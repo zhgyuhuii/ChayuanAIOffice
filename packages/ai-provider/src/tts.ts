@@ -23,6 +23,8 @@ export interface SpeechSynthesisInput {
 export interface SpeechSynthesisResult {
   bytes: Uint8Array
   mime: string
+  /** vendor-side temporary URL when the provider answers with a link (qwen-tts) */
+  remoteUrl?: string
 }
 
 const TTS_TIMEOUT_MS = 180_000
@@ -169,7 +171,11 @@ async function synthesizeDashscope(
     if (!dl.ok) throw new Error(`audio download failed: HTTP ${dl.status}`)
     const bytes = new Uint8Array(await dl.arrayBuffer())
     const ct = dl.headers.get('content-type')?.split(';')[0]?.trim()
-    return { bytes, mime: ct && ct.startsWith('audio/') ? ct : 'audio/wav' }
+    return {
+      bytes,
+      mime: ct && ct.startsWith('audio/') ? ct : 'audio/wav',
+      ...(url.startsWith('http') ? { remoteUrl: url } : {}),
+    }
   }
   if (/sambert/.test(model)) {
     const resp = await aiFetch(`${root}/api/v1/services/audio/tts`, {

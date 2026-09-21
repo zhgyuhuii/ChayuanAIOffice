@@ -25,7 +25,7 @@ const settingsWith = (...profiles: AiProviderProfile[]): AiSettingsV2 =>
   migrateSettingsV2({ version: 2, profiles })
 
 describe('capability-tree vendor rows', () => {
-  it('lists image-gen vendors with enabled ones first', () => {
+  it('strict filter: only enabled+keyed profiles with qualifying models appear', () => {
     const settings = settingsWith(
       profile({
         id: 'zhipu',
@@ -33,30 +33,77 @@ describe('capability-tree vendor rows', () => {
         displayName: 'GLM',
         models: [{ id: 'cogview-4' }],
       }),
+      profile({
+        id: 'off',
+        vendorId: 'openai',
+        displayName: 'OpenAI',
+        enabled: false,
+        models: [{ id: 'gpt-image-1' }],
+      }),
+      profile({ id: 'nokey', vendorId: 'gemini', displayName: 'Gemini', apiKey: '' }),
     )
     const rows = capabilityVendorRows(settings, 'imageGen')
     const ids = rows.map((r) => r.vendorId)
+    // configured vendor shows; disabled and keyless catalog vendors are hidden
     expect(ids).toContain('zhipu')
-    expect(ids).toContain('openai')
-    expect(ids).toContain('gemini')
-    expect(ids.indexOf('zhipu')).toBeLessThan(ids.indexOf('openai'))
+    expect(ids).not.toContain('openai')
+    expect(ids).not.toContain('gemini')
     expect(rows.find((r) => r.vendorId === 'zhipu')?.enabled).toBe(true)
-    expect(rows.find((r) => r.vendorId === 'openai')?.enabled).toBe(false)
   })
 
-  it('video understanding covers exactly the video-capable vendors', () => {
-    const settings = settingsWith()
-    const ids = capabilityVendorRows(settings, 'videoUnderstanding').map((r) => r.vendorId)
-    expect(ids.sort()).toEqual(['aliyun-bailian', 'chatoffice', 'gemini', 'volcengine', 'zhipu'])
-  })
-
-  it('svg generation lists enabled profiles only', () => {
+  it('video understanding lists only configured vendors with video input', () => {
     const settings = settingsWith(
-      profile({ id: 'deepseek', vendorId: 'deepseek', displayName: 'DeepSeek' }),
-      profile({ id: 'off', displayName: 'Off', enabled: false }),
+      profile({
+        id: 'aliyun',
+        vendorId: 'aliyun-bailian',
+        displayName: 'Bailian',
+        models: [{ id: 'qwen-vl-max' }],
+      }),
+    )
+    const ids = capabilityVendorRows(settings, 'videoUnderstanding').map((r) => r.vendorId)
+    expect(ids).toEqual(['aliyun-bailian'])
+  })
+
+  it('svg generation lists enabled+keyed profiles with chat models', () => {
+    const settings = settingsWith(
+      profile({
+        id: 'deepseek',
+        vendorId: 'deepseek',
+        displayName: 'DeepSeek',
+        models: [{ id: 'deepseek-v4-chat' }],
+      }),
+      profile({
+        id: 'off',
+        displayName: 'Off',
+        enabled: false,
+        models: [{ id: 'deepseek-v4-chat' }],
+      }),
+      profile({
+        id: 'nokey',
+        displayName: 'NoKey',
+        apiKey: '',
+        models: [{ id: 'deepseek-v4-chat' }],
+      }),
     )
     const rows = capabilityVendorRows(settings, 'svgGeneration')
     expect(rows.map((r) => r.vendorId)).toEqual(['deepseek'])
+  })
+
+  it('voice groups qualify by sambert/paraformer-style model ids', () => {
+    const settings = settingsWith(
+      profile({
+        id: 'aliyun',
+        vendorId: 'aliyun-bailian',
+        displayName: 'Bailian',
+        models: [{ id: 'cosyvoice-v2' }, { id: 'paraformer-v2' }],
+      }),
+    )
+    expect(capabilityVendorRows(settings, 'speechSynthesis').map((r) => r.vendorId)).toEqual([
+      'aliyun-bailian',
+    ])
+    expect(capabilityVendorRows(settings, 'speechRecognition').map((r) => r.vendorId)).toEqual([
+      'aliyun-bailian',
+    ])
   })
 })
 

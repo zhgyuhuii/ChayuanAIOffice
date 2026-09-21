@@ -12,6 +12,8 @@ const zh = {
   groupVideoGen: '视频生成',
   groupImageUnderstanding: '图片解析',
   groupVideoUnderstanding: '视频解析',
+  groupSpeechSynthesis: '语音合成',
+  groupSpeechRecognition: '语音识别',
   groupSvgGen: 'SVG 图像生成',
   stockTag: '图库',
   // group overview panes
@@ -59,6 +61,8 @@ const zh = {
   // AI-gen capability descriptions
   capImageGenDesc: '对话与插图中的 AI 生图默认模型。',
   capVideoGenDesc: 'AI 生成视频的默认模型（插图对话框 AI 生视频）。',
+  capSpeechSynthesisDesc: '文本转语音的默认模型（TTS：cosyvoice / qwen-tts / sambert 等）。',
+  capSpeechRecognitionDesc: '音频转文字的默认模型（ASR：paraformer / sensevoice / qwen3-asr 等）。',
   capImageUnderstandingDesc: '识别与理解图片内容的默认模型（图片解析）。',
   capVideoUnderstandingDesc: '解析视频内容的默认模型（视频理解）。',
   capSvgGenDesc: '绘制 SVG 矢量插图的对话模型。',
@@ -71,6 +75,8 @@ const en: typeof zh = {
   groupVideoGen: 'Video generation',
   groupImageUnderstanding: 'Image understanding',
   groupVideoUnderstanding: 'Video understanding',
+  groupSpeechSynthesis: 'Speech synthesis',
+  groupSpeechRecognition: 'Speech recognition',
   groupSvgGen: 'SVG generation',
   stockTag: 'Stock',
   searchOverview:
@@ -116,6 +122,10 @@ const en: typeof zh = {
   saveFailed: 'Save failed: {message}',
   capImageGenDesc: 'Default model for AI image generation in chats and dialogs.',
   capVideoGenDesc: 'Default model for AI video generation (insert-media dialog).',
+  capSpeechSynthesisDesc:
+    'Default text-to-speech model (TTS: cosyvoice / qwen-tts / sambert etc.).',
+  capSpeechRecognitionDesc:
+    'Default audio-to-text model (ASR: paraformer / sensevoice / qwen3-asr etc).',
   capImageUnderstandingDesc: 'Default model that reads and understands images.',
   capVideoUnderstandingDesc: 'Default model that parses video content.',
   capSvgGenDesc: 'Chat model that draws SVG illustrations.',

@@ -166,8 +166,12 @@ export async function materializeUrl(
       mime: sniffMime(bytes) === 'application/octet-stream' ? match[1]! : sniffMime(bytes),
     }
   }
-  const resp = await (fetchImpl ?? fetch)(url)
-  if (!resp.ok) throw new Error(`image download failed: HTTP ${resp.status}`)
+  let resp = await (fetchImpl ?? fetch)(url)
+  if (!resp || !resp.ok) {
+    // transient OSS/DNS hiccups observed in the wild — one retry
+    resp = await (fetchImpl ?? fetch)(url)
+  }
+  if (!resp || !resp.ok) throw new Error(`image download failed: HTTP ${resp.status}`)
   const bytes = new Uint8Array(await resp.arrayBuffer())
   const ct = resp.headers.get('content-type')?.split(';')[0]?.trim()
   return { bytes, mime: ct && ct !== 'application/octet-stream' ? ct : sniffMime(bytes) }
@@ -223,7 +227,14 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
     calls: ResolvedModelCall[],
     run: (call: ResolvedModelCall) => Promise<T>,
     kindLabel: string,
-  ): Promise<{ ok: true; result: T; model: string } | { ok: false; error: string }> => {
+  ): Promise<
+    | { ok: true; result: T; model: string }
+    | {
+        ok: false
+        error: string
+        attempts?: Array<{ model: string; error: string; notes?: string }>
+      }
+  > => {
     if (!calls.length) {
       return {
         ok: false,
@@ -231,16 +242,20 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
       }
     }
     let lastError = ''
+    const attempts: Array<{ model: string; error: string; notes?: string }> = []
     for (const call of calls) {
       try {
         return { ok: true, result: await run(call), model: call.model }
       } catch (e) {
-        lastError = e instanceof Error ? e.message : String(e)
+        const error = e instanceof Error ? e.message : String(e)
+        attempts.push({ model: call.model, error, ...(call.notes ? { notes: call.notes } : {}) })
+        lastError = error
       }
     }
     return {
       ok: false,
       error: calls.length > 1 ? `${lastError} (tried ${calls.length} models)` : lastError,
+      ...(attempts.length ? { attempts } : {}),
     }
   }
 
@@ -257,6 +272,7 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
       ] as const
       const flags: Record<string, boolean> = {}
       const models: Record<string, string> = {}
+      const notes: Record<string, string | undefined> = {}
       for (const kind of kinds) {
         const call = await resolveMediaCapability(
           settings,
@@ -264,9 +280,12 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
           deps.resolveSecret ? { resolveSecret: deps.resolveSecret } : {},
         )
         flags[kind] = !!call
-        if (call) models[kind] = call.model
+        if (call) {
+          models[kind] = call.model
+          if (call.notes) notes[kind] = call.notes
+        }
       }
-      return { flags, models }
+      return { flags, models, notes }
     } catch (e) {
       return { flags: {}, models: {}, error: err(e) }
     }
@@ -289,7 +308,7 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
             }),
           'image',
         )
-        if (!ir.ok) return { error: ir.error }
+        if (!ir.ok) return { error: ir.error, attempts: ir.attempts }
         const call = { model: ir.model }
         const result = ir.result
         // imagegen answers data: URLs or remote links; materialize to bytes so
@@ -458,6 +477,7 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
           url: pathToFileURL(filePath).toString(),
           mime: result.mime,
           model: call.model,
+          ...(result.remoteUrl ? { remoteUrl: result.remoteUrl } : {}),
         }
       } catch (e) {
         return { error: err(e) }

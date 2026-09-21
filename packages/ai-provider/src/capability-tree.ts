@@ -10,13 +10,20 @@
  * `discoverModels` and merges capability-matching ids back into the profile.
  */
 import { resolveModelCapabilities } from './capabilities'
+import { inferModelType } from './model-type'
 import { findProfile, isChatModel, isImageGenModel, isVideoGenModel } from './settings-v2'
 import { VENDOR_BY_ID } from './vendor-catalog'
 import type { AiModelEntry, AiProviderProfile, AiSettingsV2 } from './types'
 
 /** the model-driven capability groups surfaced in the settings tree */
 export type AiCapabilityKind =
-  'imageGen' | 'videoGen' | 'imageUnderstanding' | 'videoUnderstanding' | 'svgGeneration'
+  | 'imageGen'
+  | 'videoGen'
+  | 'imageUnderstanding'
+  | 'videoUnderstanding'
+  | 'svgGeneration'
+  | 'speechSynthesis'
+  | 'speechRecognition'
 
 /**
  * Vendor catalog ids that can serve each capability. Mirrors the wired
@@ -62,6 +69,10 @@ const CAPABILITY_VENDORS: Record<AiCapabilityKind, string[]> = {
     'chatoffice',
   ],
   videoUnderstanding: ['gemini', 'volcengine', 'zhipu', 'aliyun-bailian', 'chatoffice'],
+  // voice: mirrors the wired speech adapters (openai-compatible shapes, gemini
+  // audio, dashscope native cosyvoice/paraformer)
+  speechSynthesis: ['openai', 'gemini', 'aliyun-bailian'],
+  speechRecognition: ['openai', 'gemini', 'aliyun-bailian'],
   // SVG generation rides chat models: every vendor qualifies, the tree lists
   // enabled profiles only (no point advertising vendors the user never set up)
   svgGeneration: [],
@@ -89,6 +100,11 @@ export function modelHasCapability(
     }
     case 'svgGeneration':
       return isChatModel(entry)
+    case 'speechSynthesis':
+    case 'speechRecognition': {
+      const type = entry.type ?? inferModelType(entry.id)
+      return kind === 'speechSynthesis' ? type === 'tts' : type === 'asr'
+    }
   }
 }
 
@@ -113,9 +129,14 @@ export function capabilityVendorRows(
   settings: Pick<AiSettingsV2, 'profiles'>,
   kind: AiCapabilityKind,
 ): Array<{ vendorId: string; name: string; nameZh?: string; enabled: boolean; keyUrl?: string }> {
+  const qualifying = (profile: AiProviderProfile): boolean =>
+    profile.enabled &&
+    // configured: inline key or backend credential reference
+    ( !!profile.apiKey || !!profile.apiKeyRef) &&
+    profileCapabilityModels(settings, kind, profile.id).length > 0
   if (kind === 'svgGeneration') {
     return settings.profiles
-      .filter((p) => p.enabled)
+      .filter((p) => qualifying(p))
       .map((p) => ({
         vendorId: p.vendorId ?? p.id,
         name: p.displayName || p.id,
@@ -127,27 +148,30 @@ export function capabilityVendorRows(
   }
   const catalog = CAPABILITY_VENDORS[kind]
   const byId = new Map(settings.profiles.map((p) => [p.vendorId ?? p.id, p]))
+  // strict three-condition filter: enabled + key configured + has models of
+  // this kind — unconfigured vendors never appear in the group
   const rows = catalog
+    .filter((vendorId) => {
+      const profile = byId.get(vendorId)
+      return !!profile && qualifying(profile)
+    })
     .map((vendorId) => {
       const vendor = VENDOR_BY_ID.get(vendorId)
-      const profile = byId.get(vendorId)
       return {
         vendorId,
         name: vendor?.name ?? vendorId,
         ...(vendor?.nameZh ? { nameZh: vendor.nameZh } : {}),
-        enabled: !!profile?.enabled,
+        enabled: true,
         ...(vendor?.keyUrl ? { keyUrl: vendor.keyUrl } : {}),
       }
     })
-    .sort((a, b) => Number(b.enabled) - Number(a.enabled))
   // Custom/OpenAI-compatible profiles (no catalog vendor, e.g. agnes-ai) join
   // the group whenever at least one of their models qualifies — qualification
   // is model-driven (modelHasCapability), never vendor-list membership.
   for (const profile of settings.profiles) {
     const vendorId = profile.vendorId ?? profile.id
     if (catalog.includes(vendorId)) continue
-    if (!profile.enabled) continue
-    if (profileCapabilityModels(settings, kind, profile.id).length === 0) continue
+    if (!qualifying(profile)) continue
     rows.push({
       vendorId,
       name: profile.displayName || vendorId,

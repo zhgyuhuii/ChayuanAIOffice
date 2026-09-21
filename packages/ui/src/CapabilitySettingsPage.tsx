@@ -55,6 +55,8 @@ const GROUPS: Array<{
     | 'groupVideoGen'
     | 'groupImageUnderstanding'
     | 'groupVideoUnderstanding'
+    | 'groupSpeechSynthesis'
+    | 'groupSpeechRecognition'
     | 'groupSvgGen'
 }> = [
   { id: 'search', labelKey: 'groupSearch' },
@@ -62,6 +64,8 @@ const GROUPS: Array<{
   { id: 'videoGen', labelKey: 'groupVideoGen' },
   { id: 'imageUnderstanding', labelKey: 'groupImageUnderstanding' },
   { id: 'videoUnderstanding', labelKey: 'groupVideoUnderstanding' },
+  { id: 'speechSynthesis', labelKey: 'groupSpeechSynthesis' },
+  { id: 'speechRecognition', labelKey: 'groupSpeechRecognition' },
   { id: 'svgGeneration', labelKey: 'groupSvgGen' },
 ]
 
@@ -332,7 +336,6 @@ export function CapabilitySettingsPage({
     const entry: AiModelEntry = { id: modelId }
     return modelHasCapability(kind, profile, entry)
   }
-
   // ── tree rendering ───────────────────────────────────────────────────
   const groupLabel = (id: GroupId): string => t[GROUPS.find((g) => g.id === id)!.labelKey]
 
@@ -359,7 +362,11 @@ export function CapabilitySettingsPage({
           ? t.capImageUnderstandingDesc
           : kind === 'videoUnderstanding'
             ? t.capVideoUnderstandingDesc
-            : t.capSvgGenDesc
+            : kind === 'speechSynthesis'
+              ? t.capSpeechSynthesisDesc
+              : kind === 'speechRecognition'
+                ? t.capSpeechRecognitionDesc
+                : t.capSvgGenDesc
 
   const defaultModelLabel = (kind: AiCapabilityKind): string | undefined => {
     const sel = capabilityDefault(kind)

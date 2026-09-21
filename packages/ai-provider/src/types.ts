@@ -38,6 +38,8 @@ export interface AiModelEntry {
   name?: string
   /** inferred model type (chat/vision/image-generation/...); absent = infer from id */
   type?: AiModelType
+  /** user-authored invocation notes (usage constraints/examples) surfaced to agents */
+  notes?: string
   /** live marker on the synthetic chatop-local group: a harness instance is
    * currently running this model (picker renders a running badge) */
   running?: boolean

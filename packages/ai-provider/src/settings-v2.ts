@@ -177,6 +177,8 @@ export interface ResolvedModelCall {
   model: string
   /** originating vendor (capability lookups: output caps, media channels) */
   vendorId?: string
+  /** user-authored invocation notes from the model entry (agent self-diagnosis) */
+  notes?: string
   omitTemperature?: boolean
   useMaxCompletionTokens?: boolean
   bodyExtras?: Record<string, unknown>
@@ -239,6 +241,7 @@ export function resolveModelCall(
     apiKey,
     model: selection.modelId,
     vendorId: profile.vendorId ?? profile.id,
+    ...(entry.notes ? { notes: entry.notes } : {}),
     ...(modelHasFixedSampling(selection.modelId) || isMoonshot ? { omitTemperature: true } : {}),
     ...(isOpenAiOfficial && protocol !== 'anthropic' ? { useMaxCompletionTokens: true } : {}),
     ...(isDeepSeek && protocol === 'openai-compatible'

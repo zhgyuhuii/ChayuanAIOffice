@@ -43,10 +43,15 @@ const VIDEO_GEN = [
 const TTS = [
   /(^|[-_])tts($|[-_])/i,
   /text-to-speech/i,
-  /voice|vits|cosyvoice|bark/i,
+  /voice|vits|cosyvoice|bark|sambert/i,
   /speech(-|_)?synthesis/i,
 ]
-const ASR = [/(^|[-_])asr($|[-_])/i, /whisper/i, /speech-to-text/i, /transcri/i]
+const ASR = [
+  /(^|[-_])asr($|[-_])/i,
+  /whisper|paraformer|sensevoice/i,
+  /speech-to-text/i,
+  /transcri/i,
+]
 const AUDIO_U = [/audio-understanding/i, /audio-analysis/i, /audio-qa/i]
 const VISION = [/vision/i, /qwen-vl|internvl|minicpm-v/i]
 const VIDEO_U = [/video-understanding/i, /video-analysis/i]

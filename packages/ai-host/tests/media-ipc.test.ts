@@ -96,8 +96,8 @@ beforeAll(async () => {
         res.setHeader('Content-Type', 'application/json')
         const raw = body.join('')
         // dashscope compatible-mode inline ASR (input_audio) vs vision chat
-        const payload = raw.includes('input_audio')
-          ? { choices: [{ message: { content: 'dashscope inline transcript' } }] }
+        const payload = raw.includes('"audio"')
+          ? { choices: [{ message: { content: 'dashscope audio-url transcript' } }] }
           : { choices: [{ message: { content: 'a red square on white' } }] }
         res.end(JSON.stringify(payload))
         return
@@ -256,11 +256,17 @@ describe('registerMediaIpc end-to-end', () => {
     expect(r.model).toBe('qwen-tts')
   })
 
-  it('transcribes through qwen3-asr inline base64 (local file)', async () => {
+  it('qwen3-asr transcribes via public audio URL (real-device shape: audio part)', async () => {
+    writeSettings([dashProfile([{ id: 'qwen3-asr-flash', type: 'asr' }])])
+    const r = await call('ai:media-asr', { source: `${base}/sample.wav` })
+    expect(r.error).toBeUndefined()
+    expect(r.text).toBe('dashscope audio-url transcript')
+  })
+
+  it('qwen3-asr with a local file is honestly refused (dashscope fetches URLs only)', async () => {
     writeSettings([dashProfile([{ id: 'qwen3-asr-flash', type: 'asr' }])])
     const r = await call('ai:media-asr', { source: join(dir, 'sample.wav') })
-    expect(r.error).toBeUndefined()
-    expect(r.text).toBe('dashscope inline transcript')
+    expect(String(r.error)).toContain('public http(s) URL')
   })
 
   it('transcribes through paraformer file transcription (public URL source)', async () => {

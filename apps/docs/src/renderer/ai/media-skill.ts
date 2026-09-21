@@ -11,11 +11,20 @@ import { createMediaSkill, type AgentSkill, type MediaSkillBridge } from '@chato
  */
 
 interface MediaWire {
-  mediaCapabilities(): Promise<{ flags?: Record<string, boolean>; models?: Record<string, string> }>
+  mediaCapabilities(): Promise<{
+    flags?: Record<string, boolean>
+    models?: Record<string, string>
+    notes?: Record<string, string | undefined>
+  }>
   mediaImage(op: {
     prompt: string
     aspectRatio?: string
-  }): Promise<{ url?: string; model?: string; error?: string }>
+  }): Promise<{
+    url?: string
+    model?: string
+    error?: string
+    attempts?: Array<{ model: string; error: string; notes?: string }>
+  }>
   mediaVideo(op: {
     prompt: string
     aspectRatio?: string
@@ -43,6 +52,7 @@ interface MediaWire {
 
 const wire: MediaWire | undefined = (window as unknown as Record<string, MediaWire | undefined>)
   .desktop
+let notesCache: Record<string, string | undefined> = {}
 const unavailable = <T>(what: string): Promise<T> =>
   Promise.reject(new Error(`${what} is unavailable`))
 
@@ -56,11 +66,13 @@ export function createDocsMediaSkill(): AgentSkill {
     asr: false,
   }
   const bridge: MediaSkillBridge = {
+    modelNotes: async () => notesCache,
     capabilities: async () => {
       if (!wire) return flagsOff
       try {
         const r = await wire.mediaCapabilities()
         const f = r.flags ?? {}
+        notesCache = r.notes ?? {}
         return {
           image: !!f.image,
           video: !!f.video,

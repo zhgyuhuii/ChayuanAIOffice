@@ -39,10 +39,33 @@ beforeEach(() => {
 })
 
 describe('generateViaDashscope watermark parameter', () => {
-  it('qwen-image requests watermark:false', async () => {
-    await generateImageWithModel(call('qwen-image'), req)
+  it('qwen-image: synchronous call, no async header, watermark:false, extracts image URLs', async () => {
+    // real-device contract: qwen-image answers synchronously over
+    // multimodal-generation with image URLs inside message.content
+    ;(aiFetch as ReturnType<typeof vi.fn>).mockReset()
+    ;(aiFetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        output: {
+          choices: [
+            {
+              message: {
+                content: [{ image: 'https://img/out.png' }, { image: 'https://img/out2.png' }],
+              },
+            },
+          ],
+        },
+      }),
+    })
+    const result = await generateImageWithModel(call('qwen-image'), req)
+    expect(result.urls).toEqual(['https://img/out.png', 'https://img/out2.png'])
     const body = submitBody()
     expect(body.parameters).toMatchObject({ watermark: false })
+    const headers = (aiFetch as ReturnType<typeof vi.fn>).mock.calls[0]![1].headers
+    expect(headers['X-DashScope-Async']).toBeUndefined()
+    expect(String((aiFetch as ReturnType<typeof vi.fn>).mock.calls[0]![0])).toContain(
+      'multimodal-generation/generation',
+    )
   })
 
   it('wanx requests watermark:false', async () => {

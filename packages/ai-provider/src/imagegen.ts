@@ -140,37 +140,58 @@ async function generateViaDashscope(
   const size = strParam(req.params, 'size') ?? aspectToSize(req.aspectRatio, '*') ?? '1024*1024'
   const n = numParam(req.params, 'n') ?? 1
   const isQwenImage = /qwen-image/i.test(call.model)
-  // qwen-image / wanx watermark their output ("AI生成" mark, bottom-right) unless
-  // explicitly disabled; flux on dashscope doesn't document the parameter, so it
-  // only goes to the two families that do.
-  const noWatermark = /qwen-image|wanx/i.test(call.model) ? { watermark: false } : {}
-  const submit = await aiFetch(
-    isQwenImage
-      ? `${root}/api/v1/services/aigc/multimodal-generation/generation`
-      : `${root}/api/v1/services/aigc/text2image/image-synthesis`,
-    {
+  // qwen-image runs SYNCHRONOUSLY over multimodal-generation (the async task
+  // header is rejected with 403 "does not support asynchronous calls"); wanx
+  // keeps the async text2image task flow.
+  if (isQwenImage) {
+    const resp = await aiFetch(`${root}/api/v1/services/aigc/multimodal-generation/generation`, {
       method: 'POST',
       ...(req.signal ? { signal: req.signal } : {}),
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${call.apiKey}`,
-        'X-DashScope-Async': 'enable',
       },
-      body: JSON.stringify(
-        isQwenImage
-          ? {
-              model: call.model,
-              input: { messages: [{ role: 'user', content: [{ text: req.prompt }] }] },
-              parameters: { n, size, ...noWatermark },
-            }
-          : {
-              model: call.model,
-              input: { prompt: req.prompt },
-              parameters: { n, size, ...noWatermark },
-            },
-      ),
+      body: JSON.stringify({
+        model: call.model,
+        input: { messages: [{ role: 'user', content: [{ text: req.prompt }] }] },
+        parameters: { n, size, watermark: false },
+      }),
+    })
+    if (!resp.ok) {
+      throw new Error(`HTTP ${resp.status}: ${httpBodyDetail(await resp.text())}`)
+    }
+    const json = (await resp.json()) as {
+      output?: {
+        choices?: Array<{ message?: { content?: Array<{ image?: string }> } }>
+        message?: string
+      }
+    }
+    const images = (json.output?.choices?.[0]?.message?.content ?? [])
+      .map((part) => part.image ?? '')
+      .filter((u) => u !== '')
+    if (!images.length) {
+      throw new Error(json.output?.message || 'qwen-image returned no image')
+    }
+    return { urls: images }
+  }
+  // wanx watermark their output ("AI生成" mark, bottom-right) unless
+  // explicitly disabled; flux on dashscope doesn't document the parameter, so it
+  // only goes to the family that does.
+  const noWatermark = /wanx/i.test(call.model) ? { watermark: false } : {}
+  const submit = await aiFetch(`${root}/api/v1/services/aigc/text2image/image-synthesis`, {
+    method: 'POST',
+    ...(req.signal ? { signal: req.signal } : {}),
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${call.apiKey}`,
+      'X-DashScope-Async': 'enable',
     },
-  )
+    body: JSON.stringify({
+      model: call.model,
+      input: { prompt: req.prompt },
+      parameters: { n, size, ...noWatermark },
+    }),
+  })
   if (!submit.ok) {
     throw new Error(`HTTP ${submit.status}: ${httpBodyDetail(await submit.text())}`)
   }

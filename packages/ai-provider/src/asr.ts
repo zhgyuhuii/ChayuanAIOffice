@@ -195,26 +195,22 @@ async function transcribeDashscope(
       return text
     }
   }
-  // qwen3-asr / qwen-audio family: inline base64 via compatible-mode chat
-  const format = /wav/.test(input.mime) ? 'wav' : /mpeg|mp3/.test(input.mime) ? 'mp3' : undefined
-  if (!format) {
+  // qwen3-asr family (real-device verified): public audio URL via
+  // compatible-mode chat — a system message must be present (empty context is
+  // fine) and inline base64 is NOT supported by this model family.
+  if (!input.sourceUrl || !/^https?:\/\//i.test(input.sourceUrl)) {
     throw new Error(
-      `inline ASR accepts wav/mp3 audio (got ${input.mime}) — transcode the source, or configure a paraformer-family model for URL-based file transcription`,
+      `${model} requires a public http(s) URL of the audio — DashScope cannot fetch local files`,
     )
   }
-  const resp = await aiFetch(`${root}/compatible-mode/v1/chat/completions`, {
+  const resp = await aiFetch(`${dashscopeRoot(call.baseUrl)}/compatible-mode/v1/chat/completions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...auth },
     body: JSON.stringify({
       model,
       messages: [
-        {
-          role: 'user',
-          content: [
-            { type: 'input_audio', input_audio: { data: bytesToBase64(input.bytes), format } },
-            { type: 'text', text: input.prompt ?? 'Transcribe this audio exactly as spoken.' },
-          ],
-        },
+        { role: 'system', content: [{ type: 'text', text: input.prompt ?? '' }] },
+        { role: 'user', content: [{ type: 'audio', audio: input.sourceUrl }] },
       ],
     }),
     signal: withTimeout(signal, ASR_TIMEOUT_MS),

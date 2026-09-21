@@ -28,10 +28,13 @@ export interface MediaCapabilityFlags {
 export interface MediaSkillBridge {
   /** live probe against the main process (ai-settings defaults per kind) */
   capabilities(): Promise<MediaCapabilityFlags>
+  /** default model's invocation notes per kind (injected into the system prompt) */
+  modelNotes?(): Promise<Record<string, string | undefined>>
   generateImage(input: { prompt: string; aspectRatio?: string }): Promise<{
     url?: string
     model?: string
     error?: string
+    attempts?: Array<{ model: string; error: string; notes?: string }>
   }>
   generateVideo(input: {
     prompt: string
@@ -197,14 +200,23 @@ export function createMediaSkill(bridge: MediaSkillBridge): AgentSkill {
   const skip = new Set(bridge.skip ?? [])
   const defs = toolDefs(skip)
   let flags: MediaCapabilityFlags | null = null
-  // fire-and-forget: the loop re-reads `tools` before every request, so the
-  // first turn may run without media tools and the next one has them
+  let notesCache: Record<string, string | undefined> | null = null
+  // fire-and-forget: the loop re-reads `tools`/`systemPrompt` before every
+  // request, so the first turn may run without media tools and the next has them
   void bridge.capabilities().then(
     (f) => {
       flags = f
     },
     () => {},
   )
+  if (bridge.modelNotes) {
+    void bridge
+      .modelNotes()
+      .then((n) => {
+        notesCache = n
+      })
+      .catch(() => {})
+  }
   const fail = (summary: string, output: string): ToolExecution => ({
     output,
     isError: true,
@@ -222,6 +234,24 @@ export function createMediaSkill(bridge: MediaSkillBridge): AgentSkill {
       const f = flags
       if (!f) return ''
       const lines: string[] = ['## Media models (Settings → 生图、媒体与搜索)']
+      // user-authored per-model invocation notes: the agent adapts its inputs
+      // (language / ratio / duration) to these constraints before calling
+      const noteLine = (kind: string, label: string): string => {
+        const n = notesCache?.[kind]
+        if (!n) return ''
+        return `- ${label}模型说明：${n.length > 500 ? `${n.slice(0, 500)}…` : n}`
+      }
+      for (const [kind, label] of [
+        ['image', '生图'],
+        ['video', '视频'],
+        ['imageUnderstanding', '图片解析'],
+        ['videoUnderstanding', '视频解析'],
+        ['tts', '语音合成'],
+        ['asr', '语音识别'],
+      ] as const) {
+        const line = noteLine(kind, label)
+        if (line) lines.push(line)
+      }
       if (f.video && !skip.has('generate_video')) {
         lines.push(
           '- generate_video makes real AI video clips (vendor-billed, slow); only on explicit video requests.',
@@ -263,6 +293,16 @@ export function createMediaSkill(bridge: MediaSkillBridge): AgentSkill {
               summary: labels.genImage,
             }
           }
+          // Failure self-diagnosis: per-model errors + invocation notes let the
+          // agent fix its inputs (ratio / language / size) or report config issues
+          let attemptsText = ''
+          if (r.attempts?.length) {
+            attemptsText =
+              '\n' +
+              r.attempts
+                .map((a) => `- ${a.model}: ${a.error}${a.notes ? `（说明：${a.notes}）` : ''}`)
+                .join('\n')
+          }
           // Tier 2: web image search keeps imagery available without any model
           if (bridge.searchImages) {
             try {
@@ -285,7 +325,7 @@ export function createMediaSkill(bridge: MediaSkillBridge): AgentSkill {
             : ''
           return fail(
             labels.genImage,
-            `${r.error ?? 'image generation failed'} — no web image matched either.${svgHint}`,
+            `${r.error ?? 'image generation failed'} — no web image matched either.${svgHint}${attemptsText}`,
           )
         }
         case 'generate_video': {

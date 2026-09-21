@@ -318,7 +318,7 @@ export function ModelSettingsPage({
       const stored = profiles.find((p) => (p.vendorId ?? p.id) === selected && !p.enabled)
       setApiUrl(stored?.baseUrl ?? vendor?.defaultUrl ?? '')
       setProtocol(stored?.protocol ?? vendor?.api ?? 'openai-completions')
-      setDisplayNameInput(stored && !VENDOR_BY_ID.has(selected) ? (stored.displayName ?? '') : '')
+      setDisplayNameInput(selected === 'openai-compatible' ? (stored?.displayName ?? '') : '')
       setModels(
         (stored?.models ?? ((vendor?.presets ?? []) as AiModelEntry[])).map((m) => ({
           ...m,
@@ -333,7 +333,7 @@ export function ModelSettingsPage({
     }
     setApiUrl(selectedProfile.baseUrl)
     setProtocol(selectedProfile.protocol)
-    setDisplayNameInput(VENDOR_BY_ID.has(selected) ? '' : (selectedProfile.displayName ?? ''))
+    setDisplayNameInput(selected === 'openai-compatible' ? (selectedProfile.displayName ?? '') : '')
     setModels(selectedProfile.models.map((m) => ({ ...m, enabled: true })))
     setModelsFromPreset(false)
     setApiKeyInput('')
@@ -929,7 +929,7 @@ export function ModelSettingsPage({
             type="button"
             className="msp-btn msp-btn-block"
             data-model-add-vendor
-            onClick={() => setSelected('openai-compatible')}
+            onClick={() => setSelected(`custom-${Date.now().toString(36)}`)}
           >
             ＋ {t.addVendor}
           </button>
@@ -1167,7 +1167,7 @@ export function ModelSettingsPage({
                 </p>
               )}
 
-              {selected === 'openai-compatible' && (
+              {(!VENDOR_BY_ID.has(selected) || selected === 'openai-compatible') && (
                 <label className="msp-field">
                   <span className="msp-label">{t.displayNameLabel}</span>
                   <input
