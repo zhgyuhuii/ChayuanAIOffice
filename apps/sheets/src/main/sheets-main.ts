@@ -1632,6 +1632,8 @@ interface SheetsTabSession {
  * tab (or a closed-then-reopened tab) registered and overwrote the previous closure. */
 /// Same ceiling as local add_image (readLocalImage's 20MB check)
 const MAX_REMOTE_IMAGE_BYTES = 20 * 1024 * 1024
+/** Max CSV bytes converted on open: prevents 500MB CSV OOMing main before sidecar limits. */
+const MAX_CSV_IMPORT_BYTES = 32 * 1024 * 1024
 
 const sheetsTabs = new Map<number, SheetsTabSession>()
 let activeSheetsWebContents: WebContents | null = null
@@ -4128,6 +4130,8 @@ async function prepareWorkbookForOpen(
   const openPath = join(directory, `${stem}.xlsx`)
   try {
     if (extension === 'csv') {
+      const csvStat = await stat(path)
+      if (csvStat.size > MAX_CSV_IMPORT_BYTES) throw new Error(tm('errFileTooLarge'))
       await writeFile(
         openPath,
         await csvToXlsxBuffer(decodeCsvBuffer(await readFile(path), legacyCsvCharset())),
