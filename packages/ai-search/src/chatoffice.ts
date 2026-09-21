@@ -216,22 +216,43 @@ function runChatOffice(args: string[], timeoutMs: number, signal?: AbortSignal):
 
 // ── Search ──────────────────────────────────────────────────────────
 
+// LOCAL(2026-09-22, f5247d3..476e5023): 上游 #555 结果数/字段长度钳制——随 gsk.ts→chatoffice.ts
+// 重命名跟随,符号名 MAX_GSK_*→MAX_CHATOFFICE_*(第十二轮同型坑)
+/** Max search results kept; longest snippet/title chars (prevents MB fields blowing context). */
+export const MAX_CHATOFFICE_RESULTS = 20
+export const MAX_CHATOFFICE_SNIPPET_CHARS = 2_000
+
+function normalizeMaxResults(n: number): number {
+  if (!Number.isFinite(n)) return 6
+  return Math.min(20, Math.max(1, Math.floor(n)))
+}
+
+function clipField(v: unknown): string {
+  const s = String(v ?? '')
+  return s.length > MAX_CHATOFFICE_SNIPPET_CHARS ? s.slice(0, MAX_CHATOFFICE_SNIPPET_CHARS) : s
+}
+
 /** Parses the `chatoffice search` response shape data.organic_results[{title,link,snippet}] (exported for tests) */
 export function parseChatOfficeWebSearch(
   raw: unknown,
   maxResults: number,
 ): { results: WebSearchResult[]; answer?: string } {
+  const bounded = normalizeMaxResults(maxResults)
   const data = asRecord(asRecord(raw).data ?? raw)
   const organic: unknown[] = Array.isArray(data.organic_results) ? data.organic_results : []
-  const results: WebSearchResult[] = organic.slice(0, maxResults).map((item) => {
+  const results: WebSearchResult[] = organic.slice(0, bounded).map((item) => {
     const o = asRecord(item)
     return {
-      title: String(o.title ?? ''),
-      url: String(o.link ?? ''),
-      snippet: String(o.snippet ?? ''),
+      title: clipField(o.title),
+      url: clipField(o.link),
+      snippet: clipField(o.snippet),
     }
   })
-  const answer = typeof data.answer === 'string' && data.answer ? data.answer : undefined
+  const answerRaw = typeof data.answer === 'string' && data.answer ? data.answer : undefined
+  const answer =
+    answerRaw !== undefined && answerRaw.length > MAX_CHATOFFICE_SNIPPET_CHARS
+      ? answerRaw.slice(0, MAX_CHATOFFICE_SNIPPET_CHARS)
+      : answerRaw
   return answer !== undefined ? { results, answer } : { results }
 }
 

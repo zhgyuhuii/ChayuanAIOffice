@@ -122,6 +122,17 @@ describe('parseChatOfficeWebSearch', () => {
   it('tolerates missing data', () => {
     expect(parseChatOfficeWebSearch({ status: 'ok' }, 5).results).toEqual([])
   })
+
+  it('clamps maxResults and truncates long fields', () => {
+    const big = 'x'.repeat(5000)
+    const raw = {
+      data: { organic_results: [{ title: big, link: 'https://a.com', snippet: big }] },
+    }
+    const r = parseChatOfficeWebSearch(raw, 1e9)
+    expect(r.results).toHaveLength(1)
+    expect(r.results[0]!.snippet.length).toBeLessThanOrEqual(2000)
+    expect(parseChatOfficeWebSearch(raw, NaN).results).toHaveLength(1)
+  })
 })
 
 describe('parseChatOfficeImageSearch', () => {
