@@ -246,6 +246,34 @@ export function AiConversationBody({
   const attachmentsRef = useRef(attachments)
   attachmentsRef.current = attachments
   const lastAttachmentsRef = useRef<AttachmentMeta[]>([])
+  // LOCAL(2026-09-22, f5247d3..476e5023): 上游 #544 analyze_media 门控重放为本地能力旗标
+  // (统一媒体通道的 imageUnderstanding/videoUnderstanding;mount+focus 刷新,照上游
+  // gskLoggedInRef 模式)——未配置分析模型时 docs-skill 隐藏 analyze_media 工具
+  const mediaCapsRef = useRef({ imageUnderstanding: false, videoUnderstanding: false })
+  useEffect(() => {
+    let alive = true
+    const refresh = () => {
+      // tests render the body without a preload bridge
+      void (window as unknown as {
+        desktop?: { mediaCapabilities?: () => Promise<{ flags?: Record<string, boolean> }> }
+      })
+        .desktop?.mediaCapabilities?.()
+        .then((caps) => {
+          if (!alive || !caps?.flags) return
+          mediaCapsRef.current = {
+            imageUnderstanding: !!caps.flags.imageUnderstanding,
+            videoUnderstanding: !!caps.flags.videoUnderstanding,
+          }
+        })
+        .catch(() => {})
+    }
+    refresh()
+    window.addEventListener('focus', refresh)
+    return () => {
+      alive = false
+      window.removeEventListener('focus', refresh)
+    }
+  }, [])
   /** the scope quote of the last send, so a retry reuses it instead of re-reading the live selection */
   const lastScopeRef = useRef<AiScopeQuoteData | undefined>(undefined)
   const trackChangesRef = useRef(trackChanges)
@@ -429,6 +457,9 @@ export function AiConversationBody({
           () => pageSetupAccessRef.current,
           () => docExtrasRef.current,
           () => notesAccessRef.current,
+          // LOCAL(2026-09-22, f5247d3..476e5023): 上游 #544——analyze_media 按媒体分析能力
+          // 隐藏(本地门=统一媒体通道能力旗标,替代上游 gskLoggedIn+BYOK 判定)
+          () => mediaCapsRef.current.imageUnderstanding || mediaCapsRef.current.videoUnderstanding,
         ),
         createFilesSkill(availableAttachments),
       ]),

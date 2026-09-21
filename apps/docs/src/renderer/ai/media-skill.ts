@@ -108,7 +108,10 @@ export function createDocsMediaSkill(): AgentSkill {
       transcript:
         'Act on the transcript per the user request (summarize in chat, or insert with insert_content / write_document).',
     },
-    skip: ['generate_image'],
+    // LOCAL(2026-09-22, f5247d3..476e5023): 上游 #544 给 docs 专属 analyze_media(支持
+    // blockIndex 读文档内嵌图,执行已改走本地 media-understand 通道)——本地媒体技能不再
+    // 重复注册同名工具(避免 composeSkills 双注册)
+    skip: ['generate_image', 'analyze_media'],
   }
   return createMediaSkill(bridge)
 }

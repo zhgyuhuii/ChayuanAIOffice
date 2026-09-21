@@ -55,6 +55,13 @@ export interface MediaIpcDeps {
    * unset so private addresses stay blocked).
    */
   fetchImpl?: typeof fetch
+  /**
+   * LOCAL(2026-09-22, f5247d3..476e5023): app-specific source resolver hook —
+   * a URL scheme loadMediaSource cannot read (docs' chatoffice-docx-media://
+   * lazy pictures) gets materialized into something it does (data:/file:/…).
+   * Resolved value replaces the source; a null/throw keeps the source as-is.
+   */
+  resolveSource?: (source: string) => Promise<string | null>
 }
 
 /** per-kind concurrency gates: protect vendors from parallel-burst rate limits */
@@ -87,11 +94,23 @@ class Semaphore {
   }
 }
 
+/** LOCAL(2026-09-22): app-specific source materialization hook (see MediaIpcDeps.resolveSource) */
+async function resolveSourceOf(
+  source: string,
+  deps: Pick<MediaIpcDeps, 'resolveSource'>,
+): Promise<string> {
+  if (!deps.resolveSource) return source
+  try {
+    return (await deps.resolveSource(source)) ?? source
+  } catch {
+    return source
+  }
+}
+
 async function loadMediaSource(
   source: string,
   fetchImpl?: typeof fetch,
-): Promise<{ base64: string; mime: string }> {
-  if (source.startsWith('data:')) {
+): Promise<{ base64: string; mime: string }> {  if (source.startsWith('data:')) {
     const match = /^data:([^;,]+);base64,(.*)$/s.exec(source)
     if (!match) throw new Error('unsupported data URL')
     const base64 = match[2]!
@@ -400,7 +419,9 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
       try {
         let media
         try {
-          media = await Promise.all(sources.map((s) => loadMediaSource(s, deps.fetchImpl)))
+          media = await Promise.all(
+            sources.map(async (s) => loadMediaSource(await resolveSourceOf(s, deps), deps.fetchImpl)),
+          )
         } catch (loadErr) {
           return { error: err(loadErr) }
         }
@@ -430,7 +451,7 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
       try {
         let media
         try {
-          media = await loadMediaSource(source, deps.fetchImpl)
+          media = await loadMediaSource(await resolveSourceOf(source, deps), deps.fetchImpl)
         } catch (loadErr) {
           return { error: err(loadErr) }
         }
