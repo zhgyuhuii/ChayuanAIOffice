@@ -73,6 +73,19 @@ function ensureDir(dir: string): void {
 const DEFAULT_CHAT_LIMIT = 200
 // Upper bound for loadChat limit to avoid unbounded reads
 const MAX_CHAT_LIMIT = 10_000
+/** Max project name chars: prevents MB names bloating index.json/project.json. */
+export const MAX_PROJECT_NAME_CHARS = 128
+/** Default timeline entries; upper bound avoids loading every chat fully. */
+const DEFAULT_TIMELINE_LIMIT = 20
+const MAX_TIMELINE_LIMIT = 1_000
+
+function normalizeTimelineLimit(limit: number): number {
+  if (!Number.isFinite(limit)) return DEFAULT_TIMELINE_LIMIT
+  const floored = Math.floor(limit)
+  if (floored < 1) return 1
+  if (floored > MAX_TIMELINE_LIMIT) return MAX_TIMELINE_LIMIT
+  return floored
+}
 
 // Allowlist for project and chat ids (fail-closed: rejects traversal and separators)
 const SAFE_ID_PATTERN = /^[A-Za-z0-9_-]+$/
@@ -662,12 +675,18 @@ export class ProjectStore {
   createProject(name: string, rootPath?: string): ProjectData {
     const trimmed = name.trim()
     if (!trimmed) throw new Error('Project name cannot be empty')
+    // LOCAL: rootPath 校验(P4 文件夹项目)与上游 #547 项目名长度钳制并集保留
     let boundRoot: string | undefined
     if (rootPath !== undefined && rootPath.trim() !== '') {
       if (!existsSync(rootPath) || !statSync(rootPath).isDirectory()) {
         throw new Error(`Project folder does not exist: ${rootPath}`)
       }
       boundRoot = rootPath
+    }
+    if (trimmed.length > MAX_PROJECT_NAME_CHARS) {
+      throw new Error(
+        `Project name too long: ${trimmed.length} chars (max ${MAX_PROJECT_NAME_CHARS})`,
+      )
     }
     const now = nowIso()
     // Generate a stable yet unique id
@@ -706,6 +725,11 @@ export class ProjectStore {
     if (id === 'default') throw new Error('The default project cannot be renamed')
     const trimmed = name.trim()
     if (!trimmed) throw new Error('Project name cannot be empty')
+    if (trimmed.length > MAX_PROJECT_NAME_CHARS) {
+      throw new Error(
+        `Project name too long: ${trimmed.length} chars (max ${MAX_PROJECT_NAME_CHARS})`,
+      )
+    }
     const now = nowIso()
     const proj = this.readProject(id)
     if (!proj) throw new Error(`Project does not exist: ${id}`)
@@ -834,6 +858,7 @@ export class ProjectStore {
    * (reverse-looked-up from fileMap by chatId), role, and preview text.
    */
   getProjectTimeline(projectId: string, limit = 20): TimelineEntry[] {
+    const boundedLimit = normalizeTimelineLimit(limit)
     const index = this.readIndex()
     // Build the reverse chatId → filePath map (files in this project only); mapping wins, old data falls back to the path hash
     const chatToFile = new Map<string, string>()
@@ -868,6 +893,6 @@ export class ProjectStore {
       if (b.ts < a.ts) return -1
       return b.seq - a.seq
     })
-    return entries.slice(0, limit)
+    return entries.slice(0, boundedLimit)
   }
 }
