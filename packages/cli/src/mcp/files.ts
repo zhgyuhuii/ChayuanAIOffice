@@ -43,11 +43,20 @@ export function mimeOf(path: string): string {
   return MIME_TYPES[extname(path).toLowerCase()] ?? 'application/octet-stream'
 }
 
+/** Max safe file name chars (preserves extension when truncating). */
+export const MAX_SAFE_NAME_CHARS = 128
+
 /** A client-supplied file name reduced to one safe path segment. */
 export function safeName(raw: string | undefined, fallback = 'file'): string {
   const base = basename((raw ?? '').trim().replace(/\\/g, '/'))
-  const clean = base.replace(/[^\w.\- ()]/g, '_').replace(/^\.+/, '')
-  return clean === '' ? fallback : clean
+  let clean = base.replace(/[^\w.\- ()]/g, '_').replace(/^\.+/, '')
+  if (clean === '') return fallback
+  if (clean.length > MAX_SAFE_NAME_CHARS) {
+    const ext = extname(base).slice(0, 16)
+    const stem = clean.slice(0, MAX_SAFE_NAME_CHARS - ext.length)
+    clean = stem + ext
+  }
+  return clean
 }
 
 export class FileStore {
