@@ -3648,6 +3648,18 @@ export function registerProjectIpc(): void {
         interrupted?: boolean
       },
     ) => {
+      if (args.role !== 'user' && args.role !== 'assistant') {
+        throw new Error(`Invalid chat role: ${String(args.role)}`)
+      }
+      if (typeof args.text !== 'string' || args.text.length > 200_000) {
+        throw new Error('Invalid chat text: must be a string up to 200000 chars')
+      }
+      if (args.tools && (!Array.isArray(args.tools) || args.tools.length > 50)) {
+        throw new Error('Invalid chat tools: must be an array up to 50 entries')
+      }
+      if (args.attachments && (!Array.isArray(args.attachments) || args.attachments.length > 20)) {
+        throw new Error('Invalid chat attachments: must be an array up to 20 entries')
+      }
       const msg: Parameters<ProjectStore['appendChatMessage']>[2] = {
         role: args.role,
         text: args.text,
