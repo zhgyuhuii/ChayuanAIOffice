@@ -9,6 +9,7 @@ import type { RenderSlide } from '@chatoffice/pptx-render'
 import { useI18n } from '../i18n/locale'
 import {
   buildPrintDocumentHtml,
+  currentRangeIndices,
   parsePrintRange,
   printPageCount,
   type PrintLayout,
@@ -103,7 +104,7 @@ export function PrintDialog({
   /** 0-based deck indices selected by the range options (before the hidden filter) */
   const rangeIndices = useMemo<number[] | null>(() => {
     if (rangeMode === 'all') return slides.map((_s, i) => i)
-    if (rangeMode === 'current') return [current]
+    if (rangeMode === 'current') return currentRangeIndices(current, slides.length)
     return parsePrintRange(customRange, slides.length)
   }, [rangeMode, customRange, slides, current])
 
