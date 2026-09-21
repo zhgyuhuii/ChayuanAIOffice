@@ -16,21 +16,25 @@ export const EMU_PER_PT = 12700 // 914400 / 72
 
 /** EMU → px (under the given scale). With scale=1, converts at the 96dpi baseline. */
 export function emuToPx(emu: number, scale = 1): number {
+  if (!Number.isFinite(emu) || !Number.isFinite(scale)) return 0
   return (emu / EMU_PER_PX_96) * scale
 }
 
 /** pt → px (for font sizes), 96dpi: 1pt = 96/72 px. */
 export function ptToPx(pt: number, scale = 1): number {
+  if (!Number.isFinite(pt) || !Number.isFinite(scale)) return 0
   return ((pt * 96) / 72) * scale
 }
 
 /** OOXML rot (1/60000 degree) → degrees. */
 export function rotToDeg(rot: number): number {
+  if (!Number.isFinite(rot)) return 0
   return rot / 60000
 }
 
 /** OOXML rot (1/60000 degree) → radians. */
 export function rotToRad(rot: number): number {
+  if (!Number.isFinite(rot)) return 0
   return (rotToDeg(rot) * Math.PI) / 180
 }
 
