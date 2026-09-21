@@ -58,7 +58,7 @@ describe('registerSharedKbIpc', () => {
 
   it('search returns per-KB groups and caches the discovered origin', async () => {
     discoverMock.mockResolvedValue({
-      origin: 'http://127.0.0.1:3080',
+      origin: 'http://127.0.0.1:52584',
       source: 'probe',
       status: STATUS,
     })
@@ -90,7 +90,7 @@ describe('registerSharedKbIpc', () => {
       expect(payload.groups).toHaveLength(2)
       // origin persisted for the next start's cached level
       const state = JSON.parse(await readFile(statePath, 'utf8')) as { cachedOrigin?: string }
-      expect(state.cachedOrigin).toBe('http://127.0.0.1:3080')
+      expect(state.cachedOrigin).toBe('http://127.0.0.1:52584')
     } finally {
       globalThis.fetch = realFetch
     }
@@ -122,7 +122,7 @@ describe('registerSharedKbIpc', () => {
 
   it('file downloads bytes into the downloads dir and reveals the result', async () => {
     discoverMock.mockResolvedValue({
-      origin: 'http://127.0.0.1:3080',
+      origin: 'http://127.0.0.1:52584',
       source: 'probe',
       status: STATUS,
     })
@@ -174,7 +174,7 @@ describe('registerSharedKbIpc', () => {
     expect(missing).toEqual({ ok: false, reason: 'kb-download-unsupported' })
 
     discoverMock.mockResolvedValue({
-      origin: 'http://127.0.0.1:3080',
+      origin: 'http://127.0.0.1:52584',
       source: 'probe',
       status: STATUS,
     })

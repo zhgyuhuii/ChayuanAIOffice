@@ -3,7 +3,7 @@
 # the five editor bundles on one port.
 #
 #   docker build -f apps/server/Dockerfile -t chatoffice-server .
-#   docker run -p 8787:8787 -v chatoffice-data:/data chatoffice-server
+#   docker run -p 52587:8787 -v chatoffice-data:/data chatoffice-server
 
 # ── builder: full toolchain, produces dist/web ────────────────────────────
 FROM node:22-bookworm-slim AS builder
@@ -56,12 +56,12 @@ COPY --from=builder /repo/dist/web dist/web
 
 ENV NODE_ENV=production \
     HOST=0.0.0.0 \
-    PORT=8787 \
+    PORT=52587 \
     CHATOFFICE_DATA_DIR=/data \
     CHATOFFICE_STATIC_DIR=/app/dist/web
 VOLUME ["/data"]
 
-EXPOSE 8787
+EXPOSE 52587
 # tsx-assets.cjs: register require.extensions for `?asset` imports (slides
 # main sources pulled in by the pptx pipeline import harfbuzz.wasm / .ttf)
 CMD ["node", "--import", "tsx", "--import", "./apps/server/src/tsx-assets.cjs", "apps/server/src/main.ts"]

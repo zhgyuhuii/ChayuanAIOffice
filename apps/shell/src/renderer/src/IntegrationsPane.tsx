@@ -515,7 +515,7 @@ function KbSourceSection() {
           className="set-input"
           style={{ flex: 1, minWidth: 220 }}
           value={origin}
-          placeholder={strings.kbSource.replace('{origin}', 'http://127.0.0.1:3080')}
+          placeholder={strings.kbSource.replace('{origin}', 'http://127.0.0.1:52584')}
           onChange={(e) => setOrigin(e.target.value)}
         />
         <button

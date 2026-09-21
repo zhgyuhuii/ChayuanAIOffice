@@ -630,37 +630,42 @@ export function HomeTab({
                 />
               )}
             </div>
+            {/* Font-settings scope: what the two family boxes above target
+                      (selection / document defaults / one style). It rides this
+                      row's right slack because the ribbon band is hard-fixed at
+                      two 30px rows — as its own row it overflows the band and
+                      gets clipped (upstream #474 regression). */}
+            {onFontSettings && (
+              <select
+                className="rb-select rb-font-scope"
+                aria-label={t('ribbonFontScope')}
+                data-tip={t('ribbonFontScope')}
+                value={fontScope}
+                disabled={!canEdit || fontSettingsBusy}
+                onChange={(e) => {
+                  setFontScope(e.target.value)
+                  setDropdown(null)
+                }}
+              >
+                <option value="selection">{t('ribbonFontSelection')}</option>
+                <option value="defaults">{t('ribbonFontDefaults')}</option>
+                {[...(styles?.values() ?? [])]
+                  .filter((style) => style.type === 'paragraph' || style.type === 'character')
+                  .map((style) => (
+                    <option key={style.styleId} value={`style:${style.styleId}`}>
+                      {t(
+                        style.type === 'character'
+                          ? 'ribbonFontCharacterStyle'
+                          : 'ribbonFontParagraphStyle',
+                      )}
+                      : {style.name}
+                    </option>
+                  ))}
+              </select>
+            )}
           </div>
         </div>
-        <div className="ribbon-group-label rb-font-scope-row">
-          {t('ribbonGroupFont')}
-          {onFontSettings && (
-            <select
-              aria-label={t('ribbonFontScope')}
-              value={fontScope}
-              disabled={!canEdit || fontSettingsBusy}
-              onChange={(e) => {
-                setFontScope(e.target.value)
-                setDropdown(null)
-              }}
-            >
-              <option value="selection">{t('ribbonFontSelection')}</option>
-              <option value="defaults">{t('ribbonFontDefaults')}</option>
-              {[...(styles?.values() ?? [])]
-                .filter((style) => style.type === 'paragraph' || style.type === 'character')
-                .map((style) => (
-                  <option key={style.styleId} value={`style:${style.styleId}`}>
-                    {t(
-                      style.type === 'character'
-                        ? 'ribbonFontCharacterStyle'
-                        : 'ribbonFontParagraphStyle',
-                    )}
-                    : {style.name}
-                  </option>
-                ))}
-            </select>
-          )}
-        </div>
+        <div className="ribbon-group-label">{t('ribbonGroupFont')}</div>
       </div>
 
       <div className="ribbon-sep" />

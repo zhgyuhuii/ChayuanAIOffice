@@ -46,7 +46,7 @@ export interface McpServerOptions {
   listenRetryDelayMs?: number
 }
 
-export const DEFAULT_MCP_PORT = 3093
+export const DEFAULT_MCP_PORT = 52588
 const LISTEN_RETRY_DELAY_MS = 1500
 const MAX_BODY_BYTES = 32 * 1024 * 1024
 

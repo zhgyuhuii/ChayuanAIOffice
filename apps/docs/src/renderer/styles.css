@@ -12069,16 +12069,12 @@ tr > .page-gap-cut {
   margin-right: 4px;
   white-space: nowrap;
 }
-.rb-font-scope-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-.rb-font-scope-row select {
-  max-width: 190px;
-  font: inherit;
-  color: inherit;
-  border: 0;
-  background: transparent;
+/* Font-settings scope select (selection / defaults / style): rides the second
+   font-group row's right slack instead of adding a third row — the ribbon band
+   is hard-fixed at 80px for exactly two 30px rows, and a dedicated label row
+   overflows it and gets clipped (upstream #474 regression). */
+.rb-font-scope {
+  margin-left: auto;
+  min-width: 96px;
+  max-width: 168px;
 }

@@ -29,10 +29,10 @@
 | `/ask`                      | host.js:368-382,SSE:`citations → delta* → [DONE]`                                                             | 存在但**不采用**(§6.4)                                                                      |
 | `/doc`、`/docs`             | host.js:347-349,428-432                                                                                       | P2 文档预览                                                                                 |
 | 回环围栏                    | host.js:295-302 `isLoopback`,403 loopback-only                                                                | 同机免 token 可信;跨机需 harness 侧 `CHATOP_ALLOW_NON_LOOPBACK=1`                           |
-| dsh web 端口                | `desktop/src/main/dsh.ts:24`,默认 3080,多用户 3080+N                                                          | 桌面形态探测范围依据                                                                        |
+| dsh web 端口                | `desktop/src/main/dsh.ts`,注册表 52584,多用户会话段 52601+（**2026-09-21 统一端口注册表**，chayuan-harness `docs/port-registry.md`；旧段 3080..3090 仅作老装机兼容尾巴） | 桌面形态探测范围依据（`kb-discovery.ts` 阶梯已同步）                                        |
 | KB 插件随桌面内置           | `desktop/src/main/bundled-plugin.ts:37-79`,`BUNDLED_PLUGINS` 含 `chatop-kb`                                   | 官方察元桌面**必带**知识库,发现失败只可能是"未启动/版本过旧"                                |
 | dsh 会话内 kb 工具          | `chatop-kb/src/kb/tools.js`(kb_search/kb_list/kb_read_doc)                                                    | 属 harness 自己的会话,office 会话用不到;但工具语义可被 office 原生工具复刻                  |
-| 控制面 MCP 端点             | `desktop/src/main/control/mcp-http.ts`,62566(占用 +1..+9),发现文件 `<userData>/mcp-local.json`,回环免 token   | 桌面形态专属、kb_read_doc 只有元数据、无清单/健康——**不作为主通路**(§3)                     |
+| 控制面 MCP 端点             | `desktop/src/main/control/mcp-http.ts`,注册表 52583(占用 +1..+9),发现文件 `<userData>/mcp-local.json`,回环免 token   | 桌面形态专属、kb_read_doc 只有元数据、无清单/健康——**不作为主通路**(§3)                     |
 | dsh-plugin 的 mcp.json 管理 | `dsh-plugin/src/host.js:176-290`                                                                              | 那是 harness→其它 CLI 的清单,**office 消费 harness 不经此路**,无需注册任何东西              |
 | 检索实现                    | sqlite-vec KNN + FTS5 BM25 → RRF(k=60) → 相邻块扩窗;嵌入指纹守卫                                              | 检索质量由 harness 保证;指纹不符时 status/search 会带 mismatch 信号,office 需透出提示       |
 
@@ -71,7 +71,7 @@
 | 通路                                   | 形态覆盖                 | 清单/健康      | 结构化检索     | 引用问答(SSE) | 鉴权                    | 依赖                                 |
 | -------------------------------------- | ------------------------ | -------------- | -------------- | ------------- | ----------------------- | ------------------------------------ |
 | **A. dsh web KB REST(选定)**           | dsh + 桌面 + web/env     | `/status` 原生 | `/search` 原生 | `/ask` 原生   | 回环免 token            | 零 harness 改动                      |
-| B1. harness 控制面 MCP(62566,http)     | 仅桌面                   | 无(工具拼凑)   | kb_search 有   | 无            | 回环免 token/跨机 token | 依赖控制面开启与发现文件             |
+| B1. harness 控制面 MCP(52583,http)     | 仅桌面                   | 无(工具拼凑)   | kb_search 有   | 无            | 回环免 token/跨机 token | 依赖控制面开启与发现文件             |
 | B2. `chatop mcp` stdio 适配器          | 仅桌面(需找到可执行文件) | 无             | kb_search 有   | 无            | 进程级                  | dsh 形态无 MCP 客户端栈              |
 | C. office 原生工具走 A 的网关(§6.5,P2) | 全形态                   | —              | —              | —             | 同 A                    | 这是**消费方式**不是通路,叠加在 A 上 |
 

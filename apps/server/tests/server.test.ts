@@ -304,7 +304,7 @@ describe('AI harness fusion: chatop-models local models', () => {
     writeFileSync(
       join(modelsDir, 'state.json'),
       JSON.stringify({
-        proxyPort: 18100,
+        proxyPort: 52581,
         instances: [
           { modelId: 'bge-m3', port: 18080, caps: ['embedding'] },
           { modelId: 'qwen3-4b', port: 18082, caps: ['chat'] },
@@ -323,7 +323,7 @@ describe('AI harness fusion: chatop-models local models', () => {
     const body = view.json()
     expect(body.profiles[0]).toMatchObject({
       id: 'chatop-local',
-      baseUrl: 'http://127.0.0.1:18100/v1',
+      baseUrl: 'http://127.0.0.1:52581/v1',
       models: [{ id: 'local/qwen3-4b', type: 'chat', running: true }],
     })
     // running local chat model outranks the vendor-backed harness default

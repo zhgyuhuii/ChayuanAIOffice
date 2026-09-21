@@ -44,7 +44,7 @@ describe('kb-client', () => {
     ]
     let seenUrl = ''
     const client = createKbHttpClient({
-      baseUrl: 'http://127.0.0.1:3080/',
+      baseUrl: 'http://127.0.0.1:52584/',
       fetchImpl: (async (input: RequestInfo | URL) => {
         seenUrl = String(input)
         return jsonResponse({ ok: true, hits })
@@ -52,7 +52,7 @@ describe('kb-client', () => {
     })
     await expect(client.search('default', '这个问题', 6)).resolves.toEqual(hits)
     expect(seenUrl).toBe(
-      'http://127.0.0.1:3080/api/chatop-kb/search?kbId=default&q=' +
+      'http://127.0.0.1:52584/api/chatop-kb/search?kbId=default&q=' +
         encodeURIComponent('这个问题') +
         '&topK=6',
     )
@@ -116,7 +116,7 @@ describe('kb-client', () => {
   it('file fetches bytes and decodes the RFC 5987 filename', async () => {
     let seenUrl = ''
     const client = createKbHttpClient({
-      baseUrl: 'http://127.0.0.1:3080',
+      baseUrl: 'http://127.0.0.1:52584',
       fetchImpl: (async (input: RequestInfo | URL) => {
         seenUrl = String(input)
         return new Response(new Uint8Array([1, 2, 3]), {
@@ -129,7 +129,7 @@ describe('kb-client', () => {
     })
     const file = await client.file('公司制度库', 'abc-123')
     expect(seenUrl).toBe(
-      'http://127.0.0.1:3080/api/chatop-kb/file?kbId=' +
+      'http://127.0.0.1:52584/api/chatop-kb/file?kbId=' +
         encodeURIComponent('公司制度库') +
         '&docId=abc-123',
     )
@@ -140,7 +140,7 @@ describe('kb-client', () => {
 
   it('file surfaces upstream failures as KbError', async () => {
     const client = createKbHttpClient({
-      baseUrl: 'http://127.0.0.1:3080',
+      baseUrl: 'http://127.0.0.1:52584',
       fetchImpl: (async () => new Response('nope', { status: 404 })) as typeof fetch,
     })
     await expect(client.file('k', 'missing')).rejects.toBeInstanceOf(KbError)

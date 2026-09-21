@@ -37,6 +37,7 @@ import {
 import { createI18n, getUiLang } from '@chatoffice/i18n'
 import { hasChatOfficeAuth } from '@chatoffice/ai-search'
 import {
+  registerFetchImageIpc,
   registerMediaIpc,
   createByokImageHandler, registerSharedKbIpc
 } from '@chatoffice/ai-host'
@@ -723,6 +724,8 @@ let ipcRegistered = false
 function registerMarkdownIpc(): void {
   if (ipcRegistered) return
   ipcRegistered = true
+  // LOCAL(2026-09-20): ai:fetch-image registrar — standalone runs had no handler for the insert pipelines; upstream: additive; converge: upstream may adopt
+  registerFetchImageIpc({ ipcMain })
 
   // LOCAL(2026-09-20): unified media capability channels; upstream: additive-only; converge: never (local feature)
   registerMediaIpc({

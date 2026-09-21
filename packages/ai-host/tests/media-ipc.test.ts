@@ -3,7 +3,8 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { registerMediaJobAdapter, type MediaJobAdapter } from '@chatoffice/ai-provider'
-import { registerMediaIpc } from '../src/media-ipc'
+import { persistGeneratedImage, registerFetchImageIpc, registerMediaIpc } from '../src/media-ipc'
+import { createByokImageHandler } from '../src/index'
 
 /**
  * End-to-end drive of the unified media channels against a local fake vendor:
@@ -174,6 +175,7 @@ beforeAll(async () => {
     // the fake vendor lives on loopback — bypass the SSRF guard for this test
     fetchImpl: (input, init) => fetch(input, init),
   })
+  registerFetchImageIpc({ ipcMain, fetchImpl: (input, init) => fetch(input, init) })
 })
 
 afterAll(() => {
@@ -268,6 +270,37 @@ describe('registerMediaIpc end-to-end', () => {
   it('refuses paraformer with a local file instead of failing silently', async () => {
     const r = await call('ai:media-asr', { source: join(dir, 'sample.wav') })
     expect(String(r.error)).toContain('public http(s) URL')
+  })
+
+  it('persistGeneratedImage stores data: URLs as file:// and leaves store URLs as-is', async () => {
+    const dataUrl = `data:image/png;base64,${PNG_1PX.toString('base64')}`
+    const stored = await persistGeneratedImage(dataUrl)
+    expect(stored).toMatch(/^file:/)
+    expect(await persistGeneratedImage(stored)).toBe(stored)
+  })
+
+  it('fetch-image channel downloads store-backed file:// URLs with real mime', async () => {
+    const stored = await persistGeneratedImage(`data:image/png;base64,${PNG_1PX.toString('base64')}`)
+    const r = await call('ai:fetch-image', stored)
+    expect(r).not.toBeNull()
+    expect(r.mime).toBe('image/png')
+    expect(String(r.base64).length).toBeGreaterThan(0)
+  })
+
+  it('createByokImageHandler returns a store-backed file:// URL (markdown/pdf insert path)', async () => {
+    // earlier tests rewrote the fixture without an image model — restore it
+    writeSettings([openaiProfile([{ id: 'fake-image' }])])
+    const handler = createByokImageHandler({
+      settingsPath: () => join(dir, 'ai-settings.json'),
+      fs: {
+        readFile: (p) => import('node:fs/promises').then((m) => m.readFile(p, 'utf8')),
+        writeFile: (p, c) => import('node:fs/promises').then((m) => m.writeFile(p, c, 'utf8')),
+      },
+      chatoffice: { apiKey: () => '', hasAuth: () => false, status: async () => ({ loggedIn: false }) },
+    })
+    const r = await handler({ prompt: 'a red square' })
+    expect(r.error).toBeUndefined()
+    expect(String(r.url)).toMatch(/^file:/)
   })
 
   it('drives video generation through a registered job adapter', async () => {

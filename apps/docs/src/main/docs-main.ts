@@ -102,6 +102,7 @@ import {
   setAiUserAgent,
 } from '@chatoffice/ai-provider'
 import {
+  persistGeneratedImage,
   registerMediaIpc,
   registerSharedAiIpc, registerSharedKbIpc
 } from '@chatoffice/ai-host'
@@ -3193,12 +3194,24 @@ export function registerAiIpc(): void {
   ipcMain.handle(
     'docs:ai-generate-image',
     async (_event, op: { prompt?: unknown; aspectRatio?: unknown }) => {
+    // LOCAL(2026-09-20): materialize generated image into the store — data:/https URLs are not fetchable by the insert pipelines; upstream: additive; converge: upstream may adopt
       const prompt = String(op?.prompt ?? '').trim()
       if (!prompt) return { error: 'prompt must not be empty' }
-      return getAiRuntime().generateImage({
+      const result = await getAiRuntime().generateImage({
         prompt,
         ...(op?.aspectRatio ? { aspectRatio: String(op.aspectRatio) } : {}),
       })
+      // BYOK APIs answer data:/CDN URLs which fetch-image cannot download —
+      // store the bytes and return the file:// URL the pipelines accept
+      if (result.url) {
+        try {
+          const url = await persistGeneratedImage(result.url)
+          return { ...result, url }
+        } catch (err) {
+          return { ...result, error: err instanceof Error ? err.message : String(err) }
+        }
+      }
+      return result
     },
   )
 

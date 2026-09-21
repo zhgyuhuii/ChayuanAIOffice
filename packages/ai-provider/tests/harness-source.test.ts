@@ -296,13 +296,13 @@ describe('runtime secret resolution', () => {
 // ── chatop-local fusion（harness 本地模型 → 合成 profile + 默认选中链）──────
 
 const LOCAL_STATE_RUNNING = JSON.stringify({
-  proxyPort: 18100,
+  proxyPort: 52581,
   instances: [
     { modelId: 'bge-m3', port: 18080, caps: ['embedding'] },
     { modelId: 'qwen3-4b', port: 18082, caps: ['chat'] },
   ],
 })
-const LOCAL_STATE_STOPPED = JSON.stringify({ proxyPort: 18100, instances: [] })
+const LOCAL_STATE_STOPPED = JSON.stringify({ proxyPort: 52581, instances: [] })
 const LOCAL_REGISTRY = JSON.stringify({
   installed: ['qwen3-4b', 'bge-m3', 'whisper-small-int8'],
 })
@@ -352,7 +352,7 @@ describe('createHarnessSource × chatop-local', () => {
     const s = await source.read()
     expect(s.profiles[0]).toMatchObject({
       id: 'chatop-local',
-      baseUrl: 'http://127.0.0.1:18100/v1',
+      baseUrl: 'http://127.0.0.1:52581/v1',
       models: [{ id: 'local/qwen3-4b', type: 'chat', running: true }],
     })
     expect(s.currentModel).toEqual({ profileId: 'chatop-local', modelId: 'local/qwen3-4b' })

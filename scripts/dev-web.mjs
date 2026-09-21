@@ -1,6 +1,6 @@
 /**
  * Form ② dev: BFF + web host + the five editor renderer dev servers.
- * Ports: server 8787, host 5180, editors 5173–5177 (same as the Electron
+ * Ports: server 52587, host 5180, editors 5173–5177 (same as the Electron
  * dev shell, so editors never know which host they run in).
  */
 
@@ -52,7 +52,7 @@ for (const job of jobs) {
 console.log(`
 ChatOffice web dev (form 2):
   host    http://localhost:5180
-  bff     http://localhost:8787/healthz
+  bff     http://localhost:52587/healthz
   editors http://localhost:5173..5177
 `)
 

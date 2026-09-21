@@ -20,18 +20,18 @@ describe('kbFileUrl / bridge.file', () => {
 
   it('builds the same-origin download URL, prefix included', async () => {
     vi.stubGlobal('window', {
-      location: { origin: 'http://127.0.0.1:3080', pathname: '/chatoffice-app/' },
+      location: { origin: 'http://127.0.0.1:52584', pathname: '/chatoffice-app/' },
     })
     const url = kbFileUrl({ kbId: '公司制度库', docId: 'd1' }, '/chatoffice-app')
     expect(url).toBe(
-      'http://127.0.0.1:3080/chatoffice-app/kb/file?kbId=' +
+      'http://127.0.0.1:52584/chatoffice-app/kb/file?kbId=' +
         encodeURIComponent('公司制度库') +
         '&docId=d1',
     )
     const bridge = createKbFetchBridge('/chatoffice-app')
     await expect(bridge.file({ kbId: 'k', docId: 'd2' })).resolves.toMatchObject({
       ok: true,
-      url: 'http://127.0.0.1:3080/chatoffice-app/kb/file?kbId=k&docId=d2',
+      url: 'http://127.0.0.1:52584/chatoffice-app/kb/file?kbId=k&docId=d2',
     })
   })
 })

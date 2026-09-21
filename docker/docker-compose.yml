@@ -14,7 +14,7 @@ services:
       # POSTGRES_URL: postgresql://chatoffice:${POSTGRES_PASSWORD}@postgres:5432/chatoffice
       # S3_ENDPOINT: http://minio:9000
     ports:
-      - '8787:8787'
+      - '52587:8787'
     volumes:
       - server-data:/data
     depends_on:

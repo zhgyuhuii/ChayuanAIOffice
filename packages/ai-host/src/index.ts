@@ -24,10 +24,12 @@ import {
   type VideoTaskRegistryDeps,
 } from './video-tasks'
 import { localToolInstall, localToolStart, localToolStatus } from './local-tools'
+import { persistGeneratedImage } from './media-ipc'
 
 export type { VideoTaskView, VideoSubmitRequest, VideoFileSink } from './video-tasks'
 export { registerSharedKbIpc, type KbSourceState, type SharedKbIpcDeps } from './kb-ipc'
-export { registerMediaIpc, type MediaIpcDeps } from './media-ipc'
+export { registerFetchImageIpc, registerMediaIpc, type MediaIpcDeps } from './media-ipc'
+export { materializeUrl, persistGeneratedImage } from './media-ipc'
 export {
   createLocalTools,
   defaultLocalToolDeps,
@@ -64,7 +66,29 @@ export function createByokImageHandler(deps: {
       return params && typeof params.provider === 'string' ? `${base}: ${params.provider}` : base
     },
   })
-  return (req) => runtime.generateImage(req)
+  // Generated images come back as data: URLs (most BYOK APIs answer b64) or
+  // remote CDN links; the editors' insert pipelines fetch through
+  // fetchRemoteImage, which accepts neither. Materialize into the
+  // generated-image store so the returned file:// URL is insertable everywhere.
+  return async (req): Promise<{ url?: string; urls?: string[]; error?: string }> => {
+    const result = await runtime.generateImage(req)
+    if (!result.url) {
+      const { url, urls, error } = result
+      return {
+        ...(url !== undefined ? { url } : {}),
+        ...(urls !== undefined ? { urls } : {}),
+        ...(error !== undefined ? { error } : {}),
+      }
+    }
+    try {
+      const url = await persistGeneratedImage(result.url)
+      const urls = result.urls?.map((u) => (u === result.url ? url : u))
+      return { url, ...(urls !== undefined ? { urls } : {}) }
+    } catch (e) {
+      // store failure must not mask the generation itself
+      return { url: result.url, error: e instanceof Error ? e.message : String(e) }
+    }
+  }
 }
 
 /**

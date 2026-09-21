@@ -28,6 +28,7 @@ import {
   setRescueFetch,
   type AiRuntime,
 } from '@chatoffice/ai-provider'
+import { persistGeneratedImage } from '@chatoffice/ai-host'
 import {
   registerMediaIpc,
   registerSharedAiIpc, registerSharedKbIpc
@@ -321,13 +322,23 @@ export function registerSlidesOnlyAiIpc(): void {
   // (the cloud backend belongs to the GenOffice upstream, not this build).
   ipcMain.handle(
     'ai:generate-image',
+    // LOCAL(2026-09-20): materialize generated image into the store — data:/https
+    // URLs are not fetchable by the insert pipelines; upstream: additive; converge: upstream may adopt
     async (_event, op: { prompt?: unknown; aspectRatio?: unknown }) => {
       const prompt = String(op.prompt ?? '').trim()
       if (!prompt) return { error: 'prompt must not be empty' }
-      return getAiRuntime().generateImage({
+      const result = await getAiRuntime().generateImage({
         prompt,
         ...(op.aspectRatio ? { aspectRatio: String(op.aspectRatio) } : {}),
       })
+      if (result.url) {
+        try {
+          return { ...result, url: await persistGeneratedImage(result.url) }
+        } catch (err) {
+          return { ...result, error: err instanceof Error ? err.message : String(err) }
+        }
+      }
+      return result
     },
   )
 

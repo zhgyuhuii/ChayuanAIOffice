@@ -11,7 +11,7 @@
  * (Settings > General > Local MCP server).
  *
  * Usage:
- *   node scripts/mcp-stdio-bridge.js [--port 3093] [--host 127.0.0.1]
+ *   node scripts/mcp-stdio-bridge.js [--port 52588] [--host 127.0.0.1]
  *
  * Example mcp.json entry:
  *   {
@@ -27,7 +27,7 @@
 const http = require('node:http')
 const readline = require('node:readline')
 
-const DEFAULT_PORT = 3093
+const DEFAULT_PORT = 52588
 const DEFAULT_HOST = '127.0.0.1'
 
 function parseArgs(argv) {

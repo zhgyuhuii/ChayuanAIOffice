@@ -23,7 +23,7 @@
 | 全栈部署 | `docker compose -f docker/docker-compose.yml up` | server + Postgres + MinIO（Logto 预留） |
 | 本地预览生产包 | `npm run preview:web` | 静态服务 `dist/web`（默认 5180，可传端口参数） |
 | 生产裸跑 BFF | `npm run start:server` | 环境变量：`PORT` `HOST` `CHATOFFICE_DATA_DIR` `CHATOFFICE_AUTH=jwt|off` |
-| 调试 | `curl localhost:8787/healthz`；RPC：`curl -X POST localhost:8787/rpc/chatHistory/listProjects -d '{"args":[]}'`；推送：`websocat ws://localhost:8787/ws` 发送 `{"subscribe":["ai:stream-chunk"]}`；用量：`curl localhost:8787/ai/usage` | Fastify logger 关闭时用 `CHATOFFICE_LOG=1`（接 Fastify logger 配置） |
+| 调试 | `curl localhost:52587/healthz`；RPC：`curl -X POST localhost:52587/rpc/chatHistory/listProjects -d '{"args":[]}'`；推送：`websocat ws://localhost:52587/ws` 发送 `{"subscribe":["ai:stream-chunk"]}`；用量：`curl localhost:52587/ai/usage` | Fastify logger 关闭时用 `CHATOFFICE_LOG=1`（接 Fastify logger 配置） |
 
 ## 形态 ③ chatop 桌面内置（chayuan-harness 全家桶）
 

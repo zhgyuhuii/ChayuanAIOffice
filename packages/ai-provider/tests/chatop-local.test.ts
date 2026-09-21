@@ -37,7 +37,7 @@ describe('chatop-local: model merge', () => {
 
 describe('chatop-local: source parsing', () => {
   const STATE = {
-    proxyPort: 18100,
+    proxyPort: 52581,
     instances: [
       { modelId: 'bge-m3', port: 18080, caps: ['embedding'] },
       { modelId: 'qwen3-4b', port: 18082, caps: ['chat'] },
@@ -49,7 +49,7 @@ describe('chatop-local: source parsing', () => {
     const src = parseChatopLocalSource(STATE, REGISTRY)
     expect(src).not.toBeNull()
     expect(src!.profile.id).toBe(CHATOP_LOCAL_PROFILE_ID)
-    expect(src!.profile.baseUrl).toBe('http://127.0.0.1:18100/v1')
+    expect(src!.profile.baseUrl).toBe('http://127.0.0.1:52581/v1')
     expect(src!.profile.apiKeyRef).toBe('__chatop_proxy_key__')
     expect(src!.profile.models.map((m) => m.id)).toEqual(['local/qwen3-4b'])
     expect(src!.profile.models[0]).toMatchObject({ type: 'chat', running: true })
@@ -57,7 +57,7 @@ describe('chatop-local: source parsing', () => {
   })
 
   it('stopped local chat models still list (lazy-load), running flag off', () => {
-    const src = parseChatopLocalSource({ proxyPort: 18100, instances: [] }, REGISTRY)
+    const src = parseChatopLocalSource({ proxyPort: 52581, instances: [] }, REGISTRY)
     expect(src!.profile.models).toEqual([{ id: 'local/qwen3-4b', type: 'chat' }])
     expect(src!.runningChatId).toBeNull()
   })
@@ -65,7 +65,7 @@ describe('chatop-local: source parsing', () => {
   it('null when the proxy is not running or no chat-capable model exists', () => {
     expect(parseChatopLocalSource({ instances: [] }, REGISTRY)).toBeNull()
     expect(
-      parseChatopLocalSource({ proxyPort: 18100, instances: [] }, { installed: ['bge-m3'] }),
+      parseChatopLocalSource({ proxyPort: 52581, instances: [] }, { installed: ['bge-m3'] }),
     ).toBeNull()
     expect(parseChatopLocalSource(null, null)).toBeNull()
   })

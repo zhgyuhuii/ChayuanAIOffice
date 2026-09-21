@@ -1,9 +1,11 @@
 /**
  * Node-side discovery of the local harness knowledge base endpoint (see
  * docs/kb-integration-plan.md §5). The chatop-kb HTTP API lives inside the
- * dsh web process (loopback, default port 3080, one extra port per dsh user),
- * so "discovery" means: find a loopback origin whose /status carries the KB
- * fingerprint. Four levels, first hit wins:
+ * dsh web process (loopback). 2026-09-21 起察元系统一端口注册表
+ * （chayuan-harness docs/port-registry.md）：主实例 52584，多用户会话段
+ * 52601+；旧段 3080..3090 保留为兼容尾巴（老装机渐进升级）。so "discovery"
+ * means: find a loopback origin whose /status carries the KB fingerprint.
+ * Four levels, first hit wins:
  *
  *   manual override → cached last-good → hint file → parallel port probe
  *
@@ -23,7 +25,7 @@ export interface KbDiscoveryOptions {
   cachedOrigin?: string
   /** hint file written by the chatoffice dsh plugin host (default under ~/.dsh) */
   hintFile?: string
-  /** probe port range start; the dsh multi-user ladder is 3080..3080+N */
+  /** probe ports; default = 注册表 52584 + 会话段 52601.. +10，旧段 3080..3090 兜底 */
   probePorts?: number[]
   /** per-candidate request budget (ms) */
   timeoutMs?: number
@@ -38,7 +40,14 @@ export interface KbDiscoveryResult {
   status: KbStatus
 }
 
-const DEFAULT_PORTS = Array.from({ length: 11 }, (_, i) => 3080 + i)
+const REGISTRY_PORT = 52584 // chayuan-harness DSH_WEB_PORT（docs/port-registry.md）
+const SESSION_BASE = 52601 // dsh 多用户会话段
+const LEGACY_BASE = 3080 // 旧段（老装机兼容尾巴）
+const DEFAULT_PORTS = [
+  REGISTRY_PORT,
+  ...Array.from({ length: 10 }, (_, i) => SESSION_BASE + i),
+  ...Array.from({ length: 11 }, (_, i) => LEGACY_BASE + i),
+]
 
 function defaultHintFile(): string {
   return join(homedir(), '.dsh', 'storages', 'chatoffice', 'dsh-rpc-origin')

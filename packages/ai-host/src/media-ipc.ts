@@ -12,6 +12,7 @@ import {
   type FileSourceFs,
   type ResolvedModelCall,
 } from '@chatoffice/ai-provider'
+import { fetchRemoteImage } from '@chatoffice/electron-utils/remote-image'
 import { fetchWithSsrfGuard } from '@chatoffice/electron-utils/safe-remote-url'
 import { storeGeneratedImage } from '@chatoffice/electron-utils/generated-images'
 
@@ -147,7 +148,14 @@ function sniffMime(bytes: Uint8Array): string {
 const err = (e: unknown): string => (e instanceof Error ? e.message : String(e))
 
 /** data: URL or remote link → bytes + sniffed mime (imagegen returns either) */
-async function materializeUrl(url: string): Promise<{ bytes: Uint8Array; mime: string }> {
+export async function materializeUrl(
+  url: string,
+  fetchImpl?: typeof fetch,
+): Promise<{ bytes: Uint8Array; mime: string }> {
+  if (url.startsWith('file:')) {
+    // already in the generated-image store — readGeneratedImage will serve it
+    return { bytes: new Uint8Array(0), mime: '' }
+  }
   if (url.startsWith('data:')) {
     const match = /^data:([^;,]+);base64,(.*)$/s.exec(url)
     if (!match) throw new Error('unsupported image data URL')
@@ -157,11 +165,25 @@ async function materializeUrl(url: string): Promise<{ bytes: Uint8Array; mime: s
       mime: sniffMime(bytes) === 'application/octet-stream' ? match[1]! : sniffMime(bytes),
     }
   }
-  const resp = await fetch(url)
+  const resp = await (fetchImpl ?? fetch)(url)
   if (!resp.ok) throw new Error(`image download failed: HTTP ${resp.status}`)
   const bytes = new Uint8Array(await resp.arrayBuffer())
   const ct = resp.headers.get('content-type')?.split(';')[0]?.trim()
   return { bytes, mime: ct && ct !== 'application/octet-stream' ? ct : sniffMime(bytes) }
+}
+
+/**
+ * Materialize a generated image URL (data:/https) into the generated-image
+ * store and return its file:// URL — the one shape every editor's
+ * fetch-image/insert pipeline accepts. Store-backed file:// URLs pass through.
+ */
+export async function persistGeneratedImage(
+  url: string,
+  fetchImpl?: typeof fetch,
+): Promise<string> {
+  if (url.startsWith('file:')) return url
+  const materialized = await materializeUrl(url, fetchImpl)
+  return storeGeneratedImage(materialized.bytes, materialized.mime)
 }
 
 export function registerMediaIpc(deps: MediaIpcDeps): void {
@@ -245,9 +267,9 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
         // the result lands in the generated-image store as a file:// URL
         const first = result.urls[0]
         if (!first) throw new Error('the image API returned no image')
-        const bytes = await materializeUrl(first)
+        const url = await persistGeneratedImage(first, deps.fetchImpl)
         return {
-          url: storeGeneratedImage(bytes.bytes, bytes.mime),
+          url,
           model: call.model,
         }
       } catch (e) {
@@ -386,4 +408,41 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
       }
     })
   })
+}
+
+/**
+ * Shared ai:fetch-image registrar — the download channel behind every
+ * insert_image / web-image pipeline (markdown and pdf mains register it;
+ * docs/sheets carry older inline copies). SSRF-guarded, transient-error
+ * retries via fetchRemoteImage; store-backed file:// URLs resolve to real
+ * mime types, so callers can trust content-type.
+ */
+export function registerFetchImageIpc(deps: {
+  ipcMain: { handle(channel: string, fn: (event: unknown, url: unknown) => Promise<unknown>): void }
+  fetchImpl?: typeof fetch
+}): void {
+  deps.ipcMain.handle(
+    'ai:fetch-image',
+    async (
+      _event,
+      url: unknown,
+    ): Promise<{
+      base64: string
+      mime: string
+    } | null> => {
+      try {
+        const resp = await fetchRemoteImage(String(url), {
+          ...(deps.fetchImpl ? { fetchImpl: deps.fetchImpl } : {}),
+        })
+        if (!resp || !resp.ok) return null
+        const buf = Buffer.from(await resp.arrayBuffer())
+        const ct = resp.headers.get('content-type')?.split(';')[0]?.trim().toLowerCase()
+        const bytes = new Uint8Array(buf)
+        const mime = ct && ct !== 'application/octet-stream' ? ct : sniffMime(bytes)
+        return { base64: buf.toString('base64'), mime }
+      } catch {
+        return null
+      }
+    },
+  )
 }

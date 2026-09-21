@@ -6,7 +6,7 @@ import { defineConfig, type Plugin } from 'vite'
 
 const repoRoot = fileURLToPath(new URL('../../', import.meta.url))
 const distWeb = join(repoRoot, 'dist', 'web')
-const bff = process.env.CHATOFFICE_BFF_URL ?? 'http://localhost:8787'
+const bff = process.env.CHATOFFICE_BFF_URL ?? 'http://localhost:52587'
 
 const MIME: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
