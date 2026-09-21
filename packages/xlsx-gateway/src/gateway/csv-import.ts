@@ -10,6 +10,10 @@ import { MINIMAL_STYLESHEET_XML } from './xlsx-default-styles'
 
 const DELIMITERS = [',', ';', '\t'] as const
 
+/** Max CSV rows/cols parsed: prevents row-count bomb within byte cap from OOMing. */
+export const MAX_CSV_ROWS = 200_000
+export const MAX_CSV_COLS = 1_000
+
 // Excel writes CSV in the system's legacy charset, not UTF-8 (GBK on Chinese
 // Windows, Shift_JIS on Japanese), so decoding everything as UTF-8 turns every
 // non-ASCII cell into replacement characters.
@@ -158,6 +162,9 @@ export function parseCsv(input: string, delimiter = sniffDelimiter(input)): stri
   const stripped = splitSepDeclaration(input).text
   const text = stripped.startsWith('﻿') ? stripped.slice(1) : stripped
   const rows: string[][] = []
+  const fail = (msg: string): never => {
+    throw new Error(`CSV import rejected: ${msg}`)
+  }
   let row: string[] = []
   let field = ''
   let quoted = false
@@ -180,11 +187,13 @@ export function parseCsv(input: string, delimiter = sniffDelimiter(input)): stri
       quoted = true
     } else if (character === delimiter) {
       row.push(field)
+      if (row.length > MAX_CSV_COLS) fail(`too many columns (cap ${MAX_CSV_COLS})`)
       field = ''
     } else if (character === '\n' || character === '\r') {
       if (character === '\r' && text[index + 1] === '\n') index += 1
       row.push(field)
       rows.push(row)
+      if (rows.length > MAX_CSV_ROWS) fail(`too many rows (cap ${MAX_CSV_ROWS})`)
       row = []
       field = ''
     } else {
