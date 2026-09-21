@@ -54,6 +54,12 @@ const TEXT_MAX_CHARS = 32_000
 /** Max stored characters of a scope excerpt */
 const SCOPE_TEXT_MAX_CHARS = 400
 const TEXT_TRUNCATED_MARK = '\n\n[truncated]'
+/**
+ * Max opening messages buffered in memory per chat before the first
+ * assistant message materializes the file. Without a cap, thousands of
+ * pre-first-reply user messages accumulate unboundedly in the map.
+ */
+export const MAX_PENDING_OPENING_MESSAGES = 200
 
 function nowIso(): string {
   return new Date().toISOString()
@@ -427,6 +433,15 @@ export class ProjectStore {
       if (msg.role !== 'assistant' && !existsSync(this.chatPath(projectId, chatId))) {
         const buf = this.pendingFirstWrite.get(key) ?? []
         buf.push(record)
+        // Bound the in-memory buffer: overflow materializes the file early
+        // instead of dropping user messages.
+        if (buf.length >= MAX_PENDING_OPENING_MESSAGES) {
+          ensureDir(this.chatsDir(projectId))
+          this.pendingFirstWrite.delete(key)
+          const lines = buf.map((r) => JSON.stringify(r) + '\n').join('')
+          appendFileSync(this.chatPath(projectId, chatId), lines, 'utf8')
+          return
+        }
         this.pendingFirstWrite.set(key, buf)
         return
       }
