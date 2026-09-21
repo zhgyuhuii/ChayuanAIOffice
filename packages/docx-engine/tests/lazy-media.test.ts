@@ -92,6 +92,14 @@ describe('lazy media placeholders', () => {
     expect(parseLazyMediaUrl(url)).toEqual({ hash: HASH, partPath: 'word/media/image1.png' })
     expect(parseLazyMediaUrl('data:image/png;base64,AAAA')).toBeNull()
   })
+
+  it('rejects bad hashes and traversal/overlong part paths', () => {
+    expect(() => lazyMediaUrl('not-a-hash', 'word/media/image1.png')).toThrow(/sha256/)
+    expect(parseLazyMediaUrl(`genoffice-docx-media://${HASH}/word/media/../evil.png`)).toBeNull()
+    expect(
+      parseLazyMediaUrl(`genoffice-docx-media://${HASH}/word/media/${'a'.repeat(600)}.png`),
+    ).toBeNull()
+  })
 })
 
 describe('zip splice', () => {
