@@ -191,6 +191,21 @@ describe('parseChartXml', () => {
     expect(m.valAxis?.gridColor).toBe('#E6E6E6')
   })
 
+  it('drops non-finite chart axis bounds instead of poisoning scale math', () => {
+    const HOSTILE = `<c:chartSpace xmlns:c="c" xmlns:a="a"><c:chart><c:plotArea>
+<c:scatterChart><c:scatterStyle val="lineMarker"/>
+<c:ser><c:idx val="0"/>
+  <c:xVal><c:numRef><c:f>x</c:f><c:numCache><c:ptCount val="1"/><c:pt idx="0"><c:v>1</c:v></c:pt></c:numCache></c:numRef></c:xVal>
+  <c:yVal><c:numRef><c:f>y</c:f><c:numCache><c:ptCount val="1"/><c:pt idx="0"><c:v>2</c:v></c:pt></c:numCache></c:numRef></c:yVal>
+</c:ser></c:scatterChart>
+<c:valAx><c:axPos val="b"/><c:scaling><c:min val="Infinity"/><c:max val="NaN"/></c:scaling></c:valAx>
+</c:plotArea></c:chart></c:chartSpace>`
+    const m = parseChartXml(HOSTILE)!
+    expect(m.catAxis?.min).toBeUndefined()
+    expect(m.catAxis?.max).toBeUndefined()
+    expect(m.series[0]!.values).toEqual([2])
+  })
+
   it('parses radar chart: radarStyle + categories', () => {
     const RADAR = `<c:chartSpace xmlns:c="c" xmlns:a="a"><c:chart><c:plotArea>
 <c:radarChart><c:radarStyle val="filled"/>
