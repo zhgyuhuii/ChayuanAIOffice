@@ -138,11 +138,32 @@ const api: MarkdownApi = {
 }
 
 /** Chat persistence: the shared project:* handlers are registered once by the shell (docs-main registerProjectIpc) */
-const projectApi: Pick<ProjectApi, 'resolveChat' | 'appendChat' | 'loadChat' | 'rebindChat'> = {
+const projectApi: Pick<
+  ProjectApi,
+  | 'resolveChat'
+  | 'appendChat'
+  | 'loadChat'
+  | 'rebindChat'
+  | 'conversationsList'
+  | 'conversationCreate'
+  | 'conversationMeta'
+  | 'conversationsOpenSet'
+  | 'conversationDelete'
+  | 'conversationsDeleteAll'
+  | 'conversationsRebind'
+> = {
   resolveChat: (args) => ipcRenderer.invoke('project:resolveChat', args),
   appendChat: (args) => ipcRenderer.invoke('project:appendChat', args),
   loadChat: (args) => ipcRenderer.invoke('project:loadChat', args),
   rebindChat: (args) => ipcRenderer.invoke('project:rebindChat', args),
+  // LOCAL(2026-09-21, d8201ad0): 多会话对话索引(追加式)
+  conversationsList: (args) => ipcRenderer.invoke('project:conversationsList', args),
+  conversationCreate: (args) => ipcRenderer.invoke('project:conversationCreate', args),
+  conversationMeta: (args) => ipcRenderer.invoke('project:conversationMeta', args),
+  conversationsOpenSet: (args) => ipcRenderer.invoke('project:conversationsOpenSet', args),
+  conversationDelete: (args) => ipcRenderer.invoke('project:conversationDelete', args),
+  conversationsDeleteAll: (args) => ipcRenderer.invoke('project:conversationsDeleteAll', args),
+  conversationsRebind: (args) => ipcRenderer.invoke('project:conversationsRebind', args),
 }
 
 

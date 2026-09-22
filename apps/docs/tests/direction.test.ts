@@ -356,8 +356,11 @@ describe('ai panel messages follow their own content direction', () => {
     // Panel chrome follows the UI language; message text must follow its own
     // content, so every message body carries dir="auto" (markup contract in
     // source, no browser needed)
-    const panel = readFileSync(join(__dirname, '../src/renderer/ai/AiPanel.tsx'), 'utf8')
-    const hits = panel.match(/dir="auto"/g) ?? []
+    // LOCAL(2026-09-21, d8201ad0): 消息 JSX 迁入按会话实例化的 AiConversationBody
+    const sources = ['AiPanel.tsx', 'AiConversationBody.tsx'].map((f) =>
+      readFileSync(join(__dirname, '../src/renderer/ai/', f), 'utf8'),
+    )
+    const hits = sources.flatMap((src) => src.match(/dir="auto"/g) ?? [])
     expect(hits.length).toBeGreaterThanOrEqual(3)
   })
 

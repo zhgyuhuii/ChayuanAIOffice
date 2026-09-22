@@ -16,6 +16,9 @@ const env = {
   SLIDES_RENDERER_URL: `http://localhost:${process.env.SLIDES_DEV_PORT ?? 5175}`,
   PDF_RENDERER_URL: `http://localhost:${process.env.PDF_DEV_PORT ?? 5176}`,
   MARKDOWN_RENDERER_URL: `http://localhost:${process.env.MARKDOWN_DEV_PORT ?? 5177}`,
+  // LOCAL(2026-09-21, d8201ad0): html 渲染端此前漏设——shell 模式下 html 编辑器会回退到
+  // 旧打包产物(chatoffice-app://),dev 调试不到 vite 热更代码;与五端对齐补上
+  HTML_RENDERER_URL: `http://localhost:${process.env.HTML_DEV_PORT ?? 5178}`,
 }
 
 // shell: true — on Windows `npm` is npm.cmd, which spawn cannot launch directly

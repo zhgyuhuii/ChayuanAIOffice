@@ -66,6 +66,20 @@ export {
   type DockShellProps,
 } from './DockShell'
 export { PanelTabs, usePanelTab, type PanelTabItem, type PanelTabsProps } from './PanelTabs'
+// LOCAL(2026-09-21, d8201ad0): 多会话公共层(B 区)
+export {
+  useAiConversations,
+  type AiActiveTab,
+  type AiConversationMeta,
+  type AiConversationsScope,
+  type ConversationsApi,
+  type UseAiConversations,
+} from './useAiConversations'
+export { AiHistoryList, formatRelativeTime, type AiHistoryListLabels } from './AiHistoryList'
+export { AiHistoryPopover, type AiHistoryPopoverLabels } from './AiHistoryPopover'
+export { AiTabConfirm } from './AiTabConfirm'
+export { AiConversationsEmpty, type AiConversationsEmptyLabels } from './AiConversationsEmpty'
+export { AI_CONTINUE_INSTRUCTION } from './aiContinuation'
 export { AiPanelToggle, type AiPanelToggleProps } from './AiPanelToggle'
 export { IconSend, IconStop, type IconProps } from './icons'
 export { Markdown, type MarkdownNav } from './Markdown'

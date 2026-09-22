@@ -8,9 +8,10 @@ import { AiPanel } from '../src/renderer/ai/AiPanel'
 // adapted: the panel takes the local AiSettingsV2 shape
 import { defaultSettingsV2, type AiSettingsV2 } from '@chatoffice/ai-provider'
 
-// New chat must drop staged composer attachments along with the transcript:
-// otherwise unsent files silently join the next chat's file context
-// (availableAttachments merges sent + live composer files).
+// LOCAL(2026-09-21, d8201ad0): 多会话语义——暂存附件属于其会话实例:
+// 「+ 新建对话」切到全新会话,新会话的 composer 附件条为空(原 #224 诉求);
+// 切回原会话,暂存文件仍在(数据保留)。原「New chat 清空附件」断言随销毁式
+// newChat 退役,语义由「新会话天然不带旧附件」达成。
 
 const settings: AiSettingsV2 = defaultSettingsV2()
 
@@ -46,8 +47,6 @@ function mount(element: React.ReactElement): { container: HTMLElement; cleanup: 
 }
 
 function panelProps(editor: Editor) {
-  // No onCollapse: the New chat button is then the only .ai-header-btn,
-  // which keeps the selector independent of the active i18n locale.
   return { editor, blocks: [], settings, open: true }
 }
 
@@ -61,8 +60,23 @@ function mockApis() {
   const previousApi = win.projectApi
   const previousDesktop = win.desktop
   win.projectApi = {
-    resolveChat: vi.fn(async () => ({ projectId: 'p', chatId: 'c' })),
-    loadChat: vi.fn(async () => HISTORY),
+    conversationsList: vi.fn(async () => ({
+      projectId: 'p',
+      conversations: [{ chatId: 'seed', title: '', createdAt: 1, lastActiveAt: 1 }],
+      openIds: ['seed'],
+      activeId: 'seed',
+    })),
+    conversationCreate: vi.fn(async () => ({ projectId: 'p', chatId: 'fresh-1' })),
+    conversationMeta: vi.fn(async () => {}),
+    conversationsOpenSet: vi.fn(async () => {}),
+    conversationDelete: vi.fn(async () => {}),
+    conversationsDeleteAll: vi.fn(async () => {}),
+    conversationsRebind: vi.fn(async () => {}),
+    resolveChat: vi.fn(async () => ({ projectId: 'p', chatId: 'seed' })),
+    // the transcript reader: only the seeded conversation has history
+    loadChat: vi.fn(async (args: { chatId: string }) =>
+      args.chatId === 'seed' ? HISTORY : [],
+    ),
   }
   win.desktop = {
     pickAttachments: vi.fn(async () => ({
@@ -87,8 +101,8 @@ beforeAll(() => {
   Element.prototype.scrollTo ??= () => {}
 })
 
-describe('AiPanel new chat attachments', () => {
-  it('drops staged composer files along with the transcript', async () => {
+describe('AiPanel multi-conversation attachments', () => {
+  it('a fresh conversation starts with an empty composer strip; staged files stay with their conversation', async () => {
     const restoreApis = mockApis()
     try {
       const editor = createEditor()
@@ -96,7 +110,8 @@ describe('AiPanel new chat attachments', () => {
       try {
         await flush()
         await flush()
-        // Stage a file through the attach button.
+        await flush()
+        // Stage a file through the attach button (lands in the seeded conversation).
         const attach = container.querySelector<HTMLButtonElement>('.ai-attach-btn')
         expect(attach).not.toBeNull()
         await act(async () => {
@@ -104,14 +119,23 @@ describe('AiPanel new chat attachments', () => {
           await new Promise((resolve) => setTimeout(resolve, 0))
         })
         await flush()
-        expect(container.querySelector('.ai-attachments')).not.toBeNull()
+        expect(container.querySelectorAll('.ai-attachments').length).toBe(1)
 
-        // New chat clears the composer strip (transcript goes with it).
-        const button = container.querySelector<HTMLButtonElement>('.ai-header-btn')
-        expect(button).not.toBeNull()
-        act(() => button!.click())
-        expect(container.querySelector('.ai-attachments')).toBeNull()
-        expect(container.querySelectorAll('.ai-msg-historic').length).toBe(0)
+        // 「+」switches to a fresh conversation: the staged files stay with the
+        // seeded tab — the strip count doesn't grow, and the fresh tab activates
+        const plus = container.querySelector<HTMLButtonElement>('.ai-header-btn')
+        act(() => plus!.click())
+        await flush()
+        expect(container.querySelectorAll('.ai-tab').length).toBe(3) // [seed][fresh-1][助手](D13:历史不是 tab)
+        expect(container.querySelector('.ai-tab.active')?.textContent ?? '').not.toContain(
+          'earlier',
+        )
+
+        // switch back: the staged files stayed with the seeded conversation
+        const seedTab = container.querySelectorAll<HTMLButtonElement>('.ai-tab')[0]!
+        act(() => seedTab.click())
+        await flush()
+        expect(container.querySelectorAll('.ai-attachments').length).toBe(1)
       } finally {
         cleanup()
         editor.destroy()

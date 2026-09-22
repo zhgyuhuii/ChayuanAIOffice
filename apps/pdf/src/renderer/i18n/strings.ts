@@ -1,4 +1,7 @@
-export const strings = {
+import { localStrings } from './strings-local'
+
+// LOCAL(2026-09-21, d8201ad0): 多会话词条本地文件(B 区,制度 §3.1)
+const upstreamStrings = {
   zh: {
     ribbonTabFillForm: "填写表单",
     formPreviousField: "上一字段",
@@ -7340,4 +7343,28 @@ export const strings = {
     redactStructureBlocked: '请先应用或取消待处理涂黑标记，再更改页面结构。',
   },
 
+}
+
+// LOCAL(2026-09-21, d8201ad0): 多会话词条 spread 合并(C 区,模板照 shell strings.ts)
+export const strings = {
+  zh: { ...upstreamStrings.zh, ...localStrings.zh },
+  en: { ...upstreamStrings.en, ...localStrings.en },
+  ja: { ...upstreamStrings.ja, ...localStrings.ja },
+  ko: { ...upstreamStrings.ko, ...localStrings.ko },
+  fr: { ...upstreamStrings.fr, ...localStrings.fr },
+  de: { ...upstreamStrings.de, ...localStrings.de },
+  es: { ...upstreamStrings.es, ...localStrings.es },
+  th: { ...upstreamStrings.th, ...localStrings.th },
+  id: { ...upstreamStrings.id, ...localStrings.id },
+  ru: { ...upstreamStrings.ru, ...localStrings.ru },
+  ar: { ...upstreamStrings.ar, ...localStrings.ar },
+  pt: { ...upstreamStrings.pt, ...localStrings.pt },
+  it: { ...upstreamStrings.it, ...localStrings.it },
+  pl: { ...upstreamStrings.pl, ...localStrings.pl },
+  cs: { ...upstreamStrings.cs, ...localStrings.cs },
+  nl: { ...upstreamStrings.nl, ...localStrings.nl },
+  ms: { ...upstreamStrings.ms, ...localStrings.ms },
+  he: { ...upstreamStrings.he, ...localStrings.he },
+  hi: { ...upstreamStrings.hi, ...localStrings.hi },
+  'zh-TW': { ...upstreamStrings['zh-TW'], ...localStrings['zh-TW'] },
 } as const

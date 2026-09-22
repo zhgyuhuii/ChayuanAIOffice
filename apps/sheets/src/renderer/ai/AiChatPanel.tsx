@@ -5,6 +5,10 @@ import {
   Markdown,
   PanelTabs,
   usePanelTab,
+  AiConversationsEmpty,
+  AiHistoryPopover,
+  AiTabConfirm,
+  type AiConversationMeta,
   type AiScopeQuoteData,
   AiScopeQuote,
 } from '@chatoffice/ui'
@@ -235,8 +239,8 @@ export function AiChatPanel({
   onPromptChange,
   onSend,
   onStop,
-  onNewChat,
   onUndo,
+  conversations,
   scopeRange,
   scopeColumns,
   scopeLocked,
@@ -277,8 +281,34 @@ export function AiChatPanel({
     retryIndex?: number,
   ) => void
   readonly onStop: () => void
-  readonly onNewChat: () => void
   readonly onUndo: (steps: number) => void
+  /** LOCAL(2026-09-21, d8201ad0): 多会话(多 tab)接线(上游无此实现;收敛条件:上游原生多会话) */
+  readonly conversations?: {
+    /** tab 行 = [会话…][助手](D1;D13:历史不是 tab,走 [🕘] 浮层) */
+    tabs: readonly { id: string; label: string; running?: boolean; onClose?: () => void }[]
+    activeId: string
+    onTabChange: (id: string) => void
+    /** 常驻「+ 新建对话」 */
+    onCreate: () => void
+    /** 关闭运行中会话的确认气泡(App 持有状态;D13:历史删除确认移入浮层) */
+    confirmBubble?: {
+      body: string
+      confirmLabel: string
+      cancelLabel: string
+      onConfirm: () => void
+      onCancel: () => void
+    } | null
+    /** 历史对话浮层数据(条目只含非空会话,见 D12) */
+    history?: {
+      items: readonly AiConversationMeta[]
+      onRestore: (chatId: string) => void
+      onDelete: (chatId: string) => void
+      onDeleteAll: () => void
+    } | null
+    /** 关到零空态引导 */
+    showEmpty?: boolean
+    onEmptyCreate?: () => void
+  }
   /** A1 notation of the range this run is scoped to, or null when there is no
    *  scope — a resting single-cell selection carries no intent worth showing,
    *  and dismissing the chip clears it until the next selection change */
@@ -295,15 +325,24 @@ export function AiChatPanel({
 }): React.JSX.Element {
   const { lang, t } = useI18n()
   const kb = useKbAugment()
-  const aiTabs = [
-    { id: 'chat', label: t('aiTabChat') },
-    { id: 'assistant', label: t('aiTabAssistant') },
-  ]
-  const [tab, selectTab] = usePanelTab('aisheets.aiTab', aiTabs)
+  // LOCAL(2026-09-21, d8201ad0): tab 定义由会话池派生;无会话接线时回退旧双体(usePanelTab 保留兼容)
+  const aiTabs = conversations
+    ? conversations.tabs
+    : [
+        { id: 'chat', label: t('aiTabChat') },
+        { id: 'assistant', label: t('aiTabAssistant') },
+      ]
+  const [legacyTab, selectTab] = usePanelTab('aisheets.aiTab', [...aiTabs] as { id: string; label: string }[])  
+  const tab = conversations ? conversations.activeId : legacyTab
+  const selectTabEffective = conversations ? conversations.onTabChange : selectTab
+  // D13: 历史不再是 tab——对话体显隐不再需要 history 分支(会话 tab 常显转录)
+  const showChatBody = true
   const [panelSettings, setPanelSettings] = useState<AiSettingsV2>(
     () => settings ?? defaultSettingsV2(),
   )
   const [kbCiteView, setKbCiteView] = useState<KbCitation | null>(null)
+  // LOCAL(2026-09-22, d8201ad0): D13——历史下拉浮层开关(面板内持有;空态引导也走它)
+  const [historyOpen, setHistoryOpen] = useState(false)
   useEffect(() => {
     if (settings) setPanelSettings(settings)
   }, [settings])
@@ -478,28 +517,60 @@ export function AiChatPanel({
         activeId={tab}
         onTabChange={selectTab}
         actions={
-          // model selection lives in the composer footer only — the header
-          // copy was redundant, and the 助手 tab intentionally has no entry
-          // (the model is global state, switched from the chat tab)
-          tab === 'chat' && (chat.length > 0 || historicChat.length > 0) ? (
-            <button
-              className="ai-header-btn"
-              onClick={onNewChat}
-              data-tip={t('aiNewChat')}
-              aria-label={t('aiNewChat')}
-            >
-              <IconNewChat size={15} />
-            </button>
-          ) : null
+          conversations ? (
+            // LOCAL(2026-09-22, d8201ad0): D13——常驻两图标 [+][🕘](面板布局按钮左侧):
+            // 「+」新建并激活;「🕘」历史对话下拉浮层(数据由 App 的会话池提供)
+            <>
+              <button
+                className="ai-header-btn"
+                onClick={conversations.onCreate}
+                data-tip={t('aiNewChat')}
+                aria-label={t('aiNewChat')}
+              >
+                <IconNewChat size={15} />
+              </button>
+              <AiHistoryPopover
+                open={historyOpen}
+                onOpenChange={setHistoryOpen}
+                items={conversations.history?.items ?? []}
+                tooltip={t('aiHistoryTooltip')}
+                labels={{
+                  deleteOne: t('aiHistoryDelete'),
+                  deleteAll: t('aiHistoryDeleteAll'),
+                  empty: t('aiHistoryEmpty'),
+                  deleteOneConfirm: t('aiHistoryDeleteOneConfirm'),
+                  deleteAllConfirm: t('aiHistoryDeleteAllConfirm'),
+                  cancel: t('aiConvCancel'),
+                }}
+                onRestore={conversations.history?.onRestore ?? (() => {})}
+                onDelete={conversations.history?.onDelete ?? (() => {})}
+                onDeleteAll={conversations.history?.onDeleteAll ?? (() => {})}
+              />
+            </>
+          ) : null // legacy (no conversation wiring): the old new-chat affordance is retired
         }
         chromeActions={dockChrome?.buttons}
         dragProps={dockChrome?.dragProps}
       />
 
+      {/* LOCAL(2026-09-22, d8201ad0): D13——历史 tab 体删除,改 [🕘] 图标下拉浮层 */}
+      {/* LOCAL(2026-09-21, d8201ad0): 关到零空态(§2.1);「从历史还原」走 [🕘] 浮层(D13) */}
+      {conversations && conversations.showEmpty && (
+        <AiConversationsEmpty
+          labels={{
+            title: t('aiConvEmptyTitle'),
+            body: t('aiConvEmptyBody'),
+            create: t('aiNewChat'),
+            openHistory: t('aiConvOpenHistory'),
+          }}
+          onCreate={conversations.onEmptyCreate ?? conversations.onCreate}
+          onOpenHistory={() => setHistoryOpen(true)}
+        />
+      )}
       <div
         className="ai-chat"
         ref={chatRef}
-        style={tab === 'chat' ? undefined : { display: 'none' }}
+        style={showChatBody && (tab === 'chat' || !!conversations) ? undefined : { display: 'none' }}
         onScroll={onChatScroll}
       >
         {/* Past conversation (read-only transcript), shown continuously with the current turn */}
@@ -683,7 +754,10 @@ export function AiChatPanel({
 
       <AssistantTab items={assistItems} hidden={tab !== 'assistant'} />
 
-      <div className="ai-composer" style={tab === 'chat' ? undefined : { display: 'none' }}>
+      <div
+        className="ai-composer"
+        style={showChatBody && (tab === 'chat' || !!conversations) ? undefined : { display: 'none' }}
+      >
         {attachNotice && <div className="ai-attach-notice">{attachNotice}</div>}
         <AiComposer
           header={
@@ -846,6 +920,15 @@ export function AiChatPanel({
       )}
       {kbCiteView && (
         <KbCitePreview citation={kbCiteView} lang={lang} onClose={() => setKbCiteView(null)} />
+      )}
+      {conversations?.confirmBubble && (
+        <AiTabConfirm
+          body={conversations.confirmBubble.body}
+          confirmLabel={conversations.confirmBubble.confirmLabel}
+          cancelLabel={conversations.confirmBubble.cancelLabel}
+          onConfirm={conversations.confirmBubble.onConfirm}
+          onCancel={conversations.confirmBubble.onCancel}
+        />
       )}
     </aside>
   )
@@ -1026,3 +1109,5 @@ function ToolChipList({ tools }: { tools: readonly AiToolChip[] }): React.JSX.El
     </div>
   )
 }
+
+export type AiChatPanelProps = Parameters<typeof AiChatPanel>[0]

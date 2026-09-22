@@ -260,7 +260,8 @@ interface ExcelShellProps {
     retryIndex?: number,
   ) => void
   readonly onStop: () => void
-  readonly onNewChat: () => void
+  /** LOCAL(2026-09-21, d8201ad0): 多会话接线(App 构建,原样下传 AiChatPanel) */
+  readonly conversations?: import('./ai/AiChatPanel').AiChatPanelProps['conversations']
   readonly onUndo: (steps?: number) => void
   /// A1 notation of the multi-cell selection the AI composer offers as this
   /// run's scope, or null when the resting single-cell selection carries none.
@@ -478,7 +479,7 @@ export function ExcelShell({
   onPromptChange,
   onSend,
   onStop,
-  onNewChat,
+  conversations,
   onUndo,
   aiScopeRange,
   aiScopeColumns,
@@ -814,7 +815,7 @@ export function ExcelShell({
             onPromptChange={onPromptChange}
             onSend={onSend}
             onStop={onStop}
-            onNewChat={onNewChat}
+            {...(conversations !== undefined ? { conversations } : {})}
             onUndo={onUndo}
             scopeRange={aiScopeRange}
             scopeColumns={aiScopeColumns}

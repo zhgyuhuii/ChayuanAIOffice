@@ -1,6 +1,7 @@
-// "New chat" must clear the restored history transcript, not just the live
-// turn: previously the previous conversation stayed painted on screen with
-// no way to dismiss it (#195).
+// LOCAL(2026-09-21, d8201ad0): 多会话改造后的历史转录语义——
+// 「+ 新建对话」切换到全新会话(旧转录保留在其原 tab,数据不丢);
+// 关闭 ✕ 把会话送进历史(转录不再显示)。原「New chat 清空 historic」断言
+// 随销毁式 newChat 一并退役(#195 的诉求在新模型下由「关闭进历史」达成)。
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
@@ -47,8 +48,6 @@ function mount(element: React.ReactElement): {
 }
 
 function panelProps(editor: Editor) {
-  // No onCollapse: the New chat button is then the only .ai-header-btn,
-  // which keeps the selector independent of the active i18n locale.
   return {
     editor,
     blocks: [],
@@ -63,8 +62,25 @@ function mockProjectApi() {
   const win = window as unknown as { projectApi?: unknown }
   const previous = win.projectApi
   win.projectApi = {
-    resolveChat: vi.fn(async () => ({ projectId: 'p', chatId: 'c' })),
-    loadChat: vi.fn(async () => HISTORY),
+    // the conversation index API the multi-conversation pool speaks
+    conversationsList: vi.fn(async () => ({
+      projectId: 'p',
+      conversations: [{ chatId: 'seed', title: '', createdAt: 1, lastActiveAt: 1 }],
+      openIds: ['seed'],
+      activeId: 'seed',
+    })),
+    conversationCreate: vi.fn(async () => ({ projectId: 'p', chatId: 'fresh-1' })),
+    conversationMeta: vi.fn(async () => {}),
+    conversationsOpenSet: vi.fn(async () => {}),
+    conversationDelete: vi.fn(async () => {}),
+    conversationsDeleteAll: vi.fn(async () => {}),
+    conversationsRebind: vi.fn(async () => {}),
+    // the per-conversation transcript reader
+    resolveChat: vi.fn(async () => ({ projectId: 'p', chatId: 'seed' })),
+    // the transcript reader: only the seeded conversation has history
+    loadChat: vi.fn(async (args: { chatId: string }) =>
+      args.chatId === 'seed' ? HISTORY : [],
+    ),
   }
   return () => {
     win.projectApi = previous
@@ -82,8 +98,8 @@ beforeAll(() => {
   Element.prototype.scrollTo ??= () => {}
 })
 
-describe('AiPanel new chat', () => {
-  it('clears the restored history transcript along with the live turn', async () => {
+describe('AiPanel multi-conversation history', () => {
+  it('seeded conversation paints its transcript; + switches to a fresh one; ✕ moves it to history', async () => {
     const restoreApi = mockProjectApi()
     try {
       const editor = createEditor()
@@ -91,17 +107,33 @@ describe('AiPanel new chat', () => {
       try {
         await flush()
         await flush()
-        // the previous conversation is painted above the live turn…
+        await flush()
+        // the seeded conversation restored its transcript…
         expect(container.querySelectorAll('.ai-msg-historic').length).toBe(1)
-        // …and New chat is offered even though the live turn is empty
-        const button = container.querySelector<HTMLButtonElement>('.ai-header-btn')
-        expect(button).not.toBeNull()
 
-        act(() => button!.click())
+        // 「+」creates a conversation and switches to it (fresh tab is active);
+        // the old transcript stays mounted with its own tab (data retained)
+        const plus = container.querySelector<HTMLButtonElement>('.ai-header-btn')
+        expect(plus).not.toBeNull()
+        act(() => plus!.click())
+        await flush()
+        expect(container.querySelectorAll('.ai-tab').length).toBe(3) // [seed][fresh-1][助手](D13:历史不是 tab)
+        const activeLabel = () => container.querySelector('.ai-tab.active')?.textContent ?? ''
+        expect(activeLabel().length).toBeGreaterThan(0)
+        expect(activeLabel()).not.toContain('earlier') // fresh tab, not the seeded one
 
-        // both the transcript and the button are gone
+        // switch back: the old conversation becomes active again
+        const seedTab = container.querySelectorAll<HTMLButtonElement>('.ai-tab')[0]!
+        act(() => seedTab.click())
+        await flush()
+        expect(activeLabel()).toContain('earlier')
+
+        // closing the seeded tab moves it to history: transcript no longer rendered
+        const seedClose = container.querySelector<HTMLSpanElement>('.ai-tab-close')
+        expect(seedClose).not.toBeNull()
+        act(() => seedClose!.click())
+        await flush()
         expect(container.querySelectorAll('.ai-msg-historic').length).toBe(0)
-        expect(container.querySelector('.ai-header-btn')).toBeNull()
       } finally {
         cleanup()
         editor.destroy()

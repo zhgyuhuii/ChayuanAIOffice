@@ -325,6 +325,14 @@ const projectApi: ProjectApi = {
   deleteProject: (args) => ipcRenderer.invoke('project:delete', args),
   moveFile: (args) => ipcRenderer.invoke('project:moveFile', args),
   getTimeline: (args) => ipcRenderer.invoke('project:timeline', args),
+  // LOCAL(2026-09-21, d8201ad0): 多会话对话索引(追加式)
+  conversationsList: (args) => ipcRenderer.invoke('project:conversationsList', args),
+  conversationCreate: (args) => ipcRenderer.invoke('project:conversationCreate', args),
+  conversationMeta: (args) => ipcRenderer.invoke('project:conversationMeta', args),
+  conversationsOpenSet: (args) => ipcRenderer.invoke('project:conversationsOpenSet', args),
+  conversationDelete: (args) => ipcRenderer.invoke('project:conversationDelete', args),
+  conversationsDeleteAll: (args) => ipcRenderer.invoke('project:conversationsDeleteAll', args),
+  conversationsRebind: (args) => ipcRenderer.invoke('project:conversationsRebind', args),
 }
 
 

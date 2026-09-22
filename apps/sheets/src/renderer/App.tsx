@@ -10,6 +10,16 @@ import {
   useSyncExternalStore,
 } from 'react'
 import { createSheetsMediaSkill } from './ai/media-skill'
+// LOCAL(2026-09-21, d8201ad0): 多会话对话池 + 每会话隐藏宿主(B 区)
+import {
+  useAiConversations,
+  type AiActiveTab,
+} from '@chatoffice/ui'
+import {
+  AiSheetsConversation,
+  type SheetsConversationHandle,
+  type SheetsConversationView,
+} from './ai/AiSheetsConversation'
 // 惰性加载:设计器拖 1MB 示例库(chart-kit data/examples.json),点开才拉,不进表格启动图
 const ChartDesignerModal = lazy(() =>
   import('@chatoffice/chart-kit/designer').then((m) => ({ default: m.ChartDesignerModal })),
@@ -578,7 +588,6 @@ export function App(): React.JSX.Element {
   const visualViewportKeyRef = useRef('')
   const demoVisualDisposablesRef = useRef<{ dispose(): void }[]>([])
   const demoVisualInstallTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [prompt, setPrompt] = useState('')
   const [preview, setPreview] = useState<ChangePlan | null>(null)
   const [_revision, setRevision] = useState(0)
   const [workbookFile, setWorkbookFile] = useState<WorkbookFile | null>(null)
@@ -1080,36 +1089,53 @@ export function App(): React.JSX.Element {
       window.removeEventListener('focus', refresh)
     }
   }, [])
-  const [aiBusy, setAiBusy] = useState(false)
-  // Display history survives restarts via localStorage; the AgentLoop's model
-  // context does not, so restored turns are read-only transcript.
-  const [chat, setChat] = useState<readonly AiChatMessage[]>([])
-  /** History loaded from project-store (read-only transcript, not fed to the model) */
-  const [historicChat, setHistoricChat] = useState<readonly AiChatMessage[]>([])
-  // ── Chat attachments (same structure as docs/slides: text types go through the
-  // read_attachment tool, images go multimodal) ──
-  const [attachments, setAttachments] = useState<readonly AttachmentMeta[]>([])
-  const [attachNotice, setAttachNotice] = useState<string | null>(null)
-  const attachmentsRef = useRef(attachments)
-  attachmentsRef.current = attachments
-  /** Attachments consumed by earlier sends this session: sending clears the composer, but the
-      files skill must keep reading them mid-run and in follow-up turns. Deduped by path. */
-  const sentAttachmentsRef = useRef<readonly AttachmentMeta[]>([])
-  /** composer attachments plus everything already sent this session (deduped by path) */
-  const availableAttachments = (): AttachmentMeta[] => {
-    const seen = new Set<string>()
-    return [...sentAttachmentsRef.current, ...attachmentsRef.current].filter((a) =>
-      seen.has(a.path) ? false : (seen.add(a.path), true),
-    )
+  // LOCAL(2026-09-21, d8201ad0): 多会话改造——单份 chat/prompt/attachments 状态与单个
+  // agentLoop 由会话池(useAiConversations)+ 每会话隐藏宿主(AiSheetsConversation)取代;
+  // preview/aiRunScope/message 属面板级共享资源(§4.5),保留在本组件。上游无同类实现;
+  // 收敛条件:上游若原生实现多会话,评估取上游并删除本地会话池。
+  const sheetsTempChatIdRef = useRef(`unsaved-${Date.now()}`)
+  const conv = useAiConversations(
+    {
+      filePath: null,
+      ...(workbookFile?.sessionId !== undefined
+        ? { sessionId: workbookFile.sessionId }
+        : {}),
+      tempChatId: sheetsTempChatIdRef.current,
+    },
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    { ...(workbookFile?.sessionId !== undefined ? { reloadKey: workbookFile.sessionId } : {}) },
+  )
+  /** per-conversation view state reported by the hidden hosts (active one renders) */
+  const [convViews, setConvViews] = useState<Record<string, SheetsConversationView>>({})
+  const convHandlesRef = useRef(new Map<string, SheetsConversationHandle>())
+  const registerConvHandle = (chatId: string) => (handle: SheetsConversationHandle) => {
+    convHandlesRef.current.set(chatId, handle)
   }
-  /** Synchronous re-entrancy guard between runAgent trigger and loop.run
-   * (loop.busy is still false while attachment images load asynchronously) */
-  const runStartingRef = useRef(false)
+  const unregisterConvHandle = (chatId: string) => () => {
+    convHandlesRef.current.delete(chatId)
+  }
+  const isChatTab = (tab: AiActiveTab): tab is string =>
+    typeof tab === 'string' && tab !== 'assistant' && tab !== 'empty'
+  const targetChatId = (): string | null => {
+    if (isChatTab(conv.activeTab) && conv.open.some((c) => c.chatId === conv.activeTab)) {
+      return conv.activeTab
+    }
+    return conv.open[0]?.chatId ?? null
+  }
+  const activeId = targetChatId()
+  const activeView = activeId ? convViews[activeId] : undefined
+  const activeHandle = activeId ? convHandlesRef.current.get(activeId) : undefined
+  /** the composer text state of the active conversation (composer renders from the active view) */
+  const prompt = activeView?.prompt ?? ''
+  const setPrompt = (text: string) => activeHandle?.setPrompt(text)
+  const aiBusy = activeView?.busy ?? false
+  const chat = activeView?.chat ?? []
+  const historicChat = activeView?.historic ?? []
+  const attachments = activeView?.attachments ?? []
+  const attachNotice = activeView?.attachNotice ?? null
   /** The shell can repeat its queued-open nudge while the renderer starts.
    * Only one picker/open request may own the workbook session at a time. */
   const workbookOpeningRef = useRef(false)
-  /** Current session's projectId/chatId (resolved when the workbook opens) */
-  const chatRefIdsRef = useRef<{ projectId: string; chatId: string } | null>(null)
 
   // File renamed externally (in the shell Home list) → sync the title-bar file
   // name (the save path is synced by the main process)
@@ -1200,422 +1226,63 @@ export function App(): React.JSX.Element {
     }
   }, [])
 
-  // ── project-store: resolve chatId and load history when a workbook opens ──
-  useEffect(() => {
-    const api = (window as Window & { projectApi?: typeof window.projectApi }).projectApi
-    if (!api) return
-    // Reset (new workbook or new session)
-    chatRefIdsRef.current = null
-    setHistoricChat([])
-    const tempChatId = `unsaved-${Date.now()}`
-    const sessionId = workbookFile?.sessionId
-    const resolveArgs: Parameters<typeof api.resolveChat>[0] = { filePath: null, tempChatId }
-    if (sessionId !== undefined) resolveArgs.sessionId = sessionId
-    void api
-      .resolveChat(resolveArgs)
-      .then(async (ids) => {
-        chatRefIdsRef.current = ids
-        const msgs = await api.loadChat({
-          projectId: ids.projectId,
-          chatId: ids.chatId,
-          limit: 200,
-        })
-        if (msgs.length === 0) return
-        setHistoricChat(
-          msgs.map((m) => ({
-            role: m.role,
-            text: m.text,
-            tools:
-              m.tools?.map((t) => ({
-                summary: t.summary,
-                isError: !!t.isError,
-                ...(t.name ? { name: t.name } : {}),
-                ...(t.output ? { output: t.output.slice(0, 2000) } : {}),
-              })) ?? [],
-            // stored metadata only: no thumbnail read for history, the chips render name/size
-            ...(m.attachments && m.attachments.length > 0
-              ? {
-                  attachments: m.attachments
-                    .filter((a) => a.path)
-                    .map((a) => ({
-                      name: a.name,
-                      path: a.path ?? '',
-                      ext: a.ext ?? '',
-                      sizeBytes: a.sizeBytes ?? 0,
-                    })),
-                }
-              : {}),
-            ...(m.scope ? { scope: m.scope } : {}),
-          })),
-        )
-        // Restore model context: follow-ups after reopening the file continue the
-        // previous conversation (only when the loop is idle and has no history)
-        agentLoopRef.current?.restore(msgs.map((m) => ({ role: m.role, text: m.text })))
-      })
-      .catch(() => {
-        /* silent */
-      })
-  }, [workbookFile?.sessionId])
-
-  const persistChatMessage = (
-    role: 'user' | 'assistant',
-    text: string,
-    tools?: Array<{
-      name?: string
-      summary: string
-      isError?: boolean
-      input?: string
-      output?: string
-    }>,
-    attachments?: readonly AttachmentMeta[],
-    scope?: AiScopeQuoteData,
-  ): boolean => {
-    // Reports whether a write was issued: right after a workbook opens the
-    // chat refs resolve asynchronously, and a send in that window is dropped.
-    const ids = chatRefIdsRef.current
-    const api = (window as Window & { projectApi?: typeof window.projectApi }).projectApi
-    if (!ids || !api) return false
-    void api
-      .appendChat({
-        projectId: ids.projectId,
-        chatId: ids.chatId,
-        role,
-        text,
-        ...(tools && tools.length > 0
-          ? { tools: tools.map((t) => ({ ...t, name: t.name ?? '' })) }
-          : {}),
-        ...(attachments && attachments.length > 0
-          ? {
-              attachments: attachments.map((a) => ({
-                name: a.name,
-                path: a.path,
-                ext: a.ext,
-                sizeBytes: a.sizeBytes,
-              })),
-            }
-          : {}),
-        ...(scope ? { scope } : {}),
-      })
-      .catch(() => {
-        /* silent */
-      })
-    return true
-  }
-
-  function appendChat(entry: AiChatMessage): void {
-    setChat((previous) => [...previous, entry])
-  }
-
-  function patchLastAssistant(patch: (entry: AiChatMessage) => AiChatMessage): void {
-    setChat((previous) => {
-      const index = previous.length - 1
-      const last = previous[index]
-      if (!last || last.role !== 'assistant') return previous
-      const next = previous.slice()
-      next[index] = patch(last)
-      return next
-    })
-  }
-
-  /** Tool activity for the whole run (args/output included, accumulated across
-   * turns) — for full transcript persistence */
-  const runToolsRef = useRef<
-    Array<{ name: string; summary: string; isError?: boolean; input?: string; output?: string }>
-  >([])
+  // ── 每会话运行管线(转录/loop/附件)已迁入 AiSheetsConversation 隐藏宿主;
+  // 以下仅保留面板级共享的 plan-apply 补丁路由与自动保存(§4.5)──
+  /** the running conversation's last-assistant patch (auto-apply badges, save notes) */
+  const activeRunPatchRef = useRef<((fn: (entry: AiChatMessage) => AiChatMessage) => void) | null>(
+    null,
+  )
   /** AI plans apply asynchronously after propose_operations returns. Run
    * completion waits for these before doing the run's single auto-save. */
   const aiApplyPromisesRef = useRef<Promise<boolean>[]>([])
-  /** Last non-empty streamed text of the run: a final empty turn falls back to
-   * it instead of wiping the model's own summary from the tool-call turn. */
-  const runLastTextRef = useRef('')
-  /** true once any tool of the run mutated the workbook */
-  const runMutatedRef = useRef(false)
-
   const kbAugment = useKbAugment()
-  const agentLoopRef = useRef<AgentLoop | null>(null)
-  if (!agentLoopRef.current) {
-    agentLoopRef.current = new AgentLoop({
-      // the request carries only the selection; the main process resolves profile + secret
-      transport: createElectronTransport(() => aiSettingsRef.current!.currentModel!),
-      systemSuffix: aiLangDirective,
-      skill: composeSkills('sheets+files', '', [
-        createSheetsMediaSkill(),
-        createWorkbookSkill(sheetsSkillDeps()),
-        createFilesSkill(availableAttachments),
-        createMergeSkill({
-          getAttachments: availableAttachments,
-          mergePaths: (paths) => {
-            const runtime = univerRef.current
-            if (!runtime) throw new Error(t('appMergeWorkbooksFailed'))
-            return mergeAttachedWorkbooks({ runtime, lazyWorkbookRef, setMessage }, paths)
-          },
-        }),
-        createSearchSkill(),
-        createImageSkill(
-          // generate_image rides the locally configured image model — advertise
-          // it exactly while one resolves
-          () => !!pickImageModel(aiSettingsRef.current ?? ({} as AiSettingsV2)),
-          () => aiSettingsRef.current?.imageSource ?? 'auto',
-        ),
-      ]),
-      events: {
-        onText: (text) => {
-          if (text) runLastTextRef.current = text
-          // Status bar (and the ribbon-row status span) show a short state only;
-          // the full streamed prose lives in the chat panel.
-          setMessage(t('appAiThinking'))
-          // When the model retries successfully and keeps streaming after a
-          // mid-run failure (e.g. one apply error), clear the error flag —
-          // otherwise the whole successful message stays rendered in red.
-          patchLastAssistant((entry) => ({ ...entry, text, isError: false }))
-        },
-        onToolStart: (call) => {
-          // Live "running" chip: replaced in place by onToolExecuted
-          patchLastAssistant((entry) => ({
-            ...entry,
-            tools: [
-              ...entry.tools,
-              {
-                summary: call.name.replace(/[_-]+/g, ' '),
-                isError: false,
-                name: call.name,
-                running: true,
-              },
-            ],
-          }))
-        },
-        onToolExecuted: ({ call, execution }) => {
-          if (execution.mutated) runMutatedRef.current = true
-          const input = safeJsonInput(call.input)
-          const output = execution.output
-            ? execution.output.slice(0, PERSIST_TOOL_FIELD_MAX)
-            : undefined
-          runToolsRef.current.push({
-            name: call.name,
-            summary: execution.summary,
-            isError: !!execution.isError,
-            ...(input !== undefined ? { input } : {}),
-            ...(output !== undefined ? { output } : {}),
-          })
-          patchLastAssistant((entry) => {
-            // Swap out the running placeholder pushed by onToolStart (parse-fail calls have none)
-            const tools = [...entry.tools]
-            if (tools.at(-1)?.running) tools.pop()
-            return {
-              ...entry,
-              tools: [
-                ...tools,
-                {
-                  summary: execution.summary,
-                  isError: !!execution.isError,
-                  name: call.name,
-                  ...(execution.output ? { output: execution.output.slice(0, 2000) } : {}),
-                },
-              ],
-            }
-          })
-        },
-        onDone: ({ text, cancelled, turnLimit, truncated }) => {
-          // Prefer tool summaries when the model finished via tools with no prose
-          // (agent-core fills history with COMPLETED_VIA_TOOLS_TEXT so follow-ups
-          // stay provider-safe; the UI can show the real work that ran).
-          const toolSummaries = (() => {
-            const lines: string[] = []
-            const seen = new Set<string>()
-            for (const tool of runToolsRef.current) {
-              if (!tool.summary || tool.isError || seen.has(tool.summary)) continue
-              seen.add(tool.summary)
-              lines.push(tool.summary)
-              if (lines.length >= 8) break
-            }
-            return lines.join('\n')
-          })()
-          // A cancelled run must keep the "stopped" notice: earlier narration or
-          // tool summaries would make an aborted run read as completed.
-          const prose =
-            text && text !== COMPLETED_VIA_TOOLS_TEXT
-              ? text
-              : cancelled
-                ? ''
-                : runLastTextRef.current || toolSummaries || text
-          // A final empty turn must not claim completion: reuse the model's last
-          // streamed text; with none, only a mutating run gets the "done" phrasing.
-          const fallback = cancelled
-            ? t('appAiStopped')
-            : runLastTextRef.current ||
-              toolSummaries ||
-              (runMutatedRef.current ? t('appAiNoSummary') : t('appAiNoAction'))
-          const baseText = turnLimit
-            ? [prose, t('appAiTurnLimit')].filter(Boolean).join('\n\n')
-            : prose || fallback
-          const finalText = truncated
-            ? [baseText, t('appAiTruncatedNote')].filter(Boolean).join('\n\n')
-            : baseText
-          setMessage(cancelled ? t('appAiStopped') : t('appAiDone'))
-          patchLastAssistant((entry) => ({
-            ...entry,
-            text: finalText,
-            streaming: false,
-            isError: false,
-            // A stop mid-tool can leave a running placeholder behind — drop it
-            tools: entry.tools.filter((tl) => !tl.running),
-          }))
-          // Persist the assistant message (side effect outside the updater;
-          // tools stores the run's complete activity)
-          if (!cancelled && finalText) {
-            persistChatMessage('assistant', finalText, runToolsRef.current)
-          }
-          setAiRunScope(undefined)
-          void autoSaveCompletedAiRun().finally(() => setAiBusy(false))
-        },
-        onError: (error) => {
-          setMessage(error)
-          setChat((previous) => {
-            const next = [...previous]
-            // the loop rolled this run's user message out of the model context — surface that
-            for (let i = next.length - 1; i >= 0; i--) {
-              const entry = next[i]!
-              if (entry.role === 'user') {
-                next[i] = { ...entry, undelivered: true }
-                break
-              }
-            }
-            const last = next.at(-1)
-            if (last?.role === 'assistant') {
-              next[next.length - 1] = {
-                ...last,
-                text: error,
-                isError: true,
-                streaming: false,
-                tools: last.tools.filter((tl) => !tl.running),
-              }
-            }
-            return next
-          })
-          // Signed-out failures get an inline sign-in button; detected via
-          // chatoffice status rather than matching the localized error text
-          void window.desktopApi
-            .aiChatOfficeStatus()
-            .then((status) => {
-              if (status.loggedIn) return
-              setChat((previous) => {
-                const next = [...previous]
-                const last = next.at(-1)
-                if (last?.role === 'assistant' && last.isError) {
-                  next[next.length - 1] = { ...last, loginRequired: true }
-                }
-                return next
-              })
-            })
-            .catch(() => {})
-          setAiRunScope(undefined)
-          void autoSaveCompletedAiRun().finally(() => setAiBusy(false))
-        },
-      },
-    })
+  const patchLastAssistant = (fn: (entry: AiChatMessage) => AiChatMessage): void => {
+    activeRunPatchRef.current?.(fn)
   }
-
-  function isAgentConfigured(): boolean {
-    const settings = aiSettingsRef.current
-    if (!settings) return false
-    // any enabled chat model counts as configured; the chatoffice-login profile's
-    // secret is injected main-side (logged-out runs surface a sign-in error)
-    return enabledChatModels(settings).length > 0
-  }
-
-  /** Image attachments read as base64 and sent multimodal with this user message
-   * (≤5MB each, max 20; same structure as docs/slides) */
-  const MAX_IMAGES_PER_MESSAGE = 20
-  async function collectImageAttachments(atts: readonly AttachmentMeta[]): Promise<AgentImage[]> {
-    const imageAtts = atts.filter((a) => ATTACHMENT_IMAGE_EXTS.has(a.ext))
-    const images: AgentImage[] = []
-    const failures: string[] = []
-    for (const att of imageAtts.slice(0, MAX_IMAGES_PER_MESSAGE)) {
-      const result = await window.desktopApi.readAttachmentImage(att.path)
-      if (result.ok && result.base64 && result.mime) {
-        images.push({ base64: result.base64, mime: result.mime })
-      } else {
-        failures.push(result.error ?? t('appAttachmentReadFailed', { name: att.name }))
-      }
-    }
-    if (imageAtts.length > MAX_IMAGES_PER_MESSAGE) {
-      failures.push(t('appTooManyImages', { max: MAX_IMAGES_PER_MESSAGE }))
-    }
-    if (failures.length > 0) {
-      setAttachNotice(failures.join('；'))
-      window.setTimeout(() => setAttachNotice(null), 5000)
-    }
-    return images
-  }
-
-  function runAgent(instruction: string, sentAttachments: readonly AttachmentMeta[]): void {
-    const loop = agentLoopRef.current
-    if (!instruction.trim() || !loop || loop.busy || runStartingRef.current) return
-    runStartingRef.current = true
-    // Freeze the selection scope for the whole run: users go on clicking around
-    // while the AI works, so a live read would retarget "this column" mid-run.
-    // Released in onDone/onError, which own the rest of the run teardown.
-    setAiRunScope(aiScopeDismissed ? null : aiScope)
+  /** App-level auto-save of a completed run; entries patched via activeRunPatchRef */
+  async function autoSaveCompletedAiRun(): Promise<void> {
+    const applies = aiApplyPromisesRef.current
     aiApplyPromisesRef.current = []
-    runLastTextRef.current = ''
-    runMutatedRef.current = false
-    setAiBusy(true)
-    setMessage(t('appAiThinking'))
-    appendChat({ role: 'assistant', text: '', tools: [], streaming: true })
-    const attachKbCitations = (): void => {
-      const citations = kbAugment.lastCitations.current
-      if (citations.length > 0) {
-        patchLastAssistant((entry) => ({ ...entry, kbCitations: [...citations] }))
+    if (applies.length === 0) return
+    const results = await Promise.all(applies)
+    if (!results.some(Boolean)) return
+    const state = lazyWorkbookRef.current
+    if (!state || journalSize(state.editJournal) === 0) return
+    if (!autoSaveRef.current || state.file.needsSaveAs) {
+      setMessage(t('appAiChangesNotSaved'))
+      if (state.file.needsSaveAs) {
+        proposeSaveAsName(state)
+        patchLastAssistant(({ autoApplied: _autoApplied, ...entry }) => entry)
       }
+      return
     }
-    void collectImageAttachments(sentAttachments)
-      .then(async (images) => {
-        runStartingRef.current = false
-        const kbInstruction = kbAugment.augment(instruction)
-        void kbInstruction.then(attachKbCitations)
-        loop.run(await kbInstruction, images)
-      })
-      .catch(async () => {
-        runStartingRef.current = false
-        const kbInstruction = kbAugment.augment(instruction)
-        void kbInstruction.then(attachKbCitations)
-        loop.run(await kbInstruction)
-      })
-  }
-
-  const mergeAttachments = (result: AttachmentAddResult | null): void => {
-    if (!result) return
-    if (result.accepted.length > 0) {
-      setAttachments((prev) => {
-        const seen = new Set(prev.map((a) => a.path))
-        return [...prev, ...result.accepted.filter((a) => !seen.has(a.path))]
-      })
-    }
-    if (result.rejected.length > 0) {
-      setAttachNotice(result.rejected.join('；'))
-      window.setTimeout(() => setAttachNotice(null), 5000)
+    await handleSave('save', true)
+    const after = lazyWorkbookRef.current
+    if (after && journalSize(after.editJournal) === 0) {
+      patchLastAssistant(({ autoApplied: _autoApplied, ...entry }) => entry)
+      proposeSaveAsName(after)
     }
   }
 
+  // attachments live per conversation now: route to the active conversation's host
   async function handlePickAttachments(): Promise<void> {
-    mergeAttachments(await window.desktopApi.pickAttachments())
+    await activeHandle?.pickAttachments()
   }
 
   async function handleAddAttachmentPaths(paths: readonly string[]): Promise<void> {
-    if (paths.length === 0) return
-    mergeAttachments(await window.desktopApi.addAttachmentPaths([...paths]))
+    await activeHandle?.addAttachmentPaths(paths)
   }
 
   async function handleAddPastedImage(data: ArrayBuffer, ext: string): Promise<void> {
-    mergeAttachments(await window.desktopApi.addPastedImage(data, ext))
+    await activeHandle?.addPastedImage(data, ext)
   }
 
   function handleRemoveAttachment(path: string): void {
-    setAttachments((prev) => prev.filter((a) => a.path !== path))
+    activeHandle?.removeAttachment(path)
   }
 
   function handleStopAgent(): void {
-    agentLoopRef.current?.cancel()
+    void activeHandle?.stop()
   }
 
   /// A citation link in an AI answer ([B12](sheetnav://B12)): jump the grid to
@@ -1627,21 +1294,29 @@ export function App(): React.JSX.Element {
     if (error !== null) setMessage(error)
   }
 
-  function handleNewChat(): void {
-    agentLoopRef.current?.reset()
+  // LOCAL(2026-09-21, d8201ad0): 弃用 handleNewChat(销毁式清空)——「+ 新建对话」改为
+  // conv.create()(无破坏新开 tab);preview/aiRunScope 的清理改挂到会话关闭流程
+  // (closeConversation)与业务动作上(§4.5)。
+  // LOCAL(2026-09-22, d8201ad0): D12/D13 增量——历史不再是 tab:「🕘」改 AiChatPanel
+  // actions 槽常驻图标([+][itime])的下拉浮层,单删/全删确认移入浮层(原 historyConfirm
+  // 状态删除);空会话(从未发言)关闭直接丢弃、不进历史(hook close() 内分流)。
+  /** Close-flow (D5+D10): stop a running conversation first, then close it into history */
+  const [closeConfirmId, setCloseConfirmId] = useState<string | null>(null)
+  const closeConversation = async (chatId: string): Promise<void> => {
+    const handle = convHandlesRef.current.get(chatId)
+    if (handle) await handle.stop()
+    conv.close(chatId)
+    // the closing conversation owned the frozen scope / pending preview: drop them
     setAiRunScope(undefined)
-    setAiBusy(false)
-    setChat([])
-    setHistoricChat([])
-    // Unsent composer attachments would otherwise ride into the next chat's
-    // file context (availableAttachments merges sent + live) — same as docs
-    // (#224) and slides. The typed draft itself is kept.
-    setAttachments([])
-    setAttachNotice(null)
-    sentAttachmentsRef.current = []
     setPreview(null)
     lazyPreviewRef.current = null
-    setMessage(t('appNewConversation'))
+  }
+  const closeFlow = (chatId: string): void => {
+    if (conv.runningIds.has(chatId)) {
+      setCloseConfirmId(chatId)
+      return
+    }
+    void closeConversation(chatId)
   }
 
   /** DSL context the AgentSkill reads/writes through — reuses the exact same
@@ -3149,61 +2824,7 @@ export function App(): React.JSX.Element {
     overrideAttachments?: readonly AttachmentMeta[],
     retryIndex?: number,
   ): void {
-    const instruction = (overrideInstruction ?? prompt).trim()
-    if (!instruction || aiBusy) return
-    runToolsRef.current = []
-    // The message consumes the composer attachments: they ride along (echoed on the
-    // bubble, images multimodal, files via the files skill) and the composer clears.
-    // Retry passes the failed message's original set instead.
-    const sentAtts = overrideAttachments ?? attachmentsRef.current
-    const agentConfigured = isAgentConfigured()
-    // Retry re-sends in place: drop the failed bubble and its error reply instead
-    // of stacking a "Not sent" duplicate above the resent copy.
-    const alreadyPersisted = retryIndex !== undefined && chat[retryIndex]?.persisted === true
-    if (retryIndex !== undefined) {
-      setChat((previous) => pruneFailedExchange(previous, retryIndex))
-    }
-    // A retried message was usually persisted by its original send — but that
-    // write is skipped while the chat refs are still resolving, so re-issue it
-    // then instead of dropping the question from the stored transcript.
-    // a retry quotes what the failed message quoted; a fresh send the live scope runAgent freezes for the run
-    const scope =
-      retryIndex !== undefined
-        ? chat[retryIndex]?.scope
-        : aiScope && !aiScopeDismissed
-          ? { label: scopeLabel(aiScope.a1, aiScope.columns ?? null, t) }
-          : undefined
-    const persisted =
-      alreadyPersisted || persistChatMessage('user', instruction, undefined, sentAtts, scope)
-    appendChat({
-      role: 'user',
-      text: instruction,
-      tools: [],
-      persisted,
-      ...(sentAtts.length > 0 ? { attachments: sentAtts } : {}),
-      ...(scope ? { scope } : {}),
-    })
-    if (!overrideInstruction) setPrompt('')
-    // the deterministic path consumes the composer too — the bubble already echoes the set
-    if (!overrideAttachments && sentAtts.length > 0) {
-      const seen = new Set(sentAttachmentsRef.current.map((a) => a.path))
-      sentAttachmentsRef.current = [
-        ...sentAttachmentsRef.current,
-        ...sentAtts.filter((a) => !seen.has(a.path)),
-      ]
-      setAttachments([])
-    }
-    // real LLM configured → let the agent read context and propose operations;
-    // otherwise fall back to the local, deterministic regex planner
-    // (kept for offline use and for the fixed micro-DSL it still supports).
-    if (agentConfigured) {
-      runAgent(instruction, sentAtts)
-      return
-    }
-    const outcome = runDeterministicPlan(instruction)
-    setMessage(outcome.text)
-    appendChat({ role: 'assistant', text: outcome.text, tools: [], isError: outcome.isError })
-    persistChatMessage('assistant', outcome.text)
+    activeHandle?.send(overrideInstruction, overrideAttachments, retryIndex)
   }
 
   /// AI edits on imported workbooks preview against the live sheet, then
@@ -3290,41 +2911,6 @@ export function App(): React.JSX.Element {
 
   /** Default worksheet names carry no content signal, so they never name the file. */
   const DEFAULT_SHEET_NAME_RE = /^(sheet|工作表|ワークシート|シート)\s*\d*$/i
-
-  /** Waits for every plan submitted during one AI run, then persists all
-   * successful writes in one save. A canceled/failed Save As leaves both the
-   * journal and inline undo available. */
-  async function autoSaveCompletedAiRun(): Promise<void> {
-    const applies = aiApplyPromisesRef.current
-    aiApplyPromisesRef.current = []
-    if (applies.length === 0) return
-    const results = await Promise.all(applies)
-    if (!results.some(Boolean)) return
-    const state = lazyWorkbookRef.current
-    if (!state || journalSize(state.editJournal) === 0) return
-    // AutoSave off = the user decides when the file is written: the
-    // run's edits stay pending in the journal, so the offered Undo / ⌘Z keeps
-    // working (saving would reopen the session and reset the undo stack).
-    // A never-saved untitled workbook (needsSaveAs) must not pop a Save As
-    // dialog out of an AI run either — its edits stay pending until the
-    // user's first explicit save, like autosave-off.
-    if (!autoSaveRef.current || state.file.needsSaveAs) {
-      setMessage(t('appAiChangesNotSaved'))
-      if (state.file.needsSaveAs) {
-        proposeSaveAsName(state)
-        patchLastAssistant(({ autoApplied: _autoApplied, ...entry }) => entry)
-      }
-      return
-    }
-    // AutoSave-driven write after an AI run: silent like the interval autosave.
-    await handleSave('save', true)
-    const after = lazyWorkbookRef.current
-    if (after && journalSize(after.editJournal) === 0) {
-      // Saving reopens the sidecar session and resets Univer's undo stack.
-      patchLastAssistant(({ autoApplied: _autoApplied, ...entry }) => entry)
-      proposeSaveAsName(after)
-    }
-  }
 
   /**
    * Sheets' analog of docs' deriveAutoFileName: propose the first AI-named
@@ -6226,7 +5812,54 @@ export function App(): React.JSX.Element {
           onClose={() => setChartDialog(null)}
         />
       )}
-      <ExcelShell
+            {/* LOCAL(2026-09-21, d8201ad0): 每会话一个隐藏宿主实例(D9):持有转录/loop/附件,视图经 onState 上报 */}
+      {conv.open.map((c) => (
+        <AiSheetsConversation
+          key={c.chatId}
+          chatId={c.chatId}
+          projectId={conv.projectId}
+          getSettings={() => aiSettingsRef.current ?? ({} as AiSettingsV2)}
+          getSkillDeps={sheetsSkillDeps}
+          mergePaths={(paths) => {
+            const runtime = univerRef.current
+            if (!runtime) throw new Error(t('appMergeWorkbooksFailed'))
+            return mergeAttachedWorkbooks({ runtime, lazyWorkbookRef, setMessage }, paths)
+          }}
+
+          runDeterministicPlan={runDeterministicPlan}
+          kb={kbAugment}
+          setMessage={setMessage}
+          beginRun={() => {
+            setAiRunScope(aiScopeDismissed ? null : aiScope)
+            aiApplyPromisesRef.current = []
+            return aiScope && !aiScopeDismissed
+              ? { label: scopeLabel(aiScope.a1, aiScope.columns ?? null, t) }
+              : undefined
+          }}
+          getLiveScope={() =>
+            aiScope && !aiScopeDismissed
+              ? { label: scopeLabel(aiScope.a1, aiScope.columns ?? null, t) }
+              : undefined
+          }
+          endRun={() => setAiRunScope(undefined)}
+          onRunStart={(patch) => {
+            activeRunPatchRef.current = patch
+          }}
+          onRunEnd={() => {
+            activeRunPatchRef.current = null
+          }}
+          autoSave={() => autoSaveCompletedAiRun()}
+          onRunningChange={(running) => conv.setRunning(c.chatId, running)}
+          onFirstMessage={(text) => conv.reportTitle(c.chatId, text)}
+          onTurnEnd={() => conv.touch(c.chatId)}
+          onRegister={registerConvHandle(c.chatId)}
+          onUnregister={unregisterConvHandle(c.chatId)}
+          onState={(view) =>
+            setConvViews((prev) => ({ ...prev, [c.chatId]: view }))
+          }
+        />
+      ))}
+<ExcelShell
         aiSettings={aiSettings}
         onAiSettingsRefresh={async () => {
           setAiSettingsState(await window.desktopApi.getAiSettings())
@@ -6273,7 +5906,46 @@ export function App(): React.JSX.Element {
         onPromptChange={setPrompt}
         onSend={handleSend}
         onStop={handleStopAgent}
-        onNewChat={handleNewChat}
+        conversations={{
+          // LOCAL(2026-09-21, d8201ad0): tab 行 = [会话…][助手](D1)。
+          // LOCAL(2026-09-22, d8201ad0): D13——历史不是 tab,走 AiChatPanel 的 [🕘]
+          // 图标下拉浮层;D12——空会话(从未发言)关闭时由 hook 直接丢弃、不进历史
+          tabs: [
+            ...conv.open.map((c) => ({
+              id: c.chatId,
+              label: c.title || t('aiConvUntitled'),
+              running: conv.runningIds.has(c.chatId),
+              onClose: () => closeFlow(c.chatId),
+            })),
+            { id: 'assistant', label: t('aiTabAssistant') },
+          ],
+          activeId: conv.activeTab,
+          onTabChange: conv.setActiveTab,
+          onCreate: () => conv.create(),
+          confirmBubble:
+            closeConfirmId !== null
+              ? {
+                  body: t('aiConvCloseRunningBody'),
+                  confirmLabel: t('aiConvStopClose'),
+                  cancelLabel: t('aiConvCancel'),
+                  onConfirm: () => {
+                    const id = closeConfirmId
+                    setCloseConfirmId(null)
+                    if (id !== null) void closeConversation(id)
+                  },
+                  onCancel: () => setCloseConfirmId(null),
+                }
+              : null,
+          history: {
+            items: conv.closed,
+            onRestore: (chatId) => conv.restore(chatId),
+            // 单删/全删只作用于历史(未打开)会话;确认在浮层内完成(D3/D13)
+            onDelete: (chatId) => conv.removeClosed(chatId),
+            onDeleteAll: () => conv.removeAllClosed(),
+          },
+          showEmpty: conv.ready && conv.activeTab === 'empty',
+          onEmptyCreate: () => conv.create(),
+        }}
         onUndo={handleUndo}
         aiScopeRange={aiScopeChip.range}
         aiScopeColumns={aiScopeChip.columns ?? null}

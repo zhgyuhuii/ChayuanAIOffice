@@ -676,3 +676,324 @@
   font-size: 11px;
   color: var(--text-secondary, #606366);
 }
+
+/* ── LOCAL(2026-09-21, d8201ad0): 多会话(多 tab)对话栏——tab 关闭钮/运行圆点/历史列表/确认气泡/空态 ── */
+
+/* conversation tabs carry a ✕ and (while streaming) a running dot */
+.ai-tab .ai-tab-label {
+  vertical-align: middle;
+}
+
+.ai-tab .ai-tab-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  margin-left: 4px;
+  margin-right: -3px;
+  border-radius: 3px;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  opacity: 0;
+  transition: opacity 0.12s ease, background 0.12s ease;
+  vertical-align: middle;
+}
+
+.ai-tab:hover .ai-tab-close,
+.ai-tab.active .ai-tab-close {
+  opacity: 0.7;
+}
+
+.ai-tab .ai-tab-close:hover {
+  opacity: 1;
+  background: var(--color-bg-subtle, var(--hover, #f5f5f5));
+  color: var(--color-text-primary, var(--text, #242424));
+}
+
+/* a tab (its ✕) must not drag the panel */
+.ai-tab .ai-tab-close {
+  -webkit-app-region: no-drag;
+}
+
+.ai-tab .ai-tab-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: var(--accent, #2f6fdc);
+  vertical-align: middle;
+  animation: ai-tab-dot-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes ai-tab-dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* ── history list (历史对话 tab 体) ── */
+
+.ai-history {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.ai-history-head {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 12px 4px;
+  flex-shrink: 0;
+}
+
+.ai-history-delete-all {
+  border: none;
+  background: none;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 12px;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  cursor: pointer;
+}
+
+.ai-history-delete-all:hover {
+  color: #d33;
+  background: color-mix(in srgb, #d33 10%, transparent);
+}
+
+.ai-history-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 8px 12px;
+}
+
+.ai-history-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  color: var(--color-text-primary, var(--text, #242424));
+}
+
+.ai-history-item:hover {
+  background: var(--color-bg-subtle, var(--hover, #f5f5f5));
+}
+
+.ai-history-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.ai-history-time {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+}
+
+.ai-history-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  border-radius: 4px;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  opacity: 0;
+  cursor: pointer;
+}
+
+.ai-history-item:hover .ai-history-delete {
+  opacity: 0.7;
+}
+
+.ai-history-delete:hover {
+  opacity: 1;
+  color: #d33;
+  background: color-mix(in srgb, #d33 10%, transparent);
+}
+
+.ai-history-empty {
+  align-items: center;
+  justify-content: center;
+}
+
+.ai-history-empty-text {
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  font-size: 13px;
+  padding: 24px;
+  text-align: center;
+}
+
+/* ── confirm bubble (stop-and-close / delete-one / delete-all) ── */
+
+.ai-conv-confirm {
+  position: absolute;
+  top: 34px;
+  right: 8px;
+  z-index: 30;
+  min-width: 200px;
+  max-width: 260px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  background: var(--color-bg-elevated, var(--panel, #fff));
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  font-size: 12.5px;
+  -webkit-app-region: no-drag;
+}
+
+.ai-conv-confirm-title {
+  font-weight: 600;
+  color: var(--color-text-primary, var(--text, #242424));
+  margin-bottom: 2px;
+}
+
+.ai-conv-confirm-body {
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  margin-bottom: 8px;
+}
+
+.ai-conv-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.ai-conv-confirm-cancel,
+.ai-conv-confirm-ok {
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  background: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  cursor: pointer;
+  color: var(--color-text-primary, var(--text, #242424));
+}
+
+.ai-conv-confirm-ok {
+  background: var(--accent, #2f6fdc);
+  border-color: var(--accent, #2f6fdc);
+  color: #fff;
+}
+
+.ai-conv-confirm-ok:hover {
+  filter: brightness(1.08);
+}
+
+.ai-conv-confirm-cancel:hover {
+  background: var(--color-bg-subtle, var(--hover, #f5f5f5));
+}
+
+/* ── empty state when every conversation tab is closed ── */
+
+.ai-conv-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.ai-conv-empty-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary, var(--text, #242424));
+}
+
+.ai-conv-empty-body {
+  font-size: 12.5px;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  max-width: 260px;
+}
+
+.ai-conv-empty-create {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 7px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent, #2f6fdc);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ai-conv-empty-create:hover {
+  filter: brightness(1.08);
+}
+
+.ai-conv-empty-history {
+  border: none;
+  background: none;
+  color: var(--accent, #2f6fdc);
+  font-size: 12.5px;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.ai-conv-empty-history:hover {
+  text-decoration: underline;
+}
+
+/* D10 已中断角标(转录历史条目) */
+.ai-msg-interrupted-badge {
+  display: inline-block;
+  margin: 2px 0;
+  padding: 1px 7px;
+  border-radius: 5px;
+  font-size: 11px;
+  color: #b7791f;
+  background: color-mix(in srgb, #b7791f 12%, transparent);
+}
+
+/* ── LOCAL(2026-09-22, d8201ad0): D13 历史对话下拉浮层(AiHistoryPopover,🕘 触发,B 区追加段)。
+   上游无对应实现;收敛条件:上游若原生实现历史下拉/历史列表,评估取上游并删除此段 ── */
+
+.ai-history-anchor {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.ai-history-popover {
+  position: fixed;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  min-width: 250px;
+  max-width: 320px;
+  max-height: min(420px, 60vh);
+  overflow: auto;
+  padding: 4px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 8px;
+  background: var(--color-bg-page, var(--surface, #fff));
+  box-shadow: var(--shadow-menu, 0 8px 24px rgb(0 0 0 / 18%));
+  -webkit-app-region: no-drag;
+}
+
+/* 列表体在浮层内自适应高度(旧 tab 体里是 height:100%) */
+.ai-history-popover .ai-history {
+  height: auto;
+  min-height: 0;
+}

@@ -61,6 +61,12 @@ import {
   PanelTabs,
   USER_LOGIN_READY,
   usePanelTab,
+  AI_CONTINUE_INSTRUCTION,
+  useAiConversations,
+  AiConversationsEmpty,
+  AiHistoryPopover,
+  AiTabConfirm,
+  type AiActiveTab,
   AiScopeQuote,
   KbCitePreview,
   useAiPanelPrefs,
@@ -293,6 +299,8 @@ interface ChatEntry {
   role: 'user' | 'assistant'
   text: string
   error?: string
+  /** LOCAL(2026-09-21, d8201ad0): D10 —— 恢复的被中断轮次(半截文本保留,渲染角标) */
+  interrupted?: boolean
   /** model id that produced this assistant turn (display only) */
   model?: string
   streaming?: boolean
@@ -369,6 +377,27 @@ interface AiPanelProps {
   onQueueConsume?: (keys: string[]) => void
   /** Open the stage-side popover that queues an AI edit for the selected elements */
   onAskSelection?: () => void
+  /** LOCAL(2026-09-21, d8201ad0): 多会话——由外壳 AiPanel 按会话实例化时传入(D9)。
+   *  传入后:tab 行/助手 tab/「+」由外壳持有,持久化走 conversation.chatId(D10/D11)。 */
+  conversation?: {
+    chatId: string
+    projectId: string | null
+    onRunningChange: (running: boolean) => void
+    onFirstMessage: (text: string) => void
+    onTurnEnd: () => void
+    onRegister: (handle: SlidesConversationHandle) => void
+    onUnregister: () => void
+  }
+}
+
+/** command handle the outer panel holds per conversation (stop-then-close, plan §4.3) */
+export interface SlidesConversationHandle {
+  stop(): Promise<void>
+  runWith(instruction: string, display?: string, opts?: { slideShot?: boolean }): void
+  setDraft(text: string): void
+  addAttachmentPaths(paths: string[]): void
+  /** merge ready-made attachment metas into this conversation's composer (sync ref update) */
+  addAttachments(atts: readonly AttachmentMeta[]): void
 }
 
 /** Some locales already end the label with an ellipsis — normalize to exactly one. */
@@ -433,7 +462,8 @@ function AiTypingIndicator({ label }: { readonly label: string }) {
   )
 }
 
-export function AiPanel({
+function AiConversationBody({
+  conversation,
   slides,
   current,
   selectedIds,
@@ -466,12 +496,27 @@ export function AiPanel({
     { id: 'chat', label: t('aiTabChat') },
     { id: 'assistant', label: t('aiTabAssistant') },
   ]
-  const [tab, selectTab] = usePanelTab('aislides.aiTab', aiTabs)
+  // LOCAL(2026-09-21, d8201ad0): 会话实例下 tab 恒为对话(tabs 由外壳持有)
+  const convMode = conversation !== undefined
+  const [legacyTab, selectTab] = usePanelTab('aislides.aiTab', aiTabs)
+  const tab = convMode ? 'chat' : legacyTab
   const [input, setInput] = useState('')
   // Shared AI panel pref (Settings → General): the bespoke slides composer
   // must honor it like the shared AiComposer does.
   const { spellcheck } = useAiPanelPrefs()
   const [busy, setBusy] = useState(false)
+  const busyRef = useRef(false)
+  /** waiters resolved when a run fully settles (stop-then-close, D10 时序) */
+  const idleWaitersRef = useRef<Array<() => void>>([])
+  const setBusyTracked = (v: boolean): void => {
+    busyRef.current = v
+    setBusy(v)
+    if (!v) {
+      const waiters = idleWaitersRef.current
+      idleWaitersRef.current = []
+      for (const w of waiters) w()
+    }
+  }
   const [chat, setChat] = useState<ChatEntry[]>([])
   /** Past conversation restored from JSONL (read-only transcript, not fed to the model) */
   const [historicChat, setHistoricChat] = useState<ChatEntry[]>([])
@@ -676,10 +721,69 @@ export function AiPanel({
   const streamedTextRef = useRef('')
 
   // ── Chat history persistence ──────────────────────────────────────────────
-  /** Resolve chatId and load history on first mount (AiPanel resets by key; no need to watch currentFilePath changes) */
+  // LOCAL(2026-09-21, d8201ad0): 会话实例走 conversation.chatId(immutable,loadChat
+  // limit 10_000 全量装载 D11)→ 缓冲 → 首次 send 建 loop 时 restore 灌回(D10);
+  // 单会话旧路径(外壳未接管的独立使用)保留 resolveChat。
+  const historyLoadedRef = useRef(false)
   useEffect(() => {
     const api = (window as Window & { projectApi?: typeof window.projectApi }).projectApi
     if (!api) return
+    const applyHistory = (msgs: Array<{
+      role: 'user' | 'assistant'
+      text: string
+      interrupted?: boolean
+      tools?: Array<{ name?: string; summary: string; isError?: boolean; output?: string }>
+      attachments?: Array<{ name: string; path?: string; ext?: string; sizeBytes?: number }>
+      scope?: AiScopeQuoteData
+    }>) => {
+      if (historyLoadedRef.current || msgs.length === 0) return
+      historyLoadedRef.current = true
+      setHistoricChat(
+        msgs.map((m) => ({
+          role: m.role,
+          text: m.text,
+          interrupted: m.interrupted === true,
+          tools: m.tools?.map((t) => ({
+            name: t.name ?? '',
+            summary: t.summary,
+            isError: t.isError,
+            output: t.output ? t.output.slice(0, TOOL_OUTPUT_MAX_CHARS) : undefined,
+          })),
+          attachments: m.attachments
+            ?.filter((a) => a.path)
+            .map((a) => ({
+              name: a.name,
+              path: a.path ?? '',
+              ext: a.ext ?? '',
+              sizeBytes: a.sizeBytes ?? 0,
+            })),
+          ...(m.scope ? { scope: m.scope } : {}),
+        })),
+      )
+      // D10 hard chain: buffer → restore into the loop at its construction
+      bufferedRestoreRef.current = msgs.map((m) => ({ role: m.role, text: m.text }))
+      const firstUser = msgs.find((m) => m.role === 'user')
+      if (firstUser) onFirstMessageSafe(firstUser.text)
+    }
+    if (conversation) {
+      if (!conversation.projectId) return
+      let disposed = false
+      void api
+        .loadChat({
+          projectId: conversation.projectId,
+          chatId: conversation.chatId,
+          limit: 10_000,
+        })
+        .then((msgs) => {
+          if (!disposed) applyHistory(msgs)
+        })
+        .catch(() => {
+          /* History load failures are silent */
+        })
+      return () => {
+        disposed = true
+      }
+    }
     const tempChatId = `unsaved-${Date.now()}`
     void api
       .resolveChat({ filePath: currentFilePath ?? null, tempChatId })
@@ -688,29 +792,7 @@ export function AiPanel({
         return api.loadChat({ projectId: ids.projectId, chatId: ids.chatId, limit: 200 })
       })
       .then((msgs) => {
-        if (msgs.length === 0) return
-        setHistoricChat(
-          msgs.map((m) => ({
-            role: m.role,
-            text: m.text,
-            tools: m.tools?.map((t) => ({
-              name: t.name,
-              summary: t.summary,
-              isError: t.isError,
-              output: t.output ? t.output.slice(0, TOOL_OUTPUT_MAX_CHARS) : undefined,
-            })),
-            // stored metadata only: no thumbnail read for history, the chips render name/size
-            attachments: m.attachments
-              ?.filter((a) => a.path)
-              .map((a) => ({
-                name: a.name,
-                path: a.path ?? '',
-                ext: a.ext ?? '',
-                sizeBytes: a.sizeBytes ?? 0,
-              })),
-            ...(m.scope ? { scope: m.scope } : {}),
-          })),
-        )
+        applyHistory(msgs)
         // Restore model context: follow-ups after reopening a file continue the earlier conversation (only when the loop is idle with no history)
         loopRef.current?.restore(msgs.map((m) => ({ role: m.role, text: m.text })))
       })
@@ -718,10 +800,15 @@ export function AiPanel({
         /* History load failures are silent */
       })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [conversation?.projectId, conversation?.chatId])
+
+  const onFirstMessageSafe = (text: string): void => {
+    if (conversation) conversation.onFirstMessage(text)
+  }
 
   /** After an unsaved draft lands and gets a real path, bind the unsaved-* history to that file (recoverable by path on reopen) */
   useEffect(() => {
+    if (conversation) return
     const ids = chatRefIds.current
     const api = (window as Window & { projectApi?: typeof window.projectApi }).projectApi
     if (!api || !ids || !currentFilePath || !ids.chatId.startsWith('unsaved-')) return
@@ -752,16 +839,20 @@ export function AiPanel({
     }>,
     attachments?: AttachmentMeta[],
     scope?: AiScopeQuoteData,
+    interrupted?: boolean,
   ) => {
-    const ids = chatRefIds.current
+    const ids = conversation
+      ? { projectId: conversation.projectId, chatId: conversation.chatId }
+      : chatRefIds.current
     const api = (window as Window & { projectApi?: typeof window.projectApi }).projectApi
-    if (!ids || !api) return
+    if (!ids || !api || !ids.projectId) return
     void api
       .appendChat({
         projectId: ids.projectId,
         chatId: ids.chatId,
         role,
         text,
+        ...(interrupted ? { interrupted: true } : {}),
         ...(tools && tools.length > 0 ? { tools } : {}),
         ...(attachments && attachments.length > 0
           ? {
@@ -887,7 +978,13 @@ export function AiPanel({
   }
 
   const loopRef = useRef<AgentLoop | null>(null)
-  if (!loopRef.current) {
+  /** messages buffered for the lazy loop (D10/D11 hard chain) */
+  const bufferedRestoreRef = useRef<Array<{ role: 'user' | 'assistant'; text: string }> | null>(null)
+  /** LOCAL(2026-09-21, d8201ad0): loop 惰性构造(首次 runWith 才建,防止 N 个会话 tab 建 N 个循环) */
+  const ensureLoop = (): AgentLoop | null => {
+    if (loopRef.current) return loopRef.current
+    if (convMode && !conversation) return null
+    {
     // The three slides generation steps (style/planning/per-page HTML) force the high-quality model (only on
     // anthropic-messages profiles; other protocols keep the user selection, avoiding nonexistent model ids).
     // Chat/fine-tuning still uses the user's configured model.
@@ -1610,7 +1707,7 @@ export function AiPanel({
             return next
           })
           void finishHistoryBatch().finally(() => {
-            setBusy(false)
+            setBusyTracked(false)
             // Post-generation layout QC: only after a completed run that landed generated pages
             if (cancelled) qcPagesRef.current = []
             else if (qcPagesRef.current.length > 0) void runQcPassRef.current()
@@ -1624,9 +1721,18 @@ export function AiPanel({
           if (!cancelled && (finalText || runToolsRef.current.length > 0)) {
             persistMessage('assistant', finalText, runToolsRef.current)
           }
+          // LOCAL(2026-09-21, d8201ad0): D10 — 取消的轮次照常落盘(半截文本 + 工具活动)
+          // 打 interrupted 标记;全空不落盘(断点 = 任务起点)
+          if (cancelled) {
+            const half = streamedTextRef.current
+            if ((half && half.trim()) || runToolsRef.current.length > 0) {
+              persistMessage('assistant', half, runToolsRef.current, undefined, undefined, true)
+            }
+          }
           // A stop with nothing streamed is just the user changing their mind; a stop
           // over half-written output is the case worth keeping (runaway repetition)
           if (cancelled && streamedTextRef.current) logRunFailure('stopped')
+          if (conversation) conversation.onTurnEnd()
         },
         onError: (error) => {
           logRunFailure('error', error)
@@ -1664,7 +1770,7 @@ export function AiPanel({
             })
             .catch(() => {})
           void finishHistoryBatch().finally(() => {
-            setBusy(false)
+            setBusyTracked(false)
             const resolveQueueRun = queueRunResolverRef.current
             queueRunResolverRef.current = null
             resolveQueueRun?.(false)
@@ -1692,13 +1798,25 @@ export function AiPanel({
           protocol: protocolMap[profile.protocol] ?? 'openai-compatible',
           modelId: sel.modelId,
         })
-        if (!verdict.supported) loopRef.current.degrade()
+        if (!verdict.supported) loopRef.current?.degrade()
       }
     }
+    }
+    const built = loopRef.current
+    if (built) {
+      // D10 hard chain: restored history (incl. interrupted half text) feeds the
+      // loop before the first send — a lazy loop must never start empty when history exists
+      if (bufferedRestoreRef.current && bufferedRestoreRef.current.length > 0) {
+        built.restore(bufferedRestoreRef.current)
+        bufferedRestoreRef.current = null
+      }
+      return built
+    }
+    return null
   }
 
   useEffect(() => {
-    if (!preset) return
+    if (!preset || convMode) return
     // Attachments from the start screen: merge into attachments first (ref updated synchronously so this runWith can read them),
     // then trigger the run. Deduplicated by path, safe under StrictMode double runs.
     if (preset.attachments && preset.attachments.length > 0) {
@@ -1891,7 +2009,7 @@ export function AiPanel({
       retry?: boolean
     },
   ) => {
-    const loop = loopRef.current
+    const loop = ensureLoop()
     // runStartingRef: loop.run is called only after attachments are read asynchronously, during which loop.busy is still false,
     // so duplicate triggers must be blocked synchronously (e.g. StrictMode double-running the preset autoRun effect),
     // otherwise two sets of bubbles get pushed and the earlier assistant placeholder stays at "thinking" forever.
@@ -1934,9 +2052,10 @@ export function AiPanel({
       { role: 'assistant', text: '', streaming: true, model: runModelRef.current },
     ])
     runStartedAtRef.current = Date.now()
-    setBusy(true)
+    setBusyTracked(true)
     // Persist the user message (store display text + attachment metadata; loop.restore rebuilds model context on file reopen)
     persistMessage('user', shown, undefined, sentAtts)
+    onFirstMessageSafe(shown)
     void Promise.all([collectImageAttachments(sentAtts), collectMediaAttachments(sentAtts)])
       .then(async ([images, media]) => {
         // AI Beautify sends the current slide's rendering along, so the model sees what it edits;
@@ -1961,14 +2080,14 @@ export function AiPanel({
       })
       .catch(() => {
         runStartingRef.current = false
-        void finishHistoryBatch().finally(() => setBusy(false))
+        void finishHistoryBatch().finally(() => setBusyTracked(false))
       })
   }
 
   /** One page of a queue submission — runWith's bookkeeping minus the composer and the user bubble */
   const runQueuePage = (instruction: string) =>
     new Promise<boolean>((resolve) => {
-      const loop = loopRef.current
+      const loop = ensureLoop()
       if (!loop || loop.busy || runStartingRef.current || qcRunningRef.current) {
         resolve(false)
         return
@@ -1989,7 +2108,7 @@ export function AiPanel({
         { role: 'assistant', text: '', streaming: true, model: runModelRef.current },
       ])
       runStartedAtRef.current = Date.now()
-      setBusy(true)
+      setBusyTracked(true)
       queueRunResolverRef.current = resolve
       void Promise.resolve(onBeforeRunRef.current?.())
         .then(() => window.slidesApi.beginHistoryBatch())
@@ -2005,7 +2124,7 @@ export function AiPanel({
         .catch(() => {
           runStartingRef.current = false
           queueRunResolverRef.current = null
-          void finishHistoryBatch().finally(() => setBusy(false))
+          void finishHistoryBatch().finally(() => setBusyTracked(false))
           resolve(false)
         })
     })
@@ -2027,7 +2146,7 @@ export function AiPanel({
    */
   const sendEditQueue = async () => {
     const items = editQueue ?? []
-    const loop = loopRef.current
+    const loop = ensureLoop()
     if (items.length === 0 || !loop || loop.busy || runStartingRef.current || qcRunningRef.current)
       return
     const resolved = resolveQueue(slidesRef.current, items)
@@ -2092,7 +2211,7 @@ export function AiPanel({
     const header = tGlobal('aiQcStart', { count: capped.length })
     const lines: string[] = []
     const renderEntry = () => [header, ...lines].join('\n')
-    setBusy(true)
+    setBusyTracked(true)
     stickToBottomRef.current = true
     // The QC entry demotes the run's reply to a mid-turn segment, whose action
     // toolbar never shows — carry its rollback point onto this entry instead
@@ -2179,7 +2298,7 @@ export function AiPanel({
         snapshotId: runSnapshotIdRef.current ?? qcSnapshotId ?? undefined,
       })
       persistMessage('assistant', finalText)
-      setBusy(false)
+      setBusyTracked(false)
     }
   }
   runQcPassRef.current = runQcPass
@@ -2197,8 +2316,63 @@ export function AiPanel({
     loopRef.current?.cancel()
   }
 
+  // LOCAL(2026-09-21, d8201ad0): stop-then-close(D5/D10)——中止在途请求,
+  // resolve 于该轮 interrupted 落盘发起之后(idle waiters)
+  const stopConversation = async (): Promise<void> => {
+    dismissClarify()
+    qcAbortRef.current?.abort()
+    loopRef.current?.cancel()
+    if (!busyRef.current) return
+    await new Promise<void>((resolve) => idleWaitersRef.current.push(resolve))
+  }
+  const stopRef = useRef(stopConversation)
+  stopRef.current = stopConversation
+
+  useEffect(() => {
+    if (!conversation) return
+    conversation.onRunningChange(busy)
+  }, [busy, conversation])
+
+  // register the command handle once; methods route through refs (always fresh)
+  const slidesHandleRef = useRef<SlidesConversationHandle | null>(null)
+  if (!slidesHandleRef.current) {
+    slidesHandleRef.current = {
+      stop: () => stopRef.current(),
+      runWith: (instruction, display, opts) => runWithRef.current(instruction, display, opts),
+      setDraft: (text) => {
+        setInput(text)
+        window.setTimeout(() => inputRef.current?.focus(), 0)
+      },
+      addAttachmentPaths: (paths) => {
+        void window.desktop
+          .addAttachmentPaths(paths)
+          .then((r) => mergeAttachmentsRef.current(r))
+      },
+      addAttachments: (atts) => {
+        const prev = attachmentsRef.current
+        const seen = new Set(prev.map((a) => a.path))
+        const merged = [...prev, ...atts.filter((a) => !seen.has(a.path))]
+        attachmentsRef.current = merged
+        setAttachments(merged)
+      },
+    }
+  }
+  useEffect(() => {
+    if (!conversation) return
+    conversation.onRegister(slidesHandleRef.current!)
+    return () => conversation.onUnregister()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // Abort a QC pass still running when the panel unmounts (new file / panel remount by key)
-  useEffect(() => () => qcAbortRef.current?.abort(), [])
+  // LOCAL(2026-09-21, d8201ad0): 实例卸载同时中止本会话在途 loop(§4.5 实例私有清理)
+  useEffect(
+    () => () => {
+      qcAbortRef.current?.abort()
+      loopRef.current?.cancel()
+    },
+    [],
+  )
 
   const retry = () =>
     runWith(lastInstructionRef.current, lastDisplayTextRef.current, {
@@ -2206,11 +2380,14 @@ export function AiPanel({
       retry: true,
     })
 
+  // LOCAL(2026-09-21, d8201ad0): D10 续作入口(半截轮次恢复后「继续」)
+  const continueRun = () => runWith(AI_CONTINUE_INSTRUCTION)
+
   const newChat = () => {
     dismissClarify()
     qcAbortRef.current?.abort()
     loopRef.current?.reset()
-    setBusy(false)
+    setBusyTracked(false)
     setChat([])
     // Same as docs (#195): the restored transcript is painted above the live
     // turn, so it must clear too — otherwise the old conversation survives.
@@ -2233,6 +2410,8 @@ export function AiPanel({
     setCopiedIdx(idx)
     window.setTimeout(() => setCopiedIdx((cur) => (cur === idx ? null : cur)), 1200)
   }
+  const runWithRef = useRef(runWith)
+  runWithRef.current = runWith
 
   const mergeAttachments = (result: AttachmentAddResult | null) => {
     if (!result) return
@@ -2247,6 +2426,8 @@ export function AiPanel({
       window.setTimeout(() => setAttachNotice(null), 5000)
     }
   }
+  const mergeAttachmentsRef = useRef(mergeAttachments)
+  mergeAttachmentsRef.current = mergeAttachments
 
   const pickAttachments = async () => mergeAttachments(await window.desktop.pickAttachments())
 
@@ -2326,10 +2507,13 @@ export function AiPanel({
     },
   ]
 
+  // LOCAL(2026-09-21, d8201ad0): 会话实例以 div 容器渲染(外壳 aside 已是面板根)
+  const RootTag = (convMode ? 'div' : 'aside') as 'div'
   return (
-    <aside
-      className={`ai-panel${dragOver ? ' ai-panel-dragover' : ''}`}
+    <RootTag
+      className={convMode ? `ai-conversation${dragOver ? ' ai-panel-dragover' : ''}` : `ai-panel${dragOver ? ' ai-panel-dragover' : ''}`}
       dir={lang === 'ar' || lang === 'he' ? 'rtl' : undefined}
+      style={convMode ? { display: 'flex', flexDirection: 'column', minHeight: 0, flex: 1 } : undefined}
       onDragOver={(e) => {
         if (e.dataTransfer.types.includes('Files')) {
           e.preventDefault()
@@ -2342,6 +2526,7 @@ export function AiPanel({
       }}
       onDrop={onDrop}
     >
+      {!convMode && (
       <PanelTabs
         tabs={aiTabs}
         activeId={tab}
@@ -2362,6 +2547,7 @@ export function AiPanel({
         chromeActions={dockChrome?.buttons}
         dragProps={dockChrome?.dragProps}
       />
+      )}
 
       <div
         ref={logRef}
@@ -2384,9 +2570,19 @@ export function AiPanel({
                     <Markdown text={entry.text} />
                   </div>
                 )}
+                {entry.interrupted && (
+                  <span className="ai-msg-interrupted-badge">{t('aiTurnInterrupted')}</span>
+                )}
               </div>
             ))}
             <div className="ai-history-sep">{t('aiHistorySep')}</div>
+            {historicChat[historicChat.length - 1]?.interrupted && !busy && (
+              <div className="ai-continue-row">
+                <button className="ai-continue-btn" onClick={continueRun}>
+                  {t('aiContinue')}
+                </button>
+              </div>
+            )}
           </>
         )}
         {chat.length === 0 && historicChat.length === 0 && (
@@ -2588,7 +2784,7 @@ export function AiPanel({
         )}
       </div>
 
-      <AssistantTab items={assistItems} hidden={tab !== 'assistant'} />
+      {!convMode && <AssistantTab items={assistItems} hidden={tab !== 'assistant'} />}
 
       {tab === 'chat' && activeClarify ? (
         /* Docked in the composer slot with the composer's own outer spacing */
@@ -2768,7 +2964,7 @@ export function AiPanel({
       {kbCiteView && (
         <KbCitePreview citation={kbCiteView} lang={lang} onClose={() => setKbCiteView(null)} />
       )}
-    </aside>
+    </RootTag>
   )
 }
 
@@ -3429,5 +3625,316 @@ function ClarifyCard({
         </span>
       </div>
     </div>
+  )
+}
+
+
+// ── LOCAL(2026-09-21, d8201ad0): 多会话外壳(D1/D5/D9)─────────────────────────
+// tab 行 = [会话1][会话2]…[助手];「+ 新建对话」常驻右上;每个会话渲染一个
+// 隐藏/显示切换的 AiConversationBody 实例(上面的原 AiPanel 主体,资源归属分类见该组件
+// 顶部注释);「助手」tab 保持面板级,不实例化。上游无同类实现;收敛条件:上游若原生
+// 实现多会话,评估取上游并删除本地会话池。
+// LOCAL(2026-09-22, d8201ad0): D12/D13 增量——历史不再是 tab:「🕘」改 actions 槽
+// 常驻图标([+][🕘])的下拉浮层 AiHistoryPopover;空会话(从未发言)关闭直接丢弃、
+// 不进历史(hook close() 内分流)。上游动向与收敛条件同上。
+const isChatTabS = (tab: AiActiveTab): tab is string =>
+  typeof tab === 'string' && tab !== 'assistant' && tab !== 'empty'
+
+export function AiPanel(props: AiPanelProps) {
+  const {
+    slides,
+    current,
+    selectedIds,
+    deckEmpty,
+    settings,
+    preset,
+    open = true,
+    dockChrome,
+    onUndo,
+    onAskSelection,
+    currentFilePath,
+  } = props
+  const { lang, t } = useI18n()
+  const tempChatIdRef = useRef(`unsaved-${Date.now()}`)
+  const conv = useAiConversations(
+    { filePath: currentFilePath ?? null, tempChatId: tempChatIdRef.current },
+    { persistKey: 'aislides.aiTab' },
+  )
+  const bodyHandlesRef = useRef(new Map<string, SlidesConversationHandle>())
+
+  // 索引键换绑:未保存 → 已保存 / 重命名(chatId 不变)
+  const prevFilePathRef = useRef(currentFilePath ?? null)
+  useEffect(() => {
+    const prev = prevFilePathRef.current
+    prevFilePathRef.current = currentFilePath ?? null
+    if (!currentFilePath || prev === currentFilePath) return
+    conv.rebindIndex(prev ?? tempChatIdRef.current, currentFilePath)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentFilePath])
+
+  const [closeConfirmId, setCloseConfirmId] = useState<string | null>(null)
+  // D13: 历史下拉浮层开关(空态引导的「从历史还原」也走它)
+  const [historyOpen, setHistoryOpen] = useState(false)
+
+  const closeConversation = async (chatId: string): Promise<void> => {
+    const handle = bodyHandlesRef.current.get(chatId)
+    if (handle) await handle.stop()
+    conv.close(chatId)
+  }
+  const closeFlow = (chatId: string): void => {
+    if (conv.runningIds.has(chatId)) {
+      setCloseConfirmId(chatId)
+      return
+    }
+    void closeConversation(chatId)
+  }
+
+  // 面板级入口(助手 tab / preset)→ 目标会话体
+  const targetChatId = (): string | null => {
+    if (isChatTabS(conv.activeTab) && conv.open.some((c) => c.chatId === conv.activeTab)) {
+      return conv.activeTab
+    }
+    return conv.open[0]?.chatId ?? null
+  }
+  const pendingRunRef = useRef<{
+    text: string
+    displayText?: string
+    slideShot?: boolean
+    attachments?: readonly AttachmentMeta[]
+  } | null>(null)
+  useEffect(() => {
+    const p = pendingRunRef.current
+    if (!p) return
+    const target = targetChatId()
+    if (!target) {
+      // the pool settled with zero open conversations: open one to deliver into
+      if (conv.ready && conv.open.length === 0) conv.create()
+      return
+    }
+    const handle = bodyHandlesRef.current.get(target)
+    if (!handle) return
+    pendingRunRef.current = null
+    if (p.attachments && p.attachments.length > 0) handle.addAttachments(p.attachments)
+    handle.runWith(p.text, p.displayText, { slideShot: p.slideShot ?? false })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conv.open.length, conv.activeTab, conv.ready])
+  const routeRun = (
+    text: string,
+    displayText?: string,
+    slideShot?: boolean,
+    attachments?: readonly AttachmentMeta[],
+  ): void => {
+    const target = targetChatId()
+    const handle = target ? bodyHandlesRef.current.get(target) : undefined
+    if (handle) {
+      if (attachments && attachments.length > 0) handle.addAttachments(attachments)
+      handle.runWith(text, displayText, { slideShot: slideShot ?? false })
+      return
+    }
+    // the pool is still loading (or empty): the delivery effect above runs the
+    // queued instruction on the first ready conversation body — the seeded one,
+    // not a freshly created tab
+    pendingRunRef.current = { text, displayText, slideShot, attachments }
+  }
+
+  useEffect(() => {
+    if (!preset) return
+    if (preset.autoRun) {
+      // start-screen attachments ride with the first message into the target conversation
+      routeRun(preset.text, preset.displayText, preset.slideShot, preset.attachments)
+    } else {
+      const target = targetChatId()
+      const handle = target ? bodyHandlesRef.current.get(target) : undefined
+      if (handle) handle.setDraft(preset.text)
+      else pendingRunRef.current = { text: preset.text }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preset?.nonce])
+
+  const hasDoc = !!slides[current]
+  const assistItems = [
+    {
+      id: 'ask',
+      label: t('aiAskBtn'),
+      desc: t('aiAskDesc'),
+      icon: <IconAiAskSelection />,
+      disabled: !hasDoc || selectedIds.length === 0,
+      run: () => onAskSelection?.(),
+    },
+    {
+      id: 'beautify',
+      label: t('aiBeautifyBtn'),
+      desc: t('aiBeautifyDesc'),
+      icon: <IconAiBeautify />,
+      disabled: !hasDoc || deckEmpty,
+      run: () => {
+        routeRun(t('aiBeautifyPrompt'), undefined, true)
+        const target = targetChatId()
+        if (target) conv.setActiveTab(target)
+      },
+    },
+    {
+      id: 'factcheck',
+      label: t('aiFactCheckBtn'),
+      desc: t('aiFactCheckDesc'),
+      icon: <IconAiFactCheck />,
+      disabled: !hasDoc || deckEmpty,
+      run: () => {
+        routeRun(t('aiFactCheckPrompt'))
+        const target = targetChatId()
+        if (target) conv.setActiveTab(target)
+      },
+    },
+    {
+      id: 'image',
+      label: t('aiImageBtn'),
+      desc: t('aiImageDesc'),
+      icon: <IconAiImage />,
+      disabled: !hasDoc || deckEmpty,
+      run: () => {
+        routeRun(t('aiImagePrompt'))
+        const target = targetChatId()
+        if (target) conv.setActiveTab(target)
+      },
+    },
+  ]
+
+  const aiTabs = [
+    ...conv.open.map((c) => ({
+      id: c.chatId,
+      label: c.title || t('aiConvUntitled'),
+      onClose: () => closeFlow(c.chatId),
+      running: conv.runningIds.has(c.chatId),
+    })),
+    { id: 'assistant', label: t('aiTabAssistant') },
+  ]
+
+  // 面板级设置:模型设置页(内部惰性加载)沿用原逻辑
+  const [modelSettingsOpen, setModelSettingsOpen] = useState(false)
+  const [panelSettings, setPanelSettings] = useState(settings)
+  useEffect(() => {
+    setPanelSettings(settings)
+  }, [settings])
+  const refreshSettings = async () => {
+    try {
+      setPanelSettings(await slidesModelBridge.getSettings())
+    } catch {
+      /* keep the last known settings */
+    }
+  }
+
+  return (
+    <aside className="ai-panel" style={{ position: 'relative' }}>
+      <PanelTabs
+        tabs={aiTabs}
+        activeId={conv.activeTab}
+        onTabChange={conv.setActiveTab}
+        actions={
+          // LOCAL(2026-09-22, d8201ad0): D13——常驻两图标 [+][🕘];🕘 历史对话下拉浮层
+          <>
+            <button
+              className="ai-header-btn"
+              onClick={() => conv.create()}
+              data-tip={t('aiNewChat')}
+              aria-label={t('aiNewChat')}
+            >
+              <IconNewChat size={15} />
+            </button>
+            <AiHistoryPopover
+              open={historyOpen}
+              onOpenChange={setHistoryOpen}
+              items={conv.closed}
+              tooltip={t('aiHistoryTooltip')}
+              labels={{
+                deleteOne: t('aiHistoryDelete'),
+                deleteAll: t('aiHistoryDeleteAll'),
+                empty: t('aiHistoryEmpty'),
+                deleteOneConfirm: t('aiHistoryDeleteOneConfirm'),
+                deleteAllConfirm: t('aiHistoryDeleteAllConfirm'),
+                cancel: t('aiConvCancel'),
+              }}
+              onRestore={(chatId) => conv.restore(chatId)}
+              // 单删/全删只作用于历史(未打开)会话,确认在浮层内完成(D3)
+              onDelete={(chatId) => conv.removeClosed(chatId)}
+              onDeleteAll={() => conv.removeAllClosed()}
+            />
+          </>
+        }
+        chromeActions={dockChrome?.buttons}
+        dragProps={dockChrome?.dragProps}
+      />
+      {closeConfirmId !== null && (
+        <AiTabConfirm
+          title={t('aiConvCloseRunningTitle')}
+          body={t('aiConvCloseRunningBody')}
+          confirmLabel={t('aiConvStopClose')}
+          cancelLabel={t('aiConvCancel')}
+          onConfirm={() => {
+            const id = closeConfirmId
+            setCloseConfirmId(null)
+            if (id !== null) void closeConversation(id)
+          }}
+          onCancel={() => setCloseConfirmId(null)}
+        />
+      )}
+
+      {/* 每会话一个挂载实例 + display:none 切换(D9) */}
+      {conv.open.map((c) => (
+        <div
+          key={c.chatId}
+          style={
+            c.chatId === conv.activeTab
+              ? { display: 'flex', flexDirection: 'column', minHeight: 0, flex: 1 }
+              : { display: 'none' }
+          }
+        >
+          <AiConversationBody
+            {...props}
+            preset={null}
+            conversation={{
+              chatId: c.chatId,
+              projectId: conv.projectId,
+              onRunningChange: (running) => conv.setRunning(c.chatId, running),
+              onFirstMessage: (text) => conv.reportTitle(c.chatId, text),
+              onTurnEnd: () => conv.touch(c.chatId),
+              onRegister: (handle) => bodyHandlesRef.current.set(c.chatId, handle),
+              onUnregister: () => bodyHandlesRef.current.delete(c.chatId),
+            }}
+          />
+        </div>
+      ))}
+
+      {/* 关到零:空态引导(§2.1);「从历史还原」走 🕘 浮层(D13) */}
+      {conv.ready && conv.activeTab === 'empty' && (
+        <AiConversationsEmpty
+          labels={{
+            title: t('aiConvEmptyTitle'),
+            body: t('aiConvEmptyBody'),
+            create: t('aiNewChat'),
+            openHistory: t('aiConvOpenHistory'),
+          }}
+          onCreate={() => conv.create()}
+          onOpenHistory={() => setHistoryOpen(true)}
+        />
+      )}
+
+      {/* 助手 tab:保持面板级(§4.5),不实例化 */}
+      {conv.activeTab === 'assistant' && (
+        <AssistantTab items={assistItems} hidden={conv.activeTab !== 'assistant'} />
+      )}
+
+      {modelSettingsOpen && (
+        <Suspense fallback={null}>
+          <ModelSettingsPage
+            bridge={slidesModelBridge}
+            lang={lang}
+            onClose={() => {
+              setModelSettingsOpen(false)
+              void refreshSettings()
+            }}
+          />
+        </Suspense>
+      )}
+    </aside>
   )
 }

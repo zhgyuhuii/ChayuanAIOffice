@@ -134,6 +134,15 @@ const projectApi = {
     ipcRenderer.invoke('project:loadChat', args),
   rebindChat: (args: { projectId: string; tempChatId: string; newFilePath: string }) =>
     ipcRenderer.invoke('project:rebindChat', args),
+  // LOCAL(2026-09-21, d8201ad0): 多会话对话索引(追加式)
+  conversationsList: (args: unknown) => ipcRenderer.invoke('project:conversationsList', args),
+  conversationCreate: (args: unknown) => ipcRenderer.invoke('project:conversationCreate', args),
+  conversationMeta: (args: unknown) => ipcRenderer.invoke('project:conversationMeta', args),
+  conversationsOpenSet: (args: unknown) => ipcRenderer.invoke('project:conversationsOpenSet', args),
+  conversationDelete: (args: unknown) => ipcRenderer.invoke('project:conversationDelete', args),
+  conversationsDeleteAll: (args: unknown) =>
+    ipcRenderer.invoke('project:conversationsDeleteAll', args),
+  conversationsRebind: (args: unknown) => ipcRenderer.invoke('project:conversationsRebind', args),
 }
 
 

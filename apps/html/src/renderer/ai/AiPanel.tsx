@@ -18,6 +18,12 @@ import {
   PanelTabs,
   useKbAugment,
   usePanelTab,
+  useAiConversations,
+  AiConversationsEmpty,
+  AiHistoryPopover,
+  AiTabConfirm,
+  AI_CONTINUE_INSTRUCTION,
+  type AiActiveTab,
   type AiScopeQuoteData,
   type DockChrome,
   type KbCitation,
@@ -195,6 +201,8 @@ interface ToolActivity {
 interface ChatEntry {
   role: 'user' | 'assistant'
   text: string
+  /** LOCAL(2026-09-21, d8201ad0): D10 —— 恢复的被中断轮次 */
+  interrupted?: boolean
   streaming?: boolean
   isError?: boolean
   /** the run failed and this user message was rolled back out of the model context */
@@ -259,7 +267,16 @@ export interface HtmlAiDeps {
 /** how often the streaming draft is pushed into the preview mirror */
 const DRAFT_PREVIEW_MS = 400
 
-export function AiPanel({
+/** command handle the outer panel holds per conversation (plan §4.3) */
+export interface HtmlConversationHandle {
+  stop(): Promise<void>
+  send(text: string, displayText?: string): void
+  /** busy 时落 composer,空闲直接发送(助手 tab 语义) */
+  assist(text: string): void
+  setDraft(text: string): void
+}
+
+function AiConversationBody({
   deps,
   filePath,
   preset,
@@ -271,6 +288,7 @@ export function AiPanel({
   onQueueClear,
   onQueueFocus,
   onQueueConsume,
+  conversation,
 }: {
   deps: HtmlAiDeps
   filePath: string | null
@@ -284,6 +302,16 @@ export function AiPanel({
   onQueueClear: () => void
   onQueueFocus: (qid: string) => void
   onQueueConsume: (qids: string[]) => void
+  /** LOCAL(2026-09-21, d8201ad0): 多会话——由外壳按会话实例化时传入(D9) */
+  conversation?: {
+    chatId: string
+    projectId: string | null
+    onRunningChange: (running: boolean) => void
+    onFirstMessage: (text: string) => void
+    onTurnEnd: () => void
+    onRegister: (handle: HtmlConversationHandle) => void
+    onUnregister: () => void
+  }
 }): ReactElement {
   const { lang, t } = useI18n()
   // 知识库选库与发送前检索增强(共享选中态,与首页对话一致)
@@ -293,7 +321,10 @@ export function AiPanel({
     { id: 'chat', label: t('aiTabChat') },
     { id: 'assistant', label: t('aiTabAssistant') },
   ]
-  const [tab, selectTab] = usePanelTab('aihtml.aiTab', aiTabs)
+  // LOCAL(2026-09-21, d8201ad0): 会话实例下 tab 恒为对话(tabs 由外壳持有)
+  const convMode = conversation !== undefined
+  const [legacyTab, selectTab] = usePanelTab('aihtml.aiTab', aiTabs)
+  const tab = convMode ? 'chat' : legacyTab
   const [chat, setChat] = useState<ChatEntry[]>([])
   const [prompt, setPrompt] = useState('')
   const [busy, setBusy] = useState(false)
@@ -527,11 +558,15 @@ export function AiPanel({
     tools?: ToolActivity[],
     attachments?: AttachmentMeta[],
     scope?: AiScopeQuoteData,
+    interrupted?: boolean,
   ) => {
-    const ids = chatIdsRef.current
+    // LOCAL(2026-09-21, d8201ad0): 会话实例持久化走 conversation.chatId(immutable)
+    const ids = conversation
+      ? { projectId: conversation.projectId, chatId: conversation.chatId }
+      : chatIdsRef.current
     if (!window.projectApi) return
-    if (!ids) {
-      pendingPersistRef.current.push({ role, text, tools, attachments, scope })
+    if (!ids || !ids.projectId) {
+      if (!conversation) pendingPersistRef.current.push({ role, text, tools, attachments, scope })
       return
     }
     void window.projectApi
@@ -540,6 +575,7 @@ export function AiPanel({
         chatId: ids.chatId,
         role,
         text,
+        ...(interrupted ? { interrupted: true } : {}),
         ...(tools && tools.length > 0 ? { tools } : {}),
         ...(attachments && attachments.length > 0 ? { attachments } : {}),
         ...(scope ? { scope } : {}),
@@ -648,7 +684,15 @@ export function AiPanel({
   runBriefWriterRef.current = runBriefWriter
 
   const loopRef = useRef<AgentLoop<DocSnapshot> | null>(null)
-  if (!loopRef.current) {
+  /** messages buffered for the lazy loop (D10/D11 hard chain) */
+  const bufferedRestoreRef = useRef<Array<{ role: 'user' | 'assistant'; text: string }> | null>(null)
+  /** the loop's streamed text so far — the interrupted persist keeps this half turn (D10) */
+  const halfTextRef = useRef('')
+  /** LOCAL(2026-09-21, d8201ad0): loop 惰性构造(首次 send 才建) */
+  const ensureLoop = (): AgentLoop<DocSnapshot> | null => {
+    if (loopRef.current) return loopRef.current
+    if (convMode && !conversation) return null
+    if (!transportRef.current) return null
     loopRef.current = new AgentLoop<DocSnapshot>({
       transport: transportRef.current,
       skill: composeSkills('html+search', '', [
@@ -689,7 +733,10 @@ export function AiPanel({
       captureSnapshot: () => depsRef.current.getSnapshot(),
       systemSuffix: () => aiLangDirective(langRef.current),
       events: {
-        onText: (text) => patchLast({ text }),
+        onText: (text) => {
+          if (text) halfTextRef.current = text
+          patchLast({ text })
+        },
         onToolStart: (call) => {
           // Live "running" chip: replaced in place by onToolExecuted
           patchLast((last) => ({
@@ -746,6 +793,14 @@ export function AiPanel({
             tools: last.tools?.filter((tl) => !tl.running),
           }))
           persistMessage('assistant', final, runToolsRef.current)
+          // LOCAL(2026-09-21, d8201ad0): D10 —— 取消的轮次照常落盘(半截文本+工具活动)
+          if (cancelled) {
+            const half = halfTextRef.current
+            if ((half && half.trim()) || runToolsRef.current.length > 0) {
+              persistMessage('assistant', half, runToolsRef.current, undefined, undefined, true)
+            }
+          }
+          if (conversation) conversation.onTurnEnd()
           depsRef.current.clearHighlights()
           depsRef.current.onRunDone(runMutatedRef.current)
           queueRunRef.current = false
@@ -780,6 +835,12 @@ export function AiPanel({
         },
       },
     })
+    const built = loopRef.current
+    if (built && bufferedRestoreRef.current && bufferedRestoreRef.current.length > 0) {
+      built.restore(bufferedRestoreRef.current)
+      bufferedRestoreRef.current = null
+    }
+    return loopRef.current
   }
 
   useEffect(() => {
@@ -795,9 +856,62 @@ export function AiPanel({
   }, [])
 
   // ── chat-history persistence: bind to the file, restore prior transcript ──
+  // LOCAL(2026-09-21, d8201ad0): 会话实例 loadChat limit 10_000 全量装载(D11)→
+  // 缓冲 → 首次 send 建 loop 时 restore 灌回(D10)
+  const historyLoadedRef = useRef(false)
   useEffect(() => {
     const api = window.projectApi
     if (!api) return
+    if (conversation) {
+      if (!conversation.projectId) return
+      let disposed = false
+      void api
+        .loadChat({
+          projectId: conversation.projectId,
+          chatId: conversation.chatId,
+          limit: 10_000,
+        })
+        .then((msgs) => {
+          if (disposed || msgs.length === 0) return
+          if (historyLoadedRef.current) return
+          historyLoadedRef.current = true
+          setChat(
+            msgs.map((m) => ({
+              role: m.role,
+              text: m.text,
+              interrupted: m.interrupted === true,
+              tools: m.tools?.map((tool) => ({
+                name: tool.name,
+                summary: tool.summary,
+                isError: tool.isError,
+                output: tool.output ? tool.output.slice(0, TOOL_OUTPUT_MAX_CHARS) : undefined,
+              })),
+              ...(m.attachments && m.attachments.length > 0
+                ? {
+                    attachments: m.attachments
+                      .filter((a) => a.path)
+                      .map((a) => ({
+                        name: a.name,
+                        path: a.path ?? '',
+                        ext: a.ext ?? '',
+                        sizeBytes: a.sizeBytes ?? 0,
+                      })),
+                  }
+                : {}),
+              ...(m.scope ? { scope: m.scope } : {}),
+            })),
+          )
+          bufferedRestoreRef.current = msgs.map((m) => ({ role: m.role, text: m.text }))
+          const firstUser = msgs.find((m) => m.role === 'user')
+          if (firstUser) conversation.onFirstMessage(firstUser.text)
+        })
+        .catch(() => {
+          /* history load failures are silent */
+        })
+      return () => {
+        disposed = true
+      }
+    }
     const tempChatId = `unsaved-${Date.now()}`
     void api
       .resolveChat({ filePath: filePathRef.current ?? null, tempChatId })
@@ -858,6 +972,7 @@ export function AiPanel({
   /** after an untitled document's first save, bind the unsaved-* history to the real path */
   useEffect(() => {
     filePathRef.current = filePath
+    if (conversation) return
     const ids = chatIdsRef.current
     if (!window.projectApi || !ids || !filePath || !ids.chatId.startsWith('unsaved-')) return
     void window.projectApi
@@ -891,7 +1006,7 @@ export function AiPanel({
     scope?: AiScopeQuoteData,
   ): boolean => {
     const instruction = text.trim()
-    const loop = loopRef.current
+    const loop = ensureLoop()
     if (!instruction || !loop || loop.busy) return false
     // the message consumes the composer attachments: echoed on the bubble, images multimodal, files via the skill
     const sentAtts = attachmentsOverride ?? attachmentsRef.current
@@ -929,6 +1044,7 @@ export function AiPanel({
     // persist what the user saw — a restored transcript must not surface the
     // internal batch protocol text behind a queue submission
     persistMessage('user', displayText ?? instruction, undefined, sentAtts, scope)
+    if (conversation) conversation.onFirstMessage(displayText ?? instruction)
     // Stop / New chat during the pre-run reads (settings, image bytes) bump the sequence; a stale send never starts the loop
     const seq = ++sendSeqRef.current
     void (async () => {
@@ -1011,6 +1127,53 @@ export function AiPanel({
     else cancelPendingSend()
   }
 
+  const busyRef = useRef(false)
+  const idleWaitersRef = useRef<Array<() => void>>([])
+  useEffect(() => {
+    busyRef.current = busy
+    if (conversation) conversation.onRunningChange(busy)
+    if (!busy) {
+      const waiters = idleWaitersRef.current
+      idleWaitersRef.current = []
+      for (const w of waiters) w()
+    }
+  }, [busy, conversation])
+
+  // LOCAL(2026-09-21, d8201ad0): stop-then-close(D5/D10)——确认后先 stop 再 close
+  const stopConversation = async (): Promise<void> => {
+    stop()
+    if (!busyRef.current) return
+    await new Promise<void>((resolve) => idleWaitersRef.current.push(resolve))
+  }
+  const stopRef = useRef(stopConversation)
+  stopRef.current = stopConversation
+
+  const sendRef = useRef(send)
+  sendRef.current = send
+  const htmlHandleRef = useRef<HtmlConversationHandle | null>(null)
+  if (!htmlHandleRef.current) {
+    htmlHandleRef.current = {
+      stop: () => stopRef.current(),
+      send: (text, displayText) => {
+        void sendRef.current(text, displayText)
+      },
+      assist: (text) => {
+        if (loopRef.current?.busy) setPrompt(text)
+        else void sendRef.current(text)
+      },
+      setDraft: (text) => {
+        setPrompt(text)
+        window.setTimeout(() => inputRef.current?.focus(), 0)
+      },
+    }
+  }
+  useEffect(() => {
+    if (!conversation) return
+    conversation.onRegister(htmlHandleRef.current!)
+    return () => conversation.onUnregister()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const retry = (): void => {
     send(
       runInstructionRef.current,
@@ -1020,6 +1183,9 @@ export function AiPanel({
       lastScopeRef.current,
     )
   }
+
+  // LOCAL(2026-09-21, d8201ad0): D10 续作入口(半截轮次恢复后「继续」)
+  const continueRun = (): void => void send(AI_CONTINUE_INSTRUCTION)
 
   /** [label](htmlnav://sid/N) links in replies select that element */
   const docNav = {
@@ -1109,10 +1275,12 @@ export function AiPanel({
     })),
   ]
 
+  // LOCAL(2026-09-21, d8201ad0): 会话实例以 div 容器渲染(外壳 aside 是面板根)
+  const RootTag = (convMode ? 'div' : 'aside') as 'div'
   return (
-    <aside
-      className={`copilot${dragOver ? ' ai-panel-dragover' : ''}`}
-      style={{ width: '100%' }}
+    <RootTag
+      className={convMode ? 'ai-conversation' : `copilot${dragOver ? ' ai-panel-dragover' : ''}`}
+      style={convMode ? { display: 'flex', flexDirection: 'column', minHeight: 0, flex: 1 } : { width: '100%' }}
       dir={lang === 'ar' || lang === 'he' ? 'rtl' : undefined}
       onDragOver={(e) => {
         if (e.dataTransfer.types.includes('Files')) {
@@ -1126,34 +1294,17 @@ export function AiPanel({
       }}
       onDrop={(e) => void onDrop(e)}
     >
-      <PanelTabs
-        tabs={aiTabs}
-        activeId={tab}
-        onTabChange={selectTab}
-        actions={
-          tab === 'chat' && chat.length > 0 ? (
-            <button
-              className="ai-header-btn"
-              onClick={() => {
-                stop()
-                loopRef.current?.reset()
-                setBusy(false)
-                setChat([])
-                setReceipts([])
-                setAttachments([])
-                setAttachNotice(null)
-                sentAttachmentsRef.current = []
-              }}
-              data-tip={t('aiNewChat')}
-              aria-label={t('aiNewChat')}
-            >
-              <IconNewChat />
-            </button>
-          ) : null
-        }
-        chromeActions={dockChrome?.buttons}
-        dragProps={dockChrome?.dragProps}
-      />
+      {!convMode && (
+        // LOCAL(2026-09-21, d8201ad0): 弃用销毁式「新对话」按钮——由外壳「+」取代
+        <PanelTabs
+          tabs={aiTabs}
+          activeId={tab}
+          onTabChange={selectTab}
+          actions={null}
+          chromeActions={dockChrome?.buttons}
+          dragProps={dockChrome?.dragProps}
+        />
+      )}
       <div
         className="ai-chat"
         ref={chatRef}
@@ -1295,6 +1446,9 @@ export function AiPanel({
                 )
               )}
               {hasTools && <ToolChipList tools={entry.tools!} />}
+              {entry.interrupted && (
+                <span className="ai-msg-interrupted-badge">{t('aiTurnInterrupted')}</span>
+              )}
               {showToolbar && (
                 <div className="ai-msg-toolbar">
                   <button
@@ -1375,8 +1529,17 @@ export function AiPanel({
         </div>
       )}
 
-      <AssistantTab items={assistantItems} hidden={tab !== 'assistant'} />
+      {!convMode && <AssistantTab items={assistantItems} hidden={tab !== 'assistant'} />}
 
+      {chat[chat.length - 1]?.interrupted && !busy && (
+        <div className="ai-composer">
+          <div className="ai-continue-row">
+            <button className="ai-continue-btn" onClick={continueRun}>
+              {t('aiContinue')}
+            </button>
+          </div>
+        </div>
+      )}
       {tab === 'chat' && activeClarify && (
         <div className="ai-composer">
           <ClarifyCard
@@ -1568,7 +1731,7 @@ export function AiPanel({
       {kbCiteView && (
         <KbCitePreview citation={kbCiteView} lang={lang} onClose={() => setKbCiteView(null)} />
       )}
-    </aside>
+    </RootTag>
   )
 }
 
@@ -1749,5 +1912,217 @@ function IconClock(): ReactElement {
       <circle cx="8" cy="8" r="6" />
       <path d="M8 4.8V8l2.2 1.6" />
     </svg>
+  )
+}
+
+
+// ── LOCAL(2026-09-21, d8201ad0): 多会话外壳(D1/D5/D9)─────────────────────────
+// tab 行 = [会话…][助手];「+」常驻;每会话一个 AiConversationBody 实例。
+// html 的 receipts/clarify/brief/partial 卡均为实例私有(§4.5)。上游无同类实现;
+// 收敛条件:上游若原生实现多会话,评估取上游并删除本地会话池。
+// LOCAL(2026-09-22, d8201ad0): D12/D13 增量——历史不再是 tab:「🕘」改 actions 槽
+// 常驻图标([+][🕘])的下拉浮层 AiHistoryPopover;空会话(从未发言)关闭直接丢弃、
+// 不进历史(hook close() 内分流)。上游动向与收敛条件同上。
+const isChatTabH = (tab: AiActiveTab): tab is string =>
+  typeof tab === 'string' && tab !== 'assistant' && tab !== 'empty'
+
+export function AiPanel(props: {
+  deps: HtmlAiDeps
+  filePath: string | null
+  preset?: AiPreset | null
+  draft?: AiDraft | null
+  dockChrome?: DockChrome
+  editQueue: EditQueueItem[]
+  onQueueEditInstruction: (qid: string, instruction: string) => void
+  onQueueRemove: (qid: string) => void
+  onQueueClear: () => void
+  onQueueFocus: (qid: string) => void
+  onQueueConsume: (qids: string[]) => void
+}) {
+  const { filePath, dockChrome } = props
+  const { t } = useI18n()
+  const tempChatIdRef = useRef(`unsaved-${Date.now()}`)
+  const conv = useAiConversations(
+    { filePath: filePath ?? null, tempChatId: tempChatIdRef.current },
+    { persistKey: 'aihtml.aiTab' },
+  )
+  const bodyHandlesRef = useRef(new Map<string, HtmlConversationHandle>())
+
+  // 索引键换绑:未保存 → 已保存 / 重命名(chatId 不变)
+  const prevFilePathRef = useRef(filePath ?? null)
+  useEffect(() => {
+    const prev = prevFilePathRef.current
+    prevFilePathRef.current = filePath ?? null
+    if (!filePath || prev === filePath) return
+    conv.rebindIndex(prev ?? tempChatIdRef.current, filePath)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filePath])
+
+  const [closeConfirmId, setCloseConfirmId] = useState<string | null>(null)
+  // D13: 历史下拉浮层开关(空态引导的「从历史还原」也走它)
+  const [historyOpen, setHistoryOpen] = useState(false)
+  const closeConversation = async (chatId: string): Promise<void> => {
+    const handle = bodyHandlesRef.current.get(chatId)
+    if (handle) await handle.stop()
+    conv.close(chatId)
+  }
+  const closeFlow = (chatId: string): void => {
+    if (conv.runningIds.has(chatId)) {
+      setCloseConfirmId(chatId)
+      return
+    }
+    void closeConversation(chatId)
+  }
+
+  // 面板级入口(助手 tab / preset)→ 目标会话体
+  const targetChatId = (): string | null => {
+    if (isChatTabH(conv.activeTab) && conv.open.some((c) => c.chatId === conv.activeTab)) {
+      return conv.activeTab
+    }
+    return conv.open[0]?.chatId ?? null
+  }
+  const pendingRef = useRef<{ text: string; assist?: boolean } | null>(null)
+  useEffect(() => {
+    const p = pendingRef.current
+    if (!p) return
+    const target = targetChatId()
+    if (!target) {
+      // the pool settled with zero open conversations: open one to deliver into
+      if (conv.ready && conv.open.length === 0) conv.create()
+      return
+    }
+    const handle = bodyHandlesRef.current.get(target)
+    if (!handle) return
+    pendingRef.current = null
+    if (p.assist) handle.assist(p.text)
+    else void handle.send(p.text)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conv.open.length, conv.activeTab, conv.ready])
+  const routeText = (text: string, assist = false): void => {
+    const target = targetChatId()
+    const handle = target ? bodyHandlesRef.current.get(target) : undefined
+    if (handle) {
+      if (assist) handle.assist(text)
+      else void handle.send(text)
+      return
+    }
+    // queued: the delivery effect runs it on the first ready conversation body
+    pendingRef.current = { text, assist }
+  }
+
+  useEffect(() => {
+    const preset = props.preset
+    if (!preset) return
+    const target = targetChatId()
+    const handle = target ? bodyHandlesRef.current.get(target) : undefined
+    // html AiPreset 无 autoRun 字段:沿用原语义(busy 落 composer,否则直接发送)
+    if (handle) handle.assist(preset.displayText ?? preset.text)
+    else {
+      pendingRef.current = { text: preset.displayText ?? preset.text, assist: true }
+      conv.create()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.preset?.nonce])
+
+  return (
+    <aside className="copilot" style={{ width: '100%', position: 'relative' }}>
+      <PanelTabs
+        tabs={[
+          ...conv.open.map((c) => ({
+            id: c.chatId,
+            label: c.title || t('aiConvUntitled'),
+            onClose: () => closeFlow(c.chatId),
+            running: conv.runningIds.has(c.chatId),
+          })),
+          { id: 'assistant', label: t('aiTabAssistant') },
+        ]}
+        activeId={conv.activeTab}
+        onTabChange={conv.setActiveTab}
+        actions={
+          // LOCAL(2026-09-22, d8201ad0): D13——常驻两图标 [+][🕘];🕘 历史对话下拉浮层
+          <>
+            <button
+              className="ai-header-btn"
+              onClick={() => conv.create()}
+              data-tip={t('aiNewChat')}
+              aria-label={t('aiNewChat')}
+            >
+              <IconNewChat />
+            </button>
+            <AiHistoryPopover
+              open={historyOpen}
+              onOpenChange={setHistoryOpen}
+              items={conv.closed}
+              tooltip={t('aiHistoryTooltip')}
+              labels={{
+                deleteOne: t('aiHistoryDelete'),
+                deleteAll: t('aiHistoryDeleteAll'),
+                empty: t('aiHistoryEmpty'),
+                deleteOneConfirm: t('aiHistoryDeleteOneConfirm'),
+                deleteAllConfirm: t('aiHistoryDeleteAllConfirm'),
+                cancel: t('aiConvCancel'),
+              }}
+              onRestore={(chatId) => conv.restore(chatId)}
+              // 单删/全删只作用于历史(未打开)会话,确认在浮层内完成(D3)
+              onDelete={(chatId) => conv.removeClosed(chatId)}
+              onDeleteAll={() => conv.removeAllClosed()}
+            />
+          </>
+        }
+        chromeActions={dockChrome?.buttons}
+        dragProps={dockChrome?.dragProps}
+      />
+      {closeConfirmId !== null && (
+        <AiTabConfirm
+          title={t('aiConvCloseRunningTitle')}
+          body={t('aiConvCloseRunningBody')}
+          confirmLabel={t('aiConvStopClose')}
+          cancelLabel={t('aiConvCancel')}
+          onConfirm={() => {
+            const id = closeConfirmId
+            setCloseConfirmId(null)
+            if (id !== null) void closeConversation(id)
+          }}
+          onCancel={() => setCloseConfirmId(null)}
+        />
+      )}
+      {conv.open.map((c) => (
+        <div
+          key={c.chatId}
+          style={
+            c.chatId === conv.activeTab
+              ? { display: 'flex', flexDirection: 'column', minHeight: 0, flex: 1 }
+              : { display: 'none' }
+          }
+        >
+          <AiConversationBody
+            {...props}
+            preset={null}
+            conversation={{
+              chatId: c.chatId,
+              projectId: conv.projectId,
+              onRunningChange: (running) => conv.setRunning(c.chatId, running),
+              onFirstMessage: (text) => conv.reportTitle(c.chatId, text),
+              onTurnEnd: () => conv.touch(c.chatId),
+              onRegister: (handle) => bodyHandlesRef.current.set(c.chatId, handle),
+              onUnregister: () => bodyHandlesRef.current.delete(c.chatId),
+            }}
+          />
+        </div>
+      ))}
+      {/* 关到零:空态引导(§2.1);「从历史还原」走 🕘 浮层(D13) */}
+      {conv.ready && conv.activeTab === 'empty' && (
+        <AiConversationsEmpty
+          labels={{
+            title: t('aiConvEmptyTitle'),
+            body: t('aiConvEmptyBody'),
+            create: t('aiNewChat'),
+            openHistory: t('aiConvOpenHistory'),
+          }}
+          onCreate={() => conv.create()}
+          onOpenHistory={() => setHistoryOpen(true)}
+        />
+      )}
+    </aside>
   )
 }

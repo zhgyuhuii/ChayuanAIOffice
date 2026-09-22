@@ -63,6 +63,8 @@ import {
 } from '@chatoffice/electron-utils'
 import { createI18n, getUiLang, type Lang, normalizeLang, setUiLang } from '@chatoffice/i18n'
 import { ProjectStore } from '@chatoffice/project-store'
+// LOCAL(2026-09-21, d8201ad0): 多会话对话索引(B 区新模块)
+import { ConversationStore, bindConversationsIpc } from '@chatoffice/project-store'
 
 import {
   isAiOverloadedError,
@@ -3588,6 +3590,15 @@ function getSheetsProjectStore(): ProjectStore {
   return sheetsProjectStore
 }
 
+// LOCAL(2026-09-21, d8201ad0): 多会话对话索引存储(单例;B 区逻辑在 @chatoffice/project-store/conversations)
+let sheetsConversationsStore: ConversationStore | null = null
+function getSheetsConversationsStore(): ConversationStore {
+  if (!sheetsConversationsStore) {
+    sheetsConversationsStore = new ConversationStore(app.getPath('userData'), getSheetsProjectStore())
+  }
+  return sheetsConversationsStore
+}
+
 export function registerProjectIpc(): void {
   if (sheetsProjectIpcRegistered) return
   sheetsProjectIpcRegistered = true
@@ -3632,6 +3643,7 @@ export function registerProjectIpc(): void {
         }>
         attachments?: Array<{ name: string; path?: string; ext?: string; sizeBytes?: number }>
         scope?: { label: string; text?: string }
+        interrupted?: boolean
       },
     ) => {
       const msg: Parameters<ProjectStore['appendChatMessage']>[2] = {
@@ -3641,6 +3653,8 @@ export function registerProjectIpc(): void {
       if (args.tools) msg.tools = args.tools
       if (args.attachments) msg.attachments = args.attachments
       if (args.scope) msg.scope = args.scope
+      // LOCAL(2026-09-21, d8201ad0): D10 中断标记透传
+      if (args.interrupted === true) msg.interrupted = true
 
       getSheetsProjectStore().appendChatMessage(args.projectId, args.chatId, msg)
     },
@@ -3677,6 +3691,18 @@ export function registerProjectIpc(): void {
       return { projectId: args.projectId, chatId: args.newChatId ?? args.tempChatId }
     },
   )
+
+  // ── LOCAL(2026-09-21, d8201ad0): 多会话对话索引(追加式注册,B 区逻辑在 project-store)──
+  bindConversationsIpc({
+    handle: (channel, handler) => {
+      ipcMain.handle(channel, (event, payload) => handler(event, payload))
+    },
+    getStore: getSheetsConversationsStore,
+    sessionPath: (event, sessionId) => {
+      const senderId = (event as { sender: { id: number } }).sender.id
+      return sheetsTabs.get(senderId)?.sessions.get(sessionId)?.path ?? null
+    },
+  })
 }
 
 /**

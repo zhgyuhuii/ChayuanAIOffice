@@ -19,27 +19,29 @@ import { ms } from './ai/ms'
 import { he } from './ai/he'
 import { hi } from './ai/hi'
 import { zhTW } from './ai/zh-TW'
+// LOCAL(2026-09-21, d8201ad0): 多会话词条物理分离(B 区,制度 §3.1);C 区仅此一行 import + 下方 spread
+import { localStrings } from './local/ai-local'
 
 /** User-visible strings for the ai/ panel and tool feedback (LLM prompts are not here) */
 export const aiStrings = defineStrings({
-  zh,
-  en,
-  ja,
-  ko,
-  fr,
-  de,
-  es,
-  th,
-  id,
-  ru,
-  ar,
-  pt,
-  it,
-  pl,
-  cs,
-  nl,
-  ms,
-  he,
-  hi,
-  'zh-TW': zhTW,
+  zh: { ...zh, ...localStrings.zh },
+  en: { ...en, ...localStrings.en },
+  ja: { ...ja, ...localStrings.ja },
+  ko: { ...ko, ...localStrings.ko },
+  fr: { ...fr, ...localStrings.fr },
+  de: { ...de, ...localStrings.de },
+  es: { ...es, ...localStrings.es },
+  th: { ...th, ...localStrings.th },
+  id: { ...id, ...localStrings.id },
+  ru: { ...ru, ...localStrings.ru },
+  ar: { ...ar, ...localStrings.ar },
+  pt: { ...pt, ...localStrings.pt },
+  it: { ...it, ...localStrings.it },
+  pl: { ...pl, ...localStrings.pl },
+  cs: { ...cs, ...localStrings.cs },
+  nl: { ...nl, ...localStrings.nl },
+  ms: { ...ms, ...localStrings.ms },
+  he: { ...he, ...localStrings.he },
+  hi: { ...hi, ...localStrings.hi },
+  'zh-TW': { ...zhTW, ...localStrings['zh-TW'] },
 })

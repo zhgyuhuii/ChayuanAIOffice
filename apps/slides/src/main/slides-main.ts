@@ -71,6 +71,8 @@ import { buildPagePptx, parsePageSpec } from '@chatoffice/pipelines/slides'
 import { sniffImageMime } from './media-mime'
 import { getUiLang, normalizeLang, setUiLang } from '@chatoffice/i18n'
 import { ProjectStore } from '@chatoffice/project-store'
+// LOCAL(2026-09-21, d8201ad0): 多会话对话索引(B 区新模块)
+import { ConversationStore, bindConversationsIpc } from '@chatoffice/project-store'
 import {
   newPasteCascade,
   pageKey,
@@ -4714,6 +4716,18 @@ function getSlidesProjectStore(): ProjectStore {
   return slidesProjectStore
 }
 
+// LOCAL(2026-09-21, d8201ad0): 多会话对话索引存储(单例;B 区逻辑在 @chatoffice/project-store/conversations)
+let slidesConversationsStore: ConversationStore | null = null
+function getSlidesConversationsStore(): ConversationStore {
+  if (!slidesConversationsStore) {
+    slidesConversationsStore = new ConversationStore(
+      app.getPath('userData'),
+      getSlidesProjectStore(),
+    )
+  }
+  return slidesConversationsStore
+}
+
 export function registerProjectIpc(): void {
   if (slidesProjectIpcRegistered) return
   slidesProjectIpcRegistered = true
@@ -4748,6 +4762,7 @@ export function registerProjectIpc(): void {
         }>
         attachments?: Array<{ name: string; path?: string; ext?: string; sizeBytes?: number }>
         scope?: { label: string; text?: string }
+        interrupted?: boolean
       },
     ) => {
       const msg: Parameters<ProjectStore['appendChatMessage']>[2] = {
@@ -4757,6 +4772,8 @@ export function registerProjectIpc(): void {
       if (args.tools) msg.tools = args.tools
       if (args.attachments) msg.attachments = args.attachments
       if (args.scope) msg.scope = args.scope
+      // LOCAL(2026-09-21, d8201ad0): D10 中断标记透传
+      if (args.interrupted === true) msg.interrupted = true
 
       getSlidesProjectStore().appendChatMessage(args.projectId, args.chatId, msg)
     },
@@ -4783,6 +4800,16 @@ export function registerProjectIpc(): void {
       return { projectId: args.projectId, chatId: args.newChatId ?? args.tempChatId }
     },
   )
+
+  // ── LOCAL(2026-09-21, d8201ad0): 多会话对话索引(追加式注册,B 区逻辑在 project-store)──
+  bindConversationsIpc({
+    handle: (channel, handler) => {
+      ipcMain.handle(channel, (event, payload) => handler(event, payload))
+    },
+    getStore: getSlidesConversationsStore,
+    // slides standalone 无 sessionId 反查(演示文稿始终有真实路径)
+    sessionPath: () => null,
+  })
 }
 
 /** hidden export windows: webContents id -> the PDF path the renderer must write */

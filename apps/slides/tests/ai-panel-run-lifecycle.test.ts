@@ -112,6 +112,53 @@ async function flushEffects(): Promise<void> {
   })
 }
 
+// LOCAL(2026-09-21, d8201ad0): 多会话改造后 loop 惰性构造——测试先从 composer 发一条
+// 消息驱动 runWith 建 loop,再通过 harness 触发生命周期事件。
+async function sendFromComposer(container: HTMLElement, text: string): Promise<void> {
+  const ta = container.querySelector<HTMLTextAreaElement>('textarea[data-slides-ai-input]')
+  expect(ta).not.toBeNull()
+  const input = ta!
+  await act(async () => {
+    const setter = Object.getOwnPropertyDescriptor(
+      window.HTMLTextAreaElement.prototype,
+      'value',
+    )!.set!
+    setter.call(input, text)
+    input.dispatchEvent(new Event('input', { bubbles: true }))
+  })
+  await act(async () => {
+    input.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }),
+    )
+  })
+  await flushEffects()
+  await flushEffects()
+}
+
+/** conversation-index API mock: one seeded open conversation with the given chatId */
+function installConversationsApi(seedChatId = 'deck-chat'): void {
+  Object.defineProperty(window, 'projectApi', {
+    configurable: true,
+    value: {
+      conversationsList: async () => ({
+        projectId: 'default',
+        conversations: [{ chatId: seedChatId, title: '', createdAt: 1, lastActiveAt: 1 }],
+        openIds: [seedChatId],
+        activeId: seedChatId,
+      }),
+      conversationCreate: async () => ({ projectId: 'default', chatId: `${seedChatId}-2` }),
+      conversationMeta: async () => {},
+      conversationsOpenSet: async () => {},
+      conversationDelete: async () => {},
+      conversationsDeleteAll: async () => {},
+      conversationsRebind: async () => {},
+      // per-conversation transcript store (the conversation body loads/persists)
+      loadChat: async () => [],
+      appendChat: async () => {},
+    },
+  })
+}
+
 function installSlidesApi(): void {
   Object.defineProperty(window, 'slidesApi', {
     configurable: true,
@@ -155,9 +202,11 @@ afterEach(() => {
 describe('AiPanel agent run lifecycle (slides)', () => {
   it('persists a successful tool-only run so reopening can restore the completed turn', async () => {
     const appendChat = vi.fn(async () => undefined)
+    installConversationsApi('deck-chat')
     Object.defineProperty(window, 'projectApi', {
       configurable: true,
       value: {
+        ...((window as unknown as { projectApi?: Record<string, unknown> }).projectApi ?? {}),
         resolveChat: vi.fn(async () => ({ projectId: 'default', chatId: 'deck-chat' })),
         loadChat: vi.fn(async () => []),
         appendChat,
@@ -165,10 +214,14 @@ describe('AiPanel agent run lifecycle (slides)', () => {
       },
     })
 
-    mount(createElement(AiPanel, panelProps({ currentFilePath: '/tmp/deck.pptx' })))
+    const { container } = mount(
+      createElement(AiPanel, panelProps({ currentFilePath: '/tmp/deck.pptx' })),
+    )
     await flushEffects()
     appendChat.mockClear()
 
+    // the lazy loop builds on the first send
+    await sendFromComposer(container, 'run this')
     expect(agentHarness.events).not.toBeNull()
     act(() => {
       agentHarness.events!.onToolExecuted?.({
@@ -249,8 +302,10 @@ describe('AiPanel agent run lifecycle (slides)', () => {
       },
     })
 
+    installConversationsApi()
     const { container } = mount(createElement(AiPanel, panelProps({})))
     await flushEffects()
+    await sendFromComposer(container, 'check this deck')
 
     // the exact loop-stop message from an all-tools-failed run: no CTA
     act(() => {

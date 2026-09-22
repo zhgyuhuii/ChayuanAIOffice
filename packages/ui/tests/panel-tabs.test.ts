@@ -129,3 +129,56 @@ describe('AiPanelToggle', () => {
     act(() => root.unmount())
   })
 })
+
+// ── LOCAL(2026-09-21, d8201ad0): 多会话扩展——✕ 不切 tab、running 圆点、onClose 行为 ──
+
+describe('PanelTabs conversation extensions', () => {
+  it('clicking ✕ does not switch the tab and calls onClose', () => {
+    const onClose = vi.fn()
+    const onTabChange = vi.fn()
+    const { container, root } = mount(
+      createElement(PanelTabs, {
+        tabs: [
+          { id: 'conv1', label: '会话', onClose },
+          { id: 'assistant', label: '助手' },
+        ],
+        activeId: 'conv1',
+        onTabChange,
+      }),
+    )
+    const closeBtn = container.querySelector('.ai-tab-close') as HTMLElement
+    expect(closeBtn).toBeTruthy()
+    act(() => closeBtn.click())
+    expect(onClose).toHaveBeenCalledTimes(1)
+    expect(onTabChange).not.toHaveBeenCalled()
+    act(() => root.unmount())
+  })
+
+  it('renders a running dot only for running tabs', () => {
+    const { container, root } = mount(
+      createElement(PanelTabs, {
+        tabs: [
+          { id: 'conv1', label: '会话', running: true },
+          { id: 'conv2', label: '会话2' },
+        ],
+        activeId: 'conv2',
+        onTabChange: () => {},
+      }),
+    )
+    expect(container.querySelectorAll('.ai-tab-dot')).toHaveLength(1)
+    expect(container.querySelector('.ai-tab-running')).toBeTruthy()
+    act(() => root.unmount())
+  })
+
+  it('a tab without onClose renders no ✕', () => {
+    const { container, root } = mount(
+      createElement(PanelTabs, {
+        tabs: [{ id: 'assistant', label: '助手' }],
+        activeId: 'assistant',
+        onTabChange: () => {},
+      }),
+    )
+    expect(container.querySelector('.ai-tab-close')).toBeNull()
+    act(() => root.unmount())
+  })
+})

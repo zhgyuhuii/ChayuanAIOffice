@@ -357,3 +357,16 @@
 | 2026-09-20 | 1bf9c1f9 | 七个 preload（六端 + shell homeApi） | 媒体桥 5 方法（mediaCapabilities/Image/Video/Understand/Asr/Tts，追加块，LOCAL 标记） |
 | 2026-09-20 | 1bf9c1f9 | 五个技能组装点（docs/slides/markdown/html AiPanel + sheets App） | `create*MediaSkill()` 一行挂载 |
 | — | — | 说明 | 全部实现位于新文件（packages/ai-provider 4、ai-host 1、agent-core 1、各端 media-skill 6、测试 2）；上游移动=增行，收敛条件：上游若原生引入同能力则本地件退役 |
+| 2026-09-21 | d8201ad0 | 六端 main（docs-main/sheets-main/slides-main） | `bindConversationsIpc` 多会话通道注册（追加块，LOCAL 标记）+ appendChat `interrupted` 透传 + projectFileRenamed 索引换绑（docs） |
+| 2026-09-21 | d8201ad0 | 六端 preload | projectApi 追加 7 个 conversations* 方法（追加式，LOCAL 标记） |
+| 2026-09-21 | d8201ad0 | docs/sheets/slides/html `i18n/strings-ai.ts`、pdf/markdown `i18n/strings.ts` | 多会话词条 `localStrings` spread 合并（每文件 1 行 import + 各语言 spread，LOCAL 标记） |
+| — | — | 说明 | 全部实现位于 B 区新文件（packages/project-store conversations.ts / conversations-ipc.ts、packages/ui useAiConversations/AiHistoryList/AiTabConfirm/AiConversationsEmpty/aiContinuation、六端会话体组件）；上游移动=增行，收敛条件：上游若原生实现多会话则本地会话池整体退役 |
+| 2026-09-22 | d8201ad0 | 六端 AiPanel（docs AiPanel/AiConversationBody 同款 hunk：slides/markdown/html/pdf AiPanel + sheets App/AiChatPanel） | D13 增量：tab 行移除 `history` 项（= [会话…][助手]）；actions 槽常驻 `[+] [🕘]`；🕘 接 `AiHistoryPopover` 下拉浮层（单删/全删确认移入浮层，sheets 的 App 级 historyConfirm 状态删除）；六端 hunk 处 LOCAL 标记已追加增量段 |
+| 2026-09-22 | d8201ad0 | 六端 local i18n 文件（docs/sheets/slides/html `i18n/local/ai-local.ts`、pdf/markdown `strings-local.ts`） | 键改名 `aiTabHistory` → `aiHistoryTooltip`（20 语言×6 文件，B 区文件内改名，上游 shard 不涉及） |
+| — | — | 说明 | D13/D12 实现位于 B 区：packages/ui 新文件 AiHistoryPopover.tsx + useAiConversations（`AiActiveTab` 收窄为 chatId｜'assistant'｜'empty'，仲裁 ② 残留 'history' 视为无效；close() 空会话分流——从未发言的会话关闭直接丢弃元数据、不进历史，closed 列表只含非空会话）+ dock.css 追加段 + 单测 ai-history-popover.test.tsx；上游移动=增行，收敛条件：上游若原生实现历史下拉/历史列表则本地浮层退役 |
+
+## 12. 拒绝清单（同步时对上游 newChat 相关改动逐个裁决；制度 §5.2/§5.3）
+
+| 日期 | 基点 commit | 弃用项 | 理由 | 同步检查动作 |
+|---|---|---|---|---|
+| 2026-09-21 | d8201ad0 | 六端「销毁式 newChat」（docs/slides `newChat()`、sheets `handleNewChat`、markdown/html/pdf 内联清空按钮） | 语义被多会话模型替换：关闭 ✕=会话进历史（数据保留），「+」=无破坏新开 tab；上游的清空式 newChat 与「运行中会话可后台续跑」互斥 | 每轮同步检查上游是否把 newChat 接进新代码；若上游原生实现多会话/会话列表，触发收敛评估（取上游、删本地会话池）；单会话清空语义不回收 |

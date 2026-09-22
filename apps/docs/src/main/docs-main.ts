@@ -73,6 +73,8 @@ import {
 import { configureMetricsCache, familyVerticalMetrics } from '@chatoffice/font-metrics'
 import { createI18n, getUiLang, normalizeLang, setUiLang } from '@chatoffice/i18n'
 import { ProjectStore } from '@chatoffice/project-store'
+// LOCAL(2026-09-21, d8201ad0): 多会话对话索引(B 区新模块)
+import { ConversationStore, bindConversationsIpc } from '@chatoffice/project-store'
 import {
   bindRemoteFilesIpc,
   createRemoteFilesHost,
@@ -3298,6 +3300,21 @@ export function projectFileRenamed(oldPath: string, newPath: string): void {
   } catch (err) {
     console.warn('[project-store] fileRenamed failed:', err)
   }
+  // LOCAL(2026-09-21, d8201ad0): 多会话索引键随重命名迁移(打开集合与标题跟随文件)
+  try {
+    getConversationsStore().rebind(oldPath, newPath)
+  } catch (err) {
+    console.warn('[project-store] conversations rebind failed:', err)
+  }
+}
+
+// LOCAL(2026-09-21, d8201ad0): 多会话对话索引存储(单例;B 区逻辑在 @chatoffice/project-store/conversations)
+let conversationsStore: ConversationStore | null = null
+function getConversationsStore(): ConversationStore {
+  if (!conversationsStore) {
+    conversationsStore = new ConversationStore(app.getPath('userData'), getProjectStore())
+  }
+  return conversationsStore
 }
 
 /**
@@ -3687,6 +3704,7 @@ export function registerProjectIpc(): void {
         }>
         attachments?: Array<{ name: string; path?: string; ext?: string; sizeBytes?: number }>
         scope?: { label: string; text?: string }
+        interrupted?: boolean
       },
     ) => {
       const store = getProjectStore()
@@ -3697,6 +3715,8 @@ export function registerProjectIpc(): void {
       if (args.tools) msg.tools = args.tools
       if (args.attachments) msg.attachments = args.attachments
       if (args.scope) msg.scope = args.scope
+      // LOCAL(2026-09-21, d8201ad0): D10 中断标记透传
+      if (args.interrupted === true) msg.interrupted = true
 
       store.appendChatMessage(args.projectId, args.chatId, msg)
     },
@@ -3743,6 +3763,18 @@ export function registerProjectIpc(): void {
       return { projectId: args.projectId, chatId: args.newChatId ?? args.tempChatId }
     },
   )
+
+  // ── LOCAL(2026-09-21, d8201ad0): 多会话对话索引(追加式注册,B 区逻辑在 project-store)──
+  bindConversationsIpc({
+    handle: (channel, handler) => {
+      ipcMain.handle(channel, (event, payload) => handler(event, payload))
+    },
+    getStore: getConversationsStore,
+    sessionPath: (event, sessionId) => {
+      const senderId = (event as { sender: { id: number } }).sender.id
+      return sessionPathResolver ? sessionPathResolver(senderId, sessionId) : null
+    },
+  })
 
   // ── P1 extension IPC ─────────────────────────────────────
 
@@ -4807,6 +4839,8 @@ interface DocsShellHooks {
   openUntitledPdf?(bytes: Uint8Array, suggestedName: string, saveDir?: string): boolean
   /** Shell-mode AI-created Markdown opens as an untitled tab carrying the content. */
   openUntitledMarkdown?(content: string, suggestedName: string): boolean
+  /** Shell-mode AI-created HTML opens as an untitled tab carrying the content. */
+  openUntitledHtml?(content: string, suggestedName: string): boolean
   /** P1 停靠契约: home-chat create_document docks instead of opening a full
    *  tab; saveDir anchors the document's first save in its project root;
    *  projectId registers the saved file into the conversation's project */
@@ -4941,6 +4975,14 @@ export async function createAiDocument(
         return { ok: true }
       if (shellHooks?.openUntitledMarkdown?.(content, title)) return { ok: true }
       const filePath = uniquePathIn(projectDir ?? defaultSaveDir(), `${title}.md`)
+      await writeFile(filePath, content, 'utf8')
+      registerAiFileToProject(filePath, request.projectId)
+      openGeneratedFile(filePath)
+      return { ok: true, path: filePath }
+    }
+    if (type === 'html') {
+      if (shellHooks?.openUntitledHtml?.(content, title)) return { ok: true }
+      const filePath = uniquePathIn(projectDir ?? defaultSaveDir(), `${title}.html`)
       await writeFile(filePath, content, 'utf8')
       registerAiFileToProject(filePath, request.projectId)
       openGeneratedFile(filePath)

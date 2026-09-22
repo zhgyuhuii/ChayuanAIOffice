@@ -412,6 +412,8 @@ export class ProjectStore {
         }))
       }
       if (msg.attachments !== undefined) record.attachments = msg.attachments
+      // LOCAL(2026-09-21, d8201ad0): D10 中断标记随消息落盘(向后兼容,旧记录无字段)
+      if (msg.interrupted === true) record.interrupted = true
       if (msg.scope !== undefined) {
         record.scope = {
           label: msg.scope.label,

@@ -10,6 +10,12 @@ import {
   useKbAugment,
   PanelTabs,
   usePanelTab,
+  useAiConversations,
+  AiConversationsEmpty,
+  AiHistoryPopover,
+  AiTabConfirm,
+  AI_CONTINUE_INSTRUCTION,
+  type AiActiveTab,
   AiScopeQuote,
   KbCitePreview,
   type AiScopeQuoteData,
@@ -47,9 +53,20 @@ interface ToolActivity {
   output?: string
 }
 
+/** command handle the outer panel holds per conversation (plan §4.3) */
+export interface PdfConversationHandle {
+  stop(): Promise<void>
+  send(text: string): void
+  /** busy 时落 composer,空闲直接发送(助手 tab 语义) */
+  assist(text: string): void
+  setDraft(text: string): void
+}
+
 interface ChatEntry {
   role: 'user' | 'assistant'
   text: string
+  /** LOCAL(2026-09-21, d8201ad0): D10 —— 恢复的被中断轮次 */
+  interrupted?: boolean
   /** model id that produced this assistant turn (display only) */
   model?: string
   streaming?: boolean
@@ -73,13 +90,14 @@ interface PendingConfirm {
   settle: (ok: boolean) => void
 }
 
-export function AiPanel({
+function AiConversationBody({
   api,
   filePath,
   dockChrome,
   preset,
   onRunDone,
   onClearSelection,
+  conversation,
 }: {
   api: PdfAppDeps
   /** Absolute path of the open PDF (chat history is keyed to it) */
@@ -91,7 +109,16 @@ export function AiPanel({
   /** Fired when a run that mutated the document finishes (drives the untitled-blank auto-save) */
   onRunDone?: () => void
   /** The × on the scope chip: drop the cached selection so runs target the whole document */
-  onClearSelection?: () => void
+  onClearSelection?: () => void  /** LOCAL(2026-09-21, d8201ad0): 多会话——由外壳按会话实例化时传入(D9) */
+  conversation?: {
+    chatId: string
+    projectId: string | null
+    onRunningChange: (running: boolean) => void
+    onFirstMessage: (text: string) => void
+    onTurnEnd: () => void
+    onRegister: (handle: PdfConversationHandle) => void
+    onUnregister: () => void
+  }
 }): ReactElement {
   const { lang, t } = useI18n()
   // 知识库选库与发送前检索增强(共享选中态,与首页对话一致)
@@ -101,7 +128,10 @@ export function AiPanel({
     { id: 'chat', label: t('aiTabChat') },
     { id: 'assistant', label: t('aiTabAssistant') },
   ]
-  const [tab, selectTab] = usePanelTab('aipdf.aiTab', aiTabs)
+  // LOCAL(2026-09-21, d8201ad0): 会话实例下 tab 恒为对话(tabs 由外壳持有)
+  const convMode = conversation !== undefined
+  const [legacyTab, selectTab] = usePanelTab('aipdf.aiTab', aiTabs)
+  const tab = convMode ? 'chat' : legacyTab
   const [chat, setChat] = useState<ChatEntry[]>([])
   const [prompt, setPrompt] = useState('')
   const [busy, setBusy] = useState(false)
@@ -134,6 +164,7 @@ export function AiPanel({
             text: string
             tools?: Array<{ name: string; summary: string; isError?: boolean; output?: string }>
             scope?: AiScopeQuoteData
+            interrupted?: boolean
           }): Promise<void>
           loadChat(args: { projectId: string; chatId: string; limit?: number }): Promise<
             Array<{
@@ -156,16 +187,21 @@ export function AiPanel({
     text: string,
     tools?: ToolActivity[],
     scope?: AiScopeQuoteData,
+    interrupted?: boolean,
   ): void => {
-    const ids = chatIdsRef.current
+    // LOCAL(2026-09-21, d8201ad0): 会话实例持久化走 conversation.chatId(immutable)
+    const ids = conversation
+      ? { projectId: conversation.projectId, chatId: conversation.chatId }
+      : chatIdsRef.current
     const store = chatStore()
-    if (!ids || !store || (!text && !tools?.length)) return
+    if (!ids || !ids.projectId || !store || (!text && !tools?.length)) return
     void store
       .appendChat({
         projectId: ids.projectId,
         chatId: ids.chatId,
         role,
         text,
+        ...(interrupted ? { interrupted: true } : {}),
         ...(tools && tools.length > 0
           ? {
               tools: tools.map((tool) => ({
@@ -186,19 +222,61 @@ export function AiPanel({
       feeds these back verbatim, and providers require user/assistant
       alternation; cancelled runs persist nothing — the unanswered user
       message is filtered out by restore()) */
-  const persistRun = (): void => {
+  const persistRun = (interrupted?: boolean): void => {
     const texts = [...runTextsRef.current, segTextRef.current].filter(Boolean)
     const tools = runToolsRef.current
     segTextRef.current = ''
     runTextsRef.current = []
     runToolsRef.current = []
     if (texts.length > 0 || tools.length > 0) {
-      persistMessage('assistant', texts.join('\n\n'), tools)
+      persistMessage('assistant', texts.join('\n\n'), tools, undefined, interrupted)
     }
   }
+  // LOCAL(2026-09-21, d8201ad0): 会话实例 loadChat limit 10_000 全量装载(D11)→
+  // 缓冲 → 首次 send 建 loop 时 restore 灌回(D10)
+  const historyLoadedRef = useRef(false)
   useEffect(() => {
     const store = chatStore()
     if (!store) return
+    if (conversation) {
+      if (!conversation.projectId) return
+      let disposed = false
+      void store
+        .loadChat({
+          projectId: conversation.projectId,
+          chatId: conversation.chatId,
+          limit: 10_000,
+        })
+        .then((msgs) => {
+          if (disposed || msgs.length === 0) return
+          if (historyLoadedRef.current) return
+          historyLoadedRef.current = true
+          setChat((prev) => [
+            ...msgs.map((m) => ({
+              role: m.role,
+              text: m.text,
+              interrupted: (m as { interrupted?: boolean }).interrupted === true,
+              tools: m.tools?.map((tool) => ({
+                name: tool.name,
+                summary: tool.summary,
+                isError: tool.isError,
+                output: tool.output,
+              })),
+              ...(m.scope ? { scope: m.scope } : {}),
+            })),
+            ...prev,
+          ])
+          bufferedRestoreRef.current = msgs.map((m) => ({ role: m.role, text: m.text }))
+          const firstUser = msgs.find((m) => m.role === 'user')
+          if (firstUser) conversation.onFirstMessage(firstUser.text)
+        })
+        .catch(() => {
+          /* history load failures are silent */
+        })
+      return () => {
+        disposed = true
+      }
+    }
     const tempChatId = `unsaved-${Date.now()}`
     void store
       .resolveChat({ filePath: filePath || null, tempChatId })
@@ -228,10 +306,11 @@ export function AiPanel({
       .catch(() => {
         /* history load failures are silent */
       })
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only, like Docs
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversation?.projectId, conversation?.chatId])
   /** blank/generated PDFs get a path on first save: bind the unsaved-* history to it */
   useEffect(() => {
+    if (conversation) return
     const ids = chatIdsRef.current
     const store = chatStore()
     if (!store || !ids || !filePath || !ids.chatId.startsWith('unsaved-')) return
@@ -333,7 +412,12 @@ export function AiPanel({
 
   // The loop is built once; every mutable value goes through a ref getter
   const loopRef = useRef<AgentLoop | null>(null)
-  if (!loopRef.current) {
+  /** messages buffered for the lazy loop (D10/D11 hard chain) */
+  const bufferedRestoreRef = useRef<Array<{ role: 'user' | 'assistant'; text: string }> | null>(null)
+  /** LOCAL(2026-09-21, d8201ad0): loop 惰性构造(首次 send 才建) */
+  const ensureLoop = (): AgentLoop | null => {
+    if (loopRef.current) return loopRef.current
+    if (convMode && !conversation) return null
     const deps: PdfAiDeps = {
       doc: () => apiRef.current.doc(),
       fileName: () => apiRef.current.fileName(),
@@ -454,9 +538,16 @@ export function AiPanel({
             ? [base, tGlobal('aiTruncatedNote')].filter(Boolean).join('\n\n')
             : base
           if (cancelled) {
-            segTextRef.current = ''
-            runTextsRef.current = []
-            runToolsRef.current = []
+            // LOCAL(2026-09-21, d8201ad0): D10 —— 取消的轮次照常落盘(半截文本+工具活动)
+            const texts = [...runTextsRef.current, segTextRef.current].filter(Boolean)
+            const half = texts.join('\n\n')
+            if ((half && half.trim()) || runToolsRef.current.length > 0) {
+              persistRun(true)
+            } else {
+              segTextRef.current = ''
+              runTextsRef.current = []
+              runToolsRef.current = []
+            }
           } else {
             segTextRef.current = final || segTextRef.current
             persistRun()
@@ -466,6 +557,7 @@ export function AiPanel({
             text: final || (last.tools?.length ? last.text : tGlobal('aiNoReply')),
           }))
           setBusy(false)
+          if (conversation) conversation.onTurnEnd()
           if (runMutatedRef.current) {
             runMutatedRef.current = false
             onRunDoneRef.current?.()
@@ -492,6 +584,12 @@ export function AiPanel({
         },
       },
     })
+    const built = loopRef.current
+    if (built && bufferedRestoreRef.current && bufferedRestoreRef.current.length > 0) {
+      built.restore(bufferedRestoreRef.current)
+      bufferedRestoreRef.current = null
+    }
+    return loopRef.current
   }
 
   useEffect(() => {
@@ -509,11 +607,12 @@ export function AiPanel({
   /** retryScope: null = a retry that had no scope; undefined = capture the live selection */
   const send = (text: string, retryScope?: AiScopeQuoteData | null): void => {
     const instruction = text.trim()
-    const loop = loopRef.current
+    const loop = ensureLoop()
     if (!instruction || !loop || loop.busy) return
     stickToBottomRef.current = true
     const scope = retryScope !== undefined ? (retryScope ?? undefined) : selectionScopeQuote()
     persistMessage('user', instruction, undefined, scope)
+    if (conversation) conversation.onFirstMessage(instruction)
     segTextRef.current = ''
     runTextsRef.current = []
     runToolsRef.current = []
@@ -544,12 +643,57 @@ export function AiPanel({
     })()
   }
 
+  // LOCAL(2026-09-21, d8201ad0): D10 续作入口(半截轮次恢复后「继续」)
+  const continueRun = (): void => send(AI_CONTINUE_INSTRUCTION)
+
   const stop = (): void => loopRef.current?.cancel()
+
+  const busyRef = useRef(false)
+  const idleWaitersRef = useRef<Array<() => void>>([])
+  useEffect(() => {
+    busyRef.current = busy
+    if (conversation) conversation.onRunningChange(busy)
+    if (!busy) {
+      const waiters = idleWaitersRef.current
+      idleWaitersRef.current = []
+      for (const w of waiters) w()
+    }
+  }, [busy, conversation])
+
+  // LOCAL(2026-09-21, d8201ad0): stop-then-close(D5/D10)——确认后先 stop 再 close
+  const stopConversation = async (): Promise<void> => {
+    loopRef.current?.cancel()
+    if (!busyRef.current) return
+    await new Promise<void>((resolve) => idleWaitersRef.current.push(resolve))
+  }
+  const stopRef = useRef(stopConversation)
+  stopRef.current = stopConversation
+
+  const sendRef = useRef(send)
+  sendRef.current = send
+  const pdfHandleRef = useRef<PdfConversationHandle | null>(null)
+  if (!pdfHandleRef.current) {
+    pdfHandleRef.current = {
+      stop: () => stopRef.current(),
+      send: (text) => sendRef.current(text),
+      assist: (text) => {
+        if (loopRef.current?.busy) setPrompt(text)
+        else sendRef.current(text)
+      },
+      setDraft: (text) => setPrompt(text),
+    }
+  }
+  useEffect(() => {
+    if (!conversation) return
+    conversation.onRegister(pdfHandleRef.current!)
+    return () => conversation.onUnregister()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // One-click AI actions from the ribbon / Ask popover; while a run is active the
   // preset lands in the composer instead of being dropped silently (markdown parity)
   useEffect(() => {
-    if (!preset) return
+    if (!preset || convMode) return
     if (loopRef.current?.busy) setPrompt(preset.text)
     else send(preset.text)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run once per nonce
@@ -613,36 +757,25 @@ export function AiPanel({
     },
   ]
 
+  // LOCAL(2026-09-21, d8201ad0): 会话实例以 div 容器渲染(外壳 aside 是面板根)
+  const RootTag = (convMode ? 'div' : 'aside') as 'div'
   return (
-    <aside
-      className="copilot"
-      style={{ width: '100%' }}
+    <RootTag
+      className={convMode ? 'ai-conversation' : 'copilot'}
+      style={convMode ? { display: 'flex', flexDirection: 'column', minHeight: 0, flex: 1 } : { width: '100%' }}
       dir={lang === 'ar' || lang === 'he' ? 'rtl' : undefined}
     >
-      <PanelTabs
-        tabs={aiTabs}
-        activeId={tab}
-        onTabChange={selectTab}
-        actions={
-          tab === 'chat' && chat.length > 0 ? (
-            <button
-              className="ai-header-btn"
-              onClick={() => {
-                stop()
-                loopRef.current?.reset()
-                setBusy(false)
-                setChat([])
-              }}
-              data-tip={t('aiNewChat')}
-              aria-label={t('aiNewChat')}
-            >
-              <IconNewChat />
-            </button>
-          ) : undefined
-        }
-        chromeActions={dockChrome?.buttons}
-        dragProps={dockChrome?.dragProps}
-      />
+      {!convMode && (
+        // LOCAL(2026-09-21, d8201ad0): 弃用销毁式「新对话」按钮——由外壳「+」取代
+        <PanelTabs
+          tabs={aiTabs}
+          activeId={tab}
+          onTabChange={selectTab}
+          actions={undefined}
+          chromeActions={dockChrome?.buttons}
+          dragProps={dockChrome?.dragProps}
+        />
+      )}
 
       <div
         className="ai-chat"
@@ -699,6 +832,13 @@ export function AiPanel({
             </div>
           )
         })}
+        {chat[chat.length - 1]?.interrupted && !busy && (
+          <div className="ai-continue-row">
+            <button className="ai-continue-btn" onClick={continueRun}>
+              {t('aiContinue')}
+            </button>
+          </div>
+        )}
         {fileOpConfirm && (
           <div className="ai-confirm-card" role="group" aria-label={t('aiFileOpConfirmTitle')}>
             <div className="ai-confirm-title">{t('aiFileOpConfirmTitle')}</div>
@@ -729,7 +869,7 @@ export function AiPanel({
         {busy && <AiTypingIndicator label={typingLabel} />}
       </div>
 
-      <AssistantTab items={assistantItems} hidden={tab !== 'assistant'} />
+      {!convMode && <AssistantTab items={assistantItems} hidden={tab !== 'assistant'} />}
 
       <div className="ai-composer" style={tab === 'chat' ? undefined : { display: 'none' }}>
         <AiComposer
@@ -821,7 +961,7 @@ export function AiPanel({
       {kbCiteView && (
         <KbCitePreview citation={kbCiteView} lang={lang} onClose={() => setKbCiteView(null)} />
       )}
-    </aside>
+    </RootTag>
   )
 }
 
@@ -1004,5 +1144,205 @@ export function ChatOfficeMark({ size = 18 }: { size?: number }): React.JSX.Elem
         fill="currentColor"
       />
     </svg>
+  )
+}
+
+
+// ── LOCAL(2026-09-21, d8201ad0): 多会话外壳(D1/D5/D9)─────────────────────────
+// tab 行 = [会话…][助手];「+」常驻;每会话一个 AiConversationBody 实例。
+// pdf 的 fileOpConfirm 卡为实例私有(§4.5)。上游无同类实现;收敛条件:上游若原生
+// 实现多会话,评估取上游并删除本地会话池。
+// LOCAL(2026-09-22, d8201ad0): D12/D13 增量——历史不再是 tab:「🕘」改 actions 槽
+// 常驻图标([+][🕘])的下拉浮层 AiHistoryPopover;空会话(从未发言)关闭直接丢弃、
+// 不进历史(hook close() 内分流)。上游动向与收敛条件同上。
+const isChatTabP = (tab: AiActiveTab): tab is string =>
+  typeof tab === 'string' && tab !== 'assistant' && tab !== 'empty'
+
+export function AiPanel(props: Parameters<typeof AiConversationBody>[0]) {
+  const { filePath, dockChrome } = props
+  const { t } = useI18n()
+  const tempChatIdRef = useRef(`unsaved-${Date.now()}`)
+  const conv = useAiConversations(
+    { filePath: filePath ?? null, tempChatId: tempChatIdRef.current },
+    { persistKey: 'aipdf.aiTab' },
+  )
+  const bodyHandlesRef = useRef(new Map<string, PdfConversationHandle>())
+
+  // 索引键换绑:未保存 → 已保存 / 重命名(chatId 不变)
+  const prevFilePathRef = useRef(filePath ?? null)
+  useEffect(() => {
+    const prev = prevFilePathRef.current
+    prevFilePathRef.current = filePath ?? null
+    if (!filePath || prev === filePath) return
+    conv.rebindIndex(prev ?? tempChatIdRef.current, filePath)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filePath])
+
+  const [closeConfirmId, setCloseConfirmId] = useState<string | null>(null)
+  // D13: 历史下拉浮层开关(空态引导的「从历史还原」也走它)
+  const [historyOpen, setHistoryOpen] = useState(false)
+  const closeConversation = async (chatId: string): Promise<void> => {
+    const handle = bodyHandlesRef.current.get(chatId)
+    if (handle) await handle.stop()
+    conv.close(chatId)
+  }
+  const closeFlow = (chatId: string): void => {
+    if (conv.runningIds.has(chatId)) {
+      setCloseConfirmId(chatId)
+      return
+    }
+    void closeConversation(chatId)
+  }
+
+  // 面板级入口(助手 tab / preset)→ 目标会话体
+  const targetChatId = (): string | null => {
+    if (isChatTabP(conv.activeTab) && conv.open.some((c) => c.chatId === conv.activeTab)) {
+      return conv.activeTab
+    }
+    return conv.open[0]?.chatId ?? null
+  }
+  const pendingRef = useRef<{ text: string; assist?: boolean } | null>(null)
+  useEffect(() => {
+    const p = pendingRef.current
+    if (!p) return
+    const target = targetChatId()
+    if (!target) {
+      // the pool settled with zero open conversations: open one to deliver into
+      if (conv.ready && conv.open.length === 0) conv.create()
+      return
+    }
+    const handle = bodyHandlesRef.current.get(target)
+    if (!handle) return
+    pendingRef.current = null
+    if (p.assist) handle.assist(p.text)
+    else handle.send(p.text)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conv.open.length, conv.activeTab, conv.ready])
+  const routeText = (text: string, assist = false): void => {
+    const target = targetChatId()
+    const handle = target ? bodyHandlesRef.current.get(target) : undefined
+    if (handle) {
+      if (assist) handle.assist(text)
+      else handle.send(text)
+      return
+    }
+    // queued: the delivery effect runs it on the first ready conversation body
+    pendingRef.current = { text, assist }
+  }
+
+  useEffect(() => {
+    const preset = props.preset
+    if (!preset) return
+    const target = targetChatId()
+    const handle = target ? bodyHandlesRef.current.get(target) : undefined
+    // pdf preset 沿用原语义(busy 落 composer,否则直接发送)
+    if (handle) handle.assist(preset.text)
+    else {
+      pendingRef.current = { text: preset.text, assist: true }
+      conv.create()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.preset?.nonce])
+
+  return (
+    <aside className="copilot" style={{ width: '100%', position: 'relative' }}>
+      <PanelTabs
+        tabs={[
+          ...conv.open.map((c) => ({
+            id: c.chatId,
+            label: c.title || t('aiConvUntitled'),
+            onClose: () => closeFlow(c.chatId),
+            running: conv.runningIds.has(c.chatId),
+          })),
+          { id: 'assistant', label: t('aiTabAssistant') },
+        ]}
+        activeId={conv.activeTab}
+        onTabChange={conv.setActiveTab}
+        actions={
+          // LOCAL(2026-09-22, d8201ad0): D13——常驻两图标 [+][🕘];🕘 历史对话下拉浮层
+          <>
+            <button
+              className="ai-header-btn"
+              onClick={() => conv.create()}
+              data-tip={t('aiNewChat')}
+              aria-label={t('aiNewChat')}
+            >
+              <IconNewChat />
+            </button>
+            <AiHistoryPopover
+              open={historyOpen}
+              onOpenChange={setHistoryOpen}
+              items={conv.closed}
+              tooltip={t('aiHistoryTooltip')}
+              labels={{
+                deleteOne: t('aiHistoryDelete'),
+                deleteAll: t('aiHistoryDeleteAll'),
+                empty: t('aiHistoryEmpty'),
+                deleteOneConfirm: t('aiHistoryDeleteOneConfirm'),
+                deleteAllConfirm: t('aiHistoryDeleteAllConfirm'),
+                cancel: t('aiConvCancel'),
+              }}
+              onRestore={(chatId) => conv.restore(chatId)}
+              // 单删/全删只作用于历史(未打开)会话,确认在浮层内完成(D3)
+              onDelete={(chatId) => conv.removeClosed(chatId)}
+              onDeleteAll={() => conv.removeAllClosed()}
+            />
+          </>
+        }
+        chromeActions={dockChrome?.buttons}
+        dragProps={dockChrome?.dragProps}
+      />
+      {closeConfirmId !== null && (
+        <AiTabConfirm
+          title={t('aiConvCloseRunningTitle')}
+          body={t('aiConvCloseRunningBody')}
+          confirmLabel={t('aiConvStopClose')}
+          cancelLabel={t('aiConvCancel')}
+          onConfirm={() => {
+            const id = closeConfirmId
+            setCloseConfirmId(null)
+            if (id !== null) void closeConversation(id)
+          }}
+          onCancel={() => setCloseConfirmId(null)}
+        />
+      )}
+      {conv.open.map((c) => (
+        <div
+          key={c.chatId}
+          style={
+            c.chatId === conv.activeTab
+              ? { display: 'flex', flexDirection: 'column', minHeight: 0, flex: 1 }
+              : { display: 'none' }
+          }
+        >
+          <AiConversationBody
+            {...props}
+            preset={null}
+            conversation={{
+              chatId: c.chatId,
+              projectId: conv.projectId,
+              onRunningChange: (running) => conv.setRunning(c.chatId, running),
+              onFirstMessage: (text) => conv.reportTitle(c.chatId, text),
+              onTurnEnd: () => conv.touch(c.chatId),
+              onRegister: (handle) => bodyHandlesRef.current.set(c.chatId, handle),
+              onUnregister: () => bodyHandlesRef.current.delete(c.chatId),
+            }}
+          />
+        </div>
+      ))}
+      {/* 关到零:空态引导(§2.1);「从历史还原」走 🕘 浮层(D13) */}
+      {conv.ready && conv.activeTab === 'empty' && (
+        <AiConversationsEmpty
+          labels={{
+            title: t('aiConvEmptyTitle'),
+            body: t('aiConvEmptyBody'),
+            create: t('aiNewChat'),
+            openHistory: t('aiConvOpenHistory'),
+          }}
+          onCreate={() => conv.create()}
+          onOpenHistory={() => setHistoryOpen(true)}
+        />
+      )}
+    </aside>
   )
 }
