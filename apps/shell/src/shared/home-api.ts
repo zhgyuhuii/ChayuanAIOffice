@@ -773,6 +773,9 @@ export const HOME_CHANNELS = {
   deleteFiles: 'home:delete-files',
   openTrash: 'home:open-trash',
   folderRoots: 'home:folder-roots',
+  // LOCAL 兼容通道：编辑器 Files pane 桥（files-pane-bridge）仍硬编码旧单根通道，
+  // 上游 #757 改多根 folderRoots 后主进程必须继续注册旧名，否则六端 Files pane 根目录查询全断
+  folderRoot: 'home:folder-root',
   addFolderRoot: 'home:folder-root-add',
   dropFolderRoots: 'home:folder-root-drop',
   removeFolderRoot: 'home:folder-root-remove',

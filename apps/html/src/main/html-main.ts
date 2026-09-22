@@ -45,7 +45,6 @@ import {
   readBodyCapped,
 } from '@chatoffice/electron-utils'
 import { createI18n, getUiLang } from '@chatoffice/i18n'
-import { generateImageTool } from '@chatoffice/ai-search'
 import { parseFileToText } from '@chatoffice/file-parse' 
 import { convertHtmlToDocx } from '../../../../packages/html2docx/src'
 import { atomicWriteFile } from './atomic-write'

@@ -4829,6 +4829,15 @@ function registerHomeIpc(): void {
     return roots
   })
 
+  // LOCAL 兼容：编辑器 Files pane 桥的旧单根通道（上游 #757 已改多根 folderRoots，
+  // 但 files-pane-bridge 仍按旧名 invoke，语义保持 main 时代：返回默认保存目录根）
+  ipcMain.handle(HOME_CHANNELS.folderRoot, (): FolderRoot => {
+    // describeRoot creates a missing root, so the watcher has something to attach to
+    const root = describeRoot(defaultSaveDir())
+    if (root.usable) ensureFolderWatchers()
+    return root
+  })
+
   // an added folder joins the tree where it is: nothing on disk is created, copied or moved
   const addFolderRoot = (path: string): FolderRoot | null => {
     const extras = withExtraRoot(extraFolderRoots(), defaultSaveDir(), path)
