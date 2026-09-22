@@ -750,11 +750,9 @@ export class TabManager {
     }
     this.activeId = id
     this.refreshActiveTargets()
-<<<<<<< HEAD
     this.layout()
-=======
+    // 上游 #757: 激活后显式交还键盘焦点（可见不等于聚焦，否则键入落进隐藏 view）
     this.focusActiveView()
->>>>>>> efb9247a (Sync snapshot (2026-09-22) (#757))
     this.onChanged()
   }
 
