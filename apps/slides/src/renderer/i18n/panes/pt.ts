@@ -1,14 +1,17 @@
-/** panes strings, pt (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const pt = {
   paneCancel: 'Cancelar',
   paneOk: 'OK',
   paneMoveUp: 'Mover para Cima',
   paneMoveDown: 'Mover para Baixo',
+
   paneAnimTitle: 'Painel de Animação · Slide {n}',
   paneAnimPreview: 'Reproduzir a visualização das animações deste slide',
   paneAnimCollapse: 'Recolher o Painel de Animação',
   paneAnimEmpty: 'Nenhuma animação neste slide',
-  paneAnimEmptySub: 'Selecione uma forma e escolha um efeito na guia "Animações". As animações são gravadas no pptx e também funcionam no PowerPoint.',
+  paneAnimEmptySub:
+    'Selecione uma forma e escolha um efeito na guia "Animações". As animações são gravadas no pptx e também funcionam no PowerPoint.',
   paneAnimDelete: 'Remover esta animação',
   paneAnimSeconds: '{sec} s',
   paneAnimDelaySeconds: 'atraso de {sec} s',
@@ -37,6 +40,10 @@ export const pt = {
   paneAnimEffShrink: 'Encolher e Girar',
   paneAnimEffZoomOut: 'Zoom (Saída)',
   paneAnimEffMotionPath: 'Trajetória de Animação',
+  paneAnimEffMediaPlay: 'Reproduzir',
+  paneAnimEffMediaPause: 'Pausar',
+  paneAnimEffMediaStop: 'Parar',
+
   paneChartEditTitle: 'Editar Dados do Gráfico',
   paneChartCategoryN: 'Categoria {n}',
   paneChartSeriesN: 'Série {n}',
@@ -46,13 +53,16 @@ export const pt = {
   paneChartDelCategory: 'Remover esta categoria',
   paneChartAddCategory: 'Adicionar categoria',
   paneChartAddCategoryBtn: '+ Categoria',
+
   paneCommentsTitle: 'Comentários · Slide {n}',
   paneCommentsCollapse: 'Recolher o Painel de Comentários',
   paneCommentsEmpty: 'Nenhum comentário neste slide',
-  paneCommentsEmptySub: 'Digite abaixo — os comentários são gravados no pptx e também ficam visíveis no PowerPoint.',
+  paneCommentsEmptySub:
+    'Digite abaixo — os comentários são gravados no pptx e também ficam visíveis no PowerPoint.',
   paneCommentsDelete: 'Excluir comentário',
   paneCommentsPlaceholder: 'Novo comentário… (⌘/Ctrl+Enter para publicar)',
   paneCommentsPost: 'Publicar',
+
   paneCsdTitle: 'Apresentações Personalizadas',
   paneCsdDefaultName: 'Apresentação Personalizada {n}',
   paneFrTitle: 'Localizar e Substituir',
@@ -87,15 +97,18 @@ export const pt = {
   paneCsdCreateHint: 'Clique em "Nova" para criar uma apresentação personalizada',
   paneCsdClose: 'Fechar',
   paneCsdPlay: 'Mostrar',
+
   paneCutoutTitle: 'Remover Fundo',
   paneCutoutDecodeFail: 'Falha ao decodificar a imagem',
   paneCutoutLoadFail: 'Falha ao carregar a imagem',
   paneCutoutApplyFail: 'Falha na remoção do fundo',
   paneCutoutLoading: 'Carregando…',
   paneCutoutTolerance: 'Tolerância',
-  paneCutoutHint: 'As cores de fundo são amostradas nas bordas da imagem; quanto maior a tolerância, mais cores semelhantes são removidas. Cerca de {pct}% dos pixels foram removidos nesta visualização.',
+  paneCutoutHint:
+    'As cores de fundo são amostradas nas bordas da imagem; quanto maior a tolerância, mais cores semelhantes são removidas. Cerca de {pct}% dos pixels foram removidos nesta visualização.',
   paneCutoutApplying: 'Processando…',
   paneCutoutApply: 'Aplicar',
+
   paneFormatTitle: 'Formatar',
   paneFormatTitleTyped: 'Formatar {type}',
   paneFormatTabShape: 'Opções de Forma',
@@ -150,7 +163,8 @@ export const pt = {
   paneBgHideGraphics: 'Ocultar elementos gráficos do plano de fundo',
   paneBgReset: 'Redefinir plano de fundo',
   paneBgResetTip: 'Remove o plano de fundo próprio deste slide e restaura o do layout/slide mestre',
-  paneFormatEmpty: 'Selecione um elemento na tela para editar sua posição, tamanho e preenchimento.',
+  paneFormatEmpty:
+    'Selecione um elemento na tela para editar sua posição, tamanho e preenchimento.',
   paneFormatPicture: 'Imagem',
   paneFormatGroup: 'Grupo',
   paneFormatTextBox: 'Caixa de Texto',
@@ -171,7 +185,8 @@ export const pt = {
   panePosFromTL: 'Canto superior esquerdo',
   panePosFromCenter: 'Centro',
   paneFormatCrop: 'Cortar Imagem',
-  paneFormatCutoutTip: 'Remover o fundo da imagem por tolerância de cor (substituído por um PNG transparente)',
+  paneFormatCutoutTip:
+    'Remover o fundo da imagem por tolerância de cor (substituído por um PNG transparente)',
   paneFormatCutoutNA: 'A remoção de fundo não está disponível para esta imagem',
   paneFormatFill: 'Preenchimento',
   paneFormatSolidFill: 'Preenchimento sólido',
@@ -230,20 +245,24 @@ export const pt = {
   paneInsetT: 'Margem superior',
   paneInsetB: 'Margem inferior',
   paneTextWrap: 'Quebrar texto na forma',
+
   panePresenterEndShow: 'Finalizar Apresentação',
   panePresenterEndTip: 'Finalizar a apresentação (Esc)',
   panePresenterSwap: 'Trocar Telas',
-  panePresenterSwapTip: 'Trocar as telas que exibem o Modo de Exibição do Apresentador e a apresentação de slides',
+  panePresenterSwapTip:
+    'Trocar as telas que exibem o Modo de Exibição do Apresentador e a apresentação de slides',
   panePresenterNoSecond: 'Nenhuma segunda tela detectada',
   panePresenterUseShow: 'Usar Apresentação de Slides',
   panePresenterUseShowTip: 'Mudar para uma apresentação de slides normal nesta tela',
-  panePresenterSingleHint: 'Modo de tela única (conecte uma segunda tela para apresentar em tela cheia automaticamente)',
+  panePresenterSingleHint:
+    'Modo de tela única (conecte uma segunda tela para apresentar em tela cheia automaticamente)',
   panePresenterElapsed: 'Tempo decorrido',
   panePresenterPause: 'Pausar o cronômetro',
   panePresenterResume: 'Retomar o cronômetro',
   panePresenterRestart: 'Reiniciar o cronômetro',
   panePresenterClock: 'Hora atual',
-  panePresenterEnded: 'Fim da apresentação de slides. Pressione Esc ou "Finalizar Apresentação" para sair.',
+  panePresenterEnded:
+    'Fim da apresentação de slides. Pressione Esc ou "Finalizar Apresentação" para sair.',
   panePresenterBlackOn: 'Tela em preto (pressione B para retomar)',
   panePresenterPen: 'Caneta (desenhe no slide; o público vê ao vivo)',
   panePresenterLaser: 'Apontador laser (visível para o público)',
@@ -259,9 +278,19 @@ export const pt = {
   panePresenterNotesBigger: 'Aumentar o texto das anotações',
   panePresenterNotesSmaller: 'Diminuir o texto das anotações',
   panePresenterFilmSlideN: 'Slide {n}',
+
   paneShowEndedClick: 'Fim da apresentação de slides. Clique para sair.',
   paneShowEnded: 'Fim da apresentação de slides.',
   paneShowRehearseTip: 'Testar Intervalos: tempo neste slide / tempo total',
   paneShowRehearseTotal: 'Total {time}',
+  paneShowMenuNext: 'Seguinte',
+  paneShowMenuPrev: 'Anterior',
+  paneShowMenuLastViewed: 'Último visualizado',
+  paneShowMenuSeeAll: 'Ver todos os slides',
+  paneShowMenuScreen: 'Tela',
+  paneShowMenuBlack: 'Tela preta',
+  paneShowMenuWhite: 'Tela branca',
+  paneShowMenuEnd: 'Terminar apresentação',
+  panePresenterWhiteOn: 'Tela branca (W para retomar)',
   paneAnimRewind: 'Rebobinar após o efeito',
-}
+} satisfies Record<keyof typeof zh, string>

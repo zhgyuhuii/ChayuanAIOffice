@@ -40,6 +40,9 @@ const IMAGE_SOURCE_DIRECTIVE: Record<AiImageSource, string> = {
   svg: '- Image source preference: vector graphics — pick generate_svg first (offline, no login); use image_search only for real photos the user explicitly asks for.',
 }
 
+const MEDIA_ANALYSIS_OFF_NOTE =
+  '\n\nNote: analyze_media is currently unavailable (no media provider: signed out of Genspark or cloud tools off, and no media API key in Settings). You cannot see what a picture inside the document shows — tell the user that instead of guessing at its content.'
+
 /**
  * The docx capability as an AgentSkill: document skeleton context, the five
  * document tools, and the local executor. Future apps register their own
@@ -58,18 +61,37 @@ export function createDocsSkill(
   /** styles.xml catalog + page watermark stores (define_style / applyStyle / set_watermark) */
   getExtras?: () => AiDocExtras | undefined,
   getNotes?: () => AiNotesAccess | undefined,
+  /** same as imageGenAvailable, for analyze_media (seeing pictures that are in the document) */
+  mediaAnalysisAvailable?: () => boolean,
 ): AgentSkill {
   // Selection frozen per run: tools act on the range the prompt described,
   // not on wherever the user's live selection has wandered mid-run. The doc
   // snapshot bounds the freeze's validity (see FrozenSelection).
   let frozen: FrozenSelection | null = null
+  /**
+   * LOCAL 并集(上游 #544): 本地无 imageGenAvailable 参数(generate_image 门控由图源偏好
+   * 与 imageGenerationAvailable 在会话体侧处理),mediaToolsOff 只收 analyze_media 门;
+   * generate_image 的可用性过滤不在 docs-skill 内重复。
+   */
+  const mediaToolsOff = (): Set<string> => {
+    const hidden = new Set<string>()
+    if (mediaAnalysisAvailable?.() === false) hidden.add('analyze_media')
+    return hidden
+  }
+  const mediaOffNote = (): string => (mediaToolsOff().size > 0 ? MEDIA_ANALYSIS_OFF_NOTE : '')
   return {
     id: 'docx',
     get systemPrompt() {
+      // LOCAL 并集: 本地图源指令行(IMAGE_SOURCE_DIRECTIVE)+ 上游 #544 媒体工具可用性注记
       const line = getImageSource ? IMAGE_SOURCE_DIRECTIVE[getImageSource()] : ''
-      return line ? `${AGENT_SYSTEM_PROMPT}\n${line}` : AGENT_SYSTEM_PROMPT
+      const base = line ? `${AGENT_SYSTEM_PROMPT}\n${line}` : AGENT_SYSTEM_PROMPT
+      return base + mediaOffNote()
     },
-    tools: AGENT_TOOLS,
+    get tools() {
+      // 上游 #544: generate_image/analyze_media 按可用性过滤(替代静态 tools 列表)
+      const hidden = mediaToolsOff()
+      return hidden.size === 0 ? AGENT_TOOLS : AGENT_TOOLS.filter((t) => !hidden.has(t.name))
+    },
     buildContext: () => {
       const editor = getEditor()
       markDocSeen(editor) // the context the model receives is the freshness baseline for index-addressed writes

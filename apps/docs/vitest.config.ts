@@ -14,6 +14,10 @@ export default defineConfig({
         replacement: local('../../packages/ui/src/popover-dismiss.ts'),
       },
       {
+        find: '@chatoffice/docx-engine/lazy-media',
+        replacement: local('../../packages/docx-engine/src/lazy-media.ts'),
+      },
+      {
         find: '@chatoffice/docx-engine',
         replacement: local('../../packages/docx-engine/src/index.ts'),
       },

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { existsSync, mkdtempSync, readFileSync, rmSync, statSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
@@ -12,7 +12,11 @@ import {
   startChatofficeLogin,
   type ChatOfficeLoginProgress,
 } from '../src/chatoffice-auth'
-import { chatofficeCliApiKey, setChatOfficeProxyUrl } from '../src/chatoffice'
+import {
+  chatofficeCliApiKey,
+  setChatOfficeProxyUrl,
+  watchChatofficeApiKey,
+} from '../src/chatoffice'
 
 const CODE = 'a'.repeat(64)
 const AUTH_URL = `https://www.genspark.ai/api/office_addin_auth/verify?code=${CODE}`
@@ -302,5 +306,25 @@ describe('chatofficeLogout', () => {
     vi.stubGlobal('fetch', fetchMock)
     await chatofficeLogout()
     expect(fetchMock).not.toHaveBeenCalled()
+  })
+})
+
+describe('watchChatofficeApiKey', () => {
+  it('drops the cached key and reports the new one when another process rewrites auth.json', async () => {
+    const write = (key: string) =>
+      writeFileSync(join(dir, 'auth.json'), JSON.stringify({ api_key: key, key_id: key }))
+    write('gsk-old')
+    expect(chatofficeCliApiKey()).toBe('gsk-old')
+    const seen: string[] = []
+    const stop = watchChatofficeApiKey((key) => seen.push(key), 20)
+    try {
+      // the first stat runs off-thread; a write that lands before it becomes the baseline
+      await new Promise((r) => setTimeout(r, 100))
+      write('gsk-new')
+      await vi.waitFor(() => expect(seen).toEqual(['gsk-new']), { timeout: 3000 })
+      expect(chatofficeCliApiKey()).toBe('gsk-new')
+    } finally {
+      stop()
+    }
   })
 })

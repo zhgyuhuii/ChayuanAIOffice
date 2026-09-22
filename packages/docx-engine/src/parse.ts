@@ -7,7 +7,7 @@ import { parseCustGeom } from '@chatoffice/pptx-engine/custgeom'
 import { parseChartPartXml, parseChartExDetail } from './chart'
 import { findInkRuns, stripInkRuns } from './ink'
 import { isMetafileMime, metafileToDataUrl } from './metafile'
-import { isTiffMime, tiffToDataUrl } from './tiff'
+import { isTiffMime, tiffToDataUrlAsync } from './tiff'
 import { ommlFragmentsOf, ommlToLatex, ommlToMathML } from './math'
 import { splitXmlChildren } from './generate'
 import { NOTE_PART_PATH, parseNotesXml } from './notes'
@@ -21,7 +21,7 @@ import { FONT_TABLE_PART_PATH, parseFontTable, readEmbeddedFonts } from './font-
 import { DEFAULT_THEME_COLORS, THEME_PART_PATH, readThemeColors, readThemeFonts } from './theme'
 import { PAGE_MARK, TOTAL_PAGES_MARK } from './types'
 import { assertZipWithinLimits, loadDocxZip } from './zip-load'
-import { altChunkToDocx } from './alt-chunk'
+import { altChunkToDocx, hasAltChunkHtmlConverter } from './alt-chunk'
 import type {
   Block,
   ChartDisplay,
@@ -295,6 +295,9 @@ export interface ParseExtras {
   chartParts: Record<string, string>
   /** source-document hashes named by lazily served pictures */
   lazyMediaHashes: string[]
+  /** HTML/MHT altChunk parts skipped for want of a converter (a Worker parse):
+   *  the host reparses on the UI thread, where one is installed */
+  altChunksNeedConverter?: number
 }
 
 export interface ParseOptions {
@@ -585,7 +588,14 @@ export async function parseDocx(
       bodyInnerStart: scan.innerStart,
       bodyInnerEnd: scan.innerEnd,
     },
-    extras: { elements, chartParts, lazyMediaHashes: [...(lazyHashesByZip.get(zip) ?? [])] },
+    extras: {
+      elements,
+      chartParts,
+      lazyMediaHashes: [...(lazyHashesByZip.get(zip) ?? [])],
+      ...(unconvertedChunksByZip.get(zip)
+        ? { altChunksNeedConverter: unconvertedChunksByZip.get(zip) }
+        : {}),
+    },
   }
 }
 
@@ -698,7 +708,13 @@ async function expandAltChunk(
       const { defaults, overrides } = await contentTypesOf(zip)
       return overrides.get(`/${path}`) ?? defaults.get(path.split('.').pop()?.toLowerCase() ?? '')
     })
-    if (!bytes) return []
+    if (!bytes) {
+      // no converter here (a Worker parse): the host parses again where one is installed
+      if (!hasAltChunkHtmlConverter()) {
+        unconvertedChunksByZip.set(zip, (unconvertedChunksByZip.get(zip) ?? 0) + 1)
+      }
+      return []
+    }
     const sub = await parseDocx(bytes, { expandAltChunks: false })
     for (const [id, info] of sub.styles) if (!styles.has(id)) styles.set(id, info)
     let nextNumId = 1
@@ -7013,13 +7029,15 @@ async function readMediaPartDataUrl(zip: JSZip, partPath: string): Promise<strin
   const mime = await imagePartMime(zip, partPath)
   if (!mime) return null
   if (isMetafileMime(mime)) return metafileToDataUrl(await file.async('arraybuffer'), mime)
-  if (isTiffMime(mime)) return tiffToDataUrl(await file.async('arraybuffer'))
+  if (isTiffMime(mime)) return tiffToDataUrlAsync(await file.async('arraybuffer'))
   return mediaPartSrc(zip, file, partPath, mime)
 }
 
 /** picture URL for a media part: a lazy-media placeholder points at the
  *  source document's part, anything else inlines the bytes */
 const lazyHashesByZip = new WeakMap<JSZip, Set<string>>()
+/** w:altChunk HTML/MHT parts left unexpanded because no converter is installed */
+const unconvertedChunksByZip = new WeakMap<JSZip, number>()
 
 async function mediaPartSrc(
   zip: JSZip,

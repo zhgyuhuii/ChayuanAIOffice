@@ -9,6 +9,11 @@ export interface OutlineNode {
   items?: OutlineNode[]
 }
 
+/** Max outline nesting rendered: a hostile PDF can nest bookmarks thousands
+ *  deep, and unbounded recursion would overflow the render stack. Deeper
+ *  levels are dropped (their ancestors still render). */
+export const MAX_OUTLINE_DEPTH = 32
+
 function Item({
   node,
   depth,
@@ -41,9 +46,10 @@ function Item({
       >
         {node.title}
       </button>
-      {node.items?.map((c, i) => (
-        <Item key={i} node={c} depth={depth + 1} currentDest={currentDest} onGo={onGo} />
-      ))}
+      {depth < MAX_OUTLINE_DEPTH &&
+        node.items?.map((c, i) => (
+          <Item key={i} node={c} depth={depth + 1} currentDest={currentDest} onGo={onGo} />
+        ))}
     </>
   )
 }

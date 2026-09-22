@@ -1,14 +1,17 @@
-/** panes strings, ms (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const ms = {
   paneCancel: 'Batal',
   paneOk: 'OK',
   paneMoveUp: 'Alih ke Atas',
   paneMoveDown: 'Alih ke Bawah',
+
   paneAnimTitle: 'Anak Tetingkap Animasi · Slaid {n}',
   paneAnimPreview: 'Mainkan pratonton animasi slaid ini',
   paneAnimCollapse: 'Runtuhkan Anak Tetingkap Animasi',
   paneAnimEmpty: 'Tiada animasi pada slaid ini',
-  paneAnimEmptySub: 'Pilih bentuk dan pilih kesan pada tab "Animasi". Animasi ditulis ke dalam pptx dan turut dimainkan dalam PowerPoint.',
+  paneAnimEmptySub:
+    'Pilih bentuk dan pilih kesan pada tab "Animasi". Animasi ditulis ke dalam pptx dan turut dimainkan dalam PowerPoint.',
   paneAnimDelete: 'Alih keluar animasi ini',
   paneAnimSeconds: '{sec} s',
   paneAnimDelaySeconds: 'lengah {sec} s',
@@ -37,6 +40,10 @@ export const ms = {
   paneAnimEffShrink: 'Kecil dan Pusing',
   paneAnimEffZoomOut: 'Zum Keluar',
   paneAnimEffMotionPath: 'Laluan Gerakan',
+  paneAnimEffMediaPlay: 'Main',
+  paneAnimEffMediaPause: 'Jeda',
+  paneAnimEffMediaStop: 'Henti',
+
   paneChartEditTitle: 'Edit Data Carta',
   paneChartCategoryN: 'Kategori {n}',
   paneChartSeriesN: 'Siri {n}',
@@ -46,13 +53,16 @@ export const ms = {
   paneChartDelCategory: 'Alih keluar kategori ini',
   paneChartAddCategory: 'Tambah kategori',
   paneChartAddCategoryBtn: '+ Kategori',
+
   paneCommentsTitle: 'Komen · Slaid {n}',
   paneCommentsCollapse: 'Runtuhkan Anak Tetingkap Komen',
   paneCommentsEmpty: 'Tiada komen pada slaid ini',
-  paneCommentsEmptySub: 'Taip di bawah — komen ditulis ke dalam pptx dan turut kelihatan dalam PowerPoint.',
+  paneCommentsEmptySub:
+    'Taip di bawah — komen ditulis ke dalam pptx dan turut kelihatan dalam PowerPoint.',
   paneCommentsDelete: 'Padam komen',
   paneCommentsPlaceholder: 'Komen baharu… (⌘/Ctrl+Enter untuk menyiarkan)',
   paneCommentsPost: 'Siarkan',
+
   paneCsdTitle: 'Persembahan Tersuai',
   paneCsdDefaultName: 'Persembahan Tersuai {n}',
   paneFrTitle: 'Cari dan Ganti',
@@ -87,15 +97,18 @@ export const ms = {
   paneCsdCreateHint: 'Klik "Baharu" untuk membuat persembahan tersuai',
   paneCsdClose: 'Tutup',
   paneCsdPlay: 'Persembahkan',
+
   paneCutoutTitle: 'Alih Keluar Latar Belakang',
   paneCutoutDecodeFail: 'Gagal menyahkod imej',
   paneCutoutLoadFail: 'Gagal memuatkan imej',
   paneCutoutApplyFail: 'Pengalihan keluar latar belakang gagal',
   paneCutoutLoading: 'Memuatkan…',
   paneCutoutTolerance: 'Toleransi',
-  paneCutoutHint: 'Warna latar belakang disampel dari tepi imej; toleransi yang lebih tinggi mengalih keluar lebih banyak warna yang serupa. Kira-kira {pct}% piksel dialih keluar dalam pratonton ini.',
+  paneCutoutHint:
+    'Warna latar belakang disampel dari tepi imej; toleransi yang lebih tinggi mengalih keluar lebih banyak warna yang serupa. Kira-kira {pct}% piksel dialih keluar dalam pratonton ini.',
   paneCutoutApplying: 'Memproses…',
   paneCutoutApply: 'Guna',
+
   paneFormatTitle: 'Format',
   paneFormatTitleTyped: 'Format {type}',
   paneFormatTabShape: 'Pilihan Bentuk',
@@ -149,7 +162,8 @@ export const ms = {
   paneBgTile: 'Jubin',
   paneBgHideGraphics: 'Sembunyikan Grafik Latar Belakang',
   paneBgReset: 'Set Semula Latar Belakang',
-  paneBgResetTip: 'Mengalih keluar latar belakang slaid ini dan memulihkan latar belakang reka letak/induk',
+  paneBgResetTip:
+    'Mengalih keluar latar belakang slaid ini dan memulihkan latar belakang reka letak/induk',
   paneFormatEmpty: 'Pilih elemen pada kanvas untuk mengedit kedudukan, saiz dan isiannya.',
   paneFormatPicture: 'Gambar',
   paneFormatGroup: 'Kumpulan',
@@ -171,7 +185,8 @@ export const ms = {
   panePosFromTL: 'Penjuru kiri atas',
   panePosFromCenter: 'Tengah',
   paneFormatCrop: 'Pangkas Gambar',
-  paneFormatCutoutTip: 'Alih keluar latar belakang gambar mengikut toleransi warna (digantikan dengan PNG lut sinar)',
+  paneFormatCutoutTip:
+    'Alih keluar latar belakang gambar mengikut toleransi warna (digantikan dengan PNG lut sinar)',
   paneFormatCutoutNA: 'Pengalihan keluar latar belakang tidak tersedia untuk gambar ini',
   paneFormatFill: 'Isian',
   paneFormatSolidFill: 'Isian padu',
@@ -230,6 +245,7 @@ export const ms = {
   paneInsetT: 'Jidar atas',
   paneInsetB: 'Jidar bawah',
   paneTextWrap: 'Balut teks dalam bentuk',
+
   panePresenterEndShow: 'Tamatkan Persembahan',
   panePresenterEndTip: 'Tamatkan persembahan (Esc)',
   panePresenterSwap: 'Tukar Paparan',
@@ -237,13 +253,15 @@ export const ms = {
   panePresenterNoSecond: 'Paparan kedua tidak dikesan',
   panePresenterUseShow: 'Guna Persembahan Slaid',
   panePresenterUseShowTip: 'Beralih kepada persembahan slaid biasa pada paparan ini',
-  panePresenterSingleHint: 'Mod paparan tunggal (sambungkan paparan kedua untuk persembahan skrin penuh secara automatik)',
+  panePresenterSingleHint:
+    'Mod paparan tunggal (sambungkan paparan kedua untuk persembahan skrin penuh secara automatik)',
   panePresenterElapsed: 'Masa berlalu',
   panePresenterPause: 'Jeda pemasa',
   panePresenterResume: 'Sambung semula pemasa',
   panePresenterRestart: 'Mulakan semula pemasa',
   panePresenterClock: 'Masa semasa',
-  panePresenterEnded: 'Persembahan slaid tamat. Tekan Esc atau "Tamatkan Persembahan" untuk keluar.',
+  panePresenterEnded:
+    'Persembahan slaid tamat. Tekan Esc atau "Tamatkan Persembahan" untuk keluar.',
   panePresenterBlackOn: 'Skrin hitam (tekan B untuk menyambung semula)',
   panePresenterPen: 'Pen (lukis pada slaid; penonton melihatnya secara langsung)',
   panePresenterLaser: 'Penuding laser (kelihatan kepada penonton)',
@@ -259,9 +277,19 @@ export const ms = {
   panePresenterNotesBigger: 'Besarkan teks nota',
   panePresenterNotesSmaller: 'Kecilkan teks nota',
   panePresenterFilmSlideN: 'Slaid {n}',
+
   paneShowEndedClick: 'Persembahan slaid tamat. Klik untuk keluar.',
   paneShowEnded: 'Persembahan slaid tamat.',
   paneShowRehearseTip: 'Raptai Pemasaan: masa pada slaid ini / jumlah masa',
   paneShowRehearseTotal: 'Jumlah {time}',
+  paneShowMenuNext: 'Seterusnya',
+  paneShowMenuPrev: 'Sebelumnya',
+  paneShowMenuLastViewed: 'Terakhir Dilihat',
+  paneShowMenuSeeAll: 'Lihat Semua Slaid',
+  paneShowMenuScreen: 'Skrin',
+  paneShowMenuBlack: 'Skrin Hitam',
+  paneShowMenuWhite: 'Skrin Putih',
+  paneShowMenuEnd: 'Tamatkan Persembahan',
+  panePresenterWhiteOn: 'Skrin putih (tekan W untuk kembali)',
   paneAnimRewind: 'Mundur selepas efek',
-}
+} satisfies Record<keyof typeof zh, string>

@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState, lazy, Suspense } from 'react'
 import type { Editor } from '@tiptap/core'
+// LOCAL(2026-09-22, f5247d3..476e5023): 上游 #544(analyze_media)的 import hunk 基于其单体
+// AiPanel,本地为「外壳+AiConversationBody」架构——保本地 import;mediaAnalysisAvailable
+// 接线重放至 AiConversationBody(该提交的 docs-skill/tools/main 侧已并集落地)
 import type { Block } from '@chatoffice/docx-engine'
 import { streamText } from '@chatoffice/agent-core'
 import type { AiSettingsV2 } from '../../shared/ipc'

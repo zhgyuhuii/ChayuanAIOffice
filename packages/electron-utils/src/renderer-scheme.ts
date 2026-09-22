@@ -33,6 +33,9 @@ export const DOCX_MEDIA_SCHEME_PRIVILEGE: CustomScheme = {
 
 export type RendererHost = 'docs' | 'sheets' | 'slides' | 'pdf' | 'markdown' | 'html'
 
+export const MAX_RENDERER_QUERY_ENTRIES = 20
+export const MAX_RENDERER_QUERY_CHARS = 4_000
+
 /** Dev server URL when one is configured, otherwise the module's scheme URL; the
  * query is appended either way so a dev URL that already carries params stays valid. */
 export function rendererUrl(
@@ -46,7 +49,18 @@ export function rendererUrl(
   } catch {
     throw new Error(`Invalid dev URL for renderer "${host}": "${devUrl}"`)
   }
-  for (const [key, value] of Object.entries(query ?? {})) url.searchParams.set(key, value)
+  const entries = Object.entries(query ?? {})
+  if (entries.length > MAX_RENDERER_QUERY_ENTRIES) {
+    throw new Error(
+      `Too many renderer query params (${entries.length}, cap ${MAX_RENDERER_QUERY_ENTRIES})`,
+    )
+  }
+  for (const [key, value] of entries) {
+    if (key.length > 256 || value.length > MAX_RENDERER_QUERY_CHARS) {
+      throw new Error('Renderer query param too long')
+    }
+    url.searchParams.set(key, value)
+  }
   return url.toString()
 }
 
@@ -70,6 +84,7 @@ export function resolveRendererFile(
   } catch {
     return null
   }
+  if (pathname.length > 4096 || pathname.includes('\0')) return null
   // Treat backslashes as separators too: %5c decodes to `\`, which resolves
   // as a directory separator on Windows but not on POSIX.
   const relative = pathname.replace(/\\/g, '/').replace(/^\/+/, '')

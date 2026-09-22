@@ -1,14 +1,17 @@
-/** panes strings, hi (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const hi = {
   paneCancel: 'रद्द करें',
   paneOk: 'ठीक है',
   paneMoveUp: 'ऊपर ले जाएँ',
   paneMoveDown: 'नीचे ले जाएँ',
+
   paneAnimTitle: 'एनिमेशन फलक · स्लाइड {n}',
   paneAnimPreview: 'इस स्लाइड के एनिमेशन का पूर्वावलोकन चलाएँ',
   paneAnimCollapse: 'एनिमेशन फलक संक्षिप्त करें',
   paneAnimEmpty: 'इस स्लाइड पर कोई एनिमेशन नहीं है',
-  paneAnimEmptySub: 'कोई आकृति चुनें और "एनिमेशन" टैब में कोई प्रभाव चुनें। एनिमेशन pptx में लिखे जाते हैं और PowerPoint में भी चलते हैं।',
+  paneAnimEmptySub:
+    'कोई आकृति चुनें और "एनिमेशन" टैब में कोई प्रभाव चुनें। एनिमेशन pptx में लिखे जाते हैं और PowerPoint में भी चलते हैं।',
   paneAnimDelete: 'यह एनिमेशन हटाएँ',
   paneAnimSeconds: '{sec} से.',
   paneAnimDelaySeconds: 'विलंब {sec} से.',
@@ -37,6 +40,10 @@ export const hi = {
   paneAnimEffShrink: 'सिकुड़ना और मुड़ना',
   paneAnimEffZoomOut: 'ज़ूम आउट',
   paneAnimEffMotionPath: 'गति पथ',
+  paneAnimEffMediaPlay: 'चलाएँ',
+  paneAnimEffMediaPause: 'रोकें',
+  paneAnimEffMediaStop: 'बंद करें',
+
   paneChartEditTitle: 'चार्ट डेटा संपादित करें',
   paneChartCategoryN: 'श्रेणी {n}',
   paneChartSeriesN: 'शृंखला {n}',
@@ -46,13 +53,16 @@ export const hi = {
   paneChartDelCategory: 'यह श्रेणी हटाएँ',
   paneChartAddCategory: 'श्रेणी जोड़ें',
   paneChartAddCategoryBtn: '+ श्रेणी',
+
   paneCommentsTitle: 'टिप्पणियाँ · स्लाइड {n}',
   paneCommentsCollapse: 'टिप्पणी फलक संक्षिप्त करें',
   paneCommentsEmpty: 'इस स्लाइड पर कोई टिप्पणी नहीं है',
-  paneCommentsEmptySub: 'नीचे लिखें — टिप्पणियाँ pptx में लिखी जाती हैं और PowerPoint में भी दिखाई देती हैं।',
+  paneCommentsEmptySub:
+    'नीचे लिखें — टिप्पणियाँ pptx में लिखी जाती हैं और PowerPoint में भी दिखाई देती हैं।',
   paneCommentsDelete: 'टिप्पणी हटाएँ',
   paneCommentsPlaceholder: 'नई टिप्पणी… (पोस्ट करने के लिए ⌘/Ctrl+Enter)',
   paneCommentsPost: 'पोस्ट करें',
+
   paneCsdTitle: 'कस्टम शो',
   paneCsdDefaultName: 'कस्टम शो {n}',
   paneFrTitle: 'ढूँढें और बदलें',
@@ -87,15 +97,18 @@ export const hi = {
   paneCsdCreateHint: 'कस्टम शो बनाने के लिए "नया" पर क्लिक करें',
   paneCsdClose: 'बंद करें',
   paneCsdPlay: 'दिखाएँ',
+
   paneCutoutTitle: 'पृष्ठभूमि हटाएँ',
   paneCutoutDecodeFail: 'छवि डिकोड करने में विफल',
   paneCutoutLoadFail: 'छवि लोड करने में विफल',
   paneCutoutApplyFail: 'पृष्ठभूमि हटाना विफल',
   paneCutoutLoading: 'लोड हो रहा है…',
   paneCutoutTolerance: 'सहनशीलता',
-  paneCutoutHint: 'पृष्ठभूमि के रंग छवि के किनारों से नमूने के रूप में लिए जाते हैं; सहनशीलता जितनी अधिक होगी, उतने ही अधिक मिलते-जुलते रंग हटाए जाएँगे। इस पूर्वावलोकन में लगभग {pct}% पिक्सेल हटाए गए हैं।',
+  paneCutoutHint:
+    'पृष्ठभूमि के रंग छवि के किनारों से नमूने के रूप में लिए जाते हैं; सहनशीलता जितनी अधिक होगी, उतने ही अधिक मिलते-जुलते रंग हटाए जाएँगे। इस पूर्वावलोकन में लगभग {pct}% पिक्सेल हटाए गए हैं।',
   paneCutoutApplying: 'संसाधित हो रहा है…',
   paneCutoutApply: 'लागू करें',
+
   paneFormatTitle: 'स्वरूप',
   paneFormatTitleTyped: '{type} स्वरूपित करें',
   paneFormatTabShape: 'आकृति विकल्प',
@@ -171,7 +184,8 @@ export const hi = {
   panePosFromTL: 'ऊपरी-बाएँ कोना',
   panePosFromCenter: 'केंद्र',
   paneFormatCrop: 'चित्र क्रॉप करें',
-  paneFormatCutoutTip: 'रंग सहनशीलता के आधार पर चित्र की पृष्ठभूमि हटाएँ (पारदर्शी PNG से बदला जाता है)',
+  paneFormatCutoutTip:
+    'रंग सहनशीलता के आधार पर चित्र की पृष्ठभूमि हटाएँ (पारदर्शी PNG से बदला जाता है)',
   paneFormatCutoutNA: 'इस चित्र के लिए पृष्ठभूमि हटाना उपलब्ध नहीं है',
   paneFormatFill: 'भरण',
   paneFormatSolidFill: 'ठोस भरण',
@@ -230,6 +244,7 @@ export const hi = {
   paneInsetT: 'ऊपरी हाशिया',
   paneInsetB: 'निचला हाशिया',
   paneTextWrap: 'आकृति में पाठ लपेटें',
+
   panePresenterEndShow: 'शो समाप्त करें',
   panePresenterEndTip: 'शो समाप्त करें (Esc)',
   panePresenterSwap: 'डिस्प्ले बदलें',
@@ -237,7 +252,8 @@ export const hi = {
   panePresenterNoSecond: 'कोई दूसरा डिस्प्ले नहीं मिला',
   panePresenterUseShow: 'स्लाइड शो का उपयोग करें',
   panePresenterUseShowTip: 'इस डिस्प्ले पर सामान्य स्लाइड शो पर जाएँ',
-  panePresenterSingleHint: 'एकल डिस्प्ले मोड (दूसरा डिस्प्ले जोड़ने पर स्वतः पूर्ण स्क्रीन शो होगा)',
+  panePresenterSingleHint:
+    'एकल डिस्प्ले मोड (दूसरा डिस्प्ले जोड़ने पर स्वतः पूर्ण स्क्रीन शो होगा)',
   panePresenterElapsed: 'बीता समय',
   panePresenterPause: 'टाइमर रोकें',
   panePresenterResume: 'टाइमर जारी रखें',
@@ -259,9 +275,19 @@ export const hi = {
   panePresenterNotesBigger: 'नोट्स का टेक्स्ट बड़ा करें',
   panePresenterNotesSmaller: 'नोट्स का टेक्स्ट छोटा करें',
   panePresenterFilmSlideN: 'स्लाइड {n}',
+
   paneShowEndedClick: 'स्लाइड शो समाप्त। बाहर निकलने के लिए क्लिक करें।',
   paneShowEnded: 'स्लाइड शो समाप्त।',
   paneShowRehearseTip: 'समय का पूर्वाभ्यास: इस स्लाइड पर समय / कुल समय',
   paneShowRehearseTotal: 'कुल {time}',
+  paneShowMenuNext: 'अगला',
+  paneShowMenuPrev: 'पिछला',
+  paneShowMenuLastViewed: 'अंतिम बार देखा गया',
+  paneShowMenuSeeAll: 'सभी स्लाइड देखें',
+  paneShowMenuScreen: 'स्क्रीन',
+  paneShowMenuBlack: 'काली स्क्रीन',
+  paneShowMenuWhite: 'सफ़ेद स्क्रीन',
+  paneShowMenuEnd: 'शो समाप्त करें',
+  panePresenterWhiteOn: 'सफ़ेद स्क्रीन (वापस जाने के लिए W दबाएँ)',
   paneAnimRewind: 'प्रभाव के बाद रिवाइंड',
-}
+} satisfies Record<keyof typeof zh, string>

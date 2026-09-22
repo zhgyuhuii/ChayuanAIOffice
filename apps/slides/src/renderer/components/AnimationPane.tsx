@@ -48,6 +48,9 @@ const EFFECT_KEY: Record<AnimEffectKind, StringKey> = {
   dissolveOut: 'ribbonAnimDissolveOut',
   randomBarsOut: 'ribbonAnimRandomBarsOut',
   motionPath: 'paneAnimEffMotionPath',
+  mediaPlay: 'paneAnimEffMediaPlay',
+  mediaPause: 'paneAnimEffMediaPause',
+  mediaStop: 'paneAnimEffMediaStop',
 }
 
 const TRIGGER_GLYPH = { onClick: '🖱', withPrev: '⇉', afterPrev: '⏱' } as const

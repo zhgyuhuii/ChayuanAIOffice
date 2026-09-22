@@ -22,6 +22,12 @@ describe('rendererUrl', () => {
     )
     expect(() => rendererUrl('', 'docs')).toThrow('Invalid dev URL for renderer "docs": ""')
   })
+
+  it('rejects oversized query params', () => {
+    const many = Object.fromEntries(Array.from({ length: 25 }, (_, i) => [`k${i}`, 'v']))
+    expect(() => rendererUrl(undefined, 'docs', many)).toThrow(/Too many/)
+    expect(() => rendererUrl(undefined, 'docs', { k: 'x'.repeat(5000) })).toThrow(/too long/)
+  })
 })
 
 describe('resolveRendererFile', () => {
@@ -69,5 +75,9 @@ describe('resolveRendererFile', () => {
     expect(resolveRendererFile(roots, 'chatoffice-app://sheets/')).toBeNull()
     expect(resolveRendererFile(roots, 'chatoffice-app://sheets')).toBeNull()
     expect(resolveRendererFile(roots, 'chatoffice-app://sheets/.')).toBeNull()
+  })
+
+  it('rejects overlong and NUL paths', () => {
+    expect(resolveRendererFile(roots, `chatoffice-app://sheets/${'a'.repeat(5000)}.js`)).toBeNull()
   })
 })

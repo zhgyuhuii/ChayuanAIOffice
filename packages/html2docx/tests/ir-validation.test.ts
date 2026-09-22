@@ -37,6 +37,25 @@ test('rejects invalid shotId shapes', () => {
   assert.throws(() => normalizeIr([{ type: 'image', shotId: 42 }]), /index 0.*shotId/)
 })
 
+test('rejects non-finite or negative numeric geometry', () => {
+  for (const bad of [NaN, Infinity, -5, '-3']) {
+    assert.throws(() => normalizeIr([{ type: 'image', width: bad }]), /index 0.*width/)
+    assert.throws(() => normalizeIr([{ type: 'image', height: bad }]), /index 0.*height/)
+  }
+  assert.throws(() => normalizeIr([{ type: 'image', widthFrac: Infinity }]), /widthFrac/)
+  assert.throws(() => normalizeIr([{ type: 'image', xPx: NaN }]), /xPx/)
+})
+
+test('accepts negative offsets: elements may overhang their origin', () => {
+  const ir = normalizeIr([{ type: 'image', xPx: -12, yPx: -3 }])
+  assert.equal(ir.length, 1)
+})
+
+test('accepts honest numeric geometry', () => {
+  const ir = normalizeIr([{ type: 'image', width: 800, height: 600, widthFrac: 0.5 }])
+  assert.equal(ir.length, 1)
+})
+
 test('raceWithAbort resolves when there is no signal', async () => {
   const value = await raceWithAbort(Promise.resolve('ok'))
   assert.equal(value, 'ok')

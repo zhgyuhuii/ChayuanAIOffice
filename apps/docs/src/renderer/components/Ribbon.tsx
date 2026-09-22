@@ -22,8 +22,8 @@ import {
 import type {
   Block,
   CustomNumberingLevel,
-  DocDefaults,
   DefaultFonts,
+  DocDefaults,
   HeaderFooter,
   Run,
   SectionSettings,
@@ -103,6 +103,8 @@ export interface RibbonProps {
   styles?: Map<string, StyleInfo>
   /** document-wide text defaults from styles.xml */
   docDefaults?: DocDefaults
+  // LOCAL(2026-09-22, f5247d3..476e5023): 本地双字体设置(作用域选择+默认字体写回)由
+  // home-tab 呈现,上游快照将其改为单一字体盒,不采纳——onFontSettings 链路保留
   onFontSettings?: (scope: string, patch: DefaultFonts) => Promise<void>
   /** Open the paragraph dialog (line-spacing rule / exact value entry lives there) */
   onParagraphDialog?: () => void
@@ -1293,6 +1295,9 @@ function RibbonInner({
     setDropdown(null)
   }
 
+  // LOCAL(2026-09-22, f5247d3..476e5023): 槽位式 setFont(font/fontAscii)+作用域写回,
+  // 与 home-tab 的双字体设置 UI 配套;上游 476e5023 的单字体盒(isEastAsianFontName 推断)
+  // 依赖其内联 Home 标签体,本地 Home 体已组件化,不采纳其签名
   const setFont = (slot: 'font' | 'fontAscii', name: string) => {
     if (fontScope === 'selection') {
       setTextStyle({

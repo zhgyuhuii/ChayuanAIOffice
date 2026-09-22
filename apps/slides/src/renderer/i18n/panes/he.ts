@@ -1,14 +1,17 @@
-/** panes strings, he (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const he = {
   paneCancel: 'ביטול',
   paneOk: 'אישור',
   paneMoveUp: 'העבר למעלה',
   paneMoveDown: 'העבר למטה',
+
   paneAnimTitle: 'חלונית הנפשה · שקופית {n}',
   paneAnimPreview: 'הפעל תצוגה מקדימה של הנפשות השקופית',
   paneAnimCollapse: 'כווץ את חלונית ההנפשה',
   paneAnimEmpty: 'אין הנפשות בשקופית זו',
-  paneAnimEmptySub: 'בחר צורה ובחר אפקט בכרטיסייה "הנפשות". ההנפשות נכתבות לקובץ ה-pptx ופועלות גם ב-PowerPoint.',
+  paneAnimEmptySub:
+    'בחר צורה ובחר אפקט בכרטיסייה "הנפשות". ההנפשות נכתבות לקובץ ה-pptx ופועלות גם ב-PowerPoint.',
   paneAnimDelete: 'הסר הנפשה זו',
   paneAnimSeconds: '{sec} שנ׳',
   paneAnimDelaySeconds: 'השהיה {sec} שנ׳',
@@ -37,6 +40,10 @@ export const he = {
   paneAnimEffShrink: 'כיווץ וסיבוב',
   paneAnimEffZoomOut: 'זום החוצה',
   paneAnimEffMotionPath: 'נתיב תנועה',
+  paneAnimEffMediaPlay: 'הפעל',
+  paneAnimEffMediaPause: 'השהה',
+  paneAnimEffMediaStop: 'עצור',
+
   paneChartEditTitle: 'עריכת נתוני תרשים',
   paneChartCategoryN: 'קטגוריה {n}',
   paneChartSeriesN: 'סדרה {n}',
@@ -46,6 +53,7 @@ export const he = {
   paneChartDelCategory: 'הסר קטגוריה זו',
   paneChartAddCategory: 'הוסף קטגוריה',
   paneChartAddCategoryBtn: '+ קטגוריה',
+
   paneCommentsTitle: 'הערות · שקופית {n}',
   paneCommentsCollapse: 'כווץ את חלונית ההערות',
   paneCommentsEmpty: 'אין הערות בשקופית זו',
@@ -53,6 +61,7 @@ export const he = {
   paneCommentsDelete: 'מחק הערה',
   paneCommentsPlaceholder: 'הערה חדשה… (⌘/Ctrl+Enter לפרסום)',
   paneCommentsPost: 'פרסם',
+
   paneCsdTitle: 'הצגות מותאמות אישית',
   paneCsdDefaultName: 'הצגה מותאמת אישית {n}',
   paneFrTitle: 'חיפוש והחלפה',
@@ -87,15 +96,18 @@ export const he = {
   paneCsdCreateHint: 'לחץ על "חדשה" כדי ליצור הצגה מותאמת אישית',
   paneCsdClose: 'סגור',
   paneCsdPlay: 'הצג',
+
   paneCutoutTitle: 'הסרת רקע',
   paneCutoutDecodeFail: 'פענוח התמונה נכשל',
   paneCutoutLoadFail: 'טעינת התמונה נכשלה',
   paneCutoutApplyFail: 'הסרת הרקע נכשלה',
   paneCutoutLoading: 'טוען…',
   paneCutoutTolerance: 'סבילות',
-  paneCutoutHint: 'צבעי הרקע נדגמים משולי התמונה; ככל שהסבילות גבוהה יותר, מוסרים יותר צבעים דומים. כ-{pct}% מהפיקסלים הוסרו בתצוגה מקדימה זו.',
+  paneCutoutHint:
+    'צבעי הרקע נדגמים משולי התמונה; ככל שהסבילות גבוהה יותר, מוסרים יותר צבעים דומים. כ-{pct}% מהפיקסלים הוסרו בתצוגה מקדימה זו.',
   paneCutoutApplying: 'מעבד…',
   paneCutoutApply: 'החל',
+
   paneFormatTitle: 'עיצוב',
   paneFormatTitleTyped: 'עיצוב {type}',
   paneFormatTabShape: 'אפשרויות צורה',
@@ -230,6 +242,7 @@ export const he = {
   paneInsetT: 'שוליים עליונים',
   paneInsetB: 'שוליים תחתונים',
   paneTextWrap: 'גלישת טקסט בצורה',
+
   panePresenterEndShow: 'סיים הצגה',
   panePresenterEndTip: 'סיים את ההצגה (Esc)',
   panePresenterSwap: 'החלף צגים',
@@ -259,9 +272,19 @@ export const he = {
   panePresenterNotesBigger: 'הגדל את טקסט ההערות',
   panePresenterNotesSmaller: 'הקטן את טקסט ההערות',
   panePresenterFilmSlideN: 'שקופית {n}',
+
   paneShowEndedClick: 'סוף הצגת השקופיות. לחץ כדי לצאת.',
   paneShowEnded: 'סוף הצגת השקופיות.',
   paneShowRehearseTip: 'חזרה על תזמונים: זמן בשקופית זו / זמן כולל',
   paneShowRehearseTotal: 'סה״כ {time}',
+  paneShowMenuNext: 'הבא',
+  paneShowMenuPrev: 'הקודם',
+  paneShowMenuLastViewed: 'הוצג לאחרונה',
+  paneShowMenuSeeAll: 'הצג את כל השקופיות',
+  paneShowMenuScreen: 'מסך',
+  paneShowMenuBlack: 'מסך שחור',
+  paneShowMenuWhite: 'מסך לבן',
+  paneShowMenuEnd: 'סיים הצגה',
+  panePresenterWhiteOn: 'מסך לבן (W לחזרה)',
   paneAnimRewind: 'חזרה לאחר אפקט',
-}
+} satisfies Record<keyof typeof zh, string>

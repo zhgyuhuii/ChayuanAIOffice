@@ -128,6 +128,7 @@ import {
   resolveChatOfficeEntry,
   setChatOfficeProxyUrl,
   startChatofficeLogin,
+  watchChatofficeApiKey,
 } from '@chatoffice/ai-search'
 import { setRescueFetch } from '@chatoffice/ai-provider'
 
@@ -157,6 +158,7 @@ import {
   setDocsShellHooks,
   createAiDocument,
   projectFileRenamed,
+  setDocsHostWindowHook,
   setDocsShellWindow,
   setDocsFileSavedHook,
   setDocsFileOpenedHook,
@@ -205,6 +207,7 @@ import {
   sheetsFileRenamed,
   setSheetsCloseTabHook,
   setSheetsExtraFileMenuItems,
+  setSheetsHostWindowHook,
   setSheetsShellWindow,
   setSheetsWorkbookOpenedHook,
   startSheetsCaptureServer,
@@ -324,6 +327,22 @@ import {
 } from './folder-tree'
 import { runHeadlessExport, type HeadlessExporters } from './headless-export'
 import { TabManager } from './tab-manager'
+import {
+  activateDetached,
+  closeDetachedWithoutPrompt,
+  createDetachedEditorWindow,
+  detachedFilePaths,
+  detachedOpenDocuments,
+  detachedRenameFile,
+  detachedSetFileFor,
+  detachedWebContentsFor,
+  detachedWindowForWebContents,
+  findDetachedTabByPath,
+  focusDetachedByPath,
+  focusedDetachedKind,
+  isDetachedTabId,
+  setDetachedChangedListener,
+} from './detached-windows'
 import { applyUpdateChannel, checkForUpdatesNow, initAutoUpdater } from './updater'
 import { isUpdateChannel, type UpdateChannel } from '../shared/update-api'
 
@@ -462,9 +481,16 @@ const APP_SETTINGS_PATH = () => join(app.getPath('userData'), 'app-settings.json
 const OPEN_DOCUMENTS_PATH = () => join(app.getPath('userData'), OPEN_DOCUMENTS_FILE)
 /** only the instance holding the single-instance lock may write or remove the registry */
 let ownsOpenDocumentsRegistry = false
+let stopAuthWatch: (() => void) | null = null
 const publishOpenDocumentsIfOwner = (paths: readonly string[]) => {
   if (ownsOpenDocumentsRegistry) publishOpenDocuments(OPEN_DOCUMENTS_PATH(), paths)
 }
+
+/** every open file: the shell's tabs plus the detached editor windows */
+function publishAllOpenDocuments(): void {
+  publishOpenDocumentsIfOwner([...(tabManager?.openFilePaths() ?? []), ...detachedFilePaths()])
+}
+setDetachedChangedListener(publishAllOpenDocuments)
 
 let uiLang: Lang | null = null
 
@@ -678,6 +704,7 @@ const tMain = createI18n({
   zh: {
     menuFile: '文件',
     menuSectionNew: '新建',
+    menuOpenInNewWindow: '在新窗口中打开',
     menuNewDoc: '文档',
     menuNewSheet: '表格',
     untitledSheet: '未命名表格',
@@ -780,6 +807,7 @@ const tMain = createI18n({
   en: {
     menuFile: 'File',
     menuSectionNew: 'New',
+    menuOpenInNewWindow: 'Open in New Window',
     menuNewDoc: 'Doc',
     menuNewSheet: 'Sheet',
     untitledSheet: 'Untitled Spreadsheet',
@@ -893,6 +921,7 @@ const tMain = createI18n({
   ja: {
     menuFile: 'ファイル',
     menuSectionNew: '新規作成',
+    menuOpenInNewWindow: '新しいウィンドウで開く',
     menuNewDoc: '文書',
     menuNewSheet: '表計算',
     untitledSheet: '無題のスプレッドシート',
@@ -1006,6 +1035,7 @@ const tMain = createI18n({
   ko: {
     menuFile: '파일',
     menuSectionNew: '새로 만들기',
+    menuOpenInNewWindow: '새 창에서 열기',
     menuNewDoc: '문서',
     menuNewSheet: '표',
     untitledSheet: '제목 없는 스프레드시트',
@@ -1118,6 +1148,7 @@ const tMain = createI18n({
   fr: {
     menuFile: 'Fichier',
     menuSectionNew: 'Nouveau',
+    menuOpenInNewWindow: 'Ouvrir dans une nouvelle fenêtre',
     menuNewDoc: 'Doc',
     menuNewSheet: 'Tableur',
     untitledSheet: 'Feuille de calcul sans titre',
@@ -1232,6 +1263,7 @@ const tMain = createI18n({
   de: {
     menuFile: 'Datei',
     menuSectionNew: 'Neu',
+    menuOpenInNewWindow: 'In neuem Fenster öffnen',
     menuNewDoc: 'Doc',
     menuNewSheet: 'Tabelle',
     untitledSheet: 'Unbenannte Tabelle',
@@ -1346,6 +1378,7 @@ const tMain = createI18n({
   es: {
     menuFile: 'Archivo',
     menuSectionNew: 'Nuevo',
+    menuOpenInNewWindow: 'Abrir en una ventana nueva',
     menuNewDoc: 'Doc',
     menuNewSheet: 'Hoja',
     untitledSheet: 'Hoja de cálculo sin título',
@@ -1460,6 +1493,7 @@ const tMain = createI18n({
   th: {
     menuFile: 'ไฟล์',
     menuSectionNew: 'สร้างใหม่',
+    menuOpenInNewWindow: 'เปิดในหน้าต่างใหม่',
     menuNewDoc: 'เอกสาร',
     menuNewSheet: 'ตาราง',
     untitledSheet: 'สเปรดชีตไม่มีชื่อ',
@@ -1569,6 +1603,7 @@ const tMain = createI18n({
   id: {
     menuFile: 'File',
     menuSectionNew: 'Baru',
+    menuOpenInNewWindow: 'Buka di Jendela Baru',
     menuNewDoc: 'Dok',
     menuNewSheet: 'Lembar',
     untitledSheet: 'Spreadsheet tanpa judul',
@@ -1683,6 +1718,7 @@ const tMain = createI18n({
   ru: {
     menuFile: 'Файл',
     menuSectionNew: 'Создать',
+    menuOpenInNewWindow: 'Открыть в новом окне',
     menuNewDoc: 'Док',
     menuNewSheet: 'Таблица',
     untitledSheet: 'Таблица без названия',
@@ -1797,6 +1833,7 @@ const tMain = createI18n({
   ar: {
     menuFile: 'ملف',
     menuSectionNew: 'جديد',
+    menuOpenInNewWindow: 'فتح في نافذة جديدة',
     menuNewDoc: 'مستند',
     menuNewSheet: 'جدول',
     untitledSheet: 'جدول بيانات بلا عنوان',
@@ -1906,6 +1943,7 @@ const tMain = createI18n({
   pt: {
     menuFile: 'Arquivo',
     menuSectionNew: 'Novo',
+    menuOpenInNewWindow: 'Abrir em nova janela',
     menuNewDoc: 'Doc',
     menuNewSheet: 'Planilha',
     untitledSheet: 'Planilha sem título',
@@ -2020,6 +2058,7 @@ const tMain = createI18n({
   it: {
     menuFile: 'File',
     menuSectionNew: 'Nuovo',
+    menuOpenInNewWindow: 'Apri in una nuova finestra',
     menuNewDoc: 'Doc',
     menuNewSheet: 'Foglio',
     untitledSheet: 'Foglio di calcolo senza titolo',
@@ -2134,6 +2173,7 @@ const tMain = createI18n({
   pl: {
     menuFile: 'Plik',
     menuSectionNew: 'Nowy',
+    menuOpenInNewWindow: 'Otwórz w nowym oknie',
     menuNewDoc: 'Dok',
     menuNewSheet: 'Arkusz',
     untitledSheet: 'Arkusz bez tytułu',
@@ -2248,6 +2288,7 @@ const tMain = createI18n({
   cs: {
     menuFile: 'Soubor',
     menuSectionNew: 'Nový',
+    menuOpenInNewWindow: 'Otevřít v novém okně',
     menuNewDoc: 'AI Docs',
     menuNewSheet: 'AI Sheets',
     untitledSheet: 'Sešit bez názvu',
@@ -2357,6 +2398,7 @@ const tMain = createI18n({
   nl: {
     menuFile: 'Bestand',
     menuSectionNew: 'Nieuw',
+    menuOpenInNewWindow: 'Openen in nieuw venster',
     menuNewDoc: 'Doc',
     menuNewSheet: 'Werkblad',
     untitledSheet: 'Naamloze spreadsheet',
@@ -2471,6 +2513,7 @@ const tMain = createI18n({
   ms: {
     menuFile: 'Fail',
     menuSectionNew: 'Baharu',
+    menuOpenInNewWindow: 'Buka dalam Tetingkap Baharu',
     menuNewDoc: 'Dok',
     menuNewSheet: 'Helaian',
     untitledSheet: 'Hamparan tanpa tajuk',
@@ -2584,6 +2627,7 @@ const tMain = createI18n({
   he: {
     menuFile: 'קובץ',
     menuSectionNew: 'חדש',
+    menuOpenInNewWindow: 'פתח בחלון חדש',
     menuNewDoc: 'מסמך',
     menuNewSheet: 'גיליון',
     untitledSheet: 'גיליון אלקטרוני ללא שם',
@@ -2693,6 +2737,7 @@ const tMain = createI18n({
   hi: {
     menuFile: 'फ़ाइल',
     menuSectionNew: 'नया',
+    menuOpenInNewWindow: 'नई विंडो में खोलें',
     menuNewDoc: 'दस्तावेज़',
     menuNewSheet: 'शीट',
     untitledSheet: 'शीर्षकहीन स्प्रेडशीट',
@@ -2807,6 +2852,7 @@ const tMain = createI18n({
   'zh-TW': {
     menuFile: '檔案',
     menuSectionNew: '新增',
+    menuOpenInNewWindow: '在新視窗中開啟',
     menuNewDoc: '文件',
     menuNewSheet: '表格',
     untitledSheet: '未命名試算表',
@@ -3040,6 +3086,8 @@ function afterFileMoved(oldPath: string, newPath: string): void {
   projectFileRenamed(oldPath, newPath)
   if (/\.pptx$/i.test(newPath)) void replaceSlidesRecentFile(oldPath, newPath)
   const affected = tabManager?.renameTabFile(oldPath, newPath) ?? []
+  const detachedAffected = detachedRenameFile(oldPath, newPath)
+  if (detachedAffected) affected.push(detachedAffected)
   for (const t of affected) {
     if (t.kind === 'slides') slidesFileRenamed(t.webContents, oldPath, newPath)
     else if (t.kind === 'docs') docsFileRenamed(t.webContents, oldPath, newPath)
@@ -3167,7 +3215,7 @@ function createShellWindow(): void {
       if (win.webContents.isDestroyed()) return
       win.webContents.send(TABS_CHANNELS.changed, manager.list())
       win.webContents.send(DOCK_CHANNELS.changed, manager.dockedTabs())
-      publishOpenDocumentsIfOwner(manager.openFilePaths())
+      publishOpenDocumentsIfOwner([...manager.openFilePaths(), ...detachedFilePaths()])
     },
     applyMenuFor,
     // no extension: these tabs have no file on disk yet; the title becomes the
@@ -3185,11 +3233,17 @@ function createShellWindow(): void {
   )
   tabManager = manager
 
-  // pushRecent-triggered docs menu rebuilds must not clobber the active tab's menu
-  setDocsMenuGate(() => manager.list().some((t) => t.active && t.kind === 'docs'))
+  // pushRecent-triggered docs menu rebuilds must not clobber the active tab's
+  // menu; a focused detached docs window owns the menu just like an active tab
+  setDocsMenuGate(
+    () =>
+      focusedDetachedKind() === 'docs' || manager.list().some((t) => t.active && t.kind === 'docs'),
+  )
 
   setDocsShellWindow(win)
   setSheetsShellWindow(win)
+  setDocsHostWindowHook((wc) => detachedWindowForWebContents(wc.id))
+  setSheetsHostWindowHook((wc) => detachedWindowForWebContents(wc.id))
   setSlidesShellWindow(win)
   setSlidesShowBleed((wc, on) => manager.setContentBleed(wc, on))
   setHtmlPresentHooks({
@@ -3205,10 +3259,12 @@ function createShellWindow(): void {
       return !!id
     },
   })
+  // A detached docs/sheets window can outlive the shell window; its hooks must
+  // then reach the live tab manager (recreating the shell), never this closure's.
   setDocsShellHooks({
-    openTab: (openPath, options) => manager.openDocsTab(openPath, options),
+    openTab: (openPath, options) => ensureTabManager().openDocsTab(openPath, options),
     openAiDocTab: (content) =>
-      manager.openDocsTab(undefined, { newBlank: true, aiContent: content }),
+      ensureTabManager().openDocsTab(undefined, { newBlank: true, aiContent: content }),
     // P1 停靠契约: home-chat create_document lands in the Home right pane —
     // untitled blank docs tab seeded with the AI content, panel hidden
     openAiDockTab: (content, saveDir, projectId) => {
@@ -3250,12 +3306,16 @@ function createShellWindow(): void {
       return !!tabId && !!manager.list().find((t) => t.id === tabId)?.docked
     },
     listTabs: () =>
-      manager
-        .list()
+      (tabManager?.list() ?? [])
         .filter((t) => t.kind === 'docs')
         .map((t) => ({ id: t.id, title: t.title, focused: t.active })),
-    focusTab: (id) => manager.activateTab(id),
-    closeActiveTab: () => manager.closeActiveTab(),
+    focusTab: (id) => tabManager?.activateTab(id),
+    // ⌘W in a detached docs window closes that window (its own close guard runs)
+    closeActiveTab: () => {
+      const focused = BrowserWindow.getFocusedWindow()
+      if (focused && focused !== win) focused.close()
+      else tabManager?.closeActiveTab()
+    },
     openGeneratedPath: (path) => openGeneratedDocument(path),
     openUntitledPdf: (bytes, suggestedName, saveDir) => {
       // AI-created PDF as a hidden temp-backed untitled document: the AI title
@@ -3300,7 +3360,11 @@ function createShellWindow(): void {
       }
     },
   })
-  setSheetsCloseTabHook(() => manager.closeActiveTab())
+  setSheetsCloseTabHook(() => {
+    const focused = BrowserWindow.getFocusedWindow()
+    if (focused && focused !== win) focused.close()
+    else tabManager?.closeActiveTab()
+  })
   // ⌘W targets the focused window: in a detached slides editor window it closes
   // that window (running its own close guard), not the shell's active tab
   setSlidesCloseTabHook(() => {
@@ -3314,6 +3378,7 @@ function createShellWindow(): void {
     // A blank draft's first save just made it a real file: drop its registry entry.
     if (fromBlankDraft) removePendingUntitled(fromBlankDraft)
     manager.setTabFileFor(wc.id, path)
+    detachedSetFileFor(wc.id, path)
     recordRecentFile(path)
   })
   // Hidden temp-backed blank workbook materialized: track it so a crash before
@@ -3329,6 +3394,7 @@ function createShellWindow(): void {
   // docs' save-as / silent first save lands on a new path → sync the tab title too
   setDocsFileSavedHook((wc, path) => {
     manager.setTabFileFor(wc.id, path)
+    detachedSetFileFor(wc.id, path)
     recordRecentFile(path)
     applyPendingProject(path, wc.id)
     applyPendingDir(wc.id, path)
@@ -3338,6 +3404,7 @@ function createShellWindow(): void {
   // path never renames the tab, so the open must — r115)
   setDocsFileOpenedHook((wcId, path) => {
     manager.setTabFileFor(wcId, path)
+    detachedSetFileFor(wcId, path)
     recordRecentFile(path)
     applyPendingDir(wcId, path)
   })
@@ -3440,7 +3507,7 @@ function createShellWindow(): void {
     if (shellWindow === win) shellWindow = null
     if (tabManager === manager) {
       tabManager = null
-      publishOpenDocumentsIfOwner([])
+      publishAllOpenDocuments()
     }
   })
 
@@ -3567,7 +3634,10 @@ function openGeneratedDocument(filePath: string): boolean {
 }
 
 function routeDocumentPath(filePath: string, dock = false): boolean {
-  if (!existsSync(filePath) || !tabManager) return false
+  if (!existsSync(filePath)) return false
+  // a detached editor window already shows this file — focus it, never a second copy
+  if (focusDetachedByPath(filePath)) return true
+  if (!tabManager) return false
   // P1 停靠契约 (dock=true, home-chat open_document): the file docks into the
   // Home right pane. An already-open tab of any placement wins (its editor
   // holds the live document); otherwise a docked tab is created per kind.
@@ -4132,8 +4202,10 @@ function registerHomeIpc(): void {
     if (typeof path === 'string') toggleStarredFile(path)
   })
 
+  // LOCAL(2026-09-22, f5247d3..476e5023): 上游 #560 openPath 长度/空串守卫并入本地
+  // remote 物化+dock 结构(本地 routeDocumentPath 语义保留)
   ipcMain.handle(HOME_CHANNELS.openPath, (_event, path: unknown, options?: { dock?: boolean }) => {
-    if (typeof path !== 'string') return
+    if (typeof path !== 'string' || !path || path.length > 4096) return
     const dock = options?.dock === true
     if (isRemoteUri(path)) {
       // materialize the object into the local cache, then open that copy; its
@@ -5118,6 +5190,23 @@ function registerWindowControlsIpc(): void {
   }
 }
 
+/** the shell's tab manager, recreating the shell window when a detached editor outlived it */
+function ensureTabManager(): TabManager {
+  if (!tabManager) createShellWindow()
+  if (!tabManager) throw new Error('the shell window could not be created')
+  return tabManager
+}
+
+/** "Open in New Window": reparent the tab's live view into a detached editor
+ *  window — the document moves as-is, unsaved edits included. */
+function detachTabToWindow(id: string): void {
+  if (!tabManager) return
+  const record = tabManager.detachTab(id)
+  if (!record) return
+  const win = createDetachedEditorWindow({ ...record, applyMenuFor })
+  win.focus()
+}
+
 function registerTabsIpc(): void {
   ipcMain.on(TABS_CHANNELS.chromePressed, (event) => broadcastChromePressed(event.sender))
   ipcMain.on(TABS_CHANNELS.treeInset, (_event, visible: unknown) => {
@@ -5136,7 +5225,7 @@ function registerTabsIpc(): void {
   })
   ipcMain.handle(TABS_CHANNELS.close, (_event, id: unknown) => {
     if (typeof id !== 'string' || !id) return
-    tabManager?.closeTab(id)
+    return tabManager?.closeTab(id)
   })
   ipcMain.handle(TABS_CHANNELS.reorder, (_event, id: string, toIndex: number) => {
     if (typeof id === 'string' && Number.isInteger(toIndex)) tabManager?.reorderTab(id, toIndex)
@@ -5223,6 +5312,38 @@ function registerTabsIpc(): void {
       })),
     )
     menu.popup({
+      window: shellWindow,
+      ...(typeof x === 'number' && typeof y === 'number'
+        ? { x: Math.round(x), y: Math.round(y) }
+        : {}),
+    })
+  })
+  ipcMain.handle(TABS_CHANNELS.detach, (_event, id: unknown) => {
+    if (typeof id !== 'string') return
+    const tab = tabManager?.list().find((t) => t.id === id)
+    if (tab && (tab.kind === 'docs' || tab.kind === 'sheets')) detachTabToWindow(id)
+  })
+  // per-tab context menu — native for the same reason as the tab list above
+  ipcMain.handle(TABS_CHANNELS.showTabMenu, (_event, id: unknown, x: unknown, y: unknown) => {
+    if (!tabManager || !shellWindow || typeof id !== 'string') return
+    const tab = tabManager.list().find((t) => t.id === id)
+    if (!tab || tab.kind === 'home') return
+    const template: MenuItemConstructorOptions[] = []
+    // MVP: docs + sheets; the other editors follow once their
+    // detached-window quirks (slides fullscreen bleed, pdf) are covered
+    if (tab.kind === 'docs' || tab.kind === 'sheets') {
+      template.push({
+        label: tm('menuOpenInNewWindow'),
+        click: () => detachTabToWindow(id),
+      })
+      template.push({ type: 'separator' })
+    }
+    template.push({
+      label: tm('menuClose'),
+      enabled: tab.closable,
+      click: () => void tabManager?.closeTab(id),
+    })
+    Menu.buildFromTemplate(template).popup({
       window: shellWindow,
       ...(typeof x === 'number' && typeof y === 'number'
         ? { x: Math.round(x), y: Math.round(y) }
@@ -6495,6 +6616,14 @@ app.whenReady().then(async () => {
     app.quit()
     return
   }
+  // another ChatOffice-family app re-logging in rotates the shared key; the
+  // home page re-reads its account status. A logout that leaves only the
+  // chatoffice CLI fallback key is not a login
+  stopAuthWatch = watchChatofficeApiKey(() => {
+    if (!loadChatofficeAuth()) return
+    for (const w of BrowserWindow.getAllWindows())
+      w.webContents.send(HOME_CHANNELS.accountLoginEvent, { phase: 'success' })
+  })
   // a registry left by a crashed instance must not block chatoffice writes
   ownsOpenDocumentsRegistry = true
   publishOpenDocuments(OPEN_DOCUMENTS_PATH(), [])
@@ -6588,12 +6717,14 @@ app.whenReady().then(async () => {
     // documents the user has open: the tab list plus each family's own bridge,
     // so an agent reaches a tab nobody but the user opened
     openDocumentsControl: createOpenDocumentsControl({
-      list: () => {
-        if (!tabManager) throw new Error('the tab manager is not ready')
-        return tabManager.openDocuments()
+      list: async () => {
+        const tabs = tabManager ? await tabManager.openDocuments() : []
+        return [...tabs, ...(await detachedOpenDocuments())]
       },
-      webContentsFor: (tabId) => tabManager?.webContentsForTab(tabId),
-      closeTab: (tabId) => tabManager?.closeTabWithoutPrompt(tabId) ?? false,
+      webContentsFor: (tabId) =>
+        tabManager?.webContentsForTab(tabId) ?? detachedWebContentsFor(tabId),
+      closeTab: (tabId) =>
+        closeDetachedWithoutPrompt(tabId) || (tabManager?.closeTabWithoutPrompt(tabId) ?? false),
       defaultSaveDir: () => defaultSaveDir(),
       docs: mcpDocsControl,
       sheets: mcpSheetsControl,
@@ -6622,15 +6753,20 @@ app.whenReady().then(async () => {
     // lets the content tools take a `document` argument (tab id or path) and edit
     // a tab the *user* has open, with no create_session involved
     resolveTarget: createOpenTargetResolver({
-      list: () => {
-        if (!tabManager) throw new Error('the tab manager is not ready')
-        return tabManager.openDocuments()
+      list: async () => {
+        const tabs = tabManager ? await tabManager.openDocuments() : []
+        return [...tabs, ...(await detachedOpenDocuments())]
       },
-      webContentsFor: (tabId) => tabManager?.webContentsForTab(tabId),
+      webContentsFor: (tabId) =>
+        tabManager?.webContentsForTab(tabId) ?? detachedWebContentsFor(tabId),
       // an agent editing a background tab would otherwise work where nobody can
-      // see it: switch to that tab and bring the window forward first
-      activate: (tabId) => tabManager?.activateTab(tabId),
-      revealWindow: revealShellWindow,
+      // see it: switch to that tab and bring its window forward first
+      activate: (tabId) => {
+        if (!activateDetached(tabId)) tabManager?.activateTab(tabId)
+      },
+      revealWindow: (tabId) => {
+        if (!isDetachedTabId(tabId)) revealShellWindow()
+      },
     }),
     logFilePath: join(app.getPath('userData'), 'mcp-log.txt'),
   })
@@ -6652,8 +6788,10 @@ app.whenReady().then(async () => {
     controlHandler({
       reveal: revealShellWindow,
       openDocument: openDocumentPath,
-      activateTab: (id) => tabManager?.activateTab(id),
-      findTab: (path) => tabManager?.findTabByPath(path),
+      activateTab: (id) => {
+        if (!activateDetached(id)) tabManager?.activateTab(id)
+      },
+      findTab: (path) => tabManager?.findTabByPath(path) ?? findDetachedTabByPath(path),
     }),
   ).then(
     (server) => {
@@ -6688,6 +6826,7 @@ app.on('before-quit', () => {
 
 // after every window has closed, so the shell window's own 'closed' republish cannot revive the file
 app.on('will-quit', () => {
+  stopAuthWatch?.()
   folderWatcher?.close()
   controlServer?.close()
   // a second instance that lost the lock quits too; it must not delete the running editor's list

@@ -1,14 +1,17 @@
-/** panes strings, es (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const es = {
   paneCancel: 'Cancelar',
   paneOk: 'Aceptar',
   paneMoveUp: 'Subir',
   paneMoveDown: 'Bajar',
+
   paneAnimTitle: 'Panel de animación · Diapositiva {n}',
   paneAnimPreview: 'Reproducir la vista previa de animaciones de esta diapositiva',
   paneAnimCollapse: 'Contraer el panel de animación',
   paneAnimEmpty: 'No hay animaciones en esta diapositiva',
-  paneAnimEmptySub: 'Seleccione una forma y elija un efecto en la pestaña «Animaciones». Las animaciones se escriben en el pptx y también funcionan en PowerPoint.',
+  paneAnimEmptySub:
+    'Seleccione una forma y elija un efecto en la pestaña «Animaciones». Las animaciones se escriben en el pptx y también funcionan en PowerPoint.',
   paneAnimDelete: 'Quitar esta animación',
   paneAnimSeconds: '{sec} s',
   paneAnimDelaySeconds: 'retraso {sec} s',
@@ -37,6 +40,10 @@ export const es = {
   paneAnimEffShrink: 'Encoger y girar',
   paneAnimEffZoomOut: 'Zoom (salida)',
   paneAnimEffMotionPath: 'Trayectoria de la animación',
+  paneAnimEffMediaPlay: 'Reproducir',
+  paneAnimEffMediaPause: 'Pausar',
+  paneAnimEffMediaStop: 'Detener',
+
   paneChartEditTitle: 'Editar datos del gráfico',
   paneChartCategoryN: 'Categoría {n}',
   paneChartSeriesN: 'Serie {n}',
@@ -46,13 +53,16 @@ export const es = {
   paneChartDelCategory: 'Quitar esta categoría',
   paneChartAddCategory: 'Agregar categoría',
   paneChartAddCategoryBtn: '+ Categoría',
+
   paneCommentsTitle: 'Comentarios · Diapositiva {n}',
   paneCommentsCollapse: 'Contraer el panel de comentarios',
   paneCommentsEmpty: 'No hay comentarios en esta diapositiva',
-  paneCommentsEmptySub: 'Escriba abajo: los comentarios se escriben en el pptx y también son visibles en PowerPoint.',
+  paneCommentsEmptySub:
+    'Escriba abajo: los comentarios se escriben en el pptx y también son visibles en PowerPoint.',
   paneCommentsDelete: 'Eliminar comentario',
   paneCommentsPlaceholder: 'Nuevo comentario… (⌘/Ctrl+Entrar para publicar)',
   paneCommentsPost: 'Publicar',
+
   paneCsdTitle: 'Presentaciones personalizadas',
   paneCsdDefaultName: 'Presentación personalizada {n}',
   paneFrTitle: 'Buscar y reemplazar',
@@ -87,15 +97,18 @@ export const es = {
   paneCsdCreateHint: 'Haga clic en «Nueva» para crear una presentación personalizada',
   paneCsdClose: 'Cerrar',
   paneCsdPlay: 'Mostrar esta presentación personalizada',
+
   paneCutoutTitle: 'Quitar fondo',
   paneCutoutDecodeFail: 'Error al decodificar la imagen',
   paneCutoutLoadFail: 'Error al cargar la imagen',
   paneCutoutApplyFail: 'Error al quitar el fondo',
   paneCutoutLoading: 'Cargando…',
   paneCutoutTolerance: 'Tolerancia',
-  paneCutoutHint: 'El color de fondo se muestrea automáticamente en los bordes de la imagen; cuanto mayor sea la tolerancia, más colores similares se quitarán. En esta vista previa se ha quitado aproximadamente el {pct} % de los píxeles.',
+  paneCutoutHint:
+    'El color de fondo se muestrea automáticamente en los bordes de la imagen; cuanto mayor sea la tolerancia, más colores similares se quitarán. En esta vista previa se ha quitado aproximadamente el {pct} % de los píxeles.',
   paneCutoutApplying: 'Procesando…',
   paneCutoutApply: 'Aplicar',
+
   paneFormatTitle: 'Formato',
   paneFormatTitleTyped: 'Formato de {type}',
   paneFormatTabShape: 'Opciones de forma',
@@ -171,7 +184,8 @@ export const es = {
   panePosFromTL: 'Esquina superior izquierda',
   panePosFromCenter: 'Centro',
   paneFormatCrop: 'Recortar imagen',
-  paneFormatCutoutTip: 'Quitar el fondo de la imagen según la tolerancia de color (se reemplaza por un PNG transparente)',
+  paneFormatCutoutTip:
+    'Quitar el fondo de la imagen según la tolerancia de color (se reemplaza por un PNG transparente)',
   paneFormatCutoutNA: 'Quitar el fondo no está disponible para esta imagen',
   paneFormatFill: 'Relleno',
   paneFormatSolidFill: 'Relleno sólido',
@@ -230,14 +244,17 @@ export const es = {
   paneInsetT: 'Margen superior',
   paneInsetB: 'Margen inferior',
   paneTextWrap: 'Ajustar texto en la forma',
+
   panePresenterEndShow: 'Finalizar presentación',
   panePresenterEndTip: 'Finalizar la presentación (Esc)',
   panePresenterSwap: 'Intercambiar pantallas',
-  panePresenterSwapTip: 'Intercambiar las pantallas que muestran la vista Moderador y la presentación',
+  panePresenterSwapTip:
+    'Intercambiar las pantallas que muestran la vista Moderador y la presentación',
   panePresenterNoSecond: 'No se detectó una segunda pantalla',
   panePresenterUseShow: 'Usar presentación normal',
   panePresenterUseShowTip: 'Cambiar a una presentación normal en esta pantalla',
-  panePresenterSingleHint: 'Modo de pantalla única (conecte una segunda pantalla para presentar automáticamente a pantalla completa)',
+  panePresenterSingleHint:
+    'Modo de pantalla única (conecte una segunda pantalla para presentar automáticamente a pantalla completa)',
   panePresenterElapsed: 'Tiempo transcurrido',
   panePresenterPause: 'Pausar el temporizador',
   panePresenterResume: 'Reanudar el temporizador',
@@ -259,9 +276,19 @@ export const es = {
   panePresenterNotesBigger: 'Aumentar el texto de las notas',
   panePresenterNotesSmaller: 'Reducir el texto de las notas',
   panePresenterFilmSlideN: 'Diapositiva {n}',
+
   paneShowEndedClick: 'Fin de la presentación. Haga clic para salir.',
   paneShowEnded: 'Fin de la presentación.',
   paneShowRehearseTip: 'Ensayar intervalos: tiempo en esta diapositiva / tiempo total',
   paneShowRehearseTotal: 'Total {time}',
+  paneShowMenuNext: 'Siguiente',
+  paneShowMenuPrev: 'Anterior',
+  paneShowMenuLastViewed: 'Última diapositiva vista',
+  paneShowMenuSeeAll: 'Ver todas las diapositivas',
+  paneShowMenuScreen: 'Pantalla',
+  paneShowMenuBlack: 'Pantalla en negro',
+  paneShowMenuWhite: 'Pantalla en blanco',
+  paneShowMenuEnd: 'Fin de la presentación',
+  panePresenterWhiteOn: 'Pantalla en blanco (W para reanudar)',
   paneAnimRewind: 'Rebobinar tras el efecto',
-}
+} satisfies Record<keyof typeof zh, string>

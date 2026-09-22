@@ -58,6 +58,11 @@ describe('validateRedactionRegions messages', () => {
     )
   })
 
+  it('rejects too many regions', () => {
+    const many = Array.from({ length: 501 }, (_, i) => ({ pageIndex: 0, rect: [i, 0, i + 1, 1] }))
+    expect(() => validateRedactionRegions(many)).toThrow(/too many/)
+  })
+
   it('rejects a trailing out-of-range page with its operation number', async () => {
     const before = await fixture()
     await expect(

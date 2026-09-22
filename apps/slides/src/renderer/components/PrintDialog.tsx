@@ -5,10 +5,12 @@
  * assembled pages to the system print dialog.
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEscOverlay } from '../esc-overlay'
 import type { RenderSlide } from '@chatoffice/pptx-render'
 import { useI18n } from '../i18n/locale'
 import {
   buildPrintDocumentHtml,
+  currentRangeIndices,
   parsePrintRange,
   printPageCount,
   type PrintLayout,
@@ -33,6 +35,7 @@ export function PrintDialog({
   onClose: () => void
   setStatus: (s: string) => void
 }) {
+  useEscOverlay(true)
   const { t } = useI18n()
   const [pngs, setPngs] = useState<string[] | null>(null)
   const [notes, setNotes] = useState<string[]>([])
@@ -103,7 +106,7 @@ export function PrintDialog({
   /** 0-based deck indices selected by the range options (before the hidden filter) */
   const rangeIndices = useMemo<number[] | null>(() => {
     if (rangeMode === 'all') return slides.map((_s, i) => i)
-    if (rangeMode === 'current') return [current]
+    if (rangeMode === 'current') return currentRangeIndices(current, slides.length)
     return parsePrintRange(customRange, slides.length)
   }, [rangeMode, customRange, slides, current])
 

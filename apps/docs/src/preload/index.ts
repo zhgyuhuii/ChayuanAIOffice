@@ -206,6 +206,9 @@ const api: DesktopApi = {
     ipcRenderer.invoke('ai:web-search', query, maxResults),
   imageSearch: (query: string, maxResults?: number) =>
     ipcRenderer.invoke('ai:image-search', query, maxResults),
+  // LOCAL(2026-09-22, f5247d3..476e5023): 不引上游 analyzeMedia→docs:analyze-media 桥——
+  // 本地 analyze_media 工具走统一 ai:media-understand 通道(docs-main.ts 同名 LOCAL 注),
+  // 主进程未注册该专用通道,桥接会成为死通道
   fetchImage: (url: string) => ipcRenderer.invoke('ai:fetch-image', url),
   stockImageSearch: (source: string, query: string, maxResults?: number, page?: number) =>
     ipcRenderer.invoke('ai:stock-image-search', { source, query, maxResults, page }),

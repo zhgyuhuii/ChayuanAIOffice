@@ -483,6 +483,13 @@
   align-items: center;
   gap: 2px;
   min-width: 0;
+  /* §7.1 会话 tab 超出可横向滚动（滚动条隐藏，滚轮/触控板横扫） */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.ai-tab-strip::-webkit-scrollbar {
+  display: none;
 }
 
 .ai-tab {

@@ -28,7 +28,9 @@ export interface AnimStep {
 }
 
 /** Effect category (entrance/emphasis/exit/motion path). */
-export function animClassOf(effect: AnimEffectKind): 'entrance' | 'emphasis' | 'exit' | 'path' {
+export function animClassOf(
+  effect: AnimEffectKind,
+): 'entrance' | 'emphasis' | 'exit' | 'path' | 'media' {
   switch (effect) {
     case 'appear':
     case 'fade':
@@ -61,9 +63,44 @@ export function animClassOf(effect: AnimEffectKind): 'entrance' | 'emphasis' | '
       return 'emphasis'
     case 'motionPath':
       return 'path'
+    case 'mediaPlay':
+    case 'mediaPause':
+    case 'mediaStop':
+      return 'media'
     default:
       return 'exit'
   }
+}
+
+export type MediaCommandKind = 'mediaPlay' | 'mediaPause' | 'mediaStop'
+
+/** One media command reached by the playback cursor (in fire order). */
+export interface MediaCommand {
+  sourceId: string
+  effect: MediaCommandKind
+}
+
+/**
+ * Media commands fired so far: every media item of the played steps, plus those of the
+ * current step whose start has been reached. Media items take part in step grouping
+ * (a click-sequence video consumes a click like in PowerPoint) but have no visual state.
+ */
+export function computeMediaCommands(
+  steps: AnimStep[],
+  played: number,
+  activeMs: number | null,
+): MediaCommand[] {
+  const out: MediaCommand[] = []
+  steps.forEach((step, si) => {
+    if (si > played || (si === played && activeMs == null)) return
+    const items = si < played ? step.items : step.items.filter((t) => activeMs! > t.startMs)
+    for (const t of [...items].sort((a, b) => a.startMs - b.startMs)) {
+      if (animClassOf(t.item.effect) === 'media') {
+        out.push({ sourceId: t.item.sourceId, effect: t.item.effect as MediaCommandKind })
+      }
+    }
+  })
+  return out
 }
 
 /** Group the animation list into playback steps (same grouping rules the engine uses when writing <p:timing>). */
@@ -487,6 +524,7 @@ export function computeNodeStates(
   // Initial visibility: if the target's (shape or one paragraph) first animation is an entrance, start hidden until it plays
   for (const step of steps) {
     for (const t of step.items) {
+      if (animClassOf(t.item.effect) === 'media') continue
       const id = animStateKey(t.item.sourceId, t.item.paragraph)
       if (!states.has(id)) {
         states.set(id, { ...NORMAL, hidden: animClassOf(t.item.effect) === 'entrance' })
@@ -496,8 +534,9 @@ export function computeNodeStates(
 
   steps.forEach((step, si) => {
     for (const t of step.items) {
-      const st = states.get(animStateKey(t.item.sourceId, t.item.paragraph))!
       const cls = animClassOf(t.item.effect)
+      if (cls === 'media') continue
+      const st = states.get(animStateKey(t.item.sourceId, t.item.paragraph))!
       // Progress of this animation: played steps = 1; current step by time; not started = null (state unchanged)
       let p: number | null
       if (si < played) p = 1

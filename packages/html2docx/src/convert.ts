@@ -90,6 +90,22 @@ export function normalizeIr(raw: unknown): ValidatedIr[] {
           `(invalid "shotId"); refusing to continue with compromised page JavaScript`,
       )
     }
+    // Numeric geometry flows from page JS into division (renderer scale =
+    // maxPx / node.width) and image dimensions. Reject NaN/Infinity/negative
+    // here so a hostile page cannot produce corrupt-geometry docx.
+    for (const key of ['width', 'height', 'widthFrac', 'heightPx', 'xPx', 'yPx'] as const) {
+      const v = candidate[key]
+      if (v !== undefined && v !== null) {
+        const n = Number(v)
+        const signed = key === 'xPx' || key === 'yPx'
+        if (!Number.isFinite(n) || (!signed && n < 0)) {
+          throw new Error(
+            `html2docx: extractor returned malformed IR at index ${index} ` +
+              `(invalid numeric "${key}"); refusing to continue with compromised page JavaScript`,
+          )
+        }
+      }
+    }
     return item as ValidatedIr
   })
 }

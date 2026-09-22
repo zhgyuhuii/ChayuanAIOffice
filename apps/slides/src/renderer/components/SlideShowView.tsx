@@ -6,8 +6,10 @@
  * - Moving forward plays the target page's transition effect (CSS approximations of fade/push/wipe/split/circle/random)
  * - In-page shape animations (Animations tab): moving forward plays animations step by step, turning the page only when done;
  *   going back/jumping shows the all-animations-finished state
- * - →/space/enter/PgDn/click next step/page; ←/PgUp/right-click previous page; Home/End first/last page;
- *   Esc exits; advancing past the last page shows the "end of show" black screen
+ * - →/space/enter/PgDn/click next step/page; ←/PgUp previous page; Home/End first/last page;
+ *   B/. black screen, W/, white screen (any key or click restores); digits + Enter jump to that
+ *   slide number; Esc exits; advancing past the last page shows the "end of show" black screen
+ * - Right-click opens PowerPoint's show menu (next/previous/last viewed/see all slides/screen/end)
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { RenderNode, RenderSlide, ShapeRenderNode } from '@chatoffice/pptx-render'
@@ -19,8 +21,21 @@ import type {
   TransitionSpec,
 } from '../../shared/ipc'
 import { AnimatedSlideStage, useAnimPlayer } from './AnimatedSlide'
+import { ShowMediaLayer } from './ShowMediaLayer'
 import { useI18n } from '../i18n/locale'
 import { MorphStage } from './MorphStage'
+import { ContextMenu } from './ContextMenu'
+import { SlideThumb } from '../SlideThumb'
+import {
+  gotoPosition,
+  INITIAL_SHOW_KEYS,
+  pushVisited,
+  reduceShowKey,
+  toggleScreen,
+  type ShowKeyState,
+  type ShowScreen,
+} from '../show-keys'
+import { buildShowMenu } from '../show-menu'
 import {
   computePlayOrder,
   finishRehearse,
@@ -66,6 +81,7 @@ const ANIMATED = [
 ] as const
 
 const IS_MAC = navigator.platform.toLowerCase().includes('mac')
+const GRID_THUMB_W = 200
 
 export function SlideShowView({
   slides,
@@ -141,6 +157,21 @@ export function SlideShowView({
   const [morph, setMorph] = useState<{ fromIdx: number; toIdx: number; nonce: number } | null>(null)
   /** How the current page was entered: forward = initial state playing step by step, others = all-finished state */
   const navModeRef = useRef<'fresh' | 'all'>('fresh')
+  /** Key state (blackout + typed digits); the screen part mirrored into state for rendering */
+  const showKeysRef = useRef<ShowKeyState>(INITIAL_SHOW_KEYS)
+  const [blank, setBlank] = useState<ShowScreen>('none')
+  const setKeys = useCallback((k: ShowKeyState) => {
+    showKeysRef.current = k
+    setBlank(k.screen)
+  }, [])
+  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null)
+  const menuRef = useRef(menu)
+  menuRef.current = menu
+  const [grid, setGrid] = useState(false)
+  const gridRef = useRef(grid)
+  gridRef.current = grid
+  /** Left button went down outside the open menu: that click only closes the menu, it must not advance */
+  const menuClickRef = useRef(false)
 
   useEffect(() => {
     let cancelled = false
@@ -296,6 +327,7 @@ export function SlideShowView({
 
   // ── Transition sound (Transitions tab 声音): synthesized wav fetched over IPC,
   //    decoded once per preset and played in sync with the page turn ──
+  // LOCAL(2026-09-22, f5247d3..476e5023): local transition-sound engine kept (upstream has no transition sounds)
   const audioCtxRef = useRef<AudioContext | null>(null)
   const soundBufs = useRef<Map<string, AudioBuffer>>(new Map())
   const soundSrcRef = useRef<AudioBufferSourceNode | null>(null)
@@ -345,13 +377,13 @@ export function SlideShowView({
     [stopTransitionSound],
   )
 
-  /** Play-order position shown before the current one ("last slide viewed" action) */
-  const lastViewedRef = useRef<number | null>(null)
+  /** Play-order positions left behind by navigation ("Last Viewed" walks it back) */
+  const visitedRef = useRef<number[]>([])
   const goTo = useCallback(
-    (nextPos: number, animate: boolean) => {
+    (nextPos: number, animate: boolean, fromHistory = false) => {
       const target = order[nextPos]
       if (target == null) return
-      if (nextPos !== pos) lastViewedRef.current = pos
+      if (nextPos !== pos && !fromHistory) visitedRef.current = pushVisited(visitedRef.current, pos)
       navModeRef.current = animate ? 'fresh' : 'all'
       const current = order[pos]
       const spec = transRef.current[target]
@@ -381,6 +413,13 @@ export function SlideShowView({
     },
     [order, pos, playTransitionSound, stopTransitionSound],
   )
+
+  const lastViewed = useCallback(() => {
+    const p = visitedRef.current.pop()
+    if (p == null) return
+    setEnded(false)
+    goTo(p, false, true)
+  }, [goTo])
 
   const next = useCallback(() => {
     if (ended) {
@@ -446,7 +485,7 @@ export function SlideShowView({
             jump(order.length - 1)
             return
           case 'lastslideviewed':
-            jump(lastViewedRef.current)
+            lastViewed()
             return
           case 'endshow':
             exitRef.current()
@@ -456,7 +495,7 @@ export function SlideShowView({
       // Electron routes window.open to the system browser (setWindowOpenHandler denies in-app windows)
       window.open(target.url, '_blank', 'noreferrer')
     },
-    [order, goTo, pos],
+    [order, goTo, pos, lastViewed],
   )
   /** Click/hover position → slide-model px → topmost linked element's target (null = no link there) */
   const linkAt = useCallback(
@@ -478,37 +517,61 @@ export function SlideShowView({
     [order, pos, slide],
   )
 
-  // Keyboard navigation (capture beats the editor's generic shortcuts)
+  // Keyboard navigation (capture beats the editor's generic shortcuts). The menu owns
+  // Escape while open; the slide grid closes on Escape instead of ending the show.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault()
-        exitRef.current()
-      } else if (
-        e.key === 'ArrowRight' ||
-        e.key === 'ArrowDown' ||
-        e.key === ' ' ||
-        e.key === 'Enter' ||
-        e.key === 'PageDown'
-      ) {
-        e.preventDefault()
-        next()
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
-        e.preventDefault()
-        prev()
-      } else if (e.key === 'Home') {
-        e.preventDefault()
-        setEnded(false)
-        goTo(0, false)
-      } else if (e.key === 'End') {
-        e.preventDefault()
-        setEnded(false)
-        goTo(order.length - 1, false)
+      if (menuRef.current) return
+      if (gridRef.current) {
+        if (e.key === 'Escape') {
+          e.preventDefault()
+          setGrid(false)
+        }
+        return
+      }
+      const r = reduceShowKey(showKeysRef.current, e.key)
+      if (!r) return
+      e.preventDefault()
+      setKeys(ended ? { ...r.state, screen: 'none' } : r.state)
+      switch (r.action.type) {
+        case 'exit':
+          exitRef.current()
+          return
+        case 'next':
+          next()
+          return
+        case 'prev':
+          prev()
+          return
+        case 'first':
+          setEnded(false)
+          goTo(0, false)
+          return
+        case 'last':
+          setEnded(false)
+          goTo(order.length - 1, false)
+          return
+        case 'goto': {
+          const p = gotoPosition(r.action.slideNumber, order)
+          if (p == null) return
+          setEnded(false)
+          goTo(p, false)
+          return
+        }
       }
     }
     window.addEventListener('keydown', onKey, true)
     return () => window.removeEventListener('keydown', onKey, true)
-  }, [next, prev, goTo, order.length])
+  }, [next, prev, goTo, order, ended, setKeys])
+
+  const onRootClick = (e: React.MouseEvent) => {
+    if ((e.target as Element).closest('.ctx-menu, .ss-grid')) return
+    if (showKeysRef.current.screen !== 'none') {
+      setKeys(INITIAL_SHOW_KEYS)
+      return
+    }
+    next()
+  }
 
   if (!slide) return null
   const fitW = Math.round(Math.min(size.w, (size.h * slide.widthPx) / slide.heightPx))
@@ -522,13 +585,47 @@ export function SlideShowView({
     ? rehearse.perPageMs.reduce((a, b) => a + b, 0) + sinceEntered
     : 0
 
+  const menuItems = menu
+    ? buildShowMenu(
+        t,
+        {
+          pos,
+          count: order.length,
+          ended,
+          pending: player.pending,
+          hasLastViewed: visitedRef.current.length > 0,
+          screen: blank,
+        },
+        {
+          next,
+          prev,
+          lastViewed,
+          seeAll: () => setGrid(true),
+          setScreen: (sc) => {
+            if (!ended) setKeys(toggleScreen(showKeysRef.current, sc))
+          },
+          end: () => exitRef.current(),
+        },
+      )
+    : null
+
   return (
     <div
       className="slideshow"
-      onClick={next}
+      onClick={onRootClick}
+      onMouseDownCapture={(e) => {
+        menuClickRef.current =
+          menu != null && e.button === 0 && !(e.target as Element).closest('.ctx-menu')
+      }}
+      onClickCapture={(e) => {
+        if (!menuClickRef.current) return
+        menuClickRef.current = false
+        e.stopPropagation()
+      }}
       onContextMenu={(e) => {
         e.preventDefault()
-        prev()
+        if (!covered || grid) return
+        setMenu({ x: e.clientX, y: e.clientY })
       }}
     >
       {!covered ? null : ended ? (
@@ -577,7 +674,15 @@ export function SlideShowView({
                   width={fitW}
                   states={player.states}
                 />
-                <ShowMediaLayer slide={slide} slideIndex={order[pos]!} width={fitW} />
+                <ShowMediaLayer
+                  key={order[pos]!}
+                  slide={slide}
+                  slideIndex={order[pos]!}
+                  width={fitW}
+                  commands={player.mediaCmds}
+                  epoch={player.epoch}
+                  mediaBase={player.mediaBase}
+                />
               </div>
             </div>
           )}
@@ -592,12 +697,42 @@ export function SlideShowView({
           <div className="ss-counter">
             {pos + 1} / {order.length}
           </div>
+          {/* LOCAL(2026-09-22, f5247d3..476e5023): local countdown overlay kept alongside upstream's B/. blackout overlay */}
           {countdownLeft != null && (
             <div className={`ss-countdown${countdownLeft === 0 ? ' done' : ''}`} aria-live="off">
               ⏳ {formatClock(countdownLeft)}
             </div>
           )}
+          {blank !== 'none' && <div className={blank === 'black' ? 'ss-black' : 'ss-white'} />}
         </>
+      )}
+      {grid && (
+        <div
+          className="ss-grid"
+          onClick={(e) => {
+            e.stopPropagation()
+            setGrid(false)
+          }}
+        >
+          {order.map((idx, p) => (
+            <button
+              key={idx}
+              className={`ss-grid-item${p === pos ? ' ss-grid-cur' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation()
+                setGrid(false)
+                setEnded(false)
+                goTo(p, false)
+              }}
+            >
+              <SlideThumb slide={slides[idx]!} images={images} width={GRID_THUMB_W} />
+              <span className="ss-grid-num">{idx + 1}</span>
+            </button>
+          ))}
+        </div>
+      )}
+      {menu && menuItems && (
+        <ContextMenu x={menu.x} y={menu.y} items={menuItems} onClose={() => setMenu(null)} />
       )}
     </div>
   )
@@ -644,107 +779,4 @@ function hitLink(
     if (target) return target
   }
   return null
-}
-
-/**
- * Audio/video layer during the show: DOM players stacked over video/audio nodes (click to
- * play/pause, auto-stop on page turn). In the editor media only has poster frames; a show must
- * be able to play, or decks with video are crippled.
- */
-function ShowMediaLayer({
-  slide,
-  slideIndex,
-  width,
-}: {
-  slide: RenderSlide
-  slideIndex: number
-  width: number
-}) {
-  const k = width / slide.widthPx
-  const nodes = slide.nodes.filter(
-    (n): n is import('@chatoffice/pptx-render').PictureRenderNode =>
-      n.type === 'picture' && !!(n as import('@chatoffice/pptx-render').PictureRenderNode).media,
-  )
-  const [urls, setUrls] = useState<Record<string, { kind: 'video' | 'audio'; dataUrl: string }>>({})
-  const [playing, setPlaying] = useState<Record<string, boolean>>({})
-  useEffect(() => {
-    let cancelled = false
-    setUrls({})
-    setPlaying({})
-    for (const n of nodes) {
-      void window.slidesApi.getMediaData(slideIndex, n.sourceId).then((d) => {
-        if (!cancelled && d) setUrls((u) => ({ ...u, [n.sourceId]: d }))
-      })
-    }
-    return () => {
-      cancelled = true
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slideIndex])
-  if (!nodes.length) return null
-  return (
-    <>
-      {nodes.map((n) => {
-        const media = urls[n.sourceId]
-        if (!media) return null
-        const style: React.CSSProperties = {
-          position: 'absolute',
-          left: n.box.x * k,
-          top: n.box.y * k,
-          width: n.box.w * k,
-          height: n.box.h * k,
-          cursor: 'pointer',
-        }
-        const isPlaying = !!playing[n.sourceId]
-        const toggle = (el: HTMLMediaElement | null) => {
-          if (!el) return
-          if (el.paused) void el.play()
-          else el.pause()
-        }
-        if (media.kind === 'video') {
-          return (
-            <video
-              key={n.sourceId}
-              src={media.dataUrl}
-              style={style}
-              playsInline
-              onClick={(e) => {
-                e.stopPropagation()
-                toggle(e.currentTarget)
-              }}
-              onPlay={() => setPlaying((p) => ({ ...p, [n.sourceId]: true }))}
-              onPause={() => setPlaying((p) => ({ ...p, [n.sourceId]: false }))}
-            />
-          )
-        }
-        // Audio: the poster frame is drawn by the canvas; overlay a transparent click layer + play badge
-        return (
-          <div
-            key={n.sourceId}
-            style={{ ...style, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            onClick={(e) => {
-              e.stopPropagation()
-              toggle(document.getElementById(`ss-audio-${n.sourceId}`) as HTMLMediaElement | null)
-            }}
-          >
-            <audio
-              id={`ss-audio-${n.sourceId}`}
-              src={media.dataUrl}
-              onPlay={() => setPlaying((p) => ({ ...p, [n.sourceId]: true }))}
-              onPause={() => setPlaying((p) => ({ ...p, [n.sourceId]: false }))}
-            />
-            <span
-              style={{
-                fontSize: Math.min(n.box.w, n.box.h) * k * 0.4,
-                lineHeight: 1,
-                opacity: 0.85,
-              }}
-            >
-              {isPlaying ? '⏸' : '▶'}
-            </span>
-          </div>
-        )
-      })}
-    </>
-  )
 }

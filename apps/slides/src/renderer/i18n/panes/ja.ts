@@ -1,14 +1,17 @@
-/** panes strings, ja (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const ja = {
   paneCancel: 'キャンセル',
   paneOk: 'OK',
   paneMoveUp: '上へ移動',
   paneMoveDown: '下へ移動',
+
   paneAnimTitle: 'アニメーション ウィンドウ · スライド {n}',
   paneAnimPreview: 'このスライドのアニメーションをプレビュー再生',
   paneAnimCollapse: 'アニメーション ウィンドウを折りたたむ',
   paneAnimEmpty: 'このスライドにはまだアニメーションがありません',
-  paneAnimEmptySub: '図形を選択して「アニメーション」タブから効果を選択。アニメーションは pptx に書き込まれ、PowerPoint のスライドショーでも有効です。',
+  paneAnimEmptySub:
+    '図形を選択して「アニメーション」タブから効果を選択。アニメーションは pptx に書き込まれ、PowerPoint のスライドショーでも有効です。',
   paneAnimDelete: 'このアニメーションを削除',
   paneAnimSeconds: '{sec} 秒',
   paneAnimDelaySeconds: '遅延 {sec} 秒',
@@ -37,6 +40,10 @@ export const ja = {
   paneAnimEffShrink: '縮小および回転',
   paneAnimEffZoomOut: 'ズームアウト',
   paneAnimEffMotionPath: 'アニメーションの軌跡',
+  paneAnimEffMediaPlay: '再生',
+  paneAnimEffMediaPause: '一時停止',
+  paneAnimEffMediaStop: '停止',
+
   paneChartEditTitle: 'グラフ データの編集',
   paneChartCategoryN: 'カテゴリ {n}',
   paneChartSeriesN: '系列 {n}',
@@ -46,13 +53,16 @@ export const ja = {
   paneChartDelCategory: 'このカテゴリを削除',
   paneChartAddCategory: 'カテゴリを追加',
   paneChartAddCategoryBtn: '＋カテゴリ',
+
   paneCommentsTitle: 'コメント · スライド {n}',
   paneCommentsCollapse: 'コメント ウィンドウを折りたたむ',
   paneCommentsEmpty: 'このスライドにはまだコメントがありません',
-  paneCommentsEmptySub: '下に入力してください。コメントは pptx に書き込まれ、PowerPoint でも表示されます。',
+  paneCommentsEmptySub:
+    '下に入力してください。コメントは pptx に書き込まれ、PowerPoint でも表示されます。',
   paneCommentsDelete: 'コメントを削除',
   paneCommentsPlaceholder: '新しいコメント…（⌘/Ctrl+Enter で投稿）',
   paneCommentsPost: '投稿',
+
   paneCsdTitle: '目的別スライドショー',
   paneCsdDefaultName: '目的別スライドショー {n}',
   paneFrTitle: '検索と置換',
@@ -87,15 +97,18 @@ export const ja = {
   paneCsdCreateHint: '「新規作成」をクリックして目的別スライドショーを作成',
   paneCsdClose: '閉じる',
   paneCsdPlay: 'この目的別スライドショーを開始',
+
   paneCutoutTitle: '背景の削除',
   paneCutoutDecodeFail: '画像のデコードに失敗しました',
   paneCutoutLoadFail: '画像の読み込みに失敗しました',
   paneCutoutApplyFail: '背景の削除処理に失敗しました',
   paneCutoutLoading: '読み込み中…',
   paneCutoutTolerance: '許容値',
-  paneCutoutHint: '画像の縁から背景色を自動サンプリング。許容値が大きいほど、近い色が多く削除されます。現在のプレビューでは約 {pct}% のピクセルを削除済み。',
+  paneCutoutHint:
+    '画像の縁から背景色を自動サンプリング。許容値が大きいほど、近い色が多く削除されます。現在のプレビューでは約 {pct}% のピクセルを削除済み。',
   paneCutoutApplying: '処理中…',
   paneCutoutApply: '適用',
+
   paneFormatTitle: '書式',
   paneFormatTitleTyped: '{type}の書式設定',
   paneFormatTabShape: '図形のオプション',
@@ -230,6 +243,7 @@ export const ja = {
   paneInsetT: '上余白',
   paneInsetB: '下余白',
   paneTextWrap: '図形内でテキストを折り返す',
+
   panePresenterEndShow: 'スライドショーの終了',
   panePresenterEndTip: 'スライドショーを終了（Esc）',
   panePresenterSwap: 'ディスプレイの入れ替え',
@@ -237,7 +251,8 @@ export const ja = {
   panePresenterNoSecond: '2 台目のディスプレイが見つかりません',
   panePresenterUseShow: 'スライドショーに切り替え',
   panePresenterUseShowTip: 'この画面で通常のスライドショーを表示',
-  panePresenterSingleHint: 'シングル ディスプレイ モード（2 台目のディスプレイを接続すると自動的に全画面で放映）',
+  panePresenterSingleHint:
+    'シングル ディスプレイ モード（2 台目のディスプレイを接続すると自動的に全画面で放映）',
   panePresenterElapsed: '経過時間',
   panePresenterPause: 'タイマーを一時停止',
   panePresenterResume: 'タイマーを再開',
@@ -259,9 +274,19 @@ export const ja = {
   panePresenterNotesBigger: 'ノートの文字を大きく',
   panePresenterNotesSmaller: 'ノートの文字を小さく',
   panePresenterFilmSlideN: 'スライド {n}',
+
   paneShowEndedClick: 'スライドショーの最後です。クリックで終了。',
   paneShowEnded: 'スライドショーの最後です。',
   paneShowRehearseTip: 'リハーサル：現在のスライドの時間 / 合計時間',
   paneShowRehearseTotal: '合計 {time}',
+  paneShowMenuNext: '次へ',
+  paneShowMenuPrev: '前へ',
+  paneShowMenuLastViewed: '最後に表示したスライド',
+  paneShowMenuSeeAll: 'すべてのスライドを表示',
+  paneShowMenuScreen: 'スクリーン',
+  paneShowMenuBlack: '黒い画面',
+  paneShowMenuWhite: '白い画面',
+  paneShowMenuEnd: 'スライドショーの終了',
+  panePresenterWhiteOn: '白い画面（W キーで戻る）',
   paneAnimRewind: '終了後に早戻し',
-}
+} satisfies Record<keyof typeof zh, string>

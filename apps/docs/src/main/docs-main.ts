@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto'
+import { handOffBytes } from './byte-handoff'
 import {
   createWriteStream,
   appendFileSync,
@@ -110,6 +111,9 @@ import {
   registerSharedKbIpc,
 } from '@chatoffice/ai-host'
 import { listCodexModels, shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
+// LOCAL(2026-09-22, f5247d3..476e5023): 上游 #544 analyze_media 工具并入本地 ai-search 导入
+// (gsk→chatoffice 符号映射;analyzeMediaTool 不引——其 ai:analyze-media 专用通道被本地
+// media-understand 统一通道替代;generateImageTool/testSearchProvider 等上游命名本地无对应导出,不引)
 import {
   ensureChatofficeLogin,
   chatofficeApiKey,
@@ -143,6 +147,7 @@ import {
   readLazyMedia,
   registerLazyMediaProtocol,
 } from './lazy-media'
+import { inlineLazyMediaInHtml } from './lazy-media-inline'
 import {
   commitDocPasswordSave,
   currentDocPasswordIntentRevision,
@@ -2377,6 +2382,21 @@ export function setDocsShellWindow(win: BrowserWindow | null): void {
   docsShellWindow = win
 }
 
+/** the window hosting a tab's WebContentsView when BrowserWindow.fromWebContents
+ *  cannot tell (detached "Open in New Window" editors) */
+let hostWindowHook: ((wc: WebContents) => BrowserWindow | undefined) | null = null
+export function setDocsHostWindowHook(
+  fn: ((wc: WebContents) => BrowserWindow | undefined) | null,
+): void {
+  hostWindowHook = fn
+}
+
+function hostWindowFor(wc: WebContents | null | undefined): BrowserWindow | undefined {
+  const own = wc && (hostWindowHook?.(wc) ?? BrowserWindow.fromWebContents(wc))
+  if (own && !own.isDestroyed()) return own
+  return docsShellWindow && !docsShellWindow.isDestroyed() ? docsShellWindow : undefined
+}
+
 /** injected by the shell in tab mode: resolves the webContents of the currently active docs tab,
  * used for menu-command forwarding where there is no IpcMainInvokeEvent to key off of. */
 let activeDocsResolver: (() => WebContents | null) | null = null
@@ -2389,9 +2409,10 @@ function activeDocsWebContents(): WebContents | null {
   return BrowserWindow.getFocusedWindow()?.webContents ?? mainWindow?.webContents ?? null
 }
 
-/** dialog parent for the calling tab (standalone mode falls back to its own BrowserWindow) */
+/** dialog parent for the calling tab: the sender's own window when it has one
+ *  (standalone mode, detached "Open in New Window" editors), else the shell window */
 function dialogParent(event: IpcMainInvokeEvent): BrowserWindow | undefined {
-  return docsShellWindow ?? BrowserWindow.fromWebContents(event.sender) ?? undefined
+  return hostWindowFor(event.sender)
 }
 
 async function openDialog(event: IpcMainInvokeEvent, options: OpenDialogOptions) {
@@ -2796,12 +2817,11 @@ async function maybeRecoverDocBytes(
   return { bytes: original, recovered: false }
 }
 
-// Word's own .docx ceiling; past ~1 GB the IPC reply serializer doubles its buffer beyond the allocator's map limit and crashes the main process
+// Word's own .docx ceiling
 const MAX_OPEN_BYTES = 512 * 1024 * 1024
 
 async function showOpenError(wcId: number, detail: string): Promise<void> {
-  const wc = electronWebContents.fromId(wcId)
-  const parent = docsShellWindow ?? (wc && BrowserWindow.fromWebContents(wc)) ?? mainWindow
+  const parent = hostWindowFor(electronWebContents.fromId(wcId)) ?? mainWindow
   const options = { type: 'error' as const, message: tm('dlgOpenDoc'), detail }
   if (parent && !parent.isDestroyed()) await dialog.showMessageBox(parent, options)
   else await dialog.showMessageBox(options)
@@ -2862,7 +2882,7 @@ async function loadDocx(
   return {
     path: filePath,
     name: basename(filePath),
-    data: bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer,
+    dataUrl: handOffBytes(bytes),
     hash,
     encrypted,
     recovered: recovered || undefined,
@@ -3074,6 +3094,14 @@ export function registerAiIpc(): void {
     ipcMain,
     settingsPath: () => SETTINGS_PATH(),
     mediaDir: () => join(app.getPath('userData'), 'media', 'files'),
+    // LOCAL(2026-09-22, f5247d3..476e5023): 惰性图片(chatoffice-docx-media://)物化为
+    // data: URL——上游 #544 的 ai:analyze-media handler 曾内置此解析,现统一进媒体通道
+    resolveSource: async (source) => {
+      if (!source.startsWith('chatoffice-docx-media://')) return null
+      const lazy = await readLazyMedia(source).catch(() => null)
+      if (!lazy) return null
+      return `data:${lazy.mime};base64,${lazy.body.toString('base64')}`
+    },
   })
   aiRuntime = registerSharedAiIpc({
     ipcMain,
@@ -3165,6 +3193,10 @@ export function registerAiIpc(): void {
       return { images: [], method: 'error', error: String(err) }
     }
   })
+
+  // LOCAL(2026-09-22, f5247d3..476e5023): 上游 #544 的 ai:analyze-media 专用通道不接线——
+  // 本地 analyze_media 工具(tools.ts,含 blockIndex)改走统一媒体通道 ai:media-understand
+  // (多厂商能力分组);上游 loadMediaReference 的 data: URL 支持保留(ai-search 引擎层)
 
   // download image from URL → base64+mime (download in the main process avoids CORS; the renderer builds the image node and measures size itself)
   ipcMain.handle(
@@ -3707,6 +3739,16 @@ export function registerProjectIpc(): void {
         interrupted?: boolean
       },
     ) => {
+      if (args.role !== 'user' && args.role !== 'assistant') {
+        throw new Error(`Invalid chat role: ${String(args.role)}`)
+      }
+      if (typeof args.text !== 'string' || args.text.length > 200_000) {
+        throw new Error('Invalid chat text: must be a string up to 200000 chars')
+      }
+      if (args.tools && !Array.isArray(args.tools)) throw new Error('Invalid chat tools')
+      if (args.attachments && !Array.isArray(args.attachments)) {
+        throw new Error('Invalid chat attachments')
+      }
       const store = getProjectStore()
       const msg: Parameters<ProjectStore['appendChatMessage']>[2] = {
         role: args.role,
@@ -3837,15 +3879,7 @@ const reissuedDoc = (
   encrypted: boolean,
   hashes: Set<string>,
   plain: Buffer,
-): { data?: ArrayBuffer } =>
-  encrypted && hashes.size > 0
-    ? {
-        data: plain.buffer.slice(
-          plain.byteOffset,
-          plain.byteOffset + plain.byteLength,
-        ) as ArrayBuffer,
-      }
-    : {}
+): { dataUrl?: string } => (encrypted && hashes.size > 0 ? { dataUrl: handOffBytes(plain) } : {})
 
 /** document/attachment/window IPC (everything except the AI proxy above) */
 export function registerDocsIpc(): void {
@@ -4726,7 +4760,7 @@ export function registerDocsIpc(): void {
         allowPdfWrite(event.sender.id, filePath)
       }
       try {
-        writeFileSync(filePath, html, 'utf8')
+        writeFileSync(filePath, await inlineLazyMediaInHtml(html, readLazyMedia), 'utf8')
         openGeneratedFile(filePath)
         return { ok: true, path: filePath }
       } catch (err) {

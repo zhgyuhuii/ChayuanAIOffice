@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import {
   decodeCsvBuffer,
   isNumericCell,
+  MAX_CSV_COLS,
+  MAX_CSV_ROWS,
   parseCsv,
   resolveImportDelimiter,
   sniffDelimiter,
@@ -139,6 +141,25 @@ describe('decodeCsvBuffer', () => {
 
   it('decodes UTF-16LE without a BOM from the NUL pattern', () => {
     expect(decodeCsvBuffer(utf16leBytes('a,b'))).toBe('a,b')
+  })
+})
+
+describe('parseCsv row/col caps', () => {
+  it('rejects too many columns, counting the last field of an unterminated row', () => {
+    const wide = Array(MAX_CSV_COLS + 1)
+      .fill('a')
+      .join(',')
+    expect(() => parseCsv(wide, ',')).toThrow(/too many columns/)
+    expect(parseCsv(Array(MAX_CSV_COLS).fill('a').join(','), ',')[0]).toHaveLength(MAX_CSV_COLS)
+  })
+
+  it('accepts normal grids', () => {
+    expect(parseCsv('a,b\n1,2', ',')).toHaveLength(2)
+  })
+
+  it('exposes row/col caps', () => {
+    expect(MAX_CSV_ROWS).toBe(1_048_576)
+    expect(MAX_CSV_COLS).toBe(16_384)
   })
 })
 

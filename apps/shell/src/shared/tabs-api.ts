@@ -57,6 +57,13 @@ export interface TabsApi {
    */
   showNewMenu(x: number, y: number): Promise<void>
   /**
+   * pop up the native per-tab context menu (Open in New Window / Close) at
+   * (x, y) in window CSS coordinates. Native for the same reason as showMenu.
+   */
+  showTabMenu(id: string, x: number, y: number): Promise<void>
+  /** detach a docs/sheets tab into its own window ("Open in New Window") */
+  detach(id: string): Promise<void>
+  /**
    * pop up the application menu (File / Edit / View …) at (x, y). Windows and
    * Linux hide the native menu bar under the tab strip; macOS keeps the
    * system menu bar and never shows the button.
@@ -102,6 +109,8 @@ export const TABS_CHANNELS = {
   showTabContextMenu: 'tabs:show-tab-context-menu',
   showMenu: 'tabs:show-menu',
   showNewMenu: 'tabs:show-new-menu',
+  showTabMenu: 'tabs:show-tab-menu',
+  detach: 'tabs:detach',
   showAppMenu: 'tabs:show-app-menu',
   reorder: 'tabs:reorder',
   changed: 'tabs:changed',

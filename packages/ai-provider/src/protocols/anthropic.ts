@@ -10,6 +10,7 @@ import {
   sseErrorText,
   sseLines,
   throwIfCreditsNotice,
+  throwIfToolCountOverBudget,
   throwIfToolJsonOverBudget,
   type StreamCallbacks,
 } from './shared'
@@ -210,7 +211,11 @@ async function anthropicTurn(
       continue
     }
     if (event.type === 'content_block_start' && event.content_block?.type === 'tool_use') {
-      pendingTools.set(event.index ?? 0, {
+      const toolIndex = event.index ?? 0
+      if (!pendingTools.has(toolIndex)) {
+        throwIfToolCountOverBudget(pendingTools.size + completedTools.length + 1, 'anthropic')
+      }
+      pendingTools.set(toolIndex, {
         id: event.content_block.id ?? crypto.randomUUID(),
         name: event.content_block.name ?? '',
         json: '',

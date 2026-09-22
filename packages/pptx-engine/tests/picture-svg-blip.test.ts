@@ -30,10 +30,16 @@ describe('svgBlip fallback', () => {
     expect(el.mediaRef).toBe('ppt/media/image2.svg')
   })
 
-  it('raster r:embed still wins when both are present', () => {
+  // LOCAL(2026-09-22, f5247d3..476e5023): 本地双部件模型——mediaRef=raster + svgMediaRef=svg
+  // (渲染层 build-slide 仍矢量优先:svgDataUrl ?? dataUrl ?? media(mediaRef),可见结果与上游
+  // 单字段模型一致,且保留栅格兜底信息)——断言按本地语义改编
+  it('dual-part picture keeps raster in mediaRef and vector in svgMediaRef', () => {
+    // PowerPoint 2016+ draws the vector; the raster is only for older readers (a prod
+    // deck's fallback PNG is a blank white square where the SVG logo should be)
     const slide = parseOne(pic(`<a:blip r:embed="rId2">${SVG_EXT}</a:blip>`))
     const el = slide.elements[0] as PictureElement
     expect(el.mediaRef).toBe('ppt/media/image1.png')
+    expect(el.svgMediaRef).toBe('ppt/media/image2.svg')
   })
 
   it('shape blipFill fill resolves media via asvg:svgBlip', () => {

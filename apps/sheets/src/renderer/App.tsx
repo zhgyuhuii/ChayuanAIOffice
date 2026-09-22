@@ -9,7 +9,6 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react'
-import { createSheetsMediaSkill } from './ai/media-skill'
 // LOCAL(2026-09-21, d8201ad0): 多会话对话池 + 每会话隐藏宿主(B 区)
 import {
   useAiConversations,
@@ -113,7 +112,7 @@ import {
 } from './plan-operations'
 import { isNumericIdentifierText } from './cell-warning'
 import { consumePendingUndoCarry, undoStackDepth } from './undo-carry'
-import { useAutoSavePref, useKbAugment, type AiScopeQuoteData } from '@chatoffice/ui'
+import { useAutoSavePref, useKbAugment } from '@chatoffice/ui'
 
 import {
   CellValueType,
@@ -164,14 +163,8 @@ import { greenTheme } from '@univerjs/themes'
 import { createUniver } from './create-univer'
 
 import {
-  AgentLoop,
-  COMPLETED_VIA_TOOLS_TEXT,
-  composeSkills,
-  type AgentImage,
 } from '@chatoffice/agent-core'
 import {
-  enabledChatModels,
-  pickImageModel,
   type AiSettingsV2,
 } from '@chatoffice/ai-provider/browser'
 import {
@@ -211,7 +204,6 @@ import {
   type CrossHighlightHandle,
 } from './cross-highlight'
 import type { ApplyOutcome, ChangePlan } from '@chatoffice/xlsx-gateway/domain/workbook.types'
-import { createElectronTransport } from './ai/transport'
 import {
   MAX_READ_RANGE_CELLS,
   type ActiveSheetInfo,
@@ -219,7 +211,6 @@ import {
   type SheetsSkillDeps,
 } from './ai/tools'
 import { scopeLabel, type AiChatMessage } from './ai/AiChatPanel'
-import { pruneFailedExchange } from './ai/retry-prune'
 import { parseSheetNavHref } from './ai/sheet-nav'
 import {
   boundsToA1,
@@ -233,15 +224,9 @@ import { createAiDocument } from './ai/create-document'
 import { createWorkbookSkill } from './ai/workbook-skill'
 import { findWorkbookCells, selectWorkbookRange } from './ai/workbook-search'
 import { traceWorkbookDependents, traceWorkbookPrecedents } from './ai/formula-audit'
-import { createFilesSkill } from './ai/files-skill'
-import { createMergeSkill } from './ai/merge-skill'
 import { mergeAttachedWorkbooks } from './merge-workbooks'
-import { createSearchSkill } from './ai/search-skill'
-import { createImageSkill } from './ai/image-skill'
 import { isSvgRef, resolveSvgDataUrl } from './ai/svg-bank'
-import { ATTACHMENT_IMAGE_EXTS } from '../shared/desktop-api'
 import type {
-  AttachmentAddResult,
   AttachmentMeta,
   MenuAction,
   RecoveryPromptPayload,
@@ -271,12 +256,10 @@ import {
   MOVE_ROWS_MUTATION,
   MOVE_RANGE_MUTATION,
   NOTE_MUTATIONS,
-  PERSIST_TOOL_FIELD_MAX,
   pixelsToCharacterWidth,
   REMOVE_NUMFMT_MUTATION,
   REORDER_RANGE_MUTATION,
   ROW_COLUMN_MUTATIONS,
-  safeJsonInput,
   SET_FROZEN_MUTATION,
   SET_NUMFMT_MUTATION,
   TOGGLE_GRIDLINES_MUTATION,
@@ -398,6 +381,7 @@ import { installMultiRowAutofit } from './autofit-multi-row'
 import { registerExcelJumpNav } from './excel-jump-nav'
 import { registerExcelShortcuts } from './excel-shortcuts'
 import { installCopyMaterialize } from './copy-materialize'
+import { installStatusBarFileStats } from './statusbar-file-stats'
 import { applyUniverLocale, insertRowsBelowLocale, numberAsTextAlertLocale } from './univer-locales'
 import { installRuleDetail } from './univer-rule-detail'
 import { installActiveCellDataValidationChrome } from './data-validation-dropdown'
@@ -470,7 +454,7 @@ import {
   recordSparklineAdd,
 } from './edit-journal'
 import { shiftPinnedCells } from './formula-closure'
-import { getLang, t, aiLangDirective } from './i18n/locale'
+import { getLang, t } from './i18n/locale'
 import { planStillMatches } from './lazy-plan'
 import { lastSurvivingScreenLine, netAxisDelta, screenToFile } from './view-transform'
 import { selectionFormatEquals, toSelectionFormat, type SelectionFormat } from './selection-format'
@@ -482,6 +466,7 @@ import { EquationDialog } from './EquationDialog'
 import { IconsDialog } from './IconsDialog'
 import { RecommendedChartsDialog } from './RecommendedChartsDialog'
 import { installPictureTransfer } from './picture-paste'
+import { installWheelZoomSteps } from './wheel-zoom'
 import { ScreenshotDialog } from './ScreenshotDialog'
 import { SymbolDialog } from './SymbolDialog'
 import {
@@ -1228,6 +1213,10 @@ export function App(): React.JSX.Element {
 
   // ── 每会话运行管线(转录/loop/附件)已迁入 AiSheetsConversation 隐藏宿主;
   // 以下仅保留面板级共享的 plan-apply 补丁路由与自动保存(§4.5)──
+  // LOCAL(2026-09-22, f5247d3..476e5023): upstream's project-store chat-resolution
+  // useEffect (chatContinuesRef/rebindChat/history rehydrate) lives in the legacy
+  // single-conversation architecture this fork replaced with the conversation pool
+  // + AiSheetsConversation hidden hosts — upstream's edits to it cannot apply here.
   /** the running conversation's last-assistant patch (auto-apply badges, save notes) */
   const activeRunPatchRef = useRef<((fn: (entry: AiChatMessage) => AiChatMessage) => void) | null>(
     null,
@@ -1647,6 +1636,14 @@ export function App(): React.JSX.Element {
     // Copy/cut load their selection into the lazy window first so streamed
     // workbooks don't serialize blanks for never-viewed rows.
     const copyMaterializeDisposable = installCopyMaterialize(runtime, lazyWorkbookRef, setMessage)
+    // Footer statistics on streamed workbooks aggregate the real file, not
+    // the loaded window (a whole-column count read 191 on a 185k-row file).
+    const statusBarFileStatsDisposable = installStatusBarFileStats({
+      runtime,
+      lazyWorkbookRef,
+      aggregate: (sheetId, bounds) =>
+        aggregateWorkbookRange(readContext(), sheetId, bounds, { skipFileHiddenRows: true }),
+    })
     // Validation dropdowns and input messages follow the active cell, matching Excel.
     const dataValidationChromeDisposable = installActiveCellDataValidationChrome(runtime)
     // Excel shows no invalid-data marker until Circle Invalid Data is run.
@@ -2600,6 +2597,15 @@ export function App(): React.JSX.Element {
           insert: (file, anchor) => handleInsertPictureFile(visualContext(), file, anchor),
         })
       : () => undefined
+    const disposeWheelZoom = gridHost
+      ? installWheelZoomSteps(gridHost, {
+          isCellEditing: () => editingCellRef.current,
+          getZoom: () => runtime.univerAPI.getActiveWorkbook()?.getActiveSheet()?.getZoom(),
+          setZoom: (zoom) => {
+            runtime.univerAPI.getActiveWorkbook()?.getActiveSheet()?.zoom(zoom)
+          },
+        })
+      : () => undefined
     let selectionAskRaf: number | null = null
     let selectionAskSettleRaf: number | null = null
     let selectionAskSettling = false
@@ -2771,6 +2777,7 @@ export function App(): React.JSX.Element {
       cfDisplayKeyDisposable.dispose()
       nullResultDisposable.dispose()
       copyMaterializeDisposable.dispose()
+      statusBarFileStatsDisposable.dispose()
       dataValidationChromeDisposable.dispose()
       dataValidationMarkerDisposable.dispose()
       ruleDetailDisposable()
@@ -2793,6 +2800,7 @@ export function App(): React.JSX.Element {
       if (contentTimer) clearTimeout(contentTimer)
       contentDisposable.dispose()
       disposePictureTransfer()
+      disposeWheelZoom()
       gridHost?.removeEventListener('pointerdown', onSelectionPointerDown, true)
       window.removeEventListener('pointermove', onSelectionPointerMove, true)
       window.removeEventListener('pointerup', finishSelectionPointer, true)

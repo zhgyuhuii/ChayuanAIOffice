@@ -92,6 +92,15 @@ describe('OutlinePanel a11y', () => {
     expect(current[0].textContent).toBe('Chapter 2')
   })
 
+  it('caps nesting depth instead of recursing into hostile outlines', async () => {
+    let deep: OutlineNode = { title: 'leaf', dest: 'leaf' }
+    for (let i = 0; i < 200; i++) deep = { title: `level ${i}`, dest: `d${i}`, items: [deep] }
+    const el = await renderPanel({ outline: [deep], label: 'Outline', emptyLabel: 'No results' })
+    const items = [...el.querySelectorAll('[role="treeitem"]')]
+    expect(items.length).toBeGreaterThan(0)
+    expect(items.length).toBeLessThanOrEqual(33)
+  })
+
   it('renders the empty state as a live region reusing the no-results copy', async () => {
     const el = await renderPanel({
       outline: [],
