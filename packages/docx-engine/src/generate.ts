@@ -23,8 +23,6 @@ export interface GenerateContext {
 
 const EMU_PER_PX = 9525
 const EMU_PER_PT = 12700
-/** ST_Coordinate values must be integers; cap absurd magnitudes so output stays schema-valid */
-const MAX_EMU = Number.MAX_SAFE_INTEGER
 
 export interface ImagePatch {
   /** new display size in CSS px; rewrites wp:extent and pic a:ext */
@@ -86,7 +84,7 @@ export function patchImageParagraphXml(xml: string, patch: ImagePatch): string {
     // Non-finite dimensions must not land in the XML verbatim (cx="Infinity"
     // is schema-invalid); skip the resize and keep the original extents.
     const toEmu = (px: number): number | null =>
-      Number.isFinite(px) ? Math.max(1, Math.min(MAX_EMU, Math.round(px * EMU_PER_PX))) : null
+      Number.isFinite(px) ? Math.max(1, Math.round(px * EMU_PER_PX)) : null
     const cx = toEmu(patch.widthPx)
     const cy = toEmu(patch.heightPx)
     if (cx !== null && cy !== null) {
@@ -251,8 +249,7 @@ export function patchImageParagraphXml(xml: string, patch: ImagePatch): string {
   }
   // Rewrite posOffset values inside positionH / positionV (surgical). Non-finite
   // offsets would land verbatim (posOffset>NaN<) — skip and keep the original.
-  const finiteOffset = (v: number): number | null =>
-    Number.isFinite(v) ? Math.max(-MAX_EMU, Math.min(MAX_EMU, Math.round(v))) : null
+  const finiteOffset = (v: number): number | null => (Number.isFinite(v) ? Math.round(v) : null)
   if (patch.posOffsetX !== undefined) {
     const x = finiteOffset(patch.posOffsetX)
     if (x !== null) {

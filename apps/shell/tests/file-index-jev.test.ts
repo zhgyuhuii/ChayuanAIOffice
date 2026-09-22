@@ -132,7 +132,7 @@ describe('SearchReranker', () => {
   })
 
   beforeEach(() => {
-    dir = mkdtempSync(join(tmpdir(), 'chatoffice-jev-'))
+    dir = mkdtempSync(join(tmpdir(), 'chaoffice-jev-'))
     store = new FileIndexStore(join(dir, 'index.db'))
     store.upsert(meta('/n/first.md'), 'budget notes and more budget', 'ok')
     store.upsert(meta('/n/second.md'), 'the budget answer is here', 'ok')

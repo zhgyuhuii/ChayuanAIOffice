@@ -3269,32 +3269,6 @@ function pendingProjectSaveDir(kind: 'doc' | 'sheet' | 'slide' | 'markdown' | 'p
   return defaultSaveDir()
 }
 
-function applyMenuFor(kind: TabKind): void {
-  lastAppliedMenuKind = kind
-  switch (kind) {
-    case 'docs':
-      buildDocsMenu()
-      break
-    case 'sheets':
-      installSheetsMenu()
-      break
-    case 'slides':
-      installSlidesMenu()
-      break
-    case 'pdf':
-      buildPdfMenu()
-      break
-    case 'markdown':
-      buildMarkdownMenu()
-      break
-    case 'html':
-      buildHtmlMenu()
-      break
-    default:
-      buildHomeMenu()
-  }
-}
-
 function refreshTitleBarOverlay(): void {
   // adapted（上游 e42da7c7）:本地窗口方案=全平台 titleBarStyle hidden+TabBar 自绘三键
   // （WINDOW_CHANNELS），不启用 titleBarOverlay;在未启用 overlay 的窗口上调用
@@ -3556,12 +3530,6 @@ function createShellWindow(): void {
     applyPendingDir(wc.id, path)
   })
   setHtmlProvisionalTitleHook((wc, title) => manager.setTabTitleFor(wc.id, title))
-  // A redacted copy becomes this tab's document; the source still exists.
-  setPdfRedactionSavedHook((wc, path) => {
-    manager.setTabFileFor(wc.id, path)
-    recordRecentFile(path)
-    applyPendingDir(wc.id, path)
-  })
   // pdf content-derived auto-rename: the file moved on disk, follow it everywhere
   setPdfRenamedHook((wc, oldPath, newPath) => {
     // An untitled document's first save landed: drop its registry entry.
@@ -3655,6 +3623,32 @@ function createShellWindow(): void {
     void win.loadURL(process.env.ELECTRON_RENDERER_URL)
   } else {
     void win.loadFile(join(__dirname, '../renderer/index.html'))
+  }
+}
+
+function applyMenuFor(kind: TabKind): void {
+  lastAppliedMenuKind = kind
+  switch (kind) {
+    case 'docs':
+      buildDocsMenu()
+      break
+    case 'sheets':
+      installSheetsMenu()
+      break
+    case 'slides':
+      installSlidesMenu()
+      break
+    case 'pdf':
+      buildPdfMenu()
+      break
+    case 'markdown':
+      buildMarkdownMenu()
+      break
+    case 'html':
+      buildHtmlMenu()
+      break
+    default:
+      buildHomeMenu()
   }
 }
 
@@ -6836,8 +6830,7 @@ if (process.env.REMOTE_DEBUG_PORT) {
 }
 
 app.whenReady().then(async () => {
-  startSiteSync('office') // 官网心跳+检查更新（静默）
-  // first scan waits for the windows to come up; later ones follow folder changes
+  startSiteSync('office') // 官网心跳+检查更新（静默）  // first scan waits for the windows to come up; later ones follow folder changes
   setTimeout(() => ensureFileIndexer()?.refresh(), 4000)
   installRendererProtocol({
     docs: join(DOCS_OUT, 'renderer'),

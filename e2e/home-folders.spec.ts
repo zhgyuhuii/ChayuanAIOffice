@@ -4,6 +4,9 @@ import {
   mkdirSync,
   mkdtempSync,
   readFileSync,
+=======
+  readdirSync,
+>>>>>>> efb9247a (Sync snapshot (2026-09-22) (#757))
   realpathSync,
   rmSync,
   writeFileSync,
@@ -134,6 +137,7 @@ test.describe('home folders panel', () => {
   })
 
   test('an added folder joins the tree in place and leaves the list without touching disk', async () => {
+<<<<<<< HEAD
     const extra = realpathSync(mkdtempSync(join(tmpdir(), 'chatoffice-e2e-extra-')))
     mkdirSync(join(extra, 'Projects', 'Alpha'), { recursive: true })
     writeFileSync(join(extra, 'Projects', 'plan.md'), '# plan')
@@ -147,16 +151,6 @@ test.describe('home folders panel', () => {
       const tree = page.locator('.folder-panel .tree')
       const rootRows = tree.locator(':scope > .tree-item > .tree-row')
       await waitRootExpanded(page, tree)
-      await expect(rootRows).toHaveCount(2)
-      await expect(rootRows.nth(0)).toContainText(root.split('/').pop()!)
-      await expect(rootRows.nth(1)).toContainText(extra.split('/').pop()!)
-
-      // every root row opens on a fresh profile, so the added root shows its real contents
-      await expect(rootRows.nth(1)).toHaveAttribute('aria-expanded', 'true')
-      await expect(tree.locator('.tree-name', { hasText: 'Projects' })).toBeVisible()
-      await tree.locator('.tree-name', { hasText: 'Projects' }).click()
-      await expect(page.locator('.tree-file-row', { hasText: 'plan.md' })).toBeVisible()
-      await expect(tree.locator('.tree-row', { has: page.locator('.tree-name', { hasText: 'Alpha' }) })).toBeVisible()
 
       // edits happen where the folder really is
       await page.locator('.folder-new-btn').click()

@@ -314,7 +314,7 @@ import { collectRevisions, gotoRevision, type TrackChangesStorage } from './edit
 import { NavPane } from './components/NavPane'
 import { Ruler } from './components/Ruler'
 import { VRuler } from './components/VRuler'
-import { docBodyFont, docHasCjk, docLineFactor, docThemeCss, docStyleCss } from './doc-style-css' 
+import { docBodyFont, docHasCjk, docLineFactor, docThemeCss, docStyleCss } from './doc-style-css'
 import { isDocDirty } from './doc-dirty'
 import {
   EMPTY_HF_VARIANTS,

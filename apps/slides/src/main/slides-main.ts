@@ -29,7 +29,7 @@ const APP_ICON = nativeImage.createFromPath(appIconPath)
 import { execFile } from 'node:child_process'
 import { readFile, writeFile, rm, stat, mkdir, open } from 'node:fs/promises'
 import { createHash, randomUUID } from 'node:crypto'
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync } from 'node:fs' 
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { userInfo } from 'node:os'
 import { basename, dirname, join, resolve } from 'node:path'
 import { cleanupExpiredGeneratedPages } from './generated-page-temp'
@@ -58,7 +58,7 @@ import {
   rendererUrl,
   MAX_REMOTE_IMAGE_BYTES,
   readBodyCapped,
-} from '@chatoffice/electron-utils' 
+} from '@chatoffice/electron-utils'
 import {
   resolveGroupChildId,
   runTxn,

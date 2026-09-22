@@ -8,7 +8,7 @@ let dir: string
 let store: FileIndexStore
 
 beforeEach(() => {
-  dir = mkdtempSync(join(tmpdir(), 'chatoffice-index-'))
+  dir = mkdtempSync(join(tmpdir(), 'chaoffice-index-'))
   store = new FileIndexStore(join(dir, 'index.db'))
 })
 afterEach(() => {

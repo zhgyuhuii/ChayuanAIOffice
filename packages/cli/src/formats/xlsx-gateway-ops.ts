@@ -5,7 +5,7 @@ import {
   ResponseTooLargeError,
   fetchRemoteImage,
   readBodyCapped,
-} from '@chatoffice/electron-utils/remote-image' 
+} from '@chatoffice/electron-utils/remote-image'
 import {
   columnIndex,
   columnLabel,
