@@ -536,7 +536,14 @@ export function flattenSvgPath(d: string, curveSegs = 10): number[][] {
   let x = 0
   let y = 0
   let i = 0
-  const num = () => Number(toks[i++])
+  // Hostile custGeom paths carry NaN/Infinity/1e400 tokens: bare Number()
+  // would push them into rings where Bezier math spreads them and
+  // triangulation crashes. Sanitize to 0 and clamp the segment count.
+  const segs = Number.isFinite(curveSegs) ? Math.min(Math.max(1, Math.floor(curveSegs)), 32) : 10
+  const num = () => {
+    const v = Number(toks[i++])
+    return Number.isFinite(v) ? v : 0
+  }
   const closeRing = () => {
     if (ring.length >= 6) rings.push(ring)
     ring = []
@@ -562,8 +569,8 @@ export function flattenSvgPath(d: string, curveSegs = 10): number[][] {
         const c2y = num()
         const ex = num()
         const ey = num()
-        for (let k = 1; k <= curveSegs; k++) {
-          const u = k / curveSegs
+        for (let k = 1; k <= segs; k++) {
+          const u = k / segs
           const v = 1 - u
           ring.push(
             v * v * v * x + 3 * v * v * u * c1x + 3 * v * u * u * c2x + u * u * u * ex,
@@ -579,8 +586,8 @@ export function flattenSvgPath(d: string, curveSegs = 10): number[][] {
         const cy1 = num()
         const ex = num()
         const ey = num()
-        for (let k = 1; k <= curveSegs; k++) {
-          const u = k / curveSegs
+        for (let k = 1; k <= segs; k++) {
+          const u = k / segs
           const v = 1 - u
           ring.push(
             v * v * x + 2 * v * u * cx1 + u * u * ex,
