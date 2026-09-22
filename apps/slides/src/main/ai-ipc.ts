@@ -30,8 +30,8 @@ import {
 } from '@chatoffice/ai-provider'
 import { persistGeneratedImage } from '@chatoffice/ai-host'
 import { registerMediaIpc, registerSharedAiIpc, registerSharedKbIpc } from '@chatoffice/ai-host'
-import { fetchRemoteImage } from '@chatoffice/electron-utils'
-import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
+import { MAX_REMOTE_IMAGE_BYTES, fetchRemoteImage, readBodyCapped } from '@chatoffice/electron-utils'
+import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server' 
 import {
   webSearch,
   imageSearch,
@@ -460,7 +460,7 @@ export function registerSlidesOnlyAiIpc(): void {
           // fetchRemoteImage adds CDN-friendly headers and transient-error retries.
           const resp = await fetchRemoteImage(String(op.url))
           if (!resp || !resp.ok) return null
-          buf = Buffer.from(await resp.arrayBuffer())
+          buf = Buffer.from(await readBodyCapped(resp, MAX_REMOTE_IMAGE_BYTES))
           const ct = resp.headers.get('content-type') ?? ''
           ext = ct.includes('png') ? 'png' : ct.includes('gif') ? 'gif' : 'jpg'
         }
@@ -533,7 +533,7 @@ export function registerSlidesOnlyAiIpc(): void {
         } else {
           const resp = await fetchRemoteImage(String(op.url))
           if (!resp || !resp.ok) return null
-          buf = Buffer.from(await resp.arrayBuffer())
+          buf = Buffer.from(await readBodyCapped(resp, MAX_REMOTE_IMAGE_BYTES))
           const ct = resp.headers.get('content-type') ?? ''
           ext = ct.includes('png') ? 'png' : ct.includes('gif') ? 'gif' : 'jpg'
         }

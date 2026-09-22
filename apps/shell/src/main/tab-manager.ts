@@ -750,8 +750,28 @@ export class TabManager {
     }
     this.activeId = id
     this.refreshActiveTargets()
+<<<<<<< HEAD
     this.layout()
+=======
+    this.focusActiveView()
+>>>>>>> efb9247a (Sync snapshot (2026-09-22) (#757))
     this.onChanged()
+  }
+
+  /** Hand keyboard focus to the active tab's view. The click that opened or
+   *  switched a tab lands on the chrome webContents (tab strip, Home list),
+   *  and a WebContentsView made visible does not take focus on its own — so
+   *  without this, typing after every open/switch keeps going to a hidden
+   *  view. Home has no view of its own; the shell window's webContents is
+   *  the focus target there. Skipped while the window is unfocused
+   *  (background opens must not steal OS focus); the window's `focus`
+   *  handler re-runs it. */
+  focusActiveView(): void {
+    if (this.shellWindow.isDestroyed() || !this.shellWindow.isFocused()) return
+    const target = this.tabs.find((t) => t.id === this.activeId)
+    if (!target) return
+    if (target.view) target.view.webContents.focus()
+    else this.shellWindow.webContents.focus()
   }
 
   /** Re-point the process-global active-editor targets and the app menu at this

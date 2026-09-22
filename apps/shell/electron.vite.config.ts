@@ -23,6 +23,8 @@ export default defineConfig({
         ),
       },
     },
+    // node:sqlite is a Node 22+ builtin the bundler's builtin list may predate
+    build: { rollupOptions: { external: ['node:sqlite'] } },
   },
   preload: {
     build: {
