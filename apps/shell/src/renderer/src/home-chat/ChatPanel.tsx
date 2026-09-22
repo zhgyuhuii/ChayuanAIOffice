@@ -15,9 +15,9 @@ import {
 import attachIcon from '../assets/attach-icon.png'
 import qrCodeIcon from '../assets/qrcode.png'
 import wxpayIcon from '../assets/wxpay.png'
-import alipayIcon from '../assets/alipay.png'
 import type { AiModelSelection, AiSettingsV2, KbCitation } from '@chatoffice/ai-provider'
 import { useI18n } from '../locale'
+import { openPurchaseDialog } from '../PurchaseModal'
 import { MonoFileIcon } from '../file-icons'
 import { HomeChatController } from './controller'
 import type { HomeChatControllerTexts } from './controller'
@@ -756,8 +756,8 @@ export function ChatPanel({
   // ── sessions dropdown ──
   const [menuOpen, setMenuOpen] = useState(false)
   /** 页脚二维码点击放大（对话栏内 absolute 遮罩，点任意处/Escape 关闭）：
-   *  follow = 公众号单图；support = 微信/支付宝双图并排 */
-  const [qrZoom, setQrZoom] = useState<'follow' | 'support' | null>(null)
+   *  follow = 公众号单图；支持我们入口改为打开购买弹窗（openPurchaseDialog） */
+  const [qrZoom, setQrZoom] = useState<'follow' | null>(null)
   useEffect(() => {
     if (!qrZoom) return
     const onKey = (e: KeyboardEvent) => {
@@ -1458,7 +1458,7 @@ export function ChatPanel({
             className="chat-footer-qr"
             aria-label={t('supportUs')}
             data-tip={t('supportUs')}
-            onClick={() => setQrZoom('support')}
+            onClick={() => openPurchaseDialog()}
           >
             <img src={wxpayIcon} alt="" aria-hidden="true" />
           </button>
@@ -1482,23 +1482,10 @@ export function ChatPanel({
         <div
           className="chat-qr-zoom"
           role="dialog"
-          aria-label={qrZoom === 'follow' ? t('followUs') : t('supportUs')}
+          aria-label={t('followUs')}
           onClick={() => setQrZoom(null)}
         >
-          {qrZoom === 'follow' ? (
-            <img src={qrCodeIcon} alt={t('followUs')} />
-          ) : (
-            <div className="chat-qr-zoom-pair">
-              <figure className="chat-qr-zoom-item">
-                <img src={wxpayIcon} alt={t('wechatPayLabel')} />
-                <figcaption>{t('wechatPayLabel')}</figcaption>
-              </figure>
-              <figure className="chat-qr-zoom-item">
-                <img src={alipayIcon} alt={t('alipayPayLabel')} />
-                <figcaption>{t('alipayPayLabel')}</figcaption>
-              </figure>
-            </div>
-          )}
+          <img src={qrCodeIcon} alt={t('followUs')} />
         </div>
       )}
     </main>
