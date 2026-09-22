@@ -991,8 +991,12 @@ function parseAxis(ax: any, theme?: Theme): ChartAxisStyle | undefined {
   const out: ChartAxisStyle = {}
   if (ax['c:delete']?.['@_val'] === '1') out.hidden = true
   const scaling = ax['c:scaling']
-  if (scaling?.['c:min']?.['@_val'] != null) out.min = Number(scaling['c:min']['@_val'])
-  if (scaling?.['c:max']?.['@_val'] != null) out.max = Number(scaling['c:max']['@_val'])
+  // Corrupt axis bounds (c:min val="Infinity") would poison chart scale math:
+  // assign only finite values, else the axis auto-scales.
+  const min = Number(scaling?.['c:min']?.['@_val'])
+  if (scaling?.['c:min']?.['@_val'] != null && Number.isFinite(min)) out.min = min
+  const max = Number(scaling?.['c:max']?.['@_val'])
+  if (scaling?.['c:max']?.['@_val'] != null && Number.isFinite(max)) out.max = max
   if (scaling?.['c:orientation']?.['@_val'] === 'maxMin') out.reversed = true
   if (ax['c:tickLblPos']?.['@_val'] === 'none') out.tickLblHidden = true
   const defRPr =

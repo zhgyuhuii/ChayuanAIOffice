@@ -1944,6 +1944,17 @@ function cellBordersXml(borders: NonNullable<TableCell['borders']>): string {
   return `<w:tcBorders>${side('top')}${side('left')}${side('bottom')}${side('right')}</w:tcBorders>`
 }
 
+/** colSpan arrives from parsed files/ops models: Infinity would emit
+ *  w:val="Infinity" and blow up the grid build (Array.from({length: Infinity})
+ *  throws). Clamp to 1..64 at every emit site. */
+function cellSpan(cell: TableCell): number {
+  // colSpan arrives from parsed files/ops models as a number, but XML attr
+  // plumbing can leave a numeric string behind: coerce before validating.
+  const span = Number(cell.colSpan ?? 1)
+  if (!Number.isFinite(span)) return 1
+  return Math.min(Math.max(1, Math.floor(span)), 64)
+}
+
 function tableCellXml(
   cell: TableCell,
   width: number,
@@ -1960,7 +1971,7 @@ function tableCellXml(
   setTcPrChild(
     children,
     'w:gridSpan',
-    cell.colSpan && cell.colSpan > 1 ? `<w:gridSpan w:val="${cell.colSpan}"/>` : null,
+    cellSpan(cell) > 1 ? `<w:gridSpan w:val="${cellSpan(cell)}"/>` : null,
   )
   const merge = verticalMerge ?? cell.vMerge
   setTcPrChild(
@@ -2079,7 +2090,7 @@ export function generateTableModelXml(model: TableModel, originalTableXml?: stri
   const columnCount = Math.max(
     1,
     model.colWidthsPct?.length ?? 0,
-    ...model.rows.map((row) => row.reduce((sum, cell) => sum + (cell.colSpan ?? 1), 0)),
+    ...model.rows.map((row) => row.reduce((sum, cell) => sum + cellSpan(cell), 0)),
   )
   const percentages =
     model.colWidthsPct?.length === columnCount
@@ -2129,7 +2140,7 @@ export function generateTableModelXml(model: TableModel, originalTableXml?: stri
       // they advance the grid but are never written as w:tc
       const edges = { before: 0, wBefore: 0, after: 0, wAfter: 0 }
       for (const cell of row) {
-        const span = Math.max(1, cell.colSpan ?? 1)
+        const span = cellSpan(cell)
         const width = widths
           .slice(gridColumn, gridColumn + span)
           .reduce((sum, value) => sum + value, 0)

@@ -167,6 +167,7 @@ import {
   snapshotDocPassword,
 } from './docx-encryption'
 import { isExternallyModified, type DiskFileState } from './external-change'
+import { printScaleOption, validPrintDim, validPrintScale } from './print-args'
 import { initDocsAutoUpdater } from './updater'
 import { registerZoteroIpc, teardownZoteroIpc } from './zotero-ipc'
 
@@ -4613,8 +4614,12 @@ export function registerDocsIpc(): void {
   )
 
   // renderer print scale (inverse of the preview's print zoom, see print-zoom.ts)
+  // Infinity passes a `> 0` check, so require finiteness before handing it to Chromium.
+  const pdfScale = (scale?: number) => printScaleOption(scale)
   const printScale = (scale?: number) =>
-    scale && scale > 0 && scale !== 1 ? { scaleFactor: Math.round(scale * 100) } : {}
+    typeof scale === 'number' && Number.isFinite(scale) && scale > 0 && scale !== 1
+      ? { scaleFactor: Math.round(scale * 100) }
+      : {}
   ipcMain.handle('docs:print', async (event, scale?: number) => {
     // print the calling tab's own content; zero margins — the docx page padding provides them.
     // Resolves when the system dialog is dismissed; the print dialog stays open on cancel
@@ -4772,7 +4777,16 @@ export function registerDocsIpc(): void {
   // mixed paper-size export: the renderer prints group by group per size (other pages hidden via CSS); this produces one group's bytes
   ipcMain.handle(
     'docs:print-pdf-buffer',
-    async (event, pageWidthTwips: number, pageHeightTwips: number) => {
+    async (event, pageWidthTwips: number, pageHeightTwips: number, scale?: number) => {
+      // Renderer-supplied page geometry reaches Chromium printToPDF verbatim:
+      // reject non-finite/out-of-range sizes (0.5in..50in) and scales (0.1..5).
+      if (
+        !validPrintDim(pageWidthTwips) ||
+        !validPrintDim(pageHeightTwips) ||
+        !validPrintScale(scale)
+      ) {
+        return { ok: false, error: 'invalid page size or scale' }
+      }
       try {
         const data = await event.sender.printToPDF({
           printBackground: true,
@@ -4781,6 +4795,7 @@ export function registerDocsIpc(): void {
             height: pageHeightTwips / TWIPS_PER_INCH,
           },
           margins: { top: 0, bottom: 0, left: 0, right: 0 },
+          ...pdfScale(scale),
         })
         return { ok: true, base64: data.toString('base64') }
       } catch (err) {

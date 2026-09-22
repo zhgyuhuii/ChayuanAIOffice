@@ -21,6 +21,9 @@ export function computePlayOrder(
   startAt: number,
   customOrder?: readonly number[],
 ): number[] {
+  // A stale startAt (e.g. after slide deletions) must not emit an
+  // out-of-range slide: nothing is playable from an invalid start.
+  if (!Number.isInteger(startAt) || startAt < 0 || startAt >= slides.length) return []
   const playable = (i: number) => slides[i] != null && (!slides[i]!.hidden || i === startAt)
   const o =
     customOrder && customOrder.length > 0

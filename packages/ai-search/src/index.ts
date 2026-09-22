@@ -17,6 +17,7 @@ import { bingImageSearch } from './bing'
 import { openverseImageSearch } from './openverse'
 import { linkupWebSearch } from './linkup'
 import { searxngWebSearch } from './searxng'
+import { parallelMcpSearch } from './parallel-mcp'
 
 export type { ImageSearchResult, SearchAttempt, WebSearchResult } from './shared'
 export {
@@ -31,6 +32,7 @@ export * from './chatoffice-auth'
 const SERPER_KEY = () => process.env.SERPER_API_KEY ?? ''
 const TAVILY_KEY = () => process.env.TAVILY_API_KEY ?? ''
 const LINKUP_KEY = () => process.env.LINKUP_API_KEY ?? ''
+const PARALLEL_KEY = () => process.env.PARALLEL_API_KEY ?? ''
 
 /** API keys resolved from settings (preferred) then env vars (fallback) */
 interface SearchKeys {
@@ -38,9 +40,58 @@ interface SearchKeys {
   tavily?: string
   linkup?: string
   searxngBaseUrl?: string
+  parallelKey?: string
+}
+
+
+/** Parallel's API and free Search MCP return source excerpts, not a synthesized answer. */
+async function parallelWebSearch(
+  key: string,
+  query: string,
+  maxResults: number,
+): Promise<WebSearchResult[]> {
+  let data: Record<string, unknown>
+  if (key) {
+    const resp = await fetchWithTimeout('https://api.parallel.ai/v1/search', {
+      method: 'POST',
+      headers: { 'x-api-key': key, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ search_queries: [query], mode: 'fast' }),
+    })
+    if (!resp.ok) return []
+    data = asRecord(await resp.json())
+  } else {
+    const mcp = await parallelMcpSearch(query)
+    if (!mcp) return []
+    data = asRecord(mcp)
+  }
+  const raw: unknown[] = Array.isArray(data.results) ? data.results : []
+  const results: WebSearchResult[] = []
+  for (const item of raw.slice(0, maxResults)) {
+    const result = asRecord(item)
+    if (typeof result.url !== 'string' || !/^https?:\/\//i.test(result.url)) continue
+    const excerpts: unknown[] = Array.isArray(result.excerpts) ? result.excerpts : []
+    results.push({
+      title: typeof result.title === 'string' && result.title ? result.title : result.url,
+      url: result.url,
+      snippet: excerpts
+        .filter((excerpt): excerpt is string => typeof excerpt === 'string')
+        .join('\n'),
+    })
+  }
+  return results
 }
 
 // ── Web search ──────────────────────────────────────────────────────
+
+/**
+ * Model-driven search args arrive unvalidated: clamp the result count to a
+ * finite 1..20 and truncate the query so a wild maxResults cannot inflate
+ * backend cost/loops and a megabyte query cannot flood request bodies.
+ */
+function normalizeSearchArgs(query: string, maxResults: number): { query: string; max: number } {
+  const max = Number.isFinite(maxResults) ? Math.min(Math.max(1, Math.floor(maxResults)), 20) : 6
+  return { query: typeof query === 'string' ? query.slice(0, 500) : '', max }
+}
 
 export async function webSearch(
   query: string,
@@ -55,6 +106,7 @@ export async function webSearch(
   method: string
   error?: string
 }> {
+  const { query: q, max } = normalizeSearchArgs(query, maxResults)
   type Tier = {
     id: string
     run: () => Promise<{ results: WebSearchResult[]; answer?: string; method: string } | null>
@@ -69,12 +121,12 @@ export async function webSearch(
           const resp = await fetchWithTimeout('https://google.serper.dev/search', {
             method: 'POST',
             headers: { 'X-API-KEY': serperKey, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ q: query, num: maxResults, gl: 'us', hl: 'en' }),
+            body: JSON.stringify({ q: q, num: max, gl: 'us', hl: 'en' }),
           })
           if (resp.ok) {
             const data = asRecord(await resp.json())
             const organic: unknown[] = Array.isArray(data.organic) ? data.organic : []
-            const results: WebSearchResult[] = organic.slice(0, maxResults).map((item) => {
+            const results: WebSearchResult[] = organic.slice(0, max).map((item) => {
               const o = asRecord(item)
               return {
                 title: String(o.title ?? ''),
@@ -109,8 +161,8 @@ export async function webSearch(
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               api_key: tavilyKey,
-              query,
-              max_results: maxResults,
+              query: q,
+              max_results: max,
               include_answer: true,
             }),
           })
@@ -145,7 +197,7 @@ export async function webSearch(
         const linkupKey = keys?.linkup ?? LINKUP_KEY()
         if (!linkupKey) return null
         try {
-          const results = await linkupWebSearch(query, maxResults, linkupKey)
+          const results = await linkupWebSearch(q, max, linkupKey)
           if (results.length) return { results, method: 'linkup' }
         } catch {
           /* fall through to the next tier */
@@ -159,8 +211,24 @@ export async function webSearch(
         const searxngBase = keys?.searxngBaseUrl
         if (!searxngBase) return null
         try {
-          const results = await searxngWebSearch(query, maxResults, searxngBase)
+          const results = await searxngWebSearch(q, max, searxngBase)
           if (results.length) return { results, method: 'searxng' }
+        } catch {
+          /* fall through to the next tier */
+        }
+        return null
+      },
+    },
+    {
+      id: 'parallel',
+      // A key uses Parallel's REST API; selecting Parallel with no key opts into
+      // its free anonymous Search MCP (15s bounded handshake + tool call).
+      run: async () => {
+        const parallelKey = (keys?.parallelKey ?? PARALLEL_KEY()).trim()
+        if (!parallelKey && prefer !== 'parallel') return null
+        try {
+          const results = await parallelWebSearch(parallelKey, q, max)
+          if (results.length) return { results, method: 'parallel' }
         } catch {
           /* fall through to the next tier */
         }
@@ -171,7 +239,7 @@ export async function webSearch(
       id: 'duckduckgo',
       run: async () => {
         try {
-          return { results: await duckWebSearch(query, maxResults), method: 'duckduckgo' }
+          return { results: await duckWebSearch(q, max), method: 'duckduckgo' }
         } catch (err) {
           duckError = err
         }
@@ -189,7 +257,7 @@ export async function webSearch(
     if (tier.id === 'duckduckgo') {
       // the terminal tier's failure detail rides the error line (historical contract)
       try {
-        return { results: await duckWebSearch(query, maxResults), method: 'duckduckgo' }
+        return { results: await duckWebSearch(q, max), method: 'duckduckgo' }
       } catch (err) {
         duckError = err
       }

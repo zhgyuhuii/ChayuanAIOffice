@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "@chatoffice/ai-provider": "*",
-    "@chatoffice/electron-utils": "*"
+    "@chatoffice/electron-utils": "*",
+    "@modelcontextprotocol/sdk": "^1.30.0"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",

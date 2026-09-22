@@ -64,6 +64,20 @@ describe('webSearch (Serper)', () => {
     expect(r.results[0]?.url).toBe('https://x.com')
     expect(r.results[0]?.title).toBe('X Title')
   })
+
+  it('clamps wild maxResults and truncates huge queries at entry', async () => {
+    process.env.SERPER_API_KEY = 'test-key'
+    let seen: { q: string; num: number } | undefined
+    mockFetch((_url, init) => {
+      seen = JSON.parse(String(init?.body)) as { q: string; num: number }
+      return { ok: true, json: { organic: [] } }
+    })
+    await webSearch('x'.repeat(5000), 1e9)
+    expect(seen!.num).toBeLessThanOrEqual(20)
+    expect(seen!.q.length).toBeLessThanOrEqual(500)
+    await webSearch('normal', NaN)
+    expect(seen!.num).toBeGreaterThanOrEqual(1)
+  })
 })
 
 describe('webSearch (Tavily)', () => {
@@ -218,6 +232,43 @@ describe('imageSearch (Serper)', () => {
       width: 800,
       height: 600,
     })
+  })
+})
+
+describe('webSearch (Parallel)', () => {
+  it('uses the REST API when PARALLEL_API_KEY is set', async () => {
+    process.env.PARALLEL_API_KEY = 'pk-test'
+    let seen: { url: string; headers?: Record<string, string> } | null = null
+    mockFetch((url, init) => {
+      if (url === 'https://api.parallel.ai/v1/search') {
+        seen = { url, headers: (init?.headers ?? {}) as Record<string, string> }
+        return {
+          ok: true,
+          json: {
+            results: [
+              { title: 'Parallel result', url: 'https://example.com/a', excerpts: ['one', 'two'] },
+              { title: '', url: 'ftp://skip.example/x', excerpts: [] },
+              { title: 'Titled', url: 'https://example.com/b', excerpts: [] },
+            ],
+          },
+        }
+      }
+      return { ok: false, json: {} }
+    })
+    const r = await webSearch('parallel query', 5)
+    expect(seen).not.toBeNull()
+    expect(seen!.headers?.['x-api-key']).toBe('pk-test')
+    expect(r.method).toBe('parallel')
+    // non-http(s) URLs dropped; empty title falls back to the URL; excerpts joined
+    expect(r.results.map((x) => x.url)).toEqual(['https://example.com/a', 'https://example.com/b'])
+    expect(r.results[0]).toMatchObject({ title: 'Parallel result', snippet: 'one\ntwo' })
+  })
+
+  it('skips the tier without a key unless Parallel is the preferred provider', async () => {
+    delete process.env.PARALLEL_API_KEY
+    mockFetch((url) => (url.includes('duckduckgo') ? { ok: true, json: [] } : { ok: false, json: {} }))
+    const r = await webSearch('no key', 3)
+    expect(r.method).toBe('duckduckgo')
   })
 })
 

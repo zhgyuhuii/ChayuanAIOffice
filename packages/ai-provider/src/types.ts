@@ -219,7 +219,14 @@ export interface AiMediaSettings {
 
 /** web/image search backends — each configurable independently for web vs image search */
 export type AiSearchProviderId =
-  'serper' | 'tavily' | 'duckduckgo' | 'bing' | 'openverse' | 'linkup' | 'searxng'
+  | 'serper'
+  | 'tavily'
+  | 'duckduckgo'
+  | 'bing'
+  | 'openverse'
+  | 'linkup'
+  | 'searxng'
+  | 'parallel'
 
 export interface AiSearchProviderMeta {
   id: AiSearchProviderId

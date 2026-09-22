@@ -108,7 +108,19 @@
 
 **⚠️ 第八轮施工中（2026-09-16 深夜，未完成未合并）**：上游 `f4d8da2..09485f8`（15 提交：MCP×4+9-16 快照 525 文件+pptx 系列×5+小修）已全部 pick 到 `sync/upstream-20260916` 分支（已推 origin，含冲突裁决+品牌映射+动画引擎超集收敛，pptx-engine 1018/docs 2541 测试绿）。合并重做于 `merge-r8-wip` 分支（已推 origin）：merge 本体冲突仅 shell index/preload 导入并集×2 已解+pdf-main map 语义修复+pdf/markdown strings 按干净配方重建（pristine+品牌+本地键，锚=节 opener 后）。**剩余**：pdf LangDicts 节键集差×1+sheets workbook-ops(13)/ExcelShell(3)/save-pipeline(1) 等~30 类型错误收敛+slides/markdown 数个测试适配→全量门禁→合 main。**main 保持 310596b0 绿基线**（并行 WIP Home/strings 两文件在工作树）。新知：strings 断裂正解=main 绿版为基底+按节织入 sync 独有键（锚=节 opener 后；捕获须剥尾）；三方 merge-file+「theirs+品牌重放+HEAD 键补回」配方已在分支验证。
 
-**上次同步终点（下次续 pick 的起点）**：`476e5023`（2026-09-22 第十五轮完成并入 main；下次 `git fetch upstream` 后从 `476e5023..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+**上次同步终点（下次续 pick 的起点）**：`0d90149`（2026-09-22 第十六轮完成并入 main；下次 `git fetch upstream` 后从 `0d90149..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+
+### 第十六轮增量（2026-09-22，476e5023..0d90149：37 提交，施工于 sync/upstream-20260921 分支；上游安全加固批量周+两特性）
+
+| 内容 | 结果 |
+|---|---|
+| 引擎/壳层加固×33（docs 页码/EQ 列/脚注展开/print-pdf-buffer 校验/HTML hex 越界/AI 长度解析×3/cm i18n、docx colSpan/formatNumber/EP 列、xlsx-gateway 排序确定性+IronCalc 跨表引号+cli styles 重复写、pptx chartEx/flattenSvg、slides Custom Show/起始页/墨迹 payload/metafile 字幅/粘贴图 5MB、pdf 标注颜色四边形、pdf2docx 间距有限性、sheets 打印几何/默认阈值、html2docx 零面积图、ai-provider 媒体设置容错+自定义端点 URL 校验、ai-search 钳制、electron-utils SSRF 重定向/生成图字节、pipelines 大纲 JSON、shell CLI 输出缓冲、cli JPEG 标记） | 31 件干净 pick；**#590** 冲突=品牌导入行+maxRelationshipId 并入；**#594** 测试冲突=保 chatoffice 登录命名+收新校验用例；**#610** docs-main 两块=有限性 printScale+print-pdf-buffer 校验/scale 接线（pdfScale 复活）+print-args.ts 新件；**#672** attachments-ipc=上游 error 形状+本地 chatoffice-pasted 目录（⚠️ 曾因 grep -c 短路致带标记文件被提交，amend 修复）；**#623** image-loader 测试=品牌+MAX_METAFILE_BASE64_CHARS 导入 |
+| #586 自定义端点模型发现（feat） | **空 pick 对账**：custom-models.ts 与本地 discovery.ts openAiStyleModels 同构（GET {base}/models+Bearer+多 URL 回退），本地 aiDiscoverModels 已覆盖；SettingsModal UI 不采纳（本地 V2 页自有发现） |
+| #602 ai-search 钳制 | **接通遗留**：normalizeSearchArgs 定义在而调用缺（第十五轮快照半接线），本轮全层接线+测试驱动发现 tavily max_results 漏改 |
+| #656 Parallel 搜索供应商（feat，14 文件冲突） | **adapted 重实现进本地多供应商链**（沿第九轮 Opper 并集先例）：parallel-mcp.ts 新件（匿名 Search MCP，brand chatoffice）+index.ts parallel 层（有键 REST api.parallel.ai；无键且 prefer=parallel 启用免费 MCP；插 searxng/duckduckgo 之间）+types AiSearchProviderId+search-settings 注册表（needsKey:false）+search-tools parallelKey 透传+ai-search 依赖 @modelcontextprotocol/sdk ^1.30.0（根已有，lock 更新）；README/CONTRIBUTING/SettingsModal 按 Q5/本地 V2 不采纳；测试 2 例改编（REST mock+无键门控） |
+| 门禁 | 对账 37/37；品牌 scan 改动文件零残留；typecheck 全工作区 0；lint 改动源文件 0 error；全量测试见末行；ai-search 80 绿 |
+
+**本轮新坑**：①**`grep -c ... && python` 短路陷阱**——grep 零匹配退出码 1 会让 && 后的修复脚本不执行，带冲突标记的文件被直接 add+commit（靠 esbuild 报 `Unexpected "<<"` 揪出，amend 补救）——冲突解决脚本必须独立执行或用 `;` 连接；②cherry-pick 连发遇空 pick 会中断整个序列（"nothing to commit"），剩余件需先探测再补 pick；③上游安全加固批量周（30+ 件）与本地快照重叠度高，`git cherry-pick --no-commit` 探测（APPLIES-CLEAN/CONFLICTS 二分）比逐个撞冲突高效得多。
 
 ### 第十五轮增量（2026-09-22，f5247d3..476e5023：31 提交（30 小修+特性 + 9-21 快照巨件 509 文件），施工于 sync/upstream-20260922 分支；施工前先提交并行 WIP 两笔（c2b045ec 多会话 D12/D13 + e4d5f2b2 并行会话快照））
 

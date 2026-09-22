@@ -35,6 +35,14 @@ export const AI_SEARCH_PROVIDERS: AiSearchProviderMeta[] = [
     needsKey: true,
   },
   {
+    id: 'parallel',
+    // no key: Parallel's free anonymous Search MCP; a key upgrades to the REST API
+    label: 'Parallel',
+    keyPlaceholder: 'PARALLEL_API_KEY (optional)',
+    imageSearch: false,
+    needsKey: false,
+  },
+  {
     id: 'duckduckgo',
     label: 'DuckDuckGo',
     keyPlaceholder: '',
