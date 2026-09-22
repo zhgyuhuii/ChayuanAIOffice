@@ -2,7 +2,13 @@ import JSZip from 'jszip'
 import { afterEach, describe, expect, it } from 'vitest'
 import { parseDocx } from '../src/parse'
 import { saveDocx } from '../src/patch'
-import { decodeMhtToHtml, decodeQuotedPrintable, setAltChunkHtmlConverter } from '../src/alt-chunk'
+import {
+  decodeMhtToHtml,
+  decodeQuotedPrintable,
+  MAX_MHT_BYTES,
+  MAX_MHT_PARTS,
+  setAltChunkHtmlConverter,
+} from '../src/alt-chunk'
 import { buildDocx } from './helpers/build-docx'
 
 const CHUNK_REL =
@@ -210,8 +216,27 @@ describe('MIME decoding helpers', () => {
     const bytes = Uint8Array.from(mht, (c) => c.charCodeAt(0) & 0xff)
     const html = decodeMhtToHtml(bytes)
     expect(html).toContain('<p>hi</p>')
-    expect(html).toContain(
-      '<img src="data:image/png;base64,eA=="><img src="data:image/png;base64,eA==">',
-    )
+    // adapted: 36f8d236 restores the #752 part cap the 9-22 snapshot (#757) had
+    // dropped — parts beyond MAX_MHT_PARTS are ignored, so the pre-declared
+    // <img src="F1999.PNG"> stays unresolved while f0 (part 1) inlines.
+    expect(html).toContain('<img src="F1999.PNG"><img src="data:image/png;base64,eA==">')
+  })
+
+  it('refuses oversized MHT input', () => {
+    const bytes = new Uint8Array(MAX_MHT_BYTES + 1)
+    expect(decodeMhtToHtml(bytes)).toBeNull()
+  })
+
+  it('caps the part count on hostile multipart input', () => {
+    const boundary = 'bomb'
+    let mht =
+      `Content-Type: multipart/related; boundary="${boundary}"\r\n\r\n` +
+      `--${boundary}\r\nContent-Type: text/html\r\n\r\n<html><body><p>hi</p></body></html>\r\n`
+    for (let i = 0; i < MAX_MHT_PARTS + 50; i++) {
+      mht += `--${boundary}\r\nContent-Type: text/plain\r\nContent-Location: f${i}.txt\r\n\r\nx\r\n`
+    }
+    mht += `--${boundary}--\r\n`
+    const bytes = Uint8Array.from(mht, (c) => c.charCodeAt(0) & 0xff)
+    expect(decodeMhtToHtml(bytes)).toContain('<p>hi</p>')
   })
 })

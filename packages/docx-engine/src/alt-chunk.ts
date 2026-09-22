@@ -24,6 +24,10 @@ export type AltChunkKind = 'html' | 'mht' | 'docx'
 
 const ALT_CHUNK_REL = /\/aFChunk$/
 const MAX_CHUNK_BYTES = 64 * 1024 * 1024
+/** MHT parts beyond this are ignored (see splitMultipart) */
+export const MAX_MHT_PARTS = 1000
+/** decodeMhtToHtml refuses inputs beyond this (mirrors the chunk cap) */
+export const MAX_MHT_BYTES = 64 * 1024 * 1024
 
 export function altChunkKind(
   path: string,
@@ -136,7 +140,9 @@ function splitMultipart(body: Uint8Array, boundary: string): MimePart[] {
   const parts: MimePart[] = []
   const marker = new TextEncoder().encode(`--${boundary}`)
   let pos = indexOfBytes(body, marker, 0)
-  while (pos !== -1) {
+  // A hostile archive can pack unbounded part counts; each part costs header
+  // scans plus an html-wide regex pass during image inlining.
+  while (pos !== -1 && parts.length < MAX_MHT_PARTS) {
     let start = pos + marker.length
     if (body[start] === 0x2d && body[start + 1] === 0x2d) break
     if (body[start] === 0x0d) start++
@@ -190,6 +196,7 @@ function decodeTransfer(part: MimePart): Uint8Array {
  * the converter sees them without the package.
  */
 export function decodeMhtToHtml(bytes: Uint8Array): string | null {
+  if (bytes.length > MAX_MHT_BYTES) return null
   const top = splitHeadersBody(bytes)
   const type = top.headers.get('content-type') ?? ''
   const boundary = headerParam(type, 'boundary')
