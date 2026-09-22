@@ -42,6 +42,16 @@ interface SearchKeys {
 
 // ── Web search ──────────────────────────────────────────────────────
 
+/**
+ * Model-driven search args arrive unvalidated: clamp the result count to a
+ * finite 1..20 and truncate the query so a wild maxResults cannot inflate
+ * backend cost/loops and a megabyte query cannot flood request bodies.
+ */
+function normalizeSearchArgs(query: string, maxResults: number): { query: string; max: number } {
+  const max = Number.isFinite(maxResults) ? Math.min(Math.max(1, Math.floor(maxResults)), 20) : 6
+  return { query: typeof query === 'string' ? query.slice(0, 500) : '', max }
+}
+
 export async function webSearch(
   query: string,
   maxResults = 6,
