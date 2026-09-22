@@ -80,11 +80,21 @@ function readLastCustomMargins(): PageMargins | null {
 }
 
 const PAPER_SIZES = [
-  { key: 'a4', name: 'A4', desc: '21 × 29.7 cm', w: 11906, h: 16838 },
-  { key: 'letter', name: 'Letter', desc: '21.59 × 27.94 cm', w: 12240, h: 15840 },
-  { key: 'legal', name: 'Legal', desc: '21.59 × 35.56 cm', w: 12240, h: 20160 },
-  { key: 'b5', name: 'B5 (JIS)', desc: '18.2 × 25.7 cm', w: 10319, h: 14572 },
+  { key: 'a4', name: 'A4', w: 11906, h: 16838 },
+  { key: 'letter', name: 'Letter', w: 12240, h: 15840 },
+  { key: 'legal', name: 'Legal', w: 12240, h: 20160 },
+  { key: 'b5', name: 'B5 (JIS)', w: 10319, h: 14572 },
 ]
+
+/** Paper size caption from data (twips → trimmed cm), so the unit string
+ *  stays in i18n instead of hardcoded English. */
+export function paperSizeCaption(wTwips: number, hTwips: number, unit: string): string {
+  const cm = (twips: number): string => {
+    if (!Number.isFinite(twips) || twips < 0) return '0'
+    return String(parseFloat((twips / 567).toFixed(2)))
+  }
+  return `${cm(wTwips)} × ${cm(hTwips)} ${unit}`
+}
 
 interface LayoutTabProps extends TabProps {
   section: SectionSettings | null
@@ -291,7 +301,7 @@ export function LayoutTab({
                             {t('ribbonMarginTop')} {cmFromTwips(lastCustom.top)} ·{' '}
                             {t('ribbonMarginBottom')} {cmFromTwips(lastCustom.bottom)} ·{' '}
                             {t('ribbonMarginLeft')} {cmFromTwips(lastCustom.left)} ·{' '}
-                            {t('ribbonMarginRight')} {cmFromTwips(lastCustom.right)} cm
+                            {t('ribbonMarginRight')} {cmFromTwips(lastCustom.right)} {t('ribbonCm')}
                           </span>
                         </button>
                       )}
@@ -377,7 +387,7 @@ export function LayoutTab({
                       onClick={() => setPaper(p.w, p.h)}
                     >
                       <b>{p.name}</b>
-                      <span>{p.desc}</span>
+                      <span>{paperSizeCaption(p.w, p.h, t('ribbonCm'))}</span>
                     </button>
                   )
                 })}
