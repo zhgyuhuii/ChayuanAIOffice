@@ -719,8 +719,8 @@ export function SettingsModal({
                   label={t('setGithub')}
                   value={
                     githubStars === null
-                      ? 'github.com/zhgyuhuii/chayuan-office'
-                      : `github.com/zhgyuhuii/chayuan-office · ★ ${formatStars(githubStars)}`
+                      ? 'github.com/zhgyuhuii/ChayuanAIOffice'
+                      : `github.com/zhgyuhuii/ChayuanAIOffice · ★ ${formatStars(githubStars)}`
                   }
                   action={
                     <button

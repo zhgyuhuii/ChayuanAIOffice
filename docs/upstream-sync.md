@@ -13,7 +13,7 @@
 
 | 项 | 值 |
 |---|---|
-| 本仓 | `/Users/zyh/work/chayuan-office`（origin `git@github.com:zhgyuhuii/chayuan-office.git`；惯例：直接 main 提交+推送，中文领域 title） |
+| 本仓 | `/Users/zyh/work/chayuan-office`（origin `git@github.com:zhgyuhuii/ChayuanAIOffice.git`；惯例：直接 main 提交+推送，中文领域 title） |
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/genoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |

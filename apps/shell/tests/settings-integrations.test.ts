@@ -169,7 +169,7 @@ describe('Settings → Integrations', () => {
     expect(host.textContent).toContain('Pick any one of these three ways')
     // the same three prompts appear under both the CLI and the MCP part
     expect(host.querySelectorAll('.set-intg-example')).toHaveLength(6)
-    expect(host.textContent).toContain('npx skills add zhgyuhuii/chayuan-office')
+    expect(host.textContent).toContain('npx skills add zhgyuhuii/ChayuanAIOffice')
     // MCP block: the launcher itself while chaoffice is not on the PATH, as a command and as JSON
     const mcp = [...host.querySelectorAll('.set-intg-mcp code')].map((c) => c.textContent)
     // the brand directory name contains a space, so the launcher must be quoted

@@ -13,10 +13,10 @@
 Soubory Word, Excel, PowerPoint a PDF, upravované vámi a vaší AI, ukládané zpět ve skutečných formátech.</p>
 
 <p align="center">
-  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/chayuan-office" alt="Licence: Apache-2.0"></a>
-  <a href="https://github.com/zhgyuhuii/chayuan-office/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/chayuan-office" alt="Nejnovější verze"></a>
-  <a href="https://github.com/zhgyuhuii/chayuan-office/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/chayuan-office/total" alt="Stažení"></a>
-  <a href="https://github.com/zhgyuhuii/chayuan-office/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/chayuan-office?style=flat" alt="Hvězdy na GitHubu"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/ChayuanAIOffice" alt="Licence: Apache-2.0"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/ChayuanAIOffice" alt="Nejnovější verze"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/ChayuanAIOffice/total" alt="Stažení"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/ChayuanAIOffice?style=flat" alt="Hvězdy na GitHubu"></a>
 </p>
 
 <p align="center"><a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.pt-BR.md">Português (Brasil)</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">繁體中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ja.md">日本語</a> · <a href="README.ar.md">العربية</a> · <a href="README.ru.md">Русский</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.pl.md">Polski</a> · <b>Čeština</b> · <a href="README.id.md">Bahasa Indonesia</a> · <a href="README.ms.md">Bahasa Melayu</a> · <a href="README.th.md">ไทย</a> · <a href="README.hi.md">हिन्दी</a> · <a href="README.he.md">עברית</a></p>
@@ -56,9 +56,9 @@ provede požadovanou úpravu a přesně vám ukáže, čeho se dotkl.
   počítači vytvářet, převádět, číst a upravovat skutečné soubory Office, aniž
   by otevřel jediné okno.
 
-**Stáhnout:** [macOS](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (Apple Silicon a Intel) ·
-[Windows](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (x64 a Arm) ·
-[Linux](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (deb, rpm, AppImage) —
+**Stáhnout:** [macOS](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (Apple Silicon a Intel) ·
+[Windows](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (x64 a Arm) ·
+[Linux](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (deb, rpm, AppImage) —
 podrobnosti a požadavky najdete v sekci [Stažení](#download).
 
 ## Ukázka
@@ -179,7 +179,7 @@ přes stejné enginy jako aplikace, aniž by otevřely jediné okno.
 </tr>
 <tr>
 <td><b>Jeden prompt vašemu agentovi</b> — „Vytvoř osmisnímkovou prezentaci o sluneční soustavě.“ Agent si přečte skill, napíše stylový list, osnovu a jednu specifikaci stránky na snímek, vygeneruje obě fotografie pomocí <code>chatoffice image</code> a nechá <code>chatoffice slides check</code> odmítnout vše, co přetéká nebo se překrývá, než <code>chatoffice create</code> sestaví soubor <code>.pptx</code> a <code>slides render</code> vrátí ke kontrole jeden PNG na snímek.</td>
-<td><b>Nainstalujte jednou, v Nastavení → Integrace</b> — ChatOffice vypíše kódovací agenty, které na tomto počítači najde, a zapíše skill do každého, který vyberete. Nebo si skill stáhněte jako zip, případně spusťte <code>npx skills add zhgyuhuii/chayuan-office</code>. Příkazy a celý pracovní postup najdete v sekci <a href="#command-line-and-agent-skill">Příkazový řádek a agentní skill</a>.</td>
+<td><b>Nainstalujte jednou, v Nastavení → Integrace</b> — ChatOffice vypíše kódovací agenty, které na tomto počítači najde, a zapíše skill do každého, který vyberete. Nebo si skill stáhněte jako zip, případně spusťte <code>npx skills add zhgyuhuii/ChayuanAIOffice</code>. Příkazy a celý pracovní postup najdete v sekci <a href="#command-line-and-agent-skill">Příkazový řádek a agentní skill</a>.</td>
 </tr>
 </table>
 
@@ -248,7 +248,7 @@ OpenCode a Windsurf hned po instalaci a s jakýmkoli dalším agentem, který
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Nastavení → Integrace** v aplikaci   | Vypíše agenty nalezené na tomto počítači; jedním kliknutím zapíše skill do každého, který vyberete. Když nové vydání ChatOffice přinese novější skill, objeví se tlačítko **Aktualizovat**. |
 | **Stáhnout jako zip** na téže stránce  | Rozložení, které claude.ai, desktopové aplikace Claude a další asistenti přijímají jako nahraný skill.                                                                                     |
-| `npx skills add zhgyuhuii/chayuan-office` | Nainstaluje z tohoto repozitáře do jakéhokoli agenta podporujícího skilly.                                                                                                                 |
+| `npx skills add zhgyuhuii/ChayuanAIOffice` | Nainstaluje z tohoto repozitáře do jakéhokoli agenta podporujícího skilly.                                                                                                                 |
 
 Pak začněte nový chat a požádejte o dokument. Skill agenta naučí, kdy sáhnout
 po `chatoffice`, jak si soubor přečíst před úpravou a jak zkontrolovat vlastní
@@ -302,16 +302,16 @@ soubor `.pptx`.
 
 | Platforma                            | Požadavky                                             | Stažení                                                                                        |
 | ------------------------------------ | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [Nejnovější `.dmg` (arm64)](https://github.com/zhgyuhuii/chayuan-office/releases/latest)          |
-| **macOS** — Intel (x64)              | macOS 11+                                             | [Nejnovější `.dmg` (x64)](https://github.com/zhgyuhuii/chayuan-office/releases/latest)            |
-| **Windows** (x64, většina PC)        | Windows 10+, Intel/AMD                                | [Nejnovější instalátor `-x64.exe`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)   |
-| **Windows** na Arm (ARM64)           | Windows 11 na Arm (Snapdragon X a podobné)            | [Nejnovější instalátor `-arm64.exe`](https://github.com/zhgyuhuii/chayuan-office/releases/latest) |
-| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 nebo novější)       | [Nejnovější `.deb`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)                  |
-| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [Nejnovější `.rpm`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)                  |
-| **Linux** — ostatní distribuce       | x86_64, glibc 2.34+, FUSE 2                           | [Nejnovější `.AppImage`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)             |
+| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [Nejnovější `.dmg` (arm64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)          |
+| **macOS** — Intel (x64)              | macOS 11+                                             | [Nejnovější `.dmg` (x64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)            |
+| **Windows** (x64, většina PC)        | Windows 10+, Intel/AMD                                | [Nejnovější instalátor `-x64.exe`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)   |
+| **Windows** na Arm (ARM64)           | Windows 11 na Arm (Snapdragon X a podobné)            | [Nejnovější instalátor `-arm64.exe`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) |
+| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 nebo novější)       | [Nejnovější `.deb`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                  |
+| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [Nejnovější `.rpm`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                  |
+| **Linux** — ostatní distribuce       | x86_64, glibc 2.34+, FUSE 2                           | [Nejnovější `.AppImage`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)             |
 
 Všechny sestavení pocházejí z `main`; instalátory pro macOS a Windows jsou
-podepsané. Starší verze jsou na stránce [Releases](https://github.com/zhgyuhuii/chayuan-office/releases).
+podepsané. Starší verze jsou na stránce [Releases](https://github.com/zhgyuhuii/ChayuanAIOffice/releases).
 
 <details>
 <summary><b>Instalace na Linuxu</b></summary>
@@ -385,7 +385,7 @@ pull requestů najdete v [CONTRIBUTING.md](../../CONTRIBUTING.md).
 ChatOffice je v aktivním vývoji a vaše zpětná vazba jej utváří.
 
 - **Nahlaste chybu nebo navrhněte funkci** v
-  [GitHub Issues](https://github.com/zhgyuhuii/chayuan-office/issues).
+  [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues).
 - **Připojte se ke skupinovému chatu ChatOffice** na
   [GenTeam](https://chatoffice.ai/join), kde si můžete promluvit s týmem
   i ostatními uživateli.

@@ -685,7 +685,7 @@ let cachedGithubStars: number | null = null
 async function fetchGithubStars(): Promise<number | null> {
   if (cachedGithubStars !== null) return cachedGithubStars
   try {
-    const response = await fetch('https://api.github.com/repos/zhgyuhuii/chayuan-office', {
+    const response = await fetch('https://api.github.com/repos/zhgyuhuii/ChayuanAIOffice', {
       headers: { Accept: 'application/vnd.github+json' },
       signal: AbortSignal.timeout(5000),
     })

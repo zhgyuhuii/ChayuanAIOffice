@@ -13,10 +13,10 @@
 File Word, Excel, PowerPoint, dan PDF, diedit oleh Anda dan AI Anda, disimpan kembali dalam format aslinya.</p>
 
 <p align="center">
-  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/chayuan-office" alt="License: Apache-2.0"></a>
-  <a href="https://github.com/zhgyuhuii/chayuan-office/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/chayuan-office" alt="Latest release"></a>
-  <a href="https://github.com/zhgyuhuii/chayuan-office/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/chayuan-office/total" alt="Downloads"></a>
-  <a href="https://github.com/zhgyuhuii/chayuan-office/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/chayuan-office?style=flat" alt="GitHub stars"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/ChayuanAIOffice" alt="License: Apache-2.0"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/ChayuanAIOffice" alt="Latest release"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/ChayuanAIOffice/total" alt="Downloads"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/ChayuanAIOffice?style=flat" alt="GitHub stars"></a>
 </p>
 
 <p align="center"><a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.pt-BR.md">Português (Brasil)</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">繁體中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ja.md">日本語</a> · <a href="README.ar.md">العربية</a> · <a href="README.ru.md">Русский</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.pl.md">Polski</a> · <a href="README.cs.md">Čeština</a> · <b>Bahasa Indonesia</b> · <a href="README.ms.md">Bahasa Melayu</a> · <a href="README.th.md">ไทย</a> · <a href="README.hi.md">हिन्दी</a> · <a href="README.he.md">עברית</a></p>
@@ -58,9 +58,9 @@ perubahan, dan menunjukkan dengan tepat bagian mana yang diubah.
   coding agent bisa membuat, mengonversi, membaca, dan mengedit file Office
   asli di mesin Anda tanpa membuka satu jendela pun.
 
-**Unduh di sini:** [macOS](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (Apple Silicon dan Intel) ·
-[Windows](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (x64 dan Arm) ·
-[Linux](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (deb, rpm, AppImage) —
+**Unduh di sini:** [macOS](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (Apple Silicon dan Intel) ·
+[Windows](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (x64 dan Arm) ·
+[Linux](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (deb, rpm, AppImage) —
 detail dan persyaratan ada di bagian [Download](#download).
 
 ## Demo
@@ -181,7 +181,7 @@ lewat engine yang sama dengan aplikasinya, tanpa membuka satu jendela pun.
 </tr>
 <tr>
 <td><b>Satu prompt ke agen Anda</b> — "Buat deck delapan slide tentang Tata Surya." Agen membaca skill, menulis style sheet, outline, dan satu spesifikasi halaman per slide, menghasilkan dua foto dengan <code>chatoffice image</code>, dan membiarkan <code>chatoffice slides check</code> menolak apa pun yang meluap atau tumpang tindih sebelum <code>chatoffice create</code> merakit <code>.pptx</code> dan <code>slides render</code> mengembalikan satu PNG per slide untuk dilihat.</td>
-<td><b>Pasang sekali, dari Pengaturan → Integrasi</b> — ChatOffice menampilkan coding agent yang ditemukannya di komputer ini dan menulis skill ke setiap agen yang Anda pilih. Atau unduh skill sebagai zip, atau jalankan <code>npx skills add zhgyuhuii/chayuan-office</code>. Perintah dan alur kerja lengkapnya ada di <a href="#command-line-and-agent-skill">Baris perintah dan skill agen</a>.</td>
+<td><b>Pasang sekali, dari Pengaturan → Integrasi</b> — ChatOffice menampilkan coding agent yang ditemukannya di komputer ini dan menulis skill ke setiap agen yang Anda pilih. Atau unduh skill sebagai zip, atau jalankan <code>npx skills add zhgyuhuii/ChayuanAIOffice</code>. Perintah dan alur kerja lengkapnya ada di <a href="#command-line-and-agent-skill">Baris perintah dan skill agen</a>.</td>
 </tr>
 </table>
 
@@ -252,7 +252,7 @@ yang membaca skill.
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Pengaturan → Integrasi** di aplikasi     | Menampilkan agen yang ditemukan di komputer ini; satu klik menulis skill ke setiap agen yang Anda pilih. Tombol **Update** muncul saat rilis ChatOffice membawa skill yang lebih baru. |
 | **Unduh sebagai zip** di halaman yang sama | Tata letak yang diterima claude.ai, aplikasi desktop Claude, dan asisten lain sebagai skill yang diunggah.                                                                            |
-| `npx skills add zhgyuhuii/chayuan-office`     | Memasang dari repositori ini ke agen mana pun yang kompatibel dengan skill.                                                                                                           |
+| `npx skills add zhgyuhuii/ChayuanAIOffice`     | Memasang dari repositori ini ke agen mana pun yang kompatibel dengan skill.                                                                                                           |
 
 Lalu mulai chat baru dan minta sebuah dokumen. Skill ini mengajari agen kapan
 harus menggunakan `chatoffice`, bagaimana membaca file sebelum mengeditnya,
@@ -307,17 +307,17 @@ atau PowerPoint sebagai `.pptx` biasa.
 
 | Platform                             | Persyaratan                                           | Unduh                                                                                      |
 | ------------------------------------ | ----------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [`.dmg` terbaru (arm64)](https://github.com/zhgyuhuii/chayuan-office/releases/latest)         |
-| **macOS** — Intel (x64)              | macOS 11+                                             | [`.dmg` terbaru (x64)](https://github.com/zhgyuhuii/chayuan-office/releases/latest)           |
-| **Windows** (x64, kebanyakan PC)     | Windows 10+, Intel/AMD                                | [Installer `-x64.exe` terbaru](https://github.com/zhgyuhuii/chayuan-office/releases/latest)   |
-| **Windows** di Arm (ARM64)           | Windows 11 on Arm (Snapdragon X dan sejenisnya)       | [Installer `-arm64.exe` terbaru](https://github.com/zhgyuhuii/chayuan-office/releases/latest) |
-| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 atau lebih baru)    | [`.deb` terbaru](https://github.com/zhgyuhuii/chayuan-office/releases/latest)                 |
-| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [`.rpm` terbaru](https://github.com/zhgyuhuii/chayuan-office/releases/latest)                 |
-| **Linux** — distribusi lainnya       | x86_64, glibc 2.34+, FUSE 2                           | [`.AppImage` terbaru](https://github.com/zhgyuhuii/chayuan-office/releases/latest)            |
+| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [`.dmg` terbaru (arm64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)         |
+| **macOS** — Intel (x64)              | macOS 11+                                             | [`.dmg` terbaru (x64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)           |
+| **Windows** (x64, kebanyakan PC)     | Windows 10+, Intel/AMD                                | [Installer `-x64.exe` terbaru](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)   |
+| **Windows** di Arm (ARM64)           | Windows 11 on Arm (Snapdragon X dan sejenisnya)       | [Installer `-arm64.exe` terbaru](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) |
+| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 atau lebih baru)    | [`.deb` terbaru](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
+| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [`.rpm` terbaru](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
+| **Linux** — distribusi lainnya       | x86_64, glibc 2.34+, FUSE 2                           | [`.AppImage` terbaru](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)            |
 
 Semua build berasal dari `main`; installer macOS dan Windows sudah
 ditandatangani (signed). Versi lama ada di halaman
-[Releases](https://github.com/zhgyuhuii/chayuan-office/releases).
+[Releases](https://github.com/zhgyuhuii/ChayuanAIOffice/releases).
 
 <details>
 <summary><b>Instalasi di Linux</b></summary>
@@ -393,7 +393,7 @@ diterima.
 ChatOffice terus dikembangkan secara aktif dan masukan Anda membentuk arahnya.
 
 - **Laporkan bug atau ajukan permintaan fitur** di
-  [GitHub Issues](https://github.com/zhgyuhuii/chayuan-office/issues).
+  [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues).
 - **Gabung ke grup chat ChatOffice** di
   [GenTeam](https://chatoffice.ai/join) untuk mengobrol dengan tim dan
   pengguna lain.

@@ -13,10 +13,10 @@
 Word, Excel, PowerPoint, PDF 파일을 당신과 당신의 AI가 함께 편집하고, 실제 포맷 그대로 저장합니다.</p>
 
 <p align="center">
-  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/chayuan-office" alt="라이선스: Apache-2.0"></a>
-  <a href="https://github.com/zhgyuhuii/chayuan-office/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/chayuan-office" alt="최신 릴리스"></a>
-  <a href="https://github.com/zhgyuhuii/chayuan-office/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/chayuan-office/total" alt="다운로드 수"></a>
-  <a href="https://github.com/zhgyuhuii/chayuan-office/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/chayuan-office?style=flat" alt="GitHub 스타 수"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/ChayuanAIOffice" alt="라이선스: Apache-2.0"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/ChayuanAIOffice" alt="최신 릴리스"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/ChayuanAIOffice/total" alt="다운로드 수"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/ChayuanAIOffice?style=flat" alt="GitHub 스타 수"></a>
 </p>
 
 <p align="center"><a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.pt-BR.md">Português (Brasil)</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">繁體中文</a> · <b>한국어</b> · <a href="README.ja.md">日本語</a> · <a href="README.ar.md">العربية</a> · <a href="README.ru.md">Русский</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.pl.md">Polski</a> · <a href="README.cs.md">Čeština</a> · <a href="README.id.md">Bahasa Indonesia</a> · <a href="README.ms.md">Bahasa Melayu</a> · <a href="README.th.md">ไทย</a> · <a href="README.hi.md">हिन्दी</a> · <a href="README.he.md">עברית</a></p>
@@ -56,9 +56,9 @@ ChatOffice는 macOS, Windows, Linux에서 사용할 수 있는 무료 오픈소�
   않고도 내 컴퓨터에서 실제 Office 파일을 만들고, 변환하고, 읽고, 편집할 수
   있습니다.
 
-**다운로드:** [macOS](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (Apple Silicon 및 Intel) ·
-[Windows](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (x64 및 Arm) ·
-[Linux](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (deb, rpm, AppImage) —
+**다운로드:** [macOS](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (Apple Silicon 및 Intel) ·
+[Windows](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (x64 및 Arm) ·
+[Linux](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (deb, rpm, AppImage) —
 자세한 내용과 요구 사항은 [다운로드](#download) 섹션을 참고하세요.
 
 ## 데모
@@ -179,7 +179,7 @@ Windsurf가 앱과 동일한 엔진을 통해 창을 열지 않고도 실제 Off
 </tr>
 <tr>
 <td><b>에이전트에게 프롬프트 하나</b> — "태양계에 관한 8장짜리 덱을 만들어줘." 에이전트는 스킬을 읽고 스타일 시트, 개요, 슬라이드마다 하나씩의 페이지 스펙을 작성하고, <code>chatoffice image</code>로 사진 두 장을 생성하고, <code>chatoffice slides check</code>가 넘치거나 겹치는 요소를 걸러낸 뒤, <code>chatoffice create</code>로 <code>.pptx</code>를 조립하고 <code>slides render</code>로 슬라이드마다 PNG 한 장을 받아 확인합니다.</td>
-<td><b>설정 → 연동에서 한 번만 설치</b> — ChatOffice가 이 컴퓨터에서 찾은 코딩 에이전트를 나열하고, 선택한 각 에이전트에 스킬을 기록합니다. 스킬을 zip으로 내려받거나 <code>npx skills add zhgyuhuii/chayuan-office</code>를 실행해도 됩니다. 명령과 전체 워크플로는 <a href="#command-line-and-agent-skill">명령줄과 에이전트 스킬</a>에 있습니다.</td>
+<td><b>설정 → 연동에서 한 번만 설치</b> — ChatOffice가 이 컴퓨터에서 찾은 코딩 에이전트를 나열하고, 선택한 각 에이전트에 스킬을 기록합니다. 스킬을 zip으로 내려받거나 <code>npx skills add zhgyuhuii/ChayuanAIOffice</code>를 실행해도 됩니다. 명령과 전체 워크플로는 <a href="#command-line-and-agent-skill">명령줄과 에이전트 스킬</a>에 있습니다.</td>
 </tr>
 </table>
 
@@ -246,7 +246,7 @@ OpenCode, Windsurf는 바로 사용할 수 있고, 스킬을 읽을 수 있는 �
 | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 앱의 **설정 → 연동**                   | 이 컴퓨터에서 찾은 에이전트를 나열하고, 클릭 한 번으로 선택한 각 에이전트에 스킬을 기록합니다. ChatOffice 릴리스에 새 스킬이 포함되면 **업데이트** 버튼이 나타납니다. |
 | 같은 페이지의 **zip으로 다운로드**     | claude.ai, Claude 데스크톱 앱, 그 밖의 어시스턴트가 업로드 스킬로 받아들이는 구조입니다.                                                                             |
-| `npx skills add zhgyuhuii/chayuan-office` | 이 저장소에서 스킬을 지원하는 모든 에이전트에 설치합니다.                                                                                                            |
+| `npx skills add zhgyuhuii/ChayuanAIOffice` | 이 저장소에서 스킬을 지원하는 모든 에이전트에 설치합니다.                                                                                                            |
 
 그런 다음 새 대화를 시작해 문서를 요청하세요. 스킬은 언제 `chatoffice`를
 꺼내야 하는지, 편집 전에 파일을 어떻게 읽어야 하는지, 자신의 작업을
@@ -300,16 +300,16 @@ ChatOffice나 PowerPoint에서 열립니다.
 
 | 플랫폼                               | 요구 사항                                             | 다운로드                                                                                |
 | ------------------------------------ | ----------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [최신 `.dmg` (arm64)](https://github.com/zhgyuhuii/chayuan-office/releases/latest)         |
-| **macOS** — Intel (x64)              | macOS 11+                                             | [최신 `.dmg` (x64)](https://github.com/zhgyuhuii/chayuan-office/releases/latest)           |
-| **Windows** (x64, 대부분의 PC)       | Windows 10+, Intel/AMD                                | [최신 `-x64.exe` 설치 파일](https://github.com/zhgyuhuii/chayuan-office/releases/latest)   |
-| **Windows** on Arm (ARM64)           | Windows 11 on Arm (Snapdragon X 및 유사 기종)         | [최신 `-arm64.exe` 설치 파일](https://github.com/zhgyuhuii/chayuan-office/releases/latest) |
-| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 이상)               | [최신 `.deb`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)                 |
-| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [최신 `.rpm`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)                 |
-| **Linux** — 기타 배포판              | x86_64, glibc 2.34+, FUSE 2                           | [최신 `.AppImage`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)            |
+| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [최신 `.dmg` (arm64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)         |
+| **macOS** — Intel (x64)              | macOS 11+                                             | [최신 `.dmg` (x64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)           |
+| **Windows** (x64, 대부분의 PC)       | Windows 10+, Intel/AMD                                | [최신 `-x64.exe` 설치 파일](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)   |
+| **Windows** on Arm (ARM64)           | Windows 11 on Arm (Snapdragon X 및 유사 기종)         | [최신 `-arm64.exe` 설치 파일](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) |
+| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 이상)               | [최신 `.deb`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
+| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [최신 `.rpm`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
+| **Linux** — 기타 배포판              | x86_64, glibc 2.34+, FUSE 2                           | [최신 `.AppImage`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)            |
 
 모든 빌드는 `main` 브랜치에서 만들어지며, macOS와 Windows 설치 파일에는
-서명이 되어 있습니다. 이전 버전은 [릴리스](https://github.com/zhgyuhuii/chayuan-office/releases) 페이지에서 확인할 수 있습니다.
+서명이 되어 있습니다. 이전 버전은 [릴리스](https://github.com/zhgyuhuii/ChayuanAIOffice/releases) 페이지에서 확인할 수 있습니다.
 
 <details>
 <summary><b>Linux에 설치하기</b></summary>
@@ -384,7 +384,7 @@ ChatOffice는 활발히 개발되고 있으며, 여러분의 피드백이 그 �
 만들어갑니다.
 
 - **버그를 신고하거나 기능을 요청**하려면
-  [GitHub Issues](https://github.com/zhgyuhuii/chayuan-office/issues)를 이용하세요.
+  [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues)를 이용하세요.
 - **ChatOffice 그룹 채팅에 참여**하려면
   [GenTeam](https://chatoffice.ai/join)에서 팀 및 다른 사용자들과 대화할 수 있습니다.
 - ChatOffice가 유용하다고 느끼셨다면 **저장소에 스타를 눌러주세요** —

@@ -129,7 +129,7 @@ wps 实现全部走 `doc.Tables` JSAPI；本项目走 ProseMirror doc 遍历（`
 
 ## 9. 品牌 / 链接 / skill（全仓修正）
 
-- **开源地址**：`GITHUB_REPO_URL`（packages/electron-utils/src/github-menu.ts）与 stars fetch（shell/main/index.ts L603）、updater releases（updater.ts L346）、package.json repository/homepage（根+shell）、README badges（19 语言）、`NPX_INSTALL_COMMAND`（IntegrationsPane）全部从 `zhgyuhuii/chayuan-office`/`zhgyuhuii/chayuan-office` 改为 **`zhgyuhuii/chayuan-office`**。
+- **开源地址**：`GITHUB_REPO_URL`（packages/electron-utils/src/github-menu.ts）与 stars fetch（shell/main/index.ts L603）、updater releases（updater.ts L346）、package.json repository/homepage（根+shell）、README badges（19 语言）、`NPX_INSTALL_COMMAND`（IntegrationsPane）全部从 `zhgyuhuii/ChayuanAIOffice`/`zhgyuhuii/ChayuanAIOffice` 改为 **`zhgyuhuii/ChayuanAIOffice`**。
 - **skill**：`skills/chatoffice` → 更名 `chaoffice`，SKILL.md 重写为与实际可执行命令一致（headless CLI 名、用法、参数），设置页 IntegrationsPane 文案/命令同步，安装/卸载/导出链路回归。
 - **headless CLI**：无头导出与 MCP 通道引用的 CLI 名称同步修正。
 

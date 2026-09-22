@@ -13,10 +13,10 @@
 ไฟล์ Word, Excel, PowerPoint และ PDF แก้ไขโดยคุณและ AI ของคุณ บันทึกกลับเป็นฟอร์แมตจริง</p>
 
 <p align="center">
-  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/chayuan-office" alt="License: Apache-2.0"></a>
-  <a href="https://github.com/zhgyuhuii/chayuan-office/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/chayuan-office" alt="Latest release"></a>
-  <a href="https://github.com/zhgyuhuii/chayuan-office/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/chayuan-office/total" alt="Downloads"></a>
-  <a href="https://github.com/zhgyuhuii/chayuan-office/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/chayuan-office?style=flat" alt="GitHub stars"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/ChayuanAIOffice" alt="License: Apache-2.0"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/ChayuanAIOffice" alt="Latest release"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/ChayuanAIOffice/total" alt="Downloads"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/ChayuanAIOffice?style=flat" alt="GitHub stars"></a>
 </p>
 
 <p align="center"><a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.pt-BR.md">Português (Brasil)</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">繁體中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ja.md">日本語</a> · <a href="README.ar.md">العربية</a> · <a href="README.ru.md">Русский</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.pl.md">Polski</a> · <a href="README.cs.md">Čeština</a> · <a href="README.id.md">Bahasa Indonesia</a> · <a href="README.ms.md">Bahasa Melayu</a> · <b>ไทย</b> · <a href="README.hi.md">हिन्दी</a> · <a href="README.he.md">עברית</a></p>
@@ -55,9 +55,9 @@ Windows และ Linux เปิดและบันทึกไฟล์ `.do
   OpenCode และ Windsurf ทำให้เอเจนต์เขียนโค้ดสามารถสร้าง แปลง อ่าน
   และแก้ไขไฟล์ Office จริงบนเครื่องของคุณได้โดยไม่ต้องเปิดหน้าต่างใดๆ
 
-**ดาวน์โหลด:** [macOS](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (Apple Silicon และ Intel) ·
-[Windows](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (x64 และ Arm) ·
-[Linux](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (deb, rpm, AppImage) —
+**ดาวน์โหลด:** [macOS](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (Apple Silicon และ Intel) ·
+[Windows](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (x64 และ Arm) ·
+[Linux](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (deb, rpm, AppImage) —
 รายละเอียดและความต้องการของระบบดูได้ในหัวข้อ [ดาวน์โหลด](#download)
 
 ## เดโม
@@ -177,7 +177,7 @@ Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode หรือ Wi
 </tr>
 <tr>
 <td><b>พรอมป์เดียวถึงเอเจนต์ของคุณ</b> — "สร้างเดค 8 สไลด์เกี่ยวกับระบบสุริยะ" เอเจนต์อ่านสกิล เขียนสไตล์ชีต โครงร่าง และสเปกหน้าหนึ่งชุดต่อสไลด์ สร้างภาพถ่ายสองภาพด้วย <code>chatoffice image</code> และให้ <code>chatoffice slides check</code> ปฏิเสธทุกอย่างที่ล้นหรือซ้อนทับกันก่อนที่ <code>chatoffice create</code> จะประกอบ <code>.pptx</code> และ <code>slides render</code> ส่ง PNG กลับมาให้ดูหนึ่งภาพต่อสไลด์</td>
-<td><b>ติดตั้งครั้งเดียวจาก การตั้งค่า → การเชื่อมต่อ</b> — ChatOffice แสดงรายการเอเจนต์เขียนโค้ดที่พบในคอมพิวเตอร์เครื่องนี้และเขียนสกิลลงในแต่ละตัวที่คุณเลือก หรือดาวน์โหลดสกิลเป็น zip หรือรัน <code>npx skills add zhgyuhuii/chayuan-office</code> คำสั่งและเวิร์กโฟลว์ฉบับเต็มอยู่ใน <a href="#command-line-and-agent-skill">บรรทัดคำสั่งและสกิลสำหรับเอเจนต์</a></td>
+<td><b>ติดตั้งครั้งเดียวจาก การตั้งค่า → การเชื่อมต่อ</b> — ChatOffice แสดงรายการเอเจนต์เขียนโค้ดที่พบในคอมพิวเตอร์เครื่องนี้และเขียนสกิลลงในแต่ละตัวที่คุณเลือก หรือดาวน์โหลดสกิลเป็น zip หรือรัน <code>npx skills add zhgyuhuii/ChayuanAIOffice</code> คำสั่งและเวิร์กโฟลว์ฉบับเต็มอยู่ใน <a href="#command-line-and-agent-skill">บรรทัดคำสั่งและสกิลสำหรับเอเจนต์</a></td>
 </tr>
 </table>
 
@@ -241,7 +241,7 @@ OpenCode และ Windsurf ได้ทันทีโดยไม่ต้อ�
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **การตั้งค่า → การเชื่อมต่อ** ในแอป    | แสดงรายการเอเจนต์ที่พบในคอมพิวเตอร์เครื่องนี้ คลิกเดียวเขียนสกิลลงในแต่ละตัวที่คุณเลือก ปุ่ม **Update** จะปรากฏเมื่อรีลีสของ ChatOffice มาพร้อมสกิลเวอร์ชันใหม่กว่า |
 | **ดาวน์โหลดเป็น zip** ในหน้าเดียวกัน   | โครงสร้างที่ claude.ai แอปเดสก์ท็อป Claude และผู้ช่วยอื่นๆ ยอมรับเป็นสกิลที่อัปโหลด                                                                                |
-| `npx skills add zhgyuhuii/chayuan-office` | ติดตั้งจาก repository นี้ลงในเอเจนต์ใดก็ได้ที่รองรับสกิล                                                                                                           |
+| `npx skills add zhgyuhuii/ChayuanAIOffice` | ติดตั้งจาก repository นี้ลงในเอเจนต์ใดก็ได้ที่รองรับสกิล                                                                                                           |
 
 จากนั้นเริ่มแชทใหม่แล้วขอเอกสารสักฉบับ สกิลจะสอนเอเจนต์ว่าเมื่อใดควรใช้
 `chatoffice` วิธีอ่านไฟล์ก่อนแก้ไข และวิธีตรวจสอบงานของตัวเอง
@@ -294,16 +294,16 @@ chatoffice open deck/solar-system.pptx
 
 | แพลตฟอร์ม                            | ความต้องการของระบบ                                    | ดาวน์โหลด                                                                                  |
 | ------------------------------------ | ----------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [`.dmg` ล่าสุด (arm64)](https://github.com/zhgyuhuii/chayuan-office/releases/latest)          |
-| **macOS** — Intel (x64)              | macOS 11+                                             | [`.dmg` ล่าสุด (x64)](https://github.com/zhgyuhuii/chayuan-office/releases/latest)            |
-| **Windows** (x64, พีซีทั่วไป)        | Windows 10+, Intel/AMD                                | [ตัวติดตั้ง `-x64.exe` ล่าสุด](https://github.com/zhgyuhuii/chayuan-office/releases/latest)   |
-| **Windows** บน Arm (ARM64)           | Windows 11 on Arm (Snapdragon X และรุ่นใกล้เคียง)     | [ตัวติดตั้ง `-arm64.exe` ล่าสุด](https://github.com/zhgyuhuii/chayuan-office/releases/latest) |
-| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 ขึ้นไป)             | [`.deb` ล่าสุด](https://github.com/zhgyuhuii/chayuan-office/releases/latest)                  |
-| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [`.rpm` ล่าสุด](https://github.com/zhgyuhuii/chayuan-office/releases/latest)                  |
-| **Linux** — ดิสโทรอื่นๆ              | x86_64, glibc 2.34+, FUSE 2                           | [`.AppImage` ล่าสุด](https://github.com/zhgyuhuii/chayuan-office/releases/latest)             |
+| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [`.dmg` ล่าสุด (arm64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)          |
+| **macOS** — Intel (x64)              | macOS 11+                                             | [`.dmg` ล่าสุด (x64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)            |
+| **Windows** (x64, พีซีทั่วไป)        | Windows 10+, Intel/AMD                                | [ตัวติดตั้ง `-x64.exe` ล่าสุด](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)   |
+| **Windows** บน Arm (ARM64)           | Windows 11 on Arm (Snapdragon X และรุ่นใกล้เคียง)     | [ตัวติดตั้ง `-arm64.exe` ล่าสุด](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) |
+| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 ขึ้นไป)             | [`.deb` ล่าสุด](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                  |
+| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [`.rpm` ล่าสุด](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                  |
+| **Linux** — ดิสโทรอื่นๆ              | x86_64, glibc 2.34+, FUSE 2                           | [`.AppImage` ล่าสุด](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)             |
 
 บิลด์ทั้งหมดมาจาก `main` ตัวติดตั้ง macOS และ Windows ผ่านการลงนามแล้ว
-เวอร์ชันเก่ากว่านี้ดูได้ที่หน้า [Releases](https://github.com/zhgyuhuii/chayuan-office/releases)
+เวอร์ชันเก่ากว่านี้ดูได้ที่หน้า [Releases](https://github.com/zhgyuhuii/ChayuanAIOffice/releases)
 
 <details>
 <summary><b>การติดตั้งบน Linux</b></summary>
@@ -377,7 +377,7 @@ ChatOffice อยู่ในระหว่างการพัฒนาอย
 มีส่วนกำหนดทิศทางของมัน
 
 - **รายงานบั๊กหรือขอฟีเจอร์ใหม่** ได้ที่
-  [GitHub Issues](https://github.com/zhgyuhuii/chayuan-office/issues)
+  [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues)
 - **เข้าร่วมกลุ่มแชทของ ChatOffice** ได้ที่
   [GenTeam](https://chatoffice.ai/join) เพื่อพูดคุยกับทีมงานและผู้ใช้คนอื่นๆ
 - **ให้ดาว repo นี้** หาก ChatOffice มีประโยชน์กับคุณ — เป็นวิธีที่ดีที่สุด

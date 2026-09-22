@@ -13,10 +13,10 @@
 Word, Excel, PowerPoint और PDF फ़ाइलें, आपके और आपके AI द्वारा एडिट की गई, असली फ़ॉर्मैट में ही सेव होती हैं।</p>
 
 <p align="center">
-  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/chayuan-office" alt="License: Apache-2.0"></a>
-  <a href="https://github.com/zhgyuhuii/chayuan-office/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/chayuan-office" alt="Latest release"></a>
-  <a href="https://github.com/zhgyuhuii/chayuan-office/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/chayuan-office/total" alt="Downloads"></a>
-  <a href="https://github.com/zhgyuhuii/chayuan-office/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/chayuan-office?style=flat" alt="GitHub stars"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/ChayuanAIOffice" alt="License: Apache-2.0"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/ChayuanAIOffice" alt="Latest release"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/ChayuanAIOffice/total" alt="Downloads"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/ChayuanAIOffice?style=flat" alt="GitHub stars"></a>
 </p>
 
 <p align="center"><a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.pt-BR.md">Português (Brasil)</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">繁體中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ja.md">日本語</a> · <a href="README.ar.md">العربية</a> · <a href="README.ru.md">Русский</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.pl.md">Polski</a> · <a href="README.cs.md">Čeština</a> · <a href="README.id.md">Bahasa Indonesia</a> · <a href="README.ms.md">Bahasa Melayu</a> · <a href="README.th.md">ไทย</a> · <b>हिन्दी</b> · <a href="README.he.md">עברית</a></p>
@@ -37,9 +37,9 @@ ChatOffice, macOS, Windows और Linux के लिए Microsoft Office का
 - **आपकी कीज़ या कोई कीज़ नहीं।** Genspark से साइन इन करें और कीज़ की झंझट से बचें, या Claude, OpenAI, Gemini, DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty या किसी भी OpenAI-compatible endpoint के लिए अपनी खुद की key लाएँ — लोकल सर्वर भी शामिल हैं।
 - **स्क्रिप्ट करने योग्य और एजेंट के लिए तैयार।** ऐप के साथ एक `chatoffice` कमांड लाइन और Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode और Windsurf के लिए एक skill आती है, ताकि कोई कोडिंग एजेंट बिना कोई विंडो खोले आपकी मशीन पर असली Office फ़ाइलें बना, कन्वर्ट, पढ़ और एडिट कर सके।
 
-**पाएँ:** [macOS](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (Apple Silicon और Intel) ·
-[Windows](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (x64 और Arm) ·
-[Linux](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (deb, rpm, AppImage) —
+**पाएँ:** [macOS](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (Apple Silicon और Intel) ·
+[Windows](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (x64 और Arm) ·
+[Linux](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (deb, rpm, AppImage) —
 विवरण और आवश्यकताएँ [डाउनलोड](#download) में देखें।
 
 ## डेमो
@@ -153,7 +153,7 @@ ChatOffice के साथ एक `chatoffice` कमांड लाइन औ
 </tr>
 <tr>
 <td><b>अपने एजेंट को एक प्रॉम्प्ट</b> — "सोलर सिस्टम पर आठ स्लाइड का डेक बनाएँ।" एजेंट skill पढ़ता है, एक स्टाइल शीट, एक आउटलाइन और हर स्लाइड के लिए एक पेज स्पेक लिखता है, <code>chatoffice image</code> से दो फ़ोटो जनरेट करता है, और <code>chatoffice slides check</code> को ओवरफ़्लो या ओवरलैप करने वाली हर चीज़ रिजेक्ट करने देता है; इसके बाद <code>chatoffice create</code> <code>.pptx</code> असेंबल करता है और <code>slides render</code> देखने के लिए हर स्लाइड का एक PNG वापस देता है।</td>
-<td><b>एक बार इंस्टॉल करें, सेटिंग्स → इंटीग्रेशन से</b> — ChatOffice इस कंप्यूटर पर मिले कोडिंग एजेंट्स की सूची दिखाता है और आपके चुने हुए हर एजेंट में skill लिख देता है। या skill को zip के रूप में डाउनलोड करें, या <code>npx skills add zhgyuhuii/chayuan-office</code> चलाएँ। कमांड और पूरा वर्कफ़्लो <a href="#command-line-and-agent-skill">कमांड लाइन और एजेंट skill</a> में हैं।</td>
+<td><b>एक बार इंस्टॉल करें, सेटिंग्स → इंटीग्रेशन से</b> — ChatOffice इस कंप्यूटर पर मिले कोडिंग एजेंट्स की सूची दिखाता है और आपके चुने हुए हर एजेंट में skill लिख देता है। या skill को zip के रूप में डाउनलोड करें, या <code>npx skills add zhgyuhuii/ChayuanAIOffice</code> चलाएँ। कमांड और पूरा वर्कफ़्लो <a href="#command-line-and-agent-skill">कमांड लाइन और एजेंट skill</a> में हैं।</td>
 </tr>
 </table>
 
@@ -209,7 +209,7 @@ OpenCode और Windsurf के साथ बिना किसी अतिर
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | ऐप में **सेटिंग्स → इंटीग्रेशन**       | इस कंप्यूटर पर मिले एजेंट्स की सूची दिखाता है; एक क्लिक में आपके चुने हुए हर एजेंट में skill लिख देता है। जब किसी ChatOffice रिलीज़ में नई skill आती है, तो एक **Update** बटन दिखाई देता है। |
 | उसी पेज पर **zip के रूप में डाउनलोड**  | वह लेआउट जिसे claude.ai, Claude डेस्कटॉप ऐप्स और दूसरे असिस्टेंट अपलोड की गई skill के रूप में स्वीकार करते हैं।                                                                             |
-| `npx skills add zhgyuhuii/chayuan-office` | इस रिपॉज़िटरी से किसी भी skills-compatible एजेंट में इंस्टॉल करता है।                                                                                                                       |
+| `npx skills add zhgyuhuii/ChayuanAIOffice` | इस रिपॉज़िटरी से किसी भी skills-compatible एजेंट में इंस्टॉल करता है।                                                                                                                       |
 
 फिर एक नई चैट शुरू करें और कोई डॉक्यूमेंट माँगें। skill एजेंट को सिखाती है कि
 `chatoffice` का सहारा कब लेना है, एडिट करने से पहले फ़ाइल कैसे पढ़नी है, और अपना
@@ -263,16 +263,16 @@ chatoffice open deck/solar-system.pptx
 
 | प्लेटफ़ॉर्म                          | आवश्यकताएँ                                            | डाउनलोड                                                                                   |
 | ------------------------------------ | ----------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [नवीनतम `.dmg` (arm64)](https://github.com/zhgyuhuii/chayuan-office/releases/latest)         |
-| **macOS** — Intel (x64)              | macOS 11+                                             | [नवीनतम `.dmg` (x64)](https://github.com/zhgyuhuii/chayuan-office/releases/latest)           |
-| **Windows** (x64, ज़्यादातर PC)      | Windows 10+, Intel/AMD                                | [नवीनतम `-x64.exe` installer](https://github.com/zhgyuhuii/chayuan-office/releases/latest)   |
-| **Windows** Arm पर (ARM64)           | Windows 11 on Arm (Snapdragon X और समान)              | [नवीनतम `-arm64.exe` installer](https://github.com/zhgyuhuii/chayuan-office/releases/latest) |
-| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 या नया)             | [नवीनतम `.deb`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)                 |
-| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [नवीनतम `.rpm`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)                 |
-| **Linux** — अन्य डिस्ट्रीब्यूशन      | x86_64, glibc 2.34+, FUSE 2                           | [नवीनतम `.AppImage`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)            |
+| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [नवीनतम `.dmg` (arm64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)         |
+| **macOS** — Intel (x64)              | macOS 11+                                             | [नवीनतम `.dmg` (x64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)           |
+| **Windows** (x64, ज़्यादातर PC)      | Windows 10+, Intel/AMD                                | [नवीनतम `-x64.exe` installer](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)   |
+| **Windows** Arm पर (ARM64)           | Windows 11 on Arm (Snapdragon X और समान)              | [नवीनतम `-arm64.exe` installer](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) |
+| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 या नया)             | [नवीनतम `.deb`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
+| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [नवीनतम `.rpm`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
+| **Linux** — अन्य डिस्ट्रीब्यूशन      | x86_64, glibc 2.34+, FUSE 2                           | [नवीनतम `.AppImage`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)            |
 
 सभी बिल्ड `main` से बनते हैं; macOS और Windows इंस्टॉलर साइन किए हुए हैं।
-पुराने वर्शन [Releases](https://github.com/zhgyuhuii/chayuan-office/releases) पेज पर मौजूद हैं।
+पुराने वर्शन [Releases](https://github.com/zhgyuhuii/ChayuanAIOffice/releases) पेज पर मौजूद हैं।
 
 <details>
 <summary><b>Linux पर इंस्टॉल करना</b></summary>
@@ -339,7 +339,7 @@ pull request कैसे मर्ज होते हैं, इसके ल�
 
 ChatOffice पर सक्रिय रूप से काम चल रहा है, और आपका फ़ीडबैक इसे आकार देता है।
 
-- [GitHub Issues](https://github.com/zhgyuhuii/chayuan-office/issues) में
+- [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues) में
   **बग रिपोर्ट करें या फ़ीचर रिक्वेस्ट करें**।
 - टीम और दूसरे यूज़र्स से बात करने के लिए
   [GenTeam](https://chatoffice.ai/join) पर **ChatOffice ग्रुप चैट जॉइन करें**।
