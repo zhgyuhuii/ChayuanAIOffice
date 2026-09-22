@@ -235,6 +235,43 @@ describe('imageSearch (Serper)', () => {
   })
 })
 
+describe('webSearch (Parallel)', () => {
+  it('uses the REST API when PARALLEL_API_KEY is set', async () => {
+    process.env.PARALLEL_API_KEY = 'pk-test'
+    let seen: { url: string; headers?: Record<string, string> } | null = null
+    mockFetch((url, init) => {
+      if (url === 'https://api.parallel.ai/v1/search') {
+        seen = { url, headers: (init?.headers ?? {}) as Record<string, string> }
+        return {
+          ok: true,
+          json: {
+            results: [
+              { title: 'Parallel result', url: 'https://example.com/a', excerpts: ['one', 'two'] },
+              { title: '', url: 'ftp://skip.example/x', excerpts: [] },
+              { title: 'Titled', url: 'https://example.com/b', excerpts: [] },
+            ],
+          },
+        }
+      }
+      return { ok: false, json: {} }
+    })
+    const r = await webSearch('parallel query', 5)
+    expect(seen).not.toBeNull()
+    expect(seen!.headers?.['x-api-key']).toBe('pk-test')
+    expect(r.method).toBe('parallel')
+    // non-http(s) URLs dropped; empty title falls back to the URL; excerpts joined
+    expect(r.results.map((x) => x.url)).toEqual(['https://example.com/a', 'https://example.com/b'])
+    expect(r.results[0]).toMatchObject({ title: 'Parallel result', snippet: 'one\ntwo' })
+  })
+
+  it('skips the tier without a key unless Parallel is the preferred provider', async () => {
+    delete process.env.PARALLEL_API_KEY
+    mockFetch((url) => (url.includes('duckduckgo') ? { ok: true, json: [] } : { ok: false, json: {} }))
+    const r = await webSearch('no key', 3)
+    expect(r.method).toBe('duckduckgo')
+  })
+})
+
 describe('search-tools', () => {
   it('exports webSearchTool and imageSearchTool', async () => {
     const { webSearchTool, imageSearchTool } = await import('../src/search-tools')

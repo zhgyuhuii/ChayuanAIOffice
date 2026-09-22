@@ -17,6 +17,7 @@ function resolveSearchKeys(settings: AiSettings) {
     tavily?: string
     linkup?: string
     searxngBaseUrl?: string
+    parallelKey?: string
   } = {}
   const serper = providers?.serper?.apiKey
   if (serper) keys.serper = serper
@@ -26,6 +27,8 @@ function resolveSearchKeys(settings: AiSettings) {
   if (linkup) keys.linkup = linkup
   const searxng = providers?.searxng?.apiKey
   if (searxng) keys.searxngBaseUrl = searxng
+  const parallel = providers?.parallel?.apiKey
+  if (parallel) keys.parallelKey = parallel
   return Object.keys(keys).length ? keys : undefined
 }
 
