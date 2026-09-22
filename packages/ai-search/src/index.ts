@@ -112,7 +112,7 @@ export async function webSearch(
   method: string
   error?: string
 }> {
-  const { query: q, max } = normalizeSearchArgs(query, maxResults)
+  const { query: q, max } = normalizeSearchArgs(query, maxResults, 6)
   type Tier = {
     id: string
     run: () => Promise<{ results: WebSearchResult[]; answer?: string; method: string } | null>

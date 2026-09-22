@@ -316,7 +316,7 @@ export function registerSlidesOnlyAiIpc(): void {
   )
 
   // BYOK image generation only — the chatoffice cloud fallback was removed
-  // (the cloud backend belongs to the GenOffice upstream, not this build).
+  // (the cloud backend belongs to the upstream project, not this build).
   ipcMain.handle(
     'ai:generate-image',
     // LOCAL(2026-09-20): materialize generated image into the store — data:/https

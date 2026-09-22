@@ -1,7 +1,7 @@
 /**
  * generate_image / analyze_media for the five editors' main processes: one
  * place that reads ai-settings.json live. Image generation is BYOK-only — the
- * chatoffice cloud fallback was removed (that backend belongs to the GenOffice
+ * chatoffice cloud fallback was removed (that backend belongs to the upstream
  * upstream, not this build). BYOK providers answer with bytes; those land in
  * the local generated-image store and come back as a file:// URL that the
  * insert pipelines' fetchRemoteImage accepts. Media analysis still carries a
@@ -168,7 +168,7 @@ export async function generateImageTool(
   const byok = activeMediaConfig(settings, 'image')
   if (!byok) {
     // the chatoffice cloud fallback was removed (the cloud backend belongs to
-    // the GenOffice upstream, not this build) — BYOK media config only
+    // upstream project, not this build) — BYOK media config only
     return { error: 'no image model configured (Settings → 生图、媒体与搜索)' }
   }
   try {

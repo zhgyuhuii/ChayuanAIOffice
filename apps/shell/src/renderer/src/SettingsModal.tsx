@@ -406,15 +406,12 @@ export interface SettingsModalProps {
   /** an installed skill is older than the bundled one: dot on the Integrations entry */
   skillUpdateDue?: boolean
   onSkillUpdateDue?: (due: boolean) => void
-  /** open on this section / block instead of the account page */
-  target?: SettingsTarget | null
 }
 
 export function SettingsModal({
   onClose,
   skillUpdateDue: updateDue = false,
   onSkillUpdateDue,
-  target,
 }: SettingsModalProps) {
   const { lang, setLang, t } = useI18n()
   const [section, setSection] = useState<SectionId>('modelSettings')

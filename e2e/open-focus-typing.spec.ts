@@ -60,7 +60,7 @@ async function expectViewFocused(app: ElectronApplication, urlPart: string): Pro
 }
 
 test('docs: typing works immediately after opening a file from Home', async () => {
-  const scratch = await mkdtemp(join(tmpdir(), 'genoffice-openfocus-e2e-'))
+  const scratch = await mkdtemp(join(tmpdir(), 'chatoffice-openfocus-e2e-'))
   const docx = join(scratch, 'open-focus.docx')
   await copyFile(DOCX, docx)
 
@@ -82,7 +82,7 @@ test('docs: typing works immediately after opening a file from Home', async () =
 })
 
 test('sheets: typing into the active cell works immediately after opening from Home', async () => {
-  const scratch = await mkdtemp(join(tmpdir(), 'genoffice-openfocus-e2e-'))
+  const scratch = await mkdtemp(join(tmpdir(), 'chatoffice-openfocus-e2e-'))
   const xlsx = join(scratch, 'open-focus.xlsx')
   await copyFile(XLSX, xlsx)
 
@@ -100,7 +100,7 @@ test('sheets: typing into the active cell works immediately after opening from H
     const sheets = await waitForPageWithUrl(launched.app, '://sheets/')
     await sheets.waitForFunction(
       () =>
-        (window as unknown as { __genofficeDebug?: { univerAPI?: unknown } }).__genofficeDebug
+        (window as unknown as { __chatofficeDebug?: { univerAPI?: unknown } }).__chatofficeDebug
           ?.univerAPI,
       null,
       { timeout: 60_000 },
@@ -115,7 +115,7 @@ test('sheets: typing into the active cell works immediately after opening from H
         sheets.evaluate(() => {
           const api = (
             window as unknown as {
-              __genofficeDebug: {
+              __chatofficeDebug: {
                 univerAPI: {
                   getActiveWorkbook(): {
                     getActiveSheet(): { getRange(a: string): { getValue(): unknown } }
@@ -123,7 +123,7 @@ test('sheets: typing into the active cell works immediately after opening from H
                 }
               }
             }
-          ).__genofficeDebug.univerAPI
+          ).__chatofficeDebug.univerAPI
           return api.getActiveWorkbook()?.getActiveSheet()?.getRange('A1')?.getValue() ?? null
         }),
       )

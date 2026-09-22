@@ -125,7 +125,7 @@ test.describe('home folders panel', () => {
   })
 
   test('an added folder joins the tree in place and leaves the list without touching disk', async () => {
-    const extra = realpathSync(mkdtempSync(join(tmpdir(), 'genoffice-e2e-extra-')))
+    const extra = realpathSync(mkdtempSync(join(tmpdir(), 'chatoffice-e2e-extra-')))
     mkdirSync(join(extra, 'Projects', 'Alpha'), { recursive: true })
     writeFileSync(join(extra, 'Projects', 'plan.md'), '# plan')
     const launched = await launchShell({
