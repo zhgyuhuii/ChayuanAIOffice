@@ -86,7 +86,7 @@ Independently of the PATH, every launch of the packaged app writes the launcher 
   and the sheets CSV importer.
 - `src/resources.ts` — locates pdfium wasm, the xlsx sidecar and the OCR
   helper in both the packaged `Resources/` layout and the dev checkout.
-- `bin/chatoffice`, `bin/chatoffice.cmd` — launchers copied next to `chatoffice.cjs` in the
+- `bin/chatoffice`, `bin/chatoffice.cmd` — launchers copied next to `chaoffice.cjs` in the
   packaged app.
 
 ## Path policy and audit log
@@ -121,7 +121,7 @@ the machine.
 ## Build and run in a checkout
 
 ```
-npm run build -w @chatoffice/cli       # esbuild → dist/chatoffice.cjs
+npm run build -w @chatoffice/cli       # esbuild → dist/chaoffice.cjs
 packages/cli/bin/chatoffice info file.docx  # falls back to the system node
 ```
 

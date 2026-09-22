@@ -229,7 +229,7 @@ function assertModuleTreesPresent() {
     '../pdf/out',
     '../markdown/out',
     '../html/out',
-    '../../packages/cli/dist/chatoffice.cjs',
+    '../../packages/cli/dist/chaoffice.cjs',
     '../../packages/cli/dist/node_modules/jsdom',
   ]) {
     if (!existsSync(join(__dirname, rel))) {
@@ -320,7 +320,7 @@ const config = {
     // native/, ocr/) is what packages/cli/src/resources.ts expects. The
     // chatoffice files are the pre-rename compatibility shims.
     {
-      from: '../../packages/cli/dist/chatoffice.cjs',
+      from: '../../packages/cli/dist/chaoffice.cjs',
       to: 'cli/chaoffice.cjs',
     },
     {
