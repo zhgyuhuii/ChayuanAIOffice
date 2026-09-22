@@ -122,10 +122,14 @@ export function verifySerial(serial: string, machineFp: string, hmacKeyHex: stri
   }
   const key = Buffer.from(hmacKeyHex, 'hex')
   if (key.length !== 32) return { valid: false, reason: 'unknown-key' }
-  // Store-side tag8 feeds the fingerprint as the utf8 hex string itself (not
-  // hex-decoded bytes) for regular serials — keep the exact same convention.
-  const want = createHmac('sha256', key).update(header).update(machineFp).digest().subarray(0, 8)
-  if (!timingSafeEqual(want, givenTag)) return { valid: false, reason: 'signature' }
+  // Store signing conventions differ by era/issuer path: the original
+  // regular path fed the fingerprint as the utf8 hex string; the CURRENT
+  // payment fulfillment path (server/payment/issue.js) feeds the
+  // hex-DECODED bytes — verified against a real paid order on 2026-09-22.
+  // Accept either; both compares timing-safe.
+  const tagUtf8 = createHmac('sha256', key).update(header).update(machineFp).digest().subarray(0, 8)
+  const tagBytes = createHmac('sha256', key).update(header).update(Buffer.from(machineFp, 'hex')).digest().subarray(0, 8)
+  if (!timingSafeEqual(tagUtf8, givenTag) && !timingSafeEqual(tagBytes, givenTag)) return { valid: false, reason: 'signature' }
   if (fields.kind !== 0) return { valid: false, reason: 'kind' }
   return { valid: true, fields }
 }

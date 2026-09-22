@@ -23,6 +23,7 @@ import {
   createHtmlPresentView,
   createHtmlView,
   htmlIsDirty,
+  queueHtmlAiContent,
   requestHtmlClose,
 } from '../../../html/src/main/html-main'
 import {
@@ -695,6 +696,17 @@ export class TabManager {
       filePath: openPath,
     })
     this.activateTab(id)
+    return id
+  }
+
+  /** Untitled html tab seeded with AI-authored content (create_document):
+   * the tab stays in memory, the suggested name titles the tab now and only
+   * prefills the first-save dialog — nothing lands on disk until then. */
+  openHtmlTabWithContent(content: string, suggestedName: string): string {
+    const id = this.openHtmlTab()
+    const tab = this.tabs.find((t) => t.id === id)
+    if (tab?.view) queueHtmlAiContent(tab.view.webContents, content, suggestedName)
+    if (tab && suggestedName) tab.title = suggestedName
     return id
   }
 

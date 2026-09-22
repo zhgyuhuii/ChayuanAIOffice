@@ -450,7 +450,8 @@ function AccountEntry({
     // main-process probe (renderer CSP blocks cross-origin fetch)
     void Promise.resolve(window.chatOffice.feedbackProbe?.() ?? false)
       .then((online) => {
-        if (online) setFeedbackOpen(true)
+        // 在线：打开嵌入的在线客服聊天窗（与官网同一聊天界面）；离线：二维码卡片兜底
+        if (online) void window.chatOffice.openChat?.()
         else setFeedbackQrOpen(true)
       })
       .catch(() => setFeedbackQrOpen(true))

@@ -233,6 +233,10 @@ const homeApi: HomeApi = {
     const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.getAppVersion)
     return typeof result === 'string' ? result : ''
   },
+  async openChat() {
+    const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.openChat)
+    return result === true
+  },
   async feedbackProbe() {
     const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.feedbackProbe)
     return result === true

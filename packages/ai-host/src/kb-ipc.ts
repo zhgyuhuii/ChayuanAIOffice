@@ -28,6 +28,9 @@ import { KB_CHANNELS } from './kb-channels'
  *  bivariant any-params slot Electron's IpcMain in (same trick as IpcMainLike) */
 interface IpcRegister {
   handle(channel: string, listener: (event: any, ...args: any[]) => any): unknown
+  /** LOCAL(2026-09-21, d8201ad0): 重复注册防崩——shell 启动已注册 kb 通道时,编辑器
+   * 标签的 registerSharedKbIpc 再次注册改为 last-wins(Electron ipcMain 自带) */
+  removeHandler?(channel: string): void
 }
 
 export interface SharedKbIpcDeps {
@@ -128,10 +131,13 @@ export function registerSharedKbIpc(deps: SharedKbIpcDeps): void {
     return { ok: true, ...found }
   }
 
+  ipcMain.removeHandler?.(String(KB_CHANNELS.discover))
   ipcMain.handle(KB_CHANNELS.discover, (): Promise<KbDiscoverPayload> => discover())
 
+  ipcMain.removeHandler?.(String(KB_CHANNELS.list))
   ipcMain.handle(KB_CHANNELS.list, async (): Promise<KbDiscoverPayload> => discover())
 
+  ipcMain.removeHandler?.(String(KB_CHANNELS.search))
   ipcMain.handle(
     KB_CHANNELS.search,
     async (
@@ -150,6 +156,7 @@ export function registerSharedKbIpc(deps: SharedKbIpcDeps): void {
     },
   )
 
+  ipcMain.removeHandler?.(String(KB_CHANNELS.doc))
   ipcMain.handle(
     KB_CHANNELS.doc,
     async (
@@ -170,6 +177,7 @@ export function registerSharedKbIpc(deps: SharedKbIpcDeps): void {
   // download the source document behind a citation: fetch bytes in main (no
   // CORS, no session download dialog), drop them in the downloads folder and
   // reveal in the OS file manager
+  ipcMain.removeHandler?.(String(KB_CHANNELS.file))
   ipcMain.handle(
     KB_CHANNELS.file,
     async (_event, args: { kbId: string; docId: string }): Promise<KbFileResult> => {
@@ -191,8 +199,10 @@ export function registerSharedKbIpc(deps: SharedKbIpcDeps): void {
     },
   )
 
+  ipcMain.removeHandler?.(String(KB_CHANNELS.getSource))
   ipcMain.handle(KB_CHANNELS.getSource, (): Promise<KbSourceState> => readState(resolveStatePath()))
 
+  ipcMain.removeHandler?.(String(KB_CHANNELS.setOrigin))
   ipcMain.handle(
     KB_CHANNELS.setOrigin,
     async (_event, origin: string | null): Promise<KbSourceState> => {

@@ -10,6 +10,7 @@
  *     once-per-day page popup, reminder resume on expiry.
  */
 import { describe, expect, it } from 'vitest'
+import { createHmac } from 'node:crypto'
 import {
   FREE_PERIOD_MS,
   PRODUCT_BIT_OFFICE,
@@ -88,6 +89,45 @@ describe('verifySerial (store signer vectors)', () => {
 
   it('rejects with a wrong key', () => {
     expect(verifySerial(OS_YEAR_A, FP_A, 'ff'.repeat(32))).toMatchObject({ valid: false, reason: 'signature' })
+  })
+
+  // The CURRENT store fulfillment path (server/payment/issue.js) feeds the
+  // fingerprint hex-DECODED to tag8; the client accepts that convention too
+  // (dual-convention verification, verified against a real paid order).
+  it('accepts the store fulfillment convention (fingerprint as hex-decoded bytes)', () => {
+    const ENC = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'
+    const CHECK = ENC + '*~$=U'
+    const fields = { ver: 1, kind: 0, modules: PRODUCT_BIT_OFFICE, value: 31, issueDate: 264, nonce: 94 }
+    const widths = [4, 1, 16, 14, 13, 8]
+    const vals = [fields.ver, fields.kind, fields.modules, fields.value, fields.issueDate, fields.nonce]
+    let v = 0n
+    for (let i = 0; i < vals.length; i++) v = (v << BigInt(widths[i])) | BigInt(vals[i])
+    const header = Buffer.from(v.toString(16).padStart(14, '0'), 'hex')
+    const tag = createHmac('sha256', Buffer.from(KEY, 'hex'))
+      .update(header)
+      .update(Buffer.from(FP_A, 'hex'))
+      .digest()
+      .subarray(0, 8)
+    let bits = 0
+    let acc = 0
+    let enc = ''
+    for (const b of Buffer.concat([header, tag])) {
+      acc = (acc << 8) | b
+      bits += 8
+      while (bits >= 5) {
+        enc += ENC[(acc >>> (bits - 5)) & 31]
+        bits -= 5
+      }
+    }
+    const body = Buffer.concat([header, tag])
+    let n = 0n
+    for (const b of body) n = (n * 256n + BigInt(b)) % 37n
+    const serial = (enc + CHECK[Number(n)]).replace(/(.{5})/g, '$1-').replace(/-$/, '')
+    const r = verifySerial(serial, FP_A, KEY)
+    expect(r.valid).toBe(true)
+    expect(r.fields).toMatchObject({ modules: PRODUCT_BIT_OFFICE, value: 31, nonce: 94 })
+    // still bound to the machine: another fingerprint fails
+    expect(verifySerial(serial, FP_B, KEY)).toMatchObject({ valid: false, reason: 'signature' })
   })
 
   it('entitlement bits: an OS serial carries bit10 and would also satisfy the office shell (Q9)', () => {

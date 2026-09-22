@@ -85,6 +85,7 @@ import type {
   ExportFormat,
   ExportPdfRequest,
   ExportResult,
+  HtmlAiContent,
   ImageData,
   SaveHtmlRequest,
   SaveHtmlResult,
@@ -797,6 +798,22 @@ function openExportedPdf(path: string): void {
 /** Open path per view, queued at tab creation; the renderer consumes it after mount.
  * Kept until the view is destroyed so a reload (View > Reload) consumes it again. */
 const openPathByWc = new Map<number, string>()
+
+/** AI-authored content queued for an untitled html tab (create_document):
+ * consumed by the renderer on boot; nothing is written to disk until the
+ * user's first save, whose dialog prefills with the suggested name. */
+const pendingAiContentByWc = new Map<number, HtmlAiContent>()
+
+/** Seed an untitled html view with AI-authored content (shell create_document). */
+export function queueHtmlAiContent(
+  wc: WebContents,
+  content: string,
+  suggestedName: string,
+): void {
+  pendingAiContentByWc.set(wc.id, { content, suggestedName })
+  wc.once('destroyed', () => pendingAiContentByWc.delete(wc.id))
+}
+
 /** File paths granted to each view — readFile/save only allow these */
 const allowedByWc = new Map<number, Set<string>>()
 /** Current save target per view; absent = untitled document */
@@ -1249,6 +1266,12 @@ function registerHtmlIpc(): void {
     reveal: (p) => shell.showItemInFolder(p),
   })
   ipcMain.handle(HTML_CHANNELS.consumePending, (e) => openPathByWc.get(e.sender.id) ?? null)
+
+  ipcMain.handle(HTML_CHANNELS.consumeAiContent, (e) => {
+    const pending = pendingAiContentByWc.get(e.sender.id)
+    pendingAiContentByWc.delete(e.sender.id)
+    return pending ?? null
+  })
 
   // ---- headless export mode (--headless-export) ----
 

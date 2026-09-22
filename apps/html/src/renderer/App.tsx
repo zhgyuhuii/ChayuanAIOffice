@@ -272,7 +272,14 @@ export default function App() {
           window.htmlApi.consumePending(),
           window.htmlApi.getPreviewInfo(),
         ])
-        const raw = pending ? await window.htmlApi.readFile(pending) : ''
+        // AI-authored content (create_document): seed the untitled document's
+        // source. The content is unsaved user work — savedText stays '' so the
+        // close guard protects it — and the queued title only prefills the
+        // first-save dialog; nothing is written until the user picks a name.
+        const ai = pending ? null : await window.htmlApi.consumeAiContent()
+        if (cancelled) return
+        const seeded = !!ai && ai.content.trim() !== ''
+        const raw = pending ? await window.htmlApi.readFile(pending) : seeded ? ai!.content : ''
         if (cancelled) return
         const doc = parseDocText(raw)
         envelopeRef.current = doc.envelope
@@ -286,7 +293,8 @@ export default function App() {
         frameScrollRef.current = null
         setPath(pending)
         setText(doc.text)
-        setSavedText(doc.text)
+        setSavedText(seeded ? '' : doc.text)
+        if (seeded) provisionalNameRef.current = ai!.suggestedName
         setPreviewUrl(info.url)
         setStatus('ready')
       } catch (err) {

@@ -14,6 +14,7 @@ import type {
 
 export const HTML_CHANNELS = {
   consumePending: 'html:consume-pending',
+  consumeAiContent: 'html:consume-ai-content',
   previewUpdate: 'html:preview-update',
   previewInfo: 'html:preview-info',
   presentFullScreen: 'html:present-fullscreen',
@@ -98,6 +99,14 @@ export interface AttachmentImageResult {
 }
 
 export type SaveMode = 'save' | 'saveAs'
+
+/** AI-authored content queued for an untitled html tab (create_document) */
+export interface HtmlAiContent {
+  /** a complete standalone HTML document */
+  content: string
+  /** tab title now; prefills the first-save dialog */
+  suggestedName: string
+}
 
 export interface SaveHtmlRequest {
   /** full document text (frontmatter included) */
@@ -200,6 +209,8 @@ export interface ImageData {
 export interface HtmlApi {
   /** Take the md path pending for this view (queued at tab creation); null = new untitled document */
   consumePending(): Promise<string | null>
+  /** AI-authored content for this untitled view (create_document), consumed on boot; null = plain untitled document */
+  consumeAiContent(): Promise<HtmlAiContent | null>
   /** Headless export mode: the path and format this hidden renderer must export, null in normal use */
   consumeHeadlessExport(): Promise<HeadlessExportTarget | null>
   /** Headless export mode: report the export outcome so the main process can quit */

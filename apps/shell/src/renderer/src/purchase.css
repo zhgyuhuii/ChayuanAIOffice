@@ -90,78 +90,65 @@
   color: var(--text);
 }
 
-.purchase-tiers {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-}
-
-.purchase-tier {
-  position: relative;
+.purchase-qr-tabs {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: 10px 6px;
+  gap: 6px;
+  padding: 3px;
   border: 1px solid var(--border);
   border-radius: 10px;
+  background: var(--hover);
+}
+
+.purchase-qr-tab {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
   background: none;
-}
-
-.purchase-tier-hot {
-  border-color: var(--accent);
-}
-
-.purchase-tier-badge {
-  position: absolute;
-  top: -9px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 1px 7px;
-  border-radius: 999px;
-  background: var(--accent);
-  color: var(--color-btn-primary-text);
-  font-size: 10px;
-  white-space: nowrap;
-}
-
-.purchase-tier-name {
-  font-size: 11.5px;
   color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-.purchase-tier-price {
-  font-size: 14px;
-  font-weight: 600;
+.purchase-qr-tab-active {
+  background: var(--surface);
   color: var(--text);
+  border: 1px solid var(--border-subtle);
 }
 
 .purchase-qr-row {
   display: flex;
-  gap: 20px;
-  justify-content: center;
-}
-
-.purchase-qr {
-  display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
-.purchase-qr img {
-  width: 110px;
-  height: 110px;
-  object-fit: contain;
-  /* QR payloads carry their own white pad (RGB assets, no alpha), scannable
-   * in both themes without any raw color here */
+.purchase-qr-img {
+  width: 220px;
+  height: 220px;
   border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  background: #fff; /* QR modules need a white pad in both themes */
+}
+
+.purchase-qr-placeholder {
+  width: 220px;
+  height: 220px;
+  border: 1px dashed var(--border);
   border-radius: 10px;
 }
 
-.purchase-qr span {
-  font-size: 11.5px;
+.purchase-qr-caption {
+  font-size: 12px;
   color: var(--text-secondary);
+  text-align: center;
+}
+
+.purchase-link-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
 }
 
 .purchase-fingerprint {

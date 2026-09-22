@@ -7,6 +7,7 @@ import { kbDoc, kbSelectedIds, kbSearchGroups } from '@chatoffice/ui'
 import type { MediaCapabilityFlags } from '@chatoffice/agent-core'
 import { buildMcpToolDefs, mcpSystemSection } from './mcp-tools'
 import type { McpToolBinding } from './mcp-tools'
+import { extractDocumentBody } from './doc-body'
 
 /** everything the home agent needs from the host (window.chatOffice on desktop, shims on web) */
 export interface HomeAgentBridge {
@@ -123,7 +124,8 @@ const CREATE_DOC_TOOL = {
   name: 'create_document',
   description:
     'Create a new document and open it in a new tab. ' +
-    'For docx/md/html/pdf: write the FULL body as your reply text FIRST, then call this tool — your reply text becomes the file content verbatim. ' +
+    'For docx/md/html/pdf: write the FULL body as your reply text FIRST, then call this tool — your reply text becomes the file content verbatim ' +
+    '(a conversational preamble like "我来为你写…" / "Sure, here is…" is NOT a body; only the document markup counts). ' +
     'For xlsx/pptx: these create blank files (no body needed); just call the tool with title and type.',
   inputSchema: {
     type: 'object',
@@ -360,6 +362,17 @@ Reply directly in concise Markdown.`
 const MIN_DOC_BODY_CHARS = 50
 
 /**
+ * create_document 以「回复即正文」为契约,但模型常先写一段对话性开场白
+ * (「我来为你写…下面开始生成」)就调工具——开场白原样落盘便成了整份文档。
+ * 门槛挡不住百来字的开场白,所以 docx/pdf 在落盘前按块级 HTML 标签提取正文:
+ * 提取到 → 剥掉正文前的开场白;提取不到 → 拒绝并让模型先写正文再重试。
+ */
+const DOC_BODY_CONTRACT_HINT =
+  'Your reply so far is conversational preamble, not a document body — nothing was written into the file. ' +
+  'Write the FULL document body as your reply text now: docx/pdf want a restricted HTML fragment (<h1>-<h3>, <p>, <ul>/<ol>/<li>, <table>, <blockquote>, <strong>/<em>); ' +
+  'md wants plain Markdown source. Then call create_document again with the same title and type. The body itself must contain no chat preamble.'
+
+/**
  * Appended to the system prompt while a session is in plan mode: the agent
  * advises instead of acting. Read-only tools stay available (research is not
  * mutation); only file-creating/opening actions are constrained.
@@ -523,9 +536,18 @@ function homeSkill(
             ['docx', 'xlsx', 'pptx', 'md', 'html', 'pdf'].includes(rawType) ? rawType : 'docx'
           ) as DocType
           const isBlank = docType === 'xlsx' || docType === 'pptx'
-          const body = state.turnText().trim()
-          if (!isBlank && body.length < MIN_DOC_BODY_CHARS) {
-            return { output: texts.docBodyMissing, isError: true, summary: 'create_document' }
+          const reply = state.turnText().trim()
+          // docx/pdf 的正文契约是受限 HTML 片段——块级开标签是可信的正文起点,
+          // 据此剥掉开场白;md(纯 Markdown 源)与 html(完整 HTML 文档)没有
+          // 可靠的块级信号,保持全文原样
+          const body =
+            docType === 'docx' || docType === 'pdf' ? (extractDocumentBody(reply) ?? '') : reply
+          if (!isBlank && body.replace(/\s/g, '').length < MIN_DOC_BODY_CHARS) {
+            return {
+              output: `${texts.docBodyMissing}\n${DOC_BODY_CONTRACT_HINT}`,
+              isError: true,
+              summary: 'create_document',
+            }
           }
           let projectId: string | null | undefined
           if (bridge.ensureProject) {

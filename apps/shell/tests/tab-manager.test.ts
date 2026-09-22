@@ -146,12 +146,14 @@ const createHtmlView = vi.fn(() => makeFakeView())
 const createHtmlPresentView = vi.fn(() => makeFakeView())
 const htmlIsDirty = vi.fn(() => false)
 const requestHtmlClose = vi.fn(() => Promise.resolve(true))
+const queueHtmlAiContent = vi.fn()
 
 vi.mock('../../html/src/main/html-main', () => ({
   createHtmlView: (...args: unknown[]) => createHtmlView(...(args as [])),
   createHtmlPresentView: (...args: unknown[]) => createHtmlPresentView(...(args as [])),
   htmlIsDirty: (...args: unknown[]) => htmlIsDirty(...(args as [])),
   requestHtmlClose: (...args: unknown[]) => requestHtmlClose(...(args as [])),
+  queueHtmlAiContent: (...args: unknown[]) => queueHtmlAiContent(...(args as [])),
 }))
 
 import { TabManager } from '../src/main/tab-manager'
@@ -280,6 +282,25 @@ describe('opening tabs', () => {
     expect(markDocsNewBlank).toHaveBeenCalledTimes(1)
     manager.openSheetsTab(undefined, { newBlank: true })
     expect(setSheetsNewBlank).toHaveBeenCalledTimes(1)
+  })
+
+  it('seeds an untitled html tab with AI content and titles it with the suggested name', () => {
+    const id = manager.openHtmlTabWithContent('<html><body>x</body></html>', '大美中国')
+    expect(manager.list().at(-1)).toMatchObject({
+      id,
+      kind: 'html',
+      title: '大美中国',
+      closable: true,
+      active: true,
+    })
+    // the view is created pathless (untitled) and the content rides the
+    // queue the renderer drains on boot — nothing is written to disk
+    expect(createHtmlView).toHaveBeenLastCalledWith(undefined)
+    expect(queueHtmlAiContent).toHaveBeenCalledWith(
+      lastCreatedView(createHtmlView).webContents,
+      '<html><body>x</body></html>',
+      '大美中国',
+    )
   })
 })
 

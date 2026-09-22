@@ -113,6 +113,18 @@ describe('create_document tool', () => {
     expect(createDocument).toHaveBeenCalledOnce()
   })
 
+  it('forwards complete html pages to the bridge without fragment validation', async () => {
+    const createDocument = vi.fn(async () => ({ ok: true, path: '/tmp/page.html' }))
+    const content =
+      '<!DOCTYPE html><html><head><style>p{color:red}</style></head><body><p>x</p></body></html>'
+    const exec = await runWithDesktop(createDocument, { type: 'html', title: 'page', content })
+    expect(exec.isError).toBeUndefined()
+    expect(createDocument).toHaveBeenCalledOnce()
+    const request = (createDocument.mock.calls as unknown[][])[0]![0] as Record<string, unknown>
+    expect(request).toMatchObject({ type: 'html', title: 'page', content })
+    expect(exec.output).toContain('/tmp/page.html')
+  })
+
   it('surfaces a main-process failure', async () => {
     const createDocument = vi.fn(async () => ({ ok: false, error: 'disk full' }))
     const exec = await runWithDesktop(createDocument, { title: 'T', content: '<p>x</p>' })

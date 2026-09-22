@@ -215,6 +215,7 @@ export interface HomeApi {
   /** open an arbitrary https URL in the system browser (homepage footer links);
    *  main validates the scheme, non-https is dropped. Optional: web shim omits it */
   openExternal?(url: string): Promise<void>
+  openChat?(): Promise<boolean>
   /** log out (clears the saved API key; the login state is shared globally with the chatoffice CLI) */
   accountLogout(): Promise<void>
   /** app version (from package.json / electron app.getVersion) */
@@ -714,6 +715,7 @@ export const HOME_CHANNELS = {
   feedbackProbe: 'home:feedback-probe',
   feedbackUpload: 'home:feedback-upload',
   feedbackSubmit: 'home:feedback-submit',
+  openChat: 'home:open-chat',
   onboardingSeen: 'home:onboarding-seen',
   setOnboardingSeen: 'home:set-onboarding-seen',
   getTheme: 'home:get-theme',

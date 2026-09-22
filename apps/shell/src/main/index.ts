@@ -19,6 +19,7 @@ import os from 'node:os'
 import {
   BrowserWindow,
   Menu,
+  MenuItem,
   app,
   dialog,
   ipcMain,
@@ -94,7 +95,8 @@ import {
 } from './analytics'
 import type { Analytics, AnalyticsKeys } from './analytics'
 // LOCAL(purchase): offline purchase / license scheduler + IPC (B-zone module)
-import { registerPurchaseIpc, startPurchaseScheduler } from './purchase'
+import { openPurchasePage, purchaseSnapshot, registerPurchaseIpc, startPurchaseScheduler } from './purchase'
+import type { PurchaseSnapshot } from '../shared/purchase-api'
 import {
   LAST_RUN_VERSION_KEY,
   STAR_PROMPT_KEY,
@@ -718,6 +720,12 @@ const tMain = createI18n({
     errUnsupportedExt: '暂不支持 .{ext} 类型',
     copySuffix: '副本',
     menuHelp: '帮助',
+    menuActivate: '激活',
+    menuActivateLoading: '正在读取授权状态…',
+    menuActivateEntitled: '已激活 · 有效期至 {date}',
+    menuActivateFree: '免费体验中 · 剩 {n} 天',
+    menuActivateExpired: '体验期已结束 · 购买后提醒消失',
+    menuPurchaseActivate: '购买 / 激活…',
     thirdPartyNotices: '第三方软件声明',
     menuExportDocx: '导出为 Word…',
     menuExportDocxLocal: '导出为 Word（本地）…',
@@ -814,6 +822,12 @@ const tMain = createI18n({
     errUnsupportedExt: '.{ext} files are not supported',
     copySuffix: 'copy',
     menuHelp: 'Help',
+    menuActivate: 'License',
+    menuActivateLoading: 'Loading license status…',
+    menuActivateEntitled: 'Activated · valid until {date}',
+    menuActivateFree: 'Free trial · {n} days left',
+    menuActivateExpired: 'Trial ended · buy to stop reminders',
+    menuPurchaseActivate: 'Purchase / Activate…',
     thirdPartyNotices: 'Third-Party Notices',
     menuExportDocx: 'Export as Word…',
     menuExportDocxLocal: 'Export as Word（本地）…',
@@ -921,6 +935,12 @@ const tMain = createI18n({
     errUnsupportedExt: '.{ext} 形式には対応していません',
     copySuffix: 'コピー',
     menuHelp: 'ヘルプ',
+    menuActivate: 'ライセンス',
+    menuActivateLoading: 'ライセンス状態を取得中…',
+    menuActivateEntitled: '認証済み · {date} まで有効',
+    menuActivateFree: '無料体験中 · 残り {n} 日',
+    menuActivateExpired: '体験期間終了 · 購入で通知が消えます',
+    menuPurchaseActivate: '購入 / アクティベート…',
     thirdPartyNotices: 'サードパーティソフトウェアに関する通知',
     menuExportDocx: 'Word として書き出す…',
     menuExportDocxLocal: 'Word として書き出す（本地）…',
@@ -1028,6 +1048,12 @@ const tMain = createI18n({
     errUnsupportedExt: '.{ext} 형식은 지원되지 않습니다',
     copySuffix: '복사본',
     menuHelp: '도움말',
+    menuActivate: '라이선스',
+    menuActivateLoading: '라이선스 상태 확인 중…',
+    menuActivateEntitled: '활성화됨 · {date}까지 유효',
+    menuActivateFree: '무료 체험 중 · {n}일 남음',
+    menuActivateExpired: '체험 기간 종료 · 구매 시 알림이 사라집니다',
+    menuPurchaseActivate: '구매 / 활성화…',
     thirdPartyNotices: '타사 소프트웨어 고지',
     menuExportDocx: 'Word로 내보내기…',
     menuExportDocxLocal: 'Word로 내보내기（本地）…',
@@ -1134,6 +1160,12 @@ const tMain = createI18n({
     errUnsupportedExt: 'les fichiers .{ext} ne sont pas pris en charge',
     copySuffix: 'copie',
     menuHelp: 'Aide',
+    menuActivate: 'Licence',
+    menuActivateLoading: 'Chargement de l\'état de la licence…',
+    menuActivateEntitled: 'Activée · valide jusqu\'au {date}',
+    menuActivateFree: 'Essai gratuit · {n} jours restants',
+    menuActivateExpired: 'Essai terminé · achetez pour arrêter les rappels',
+    menuPurchaseActivate: 'Acheter / Activer…',
     thirdPartyNotices: 'Mentions relatives aux logiciels tiers',
     menuExportDocx: 'Exporter en Word…',
     menuExportDocxLocal: 'Exporter en Word（本地）…',
@@ -1242,6 +1274,12 @@ const tMain = createI18n({
     errUnsupportedExt: '.{ext}-Dateien werden nicht unterstützt',
     copySuffix: 'Kopie',
     menuHelp: 'Hilfe',
+    menuActivate: 'Lizenz',
+    menuActivateLoading: 'Lizenzstatus wird geladen…',
+    menuActivateEntitled: 'Aktiviert · gültig bis {date}',
+    menuActivateFree: 'Kostenlose Testphase · {n} Tage übrig',
+    menuActivateExpired: 'Testphase beendet · Kauf stoppt die Erinnerungen',
+    menuPurchaseActivate: 'Kaufen / Aktivieren…',
     thirdPartyNotices: 'Hinweise zu Drittanbietersoftware',
     menuExportDocx: 'Als Word exportieren…',
     menuExportDocxLocal: 'Als Word exportieren（本地）…',
@@ -1350,6 +1388,12 @@ const tMain = createI18n({
     errUnsupportedExt: 'los archivos .{ext} no son compatibles',
     copySuffix: 'copia',
     menuHelp: 'Ayuda',
+    menuActivate: 'Licencia',
+    menuActivateLoading: 'Cargando estado de licencia…',
+    menuActivateEntitled: 'Activada · válida hasta {date}',
+    menuActivateFree: 'Prueba gratis · quedan {n} días',
+    menuActivateExpired: 'Prueba terminada · compra para quitar recordatorios',
+    menuPurchaseActivate: 'Comprar / Activar…',
     thirdPartyNotices: 'Avisos de software de terceros',
     menuExportDocx: 'Exportar como Word…',
     menuExportDocxLocal: 'Exportar como Word（本地）…',
@@ -1458,6 +1502,12 @@ const tMain = createI18n({
     errUnsupportedExt: 'ไม่รองรับไฟล์ .{ext}',
     copySuffix: 'สำเนา',
     menuHelp: 'วิธีใช้',
+    menuActivate: 'License',
+    menuActivateLoading: 'Loading license status…',
+    menuActivateEntitled: 'Activated · valid until {date}',
+    menuActivateFree: 'Free trial · {n} days left',
+    menuActivateExpired: 'Trial ended · buy to stop reminders',
+    menuPurchaseActivate: 'Purchase / Activate…',
     thirdPartyNotices: 'ประกาศเกี่ยวกับซอฟต์แวร์ของบุคคลที่สาม',
     menuExportDocx: 'ส่งออกเป็น Word…',
     menuExportDocxLocal: 'ส่งออกเป็น Word（本地）…',
@@ -1561,6 +1611,12 @@ const tMain = createI18n({
     errUnsupportedExt: 'file .{ext} tidak didukung',
     copySuffix: 'salinan',
     menuHelp: 'Bantuan',
+    menuActivate: 'License',
+    menuActivateLoading: 'Loading license status…',
+    menuActivateEntitled: 'Activated · valid until {date}',
+    menuActivateFree: 'Free trial · {n} days left',
+    menuActivateExpired: 'Trial ended · buy to stop reminders',
+    menuPurchaseActivate: 'Purchase / Activate…',
     thirdPartyNotices: 'Pemberitahuan Perangkat Lunak Pihak Ketiga',
     menuExportDocx: 'Ekspor sebagai Word…',
     menuExportDocxLocal: 'Ekspor sebagai Word（本地）…',
@@ -1669,6 +1725,12 @@ const tMain = createI18n({
     errUnsupportedExt: 'файлы .{ext} не поддерживаются',
     copySuffix: 'копия',
     menuHelp: 'Справка',
+    menuActivate: 'Лицензия',
+    menuActivateLoading: 'Загрузка статуса лицензии…',
+    menuActivateEntitled: 'Активирована · до {date}',
+    menuActivateFree: 'Бесплатный период · осталось {n} дн.',
+    menuActivateExpired: 'Период закончился · покупка уберёт напоминания',
+    menuPurchaseActivate: 'Купить / Активировать…',
     thirdPartyNotices: 'Уведомления о стороннем ПО',
     menuExportDocx: 'Экспортировать в Word…',
     menuExportDocxLocal: 'Экспортировать в Word（本地）…',
@@ -1777,6 +1839,12 @@ const tMain = createI18n({
     errUnsupportedExt: 'ملفات .{ext} غير مدعومة',
     copySuffix: 'نسخة',
     menuHelp: 'تعليمات',
+    menuActivate: 'License',
+    menuActivateLoading: 'Loading license status…',
+    menuActivateEntitled: 'Activated · valid until {date}',
+    menuActivateFree: 'Free trial · {n} days left',
+    menuActivateExpired: 'Trial ended · buy to stop reminders',
+    menuPurchaseActivate: 'Purchase / Activate…',
     thirdPartyNotices: 'إشعارات برامج الجهات الخارجية',
     menuExportDocx: 'تصدير كملف Word…',
     menuExportDocxLocal: 'تصدير كملف Word（本地）…',
@@ -1880,6 +1948,12 @@ const tMain = createI18n({
     errUnsupportedExt: 'arquivos .{ext} não são suportados',
     copySuffix: 'cópia',
     menuHelp: 'Ajuda',
+    menuActivate: 'Licença',
+    menuActivateLoading: 'Carregando estado da licença…',
+    menuActivateEntitled: 'Ativada · válida até {date}',
+    menuActivateFree: 'Teste grátis · {n} dias restantes',
+    menuActivateExpired: 'Teste encerrado · compre para parar os lembretes',
+    menuPurchaseActivate: 'Comprar / Ativar…',
     thirdPartyNotices: 'Avisos de software de terceiros',
     menuExportDocx: 'Exportar como Word…',
     menuExportDocxLocal: 'Exportar como Word（本地）…',
@@ -1988,6 +2062,12 @@ const tMain = createI18n({
     errUnsupportedExt: 'i file .{ext} non sono supportati',
     copySuffix: 'copia',
     menuHelp: 'Aiuto',
+    menuActivate: 'Licenza',
+    menuActivateLoading: 'Caricamento stato licenza…',
+    menuActivateEntitled: 'Attivata · valida fino al {date}',
+    menuActivateFree: 'Prova gratuita · {n} giorni rimasti',
+    menuActivateExpired: 'Prova terminata · acquista per fermare i promemoria',
+    menuPurchaseActivate: 'Acquista / Attiva…',
     thirdPartyNotices: 'Note sul software di terze parti',
     menuExportDocx: 'Esporta come Word…',
     menuExportDocxLocal: 'Esporta come Word（本地）…',
@@ -2096,6 +2176,12 @@ const tMain = createI18n({
     errUnsupportedExt: 'pliki .{ext} nie są obsługiwane',
     copySuffix: 'kopia',
     menuHelp: 'Pomoc',
+    menuActivate: 'Licencja',
+    menuActivateLoading: 'Ładowanie stanu licencji…',
+    menuActivateEntitled: 'Aktywna · ważna do {date}',
+    menuActivateFree: 'Darmowy okres · pozostało {n} dni',
+    menuActivateExpired: 'Okres próbny zakończony · zakup wyłącza przypomnienia',
+    menuPurchaseActivate: 'Kup / Aktywuj…',
     thirdPartyNotices: 'Informacje o oprogramowaniu innych firm',
     menuExportDocx: 'Eksportuj jako Word…',
     menuExportDocxLocal: 'Eksportuj jako Word（本地）…',
@@ -2204,6 +2290,12 @@ const tMain = createI18n({
     errUnsupportedExt: 'Soubory .{ext} nejsou podporovány',
     copySuffix: 'kopie',
     menuHelp: 'Nápověda',
+    menuActivate: 'License',
+    menuActivateLoading: 'Loading license status…',
+    menuActivateEntitled: 'Activated · valid until {date}',
+    menuActivateFree: 'Free trial · {n} days left',
+    menuActivateExpired: 'Trial ended · buy to stop reminders',
+    menuPurchaseActivate: 'Purchase / Activate…',
     thirdPartyNotices: 'Informace o softwaru třetích stran',
     menuExportDocx: 'Exportovat jako Word…',
     btnCancel: 'Zrušit',
@@ -2307,6 +2399,12 @@ const tMain = createI18n({
     errUnsupportedExt: '.{ext}-bestanden worden niet ondersteund',
     copySuffix: 'kopie',
     menuHelp: 'Help',
+    menuActivate: 'License',
+    menuActivateLoading: 'Loading license status…',
+    menuActivateEntitled: 'Activated · valid until {date}',
+    menuActivateFree: 'Free trial · {n} days left',
+    menuActivateExpired: 'Trial ended · buy to stop reminders',
+    menuPurchaseActivate: 'Purchase / Activate…',
     thirdPartyNotices: 'Kennisgevingen over software van derden',
     menuExportDocx: 'Exporteren als Word…',
     menuExportDocxLocal: 'Exporteren als Word（本地）…',
@@ -2415,6 +2513,12 @@ const tMain = createI18n({
     errUnsupportedExt: 'fail .{ext} tidak disokong',
     copySuffix: 'salinan',
     menuHelp: 'Bantuan',
+    menuActivate: 'License',
+    menuActivateLoading: 'Loading license status…',
+    menuActivateEntitled: 'Activated · valid until {date}',
+    menuActivateFree: 'Free trial · {n} days left',
+    menuActivateExpired: 'Trial ended · buy to stop reminders',
+    menuPurchaseActivate: 'Purchase / Activate…',
     thirdPartyNotices: 'Notis Perisian Pihak Ketiga',
     menuExportDocx: 'Eksport sebagai Word…',
     menuExportDocxLocal: 'Eksport sebagai Word（本地）…',
@@ -2522,6 +2626,12 @@ const tMain = createI18n({
     errUnsupportedExt: 'קובצי .{ext} אינם נתמכים',
     copySuffix: 'עותק',
     menuHelp: 'עזרה',
+    menuActivate: 'License',
+    menuActivateLoading: 'Loading license status…',
+    menuActivateEntitled: 'Activated · valid until {date}',
+    menuActivateFree: 'Free trial · {n} days left',
+    menuActivateExpired: 'Trial ended · buy to stop reminders',
+    menuPurchaseActivate: 'Purchase / Activate…',
     thirdPartyNotices: 'הודעות על תוכנות צד שלישי',
     menuExportDocx: 'ייצוא כ-Word…',
     menuExportDocxLocal: 'ייצוא כ-Word（本地）…',
@@ -2625,6 +2735,12 @@ const tMain = createI18n({
     errUnsupportedExt: '.{ext} फ़ाइलें समर्थित नहीं हैं',
     copySuffix: 'प्रतिलिपि',
     menuHelp: 'सहायता',
+    menuActivate: 'License',
+    menuActivateLoading: 'Loading license status…',
+    menuActivateEntitled: 'Activated · valid until {date}',
+    menuActivateFree: 'Free trial · {n} days left',
+    menuActivateExpired: 'Trial ended · buy to stop reminders',
+    menuPurchaseActivate: 'Purchase / Activate…',
     thirdPartyNotices: 'तृतीय-पक्ष सॉफ़्टवेयर सूचनाएँ',
     menuExportDocx: 'Word के रूप में निर्यात करें…',
     menuExportDocxLocal: 'Word के रूप में निर्यात करें（本地）…',
@@ -2733,6 +2849,12 @@ const tMain = createI18n({
     errUnsupportedExt: '暫不支援 .{ext} 類型',
     copySuffix: '副本',
     menuHelp: '說明',
+    menuActivate: '啟用',
+    menuActivateLoading: '正在讀取授權狀態…',
+    menuActivateEntitled: '已啟用 · 有效期至 {date}',
+    menuActivateFree: '免費體驗中 · 剩 {n} 天',
+    menuActivateExpired: '體驗期已結束 · 購買後提醒消失',
+    menuPurchaseActivate: '購買 / 啟用…',
     thirdPartyNotices: '第三方軟體聲明',
     menuExportDocx: '匯出為 Word…',
     menuExportDocxLocal: '匯出為 Word（本地）…',
@@ -2971,6 +3093,7 @@ function pendingProjectSaveDir(kind: 'doc' | 'sheet' | 'slide' | 'markdown' | 'p
 }
 
 function applyMenuFor(kind: TabKind): void {
+  lastAppliedMenuKind = kind
   switch (kind) {
     case 'docs':
       buildDocsMenu()
@@ -3163,6 +3286,16 @@ function createShellWindow(): void {
         return true
       } catch (err) {
         console.warn('[shell] untitled markdown tab open failed:', err)
+        return false
+      }
+    },
+    openUntitledHtml: (content, suggestedName) => {
+      // AI-created HTML as an untitled tab carrying the content in memory.
+      try {
+        manager.openHtmlTabWithContent(content, suggestedName)
+        return true
+      } catch (err) {
+        console.warn('[shell] untitled html tab open failed:', err)
         return false
       }
     },
@@ -3911,6 +4044,22 @@ function registerHomeIpc(): void {
   //    stay in main (src/main/feedback.ts, same endpoint as chayuan-wps).
   const feedbackClient = createFeedbackClient()
   ipcMain.handle(HOME_CHANNELS.feedbackProbe, (): Promise<boolean> => feedbackClient.probe())
+  // 在线客服（察元机器人聊天页）：独立聊天窗加载 aidooo.com/bot/chat（同一聊天界面）。
+  // 离线时主进程 loadURL 失败仅白窗——渲染层 handleFeedbackClick 已先 probe，离线走二维码卡片。
+  ipcMain.handle(HOME_CHANNELS.openChat, () => {
+    const chatWin = new BrowserWindow({
+      width: 420,
+      height: 660,
+      minWidth: 320,
+      minHeight: 480,
+      title: '察元AI在线客服',
+      autoHideMenuBar: true,
+      backgroundColor: '#f7f8fa',
+      webPreferences: { contextIsolation: true, sandbox: true, nodeIntegration: false },
+    })
+    void chatWin.loadURL('https://aidooo.com/bot/chat?embed=1&channel=office')
+    return true
+  })
   ipcMain.handle(
     HOME_CHANNELS.feedbackUpload,
     (_event, name: unknown, mime: unknown, data: unknown) => {
@@ -4815,7 +4964,21 @@ function collectHiddenAccelerators(menu: Electron.Menu, item: Electron.MenuItem)
 const rawSetApplicationMenu = Menu.setApplicationMenu.bind(Menu)
 Menu.setApplicationMenu = ((menu: Electron.Menu | null) => {
   const isMac = process.platform === 'darwin'
-  if (!menu || !isMac) {
+  if (!menu || menu.items.length === 0) {
+    menuAccelerators.clear()
+    rawSetApplicationMenu(menu)
+    return
+  }
+  // LOCAL(purchase): 统一注入独立「激活」菜单（帮助上方）。所有菜单——
+  // 包括 docs/sheets/slides 各包自建的——都经此收口，包内无需重复实现；
+  // 已含激活段（防重）或缺帮助菜单时退化为 append。
+  if (!menu.items.some((it) => it.label === tm('menuActivate'))) {
+    const activate = new MenuItem(activateMenuSection())
+    const helpIdx = menu.items.findIndex((it) => it.role === 'help')
+    if (helpIdx >= 0) menu.insert(helpIdx, activate)
+    else menu.append(activate)
+  }
+  if (!isMac) {
     menuAccelerators.clear()
     rawSetApplicationMenu(menu)
     return
@@ -4826,6 +4989,9 @@ Menu.setApplicationMenu = ((menu: Electron.Menu | null) => {
     const isEditMenu =
       !!item.submenu && (item.submenu as Electron.Menu).items.some((sub) => sub.role === 'copy')
     if (isEditMenu) return // 编辑：剪贴板 role 的可见入口（⌘C/⌘V 在 AppKit 层）
+    // LOCAL(purchase): 激活菜单独立于帮助菜单，始终可见——授权状态是账户级
+    // 信息，随时要能点开购买页（帮助等其余菜单仍按原约定隐藏，仅留加速键）
+    if (item.label === tm('menuActivate')) return
     collectHiddenAccelerators(menu, item)
     item.visible = false
   })
@@ -5190,6 +5356,47 @@ async function openFileViaDialog(): Promise<void> {
     properties: ['openFile', 'multiSelections'],
   })
   if (!result.canceled) for (const path of result.filePaths) openDocumentPath(path)
+}
+
+// ---- LOCAL(purchase): 激活 menu section (above 帮助) ----
+
+/** Cached entitlement snapshot for the menu status line; null until the
+ * first async load lands (the menu itself builds synchronously). */
+let purchaseMenuSnapshot: PurchaseSnapshot | null = null
+let lastAppliedMenuKind: TabKind | null = null
+
+function purchaseStatusLabel(): string {
+  const s = purchaseMenuSnapshot
+  if (s === null) return tm('menuActivateLoading')
+  if (s.entitled) return tm('menuActivateEntitled').replaceAll('{date}', (s.expireAt ?? '').slice(0, 10))
+  return s.freeDaysLeft > 0
+    ? tm('menuActivateFree').replaceAll('{n}', String(s.freeDaysLeft))
+    : tm('menuActivateExpired')
+}
+
+/** The standalone top-level 激活 menu: live status line + entry that opens
+ * the renderer purchase dialog (QR + activation form) via the same
+ * open-page event the scheduler uses. */
+function activateMenuSection(): MenuItemConstructorOptions {
+  return {
+    label: tm('menuActivate'),
+    submenu: [
+      { label: purchaseStatusLabel(), enabled: false },
+      { type: 'separator' },
+      { label: tm('menuPurchaseActivate'), click: () => openPurchasePage(shellWindow) },
+    ],
+  }
+}
+
+/** Pull a fresh snapshot and rebuild the current menu so the status line
+ * flips (e.g. 已激活 · 至日期) the moment an activation lands. */
+async function refreshPurchaseMenu(): Promise<void> {
+  try {
+    purchaseMenuSnapshot = await purchaseSnapshot()
+  } catch {
+    return // keep the previous label on failure
+  }
+  if (lastAppliedMenuKind !== null) applyMenuFor(lastAppliedMenuKind)
 }
 
 function buildHomeMenu(): void {
@@ -6235,6 +6442,12 @@ async function runHeadlessExportEntry(
   app.exit(headlessExitCode(outcome))
 }
 
+// LOCAL(2026-09-21, d8201ad0): 真机测试辅助——REMOTE_DEBUG_PORT 环境变量存在时开启 CDP
+// 调试端口(仅显式设置时生效,正常运行零影响;收敛条件:无需收敛,env 门控)
+if (process.env.REMOTE_DEBUG_PORT) {
+  app.commandLine.appendSwitch('remote-debugging-port', process.env.REMOTE_DEBUG_PORT)
+}
+
 app.whenReady().then(async () => {
   startSiteSync('office') // 官网心跳+检查更新（静默）
   installRendererProtocol({
@@ -6333,7 +6546,8 @@ app.whenReady().then(async () => {
   // free-period scheduler (once-per-day page + 30-min gentle toast). Events
   // only fire while the shell window is visible; the page popup catches up
   // later the same day after lock screens or hidden windows.
-  registerPurchaseIpc()
+  registerPurchaseIpc(() => void refreshPurchaseMenu())
+  void refreshPurchaseMenu()
   startPurchaseScheduler(() =>
     shellWindow !== null && !shellWindow.isDestroyed() && shellWindow.isVisible() ? shellWindow : null,
   )

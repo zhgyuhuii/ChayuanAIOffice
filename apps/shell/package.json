@@ -36,6 +36,7 @@
     "@chatoffice/ui": "*",
     "@chatoffice/xlsx-gateway": "*",
     "@modelcontextprotocol/sdk": "^1.30.0",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.0.4",
@@ -50,5 +51,8 @@
     "vite": "^7.3.1",
     "vitest": "^4.1.11"
   },
-  "author": "ChatOffice"
+  "author": "ChatOffice",
+  "dependencies": {
+    "qrcode": "^1.5.4"
+  }
 }

@@ -37,6 +37,9 @@ import { storeGeneratedImage } from '@chatoffice/electron-utils/generated-images
 export interface MediaIpcDeps {
   ipcMain: {
     handle(channel: string, fn: (event: unknown, payload: unknown) => Promise<unknown>): void
+    /** LOCAL(2026-09-21, d8201ad0): 重复注册防崩——shell 启动已注册媒体通道时,编辑器
+     * 标签的 register*Ipc 再次注册改为 last-wins(Electron ipcMain 自带,测试桩可缺省) */
+    removeHandler?(channel: string): void
   }
   /** ai-settings.json path (string or lazy resolver) */
   settingsPath: string | (() => string)
@@ -259,6 +262,7 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
     }
   }
 
+  deps.ipcMain.removeHandler?.('ai:media-capabilities')
   deps.ipcMain.handle('ai:media-capabilities', async () => {
     try {
       const settings = await readSettings()
@@ -291,6 +295,7 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
     }
   })
 
+  deps.ipcMain.removeHandler?.('ai:media-image')
   deps.ipcMain.handle('ai:media-image', async (_event, payload: unknown) => {
     const op = (payload ?? {}) as { prompt?: unknown; aspectRatio?: unknown }
     const prompt = String(op.prompt ?? '').trim()
@@ -326,6 +331,7 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
     })
   })
 
+  deps.ipcMain.removeHandler?.('ai:media-video')
   deps.ipcMain.handle('ai:media-video', async (_event, payload: unknown) => {
     const op = (payload ?? {}) as {
       prompt?: unknown
@@ -381,6 +387,7 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
     })
   })
 
+  deps.ipcMain.removeHandler?.('ai:media-understand')
   deps.ipcMain.handle('ai:media-understand', async (_event, payload: unknown) => {
     const op = (payload ?? {}) as { sources?: unknown; requirements?: unknown }
     const sources = Array.isArray(op.sources)
@@ -413,6 +420,7 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
     })
   })
 
+  deps.ipcMain.removeHandler?.('ai:media-asr')
   deps.ipcMain.handle('ai:media-asr', async (_event, payload: unknown) => {
     const op = (payload ?? {}) as { source?: unknown; language?: unknown }
     const source = String(op.source ?? '').trim()
@@ -448,6 +456,7 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
     })
   })
 
+  deps.ipcMain.removeHandler?.('ai:media-tts')
   deps.ipcMain.handle('ai:media-tts', async (_event, payload: unknown) => {
     const op = (payload ?? {}) as { text?: unknown; voice?: unknown }
     const text = String(op.text ?? '').trim()
@@ -494,9 +503,13 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
  * mime types, so callers can trust content-type.
  */
 export function registerFetchImageIpc(deps: {
-  ipcMain: { handle(channel: string, fn: (event: unknown, url: unknown) => Promise<unknown>): void }
+  ipcMain: {
+    handle(channel: string, fn: (event: unknown, url: unknown) => Promise<unknown>): void
+    removeHandler?(channel: string): void
+  }
   fetchImpl?: typeof fetch
 }): void {
+  deps.ipcMain.removeHandler?.('ai:fetch-image')
   deps.ipcMain.handle(
     'ai:fetch-image',
     async (

@@ -1,19 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import QRCode from 'qrcode'
 import { useI18n } from './locale'
-import wxpayQr from './assets/wxpay.png'
-import alipayQr from './assets/alipay.png'
 import './purchase.css'
 
 /**
- * Purchase / license dialog (LOCAL feature, B-zone). Opened by the
- * `chatoffice-purchase-open` window event, which three sources funnel into:
- * the main-process once-per-day scheduler (via PurchaseToast), the toast
- * click, and nothing else — the shell has no other purchase entry on
- * purpose. Content: status line, four duration tiers (display only — the
- * real quote is whatever support charges), the offline WeChat/Alipay
- * collection QRs, the machine fingerprint with copy, and the serial
- * activation form. Activation verifies locally in the main process
- * (main/purchase.ts) and never touches the network.
+ * Purchase / license dialog (LOCAL feature, B-zone), mirroring the
+ * chayuan-desktop-own LicenseDialog flow. Opened by the
+ * `chatoffice-purchase-open` window event, which the main-process scheduler
+ * (via PurchaseToast) and the toast click funnel into — the shell has no
+ * other purchase entry on purpose.
+ *
+ * Content: status line; a locally generated QR of the buy page
+ * ({base}/buy?app=office&mid={fingerprint}) — the phone picks the tier and
+ * pays there, so NO prices or tiers live in this client — plus a share tab
+ * ({base}/share?mid={fp}), open-in-browser and copy-link affordances, the
+ * machine fingerprint with copy, and the serial activation form. The serial
+ * the buy page hands back after payment is verified locally in the main
+ * process (main/purchase.ts); its module bitmap + duration tell the user
+ * what they bought (office bit = this app, OS bit = one-way coverage).
  */
 
 export const PURCHASE_OPEN_EVENT = 'chatoffice-purchase-open'
@@ -29,14 +33,6 @@ declare global {
     }
   }
 }
-
-/** Consensus price ladder for Chayuan AI Office (fen). Display only. */
-const TIERS: Array<{ id: 'month' | 'quarter' | 'half' | 'year'; priceFen: number; recommended?: boolean }> = [
-  { id: 'month', priceFen: 9900 },
-  { id: 'quarter', priceFen: 23900 },
-  { id: 'half', priceFen: 39900 },
-  { id: 'year', priceFen: 69900, recommended: true },
-]
 
 /** Activation failures collapse into four user-facing buckets. */
 function reasonKey(reason: string): string {
@@ -68,6 +64,8 @@ interface PurchaseSnapshotLite {
   expireAt: string | null
   serialMasked: string | null
   keyConfigured: boolean
+  buyUrl: string
+  shareUrl: string
 }
 
 function snapshotBridge(): Promise<PurchaseSnapshotLite> | null {
@@ -80,7 +78,18 @@ function snapshotBridge(): Promise<PurchaseSnapshotLite> | null {
     expireAt: s.expireAt,
     serialMasked: s.serialMasked,
     keyConfigured: s.keyConfigured,
+    buyUrl: s.buyUrl,
+    shareUrl: s.shareUrl,
   }))
+}
+
+async function copyText(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text)
+    return true
+  } catch {
+    return false
+  }
 }
 
 export function openPurchaseDialog(): void {
@@ -94,7 +103,9 @@ export function PurchaseModal() {
   const [serial, setSerial] = useState('')
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null)
-  const [copied, setCopied] = useState(false)
+  const [qrTab, setQrTab] = useState<'buy' | 'share'>('buy')
+  const [qr, setQr] = useState('')
+  const [copied, setCopied] = useState<'fp' | 'link' | null>(null)
   const [guideOpen, setGuideOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -110,10 +121,32 @@ export function PurchaseModal() {
     return () => window.removeEventListener(PURCHASE_OPEN_EVENT, onOpen)
   }, [])
 
+  // Local QR generation (same as the reference LicenseDialog): the code is
+  // just the buy/share URL, rendered to a data URL entirely offline.
+  const activeUrl = qrTab === 'buy' ? state?.buyUrl : state?.shareUrl
+  useEffect(() => {
+    if (!open || !activeUrl) {
+      setQr('')
+      return undefined
+    }
+    let alive = true
+    QRCode.toDataURL(activeUrl, { margin: 1, width: 220 })
+      .then((dataUrl) => {
+        if (alive) setQr(dataUrl)
+      })
+      .catch(() => {
+        if (alive) setQr('')
+      })
+    return () => {
+      alive = false
+    }
+  }, [open, activeUrl])
+
   useEffect(() => {
     if (!open) return undefined
     refresh()
     setResult(null)
+    setQrTab('buy')
     // Same editor-view yielding contract as the settings funnel (Home's
     // useShellModalSurface): without this the dialog paints UNDER the
     // covering editor WebContentsView.
@@ -135,15 +168,30 @@ export function PurchaseModal() {
   const bridge = window.chatOfficePurchase
   const entitled = state?.entitled === true
 
+  const flashCopied = (what: 'fp' | 'link') => {
+    setCopied(what)
+    setTimeout(() => setCopied(null), 1500)
+  }
+
   const copyFingerprint = async () => {
     if (!state?.fingerprint) return
-    try {
-      await navigator.clipboard.writeText(state.fingerprint)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
-    } catch {
-      // clipboard unavailable: the code stays selectable
-    }
+    if (await copyText(state.fingerprint)) flashCopied('fp')
+  }
+
+  const copyActiveLink = async () => {
+    if (!activeUrl) return
+    if (await copyText(activeUrl)) flashCopied('link')
+  }
+
+  const openInBrowser = () => {
+    if (!activeUrl) return
+    void window.chatOffice?.openExternal?.(activeUrl)
+  }
+
+  const grantText = (modules: number, days: number): string => {
+    const product =
+      modules & (1 << 12) ? t('purchaseProductOffice') : modules & (1 << 11) ? t('purchaseProductOs') : ''
+    return product ? `${product} · ${t('purchaseGrantRenew', { n: days })}` : t('purchaseGrantRenew', { n: days })
   }
 
   const activate = async () => {
@@ -154,7 +202,11 @@ export function PurchaseModal() {
     try {
       const r = await bridge.activate(trimmed)
       if (r.ok) {
-        setResult({ ok: true, text: t('purchaseActivateOk', { date: fmtDate(r.expireAt) }) })
+        // The serial itself tells what was bought: module bitmap + duration.
+        setResult({
+          ok: true,
+          text: `${t('purchaseActivateOk', { date: fmtDate(r.expireAt) })} · ${grantText(r.modules, r.days)}`,
+        })
         setSerial('')
         refresh()
       } else {
@@ -168,12 +220,12 @@ export function PurchaseModal() {
   }
 
   const statusLine = !bridge
-    ? t('purchaseUnavailable' as Parameters<typeof t>[0])
+    ? t('purchaseUnavailable')
     : entitled
-      ? t('purchaseEntitledUntil' as Parameters<typeof t>[0], { date: fmtDate(state?.expireAt ?? null) })
+      ? t('purchaseEntitledUntil', { date: fmtDate(state?.expireAt ?? null) })
       : state && state.freeDaysLeft > 0
-        ? t('purchaseFreeLeft' as Parameters<typeof t>[0], { n: state.freeDaysLeft })
-        : t('purchaseExpired' as Parameters<typeof t>[0])
+        ? t('purchaseFreeLeft', { n: state.freeDaysLeft })
+        : t('purchaseExpired')
 
   return (
     <div className="purchase-overlay" onMouseDown={() => setOpen(false)} data-purchase-dialog>
@@ -192,34 +244,60 @@ export function PurchaseModal() {
             {statusLine}
           </p>
 
-          <p className="purchase-section-title">{t('purchaseTiersTitle')}</p>
-          <div className="purchase-tiers" data-purchase-tiers>
-            {TIERS.map((tier) => (
-              <div key={tier.id} className={`purchase-tier${tier.recommended ? ' purchase-tier-hot' : ''}`} data-purchase-tier={tier.id}>
-                {tier.recommended && <span className="purchase-tier-badge">{t('purchaseRecommended')}</span>}
-                <span className="purchase-tier-name">{t(`purchaseTier${tier.id.charAt(0).toUpperCase()}${tier.id.slice(1)}` as 'purchaseTierMonth')}</span>
-                <span className="purchase-tier-price">¥{tier.priceFen / 100}</span>
-              </div>
-            ))}
+          <div className="purchase-qr-tabs" role="tablist" data-purchase-tabs>
+            <button
+              role="tab"
+              aria-selected={qrTab === 'buy'}
+              className={`purchase-qr-tab${qrTab === 'buy' ? ' purchase-qr-tab-active' : ''}`}
+              onClick={() => setQrTab('buy')}
+              data-purchase-tab="buy"
+            >
+              {t('purchaseTabBuy')}
+            </button>
+            <button
+              role="tab"
+              aria-selected={qrTab === 'share'}
+              className={`purchase-qr-tab${qrTab === 'share' ? ' purchase-qr-tab-active' : ''}`}
+              onClick={() => setQrTab('share')}
+              data-purchase-tab="share"
+            >
+              {t('purchaseTabShare')}
+            </button>
           </div>
 
-          <p className="purchase-section-title">{t('purchasePayTitle')}</p>
           <div className="purchase-qr-row">
-            <div className="purchase-qr">
-              <img src={wxpayQr} alt={t('purchasePayWechat')} width={110} height={110} draggable={false} />
-              <span>{t('purchasePayWechat')}</span>
-            </div>
-            <div className="purchase-qr">
-              <img src={alipayQr} alt={t('purchasePayAlipay')} width={110} height={110} draggable={false} />
-              <span>{t('purchasePayAlipay')}</span>
-            </div>
+            {qr ? (
+              <img
+                className="purchase-qr-img"
+                src={qr}
+                alt={qrTab === 'buy' ? t('purchaseTabBuy') : t('purchaseTabShare')}
+                width={220}
+                height={220}
+                draggable={false}
+                data-purchase-qr
+              />
+            ) : (
+              <div className="purchase-qr-placeholder" data-purchase-qr-placeholder />
+            )}
+            <span className="purchase-qr-caption" data-purchase-qr-caption>
+              {qrTab === 'buy' ? t('purchaseScanCaption') : t('purchaseShareCaption')}
+            </span>
+          </div>
+
+          <div className="purchase-link-row">
+            <button className="purchase-copy" onClick={() => void openInBrowser()} data-purchase-open-link>
+              {t('purchaseOpenInBrowser')}
+            </button>
+            <button className="purchase-copy" onClick={() => void copyActiveLink()} data-purchase-copy-link>
+              {copied === 'link' ? t('purchaseCopied') : t('purchaseCopyLink')}
+            </button>
           </div>
 
           <div className="purchase-fingerprint" data-purchase-fingerprint>
             <span className="purchase-fingerprint-label">{t('purchaseFingerprint')}</span>
             <code data-purchase-fingerprint-code>{state?.fingerprint ?? '—'}</code>
             <button className="purchase-copy" onClick={() => void copyFingerprint()} data-purchase-fp-copy>
-              {copied ? t('purchaseCopied') : t('purchaseCopy')}
+              {copied === 'fp' ? t('purchaseCopied') : t('purchaseCopy')}
             </button>
           </div>
 
