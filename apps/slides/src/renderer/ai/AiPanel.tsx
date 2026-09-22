@@ -3486,7 +3486,7 @@ function ClarifyCard({
             className="ai-clarify-head-arrow"
             disabled={qIdx === 0}
             onClick={() => goTo(qIdx - 1)}
-            aria-label="‹"
+            aria-label={t('aiClarifyPrev')}
           >
             ‹
           </button>
@@ -3495,7 +3495,7 @@ function ClarifyCard({
             className="ai-clarify-head-arrow"
             disabled={qIdx >= furthest || !hasAnswer}
             onClick={() => goTo(qIdx + 1)}
-            aria-label="›"
+            aria-label={t('aiClarifyNext')}
           >
             ›
           </button>
