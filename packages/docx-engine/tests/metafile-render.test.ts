@@ -13,7 +13,7 @@ import { readFileSync } from 'node:fs'
 import { gzipSync } from 'node:zlib'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { convertEmfToDataUrl, convertWmfToDataUrl } from '../src/vendor/emf-converter/index.mjs'
-import { isMetafileMime, metafileToDataUrl } from '../src/metafile'
+import { isMetafileMime, MAX_METAFILE_GUNZIP_BYTES, metafileToDataUrl } from '../src/metafile'
 
 interface Call {
   method: string
@@ -421,6 +421,12 @@ describe('gzipped metafiles (.emz/.wmz)', () => {
     const result = await metafileToDataUrl(new Uint8Array(gz), 'image/x-emf')
     expect(result).toMatch(/^data:image\/png;base64,/)
     expect(canvases[0]?.width).toBe(380)
+  })
+
+  it('refuses gzip bombs instead of exhausting memory', async () => {
+    reset()
+    const bomb = gzipSync(Buffer.alloc(MAX_METAFILE_GUNZIP_BYTES + 1))
+    await expect(metafileToDataUrl(new Uint8Array(bomb), 'image/x-emz')).resolves.toBeNull()
   })
 })
 
