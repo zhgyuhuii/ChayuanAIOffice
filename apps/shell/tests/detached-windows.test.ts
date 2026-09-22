@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-/** the open-documents listing awaits the docs dirty query; a window closed meanwhile must be skipped */
+/**
+ * detached-windows.ts liveness guards: lookups must skip records whose
+ * window was destroyed OR whose view webContents died, and the async
+ * open-documents listing must re-check after its await.
+ */
 
 const instances: FakeWindow[] = []
 
@@ -65,11 +69,11 @@ type DetachedModule = typeof import('../src/main/detached-windows')
 
 let detached: DetachedModule
 
-function fakeView(id: number) {
+function fakeView(id: number, dead: { current: boolean }) {
   return {
     webContents: {
       id,
-      isDestroyed: () => false,
+      isDestroyed: () => dead.current,
       focus: vi.fn(),
       close: vi.fn(),
     },
@@ -84,22 +88,58 @@ beforeEach(async () => {
   detached = await import('../src/main/detached-windows')
 })
 
-describe('detachedOpenDocuments', () => {
-  it('lists live windows', async () => {
+describe('detached window liveness guards', () => {
+  it('lookups skip records with dead view contents', () => {
+    const dead = { current: false }
     detached.createDetachedEditorWindow({
-      view: fakeView(22) as never,
+      view: fakeView(11, dead) as never,
+      kind: 'docs',
+      title: 'a.txt',
+      filePath: 'C:/docs/a.txt',
+      applyMenuFor: () => {},
+    })
+    dead.current = true
+
+    expect(detached.isDetachedTabId('detached:11')).toBe(false)
+    expect(detached.activateDetached('detached:11')).toBe(false)
+    expect(detached.detachedWebContentsFor('detached:11')).toBeUndefined()
+    expect(detached.closeDetachedWithoutPrompt('detached:11')).toBe(false)
+    expect(detached.findDetachedTabByPath('c:/docs/a.txt')).toBeUndefined()
+    expect(detached.focusDetachedByPath('c:/docs/a.txt')).toBe(false)
+    expect(detached.detachedRenameFile('c:/docs/a.txt', 'c:/docs/b.txt')).toBeUndefined()
+    expect(detached.detachedFilePaths()).toEqual([])
+    expect(detached.focusedDetachedKind()).toBeUndefined()
+  })
+
+  it('live records keep answering while dead ones are skipped', async () => {
+    const deadDocs = { current: false }
+    const liveSheets = { current: false }
+    detached.createDetachedEditorWindow({
+      view: fakeView(21, deadDocs) as never,
+      kind: 'docs',
+      title: 'a',
+      filePath: 'C:/docs/a.txt',
+      applyMenuFor: () => {},
+    })
+    detached.createDetachedEditorWindow({
+      view: fakeView(22, liveSheets) as never,
       kind: 'sheets',
       title: 'b',
       filePath: 'C:/docs/b.txt',
       applyMenuFor: () => {},
     })
+    deadDocs.current = true
+
+    expect(detached.findDetachedTabByPath('c:/docs/b.txt')?.id).toBe('detached:22')
+    expect(detached.detachedFilePaths()).toEqual(['C:/docs/b.txt'])
     const docs = await detached.detachedOpenDocuments()
     expect(docs.map((d) => d.id)).toEqual(['detached:22'])
   })
 
-  it('skips windows destroyed during the async dirty check', async () => {
+  it('open-documents listing skips windows destroyed during the async dirty check', async () => {
+    const live = { current: false }
     detached.createDetachedEditorWindow({
-      view: fakeView(31) as never,
+      view: fakeView(31, live) as never,
       kind: 'docs',
       title: 'c',
       filePath: 'C:/docs/c.txt',
