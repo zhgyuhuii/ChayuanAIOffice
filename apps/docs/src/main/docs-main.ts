@@ -3183,6 +3183,53 @@ export function registerAiIpc(): void {
       return { results: [], method: 'error', error: String(err) }
     }
   })
+
+  // 搜索通道可用性(首页 web_search 工具门控):配置了任一 key 平台即视为可用;
+  // 否则探测 DuckDuckGo(唯一免 key 兜底)可达性,结果缓存 10 分钟 —— 冷启动
+  // 第一次探测最多引入一次兜底超时,之后命中缓存不再拖慢发送路径
+  let searchProbeCache: { at: number; ok: boolean } | null = null
+  let searchProbeInFlight: Promise<boolean> | null = null
+  const SEARCH_PROBE_TTL_MS = 10 * 60_000
+  const searchBackendReady = async (): Promise<boolean> => {
+    try {
+      const settings = await getAiRuntime().readRawSettings()
+      const providers = settings.search?.providers as
+        | Record<string, { apiKey?: string } | undefined>
+        | undefined
+      const keyed =
+        providers?.serper?.apiKey ||
+        settings.searchApiKeys?.serper ||
+        process.env.SERPER_API_KEY ||
+        providers?.tavily?.apiKey ||
+        process.env.TAVILY_API_KEY ||
+        providers?.linkup?.apiKey ||
+        process.env.LINKUP_API_KEY ||
+        providers?.searxng?.apiKey ||
+        providers?.parallel?.apiKey
+      if (keyed) return true
+    } catch {
+      /* settings unreadable → fall through to the fallback probe */
+    }
+    if (searchProbeCache && Date.now() - searchProbeCache.at < SEARCH_PROBE_TTL_MS)
+      return searchProbeCache.ok
+    searchProbeInFlight ??= (async () => {
+      let ok = false
+      try {
+        const r = await webSearch('connectivity check', 1, false, {}, 'duckduckgo')
+        ok = !r.error
+      } catch {
+        /* unreachable backend → ok stays false */
+      }
+      searchProbeCache = { at: Date.now(), ok }
+      return ok
+    })().finally(() => {
+      searchProbeInFlight = null
+    })
+    return searchProbeInFlight
+  }
+  ipcMain.handle('ai:search-capabilities', async (): Promise<{ search: boolean }> => ({
+    search: await searchBackendReady(),
+  }))
   ipcMain.handle('ai:image-search', async (_event, query: string, maxResults?: number) => {
     try {
       return await imageSearch(
@@ -5214,13 +5261,6 @@ export function buildDocsMenu(): void {
         { label: tm('menuWholePage'), click: () => sendCommand('zoom-whole-page') },
         { type: 'separator' },
         {
-          id: 'docs-menu-ai-sidebar',
-          type: 'checkbox',
-          checked: activeViewMenuState().aiSidebar,
-          label: tm('menuAiSidebar'),
-          click: () => sendCommand('toggle-ai'),
-        },
-        {
           id: 'docs-menu-dark-mode',
           type: 'checkbox',
           checked: activeViewMenuState().darkCanvas,
@@ -5289,9 +5329,6 @@ export function buildDocsMenu(): void {
       label: tm('menuTools'),
       submenu: [
         { label: tm('menuWordCount'), click: () => sendCommand('word-count') },
-        { type: 'separator' },
-        // Runs the same AI proofread as Review > Editor (renderer shows the one-time ack)
-        { label: tm('menuAiProofread'), click: () => sendCommand('ai-proofread') },
       ],
     },
     windowMenuTemplate(process.platform, appMenuLabels(getUiLang())),
