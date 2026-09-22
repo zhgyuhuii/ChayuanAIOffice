@@ -7332,7 +7332,7 @@ function ZoomPop({
           value={custom}
           onChange={(e) => setCustom(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') applyCustom()
+            if (e.key === 'Enter' && !e.nativeEvent.isComposing) applyCustom()
           }}
         />
         <span>%</span>

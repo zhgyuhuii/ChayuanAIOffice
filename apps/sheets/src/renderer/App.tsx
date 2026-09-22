@@ -1110,9 +1110,30 @@ export function App(): React.JSX.Element {
   const activeId = targetChatId()
   const activeView = activeId ? convViews[activeId] : undefined
   const activeHandle = activeId ? convHandlesRef.current.get(activeId) : undefined
-  /** the composer text state of the active conversation (composer renders from the active view) */
-  const prompt = activeView?.prompt ?? ''
-  const setPrompt = (text: string) => activeHandle?.setPrompt(text)
+  // LOCAL(IME): the composer is a controlled textarea; its value must update in the
+  // SAME commit as the keystroke. Routing keystrokes through the hidden host
+  // (setPrompt → effect → onState → setConvViews) lags one render behind, and
+  // React's controlled-value restoration then writes the STALE text back into the
+  // textarea mid-composition, killing the IME session — Chinese input dies on the
+  // first pinyin keystroke. Keep a synchronous per-conversation draft mirror here;
+  // the host stays the owner for send/clear/switch (synced back via the effect below).
+  const [composerDrafts, setComposerDrafts] = useState<Record<string, string>>({})
+  const prompt = activeId != null ? (composerDrafts[activeId] ?? activeView?.prompt ?? '') : ''
+  const setPrompt = (text: string) => {
+    if (activeId === null || activeId === undefined) return
+    setComposerDrafts((prev) => (prev[activeId] === text ? prev : { ...prev, [activeId]: text }))
+    activeHandle?.setPrompt(text)
+  }
+  // host is authoritative for programmatic prompt changes (send clears, session
+  // load) — reflect those into the mirror; typing never fights this because the
+  // host's reported value converges to the same text the draft already holds
+  useEffect(() => {
+    if (activeId === null || activeId === undefined) return
+    const viewPrompt = activeView?.prompt ?? ''
+    setComposerDrafts((prev) =>
+      prev[activeId] === viewPrompt ? prev : { ...prev, [activeId]: viewPrompt },
+    )
+  }, [activeId, activeView?.prompt])
   const aiBusy = activeView?.busy ?? false
   const chat = activeView?.chat ?? []
   const historicChat = activeView?.historic ?? []

@@ -390,7 +390,7 @@ export function DeclassifyRestoreDialog({
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && password && void restore()}
+              onKeyDown={(e) => e.key === 'Enter' && !e.nativeEvent.isComposing && password && void restore()}
             />
           </DocOpsField>
         </>

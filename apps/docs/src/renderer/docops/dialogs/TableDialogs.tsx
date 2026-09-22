@@ -105,7 +105,7 @@ export function DeleteTextDialog({
             setKeyword(e.target.value)
             setHits(null)
           }}
-          onKeyDown={(e) => e.key === 'Enter' && search()}
+          onKeyDown={(e) => e.key === 'Enter' && !e.nativeEvent.isComposing && search()}
         />
       </DocOpsField>
       {hits !== null && (
@@ -164,7 +164,7 @@ export function AppendReplaceTextDialog({ editor, onClose }: { editor: Editor; o
           ref={inputRef}
           value={find}
           onChange={(e) => setFind(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && find.trim() && run()}
+          onKeyDown={(e) => e.key === 'Enter' && !e.nativeEvent.isComposing && find.trim() && run()}
         />
       </DocOpsField>
       <div className="docops-radio-row" role="radiogroup">
@@ -237,7 +237,7 @@ export function ManualColWidthDialog({ editor, onClose }: { editor: Editor; onCl
           max={500}
           value={width}
           onChange={(e) => setWidth(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && run()}
+          onKeyDown={(e) => e.key === 'Enter' && !e.nativeEvent.isComposing && run()}
         />
       </DocOpsField>
     </DocOpsModal>

@@ -72,7 +72,7 @@ export function FormContentDialog({ editor, onClose }: { editor: Editor; onClose
                       <input
                         value={drafts[i] ?? ''}
                         onChange={(e) => setDrafts({ ...drafts, [i]: e.target.value })}
-                        onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+                        onKeyDown={(e) => e.key === 'Enter' && !e.nativeEvent.isComposing && e.currentTarget.blur()}
                       />
                     </td>
                   </tr>
