@@ -313,6 +313,8 @@ export interface HomeApi {
     method: string
     error?: string
   }>
+  /** 搜索通道可用性探测（web_search 工具门控；web 宿主 shim 可不实现） */
+  searchCapabilities?(): Promise<{ search: boolean }>
   /** 首页对话能力工具：AI 生图（默认生图模型，返回 data: URL） */
   mediaGenerate(req: {
     profileId?: string

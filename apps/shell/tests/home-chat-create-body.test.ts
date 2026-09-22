@@ -29,7 +29,7 @@ const DOC_BODY =
   '<h1>大美中国</h1><toc></toc><h2>山河壮丽</h2><p>这是一段足够长的正文，用来通过最小文档长度校验，山川湖海皆入画来。</p>'
 
 const MD_BODY =
-  '# 大美中国\n\n## 山河壮丽\n\n这是一段足够长的 Markdown 正文，用来通过最小文档长度校验，山河湖海皆成文章。'
+  '# 大美中国\n\n## 山河壮丽\n\n从雪山之巅到东海之滨，这是一段足够长的 Markdown 正文，用来通过最小文档长度校验。\n\n- 要点一\n- 要点二'
 
 type StreamChunk = {
   requestId: string
@@ -128,6 +128,10 @@ describe('create_document body contract (开场白不得落盘)', () => {
       .join('\n')
     expect(toolFeedback).toContain('missing')
     expect(toolFeedback).toContain('conversational preamble')
+    // 拒绝提示绝不能给模型留 md 逃生门——上次事故里模型就是被提示里的
+    // 「md wants plain Markdown source」诱导把 type=docx 改成了 md
+    expect(toolFeedback).not.toMatch(/\bmd\b/i)
+    expect(toolFeedback).not.toContain('Markdown')
     // 重试轮成功落盘,且正文不带开场白
     expect(created).toHaveLength(1)
     expect(created[0]!.type).toBe('docx')
@@ -162,6 +166,102 @@ describe('create_document body contract (开场白不得落盘)', () => {
     expect(created).toHaveLength(1)
     expect(created[0]!.type).toBe('md')
     expect(created[0]!.content).toBe(MD_BODY)
+  })
+
+  it('converts a markdown body to restricted html for docx (type never silently demoted)', async () => {
+    // 事故场景:用户要 word,模型却按 Markdown 写正文并调 type=docx。
+    // 旧行为:提取不到 HTML → 拒绝 + 提示里出现 md → 模型改 type=md 得逞,
+    // 用户要 word 得到 md。新行为:就地转换,docx 落盘,一轮成功。
+    const { bridge, created } = makeBridge([
+      {
+        text: MD_BODY,
+        toolCall: { id: 'c1', name: 'create_document', input: { title: '大美中国', type: 'docx' } },
+      },
+      { text: '文档已生成。' },
+    ])
+    const { events, dones, errors } = makeEvents()
+    await run(bridge, events)
+    expect(errors).toEqual([])
+    expect(created).toHaveLength(1)
+    expect(created[0]!.type).toBe('docx')
+    expect(created[0]!.content).toContain('<h1>大美中国</h1>')
+    expect(created[0]!.content).toContain('<h2>山河壮丽</h2>')
+    expect(created[0]!.content).toContain('<ul><li>要点一</li><li>要点二</li></ul>')
+    // 落盘内容不再是裸 Markdown 语法
+    expect(created[0]!.content).not.toContain('#')
+    expect(created[0]!.content).not.toContain('- 要点')
+    expect(dones.at(-1)?.createdDoc).toEqual({ title: '大美中国', docType: 'docx' })
+  })
+
+  it('strips the preamble when converting a markdown body for docx', async () => {
+    const { bridge, created } = makeBridge([
+      {
+        text: `${PREAMBLE}\n\n${MD_BODY}`,
+        toolCall: { id: 'c1', name: 'create_document', input: { title: '大美中国', type: 'docx' } },
+      },
+      { text: '文档已生成。' },
+    ])
+    const { events } = makeEvents()
+    await run(bridge, events)
+    expect(created).toHaveLength(1)
+    expect(created[0]!.type).toBe('docx')
+    expect(created[0]!.content.startsWith('<h1>大美中国</h1>')).toBe(true)
+    expect(created[0]!.content).not.toContain('我来为你写')
+  })
+
+  it('recovers when the model splits body and tool call across turns (GJB dead-end)', async () => {
+    // 事故现场:轮1空正文调 create_document 被拒;轮2补写完整正文却不再调
+    // 工具。旧行为:运行就此结束,文档不创建(「生成文档后打不开编辑器」)。
+    // 新行为:verifyResponse 强制补一轮工具调用,正文从历史回溯取得。
+    const { bridge, created, wireRequests } = makeBridge([
+      { toolCall: { id: 'c1', name: 'create_document', input: { title: '软件设计大纲', type: 'docx' } } },
+      { text: DOC_BODY },
+      { toolCall: { id: 'c2', name: 'create_document', input: { title: '软件设计大纲', type: 'docx' } } },
+      { text: '文档已生成。' },
+    ])
+    const { events, dones, errors } = makeEvents()
+    await run(bridge, events)
+    expect(errors).toEqual([])
+    expect(created).toHaveLength(1)
+    expect(created[0]!.type).toBe('docx')
+    expect(created[0]!.content).toBe(DOC_BODY)
+    expect(dones.at(-1)?.createdDoc).toEqual({ title: '软件设计大纲', docType: 'docx' })
+    // 第 3 次 wire 请求(纠错轮)带着 verifyResponse 的补调指令
+    const correction = wireRequests[2] as { messages: Array<{ role: string; text?: string }> }
+    expect(
+      correction.messages.some((m) => m.text?.includes('failed because the body was not written yet')),
+    ).toBe(true)
+  })
+
+  it('recovers the same dead-end for markdown bodies', async () => {
+    const { bridge, created } = makeBridge([
+      { toolCall: { id: 'c1', name: 'create_document', input: { title: '笔记', type: 'md' } } },
+      { text: MD_BODY },
+      { toolCall: { id: 'c2', name: 'create_document', input: { title: '笔记', type: 'md' } } },
+      { text: '已创建。' },
+    ])
+    const { events, errors } = makeEvents()
+    await run(bridge, events)
+    expect(errors).toEqual([])
+    expect(created).toHaveLength(1)
+    expect(created[0]!.type).toBe('md')
+    expect(created[0]!.content).toBe(MD_BODY)
+  })
+
+  it('accepts a signal-free pure-paragraph markdown body in the current turn (md keeps the length-only gate)', async () => {
+    const prose = '这是一段没有任何 Markdown 块级信号的纯段落笔记正文，长度早已越过最小文档门槛，应当按原文直传创建 md 文件而不被拒绝。'
+    const { bridge, created } = makeBridge([
+      {
+        text: prose,
+        toolCall: { id: 'c1', name: 'create_document', input: { title: '随笔', type: 'md' } },
+      },
+      { text: '已创建。' },
+    ])
+    const { events, errors } = makeEvents()
+    await run(bridge, events)
+    expect(errors).toEqual([])
+    expect(created).toHaveLength(1)
+    expect(created[0]!.content).toBe(prose)
   })
 
   it('passes a complete html document through verbatim (head/styles must survive)', async () => {

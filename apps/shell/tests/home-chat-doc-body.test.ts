@@ -1,7 +1,11 @@
 // 文档正文拆分(doc-body):create_document 的受限 HTML 正文不得按 markdown
 // 渲染(裸标签乱码),拆出后由折叠块承接;流式未闭合尾界落到文本末尾。
 import { describe, expect, it } from 'vitest'
-import { extractDocumentBody, splitDocumentBody } from '../src/renderer/src/home-chat/doc-body'
+import {
+  extractDocumentBody,
+  markdownToRestrictedHtml,
+  splitDocumentBody,
+} from '../src/renderer/src/home-chat/doc-body'
 
 const BODY =
   '<h1>季度报告</h1><h2>概述</h2><p>这是一段足够长的正文，用来通过最小文档长度校验。</p><ul><li>要点一</li><li>要点二</li></ul>'
@@ -57,5 +61,77 @@ describe('splitDocumentBody', () => {
     const { prose, body } = splitDocumentBody('# 标题\n\n- 列表项\n\n正文段落。')
     expect(body).toBeNull()
     expect(prose).toBe('# 标题\n\n- 列表项\n\n正文段落。')
+  })
+})
+
+describe('markdownToRestrictedHtml (docx/pdf 的 Markdown 兜底)', () => {
+  it('converts headings, inline marks, lists, quotes, tables and code fences', () => {
+    const md = [
+      '# 大美中国',
+      '',
+      '## 山河壮丽',
+      '',
+      '这里有**加粗**和*斜体*以及~~删除~~的文字，`代码` 与 [链接](https://x.example) 保留文本。',
+      '',
+      '- 要点一',
+      '- 要点二',
+      '',
+      '1. 第一',
+      '2. 第二',
+      '',
+      '> 引用一句',
+      '',
+      '| 列一 | 列二 |',
+      '| --- | --- |',
+      '| 甲 | 乙 |',
+      '',
+      '```',
+      'const x = 1 < 2',
+      '```',
+    ].join('\n')
+    const html = markdownToRestrictedHtml(md)
+    expect(html).toContain('<h1>大美中国</h1>')
+    expect(html).toContain('<h2>山河壮丽</h2>')
+    expect(html).toContain('<strong>加粗</strong>')
+    expect(html).toContain('<em>斜体</em>')
+    expect(html).toContain('<s>删除</s>')
+    expect(html).toContain('代码 与 链接 保留文本')
+    expect(html).toContain('<ul><li>要点一</li><li>要点二</li></ul>')
+    expect(html).toContain('<ol><li>第一</li><li>第二</li></ol>')
+    expect(html).toContain('<blockquote><p>引用一句</p></blockquote>')
+    expect(html).toContain('<table><thead><tr><th>列一</th><th>列二</th></tr></thead>')
+    expect(html).toContain('<td>甲</td>')
+    // 表格分隔行不产行;行内语法字符全部消化
+    expect(html).not.toContain('**')
+    expect(html).not.toContain('](https')
+    // 代码块内容转义,不逃逸成标签
+    expect(html).toContain('<pre>const x = 1 &lt; 2</pre>')
+  })
+
+  it('starts at the first block signal (preamble dropped) and passes <toc> through', () => {
+    const md =
+      '我来为你写一篇文章。下面开始生成\n\n# 大美中国\n\n<toc></toc>\n\n正文第一段。\n\n正文第二段。'
+    const html = markdownToRestrictedHtml(md)
+    expect(html).not.toContain('我来为你写')
+    expect(html.startsWith('<h1>大美中国</h1>')).toBe(true)
+    expect(html).toContain('<toc></toc>')
+    expect(html).toContain('<p>正文第一段。</p>')
+    expect(html).toContain('<p>正文第二段。</p>')
+  })
+
+  it('escapes raw html in prose so user text cannot smuggle tags', () => {
+    const html = markdownToRestrictedHtml('# 标题\n\n段落里有 <b>裸标签</b> 与 & 符号。')
+    expect(html).toContain('&lt;b&gt;裸标签&lt;/b&gt;')
+    expect(html).toContain('&amp; 符号')
+  })
+
+  it('returns empty for replies with no block signal at all', () => {
+    expect(markdownToRestrictedHtml('我来为你写一篇《大美中国》的文章。下面开始生成')).toBe('')
+    expect(markdownToRestrictedHtml('')).toBe('')
+  })
+
+  it('joins soft-wrapped lines without an ASCII gap after CJK text', () => {
+    const html = markdownToRestrictedHtml('# 题\n\n雪山连绵，\n江水奔流，\n向东而去。')
+    expect(html).toContain('<p>雪山连绵，江水奔流，向东而去。</p>')
   })
 })

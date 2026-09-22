@@ -84,3 +84,178 @@ function splitByBlockTags(text: string, openRe: RegExp, minBodyChars: number): S
   const prose = [before, after].filter(Boolean).join('\n\n')
   return { prose, body }
 }
+
+// ── Markdown 正文 → 受限 HTML(docx/pdf 兜底) ──
+// 弱模型常无视「docx 要受限 HTML」的契约、按 Markdown 写正文。用户要的是
+// word:拒绝会把类型逼成 md(错误提示里出现 md 字样即逃生门),重试又可能再写
+// Markdown — 所以就地转换,类型不动。只做契约内的结构与行内标记,嵌套列表、
+// Setext 标题等超集特性不支持(受限契约本来也表达不了)。
+
+/** 块级 Markdown 信号行:正文起点(其前的对话性开场白剥掉) */
+function isMarkdownBlockSignal(line: string): boolean {
+  const t = line.trim()
+  return (
+    /^#{1,6}\s/.test(t) ||
+    /^\s*[-*+]\s+/.test(line) ||
+    /^\s*\d+[.)]\s+/.test(line) ||
+    t.startsWith('>') ||
+    t.startsWith('```') ||
+    t.startsWith('|') ||
+    /^<toc\b/i.test(t)
+  )
+}
+
+function escapeHtmlText(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+/** 行内标记:图片丢弃、链接留文本、加粗/斜体/删除线、行内代码去壳 */
+function markdownInline(s: string): string {
+  return escapeHtmlText(s)
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*\n]+)\*/g, '<em>$1</em>')
+    .replace(/~~([^~]+)~~/g, '<s>$1</s>')
+    .replace(/`([^`]+)`/g, '$1')
+}
+
+/** 段内多行拼接:前行尾是 CJK 字符/全角标点时不补半角空格 */
+function joinFlowLines(parts: string[]): string {
+  let s = ''
+  for (const p of parts) s = s ? s + (/[\u3000-\u9fff\uff00-\uffef]$/.test(s) ? '' : ' ') + p : p
+  return s
+}
+
+function splitMdRow(line: string): string[] {
+  return line
+    .replace(/^\|/, '')
+    .replace(/\|$/, '')
+    .split('|')
+    .map((c) => c.trim())
+}
+
+/**
+ * Markdown 正文 → create_document 的受限 HTML 片段。从第一个块级信号行起
+ * 转换(其前的开场白丢弃);没有任何块级信号(纯对话文本)返回 '' — 调用方
+ * 按长度门槛拒绝。
+ */
+export function markdownToRestrictedHtml(md: string): string {
+  const lines = md.replace(/\r\n?/g, '\n').split('\n')
+  const start = lines.findIndex(isMarkdownBlockSignal)
+  if (start < 0) return ''
+  const out: string[] = []
+  let para: string[] = []
+  const flushPara = () => {
+    if (para.length) {
+      out.push(`<p>${markdownInline(joinFlowLines(para))}</p>`)
+      para = []
+    }
+  }
+  let i = start
+  while (i < lines.length) {
+    const line = lines[i]!
+    const t = line.trim()
+    if (!t) {
+      flushPara()
+      i++
+      continue
+    }
+    if (t.startsWith('```')) {
+      flushPara()
+      const buf: string[] = []
+      i++
+      while (i < lines.length && !lines[i]!.trim().startsWith('```')) {
+        buf.push(lines[i]!)
+        i++
+      }
+      i++ // 闭合围栏(或文末)
+      out.push(`<pre>${escapeHtmlText(buf.join('\n'))}</pre>`)
+      continue
+    }
+    // <toc> 直通(T3 目录域标记),围栏外的原样标签只放行这一个
+    if (/^<toc\b[^>]*\/>\s*$/.test(t) || /^<toc\b[^>]*>\s*<\/toc\s*>\s*$/.test(t)) {
+      flushPara()
+      out.push('<toc></toc>')
+      i++
+      continue
+    }
+    const heading = t.match(/^(#{1,6})\s+(.*)$/u)
+    if (heading) {
+      flushPara()
+      const level = Math.min(heading[1]!.length, 3)
+      out.push(`<h${level}>${markdownInline(heading[2]!)}</h${level}>`)
+      i++
+      continue
+    }
+    if (/^(?:-{3,}|\*{3,}|_{3,})$/.test(t)) {
+      // 水平线:受限契约没有对应物,吞掉
+      flushPara()
+      i++
+      continue
+    }
+    if (t.startsWith('|')) {
+      flushPara()
+      const rows: string[][] = []
+      while (i < lines.length && lines[i]!.trim().startsWith('|')) {
+        rows.push(splitMdRow(lines[i]!.trim()))
+        i++
+      }
+      // 分隔行(| --- | --- |)只用于确认表头,不产出行
+      const body = rows.filter((r) => !r.every((c) => /^:?-+:?$/.test(c) || c === ''))
+      const [head, ...rest] = body
+      const html: string[] = ['<table>']
+      if (head?.length) {
+        html.push('<thead><tr>')
+        for (const c of head) html.push(`<th>${markdownInline(c)}</th>`)
+        html.push('</tr></thead>')
+      }
+      if (rest.length) {
+        html.push('<tbody>')
+        for (const r of rest) {
+          html.push('<tr>')
+          for (const c of r) html.push(`<td>${markdownInline(c)}</td>`)
+          html.push('</tr>')
+        }
+        html.push('</tbody>')
+      }
+      html.push('</table>')
+      out.push(html.join(''))
+      continue
+    }
+    if (t.startsWith('>')) {
+      flushPara()
+      const buf: string[] = []
+      while (i < lines.length && /^\s*>\s?/.test(lines[i]!)) {
+        buf.push(lines[i]!.replace(/^\s*>\s?/, ''))
+        i++
+      }
+      out.push(`<blockquote><p>${markdownInline(joinFlowLines(buf))}</p></blockquote>`)
+      continue
+    }
+    if (/^\s*[-*+]\s+/.test(line)) {
+      flushPara()
+      const items: string[] = []
+      while (i < lines.length && /^\s*[-*+]\s+/.test(lines[i]!)) {
+        items.push(`<li>${markdownInline(lines[i]!.replace(/^\s*[-*+]\s+/, ''))}</li>`)
+        i++
+      }
+      out.push(`<ul>${items.join('')}</ul>`)
+      continue
+    }
+    if (/^\s*\d+[.)]\s+/.test(line)) {
+      flushPara()
+      const items: string[] = []
+      while (i < lines.length && /^\s*\d+[.)]\s+/.test(lines[i]!)) {
+        items.push(`<li>${markdownInline(lines[i]!.replace(/^\s*\d+[.)]\s+/, ''))}</li>`)
+        i++
+      }
+      out.push(`<ol>${items.join('')}</ol>`)
+      continue
+    }
+    para.push(t)
+    i++
+  }
+  flushPara()
+  return out.join('\n')
+}

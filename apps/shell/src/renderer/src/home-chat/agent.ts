@@ -7,7 +7,7 @@ import { kbDoc, kbSelectedIds, kbSearchGroups } from '@chatoffice/ui'
 import type { MediaCapabilityFlags } from '@chatoffice/agent-core'
 import { buildMcpToolDefs, mcpSystemSection } from './mcp-tools'
 import type { McpToolBinding } from './mcp-tools'
-import { extractDocumentBody } from './doc-body'
+import { extractDocumentBody, markdownToRestrictedHtml } from './doc-body'
 
 /** everything the home agent needs from the host (window.chatOffice on desktop, shims on web) */
 export interface HomeAgentBridge {
@@ -51,6 +51,9 @@ export interface HomeAgentBridge {
     method: string
     error?: string
   }>
+  /** live probe: a usable search backend resolves (keyed provider configured or
+   *  the keyless DuckDuckGo fallback reachable) — absent = never gate web_search */
+  searchCapabilities?(): Promise<{ search: boolean }>
   generateImage?: (op: {
     prompt: string
     aspectRatio?: string
@@ -124,8 +127,8 @@ const CREATE_DOC_TOOL = {
   name: 'create_document',
   description:
     'Create a new document and open it in a new tab. ' +
-    'For docx/md/html/pdf: write the FULL body as your reply text FIRST, then call this tool — your reply text becomes the file content verbatim ' +
-    '(a conversational preamble like "我来为你写…" / "Sure, here is…" is NOT a body; only the document markup counts). ' +
+    'For docx/md/html/pdf: write the FULL body as your reply text FIRST, then call this tool — your reply text becomes the file content ' +
+    '(a conversational preamble like "我来为你写…" / "Sure, here is…" is stripped; for docx/pdf a restricted HTML fragment is preferred, plain Markdown is auto-converted). ' +
     'For xlsx/pptx: these create blank files (no body needed); just call the tool with title and type.',
   inputSchema: {
     type: 'object',
@@ -345,7 +348,7 @@ Never stall by asking for details: when something is unspecified, make a reasona
 
 ## Working with existing files
 - search_files locates files from recent/starred/project lists; if it finds nothing, use system_search to scan the user's entire computer (Documents, Desktop, Downloads).
-- web_search answers questions that need current or external knowledge; cite the source URL when you use its results.
+- Answer from your own knowledge first; call web_search only for facts you cannot reliably know (current news, dates, prices, versions, locale-specific facts) and cite the source URL when you use its results.
 - generate_image draws an image with the user's default image model and shows it in the conversation; use it whenever the user asks for a picture or illustration (detailed English prompt).
 - system_search searches the whole computer for document files (docx, xlsx, pptx, md, html, pdf). Use it when the user asks to "search the computer" or when search_files returns no results.
 - read_document reads a file's text (page long files with offset); open_document opens a file in its editor tab.
@@ -364,13 +367,60 @@ const MIN_DOC_BODY_CHARS = 50
 /**
  * create_document 以「回复即正文」为契约,但模型常先写一段对话性开场白
  * (「我来为你写…下面开始生成」)就调工具——开场白原样落盘便成了整份文档。
- * 门槛挡不住百来字的开场白,所以 docx/pdf 在落盘前按块级 HTML 标签提取正文:
- * 提取到 → 剥掉正文前的开场白;提取不到 → 拒绝并让模型先写正文再重试。
+ * 门槛挡不住百来字的开场白,所以 docx/pdf 在落盘前做两级归一:
+ * ①回复里有块级 HTML 标签 → 提取,剥掉正文前的开场白;
+ * ②没有标签但有 Markdown 块级信号 → 就地转受限 HTML(用户要 word 时模型
+ *   常无视契约按 Markdown 写——拒绝会把类型逼成 md,转换保住类型与产物);
+ * ③两者皆无(纯对话文本) → 拒绝并让模型先写正文再重试。
  */
 const DOC_BODY_CONTRACT_HINT =
   'Your reply so far is conversational preamble, not a document body — nothing was written into the file. ' +
-  'Write the FULL document body as your reply text now: docx/pdf want a restricted HTML fragment (<h1>-<h3>, <p>, <ul>/<ol>/<li>, <table>, <blockquote>, <strong>/<em>); ' +
-  'md wants plain Markdown source. Then call create_document again with the same title and type. The body itself must contain no chat preamble.'
+  'Write the FULL document body as your reply text now — a restricted HTML fragment (<h1>-<h3>, <p>, <ul>/<ol>/<li>, <table>, <blockquote>, <strong>/<em>) — then call create_document again. ' +
+  'Keep the SAME title and type the user asked for; never switch the document type because of this error.'
+
+/** 历史回溯用:单段文本按目标类型归一成正文,带块级信号要求;空串 = 不合格 */
+function normalizeDocBody(docType: DocType, text: string): string {
+  const trimmed = text.trim()
+  if (docType === 'docx' || docType === 'pdf') {
+    return extractDocumentBody(trimmed) || markdownToRestrictedHtml(trimmed)
+  }
+  // md/html 契约为全文直传;回溯历史时必须有块级信号,否则任意一段
+  // 聊天回复(>50 字)都会被误当 md 正文
+  const long = trimmed.replace(/\s/g, '').length >= MIN_DOC_BODY_CHARS
+  if (docType === 'md') return long && markdownToRestrictedHtml(trimmed) ? trimmed : ''
+  return long && /<\/html\s*>|<body\b/i.test(trimmed) ? trimmed : ''
+}
+
+/**
+ * 弱模型常把「写正文」和「调 create_document」拆成两轮:先空着正文调工具
+ * (被拒),下一轮补写正文后却不再调工具——运行就此死掉,文档永远不创建
+ * (「生成文档后打不开编辑器」的根因)。所以正文来源是「当前轮 + 本次运行
+ * 的助手历史」:当前轮按原契约(直传 + 长度门槛;docx/pdf 归一),不够格再
+ * 倒序回溯历史。系统注入的合成消息([System]/[Summary 开头)不是模型正文,
+ * 跳过。
+ */
+function resolveDocBody(
+  docType: DocType,
+  turnText: string,
+  transcript: Array<{ role: string; text?: string }>,
+): string {
+  const trimmed = turnText.trim()
+  const current =
+    docType === 'docx' || docType === 'pdf'
+      ? extractDocumentBody(trimmed) || markdownToRestrictedHtml(trimmed)
+      : trimmed
+  if (current.replace(/\s/g, '').length >= MIN_DOC_BODY_CHARS) return current
+  const history = [...transcript]
+    .filter((m) => m.role === 'assistant' && typeof m.text === 'string')
+    .map((m) => m.text as string)
+    .filter((t) => !t.startsWith('[System]') && !t.startsWith('[Summary of earlier'))
+    .reverse()
+  for (const candidate of history) {
+    const body = normalizeDocBody(docType, candidate)
+    if (body.replace(/\s/g, '').length >= MIN_DOC_BODY_CHARS) return body
+  }
+  return ''
+}
 
 /**
  * Appended to the system prompt while a session is in plan mode: the agent
@@ -420,7 +470,6 @@ const HOME_TOOLS: AgentToolDef[] = [
   READ_DOCUMENT_TOOL,
   OPEN_DOCUMENT_TOOL,
   UPDATE_TASKS_TOOL,
-  WEB_SEARCH_TOOL,
 ]
 
 /** external MCP tools surfaced to the skill (built-in list + namespaced extras) */
@@ -446,6 +495,8 @@ function homeSkill(
     mcp: McpSkillState
     /** live predicate: a default image-gen model is configured (settings-driven) */
     imageGenReady: () => boolean
+    /** live predicate: a usable search backend resolves (web_search tool gate) */
+    searchReady: () => boolean
     /** live per-kind media capability flags (unified ai:media-capabilities probe) */
     mediaFlags: () => MediaCapabilityFlags | null
     /** generated image display channel (tool timeline card) */
@@ -464,6 +515,10 @@ function homeSkill(
     },
     get tools() {
       const imageGen = bridge.generateImage && state.imageGenReady() ? [GENERATE_IMAGE_TOOL] : []
+      // web_search 只在搜索通道可用时挂进工具箱:通道不可用时模型自然全程用
+      // 自身知识回答,不再撞上必失败的调用(优雅降级优先于报错重试)
+      const webSearchTool =
+        bridge.webSearch && state.searchReady() ? [WEB_SEARCH_TOOL] : []
       const flags = state.mediaFlags()
       const media: AgentToolDef[] = []
       if (flags?.video && bridge.mediaVideo) media.push(GENERATE_VIDEO_TOOL)
@@ -472,7 +527,7 @@ function homeSkill(
       if (flags?.tts && bridge.mediaTts) media.push(GENERATE_SPEECH_TOOL)
       // KB tools join only while libraries are selected in the composer
       const kb = kbSelectedIds().length > 0 ? [KB_SEARCH_TOOL, KB_READ_DOC_TOOL] : []
-      return [...HOME_TOOLS, ...imageGen, ...media, ...kb, ...state.mcp.tools()]
+      return [...HOME_TOOLS, ...webSearchTool, ...imageGen, ...media, ...kb, ...state.mcp.tools()]
     },
     async executeTool(call) {
       const mcpResult = await state.mcp.call(call.name, call.input)
@@ -536,12 +591,9 @@ function homeSkill(
             ['docx', 'xlsx', 'pptx', 'md', 'html', 'pdf'].includes(rawType) ? rawType : 'docx'
           ) as DocType
           const isBlank = docType === 'xlsx' || docType === 'pptx'
-          const reply = state.turnText().trim()
-          // docx/pdf 的正文契约是受限 HTML 片段——块级开标签是可信的正文起点,
-          // 据此剥掉开场白;md(纯 Markdown 源)与 html(完整 HTML 文档)没有
-          // 可靠的块级信号,保持全文原样
-          const body =
-            docType === 'docx' || docType === 'pdf' ? (extractDocumentBody(reply) ?? '') : reply
+          // 正文来源:当前轮文本,不够格时回溯本次运行的助手历史(倒序),
+          // 承接「先空调工具被拒、下一轮才补写正文」的拆轮写法
+          const body = resolveDocBody(docType, state.turnText(), state.transcript())
           if (!isBlank && body.replace(/\s/g, '').length < MIN_DOC_BODY_CHARS) {
             return {
               output: `${texts.docBodyMissing}\n${DOC_BODY_CONTRACT_HINT}`,
@@ -670,10 +722,13 @@ function homeSkill(
           }
           const maxResults = Math.min(10, Math.max(1, Number(call.input.maxResults) || 6))
           const r = await bridge.webSearch(query, maxResults)
-          // a backend failure must not read as "no results" — the model would fabricate conclusions
+          // a backend failure must not read as "no results" — the model would fabricate conclusions;
+          // the feedback orders a knowledge fallback so one dead backend never dead-ends the turn
           if (r.error) {
             return {
-              output: `web search failed (service error, not an empty result — you may retry): ${r.error}`,
+              output:
+                `web search failed (${r.error}). Search is unavailable right now — retry at most once, ` +
+                'then answer from your own knowledge and clearly tell the user the information may be outdated or unverified.',
               isError: true,
               summary: 'web_search',
             }
@@ -852,6 +907,21 @@ function homeSkill(
     verifyResponse(finalText, executed) {
       const created = executed.some((c) => c.name === 'create_document' && c.ok)
       if (created) return null
+      // 死胡同修复:create_document 曾被拒(正文缺失),模型随后把正文补在了
+      // 末轮回复里却不再调工具 → 强制补一轮工具调用(正文工具会从历史里取)
+      const attemptedFailed = executed.some((c) => c.name === 'create_document' && !c.ok)
+      if (
+        attemptedFailed &&
+        (extractDocumentBody(finalText) ||
+          markdownToRestrictedHtml(finalText) ||
+          finalText.trim().replace(/\s/g, '').length >= MIN_DOC_BODY_CHARS)
+      ) {
+        return (
+          'Your earlier create_document call failed because the body was not written yet. ' +
+          'The full document body is now in your reply — call create_document again with the SAME title and type as that earlier attempt. ' +
+          'Do not rewrite the body; the tool reads it from your reply. Just call the tool.'
+        )
+      }
       // claimed creation without a successful tool call → force the real call once
       const claimsCreate =
         /(已创建|已生成|已建立|create(d)? the document|document (has been|is) created)/i.test(
@@ -933,6 +1003,8 @@ export class HomeAgent {
   private pendingGenImage: string | null = null
   /** cached capability probe: a default image-gen model resolves from settings */
   private imageGenReady = false
+  /** cached search-backend probe (web_search tool gate); true until a probe says otherwise */
+  private searchReadyFlag = true
   private mediaFlags: MediaCapabilityFlags | null = null
   /** busy from send() until the run settles; loop.busy alone lags behind the
    *  pre-run awaits (attachment reads, MCP refresh) and would leave a gap
@@ -970,6 +1042,7 @@ export class HomeAgent {
           call: (wireName, input) => this.callMcpTool(wireName, input),
         },
         imageGenReady: () => this.imageGenReady,
+        searchReady: () => this.searchReadyFlag,
         mediaFlags: () => this.mediaFlags,
         onGeneratedImage: (dataUrl) => {
           this.pendingGenImage = dataUrl
@@ -1043,6 +1116,18 @@ export class HomeAgent {
     // the enabled servers' tools (start() re-refreshes before every run)
     if (this.bridge.listMcpTools) void this.ensureMcpTools()
     void this.probeMediaFlags()
+    this.probeSearch()
+  }
+
+  /** warm the web_search gate (constructor + refreshed before every run) */
+  private probeSearch(): void {
+    if (!this.bridge.searchCapabilities) return
+    void this.bridge.searchCapabilities().then(
+      (r) => {
+        this.searchReadyFlag = r.search
+      },
+      () => {},
+    )
   }
 
   /** warm the per-kind capability flags (constructor + refreshed before every run) */
@@ -1196,6 +1281,15 @@ export class HomeAgent {
           this.imageGenReady = await this.bridge.imageGenReady()
         } catch {
           this.imageGenReady = false
+        }
+      }
+      // web_search 门控(搜索通道可用性):无 key 且免 key 兜底不可达时收起
+      // 工具,模型用自身知识作答 —— 配好 key 后下一次发送即刻恢复
+      if (this.bridge.searchCapabilities) {
+        try {
+          this.searchReadyFlag = (await this.bridge.searchCapabilities()).search
+        } catch {
+          /* keep the last known gate state */
         }
       }
       this.loop.run(instruction, images)

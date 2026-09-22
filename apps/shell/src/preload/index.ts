@@ -476,6 +476,10 @@ const homeApi: HomeApi = {
       error?: string
     }
   },
+  // 搜索通道可用性探测（web_search 工具门控：key 平台已配或免 key 兜底可达）
+  async searchCapabilities() {
+    return (await ipcRenderer.invoke('ai:search-capabilities')) as { search: boolean }
+  },
   async mediaGenerate(req: {
     profileId?: string
     modelId?: string

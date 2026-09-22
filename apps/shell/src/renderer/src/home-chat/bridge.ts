@@ -34,6 +34,12 @@ export function createHomeChatBridge(
     aiStream: (request) => window.chatOffice.aiStream(request),
     aiStreamCancel: (requestId) => window.chatOffice.aiStreamCancel(requestId),
     onAiStream: (listener) => window.chatOffice.onAiStream(listener),
+    ...(window.chatOffice.searchCapabilities
+      ? {
+          searchCapabilities: () =>
+            window.chatOffice.searchCapabilities!() as Promise<{ search: boolean }>,
+        }
+      : {}),
     createDocument: (request) => window.chatOffice.createDocument({ ...request, dock: false }),
     readAttachment: (path, offset, maxChars) =>
       window.chatOffice.readAttachment(path, offset, maxChars),
