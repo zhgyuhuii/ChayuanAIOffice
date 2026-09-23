@@ -1,7 +1,7 @@
 {
   "name": "@chatoffice/shell",
   "productName": "ChaAI Office",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "license": "Apache-2.0",
   "homepage": "https://github.com/zhgyuhuii/ChayuanAIOffice",
   "private": true,

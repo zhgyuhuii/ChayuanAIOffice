@@ -39,6 +39,56 @@ import {
   verifySerial,
 } from './purchase-codec'
 
+// ── 同机 OS 侧授权联动（2026-09-23，chayuan-harness docs/desktop-28-fixes-plan.md M2）──
+// 察元AI OS（harness）购买后，本机 Office 不再显示激活/提醒：只读 OS 侧
+// userData/purchase.json，activation 未过期即视为已授权。两侧机器指纹同
+// 算法（sha256(IOPlatformUUID)[:16]），串码 OS|OFFICE 位单向覆盖——OS 端
+// 激活即全家桶授权（纯读取，绝不写对方文件；60s 缓存防高频读盘）。
+let osEntitlementCache: { at: number; entitled: boolean } | null = null
+
+function osPurchaseStateCandidates(): string[] {
+  const home = homedir()
+  const out: string[] = []
+  const dataRoot = process.env.CHATOP_DATA_ROOT
+  if (dataRoot) out.push(join(dataRoot, 'shell', 'purchase.json'))
+  if (process.platform === 'darwin') {
+    out.push(join(home, 'Library', 'Application Support', '察元AI OS', 'purchase.json'))
+    out.push(join(home, 'Library', 'Application Support', 'chatop', 'purchase.json'))
+  } else if (process.platform === 'win32') {
+    const appData = process.env.APPDATA ?? join(home, 'AppData', 'Roaming')
+    out.push(join(appData, '察元AI OS', 'purchase.json'))
+    out.push(join(appData, 'chatop', 'purchase.json'))
+  } else {
+    out.push(join(home, '.config', '察元AI OS', 'purchase.json'))
+    out.push(join(home, '.config', 'chatop', 'purchase.json'))
+  }
+  return out
+}
+
+/** True when the harness OS on this machine holds an unexpired activation. */
+export function readOsSideEntitlement(now = Date.now()): boolean {
+  if (osEntitlementCache !== null && now - osEntitlementCache.at < 60_000) return osEntitlementCache.entitled
+  let entitled = false
+  for (const file of osPurchaseStateCandidates()) {
+    try {
+      if (!existsSync(file)) continue
+      const state = JSON.parse(readFileSync(file, 'utf8')) as { activation?: { expireAt?: string } | null }
+      const expireAt = state?.activation?.expireAt
+      if (state?.activation != null && typeof expireAt === 'string' && Date.parse(expireAt) > now) {
+        entitled = true
+        break
+      }
+    } catch { /* 单个候选损坏/不可读不连坐 */ }
+  }
+  osEntitlementCache = { at: now, entitled }
+  return entitled
+}
+
+/** Effective entitlement = own activation OR the OS-side purchase (M2). */
+export function isEntitledEffective(state: Parameters<typeof isEntitled>[0], now = Date.now()): boolean {
+  return isEntitled(state, now) || readOsSideEntitlement(now)
+}
+
 /** First toast lands 30 minutes after launch, then every 30 minutes (Q5). */
 const FIRST_REMIND_MS = 30 * 60_000
 const REMIND_EVERY_MS = 30 * 60_000
@@ -235,7 +285,7 @@ export async function purchaseSnapshot(state = loadPurchaseState()): Promise<Pur
     firstRunAt: state.firstRunAt,
     freeUntil: new Date(freeUntil).toISOString(),
     freeDaysLeft,
-    entitled: isEntitled(state),
+    entitled: isEntitledEffective(state),
     expireAt: state.activation?.expireAt ?? null,
     activatedAt: state.activation?.activatedAt ?? null,
     serialMasked: state.activation ? maskSerial(state.activation.serial) : null,
@@ -253,13 +303,13 @@ let started = false
  * free-period wait; entitlement and the once-per-day gate still hold. */
 export function pageDueNow(state: PurchaseState, force: boolean, now = new Date()): boolean {
   return force
-    ? !isEntitled(state, now.getTime()) && state.pageShownDate !== localDateStr(now)
+    ? !isEntitledEffective(state, now.getTime()) && state.pageShownDate !== localDateStr(now)
     : pageDue(state, now)
 }
 
 /** remindDue with the FORCE_DUE test hook applied (entitlement still holds). */
 export function remindDueNow(state: PurchaseState, force: boolean, now = Date.now()): boolean {
-  return force ? !isEntitled(state, now) : remindDue(state, now)
+  return force ? !isEntitledEffective(state, now) : remindDue(state, now)
 }
 
 let dbgConsoleWired = false
@@ -331,7 +381,7 @@ export function startPurchaseScheduler(targetWindow: () => BrowserWindow | null)
   const kickTimer = FORCE_DUE
     ? setTimeout(() => {
         const cur = loadPurchaseState()
-        if ((isEntitled(cur) && !SHOW_WHEN_ENTITLED) || targetWindow() === null) return
+        if ((isEntitledEffective(cur) && !SHOW_WHEN_ENTITLED) || targetWindow() === null) return
         fire('open-page')
         savePurchaseState({ ...cur, pageShownDate: localDateStr(new Date()) })
       }, 2500)

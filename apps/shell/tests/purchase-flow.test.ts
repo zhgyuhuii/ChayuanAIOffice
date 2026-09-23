@@ -7,7 +7,7 @@
  * customer can actually hit (wrong machine, wrong product, bad input,
  * missing key) and the key-resolution order.
  */
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createHmac } from 'node:crypto'
@@ -41,6 +41,8 @@ const {
   machineFingerprint,
   purchaseSnapshot,
   registerPurchaseIpc,
+  readOsSideEntitlement,
+  isEntitledEffective,
 } = await import('../src/main/purchase')
 
 const DAY = 86400_000
@@ -262,3 +264,38 @@ describe('purchase flow (registerPurchaseIpc + state file)', () => {
     expect(Date.now() - Date.parse(s.firstRunAt)).toBeLessThan(5000)
   })
 })
+
+describe('OS-side entitlement linkage (M2: OS 购买覆盖同机 Office)', () => {
+  const realNow = Date.now()
+  afterEach(() => { vi.setSystemTime(realNow) })
+
+  it('reads the harness OS purchase.json candidates and silences reminders', async () => {
+    const sandbox = mkdtempSync(join(tmpdir(), 'os-ent-'))
+    process.env.CHATOP_DATA_ROOT = sandbox
+    const { isEntitledEffective: eff, readOsSideEntitlement: readOs } = await import('../src/main/purchase')
+    const state = loadPurchaseState()
+    // 无 OS 激活文件：不授权
+    expect(readOs()).toBe(false)
+    // 写入一份 OS 侧激活（未过期）
+    mkdirSync(join(sandbox, 'shell'), { recursive: true })
+    writeFileSync(join(sandbox, 'shell', 'purchase.json'), JSON.stringify({
+      firstRunAt: new Date(Date.now() - 100 * DAY).toISOString(),
+      activation: { serial: 'XXXXX•••••XXXXX', days: 365, activatedAt: new Date().toISOString(), expireAt: new Date(Date.now() + 200 * DAY).toISOString(), modules: PRODUCT_BIT_OS },
+    }), 'utf8')
+    vi.setSystemTime(Date.now() + 61_000) // 翻过 60s 读缓存
+    expect(readOs()).toBe(true)
+    expect(eff(state)).toBe(true)
+    // 到期 → 恢复本地免费期语义（不再联动）
+    const expired = join(sandbox, 'shell', 'purchase.json')
+    writeFileSync(expired, JSON.stringify({
+      firstRunAt: new Date(Date.now() - 400 * DAY).toISOString(),
+      activation: { serial: 'XXXXX•••••XXXXX', days: 30, activatedAt: new Date(Date.now() - 100 * DAY).toISOString(), expireAt: new Date(Date.now() - 50 * DAY).toISOString(), modules: PRODUCT_BIT_OS },
+    }), 'utf8')
+    // 缓存 60s 内仍为旧值 → 翻转时间强制重读
+    vi.setSystemTime(Date.now() + 61_000)
+    expect(readOs()).toBe(false)
+    rmSync(sandbox, { recursive: true, force: true })
+    delete process.env.CHATOP_DATA_ROOT
+  })
+})
+
