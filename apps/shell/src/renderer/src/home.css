@@ -3046,6 +3046,13 @@ body.sidebar-resizing {
   white-space: nowrap;
 }
 
+.chat-head-btn.chat-head-icon {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  justify-content: center;
+}
+
 .chat-head-btn:hover {
   background: var(--surface-subtle);
   color: var(--text);

@@ -1244,12 +1244,14 @@ export function ChatPanel({
         <div className="chat-head-actions">
           <div className="chat-sessions-wrap" ref={menuWrapRef}>
             <button
-              className="chat-head-btn"
+              className="chat-head-btn chat-head-icon"
               aria-haspopup="menu"
               aria-expanded={menuOpen}
+              aria-label={t('chatHistory')}
+              title={t('chatHistory')}
               onClick={() => setMenuOpen((o) => !o)}
             >
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <circle cx="8" cy="8" r="6.2" stroke="currentColor" strokeWidth="1.3" />
                 <path
                   d="M8 4.8V8l2.2 1.6"
@@ -1258,7 +1260,6 @@ export function ChatPanel({
                   strokeLinecap="round"
                 />
               </svg>
-              {t('chatHistory')}
             </button>
             {menuOpen && (
               <div className="chat-sessions" role="menu">
@@ -1387,8 +1388,13 @@ export function ChatPanel({
               </div>
             )}
           </div>
-          <button className="chat-head-btn primary" onClick={newChat}>
-            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <button
+            className="chat-head-btn chat-head-icon primary"
+            aria-label={t('chatNew')}
+            title={t('chatNew')}
+            onClick={newChat}
+          >
+            <svg width="16" height="16" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path
                 d="M7 1v12M1 7h12"
                 stroke="currentColor"
@@ -1396,7 +1402,6 @@ export function ChatPanel({
                 strokeLinecap="round"
               />
             </svg>
-            {t('chatNew')}
           </button>
         </div>
       </header>
