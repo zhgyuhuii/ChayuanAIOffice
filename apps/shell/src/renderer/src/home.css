@@ -4173,17 +4173,22 @@ body.sidebar-resizing {
   container-type: inline-size;
   /* 滚动预算（2026-09-23 窄窗遮挡修复）：justify-content:center 在内容超高时
      会向两端对称溢出（广场/页脚压住输入框、问候语顶部裁切）——改为顶对齐
-     + 首尾 margin-block:auto 弹性居中 + 容器自身可滚 */
+     + 容器自身可滚 */
   justify-content: flex-start;
   overflow-y: auto;
 }
 
-.chat-landing.welcome .chat-greet {
-  margin-top: auto;
+/* 黄金分割纵向构图（2026-09-23 用户明令）：首尾两个 flex 占位按 38.2 : 61.8
+   分配剩余空白——问候语落在上 38.2% 黄金线上（有空间时构图成立；内容超高时
+   占位 flex-shrink 收缩到 0，滚动预算不受影响） */
+.chat-landing.welcome::before {
+  content: '';
+  flex: 38 1 0;
 }
 
-.chat-landing.welcome .chat-landing-footer {
-  margin-bottom: auto;
+.chat-landing.welcome::after {
+  content: '';
+  flex: 62 1 0;
 }
 
 .chat-greet .welcome-sub {
