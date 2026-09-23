@@ -74,6 +74,7 @@ import {
   windowMenuTemplate,
   aboutMenuItem,
   checkUpdatesMenuItem,
+  displayVersion,
   setUpdateCheckInvoker,
   installRendererProtocol,
 } from '@chatoffice/electron-utils'
@@ -4241,7 +4242,8 @@ function registerHomeIpc(): void {
     clearCloudProjectsStore(cloudProjectsStorePath())
   })
 
-  ipcMain.handle(HOME_CHANNELS.getAppVersion, (): string => app.getVersion())
+  // 版本号规范：设置页关于展示六段「自有版本.上游版本」（display-version 拼接）
+  ipcMain.handle(HOME_CHANNELS.getAppVersion, (): string => displayVersion())
 
   // ── Feedback channel (aidooo.com): renderer CSP blocks cross-origin fetch,
   //    so probe/upload/submit are proxied here. Signing secret + app identity

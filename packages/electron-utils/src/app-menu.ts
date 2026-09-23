@@ -575,7 +575,8 @@ export function aboutMenuItem(labels: AppMenuLabels): MenuItemConstructorOptions
     label: labels.about,
     click: async () => {
       const { app, dialog, clipboard } = await import('electron')
-      const version = app.getVersion()
+      const { displayVersion } = await import('./display-version')
+      const version = displayVersion()
       const canCheck = updateCheckInvoker !== null
       const { response } = await dialog.showMessageBox({
         type: 'info',
