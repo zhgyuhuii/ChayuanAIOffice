@@ -115,7 +115,12 @@ import { textOutlineCssValue } from './editor/text-outline'
 import { AiAskPopover } from './components/AiAskPopover'
 import { EDIT_QUEUE_MAX, selectionForAnchor, type DocsEditQueueItem } from './ai/edit-queue'
 import { addQueueAnchor, clearQueueAnchors, removeQueueAnchors } from './editor/ai-queue-anchors'
-import { asianCharCount, countWords, nonAsianWordCount } from './word-count'
+import {
+  asianCharCount,
+  countWords,
+  documentTextForWordCount,
+  nonAsianWordCount,
+} from './word-count'
 import { CommentsPanel } from './components/CommentsPanel'
 import { EquationModal } from './components/EquationModal'
 import { HeaderFooterArea } from './components/HeaderFooterArea'
@@ -401,7 +406,7 @@ const EMPTY_BLOCKS: Block[] = []
 
 // O(doc) derivations cached by PM doc reference: caret moves and unrelated
 // state updates reuse the last result instead of re-walking the whole document
-const wordCountOfDoc = cachedByDoc((d) => countWords(d.textContent))
+const wordCountOfDoc = cachedByDoc((d) => countWords(documentTextForWordCount(d)))
 const revisionCountOfDoc = cachedByDoc((d) => collectRevisions(d).length)
 
 /**
@@ -4855,7 +4860,7 @@ export function App() {
   /** Word word-count dialog: pages/lines estimated from the current layout */
   const openStats = useCallback(() => {
     if (!editor) return
-    const text = editor.state.doc.textContent
+    const text = documentTextForWordCount(editor.state.doc)
     const pm = document.querySelector('.ProseMirror')
     const zoomFactor = zoom / 100
     let lines = 0
@@ -4871,7 +4876,7 @@ export function App() {
     // inside table cells (descendants, not just top-level children)
     let paragraphs = 0
     editor.state.doc.descendants((node) => {
-      if (node.isTextblock && node.textContent.trim() !== '') paragraphs++
+      if (node.isTextblock && documentTextForWordCount(node).trim() !== '') paragraphs++
       return true
     })
     setStats({
