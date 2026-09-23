@@ -34,6 +34,17 @@ process.env.ELECTRON_BUILDER_BINARIES_MIRROR ??=
   'https://npmmirror.com/mirrors/electron-builder-binaries/'
 
 const { execFileSync } = require('node:child_process')
+
+// rpm 目标需要宿主装 rpmbuild（mac/多数 Linux 缺省没有）——缺席时自动跳过
+// rpm 目标而不是让整条 dist:linux 失败（AppImage/deb 不依赖它）
+function hasRpmbuild() {
+  try {
+    execFileSync('rpmbuild', ['--version'], { stdio: 'ignore' })
+    return true
+  } catch {
+    return false
+  }
+}
 const { copyFileSync, existsSync, rmSync, writeFileSync } = require('node:fs')
 const { join } = require('node:path')
 
@@ -516,7 +527,7 @@ const config = {
     // artifactName pins the AppImage name (deb/rpm override with their own);
   // all target names are space-free per user rule (2026-09-23)
   artifactName: 'ChaAIOffice-${version}-${arch}.${ext}',
-  // AppImage (self-contained, any distro) + deb (apt install, pulls in the
+
     // GTK/NSS runtime deps) + rpm (dnf/zypper install on Fedora / RHEL /
     // openSUSE). Default artifact names are kept on purpose —
     // ChatOffice-<v>.AppImage / chatoffice_<v>_amd64.deb — because the public
@@ -525,7 +536,7 @@ const config = {
     target: [
       { target: 'AppImage', arch: ['x64'] },
       { target: 'deb', arch: ['x64'] },
-      { target: 'rpm', arch: ['x64'] },
+      ...(hasRpmbuild() ? [{ target: 'rpm', arch: ['x64'] }] : []),
     ],
     // deb control metadata; values match the manually published 0.5.149 deb
     // so apt sees the new packages as the same lineage. Homepage comes from
