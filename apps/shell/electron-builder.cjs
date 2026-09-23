@@ -26,6 +26,13 @@
  * users can still install local font files.
  */
 
+// electron-builder 在打包期要从 GitHub 下载 Electron zip 与 fpm/7zip 等工具，
+// 国内直连 GitHub 常见超时/重置——默认走 npmmirror 镜像，让 `npm run dist:*`
+// 不带任何环境变量即可工作。CI 或特殊网络可用同名环境变量覆盖（设为官方地址）。
+process.env.ELECTRON_MIRROR ??= 'https://npmmirror.com/mirrors/electron/'
+process.env.ELECTRON_BUILDER_BINARIES_MIRROR ??=
+  'https://npmmirror.com/mirrors/electron-builder-binaries/'
+
 const { execFileSync } = require('node:child_process')
 const { existsSync, rmSync, writeFileSync } = require('node:fs')
 const { join } = require('node:path')
