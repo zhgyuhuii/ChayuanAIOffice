@@ -53,3 +53,4 @@ _scratch-*
 
 # Chart example harvest cache (echarts-examples tarball + extract)
 /.tmp/
+apps/shell/build/license-key.txt
