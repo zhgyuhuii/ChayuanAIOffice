@@ -34,14 +34,12 @@ describe('mcp http hardening', () => {
     const { mcpCommand } = await import('../src/commands/mcp')
     const { parseArgs } = await import('../src/args')
     await expect(
-      mcpCommand.run(
-        parseArgs(['mcp', 'serve', '--http', '8080', '--token', '']),
-        {
-          cwd: process.cwd(),
-          env: {},
-          log: () => {},
-        } as Parameters<typeof mcpCommand.run>[1],
-      ),
+      mcpCommand.run(parseArgs(['mcp', 'serve', '--http', '8080', '--token', '']), {
+        cwd: process.cwd(),
+        env: {},
+        log: () => {},
+        warn: () => {},
+      } as Parameters<typeof mcpCommand.run>[1]),
     ).rejects.toThrow(/--token needs a non-empty value/)
   })
 
