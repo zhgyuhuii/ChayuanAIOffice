@@ -4162,10 +4162,11 @@ body.sidebar-resizing {
 }
 
 /* ── Welcome landing: product family showcase ───────────────────────────
- * Four zones per consensus: greeting, five product cards, plaza badge
- * strip, upgraded footer (dual QR + star). Entrance/exit are staggered
- * keyframes (reverse-domino in, domino out); the strip reflows to a single
- * column under 920px of *container* width (the chat pane collapses). */
+ * Four zones per consensus: greeting, six uniform product cards (the plaza
+ * merged as the 6th, 2026-09-23), upgraded footer (dual QR + star).
+ * Entrance/exit are staggered keyframes (reverse-domino in, domino out);
+ * the card grid steps 6/3/2/1 columns by *container* width (>=1200 / 640-1023
+ * / 400-639 / <400), chips hidden only on the 6-column tier. */
 
 .chat-landing.welcome {
   gap: 4px;
@@ -4195,10 +4196,56 @@ body.sidebar-resizing {
 }
 
 .welcome-cards {
-  display: flex;
+  display: grid;
   gap: 12px;
-  width: min(880px, 100%);
+  width: 100%;
   margin: 26px 0 14px;
+  /* 严格 6/3/2/1 四档（2026-09-23 共识）：不用 auto-fit，避免 5+1/4+2 失衡过渡态 */
+  grid-template-columns: repeat(6, 1fr);
+}
+
+/* 一行六卡时卡片只有 ~180px：隐藏 chips，只留 图标+名称+描述（渐进披露） */
+.welcome-cards .welcome-card-chips {
+  display: none;
+}
+
+.welcome-card.plaza .welcome-card-icon {
+  border-radius: 50%;
+}
+
+.welcome-card.plaza .welcome-card-go {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* 广场徽章降级为彩色 chips（沿用原广场徽章四色） */
+.welcome-chip.pb0 {
+  background: rgb(22 119 255 / 12%);
+  color: #1667ff;
+}
+
+.welcome-chip.pb1 {
+  background: rgb(82 196 26 / 14%);
+  color: #3da10f;
+}
+
+.welcome-chip.pb2 {
+  background: rgb(250 140 22 / 14%);
+  color: #d97a06;
+}
+
+.welcome-chip.pb3 {
+  background: rgb(114 46 209 / 12%);
+  color: #7a2ed1;
 }
 
 .welcome-card {
@@ -4293,106 +4340,6 @@ body.sidebar-resizing {
   box-shadow: none;
 }
 
-/* plaza badge strip: wider than the cards, one row (icon | title/desc | badges | cta) */
-.welcome-plaza {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: min(880px, 100%);
-  padding: 13px 18px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--surface);
-  color: var(--text);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  transition:
-    border-color 0.18s ease,
-    box-shadow 0.18s ease;
-}
-
-.welcome-plaza:hover {
-  border-color: var(--accent);
-  box-shadow: 0 4px 14px rgb(15 127 255 / 10%);
-}
-
-.welcome-plaza-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-
-.welcome-plaza-main {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.welcome-plaza-name {
-  font-size: 13.5px;
-  font-weight: 650;
-}
-
-.welcome-plaza-desc {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.welcome-plaza-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-left: auto;
-}
-
-.welcome-plaza-badge {
-  padding: 2.5px 9px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-/* one muted hue per resource kind — tinted, not loud, to stay behind the cards */
-.welcome-plaza-badge.b0 {
-  background: rgb(22 119 255 / 12%);
-  color: #1667ff;
-}
-
-.welcome-plaza-badge.b1 {
-  background: rgb(82 196 26 / 14%);
-  color: #3da10f;
-}
-
-.welcome-plaza-badge.b2 {
-  background: rgb(250 140 22 / 14%);
-  color: #d97a06;
-}
-
-.welcome-plaza-badge.b3 {
-  background: rgb(114 46 209 / 12%);
-  color: #7a2ed1;
-}
-
-.welcome-plaza-cta {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--accent);
-  white-space: nowrap;
-}
-
 /* "coming soon" toast for the unbuilt platform card */
 .welcome-toast {
   position: absolute;
@@ -4480,11 +4427,6 @@ body.sidebar-resizing {
   animation: welcome-fade-in 0.24s ease both;
 }
 
-.chat-landing.welcome .welcome-plaza {
-  animation: welcome-rise-in 0.22s ease both;
-  animation-delay: 0.1s;
-}
-
 .chat-landing.welcome .welcome-card {
   animation: welcome-card-in 0.22s ease both;
 }
@@ -4507,6 +4449,10 @@ body.sidebar-resizing {
 
 .chat-landing.welcome .welcome-card:nth-child(5) {
   animation-delay: 0.4s;
+}
+
+.chat-landing.welcome .welcome-card:nth-child(6) {
+  animation-delay: 0.455s;
 }
 
 .chat-landing-footer:not(.exiting) {
@@ -4624,75 +4570,19 @@ body.sidebar-resizing {
 
 /* ── narrow chat pane: cards stack (icon left, copy right), plaza wraps ── */
 
-/* 平板端（容器 640–1199）：五卡单列 + 广场收徽章 */
-@container (max-width: 1199px) {
+/* 平板端（容器 640–1023）：一行 3 个，两行 */
+@container (max-width: 1023px) {
   .welcome-cards {
-    flex-direction: column;
-    width: min(430px, 100%);
-    gap: 9px;
+    grid-template-columns: repeat(3, 1fr);
+    width: min(720px, 100%);
   }
 
-  .welcome-card {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    grid-template-rows: auto auto auto;
-    grid-template-areas:
-      'icon name'
-      'icon desc'
-      'icon chips';
-    column-gap: 12px;
-    align-items: center;
-    padding: 11px 14px;
-    text-align: left;
-  }
-
-  .welcome-card-icon {
-    grid-area: icon;
-    width: 34px;
-    height: 34px;
-    margin-bottom: 0;
-  }
-
-  .welcome-card-name {
-    grid-area: name;
-  }
-
-  .welcome-card-desc {
-    grid-area: desc;
-  }
-
-  .welcome-card-chips {
-    grid-area: chips;
-    justify-content: flex-start;
-    margin-top: 2px;
-  }
-
-  .welcome-card-soon {
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  /* 广场收窄：徽章行整体隐藏，描述截断，按钮吸右 */
-  .welcome-plaza {
-    gap: 9px 12px;
-  }
-
-  .welcome-plaza-badges {
-    display: none;
-  }
-
-  .welcome-plaza-desc {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .welcome-plaza-cta {
-    margin-left: auto;
+  .welcome-cards .welcome-card-chips {
+    display: flex;
   }
 }
 
-/* 手机端（容器 <640）：广场紧凑行（图标+名称+按钮），页脚只留文字行 */
+/* 窄屏（容器 400–639）：一行 2 个，三行 */
 @container (max-width: 639px) {
   .chat-landing {
     padding: 12px 10px;
@@ -4707,12 +4597,20 @@ body.sidebar-resizing {
     font-size: 13px;
   }
 
-  .welcome-plaza-desc {
-    display: none;
+  .welcome-cards {
+    grid-template-columns: repeat(2, 1fr);
+    margin: 14px 0 10px;
   }
 
   .chat-landing-footer .chat-footer-qr {
     display: none;
+  }
+}
+
+/* 极窄（容器 <400）：一行 1 个，六行（配合落地层滚动预算） */
+@container (max-width: 399px) {
+  .welcome-cards {
+    grid-template-columns: 1fr;
   }
 }
 

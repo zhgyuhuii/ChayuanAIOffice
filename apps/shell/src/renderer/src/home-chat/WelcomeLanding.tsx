@@ -4,7 +4,6 @@ import { useI18n } from '../locale'
 import { pickWelcomePrompt } from './welcome-prompts'
 import {
   WELCOME_PLAZA_BADGES_KEY,
-  WELCOME_PLAZA_CTA_KEY,
   WELCOME_PLAZA_DESC_KEY,
   WELCOME_PLAZA_NAME_KEY,
   WELCOME_PLAZA_URL,
@@ -245,42 +244,40 @@ export function WelcomeLanding({
             {p.soon && <span className="welcome-card-soon">{t('welcomeSoonBadge')}</span>}
           </button>
         ))}
-      </div>
 
-      <button
-        type="button"
-        className="welcome-plaza"
-        onClick={() => openExternal(WELCOME_PLAZA_URL)}
-      >
-        <span className="welcome-plaza-icon">
-          <WelcomeIcon id="plaza" />
-        </span>
-        <span className="welcome-plaza-main">
-          <span className="welcome-plaza-name">{t(WELCOME_PLAZA_NAME_KEY)}</span>
-          <span className="welcome-plaza-desc">{t(WELCOME_PLAZA_DESC_KEY)}</span>
-        </span>
-        <span className="welcome-plaza-badges">
-          {t(WELCOME_PLAZA_BADGES_KEY)
-            .split('|')
-            .map((badge, i) => (
-              <span key={badge} className={`welcome-plaza-badge b${i}`}>
-                {badge}
-              </span>
-            ))}
-        </span>
-        <span className="welcome-plaza-cta">
-          {t(WELCOME_PLAZA_CTA_KEY)}
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-            <path
-              d="M2.5 6h7M6.5 2.5L10 6l-3.5 3.5"
-              stroke="currentColor"
-              strokeWidth="1.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </span>
-      </button>
+        {/* 第六卡：察元AI智能广场（2026-09-23 共识：六卡同构同尺寸，徽章降级为 chips，整卡可点） */}
+        <button
+          type="button"
+          className="welcome-card plaza"
+          onClick={() => openExternal(WELCOME_PLAZA_URL)}
+        >
+          <span className="welcome-card-icon">
+            <WelcomeIcon id="plaza" />
+          </span>
+          <span className="welcome-card-name">{t(WELCOME_PLAZA_NAME_KEY)}</span>
+          <span className="welcome-card-desc">{t(WELCOME_PLAZA_DESC_KEY)}</span>
+          <span className="welcome-card-chips">
+            {t(WELCOME_PLAZA_BADGES_KEY)
+              .split('|')
+              .map((badge, i) => (
+                <span key={badge} className={`welcome-chip pb${i}`}>
+                  {badge}
+                </span>
+              ))}
+          </span>
+          <span className="welcome-card-go" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 12 12" fill="none">
+              <path
+                d="M2.5 6h7M6.5 2.5L10 6l-3.5 3.5"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
 
       {toast && (
         <div className="welcome-toast" role="status">
