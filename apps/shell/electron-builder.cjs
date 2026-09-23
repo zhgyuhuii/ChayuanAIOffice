@@ -616,9 +616,10 @@ const config = {
   },
   beforePack: async (context) => {
     assertModuleTreesPresent()
-    // 交叉打包（mac 宿主出三平台包）：按目标平台/架构把 zigbuild/mingw 产物
-    // 就位到 extraResources 读取的 target/release 路径。源缺席直接抛错——
-    // 绝不让宿主平台的二进制静默混进别的系统的包（2026-09-23 实测踩中）。
+    // 交叉打包（mac 宿主出三平台包）：按目标架构把 zigbuild/mingw 产物就位到
+    // extraResources 读取的 target/release 路径；原生架构（宿主=目标）则直接
+    // 校验 cargo 产物在位。任一缺席即抛错——绝不让宿主平台的二进制静默混进
+    // 别的系统的包（2026-09-23 实测踩中）。
     if (context.electronPlatformName === 'linux') {
       // context.arch 是枚举数值（electron-builder Arch：1=x64，3=arm64）
       const archName = { 1: 'x64', 3: 'arm64' }[context.arch]
@@ -629,16 +630,28 @@ const config = {
             ? 'x86_64-unknown-linux-gnu'
             : null
       if (!triple) throw new Error(`unsupported linux arch: ${String(context.arch)}`)
-      const src = join(
+      const staged = join(
         __dirname,
-        `../sheets/native/xlsx-engine/target/${triple}/release/xlsx-sidecar`,
+        '../sheets/native/xlsx-engine/target/release/xlsx-sidecar',
       )
-      if (!existsSync(src)) {
-        throw new Error(
-          `linux sidecar missing for ${triple}: ${src} (cargo zigbuild --release --target ${triple}.2.28 first)`,
+      const native = process.arch === archName
+      if (native) {
+        // 原生构建（linux 宿主）：cargo build --release 的产物已在此路径
+        if (!existsSync(staged)) {
+          throw new Error(`linux sidecar missing: ${staged} (cargo build --release first on this host)`)
+        }
+      } else {
+        const cross = join(
+          __dirname,
+          `../sheets/native/xlsx-engine/target/${triple}/release/xlsx-sidecar`,
         )
+        if (!existsSync(cross)) {
+          throw new Error(
+            `linux sidecar missing for ${triple}: ${cross} (cargo zigbuild --release --target ${triple}.2.28 first)`,
+          )
+        }
+        copyFileSync(cross, staged)
       }
-      copyFileSync(src, join(__dirname, '../sheets/native/xlsx-engine/target/release/xlsx-sidecar'))
     }
     writeLicenseKeyMaterial()
     if (context.electronPlatformName === 'darwin' && includeMacX64) {
