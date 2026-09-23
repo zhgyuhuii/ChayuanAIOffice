@@ -95,39 +95,18 @@ describe('configuredDefaultSaveDir', () => {
     expect(configuredDefaultSaveDir(app)).toBe(custom)
   })
 
-  // adapted（品牌改名 ChatOffice→ChaAI Office→ChayuanAIOffice，2026-09-23）：无配置时
-  // 新装回落 <Documents>/ChayuanAIOffice；已有旧版目录的机器按改名次序沿用最近一代，
-  // 避免静默换到空目录
-  it('falls back to <Documents>/ChayuanAIOffice without a setting', () => {
+  // 2026-09-23 用户明令：默认保存目录一律 <Documents>/ChayuanAIOffice，
+  // 不再沿用 ChatOffice / ChaAI Office 等历史代目录
+  it('always falls back to <Documents>/ChayuanAIOffice, ignoring legacy folders', () => {
     const userData = join(root, 'userData')
     const documents = join(root, 'Documents')
     mkdirSync(userData, { recursive: true })
+    mkdirSync(join(documents, 'ChatOffice'), { recursive: true })
+    mkdirSync(join(documents, 'ChaAI Office'), { recursive: true })
     const app = {
       getPath: (name: 'userData' | 'documents') => (name === 'userData' ? userData : documents),
     }
     expect(configuredDefaultSaveDir(app)).toBe(join(documents, 'ChayuanAIOffice'))
     expect(existsSync(join(documents, 'ChayuanAIOffice'))).toBe(true)
-  })
-
-  it('prefers an existing legacy <Documents>/ChatOffice folder', () => {
-    const userData = join(root, 'userData')
-    const documents = join(root, 'Documents')
-    mkdirSync(userData, { recursive: true })
-    mkdirSync(join(documents, 'ChatOffice'), { recursive: true })
-    const app = {
-      getPath: (name: 'userData' | 'documents') => (name === 'userData' ? userData : documents),
-    }
-    expect(configuredDefaultSaveDir(app)).toBe(join(documents, 'ChatOffice'))
-  })
-
-  it('prefers an existing legacy <Documents>/ChaAI Office folder over the new name', () => {
-    const userData = join(root, 'userData')
-    const documents = join(root, 'Documents')
-    mkdirSync(userData, { recursive: true })
-    mkdirSync(join(documents, 'ChaAI Office'), { recursive: true })
-    const app = {
-      getPath: (name: 'userData' | 'documents') => (name === 'userData' ? userData : documents),
-    }
-    expect(configuredDefaultSaveDir(app)).toBe(join(documents, 'ChaAI Office'))
   })
 })

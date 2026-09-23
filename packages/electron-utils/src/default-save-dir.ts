@@ -53,13 +53,9 @@ export function resolveDefaultSaveDir(configured: string | null, fallbackDir: st
 export function configuredDefaultSaveDir(app: PathProvider): string {
   const settingsPath = join(app.getPath('userData'), 'app-settings.json')
   const documents = app.getPath('documents')
-  // brand renames (ChatOffice → ChaAI Office → ChayuanAIOffice, 2026-09-23): keep
-  // landing files in an existing legacy folder instead of silently switching to a
-  // fresh empty one; only machines with none of the legacy folders get the new one
-  const legacy = existsSync(join(documents, 'ChatOffice'))
-    ? join(documents, 'ChatOffice')
-    : existsSync(join(documents, 'ChaAI Office'))
-      ? join(documents, 'ChaAI Office')
-      : join(documents, 'ChayuanAIOffice')
-  return resolveDefaultSaveDir(readDefaultSaveDirSetting(settingsPath), legacy)
+  // 默认保存目录统一为 <Documents>/ChayuanAIOffice（2026-09-23 用户明令）：
+  // 不再沿用 ChatOffice / ChaAI Office 等历史代目录（旧目录里的文件可手动移入，
+  // 或在首页「文件夹」面板加根目录继续访问）
+  const fallback = join(documents, 'ChayuanAIOffice')
+  return resolveDefaultSaveDir(readDefaultSaveDirSetting(settingsPath), fallback)
 }
