@@ -525,7 +525,9 @@ const config = {
   // reverse, needs a matching `cargo build --target` first.
   linux: {
     // artifactName pins the AppImage name (deb/rpm override with their own);
-  // all target names are space-free per user rule (2026-09-23)
+  // all target names are space-free per user rule (2026-09-23).
+  // 目标架构取宿主架构（electron-builder 缺省恒为 x64，arm64 宿主会出跑不起来的
+  // x64 包——2026-09-23 UOS ARM 虚机实测踩中）；CLI --x64/--arm64 仍可覆盖
   artifactName: 'ChaAIOffice-${version}-${arch}.${ext}',
 
     // GTK/NSS runtime deps) + rpm (dnf/zypper install on Fedora / RHEL /
@@ -534,9 +536,9 @@ const config = {
     // README download links and the already-published linux-v0.5.149 release
     // use them.
     target: [
-      { target: 'AppImage', arch: ['x64'] },
-      { target: 'deb', arch: ['x64'] },
-      ...(hasRpmbuild() ? [{ target: 'rpm', arch: ['x64'] }] : []),
+      { target: 'AppImage', arch: [process.arch === 'arm64' ? 'arm64' : 'x64'] },
+      { target: 'deb', arch: [process.arch === 'arm64' ? 'arm64' : 'x64'] },
+      ...(hasRpmbuild() ? [{ target: 'rpm', arch: [process.arch === 'arm64' ? 'arm64' : 'x64'] }] : []),
     ],
     // deb control metadata; values match the manually published 0.5.149 deb
     // so apt sees the new packages as the same lineage. Homepage comes from
