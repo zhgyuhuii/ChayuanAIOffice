@@ -566,7 +566,9 @@ const config = {
   // install, breaking upgrades. Without it, fpm receives productName
   // "ChatOffice" and only happens to downcase it to the right value.
   deb: {
-    artifactName: 'chaoffice_${version}_${arch}.deb',
+    // 2026-09-23 用户明令：包名对齐 mac 侧「ChaAI Office-版本号」；control 里的
+    // Package 仍为 chaoffice，apt 升级链不受影响
+    artifactName: 'ChaAI Office-${version}-${arch}.deb',
     packageName: 'chaoffice',
     // expose the chatoffice command line shipped inside the app
     afterInstall: 'build/linux-after-install.sh',
@@ -584,7 +586,7 @@ const config = {
   // latest-linux.yml keeps listing exactly what the CDN pipeline uploads
   // (AppImage + deb) and the promote workflow needs no rpm alias.
   rpm: {
-    artifactName: 'chaoffice-${version}.${arch}.rpm',
+    artifactName: 'ChaAI Office-${version}-${arch}.rpm',
     packageName: 'chaoffice',
     publish: null,
     afterInstall: 'build/linux-after-install.sh',

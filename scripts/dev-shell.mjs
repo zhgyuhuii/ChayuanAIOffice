@@ -19,6 +19,10 @@ const env = {
   // LOCAL(2026-09-21, d8201ad0): html 渲染端此前漏设——shell 模式下 html 编辑器会回退到
   // 旧打包产物(chatoffice-app://),dev 调试不到 vite 热更代码;与五端对齐补上
   HTML_RENDERER_URL: `http://localhost:${process.env.HTML_DEV_PORT ?? 5178}`,
+  // Linux dev：electron 的 SUID chrome-sandbox 要求 root 属主+4755，开发检出装不出来
+  // （FATAL: sandbox ... aborting now）。dev 一律免沙箱启动，与 e2e helpers 的先例一致；
+  // 打包产物由 deb 的 after-install 脚本修 sandbox 权限，不受此影响。
+  ...(process.platform === 'linux' ? { ELECTRON_DISABLE_SANDBOX: '1' } : {}),
 }
 
 // shell: true — on Windows `npm` is npm.cmd, which spawn cannot launch directly
