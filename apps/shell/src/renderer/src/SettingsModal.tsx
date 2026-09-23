@@ -16,7 +16,12 @@ import { ModelDefaultsPage } from '@chatoffice/ui/ModelDefaultsPage'
 import { Dropdown } from '@chatoffice/ui'
 import { useI18n } from './locale'
 import type { StringKey } from './locale'
-import type { AccountStatus, UiTheme } from '../../shared/home-api'
+import type {
+  AccountStatus,
+  FileSearchSettings,
+  JevEndpoint,
+  UiTheme,
+} from '../../shared/home-api'
 import { StoragePane } from './StoragePane'
 import { IntegrationsPane, skillUpdateDue } from './IntegrationsPane'
 import { McpServerSettings } from './McpServerSettings'
@@ -82,6 +87,7 @@ function formatStars(n: number): string {
 type SectionId =
   | 'modelSettings'
   | 'defaultModels'
+  | 'fileSearch'
   | 'remoteStorage'
   | 'general'
   | 'integrations'
@@ -146,6 +152,7 @@ const SECTIONS: readonly { id: SectionId; labelKey: StringKey }[] = [
   { id: 'modelSettings', labelKey: 'setSecModelSettings' },
   { id: 'defaultModels', labelKey: 'setSecDefaultModels' },
   { id: 'aiMedia', labelKey: 'setSecAiMedia' },
+  { id: 'fileSearch', labelKey: 'setAiCapFileSearch' },
   { id: 'remoteStorage', labelKey: 'setSecRemoteStorage' },
   { id: 'general', labelKey: 'setSecGeneral' },
   { id: 'integrations', labelKey: 'setSecIntegrations' },
@@ -281,6 +288,131 @@ function SectionIcon({ id }: { id: SectionId }) {
       <path d="M8 7.4v3.4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
       <circle cx="8" cy="5.1" r="0.8" fill="currentColor" />
     </svg>
+  )
+}
+
+
+/** 本机文件搜索（Jev 重排）设置——上游 #757 的设置 UI 按本地 V2 结构重建
+ *  （LOCAL 2026-09-23 挂账 #1 落地）：开关/端点/密钥即时持久化，测试按钮
+ *  走 testFileSearchRerank 做一次双文档判定并回显结果。 */
+const JEV_ENDPOINTS: { value: JevEndpoint; label: string }[] = [
+  { value: 'openrouter', label: 'OpenRouter' },
+  { value: 'direct', label: 'TypeSafe' },
+]
+
+function FileSearchPane() {
+  const { t } = useI18n()
+  const [settings, setSettings] = useState<FileSearchSettings | null>(null)
+  const [testing, setTesting] = useState(false)
+  const [testResult, setTestResult] = useState<{ ok: boolean; error?: string } | null>(null)
+
+  useEffect(() => {
+    let alive = true
+    void window.chatOffice.getFileSearchSettings?.().then((v) => {
+      if (alive && v) setSettings(v)
+    })
+    return () => {
+      alive = false
+    }
+  }, [])
+
+  const patch = (next: Partial<FileSearchSettings>) => {
+    // optimistic merge; the persisted answer (normalized keys) wins afterwards
+    void window.chatOffice.setFileSearchSettings?.(next).then((saved) => setSettings(saved))
+    setSettings((prev) => (prev ? { ...prev, ...next } : prev))
+  }
+
+  const test = async () => {
+    if (!settings) return
+    setTesting(true)
+    setTestResult(null)
+    try {
+      const result = await window.chatOffice.testFileSearchRerank?.({
+        endpoint: settings.jevEndpoint,
+        apiKey: settings.jevKeys[settings.jevEndpoint] ?? '',
+      })
+      setTestResult(result)
+    } catch (err) {
+      setTestResult({ ok: false, error: String(err instanceof Error ? err.message : err) })
+    } finally {
+      setTesting(false)
+    }
+  }
+
+  return (
+    <>
+      <h3 className="set-pane-title">{t('setAiCapFileSearch')}</h3>
+      {settings && (
+        <>
+          <div className="set-field">
+            <div className="set-field-text">
+              <div className="set-field-stack">
+                <div className="set-field-label">{t('setSearchRerank')}</div>
+                <div className="set-field-desc">{t('setSearchRerankDesc')}</div>
+              </div>
+            </div>
+            <button
+              className="set-switch"
+              role="switch"
+              aria-checked={settings.rerank}
+              aria-label={t('setSearchRerank')}
+              onClick={() => patch({ rerank: !settings.rerank })}
+            />
+          </div>
+          {settings.rerank && (
+            <>
+              <div className="set-field">
+                <div className="set-field-text">
+                  <label className="set-field-label">{t('setSearchRerankEndpoint')}</label>
+                </div>
+                <Dropdown
+                  className="set-dd"
+                  value={settings.jevEndpoint}
+                  ariaLabel={t('setSearchRerankEndpoint')}
+                  options={JEV_ENDPOINTS}
+                  onPick={(v) => patch({ jevEndpoint: v === 'direct' ? 'direct' : 'openrouter' })}
+                />
+              </div>
+              <div className="set-field">
+                <div className="set-field-text">
+                  <label className="set-field-label" htmlFor="set-search-jev-key">
+                    {t('setAiApiKey')}
+                  </label>
+                </div>
+                <input
+                  id="set-search-jev-key"
+                  className="set-input"
+                  type="password"
+                  value={settings.jevKeys[settings.jevEndpoint] ?? ''}
+                  placeholder={settings.jevEndpoint === 'openrouter' ? 'sk-or-…' : 'API Key'}
+                  spellCheck={false}
+                  autoComplete="off"
+                  onChange={(e) =>
+                    patch({
+                      jevKeys: { ...settings.jevKeys, [settings.jevEndpoint]: e.target.value },
+                    })
+                  }
+                />
+              </div>
+              <div className="set-field">
+                <button className="set-btn" disabled={testing} onClick={() => void test()}>
+                  {t('setAiTest')}
+                </button>
+                <span className="set-field-desc" role="status">
+                  {testing
+                    ? t('setAiTesting')
+                    : testResult
+                      ? testResult.ok
+                        ? t('setAiTestOk')
+                        : `⚠ ${testResult.error || t('setAiTestFail')}`
+                      : ''}
+                </span>
+              </div>
+            </>
+          )}
+        </>
+      )}
+    </>
   )
 }
 
@@ -536,6 +668,7 @@ export function SettingsModal({
                 }}
               />
             )}
+            {section === 'fileSearch' && <FileSearchPane />}
             {section === 'remoteStorage' && <StoragePane />}
             {section === 'general' && (
               <>
