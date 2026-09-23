@@ -8,6 +8,8 @@ export const localStrings = {
   zh: {
     secChats: '对话',
     sidebarTabList: '左树分组',
+    // 胶囊 Tab 用短词（A 区上游值为「最近使用」，B 区覆盖防同步冲回）
+    secRecent: '最近',
     chatPaneShow: '显示对话',
     chatCount: '{n} 个对话',
     chatCountOne: '{n} 个对话',

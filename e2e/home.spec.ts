@@ -36,7 +36,7 @@ test.describe('home screen', () => {
       await expect(page.locator('.sidebar-seg [role="tab"]', { hasText: '最近' })).toBeVisible()
       await expect(page.locator('.sidebar-seg [role="tab"]', { hasText: '对话' })).toBeVisible()
       await expect(page.locator('.sidebar-seg [role="tab"]', { hasText: '项目' })).toBeVisible()
-      await expect(page.locator('.side-sec-recent .side-files-title')).toHaveText('最近使用')
+      await expect(page.locator('.side-sec-recent .side-files-title')).toHaveText('最近')
       await page.screenshot({ path: screenshotPath('home-zh-cn') })
     } finally {
       await closeAndSaveVideo(launched, 'home-zh-cn')
