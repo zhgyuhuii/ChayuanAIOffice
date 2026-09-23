@@ -1242,6 +1242,21 @@ export function ChatPanel({
           ))}
         </div>
         <div className="chat-head-actions">
+          <button
+            className="chat-head-btn chat-head-icon primary"
+            aria-label={t('chatNew')}
+            title={t('chatNew')}
+            onClick={newChat}
+          >
+            <svg width="16" height="16" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path
+                d="M7 1v12M1 7h12"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+              />
+            </svg>
+          </button>
           <div className="chat-sessions-wrap" ref={menuWrapRef}>
             <button
               className="chat-head-btn chat-head-icon"
@@ -1388,21 +1403,6 @@ export function ChatPanel({
               </div>
             )}
           </div>
-          <button
-            className="chat-head-btn chat-head-icon primary"
-            aria-label={t('chatNew')}
-            title={t('chatNew')}
-            onClick={newChat}
-          >
-            <svg width="16" height="16" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path
-                d="M7 1v12M1 7h12"
-                stroke="currentColor"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-              />
-            </svg>
-          </button>
         </div>
       </header>
 
