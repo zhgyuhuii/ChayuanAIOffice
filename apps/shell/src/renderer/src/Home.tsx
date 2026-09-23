@@ -26,6 +26,7 @@ import { useI18n } from './locale'
 import type { I18n, StringKey } from './locale'
 import { skillUpdateDue } from './IntegrationsPane'
 import { ChatPanel } from './home-chat/ChatPanel'
+import { FileTreePane } from './home-files/FileTreePane'
 import { refreshHomeModelCache } from './home-chat/bridge'
 import { useHomeChatStore } from './home-chat/store'
 import { clampSidebarWidth, getHomeLayout, onHomeLayoutChange, setHomeLayout } from './home-layout'
@@ -1105,6 +1106,9 @@ export function Home() {
     return () => window.removeEventListener('pointerup', endSidebarDrag)
   }, [endSidebarDrag])
 
+  // ── 文件树选中的文件夹（新建文件的落点；共识 Q2：树选中=落点，未选中=默认目录） ──
+  const [newFileDir, setNewFileDir] = useState<string | null>(null)
+
   // ── Project state ──
   const [projects, setProjects] = useState<ProjectSummaryEntry[]>([])
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
@@ -1631,34 +1635,32 @@ export function Home() {
   }
 
   // ── New file (passes projectId when a project is selected) ──
+  /** 新建落点：选中项目优先（既有行为），否则落文件树选中的文件夹（共识 Q2） */
+  const newFileOpts = () =>
+    selectedProjectId ? { projectId: selectedProjectId } : newFileDir ? { dir: newFileDir } : undefined
+
   const handleNewDoc = () => {
-    void window.chatOffice.newDoc(selectedProjectId ? { projectId: selectedProjectId } : undefined)
+    void window.chatOffice.newDoc(newFileOpts())
   }
 
   const handleNewSheet = () => {
-    void window.chatOffice.newSheet(
-      selectedProjectId ? { projectId: selectedProjectId } : undefined,
-    )
+    void window.chatOffice.newSheet(newFileOpts())
   }
 
   const handleNewSlide = () => {
-    void window.chatOffice.newSlide(
-      selectedProjectId ? { projectId: selectedProjectId } : undefined,
-    )
+    void window.chatOffice.newSlide(newFileOpts())
   }
 
   const handleNewMarkdown = () => {
-    void window.chatOffice.newMarkdown(
-      selectedProjectId ? { projectId: selectedProjectId } : undefined,
-    )
+    void window.chatOffice.newMarkdown(newFileOpts())
   }
 
   const handleNewHtml = () => {
-    void window.chatOffice.newHtml(selectedProjectId ? { projectId: selectedProjectId } : undefined)
+    void window.chatOffice.newHtml(newFileOpts())
   }
 
   const handleNewPdf = () => {
-    void window.chatOffice.newPdf(selectedProjectId ? { projectId: selectedProjectId } : undefined)
+    void window.chatOffice.newPdf(newFileOpts())
   }
 
   const NEW_ITEMS = [
@@ -1675,76 +1677,40 @@ export function Home() {
 
   function renderSideActions() {
     return (
-      <div className={`side-group side-sec-new${layout.newCollapsed ? ' collapsed' : ''}`}>
-        <div
-          className="side-group-head"
-          role="button"
-          tabIndex={0}
-          aria-expanded={!layout.newCollapsed}
-          onClick={() => setHomeLayout({ newCollapsed: !layout.newCollapsed })}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter' && event.target === event.currentTarget) {
-              setHomeLayout({ newCollapsed: !layout.newCollapsed })
-            }
-          }}
-        >
-          <svg
-            className={`side-group-arrow${layout.newCollapsed ? ' folded' : ''}`}
-            width="12"
-            height="12"
-            viewBox="0 0 16 16"
-            aria-hidden="true"
-          >
-            <path
-              d="M6 3.5L10.5 8L6 12.5"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              fill="none"
-            />
-          </svg>
+      <div className="side-group side-sec-new">
+        <div className="side-group-head">
           <span className="side-files-title">{t('secNew')}</span>
         </div>
         <div className="side-group-body">
-          <ul className="side-new-list">
+          <div className="side-new-grid">
             {NEW_ITEMS.map((item) => (
-              <li key={item.ext}>
-                <button
-                  className="side-new-row"
-                  title={`${item.title} (${item.sub})`}
-                  onClick={() => void item.action()}
-                >
-                  <FileBadge ext={item.ext} size={18} />
-                  <span className="side-new-label">{item.title}</span>
-                </button>
-              </li>
-            ))}
-            <li className="side-new-divider" aria-hidden="true" />
-            <li>
               <button
-                className="side-new-row"
-                title={t('openLocal')}
-                onClick={() => void window.chatOffice.browse()}
+                key={item.ext}
+                className="side-new-tile"
+                title={`${item.title} (${item.sub})`}
+                onClick={() => void item.action()}
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path
-                    d="M3 7a2 2 0 0 1 2-2h4.586a1 1 0 0 1 .707.293L12 7h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M9 13h6M12 10v6"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
-                <span className="side-new-label">{t('openLocal')}</span>
+                <FileBadge ext={item.ext} size={22} />
+                <span className="side-new-ext">{item.sub}</span>
               </button>
-            </li>
-          </ul>
+            ))}
+          </div>
+          <button
+            className="side-new-browse"
+            title={OPEN_LOCAL_EXTENSIONS}
+            onClick={() => void window.chatOffice.browse()}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M3 7a2 2 0 0 1 2-2h4.586a1 1 0 0 1 .707.293L12 7h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinejoin="round"
+              />
+              <path d="M9 13h6M12 10v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <span>{t('openLocal')}</span>
+          </button>
         </div>
       </div>
     )
@@ -3129,7 +3095,41 @@ export function Home() {
         {/* ZCode 式左树：对话 | 项目 双 Tab + 最近；整体单滚动。
             归档视图打开时取代 Tab 区（收藏文档与归档会话集中于此） */}
         <div className="sidebar-scroll">
-          {archiveOpen ? renderArchiveView() : renderRecentSection()}
+          {archiveOpen ? (
+            renderArchiveView()
+          ) : (
+            <>
+              {/* ZCode 式左树：对话 | 项目 双 Tab（用户 2026-09-23 明令保留，靠左） */}
+              <div className="sidebar-tabs" role="tablist" aria-label={t('sidebarTabList')}>
+                <button
+                  role="tab"
+                  id="home-tree-tab-chats"
+                  aria-selected={layout.activeTab === 'chats'}
+                  aria-controls="home-tree-panel-chats"
+                  className={`sidebar-tab${layout.activeTab === 'chats' ? ' active' : ''}`}
+                  onClick={() => setHomeLayout({ activeTab: 'chats' })}
+                >
+                  {t('secChats')}
+                </button>
+                {projectMode && (
+                  <button
+                    role="tab"
+                    id="home-tree-tab-projects"
+                    aria-selected={layout.activeTab === 'projects'}
+                    aria-controls="home-tree-panel-projects"
+                    className={`sidebar-tab${layout.activeTab === 'projects' ? ' active' : ''}`}
+                    onClick={() => setHomeLayout({ activeTab: 'projects' })}
+                  >
+                    {t('projects')}
+                  </button>
+                )}
+              </div>
+              {layout.activeTab === 'projects' ? renderProjectsSection() : renderChatsSection()}
+              {renderRecentSection()}
+              {/* 上游 #757 文件树（树内联文件+全文搜索）；LOCAL: 移植进新组件，见 home-files/FileTreePane.tsx */}
+              <FileTreePane selectedFolder={newFileDir} onSelectFolder={setNewFileDir} />
+            </>
+          )}
         </div>
 
         <AccountEntry
