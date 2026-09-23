@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { shiftFormulaRefs, shiftIndex, shiftSpecForOp } from '../src/domain/formula-shift'
+import {
+  offsetFormulaRefs,
+  shiftFormulaRefs,
+  shiftIndex,
+  shiftSpecForOp,
+} from '../src/domain/formula-shift'
 import type { StructuralOperation } from '../src/domain/workbook-dsl'
 
 const SHEET = 'Sheet1'
@@ -118,6 +123,18 @@ describe('shiftFormulaRefs on delete rows', () => {
 })
 
 describe('shiftFormulaRefs on columns', () => {
+  it('shifts lowercase cell refs and whole-column spans on insert', () => {
+    const result = shiftFormulaRefs('=sum(a1:b2)+sum(b:d)', insertCols('B', 1), true, SHEET)
+    expect(result.formula).toBe('=sum(A1:C2)+sum(C:E)')
+    expect(result.changed).toBe(true)
+  })
+
+  it('shrinks lowercase ranges when a column is deleted', () => {
+    const result = shiftFormulaRefs('=sum(a1:b2)', deleteCols('B', 1), true, SHEET)
+    expect(result.formula).toBe('=sum(A1:A2)')
+    expect(result.hasRefError).toBe(false)
+  })
+
   it('shifts refs right on insert', () => {
     const result = shiftFormulaRefs('=A1+B1+C1', insertCols('B', 1), true, SHEET)
     expect(result.formula).toBe('=A1+C1+D1')
@@ -148,6 +165,12 @@ describe('shiftFormulaRefs on columns', () => {
   it('shifts whole-row spans on insert', () => {
     const result = shiftFormulaRefs('=SUM(2:4)', insertRows(2, 1), true, SHEET)
     expect(result.formula).toBe('=SUM(3:5)')
+  })
+})
+
+describe('offsetFormulaRefs', () => {
+  it('shifts lowercase cell refs and whole-column spans on fill', () => {
+    expect(offsetFormulaRefs('=sum(a1:b2)+sum($b:d)', 0, 1)).toBe('=sum(B1:C2)+sum($B:E)')
   })
 })
 
