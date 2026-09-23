@@ -34,7 +34,7 @@ process.env.ELECTRON_BUILDER_BINARIES_MIRROR ??=
   'https://npmmirror.com/mirrors/electron-builder-binaries/'
 
 const { execFileSync } = require('node:child_process')
-const { existsSync, rmSync, writeFileSync } = require('node:fs')
+const { copyFileSync, existsSync, rmSync, writeFileSync } = require('node:fs')
 const { join } = require('node:path')
 
 function normalizeHttpsBaseUrl(name, value) {
@@ -603,6 +603,30 @@ const config = {
   },
   beforePack: async (context) => {
     assertModuleTreesPresent()
+    // 交叉打包（mac 宿主出三平台包）：按目标平台/架构把 zigbuild/mingw 产物
+    // 就位到 extraResources 读取的 target/release 路径。源缺席直接抛错——
+    // 绝不让宿主平台的二进制静默混进别的系统的包（2026-09-23 实测踩中）。
+    if (context.electronPlatformName === 'linux') {
+      // context.arch 是枚举数值（electron-builder Arch：1=x64，3=arm64）
+      const archName = { 1: 'x64', 3: 'arm64' }[context.arch]
+      const triple =
+        archName === 'arm64'
+          ? 'aarch64-unknown-linux-gnu'
+          : archName === 'x64'
+            ? 'x86_64-unknown-linux-gnu'
+            : null
+      if (!triple) throw new Error(`unsupported linux arch: ${String(context.arch)}`)
+      const src = join(
+        __dirname,
+        `../sheets/native/xlsx-engine/target/${triple}/release/xlsx-sidecar`,
+      )
+      if (!existsSync(src)) {
+        throw new Error(
+          `linux sidecar missing for ${triple}: ${src} (cargo zigbuild --release --target ${triple}.2.28 first)`,
+        )
+      }
+      copyFileSync(src, join(__dirname, '../sheets/native/xlsx-engine/target/release/xlsx-sidecar'))
+    }
     writeLicenseKeyMaterial()
     if (context.electronPlatformName === 'darwin' && includeMacX64) {
       assertUniversalSidecar()
