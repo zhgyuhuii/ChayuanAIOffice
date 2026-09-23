@@ -1,4 +1,51 @@
 import { localStrings } from './strings-local'
+const fillFormStrings = {
+  ribbonTabFillForm: 'Fill Form',
+  formPreviousField: 'Previous field',
+  formNextField: 'Next field',
+  formFieldProgress: '{current} / {total}',
+  insertText: 'Insert text',
+  insertTextHint: 'Insert searchable text into the PDF',
+  insertTextTitle: 'Insert text',
+  editInsertedText: 'Edit inserted text',
+  deleteInsertedText: 'Delete inserted text',
+  insertedTextDeleted: 'Inserted text deleted',
+  textInsertSkipped: 'Inserted text could not be saved on page(s): {pages}',
+  textInsertNoFont:
+    'No installed font can draw this text in the PDF (emoji and special symbols are not supported)',
+  formComplete: 'Finish filling',
+  formMissingRequired: '{count} required fields are still empty',
+  formCompleteDone: 'Form completion check passed',
+  formSignField: 'Click to sign',
+  formAddText: 'Add text',
+  formAddTextHint: 'Type text, then click the page to place it',
+  formAddTextTitle: 'Add text to PDF',
+  formEditText: 'Edit text',
+  formAddTextPlaceholder: 'Enter the text to place',
+  formTextSize: 'Font size',
+  formTextColor: 'Color',
+  formTextAlign: 'Alignment',
+  formAlignLeft: 'Left',
+  formAlignCenter: 'Center',
+  formAlignRight: 'Right',
+  formAddCheck: 'Check',
+  formAddCheckHint: 'Click the page to place a check mark',
+  formAddCross: 'Cross',
+  formAddCrossHint: 'Click the page to place an X mark',
+  formPlaceStaticHint: 'Click to place; select the result to move or resize it',
+  formXfaWarning:
+    'This PDF contains XFA. Only AcroForm is supported; saving may not preserve XFA data.',
+  redact: 'Redact area',
+  redactHint: 'Drag to mark content that will be permanently removed',
+  redactClear: 'Clear marks',
+  redactApply: 'Apply redactions',
+  redactConfirm:
+    'Content inside the marked areas will be permanently removed. The first application creates and opens a copy; subsequent applications update that copy. Continue?',
+  redactSaveAsHint:
+    'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
+  redactSaveFirst: 'Save other pending changes before applying redactions.',
+  redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
+}
 
 // LOCAL(2026-09-21, d8201ad0): 多会话词条本地文件(B 区,制度 §3.1)
 const upstreamStrings = {
@@ -368,6 +415,11 @@ const upstreamStrings = {
     redactConfirm: '标记区域内的内容将被永久移除。继续后请在系统另存为对话框中选择新副本？',
     redactSaveAsHint: '涂黑未应用。请再次点击“应用涂黑”选择新副本；普通保存不会应用这些标记。',
     redactSaveFirst: '应用涂黑前请先保存其他待处理更改。',
+    redactConfirm:
+      '区域中的内容将被永久移除。首次应用会另存并打开副本，后续应用会更新该副本。是否继续？',
+    redactSaveAsHint:
+      '涂黑尚未应用。请点击“应用涂黑”将标记应用到工作副本；普通保存不会应用这些标记。',
+    redactSaveFirst: '请先保存其他待处理的修改，再应用涂黑。',
     redactStructureBlocked: '请先应用或取消待处理涂黑标记，再更改页面结构。',
   },
   en: {
@@ -735,6 +787,10 @@ const upstreamStrings = {
     redactApply: 'Apply redactions',
     redactConfirm: 'Content inside the marked areas will be permanently removed. Continue, then choose a new copy in the system Save As dialog?',
     redactSaveAsHint: 'Redactions were not applied. Click Apply redactions again to choose a new copy; Normal Save never applies these marks.',
+    redactConfirm:
+      'Content inside the marked areas will be permanently removed. The first application creates and opens a copy; subsequent applications update that copy. Continue?',
+    redactSaveAsHint:
+      'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
     redactSaveFirst: 'Save other pending changes before applying redactions.',
     redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
   },
