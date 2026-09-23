@@ -108,7 +108,27 @@
 
 **⚠️ 第八轮施工中（2026-09-16 深夜，未完成未合并）**：上游 `f4d8da2..09485f8`（15 提交：MCP×4+9-16 快照 525 文件+pptx 系列×5+小修）已全部 pick 到 `sync/upstream-20260916` 分支（已推 origin，含冲突裁决+品牌映射+动画引擎超集收敛，pptx-engine 1018/docs 2541 测试绿）。合并重做于 `merge-r8-wip` 分支（已推 origin）：merge 本体冲突仅 shell index/preload 导入并集×2 已解+pdf-main map 语义修复+pdf/markdown strings 按干净配方重建（pristine+品牌+本地键，锚=节 opener 后）。**剩余**：pdf LangDicts 节键集差×1+sheets workbook-ops(13)/ExcelShell(3)/save-pipeline(1) 等~30 类型错误收敛+slides/markdown 数个测试适配→全量门禁→合 main。**main 保持 310596b0 绿基线**（并行 WIP Home/strings 两文件在工作树）。新知：strings 断裂正解=main 绿版为基底+按节织入 sync 独有键（锚=节 opener 后；捕获须剥尾）；三方 merge-file+「theirs+品牌重放+HEAD 键补回」配方已在分支验证。
 
-**上次同步终点（下次续 pick 的起点）**：`0d90149`（2026-09-22 第十六轮完成并入 main；下次 `git fetch upstream` 后从 `0d90149..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+**上次同步终点（下次续 pick 的起点）**：`efb9247`（= 上游 tag v0.10.1038，2026-09-23 第十七轮完成；下次 `git fetch upstream` 后从 `efb9247..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+
+## 版本号规范（2026-09-23 用户明令，铁律）
+
+格式：`自有版本.上游版本` 共六段 `X.Y.Z.A.B.C`。规则：
+1. **每次更新合并上游代码后**，改后三位 `A.B.C` ＝ 本次合并到的上游版本号（例：合并到上游 tag v0.10.1038 → 后三位 `0.10.1038`）。前三位为自有版本线，仅在本地功能线升级时人工推进（当前 `1.0` 线，第三位 Z 为打包序号）。
+2. **每次打包前**，第三位 `Z` 加一（例：合并后版本 `1.0.1.0.10.1038` → 打包版本 `1.0.2.0.10.1038`），作为打包纪律。
+3. 版本号落点：`apps/shell/package.json` 的 `version` 字段（electron-builder 的 appId/产物名/auto-update feed 均由它派生）；包管理器只取前三段做 semver 校验，后三段随产物名与关于页透出。
+4. 合并改后三位与打包加第三位均在**合 main 前后各一次提交**内完成，与台账轮次记录绑定。
+
+### 第十七轮增量（2026-09-23，0d90149..efb9247：9 提交（8 加固/小修 + 9-22 快照 115 文件 +8537/−783），施工于 sync/upstream-20260923 分支；施工前 stash 并行 WIP（home.css 窄落地+两 fixture 删除））
+
+| 内容 | 结果 |
+|---|---|
+| #741 slides/#749 html 无障碍箭头标签（各 22 文件 i18n shard） | #741 冲突=slides ai/cs.ts 整文件三方断裂，按第十五轮 stage 重建配方（上游为基+本地独有键追加 115 键）；⚠️ 上游 8 键为多行格式，单行正则漏判致重复键 TS1117，删追加副本修正——**键提取必须兼容多行条目**。#749 干净 |
+| #743 sheets 打印标题 21 行钳制/#748 html 面包屑/#753 docx 图像几何有限性/#755 metafile EMZ zip 炸弹/#746 shell 死内容守卫/#752 docx MHT 上限 | 全部干净 pick |
+| **9-22 快照 efb9247**（Home 全文搜索+Parallel 搜索供应商+图表轴/图例/3D 斜角+ink 回退等） | 22 冲突文件全清。**未采纳（挂账后本轮已采纳，见下）**：Home.tsx/home.css/SettingsModal 初版保本地——用户随后明令首页改版，上游树/搜索后端（file-index 九件+folder-roots+home-api 搜索通道）全量落地，UI 经 home-files/FileTreePane.tsx 移植接入（见 feat home 提交）；ai-search/index.ts 多供应商链保本地（上游 useGsk/normalizeOptions 旧结构不采纳，normalizeSearchArgs 补 fallback=6）；cli image/image-source/xlsx-gateway-ops/html-main/docs-main/slides-main/ai-ipc 导入并集+MAX_REMOTE_IMAGE_BYTES/readBodyCapped 封顶符号跟进；docs App.tsx 结构区保本地 DockShell+织入上游 focusFindNonce（FindPanel 新 prop，顺手清掉 main 存量 findFocusInput 未用告警）；slides ChartBody/NodeBody/export-svg 采上游 3D extrusion/displayFontFamily 并去品牌；shell index.ts 四冲突=applyPendingProject 保本地+openPath 织入 fileIndexer.refresh+parked 前缀保品牌+启动时序并集（4s 首扫）；tab-manager activate=本地 layout()+上游 focusActiveView() 并集（漏改后补）；electron.vite.config=node:sqlite external+本地 MCP 别名并集；strings.ts 10 处纯上游新增键取 theirs；**files-pane 兼容**：上游 #757 删旧单根 folderRoot 通道，六端 files-pane-bridge 仍硬编码旧名——主进程恢复注册 home:folder-root（describeRoot(defaultSaveDir) 语义）保 Files pane 不断；其 e2e home-search/settings-media-search 初版删除，home-search 随 UI 落地恢复（去品牌+窄栏断言），settings-media-search 维持删除（Jev 设置 UI 挂账） |
+| 首页改版（用户 2026-09-23 六轮问答共识，方向 A） | 见 feat(home) a5518899：树内联文件+2×3 新建直钮（落点=树选中文件夹）+搜索框+对话｜项目双 Tab 接回；e2e home-folders 按树内联形态与延迟落盘架构改编（3 用例）、home-search 窄栏断言改编、新增 _home-shot 截图规格；修 FileTreePane 文件行菜单 dismiss 缺 inside 根真 bug |
+| 门禁 | 对账 9/9；品牌 grep 全量改动文件零残留（测试 tmpdir 前缀/__genofficeDebug→__chatofficeDebug/注释旧名清理）；typecheck 全工作区 0；shell 702 测试全绿；lint 回 main 基线（新增项清零）；home 系 e2e 5 用例全绿（截图 e2e/artifacts/screenshots/home-new-*.png） |
+
+**本轮新坑**：①上游 i18n 键存在多行格式（键名单独一行），键级合并正则必须兼容，否则漏判重复；②上游删除通道时其旧名可能仍被本地 B 区桥硬编码（files-pane-bridge ⇄ folderRoots 改名）——删通道先全库 grep 旧通道字符串；③e2e 规格断言的写盘行为可能与本仓「延迟落盘」共识冲突（新建即内存文档），改编前先核架构归属。
 
 ### 第十六轮增量（2026-09-22，476e5023..0d90149：37 提交，施工于 sync/upstream-20260921 分支；上游安全加固批量周+两特性）
 

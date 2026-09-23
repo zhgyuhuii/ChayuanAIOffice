@@ -29,7 +29,7 @@ const APP_ICON = nativeImage.createFromPath(appIconPath)
 import { execFile } from 'node:child_process'
 import { readFile, writeFile, rm, stat, mkdir, open } from 'node:fs/promises'
 import { createHash, randomUUID } from 'node:crypto'
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync } from 'node:fs' 
 import { userInfo } from 'node:os'
 import { basename, dirname, join, resolve } from 'node:path'
 import { cleanupExpiredGeneratedPages } from './generated-page-temp'
@@ -56,7 +56,9 @@ import {
   installRendererProtocol,
   registerRendererScheme,
   rendererUrl,
-} from '@chatoffice/electron-utils'
+  MAX_REMOTE_IMAGE_BYTES,
+  readBodyCapped,
+} from '@chatoffice/electron-utils' 
 import {
   resolveGroupChildId,
   runTxn,
@@ -516,6 +518,16 @@ async function readRecent(): Promise<string[]> {
   try {
     const raw = await readFile(RECENT_PATH(), 'utf8')
     return (JSON.parse(raw) as string[]).filter((p) => existsSync(p))
+  } catch {
+    return []
+  }
+}
+
+/** the raw recent list, for the shell's folder bookkeeping (no existence filter) */
+export function readSlidesRecentFiles(): string[] {
+  try {
+    const parsed: unknown = JSON.parse(readFileSync(RECENT_PATH(), 'utf8'))
+    return Array.isArray(parsed) ? parsed.filter((p): p is string => typeof p === 'string') : []
   } catch {
     return []
   }
@@ -1876,7 +1888,7 @@ export function registerSlidesIpc(): void {
           fetchImage: async (url) => {
             const resp = await fetchRemoteImage(url)
             if (!resp || !resp.ok) return null
-            const buf = new Uint8Array(await resp.arrayBuffer())
+            const buf = await readBodyCapped(resp, MAX_REMOTE_IMAGE_BYTES)
             const mime = sniffImageMime(buf) ?? resp.headers.get('content-type') ?? ''
             const ext = /png/.test(mime)
               ? 'png'

@@ -9,7 +9,7 @@ import {
 } from '../../src/main/mcp/cli-runner'
 
 function script(body: string): string {
-  const dir = mkdtempSync(join(tmpdir(), 'genoffice-cli-runner-'))
+  const dir = mkdtempSync(join(tmpdir(), 'chatoffice-cli-runner-'))
   const file = join(dir, 'child.js')
   writeFileSync(file, body)
   return file
@@ -20,7 +20,7 @@ describe('createCliRunner output cap', () => {
     const runner = createCliRunner({
       executable: process.execPath,
       entry: script(
-        `process.stdout.write('x'.repeat(10 * 1024 * 1024)); setInterval(() => {}, 1000)`,
+        `process.stdout.write('x'.repeat(${MAX_CLI_OUTPUT_BYTES + 1024 * 1024})); setInterval(() => {}, 1000)`,
       ),
     })
     const start = Date.now()

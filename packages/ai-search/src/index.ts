@@ -88,8 +88,14 @@ async function parallelWebSearch(
  * finite 1..20 and truncate the query so a wild maxResults cannot inflate
  * backend cost/loops and a megabyte query cannot flood request bodies.
  */
-function normalizeSearchArgs(query: string, maxResults: number): { query: string; max: number } {
-  const max = Number.isFinite(maxResults) ? Math.min(Math.max(1, Math.floor(maxResults)), 20) : 6
+function normalizeSearchArgs(
+  query: string,
+  maxResults: number,
+  fallback: number,
+): { query: string; max: number } {
+  const max = Number.isFinite(maxResults)
+    ? Math.min(Math.max(1, Math.floor(maxResults)), 20)
+    : fallback
   return { query: typeof query === 'string' ? query.slice(0, 500) : '', max }
 }
 
@@ -106,7 +112,7 @@ export async function webSearch(
   method: string
   error?: string
 }> {
-  const { query: q, max } = normalizeSearchArgs(query, maxResults)
+  const { query: q, max } = normalizeSearchArgs(query, maxResults, 6)
   type Tier = {
     id: string
     run: () => Promise<{ results: WebSearchResult[]; answer?: string; method: string } | null>
