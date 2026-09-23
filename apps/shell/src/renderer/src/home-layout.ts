@@ -10,7 +10,7 @@
  */
 
 /** which of the two left-tree tabs (对话 / 项目) is shown */
-export type HomeTreeTab = 'chats' | 'projects'
+export type HomeTreeTab = 'recent' | 'chats' | 'projects'
 
 export interface HomeLayoutState {
   leftCollapsed: boolean
@@ -50,7 +50,7 @@ export function clampDockWidth(w: number): number {
 const DEFAULT_STATE: HomeLayoutState = {
   leftCollapsed: false,
   rightCollapsed: true,
-  activeTab: 'chats',
+  activeTab: 'recent',
   recentCollapsed: false,
   newCollapsed: false,
   sidebarWidth: SIDEBAR_DEFAULT,
@@ -64,9 +64,10 @@ const DEFAULT_STATE: HomeLayoutState = {
  * projects.
  */
 export function treeTabFromStored(obj: Record<string, unknown>): HomeTreeTab {
-  if (obj.activeTab === 'projects' || obj.activeTab === 'chats') return obj.activeTab
+  if (obj.activeTab === 'recent' || obj.activeTab === 'projects' || obj.activeTab === 'chats')
+    return obj.activeTab
   if (obj.chatsCollapsed === true && obj.projectsCollapsed === false) return 'projects'
-  return 'chats'
+  return 'recent'
 }
 
 function load(): HomeLayoutState {

@@ -6,19 +6,16 @@ test.describe('home screen', () => {
     const launched = await launchShell({ onboardingSeen: true, videoDir: 'home-basics' })
     const { page } = launched
     try {
-      // 左上 launcher：新建（菜单）+ 打开本地文件
-      await expect(page.locator('.side-launcher .launch-btn.primary')).toBeVisible()
-      await expect(page.locator('.side-launcher .launch-btn.secondary')).toBeVisible()
-      // 新建菜单展开六个格式项
-      await page.click('.side-launcher .launch-btn.primary')
-      await expect(page.locator('.launch-item')).toHaveCount(6)
-      await page.keyboard.press('Escape')
-      // ZCode 式左树：对话 | 项目 双 Tab + 最近
-      await expect(page.locator('.sidebar-tabs [role="tab"]', { hasText: 'Chats' })).toBeVisible()
+      // 左上：2×3 新建直钮网格（六格式）+ 打开本地
+      await expect(page.locator('.side-new-grid .side-new-tile')).toHaveCount(6)
+      await expect(page.locator('.side-new-browse')).toBeVisible()
+      // 胶囊三段 Tab：最近 | 对话 | 项目（默认选中最近）
+      await expect(page.locator('.sidebar-seg [role="tab"]', { hasText: 'Recent' })).toBeVisible()
+      await expect(page.locator('.sidebar-seg [role="tab"]', { hasText: 'Chats' })).toBeVisible()
       await expect(
-        page.locator('.sidebar-tabs [role="tab"]', { hasText: 'Projects' }),
+        page.locator('.sidebar-seg [role="tab"]', { hasText: 'Projects' }),
       ).toBeVisible()
-      await expect(page.locator('.side-sec-chats')).toBeVisible()
+      await expect(page.locator('.sidebar-seg [role="tab"].active', { hasText: 'Recent' })).toBeVisible()
       await expect(page.locator('.side-sec-recent .side-files-title')).toBeVisible()
       await expect(page.locator('.tab-bar .tab-item.tab-home')).toBeVisible()
       await page.screenshot({ path: screenshotPath('home-overview') })
@@ -36,8 +33,9 @@ test.describe('home screen', () => {
     const { page } = launched
     try {
       // 左树双 Tab 与最近分组的中文标题
-      await expect(page.locator('.sidebar-tabs [role="tab"]', { hasText: '对话' })).toBeVisible()
-      await expect(page.locator('.sidebar-tabs [role="tab"]', { hasText: '项目' })).toBeVisible()
+      await expect(page.locator('.sidebar-seg [role="tab"]', { hasText: '最近' })).toBeVisible()
+      await expect(page.locator('.sidebar-seg [role="tab"]', { hasText: '对话' })).toBeVisible()
+      await expect(page.locator('.sidebar-seg [role="tab"]', { hasText: '项目' })).toBeVisible()
       await expect(page.locator('.side-sec-recent .side-files-title')).toHaveText('最近使用')
       await page.screenshot({ path: screenshotPath('home-zh-cn') })
     } finally {

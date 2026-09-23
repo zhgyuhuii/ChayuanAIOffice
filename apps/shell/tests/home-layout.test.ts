@@ -30,14 +30,15 @@ describe('treeTabFromStored (pre-tab collapse-flag migration)', () => {
     expect(treeTabFromStored({ chatsCollapsed: true, projectsCollapsed: false })).toBe('projects')
   })
 
-  it('migrates: both expanded (or both folded) → chats default', () => {
-    expect(treeTabFromStored({ chatsCollapsed: false, projectsCollapsed: false })).toBe('chats')
-    expect(treeTabFromStored({ chatsCollapsed: true, projectsCollapsed: true })).toBe('chats')
-    expect(treeTabFromStored({ chatsCollapsed: false, projectsCollapsed: true })).toBe('chats')
+  // 2026-09-23 胶囊三段 Tab（最近|对话|项目）后，迁移默认值从 chats 改为 recent
+  it('migrates: both expanded (or both folded) → recent default', () => {
+    expect(treeTabFromStored({ chatsCollapsed: false, projectsCollapsed: false })).toBe('recent')
+    expect(treeTabFromStored({ chatsCollapsed: true, projectsCollapsed: true })).toBe('recent')
+    expect(treeTabFromStored({ chatsCollapsed: false, projectsCollapsed: true })).toBe('recent')
   })
 
-  it('falls back to chats with no stored tree state at all', () => {
-    expect(treeTabFromStored({})).toBe('chats')
+  it('falls back to recent with no stored tree state at all', () => {
+    expect(treeTabFromStored({})).toBe('recent')
   })
 })
 

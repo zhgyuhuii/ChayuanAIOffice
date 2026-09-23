@@ -1216,22 +1216,25 @@ body.sidebar-resizing {
 
 /* ── ZCode 式左树双 Tab（对话 | 项目） ── */
 
-/* segmented tab strip: one visible panel below (aria role=tablist/tab/tabpanel) */
-.sidebar-tabs {
-  display: flex;
+/* 胶囊三段 Tab：最近 | 对话 | 项目（2026-09-23 用户明令）
+   靠左排布；容器与选项均按文字自适应宽度（inline-flex + 固定内边距） */
+.sidebar-seg {
+  display: inline-flex;
+  align-self: flex-start;
   gap: 2px;
-  margin-top: 6px;
+  margin: 6px 0 2px 8px;
   padding: 2px;
-  border-radius: 8px;
+  border-radius: 999px;
   background: var(--bg-hover);
+  max-width: 100%;
 }
 
-.sidebar-tab {
-  flex: 1;
+.sidebar-seg-item {
+  flex: none;
   min-width: 0;
-  padding: 3px 8px;
+  padding: 3px 12px;
   border: none;
-  border-radius: 6px;
+  border-radius: 999px;
   background: transparent;
   color: var(--text-muted);
   font: inherit;
@@ -1239,16 +1242,14 @@ body.sidebar-resizing {
   font-weight: 600;
   letter-spacing: 0.02em;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   cursor: pointer;
 }
 
-.sidebar-tab:hover {
+.sidebar-seg-item:hover {
   color: var(--text-secondary);
 }
 
-.sidebar-tab.active {
+.sidebar-seg-item.active {
   background: var(--surface);
   color: var(--text);
   box-shadow: 0 1px 2px var(--border-subtle);

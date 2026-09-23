@@ -2930,15 +2930,64 @@ export function Home() {
     )
   }
   /** always-on 最近使用 section (collapsible group; extension-style filter chips) */
-  function renderRecentSection() {
+  function renderRecentSection(asTab = false) {
     const selCount = selection['recent']?.size ?? 0
     return (
       <div
-        className={`side-files side-sec-recent side-group${
-          layout.recentCollapsed ? ' collapsed' : ''
-        }${selCount > 0 ? ' selecting' : ''}`}
+        className={`side-files side-sec-recent${asTab ? '' : ` side-group${layout.recentCollapsed ? ' collapsed' : ''}`}${
+          selCount > 0 ? ' selecting' : ''
+        }`}
       >
-        {renderGroupHead(
+        {asTab ? (
+          // 胶囊 Tab 形态：标题已由 Tab 表达，头部只留 计数+过滤+清空（无折叠）
+          <div className="side-group-head side-seg-head">
+            <span className="side-files-title">{t('secRecent')}</span>
+            <span className="nav-count">{listTotal}</span>
+            <span className="funnel-anchor" ref={filterMenuWrapRef}>
+              <button
+                className={`side-head-btn funnel${filter !== 'all' ? ' active' : ''}${filterMenuOpen ? ' open' : ''}`}
+                aria-label={t('filterAria')}
+                title={t('filterAria')}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  setFilterMenuOpen((v) => !v)
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path
+                    d="M2.2 3h11.6l-4.5 5.2v4l-2.6 1.4V8.2z"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+              {filterMenuOpen && (
+                <div className="funnel-menu" role="menu">
+                  {RECENT_FILTERS.map((f) => (
+                    <button
+                      key={f.key}
+                      role="menuitem"
+                      className={`funnel-item${filter === f.key ? ' active' : ''}`}
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        changeFilter(f.key)
+                        setFilterMenuOpen(false)
+                      }}
+                    >
+                      <span className="funnel-check">{filter === f.key ? '✓' : ''}</span>
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </span>
+            <button className="side-head-btn" title={t('clearRecent')} onClick={clearAllRecent}>
+              {t('clearRecent')}
+            </button>
+          </div>
+        ) : (
+        renderGroupHead(
           t('secRecent'),
           listTotal,
           layout.recentCollapsed,
@@ -2983,8 +3032,8 @@ export function Home() {
                 ))}
               </div>
             )}
-          </span>,
-        )}
+            </span>,
+        ))}
         <div className="side-group-body">
           {selCount > 0 && (
             <div className="zone-toolbar">
@@ -3099,14 +3148,24 @@ export function Home() {
             renderArchiveView()
           ) : (
             <>
-              {/* ZCode 式左树：对话 | 项目 双 Tab（用户 2026-09-23 明令保留，靠左） */}
-              <div className="sidebar-tabs" role="tablist" aria-label={t('sidebarTabList')}>
+              {/* 胶囊三段 Tab：最近 | 对话 | 项目（用户 2026-09-23 明令：靠左、随文字自适应宽度） */}
+              <div className="sidebar-seg" role="tablist" aria-label={t('sidebarTabList')}>
+                <button
+                  role="tab"
+                  id="home-tree-tab-recent"
+                  aria-selected={layout.activeTab === 'recent'}
+                  aria-controls="home-tree-panel-recent"
+                  className={`sidebar-seg-item${layout.activeTab === 'recent' ? ' active' : ''}`}
+                  onClick={() => setHomeLayout({ activeTab: 'recent' })}
+                >
+                  {t('secRecent')}
+                </button>
                 <button
                   role="tab"
                   id="home-tree-tab-chats"
                   aria-selected={layout.activeTab === 'chats'}
                   aria-controls="home-tree-panel-chats"
-                  className={`sidebar-tab${layout.activeTab === 'chats' ? ' active' : ''}`}
+                  className={`sidebar-seg-item${layout.activeTab === 'chats' ? ' active' : ''}`}
                   onClick={() => setHomeLayout({ activeTab: 'chats' })}
                 >
                   {t('secChats')}
@@ -3117,15 +3176,18 @@ export function Home() {
                     id="home-tree-tab-projects"
                     aria-selected={layout.activeTab === 'projects'}
                     aria-controls="home-tree-panel-projects"
-                    className={`sidebar-tab${layout.activeTab === 'projects' ? ' active' : ''}`}
+                    className={`sidebar-seg-item${layout.activeTab === 'projects' ? ' active' : ''}`}
                     onClick={() => setHomeLayout({ activeTab: 'projects' })}
                   >
                     {t('projects')}
                   </button>
                 )}
               </div>
-              {layout.activeTab === 'projects' ? renderProjectsSection() : renderChatsSection()}
-              {renderRecentSection()}
+              {layout.activeTab === 'recent'
+                ? renderRecentSection(true)
+                : layout.activeTab === 'projects' && projectMode
+                  ? renderProjectsSection()
+                  : renderChatsSection()}
               {/* 上游 #757 文件树（树内联文件+全文搜索）；LOCAL: 移植进新组件，见 home-files/FileTreePane.tsx */}
               <FileTreePane selectedFolder={newFileDir} onSelectFolder={setNewFileDir} />
             </>
