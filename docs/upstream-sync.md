@@ -115,7 +115,7 @@
 格式：`自有版本.上游版本` 共六段 `X.Y.Z.A.B.C`。规则：
 1. **每次更新合并上游代码后**，改后三位 `A.B.C` ＝ 本次合并到的上游版本号（例：合并到上游 tag v0.10.1038 → 后三位 `0.10.1038`）。前三位为自有版本线，仅在本地功能线升级时人工推进（当前 `1.0` 线，第三位 Z 为打包序号）。
 2. **每次打包前**，第三位 `Z` 加一（例：合并后版本 `1.0.1.0.10.1038` → 打包版本 `1.0.2.0.10.1038`），作为打包纪律。
-3. 版本号落点：`apps/shell/package.json` 的 `version` 字段（electron-builder 的 appId/产物名/auto-update feed 均由它派生）；包管理器只取前三段做 semver 校验，后三段随产物名与关于页透出。
+3. 版本号落点：`apps/shell/package.json` 的 `version` 字段只能存**前三段**（electron-builder 的 normalizePackageData 按 semver 校验，六段直接报 Invalid version——2026-09-23 实测）；**后三位**存同文件 `chatofficeUpstreamVersion` 字段。显示层由 `packages/electron-utils/src/display-version.ts` 的 `displayVersion()` 拼接为六段（设置页 getAppVersion IPC 与菜单关于已接）；更新器/遥测等 semver 管线继续消费三段 `version`，不受影响。
 4. 合并改后三位与打包加第三位均在**合 main 前后各一次提交**内完成，与台账轮次记录绑定。
 
 ### 第十七轮增量（2026-09-23，0d90149..efb9247：9 提交（8 加固/小修 + 9-22 快照 115 文件 +8537/−783），施工于 sync/upstream-20260923 分支；施工前 stash 并行 WIP（home.css 窄落地+两 fixture 删除））
