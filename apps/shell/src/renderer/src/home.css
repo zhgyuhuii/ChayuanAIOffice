@@ -4170,6 +4170,19 @@ body.sidebar-resizing {
 .chat-landing.welcome {
   gap: 4px;
   container-type: inline-size;
+  /* 滚动预算（2026-09-23 窄窗遮挡修复）：justify-content:center 在内容超高时
+     会向两端对称溢出（广场/页脚压住输入框、问候语顶部裁切）——改为顶对齐
+     + 首尾 margin-block:auto 弹性居中 + 容器自身可滚 */
+  justify-content: flex-start;
+  overflow-y: auto;
+}
+
+.chat-landing.welcome .chat-greet {
+  margin-top: auto;
+}
+
+.chat-landing.welcome .chat-landing-footer {
+  margin-bottom: auto;
 }
 
 .chat-greet .welcome-sub {
@@ -4611,7 +4624,8 @@ body.sidebar-resizing {
 
 /* ── narrow chat pane: cards stack (icon left, copy right), plaza wraps ── */
 
-@container (max-width: 919px) {
+/* 平板端（容器 640–1199）：五卡单列 + 广场收徽章 */
+@container (max-width: 1199px) {
   .welcome-cards {
     flex-direction: column;
     width: min(430px, 100%);
@@ -4658,17 +4672,47 @@ body.sidebar-resizing {
     transform: translateY(-50%);
   }
 
+  /* 广场收窄：徽章行整体隐藏，描述截断，按钮吸右 */
   .welcome-plaza {
-    flex-wrap: wrap;
     gap: 9px 12px;
   }
 
   .welcome-plaza-badges {
-    margin-left: 54px;
+    display: none;
+  }
+
+  .welcome-plaza-desc {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .welcome-plaza-cta {
     margin-left: auto;
+  }
+}
+
+/* 手机端（容器 <640）：广场紧凑行（图标+名称+按钮），页脚只留文字行 */
+@container (max-width: 639px) {
+  .chat-landing {
+    padding: 12px 10px;
+  }
+
+  .chat-greet {
+    font-size: 20px;
+  }
+
+  .chat-greet .hero-ask,
+  .chat-greet .welcome-sub {
+    font-size: 13px;
+  }
+
+  .welcome-plaza-desc {
+    display: none;
+  }
+
+  .chat-landing-footer .chat-footer-qr {
+    display: none;
   }
 }
 
