@@ -95,17 +95,18 @@ describe('configuredDefaultSaveDir', () => {
     expect(configuredDefaultSaveDir(app)).toBe(custom)
   })
 
-  // adapted（品牌改名 ChatOffice→ChaAI Office）：无配置时新装回落 <Documents>/ChaAI Office；
-  // 已有旧版 <Documents>/ChatOffice 的机器优先沿用旧目录，避免静默换到空目录
-  it('falls back to <Documents>/ChaAI Office without a setting', () => {
+  // adapted（品牌改名 ChatOffice→ChaAI Office→ChayuanAIOffice，2026-09-23）：无配置时
+  // 新装回落 <Documents>/ChayuanAIOffice；已有旧版目录的机器按改名次序沿用最近一代，
+  // 避免静默换到空目录
+  it('falls back to <Documents>/ChayuanAIOffice without a setting', () => {
     const userData = join(root, 'userData')
     const documents = join(root, 'Documents')
     mkdirSync(userData, { recursive: true })
     const app = {
       getPath: (name: 'userData' | 'documents') => (name === 'userData' ? userData : documents),
     }
-    expect(configuredDefaultSaveDir(app)).toBe(join(documents, 'ChaAI Office'))
-    expect(existsSync(join(documents, 'ChaAI Office'))).toBe(true)
+    expect(configuredDefaultSaveDir(app)).toBe(join(documents, 'ChayuanAIOffice'))
+    expect(existsSync(join(documents, 'ChayuanAIOffice'))).toBe(true)
   })
 
   it('prefers an existing legacy <Documents>/ChatOffice folder', () => {
@@ -117,5 +118,16 @@ describe('configuredDefaultSaveDir', () => {
       getPath: (name: 'userData' | 'documents') => (name === 'userData' ? userData : documents),
     }
     expect(configuredDefaultSaveDir(app)).toBe(join(documents, 'ChatOffice'))
+  })
+
+  it('prefers an existing legacy <Documents>/ChaAI Office folder over the new name', () => {
+    const userData = join(root, 'userData')
+    const documents = join(root, 'Documents')
+    mkdirSync(userData, { recursive: true })
+    mkdirSync(join(documents, 'ChaAI Office'), { recursive: true })
+    const app = {
+      getPath: (name: 'userData' | 'documents') => (name === 'userData' ? userData : documents),
+    }
+    expect(configuredDefaultSaveDir(app)).toBe(join(documents, 'ChaAI Office'))
   })
 })

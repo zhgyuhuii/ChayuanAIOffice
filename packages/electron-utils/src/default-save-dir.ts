@@ -53,9 +53,13 @@ export function resolveDefaultSaveDir(configured: string | null, fallbackDir: st
 export function configuredDefaultSaveDir(app: PathProvider): string {
   const settingsPath = join(app.getPath('userData'), 'app-settings.json')
   const documents = app.getPath('documents')
-  // brand rename (ChatOffice → ChaAI Office): keep landing files in an existing
-  // legacy folder instead of silently switching to a fresh empty one
-  const legacy = join(documents, 'ChatOffice')
-  const fallback = existsSync(legacy) ? legacy : join(documents, 'ChaAI Office')
-  return resolveDefaultSaveDir(readDefaultSaveDirSetting(settingsPath), fallback)
+  // brand renames (ChatOffice → ChaAI Office → ChayuanAIOffice, 2026-09-23): keep
+  // landing files in an existing legacy folder instead of silently switching to a
+  // fresh empty one; only machines with none of the legacy folders get the new one
+  const legacy = existsSync(join(documents, 'ChatOffice'))
+    ? join(documents, 'ChatOffice')
+    : existsSync(join(documents, 'ChaAI Office'))
+      ? join(documents, 'ChaAI Office')
+      : join(documents, 'ChayuanAIOffice')
+  return resolveDefaultSaveDir(readDefaultSaveDirSetting(settingsPath), legacy)
 }

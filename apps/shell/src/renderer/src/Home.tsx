@@ -3152,16 +3152,6 @@ export function Home() {
               <div className="sidebar-seg" role="tablist" aria-label={t('sidebarTabList')}>
                 <button
                   role="tab"
-                  id="home-tree-tab-recent"
-                  aria-selected={layout.activeTab === 'recent'}
-                  aria-controls="home-tree-panel-recent"
-                  className={`sidebar-seg-item${layout.activeTab === 'recent' ? ' active' : ''}`}
-                  onClick={() => setHomeLayout({ activeTab: 'recent' })}
-                >
-                  {t('secRecent')}
-                </button>
-                <button
-                  role="tab"
                   id="home-tree-tab-chats"
                   aria-selected={layout.activeTab === 'chats'}
                   aria-controls="home-tree-panel-chats"
@@ -3182,6 +3172,16 @@ export function Home() {
                     {t('projects')}
                   </button>
                 )}
+                <button
+                  role="tab"
+                  id="home-tree-tab-recent"
+                  aria-selected={layout.activeTab === 'recent'}
+                  aria-controls="home-tree-panel-recent"
+                  className={`sidebar-seg-item${layout.activeTab === 'recent' ? ' active' : ''}`}
+                  onClick={() => setHomeLayout({ activeTab: 'recent' })}
+                >
+                  {t('secRecent')}
+                </button>
               </div>
               {layout.activeTab === 'recent'
                 ? renderRecentSection(true)

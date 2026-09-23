@@ -1223,9 +1223,10 @@ body.sidebar-resizing {
   align-self: flex-start;
   gap: 2px;
   margin: 6px 0 2px 8px;
-  padding: 2px;
+  padding: 3px;
   border-radius: 999px;
   background: var(--bg-hover);
+  box-shadow: inset 0 0 0 1px var(--border-subtle);
   max-width: 100%;
 }
 
@@ -1252,7 +1253,9 @@ body.sidebar-resizing {
 .sidebar-seg-item.active {
   background: var(--surface);
   color: var(--text);
-  box-shadow: 0 1px 2px var(--border-subtle);
+  box-shadow:
+    inset 0 0 0 1px var(--border-strong),
+    0 1px 2px var(--border-subtle);
 }
 
 /* tab 面板头部行：计数 + 行尾过滤/归档/新建钮（悬浮显现） */
