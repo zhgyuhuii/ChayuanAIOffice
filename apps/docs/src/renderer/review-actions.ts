@@ -17,7 +17,12 @@ import {
   removeCommentFromDoc,
   wordRangeAtCaret,
 } from './editor/comments'
-import { blockTexts, compareParagraphs, type CompareEntry } from './editor/compare'
+import {
+  blockTexts,
+  compareParagraphs,
+  editorBlockTexts,
+  type CompareEntry,
+} from './editor/compare'
 import { pendingCommentPluginKey } from './editor/extensions'
 import type { InkAnnotation } from './editor/ink'
 import {
@@ -283,7 +288,9 @@ export async function compareWithFile(ctx: ReviewContext): Promise<void> {
   try {
     const otherParsed = await parseDocx(await fetchDocBytes(other.dataUrl))
     const entries = compareParagraphs(
-      blockTexts(ctx.doc.parsed.blocks),
+      ctx.editor
+        ? editorBlockTexts(ctx.editor.getJSON(), ctx.doc.parsed.blocks)
+        : blockTexts(ctx.doc.parsed.blocks),
       blockTexts(otherParsed.blocks),
     )
     ctx.setCompareResult({ otherName: other.name, entries })
