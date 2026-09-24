@@ -1,0 +1,1006 @@
+/**
+ * DockShell styles — layout engine for the shared dockable AI panel.
+ *
+ * The panel slot (.dockshell-panel) is a single stable DOM child; every layout
+ * (left/right/bottom/float/maximized/collapsed) is expressed with classes on
+ * the shell root so switching never remounts the panel. Sizes flow through CSS
+ * variables: --dock-size (docked dimension) and --dock-x/y/w/h (float/tear).
+ *
+ * Colors use the shared theme tokens with fallbacks so the shell works in apps
+ * that only define a subset.
+ */
+
+.dockshell {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.dockshell-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* column body: children must shrink past their content height, else a tall
+ * editor kills its own scroller and overflows over a bottom-docked panel */
+.dockshell-body > * {
+  min-height: 0;
+}
+
+/* reserves the docked strip while the panel is carried during a tear drag —
+ * the editor holds its layout until the drop commits */
+.dockshell-slot {
+  flex-shrink: 0;
+  align-self: stretch;
+  background: var(--surface-subtle, #f6f7f9);
+  border: 1px dashed var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 6px;
+  margin: 4px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.dockshell-panel {
+  position: relative;
+  flex-shrink: 0;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-page, var(--surface, #fff));
+  /* maximized covers the ribbon tab row — a window drag region that hit-tests
+   * by rectangle regardless of z-order and would swallow every click on the
+   * panel header (see .find-panel in the docs app for the same carve-out) */
+  -webkit-app-region: no-drag;
+  transition:
+    width 180ms cubic-bezier(0.4, 0, 0.2, 1),
+    height 180ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* live drags follow the pointer without easing */
+.dockshell.is-resizing .dockshell-panel,
+.dockshell.is-tearing .dockshell-panel {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dockshell-panel {
+    transition: none;
+  }
+}
+
+/* the app panel component fills the slot in every layout */
+.dockshell-panel > :first-child {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- docked left / right (flex row) ---- */
+
+.dockshell.pos-left .dockshell-panel {
+  order: 0;
+  width: var(--dock-size);
+  border-right: 1px solid var(--color-border-strong, var(--border-strong, #d9d9d9));
+}
+
+.dockshell.pos-left .dockshell-body {
+  order: 1;
+}
+
+.dockshell.pos-right .dockshell-body {
+  order: 0;
+}
+
+.dockshell.pos-right .dockshell-panel {
+  order: 1;
+  width: var(--dock-size);
+  border-left: 1px solid var(--color-border-strong, var(--border-strong, #d9d9d9));
+}
+
+/* ---- docked bottom (flex column, panel spans the full shell width) ---- */
+
+.dockshell.pos-bottom {
+  flex-direction: column;
+}
+
+.dockshell.pos-bottom .dockshell-body {
+  order: 0;
+}
+
+.dockshell.pos-bottom .dockshell-panel {
+  order: 1;
+  width: 100%;
+  height: var(--dock-size);
+  border-top: 1px solid var(--color-border-strong, var(--border-strong, #d9d9d9));
+}
+
+/* ---- floating ---- */
+
+.dockshell.pos-float .dockshell-panel {
+  position: absolute;
+  left: var(--dock-x);
+  top: var(--dock-y);
+  width: var(--dock-w);
+  height: var(--dock-h);
+  z-index: 40;
+  border: 1px solid var(--color-border-strong, var(--border-strong, #d9d9d9));
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgb(0 0 0 / 18%);
+}
+
+/* tearing: the ghost follows the pointer at the panel's current size */
+.dockshell.is-tearing .dockshell-panel {
+  position: absolute;
+  left: var(--dock-x);
+  top: var(--dock-y);
+  width: var(--dock-w);
+  height: var(--dock-h);
+  z-index: 70;
+  border: 1px solid var(--color-border-strong, var(--border-strong, #d9d9d9));
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgb(0 0 0 / 24%);
+  opacity: 0.94;
+  pointer-events: none;
+}
+
+/* ---- maximized: panel covers the whole shell INCLUDING the app's ribbon —
+ * true fullscreen, the panel's own header (对话/助手 tabs) stays on top ---- */
+
+.dockshell.is-max .dockshell-panel {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  z-index: 40;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* maximized covers the ribbon tab row entirely — the row is a window drag
+ * region that hit-tests by rectangle regardless of z-order, so while covered
+ * it must stand down or every click in the band (panel header buttons) drags
+ * the window instead */
+.dockshell.is-max .ribbon-tabs {
+  -webkit-app-region: no-drag;
+}
+
+/* ---- collapsed: panel hidden entirely (the top-row bubble icon reopens) ---- */
+
+.dockshell.is-closed .dockshell-panel {
+  display: none;
+}
+
+/* ---- divider between panel and content (docked only) ---- */
+
+.dockshell-resizer {
+  position: absolute;
+  z-index: 45;
+  background: transparent;
+}
+
+.dockshell.pos-left .dockshell-resizer {
+  right: -3px;
+  top: 0;
+  bottom: 0;
+  width: 7px;
+  cursor: col-resize;
+}
+
+.dockshell.pos-right .dockshell-resizer {
+  left: -3px;
+  top: 0;
+  bottom: 0;
+  width: 7px;
+  cursor: col-resize;
+}
+
+.dockshell.pos-bottom .dockshell-resizer {
+  top: -3px;
+  left: 0;
+  right: 0;
+  height: 7px;
+  cursor: row-resize;
+}
+
+.dockshell.pos-float .dockshell-resizer,
+.dockshell.is-max .dockshell-resizer,
+.dockshell.is-closed .dockshell-resizer,
+.dockshell.is-tearing .dockshell-resizer {
+  display: none;
+}
+
+.dockshell.is-resizing,
+.dockshell.is-resizing * {
+  cursor: inherit;
+  user-select: none;
+}
+
+/* ---- float resize handles (edges + corners) ----
+ * shell-root children positioned from the rect vars: the float slot itself is
+ * overflow:hidden (corner radius), so handles can't live inside it */
+
+.dockshell-fh {
+  position: absolute;
+  z-index: 46;
+  display: none;
+  /* a float parked over the ribbon tab row keeps its resize grips clickable */
+  -webkit-app-region: no-drag;
+}
+
+.dockshell.pos-float:not(.is-max):not(.is-closed) .dockshell-fh {
+  display: block;
+}
+
+.dockshell-fh-n {
+  left: calc(var(--dock-x) + 10px);
+  top: calc(var(--dock-y) - 3px);
+  width: calc(var(--dock-w) - 20px);
+  height: 8px;
+  cursor: n-resize;
+}
+
+.dockshell-fh-s {
+  left: calc(var(--dock-x) + 10px);
+  top: calc(var(--dock-y) + var(--dock-h) - 5px);
+  width: calc(var(--dock-w) - 20px);
+  height: 8px;
+  cursor: s-resize;
+}
+
+.dockshell-fh-e {
+  left: calc(var(--dock-x) + var(--dock-w) - 5px);
+  top: calc(var(--dock-y) + 10px);
+  width: 8px;
+  height: calc(var(--dock-h) - 20px);
+  cursor: e-resize;
+}
+
+.dockshell-fh-w {
+  left: calc(var(--dock-x) - 3px);
+  top: calc(var(--dock-y) + 10px);
+  width: 8px;
+  height: calc(var(--dock-h) - 20px);
+  cursor: w-resize;
+}
+
+.dockshell-fh-ne {
+  left: calc(var(--dock-x) + var(--dock-w) - 5px);
+  top: calc(var(--dock-y) - 3px);
+  width: 12px;
+  height: 12px;
+  cursor: ne-resize;
+}
+
+.dockshell-fh-nw {
+  left: calc(var(--dock-x) - 3px);
+  top: calc(var(--dock-y) - 3px);
+  width: 12px;
+  height: 12px;
+  cursor: nw-resize;
+}
+
+.dockshell-fh-se {
+  left: calc(var(--dock-x) + var(--dock-w) - 5px);
+  top: calc(var(--dock-y) + var(--dock-h) - 5px);
+  width: 12px;
+  height: 12px;
+  cursor: se-resize;
+}
+
+.dockshell-fh-sw {
+  left: calc(var(--dock-x) - 3px);
+  top: calc(var(--dock-y) + var(--dock-h) - 5px);
+  width: 12px;
+  height: 12px;
+  cursor: sw-resize;
+}
+
+/* ---- carried panel during a tear drag (ghost) ----
+ * the panel floats at the pointer regardless of the resting dock position;
+ * the layout class only changes on drop. Same geometry as .pos-float. */
+.dockshell.is-tearing .dockshell-panel {
+  position: absolute;
+  top: var(--dock-y);
+  left: var(--dock-x);
+  width: var(--dock-w);
+  height: var(--dock-h);
+  z-index: 40;
+  /* the border lives here, not only in the first ghost block above: tearing
+   * out of is-max must still win over is-max's border:none (this block is
+   * the last word on the ghost's box) */
+  border: 1px solid var(--color-border-strong, var(--border-strong, #d9d9d9));
+  border-radius: 10px;
+  box-shadow:
+    0 14px 36px rgb(0 0 0 / 30%),
+    0 2px 8px rgb(0 0 0 / 14%);
+  opacity: 0.97;
+}
+
+/* ---- snap preview (edge hot zone armed during a tear drag) ----
+ * sits ABOVE the carried panel: the target must stay visible while the
+ * ghost passes over it. Strong shadow + accent glow so it reads as the
+ * drop target. */
+.dockshell-snap {
+  position: absolute;
+  z-index: 50;
+  margin: 4px;
+  border-radius: 8px;
+  border: 1.5px solid var(--accent, #2f6fdc);
+  background: color-mix(in srgb, var(--accent, #2f6fdc) 18%, transparent);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--accent, #2f6fdc) 22%, transparent),
+    0 10px 30px color-mix(in srgb, var(--accent, #2f6fdc) 30%, transparent);
+  pointer-events: none;
+  animation: dockshell-snap-in 120ms ease;
+}
+
+@keyframes dockshell-snap-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.dockshell-snap-left {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--snap-size);
+}
+
+.dockshell-snap-right {
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--snap-size);
+}
+
+.dockshell-snap-bottom {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--snap-size);
+}
+
+/* ---- window-drag carve-out ----
+ * Chromium collects -webkit-app-region rects in document order (drag = union,
+ * no-drag = subtract) and the hit test ignores z-order entirely. The ribbon
+ * tab row inside the dock body is a drag region that comes AFTER this panel
+ * in the DOM, so a no-drag declared on the panel itself is re-covered by the
+ * row's later drag rect — with the panel maximized or floating over the row,
+ * every header click in the band drags the window instead of reaching the
+ * buttons. This invisible overlay is the shell's LAST child, so its no-drag
+ * subtracts after the ribbon's drag; pointer-events:none keeps real hits
+ * flowing to the panel beneath. */
+.dockshell-carve {
+  position: absolute;
+  z-index: 40;
+  pointer-events: none;
+  -webkit-app-region: no-drag;
+}
+
+.dockshell.is-max .dockshell-carve {
+  inset: 0;
+}
+
+.dockshell.pos-float:not(.is-max) .dockshell-carve {
+  left: var(--dock-x);
+  top: var(--dock-y);
+  width: var(--dock-w);
+  height: var(--dock-h);
+}
+
+/* ---- header chrome buttons (rendered inside the app's panel header) ---- */
+
+.dockshell-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  cursor: pointer;
+  padding: 0;
+  transition: background 120ms ease;
+}
+
+.dockshell-btn:hover {
+  background: var(--color-bg-subtle, var(--hover, #f5f5f5));
+  color: var(--color-text-primary, var(--text, #242424));
+}
+
+/* ---- layout menu (fixed: escapes the panel's overflow clipping) ---- */
+
+.dockshell-menu {
+  position: fixed;
+  z-index: 100;
+  min-width: 168px;
+  /* same drag-region carve-out as the panel: the menu may open over the
+   * app's ribbon tab row while maximized */
+  -webkit-app-region: no-drag;
+  padding: 4px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 8px;
+  background: var(--color-bg-page, var(--surface, #fff));
+  box-shadow: var(--shadow-menu, 0 8px 24px rgb(0 0 0 / 18%));
+}
+
+.dockshell-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  font-size: 13px;
+  color: var(--color-text-primary, var(--text, #242424));
+  cursor: pointer;
+  text-align: left;
+}
+
+.dockshell-menu-item:hover {
+  background: var(--color-bg-subtle, var(--hover, #f5f5f5));
+}
+
+.dockshell-menu-item.selected {
+  color: var(--accent, #2f6fdc);
+}
+
+/* ---- AI panel header / tab strip (PanelTabs, rendered inside the panel slot) ---- */
+
+.ai-tab-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 6px 12px;
+  border-bottom: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.ai-tab-strip {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  /* §7.1 会话 tab 超出可横向滚动（滚动条隐藏，滚轮/触控板横扫） */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.ai-tab-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.ai-tab {
+  border: none;
+  background: none;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.2;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ai-tab:hover {
+  color: var(--color-text-primary, var(--text, #242424));
+  background: var(--color-bg-subtle, var(--hover, #f5f5f5));
+}
+
+.ai-tab.active {
+  color: var(--accent, #2f6fdc);
+  font-weight: 600;
+}
+
+.ai-tab-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* macOS 独立窗口（hiddenInset）：红绿灯占左上 ~84px，左停靠/最大化时面板头
+   （对话/助手行）让位——与各应用 .ribbon-tabs-mac 同值；宿主挂 .mac-standalone */
+.dockshell.mac-standalone.pos-left .ai-tab-header,
+.dockshell.mac-standalone.is-max .ai-tab-header {
+  padding-left: 84px;
+}
+
+/* ---- top-row bubble icon (AiPanelToggle, placed in the app's tab row) ---- */
+
+.ai-toggle-wrap {
+  position: relative;
+  display: inline-flex;
+  margin-left: auto;
+  flex-shrink: 0;
+  -webkit-app-region: no-drag;
+}
+
+.ai-panel-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 28px;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  border-radius: 4px;
+  color: var(--color-text-primary, var(--text, #242424));
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+
+.ai-panel-toggle:hover {
+  background: var(--color-bg-subtle, var(--hover, #f5f5f5));
+}
+
+.ai-panel-toggle.active {
+  color: var(--accent, #2f6fdc);
+  background: color-mix(in srgb, var(--accent, #2f6fdc) 14%, transparent);
+}
+
+/* one-shot attention after the panel closes: pulse + wiggle, then rest */
+@keyframes ai-toggle-attention {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  15% {
+    transform: scale(1.22) rotate(-9deg);
+  }
+  30% {
+    transform: scale(1.22) rotate(9deg);
+  }
+  45% {
+    transform: scale(1.14) rotate(-5deg);
+  }
+  60% {
+    transform: scale(1.14) rotate(5deg);
+  }
+  78% {
+    transform: scale(1.06) rotate(0deg);
+  }
+}
+
+.ai-panel-toggle.attention {
+  animation: ai-toggle-attention 1.8s cubic-bezier(0.45, 0, 0.25, 1) both;
+  color: var(--accent, #2f6fdc);
+}
+
+/* arrowed "click here" hint riding the attention window */
+.ai-toggle-hint {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 10px);
+  transform: translateY(-50%);
+  padding: 4px 10px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 7px;
+  background: var(--color-bg-page, var(--surface, #fff));
+  box-shadow: 0 4px 14px rgb(0 0 0 / 14%);
+  color: var(--color-text-primary, var(--text, #242424));
+  font-size: 11px;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: ai-toggle-hint-fade 1.8s ease both;
+}
+
+.ai-toggle-hint::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  width: 6px;
+  height: 6px;
+  transform: translateY(-50%) rotate(45deg);
+  border-top: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-right: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  background: var(--color-bg-page, var(--surface, #fff));
+}
+
+@keyframes ai-toggle-hint-fade {
+  0% {
+    opacity: 0;
+  }
+  12%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-panel-toggle.attention {
+    animation: none;
+  }
+  .ai-toggle-hint {
+    animation: none;
+  }
+}
+
+/* ── model picker (panel header) + empty-state guidance ─────────── */
+
+.ai-model-picker {
+  max-width: 168px;
+  font-size: 11px;
+}
+
+/* the dropdown popover escapes the panel footer's overflow: show full model ids */
+.ai-model-picker .gs-dd-pop {
+  min-width: 220px;
+}
+
+.ai-msg-model {
+  margin-top: 4px;
+  font-size: 10px;
+  color: var(--text-tertiary, #909499);
+  user-select: none;
+}
+
+.ai-model-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 10px 0 4px;
+  padding: 10px 12px;
+  border: 1px dashed var(--border-strong, #d9d9d9);
+  border-radius: 8px;
+  background: var(--surface-subtle, #f6f7f9);
+}
+.ai-model-empty-title {
+  font-size: 12px;
+  font-weight: 600;
+}
+.ai-model-empty-body {
+  font-size: 11px;
+  color: var(--text-secondary, #606366);
+}
+
+/* ── LOCAL(2026-09-21, d8201ad0): 多会话(多 tab)对话栏——tab 关闭钮/运行圆点/历史列表/确认气泡/空态 ── */
+
+/* conversation tabs carry a ✕ and (while streaming) a running dot */
+.ai-tab .ai-tab-label {
+  vertical-align: middle;
+}
+
+.ai-tab .ai-tab-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  margin-left: 4px;
+  margin-right: -3px;
+  border-radius: 3px;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  opacity: 0;
+  transition: opacity 0.12s ease, background 0.12s ease;
+  vertical-align: middle;
+}
+
+.ai-tab:hover .ai-tab-close,
+.ai-tab.active .ai-tab-close {
+  opacity: 0.7;
+}
+
+.ai-tab .ai-tab-close:hover {
+  opacity: 1;
+  background: var(--color-bg-subtle, var(--hover, #f5f5f5));
+  color: var(--color-text-primary, var(--text, #242424));
+}
+
+/* a tab (its ✕) must not drag the panel */
+.ai-tab .ai-tab-close {
+  -webkit-app-region: no-drag;
+}
+
+.ai-tab .ai-tab-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: var(--accent, #2f6fdc);
+  vertical-align: middle;
+  animation: ai-tab-dot-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes ai-tab-dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* ── history list (历史对话 tab 体) ── */
+
+.ai-history {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.ai-history-head {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 12px 4px;
+  flex-shrink: 0;
+}
+
+.ai-history-delete-all {
+  border: none;
+  background: none;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 12px;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  cursor: pointer;
+}
+
+.ai-history-delete-all:hover {
+  color: #d33;
+  background: color-mix(in srgb, #d33 10%, transparent);
+}
+
+.ai-history-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 8px 12px;
+}
+
+.ai-history-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  color: var(--color-text-primary, var(--text, #242424));
+}
+
+.ai-history-item:hover {
+  background: var(--color-bg-subtle, var(--hover, #f5f5f5));
+}
+
+.ai-history-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.ai-history-time {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+}
+
+.ai-history-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  border-radius: 4px;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  opacity: 0;
+  cursor: pointer;
+}
+
+.ai-history-item:hover .ai-history-delete {
+  opacity: 0.7;
+}
+
+.ai-history-delete:hover {
+  opacity: 1;
+  color: #d33;
+  background: color-mix(in srgb, #d33 10%, transparent);
+}
+
+.ai-history-empty {
+  align-items: center;
+  justify-content: center;
+}
+
+.ai-history-empty-text {
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  font-size: 13px;
+  padding: 24px;
+  text-align: center;
+}
+
+/* ── confirm bubble (stop-and-close / delete-one / delete-all) ── */
+
+.ai-conv-confirm {
+  position: absolute;
+  top: 34px;
+  right: 8px;
+  z-index: 30;
+  min-width: 200px;
+  max-width: 260px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  background: var(--color-bg-elevated, var(--panel, #fff));
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  font-size: 12.5px;
+  -webkit-app-region: no-drag;
+}
+
+.ai-conv-confirm-title {
+  font-weight: 600;
+  color: var(--color-text-primary, var(--text, #242424));
+  margin-bottom: 2px;
+}
+
+.ai-conv-confirm-body {
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  margin-bottom: 8px;
+}
+
+.ai-conv-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.ai-conv-confirm-cancel,
+.ai-conv-confirm-ok {
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  background: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  cursor: pointer;
+  color: var(--color-text-primary, var(--text, #242424));
+}
+
+.ai-conv-confirm-ok {
+  background: var(--accent, #2f6fdc);
+  border-color: var(--accent, #2f6fdc);
+  color: #fff;
+}
+
+.ai-conv-confirm-ok:hover {
+  filter: brightness(1.08);
+}
+
+.ai-conv-confirm-cancel:hover {
+  background: var(--color-bg-subtle, var(--hover, #f5f5f5));
+}
+
+/* ── empty state when every conversation tab is closed ── */
+
+.ai-conv-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.ai-conv-empty-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary, var(--text, #242424));
+}
+
+.ai-conv-empty-body {
+  font-size: 12.5px;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  max-width: 260px;
+}
+
+.ai-conv-empty-create {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 7px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent, #2f6fdc);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ai-conv-empty-create:hover {
+  filter: brightness(1.08);
+}
+
+.ai-conv-empty-history {
+  border: none;
+  background: none;
+  color: var(--accent, #2f6fdc);
+  font-size: 12.5px;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.ai-conv-empty-history:hover {
+  text-decoration: underline;
+}
+
+/* D10 已中断角标(转录历史条目) */
+.ai-msg-interrupted-badge {
+  display: inline-block;
+  margin: 2px 0;
+  padding: 1px 7px;
+  border-radius: 5px;
+  font-size: 11px;
+  color: #b7791f;
+  background: color-mix(in srgb, #b7791f 12%, transparent);
+}
+
+/* ── LOCAL(2026-09-22, d8201ad0): D13 历史对话下拉浮层(AiHistoryPopover,🕘 触发,B 区追加段)。
+   上游无对应实现;收敛条件:上游若原生实现历史下拉/历史列表,评估取上游并删除此段 ── */
+
+.ai-history-anchor {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.ai-history-popover {
+  position: fixed;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  min-width: 250px;
+  max-width: 320px;
+  max-height: min(420px, 60vh);
+  overflow: auto;
+  padding: 4px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 8px;
+  background: var(--color-bg-page, var(--surface, #fff));
+  box-shadow: var(--shadow-menu, 0 8px 24px rgb(0 0 0 / 18%));
+  -webkit-app-region: no-drag;
+}
+
+/* 列表体在浮层内自适应高度(旧 tab 体里是 height:100%) */
+.ai-history-popover .ai-history {
+  height: auto;
+  min-height: 0;
+}

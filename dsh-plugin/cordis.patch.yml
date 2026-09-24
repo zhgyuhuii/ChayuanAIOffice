@@ -1,0 +1,6 @@
+# dsh bundle layer: mount the chatoffice host plugin (package root export).
+# The client half (桌面应用注册 + 编辑器窗口) is declared in package.json's
+# dsh.client and is served to the browser as this package's client module.
+- insert:
+    - id: chatoffice
+      name: 'chatoffice'

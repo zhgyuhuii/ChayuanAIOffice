@@ -1,0 +1,915 @@
+import type { AiWireProtocol } from './types'
+
+/**
+ * Vendor catalog — harvested from chatop's desktop/models/vendor-catalog.js and
+ * merged with this repo's runtime knowledge:
+ * - `gemini` defaults to the native generateContent protocol (chatop routed it
+ *   through the OpenAI-compat endpoint; we speak native directly).
+ * - `anthropic` base URL omits the /v1 suffix (our adapter appends /v1/messages).
+ * - `chatoffice` is this suite's special login-backed profile (not in chatop).
+ *
+ * Vendor ids double as profile ids and (in the harness settings source) as the
+ * `chatop-<id>` route key, so office and chatop enable the same provider row.
+ */
+
+export interface VendorCatalogEntry {
+  id: string
+  /** display name (official English/brand name); zh via nameZh */
+  name: string
+  nameZh?: string
+  group: 'cn' | 'global' | 'local' | 'agg'
+  /** default API base URL; empty = user must supply one */
+  defaultUrl: string
+  /** default wire protocol; the settings UI lets the user override */
+  api: AiWireProtocol
+  /** endpoint serves Ollama-style /api/tags and accepts an empty key */
+  ollamaLike?: boolean
+  /** provider rides the local Codex CLI's ChatGPT login; models come from the CLI catalog */
+  codexLike?: boolean
+  /** console page where an API key can be created */
+  keyUrl?: string
+  docsUrl?: string
+  /** declarative credential form — default is one secret field; vendors whose
+   * auth needs several values render one input per field and the settings page
+   * folds them into the single stored key with `join` (kling: "ak:sk" JWT) */
+  keyFields?: Array<{ id: string; label: string; labelZh?: string; join?: string }>
+  /** free = 'nokey' (usable keyless) | 'freekey' (free key on signup) | 'tier' (free quota) */
+  free?: 'nokey' | 'freekey' | 'tier'
+  freeNote?: string
+  /** fallback model list when the vendor exposes no /models endpoint */
+  presets?: Array<{ id: string; name?: string }>
+}
+
+export const VENDOR_GROUPS: Array<{
+  id: 'cn' | 'global' | 'local' | 'agg'
+  label: string
+  labelZh: string
+}> = [
+  { id: 'cn', label: 'China platforms', labelZh: '国内平台' },
+  { id: 'global', label: 'Global platforms', labelZh: '国际平台' },
+  { id: 'local', label: 'Local & self-hosted', labelZh: '本地与自建' },
+  { id: 'agg', label: 'API aggregators', labelZh: 'API 聚合' },
+]
+
+/** This suite's login-backed default profile; protocol is model-dependent (claude→anthropic, gemini→gemini, rest→openai). */
+export const CHATOFFICE_PRESET_MODELS = [
+  'claude-opus-4-7',
+  'claude-opus-4-8',
+  'claude-sonnet-4-6',
+  'gpt-5.6',
+  'gpt-5.6-terra',
+  'gpt-5.6-luna',
+  'gemini-3.1-pro-preview',
+  'gemini-3-flash-preview',
+  'gemini-3.7-flash',
+]
+
+export const VENDORS: VendorCatalogEntry[] = [
+  {
+    id: 'chatoffice',
+    name: 'ChaAI Office',
+    group: 'agg',
+    defaultUrl: '',
+    api: 'openai-completions',
+    presets: CHATOFFICE_PRESET_MODELS.map((id) => ({ id })),
+  },
+  {
+    id: 'deepseek',
+    name: 'DeepSeek',
+    nameZh: '深度求索 DeepSeek',
+    group: 'cn',
+    defaultUrl: 'https://api.deepseek.com',
+    api: 'openai-completions',
+    keyUrl: 'https://platform.deepseek.com/api_keys',
+  },
+  {
+    // Media-generation-only vendor: keys + models manage through the settings
+    // UI, but chat does not route here — runMediaJob (media-jobs.ts) drives it.
+    id: 'kling',
+    name: 'Kling AI',
+    nameZh: '快手可灵',
+    group: 'cn',
+    defaultUrl: 'https://api.klingai.com',
+    api: 'openai-completions',
+    keyUrl: 'https://app.klingai.com/global/dev/document-api/apiReference/commonInfo',
+    docsUrl: 'https://app.klingai.com/global/dev/document-api/apiReference/commonInfo',
+    // Kling signs requests with a JWT made from an accessKey + secretKey pair;
+    // the stored key is the two values colon-joined (media-jobs klingJwt).
+    keyFields: [
+      { id: 'accessKey', label: 'Access Key', labelZh: 'Access Key（AK）' },
+      { id: 'secretKey', label: 'Secret Key', labelZh: 'Secret Key（SK）', join: ':' },
+    ],
+  },
+  {
+    id: 'luma',
+    name: 'Luma Dream Machine',
+    group: 'global',
+    defaultUrl: 'https://api.lumalabs.ai',
+    api: 'openai-completions',
+    keyUrl: 'https://lumalabs.ai/api/keys',
+    docsUrl: 'https://docs.lumalabs.ai/',
+  },
+  {
+    // Aggregator: one key reaches FLUX, Kling, Veo, Wan and more via queue.fal.run
+    id: 'fal',
+    name: 'fal.ai',
+    group: 'global',
+    defaultUrl: 'https://queue.fal.run',
+    api: 'openai-completions',
+    keyUrl: 'https://fal.ai/dashboard/keys',
+    docsUrl: 'https://fal.ai/models',
+  },
+  {
+    // Image-generation-only vendor: the only native SVG-output generator
+    // (model recraftv3, style vector_illustration) — strategic for the SVG line.
+    // OpenAI-shaped POST {base}/images/generations, driven by imagegen.ts.
+    id: 'recraft',
+    name: 'Recraft',
+    group: 'global',
+    defaultUrl: 'https://external.api.recraft.ai/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://www.recraft.ai/profile/api-key',
+    docsUrl: 'https://docs.recraft.ai/',
+  },
+  {
+    // Media-generation-only vendor: driven by runMediaJob (media-jobs.ts).
+    id: 'runway',
+    name: 'Runway',
+    group: 'global',
+    defaultUrl: 'https://api.dev.runwayml.com',
+    api: 'openai-completions',
+    keyUrl: 'https://dev.runwayml.com/',
+    docsUrl: 'https://docs.dev.runwayml.com/',
+  },
+  {
+    // Media-generation-only vendor: driven by runMediaJob (media-jobs.ts).
+    id: 'vidu',
+    name: 'Vidu',
+    nameZh: '生数科技 Vidu',
+    group: 'cn',
+    defaultUrl: 'https://api.vidu.com',
+    api: 'openai-completions',
+    keyUrl: 'https://platform.vidu.com/',
+    docsUrl: 'https://platform.vidu.com/docs',
+  },
+  {
+    // Media-generation-only vendor: driven by runMediaJob (media-jobs.ts).
+    id: 'pixverse',
+    name: 'PixVerse',
+    nameZh: '爱诗科技 PixVerse',
+    group: 'global',
+    defaultUrl: 'https://app-api.pixverse.ai',
+    api: 'openai-completions',
+    keyUrl: 'https://platform.pixverse.ai/',
+    docsUrl: 'https://docs.platform.pixverse.ai/',
+  },
+  {
+    id: 'moonshot',
+    name: 'Moonshot Kimi',
+    nameZh: '月之暗面 Kimi',
+    group: 'cn',
+    defaultUrl: 'https://api.moonshot.cn/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://platform.moonshot.cn/console/api-keys',
+  },
+  {
+    id: 'aliyun-bailian',
+    name: 'Alibaba Bailian',
+    nameZh: '阿里百炼',
+    group: 'cn',
+    defaultUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://dashscope.console.aliyun.com/api-key_management',
+  },
+  {
+    id: 'baidu-qianfan',
+    name: 'Baidu Qianfan',
+    nameZh: '百度云千帆',
+    group: 'cn',
+    defaultUrl: 'https://qianfan.baidubce.com/v2',
+    api: 'openai-completions',
+    keyUrl: 'https://console.bce.baidu.com/qianfan/ais/console/applicationConsole/application',
+  },
+  {
+    id: 'zhipu',
+    name: 'Zhipu GLM',
+    nameZh: '智谱开放平台',
+    group: 'cn',
+    defaultUrl: 'https://open.bigmodel.cn/api/paas/v4',
+    api: 'openai-completions',
+    keyUrl: 'https://open.bigmodel.cn/usercenter/apikeys',
+    free: 'tier',
+  },
+  {
+    id: 'volcengine',
+    name: 'Volcengine Ark',
+    nameZh: '火山引擎（豆包）',
+    group: 'cn',
+    defaultUrl: 'https://ark.cn-beijing.volces.com/api/v3',
+    api: 'openai-completions',
+    keyUrl: 'https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey',
+  },
+  {
+    id: 'lingyi-wanwu',
+    name: 'Yi',
+    nameZh: '零一万物',
+    group: 'cn',
+    defaultUrl: 'https://api.lingyiwanwu.com/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://platform.lingyiwanwu.com/apikeys',
+  },
+  {
+    id: 'minimax',
+    name: 'MiniMax',
+    group: 'cn',
+    defaultUrl: 'https://api.minimax.chat/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://platform.minimax.io/user-center/basic-information/interface-key',
+  },
+  {
+    id: 'step-ai',
+    name: 'StepFun',
+    nameZh: '阶跃星辰',
+    group: 'cn',
+    defaultUrl: 'https://api.stepfun.com/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://platform.stepfun.com/interface-key',
+  },
+  {
+    id: 'baichuan',
+    name: 'Baichuan',
+    nameZh: '百川',
+    group: 'cn',
+    defaultUrl: 'https://api.baichuan-ai.com/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://platform.baichuan-ai.com/homePage',
+  },
+  {
+    id: 'tencent-hunyuan',
+    name: 'Tencent Hunyuan',
+    nameZh: '腾讯混元',
+    group: 'cn',
+    defaultUrl: 'https://api.hunyuan.cloud.tencent.com/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://console.cloud.tencent.com/hunyuan/start',
+  },
+  {
+    id: 'tencent-cloud-ti',
+    name: 'Tencent Cloud TI',
+    nameZh: '腾讯云 TI',
+    group: 'cn',
+    defaultUrl: '',
+    api: 'openai-completions',
+    keyUrl: 'https://console.cloud.tencent.com/cam/capi',
+  },
+  {
+    id: 'xiaomi-mimo',
+    name: 'Xiaomi MiMo',
+    nameZh: '小米 MiMo',
+    group: 'cn',
+    defaultUrl: 'https://api.mimo.mi.com/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://platform.xiaomimo.com/#/console/api-keys',
+  },
+  {
+    id: 'modelscope',
+    name: 'ModelScope',
+    nameZh: '魔搭 ModelScope',
+    group: 'cn',
+    defaultUrl: 'https://api.modelscope.cn/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://modelscope.cn/my/myaccesstoken',
+    free: 'freekey',
+    freeNote: '需绑定阿里云账号',
+  },
+  {
+    id: 'tianyi-xirang',
+    name: 'Tianyi Xirang',
+    nameZh: '天翼云息壤',
+    group: 'cn',
+    defaultUrl: '',
+    api: 'openai-completions',
+    keyUrl: 'https://ctxirang.ctyun.cn/home',
+  },
+  {
+    id: 'qiniu',
+    name: 'Qiniu AI',
+    nameZh: '七牛云 AI 推理',
+    group: 'cn',
+    defaultUrl: 'https://ai.qiniuapi.com/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://portal.qiniu.com/ai-inference/api-key',
+  },
+  {
+    id: 'ppio',
+    name: 'PPIO',
+    nameZh: 'PPIO 派欧云',
+    group: 'cn',
+    defaultUrl: 'https://api.ppio.cloud/v1',
+    api: 'openai-completions',
+  },
+  {
+    id: 'lanyun',
+    name: 'Lanyun',
+    nameZh: '蓝耘科技',
+    group: 'cn',
+    defaultUrl: 'https://api.lanyun.com/v1',
+    api: 'openai-completions',
+  },
+  {
+    id: 'ph8',
+    name: 'PH8',
+    nameZh: 'PH8 大模型开放平台',
+    group: 'cn',
+    defaultUrl: 'https://api.ph8.com/v1',
+    api: 'openai-completions',
+  },
+  {
+    id: 'sophnet',
+    name: 'SophNet',
+    group: 'cn',
+    defaultUrl: 'https://api.sophnet.com/v1',
+    api: 'openai-completions',
+  },
+  {
+    id: 'alaya-new',
+    name: 'Alaya NeW',
+    group: 'cn',
+    defaultUrl: 'https://api.alaya.com/v1',
+    api: 'openai-completions',
+  },
+  {
+    id: 'wuwen-xinqiong',
+    name: 'Infinigence',
+    nameZh: '无问芯穹',
+    group: 'cn',
+    defaultUrl: 'https://api.wuwen.com/v1',
+    api: 'openai-completions',
+  },
+  {
+    id: 'netease-youdao',
+    name: 'NetEase Youdao',
+    nameZh: '网易有道',
+    group: 'cn',
+    defaultUrl: '',
+    api: 'openai-completions',
+  },
+  {
+    id: 'gitee-ai',
+    name: 'Gitee AI',
+    group: 'cn',
+    defaultUrl: 'https://ai.gitee.com/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://ai.gitee.com/user-center/tokens',
+  },
+  {
+    id: 'siliconflow',
+    name: 'SiliconFlow',
+    nameZh: '硅基流动',
+    group: 'cn',
+    defaultUrl: 'https://api.siliconflow.cn/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://cloud.siliconflow.cn/account/ak',
+    free: 'tier',
+  },
+  {
+    id: 'openai',
+    name: 'OpenAI',
+    group: 'global',
+    defaultUrl: 'https://api.openai.com/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://platform.openai.com/api-keys',
+  },
+  {
+    id: 'anthropic',
+    name: 'Anthropic',
+    group: 'global',
+    defaultUrl: 'https://api.anthropic.com',
+    api: 'anthropic-messages',
+    keyUrl: 'https://console.anthropic.com/settings/keys',
+  },
+  {
+    id: 'gemini',
+    name: 'Google Gemini',
+    group: 'global',
+    defaultUrl: 'https://generativelanguage.googleapis.com/v1beta',
+    api: 'gemini-native',
+    keyUrl: 'https://aistudio.google.com/app/apikey',
+    free: 'tier',
+  },
+  {
+    id: 'azure-openai',
+    name: 'Azure OpenAI',
+    group: 'global',
+    defaultUrl: '',
+    api: 'openai-completions',
+    keyUrl: 'https://portal.azure.com/#view/Microsoft_Azure_OpenAI/AzureOpenAIChat',
+  },
+  {
+    id: 'vertex-ai',
+    name: 'Vertex AI',
+    group: 'global',
+    defaultUrl: '',
+    api: 'openai-completions',
+    keyUrl: 'https://console.cloud.google.com/apis/credentials',
+  },
+  {
+    id: 'github-models',
+    name: 'GitHub Models',
+    group: 'global',
+    defaultUrl: 'https://models.github.ai/inference',
+    api: 'openai-completions',
+    keyUrl: 'https://github.com/settings/tokens',
+    free: 'tier',
+  },
+  {
+    id: 'github-copilot',
+    name: 'GitHub Copilot',
+    group: 'global',
+    defaultUrl: 'https://api.githubcopilot.com/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://github.com/settings/copilot',
+  },
+  {
+    id: 'grok',
+    name: 'xAI Grok',
+    group: 'global',
+    defaultUrl: 'https://api.x.ai/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://console.x.ai/',
+  },
+  {
+    id: 'mistral',
+    name: 'Mistral',
+    group: 'global',
+    defaultUrl: 'https://api.mistral.ai/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://console.mistral.ai/api-keys',
+    free: 'tier',
+  },
+  {
+    id: 'perplexity',
+    name: 'Perplexity',
+    group: 'global',
+    defaultUrl: 'https://api.perplexity.ai',
+    api: 'openai-completions',
+    keyUrl: 'https://www.perplexity.ai/settings/api',
+  },
+  {
+    id: 'cohere',
+    name: 'Cohere',
+    group: 'global',
+    defaultUrl: 'https://api.cohere.ai/compatibility/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://dashboard.cohere.com/api-keys',
+    free: 'tier',
+  },
+  {
+    id: 'groq',
+    name: 'Groq',
+    group: 'global',
+    defaultUrl: 'https://api.groq.com/openai/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://console.groq.com/keys',
+    free: 'tier',
+  },
+  {
+    id: 'together',
+    name: 'Together',
+    group: 'global',
+    defaultUrl: 'https://api.together.xyz/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://api.together.xyz/settings/api-keys',
+  },
+  {
+    id: 'fireworks',
+    name: 'Fireworks',
+    group: 'global',
+    defaultUrl: 'https://api.fireworks.ai/inference/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://fireworks.ai/api-keys',
+  },
+  {
+    id: 'nvidia',
+    name: 'NVIDIA',
+    group: 'global',
+    defaultUrl: 'https://integrate.api.nvidia.com/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://build.nvidia.com/settings/api-keys',
+    free: 'tier',
+  },
+  {
+    id: 'cerebras',
+    name: 'Cerebras',
+    group: 'global',
+    defaultUrl: 'https://api.cerebras.ai/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://cloud.cerebras.ai/',
+    free: 'tier',
+  },
+  {
+    id: 'hyperbolic',
+    name: 'Hyperbolic',
+    group: 'global',
+    defaultUrl: 'https://api.hyperbolic.com/v1',
+    api: 'openai-completions',
+  },
+  {
+    id: 'aws-bedrock',
+    name: 'AWS Bedrock',
+    group: 'global',
+    defaultUrl: '',
+    api: 'openai-completions',
+    keyUrl: 'https://console.aws.amazon.com/bedrock/',
+  },
+  {
+    id: 'huggingface',
+    name: 'Hugging Face',
+    group: 'global',
+    defaultUrl: 'https://router.huggingface.co/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://huggingface.co/settings/tokens',
+    free: 'freekey',
+  },
+  {
+    id: 'jina',
+    name: 'Jina AI',
+    group: 'global',
+    defaultUrl: 'https://api.jina.ai/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://jina.ai/zh-CN/api-dashboard/',
+  },
+  {
+    id: 'voyage-ai',
+    name: 'Voyage AI',
+    group: 'global',
+    defaultUrl: 'https://api.voyageai.com/v1',
+    api: 'openai-completions',
+  },
+  {
+    id: 'poe',
+    name: 'Poe',
+    group: 'global',
+    defaultUrl: 'https://api.poe.com/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://poe.com/api_key',
+  },
+  {
+    id: 'replicate',
+    name: 'Replicate',
+    group: 'global',
+    defaultUrl: 'https://api.replicate.com/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://replicate.com/account/api-tokens',
+  },
+  {
+    id: 'vercel-ai',
+    name: 'Vercel AI Gateway',
+    group: 'global',
+    defaultUrl: 'https://gateway.ai.cloudflare.com/v1',
+    api: 'openai-completions',
+  },
+  {
+    id: 'cloudflare-workers',
+    name: 'Cloudflare Workers AI',
+    group: 'global',
+    defaultUrl: 'https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://dash.cloudflare.com/profile/api-tokens',
+    free: 'tier',
+  },
+  {
+    id: 'ollama-cloud',
+    name: 'Ollama Cloud',
+    group: 'global',
+    defaultUrl: 'https://ollama.com/v1',
+    api: 'openai-completions',
+    free: 'tier',
+  },
+  {
+    id: 'ovh-ai',
+    name: 'OVH AI Endpoints',
+    group: 'global',
+    defaultUrl: 'https://oai.endpoints.kepler.ai.cloud.ovh.net/v1',
+    api: 'openai-completions',
+    free: 'nokey',
+  },
+  {
+    id: 'reka',
+    name: 'Reka',
+    group: 'global',
+    defaultUrl: 'https://api.reka.ai/v1',
+    api: 'openai-completions',
+    free: 'freekey',
+  },
+  {
+    id: 'sea-lion',
+    name: 'SEA-LION',
+    group: 'global',
+    defaultUrl: 'https://api.sea-lion.ai/v1',
+    api: 'openai-completions',
+    free: 'freekey',
+  },
+  {
+    id: 'ollama',
+    name: 'Ollama',
+    group: 'local',
+    defaultUrl: 'http://localhost:11434/v1',
+    api: 'openai-completions',
+    ollamaLike: true,
+    docsUrl: 'https://ollama.com/',
+    free: 'nokey',
+  },
+  {
+    id: 'codex',
+    name: 'Codex (local CLI)',
+    nameZh: 'Codex（本地 CLI）',
+    group: 'local',
+    defaultUrl: '',
+    api: 'openai-completions',
+    codexLike: true,
+    docsUrl: 'https://developers.openai.com/codex/',
+    free: 'nokey',
+  },
+  {
+    id: 'lm-studio',
+    name: 'LM Studio',
+    group: 'local',
+    defaultUrl: 'http://localhost:1234/v1',
+    api: 'openai-completions',
+    ollamaLike: true,
+    docsUrl: 'https://lmstudio.ai/',
+    free: 'nokey',
+  },
+  {
+    id: 'xinference',
+    name: 'Xinference',
+    group: 'local',
+    defaultUrl: 'http://localhost:9997/v1',
+    api: 'openai-completions',
+    ollamaLike: true,
+    docsUrl: 'https://inference.readthedocs.io/',
+    free: 'nokey',
+  },
+  {
+    id: 'oneapi',
+    name: 'One API',
+    group: 'local',
+    defaultUrl: '',
+    api: 'openai-completions',
+    ollamaLike: true,
+    docsUrl: 'https://github.com/songquanpeng/one-api',
+    free: 'nokey',
+  },
+  {
+    id: 'new-api',
+    name: 'New API',
+    group: 'local',
+    defaultUrl: '',
+    api: 'openai-completions',
+    ollamaLike: true,
+    docsUrl: 'https://github.com/Calcium-Ion/new-api',
+    free: 'nokey',
+  },
+  {
+    id: 'fastchat',
+    name: 'FastChat / vLLM',
+    group: 'local',
+    defaultUrl: 'http://localhost:8000/v1',
+    api: 'openai-completions',
+    ollamaLike: true,
+    docsUrl: 'https://github.com/lm-sys/FastChat',
+    free: 'nokey',
+  },
+  {
+    id: 'gpustack',
+    name: 'GPUStack',
+    group: 'local',
+    defaultUrl: '',
+    api: 'openai-completions',
+    ollamaLike: true,
+    docsUrl: 'https://docs.gpustack.ai/',
+    free: 'nokey',
+  },
+  {
+    id: 'openai-compatible',
+    name: 'Custom OpenAI-compatible',
+    nameZh: '自定义 OpenAI 兼容',
+    group: 'local',
+    defaultUrl: '',
+    api: 'openai-completions',
+    // not ollamaLike: this catch-all usually points at a remote OpenAI-compatible
+    // gateway that needs a Bearer key and serves /v1/models only; the nokey
+    // treatment probed /api/tags and dropped the key from discovery requests.
+    // Keyless local engines have dedicated vendors (ollama, lm-studio, …).
+    free: 'nokey',
+  },
+  {
+    id: 'openrouter',
+    name: 'OpenRouter',
+    group: 'agg',
+    defaultUrl: 'https://openrouter.ai/api/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://openrouter.ai/keys',
+    free: 'tier',
+  },
+  {
+    id: 'aihubmix',
+    name: 'AiHubMix',
+    group: 'agg',
+    defaultUrl: 'https://api.aihubmix.com/v1',
+    api: 'openai-completions',
+  },
+  {
+    id: 'dmxapi',
+    name: 'DMXAPI',
+    group: 'agg',
+    defaultUrl: 'https://api.dmxapi.com/v1',
+    api: 'openai-completions',
+  },
+  {
+    id: '302-ai',
+    name: '302.AI',
+    group: 'agg',
+    defaultUrl: 'https://api.302.ai/v1',
+    api: 'openai-completions',
+  },
+  {
+    id: 'tokenflux',
+    name: 'TokenFlux',
+    group: 'agg',
+    defaultUrl: 'https://api.tokenflux.com/v1',
+    api: 'openai-completions',
+  },
+  {
+    id: 'burncloud',
+    name: 'BurnCloud',
+    group: 'agg',
+    defaultUrl: 'https://api.burncloud.com/v1',
+    api: 'openai-completions',
+  },
+  {
+    id: 'ocoolai',
+    name: 'ocoolAI',
+    group: 'agg',
+    defaultUrl: 'https://api.ocoolai.com/v1',
+    api: 'openai-completions',
+  },
+  {
+    id: 'cephalon',
+    name: 'Cephalon',
+    group: 'agg',
+    defaultUrl: 'https://api.cephalon.ai/v1',
+    api: 'openai-completions',
+  },
+  {
+    id: 'aionly',
+    name: 'Aionly',
+    nameZh: '唯一AI',
+    group: 'agg',
+    defaultUrl: 'https://api.aionly.com/v1',
+    api: 'openai-completions',
+  },
+  {
+    id: 'longcat',
+    name: 'LongCat',
+    nameZh: '龙猫 LongCat',
+    group: 'agg',
+    defaultUrl: 'https://api.longcat.chat/openai',
+    api: 'openai-completions',
+    keyUrl: 'https://longcat.chat/platform/api_keys',
+    presets: [
+      { id: 'longcat-flash', name: 'LongCat-Flash-Chat' },
+      { id: 'longcat-flash-thinking', name: 'LongCat-Flash-Thinking' },
+    ],
+  },
+  {
+    id: 'kilo-gateway',
+    name: 'Kilo Gateway',
+    group: 'agg',
+    defaultUrl: 'https://kilo.kimai.dev/v1',
+    api: 'openai-completions',
+    free: 'nokey',
+  },
+  {
+    id: 'pollinations',
+    name: 'Pollinations',
+    group: 'agg',
+    defaultUrl: 'https://text.pollinations.ai/openai',
+    api: 'openai-completions',
+    free: 'nokey',
+  },
+  {
+    id: 'llm7',
+    name: 'LLM7',
+    group: 'agg',
+    defaultUrl: 'https://api.llm7.io/v1',
+    api: 'openai-completions',
+    free: 'nokey',
+  },
+  {
+    id: 'opencode-zen',
+    name: 'OpenCode Zen',
+    group: 'agg',
+    defaultUrl: 'https://opencode.ai/zen/v1',
+    api: 'openai-completions',
+    free: 'freekey',
+  },
+  {
+    // 爱思 Agnes AI（T6）：Flash 系文本免费、Pro/高清视频收费。GET /v1/models
+    // works live, but the free tier rate-limits bursts — the curated preset list
+    // doubles as the fetch-fallback so the vendor stays configurable at 429.
+    id: 'agnes-ai',
+    name: 'Agnes AI',
+    nameZh: '爱思 Agnes AI',
+    group: 'agg',
+    defaultUrl: 'https://api.agnes-ai.cn/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://www.agnes-ai.cn',
+    docsUrl: 'https://wiki.agnes-ai.cn/zh-Hans/docs/overview',
+    free: 'freekey',
+    freeNote: '注册即得免费Key：文本 Flash 与图像生成免费，Pro/高清视频收费',
+    presets: [
+      { id: 'agnes-2.5-flash', name: 'Agnes 2.5 Flash（免费）' },
+      { id: 'agnes-3.0-flash', name: 'Agnes 3.0 Flash（免费）' },
+      { id: 'agnes-2.5-pro-beta', name: 'Agnes 2.5 Pro Beta' },
+      { id: 'agnes-2.5-pro', name: 'Agnes 2.5 Pro' },
+    ],
+  },
+  {
+    id: 'routeway',
+    name: 'Routeway',
+    group: 'agg',
+    defaultUrl: '',
+    api: 'openai-completions',
+    free: 'freekey',
+  },
+  {
+    id: 'bazaarlink',
+    name: 'BazaarLink',
+    group: 'agg',
+    defaultUrl: '',
+    api: 'openai-completions',
+    free: 'freekey',
+  },
+  {
+    id: 'ainative',
+    name: 'AINative Studio',
+    group: 'agg',
+    defaultUrl: '',
+    api: 'openai-completions',
+    free: 'freekey',
+  },
+  {
+    id: 'aion-labs',
+    name: 'Aion Labs',
+    group: 'agg',
+    defaultUrl: '',
+    api: 'openai-completions',
+    free: 'freekey',
+  },
+  {
+    id: 'requesty',
+    name: 'Requesty',
+    group: 'agg',
+    defaultUrl: 'https://router.requesty.ai/v1',
+    api: 'openai-completions',
+    free: 'freekey',
+  },
+  {
+    id: 'navyai',
+    name: 'NavyAI',
+    group: 'agg',
+    defaultUrl: '',
+    api: 'openai-completions',
+    free: 'freekey',
+  },
+  {
+    id: 'nararouter',
+    name: 'NaraRouter',
+    group: 'agg',
+    defaultUrl: '',
+    api: 'openai-completions',
+    free: 'freekey',
+  },
+  {
+    id: 'ai-horde',
+    name: 'AI Horde',
+    group: 'agg',
+    defaultUrl: '',
+    api: 'openai-completions',
+    free: 'nokey',
+  },
+]
+
+export const VENDOR_BY_ID = new Map(VENDORS.map((v) => [v.id, v]))
+
+/** Vendors without a usable /models endpoint; their presets are offered instead. */
+export const NO_MODELS_API = new Set(['longcat', 'chatoffice'])
+
+/** llm-pi-ai route key (harness settings source): the chatop-<id> prefix avoids collisions with hand-written profiles. */
+export const harnessRouteFor = (vendorId: string): string => `chatop-${vendorId}`
+
+/** Credential ref (env-var style) derived from the vendor id, mirroring chatop's scheme. */
+export const harnessKeyRefFor = (vendorId: string): string =>
+  `CHATOP_${vendorId.toUpperCase().replace(/[^A-Z0-9]+/g, '_')}_API_KEY`

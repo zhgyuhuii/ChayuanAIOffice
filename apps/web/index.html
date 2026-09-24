@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="./app-icon-64.png" />
+    <title>ChaAI Office</title>
+    <script>
+      // Same-origin editors config (injected at build for production)
+      window.CHATOFFICE_EDITORS = window.CHATOFFICE_EDITORS || {
+        docs: 'editors/docs/',
+        sheets: 'editors/sheets/',
+        slides: 'editors/slides/',
+        pdf: 'editors/pdf/',
+        markdown: 'editors/markdown/',
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/shell-boot.ts"></script>
+  </body>
+</html>

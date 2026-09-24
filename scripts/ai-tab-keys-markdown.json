@@ -1,0 +1,154 @@
+{
+  "zh": {
+    "aiPanelTitle": "AI 助手",
+    "aiTabChat": "对话",
+    "aiTabAssistant": "助手",
+    "aiSummarizeDesc": "总结全文的主要内容和要点",
+    "aiPolishDesc": "润色文字，使表达更清晰流畅",
+    "aiTidyDesc": "整理排版：标题层级、列表格式、多余空行"
+  },
+  "en": {
+    "aiPanelTitle": "AI Assistant",
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Assistant",
+    "aiSummarizeDesc": "Summarize the document's main points",
+    "aiPolishDesc": "Polish the writing for clarity and flow",
+    "aiTidyDesc": "Tidy formatting: heading levels, lists, and blank lines"
+  },
+  "ja": {
+    "aiPanelTitle": "AI アシスタント",
+    "aiTabChat": "チャット",
+    "aiTabAssistant": "アシスタント",
+    "aiSummarizeDesc": "文書の主な内容と要点をまとめる",
+    "aiPolishDesc": "表現をより明確で滑らかに推敲する",
+    "aiTidyDesc": "見出し階層・リスト書式・余分な空行を整える"
+  },
+  "ko": {
+    "aiPanelTitle": "AI 어시스턴트",
+    "aiTabChat": "채팅",
+    "aiTabAssistant": "어시스턴트",
+    "aiSummarizeDesc": "문서의 주요 내용과 요점 요약",
+    "aiPolishDesc": "표현을 더 명확하고 매끄럽게 다듬기",
+    "aiTidyDesc": "제목 수준·목록 서식·불필요한 빈 줄 정리"
+  },
+  "fr": {
+    "aiPanelTitle": "Assistant IA",
+    "aiTabChat": "Discussion",
+    "aiTabAssistant": "Assistant",
+    "aiSummarizeDesc": "Résumer le contenu et les points clés du document",
+    "aiPolishDesc": "Améliorer le style pour plus de clarté et de fluidité",
+    "aiTidyDesc": "Ranger la mise en forme : niveaux de titres, listes et lignes vides"
+  },
+  "de": {
+    "aiPanelTitle": "KI-Assistent",
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Assistent",
+    "aiSummarizeDesc": "Inhalt und Kernpunkte des Dokuments zusammenfassen",
+    "aiPolishDesc": "Den Text für Klarheit und Lesbarkeit überarbeiten",
+    "aiTidyDesc": "Formatierung aufräumen: Überschriftenebenen, Listen, Leerzeilen"
+  },
+  "es": {
+    "aiPanelTitle": "Asistente de IA",
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Asistente",
+    "aiSummarizeDesc": "Resumir el contenido y los puntos clave del documento",
+    "aiPolishDesc": "Pulir la redacción para mayor claridad y fluidez",
+    "aiTidyDesc": "Ordenar el formato: niveles de título, listas y líneas en blanco"
+  },
+  "th": {
+    "aiPanelTitle": "ผู้ช่วย AI",
+    "aiTabChat": "แชท",
+    "aiTabAssistant": "ผู้ช่วย",
+    "aiSummarizeDesc": "สรุปเนื้อหาหลักและประเด็นสำคัญของเอกสาร",
+    "aiPolishDesc": "ขัดเกลาถ้อยคำให้ชัดเจนและลื่นไหล",
+    "aiTidyDesc": "จัดรูปแบบ: ระดับหัวข้อ รายการ และบรรทัดว่าง"
+  },
+  "id": {
+    "aiPanelTitle": "Asisten AI",
+    "aiTabChat": "Obrolan",
+    "aiTabAssistant": "Asisten",
+    "aiSummarizeDesc": "Ringkas isi dan poin utama dokumen",
+    "aiPolishDesc": "Perhalus tulisan agar lebih jelas dan mengalir",
+    "aiTidyDesc": "Rapikan format: tingkat judul, daftar, dan baris kosong"
+  },
+  "ru": {
+    "aiPanelTitle": "ИИ-помощник",
+    "aiTabChat": "Чат",
+    "aiTabAssistant": "Помощник",
+    "aiSummarizeDesc": "Сделать конспект: основное содержание и ключевые тезисы",
+    "aiPolishDesc": "Отшлифовать текст: ясность и связность изложения",
+    "aiTidyDesc": "Навести порядок в форматировании: уровни заголовков, списки, пустые строки"
+  },
+  "ar": {
+    "aiPanelTitle": "مساعد الذكاء الاصطناعي",
+    "aiTabChat": "الدردشة",
+    "aiTabAssistant": "المساعد",
+    "aiSummarizeDesc": "تلخيص المحتوى الرئيسي والنقاط الأساسية للمستند",
+    "aiPolishDesc": "تحسين الصياغة لوضوح أكبر وسلاسة أفضل",
+    "aiTidyDesc": "ترتيب التنسيق: مستويات العناوين والقوائم والأسطر الفارغة"
+  },
+  "pt": {
+    "aiPanelTitle": "Assistente de IA",
+    "aiTabChat": "Bate-papo",
+    "aiTabAssistant": "Assistente",
+    "aiSummarizeDesc": "Resumir o conteúdo e os pontos principais do documento",
+    "aiPolishDesc": "Polir a redação para mais clareza e fluidez",
+    "aiTidyDesc": "Organizar a formatação: níveis de título, listas e linhas em branco"
+  },
+  "it": {
+    "aiPanelTitle": "Assistente IA",
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Assistente",
+    "aiSummarizeDesc": "Riassumere i contenuti e i punti principali del documento",
+    "aiPolishDesc": "Migliorare lo stile per chiarezza e scorrevolezza",
+    "aiTidyDesc": "Sistemare la formattazione: livelli di titolo, elenchi e righe vuote"
+  },
+  "pl": {
+    "aiPanelTitle": "Asystent AI",
+    "aiTabChat": "Czat",
+    "aiTabAssistant": "Asystent",
+    "aiSummarizeDesc": "Streść główne treści i najważniejsze punkty dokumentu",
+    "aiPolishDesc": "Wypoleruj tekst: klarowność i płynność wywodu",
+    "aiTidyDesc": "Uporządkuj formatowanie: poziomy nagłówków, listy i puste wiersze"
+  },
+  "nl": {
+    "aiPanelTitle": "AI-assistent",
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Assistent",
+    "aiSummarizeDesc": "Vat de inhoud en kernpunten van het document samen",
+    "aiPolishDesc": "Stijl verbeteren voor duidelijkheid en leesbaarheid",
+    "aiTidyDesc": "Opmaak opruimen: kopniveaus, lijsten en lege regels"
+  },
+  "ms": {
+    "aiPanelTitle": "Pembantu AI",
+    "aiTabChat": "Sembang",
+    "aiTabAssistant": "Pembantu",
+    "aiSummarizeDesc": "Ringkaskan kandungan dan poin utama dokumen",
+    "aiPolishDesc": "Lintaskan tulisan agar lebih jelas dan lancer",
+    "aiTidyDesc": "Kemas format: aras tajuk, senarai dan baris kosong"
+  },
+  "he": {
+    "aiPanelTitle": "עוזר AI",
+    "aiTabChat": "צ׳אט",
+    "aiTabAssistant": "עוזר",
+    "aiSummarizeDesc": "סיכום התוכן המרכזי והנקודות העיקריות של המסמך",
+    "aiPolishDesc": "ליטוש הניסוח לבהירות ולשטף טוב יותר",
+    "aiTidyDesc": "סידור העיצוב: רמות כותרות, רשימות ושורות ריקות"
+  },
+  "hi": {
+    "aiPanelTitle": "AI सहायक",
+    "aiTabChat": "चैट",
+    "aiTabAssistant": "सहायक",
+    "aiSummarizeDesc": "दस्तावेज़ की मुख्य सामग्री और मुख्य बिंदुओं का सारांश",
+    "aiPolishDesc": "स्पष्टता और प्रवाह के लिए भाषा को निखारें",
+    "aiTidyDesc": "प्रारूपण सुव्यवस्थित करें: शीर्षक स्तर, सूचियाँ और खाली पंक्तियाँ"
+  },
+  "zh-TW": {
+    "aiPanelTitle": "AI 助手",
+    "aiTabChat": "對話",
+    "aiTabAssistant": "助手",
+    "aiSummarizeDesc": "總結全文的主要內容和要點",
+    "aiPolishDesc": "潤飾文字，使表達更清晰流暢",
+    "aiTidyDesc": "整理排版：標題層級、清單格式、多餘空行"
+  }
+}

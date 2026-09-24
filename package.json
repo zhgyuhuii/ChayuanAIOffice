@@ -1,0 +1,87 @@
+{
+  "name": "chatoffice",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI-native office suite (docs, sheets, slides, pdf)",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22.12.0",
+    "npm": ">=10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhgyuhuii/ChayuanAIOffice.git"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "postinstall": "install-electron && node tools/patch-dev-electron-name.mjs",
+    "format": "node tools/format-changed.mjs --write",
+    "format:check": "node tools/format-changed.mjs --check",
+    "check:theme-colors": "node tools/check-theme-colors.mjs",
+    "check:english-comments": "node tools/check-english-comments.mjs",
+    "check:skill-version": "node tools/check-skill-version.mjs",
+    "lint": "eslint .",
+    "fixtures": "npm run fixtures -w @chatoffice/docx-engine",
+    "test": "npm run test -w @chatoffice/i18n && npm run test -w @chatoffice/electron-utils && npm run test -w @chatoffice/font-metrics && npm run test -w @chatoffice/docx-engine && npm run test -w @chatoffice/pdf2docx && npm run test -w @chatoffice/html2docx && npm run test -w @chatoffice/file-parse && npm run test -w @chatoffice/pipelines && npm run test -w @chatoffice/pptx-engine && npm run test -w @chatoffice/xlsx-gateway && npm run test -w @chatoffice/pptx-ops && npm run test -w @chatoffice/pptx-render && npm run test -w @chatoffice/chart-kit && npm run test -w @chatoffice/ai-search && npm run test -w @chatoffice/agent-core && npm run test -w @chatoffice/ai-provider && npm run test -w @chatoffice/storage-adapter && npm run test -w @chatoffice/service-core && npm run test -w @chatoffice/project-store && npm run test -w @chatoffice/cli && npm run test -w @chatoffice/ui && npm run test -w @chatoffice/ribbon && npm run test -w @chatoffice/mobile-touch && npm run test -w @chatoffice/docs && npm run test -w @chatoffice/sheets && npm run test -w @chatoffice/shell && npm run test -w @chatoffice/slides && npm run test -w @chatoffice/pdf && npm run test -w @chatoffice/markdown && npm run test -w @chatoffice/web-bridge && npm run test -w @chatoffice/server && npm run test -w @chatoffice/web",
+    "typecheck": "npm run typecheck -w @chatoffice/i18n && npm run typecheck -w @chatoffice/electron-utils && npm run typecheck -w @chatoffice/font-metrics && npm run typecheck -w @chatoffice/docx-engine && npm run typecheck -w @chatoffice/pdf2docx && npm run typecheck -w @chatoffice/html2docx && npm run typecheck -w @chatoffice/file-parse && npm run typecheck -w @chatoffice/xlsx-gateway && npm run typecheck -w @chatoffice/pptx-ops && npm run typecheck -w @chatoffice/pipelines && npm run typecheck -w @chatoffice/pptx-engine && npm run typecheck -w @chatoffice/pptx-render && npm run typecheck -w @chatoffice/chart-kit && npm run typecheck -w @chatoffice/ai-search && npm run typecheck -w @chatoffice/agent-core && npm run typecheck -w @chatoffice/ai-provider && npm run typecheck -w @chatoffice/storage-adapter && npm run typecheck -w @chatoffice/service-core && npm run typecheck -w @chatoffice/project-store && npm run typecheck -w @chatoffice/cli && npm run typecheck -w @chatoffice/ui && npm run typecheck -w @chatoffice/ribbon && npm run typecheck -w @chatoffice/mobile-touch && npm run typecheck -w @chatoffice/docs && npm run typecheck -w @chatoffice/sheets && npm run typecheck -w @chatoffice/shell && npm run typecheck -w @chatoffice/slides && npm run typecheck -w @chatoffice/pdf && npm run typecheck -w @chatoffice/markdown && npm run typecheck -w @chatoffice/web-bridge && npm run typecheck -w @chatoffice/server && npm run typecheck -w @chatoffice/web",
+    "predev": "node tools/build-stale-preloads.mjs && node tools/patch-dev-electron-name.mjs",
+    "dev": "concurrently -k -n docs,sheets,slides,pdf,markdown,html,shell -c blue,green,yellow,red,cyan,white,magenta \"npm run dev:renderer -w @chatoffice/docs\" \"npm run dev:renderer -w @chatoffice/sheets\" \"npm run dev:renderer -w @chatoffice/slides\" \"npm run dev:renderer -w @chatoffice/pdf\" \"npm run dev:renderer -w @chatoffice/markdown\" \"npm run dev:renderer -w @chatoffice/html\" \"node scripts/dev-shell.mjs\"",
+    "dev:docs": "npm run dev -w @chatoffice/docs",
+    "build": "npm run build -w @chatoffice/docs",
+    "build:all": "npm run build -w @chatoffice/docs && npm run build -w @chatoffice/sheets && npm run build -w @chatoffice/slides && npm run build -w @chatoffice/pdf && npm run build -w @chatoffice/markdown && npm run build -w @chatoffice/html && npm run build -w @chatoffice/cli && npm run build -w @chatoffice/shell",
+    "shell": "node tools/patch-dev-electron-name.mjs && npm run build:all && electron apps/shell",
+    "test:e2e": "playwright test --config e2e/playwright.config.ts",
+    "notices": "node tools/gen-third-party-notices.mjs",
+    "licenses": "node tools/check-licenses.mjs",
+    "dist:mac": "npm run notices && npm run build:all && npm run native:build:universal -w @chatoffice/sheets && npm run dist:mac -w @chatoffice/shell",
+    "dist:win": "npm run notices && npm run build:all && npm run dist:win -w @chatoffice/shell",
+    "dist:linux": "npm run notices && npm run build:all && npm run dist:linux -w @chatoffice/shell",
+    "dev:desktop": "npm run dev",
+    "dev:server": "npm run dev -w @chatoffice/server",
+    "dev:web": "node scripts/dev-web.mjs",
+    "start:server": "node --import tsx --import ./apps/server/src/tsx-assets.cjs apps/server/src/main.ts",
+    "build:web": "node scripts/build-web.mjs",
+    "preview:web": "node scripts/serve-web.mjs",
+    "dist:server": "npm run notices && docker build -f apps/server/Dockerfile -t chatoffice-server:latest .",
+    "package:embedded": "node scripts/package-embedded.mjs",
+    "package:plugin": "node scripts/package-plugin.mjs",
+    "dist:chatop": "node scripts/dist-chatop.mjs"
+  },
+  "dependencies": {
+    "opencc-js": "^1.4.2",
+    "pinyin-pro": "^3.29.3",
+    "ws": "^8.21.1"
+  },
+  "overrides": {
+    "nanoid@3": "^3.3.17",
+    "nanoid@5": "^5.1.16",
+    "@tiptap/core": "3.31.0",
+    "@tiptap/extensions": "3.31.0",
+    "@tiptap/pm": "3.31.0",
+    "@tiptap/react": "3.31.0",
+    "@tiptap/starter-kit": "3.31.0",
+    "@tiptap/markdown": "3.31.0",
+    "@tiptap/extension-table": "3.31.0",
+    "@tiptap/extension-list": "3.31.0",
+    "@tiptap/extension-code-block": "3.31.0",
+    "@tiptap/extension-image": "3.31.0",
+    "@tiptap/extension-mathematics": "3.31.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.61.1",
+    "concurrently": "^9.2.4",
+    "eslint": "^10.8.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.8.0",
+    "pixelmatch": "^7.2.0",
+    "playwright-core": "^1.61.1",
+    "pngjs": "^7.0.0",
+    "prettier": "^3.9.6",
+    "typescript-eslint": "^8.65.0",
+    "typescript": "5.9.3"
+  }
+}

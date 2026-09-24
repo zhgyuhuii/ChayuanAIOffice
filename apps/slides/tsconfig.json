@@ -1,0 +1,29 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node"],
+    // Pin resolution to this repo's workspace sources (avoids stale types when node_modules links point elsewhere)
+    "baseUrl": ".",
+    "paths": {
+      "@chatoffice/pptx-engine": ["../../packages/pptx-engine/src/index.ts"],
+      "@chatoffice/pptx-engine/table-grid": ["../../packages/pptx-engine/src/table-grid.ts"],
+      "@chatoffice/pptx-engine/identity": ["../../packages/pptx-engine/src/identity.ts"],
+      "@chatoffice/pptx-engine/named-action": ["../../packages/pptx-engine/src/named-action.ts"],
+      "@chatoffice/pptx-engine/background-promote": [
+        "../../packages/pptx-engine/src/background-promote.ts"
+      ],
+      "@chatoffice/pptx-ops": ["../../packages/pptx-ops/src/index.ts"],
+      "@chatoffice/pptx-ops/op-docs": ["../../packages/pptx-ops/src/op-docs.ts"],
+      "@chatoffice/pptx-ops/font-size": ["../../packages/pptx-ops/src/font-size.ts"],
+      "@chatoffice/pptx-render": ["../../packages/pptx-render/src/index.ts"],
+      "@chatoffice/pipelines/slides": ["../../packages/pipelines/src/slides/index.ts"],
+      "@chatoffice/pipelines/slides/layout-audit": [
+        "../../packages/pipelines/src/slides/layout-audit.ts"
+      ],
+      "@chatoffice/docx-engine/metafile": ["../../packages/docx-engine/src/metafile.ts"]
+    }
+  },
+  "include": ["src", "tests", "electron.vite.config.ts", "vitest.config.ts"]
+}

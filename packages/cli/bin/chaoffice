@@ -1,0 +1,37 @@
+#!/bin/sh
+# chaoffice launcher — the headless ChaAI Office CLI. Inside a packaged app it
+# runs the bundled CLI on the app's own Node runtime (ELECTRON_RUN_AS_NODE); in
+# a dev checkout it falls back to the system node and the local build output.
+# Usually reached through a symlink on the PATH, so resolve the real location.
+self="$0"
+while [ -L "$self" ]; do
+  target=$(readlink "$self")
+  case "$target" in
+    /*) self="$target" ;;
+    *) self="$(dirname "$self")/$target" ;;
+  esac
+done
+here=$(cd "$(dirname "$self")" && pwd)
+
+if [ -n "$CHAOFFICE_NODE" ]; then
+  exec "$CHAOFFICE_NODE" "$here/chaoffice.cjs" "$@"
+fi
+
+case "$here" in
+  */Contents/Resources/cli) app="$here/../../MacOS/ChaAI Office" ;;
+  */resources/cli)
+    # Linux install (binary is the executableName), or the Windows install
+    # reached from Git Bash / MSYS
+    if [ -x "$here/../../ChaAI Office.exe" ]; then app="$here/../../ChaAI Office.exe"; else app="$here/../../chaoffice"; fi
+    ;;
+  *) app="" ;;
+esac
+
+if [ -n "$app" ] && [ -x "$app" ]; then
+  ELECTRON_RUN_AS_NODE=1 exec "$app" "$here/chaoffice.cjs" "$@"
+fi
+
+if [ -f "$here/chaoffice.cjs" ]; then
+  exec node "$here/chaoffice.cjs" "$@"
+fi
+exec node "$here/../dist/chatoffice.cjs" "$@"

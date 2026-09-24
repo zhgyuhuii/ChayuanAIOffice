@@ -1,0 +1,452 @@
+/* 统一插入图片对话框（三 tab） */
+.insimg-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.insimg-dialog {
+  width: min(760px, 92vw);
+  height: min(560px, 86vh);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface, #fff);
+  border-radius: 10px;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+.insimg-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border, #e4e4e4);
+}
+.insimg-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+.insimg-tabs {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+.insimg-tab {
+  padding: 5px 14px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text-secondary, #555);
+}
+.insimg-tab.active {
+  background: var(--surface-hover, #eef4ff);
+  color: var(--accent, #217346);
+  font-weight: 600;
+}
+.insimg-close {
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 5px;
+}
+.insimg-close:hover {
+  background: var(--surface-hover, #f0f0f0);
+}
+.insimg-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  overflow: hidden;
+}
+.insimg-local {
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+.insimg-primary {
+  padding: 7px 18px;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent, #217346);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+.insimg-primary:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.insimg-hint {
+  font-size: 12px;
+  color: var(--text-secondary, #777);
+  margin: 0;
+}
+.insimg-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.insimg-chips {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.insimg-chip {
+  padding: 4px 12px;
+  border: 1px solid var(--border, #d8d8d8);
+  border-radius: 999px;
+  background: var(--surface, #fff);
+  font-size: 12px;
+  cursor: pointer;
+}
+.insimg-chip.active {
+  border-color: var(--accent, #217346);
+  color: var(--accent, #217346);
+  font-weight: 600;
+  background: var(--surface-hover, #eef7f1);
+}
+.insimg-gear {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+}
+.insimg-searchrow {
+  display: flex;
+  gap: 8px;
+}
+.insimg-search {
+  flex: 1;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--border, #d8d8d8);
+  border-radius: 6px;
+  font-size: 13px;
+}
+.insimg-keys {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--border, #e0e0e0);
+  border-radius: 8px;
+  background: var(--surface-hover, #fafafa);
+}
+.insimg-keys-hint {
+  font-size: 12px;
+  color: var(--text-secondary, #666);
+  display: flex;
+  gap: 6px;
+}
+.insimg-keys-hint a {
+  color: var(--accent, #217346);
+}
+.insimg-keyrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.insimg-keyrow span {
+  min-width: 76px;
+  color: var(--text-secondary, #555);
+}
+.insimg-keyrow input {
+  flex: 1;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--border, #d8d8d8);
+  border-radius: 5px;
+  font-size: 12px;
+}
+.insimg-grid-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+.insimg-grid-body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.insimg-more {
+  display: flex;
+  justify-content: center;
+  padding: 2px 0 6px;
+}
+.insimg-morebtn {
+  padding: 6px 22px;
+  border: 1px solid var(--border, #d0d0d0);
+  border-radius: 6px;
+  background: var(--surface, #fff);
+  color: var(--text, #333);
+  font-size: 13px;
+  cursor: pointer;
+}
+.insimg-morebtn:hover:not(:disabled) {
+  background: var(--surface-hover, #f0f0f0);
+}
+.insimg-morebtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.insimg-nomore {
+  font-size: 12px;
+  color: var(--text-secondary, #999);
+}
+.insimg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+.insimg-cell {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--surface-hover, #f2f2f2);
+}
+.insimg-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.insimg-cell.selected {
+  border-color: var(--accent, #217346);
+}
+.insimg-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.insimg-prompt {
+  width: 100%;
+  resize: vertical;
+  min-height: 58px;
+  padding: 8px 10px;
+  border: 1px solid var(--border, #d8d8d8);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+.insimg-aierror {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid #f0c36d;
+  background: #fff8e6;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #7a5b00;
+}
+.insimg-aierror button {
+  border: 1px solid currentColor;
+  background: transparent;
+  border-radius: 5px;
+  padding: 2px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* ── per-vendor key modal (Pexels / Pixabay never share a panel) ── */
+.insimg-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+.insimg-modal {
+  background: var(--bg, #fff);
+  border: 1px solid var(--border, #ddd);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  padding: 14px 16px;
+  width: min(420px, 86%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.insimg-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+}
+.insimg-modal-actions {
+  display: flex;
+  gap: 8px;
+}
+.insimg-keytest.ok {
+  color: #1a7f37;
+}
+.insimg-keytest.fail {
+  color: #c62828;
+}
+
+/* ── AI tab: model picker + dynamic params ── */
+.insimg-modelrow,
+.insimg-paramrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.insimg-modelrow > span:first-child,
+.insimg-paramrow > span {
+  min-width: 64px;
+  font-size: 12px;
+  opacity: 0.75;
+}
+.insimg-select {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--border, #ccc);
+  border-radius: 6px;
+  background: var(--bg, #fff);
+  color: inherit;
+}
+.insimg-params {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--border, #e3e3e3);
+  border-radius: 8px;
+}
+.insimg-paraminput {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--border, #ccc);
+  border-radius: 6px;
+  background: var(--bg, #fff);
+  color: inherit;
+}
+.insimg-diag {
+  margin-top: 4px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* video task list (AI tab, video models) */
+.insimg-videohint {
+  margin: 2px 0 6px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  background: color-mix(in srgb, #4a90d9 12%, transparent);
+  border: 1px solid color-mix(in srgb, #4a90d9 35%, transparent);
+}
+.insimg-vtasks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border, #e3e3e3);
+  border-radius: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+.insimg-vtasks-title {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.65;
+}
+.insimg-vtask {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--border, #e3e3e3);
+  border-radius: 8px;
+}
+.insimg-vtask.vtask-failed {
+  border-color: color-mix(in srgb, #d94848 45%, transparent);
+}
+.insimg-vtask-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+}
+.insimg-vtask-prompt {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.insimg-vtask-status {
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+.insimg-vtask-status.st-succeeded {
+  color: #2e9e5b;
+  opacity: 1;
+}
+.insimg-vtask-status.st-failed {
+  color: #d94848;
+  opacity: 1;
+}
+.insimg-vtask-error {
+  margin: 0;
+  font-size: 12px;
+  color: #d94848;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.insimg-vtask-result {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.insimg-vtask-result video,
+.insimg-vtask-result img {
+  width: 200px;
+  max-height: 120px;
+  border-radius: 6px;
+  background: #000;
+  object-fit: contain;
+}
+.insimg-vtask-actions {
+  display: flex;
+  gap: 8px;
+}
+.insimg-vtask-actions button {
+  padding: 4px 12px;
+  border: 1px solid var(--border, #ccc);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.insimg-vtask-actions .insimg-primary {
+  background: var(--accent, #2f6fd0);
+  color: #fff;
+  border-color: transparent;
+}

@@ -1,0 +1,26 @@
+{
+  "name": "@chatoffice/ai-host",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared ai:* IPC registration for the Electron main processes: wires the v2 ai-provider runtime onto an injected ipcMain (identical channel names across docs/sheets/slides/markdown/pdf)",
+  "exports": {
+    ".": "./src/index.ts",
+    "./kb-channels": "./src/kb-channels.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@chatoffice/ai-provider": "*",
+    "@chatoffice/ai-search": "*",
+    "@chatoffice/electron-utils": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  }
+}

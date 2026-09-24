@@ -1,0 +1,221 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>chart gl frame</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+      }
+      #host {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="host"></div>
+    <script>
+      // GL 渲染帧:本文档由应用原样发出(无 CSP 头/meta),claygl 内部的
+      // new Function 在这里不受宿主页 script-src 'self' 限制。父页经
+      // postMessage 传入 echarts/echarts-gl 的模块 URL(宿主页经
+      // import.meta.resolve 解析,dev/build 均为真实地址),本帧动态
+      // import 后承担 GL 图表的 init/setOption/快照。
+      ;(function () {
+        var echarts = null
+        var inst = null
+        var host = null
+        var msgId = 0
+        var waiting = {}
+
+        function reply(source, msg) {
+          msg.__ckgl = true
+          source.postMessage(msg, '*')
+        }
+
+        function revive(v) {
+          if (typeof v !== 'object' || v === null) return v
+          if (typeof v.__chartkit_fn__ === 'string') {
+            try {
+              return new Function('return (' + v.__chartkit_fn__ + ')')()
+            } catch (e) {
+              return v
+            }
+          }
+          if (Array.isArray(v)) return v.map(revive)
+          var out = {}
+          for (var k in v) out[k] = revive(v[k])
+          return out
+        }
+
+        window.addEventListener('message', function (ev) {
+          var m = ev.data || {}
+          if (m.__ckgl !== true) return
+          var source = ev.source
+          if (m.type === 'boot') {
+            // echarts-gl 的 dist 是 UMD:非模块上下文取 window.echarts,
+            // 所以必须先 import echarts 挂到 window 再 import gl,否则
+            // gl 内部 echarts 为 undefined(registerPostInit 报错)
+            import(m.echartsUrl)
+              .then(function (mod) {
+                // UMD dist(打包产物)没有模块导出,靠执行副作用挂
+                // window.echarts——此时绝不能用空命名空间 mod 覆盖它,
+                // 否则 gl 初始化在空对象上找 registerPostInit 直接报错;
+                // ESM 形态(dev 经 vite 服务)取命名空间/default。
+                var lib =
+                  mod.use || (mod.default && mod.default.use)
+                    ? mod.use
+                      ? mod
+                      : mod.default
+                    : window.echarts || mod
+                window.echarts = lib
+                return import(m.echartsGlUrl)
+              })
+              .then(function () {
+                echarts = window.echarts
+                reply(source, { type: 'booted', ok: true })
+              })
+              .catch(function (e) {
+                reply(source, { type: 'booted', ok: false, error: String((e && e.message) || e) })
+              })
+          } else if (m.type === 'setOption') {
+            var id = ++msgId
+            try {
+              if (!inst) {
+                host = document.getElementById('host')
+                inst = echarts.init(host)
+              }
+              inst.resize({
+                width: m.width || host.clientWidth,
+                height: m.height || host.clientHeight,
+              })
+              var opt = typeof m.option === 'string' ? JSON.parse(m.option) : m.option
+              inst.setOption(revive(opt), { notMerge: true })
+              // GL 场景(claygl)的真实绘制远晚于 zrender 的 finished 事件
+              // (着色器编译+首帧在 setOption 之后数百毫秒才发生),立即回
+              // done 会让快照截到空 GL 层(只剩 visualMap 等二维组件)。
+              // 轮询 WebGL 画布的真实像素,出现有色内容(着色/饱和度)才算
+              // 就绪;4s 兜底防止永不就绪。
+              var settled = false
+              var finishOnce = function () {
+                if (settled) return
+                settled = true
+                clearInterval(pollTimer)
+                setTimeout(function () {
+                  reply(source, { type: 'done', id: id, ok: true })
+                }, 60)
+              }
+              var samples = 0
+              var pollTimer = setInterval(function () {
+                samples++
+                if (settled) {
+                  clearInterval(pollTimer)
+                  return
+                }
+                try {
+                  // GL 层画布不在 zrender getLayers() 里,直接扫 host 下的
+                  // canvas:取最大的一块做降采样读回,WebGL 画布空态是透明
+                  // 黑,出现非黑像素即代表 3D 场景已真实绘制。
+                  var canvases = host ? host.querySelectorAll('canvas') : []
+                  var best = null
+                  for (var ci = 0; ci < canvases.length; ci++) {
+                    if (
+                      !best ||
+                      canvases[ci].width * canvases[ci].height > best.width * best.height
+                    ) {
+                      best = canvases[ci]
+                    }
+                  }
+                  if (best && best.width > 0) {
+                    var test = document.createElement('canvas')
+                    test.width = 48
+                    test.height = 48
+                    var tctx = test.getContext('2d')
+                    tctx.drawImage(best, 0, 0, 48, 48)
+                    var d = tctx.getImageData(0, 0, 48, 48).data
+                    var lit = 0
+                    for (var i = 0; i < d.length; i += 4) {
+                      if (d[i] + d[i + 1] + d[i + 2] > 60) lit++
+                    }
+                    if (lit >= 12) {
+                      console.log('[ckgl-poll] lit=' + lit + ' after ' + samples + ' ticks')
+                      finishOnce()
+                      return
+                    }
+                  }
+                } catch (e2) {
+                  /* 采样失败继续轮询 */
+                }
+              }, 60)
+              setTimeout(finishOnce, 4000)
+            } catch (e) {
+              reply(source, {
+                type: 'done',
+                id: id,
+                ok: false,
+                error: String((e && e.message) || e),
+              })
+            }
+          } else if (m.type === 'registerMap') {
+            try {
+              echarts.registerMap(m.name, m.geojson)
+              reply(source, { type: 'done', id: m.id, ok: true })
+            } catch (e) {
+              reply(source, {
+                type: 'done',
+                id: m.id,
+                ok: false,
+                error: String((e && e.message) || e),
+              })
+            }
+          } else if (m.type === 'snapshot') {
+            try {
+              // 不能用 inst.getDataURL:zrender6 的合成不含 echarts-gl 的
+              // LayerGL(结果只剩 visualMap 等二维组件)。GL 画布创建时带
+              // preserveDrawingBuffer,可被 drawImage 读回——按 DOM 顺序把
+              // 所有层画到一张输出画布上,才是完整的 3D 场景。
+              var h2 = document.getElementById('host')
+              var ratio = m.pixelRatio || 2
+              var outW = Math.round((h2 ? h2.clientWidth : 600) * ratio)
+              var outH = Math.round((h2 ? h2.clientHeight : 400) * ratio)
+              var out = document.createElement('canvas')
+              out.width = outW
+              out.height = outH
+              var octx = out.getContext('2d')
+              octx.fillStyle = m.backgroundColor || '#ffffff'
+              octx.fillRect(0, 0, outW, outH)
+              var all = h2 ? h2.querySelectorAll('canvas') : []
+              for (var ci = 0; ci < all.length; ci++) {
+                var lc = all[ci]
+                if (lc.width > 0 && lc.height > 0) {
+                  octx.drawImage(lc, 0, 0, outW, outH)
+                }
+              }
+              var url = out.toDataURL('image/png')
+              reply(source, { type: 'done', id: m.id, ok: true, url: url })
+            } catch (e) {
+              reply(source, {
+                type: 'done',
+                id: m.id,
+                ok: false,
+                error: String((e && e.message) || e),
+              })
+            }
+          } else if (m.type === 'resize') {
+            if (inst) inst.resize({ width: m.width, height: m.height })
+          } else if (m.type === 'dispose') {
+            try {
+              if (inst) inst.dispose()
+            } catch (e) {
+              /* ignore */
+            }
+            inst = null
+          }
+        })
+      })()
+    </script>
+  </body>
+</html>

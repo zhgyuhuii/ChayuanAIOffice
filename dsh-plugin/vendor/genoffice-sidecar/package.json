@@ -1,0 +1,18 @@
+{
+  "name": "genoffice-embedded",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "overrides": {
+    "nanoid@3": "^3.3.17",
+    "nanoid@5": "^5.1.16"
+  },
+  "dependencies": {
+    "tsx": "^4.19.2",
+    "harfbuzzjs": "^1.5.0"
+  }
+}

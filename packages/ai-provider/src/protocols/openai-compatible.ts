@@ -1,0 +1,423 @@
+import type { AgentMessage, AgentToolCall, AgentToolDef } from '@chatoffice/agent-core'
+import { aiFetch } from '../fetch'
+import { httpBodyDetail } from '../http-error'
+import { chatofficeAttributionHeaders, opencodeSessionHeaders } from '../providers'
+import { modelEchoesReasoning } from '../registry'
+import { inferModelType } from '../model-type'
+import type { AiChatResponse, AiProviderConfig } from '../types'
+import { AI_CONNECT_TIMEOUT_MS, createStreamWatchdog, type StreamWatchdog } from '../watchdog'
+import {
+  jsonBodyInsteadOfSse,
+  parseToolInput,
+  sseErrorText,
+  sseLines,
+  throwIfCreditsNotice,
+  throwIfToolCountOverBudget,
+  throwIfToolJsonOverBudget,
+  type StreamCallbacks,
+} from './shared'
+
+function openAiMessages(
+  system: string,
+  messages: AgentMessage[],
+  echoReasoning: boolean,
+  baseUrl = '',
+): unknown[] {
+  const out: unknown[] = [{ role: 'system', content: system }]
+  for (const m of messages) {
+    if (m.role === 'user') {
+      const parts: unknown[] = m.text ? [{ type: 'text', text: m.text }] : []
+      // Standard OpenAI audio part (base64; format = mime subtype, e.g. "mp3")
+      for (const a of m.audio ?? []) {
+        const fmt = a.mime.split('/')[1]?.toLowerCase() || 'mp3'
+        parts.push({ type: 'input_audio', input_audio: { data: a.base64, format: fmt } })
+      }
+      // Video on OpenAI routes is vendor-specific and URL-only (dashscope
+      // `type:'video'` part list, zhipu `video_url`). Local base64 video has
+      // no carrier here — the caller must gate it via the capability matrix.
+      for (const v of m.video ?? []) {
+        const host = new URL(baseUrl).hostname
+        if (!v.url) {
+          throw new Error(
+            `Video attachments on ${host} require a public URL; use a gemini model for local video files`,
+          )
+        }
+        if (/dashscope\.aliyuncs\.com$/i.test(host)) {
+          parts.push({ type: 'video', video: [v.url] })
+        } else if (/open\.bigmodel\.cn$/i.test(host)) {
+          parts.push({ type: 'video_url', video_url: { url: v.url } })
+        } else {
+          throw new Error(`Video input is not adapted for ${host}; only gemini supports it today`)
+        }
+      }
+      for (const img of m.images ?? []) {
+        parts.push({
+          type: 'image_url',
+          image_url: { url: `data:${img.mime};base64,${img.base64}` },
+        })
+      }
+      // Strict gateways (Agnes's upstream) reject an empty content-parts array
+      // ("message content parts cannot be empty"); an empty turn still has to
+      // serialize, so it goes out as an empty string instead.
+      if (parts.length === 0) {
+        out.push({ role: 'user', content: '' })
+      } else if (parts.length === 1 && m.text) {
+        out.push({ role: 'user', content: m.text })
+      } else {
+        out.push({ role: 'user', content: parts })
+      }
+    } else if (m.role === 'assistant') {
+      const hasTools = !!(m.toolCalls && m.toolCalls.length > 0)
+      // content:null with no tool_calls is an empty assistant turn; some OpenAI-
+      // compatible proxies drop or reject the follow-up conversation after that.
+      out.push({
+        role: 'assistant',
+        content: m.text || (hasTools ? null : '(no content)'),
+        ...(echoReasoning && m.reasoning ? { reasoning_content: m.reasoning } : {}),
+        ...(hasTools
+          ? {
+              tool_calls: m.toolCalls!.map((call) => ({
+                id: call.id,
+                type: 'function',
+                function: { name: call.name, arguments: JSON.stringify(call.input) },
+              })),
+            }
+          : {}),
+      })
+    } else {
+      for (const r of m.results) {
+        out.push({ role: 'tool', tool_call_id: r.id, content: r.output })
+      }
+    }
+  }
+  return out
+}
+
+/** Emits a complete (non-streamed) chat completion delivered as a plain JSON body. */
+function emitOpenAiJsonMessage(bodyText: string, cb: StreamCallbacks): void {
+  let msg: {
+    choices?: Array<{
+      message?: {
+        /** string for text models; image models (qwen-image) may return a list of parts */
+        content?: string | Array<{ text?: string }> | null
+        reasoning_content?: string
+        tool_calls?: Array<{ id?: string; function?: { name?: string; arguments?: string } }>
+      }
+      finish_reason?: string | null
+    }>
+    error?: { message?: string } | string
+  }
+  try {
+    msg = JSON.parse(bodyText) as typeof msg
+  } catch {
+    throw new Error(`The model returned an unparseable JSON body: ${httpBodyDetail(bodyText)}`)
+  }
+  if (msg.error) throw new Error(sseErrorText(msg.error, 'Model error'))
+  const choice = msg.choices?.[0]
+  let emitted = false
+  if (choice?.message?.reasoning_content) cb.onReasoningDelta?.(choice.message.reasoning_content)
+  const rawContent = choice?.message?.content
+  // image models may answer with a part list ({text: '![…](url)'}) — flatten it
+  const content =
+    typeof rawContent === 'string'
+      ? rawContent
+      : Array.isArray(rawContent)
+        ? rawContent.map((part) => part?.text ?? '').join('')
+        : ''
+  if (content) {
+    emitted = true
+    cb.onDelta(content)
+  }
+  const toolCalls: AgentToolCall[] = []
+  for (const tc of choice?.message?.tool_calls ?? []) {
+    if (!tc.function?.name) continue
+    emitted = true
+    const { input, error } = parseToolInput(tc.function.arguments ?? '')
+    toolCalls.push({
+      id: tc.id ?? crypto.randomUUID(),
+      name: tc.function.name,
+      input,
+      inputError: error,
+    })
+  }
+  // a 'length' finish may have cut off the last tool call's arguments
+  const lastTool = toolCalls.at(-1)
+  if (choice?.finish_reason === 'length' && lastTool) lastTool.truncated = true
+  for (const call of toolCalls) cb.onToolCall(call)
+  if (!emitted) throw new Error(`The model returned no content: ${httpBodyDetail(bodyText)}`)
+  if (choice?.finish_reason === 'length') cb.onStopReason?.('max_tokens')
+}
+
+/** Per-endpoint request shaping resolved from the provider registry. */
+export interface OpenAiRequestOptions {
+  omitTemperature?: boolean | undefined
+  /** send the output cap as OpenAI's renamed `max_completion_tokens` (GPT-5.x/o-series 400 on `max_tokens`) */
+  useMaxCompletionTokens?: boolean | undefined
+  /** vendor-specific fields merged into the request body (e.g. DeepSeek's `thinking`) */
+  bodyExtras?: Record<string, unknown> | undefined
+}
+
+export async function streamOpenAiCompatible(
+  baseUrl: string,
+  config: AiProviderConfig,
+  system: string,
+  messages: AgentMessage[],
+  tools: AgentToolDef[],
+  maxTokens: number,
+  cb: StreamCallbacks,
+  options: OpenAiRequestOptions = {},
+): Promise<void> {
+  // 本地回环引擎（察元本地模型）首 token 前 CPU prefill 可达数分钟（大
+  // system prompt 实测 >60s 才出响应头）——connect 预算放宽到 5 分钟；
+  // 云端网关响应头秒回，维持默认。
+  const localEngine = /\/\/(127\.0\.0\.1|localhost|\[::1\])(:|\/)/.test(baseUrl)
+  const wd = createStreamWatchdog(cb.signal, localEngine ? 300_000 : AI_CONNECT_TIMEOUT_MS)
+  return wd.guard(() =>
+    openAiCompatibleTurn(baseUrl, config, system, messages, tools, maxTokens, cb, wd, options),
+  )
+}
+
+async function openAiCompatibleTurn(
+  baseUrl: string,
+  config: AiProviderConfig,
+  system: string,
+  messages: AgentMessage[],
+  tools: AgentToolDef[],
+  maxTokens: number,
+  cb: StreamCallbacks,
+  wd: StreamWatchdog,
+  options: OpenAiRequestOptions,
+): Promise<void> {
+  const onBytes = () => {
+    wd.touch()
+    cb.onActivity?.()
+  }
+  // Image-generation models exposed on an OpenAI-compatible host (e.g.
+  // qwen-image on DashScope compatible-mode) reject conversation shapes:
+  // DashScope validates them as input.messages with role 'user' only and
+  // content as a part list — a system/assistant history with string content
+  // fails with "Input should be 'user'"/"should be a valid list". Collapse
+  // the turn to a single user text message and read the non-streamed reply.
+  const imageModel = inferModelType(config.model) === 'image-generation'
+  const lastUser = [...messages]
+    .reverse()
+    .find((m): m is Extract<AgentMessage, { role: 'user' }> => m.role === 'user' && !!m.text)
+  const lastUserText = lastUser?.text ?? system
+  const response = await aiFetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
+    method: 'POST',
+    signal: wd.signal,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {}),
+      ...chatofficeAttributionHeaders(baseUrl),
+      ...opencodeSessionHeaders(baseUrl, cb.sessionId),
+    },
+    body: imageModel
+      ? JSON.stringify({
+          model: config.model,
+          messages: [{ role: 'user', content: [{ type: 'text', text: lastUserText }] }],
+          stream: false,
+        })
+      : JSON.stringify({
+          model: config.model,
+          ...(options.useMaxCompletionTokens
+            ? { max_completion_tokens: maxTokens }
+            : { max_tokens: maxTokens }),
+          messages: openAiMessages(system, messages, modelEchoesReasoning(config.model), baseUrl),
+          ...(tools.length > 0
+            ? {
+                tools: tools.map((t) => ({
+                  type: 'function',
+                  function: { name: t.name, description: t.description, parameters: t.inputSchema },
+                })),
+              }
+            : {}),
+          ...(options.omitTemperature ? {} : { temperature: 0.3 }),
+          ...options.bodyExtras,
+          stream: true,
+        }),
+  })
+  // headers arrived: ping the renderer watchdog too, or a slow first chunk could trip it
+  onBytes()
+  if (!response.ok || !response.body) {
+    throw new Error(`HTTP ${response.status}: ${httpBodyDetail(await response.text())}`)
+  }
+  const jsonBody = await jsonBodyInsteadOfSse(response)
+  if (jsonBody !== null) {
+    throwIfCreditsNotice(jsonBody)
+    return emitOpenAiJsonMessage(jsonBody, cb)
+  }
+  // tool call arguments stream in fragments keyed by index
+  const pendingTools = new Map<number, { id: string; name: string; json: string }>()
+  let stopReason: string | undefined
+  let abnormalFinish: string | undefined
+  let sawFinish = false
+  let sawDone = false
+  let emitted = false
+  const flushTools = () => {
+    const entries = [...pendingTools.entries()].sort(([a], [b]) => a - b)
+    const lastIndex = entries.at(-1)?.[0]
+    for (const [index, pending] of entries) {
+      if (pending.name) {
+        const { input, error } = parseToolInput(pending.json)
+        emitted = true
+        cb.onToolCall({
+          id: pending.id,
+          name: pending.name,
+          input,
+          inputError: error,
+          // a 'length' finish cuts off the last streaming tool's arguments
+          ...(stopReason === 'max_tokens' && index === lastIndex ? { truncated: true } : {}),
+        })
+      }
+    }
+    pendingTools.clear()
+  }
+  for await (const line of sseLines(response.body, onBytes)) {
+    if (!line.startsWith('data:')) continue
+    const payload = line.slice(5).trim()
+    if (!payload) continue
+    if (payload === '[DONE]') {
+      sawDone = true
+      break
+    }
+    // A truncated frame or a non-JSON keep-alive from a proxy should skip
+    // that event, not kill the entire AI turn with a parser error.
+    let event
+    try {
+      event = JSON.parse(payload) as {
+        choices?: Array<{
+          delta?: {
+            content?: string
+            /** DeepSeek/MiniMax native and LiteLLM-normalized thinking stream; OpenRouter uses `reasoning` */
+            reasoning_content?: string
+            reasoning?: string
+            tool_calls?: Array<{
+              index: number
+              id?: string
+              function?: { name?: string; arguments?: string }
+            }>
+          }
+          finish_reason?: string | null
+        }>
+        error?: { message?: string } | string
+      }
+    } catch {
+      continue
+    }
+    if (event.error) throw new Error(sseErrorText(event.error, 'Model stream error'))
+    const choice = event.choices?.[0]
+    if (!choice) continue
+    const reasoning = choice.delta?.reasoning_content ?? choice.delta?.reasoning
+    if (typeof reasoning === 'string' && reasoning) cb.onReasoningDelta?.(reasoning)
+    if (choice.delta?.content) {
+      emitted = true
+      cb.onDelta(choice.delta.content)
+    }
+    for (const tc of choice.delta?.tool_calls ?? []) {
+      if (!pendingTools.has(tc.index)) {
+        throwIfToolCountOverBudget(pendingTools.size + 1, 'openai-compatible')
+      }
+      const pending = pendingTools.get(tc.index) ?? {
+        id: tc.id ?? crypto.randomUUID(),
+        name: '',
+        json: '',
+      }
+      if (tc.id) pending.id = tc.id
+      // Spec-compliant servers send the name once, but some local/proxy
+      // servers resend the full (or growing) name on every delta; naive
+      // concatenation then yields "read_fileread_file" and every call fails
+      // as an unknown tool. Treat a delta that extends the accumulated name
+      // as a resend, anything else as a fragment to append.
+      if (tc.function?.name) {
+        pending.name = tc.function.name.startsWith(pending.name)
+          ? tc.function.name
+          : pending.name + tc.function.name
+      }
+      if (tc.function?.arguments) {
+        pending.json += tc.function.arguments
+        throwIfToolJsonOverBudget(pending.json.length, 'openai-compatible')
+      }
+      pendingTools.set(tc.index, pending)
+    }
+    if (choice.finish_reason) {
+      sawFinish = true
+      if (choice.finish_reason === 'length') stopReason = 'max_tokens'
+      else if (choice.finish_reason !== 'stop' && choice.finish_reason !== 'tool_calls') {
+        abnormalFinish = choice.finish_reason
+      }
+      flushTools()
+    }
+  }
+  // No finish and no [DONE] with half-received arguments: the connection dropped
+  if (!sawFinish && !sawDone) {
+    const broken = [...pendingTools.values()].filter((p) => p.name && parseToolInput(p.json).error)
+    if (broken.length > 0) {
+      const received = broken.reduce((n, p) => n + p.json.length, 0)
+      throw new Error(
+        `The model stream closed while sending tool arguments (${received} chars received); the connection was dropped. ` +
+          'If this recurs on a large request (e.g. generating a whole document), ask for the output in several smaller parts.',
+      )
+    }
+  }
+  flushTools()
+  // e.g. finish_reason=content_filter with no output, or a stream with no
+  // message framing at all (gateway soft-failure) — surface both instead of an
+  // empty success; a genuine empty turn still carries finish_reason=stop
+  if (!emitted && abnormalFinish) {
+    throw new Error(`The model returned no content (finish_reason=${abnormalFinish})`)
+  }
+  if (!emitted && !sawFinish) {
+    throw new Error('The model returned no content (empty stream)')
+  }
+  if (stopReason) cb.onStopReason?.(stopReason)
+}
+
+export async function chatOpenAiCompatible(
+  wd: StreamWatchdog,
+  baseUrl: string,
+  config: AiProviderConfig,
+  system: string,
+  user: string,
+  options: OpenAiRequestOptions = {},
+): Promise<AiChatResponse> {
+  const response = await aiFetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
+    method: 'POST',
+    signal: wd.signal,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {}),
+      ...chatofficeAttributionHeaders(baseUrl),
+      ...opencodeSessionHeaders(baseUrl),
+    },
+    body: JSON.stringify({
+      model: config.model,
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user', content: user },
+      ],
+      ...(options.omitTemperature ? {} : { temperature: 0.3 }),
+      ...options.bodyExtras,
+    }),
+  })
+  wd.touch()
+  if (!response.ok) {
+    return { ok: false, error: `HTTP ${response.status}: ${httpBodyDetail(await response.text())}` }
+  }
+  // A 200 with an HTML shell / empty / truncated body (gateway soft-failure)
+  // would make response.json() throw; return ok:false instead of leaking a
+  // raw SyntaxError to the caller.
+  const bodyText = await response.text()
+  let json: { choices?: Array<{ message?: { content?: string } }> }
+  try {
+    json = JSON.parse(bodyText) as { choices?: Array<{ message?: { content?: string } }> }
+  } catch {
+    return {
+      ok: false,
+      error: `AI returned a non-JSON response: ${httpBodyDetail(bodyText)}`,
+    }
+  }
+  const content = json.choices?.[0]?.message?.content
+  if (!content) return { ok: false, error: 'AI returned an empty response' }
+  return { ok: true, content }
+}

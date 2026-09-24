@@ -1,0 +1,30 @@
+{
+  "name": "chatoffice-embedded",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "overrides": {
+    "nanoid@3": "^3.3.17",
+    "nanoid@5": "^5.1.16",
+    "@tiptap/core": "3.31.0",
+    "@tiptap/extensions": "3.31.0",
+    "@tiptap/pm": "3.31.0",
+    "@tiptap/react": "3.31.0",
+    "@tiptap/starter-kit": "3.31.0",
+    "@tiptap/markdown": "3.31.0",
+    "@tiptap/extension-table": "3.31.0",
+    "@tiptap/extension-list": "3.31.0",
+    "@tiptap/extension-code-block": "3.31.0",
+    "@tiptap/extension-image": "3.31.0",
+    "@tiptap/extension-mathematics": "3.31.0"
+  },
+  "dependencies": {
+    "tsx": "^4.19.2",
+    "harfbuzzjs": "^1.5.0",
+    "ws": "^8.21.1"
+  }
+}

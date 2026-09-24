@@ -1,0 +1,172 @@
+{
+  "zh": {
+    "aiTabChat": "对话",
+    "aiTabAssistant": "助手",
+    "aiAskDesc": "为选中的元素下达一条编辑指令",
+    "aiBeautifyDesc": "优化当前页的排版、配色与字体层级",
+    "aiFactCheckDesc": "核查页面中的数据、名称与论断",
+    "aiImageDesc": "根据当前页内容生成并插入配图"
+  },
+  "en": {
+    "aiPanelTitle": "AI Assistant",
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Assistant",
+    "aiAskDesc": "Give the selected element an edit instruction",
+    "aiBeautifyDesc": "Refine the current slide's layout, colors, and type hierarchy",
+    "aiFactCheckDesc": "Verify the data, names, and claims on your slides",
+    "aiImageDesc": "Generate and insert an image for the current slide"
+  },
+  "ja": {
+    "aiPanelTitle": "AI アシスタント",
+    "aiTabChat": "チャット",
+    "aiTabAssistant": "アシスタント",
+    "aiAskDesc": "選択した要素に編集指示を出す",
+    "aiBeautifyDesc": "現在のスライドのレイアウト・配色・書体階層を整える",
+    "aiFactCheckDesc": "スライド内のデータ・名称・主張を確認する",
+    "aiImageDesc": "現在のスライドの内容に合わせて画像を生成して挿入"
+  },
+  "ko": {
+    "aiPanelTitle": "AI 어시스턴트",
+    "aiTabChat": "채팅",
+    "aiTabAssistant": "어시스턴트",
+    "aiAskDesc": "선택한 요소에 편집 지시 내리기",
+    "aiBeautifyDesc": "현재 슬라이드의 레이아웃·색상·서체 위계 다듬기",
+    "aiFactCheckDesc": "슬라이드의 데이터·이름·주장 검증",
+    "aiImageDesc": "현재 슬라이드 내용에 맞는 이미지 생성 후 삽입"
+  },
+  "fr": {
+    "aiPanelTitle": "Assistant IA",
+    "aiTabChat": "Discussion",
+    "aiTabAssistant": "Assistant",
+    "aiAskDesc": "Donner une consigne de modification à l'élément sélectionné",
+    "aiBeautifyDesc": "Affiner la mise en page, les couleurs et la hiérarchie de la diapo",
+    "aiFactCheckDesc": "Vérifier les données, noms et affirmations des diapositives",
+    "aiImageDesc": "Générer et insérer une image pour la diapo actuelle"
+  },
+  "de": {
+    "aiPanelTitle": "KI-Assistent",
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Assistent",
+    "aiAskDesc": "Dem ausgewählten Element eine Bearbeitungsanweisung geben",
+    "aiBeautifyDesc": "Layout, Farben und Schrifthierarchie der Folie verfeinern",
+    "aiFactCheckDesc": "Daten, Namen und Aussagen der Folien prüfen",
+    "aiImageDesc": "Passendes Bild zur Folie erzeugen und einfügen"
+  },
+  "es": {
+    "aiPanelTitle": "Asistente de IA",
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Asistente",
+    "aiAskDesc": "Dar una instrucción de edición al elemento seleccionado",
+    "aiBeautifyDesc": "Refinar el diseño, los colores y la jerarquía tipográfica de la diapositiva",
+    "aiFactCheckDesc": "Verificar datos, nombres y afirmaciones de las diapositivas",
+    "aiImageDesc": "Generar e insertar una imagen para la diapositiva actual"
+  },
+  "th": {
+    "aiPanelTitle": "ผู้ช่วย AI",
+    "aiTabChat": "แชท",
+    "aiTabAssistant": "ผู้ช่วย",
+    "aiAskDesc": "สั่งแก้ไของค์ประกอบที่เลือก",
+    "aiBeautifyDesc": "ปรับเลย์เอาต์ สี และลำดับชั้นตัวอักษรของสไลด์ปัจจุบัน",
+    "aiFactCheckDesc": "ตรวจสอบข้อมูล ชื่อ และข้ออ้างในสไลด์",
+    "aiImageDesc": "สร้างและแทรกรูปภาพที่เข้ากับสไลด์ปัจจุบัน"
+  },
+  "id": {
+    "aiPanelTitle": "Asisten AI",
+    "aiTabChat": "Obrolan",
+    "aiTabAssistant": "Asisten",
+    "aiAskDesc": "Beri instruksi pengeditan untuk elemen terpilih",
+    "aiBeautifyDesc": "Perbaiki tata letak, warna, dan hierarki font slide saat ini",
+    "aiFactCheckDesc": "Periksa data, nama, dan klaim pada slide",
+    "aiImageDesc": "Buat dan sisipkan gambar untuk slide saat ini"
+  },
+  "ru": {
+    "aiPanelTitle": "ИИ-помощник",
+    "aiTabChat": "Чат",
+    "aiTabAssistant": "Помощник",
+    "aiAskDesc": "Дать выбранному элементу инструкцию на изменение",
+    "aiBeautifyDesc": "Улучшить вёрстку, цвета и иерархию шрифтов текущего слайда",
+    "aiFactCheckDesc": "Проверить данные, имена и утверждения в слайдах",
+    "aiImageDesc": "Создать и вставить изображение для текущего слайда"
+  },
+  "ar": {
+    "aiPanelTitle": "مساعد الذكاء الاصطناعي",
+    "aiTabChat": "الدردشة",
+    "aiTabAssistant": "المساعد",
+    "aiAskDesc": "إصدار تعليمة تحرير للعنصر المحدد",
+    "aiBeautifyDesc": "تحسين تخطيط الشريحة الحالية وألوانها وتدرج الخطوط",
+    "aiFactCheckDesc": "التحقق من البيانات والأسماء والادعاءات في الشرائح",
+    "aiImageDesc": "إنشاء صورة مناسبة للشريحة الحالية وإدراجها"
+  },
+  "pt": {
+    "aiPanelTitle": "Assistente de IA",
+    "aiTabChat": "Bate-papo",
+    "aiTabAssistant": "Assistente",
+    "aiAskDesc": "Dar uma instrução de edição ao elemento selecionado",
+    "aiBeautifyDesc": "Refinar o layout, as cores e a hierarquia tipográfica do slide",
+    "aiFactCheckDesc": "Verificar dados, nomes e afirmações dos slides",
+    "aiImageDesc": "Gerar e inserir uma imagem para o slide atual"
+  },
+  "it": {
+    "aiPanelTitle": "Assistente IA",
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Assistente",
+    "aiAskDesc": "Dai un'istruzione di modifica all'elemento selezionato",
+    "aiBeautifyDesc": "Raffina layout, colori e gerarchia dei caratteri della diapositiva",
+    "aiFactCheckDesc": "Verifica dati, nomi e affermazioni delle diapositive",
+    "aiImageDesc": "Genera e inserisci un'immagine per la diapositiva attuale"
+  },
+  "pl": {
+    "aiPanelTitle": "Asystent AI",
+    "aiTabChat": "Czat",
+    "aiTabAssistant": "Asystent",
+    "aiAskDesc": "Nadaj wybranemu elementowi instrukcję edycji",
+    "aiBeautifyDesc": "Popraw układ, kolory i hierarchię czcionek bieżącego slajdu",
+    "aiFactCheckDesc": "Sprawdź dane, nazwy i twierdzenia na slajdach",
+    "aiImageDesc": "Wygeneruj i wstaw obraz do bieżącego slajdu"
+  },
+  "nl": {
+    "aiPanelTitle": "AI-assistent",
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Assistent",
+    "aiAskDesc": "Geef het geselecteerde element een bewerkingsinstructie",
+    "aiBeautifyDesc": "Verfijn lay-out, kleuren en typografie van de huidige dia",
+    "aiFactCheckDesc": "Controleer gegevens, namen en beweringen op de dia's",
+    "aiImageDesc": "Genereer en voeg een afbeelding toe bij de huidige dia"
+  },
+  "ms": {
+    "aiPanelTitle": "Pembantu AI",
+    "aiTabChat": "Sembang",
+    "aiTabAssistant": "Pembantu",
+    "aiAskDesc": "Berikan arahan suntingan kepada elemen terpilih",
+    "aiBeautifyDesc": "Perhalusi susun atur, warna dan hierarki fon slaid semasa",
+    "aiFactCheckDesc": "Semak data, nama dan dakwaan pada slaid",
+    "aiImageDesc": "Jana dan sisipkan imej untuk slaid semasa"
+  },
+  "he": {
+    "aiPanelTitle": "עוזר AI",
+    "aiTabChat": "צ׳אט",
+    "aiTabAssistant": "עוזר",
+    "aiAskDesc": "תנו לרכיב הנבחר הוראת עריכה",
+    "aiBeautifyDesc": "שיפור הפריסה, הצבעים והיררכיית הגופנים של השקף הנוכחי",
+    "aiFactCheckDesc": "אימות נתונים, שמות וטענות בשקפים",
+    "aiImageDesc": "יצירה והוספה של תמונה מתאימה לשקף הנוכחי"
+  },
+  "hi": {
+    "aiPanelTitle": "AI सहायक",
+    "aiTabChat": "चैट",
+    "aiTabAssistant": "सहायक",
+    "aiAskDesc": "चुने गए तत्व को संपादन निर्देश दें",
+    "aiBeautifyDesc": "मौजूदा स्लाइड का लेआउट, रंग और टाइपोग्राफी पदानुक्रम सुधारें",
+    "aiFactCheckDesc": "स्लाइड्स में डेटा, नाम और दावों की जाँच करें",
+    "aiImageDesc": "मौजूदा स्लाइड के लिए छवि बनाकर जोड़ें"
+  },
+  "zh-TW": {
+    "aiPanelTitle": "AI 助手",
+    "aiTabChat": "對話",
+    "aiTabAssistant": "助手",
+    "aiAskDesc": "為選取的元素下達一條編輯指令",
+    "aiBeautifyDesc": "最佳化目前頁面的版面、配色與字型層級",
+    "aiFactCheckDesc": "核查頁面中的資料、名稱與論斷",
+    "aiImageDesc": "依目前頁面內容生成並插入配圖"
+  }
+}

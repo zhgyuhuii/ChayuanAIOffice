@@ -1,0 +1,36 @@
+{
+  "name": "chatoffice",
+  "version": "0.1.1",
+  "description": "ChatOffice 办公套件 — 全离线 BFF sidecar（文档/表格/幻灯/PDF/Markdown 五编辑器）以桌面应用形式运行在察元桌面：harness 形态与 Electron 形态点击 Dock 图标即用。",
+  "type": "module",
+  "main": "./dist/host.js",
+  "exports": {
+    ".": "./dist/host.js",
+    "./client": "./dist/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "vendor/chatoffice-sidecar",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime"
+      ]
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0"
+  },
+  "license": "Apache-2.0"
+}

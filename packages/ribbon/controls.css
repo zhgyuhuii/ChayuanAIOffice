@@ -1,0 +1,336 @@
+/*
+ * @chatoffice/ribbon — default styles for the schema-driven controls that the
+ * per-app stylesheets don't define yet (spinbox, combobox, palette, gallery).
+ * Toggle reuses the button chrome (rb-big/rb-small/rb-icon + active), color
+ * triggers reuse rb-color-btn/rb-color-bar; nothing for those is needed here.
+ *
+ * Visual rule (WPS 实测, docs/ribbon-wps-parity-gap.md): ribbon controls are
+ * BORDERLESS and quiet — `border: none; background: none` like the apps'
+ * rb-big/rb-icon; only group separators draw lines. Hover/active paint a flat
+ * fill. Panels (menus/palettes) are the exception: they float on a bordered,
+ * shadowed surface.
+ *
+ * Import order contract: hosts import this BEFORE their own styles.css so app
+ * rules win. Colors go through --rb-* variables with light defaults.
+ */
+
+:root {
+  --rb-control-hover-bg: #e8f0fb;
+  --rb-control-active-bg: #cfe1f7;
+  --rb-panel-bg: #fff;
+  --rb-panel-border: #c8c8c8;
+  --rb-panel-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  --rb-spin-width: 60px;
+  --rb-sep: #e1e1e1;
+}
+
+/* ---- number spinbox (.rb-spin) — borderless, value + tiny steppers ---- */
+
+.rb-spin {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  background: none;
+  border-radius: 3px;
+}
+
+.rb-spin:hover {
+  background: var(--rb-control-hover-bg);
+}
+
+.rb-spin:focus-within {
+  background: var(--rb-control-active-bg);
+}
+
+.rb-spin-input {
+  width: var(--rb-spin-width);
+  min-width: 0;
+  border: 0;
+  outline: none;
+  padding: 0 4px;
+  font: inherit;
+  text-align: left;
+  background: transparent;
+  color: inherit;
+}
+
+.rb-spin-input:disabled {
+  color: #9a9a9a;
+}
+
+.rb-spin-unit {
+  padding-right: 2px;
+  font-size: 11px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.rb-spin-steps {
+  display: flex;
+  flex-direction: column;
+  width: 14px;
+  margin-left: 1px;
+  border-left: 1px solid var(--rb-sep);
+}
+
+.rb-spin-step {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+}
+
+.rb-spin-step:hover:not(:disabled) {
+  color: #222;
+}
+
+.rb-spin-step .rb-caret-svg {
+  width: 8px;
+  height: 8px;
+}
+
+.rb-spin-up .rb-caret-svg {
+  transform: rotate(180deg);
+}
+
+/* ---- combobox (.rb-combo) — borderless trigger like rb-small ---- */
+
+.rb-combo {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+}
+
+.rb-combo-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 3px;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.rb-combo-trigger:hover:not(:disabled) {
+  background: var(--rb-control-hover-bg);
+}
+
+.rb-combo-trigger.active {
+  background: var(--rb-control-active-bg);
+}
+
+.rb-combo-trigger:disabled .rb-combo-value {
+  color: #9a9a9a;
+}
+
+.rb-combo-value {
+  min-width: 32px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.rb-combo-caret {
+  display: inline-flex;
+  color: #666;
+}
+
+.rb-combo-caret .rb-caret-svg {
+  width: 8px;
+  height: 8px;
+}
+
+.rb-combo-editable .rb-combo-input {
+  width: var(--rb-spin-width);
+  height: 100%;
+  border: 0;
+  outline: none;
+  border-radius: 3px;
+  padding: 0 4px;
+  font: inherit;
+  background: transparent;
+  color: inherit;
+}
+
+.rb-combo-editable:hover {
+  background: var(--rb-control-hover-bg);
+}
+
+.rb-combo-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 30;
+  min-width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  background: var(--rb-panel-bg);
+  border: 1px solid var(--rb-panel-border);
+  box-shadow: var(--rb-panel-shadow);
+  padding: 2px 0;
+}
+
+.rb-combo-panel button {
+  display: block;
+  width: 100%;
+  padding: 3px 10px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.rb-combo-panel button:hover:not(:disabled) {
+  background: var(--rb-control-hover-bg);
+}
+
+.rb-combo-panel button.active {
+  background: var(--rb-control-active-bg);
+}
+
+/* ---- color palette (.rb-palette) — floating panel: border allowed here ---- */
+
+.rb-palette {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 30;
+  background: var(--rb-panel-bg);
+  border: 1px solid var(--rb-panel-border);
+  box-shadow: var(--rb-panel-shadow);
+  padding: 6px;
+}
+
+.rb-palette-none {
+  display: block;
+  width: 100%;
+  margin-bottom: 4px;
+  padding: 3px 6px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.rb-palette-none:hover {
+  background: var(--rb-control-hover-bg);
+}
+
+.rb-palette-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 16px);
+  gap: 2px;
+}
+
+.rb-palette-swatch {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  /* swatches are color chips on a white panel: a hairline keeps light colors
+     visible (WPS 色板同款浅描边); NOT a control border */
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 1px;
+  cursor: pointer;
+}
+
+.rb-palette-swatch:hover {
+  outline: 2px solid var(--rb-control-active-bg);
+  outline-offset: 0;
+}
+
+/* ---- gallery (.rb-gallery) ----
+ * Fallback only: hosts with their own .rb-gallery (slides' fixed 2-row grids)
+ * keep theirs. Items are borderless tiles; hover paints a flat fill. */
+
+.rb-gallery {
+  display: grid;
+  gap: 2px;
+  width: 132px;
+  max-height: 40px;
+  overflow-y: auto;
+  padding: 1px;
+}
+
+.rb-gallery-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.rb-gallery-item:hover:not(:disabled) {
+  background: var(--rb-control-hover-bg);
+}
+
+/* ---- adaptive body row (M2 measuring container) ----
+ * Takes over .ribbon-body's flex row so the degradation loop can measure
+ * content vs available width (overflow-x hidden: WPS degrades, never scrolls).
+ * renderBody-hosted tab bodies bypass this wrapper and keep legacy scrolling. */
+
+.ribbon-body-row {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+/* group caption: hidden by per-app legacy CSS (display:none) until a host
+ * adopts the schema renderer — WPS shows captions and the collapsed-strip
+ * (Q16) depends on them. */
+
+.ribbon-group-collapsed {
+  justify-content: flex-end;
+}
+
+.ribbon-group-name {
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ribbon-group-name:hover,
+.ribbon-group-name.active {
+  background: var(--rb-control-hover-bg);
+}
+
+.ribbon-group-panel {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 30;
+  padding: 8px;
+  background: var(--rb-panel-bg);
+  border: 1px solid var(--rb-panel-border);
+  box-shadow: var(--rb-panel-shadow);
+}
+
+.ribbon-group-panel .ribbon-group-items {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}

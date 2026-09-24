@@ -1,0 +1,2128 @@
+import { useEffect, useRef, useState, lazy, Suspense } from 'react'
+import { createHtmlMediaSkill } from './media-skill'
+import type { ReactElement, ReactNode } from 'react'
+import { AgentLoop, composeSkills } from '@chatoffice/agent-core'
+import type { AgentImage } from '@chatoffice/agent-core'
+import type { AiSettingsV2 } from '@chatoffice/ai-provider'
+import { defaultSettingsV2 } from '@chatoffice/ai-provider/browser'
+import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
+import type { AttachmentAddResult, AttachmentMeta } from '../../shared/ipc'
+import {
+  AiComposer,
+  AiScopeQuote,
+  AiTypingIndicator,
+  KbCitePreview,
+  KbPickerButton,
+  Markdown,
+  ModelPickerButton,
+  PanelTabs,
+  useKbAugment,
+  usePanelTab,
+  useAiConversations,
+  AiConversationsEmpty,
+  AiHistoryPopover,
+  AiTabConfirm,
+  AI_CONTINUE_INSTRUCTION,
+  type AiActiveTab,
+  type AiScopeQuoteData,
+  type DockChrome,
+  type KbCitation,
+} from '@chatoffice/ui'
+import { aiLangDirective, t as tGlobal, useI18n, type StringKey } from '../i18n/locale'
+import { htmlModelBridge } from './model-bridge'
+import { AssistantTab } from './AssistantTab'
+import { IconPalette, IconSummarize, IconWand } from '../components/icons'
+import attachIcon from '../assets/attach-icon.png'
+import fileDocumentIcon from '../assets/file-document.png'
+import fileExcelIcon from '../assets/file-excel.png'
+import fileGeneralIcon from '../assets/file-general.png'
+import fileImageIcon from '../assets/file-image.png'
+import filePdfIcon from '../assets/file-pdf.png'
+import filePptIcon from '../assets/file-ppt.png'
+import fileWordIcon from '../assets/file-word.png'
+import { createDocumentSkill } from './html-skill'
+import { createFilesSkill } from './files-skill'
+import { createIntentSkill, type PageIntent } from './intent'
+import {
+  buildPageWriterRequest,
+  streamPage,
+  type PageWriteResult,
+  type PageWriteSpec,
+} from './page-writer'
+import {
+  buildBriefWriterRequest,
+  streamBrief,
+  type BriefPlanSpec,
+  type BriefPlanResult,
+} from './brief-writer'
+import type { BriefDecision, ClarifyQuestion, HtmlDocAccess } from './tools'
+import type { Brief } from '../document/brief'
+import { isDocEmpty } from '../document/blank'
+import { ClarifyCard } from '../components/ClarifyCard'
+import { BriefCard } from '../components/BriefCard'
+import { createSearchSkill } from './search-skill'
+import { pastedBase64Image } from './base64-paste'
+import { createElectronTransport } from './transport'
+import { DOC_NAV_SCHEME, parseDocNavHref } from './doc-nav'
+import { EditQueueCard } from './EditQueueCard'
+import {
+  buildQueueInstruction,
+  buildQueueSummary,
+  liveItems,
+  resolveQueue,
+  type EditQueueItem,
+} from './edit-queue'
+
+// 惰性加载:模型设置页(含厂商 logo 组)只在打开时拉取,不进启动图
+const ModelSettingsPage = lazy(() =>
+  import('@chatoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
+)
+
+/** [chip label, composer prefill]: blank page → design something new; page with content → rework it */
+const GENERATE_STARTERS = [
+  ['aiStarterLanding', 'aiStarterLandingPrompt'],
+  ['aiStarterReport', 'aiStarterReportPrompt'],
+  ['aiStarterPoster', 'aiStarterPosterPrompt'],
+  ['aiStarterWorkspace', 'aiStarterWorkspacePrompt'],
+] as const
+const WRITE_STARTERS = [
+  ['aiStarterArticle', 'aiStarterArticlePrompt'],
+  ['aiStarterAnnouncement', 'aiStarterAnnouncementPrompt'],
+  ['aiStarterGuide', 'aiStarterGuidePrompt'],
+] as const
+const EDIT_STARTERS = [
+  ['aiStarterExtractBrief', 'aiStarterExtractBriefPrompt'],
+  ['aiStarterRecolor', 'aiStarterRecolorPrompt'],
+  ['aiStarterUnify', 'aiStarterUnifyPrompt'],
+] as const
+
+/** clipboard bitmap MIME → attachment extension (matches ATTACHMENT_IMAGE_EXTS) */
+const PASTE_MIME_EXT: Record<string, string> = {
+  'image/png': 'png',
+  'image/jpeg': 'jpg',
+  'image/gif': 'gif',
+  'image/webp': 'webp',
+}
+const ATTACHMENT_CARD_ICONS: Record<string, string> = Object.fromEntries(
+  (
+    [
+      [fileWordIcon, ['doc', 'docx']],
+      [fileExcelIcon, ['xls', 'xlsx', 'xlsm', 'csv', 'tsv']],
+      [filePptIcon, ['ppt', 'pptx']],
+      [filePdfIcon, ['pdf']],
+      [fileImageIcon, ['png', 'jpg', 'jpeg', 'gif', 'webp']],
+    ] as [string, string[]][]
+  ).flatMap(([icon, exts]) => exts.map((ext) => [ext, icon])),
+)
+const MAX_IMAGES_PER_MESSAGE = 20
+
+function formatAttachmentSize(bytes: number): string {
+  return bytes >= 1024 * 1024
+    ? `${(bytes / (1024 * 1024)).toFixed(2)} MB`
+    : `${(bytes / 1024).toFixed(2)} KB`
+}
+
+/** composer chips (removable) and the read-only echo on a sent message share one renderer */
+function AttachmentList({
+  atts,
+  previews,
+  onRemove,
+  removeLabel,
+}: {
+  atts: AttachmentMeta[]
+  previews: Record<string, string>
+  onRemove?: (path: string) => void
+  removeLabel?: string
+}) {
+  const remove = (path: string) =>
+    onRemove && (
+      <button
+        type="button"
+        className="ai-attachment-thumb-remove"
+        onClick={() => onRemove(path)}
+        data-tip={removeLabel}
+        aria-label={removeLabel}
+      >
+        <svg width="16" height="16" viewBox="0 0 32 32" aria-hidden>
+          <path
+            d="M24 9.4L22.6 8L16 14.6L9.4 8L8 9.4l6.6 6.6L8 22.6L9.4 24l6.6-6.6l6.6 6.6l1.4-1.4l-6.6-6.6L24 9.4z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+    )
+  return (
+    <>
+      {atts.map((a) =>
+        ATTACHMENT_IMAGE_EXTS.has(a.ext) ? (
+          <span key={a.path} className="ai-attachment-thumb" title={a.name}>
+            {previews[a.path] ? (
+              <img src={previews[a.path]} alt={a.name} />
+            ) : (
+              <span className="ai-attachment-thumb-pending" aria-hidden>
+                <img src={fileImageIcon} alt="" />
+              </span>
+            )}
+            {remove(a.path)}
+          </span>
+        ) : (
+          <span key={a.path} className="ai-attachment-card" title={a.path}>
+            <span className="ai-attachment-card-icon">
+              <img
+                src={ATTACHMENT_CARD_ICONS[a.ext] ?? fileDocumentIcon ?? fileGeneralIcon}
+                alt=""
+                aria-hidden
+              />
+            </span>
+            <span className="ai-attachment-card-meta">
+              <span className="ai-attachment-card-name">{a.name}</span>
+              <span className="ai-attachment-card-size">{formatAttachmentSize(a.sizeBytes)}</span>
+            </span>
+            {remove(a.path)}
+          </span>
+        ),
+      )}
+    </>
+  )
+}
+
+const MAX_SNAPSHOTS = 20
+const TOOL_OUTPUT_MAX_CHARS = 2000
+
+interface ToolActivity {
+  name: string
+  summary: string
+  /** still executing: rendered as a spinner chip, replaced in place when the tool finishes */
+  running?: boolean
+  isError?: boolean
+  output?: string
+}
+
+interface ChatEntry {
+  role: 'user' | 'assistant'
+  text: string
+  /** LOCAL(2026-09-21, d8201ad0): D10 —— 恢复的被中断轮次 */
+  interrupted?: boolean
+  streaming?: boolean
+  isError?: boolean
+  /** the run failed and this user message was rolled back out of the model context */
+  undelivered?: boolean
+  /** instruction actually sent when it differs from the bubble text (sid-pinned Ask AI / queue batch); retries resend this */
+  instruction?: string
+  /** the bubble was a queue batch: retry must hide the live selection again */
+  queueRun?: boolean
+  /** attachments consumed from the composer by this message (echoed read-only; retries resend them) */
+  attachments?: AttachmentMeta[]
+  tools?: ToolActivity[]
+  /** the element this user message targeted, frozen at send */
+  scope?: AiScopeQuoteData
+  /** KB citations behind the [n] chips of this assistant turn */
+  kbCitations?: KbCitation[]
+}
+
+/** the whole source text: one string is the exact rollback unit */
+export interface DocSnapshot {
+  text: string
+}
+
+interface Snapshot {
+  label: string
+  time: string
+  doc: DocSnapshot
+}
+
+/** Preset instruction (ribbon / Ask AI "send now"); a new nonce triggers one auto-send */
+export interface AiPreset {
+  text: string
+  nonce: number
+  /** what the chat bubble shows when the instruction itself carries protocol text */
+  displayText?: string
+  scope?: AiScopeQuoteData
+}
+
+/** Prefill the composer without sending (Ask AI about the selected element) */
+export interface AiDraft {
+  text: string
+  nonce: number
+}
+
+export interface HtmlAiDeps {
+  /** live document access for the skill's tools */
+  access: HtmlDocAccess
+  getSnapshot(): DocSnapshot
+  restoreSnapshot(snapshot: DocSnapshot): void
+  /** the user sent a request (the text as shown in the bubble); names an untitled document */
+  onPrompt(text: string): void
+  /** fired when a run with at least one mutation finishes (auto-save hook) */
+  onRunDone(mutated: boolean): void
+  clearHighlights(): void
+  /** [label](htmlnav://sid/N) citation clicked */
+  navigateTo(sid: number): void
+  /** the user confirmed a brief on the card; the app pins it into the next generated document */
+  onBriefConfirmed(brief: Brief): void
+  /** page the AI is still writing (null when done): mirrored over the preview */
+  previewDraft(html: string | null): void
+}
+
+/** how often the streaming draft is pushed into the preview mirror */
+const DRAFT_PREVIEW_MS = 400
+
+/** command handle the outer panel holds per conversation (plan §4.3) */
+export interface HtmlConversationHandle {
+  stop(): Promise<void>
+  send(text: string, displayText?: string): void
+  /** busy 时落 composer,空闲直接发送(助手 tab 语义) */
+  assist(text: string): void
+  setDraft(text: string): void
+}
+
+function AiConversationBody({
+  deps,
+  filePath,
+  preset,
+  draft,
+  dockChrome,
+  editQueue,
+  onQueueEditInstruction,
+  onQueueRemove,
+  onQueueClear,
+  onQueueFocus,
+  onQueueConsume,
+  conversation,
+}: {
+  deps: HtmlAiDeps
+  filePath: string | null
+  preset?: AiPreset | null
+  draft?: AiDraft | null
+  /** shared DockShell header chrome (drag-to-dock + layout buttons) */
+  dockChrome?: DockChrome
+  editQueue: EditQueueItem[]
+  onQueueEditInstruction: (qid: string, instruction: string) => void
+  onQueueRemove: (qid: string) => void
+  onQueueClear: () => void
+  onQueueFocus: (qid: string) => void
+  onQueueConsume: (qids: string[]) => void
+  /** LOCAL(2026-09-21, d8201ad0): 多会话——由外壳按会话实例化时传入(D9) */
+  conversation?: {
+    chatId: string
+    projectId: string | null
+    onRunningChange: (running: boolean) => void
+    onFirstMessage: (text: string) => void
+    onTurnEnd: () => void
+    onRegister: (handle: HtmlConversationHandle) => void
+    onUnregister: () => void
+  }
+}): ReactElement {
+  const { lang, t } = useI18n()
+  // 知识库选库与发送前检索增强(共享选中态,与首页对话一致)
+  const kb = useKbAugment()
+  const [kbCiteView, setKbCiteView] = useState<KbCitation | null>(null)
+  const aiTabs = [
+    { id: 'chat', label: t('aiTabChat') },
+    { id: 'assistant', label: t('aiTabAssistant') },
+  ]
+  // LOCAL(2026-09-21, d8201ad0): 会话实例下 tab 恒为对话(tabs 由外壳持有)
+  const convMode = conversation !== undefined
+  const [legacyTab, selectTab] = usePanelTab('aihtml.aiTab', aiTabs)
+  const tab = convMode ? 'chat' : legacyTab
+  const [chat, setChat] = useState<ChatEntry[]>([])
+  const [prompt, setPrompt] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null)
+  const [snapshots, setSnapshots] = useState<Snapshot[]>([])
+  /** questionnaire / brief cards docked in the composer slot while a tool waits for the user */
+  const [activeClarify, setActiveClarify] = useState<ClarifyQuestion[] | null>(null)
+  const clarifyResolverRef = useRef<((r: { answers: string; cancelled?: boolean }) => void) | null>(
+    null,
+  )
+  const [activeBrief, setActiveBrief] = useState<Brief | null>(null)
+  const briefResolverRef = useRef<((d: BriefDecision) => void) | null>(null)
+  /** the page writer stopped early: keep-or-discard card for what arrived */
+  const [activePartial, setActivePartial] = useState<{ lines: number } | null>(null)
+  const partialResolverRef = useRef<((keep: boolean) => void) | null>(null)
+  /** answered receipts rendered after the user message they belong to (view-only, not chat data) */
+  const [receipts, setReceipts] = useState<
+    Array<{ afterIdx: number; qa?: Array<{ q: string; a: string }>; brief?: Brief }>
+  >([])
+  const chatRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const stickToBottomRef = useRef(true)
+  const [intent, setIntent] = useState<PageIntent>('design')
+  const intentRef = useRef(intent)
+  intentRef.current = intent
+  const [attachments, setAttachments] = useState<AttachmentMeta[]>([])
+  const attachmentsRef = useRef(attachments)
+  attachmentsRef.current = attachments
+  const sendSeqRef = useRef(0)
+  const [attachNotice, setAttachNotice] = useState<string | null>(null)
+  const [dragOver, setDragOver] = useState(false)
+  /** data-URL previews for image attachments, keyed by path */
+  const [attachmentPreviews, setAttachmentPreviews] = useState<Record<string, string>>({})
+  const previewRequestedRef = useRef(new Set<string>())
+  /** attachments consumed by earlier sends: the files skill keeps reading them in follow-up turns */
+  const sentAttachmentsRef = useRef<AttachmentMeta[]>([])
+  useEffect(() => {
+    const wanted = [...attachments, ...chat.flatMap((e) => e.attachments ?? [])]
+    const alive = new Set(wanted.map((a) => a.path))
+    setAttachmentPreviews((prev) => {
+      const stale = Object.keys(prev).filter((path) => !alive.has(path))
+      if (stale.length === 0) return prev
+      const next = { ...prev }
+      for (const path of stale) delete next[path]
+      return next
+    })
+    for (const path of previewRequestedRef.current) {
+      if (!alive.has(path)) previewRequestedRef.current.delete(path)
+    }
+    for (const a of wanted) {
+      if (!ATTACHMENT_IMAGE_EXTS.has(a.ext) || previewRequestedRef.current.has(a.path)) continue
+      previewRequestedRef.current.add(a.path)
+      void window.htmlApi
+        .readAttachmentImage(a.path)
+        .then((r) => {
+          if (!previewRequestedRef.current.has(a.path)) return
+          if (r.ok && r.base64 && r.mime) {
+            setAttachmentPreviews((prev) => ({
+              ...prev,
+              [a.path]: `data:${r.mime};base64,${r.base64}`,
+            }))
+          }
+        })
+        .catch(() => previewRequestedRef.current.delete(a.path))
+    }
+  }, [attachments, chat])
+  const availableAttachments = (): AttachmentMeta[] => {
+    const seen = new Set<string>()
+    return [...sentAttachmentsRef.current, ...attachmentsRef.current].filter((a) => {
+      if (seen.has(a.path)) return false
+      seen.add(a.path)
+      return true
+    })
+  }
+  const showAttachNotice = (lines: string[]) => {
+    if (lines.length === 0) return
+    setAttachNotice(lines.join('; '))
+    window.setTimeout(() => setAttachNotice(null), 5000)
+  }
+  const mergeAttachments = (result: AttachmentAddResult | null) => {
+    if (!result) return
+    if (result.accepted.length > 0) {
+      setAttachments((prev) => {
+        const seen = new Set(prev.map((a) => a.path))
+        return [...prev, ...result.accepted.filter((a) => !seen.has(a.path))]
+      })
+    }
+    showAttachNotice(result.rejected)
+  }
+  const pickAttachments = async () => mergeAttachments(await window.htmlApi.pickAttachments())
+  const onDrop = async (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setDragOver(false)
+    const paths = Array.from(e.dataTransfer.files)
+      .map((f) => window.htmlApi.getPathForFile(f))
+      .filter(Boolean)
+    if (paths.length > 0) mergeAttachments(await window.htmlApi.addAttachmentPaths(paths))
+  }
+  /** pasted files with a local path go through the regular route; pure bitmaps (screenshots) hit a temp file first */
+  const onPasteFiles = async (files: File[]) => {
+    const paths: string[] = []
+    for (const f of files) {
+      const path = window.htmlApi.getPathForFile(f)
+      if (path) {
+        paths.push(path)
+        continue
+      }
+      const ext = PASTE_MIME_EXT[f.type] ?? f.name.split('.').pop()?.toLowerCase() ?? 'bin'
+      mergeAttachments(await window.htmlApi.addPastedImage(await f.arrayBuffer(), ext))
+    }
+    if (paths.length > 0) mergeAttachments(await window.htmlApi.addAttachmentPaths(paths))
+  }
+  /** a pasted base64 image (data: URL or a bare base64 dump) becomes a real attachment, not chat text */
+  const onPasteText = (text: string): boolean => {
+    const img = pastedBase64Image(text)
+    if (!img) return false
+    void window.htmlApi
+      .addPastedImage(img.bytes.buffer as ArrayBuffer, img.ext)
+      .then(mergeAttachments)
+    return true
+  }
+  const removeAttachment = (path: string) =>
+    setAttachments((prev) => prev.filter((a) => a.path !== path))
+  /** image attachments ride along as multimodal input (≤5MB each, capped per message) */
+  const collectImages = async (atts: AttachmentMeta[]): Promise<AgentImage[]> => {
+    const imageAtts = atts.filter((a) => ATTACHMENT_IMAGE_EXTS.has(a.ext))
+    const images: AgentImage[] = []
+    const failures: string[] = []
+    for (const att of imageAtts.slice(0, MAX_IMAGES_PER_MESSAGE)) {
+      const result = await window.htmlApi.readAttachmentImage(att.path)
+      if (result.ok && result.base64 && result.mime) {
+        images.push({ base64: result.base64, mime: result.mime })
+      } else {
+        failures.push(result.error ?? t('aiImageReadFail', { name: att.name }))
+      }
+    }
+    if (imageAtts.length > MAX_IMAGES_PER_MESSAGE) {
+      failures.push(t('aiTooManyImages', { max: MAX_IMAGES_PER_MESSAGE }))
+    }
+    showAttachNotice(failures)
+    return images
+  }
+  // preferred = the user's chosen width (the only value persisted); the DockShell
+  // owns the width preference (migrated from the pre-DockShell key on first load)
+  const settingsRef = useRef<AiSettingsV2 | null>(null)
+  const [panelSettings, setPanelSettings] = useState<AiSettingsV2>(() => defaultSettingsV2())
+  const [modelSettingsOpen, setModelSettingsOpen] = useState(false)
+  const refreshPanelSettings = async () => {
+    try {
+      setPanelSettings(await htmlModelBridge.getSettings())
+    } catch {
+      /* keep the last known settings */
+    }
+  }
+  /** apply_ops `attachment://` references: land in the document's assets/ like a manually placed picture, or inline when that is not possible */
+  const resolveAttachmentSrc = async (
+    ref: string,
+  ): Promise<{ ok: true; src: string } | { ok: false; error: string }> => {
+    const name = ref.trim()
+    const atts = availableAttachments()
+    const att =
+      atts.find((a) => a.name === name) ??
+      atts.find((a) => a.name.toLowerCase() === name.toLowerCase())
+    if (!att) {
+      const names = atts.map((a) => a.name).join(', ') || '(none)'
+      return { ok: false, error: `no attachment named "${name}"; attached files: ${names}` }
+    }
+    if (!ATTACHMENT_IMAGE_EXTS.has(att.ext)) {
+      return {
+        ok: false,
+        error: `${att.name} is not an image attachment (png/jpg/gif/webp); ask the user to attach the image file itself`,
+      }
+    }
+    const img = await window.htmlApi.readAttachmentImage(att.path)
+    if (!img.ok || !img.base64 || !img.mime) {
+      return { ok: false, error: img.error ?? `could not read ${att.name}` }
+    }
+    // saveImage keeps webp out (assets must stay DOCX-exportable) and returns null for an unsaved document
+    const ext = att.ext === 'jpeg' ? 'jpg' : att.ext
+    const rel = ext === 'webp' ? null : await window.htmlApi.saveImage({ base64: img.base64, ext })
+    return { ok: true, src: rel ?? `data:${img.mime};base64,${img.base64}` }
+  }
+  useEffect(() => {
+    void refreshPanelSettings()
+  }, [])
+  const mountedRef = useRef(true)
+  const langRef = useRef(lang)
+  langRef.current = lang
+  const depsRef = useRef(deps)
+  depsRef.current = deps
+  const filePathRef = useRef(filePath)
+  /** instruction of the in-flight run, labels its rollback snapshot */
+  const runInstructionRef = useRef('')
+  /** a queue batch names its own targets: the live selection is hidden from the model while it runs */
+  const queueRunRef = useRef(false)
+  /** whether the last started run was a queue batch (survives onDone/onError for the header retry) */
+  const lastQueueRunRef = useRef(false)
+  /** what the user saw for that instruction (queue submissions show a summary) */
+  const runDisplayRef = useRef('')
+  /** the scope quote of the last send, carried over by the header retry */
+  const lastScopeRef = useRef<AiScopeQuoteData | undefined>(undefined)
+  const runMutatedRef = useRef(false)
+  /** tool activity of the whole run, for transcript persistence */
+  const runToolsRef = useRef<ToolActivity[]>([])
+  const chatIdsRef = useRef<{ projectId: string; chatId: string } | null>(null)
+  /** messages sent before resolveChat returned, flushed once the chat id is known */
+  const pendingPersistRef = useRef<
+    Array<{
+      role: 'user' | 'assistant'
+      text: string
+      tools?: ToolActivity[]
+      attachments?: AttachmentMeta[]
+      scope?: AiScopeQuoteData
+    }>
+  >([])
+
+  const patchLast = (patch: Partial<ChatEntry> | ((last: ChatEntry) => Partial<ChatEntry>)) => {
+    setChat((prev) => {
+      const next = [...prev]
+      const last = next[next.length - 1]
+      if (!last || last.role !== 'assistant') return prev
+      next[next.length - 1] = { ...last, ...(typeof patch === 'function' ? patch(last) : patch) }
+      return next
+    })
+  }
+
+  const persistMessage = (
+    role: 'user' | 'assistant',
+    text: string,
+    tools?: ToolActivity[],
+    attachments?: AttachmentMeta[],
+    scope?: AiScopeQuoteData,
+    interrupted?: boolean,
+  ) => {
+    // LOCAL(2026-09-21, d8201ad0): 会话实例持久化走 conversation.chatId(immutable)
+    const ids = conversation
+      ? { projectId: conversation.projectId, chatId: conversation.chatId }
+      : chatIdsRef.current
+    if (!window.projectApi) return
+    if (!ids || !ids.projectId) {
+      if (!conversation) pendingPersistRef.current.push({ role, text, tools, attachments, scope })
+      return
+    }
+    void window.projectApi
+      .appendChat({
+        projectId: ids.projectId,
+        chatId: ids.chatId,
+        role,
+        text,
+        ...(interrupted ? { interrupted: true } : {}),
+        ...(tools && tools.length > 0 ? { tools } : {}),
+        ...(attachments && attachments.length > 0 ? { attachments } : {}),
+        ...(scope ? { scope } : {}),
+      })
+      .catch(() => {
+        /* persistence failures are silent */
+      })
+  }
+
+  // The loop is built once; every mutable value goes through a ref getter
+  const transportRef = useRef<ReturnType<typeof createElectronTransport> | null>(null)
+  if (!transportRef.current) {
+    // the request carries only the selection; the owning main process resolves profile + secret
+    transportRef.current = createElectronTransport(() => settingsRef.current!.currentModel!)
+  }
+
+  /**
+   * Whole-page generation: one tool-less request whose reply is the HTML, streamed
+   * into the preview mirror as it arrives. A stream that stops early leaves the user
+   * a keep-or-discard choice; a stream that produced nothing is retried once.
+   */
+  const runPageWriter = async (
+    spec: PageWriteSpec,
+    signal?: AbortSignal,
+  ): Promise<PageWriteResult> => {
+    const { system, user } = buildPageWriterRequest(spec, aiLangDirective(langRef.current))
+    let draft = ''
+    let timer: number | null = null
+    let closed = false
+    const flush = () => {
+      timer = null
+      if (closed) return
+      depsRef.current.previewDraft(draft)
+      const lines = draft.split('\n').length
+      patchLast((last) => ({
+        tools: last.tools?.map((tl) =>
+          tl.running ? { ...tl, summary: tGlobal('aiWritingPage', { lines }) } : tl,
+        ),
+      }))
+    }
+    const attempt = () =>
+      streamPage({
+        transport: transportRef.current!,
+        system,
+        user,
+        signal,
+        onProgress: (html) => {
+          if (closed) return
+          draft = html
+          if (timer === null) timer = window.setTimeout(flush, DRAFT_PREVIEW_MS)
+        },
+      })
+    let outcome = await attempt()
+    if (outcome.status === 'empty' && !signal?.aborted) outcome = await attempt()
+    // nothing may touch the mirror after this point, or the overlay would outlive the landed page
+    closed = true
+    if (timer !== null) window.clearTimeout(timer)
+    timer = null
+    const done = () => depsRef.current.previewDraft(null)
+    if (outcome.status === 'complete') {
+      done()
+      return { ok: true, html: outcome.html }
+    }
+    if (outcome.status === 'empty') {
+      done()
+      return { ok: false, error: outcome.error }
+    }
+    // the draft stays visible while the user decides what to do with it
+    depsRef.current.previewDraft(outcome.html)
+    const keep = await new Promise<boolean>((resolve) => {
+      partialResolverRef.current = resolve
+      setActivePartial({ lines: outcome.html.split('\n').length })
+    })
+    done()
+    return keep
+      ? { ok: true, html: outcome.html, truncated: true }
+      : {
+          ok: false,
+          error: `${outcome.reason}${outcome.error ? `: ${outcome.error}` : ''}; the user discarded the partial page`,
+        }
+  }
+  const runPageWriterRef = useRef(runPageWriter)
+  runPageWriterRef.current = runPageWriter
+
+  /** Brief drafting: one tool-less request over the conversation transcript; an empty reply is retried once. */
+  const runBriefWriter = async (
+    spec: BriefPlanSpec,
+    signal?: AbortSignal,
+  ): Promise<BriefPlanResult> => {
+    const { system, user } = buildBriefWriterRequest(
+      spec,
+      loopRef.current?.messages ?? [],
+      aiLangDirective(langRef.current),
+    )
+    patchLast((last) => ({
+      tools: last.tools?.map((tl) =>
+        tl.running ? { ...tl, summary: tGlobal('aiDraftingBrief') } : tl,
+      ),
+    }))
+    const attempt = () => streamBrief({ transport: transportRef.current!, system, user, signal })
+    let result = await attempt()
+    if (!result.ok && !signal?.aborted) result = await attempt()
+    return result
+  }
+  const runBriefWriterRef = useRef(runBriefWriter)
+  runBriefWriterRef.current = runBriefWriter
+
+  const loopRef = useRef<AgentLoop<DocSnapshot> | null>(null)
+  /** messages buffered for the lazy loop (D10/D11 hard chain) */
+  const bufferedRestoreRef = useRef<Array<{ role: 'user' | 'assistant'; text: string }> | null>(null)
+  /** the loop's streamed text so far — the interrupted persist keeps this half turn (D10) */
+  const halfTextRef = useRef('')
+  /** LOCAL(2026-09-21, d8201ad0): loop 惰性构造(首次 send 才建) */
+  const ensureLoop = (): AgentLoop<DocSnapshot> | null => {
+    if (loopRef.current) return loopRef.current
+    if (convMode && !conversation) return null
+    if (!transportRef.current) return null
+    loopRef.current = new AgentLoop<DocSnapshot>({
+      transport: transportRef.current,
+      skill: composeSkills('html+search', '', [
+        createHtmlMediaSkill(),
+        createDocumentSkill({
+          getText: () => depsRef.current.access.getText(),
+          getVersion: () => depsRef.current.access.getVersion(),
+          getMap: () => depsRef.current.access.getMap(),
+          getLastManualVersion: () => depsRef.current.access.getLastManualVersion(),
+          getFilePath: () => depsRef.current.access.getFilePath(),
+          getSelectedSid: () =>
+            queueRunRef.current ? null : depsRef.current.access.getSelectedSid(),
+          applyOps: (ops, label) => depsRef.current.access.applyOps(ops, label),
+          replaceAll: (html, label) => depsRef.current.access.replaceAll(html, label),
+          askClarification: (questions) =>
+            new Promise((resolve) => {
+              clarifyResolverRef.current = resolve
+              setActiveClarify(questions)
+            }),
+          confirmBrief: (brief) =>
+            new Promise((resolve) => {
+              briefResolverRef.current = resolve
+              setActiveBrief(brief)
+            }),
+          writePage: (spec, signal) => runPageWriterRef.current(spec, signal),
+          planBrief: (spec, signal) => runBriefWriterRef.current(spec, signal),
+          getInstruction: () => runInstructionRef.current,
+          resolveAttachmentSrc: (ref) => resolveAttachmentSrc(ref),
+          listAttachmentNames: () => availableAttachments().map((a) => a.name),
+        }),
+        createSearchSkill(),
+        createFilesSkill(availableAttachments),
+        createIntentSkill(
+          () => intentRef.current,
+          () => isDocEmpty(depsRef.current.access.getText()),
+        ),
+      ]),
+      captureSnapshot: () => depsRef.current.getSnapshot(),
+      systemSuffix: () => aiLangDirective(langRef.current),
+      events: {
+        onText: (text) => {
+          if (text) halfTextRef.current = text
+          patchLast({ text })
+        },
+        onToolStart: (call) => {
+          // Live "running" chip: replaced in place by onToolExecuted
+          patchLast((last) => ({
+            tools: [
+              ...(last.tools ?? []),
+              { name: call.name, summary: call.name.replace(/[_-]+/g, ' '), running: true },
+            ],
+          }))
+        },
+        onToolExecuted: ({ call, execution, snapshotBefore }) => {
+          if (execution.mutated) runMutatedRef.current = true
+          if (snapshotBefore !== undefined) {
+            const label = runInstructionRef.current.slice(0, 40)
+            const time = new Date().toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            })
+            setSnapshots((prev) =>
+              [...prev, { label, time, doc: snapshotBefore }].slice(-MAX_SNAPSHOTS),
+            )
+          }
+          const activity: ToolActivity = {
+            name: call.name,
+            summary: execution.summary,
+            isError: execution.isError,
+            output: execution.output?.slice(0, TOOL_OUTPUT_MAX_CHARS),
+          }
+          runToolsRef.current.push(activity)
+          patchLast((last) => {
+            // Swap out the running placeholder pushed by onToolStart (parse-fail calls have none)
+            const tools = [...(last.tools ?? [])]
+            if (tools.at(-1)?.running) tools.pop()
+            return { tools: [...tools, activity] }
+          })
+        },
+        onTurnEnd: () => {
+          patchLast({ streaming: false })
+          setChat((prev) => [...prev, { role: 'assistant', text: '', streaming: true }])
+        },
+        onDone: ({ text, cancelled, turnLimit, truncated }) => {
+          const base = turnLimit
+            ? [text, tGlobal('aiTurnLimit')].filter(Boolean).join('\n\n')
+            : text || (cancelled ? tGlobal('aiStopped') : '')
+          // A reasoning model can spend the entire output budget on thinking and close the
+          // turn with finish_reason=length and no prose at all — the bare "(no reply)" read
+          // as the assistant ignoring the user. Name the truncation, as docs already does.
+          const final = truncated
+            ? [base, tGlobal('aiTruncatedNote')].filter(Boolean).join('\n\n')
+            : base
+          patchLast((last) => ({
+            streaming: false,
+            text: final || (last.tools?.length ? last.text : tGlobal('aiNoReply')),
+            // A stop mid-tool can leave a running placeholder behind — drop it
+            tools: last.tools?.filter((tl) => !tl.running),
+          }))
+          persistMessage('assistant', final, runToolsRef.current)
+          // LOCAL(2026-09-21, d8201ad0): D10 —— 取消的轮次照常落盘(半截文本+工具活动)
+          if (cancelled) {
+            const half = halfTextRef.current
+            if ((half && half.trim()) || runToolsRef.current.length > 0) {
+              persistMessage('assistant', half, runToolsRef.current, undefined, undefined, true)
+            }
+          }
+          if (conversation) conversation.onTurnEnd()
+          depsRef.current.clearHighlights()
+          depsRef.current.onRunDone(runMutatedRef.current)
+          queueRunRef.current = false
+          setBusy(false)
+        },
+        onError: (error) => {
+          // once a tool ran the message was delivered; a later turn failing is not a send failure
+          const undelivered = runToolsRef.current.length === 0
+          setChat((prev) => {
+            const next = [...prev]
+            for (let i = undelivered ? next.length - 1 : -1; i >= 0; i--) {
+              const entry = next[i]!
+              if (entry.role === 'user') {
+                next[i] = { ...entry, undelivered: true }
+                break
+              }
+            }
+            const last = next.at(-1)
+            if (last?.role === 'assistant') {
+              next[next.length - 1] = {
+                ...last,
+                streaming: false,
+                text: error,
+                isError: true,
+                tools: last.tools?.filter((tl) => !tl.running),
+              }
+            }
+            return next
+          })
+          queueRunRef.current = false
+          setBusy(false)
+        },
+      },
+    })
+    const built = loopRef.current
+    if (built && bufferedRestoreRef.current && bufferedRestoreRef.current.length > 0) {
+      built.restore(bufferedRestoreRef.current)
+      bufferedRestoreRef.current = null
+    }
+    return loopRef.current
+  }
+
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+      clarifyResolverRef.current?.({ answers: '', cancelled: true })
+      briefResolverRef.current?.({ kind: 'cancelled' })
+      partialResolverRef.current?.(false)
+      loopRef.current?.cancel()
+      depsRef.current.clearHighlights()
+    }
+  }, [])
+
+  // ── chat-history persistence: bind to the file, restore prior transcript ──
+  // LOCAL(2026-09-21, d8201ad0): 会话实例 loadChat limit 10_000 全量装载(D11)→
+  // 缓冲 → 首次 send 建 loop 时 restore 灌回(D10)
+  const historyLoadedRef = useRef(false)
+  useEffect(() => {
+    const api = window.projectApi
+    if (!api) return
+    if (conversation) {
+      if (!conversation.projectId) return
+      let disposed = false
+      void api
+        .loadChat({
+          projectId: conversation.projectId,
+          chatId: conversation.chatId,
+          limit: 10_000,
+        })
+        .then((msgs) => {
+          if (disposed || msgs.length === 0) return
+          if (historyLoadedRef.current) return
+          historyLoadedRef.current = true
+          setChat(
+            msgs.map((m) => ({
+              role: m.role,
+              text: m.text,
+              interrupted: m.interrupted === true,
+              tools: m.tools?.map((tool) => ({
+                name: tool.name,
+                summary: tool.summary,
+                isError: tool.isError,
+                output: tool.output ? tool.output.slice(0, TOOL_OUTPUT_MAX_CHARS) : undefined,
+              })),
+              ...(m.attachments && m.attachments.length > 0
+                ? {
+                    attachments: m.attachments
+                      .filter((a) => a.path)
+                      .map((a) => ({
+                        name: a.name,
+                        path: a.path ?? '',
+                        ext: a.ext ?? '',
+                        sizeBytes: a.sizeBytes ?? 0,
+                      })),
+                  }
+                : {}),
+              ...(m.scope ? { scope: m.scope } : {}),
+            })),
+          )
+          bufferedRestoreRef.current = msgs.map((m) => ({ role: m.role, text: m.text }))
+          const firstUser = msgs.find((m) => m.role === 'user')
+          if (firstUser) conversation.onFirstMessage(firstUser.text)
+        })
+        .catch(() => {
+          /* history load failures are silent */
+        })
+      return () => {
+        disposed = true
+      }
+    }
+    const tempChatId = `unsaved-${Date.now()}`
+    void api
+      .resolveChat({ filePath: filePathRef.current ?? null, tempChatId })
+      .then((ids) => {
+        chatIdsRef.current = ids
+        for (const msg of pendingPersistRef.current.splice(0)) {
+          persistMessage(msg.role, msg.text, msg.tools, msg.attachments, msg.scope)
+        }
+        return api.loadChat({ projectId: ids.projectId, chatId: ids.chatId, limit: 200 })
+      })
+      .then((msgs) => {
+        if (msgs.length === 0) return
+        // the user may have sent a message while history was loading — never
+        // replace a live transcript (and don't clobber the loop context)
+        let applied = false
+        // stored metadata only: the chips render name/size, a still-readable image gets its thumbnail
+        const restoredAtts = (m: (typeof msgs)[number]): AttachmentMeta[] | undefined =>
+          m.attachments
+            ?.filter((a) => a.path)
+            .map((a) => ({
+              name: a.name,
+              path: a.path ?? '',
+              ext: a.ext ?? '',
+              sizeBytes: a.sizeBytes ?? 0,
+            }))
+        setChat((prev) => {
+          if (prev.length > 0) return prev
+          applied = true
+          return msgs.map((m) => ({
+            role: m.role,
+            text: m.text,
+            tools: m.tools?.map((tool) => ({
+              name: tool.name,
+              summary: tool.summary,
+              isError: tool.isError,
+              output: tool.output ? tool.output.slice(0, TOOL_OUTPUT_MAX_CHARS) : undefined,
+            })),
+            attachments: restoredAtts(m),
+            ...(m.scope ? { scope: m.scope } : {}),
+          }))
+        })
+        if (applied && !loopRef.current?.busy) {
+          loopRef.current?.restore(msgs.map((m) => ({ role: m.role, text: m.text })))
+          // follow-up turns can keep reading the files those messages attached
+          const seen = new Set(sentAttachmentsRef.current.map((a) => a.path))
+          for (const a of msgs.flatMap((m) => restoredAtts(m) ?? [])) {
+            if (seen.has(a.path)) continue
+            seen.add(a.path)
+            sentAttachmentsRef.current.push(a)
+          }
+        }
+      })
+      .catch(() => {
+        /* history load failures are silent */
+      })
+  }, [])
+
+  /** after an untitled document's first save, bind the unsaved-* history to the real path */
+  useEffect(() => {
+    filePathRef.current = filePath
+    if (conversation) return
+    const ids = chatIdsRef.current
+    if (!window.projectApi || !ids || !filePath || !ids.chatId.startsWith('unsaved-')) return
+    void window.projectApi
+      .rebindChat({ projectId: ids.projectId, tempChatId: ids.chatId, newFilePath: filePath })
+      .then((r) => {
+        if (r?.chatId) chatIdsRef.current = r
+      })
+      .catch(() => {
+        /* silent */
+      })
+  }, [filePath])
+
+  useEffect(() => {
+    if (stickToBottomRef.current) {
+      chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight })
+    }
+  }, [chat, busy])
+
+  const onChatScroll = (): void => {
+    const el = chatRef.current
+    if (!el) return
+    stickToBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48
+  }
+
+  /** false when nothing was started (empty text or a run already active) */
+  const send = (
+    text: string,
+    displayText?: string,
+    queueRun = false,
+    attachmentsOverride?: AttachmentMeta[],
+    scope?: AiScopeQuoteData,
+  ): boolean => {
+    const instruction = text.trim()
+    const loop = ensureLoop()
+    if (!instruction || !loop || loop.busy) return false
+    // the message consumes the composer attachments: echoed on the bubble, images multimodal, files via the skill
+    const sentAtts = attachmentsOverride ?? attachmentsRef.current
+    if (sentAtts.length > 0) {
+      const seen = new Set(sentAttachmentsRef.current.map((a) => a.path))
+      sentAttachmentsRef.current = [
+        ...sentAttachmentsRef.current,
+        ...sentAtts.filter((a) => !seen.has(a.path)),
+      ]
+      if (!attachmentsOverride) setAttachments([])
+    }
+    stickToBottomRef.current = true
+    queueRunRef.current = queueRun
+    lastQueueRunRef.current = queueRun
+    runInstructionRef.current = instruction
+    runDisplayRef.current = displayText ?? instruction
+    lastScopeRef.current = scope
+    runMutatedRef.current = false
+    depsRef.current.onPrompt(displayText ?? instruction)
+    runToolsRef.current = []
+    setChat((prev) => [
+      ...prev,
+      {
+        role: 'user',
+        text: displayText ?? instruction,
+        instruction: displayText ? instruction : undefined,
+        queueRun: queueRun || undefined,
+        attachments: sentAtts.length > 0 ? sentAtts : undefined,
+        scope,
+      },
+      { role: 'assistant', text: '', streaming: true },
+    ])
+    setPrompt('')
+    setBusy(true)
+    // persist what the user saw — a restored transcript must not surface the
+    // internal batch protocol text behind a queue submission
+    persistMessage('user', displayText ?? instruction, undefined, sentAtts, scope)
+    if (conversation) conversation.onFirstMessage(displayText ?? instruction)
+    // Stop / New chat during the pre-run reads (settings, image bytes) bump the sequence; a stale send never starts the loop
+    const seq = ++sendSeqRef.current
+    void (async () => {
+      try {
+        settingsRef.current = await window.htmlApi.getAiSettings()
+        const images = sentAtts.length > 0 ? await collectImages(sentAtts) : []
+        if (!mountedRef.current || seq !== sendSeqRef.current) return
+        const kbInstruction = await kb.augment(instruction)
+        if (kb.lastCitations.current.length > 0)
+          patchLast({ kbCitations: kb.lastCitations.current })
+        await loop.run(kbInstruction, images.length > 0 ? images : undefined)
+      } catch (err) {
+        // a send cancelled during its pre-run reads must not paint its error onto a later turn's bubble
+        if (!mountedRef.current || seq !== sendSeqRef.current) return
+        patchLast({
+          streaming: false,
+          text: err instanceof Error ? err.message : String(err),
+          isError: true,
+        })
+        queueRunRef.current = false
+        setBusy(false)
+      }
+    })()
+    return true
+  }
+
+  /** one run for the whole queue; every item is consumed up front, failures go through retry */
+  const sendQueue = (): void => {
+    const access = depsRef.current.access
+    const entries = liveItems(resolveQueue(access.getText(), access.getMap(), editQueue))
+    if (entries.length === 0) {
+      onQueueClear()
+      return
+    }
+    const started = send(
+      buildQueueInstruction(entries),
+      buildQueueSummary(t('aiQueueSubmitted', { count: entries.length }), entries),
+      true,
+    )
+    // consume only once the run is under way; a failed run keeps its retry via the bubble's instruction
+    if (started) onQueueConsume(editQueue.map((item) => item.qid))
+  }
+
+  /** finish pending cards as skipped so no promise is left dangling */
+  const dismissCards = (): void => {
+    clarifyResolverRef.current?.({ answers: '', cancelled: true })
+    clarifyResolverRef.current = null
+    setActiveClarify(null)
+    briefResolverRef.current?.({ kind: 'cancelled' })
+    briefResolverRef.current = null
+    setActiveBrief(null)
+    decidePartial(false)
+  }
+
+  const decidePartial = (keep: boolean): void => {
+    partialResolverRef.current?.(keep)
+    partialResolverRef.current = null
+    setActivePartial(null)
+  }
+
+  /** pre-run send in flight (reads before loop.run): cancelling it drops the empty reply and marks the message undelivered */
+  const cancelPendingSend = (): void => {
+    sendSeqRef.current++
+    setChat((prev) => {
+      const last = prev.at(-1)
+      if (!last || last.role !== 'assistant' || !last.streaming || last.text) return prev
+      const rest = prev.slice(0, -1)
+      const user = rest.at(-1)
+      if (user?.role === 'user') rest[rest.length - 1] = { ...user, undelivered: true }
+      return rest
+    })
+    queueRunRef.current = false
+    setBusy(false)
+  }
+
+  const stop = (): void => {
+    dismissCards()
+    const loop = loopRef.current
+    if (loop?.busy) loop.cancel()
+    else cancelPendingSend()
+  }
+
+  const busyRef = useRef(false)
+  const idleWaitersRef = useRef<Array<() => void>>([])
+  useEffect(() => {
+    busyRef.current = busy
+    if (conversation) conversation.onRunningChange(busy)
+    if (!busy) {
+      const waiters = idleWaitersRef.current
+      idleWaitersRef.current = []
+      for (const w of waiters) w()
+    }
+  }, [busy, conversation])
+
+  // LOCAL(2026-09-21, d8201ad0): stop-then-close(D5/D10)——确认后先 stop 再 close
+  const stopConversation = async (): Promise<void> => {
+    stop()
+    if (!busyRef.current) return
+    await new Promise<void>((resolve) => idleWaitersRef.current.push(resolve))
+  }
+  const stopRef = useRef(stopConversation)
+  stopRef.current = stopConversation
+
+  const sendRef = useRef(send)
+  sendRef.current = send
+  const htmlHandleRef = useRef<HtmlConversationHandle | null>(null)
+  if (!htmlHandleRef.current) {
+    htmlHandleRef.current = {
+      stop: () => stopRef.current(),
+      send: (text, displayText) => {
+        void sendRef.current(text, displayText)
+      },
+      assist: (text) => {
+        if (loopRef.current?.busy) setPrompt(text)
+        else void sendRef.current(text)
+      },
+      setDraft: (text) => {
+        setPrompt(text)
+        window.setTimeout(() => inputRef.current?.focus(), 0)
+      },
+    }
+  }
+  useEffect(() => {
+    if (!conversation) return
+    conversation.onRegister(htmlHandleRef.current!)
+    return () => conversation.onUnregister()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const retry = (): void => {
+    send(
+      runInstructionRef.current,
+      runDisplayRef.current,
+      lastQueueRunRef.current,
+      undefined,
+      lastScopeRef.current,
+    )
+  }
+
+  // LOCAL(2026-09-21, d8201ad0): D10 续作入口(半截轮次恢复后「继续」)
+  const continueRun = (): void => void send(AI_CONTINUE_INSTRUCTION)
+
+  /** [label](htmlnav://sid/N) links in replies select that element */
+  const docNav = {
+    scheme: DOC_NAV_SCHEME,
+    onNavigate: (href: string) => {
+      const sid = parseDocNavHref(href)
+      if (sid !== null) depsRef.current.navigateTo(sid)
+    },
+  }
+
+  const draftNonceRef = useRef(0)
+  useEffect(() => {
+    if (!draft || draft.nonce === draftNonceRef.current) return
+    draftNonceRef.current = draft.nonce
+    setPrompt(draft.text)
+    inputRef.current?.focus()
+  }, [draft])
+
+  // ribbon presets auto-send; while a run is active they land in the composer instead
+  const presetNonceRef = useRef(0)
+  useEffect(() => {
+    if (!preset || preset.nonce === presetNonceRef.current) return
+    presetNonceRef.current = preset.nonce
+    // while a run is active the request lands in the composer as the user phrased it, never as protocol text
+    if (loopRef.current?.busy) setPrompt(preset.displayText ?? preset.text)
+    else send(preset.text, preset.displayText, false, undefined, preset.scope)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preset])
+
+  const copyMessage = (text: string, idx: number): void => {
+    void navigator.clipboard.writeText(text)
+    setCopiedIdx(idx)
+    window.setTimeout(() => setCopiedIdx((cur) => (cur === idx ? null : cur)), 1200)
+  }
+
+  const rollback = (snapshot: Snapshot): void => {
+    if (busy) return
+    depsRef.current.restoreSnapshot(snapshot.doc)
+    setSnapshots((prev) => prev.filter((s) => s !== snapshot))
+  }
+
+  const docEmpty = chat.length === 0 && isDocEmpty(deps.access.getText())
+
+  // 助手 tab: the page-wide one-click AI actions (same set as the ribbon's AI group);
+  // every item sends right away and flips back to the chat tab
+  const runAssist = (promptKey: StringKey): void => {
+    selectTab('chat')
+    if (loopRef.current?.busy) setPrompt(t(promptKey))
+    else send(t(promptKey))
+  }
+  const assistantItems = [
+    {
+      id: 'restyle',
+      label: t('aiRestyleBtn'),
+      desc: t('aiRestyleDesc'),
+      icon: <IconWand size={24} />,
+      run: () => runAssist('aiRestylePrompt'),
+    },
+    {
+      id: 'summarize',
+      label: t('aiSummarizeBtn'),
+      desc: t('aiSummarizeDesc'),
+      icon: <IconSummarize size={24} />,
+      disabled: docEmpty,
+      run: () => runAssist('aiSummarizePrompt'),
+    },
+    ...(
+      [
+        ['aiThemeMinimal', 'aiThemeMinimalDesc'],
+        ['aiThemeEditorial', 'aiThemeEditorialDesc'],
+        ['aiThemeTech', 'aiThemeTechDesc'],
+        ['aiThemePlayful', 'aiThemePlayfulDesc'],
+        ['aiThemeDark', 'aiThemeDarkDesc'],
+      ] as const
+    ).map(([labelKey, descKey]) => ({
+      id: `theme-${labelKey}`,
+      label: t(labelKey),
+      desc: t(descKey),
+      icon: <IconPalette size={24} />,
+      disabled: docEmpty,
+      run: () => {
+        selectTab('chat')
+        const instruction = t('aiThemePrompt', { direction: t(labelKey) })
+        if (loopRef.current?.busy) setPrompt(instruction)
+        else send(instruction)
+      },
+    })),
+  ]
+
+  // LOCAL(2026-09-21, d8201ad0): 会话实例以 div 容器渲染(外壳 aside 是面板根)
+  const RootTag = (convMode ? 'div' : 'aside') as 'div'
+  return (
+    <RootTag
+      className={convMode ? 'ai-conversation' : `copilot${dragOver ? ' ai-panel-dragover' : ''}`}
+      style={convMode ? { display: 'flex', flexDirection: 'column', minHeight: 0, flex: 1 } : { width: '100%' }}
+      dir={lang === 'ar' || lang === 'he' ? 'rtl' : undefined}
+      onDragOver={(e) => {
+        if (e.dataTransfer.types.includes('Files')) {
+          e.preventDefault()
+          e.stopPropagation()
+          setDragOver(true)
+        }
+      }}
+      onDragLeave={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setDragOver(false)
+      }}
+      onDrop={(e) => void onDrop(e)}
+    >
+      {!convMode && (
+        // LOCAL(2026-09-21, d8201ad0): 弃用销毁式「新对话」按钮——由外壳「+」取代
+        <PanelTabs
+          tabs={aiTabs}
+          activeId={tab}
+          onTabChange={selectTab}
+          actions={null}
+          chromeActions={dockChrome?.buttons}
+          dragProps={dockChrome?.dragProps}
+        />
+      )}
+      <div
+        className="ai-chat"
+        ref={chatRef}
+        onScroll={onChatScroll}
+        style={tab === 'chat' ? undefined : { display: 'none' }}
+      >
+        {chat.length === 0 && (
+          <div className="ai-chat-empty">
+            <div className="ai-chat-empty-title">
+              {t(
+                docEmpty
+                  ? intent === 'write'
+                    ? 'aiEmptyWriteTitle'
+                    : 'aiEmptyTitle'
+                  : 'aiEmptyDocTitle',
+              )}
+            </div>
+            <div className="ai-chat-empty-body">
+              {t(
+                docEmpty
+                  ? intent === 'write'
+                    ? 'aiEmptyWriteBody'
+                    : 'aiEmptyBody'
+                  : 'aiEmptyDocBody',
+              )}
+            </div>
+            <div className="ai-starter-list">
+              {(docEmpty
+                ? intent === 'write'
+                  ? WRITE_STARTERS
+                  : GENERATE_STARTERS
+                : EDIT_STARTERS
+              ).map(([label, promptKey]) => (
+                <button
+                  key={label}
+                  className="ai-starter"
+                  onClick={() => {
+                    setPrompt(t(promptKey))
+                    inputRef.current?.focus()
+                  }}
+                >
+                  {t(label)}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        {chat.map((entry, i) => {
+          if (entry.role === 'user') {
+            const own = receipts.filter((r) => r.afterIdx === i)
+            return (
+              <div key={i} className="ai-msg ai-msg-user">
+                {entry.scope && <AiScopeQuote scope={entry.scope} />}
+                {entry.attachments && entry.attachments.length > 0 && (
+                  <div className="ai-msg-attachments">
+                    <AttachmentList atts={entry.attachments} previews={attachmentPreviews} />
+                  </div>
+                )}
+                <span dir="auto">{entry.text}</span>
+                {own.map((r, k) =>
+                  r.qa ? (
+                    <div key={`ca${k}`} className="ai-clarify-answered">
+                      {r.qa.map((pair, m) => (
+                        <div key={m} className="ai-clarify-answered-row">
+                          <div className="ai-clarify-answered-q">{pair.q}</div>
+                          <div className="ai-clarify-answered-a">{pair.a}</div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : r.brief ? (
+                    <div key={`br${k}`} className="brief-receipt">
+                      <b>{t('briefTitle')}</b> ·{' '}
+                      {t('briefReceipt', { hook: r.brief.core_hook, n: r.brief.sections.length })}
+                    </div>
+                  ) : null,
+                )}
+                {entry.undelivered && (
+                  <div className="ai-msg-undelivered">
+                    {t('aiUndelivered')}
+                    {!busy && (
+                      <button
+                        className="ai-retry-btn"
+                        onClick={() =>
+                          send(
+                            entry.instruction ?? entry.text,
+                            entry.text,
+                            entry.queueRun,
+                            entry.attachments ?? [],
+                            entry.scope,
+                          )
+                        }
+                      >
+                        {t('aiRetry')}
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )
+          }
+          const hasTools = (entry.tools?.length ?? 0) > 0
+          if (!entry.text && !entry.streaming && !hasTools) return null
+          const isLast = i === chat.length - 1
+          // Action row appears once per completed reply: on the turn's final segment only
+          // (mid-turn segments have a following assistant entry; the live turn ends when !busy)
+          const nextEntry = chat[i + 1]
+          const turnEnded = nextEntry ? nextEntry.role === 'user' : !busy
+          const showToolbar = !entry.streaming && turnEnded && !!entry.text && !entry.isError
+          return (
+            <div
+              key={i}
+              className={`ai-msg ai-msg-assistant${entry.isError ? ' ai-msg-error' : ''}${entry.streaming ? ' ai-msg-streaming' : ''}`}
+            >
+              {!entry.text && entry.streaming ? (
+                <span className="ai-typing-row">
+                  <AiTypingIndicator label={hasTools ? t('aiWorking') : t('aiThinking')} />
+                </span>
+              ) : (
+                entry.text && (
+                  <div dir="auto">
+                    <Markdown
+                      text={entry.text}
+                      nav={docNav}
+                      citations={entry.kbCitations}
+                      onCitationClick={setKbCiteView}
+                      onInsertImage={(src) => {
+                        // append a standalone figure before </body>; the data URL
+                        // keeps the asset self-contained like the rest of the file
+                        const html = depsRef.current.access.getText()
+                        const figure = `\n<figure><img src="${src}" alt="${lang.startsWith('zh') ? 'AI 生成图片' : 'AI image'}"></figure>\n`
+                        const next = /<\/body\s*>/i.test(html)
+                          ? html.replace(/<\/body\s*>/i, `${figure}</body>`)
+                          : html + figure
+                        depsRef.current.access.replaceAll(next, 'ai-insert-image')
+                      }}
+                      insertImageLabel={lang.startsWith('zh') ? '插入页面' : 'Insert'}
+                    />
+                  </div>
+                )
+              )}
+              {hasTools && <ToolChipList tools={entry.tools!} />}
+              {entry.interrupted && (
+                <span className="ai-msg-interrupted-badge">{t('aiTurnInterrupted')}</span>
+              )}
+              {showToolbar && (
+                <div className="ai-msg-toolbar">
+                  <button
+                    className="ai-msg-tool-btn"
+                    onClick={() => copyMessage(entry.text, i)}
+                    aria-label={t('aiCopyReplyTitle')}
+                    data-tip={t('aiCopyReplyTitle')}
+                  >
+                    {copiedIdx === i ? (
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    ) : (
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path
+                          d="M14.6113 5.34253C16.0608 5.3428 17.2363 6.518 17.2363 7.96753V15.5066C17.2361 16.956 16.0607 18.1313 14.6113 18.1316H7.07227C5.62267 18.1316 4.44751 16.9561 4.44727 15.5066V7.96753C4.44732 6.51783 5.62255 5.34253 7.07227 5.34253H14.6113ZM7.07227 6.59253C6.31291 6.59253 5.69732 7.20819 5.69727 7.96753V15.5066C5.69751 16.2658 6.31302 16.8816 7.07227 16.8816H14.6113C15.3703 16.8813 15.9861 16.2656 15.9863 15.5066V7.96753C15.9863 7.20835 15.3705 6.5928 14.6113 6.59253H7.07227ZM10.0176 2.8689C10.3626 2.86905 10.6426 3.14882 10.6426 3.4939C10.6425 3.83888 10.3626 4.11874 10.0176 4.1189H4.59961C3.84022 4.1189 3.22461 4.73451 3.22461 5.4939V11.324C3.22433 11.6689 2.94461 11.949 2.59961 11.949C2.25461 11.949 1.97489 11.6689 1.97461 11.324V5.4939C1.97461 4.04415 3.14987 2.8689 4.59961 2.8689H10.0176Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    )}
+                  </button>
+                  {isLast && !busy && runInstructionRef.current && (
+                    <button
+                      className="ai-msg-tool-btn"
+                      onClick={retry}
+                      aria-label={t('aiRegenerateTitle')}
+                      data-tip={t('aiRegenerateTitle')}
+                    >
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden
+                      >
+                        <path d="M 12.68 6.65 a 4.86 4.86 0 0 0 -9 -1.08 M 3.32 9.35 a 4.86 4.86 0 0 0 9 1.08" />
+                        <path d="M 12.95 3.05 v 2.7 h -2.7 M 3.05 12.95 v -2.7 h 2.7" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {tab === 'chat' && snapshots.length > 0 && (
+        <div className="ai-versions">
+          <div className="ai-versions-title">
+            <IconClock />
+            {t('aiSnapshotsTitle')}
+          </div>
+          {snapshots.map((s, i) => (
+            <div key={i} className="ai-version-row">
+              <span className="ai-version-label" data-tip={s.label}>
+                <span className="ai-version-time">{s.time}</span>
+                {s.label}
+              </span>
+              <button className="ai-version-rollback" disabled={busy} onClick={() => rollback(s)}>
+                {t('aiRollback')}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {!convMode && <AssistantTab items={assistantItems} hidden={tab !== 'assistant'} />}
+
+      {chat[chat.length - 1]?.interrupted && !busy && (
+        <div className="ai-composer">
+          <div className="ai-continue-row">
+            <button className="ai-continue-btn" onClick={continueRun}>
+              {t('aiContinue')}
+            </button>
+          </div>
+        </div>
+      )}
+      {tab === 'chat' && activeClarify && (
+        <div className="ai-composer">
+          <ClarifyCard
+            questions={activeClarify}
+            onSubmit={(answers, qa) => {
+              const idx = chat.map((c) => c.role).lastIndexOf('user')
+              clarifyResolverRef.current?.({ answers })
+              clarifyResolverRef.current = null
+              setActiveClarify(null)
+              setReceipts((prev) => [...prev, { afterIdx: idx, qa }])
+            }}
+            onSkip={() => {
+              clarifyResolverRef.current?.({ answers: '', cancelled: true })
+              clarifyResolverRef.current = null
+              setActiveClarify(null)
+            }}
+          />
+        </div>
+      )}
+      {tab === 'chat' && activeBrief && !activeClarify && (
+        <div className="ai-composer">
+          <BriefCard
+            key={activeBrief.core_hook + activeBrief.sections.length}
+            brief={activeBrief}
+            onDecide={(decision) => {
+              const idx = chat.map((c) => c.role).lastIndexOf('user')
+              if (decision.kind === 'confirmed') {
+                depsRef.current.onBriefConfirmed(decision.brief)
+                setReceipts((prev) => [...prev, { afterIdx: idx, brief: decision.brief }])
+              }
+              briefResolverRef.current?.(decision)
+              briefResolverRef.current = null
+              setActiveBrief(null)
+            }}
+          />
+        </div>
+      )}
+      {tab === 'chat' && activePartial && !activeClarify && !activeBrief && (
+        <div className="ai-composer">
+          <div className="brief-card ai-partial-card" role="group" aria-label={t('aiPartialTitle')}>
+            <div className="ai-partial-title">{t('aiPartialTitle')}</div>
+            <div className="ai-partial-body">
+              {t('aiPartialBody', { lines: activePartial.lines })}
+            </div>
+            <div className="brief-actions">
+              <button type="button" className="brief-btn" onClick={() => decidePartial(false)}>
+                {t('aiPartialDiscard')}
+              </button>
+              <button
+                type="button"
+                className="brief-btn primary"
+                onClick={() => decidePartial(true)}
+              >
+                {t('aiPartialAdopt')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <div
+        className="ai-composer"
+        style={
+          tab !== 'chat' || activeClarify || activeBrief || activePartial
+            ? { display: 'none' }
+            : undefined
+        }
+      >
+        {chat.length === 0 && docEmpty && (
+          <div className="ai-intent-bar">
+            <div className="ai-intent-label">{t('aiIntentLabel')}</div>
+            <div className="ai-intent-cards" role="radiogroup" aria-label={t('aiIntentLabel')}>
+              {(
+                [
+                  ['design', 'aiIntentDesign', 'aiIntentDesignDesc'],
+                  ['write', 'aiIntentWrite', 'aiIntentWriteDesc'],
+                ] as const
+              ).map(([kind, title, desc]) => (
+                <button
+                  key={kind}
+                  type="button"
+                  role="radio"
+                  aria-checked={intent === kind}
+                  className={`ai-intent-card${intent === kind ? ' selected' : ''}`}
+                  data-tip={t(desc)}
+                  onClick={() => {
+                    setIntent(kind)
+                    inputRef.current?.focus()
+                  }}
+                >
+                  <span className="ai-intent-card-icon" aria-hidden>
+                    {kind === 'design' ? (
+                      <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                        <rect x="2.5" y="2.5" width="15" height="15" rx="2.5" />
+                        <path d="M2.5 7.5h15M7.5 7.5v10" />
+                      </svg>
+                    ) : (
+                      <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                        <path d="M4 15.5h12M4 4.5h12M4 8.2h12M4 11.8h8" />
+                      </svg>
+                    )}
+                  </span>
+                  <span className="ai-intent-card-title">{t(title)}</span>
+                  {intent === kind && (
+                    <span className="ai-intent-card-check" aria-hidden>
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                        <path d="M2 5.2l2.2 2.2L8 3" />
+                      </svg>
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        {editQueue.length > 0 && (
+          <EditQueueCard
+            items={editQueue}
+            text={deps.access.getText()}
+            map={deps.access.getMap()}
+            busy={busy}
+            onEditInstruction={onQueueEditInstruction}
+            onRemove={onQueueRemove}
+            onDiscardAll={onQueueClear}
+            onFocus={onQueueFocus}
+            onSend={sendQueue}
+          />
+        )}
+        {attachments.length > 0 && (
+          <div className="ai-attachments">
+            <AttachmentList
+              atts={attachments}
+              previews={attachmentPreviews}
+              onRemove={removeAttachment}
+              removeLabel={t('aiRemoveAttachmentTitle')}
+            />
+          </div>
+        )}
+        {attachNotice && <div className="ai-attach-notice">{attachNotice}</div>}
+        <AiComposer
+          value={prompt}
+          busy={busy}
+          placeholder={t('aiComposerPlaceholder')}
+          hintIdle={t('aiHintIdle')}
+          hintBusy={t('aiHintBusy')}
+          sendLabel={t('aiSend')}
+          stopLabel={t('aiStop')}
+          iconOnly
+          textareaRef={inputRef}
+          onChange={setPrompt}
+          onSend={() => send(prompt)}
+          onStop={stop}
+          onPasteFiles={(files) => void onPasteFiles(files)}
+          onPasteText={onPasteText}
+          footerStart={
+            <>
+              <KbPickerButton lang={lang} selected={kb.selected} onToggle={kb.toggle} />
+              <ModelPickerButton
+                settings={panelSettings}
+                onPick={(selection) => {
+                  void htmlModelBridge.setCurrentModel(selection).then(refreshPanelSettings)
+                }}
+                onOpenSettings={() => setModelSettingsOpen(true)}
+              />
+              <button
+                type="button"
+                className="ai-attach-btn"
+                onClick={() => void pickAttachments()}
+                data-tip={t('aiAttachTitle')}
+                aria-label={t('aiAttachTitle')}
+              >
+                <img src={attachIcon} alt="" aria-hidden />
+              </button>
+            </>
+          }
+        />
+      </div>
+      {modelSettingsOpen && (
+        <Suspense fallback={null}>
+          <ModelSettingsPage
+            bridge={htmlModelBridge}
+            lang={lang}
+            onClose={() => {
+              setModelSettingsOpen(false)
+              void refreshPanelSettings()
+            }}
+          />
+        </Suspense>
+      )}
+      {kbCiteView && (
+        <KbCitePreview citation={kbCiteView} lang={lang} onClose={() => setKbCiteView(null)} />
+      )}
+    </RootTag>
+  )
+}
+
+/** Step-row status icons (timeline glyphs, unified with the other apps) */
+function StepIcon({ status }: { status: 'running' | 'done' | 'error' }) {
+  if (status === 'running') {
+    return (
+      <svg
+        viewBox="0 0 24 24"
+        width="14"
+        height="14"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+      >
+        <path d="M6.5 3.5h11M6.5 20.5h11M8 3.5v3.2c0 2.6 4 4.2 4 5.3 0 1.1 4 2.7 4 5.3v3.2M16 3.5v3.2c0 2.6-4 4.2-4 5.3 0 1.1-4 2.7-4 5.3v3.2" />
+      </svg>
+    )
+  }
+  if (status === 'error') {
+    return (
+      <svg
+        viewBox="0 0 24 24"
+        width="14"
+        height="14"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+      >
+        <circle cx="12" cy="12" r="9" />
+        <path d="m9.2 9.2 5.6 5.6M14.8 9.2l-5.6 5.6" />
+      </svg>
+    )
+  }
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="14"
+      height="14"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <circle cx="12" cy="12" r="9" />
+      <path d="m8.5 12.4 2.4 2.4 4.6-5" />
+    </svg>
+  )
+}
+
+/** Tool activity group (docs parity): auto-opens while tools run, auto-collapses into
+ *  "Worked · N steps" when they finish; a manual toggle always wins */
+function ToolChipList({ tools }: { tools: ToolActivity[] }) {
+  const { t: tr } = useI18n()
+  const [expanded, setExpanded] = useState<Set<number>>(new Set())
+  const [userOpen, setUserOpen] = useState<boolean | null>(null)
+
+  const toggle = (j: number) => {
+    setExpanded((prev) => {
+      const next = new Set(prev)
+      if (next.has(j)) next.delete(j)
+      else next.add(j)
+      return next
+    })
+  }
+
+  const anyRunning = tools.some((tool) => tool.running)
+  const open = userOpen ?? anyRunning
+  const label = anyRunning ? tr('aiGroupWorking') : tr('aiWorkedSteps', { n: tools.length })
+
+  return (
+    <div className="ai-work-group">
+      <button
+        type="button"
+        className={`ai-work-group-summary${anyRunning ? ' running' : ''}`}
+        aria-expanded={open}
+        onClick={() => setUserOpen(!open)}
+      >
+        {anyRunning && !open && <span className="ai-tool-chip-spinner" aria-hidden />}
+        <span className="ai-work-group-label">{label}</span>
+        <span className={`ai-tool-chip-caret${open ? ' open' : ''}`} aria-hidden>
+          ›
+        </span>
+      </button>
+      <div className={`ai-work-group-body${open ? ' open' : ''}`}>
+        <div className="ai-work-group-body-inner">
+          {tools.map((tool, j) => {
+            const hasOutput = !tool.running && !!tool.output
+            const isOpen = expanded.has(j)
+            const stepStatus = tool.running ? 'running' : tool.isError ? 'error' : 'done'
+            return (
+              <div key={j} className="ai-step-row">
+                <span className={`ai-step-icon ${stepStatus}`} aria-hidden>
+                  <StepIcon status={stepStatus} />
+                </span>
+                <div className="ai-step-content">
+                  {hasOutput ? (
+                    <button
+                      type="button"
+                      className="ai-step-title clickable"
+                      data-tip={tool.name}
+                      aria-expanded={isOpen}
+                      onClick={() => toggle(j)}
+                    >
+                      {tool.summary}
+                    </button>
+                  ) : (
+                    <span className="ai-step-title" data-tip={tool.name}>
+                      {tool.summary}
+                    </span>
+                  )}
+                  {hasOutput && isOpen && (
+                    <div className="ai-step-detail">
+                      <div className="ai-tool-output">
+                        <div className="ai-tool-output-pre">{tool.output}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function Svg({ children }: { children: ReactNode }): ReactElement {
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      aria-hidden
+    >
+      {children}
+    </svg>
+  )
+}
+
+function IconNewChat(): ReactElement {
+  return (
+    <Svg>
+      <path
+        d="M13.5 7.2v-3A1.7 1.7 0 0 0 11.8 2.5H4.2a1.7 1.7 0 0 0-1.7 1.7v6.1a1.7 1.7 0 0 0 1.7 1.7h1.1v2l2.6-2h1.3"
+        strokeLinejoin="round"
+      />
+      <path d="M12.2 9.4v4M10.2 11.4h4" />
+    </Svg>
+  )
+}
+
+function IconClock(): ReactElement {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.3"
+      strokeLinecap="round"
+      aria-hidden
+    >
+      <circle cx="8" cy="8" r="6" />
+      <path d="M8 4.8V8l2.2 1.6" />
+    </svg>
+  )
+}
+
+
+// ── LOCAL(2026-09-21, d8201ad0): 多会话外壳(D1/D5/D9)─────────────────────────
+// tab 行 = [会话…][助手];「+」常驻;每会话一个 AiConversationBody 实例。
+// html 的 receipts/clarify/brief/partial 卡均为实例私有(§4.5)。上游无同类实现;
+// 收敛条件:上游若原生实现多会话,评估取上游并删除本地会话池。
+// LOCAL(2026-09-22, d8201ad0): D12/D13 增量——历史不再是 tab:「🕘」改 actions 槽
+// 常驻图标([+][🕘])的下拉浮层 AiHistoryPopover;空会话(从未发言)关闭直接丢弃、
+// 不进历史(hook close() 内分流)。上游动向与收敛条件同上。
+const isChatTabH = (tab: AiActiveTab): tab is string =>
+  typeof tab === 'string' && tab !== 'assistant' && tab !== 'empty'
+
+export function AiPanel(props: {
+  deps: HtmlAiDeps
+  filePath: string | null
+  preset?: AiPreset | null
+  draft?: AiDraft | null
+  dockChrome?: DockChrome
+  editQueue: EditQueueItem[]
+  onQueueEditInstruction: (qid: string, instruction: string) => void
+  onQueueRemove: (qid: string) => void
+  onQueueClear: () => void
+  onQueueFocus: (qid: string) => void
+  onQueueConsume: (qids: string[]) => void
+}) {
+  const { filePath, dockChrome } = props
+  const { t } = useI18n()
+  const tempChatIdRef = useRef(`unsaved-${Date.now()}`)
+  const conv = useAiConversations(
+    { filePath: filePath ?? null, tempChatId: tempChatIdRef.current },
+    { persistKey: 'aihtml.aiTab' },
+  )
+  const bodyHandlesRef = useRef(new Map<string, HtmlConversationHandle>())
+
+  // 索引键换绑:未保存 → 已保存 / 重命名(chatId 不变)
+  const prevFilePathRef = useRef(filePath ?? null)
+  useEffect(() => {
+    const prev = prevFilePathRef.current
+    prevFilePathRef.current = filePath ?? null
+    if (!filePath || prev === filePath) return
+    conv.rebindIndex(prev ?? tempChatIdRef.current, filePath)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filePath])
+
+  const [closeConfirmId, setCloseConfirmId] = useState<string | null>(null)
+  // D13: 历史下拉浮层开关(空态引导的「从历史还原」也走它)
+  const [historyOpen, setHistoryOpen] = useState(false)
+  const closeConversation = async (chatId: string): Promise<void> => {
+    const handle = bodyHandlesRef.current.get(chatId)
+    if (handle) await handle.stop()
+    conv.close(chatId)
+  }
+  const closeFlow = (chatId: string): void => {
+    if (conv.runningIds.has(chatId)) {
+      setCloseConfirmId(chatId)
+      return
+    }
+    void closeConversation(chatId)
+  }
+
+  // 面板级入口(助手 tab / preset)→ 目标会话体
+  const targetChatId = (): string | null => {
+    if (isChatTabH(conv.activeTab) && conv.open.some((c) => c.chatId === conv.activeTab)) {
+      return conv.activeTab
+    }
+    return conv.open[0]?.chatId ?? null
+  }
+  const pendingRef = useRef<{ text: string; assist?: boolean } | null>(null)
+  useEffect(() => {
+    const p = pendingRef.current
+    if (!p) return
+    const target = targetChatId()
+    if (!target) {
+      // the pool settled with zero open conversations: open one to deliver into
+      if (conv.ready && conv.open.length === 0) conv.create()
+      return
+    }
+    const handle = bodyHandlesRef.current.get(target)
+    if (!handle) return
+    pendingRef.current = null
+    if (p.assist) handle.assist(p.text)
+    else void handle.send(p.text)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conv.open.length, conv.activeTab, conv.ready])
+  const routeText = (text: string, assist = false): void => {
+    const target = targetChatId()
+    const handle = target ? bodyHandlesRef.current.get(target) : undefined
+    if (handle) {
+      if (assist) handle.assist(text)
+      else void handle.send(text)
+      return
+    }
+    // queued: the delivery effect runs it on the first ready conversation body
+    pendingRef.current = { text, assist }
+  }
+
+  useEffect(() => {
+    const preset = props.preset
+    if (!preset) return
+    const target = targetChatId()
+    const handle = target ? bodyHandlesRef.current.get(target) : undefined
+    // html AiPreset 无 autoRun 字段:沿用原语义(busy 落 composer,否则直接发送)
+    if (handle) handle.assist(preset.displayText ?? preset.text)
+    else {
+      pendingRef.current = { text: preset.displayText ?? preset.text, assist: true }
+      conv.create()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.preset?.nonce])
+
+  return (
+    <aside className="copilot" style={{ width: '100%', position: 'relative' }}>
+      <PanelTabs
+        tabs={[
+          ...conv.open.map((c) => ({
+            id: c.chatId,
+            label: c.title || t('aiConvUntitled'),
+            onClose: () => closeFlow(c.chatId),
+            running: conv.runningIds.has(c.chatId),
+          })),
+          { id: 'assistant', label: t('aiTabAssistant') },
+        ]}
+        activeId={conv.activeTab}
+        onTabChange={conv.setActiveTab}
+        actions={
+          // LOCAL(2026-09-22, d8201ad0): D13——常驻两图标 [+][🕘];🕘 历史对话下拉浮层
+          <>
+            <button
+              className="ai-header-btn"
+              onClick={() => conv.create()}
+              data-tip={t('aiNewChat')}
+              aria-label={t('aiNewChat')}
+            >
+              <IconNewChat />
+            </button>
+            <AiHistoryPopover
+              open={historyOpen}
+              onOpenChange={setHistoryOpen}
+              items={conv.closed}
+              tooltip={t('aiHistoryTooltip')}
+              labels={{
+                deleteOne: t('aiHistoryDelete'),
+                deleteAll: t('aiHistoryDeleteAll'),
+                empty: t('aiHistoryEmpty'),
+                deleteOneConfirm: t('aiHistoryDeleteOneConfirm'),
+                deleteAllConfirm: t('aiHistoryDeleteAllConfirm'),
+                cancel: t('aiConvCancel'),
+              }}
+              onRestore={(chatId) => conv.restore(chatId)}
+              // 单删/全删只作用于历史(未打开)会话,确认在浮层内完成(D3)
+              onDelete={(chatId) => conv.removeClosed(chatId)}
+              onDeleteAll={() => conv.removeAllClosed()}
+            />
+          </>
+        }
+        chromeActions={dockChrome?.buttons}
+        dragProps={dockChrome?.dragProps}
+      />
+      {closeConfirmId !== null && (
+        <AiTabConfirm
+          title={t('aiConvCloseRunningTitle')}
+          body={t('aiConvCloseRunningBody')}
+          confirmLabel={t('aiConvStopClose')}
+          cancelLabel={t('aiConvCancel')}
+          onConfirm={() => {
+            const id = closeConfirmId
+            setCloseConfirmId(null)
+            if (id !== null) void closeConversation(id)
+          }}
+          onCancel={() => setCloseConfirmId(null)}
+        />
+      )}
+      {conv.open.map((c) => (
+        <div
+          key={c.chatId}
+          style={
+            c.chatId === conv.activeTab
+              ? { display: 'flex', flexDirection: 'column', minHeight: 0, flex: 1 }
+              : { display: 'none' }
+          }
+        >
+          <AiConversationBody
+            {...props}
+            preset={null}
+            conversation={{
+              chatId: c.chatId,
+              projectId: conv.projectId,
+              onRunningChange: (running) => conv.setRunning(c.chatId, running),
+              onFirstMessage: (text) => conv.reportTitle(c.chatId, text),
+              onTurnEnd: () => conv.touch(c.chatId),
+              onRegister: (handle) => bodyHandlesRef.current.set(c.chatId, handle),
+              onUnregister: () => bodyHandlesRef.current.delete(c.chatId),
+            }}
+          />
+        </div>
+      ))}
+      {/* 关到零:空态引导(§2.1);「从历史还原」走 🕘 浮层(D13) */}
+      {conv.ready && conv.activeTab === 'empty' && (
+        <AiConversationsEmpty
+          labels={{
+            title: t('aiConvEmptyTitle'),
+            body: t('aiConvEmptyBody'),
+            create: t('aiNewChat'),
+            openHistory: t('aiConvOpenHistory'),
+          }}
+          onCreate={() => conv.create()}
+          onOpenHistory={() => setHistoryOpen(true)}
+        />
+      )}
+    </aside>
+  )
+}

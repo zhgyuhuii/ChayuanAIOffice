@@ -1,0 +1,839 @@
+/* ModelSettingsPage — faithful port of chatop's ModelSettings layout:
+ * 240px vendor directory (search / groups / add) + config form with vendor
+ * header, enable switch, field stack, action buttons, grouped model list. */
+
+.msp-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-overlay, rgb(0 0 0 / 45%));
+}
+
+.msp-dialog {
+  display: flex;
+  flex-direction: column;
+  width: min(1000px, 94vw);
+  height: min(680px, 90vh);
+  border-radius: 12px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  background: var(--color-bg-page, var(--surface, #fff));
+  box-shadow: 0 24px 60px rgb(0 0 0 / 28%);
+  overflow: hidden;
+  color: var(--color-text-primary, var(--text, #242424));
+}
+
+/* ── header ─────────────────────────────────────────────────── */
+.msp-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 44px;
+  padding: 0 12px 0 20px;
+  border-bottom: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  flex-shrink: 0;
+}
+.msp-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+}
+.msp-image-model {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  flex-shrink: 0;
+}
+.msp-select-compact {
+  width: 220px;
+  height: 26px;
+  font-size: 11px;
+}
+.msp-close {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.msp-close:hover {
+  background: var(--color-bg-hover, var(--hover, #f5f5f5));
+  color: var(--color-text-primary, var(--text, #242424));
+}
+
+.msp-body {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+}
+
+/* inline variant: no dialog chrome — fills the host pane (shell settings) */
+.msp-inline-dialog {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+.msp-inline-dialog .msp-header {
+  border-bottom: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  padding-left: 0;
+}
+
+/* ── left: vendor directory (chatop w-60) ───────────────────── */
+.msp-left {
+  width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  background: var(--color-bg-subtle, var(--surface-subtle, #f6f7f9));
+}
+.msp-search-wrap {
+  padding: 8px;
+}
+.msp-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 8px;
+}
+.msp-left-footer {
+  padding: 8px;
+  border-top: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+}
+
+.msp-group {
+  margin-bottom: 4px;
+}
+.msp-group-title {
+  padding: 8px 12px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-tertiary, var(--text-tertiary, #909499));
+}
+
+/* collapsible directory group header */
+.msp-group-head {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 8px 12px 4px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-tertiary, var(--text-tertiary, #909499));
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  text-align: left;
+}
+.msp-group-head .msp-chev {
+  font-size: 9px;
+}
+
+.msp-vendor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.msp-vendor:hover {
+  background: var(--color-bg-hover, var(--hover, rgb(0 0 0 / 5%)));
+}
+.msp-vendor.is-selected {
+  background: var(--accent, #2f6fdc);
+  color: #fff;
+}
+.msp-vendor-name {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* vendor badges: key / free-ness metadata from the catalog */
+
+.msp-tags {
+  display: inline-flex;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.msp-tag {
+  font-size: 9px;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  color: var(--text-secondary, #606366);
+  white-space: nowrap;
+}
+
+.msp-tag.is-key {
+  color: var(--text-tertiary, #909499);
+}
+
+.msp-tag.is-nokey,
+.msp-tag.is-free {
+  color: #0a7d38;
+  border-color: rgb(10 125 56 / 35%);
+  background: rgb(10 125 56 / 7%);
+}
+
+.msp-tag.is-tier {
+  color: #0f6cbd;
+  border-color: rgb(15 108 189 / 35%);
+  background: rgb(15 108 189 / 7%);
+}
+
+/* 免费过滤 chip in the search row */
+
+.msp-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.msp-filter {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.msp-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 8px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 13px;
+  background: var(--surface, #fff);
+  font-size: 11px;
+  color: var(--text-secondary, #606366);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.msp-filter-btn:hover {
+  background: var(--surface-subtle, #f6f7f9);
+}
+
+.msp-filter-btn.is-active {
+  color: #0a7d38;
+  border-color: rgb(10 125 56 / 45%);
+  background: rgb(10 125 56 / 8%);
+  font-weight: 600;
+}
+
+.msp-filter-btn .msp-chev {
+  font-size: 8px;
+  color: var(--text-tertiary, #909499);
+  transition: transform 120ms ease;
+}
+
+.msp-filter-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 30;
+  min-width: 118px;
+  padding: 3px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 8px;
+  background: var(--surface, #fff);
+  box-shadow: 0 8px 22px rgb(0 0 0 / 14%);
+}
+
+.msp-filter-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 5px 8px;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  font-size: 11px;
+  color: var(--text-secondary, #606366);
+  text-align: left;
+  cursor: pointer;
+}
+
+.msp-filter-item:hover {
+  background: var(--surface-subtle, #f6f7f9);
+}
+
+.msp-filter-item.is-active {
+  color: var(--accent, #2f6fdc);
+  font-weight: 600;
+}
+
+.msp-filter-check {
+  font-size: 10px;
+}
+
+/* entering hint: points at the filter, fades on any interaction */
+
+.msp-filter-hint {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  z-index: 29;
+  padding: 5px 8px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 6px;
+  background: var(--surface, #fff);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 12%);
+  font-size: 10px;
+  color: var(--text-tertiary, #909499);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* nothing-enabled guidance banner */
+
+.msp-guide {
+  padding: 8px 16px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary, #606366);
+  background: var(--accent-soft, #eaf0fd);
+  border-bottom: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+}
+
+.msp-empty-hint {
+  margin: 2px 0 6px;
+  padding: 2px 12px 2px 26px;
+  font-size: 11px;
+  color: var(--text-tertiary, #909499);
+}
+.msp-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success, #107c41);
+  flex-shrink: 0;
+}
+.msp-vendor.is-selected .msp-dot {
+  background: #fff;
+}
+.msp-dot.is-big {
+  width: 8px;
+  height: 8px;
+}
+.msp-dot.is-on {
+  background: var(--success, #107c41);
+}
+
+.msp-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent, #2f6fdc);
+}
+.msp-vendor.is-selected .msp-avatar {
+  background: rgb(255 255 255 / 25%);
+}
+.msp-avatar.is-big {
+  width: 34px;
+  height: 34px;
+  font-size: 14px;
+}
+
+/* ── right: config form ─────────────────────────────────────── */
+.msp-right {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}
+.msp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 672px;
+  padding: 20px;
+}
+
+.msp-pane-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.msp-pane-titles {
+  flex: 1;
+  min-width: 0;
+}
+.msp-pane-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+.msp-pane-status {
+  font-size: 11px;
+  color: var(--color-text-tertiary, var(--text-tertiary, #909499));
+  margin-top: 2px;
+}
+
+/* chatop's Switch: 36×20 pill */
+.msp-switch {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-default, var(--border-strong, #d9d9d9));
+  background: var(--color-bg-hover, var(--hover, #e8e8e8));
+  cursor: pointer;
+  padding: 0;
+  transition: background 140ms;
+}
+.msp-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 25%);
+  transition: left 140ms;
+}
+.msp-switch.is-on {
+  background: var(--accent, #2f6fdc);
+  border-color: var(--accent, #2f6fdc);
+}
+.msp-switch.is-on::after {
+  left: 18px;
+}
+.msp-switch:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.msp-msg {
+  margin: 0;
+  font-size: 12px;
+}
+.msp-msg.ok {
+  color: var(--success, #107c41);
+}
+.msp-msg.err {
+  color: var(--danger, #d13438);
+}
+
+.msp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.msp-label {
+  font-size: 12px;
+  opacity: 0.75;
+}
+.msp-note {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--color-text-tertiary, var(--text-tertiary, #909499));
+  margin: 0;
+}
+
+.msp-input {
+  width: 100%;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--color-border-default, var(--border-strong, #d9d9d9));
+  border-radius: 8px;
+  background: var(--color-bg-page, var(--surface, #fff));
+  color: inherit;
+  font-size: 12px;
+}
+.msp-input:focus {
+  outline: none;
+  border-color: var(--accent, #2f6fdc);
+}
+.msp-select {
+  appearance: auto;
+}
+.msp-key-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.msp-key-row .msp-input {
+  flex: 1;
+}
+
+.msp-chatoffice-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.msp-chatoffice-state {
+  flex: 1;
+  min-width: 0;
+}
+
+.msp-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.msp-select-bar {
+  display: flex;
+  gap: 8px;
+}
+
+.msp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+}
+.msp-btn:hover:not(:disabled) {
+  background: var(--color-bg-hover, var(--hover, rgb(0 0 0 / 5%)));
+}
+.msp-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.msp-btn-primary {
+  background: var(--accent, #2f6fdc);
+  border-color: var(--accent, #2f6fdc);
+  color: #fff;
+}
+.msp-btn-primary:hover:not(:disabled) {
+  background: var(--accent-dark, #245a96);
+}
+.msp-btn-danger {
+  color: var(--danger, #d13438);
+  border-color: color-mix(in srgb, var(--danger, #d13438) 40%, transparent);
+}
+.msp-btn-danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--danger, #d13438) 8%, transparent);
+}
+.msp-btn-link {
+  color: var(--accent, #2f6fdc);
+  border-color: var(--color-border-default, var(--border, #e3e6ea));
+}
+.msp-btn-mini {
+  height: 22px;
+  padding: 0 10px;
+  font-size: 11px;
+}
+.msp-btn-block {
+  width: 100%;
+}
+
+/* model checklist card (chatop ModelList) */
+.msp-list {
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 12px;
+  background: var(--color-bg-page, var(--surface, #fff));
+  overflow: hidden;
+}
+.msp-list.is-empty {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+  border-style: dashed;
+}
+.msp-list .msp-note {
+  padding: 8px 12px 0;
+}
+.msp-type-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-text-tertiary, var(--text-tertiary, #909499));
+}
+.msp-type-name {
+  flex: 1;
+}
+.msp-type-toggle {
+  height: 18px;
+  padding: 0 6px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font-size: 10px;
+  font-weight: 400;
+  cursor: pointer;
+}
+.msp-type-toggle:hover {
+  background: var(--color-bg-hover, var(--hover, rgb(0 0 0 / 5%)));
+}
+.msp-model-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.msp-model-row:hover {
+  background: var(--color-bg-hover-subtle, var(--bg-hover-subtle, #f0f2f5));
+}
+.msp-model-row input {
+  accent-color: var(--accent, #2f6fdc);
+  flex-shrink: 0;
+}
+.msp-model-name {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.msp-model-id {
+  font-size: 10px;
+  color: var(--color-text-tertiary, var(--text-tertiary, #909499));
+  max-width: 45%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* harvested vendor icon */
+.msp-logo {
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: 3px;
+}
+
+/* collapsible type-group header */
+.msp-type-collapse {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  text-align: left;
+}
+.msp-chev {
+  display: inline-block;
+  transition: transform 120ms ease;
+  font-size: 9px;
+}
+.msp-chev.is-collapsed {
+  transform: rotate(-90deg);
+}
+
+/* 默认模型 pane */
+.msp-defaults {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 560px;
+}
+.msp-defaults-field select {
+  width: 100%;
+}
+
+/* enabled vendor rows expand to a model sub-list */
+.msp-vendor-wrap {
+  position: relative;
+}
+.msp-vendor-wrap .msp-vendor {
+  width: 100%;
+}
+.msp-vendor .msp-chev {
+  font-size: 9px;
+  color: var(--color-text-tertiary, var(--text-tertiary, #909499));
+  padding: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.msp-vendor.is-selected .msp-chev {
+  color: #fff;
+}
+.msp-vendor-models {
+  display: flex;
+  flex-direction: column;
+  padding: 2px 12px 6px 38px;
+  font-size: 11px;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  border-left: 2px solid var(--color-border-default, var(--border, #e3e6ea));
+  margin: 0 12px 4px 14px;
+}
+.msp-vendor-model {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 1px 0;
+}
+
+/* 说明页（初次进入的默认落地）：支持的模型服务卡片 */
+.msp-guide-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.msp-guide-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.msp-guide-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+}
+.msp-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 8px;
+}
+.msp-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 10px;
+  background: var(--color-bg-page, var(--surface, #fff));
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.msp-card:hover {
+  border-color: var(--accent, #2f6fdc);
+  background: var(--color-bg-hover-subtle, var(--bg-hover-subtle, #f0f2f5));
+}
+.msp-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.msp-card-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.msp-card-on {
+  flex-shrink: 0;
+  font-size: 9px;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: #fff;
+  background: var(--success, #107c41);
+}
+.msp-card-tags {
+  display: flex;
+  gap: 3px;
+}
+
+/* 本地与自建：安装/运行状态卡 */
+.msp-local-tool {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 10px;
+  background: var(--color-bg-page, var(--surface, #fff));
+}
+.msp-local-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.msp-dot.is-off {
+  background: var(--color-text-tertiary, var(--text-tertiary, #909499));
+}
+.msp-local-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+}
+.msp-local-line {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.msp-local-note {
+  color: var(--danger, #d13438);
+  word-break: break-all;
+}
+
+/* multi-field credentials (kling AK/SK) */
+.msp-key-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.msp-key-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.msp-key-field > span {
+  font-size: 11px;
+  opacity: 0.65;
+}

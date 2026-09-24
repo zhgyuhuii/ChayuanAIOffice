@@ -1,0 +1,11 @@
+{
+  "name": "@chatoffice/slides-src",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "dependencies": {
+    "pngjs": "^7.0.0",
+    "utif2": "^4.1.0",
+    "harfbuzzjs": "^1.4.0"
+  }
+}

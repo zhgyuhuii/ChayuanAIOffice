@@ -1,0 +1,60 @@
+/* Ribbon tab-strip overflow (shared, from @chatoffice/ribbon/tab-strip.css).
+   When the tab row runs out of width it clips instead of wrapping; the wheel
+   scrolls it and TabStripArrows page through the hidden tabs. Hosts wrap the
+   scrolling tabs as .ribbon-tabs-scroll > .ribbon-tabs-track and keep their
+   file/quick actions and trailing actions pinned outside the wrapper. */
+
+.ribbon-tabs-scroll {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.ribbon-tabs-track {
+  display: flex;
+  align-items: center;
+  gap: inherit; /* keep the host strip's tab spacing */
+}
+
+/* tabs never shrink or wrap — overflow scrolls instead. The nowrap also pins
+   the file button (.ribbon-tab) so the pinned chrome never wraps under squeeze;
+   the scroll viewport absorbs the pressure instead. */
+.ribbon-tabs-track > *,
+.ribbon-tabs .ribbon-tab {
+  flex: none;
+  white-space: nowrap;
+}
+
+.rb-strip-arrow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  border: none;
+  padding: 0 3px;
+  background: none;
+  color: var(--text-dim, inherit);
+  cursor: pointer;
+}
+
+.rb-strip-arrow:hover {
+  color: var(--text, inherit);
+}
+
+/* a chrome-colored fade under the chevron keeps the covered tab legible */
+.rb-strip-arrow-lead {
+  left: 0;
+  padding-right: 12px;
+  background: linear-gradient(to right, var(--chrome-bg) 45%, transparent);
+}
+
+.rb-strip-arrow-tail {
+  right: 0;
+  padding-left: 12px;
+  background: linear-gradient(to left, var(--chrome-bg) 45%, transparent);
+}

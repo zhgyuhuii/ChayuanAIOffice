@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <script>
+      // option 函数复活帧:本文档由应用原样发出(无 CSP 头/meta),父页
+      // (docs/sheets/slides 的 script-src 'self')禁止主线程 new Function,
+      // 但同源帧里编译的对象/函数可被父页直接引用(同源跨 realm 调用合法),
+      // 于是 eval 只发生在这个空白帧里 —— 与 gl-frame 同一手法的轻量版。
+      //
+      // 官方示例的 formatter/数据函数常引用 echarts 全局
+      // (echarts.graphic.LinearGradient / echarts.format.formatTime …),
+      // 函数编译在本帧、调用发生在主线程 ECharts 渲染期 —— 函数的作用域链
+      // 指向创建它的 realm,所以本帧必须装载 echarts 并挂到 window
+      // (父页经 boot 消息传入模块 URL,见 revive.ts)。
+      ;(function () {
+        var booted = false
+        var bootWaiters = []
+
+        function onBootReady(cb) {
+          if (booted) cb()
+          else bootWaiters.push(cb)
+        }
+
+        window.addEventListener('message', function (ev) {
+          var m = ev.data || {}
+          if (m.__ckeval !== true || m.type !== 'boot') return
+          var source = ev.source
+          import(m.echartsUrl)
+            .then(function (mod) {
+              // UMD dist 没有模块导出,靠执行副作用挂 window.echarts;
+              // ESM 形态(经 vite 的 dev 服务)则取命名空间/default
+              var lib = mod.use
+                ? mod
+                : mod.default && mod.default.use
+                  ? mod.default
+                  : window.echarts
+              window.echarts = lib
+              booted = true
+              var waiters = bootWaiters.splice(0)
+              for (var i = 0; i < waiters.length; i++) waiters[i]()
+              if (source) source.postMessage({ __ckeval: true, type: 'booted', ok: true }, '*')
+            })
+            .catch(function (e) {
+              if (source)
+                source.postMessage(
+                  {
+                    __ckeval: true,
+                    type: 'booted',
+                    ok: false,
+                    error: String((e && e.message) || e),
+                  },
+                  '*',
+                )
+            })
+        })
+
+        function revive(v) {
+          if (typeof v !== 'object' || v === null) return v
+          if (typeof v.__chartkit_fn__ === 'string') {
+            try {
+              return new Function('return (' + v.__chartkit_fn__ + ')')()
+            } catch (e) {
+              return v
+            }
+          }
+          if (Array.isArray(v)) return v.map(revive)
+          var out = {}
+          for (var k in v) out[k] = revive(v[k])
+          return out
+        }
+
+        // 父页收到 booted 前不应调用;双保险:未 boot 时抛错让父页走兜底
+        window.__ckrevive = function (json) {
+          if (!booted) throw new Error('eval frame not booted')
+          return revive(JSON.parse(json))
+        }
+        window.__ckping = true
+      })()
+    </script>
+  </body>
+</html>

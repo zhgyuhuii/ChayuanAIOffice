@@ -1,0 +1,282 @@
+/* feedback.css — 反馈对话框与离线二维码卡片（全部走语义令牌） */
+
+.fb-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--color-bg-overlay);
+  backdrop-filter: blur(6px);
+}
+
+.fb-dialog {
+  width: min(460px, 100%);
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-8);
+  box-shadow: var(--shadow-modal-strong);
+  padding: 20px;
+  animation: fb-in 0.12s ease-out;
+}
+
+@keyframes fb-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.fb-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.fb-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.fb-subtitle {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.fb-close {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  margin: -4px -6px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-8);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.fb-close:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+/* 类型选择（错误/需求/其他） */
+.fb-types {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.fb-types-label {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-right: 2px;
+}
+
+.fb-type-btn {
+  padding: 4px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.fb-type-btn:hover {
+  background: var(--bg-hover);
+}
+
+.fb-type-btn.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--color-btn-primary-text);
+}
+
+.fb-textarea {
+  width: 100%;
+  resize: none;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-8);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.6;
+  outline: none;
+}
+
+.fb-textarea:focus {
+  border-color: var(--accent);
+}
+
+.fb-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* 待发附件 */
+.fb-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.fb-att {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 200px;
+  padding: 4px 6px 4px 5px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-8);
+  background: var(--surface-subtle);
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.fb-att img {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.fb-att-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fb-att-remove {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fb-att-remove:hover {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+/* 操作行 */
+.fb-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.fb-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-8);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.fb-action-btn:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.fb-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.fb-uploading-label {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.fb-send {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 6px 16px;
+  border: none;
+  border-radius: var(--radius-8);
+  background: var(--accent);
+  color: var(--color-btn-primary-text);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.fb-send:hover:not(:disabled) {
+  background: var(--accent-soft);
+}
+
+.fb-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 提示条 */
+.fb-notice {
+  margin-top: 10px;
+  padding: 7px 10px;
+  border-radius: var(--radius-8);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.fb-notice-success { background: var(--surface-subtle); color: var(--text-secondary); }
+.fb-notice-draft { background: var(--surface-subtle); color: var(--text-secondary); }
+.fb-notice-hint { background: var(--surface-subtle); color: var(--text-muted); }
+.fb-notice-error { background: var(--danger-bg); color: var(--danger); }
+
+/* 离线二维码卡片 */
+.fb-qr-dialog {
+  width: min(320px, 100%);
+  text-align: center;
+}
+
+.fb-qr-img {
+  width: 216px;
+  height: 216px;
+  object-fit: contain;
+  border-radius: var(--radius-8);
+  border: 1px solid var(--border-subtle);
+}
+
+.fb-qr-text {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.fb-qr-sub {
+  margin: 4px 0 0;
+  font-size: 11.5px;
+  color: var(--text-muted);
+}

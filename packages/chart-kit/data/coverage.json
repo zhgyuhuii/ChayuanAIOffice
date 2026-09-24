@@ -1,0 +1,1154 @@
+{
+  "generatedAt": "2026-09-04T17:07:42.948Z",
+  "source": "apache/echarts-examples gh-pages",
+  "total": 445,
+  "okTotal": 211,
+  "failedTotal": 234,
+  "baselineInjected": [
+    "lines",
+    "globe",
+    "scatter3D",
+    "map3D",
+    "lines3D",
+    "scatterGL",
+    "linesGL",
+    "flowGL",
+    "graphGL"
+  ],
+  "emptyGroups": [],
+  "perGroup": [
+    {
+      "id": "line",
+      "total": 40,
+      "ok": 24
+    },
+    {
+      "id": "bar",
+      "total": 46,
+      "ok": 30
+    },
+    {
+      "id": "pie",
+      "total": 19,
+      "ok": 14
+    },
+    {
+      "id": "scatter",
+      "total": 36,
+      "ok": 13
+    },
+    {
+      "id": "map",
+      "total": 25,
+      "ok": 2
+    },
+    {
+      "id": "candlestick",
+      "total": 10,
+      "ok": 4
+    },
+    {
+      "id": "radar",
+      "total": 5,
+      "ok": 4
+    },
+    {
+      "id": "boxplot",
+      "total": 4,
+      "ok": 3
+    },
+    {
+      "id": "heatmap",
+      "total": 7,
+      "ok": 4
+    },
+    {
+      "id": "graph",
+      "total": 13,
+      "ok": 3
+    },
+    {
+      "id": "lines",
+      "total": 6,
+      "ok": 1
+    },
+    {
+      "id": "tree",
+      "total": 7,
+      "ok": 1
+    },
+    {
+      "id": "treemap",
+      "total": 7,
+      "ok": 1
+    },
+    {
+      "id": "sunburst",
+      "total": 7,
+      "ok": 7
+    },
+    {
+      "id": "parallel",
+      "total": 4,
+      "ok": 3
+    },
+    {
+      "id": "sankey",
+      "total": 7,
+      "ok": 3
+    },
+    {
+      "id": "funnel",
+      "total": 4,
+      "ok": 4
+    },
+    {
+      "id": "gauge",
+      "total": 12,
+      "ok": 6
+    },
+    {
+      "id": "pictorialBar",
+      "total": 8,
+      "ok": 3
+    },
+    {
+      "id": "themeRiver",
+      "total": 2,
+      "ok": 2
+    },
+    {
+      "id": "calendar",
+      "total": 9,
+      "ok": 1
+    },
+    {
+      "id": "matrix",
+      "total": 14,
+      "ok": 5
+    },
+    {
+      "id": "chord",
+      "total": 4,
+      "ok": 4
+    },
+    {
+      "id": "custom",
+      "total": 20,
+      "ok": 5
+    },
+    {
+      "id": "dataset",
+      "total": 9,
+      "ok": 7
+    },
+    {
+      "id": "dataZoom",
+      "total": 5,
+      "ok": 1
+    },
+    {
+      "id": "graphic",
+      "total": 5,
+      "ok": 3
+    },
+    {
+      "id": "rich",
+      "total": 3,
+      "ok": 1
+    },
+    {
+      "id": "globe",
+      "total": 11,
+      "ok": 1
+    },
+    {
+      "id": "bar3D",
+      "total": 12,
+      "ok": 2
+    },
+    {
+      "id": "scatter3D",
+      "total": 7,
+      "ok": 1
+    },
+    {
+      "id": "surface",
+      "total": 11,
+      "ok": 3
+    },
+    {
+      "id": "map3D",
+      "total": 5,
+      "ok": 1
+    },
+    {
+      "id": "lines3D",
+      "total": 5,
+      "ok": 1
+    },
+    {
+      "id": "line3D",
+      "total": 1,
+      "ok": 1
+    },
+    {
+      "id": "scatterGL",
+      "total": 3,
+      "ok": 1
+    },
+    {
+      "id": "linesGL",
+      "total": 2,
+      "ok": 1
+    },
+    {
+      "id": "flowGL",
+      "total": 4,
+      "ok": 1
+    },
+    {
+      "id": "graphGL",
+      "total": 4,
+      "ok": 1
+    }
+  ],
+  "failedExamples": [
+    {
+      "id": "bar-histogram",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "calendar-simple",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "calendar-heatmap",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "calendar-vertical",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "custom-ohlc",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "scatter-clustering",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "scatter-clustering-process",
+      "error": "ecStat is not defined"
+    },
+    {
+      "id": "scatter-exponential-regression",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "area-stack-gradient",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "calendar-horizontal",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "line-marker",
+      "error": "yAxis id-reference not supported (filtered)"
+    },
+    {
+      "id": "matrix-covariance",
+      "error": "window is not defined"
+    },
+    {
+      "id": "matrix-graph",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "pie-pattern",
+      "error": "Image is not defined"
+    },
+    {
+      "id": "radar-custom",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "sankey-levels",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "scatter-linear-regression",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "scatter-polynomial-regression",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "bar-breaks-simple",
+      "error": "chart sandbox: setTimeout is disabled"
+    },
+    {
+      "id": "bar-gradient",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "bar-label-rotation",
+      "error": "app is not defined"
+    },
+    {
+      "id": "bar-stack-normalization-and-variation",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "candlestick-large",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "custom-bar-trend",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "custom-cartesian-polygon",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "custom-error-bar",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "data-transform-filter",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "dataset-encode1",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "gauge-stage",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "geo-graph",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "graph-force",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "graph-label-overlap",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "matrix-confusion",
+      "error": "window is not defined"
+    },
+    {
+      "id": "matrix-grid-layout",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "matrix-stock",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "sankey-energy",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "sankey-nodeAlign-left",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "sankey-nodeAlign-right",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "scatter-jitter",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "scatter-weight",
+      "error": "yAxis id-reference not supported (filtered)"
+    },
+    {
+      "id": "area-simple",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "bar-brush",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "calendar-graph",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "confidence-band",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "custom-gantt-flight",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "data-transform-aggregate",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "flame-graph",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "gauge-multi-title",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "gauge-temperature",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "graph",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "intraday-breaks-1",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "intraday-breaks-2",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "line-aqi",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "mix-zoom-on-value",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "parallel-nutrients",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "pictorialBar-bar-transition",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "pie-rich-text",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "scatter-aggregate-bar",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "scatter-symbol-morph",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "treemap-sunburst-transition",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "bar-drilldown",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "bar-large",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "bar-race",
+      "error": "chart sandbox: setTimeout is disabled"
+    },
+    {
+      "id": "dataset-link",
+      "error": "chart sandbox: setTimeout is disabled"
+    },
+    {
+      "id": "dynamic-data2",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "gauge-ring",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "geo-choropleth-scatter",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "graph-circular-layout",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "line-race",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "map-iceland-pie",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "matrix-sparkline",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "scatter-large",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "scatter-nebula",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "scatter-stream-visual",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "wind-barb",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "bar-multi-drilldown",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "bar-race-country",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "bar-rich-text",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "bubble-gradient",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "calendar-pie",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "custom-hexbin",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "dynamic-data",
+      "error": "app is not defined"
+    },
+    {
+      "id": "gauge-barometer",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "graph-force-dynamic",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "matrix-mini-bar-geo",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "watermark",
+      "error": "document is not defined"
+    },
+    {
+      "id": "custom-calendar-icon",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "custom-wind",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "gauge-clock",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "graph-life-expectancy",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "scatter-nutrients",
+      "error": "yAxis id-reference not supported (filtered)"
+    },
+    {
+      "id": "scatter-nutrients-matrix",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "bar-breaks-brush",
+      "error": "chart sandbox: setTimeout is disabled"
+    },
+    {
+      "id": "graph-webkit-dep",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "line-fisheye-lens",
+      "error": "chart sandbox: setTimeout is disabled"
+    },
+    {
+      "id": "custom-gauge",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "graph-npm",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "line-pen",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "scatter-life-expectancy-timeline",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "scatter-painter-choice",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "calendar-effectscatter",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "candlestick-brush",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "effectScatter-bmap",
+      "error": "bmap needs external Baidu Map SDK (filtered)"
+    },
+    {
+      "id": "geo-beef-cuts",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "geo-organ",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "geo-seatmap-flight",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "geo-svg-custom-effect",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "geo-svg-lines",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "geo-svg-map",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "geo-svg-scatter-simple",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "geo-svg-traffic",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "graphic-wave-animation",
+      "error": "app is not defined"
+    },
+    {
+      "id": "line-tooltip-touch",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "lines-airline",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "lines-ny",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "map-bar-morph",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "map-HK",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "map-usa",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "map-usa-projection",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "matrix-periodic-table",
+      "error": "chart sandbox: setTimeout is disabled"
+    },
+    {
+      "id": "pictorialBar-dotted",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "pictorialBar-forest",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "pictorialBar-hill",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "pictorialBar-spirit",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "pie-parliament-transition",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "tree-basic",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "tree-legend",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "tree-orient-bottom-top",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "tree-orient-right-left",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "tree-radial",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "tree-vertical",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "treemap-disk",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "treemap-drill-down",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "treemap-obama",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "treemap-show-parent",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "treemap-visual",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "calendar-charts",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "circle-packing-with-d3",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "custom-spiral-race",
+      "error": "chart sandbox: setTimeout is disabled"
+    },
+    {
+      "id": "matrix-mbti",
+      "error": "window is not defined"
+    },
+    {
+      "id": "line-draggable",
+      "error": "chart sandbox: setTimeout is disabled"
+    },
+    {
+      "id": "scatter-logarithmic-regression",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "heatmap-bmap",
+      "error": "bmap needs external Baidu Map SDK (filtered)"
+    },
+    {
+      "id": "doc-example/bar-dataZoom-filterMode",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "doc-example/bar-media-timeline",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "doc-example/barGrid-barGap",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "doc-example/candlestick-axisPointer",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "doc-example/custom-transition-simple",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "doc-example/geo-roam-indicator",
+      "error": "app is not defined"
+    },
+    {
+      "id": "doc-example/geo-svg-label-basic",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "doc-example/geo-svg-layout-basic",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "doc-example/geo-svg-named-basic",
+      "error": "echarts is not defined"
+    },
+    {
+      "id": "doc-example/graph-roam-indicator",
+      "error": "app is not defined"
+    },
+    {
+      "id": "doc-example/graphic-bounding",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "doc-example/grid-outerBounds",
+      "error": "app is not defined"
+    },
+    {
+      "id": "doc-example/label-position",
+      "error": "app is not defined"
+    },
+    {
+      "id": "doc-example/map-visualMap-continuous-text",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "doc-example/map-visualMap-pieces",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "doc-example/map-visualMap-piecewise-text",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "doc-example/pictorialBar-graphicType",
+      "error": "Image is not defined"
+    },
+    {
+      "id": "doc-example/pictorialBar-patternSize",
+      "error": "Image is not defined"
+    },
+    {
+      "id": "doc-example/pictorialBar-repeatLayout",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "doc-example/pictorialBar-symbolSize",
+      "error": "chart sandbox: setTimeout is disabled"
+    },
+    {
+      "id": "doc-example/pie-highlight",
+      "error": "app is not defined"
+    },
+    {
+      "id": "doc-example/pie-media",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "doc-example/scatter-jitter-avoidOverlap",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "doc-example/sunburst-highlight-ancestor",
+      "error": "chart sandbox: setTimeout is disabled"
+    },
+    {
+      "id": "doc-example/sunburst-highlight-descendant",
+      "error": "chart sandbox: setTimeout is disabled"
+    },
+    {
+      "id": "doc-example/title-block",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "doc-example/treemap-borderColor",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "doc-example/tutorial-async",
+      "error": "chart sandbox: setTimeout is disabled"
+    },
+    {
+      "id": "doc-example/tutorial-dynamic-data",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "doc-example/tutorial-loading",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "doc-example/value-animation-simple",
+      "error": "chart sandbox: setInterval is disabled"
+    },
+    {
+      "id": "lines-bmap",
+      "error": "bmap needs external Baidu Map SDK (filtered)"
+    },
+    {
+      "id": "lines-bmap-bus",
+      "error": "bmap needs external Baidu Map SDK (filtered)"
+    },
+    {
+      "id": "lines-bmap-effect",
+      "error": "bmap needs external Baidu Map SDK (filtered)"
+    },
+    {
+      "id": "map-bin",
+      "error": "bmap needs external Baidu Map SDK (filtered)"
+    },
+    {
+      "id": "map-polygon",
+      "error": "bmap needs external Baidu Map SDK (filtered)"
+    },
+    {
+      "id": "scatter-map-brush",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "scatter-weibo",
+      "error": "myChart is not defined"
+    },
+    {
+      "id": "globe-echarts-gl-hello-world",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "globe-atmosphere",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "globe-layers",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "animating-contour-on-globe",
+      "error": "document is not defined"
+    },
+    {
+      "id": "bar3d-dataset",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "bar3d-global-population",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "bar3d-myth",
+      "error": "Image is not defined"
+    },
+    {
+      "id": "bar3d-noise-modified-from-marpi-demo",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "bar3d-simplex-noise",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "bar3d-voxelize-image",
+      "error": "document is not defined"
+    },
+    {
+      "id": "flowGL-noise",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "geo3d",
+      "error": "code file not found"
+    },
+    {
+      "id": "geo3d-with-different-height",
+      "error": "code file not found"
+    },
+    {
+      "id": "global-population-bar3d-on-globe",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "global-wind-visualization",
+      "error": "bmap needs external Baidu Map SDK (filtered)"
+    },
+    {
+      "id": "global-wind-visualization-2",
+      "error": "bmap needs external Baidu Map SDK (filtered)"
+    },
+    {
+      "id": "globe-contour-paint",
+      "error": "document is not defined"
+    },
+    {
+      "id": "globe-country-carousel",
+      "error": "document is not defined"
+    },
+    {
+      "id": "globe-displacement",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "globe-moon",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "globe-with-echarts-surface",
+      "error": "document is not defined"
+    },
+    {
+      "id": "graphgl-gpu-layout",
+      "error": "window is not defined"
+    },
+    {
+      "id": "graphgl-large-internet",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "graphgl-npm-dep",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "image-surface-sushuang",
+      "error": "Image is not defined"
+    },
+    {
+      "id": "image-to-bar3d",
+      "error": "Image is not defined"
+    },
+    {
+      "id": "iron-globe",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "lines3d-airline-on-globe",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "lines3d-flights",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "lines3d-flights-gl",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "lines3d-flights-on-geo3d",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "linesGL-ny",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "map3d-alcohol-consumption",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "map3d-buildings",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "map3d-wood-city",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "map3d-wood-map",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "metal-bar3d",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "metal-surface",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "parametric-surface-rose",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "scatter3d",
+      "error": "app is not defined"
+    },
+    {
+      "id": "scatter3D-dataset",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "scatter3d-globe-population",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "scatter3d-orthographic",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "scatter3d-scatter",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "scatter3d-simplex-noise",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "scatterGL-gps",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "scattergl-weibo",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "stacked-bar3d",
+      "error": "$ is not defined"
+    },
+    {
+      "id": "surface-breather",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "surface-golden-rose",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "surface-leather",
+      "error": "Image is not defined"
+    },
+    {
+      "id": "surface-mollusc-shell",
+      "error": "ROOT_PATH is not defined"
+    },
+    {
+      "id": "surface-theme-roses",
+      "error": "ROOT_PATH is not defined"
+    }
+  ]
+}

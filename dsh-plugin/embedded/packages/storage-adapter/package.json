@@ -1,0 +1,21 @@
+{
+  "name": "@chatoffice/storage-adapter",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "description": "Storage track abstraction: one business-logic layer, swappable backends (local fs / cloud / embedded)",
+  "exports": {
+    ".": "./src/index.ts",
+    "./remote-ipc": "./src/remote/ipc.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  }
+}

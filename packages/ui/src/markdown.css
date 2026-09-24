@@ -1,0 +1,96 @@
+/* Block-level markdown in AI chat bubbles (tables, fenced code); inline chips stay per-app */
+/* generated images streamed by image models: small thumbnail in the bubble … */
+.ai-md-img-wrap {
+  display: inline-block;
+  position: relative;
+}
+.ai-md-img {
+  max-width: 220px;
+  max-height: 150px;
+  border-radius: 6px;
+  margin: 4px 0;
+  display: block;
+  cursor: zoom-in;
+}
+/* push the picture into the hosting document (editor panels wire the action) */
+.ai-md-img-insert {
+  position: absolute;
+  right: 6px;
+  bottom: 10px;
+  border: none;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  background: rgb(0 0 0 / 55%);
+  color: #fff;
+  opacity: 0.85;
+}
+.ai-md-img-insert:hover {
+  opacity: 1;
+}
+/* … click opens a plain full-screen lightbox (click backdrop / Esc closes) */
+.ai-md-zoom {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-overlay);
+  cursor: zoom-out;
+  -webkit-app-region: no-drag;
+}
+.ai-md-zoom img {
+  max-width: 92vw;
+  max-height: 92vh;
+  border-radius: 4px;
+  box-shadow: var(--shadow-menu);
+}
+/* generated clips streamed as ```video fences */
+.ai-md-video {
+  max-width: 100%;
+  width: 320px;
+  border-radius: 6px;
+  margin: 4px 0;
+  display: block;
+  background: rgb(0 0 0 / 35%);
+}
+.ai-md-table-wrap {
+  overflow-x: auto;
+  margin: 0 0 16px;
+}
+.ai-md-table {
+  border-collapse: collapse;
+  font-size: 0.95em;
+  line-height: 1.45;
+}
+.ai-md-table th,
+.ai-md-table td {
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+.ai-md-table th {
+  background: var(--surface-subtle);
+  font-weight: 600;
+}
+.ai-md-pre {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: var(--color-bg-subtle);
+  overflow-x: auto;
+  line-height: 1.5;
+  font-size: 13px;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+}
+.ai-md .ai-md-pre code {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+  white-space: pre;
+}

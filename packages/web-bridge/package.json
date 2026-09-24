@@ -1,0 +1,21 @@
+{
+  "name": "@chatoffice/web-bridge",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "description": "Unified renderer bridge for the web forms: postMessage protocol, degrade registry, preload-shaped shims, RPC client, File System Access handle store",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  }
+}

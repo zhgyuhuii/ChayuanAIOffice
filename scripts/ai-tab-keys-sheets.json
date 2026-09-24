@@ -1,0 +1,135 @@
+{
+  "zh": {
+    "aiPanelTitle": "AI 助手",
+    "aiTabChat": "对话",
+    "aiTabAssistant": "助手",
+    "aiCheckDesc": "校验公式错误与数据异常，并给出修复建议",
+    "aiAnalyzeDesc": "总结关键发现、趋势和异常"
+  },
+  "en": {
+    "aiPanelTitle": "AI Assistant",
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Assistant",
+    "aiCheckDesc": "Check the sheet for formula errors and data issues",
+    "aiAnalyzeDesc": "Summarize key findings, trends, and outliers"
+  },
+  "ja": {
+    "aiPanelTitle": "AI アシスタント",
+    "aiTabChat": "チャット",
+    "aiTabAssistant": "アシスタント",
+    "aiCheckDesc": "数式のエラーやデータの異常をチェックし、修正案を提示",
+    "aiAnalyzeDesc": "重要な発見、傾向、異常をまとめる"
+  },
+  "ko": {
+    "aiPanelTitle": "AI 어시스턴트",
+    "aiTabChat": "채팅",
+    "aiTabAssistant": "어시스턴트",
+    "aiCheckDesc": "수식 오류와 데이터 이상을 점검하고 수정 제안",
+    "aiAnalyzeDesc": "주요 발견, 추세, 이상치 요약"
+  },
+  "fr": {
+    "aiPanelTitle": "Assistant IA",
+    "aiTabChat": "Discussion",
+    "aiTabAssistant": "Assistant",
+    "aiCheckDesc": "Vérifier les erreurs de formules et les anomalies de données",
+    "aiAnalyzeDesc": "Résumer les conclusions, tendances et anomalies clés"
+  },
+  "de": {
+    "aiPanelTitle": "KI-Assistent",
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Assistent",
+    "aiCheckDesc": "Formelfehler und Datenprobleme prüfen",
+    "aiAnalyzeDesc": "Wichtige Erkenntnisse, Trends und Ausreißer zusammenfassen"
+  },
+  "es": {
+    "aiPanelTitle": "Asistente de IA",
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Asistente",
+    "aiCheckDesc": "Revisar errores de fórmula y datos",
+    "aiAnalyzeDesc": "Resumir hallazgos, tendencias y valores atípicos"
+  },
+  "th": {
+    "aiPanelTitle": "ผู้ช่วย AI",
+    "aiTabChat": "แชท",
+    "aiTabAssistant": "ผู้ช่วย",
+    "aiCheckDesc": "ตรวจสอบข้อผิดพลาดของสูตรและความผิดปกติของข้อมูล",
+    "aiAnalyzeDesc": "สรุปข้อค้นพบ แนวโน้ม และค่าผิดปกติ"
+  },
+  "id": {
+    "aiPanelTitle": "Asisten AI",
+    "aiTabChat": "Obrolan",
+    "aiTabAssistant": "Asisten",
+    "aiCheckDesc": "Periksa kesalahan rumus dan masalah data",
+    "aiAnalyzeDesc": "Ringkas temuan, tren, dan pencilan utama"
+  },
+  "ru": {
+    "aiPanelTitle": "ИИ-помощник",
+    "aiTabChat": "Чат",
+    "aiTabAssistant": "Помощник",
+    "aiCheckDesc": "Проверить ошибки в формулах и аномалии в данных",
+    "aiAnalyzeDesc": "Сделать выводы: ключевые наблюдения, тренды и аномалии"
+  },
+  "ar": {
+    "aiPanelTitle": "مساعد الذكاء الاصطناعي",
+    "aiTabChat": "الدردشة",
+    "aiTabAssistant": "المساعد",
+    "aiCheckDesc": "فحص أخطاء الصيغ ومشكلات البيانات",
+    "aiAnalyzeDesc": "تلخيص أبرز النتائج والاتجاهات والقيم الشاذة"
+  },
+  "pt": {
+    "aiPanelTitle": "Assistente de IA",
+    "aiTabChat": "Bate-papo",
+    "aiTabAssistant": "Assistente",
+    "aiCheckDesc": "Verificar erros de fórmula e problemas nos dados",
+    "aiAnalyzeDesc": "Resumir descobertas, tendências e valores atípicos"
+  },
+  "it": {
+    "aiPanelTitle": "Assistente IA",
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Assistente",
+    "aiCheckDesc": "Controlla errori nelle formule e nei dati",
+    "aiAnalyzeDesc": "Riassumi risultati, tendenze e anomalie"
+  },
+  "pl": {
+    "aiPanelTitle": "Asystent AI",
+    "aiTabChat": "Czat",
+    "aiTabAssistant": "Asystent",
+    "aiCheckDesc": "Sprawdź błędy formuł i problemy z danymi",
+    "aiAnalyzeDesc": "Podsumuj kluczowe ustalenia, trendy i wartości odstające"
+  },
+  "nl": {
+    "aiPanelTitle": "AI-assistent",
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Assistent",
+    "aiCheckDesc": "Formulefouten en dataproblemen controleren",
+    "aiAnalyzeDesc": "Belangrijkste bevindingen, trends en uitschieters samenvatten"
+  },
+  "ms": {
+    "aiPanelTitle": "Pembantu AI",
+    "aiTabChat": "Sembang",
+    "aiTabAssistant": "Pembantu",
+    "aiCheckDesc": "Semak ralat formula dan masalah data",
+    "aiAnalyzeDesc": "Ringkaskan penemuan, trend dan pencilan utama"
+  },
+  "he": {
+    "aiPanelTitle": "עוזר AI",
+    "aiTabChat": "צ׳אט",
+    "aiTabAssistant": "עוזר",
+    "aiCheckDesc": "בדיקת שגיאות בנוסחאות ובעיות נתונים",
+    "aiAnalyzeDesc": "סיכום הממצאים, המגמות והחריגות המרכזיים"
+  },
+  "hi": {
+    "aiPanelTitle": "AI सहायक",
+    "aiTabChat": "चैट",
+    "aiTabAssistant": "सहायक",
+    "aiCheckDesc": "सूत्र त्रुटियाँ और डेटा समस्याएँ जाँचें",
+    "aiAnalyzeDesc": "मुख्य निष्कर्ष, रुझान और विषमताएँ सारांशित करें"
+  },
+  "zh-TW": {
+    "aiPanelTitle": "AI 助手",
+    "aiTabChat": "對話",
+    "aiTabAssistant": "助手",
+    "aiCheckDesc": "校驗公式錯誤與資料異常，並給出修復建議",
+    "aiAnalyzeDesc": "總結關鍵發現、趨勢和異常"
+  }
+}
