@@ -29,6 +29,7 @@ vi.mock('electron', () => ({
   app: { on: vi.fn(), whenReady: () => new Promise(() => {}) },
   dialog: { showSaveDialog: (...args: unknown[]) => pick(...args) },
   shell: {},
+  nativeImage: { createFromPath: () => ({ resize: () => ({}) }) },
   BrowserWindow: { fromWebContents: () => null },
   WebContentsView: class {
     webContents = (lastContents = new FakeContents())
