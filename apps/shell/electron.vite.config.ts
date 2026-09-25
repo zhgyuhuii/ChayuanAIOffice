@@ -7,7 +7,6 @@ export default defineConfig({
   // imported docs/sheets main modules are TS source with no build artifacts,
   // so externalizing them would break Node ESM resolution at runtime.
   main: {
-<<<<<<< HEAD
     resolve: {
       alias: {
         '@modelcontextprotocol/sdk/server/mcp.js': resolve(
@@ -23,10 +22,7 @@ export default defineConfig({
           '../../node_modules/@modelcontextprotocol/sdk/dist/esm/server/streamableHttp.js',
         ),
       },
-    },
-=======
->>>>>>> efb9247a (Sync snapshot (2026-09-22) (#757))
-    // node:sqlite is a Node 22+ builtin the bundler's builtin list may predate
+    },    // node:sqlite is a Node 22+ builtin the bundler's builtin list may predate
     build: { rollupOptions: { external: ['node:sqlite'] } },
   },
   preload: {
