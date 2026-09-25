@@ -12,7 +12,7 @@ import {
   isBridgeSubscribe,
   type BridgeResponse,
 } from '@chatoffice/web-bridge'
-import { fileStore } from './file-open.js'
+import { extToKind, fileStore, openEditorFor } from './file-open.js'
 import { tabManager } from './tab-manager.js'
 
 function bffBase(): string {
@@ -80,6 +80,23 @@ async function handleLocal(channel: string, args: unknown[]): Promise<unknown> {
 }
 
 export function startBridgeHost(): void {
+  // 察元桌面双击文档 → 桌面壳 postMessage 交付（chaOffice-open/1）：内容入库
+  // （只读形态）→ 按扩展名开编辑器标签 → ACK 回执（桌面壳收到即停重试）。
+  // 消息来自顶帧（察元桌面壳），与编辑器的 BRIDGE_PROTOCOL 通道互不干扰。
+  window.addEventListener('message', (ev: MessageEvent) => {
+    const d = ev.data as { proto?: string; kind?: string; name?: string; base64?: string } | null
+    if (!d || d.proto !== 'chaOffice-open/1' || d.kind !== 'open-file' || !d.name || !d.base64) return
+    try {
+      const file = new File([b64ToBytes(d.base64) as BlobPart], d.name)
+      const id = fileStore.registerFile(file, d.name)
+      const kind = extToKind(d.name) ?? 'markdown'
+      void openEditorFor(kind, id, d.name)
+      ;(ev.source as Window | null)?.postMessage({ proto: 'chaOffice-open/1', kind: 'opened', name: d.name }, '*')
+    } catch {
+      // 坏消息忽略（ACK 不回，桌面壳重试自然停止）
+    }
+  })
+
   const subscribers = new Map<HTMLIFrameElement, Set<string>>()
 
   window.addEventListener('message', (ev: MessageEvent) => {

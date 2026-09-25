@@ -174,6 +174,13 @@ export class FileHandleStore {
     return { id, name: suggestedName }
   }
 
+  /** 桌面壳交付的文件内容入库（只读形态：就地写降级，另存为可用）。 */
+  registerFile(file: File, name?: string): string {
+    const id = `f${this.seq++}`
+    this.live.set(id, { kind: 'file', file, name: name ?? file.name })
+    return id
+  }
+
   private async resolve(id: string): Promise<LiveEntry> {
     const live = this.live.get(id)
     if (live) return live

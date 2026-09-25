@@ -10,7 +10,7 @@ import { recordRecent } from './recents.js'
 
 export const fileStore = new FileHandleStore()
 
-function extToKind(name: string): TabKind | null {
+export function extToKind(name: string): TabKind | null {
   const lower = name.toLowerCase()
   if (lower.endsWith('.docx')) return 'docs'
   if (lower.endsWith('.xlsx')) return 'sheets'
