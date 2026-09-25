@@ -108,7 +108,20 @@
 
 **⚠️ 第八轮施工中（2026-09-16 深夜，未完成未合并）**：上游 `f4d8da2..09485f8`（15 提交：MCP×4+9-16 快照 525 文件+pptx 系列×5+小修）已全部 pick 到 `sync/upstream-20260916` 分支（已推 origin，含冲突裁决+品牌映射+动画引擎超集收敛，pptx-engine 1018/docs 2541 测试绿）。合并重做于 `merge-r8-wip` 分支（已推 origin）：merge 本体冲突仅 shell index/preload 导入并集×2 已解+pdf-main map 语义修复+pdf/markdown strings 按干净配方重建（pristine+品牌+本地键，锚=节 opener 后）。**剩余**：pdf LangDicts 节键集差×1+sheets workbook-ops(13)/ExcelShell(3)/save-pipeline(1) 等~30 类型错误收敛+slides/markdown 数个测试适配→全量门禁→合 main。**main 保持 310596b0 绿基线**（并行 WIP Home/strings 两文件在工作树）。新知：strings 断裂正解=main 绿版为基底+按节织入 sync 独有键（锚=节 opener 后；捕获须剥尾）；三方 merge-file+「theirs+品牌重放+HEAD 键补回」配方已在分支验证。
 
-**上次同步终点（下次续 pick 的起点）**：`efb9247`（= 上游 tag v0.10.1038，2026-09-23 第十七轮完成；下次 `git fetch upstream` 后从 `efb9247..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+**上次同步终点（下次续 pick 的起点）**：`3f9d07d`（2026-09-25 第十七轮完成并入 main；下次 `git fetch upstream` 后从 `3f9d07d..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+
+### 第十七轮增量（2026-09-25，0d90149..3f9d07d：18 提交，施工于 sync/upstream-20260922b 分支；本地 shell 版本 1.0.3 自主线，上游 0.10.0 不跟随——激活 UI/购买体系为本地 B 区，版本号本地为准）
+
+| 内容 | 结果 |
+|---|---|
+| ①版本 | 本地 shell 1.0.3（并行会话随 OS 授权联动打包）；上游 0.10.0——分叉自研发，本地号为准不合并 |
+| ②更新内容 | 17 修+快照 efb9247a（115 文件 +8537）：安全加固（zip 越界/MHT 帽/EMZ 炸弹/路径 bbox）、a11y（breadcrumb/箭头/查找框）、修复（词统计/xlsx 小写公式引用/--max-chars 帽/print-titles 钳制）、快照=file-index 全家桶+folder-roots+Home 树重构 |
+| ③落位明细 | **13 实 pick**（#753 上游 MAX_EMU 超集/#746 isLiveRecord webContents 存活/#761 zip 越界/#762 bbox 循环/#770/#775 零冲突/#777/#778/#776/#780 env 隔离改编 GENOFFICE_* 豁免保留+#756 pdf 脱敏工作副本+#752+#795?——见 git log）；**5 空对账**（#741/#743/#748/#749/#755 均有 SAME-AS-UPSTREAM 文件佐证） |
+| ③a 拷问#752 MHT 帽 | **上游自己回退了 #752**（快照 #757 删 MAX_MHT_PARTS/BYTES 帽）。裁定：恢复帽子（防 hostile MHT 打爆内存的安全取向优先；快照回退更像失误）；随附 2000-parts perf 测试期望改编（F1999 前置 img 保持未解析——帽语义）。**⚠️ 待用户裁定点**：若上游终态（无帽）才是有意为之，删 alt-chunk.ts 两常量+while 条件即可反转 |
+| ③b 拷问#756 pdf 脱敏工作副本 | 双机制并集：本地 untitled 转正+上游授权重绑（allowedByWc/redactionPathByWc/savedHook）；App 层 redactionRequestInFlight 门+apply 后 loadDoc 重载净化副本+根节点 inert/aria-busy 织入本地 DockShell；**ipc.ts/#756 净 delta 仅 1 行注释**——--theirs 误用曾削掉本地 V2 AI surface（AiSettingsV2/5 通道）/SavePdfResult.canceled/writeRecovery 通道/suggestedName，全量以 main 为基底回植+注释更新；strings 4 组 redact 文案重放 |
+| ③c 拷问快照四域 | **Home.tsx/SettingsModal.tsx/home.css/e2e×4 全保本地**——并行会话 a5518899 已把快照树逻辑（file-index/folder-roots/FileTreePane）原样移植+按用户明令重构（胶囊 Tab），快照侧是上游主区表格旧形态。快照独有的 file-index 新模块（indexer/store/jev/rerank/scan/snippet/tokenize/extract-worker 8 件 IDENTICAL+folder-roots 补入+extract 品牌修复）；shell index 织入 setDocsFileOpenedHook（⌘O 立即同步 tab 标题）；file-parse pptx/xlsx @genoffice 残留补洗 |
+| 施工事故与修复 | ①空 pick 卡死序列（--allow-empty 不适用 skip 状态）→ 改「探测+手动对账空提交」流水线；②`grep -c && python` 短路两度致带标记文件被提交（slides attachments 前轮/cli 780 本轮）→ 全部靠 esbuild 语法报错揪出 amend 修复；③shell index 织入过程结构性损伤（6 函数被腰斩）→ 逐函数从 main 抽取重构（applyMenuFor/registerHomeIpc/openAiDockTab/openMarkdownDockTab/openUntitled×3/abandonBlankTabForMcp/refreshTitleBarOverlay/createShellWindow）+pendingProjectSaveDir 缺 `}` 补齐——织入多冲突大文件必须以函数为粒度抽取而非行级拼接 |
+| 门禁 | 对账 18/18（4 件有 SAME-AS-UPSTREAM 佐证）；typecheck 全工作区 0 错误；lint 改动文件 0 error；品牌零新增（GENOFFICE_* env 豁免）；全量测试见下；lock 重生成（tsx 平台矩阵） |
 
 ## 第十七轮挂账登记（2026-09-23 冲突分析问答，逐条销账）
 
