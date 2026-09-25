@@ -385,6 +385,7 @@ export default function App() {
   const [drawTool, setDrawTool] = useState<DrawTool | null>(null)
   const [redactions, setRedactions] = useState<LocalRedaction[]>([])
   const redactionApplyConfirmedRef = useRef(false)
+  const redactionRequestInFlightRef = useRef(false)
   const [redactionCopyInFlight, setRedactionCopyInFlight] = useState(false)
   const [textEdits, setTextEdits] = useState<LocalTextEdit[]>([])
   const [textInserts, setTextInserts] = useState<LocalTextInsert[]>([])
@@ -895,12 +896,13 @@ export default function App() {
     scrollRef,
     rows.length,
     '800px 0px',
+    status === 'ready',
   )
   const { visible: visibleThumbs, setItemRef: setThumbRef } = useVisibleSet(
     thumbsRef,
     pageCount,
     '400px 0px',
-    sidebar === 'thumbs',
+    status === 'ready' && sidebar === 'thumbs',
   )
 
   // Keep the current page's thumbnail in view as the main viewport drives currentPage
@@ -3326,6 +3328,7 @@ export default function App() {
   const queuedSavesRef = useRef<{ autosave: boolean; resolve: (ok: boolean) => void }[]>([])
 
   const save = (autosave = false): Promise<boolean> => {
+    if (redactionRequestInFlightRef.current) return Promise.resolve(false)
     // A save is already writing: queue behind it instead of reporting failure — the
     // close prompt's "Save" and ⌘S regularly collide with the blur-triggered autosave
     // (the prompt itself blurs the window). The ref is set synchronously, so this also
@@ -3548,30 +3551,65 @@ export default function App() {
     if (result.skippedImageEdits && result.skippedImageEdits.length > 0) {
       noticeSkippedImages(result.skippedImageEdits)
     }
+    if (applyingRedactions) {
+      // The main process has committed this path and its read grant. Reload the
+      // sanitized bytes, clearing undo/search state that could expose old content.
+      const scrollTop = scrollRef.current?.scrollTop ?? 0
+      setFilePath(targetPath)
+      setStatus('loading')
+      try {
+        await loadDoc(targetPath, doc)
+        setStatus('ready')
+        requestAnimationFrame(() => {
+          if (scrollRef.current) scrollRef.current.scrollTop = scrollTop
+        })
+      } catch (err) {
+        // The write succeeded. Never resume editing a stale, unredacted canvas.
+        setStatus('error')
+        opFailed(err instanceof Error ? err.message : String(err))
+      }
+      redactionApplyConfirmedRef.current = false
+      setSaveState('idle')
+      return true
+    }
     // Back to idle, not 'saved': only the copy was written — this tab's edits are
     // still pending, so a saved-confirmation next to the unsaved badge would lie
     setSaveState('idle')
-    if (applyingRedactions) {
-      redactionApplyConfirmedRef.current = false
-      setRedactions([])
-    }
     return true
   }
 
   const requestRedactionSaveAs = () => {
-    if (redactions.length === 0) return
-    const otherPending = ordinaryDirty
+    if (redactions.length === 0 || redactionRequestInFlightRef.current) return
+    const otherPending =
+      saveInFlightRef.current !== null ||
+      textDraft !== null ||
+      noteDraft !== null ||
+      markups.length > 0 ||
+      annotDeletes.length > 0 ||
+      noteEdits.length > 0 ||
+      drawings.length > 0 ||
+      textEdits.length > 0 ||
+      textInserts.length > 0 ||
+      imageEdits.length > 0 ||
+      stampCfg !== null ||
+      formEdits.size > 0 ||
+      rotations.size > 0 ||
+      deleted.size > 0 ||
+      order !== null ||
+      metadata !== null
     if (otherPending) {
       showNotice(t('redactSaveFirst'))
       return
     }
     if (!window.confirm(t('redactConfirm'))) return
     redactionApplyConfirmedRef.current = true
+    redactionRequestInFlightRef.current = true
     setRedactionCopyInFlight(true)
     void window.pdfApi
       .requestRedactionCopy(filePath)
-      .catch(() => undefined)
+      .catch((err: unknown) => opFailed(err instanceof Error ? err.message : String(err)))
       .finally(() => {
+        redactionRequestInFlightRef.current = false
         redactionApplyConfirmedRef.current = false
         setRedactionCopyInFlight(false)
       })
@@ -3599,7 +3637,8 @@ export default function App() {
       filePath !== '' &&
       !readOnly &&
       !saveAsFlowRef.current &&
-      (untitledRef.current || savedOnceRef.current),
+      (untitledRef.current || savedOnceRef.current) &&
+      !redactionRequestInFlightRef.current,
     () => {
       if (untitledRef.current) {
         void window.pdfApi
@@ -5551,7 +5590,12 @@ export default function App() {
   // Shell menu Save As → write pending edits to the picked path only; the original file is never mutated
   useEffect(() => {
     return window.pdfApi.onSaveAsRequest((targetPath) => {
-      void saveAsTo(targetPath).then((ok) => window.pdfApi.sendSaveAsResult(ok))
+      void saveAsTo(targetPath)
+        .catch((err: unknown) => {
+          opFailed(err instanceof Error ? err.message : String(err))
+          return false
+        })
+        .then((ok) => window.pdfApi.sendSaveAsResult(ok))
     })
   })
 
@@ -5563,6 +5607,7 @@ export default function App() {
   // Shortcuts: ⌘S/⌘F/⌘P/⌘±/⌘0 + page navigation (only ⌘ combos kept while an input control is focused)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (redactionRequestInFlightRef.current) return
       const target = e.target as HTMLElement | null
       const inEditable =
         !!target &&
@@ -6725,7 +6770,7 @@ export default function App() {
   )
 
   return (
-    <div className="app">
+    <div className="app" inert={redactionCopyInFlight} aria-busy={redactionCopyInFlight}>
       <input
         ref={imageFileRef}
         type="file"

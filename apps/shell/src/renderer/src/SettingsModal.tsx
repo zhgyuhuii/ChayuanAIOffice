@@ -147,7 +147,6 @@ function CustomFontSizeInput({
     </label>
   )
 }
-
 const SECTIONS: readonly { id: SectionId; labelKey: StringKey }[] = [
   { id: 'modelSettings', labelKey: 'setSecModelSettings' },
   { id: 'defaultModels', labelKey: 'setSecDefaultModels' },

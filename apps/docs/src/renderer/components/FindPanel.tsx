@@ -242,6 +242,7 @@ export function FindPanel({ editor, onClose, focusFindNonce, focusReplaceNonce }
           ref={inputRef}
           className="find-input"
           placeholder={t('appFindPlaceholder')}
+          aria-label={t('appFindPlaceholder')}
           value={query}
           onChange={(e) => {
             setQuery(e.target.value)
@@ -273,7 +274,7 @@ export function FindPanel({ editor, onClose, focusFindNonce, focusReplaceNonce }
         >
           W
         </button>
-        <span className="find-count">
+        <span className="find-count" aria-live="polite">
           {query
             ? matches.length === 0
               ? t('appNoResults')
@@ -313,6 +314,7 @@ export function FindPanel({ editor, onClose, focusFindNonce, focusReplaceNonce }
             ref={replaceInputRef}
             className="find-input"
             placeholder={t('appReplacePlaceholder')}
+            aria-label={t('appReplacePlaceholder')}
             value={replacement}
             onChange={(e) => setReplacement(e.target.value)}
             onKeyDown={(e) => {

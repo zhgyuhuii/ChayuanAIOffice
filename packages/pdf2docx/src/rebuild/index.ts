@@ -281,7 +281,10 @@ function runFromSpan(span: Span): Run {
   }
   if (span.color && span.color !== '000000') run.color = span.color
   const halfPoints = Math.round(span.fontSize * 2)
-  if (halfPoints > 0) run.sizeHalfPoints = halfPoints
+  // A corrupt declared size (Infinity from a bad Tf operand, or a magnitude
+  // that prints in exponential notation) would land verbatim as w:val and
+  // produce schema-invalid XML; omit the size and let Word fall back instead.
+  if (Number.isSafeInteger(halfPoints) && halfPoints > 0) run.sizeHalfPoints = halfPoints
   if (span.fontFamily) {
     // CJK-family scripts fill the w:eastAsia slot (docx-engine Run.font);
     // everything else declares only the Latin slots (fontAscii)

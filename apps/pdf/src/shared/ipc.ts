@@ -715,7 +715,7 @@ export interface PdfApi {
   /** Crash-recovery copy of an untitled document's pending edits, written under
       userData (best-effort; never prompts, never touches the temp backing file). */
   writeRecovery(request: SavePdfRequest): Promise<{ ok: boolean }>
-  /** Opens a Save As dialog and grants a single target for the confirmed redaction copy. */
+  /** Creates a redacted working copy on first apply; subsequent applies save that copy in place. */
   requestRedactionCopy(path: string): Promise<boolean>
   isUntitled(path: string): Promise<boolean>
   /** Dry-run match of pending text edits against the file: reason null = would apply */

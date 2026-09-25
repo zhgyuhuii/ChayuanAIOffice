@@ -22,8 +22,7 @@ export default defineConfig({
           '../../node_modules/@modelcontextprotocol/sdk/dist/esm/server/streamableHttp.js',
         ),
       },
-    },
-    // node:sqlite is a Node 22+ builtin the bundler's builtin list may predate
+    },    // node:sqlite is a Node 22+ builtin the bundler's builtin list may predate
     build: { rollupOptions: { external: ['node:sqlite'] } },
   },
   preload: {

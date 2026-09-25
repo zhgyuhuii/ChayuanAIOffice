@@ -88,7 +88,7 @@ import {
   RemoteConflictError,
   type RemoteFilesHost,
   type RemoteStorageConfig,
-} from '@chatoffice/storage-adapter' 
+} from '@chatoffice/storage-adapter'
 import type {
   IpcMainInvokeEvent,
   MenuItemConstructorOptions,

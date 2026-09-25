@@ -22,7 +22,7 @@ import type {
   ArrowEndRender,
   RenderReflection,
 } from '@chatoffice/pptx-render'
-import { extrusionFrontFace } from '@chatoffice/pptx-render' 
+import { extrusionFrontFace } from '@chatoffice/pptx-render'
 import {
   featheredImage,
   featheredShapeCanvas,
