@@ -992,6 +992,17 @@ function DropToOpenOverlay(): ReactElement | null {
 
 // ── Main component ──────────────────────────────────────
 
+/** 打开本地文件失败的可见反馈：之前错误被 void 吞掉，用户只看到「点了没反应」 */
+function showOpenFileErrorToast(err: unknown): void {
+  if (err instanceof DOMException && err.name === 'AbortError') return // 用户取消，不是失败
+  const text = err instanceof Error ? err.message : String(err)
+  const toast = document.createElement('div')
+  toast.textContent = `打开失败：${text}`
+  toast.style.cssText = 'position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:2147483647;padding:8px 16px;border-radius:10px;background:rgba(220,38,38,.92);color:#fff;font:12px/1.5 system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:70vw'
+  document.body.appendChild(toast)
+  setTimeout(() => toast.remove(), 6000)
+}
+
 export function Home() {
   const i18n = useI18n()
   const { t } = i18n
@@ -1698,7 +1709,7 @@ export function Home() {
           <button
             className="side-new-browse"
             title={OPEN_LOCAL_EXTENSIONS}
-            onClick={() => void window.chaOffice.browse()}
+            onClick={() => window.chaOffice.browse().catch((err) => showOpenFileErrorToast(err))}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
