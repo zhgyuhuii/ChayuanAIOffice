@@ -17,23 +17,23 @@ describe('chatoffice launcher file', () => {
   it('writes one line, creates the directory, and only rewrites on change', () => {
     const dir = mkdtempSync(join(tmpdir(), 'chatoffice-launcher-'))
     const file = join(dir, 'nested', 'launcher')
-    expect(writeLauncherFile(file, '/Applications/ChatOffice.app/Contents/Resources/cli')).toBe(true)
-    expect(readFileSync(file, 'utf-8')).toBe('/Applications/ChatOffice.app/Contents/Resources/cli\n')
+    expect(writeLauncherFile(file, '/Applications/ChaOffice.app/Contents/Resources/cli')).toBe(true)
+    expect(readFileSync(file, 'utf-8')).toBe('/Applications/ChaOffice.app/Contents/Resources/cli\n')
     const before = statSync(file).mtimeMs
-    expect(writeLauncherFile(file, '/Applications/ChatOffice.app/Contents/Resources/cli')).toBe(
+    expect(writeLauncherFile(file, '/Applications/ChaOffice.app/Contents/Resources/cli')).toBe(
       false,
     )
     expect(statSync(file).mtimeMs).toBe(before)
-    expect(writeLauncherFile(file, 'C:\\Programs\\ChatOffice\\resources\\chatoffice')).toBe(true)
-    expect(readFileSync(file, 'utf-8')).toBe('C:\\Programs\\ChatOffice\\resources\\chatoffice\n')
+    expect(writeLauncherFile(file, 'C:\\Programs\\ChaOffice\\resources\\chatoffice')).toBe(true)
+    expect(readFileSync(file, 'utf-8')).toBe('C:\\Programs\\ChaOffice\\resources\\chatoffice\n')
   })
 
   it('treats dmg and AppImage mounts as temporary', () => {
-    expect(isEphemeralInstall('/Volumes/ChatOffice/ChatOffice.app/Contents/Resources', {})).toBe(true)
+    expect(isEphemeralInstall('/Volumes/ChaOffice/ChaOffice.app/Contents/Resources', {})).toBe(true)
     expect(isEphemeralInstall('/tmp/.mount_GenOfxyz/resources', {})).toBe(true)
-    expect(isEphemeralInstall('/opt/ChatOffice/resources', { APPIMAGE: '/home/u/G.AppImage' })).toBe(
+    expect(isEphemeralInstall('/opt/ChaOffice/resources', { APPIMAGE: '/home/u/G.AppImage' })).toBe(
       true,
     )
-    expect(isEphemeralInstall('/Applications/ChatOffice.app/Contents/Resources', {})).toBe(false)
+    expect(isEphemeralInstall('/Applications/ChaOffice.app/Contents/Resources', {})).toBe(false)
   })
 })

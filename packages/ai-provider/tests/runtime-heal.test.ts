@@ -13,7 +13,7 @@ import type { AiSettingsV2, AiStreamChunk } from '../src/types'
 const chatofficeProfile = {
   id: 'chatoffice',
   vendorId: 'chatoffice',
-  displayName: 'ChatOffice',
+  displayName: 'ChaOffice',
   protocol: 'openai-completions' as const,
   baseUrl: '',
   auth: 'chatoffice-login' as const,
@@ -49,7 +49,7 @@ function makeSource(stored: AiSettingsV2): AiSettingsSource & { writes: AiSettin
   }
 }
 
-const noChatOffice = {
+const noChaOffice = {
   apiKey: () => '',
   hasAuth: () => false,
   status: async () => ({ loggedIn: false }),
@@ -64,7 +64,7 @@ describe('runtime chatoffice fallback heal', () => {
       profiles: [chatofficeProfile, byokProfile()],
       currentModel: { profileId: 'chatoffice', modelId: 'claude-opus-4-7' },
     })
-    const runtime = createAiRuntime({ source, chatoffice: noChatOffice, translate })
+    const runtime = createAiRuntime({ source, chatoffice: noChaOffice, translate })
 
     const view = await runtime.getSettingsView()
     expect(view.currentModel).toEqual({ profileId: 'zhipu', modelId: 'glm-5.3' })
@@ -80,7 +80,7 @@ describe('runtime chatoffice fallback heal', () => {
       profiles: [chatofficeProfile],
       currentModel: { profileId: 'chatoffice', modelId: 'claude-opus-4-7' },
     })
-    const runtime = createAiRuntime({ source, chatoffice: noChatOffice, translate })
+    const runtime = createAiRuntime({ source, chatoffice: noChaOffice, translate })
 
     const view = await runtime.getSettingsView()
     expect(view.currentModel).toEqual({ profileId: 'chatoffice', modelId: 'claude-opus-4-7' })
@@ -95,7 +95,7 @@ describe('runtime chatoffice fallback heal', () => {
     })
     const runtime = createAiRuntime({
       source,
-      chatoffice: { ...noChatOffice, hasAuth: () => true, apiKey: () => 'chatoffice-key' },
+      chatoffice: { ...noChaOffice, hasAuth: () => true, apiKey: () => 'chatoffice-key' },
       translate,
     })
     const view = await runtime.getSettingsView()
@@ -109,7 +109,7 @@ describe('runtime chatoffice fallback heal', () => {
       profiles: [chatofficeProfile, byokProfile()],
       currentModel: { profileId: 'chatoffice', modelId: 'claude-opus-4-7' },
     })
-    const runtime = createAiRuntime({ source, chatoffice: noChatOffice, translate })
+    const runtime = createAiRuntime({ source, chatoffice: noChaOffice, translate })
     const chunks: AiStreamChunk[] = []
     // the healed read swaps the selection before resolution; resolveForRun on
     // the stale selection would throw — verify via the healed view + resolve

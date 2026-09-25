@@ -113,7 +113,7 @@ const callable = Object.entries(OP_DOCS).filter(
 
 describe('op doc examples', () => {
   it('every AI-callable op documents at least one example', () => {
-    // adapted: 69b4ce0 — ChatOffice-local ops carry sig-only docs
+    // adapted: 69b4ce0 — ChaOffice-local ops carry sig-only docs
     const LOCAL_OPS = new Set(Object.keys(LOCAL_OP_DOCS))
     const missing = callable
       .filter(([n, doc]) => doc.examples.length === 0 && !LOCAL_OPS.has(n))

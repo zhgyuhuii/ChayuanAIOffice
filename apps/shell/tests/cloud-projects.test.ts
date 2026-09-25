@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { chatofficeListPastProjects, type ChatOfficePastProjectsPage } from '@chatoffice/ai-search'
+import { chatofficeListPastProjects, type ChaOfficePastProjectsPage } from '@chatoffice/ai-search'
 import {
   cloudStoreOwner,
   clearCloudProjectsStore,
@@ -14,7 +14,7 @@ vi.mock('@chatoffice/ai-search', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@chatoffice/ai-search')>()
   // the CLI binary is not installed in the test environment; auth presence is
   // what the store logic keys on, so force it on (the packaged app has the CLI)
-  return { ...actual, chatofficeListPastProjects: vi.fn(), hasChatOfficeAuth: vi.fn(() => true) }
+  return { ...actual, chatofficeListPastProjects: vi.fn(), hasChaOfficeAuth: vi.fn(() => true) }
 })
 
 const listMock = vi.mocked(chatofficeListPastProjects)
@@ -102,7 +102,7 @@ describe('cloud projects sync account isolation', () => {
     disable: process.env.AI_SEARCH_DISABLE_GSK,
   }
 
-  const pageFor = (title: string): ChatOfficePastProjectsPage => ({
+  const pageFor = (title: string): ChaOfficePastProjectsPage => ({
     projects: [
       {
         projectId: `id-${title}`,
@@ -150,9 +150,9 @@ describe('cloud projects sync account isolation', () => {
   })
 
   it('does not share an in-flight sync across accounts', async () => {
-    const gates: Array<(page: ChatOfficePastProjectsPage) => void> = []
+    const gates: Array<(page: ChaOfficePastProjectsPage) => void> = []
     listMock.mockImplementation(
-      () => new Promise<ChatOfficePastProjectsPage>((resolve) => gates.push(resolve)),
+      () => new Promise<ChaOfficePastProjectsPage>((resolve) => gates.push(resolve)),
     )
 
     const first = syncCloudProjects(storePath)

@@ -22,12 +22,12 @@ export function setRescueFetch(fn: FetchLike | null): void {
  * clients to identify themselves and flags "broad" user agents). Main
  * processes refine the default with the app version.
  */
-export const AI_DEFAULT_USER_AGENT = 'ChatOffice'
+export const AI_DEFAULT_USER_AGENT = 'ChaOffice'
 
 /**
  * The rescue fetch runs on Chromium's network stack (Electron net.fetch), so
  * its TLS fingerprint already looks like a browser. But the init still carries
- * the app's User-Agent ("ChatOffice/x.y"), which Cloudflare flags as a
+ * the app's User-Agent ("ChaOffice/x.y"), which Cloudflare flags as a
  * bot — a Chromium TLS fingerprint paired with a non-browser UA is a
  * tell-tale mismatch. Override with a stock Chrome UA so the two signals
  * agree.

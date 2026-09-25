@@ -1,5 +1,5 @@
 /**
- * chatOffice / chatOfficeProject / chatOfficeTabs — WEB implementation of the shell
+ * chaOffice / chaOfficeProject / chaOfficeTabs — WEB implementation of the shell
  * preload bridges (plan v2.2 decision #2/#4). The shell renderer source is
  * untouched; these globals are installed before it boots and route to the
  * in-page tab manager, the localStorage recents store, and the FS Access
@@ -194,11 +194,11 @@ const NEW_MENU: Array<{ label: string; kind: TabKind }> = [
 // ── install ─────────────────────────────────────────────────────────────────
 
 export function installShellShims(): void {
-  // same chatOfficeKb contract as the desktop preloads (fetch-backed here)
+  // same chaOfficeKb contract as the desktop preloads (fetch-backed here)
   installKbFetchBridge()
   const w = window as unknown as Record<string, unknown>
 
-  w.chatOfficeTabs = {
+  w.chaOfficeTabs = {
     list: async () => tabManager.list(),
     activate: async (id: string) => tabManager.activate(id),
     close: async (id: string) => tabManager.close(id),
@@ -235,7 +235,7 @@ export function installShellShims(): void {
 
   // Home 右栏停靠(P1 契约 web 侧): dock iframes live in their own layer;
   // the layer element is attached by shell-boot alongside the editor layer.
-  w.chatOfficeDock = {
+  w.chaOfficeDock = {
     open: async (kind: string, options?: { file?: string; newBlank?: boolean }) =>
       dockHost.open(kind as never, {
         // web 的「文件」= FS-Access fileId(契约 options.file 在 web 语义下即 id)
@@ -257,7 +257,7 @@ export function installShellShims(): void {
     onPanelTurn: (_handler: (turn: unknown) => void) => () => {},
   }
 
-  w.chatOffice = {
+  w.chaOffice = {
     // ── file lists (localStorage recents over FS-Access file ids) ──
     recents: async (query?: { offset?: number; limit?: number; ext?: string }) =>
       page(query, false),
@@ -282,6 +282,9 @@ export function installShellShims(): void {
     newSlide: async () => tabManager.openEditor('slides', { newBlank: true }),
     newMarkdown: async () => tabManager.openEditor('markdown', { newBlank: true }),
     newPdf: async () => tabManager.openEditor('pdf', { newBlank: true }),
+    // html has no dedicated web editor bundle — author it as text in the
+    // markdown editor (same surface OPEN of an .html file lands on below)
+    newHtml: async () => tabManager.openEditor('markdown', { newBlank: true, title: '未命名.html' }),
 
     // ── home folder tree (upstream 7036122): no local filesystem here — the
     // tree renders empty and the mutating actions degrade. folderRoots MUST
@@ -293,10 +296,10 @@ export function installShellShims(): void {
     removeFolderRoot: async () => undefined,
     pathForFile: () => '',
     listFolder: async (dir: string) => ({ dir, folders: [], files: [], missing: true }),
-    createFolder: async () => degraded('chatOffice.createFolder'),
-    renameFolder: async () => degraded('chatOffice.renameFolder'),
-    movePaths: async () => degraded('chatOffice.movePaths'),
-    deleteFolder: async () => degraded('chatOffice.deleteFolder'),
+    createFolder: async () => degraded('chaOffice.createFolder'),
+    renameFolder: async () => degraded('chaOffice.renameFolder'),
+    movePaths: async () => degraded('chaOffice.movePaths'),
+    deleteFolder: async () => degraded('chaOffice.deleteFolder'),
     onFolderChanged: (_handler: (dirs: string[]) => void) => () => undefined,
 
     // ── app state ──
@@ -329,11 +332,11 @@ export function installShellShims(): void {
       (window as unknown as { CHATOFFICE_VERSION?: string }).CHATOFFICE_VERSION ?? '0.1.0',
 
     // ── file management: batch 2 ──
-    renameFile: async () => degraded('chatOffice.renameFile'),
-    duplicateFile: async () => degraded('chatOffice.duplicateFile'),
-    deleteFiles: async () => degraded('chatOffice.deleteFiles'),
-    revealPath: async () => degraded('chatOffice.revealPath'),
-    openTrash: async () => degraded('chatOffice.openTrash'),
+    renameFile: async () => degraded('chaOffice.renameFile'),
+    duplicateFile: async () => degraded('chaOffice.duplicateFile'),
+    deleteFiles: async () => degraded('chaOffice.deleteFiles'),
+    revealPath: async () => degraded('chaOffice.revealPath'),
+    openTrash: async () => degraded('chaOffice.openTrash'),
 
     // ── local MCP server: the web host has none — report the disabled state
     // (the settings panel reads these fields directly) and degrade mutations ──
@@ -357,18 +360,18 @@ export function installShellShims(): void {
     }),
     getMcpLogs: async () => [],
     clearMcpLogs: async () => undefined,
-    openMcpLogFile: async () => degraded('chatOffice.openMcpLogFile'),
+    openMcpLogFile: async () => degraded('chaOffice.openMcpLogFile'),
     searchCapabilities: async () => ({ search: false }),
 
     // ── account / cloud / AI: awaiting the BFF channels ──
     accountStatus: async () => null,
-    accountLogin: async () => degraded('chatOffice.accountLogin'),
+    accountLogin: async () => degraded('chaOffice.accountLogin'),
     accountLogout: async () => undefined,
     openLoginUrl: () => undefined,
     onAccountLogin: () => () => undefined,
-    cloudProjectsSync: async () => degraded('chatOffice.cloudProjectsSync'),
+    cloudProjectsSync: async () => degraded('chaOffice.cloudProjectsSync'),
     cloudProjectsCached: async () => null,
-    openCloudProject: async () => degraded('chatOffice.openCloudProject'),
+    openCloudProject: async () => degraded('chaOffice.openCloudProject'),
     // AI settings run over the BFF's /ai/* endpoints (keys stay server-side)
     getAiSettings: async () => (await fetch(aiUrl('ai/settings'))).json() as unknown,
     setAiSettings: async (view: unknown) => {
@@ -467,7 +470,7 @@ export function installShellShims(): void {
     chatofficeStatus: async () => ({ loggedIn: false }),
     chatofficeLogin: async () => undefined,
     getDefaultSaveDir: async () => null,
-    pickDefaultSaveDir: async () => degraded('chatOffice.pickDefaultSaveDir'),
+    pickDefaultSaveDir: async () => degraded('chaOffice.pickDefaultSaveDir'),
     getAnalyticsEnabled: async () => false,
     setAnalyticsEnabled: async () => undefined,
     githubStars: async () => null,
@@ -488,12 +491,12 @@ export function installShellShims(): void {
     getAutoSaveDefault: async () => ({ on: true, updatedAt: 0 }),
     setAutoSaveDefault: async () => undefined,
     feedbackProbe: async () => false,
-    feedbackUpload: async () => degraded('chatOffice.feedbackUpload'),
-    feedbackSubmit: async () => degraded('chatOffice.feedbackSubmit'),
-    openExternal: async () => degraded('chatOffice.openExternal'),
+    feedbackUpload: async () => degraded('chaOffice.feedbackUpload'),
+    feedbackSubmit: async () => degraded('chaOffice.feedbackSubmit'),
+    openExternal: async () => degraded('chaOffice.openExternal'),
     openGenTeam: () => undefined,
     // AI-authored standalone file: needs the desktop FS pipeline
-    createDocument: async () => degraded('chatOffice.createDocument'),
+    createDocument: async () => degraded('chaOffice.createDocument'),
     // attachment pickers/readers need real file access (FS-Access landing TBD);
     // null = user cancelled, ok:false = unreadable, matching the desktop shapes
     pickAttachments: async () => null,
@@ -501,12 +504,12 @@ export function installShellShims(): void {
     readAttachmentImage: async () => ({ ok: false, error: '网页版暂不支持读取图片附件' }),
   }
 
-  w.chatOfficeProject = {
+  w.chaOfficeProject = {
     listProjects: async () => [],
-    createProject: async () => degraded('chatOfficeProject.createProject'),
-    renameProject: async () => degraded('chatOfficeProject.renameProject'),
-    deleteProject: async () => degraded('chatOfficeProject.deleteProject'),
-    moveFile: async () => degraded('chatOfficeProject.moveFile'),
+    createProject: async () => degraded('chaOfficeProject.createProject'),
+    renameProject: async () => degraded('chaOfficeProject.renameProject'),
+    deleteProject: async () => degraded('chaOfficeProject.deleteProject'),
+    moveFile: async () => degraded('chaOfficeProject.moveFile'),
     listProjectFiles: async () => [],
     getTimeline: async () => [],
   }
@@ -533,7 +536,7 @@ export function installShellShims(): void {
     }
     return body.result
   }
-  ;(w as unknown as Record<string, unknown>).chatOfficeRemoteFiles = {
+  ;(w as unknown as Record<string, unknown>).chaOfficeRemoteFiles = {
     getSettings: () => storageRpc('getSettings', []),
     saveSettings: (settings: unknown) => storageRpc('saveSettings', [settings]),
     testConnection: (config: unknown) => storageRpc('testConnection', [config]),

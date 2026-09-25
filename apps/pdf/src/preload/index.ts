@@ -101,7 +101,7 @@ const api: PdfApi = {
   setAiSettings: (view) => ipcRenderer.invoke(AI_CHANNELS.setSettings, view),
   setAiCurrentModel: (selection) => ipcRenderer.invoke(AI_CHANNELS.setCurrentModel, selection),
   aiDiscoverModels: (target) => ipcRenderer.invoke(AI_CHANNELS.discoverModels, target),
-  aiChatOfficeLogin: () => ipcRenderer.invoke(AI_CHANNELS.chatofficeLogin),
+  aiChaOfficeLogin: () => ipcRenderer.invoke(AI_CHANNELS.chatofficeLogin),
   aiLocalToolStatus: (vendorId: string) => ipcRenderer.invoke('ai:local-tool-status', vendorId),
   aiLocalToolInstall: (vendorId: string, onLine?: (line: string) => void) => {
     if (!onLine) return ipcRenderer.invoke('ai:local-tool-install', vendorId)
@@ -172,7 +172,7 @@ installFilesPaneBridge()
 
 // Knowledge-base read surface (docs/kb-integration-plan.md): one dedicated
 // global so every app shell / editor window shares the same facade contract.
-contextBridge.exposeInMainWorld('chatOfficeKb', {
+contextBridge.exposeInMainWorld('chaOfficeKb', {
   discover: () => ipcRenderer.invoke(KB_CHANNELS.discover),
   search: (args: { kbIds: string[]; q: string; topK?: number }) =>
     ipcRenderer.invoke(KB_CHANNELS.search, args),

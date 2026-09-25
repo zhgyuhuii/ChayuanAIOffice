@@ -1,4 +1,4 @@
-/** dialogs strings, id (merged with ChatOffice-local keys) */
+/** dialogs strings, id (merged with ChaOffice-local keys) */
 import type { zh } from './zh'
 export const id = {
   dlgAllowEditRangesTitle: 'Izinkan Edit Rentang',

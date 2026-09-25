@@ -2608,7 +2608,7 @@ body.vib .slide-list {
 .ai-attachments {
   display: flex;
   gap: 8px;
-  /* single row inside the prompt box, above the textarea (ChatOffice composer style):
+  /* single row inside the prompt box, above the textarea (ChaOffice composer style):
      extra images run past the box edge and scroll horizontally.
      scroll (not auto) + zero bottom padding: the always-present 4px scrollbar lane
      doubles as the bottom padding, so overflowing never grows the strip and
@@ -2716,7 +2716,7 @@ body.vib .slide-list {
   background: var(--slides-att-bg);
 }
 
-/* the type icon sits in its own bordered white tile, like the ChatOffice card */
+/* the type icon sits in its own bordered white tile, like the ChaOffice card */
 .ai-attachment-card-icon {
   display: flex;
   flex-shrink: 0;
@@ -3294,7 +3294,7 @@ body.vib .slide-list {
   margin-top: 18px;
 }
 
-/* ChatOffice DS modal footer buttons: secondary = bg-subtle, primary = black (#232425) */
+/* ChaOffice DS modal footer buttons: secondary = bg-subtle, primary = black (#232425) */
 .modal-actions button {
   display: inline-flex;
   align-items: center;
@@ -3426,7 +3426,7 @@ body.vib .slide-list {
   margin-top: 5.6px;
 }
 
-/* 形状选项 / 文本选项 primary tabs under the pane header (ChatOffice style:
+/* 形状选项 / 文本选项 primary tabs under the pane header (ChaOffice style:
    left-aligned text tabs, active = bold + text-colored underline) */
 .fp-tabs {
   display: flex;
@@ -3460,7 +3460,7 @@ body.vib .slide-list {
   border-bottom-color: var(--accent);
 }
 
-/* Second-level tabs (填充与线条 / 效果 / 大小与属性 …): ChatOffice segmented pill track —
+/* Second-level tabs (填充与线条 / 效果 / 大小与属性 …): ChaOffice segmented pill track —
    pills sit in one rounded gray track; active = accent-filled pill */
 /* Second-level tabs (填充与线条 / 效果 / 大小与属性 …): Genspark segmented pill track —
    pills sit in one rounded gray track; active = accent-filled pill. Long locales

@@ -271,7 +271,7 @@ export const he = {
   aiSumBackground: "הרקע הוגדר בשקופית {n}",
   aiSumSpeakerNotes: "נכתבו הערות דובר בשקופית {n}",
   aiSumDeleteElement: "רכיב נמחק בשקופית {n}",
-  aiChatOfficeLoginBtn: "התחבר",
+  aiChaOfficeLoginBtn: "התחבר",
   aiTabChat: "צ׳אט",
   aiTabAssistant: "עוזר",
   aiAskDesc: "תנו לרכיב הנבחר הוראת עריכה",

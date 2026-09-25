@@ -1061,7 +1061,7 @@ export function App(): React.JSX.Element {
     let alive = true
     const refresh = () => {
       void window.desktopApi
-        ?.aiChatOfficeStatus()
+        ?.aiChaOfficeStatus()
         .then((s) => {
           if (alive) chatofficeLoggedInRef.current = !!s?.loggedIn
         })

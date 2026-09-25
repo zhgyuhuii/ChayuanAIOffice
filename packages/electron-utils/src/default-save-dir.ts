@@ -1,6 +1,6 @@
 /// The default folder where new/untitled files land on their first (silent)
 /// save and where AI-generated drafts go. Historically hardcoded to
-/// <Documents>/ChatOffice; now user-configurable via the `defaultSaveDir` key
+/// <Documents>/ChaOffice; now user-configurable via the `defaultSaveDir` key
 /// in userData/app-settings.json (set from the home screen's account menu).
 /// Every editor main module resolves through here so they all honor the same
 /// setting.
@@ -54,7 +54,7 @@ export function configuredDefaultSaveDir(app: PathProvider): string {
   const settingsPath = join(app.getPath('userData'), 'app-settings.json')
   const documents = app.getPath('documents')
   // 默认保存目录统一为 <Documents>/ChayuanAIOffice（2026-09-23 用户明令）：
-  // 不再沿用 ChatOffice / ChaAI Office 等历史代目录（旧目录里的文件可手动移入，
+  // 不再沿用 ChaOffice / ChaAI Office 等历史代目录（旧目录里的文件可手动移入，
   // 或在首页「文件夹」面板加根目录继续访问）
   const fallback = join(documents, 'ChayuanAIOffice')
   return resolveDefaultSaveDir(readDefaultSaveDirSetting(settingsPath), fallback)

@@ -102,7 +102,7 @@ function normalizeSearchArgs(
 export async function webSearch(
   query: string,
   maxResults = 6,
-  _useChatOffice?: boolean,
+  _useChaOffice?: boolean,
   keys?: SearchKeys,
   /** preferred provider id (settings default): tried first, chain still backs it up */
   prefer?: string,
@@ -289,7 +289,7 @@ export async function webSearch(
 export async function imageSearch(
   query: string,
   maxResults = 8,
-  _useChatOffice?: boolean,
+  _useChaOffice?: boolean,
   serperKeyOverride?: string,
   /** 1-based result page; each tier maps it to its own offset (insert-dialog "next batch") */
   page = 1,

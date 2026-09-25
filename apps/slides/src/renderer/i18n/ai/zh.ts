@@ -268,7 +268,7 @@ export const zh = {
   aiSumBackground: "设置第 {n} 页背景",
   aiSumSpeakerNotes: "写入第 {n} 页演讲者备注",
   aiSumDeleteElement: "第 {n} 页删除元素",
-  aiChatOfficeLoginBtn: "登录",
+  aiChaOfficeLoginBtn: "登录",
   aiTabChat: "对话",
   aiTabAssistant: "助手",
   aiAskDesc: "为选中的元素下达一条编辑指令",

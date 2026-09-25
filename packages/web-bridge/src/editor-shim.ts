@@ -7,6 +7,7 @@
 
 import { BridgeClient } from './client.js'
 import { createAiHttpBridge } from './ai-bridge.js'
+import { makeShim } from './shim-factory.js'
 import { installKbFetchBridge } from './kb-bridge.js'
 import { installDocsShim } from './editors/docs-shim.js'
 import { installPdfShim } from './editors/pdf-shim.js'
@@ -56,7 +57,9 @@ function installMarkdownShim(): void {
 
   const textEncoder = new TextEncoder()
 
-  ;(window as unknown as Record<string, unknown>).markdownApi = {
+  ;(window as unknown as Record<string, unknown>).markdownApi = makeShim(client, {
+    prefix: 'markdown',
+    impl: {
     // AI runs over the BFF: SSE chunks forwarded into onAiStream, keys stay server-side
     ...createAiHttpBridge(),
     consumePending: async () => {
@@ -100,6 +103,9 @@ function installMarkdownShim(): void {
     onCloseSaveRequest: () => () => undefined,
     sendCloseSaveResult: () => undefined,
     onFileRenamed: () => () => undefined,
+    // App.tsx subscribes during mount — a missing method throws a sync
+    // TypeError and kills the effect chain (image-view overlay just stays off)
+    onViewImage: (_handler: (src: string) => void) => () => undefined,
     pickImage: degrade('markdown.pickImage') as unknown as () => Promise<null>,
     saveImage: degrade('markdown.saveImage') as unknown as () => Promise<null>,
     readImage: async () => null,
@@ -112,7 +118,8 @@ function installMarkdownShim(): void {
     getTheme: async () => 'system' as const,
     onThemeChanged: () => () => undefined,
     onChromePressed: () => () => undefined,
-  }
+    },
+  })
 }
 
 // ── dispatch by editor path ──────────────────────────────────────────────────

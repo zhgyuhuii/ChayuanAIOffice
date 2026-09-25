@@ -276,7 +276,7 @@ export const en = {
   aiSumBackground: "Set background on slide {n}",
   aiSumSpeakerNotes: "Wrote speaker notes on slide {n}",
   aiSumDeleteElement: "Deleted element on slide {n}",
-  aiChatOfficeLoginBtn: "Sign in",
+  aiChaOfficeLoginBtn: "Sign in",
   aiTabChat: "Chat",
   aiTabAssistant: "Assistant",
   aiAskDesc: "Give the selected element an edit instruction",

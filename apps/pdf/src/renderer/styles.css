@@ -1178,7 +1178,7 @@ button {
 
 /* ── Encrypted document password ── */
 
-/* ---- encrypted-PDF password dialog (ChatOffice DS form dialog, matching the
+/* ---- encrypted-PDF password dialog (ChaOffice DS form dialog, matching the
    docs PasswordDialog and mockups/protect-dialogs-chatoffice.html §1/2) ---- */
 
 /* base .pdf-modal-mask (defined below) top-aligns dialogs; this one centers */
@@ -1449,7 +1449,7 @@ button {
   gap: 8px;
 }
 
-/* ChatOffice DS modal footer buttons: secondary = bg-subtle, primary = black (#232425) */
+/* ChaOffice DS modal footer buttons: secondary = bg-subtle, primary = black (#232425) */
 .pdf-modal-btn {
   display: inline-flex;
   align-items: center;
@@ -3361,7 +3361,7 @@ button {
   white-space: nowrap;
 }
 
-/* ChatOffice brand logo (shared by the collapsed entry and the AI panel title) */
+/* ChaOffice brand logo (shared by the collapsed entry and the AI panel title) */
 .chatoffice-badge {
   display: block;
   width: 22px;

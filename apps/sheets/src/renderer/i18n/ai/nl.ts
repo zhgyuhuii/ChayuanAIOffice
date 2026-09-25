@@ -1,4 +1,4 @@
-/** ai strings, nl (merged with ChatOffice-local keys) */
+/** ai strings, nl (merged with ChaOffice-local keys) */
 export const nl = {
   aiComposerPlaceholderBuild: 'Beschrijf de tabel, gegevens of grafiek om te maken…',
   aiEmptyBuildTitle: 'Laat AI deze werkmap voor je opbouwen',
@@ -45,13 +45,13 @@ export const nl = {
   aiInstructionAria: 'AI-instructie',
   aiFileTooltip: 'SHA-256 {sha}\\nBij het opslaan worden alleen de bewerkte items herschreven; al het andere blijft behouden.',
   aiFileMeta: '{sheets} bladen · {entries} items',
-  aiChatOfficeAccount: 'ChaAI Office-account',
+  aiChaOfficeAccount: 'ChaAI Office-account',
   aiAccountChecking: 'Controleren…',
   aiLoggedIn: 'Aangemeld',
   aiLoggedInAs: 'Aangemeld: {email}',
   aiNotLoggedIn: 'Niet aangemeld (AI-functies vereisen een ChaAI Office-account)',
   aiWaitingBrowserLogin: 'Wachten op aanmelding in de browser…',
-  aiLoginChatOffice: 'Aanmelden bij ChaAI Office',
+  aiLoginChaOffice: 'Aanmelden bij ChaAI Office',
   aiModel: 'Model',
   aiCancel: 'Annuleren',
   aiSave: 'Opslaan',
@@ -99,7 +99,7 @@ export const nl = {
   aiScopeColumns: 'Geselecteerd: {names} ({count} kolommen)',
   aiScopeRangeTip: 'AI leest "deze kolom / deze rijen / het geselecteerde deel" als dit bereik; bij verzenden wordt het voor de hele run vastgezet',
   aiScopeClearTitle: 'Bereikbereik wissen en het hele blad gebruiken',
-  aiChatOfficeLoginBtn: 'Aanmelden',
+  aiChaOfficeLoginBtn: 'Aanmelden',
   aiPanelTitle: 'AI-assistent',
   aiTabChat: 'Chat',
   aiTabAssistant: 'Assistent',

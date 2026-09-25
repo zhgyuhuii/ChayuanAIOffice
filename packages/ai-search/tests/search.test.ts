@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach, beforeAll } from 'vitest'
 import { webSearch, imageSearch } from '../src/index'
 
-// These cases test the Serper/DuckDuckGo paths (ChatOffice removed from search chain)
+// These cases test the Serper/DuckDuckGo paths (ChaOffice removed from search chain)
 beforeAll(() => {
   process.env.AI_SEARCH_DISABLE_GSK = '1'
 })

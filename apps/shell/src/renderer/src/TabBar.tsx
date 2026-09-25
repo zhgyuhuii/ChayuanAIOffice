@@ -13,8 +13,8 @@ import tabIconLogo from './assets/logo.png'
 
 declare global {
   interface Window {
-    chatOfficeTabs: TabsApi
-    chatOfficeWindow?: WindowControlsApi
+    chaOfficeTabs: TabsApi
+    chaOfficeWindow?: WindowControlsApi
   }
 }
 
@@ -22,7 +22,7 @@ declare global {
  *  macOS 用原生红绿灯、web/dsh 无窗口概念——preload 的 controls=false 时不出现在 DOM。 */
 function WindowControls({ side }: { side: 'left' | 'right' }): ReactElement | null {
   const [maximized, setMaximized] = useState(false)
-  const controls = window.chatOfficeWindow
+  const controls = window.chaOfficeWindow
   useEffect(() => {
     if (!controls?.controls) return
     void controls.isMaximized().then(setMaximized)
@@ -42,7 +42,7 @@ function WindowControls({ side }: { side: 'left' | 'right' }): ReactElement | nu
         className="win-control-btn"
         title="最小化"
         aria-label="最小化"
-        onClick={() => window.chatOfficeWindow?.minimize()}
+        onClick={() => window.chaOfficeWindow?.minimize()}
       >
         <svg width="11" height="11" viewBox="0 0 11 11" aria-hidden="true">
           <path d="M1.5 5.5h8" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
@@ -52,7 +52,7 @@ function WindowControls({ side }: { side: 'left' | 'right' }): ReactElement | nu
         className="win-control-btn"
         title={maximized ? '还原' : '最大化'}
         aria-label={maximized ? '还原' : '最大化'}
-        onClick={() => window.chatOfficeWindow?.toggleMaximize()}
+        onClick={() => window.chaOfficeWindow?.toggleMaximize()}
       >
         {maximized ? (
           <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
@@ -69,7 +69,7 @@ function WindowControls({ side }: { side: 'left' | 'right' }): ReactElement | nu
         className="win-control-btn win-control-close"
         title="关闭"
         aria-label="关闭"
-        onClick={() => window.chatOfficeWindow?.close()}
+        onClick={() => window.chaOfficeWindow?.close()}
       >
         <svg width="11" height="11" viewBox="0 0 11 11" aria-hidden="true">
           <path
@@ -206,19 +206,19 @@ export function TabBar() {
         next.splice(Math.min(Math.max(drag.target, 1), next.length), 0, moved)
         return next
       })
-      void window.chatOfficeTabs.reorder(drag.id, drag.target)
+      void window.chaOfficeTabs.reorder(drag.id, drag.target)
     }
   }
 
   useEffect(() => {
-    void window.chatOfficeTabs.list().then(setTabs)
-    return window.chatOfficeTabs.onChanged(setTabs)
+    void window.chaOfficeTabs.list().then(setTabs)
+    return window.chaOfficeTabs.onChanged(setTabs)
   }, [])
 
   // document tabs are sibling WebContentsViews: they see neither this press
   // nor a focus change, so relay it for them to dismiss open popovers
   useEffect(() => {
-    const notify = (): void => window.chatOfficeTabs.notifyChromePressed?.()
+    const notify = (): void => window.chaOfficeTabs.notifyChromePressed?.()
     document.addEventListener('pointerdown', notify, true)
     return () => document.removeEventListener('pointerdown', notify, true)
   }, [])
@@ -230,11 +230,11 @@ export function TabBar() {
   // it must track live or a user-resized strip gets cut at the stale default,
   // taking the divider and drag handle with it.
   useEffect(() => {
-    if (!('chatOfficeTabs' in window)) return
+    if (!('chaOfficeTabs' in window)) return
     const send = (): void => {
       const layout = getHomeLayout()
-      window.chatOfficeTabs.setTreeInset(!layout.leftCollapsed)
-      window.chatOfficeTabs.setTreeWidth(layout.sidebarWidth)
+      window.chaOfficeTabs.setTreeInset(!layout.leftCollapsed)
+      window.chaOfficeTabs.setTreeWidth(layout.sidebarWidth)
       document.documentElement.style.setProperty(
         '--tree-width',
         layout.leftCollapsed ? '0px' : `${layout.sidebarWidth}px`,
@@ -282,7 +282,7 @@ export function TabBar() {
       ?.scrollIntoView({ inline: 'nearest', block: 'nearest' })
   }, [activeId])
 
-  const platform = window.chatOfficeWindow?.platform ?? ''
+  const platform = window.chaOfficeWindow?.platform ?? ''
   const controlSide = platform === 'darwin' ? 'left' : 'right'
   return (
     <div className="tab-bar">
@@ -295,7 +295,7 @@ export function TabBar() {
           aria-label={t('appMenu')}
           onClick={(event) => {
             const rect = event.currentTarget.getBoundingClientRect()
-            void window.chatOfficeTabs.showAppMenu(Math.round(rect.left), Math.round(rect.bottom))
+            void window.chaOfficeTabs.showAppMenu(Math.round(rect.left), Math.round(rect.bottom))
           }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -346,7 +346,7 @@ export function TabBar() {
                 if ((event.target as HTMLElement).closest('.tab-close')) return
                 // Chrome-style: pressing a tab activates it immediately, so
                 // activation never depends on the click that a drag would eat
-                if (!tab.active) void window.chatOfficeTabs.activate(tab.id)
+                if (!tab.active) void window.chaOfficeTabs.activate(tab.id)
                 if (tab.id === 'home') return
                 const strip = stripRef.current
                 if (!strip) return
@@ -427,7 +427,7 @@ export function TabBar() {
               onContextMenu={(event) => {
                 event.preventDefault()
                 if (tab.id === 'home') return
-                void window.chatOfficeTabs.showTabContextMenu(
+                void window.chaOfficeTabs.showTabContextMenu(
                   Math.round(event.clientX),
                   Math.round(event.clientY),
                   tab.id,
@@ -448,7 +448,7 @@ export function TabBar() {
                   aria-label={t('closeTab')}
                   onClick={(event) => {
                     event.stopPropagation()
-                    void window.chatOfficeTabs.close(tab.id)
+                    void window.chaOfficeTabs.close(tab.id)
                   }}
                 >
                   ×
@@ -463,7 +463,7 @@ export function TabBar() {
           aria-label={t('newTab')}
           onClick={(event) => {
             const rect = event.currentTarget.getBoundingClientRect()
-            void window.chatOfficeTabs.showNewMenu(Math.round(rect.left), Math.round(rect.bottom))
+            void window.chaOfficeTabs.showNewMenu(Math.round(rect.left), Math.round(rect.bottom))
           }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
@@ -484,7 +484,7 @@ export function TabBar() {
         aria-label={t('tabList')}
         onClick={(event) => {
           const rect = event.currentTarget.getBoundingClientRect()
-          void window.chatOfficeTabs.showMenu(Math.round(rect.left), Math.round(rect.bottom))
+          void window.chaOfficeTabs.showMenu(Math.round(rect.left), Math.round(rect.bottom))
         }}
       >
         {/* window-with-tab-bar glyph: slanted tab cells above a full-width

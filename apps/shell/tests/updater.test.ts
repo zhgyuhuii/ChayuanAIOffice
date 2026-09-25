@@ -338,10 +338,10 @@ describe('initAutoUpdater', () => {
 
 describe('manual download fallback', () => {
   const macFiles = [
-    { url: 'ChatOffice-0.2.0-arm64.zip' },
-    { url: 'ChatOffice-0.2.0.zip' },
-    { url: 'ChatOffice-0.2.0-arm64.dmg' },
-    { url: 'ChatOffice-0.2.0.dmg' },
+    { url: 'ChaOffice-0.2.0-arm64.zip' },
+    { url: 'ChaOffice-0.2.0.zip' },
+    { url: 'ChaOffice-0.2.0-arm64.dmg' },
+    { url: 'ChaOffice-0.2.0.dmg' },
   ]
 
   function setArch(arch: string): () => void {
@@ -373,7 +373,7 @@ describe('manual download fallback', () => {
       const actions = await failTwiceIntoManual(macFiles)
       actions.onOpenDownload()
       expect(openExternal).toHaveBeenCalledWith(
-        'https://cdn.example.com/mac/ChatOffice-0.2.0-arm64.dmg',
+        'https://cdn.example.com/mac/ChaOffice-0.2.0-arm64.dmg',
       )
     } finally {
       restoreArch()
@@ -387,15 +387,15 @@ describe('manual download fallback', () => {
     try {
       const actions = await failTwiceIntoManual(macFiles)
       actions.onOpenDownload()
-      expect(openExternal).toHaveBeenCalledWith('https://cdn.example.com/mac/ChatOffice-0.2.0.dmg')
+      expect(openExternal).toHaveBeenCalledWith('https://cdn.example.com/mac/ChaOffice-0.2.0.dmg')
     } finally {
       restoreArch()
     }
   })
 
   const winFiles = [
-    { url: 'ChatOfficeSetup-v0.2.0.exe' },
-    { url: 'ChatOfficeSetup-v0.2.0-arm64.exe' },
+    { url: 'ChaOfficeSetup-v0.2.0.exe' },
+    { url: 'ChaOfficeSetup-v0.2.0-arm64.exe' },
   ]
 
   it('picks the arm64 installer on Windows arm64', async () => {
@@ -408,7 +408,7 @@ describe('manual download fallback', () => {
       const actions = await failTwiceIntoManual(winFiles)
       actions.onOpenDownload()
       expect(openExternal).toHaveBeenCalledWith(
-        'https://cdn.example.com/win/ChatOfficeSetup-v0.2.0-arm64.exe',
+        'https://cdn.example.com/win/ChaOfficeSetup-v0.2.0-arm64.exe',
       )
     } finally {
       restoreArch()
@@ -425,7 +425,7 @@ describe('manual download fallback', () => {
       const actions = await failTwiceIntoManual([...winFiles].reverse())
       actions.onOpenDownload()
       expect(openExternal).toHaveBeenCalledWith(
-        'https://cdn.example.com/win/ChatOfficeSetup-v0.2.0.exe',
+        'https://cdn.example.com/win/ChaOfficeSetup-v0.2.0.exe',
       )
     } finally {
       restoreArch()
@@ -439,10 +439,10 @@ describe('manual download fallback', () => {
     setPlatform('win32')
     const restoreArch = setArch('arm64')
     try {
-      const actions = await failTwiceIntoManual([{ url: 'ChatOfficeSetup-v0.2.0.exe' }])
+      const actions = await failTwiceIntoManual([{ url: 'ChaOfficeSetup-v0.2.0.exe' }])
       actions.onOpenDownload()
       expect(openExternal).toHaveBeenCalledWith(
-        'https://cdn.example.com/win/ChatOfficeSetup-v0.2.0.exe',
+        'https://cdn.example.com/win/ChaOfficeSetup-v0.2.0.exe',
       )
     } finally {
       restoreArch()
@@ -455,13 +455,13 @@ describe('manual download fallback', () => {
     const restoreArch = setArch('arm64')
     try {
       const actions = await failTwiceIntoManual([
-        { url: 'https://attacker.example/ChatOffice-0.2.0-arm64.zip' },
-        { url: 'https://attacker.example/ChatOffice-0.2.0-arm64.dmg' },
-        { url: 'https://attacker.example/ChatOffice-0.2.0.dmg' },
+        { url: 'https://attacker.example/ChaOffice-0.2.0-arm64.zip' },
+        { url: 'https://attacker.example/ChaOffice-0.2.0-arm64.dmg' },
+        { url: 'https://attacker.example/ChaOffice-0.2.0.dmg' },
       ])
       actions.onOpenDownload()
       expect(openExternal).toHaveBeenCalledWith(
-        'https://cdn.example.com/mac/ChatOffice-0.2.0-arm64.dmg',
+        'https://cdn.example.com/mac/ChaOffice-0.2.0-arm64.dmg',
       )
     } finally {
       restoreArch()
@@ -481,7 +481,7 @@ describe('manual download fallback', () => {
   it('falls back to the generic download page when the feed base cannot be read', async () => {
     // readFileSyncMock throws by default (no app-update.yml)
     const actions = await failTwiceIntoManual([
-      { url: 'https://attacker.example/ChatOffice-0.2.0-arm64.dmg' },
+      { url: 'https://attacker.example/ChaOffice-0.2.0-arm64.dmg' },
     ])
     actions.onOpenDownload()
     expect(openExternal).toHaveBeenCalledWith(

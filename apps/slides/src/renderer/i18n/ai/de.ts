@@ -280,7 +280,7 @@ export const de = {
   aiSumBackground: "Hintergrund auf Folie {n} festgelegt",
   aiSumSpeakerNotes: "Sprechernotizen auf Folie {n} geschrieben",
   aiSumDeleteElement: "Element auf Folie {n} gelöscht",
-  aiChatOfficeLoginBtn: "Anmelden",
+  aiChaOfficeLoginBtn: "Anmelden",
   aiTabChat: "Chat",
   aiTabAssistant: "Assistent",
   aiAskDesc: "Dem ausgewählten Element eine Bearbeitungsanweisung geben",

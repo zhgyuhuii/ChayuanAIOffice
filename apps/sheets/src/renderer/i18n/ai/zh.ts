@@ -1,4 +1,4 @@
-/** ai strings, zh (merged with ChatOffice-local keys) */
+/** ai strings, zh (merged with ChaOffice-local keys) */
 export const zh = {
   aiComposerPlaceholderBuild: '描述要生成的表格、数据或图表…',
   aiEmptyBuildTitle: '让 AI 帮你从零建表',
@@ -45,13 +45,13 @@ export const zh = {
   aiInstructionAria: 'AI 指令',
   aiFileTooltip: 'SHA-256 {sha}\\n保存只重写被编辑的条目，其余内容原样保留。',
   aiFileMeta: '{sheets} 个工作表 · {entries} 个条目',
-  aiChatOfficeAccount: '察元AIOffice 账号',
+  aiChaOfficeAccount: '察元AIOffice 账号',
   aiAccountChecking: '检测中…',
   aiLoggedIn: '已登录',
   aiLoggedInAs: '已登录：{email}',
   aiNotLoggedIn: '未登录（AI 功能需要登录 察元AIOffice 账号）',
   aiWaitingBrowserLogin: '等待浏览器登录…',
-  aiLoginChatOffice: '登录 察元AIOffice',
+  aiLoginChaOffice: '登录 察元AIOffice',
   aiModel: '模型',
   aiCancel: '取消',
   aiSave: '保存',
@@ -99,7 +99,7 @@ export const zh = {
   aiScopeColumns: '已选中 {names} 共 {count} 列',
   aiScopeRangeTip: 'AI 会把"这一列 / 这些行 / 选中部分"理解为该区域；发送后本轮固定不变',
   aiScopeClearTitle: '取消该区域范围，本次针对整张表',
-  aiChatOfficeLoginBtn: '登录',
+  aiChaOfficeLoginBtn: '登录',
   aiPanelTitle: 'AI 助手',
   aiTabChat: '对话',
   aiTabAssistant: '助手',

@@ -17,7 +17,7 @@ import type {
   AiSettingsV2,
   AiStreamChunk,
   DiscoveryTarget,
-  ChatOfficeAccountStatus,
+  ChaOfficeAccountStatus,
   LocalToolOpResult,
   LocalToolStatus,
 } from '@chatoffice/ai-provider'
@@ -59,7 +59,7 @@ export type {
   AiStreamRequest,
   AiWireProtocol,
   DiscoveryTarget,
-  ChatOfficeAccountStatus,
+  ChaOfficeAccountStatus,
 } from '@chatoffice/ai-provider'
 export { AI_PROVIDERS } from '@chatoffice/ai-provider/browser'
 
@@ -1927,10 +1927,10 @@ export interface SlidesApi {
   aiDiscoverModels: (target: DiscoveryTarget) => Promise<{ models: AiModelEntry[]; error?: string }>
   aiStream: (request: AiStreamWireRequest) => Promise<void>
   aiStreamCancel: (requestId: string) => Promise<void>
-  /** ChatOffice account status (chatoffice login state); with withEmail also fetches the email (needs a network request, slower) */
-  aiChatOfficeStatus: (withEmail?: boolean) => Promise<ChatOfficeAccountStatus>
-  /** Open the browser to log into ChatOffice (fire-and-forget; aiChatOfficeStatus turns logged-in once done) */
-  aiChatOfficeLogin: () => Promise<void>
+  /** ChaOffice account status (chatoffice login state); with withEmail also fetches the email (needs a network request, slower) */
+  aiChaOfficeStatus: (withEmail?: boolean) => Promise<ChaOfficeAccountStatus>
+  /** Open the browser to log into ChaOffice (fire-and-forget; aiChaOfficeStatus turns logged-in once done) */
+  aiChaOfficeLogin: () => Promise<void>
   /** 本地与自建：探测 / 一键安装 / 启动（模型设置页状态卡） */
   aiLocalToolStatus(vendorId: string): Promise<LocalToolStatus>
   aiLocalToolInstall(vendorId: string, onLine?: (line: string) => void): Promise<LocalToolOpResult>
@@ -2074,7 +2074,7 @@ export interface SlidesApi {
     ext?: string
     keepSrcRect?: boolean
   }) => Promise<RenderSlide | null>
-  /** chatoffice (ChatOffice) AI image generation/editing, returns the image URL (error prompts login when logged out) */
+  /** chatoffice (ChaOffice) AI image generation/editing, returns the image URL (error prompts login when logged out) */
   generateImage: (op: {
     prompt: string
     model?: string
@@ -2083,7 +2083,7 @@ export interface SlidesApi {
     imageSize?: string
     transparentBackground?: boolean
   }) => Promise<{ url?: string; error?: string }>
-  /** chatoffice (ChatOffice) media analysis: image/audio/video content understanding, returns analysis text */
+  /** chatoffice (ChaOffice) media analysis: image/audio/video content understanding, returns analysis text */
   analyzeMedia: (op: {
     mediaUrls: string[]
     requirements: string

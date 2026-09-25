@@ -31,7 +31,7 @@ layer.style.cssText = 'position:fixed;z-index:1;background:#fff;display:none'
 document.body.appendChild(layer)
 
 // Dock iframe layer (P1): the Home right pane's docked editors — positioned
-// from the shell renderer's mirrored .dock-area rect via chatOfficeDock.setRect
+// from the shell renderer's mirrored .dock-area rect via chaOfficeDock.setRect
 const dockLayer = document.createElement('div')
 document.body.appendChild(dockLayer)
 dockHost.attach(dockLayer)

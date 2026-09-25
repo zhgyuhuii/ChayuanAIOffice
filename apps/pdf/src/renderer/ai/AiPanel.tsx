@@ -1127,9 +1127,9 @@ function IconNewChat(): ReactElement {
   )
 }
 
-/** ChatOffice brand mark (rounded-square sparkle badge), inline so it renders
+/** ChaOffice brand mark (rounded-square sparkle badge), inline so it renders
  * crisply at device resolution instead of going through <img> rasterization */
-export function ChatOfficeMark({ size = 18 }: { size?: number }): React.JSX.Element {
+export function ChaOfficeMark({ size = 18 }: { size?: number }): React.JSX.Element {
   return (
     <svg
       width={size}

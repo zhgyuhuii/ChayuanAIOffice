@@ -653,7 +653,7 @@ export class ProjectStore {
 
   /**
    * Lists files that currently exist for a project. Stored paths are historical
-   * records and may outlive files deleted or moved outside ChatOffice.
+   * records and may outlive files deleted or moved outside ChaOffice.
    * Folder projects (rootPath) also surface the document files living directly
    * in that directory, unioned with the stored list.
    */

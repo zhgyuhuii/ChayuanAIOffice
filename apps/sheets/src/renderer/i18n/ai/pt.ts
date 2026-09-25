@@ -1,4 +1,4 @@
-/** ai strings, pt (merged with ChatOffice-local keys) */
+/** ai strings, pt (merged with ChaOffice-local keys) */
 export const pt = {
   aiComposerPlaceholderBuild: 'Descreva a tabela, os dados ou o gráfico a criar…',
   aiEmptyBuildTitle: 'Deixe a IA montar esta pasta de trabalho para você',
@@ -45,13 +45,13 @@ export const pt = {
   aiInstructionAria: 'Instrução de IA',
   aiFileTooltip: 'SHA-256 {sha}\\nAo salvar, apenas as entradas editadas são reescritas; todo o resto é preservado.',
   aiFileMeta: '{sheets} planilhas · {entries} entradas',
-  aiChatOfficeAccount: 'Conta ChaAI Office',
+  aiChaOfficeAccount: 'Conta ChaAI Office',
   aiAccountChecking: 'Verificando…',
   aiLoggedIn: 'Conectado',
   aiLoggedInAs: 'Conectado: {email}',
   aiNotLoggedIn: 'Não conectado (os recursos de IA exigem uma conta ChaAI Office)',
   aiWaitingBrowserLogin: 'Aguardando login no navegador…',
-  aiLoginChatOffice: 'Entrar no ChaAI Office',
+  aiLoginChaOffice: 'Entrar no ChaAI Office',
   aiModel: 'Modelo',
   aiCancel: 'Cancelar',
   aiSave: 'Salvar',
@@ -99,7 +99,7 @@ export const pt = {
   aiScopeColumns: 'Selecionado: {names} ({count} colunas)',
   aiScopeRangeTip: 'A IA interpreta "esta coluna / estas linhas / a parte selecionada" como este intervalo, que fica fixo durante toda a execução ao enviar',
   aiScopeClearTitle: 'Remover o escopo do intervalo e usar a planilha inteira',
-  aiChatOfficeLoginBtn: 'Entrar',
+  aiChaOfficeLoginBtn: 'Entrar',
   aiPanelTitle: 'Assistente de IA',
   aiTabChat: 'Bate-papo',
   aiTabAssistant: 'Assistente',

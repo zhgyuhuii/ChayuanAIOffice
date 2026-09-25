@@ -123,8 +123,8 @@ describe('installCliLink', () => {
       return { ok: true, stdout: scripts.length === 1 ? 'linked\n' : 'present\n' }
     }
     const launcher =
-      "C:\\Users\\O'Brien\\AppData\\Local\\Programs\\ChatOffice\\resources\\chatoffice\\chatoffice.cmd"
-    const dir = "C:\\Users\\O'Brien\\AppData\\Local\\Programs\\ChatOffice\\resources\\chatoffice"
+      "C:\\Users\\O'Brien\\AppData\\Local\\Programs\\ChaOffice\\resources\\chatoffice\\chatoffice.cmd"
+    const dir = "C:\\Users\\O'Brien\\AppData\\Local\\Programs\\ChaOffice\\resources\\chatoffice"
     const first = installCliLink({ launcher, platform: 'win32', runPowerShell: run })
     expect(first).toEqual({ status: 'linked', location: dir })
     expect(scripts[0]).toContain("$dir = 'C:\\Users\\O''Brien\\AppData")
@@ -146,14 +146,14 @@ describe('installCliLink', () => {
 
   it('inspects the Windows PATH read-only', () => {
     const scripts: string[] = []
-    const launcher = 'C:\\ChatOffice\\resources\\chatoffice\\chatoffice.cmd'
+    const launcher = 'C:\\ChaOffice\\resources\\chatoffice\\chatoffice.cmd'
     const present = inspectCliLink({
       launcher,
       platform: 'win32',
       runPowerShell: (s) => (scripts.push(s), { ok: true, stdout: 'present\n' }),
     })
     expect(present.status).toBe('present')
-    expect(present.location).toBe('C:\\ChatOffice\\resources\\chatoffice')
+    expect(present.location).toBe('C:\\ChaOffice\\resources\\chatoffice')
     expect(scripts[0]).not.toContain('SetValue')
     const missing = inspectCliLink({
       launcher,

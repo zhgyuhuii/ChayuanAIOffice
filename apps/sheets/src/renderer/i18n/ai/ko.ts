@@ -1,4 +1,4 @@
-/** ai strings, ko (merged with ChatOffice-local keys) */
+/** ai strings, ko (merged with ChaOffice-local keys) */
 export const ko = {
   aiComposerPlaceholderBuild: '만들 표, 데이터, 차트를 설명하세요…',
   aiEmptyBuildTitle: 'AI에게 시트 작성을 맡기세요',
@@ -45,13 +45,13 @@ export const ko = {
   aiInstructionAria: 'AI 지시',
   aiFileTooltip: 'SHA-256 {sha}\\n저장 시 편집된 항목만 다시 쓰고 나머지는 그대로 유지합니다.',
   aiFileMeta: '시트 {sheets}개 · 항목 {entries}개',
-  aiChatOfficeAccount: 'ChaAI Office 계정',
+  aiChaOfficeAccount: 'ChaAI Office 계정',
   aiAccountChecking: '확인 중…',
   aiLoggedIn: '로그인됨',
   aiLoggedInAs: '로그인됨: {email}',
   aiNotLoggedIn: '로그인되지 않음(AI 기능을 사용하려면 ChaAI Office 계정 로그인이 필요합니다)',
   aiWaitingBrowserLogin: '브라우저 로그인 대기 중…',
-  aiLoginChatOffice: 'ChaAI Office 로그인',
+  aiLoginChaOffice: 'ChaAI Office 로그인',
   aiModel: '모델',
   aiCancel: '취소',
   aiSave: '저장',
@@ -99,7 +99,7 @@ export const ko = {
   aiScopeColumns: '{names} 등 {count}개 열 선택됨',
   aiScopeRangeTip: 'AI는 "이 열 / 이 행들 / 선택한 부분"을 이 범위로 해석하며, 전송하면 이번 실행 동안 고정됩니다',
   aiScopeClearTitle: '범위 지정을 해제하고 시트 전체를 대상으로 하기',
-  aiChatOfficeLoginBtn: '로그인',
+  aiChaOfficeLoginBtn: '로그인',
   aiPanelTitle: 'AI 어시스턴트',
   aiTabChat: '채팅',
   aiTabAssistant: '어시스턴트',

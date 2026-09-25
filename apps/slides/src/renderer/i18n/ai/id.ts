@@ -277,7 +277,7 @@ export const id = {
   aiSumBackground: "Mengatur latar belakang slide {n}",
   aiSumSpeakerNotes: "Menulis catatan pembicara pada slide {n}",
   aiSumDeleteElement: "Menghapus elemen di slide {n}",
-  aiChatOfficeLoginBtn: "Masuk",
+  aiChaOfficeLoginBtn: "Masuk",
   aiTabChat: "Obrolan",
   aiTabAssistant: "Asisten",
   aiAskDesc: "Beri instruksi pengeditan untuk elemen terpilih",

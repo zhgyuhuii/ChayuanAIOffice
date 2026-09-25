@@ -40,7 +40,7 @@ beforeEach(() => {
     size: data.byteLength,
   }))
   getMcpLogs = vi.fn(async () => [] as string[])
-  window.chatOffice = {
+  window.chaOffice = {
     getAppVersion: async () => '0.10.0',
     getMcpLogs,
     feedbackProbe: async () => true,

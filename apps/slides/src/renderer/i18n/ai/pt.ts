@@ -277,7 +277,7 @@ export const pt = {
   aiSumBackground: "Fundo definido no slide {n}",
   aiSumSpeakerNotes: "Notas do apresentador escritas no slide {n}",
   aiSumDeleteElement: "Elemento excluído no slide {n}",
-  aiChatOfficeLoginBtn: "Entrar",
+  aiChaOfficeLoginBtn: "Entrar",
   aiTabChat: "Bate-papo",
   aiTabAssistant: "Assistente",
   aiAskDesc: "Dar uma instrução de edição ao elemento selecionado",

@@ -50,7 +50,7 @@ for (const job of jobs) {
 }
 
 console.log(`
-ChatOffice web dev (form 2):
+ChaOffice web dev (form 2):
   host    http://localhost:5180
   bff     http://localhost:52587/healthz
   editors http://localhost:5173..5177

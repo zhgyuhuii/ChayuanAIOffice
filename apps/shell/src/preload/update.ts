@@ -27,4 +27,4 @@ const api: UpdateWindowApi = {
   },
 }
 
-contextBridge.exposeInMainWorld('chatOfficeUpdate', api)
+contextBridge.exposeInMainWorld('chaOfficeUpdate', api)

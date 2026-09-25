@@ -1,4 +1,4 @@
-/** ai strings, he (merged with ChatOffice-local keys) */
+/** ai strings, he (merged with ChaOffice-local keys) */
 export const he = {
   aiComposerPlaceholderBuild: 'תארו את הטבלה, הנתונים או התרשים ליצירה…',
   aiEmptyBuildTitle: 'תנו ל-AI לבנות את חוברת העבודה הזו עבורכם',
@@ -45,13 +45,13 @@ export const he = {
   aiInstructionAria: 'הוראה ל-AI',
   aiFileTooltip: 'SHA-256 {sha}\\nבשמירה נכתבים מחדש רק הפריטים שנערכו; כל השאר נשמר כפי שהוא.',
   aiFileMeta: '{sheets} גיליונות · {entries} פריטים',
-  aiChatOfficeAccount: 'חשבון ChaAI Office',
+  aiChaOfficeAccount: 'חשבון ChaAI Office',
   aiAccountChecking: 'בודק…',
   aiLoggedIn: 'מחובר',
   aiLoggedInAs: 'מחובר: {email}',
   aiNotLoggedIn: 'לא מחובר (תכונות AI דורשות חשבון ChaAI Office)',
   aiWaitingBrowserLogin: 'ממתין לכניסה בדפדפן…',
-  aiLoginChatOffice: 'כניסה ל-ChaAI Office',
+  aiLoginChaOffice: 'כניסה ל-ChaAI Office',
   aiModel: 'מודל',
   aiCancel: 'ביטול',
   aiSave: 'שמירה',
@@ -99,7 +99,7 @@ export const he = {
   aiScopeColumns: 'נבחרו: {names} ({count} עמודות)',
   aiScopeRangeTip: 'ה-AI מפרש "העמודה הזו / השורות האלה / החלק הנבחר" כטווח הזה, והוא מקובע לכל ההרצה עם השליחה',
   aiScopeClearTitle: 'ביטול טווח הבחירה ומיקוד בגיליון כולו',
-  aiChatOfficeLoginBtn: 'התחבר',
+  aiChaOfficeLoginBtn: 'התחבר',
   aiPanelTitle: 'עוזר AI',
   aiTabChat: 'צ׳אט',
   aiTabAssistant: 'עוזר',

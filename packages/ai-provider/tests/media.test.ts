@@ -133,7 +133,7 @@ describe('media settings', () => {
     ).toBe('')
   })
 
-  it('gates the tools on BYOK model presence (no ChatOffice backend)', () => {
+  it('gates the tools on BYOK model presence (no ChaOffice backend)', () => {
     const chatoffice = defaultAiSettings()
     expect(imageGenerationAvailable(chatoffice, true)).toBe(false)
     expect(imageGenerationAvailable(chatoffice, false)).toBe(false)

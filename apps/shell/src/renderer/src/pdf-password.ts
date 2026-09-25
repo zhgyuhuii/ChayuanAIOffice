@@ -1,7 +1,7 @@
 import type { PdfPasswordUiState, PdfPasswordWindowApi } from '../../shared/pdf-password-api'
 
 // exposed by src/preload/pdf-password.ts
-const api = (window as unknown as { chatOfficePdfPassword: PdfPasswordWindowApi }).chatOfficePdfPassword
+const api = (window as unknown as { chaOfficePdfPassword: PdfPasswordWindowApi }).chaOfficePdfPassword
 
 const el = (id: string): HTMLElement => document.getElementById(id) as HTMLElement
 const title = el('title')

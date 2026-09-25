@@ -124,10 +124,10 @@ import {
   chatofficeLogout,
   chatofficeConvertPdfToDocx,
   chatofficeLoginInfo,
-  hasChatOfficeAuth,
+  hasChaOfficeAuth,
   loadChatofficeAuth,
-  resolveChatOfficeEntry,
-  setChatOfficeProxyUrl,
+  resolveChaOfficeEntry,
+  setChaOfficeProxyUrl,
   startChatofficeLogin,
   watchChatofficeApiKey,
 } from '@chatoffice/ai-search'
@@ -371,7 +371,7 @@ import { applyUpdateChannel, checkForUpdatesNow, initAutoUpdater } from './updat
 import { isUpdateChannel, type UpdateChannel } from '../shared/update-api'
 
 /**
- * ChatOffice unified shell: ONE Electron app, ONE BrowserWindow, hosting the
+ * ChaOffice unified shell: ONE Electron app, ONE BrowserWindow, hosting the
  * docs and sheets modules as WebContentsView tabs behind a WPS-style tab
  * strip. The shell owns the lifecycle — single-instance lock, file-
  * association routing by extension, and per-active-tab menu switching.
@@ -381,13 +381,13 @@ import { isUpdateChannel, type UpdateChannel } from '../shared/update-api'
 
 // ANY unpacked run (`npm run shell`, `npm run dev`, `npx electron .`) must not
 // share the installed app's userData or single-instance lock — otherwise a dev
-// run silently quits and forwards its argv to the running installed ChatOffice.
+// run silently quits and forwards its argv to the running installed ChaOffice.
 // CHATOFFICE_USER_DATA: test drivers point this at a scratch dir so an
 // automated instance can run alongside the dev instance (separate lock).
 if (!app.isPackaged)
   app.setPath(
     'userData',
-    process.env.CHATOFFICE_USER_DATA ?? join(app.getPath('appData'), 'ChatOffice Dev'),
+    process.env.CHATOFFICE_USER_DATA ?? join(app.getPath('appData'), 'ChaOffice Dev'),
   )
 
 /**
@@ -402,12 +402,12 @@ if (headlessArgv.kind !== 'none') {
   app.dock?.hide()
 }
 
-// Product renames changed the userData path ("AI Office" → "ChatOffice" → "ChaAI Office"); migrate old user data once on each rename hop.
+// Product renames changed the userData path ("AI Office" → "ChaOffice" → "ChaAI Office"); migrate old user data once on each rename hop.
 if (app.isPackaged) {
   const newDir = app.getPath('userData')
   const newEmpty = !existsSync(newDir) || readdirSync(newDir).length === 0
   if (newEmpty) {
-    for (const oldName of ['ChatOffice', 'AI Office']) {
+    for (const oldName of ['ChaOffice', 'AI Office']) {
       const oldDir = join(app.getPath('appData'), oldName)
       // The current name sits in the hop list from an earlier rename; copying
       // it onto itself throws "src and dest cannot be the same" as an uncaught
@@ -670,7 +670,7 @@ function initAnalytics(): void {
 // invite link, which stays out of this repo and rotates server-side.
 const GENTEAM_URL = 'https://genspark.ai/join'
 
-// ChatOffice credit-usage page opened from the account menu's credits row.
+// ChaOffice credit-usage page opened from the account menu's credits row.
 // Kept main-side so the renderer never supplies the URL.
 const CREDIT_USAGE_URL = 'https://www.genspark.ai/credit-usage'
 
@@ -4194,7 +4194,7 @@ function registerHomeIpc(): void {
   // registerAiIpc() (called above) exactly once for all window types —
   // a second registration here crashed the packaged app ("second handler
   // for 'kb:discover'"); the home composer and embedded editors share it.
-  // signed-in means ChatOffice's own device-code login; the shared chatoffice CLI key
+  // signed-in means ChaOffice's own device-code login; the shared chatoffice CLI key
   // is only a silent fallback, deliberately not shown here to nudge users onto our key
   ipcMain.handle(HOME_CHANNELS.accountStatus, async () => {
     if (!loadChatofficeAuth()) return { loggedIn: false }
@@ -6183,11 +6183,11 @@ async function exportPdfAsDocx(): Promise<void> {
   exportingPdfDocx = true
   try {
     if (!(await flushPdfSave(tab.webContents))) return
-    if (!hasChatOfficeAuth()) {
-      // hasChatOfficeAuth() is also false when the chatoffice CLI itself cannot be resolved
+    if (!hasChaOfficeAuth()) {
+      // hasChaOfficeAuth() is also false when the chatoffice CLI itself cannot be resolved
       // (broken install); Sign In could not launch in that case, so surface
       // the real problem instead of a login dialog that cannot succeed.
-      if (!resolveChatOfficeEntry()) {
+      if (!resolveChaOfficeEntry()) {
         void dialog.showMessageBox(shellWindow, {
           type: 'error',
           message: tm('pdfDocxNoCliMsg'),
@@ -6681,7 +6681,7 @@ async function installMainProcessProxy(): Promise<void> {
   if (!proxyUrl) {
     try {
       // PAC/rule proxies answer per-host: probe the host the login flow, the
-      // ChatOffice LLM proxy and the chatoffice CLI actually target
+      // ChaOffice LLM proxy and the chatoffice CLI actually target
       const resolved = await session.defaultSession.resolveProxy('https://www.genspark.ai/')
       const m = /PROXY\s+([^;\s]+)/.exec(resolved)
       if (m) proxyUrl = `http://${m[1]}`
@@ -6692,7 +6692,7 @@ async function installMainProcessProxy(): Promise<void> {
   if (!proxyUrl) return
   // spawned chatoffice CLI children (login/search/…) do their own fetch and never see
   // the dispatcher below — forward the proxy to them via env
-  setChatOfficeProxyUrl(proxyUrl)
+  setChaOfficeProxyUrl(proxyUrl)
   try {
     const { ProxyAgent, setGlobalDispatcher } = await import('undici')
     setGlobalDispatcher(new ProxyAgent(proxyUrl))
@@ -6877,7 +6877,7 @@ app.whenReady().then(async () => {
     app.quit()
     return
   }
-  // another ChatOffice-family app re-logging in rotates the shared key; the
+  // another ChaOffice-family app re-logging in rotates the shared key; the
   // home page re-reads its account status. A logout that leaves only the
   // chatoffice CLI fallback key is not a login
   stopAuthWatch = watchChatofficeApiKey(() => {

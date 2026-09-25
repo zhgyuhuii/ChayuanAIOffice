@@ -24,7 +24,7 @@ export function PurchaseToast() {
   const [seq, setSeq] = useState(0)
 
   useEffect(() => {
-    const bridge = window.chatOfficePurchase
+    const bridge = window.chaOfficePurchase
     if (!bridge) return undefined
     const armTimer = () => {
       if (timerRef.current !== null) clearTimeout(timerRef.current)

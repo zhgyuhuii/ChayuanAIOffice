@@ -277,7 +277,7 @@ export const ru = {
   aiSumBackground: "Задан фон слайда {n}",
   aiSumSpeakerNotes: "Записаны заметки докладчика на слайде {n}",
   aiSumDeleteElement: "Удалён элемент на слайде {n}",
-  aiChatOfficeLoginBtn: "Войти",
+  aiChaOfficeLoginBtn: "Войти",
   aiTabChat: "Чат",
   aiTabAssistant: "Помощник",
   aiAskDesc: "Дать выбранному элементу инструкцию на изменение",

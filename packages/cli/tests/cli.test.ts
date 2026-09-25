@@ -119,7 +119,7 @@ describe('chatoffice cli', () => {
     // never reaching the missing-binary path. Isolate the lookup like control.test.ts does.
     const r = await run(['open', DOCX, '--json'], {
       env: {
-        GENOFFICE_APP_BIN: '/nonexistent/ChatOffice',
+        GENOFFICE_APP_BIN: '/nonexistent/ChaOffice',
         GENOFFICE_USER_DATA: tempDir(),
         GENOFFICE_AUDIT_LOG: 'off',
       },

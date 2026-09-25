@@ -199,7 +199,7 @@ export function WelcomeLanding({
   }, [toast])
 
   const openExternal = (url: string) => {
-    void window.chatOffice.openExternal?.(url)
+    void window.chaOffice.openExternal?.(url)
   }
 
   const onCardClick = (id: string, url: string | null) => {

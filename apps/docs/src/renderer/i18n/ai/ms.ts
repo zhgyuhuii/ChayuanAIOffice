@@ -207,7 +207,7 @@ export const ms = {
   aiPolishDesc: 'Perhalus tulisan supaya lebih jelas dan lancar',
   aiAssistantNoMatch: 'Tiada pembantu yang sepadan',
   aiAssistantScopeSelection: 'Pemilihan',
-  aiChatOfficeLoginBtn: 'Log masuk',
+  aiChaOfficeLoginBtn: 'Log masuk',
   aiTabChat: 'Sembang',
   aiSummarizeDesc: 'Ringkaskan dokumen dan fahami poin pentingnya',
 

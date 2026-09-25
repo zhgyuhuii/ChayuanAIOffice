@@ -51,7 +51,7 @@ export const PDF_CHANNELS = {
   aiPanelPrefsChanged: 'app:ai-panel-prefs-changed',
 } as const
 
-export const VISUAL_SIGNATURE_CONTENT_PREFIX = 'ChatOffice visual signature field: '
+export const VISUAL_SIGNATURE_CONTENT_PREFIX = 'ChaOffice visual signature field: '
 
 /** Signature strokes: pad pixel coords, scaled proportionally and y-flipped when placed on the page */
 export interface SignatureStrokes {
@@ -185,7 +185,7 @@ export type DrawingInput =
       color: [number, number, number]
       at: [number, number]
       contents: string
-      /** Annotation author (/T); omitted → 'ChatOffice' */
+      /** Annotation author (/T); omitted → 'ChaOffice' */
       author?: string
       /** Creation time (ms since epoch) → /CreationDate and /M; omitted → save time */
       createdMs?: number
@@ -405,7 +405,7 @@ export interface PageImageRef {
   aboveText: boolean
 }
 
-/** Editable metadata for a ChatOffice static form fill embedded as a page image. */
+/** Editable metadata for a ChaOffice static form fill embedded as a page image. */
 export interface StaticFormFillRecord {
   id: string
   kind: 'text' | 'check' | 'cross'
@@ -548,7 +548,7 @@ export interface ValidateTextEditsRequest {
   edits: TextEditInput[]
 }
 
-/** Extract pages into a new PDF written to the ChatOffice save dir and opened in a new tab */
+/** Extract pages into a new PDF written to the ChaOffice save dir and opened in a new tab */
 export interface ExtractPagesRequest {
   path: string
   /** Page indices in the file as saved (the renderer flushes first, so visible positions) */
@@ -638,7 +638,7 @@ export interface SetPageSizeRequest {
 export type SetPageSizeResult = { ok: true } | { ok: false; error: string }
 
 /** Split every page into a grid of pages (inverse of merge pages), written to the
- * ChatOffice save dir and opened in a new tab */
+ * ChaOffice save dir and opened in a new tab */
 export interface SplitPagesRequest {
   path: string
   perPage: 2 | 4 | 9
@@ -727,7 +727,7 @@ export interface PdfApi {
   canDrawText(text: string, font?: string, bold?: boolean, italic?: boolean): Promise<boolean>
   /** Enumerate the content-stream images of every page (for image edit mode) */
   listPageImages(path: string): Promise<PageImageRef[]>
-  /** Read ChatOffice static-fill metadata stored inside the PDF. */
+  /** Read ChaOffice static-fill metadata stored inside the PDF. */
   listStaticFormFills(path: string): Promise<StaticFormFillRecord[]>
   /** System-OCR one rendered page image (PNG, base64); null when no engine is
       available on this platform, [] when recognition failed for this image */
@@ -763,7 +763,7 @@ export interface PdfApi {
   imageSearch(query: string, maxResults?: number): Promise<ImageSearchResponse>
   /** Download an image URL in the main process (SSRF-guarded, avoids CORS); null on failure */
   fetchImage(url: string): Promise<{ base64: string; mime: string } | null>
-  /** AI image generation via ChatOffice (chatoffice); returns a downloadable URL or an error message */
+  /** AI image generation via ChaOffice (chatoffice); returns a downloadable URL or an error message */
   generateImage(op: { prompt: string; aspectRatio?: string }): Promise<{
     url?: string
     error?: string
@@ -807,7 +807,7 @@ export interface PdfApi {
   aiDiscoverModels(
     target: import('@chatoffice/ai-provider').DiscoveryTarget,
   ): Promise<{ models: import('@chatoffice/ai-provider').AiModelEntry[]; error?: string }>
-  aiChatOfficeLogin(): Promise<void>
+  aiChaOfficeLogin(): Promise<void>
   /** 本地与自建：探测 / 一键安装 / 启动（模型设置页状态卡） */
   aiLocalToolStatus(vendorId: string): Promise<import('@chatoffice/ai-provider').LocalToolStatus>
   aiLocalToolInstall(
@@ -815,10 +815,10 @@ export interface PdfApi {
     onLine?: (line: string) => void,
   ): Promise<import('@chatoffice/ai-provider').LocalToolOpResult>
   aiLocalToolStart(vendorId: string): Promise<import('@chatoffice/ai-provider').LocalToolOpResult>
-  /** ChatOffice login state (chatoffice); gates the cloud-only generate_image tool */
+  /** ChaOffice login state (chatoffice); gates the cloud-only generate_image tool */
   chatofficeStatus(
     withEmail?: boolean,
-  ): Promise<import('@chatoffice/ai-provider').ChatOfficeAccountStatus>
+  ): Promise<import('@chatoffice/ai-provider').ChaOfficeAccountStatus>
   aiStream(request: {
     requestId: string
     settings: AiModelSelection

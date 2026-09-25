@@ -35,7 +35,7 @@ import {
   rendererUrl,
 } from '@chatoffice/electron-utils'
 import { createI18n, getUiLang } from '@chatoffice/i18n'
-import { hasChatOfficeAuth } from '@chatoffice/ai-search'
+import { hasChaOfficeAuth } from '@chatoffice/ai-search'
 import {
   registerFetchImageIpc,
   registerMediaIpc,
@@ -353,7 +353,7 @@ interface RuntimePaths {
   preloadPath: string
   rendererUrl?: string
   rendererFile?: string
-  /** Shell router used to open exported PDFs in a new ChatOffice tab. */
+  /** Shell router used to open exported PDFs in a new ChaOffice tab. */
   openGeneratedPath?: (path: string) => boolean
 }
 
@@ -921,9 +921,9 @@ function registerMarkdownIpc(): void {
       },
       chatoffice: {
         apiKey: () => '',
-        hasAuth: () => hasChatOfficeAuth(),
+        hasAuth: () => hasChaOfficeAuth(),
         status: async (withEmail) => {
-          if (!hasChatOfficeAuth()) return { loggedIn: false }
+          if (!hasChaOfficeAuth()) return { loggedIn: false }
           return withEmail ? { loggedIn: true } : { loggedIn: true }
         },
       },
@@ -934,7 +934,7 @@ function registerMarkdownIpc(): void {
   // markdown-owned (like docs:ai-generate-image): the shared ai:* handlers are
   // shell-registered, but image generation is gated per app. BYOK default
   // image model first (设置 → 生图、媒体与搜索) — same order as docs/sheets —
-  // with the ChatOffice cloud (login + cloud-tools gated) as the fallback.
+  // with the ChaOffice cloud (login + cloud-tools gated) as the fallback.
   ipcMain.handle(
     MARKDOWN_CHANNELS.aiGenerateImage,
     async (_e, op: { prompt?: unknown; aspectRatio?: unknown }) => {

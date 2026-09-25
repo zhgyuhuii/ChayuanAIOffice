@@ -1,5 +1,5 @@
 /**
- * Wrapper around chatoffice (ChatOffice CLI, @chatoffice/cli) — search / image generation /
+ * Wrapper around chatoffice (ChaOffice CLI, @chatoffice/cli) — search / image generation /
  * media analysis / upload / transcription.
  *
  * Execution: the main process spawns the CLI's JS entry with
@@ -7,7 +7,7 @@
  * no-op in a plain Node environment), avoiding the Windows problem where
  * .cmd files cannot be passed to execFile.
  *
- * Auth: chatofficeCliApiKey() below. When not logged in, hasChatOfficeAuth() returns false and
+ * Auth: chatofficeCliApiKey() below. When not logged in, hasChaOfficeAuth() returns false and
  * callers should fall back to other implementations (e.g. Serper search).
  */
 
@@ -37,7 +37,7 @@ const MAX_BUFFER = 32 * 1024 * 1024
 let cachedEntry: string | null | undefined
 
 /** JS entry of @chatoffice/cli (null if not found). Can be overridden via GSK_CLI_PATH. */
-export function resolveChatOfficeEntry(): string | null {
+export function resolveChaOfficeEntry(): string | null {
   if (process.env.GSK_CLI_PATH) return process.env.GSK_CLI_PATH
   if (cachedEntry !== undefined) return cachedEntry
   try {
@@ -80,8 +80,8 @@ function electronCompatArgs(): string[] {
 }
 
 /**
- * API key for ChatOffice LLM proxy / tool_cli auth; '' when not logged in.
- * Priority: CHATOFFICE_API_KEY env → ChatOffice's own key (bills to us via its
+ * API key for ChaOffice LLM proxy / tool_cli auth; '' when not logged in.
+ * Priority: CHATOFFICE_API_KEY env → ChaOffice's own key (bills to us via its
  * key_name) → shared chatoffice CLI login (bills to the Claw bucket).
  */
 export function chatofficeCliApiKey(): string {
@@ -100,7 +100,7 @@ export function chatofficeCliApiKey(): string {
 
 /**
  * Fires when the effective chatoffice key changes on disk — another
- * ChatOffice-family app re-logging in mints a new key and revokes the one this
+ * ChaOffice-family app re-logging in mints a new key and revokes the one this
  * process holds. Polls by path (watchFile): auth.json is replaced whole, and
  * fs.watch misses events for a moment after it is armed.
  */
@@ -127,16 +127,16 @@ export function watchChatofficeApiKey(
  * Whether chatoffice is usable (CLI installed and logged in / has a key). Callers use this to decide fallback.
  * Set AI_SEARCH_DISABLE_GSK=1 to force-disable (test isolation / force Serper).
  */
-export function hasChatOfficeAuth(): boolean {
+export function hasChaOfficeAuth(): boolean {
   if (process.env.AI_SEARCH_DISABLE_GSK === '1') return false
-  return !!chatofficeCliApiKey() && resolveChatOfficeEntry() !== null
+  return !!chatofficeCliApiKey() && resolveChaOfficeEntry() !== null
 }
 
 // ── Child-process proxy plumbing ────────────────────────────────────
 
 // The main process's undici dispatcher (see the apps' proxy bootstraps) never
 // reaches child processes: without forwarding they dial genspark.ai directly.
-export { setChatOfficeProxyUrl, chatofficeProxyUrl } from './shared'
+export { setChaOfficeProxyUrl, chatofficeProxyUrl } from './shared'
 
 /**
  * env for chatoffice CLI children: Electron-as-Node plus proxy forwarding. The CLI
@@ -176,7 +176,7 @@ export function chatofficeChildEnv(base: NodeJS.ProcessEnv = process.env): NodeJ
  * scan for a line starting with { or [ and parse the longest valid JSON
  * block from there, shrinking past any trailing logs.
  */
-export function parseChatOfficeOutput(stdout: string): unknown {
+export function parseChaOfficeOutput(stdout: string): unknown {
   const trimmed = stdout.trim()
   try {
     return JSON.parse(trimmed)
@@ -201,8 +201,8 @@ export function parseChatOfficeOutput(stdout: string): unknown {
   throw new Error(`No JSON found in chatoffice output: ${stdout.slice(0, 300)}`)
 }
 
-function runChatOffice(args: string[], timeoutMs: number, signal?: AbortSignal): Promise<unknown> {
-  const entry = resolveChatOfficeEntry()
+function runChaOffice(args: string[], timeoutMs: number, signal?: AbortSignal): Promise<unknown> {
+  const entry = resolveChaOfficeEntry()
   if (!entry) return Promise.reject(new Error('@chatoffice/cli is not installed'))
   // inject the resolved key so the CLI bills the same identity as our direct HTTP calls
   const key = chatofficeCliApiKey()
@@ -227,7 +227,7 @@ function runChatOffice(args: string[], timeoutMs: number, signal?: AbortSignal):
           return
         }
         try {
-          const result = parseChatOfficeOutput(String(stdout))
+          const result = parseChaOfficeOutput(String(stdout))
           const rec = asRecord(result)
           if (rec.status && rec.status !== 'ok') {
             reject(new Error(`chatoffice returned an error: ${rec.message ?? rec.status}`))
@@ -261,7 +261,7 @@ function clipField(v: unknown): string {
 }
 
 /** Parses the `chatoffice search` response shape data.organic_results[{title,link,snippet}] (exported for tests) */
-export function parseChatOfficeWebSearch(
+export function parseChaOfficeWebSearch(
   raw: unknown,
   maxResults: number,
 ): { results: WebSearchResult[]; answer?: string } {
@@ -288,12 +288,12 @@ export async function chatofficeWebSearch(
   query: string,
   maxResults = 6,
 ): Promise<{ results: WebSearchResult[]; answer?: string }> {
-  const raw = await runChatOffice(['search', query], SEARCH_TIMEOUT_MS)
-  return parseChatOfficeWebSearch(raw, maxResults)
+  const raw = await runChaOffice(['search', query], SEARCH_TIMEOUT_MS)
+  return parseChaOfficeWebSearch(raw, maxResults)
 }
 
 /** Parses the `chatoffice img-search` response shape data[{image_url,title,source,link,width,height}] (exported for tests) */
-export function parseChatOfficeImageSearch(raw: unknown, maxResults: number): ImageSearchResult[] {
+export function parseChaOfficeImageSearch(raw: unknown, maxResults: number): ImageSearchResult[] {
   const dataRaw = asRecord(raw).data
   const data: unknown[] = Array.isArray(dataRaw) ? dataRaw : []
   const images: ImageSearchResult[] = []
@@ -326,13 +326,13 @@ export async function chatofficeImageSearch(
 ): Promise<ImageSearchResult[]> {
   const args = ['img-search', query]
   if (page > 1) args.push('--offset', String((page - 1) * maxResults))
-  const raw = await runChatOffice(args, SEARCH_TIMEOUT_MS)
-  return parseChatOfficeImageSearch(raw, maxResults)
+  const raw = await runChaOffice(args, SEARCH_TIMEOUT_MS)
+  return parseChaOfficeImageSearch(raw, maxResults)
 }
 
 // ── Image generation ────────────────────────────────────────────────
 
-export interface ChatOfficeGenerateImageOptions {
+export interface ChaOfficeGenerateImageOptions {
   /** Image description (English works better; text that must appear in the image stays verbatim) */
   prompt: string
   /** Generation model; defaults to the CLI default (nano-banana-2). Special-purpose: fal-bria-rmbg background removal, fal-ai/recraft-clarity-upscale upscaling, flux-pro/outpaint outpainting, fal-ai/image-editing/text-removal watermark text removal */
@@ -345,14 +345,14 @@ export interface ChatOfficeGenerateImageOptions {
   imageSize?: string
 }
 
-export interface ChatOfficeGeneratedImage {
+export interface ChaOfficeGeneratedImage {
   /** Watermark-free image URL (preferred); can be downloaded and inserted directly */
   url: string
   taskId: string
 }
 
 /** Parses `chatoffice img` results: prefers data.generated_images[].image_urls_nowatermark (exported for tests) */
-export function parseChatOfficeGeneratedImage(raw: unknown): ChatOfficeGeneratedImage {
+export function parseChaOfficeGeneratedImage(raw: unknown): ChaOfficeGeneratedImage {
   const data = asRecord(asRecord(raw).data ?? raw)
   const img = asRecord(firstItem(data.generated_images ?? data.images ?? []))
   const url = firstItem(img.image_urls_nowatermark) ?? firstItem(img.image_urls) ?? img.url ?? ''
@@ -365,16 +365,16 @@ export function parseChatOfficeGeneratedImage(raw: unknown): ChatOfficeGenerated
 }
 
 export async function chatofficeGenerateImage(
-  options: ChatOfficeGenerateImageOptions,
+  options: ChaOfficeGenerateImageOptions,
   signal?: AbortSignal,
-): Promise<ChatOfficeGeneratedImage> {
+): Promise<ChaOfficeGeneratedImage> {
   const args = ['img', options.prompt]
   if (options.model) args.push('-m', options.model)
   if (options.referenceImageUrls?.length) args.push('--image_urls', ...options.referenceImageUrls)
   if (options.aspectRatio) args.push('--aspect_ratio', options.aspectRatio)
   if (options.imageSize) args.push('--image_size', options.imageSize)
-  const raw = await runChatOffice(args, GENERATE_TIMEOUT_MS, signal)
-  const result = parseChatOfficeGeneratedImage(raw)
+  const raw = await runChaOffice(args, GENERATE_TIMEOUT_MS, signal)
+  const result = parseChaOfficeGeneratedImage(raw)
   // Bare chatoffice file URLs (/api/files/) return 403; swap for a signed direct link with a token
   // so later plain fetch downloads (e.g. insert_web_image) need no auth
   result.url = await chatofficeResolveDownloadUrl(result.url)
@@ -389,7 +389,7 @@ export async function chatofficeGenerateImage(
 export async function chatofficeResolveDownloadUrl(url: string): Promise<string> {
   if (!url.includes('/api/files/')) return url
   try {
-    const raw = asRecord(await runChatOffice(['download', url], SEARCH_TIMEOUT_MS))
+    const raw = asRecord(await runChaOffice(['download', url], SEARCH_TIMEOUT_MS))
     const downloadUrl = asRecord(raw.data).download_url ?? raw.download_url
     return downloadUrl ? String(downloadUrl) : url
   } catch {
@@ -397,7 +397,7 @@ export async function chatofficeResolveDownloadUrl(url: string): Promise<string>
   }
 }
 
-// ── Cloud single-slide generation (ChatOffice slide_generate) ─────────
+// ── Cloud single-slide generation (ChaOffice slide_generate) ─────────
 
 /**
  * Calls the tool_cli HTTP endpoint directly so structured params
@@ -407,7 +407,7 @@ export async function chatofficeResolveDownloadUrl(url: string): Promise<string>
 const GSK_TOOL_CLI_BASE = 'https://www.genspark.ai/api/tool_cli'
 const SLIDE_GENERATE_TIMEOUT_MS = 240_000
 
-export interface ChatOfficeSlideGenerateOptions {
+export interface ChaOfficeSlideGenerateOptions {
   /** Content and layout brief for this page */
   brief: string
   title?: string
@@ -447,7 +447,7 @@ async function toolCliPost(
   signal?: AbortSignal,
 ): Promise<unknown> {
   const key = chatofficeCliApiKey()
-  if (!key) throw new Error('Not logged in to ChatOffice (chatoffice login)')
+  if (!key) throw new Error('Not logged in to ChaOffice (chatoffice login)')
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), timeoutMs)
   const onAbort = () => controller.abort()
@@ -455,7 +455,7 @@ async function toolCliPost(
   try {
     const resp = await fetch(`${GSK_TOOL_CLI_BASE}${path}`, {
       method: 'POST',
-      // X-Agent-Type splits ChatOffice usage out of the proxy's "Claw" billing bucket
+      // X-Agent-Type splits ChaOffice usage out of the proxy's "Claw" billing bucket
       headers: {
         'X-Api-Key': key,
         'Content-Type': 'application/json',
@@ -482,7 +482,7 @@ async function toolCliPost(
  * and returns the downloaded PPTX bytes plus the model that produced it.
  */
 export async function chatofficeSlideGenerate(
-  options: ChatOfficeSlideGenerateOptions,
+  options: ChaOfficeSlideGenerateOptions,
 ): Promise<{ bytes: Uint8Array; model: string }> {
   const { signal } = options
   const body: Record<string, unknown> = { brief: options.brief }
@@ -513,7 +513,7 @@ export async function chatofficeSlideGenerate(
 // ── File conversion (PDF → DOCX) ────────────────────────────────────
 
 /** Extracts the download link from file_convert's markdown result text (exported for tests) */
-export function parseChatOfficeConvertResult(raw: unknown): string {
+export function parseChaOfficeConvertResult(raw: unknown): string {
   const data = asRecord(asRecord(raw).data ?? raw)
   const text = typeof data.result === 'string' ? data.result : ''
   const url = /\((https?:\/\/[^)\s]+)\)/.exec(text)?.[1] ?? /https?:\/\/\S+/.exec(text)?.[0]
@@ -532,8 +532,8 @@ export async function chatofficeConvertPdfToDocx(
   signal?: AbortSignal,
 ): Promise<Uint8Array> {
   const wrapperUrl = await chatofficeUpload(filePath)
-  const raw = await runChatOffice(['convert', wrapperUrl], GENERATE_TIMEOUT_MS, signal)
-  const link = parseChatOfficeConvertResult(raw)
+  const raw = await runChaOffice(['convert', wrapperUrl], GENERATE_TIMEOUT_MS, signal)
+  const link = parseChaOfficeConvertResult(raw)
   const downloadUrl = await chatofficeResolveDownloadUrl(link)
   const resp = await fetch(downloadUrl, signal ? { signal } : undefined)
   if (!resp.ok) throw new Error(`DOCX download failed: HTTP ${resp.status}`)
@@ -543,7 +543,7 @@ export async function chatofficeConvertPdfToDocx(
 // ── Media analysis / transcription ──────────────────────────────────
 
 /** Best-effort text extraction from chatoffice analysis-type command output (shape varies by task, so be lenient; exported for tests) */
-export function extractChatOfficeText(raw: unknown): string {
+export function extractChaOfficeText(raw: unknown): string {
   const data = asRecord(raw).data ?? raw
   if (typeof data === 'string') return data
   if (data && typeof data === 'object') {
@@ -563,7 +563,7 @@ export function extractChatOfficeText(raw: unknown): string {
   return JSON.stringify(data ?? raw)
 }
 
-export interface ChatOfficeAnalyzeMediaOptions {
+export interface ChaOfficeAnalyzeMediaOptions {
   /** Media URLs or local paths (image/audio/video; the CLI uploads local files automatically) */
   mediaUrls: string[]
   /** Analysis requirements (in English): what info to extract and what it's for */
@@ -571,7 +571,7 @@ export interface ChatOfficeAnalyzeMediaOptions {
 }
 
 export async function chatofficeAnalyzeMedia(
-  options: ChatOfficeAnalyzeMediaOptions,
+  options: ChaOfficeAnalyzeMediaOptions,
   signal?: AbortSignal,
 ): Promise<string> {
   const args = [
@@ -581,11 +581,11 @@ export async function chatofficeAnalyzeMedia(
     '--requirements',
     options.requirements,
   ]
-  const raw = await runChatOffice(args, GENERATE_TIMEOUT_MS, signal)
-  return extractChatOfficeText(raw)
+  const raw = await runChaOffice(args, GENERATE_TIMEOUT_MS, signal)
+  return extractChaOfficeText(raw)
 }
 
-export interface ChatOfficeTranscribeOptions {
+export interface ChaOfficeTranscribeOptions {
   /** Audio URLs or local paths */
   audioUrls: string[]
   /** Prompt (context / proper nouns; can improve recognition quality) */
@@ -595,21 +595,21 @@ export interface ChatOfficeTranscribeOptions {
 }
 
 export async function chatofficeTranscribe(
-  options: ChatOfficeTranscribeOptions,
+  options: ChaOfficeTranscribeOptions,
   signal?: AbortSignal,
 ): Promise<string> {
   const args = ['transcribe', '--audio_urls', ...options.audioUrls]
   if (options.prompt) args.push('--prompt', options.prompt)
   if (options.model) args.push('-m', options.model)
-  const raw = await runChatOffice(args, GENERATE_TIMEOUT_MS, signal)
-  return extractChatOfficeText(raw)
+  const raw = await runChaOffice(args, GENERATE_TIMEOUT_MS, signal)
+  return extractChaOfficeText(raw)
 }
 
 // ── File upload / login ─────────────────────────────────────────────
 
 /** Uploads a local file and returns a file wrapper URL (usable as input to other chatoffice commands) */
 export async function chatofficeUpload(filePath: string): Promise<string> {
-  const raw = asRecord(await runChatOffice(['upload', filePath], GENERATE_TIMEOUT_MS))
+  const raw = asRecord(await runChaOffice(['upload', filePath], GENERATE_TIMEOUT_MS))
   const dataRec = asRecord(raw.data)
   const url = dataRec.file_wrapper_url ?? raw.url ?? dataRec.url
   if (!url)
@@ -617,9 +617,9 @@ export async function chatofficeUpload(filePath: string): Promise<string> {
   return String(url)
 }
 
-// ── Past projects (ChatOffice web) ────────────────────────────────────
+// ── Past projects (ChaOffice web) ────────────────────────────────────
 
-export interface ChatOfficePastProject {
+export interface ChaOfficePastProject {
   projectId: string
   /** raw project type, e.g. 'slides_agent_git' */
   type: string
@@ -630,8 +630,8 @@ export interface ChatOfficePastProject {
   projectUrl: string
 }
 
-export interface ChatOfficePastProjectsPage {
-  projects: ChatOfficePastProject[]
+export interface ChaOfficePastProjectsPage {
+  projects: ChaOfficePastProject[]
   total: number
   hasMore: boolean
 }
@@ -641,7 +641,7 @@ export interface ChatOfficePastProjectsPage {
  * session_state.past_projects — so take it from there, falling back to
  * deriving it from the project id. (exported for tests)
  */
-export function parseChatOfficePastProjects(raw: unknown): ChatOfficePastProjectsPage {
+export function parseChaOfficePastProjects(raw: unknown): ChaOfficePastProjectsPage {
   const rec = asRecord(raw)
   const data = asRecord(rec.data ?? raw)
   const urlById = new Map<string, string>()
@@ -655,7 +655,7 @@ export function parseChatOfficePastProjects(raw: unknown): ChatOfficePastProject
     }
   }
   const listRaw: unknown[] = Array.isArray(data.projects) ? data.projects : []
-  const projects: ChatOfficePastProject[] = []
+  const projects: ChaOfficePastProject[] = []
   for (const item of listRaw) {
     const p = asRecord(item)
     const projectId = String(p.project_id ?? '')
@@ -676,7 +676,7 @@ export function parseChatOfficePastProjects(raw: unknown): ChatOfficePastProject
   }
 }
 
-export interface ChatOfficeListPastProjectsOptions {
+export interface ChaOfficeListPastProjectsOptions {
   /** 'slides' | 'docs' | 'sheets' | ...; omit for all kinds */
   artifactTypes?: string[]
   /** page size, CLI default 20, max 100 */
@@ -685,31 +685,31 @@ export interface ChatOfficeListPastProjectsOptions {
   signal?: AbortSignal
 }
 
-/** Lists the user's own past ChatOffice web projects, newest first (`chatoffice projects`). */
+/** Lists the user's own past ChaOffice web projects, newest first (`chatoffice projects`). */
 export async function chatofficeListPastProjects(
-  options: ChatOfficeListPastProjectsOptions = {},
-): Promise<ChatOfficePastProjectsPage> {
+  options: ChaOfficeListPastProjectsOptions = {},
+): Promise<ChaOfficePastProjectsPage> {
   const args = ['projects']
   if (options.artifactTypes?.length) args.push('--artifact_types', ...options.artifactTypes)
   if (options.limit !== undefined) args.push('--limit', String(options.limit))
   if (options.offset) args.push('--offset', String(options.offset))
-  const raw = await runChatOffice(args, SEARCH_TIMEOUT_MS, options.signal)
-  return parseChatOfficePastProjects(raw)
+  const raw = await runChaOffice(args, SEARCH_TIMEOUT_MS, options.signal)
+  return parseChaOfficePastProjects(raw)
 }
 
-export interface ChatOfficeLoginInfo {
+export interface ChaOfficeLoginInfo {
   email: string
   plan: string
   creditBalance?: number
 }
 
 /** Current login info; null when not logged in */
-export async function chatofficeLoginInfo(): Promise<ChatOfficeLoginInfo | null> {
+export async function chatofficeLoginInfo(): Promise<ChaOfficeLoginInfo | null> {
   try {
-    const raw = await runChatOffice(['login-info'], SEARCH_TIMEOUT_MS)
+    const raw = await runChaOffice(['login-info'], SEARCH_TIMEOUT_MS)
     const d = asRecord(asRecord(raw).data ?? raw)
     if (!d.email) return null
-    const info: ChatOfficeLoginInfo = {
+    const info: ChaOfficeLoginInfo = {
       email: String(d.email),
       plan: String(d.plan ?? d.personal_plan ?? ''),
     }

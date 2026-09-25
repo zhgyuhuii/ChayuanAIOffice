@@ -1,4 +1,4 @@
-/** ai strings, zh-TW (merged with ChatOffice-local keys) */
+/** ai strings, zh-TW (merged with ChaOffice-local keys) */
 export const zhTW = {
   aiComposerPlaceholderBuild: '描述要生成的表格、資料或圖表…',
   aiEmptyBuildTitle: '讓 AI 幫你從零建表',
@@ -45,13 +45,13 @@ export const zhTW = {
   aiInstructionAria: 'AI 指令',
   aiFileTooltip: 'SHA-256 {sha}\\n儲存只重寫被編輯的項目，其餘內容原樣保留。',
   aiFileMeta: '{sheets} 個工作表 · {entries} 個項目',
-  aiChatOfficeAccount: '察元AIOffice 帳號',
+  aiChaOfficeAccount: '察元AIOffice 帳號',
   aiAccountChecking: '偵測中…',
   aiLoggedIn: '已登入',
   aiLoggedInAs: '已登入：{email}',
   aiNotLoggedIn: '未登入（AI 功能需要登入 察元AIOffice 帳號）',
   aiWaitingBrowserLogin: '等待瀏覽器登入…',
-  aiLoginChatOffice: '登入 察元AIOffice',
+  aiLoginChaOffice: '登入 察元AIOffice',
   aiModel: '模型',
   aiCancel: '取消',
   aiSave: '儲存',
@@ -99,7 +99,7 @@ export const zhTW = {
   aiScopeColumns: '已選取 {names} 共 {count} 欄',
   aiScopeRangeTip: 'AI 會把「這一欄 / 這些列 / 選取部分」理解為該範圍；送出後本輪固定不變',
   aiScopeClearTitle: '取消該範圍，本次針對整張工作表',
-  aiChatOfficeLoginBtn: '登入',
+  aiChaOfficeLoginBtn: '登入',
   aiPanelTitle: 'AI 助手',
   aiTabChat: 'चैट',
   aiTabAssistant: 'सहायक',

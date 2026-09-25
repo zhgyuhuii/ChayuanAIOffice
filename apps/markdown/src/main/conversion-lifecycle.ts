@@ -62,7 +62,7 @@ async function readSessionMarker(directory: string): Promise<ConversionSessionMa
 }
 
 /**
- * Removes only marked ChatOffice session directories older than the TTL.
+ * Removes only marked ChaOffice session directories older than the TTL.
  * Unknown files/directories under the cache root are deliberately ignored.
  */
 export async function cleanupStaleMarkdownConversions(

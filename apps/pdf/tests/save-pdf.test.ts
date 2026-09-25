@@ -620,7 +620,7 @@ describe('applySaveRequest', () => {
 
     for (const [index, fieldName] of ['signature.image', 'signature.ink'].entries()) {
       expect(
-        annots[index]!.lookup(PDFName.of('ChatOfficeFormField'), PDFHexString).decodeText(),
+        annots[index]!.lookup(PDFName.of('ChaOfficeFormField'), PDFHexString).decodeText(),
       ).toBe(fieldName)
       expect(annots[index]!.lookup(PDFName.of('Contents'), PDFHexString).decodeText()).toBe(
         `${VISUAL_SIGNATURE_CONTENT_PREFIX}${fieldName}`,

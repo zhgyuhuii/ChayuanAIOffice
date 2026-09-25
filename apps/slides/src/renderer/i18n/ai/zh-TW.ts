@@ -269,7 +269,7 @@ export const zhTW = {
   aiSumBackground: "設定第 {n} 頁背景",
   aiSumSpeakerNotes: "寫入第 {n} 頁演講者備註",
   aiSumDeleteElement: "第 {n} 頁刪除元素",
-  aiChatOfficeLoginBtn: "登入",
+  aiChaOfficeLoginBtn: "登入",
   aiTabChat: "對話",
   aiTabAssistant: "助手",
   aiAskDesc: "為選取的元素下達一條編輯指令",

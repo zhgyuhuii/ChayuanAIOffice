@@ -42,7 +42,7 @@ export interface FeedbackDiagnostics {
 export async function collectFeedbackDiagnostics(): Promise<FeedbackDiagnostics> {
   let appVersion = ''
   try {
-    appVersion = await window.chatOffice.getAppVersion()
+    appVersion = await window.chaOffice.getAppVersion()
   } catch {
     appVersion = ''
   }
@@ -68,7 +68,7 @@ export async function collectFeedbackDiagnostics(): Promise<FeedbackDiagnostics>
 
   let recentLog: string[] = []
   try {
-    const lines = await window.chatOffice.getMcpLogs()
+    const lines = await window.chaOffice.getMcpLogs()
     if (Array.isArray(lines)) recentLog = lines.slice(-50)
   } catch {
     recentLog = []
@@ -100,7 +100,7 @@ export interface FeedbackDraft {
 /** Upload one picked file through the main-process proxy. */
 export async function uploadFeedbackFile(file: File): Promise<FeedbackAttachmentMeta> {
   const data = new Uint8Array(await file.arrayBuffer())
-  const res = await window.chatOffice.feedbackUpload(file.name, file.type || 'application/octet-stream', data)
+  const res = await window.chaOffice.feedbackUpload(file.name, file.type || 'application/octet-stream', data)
   if (!res.ok || !res.url) throw new Error(res.error || 'upload failed')
   return {
     name: res.name || file.name,
@@ -120,7 +120,7 @@ export async function submitFeedbackForm(args: {
   attachments: FeedbackAttachmentMeta[]
 }): Promise<FeedbackSubmitResult> {
   const { appVersion, os, osVer, arch, logJson } = await collectFeedbackDiagnostics()
-  const res = await window.chatOffice.feedbackSubmit({
+  const res = await window.chaOffice.feedbackSubmit({
     mid: getFeedbackMid(),
     type: args.type,
     content: args.content,

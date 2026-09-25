@@ -1,4 +1,4 @@
-/** ai strings, ms (merged with ChatOffice-local keys) */
+/** ai strings, ms (merged with ChaOffice-local keys) */
 export const ms = {
   aiComposerPlaceholderBuild: 'Terangkan jadual, data atau carta untuk dijana…',
   aiEmptyBuildTitle: 'Biarkan AI membina buku kerja ini untuk anda',
@@ -45,13 +45,13 @@ export const ms = {
   aiInstructionAria: 'Arahan AI',
   aiFileTooltip: 'SHA-256 {sha}\\nPenyimpanan hanya menulis semula entri yang diedit; yang lain dikekalkan seperti sedia ada.',
   aiFileMeta: '{sheets} helaian · {entries} entri',
-  aiChatOfficeAccount: 'Akaun ChaAI Office',
+  aiChaOfficeAccount: 'Akaun ChaAI Office',
   aiAccountChecking: 'Sedang menyemak…',
   aiLoggedIn: 'Sudah log masuk',
   aiLoggedInAs: 'Sudah log masuk: {email}',
   aiNotLoggedIn: 'Belum log masuk (ciri AI memerlukan akaun ChaAI Office)',
   aiWaitingBrowserLogin: 'Menunggu log masuk dalam pelayar…',
-  aiLoginChatOffice: 'Log masuk ke ChaAI Office',
+  aiLoginChaOffice: 'Log masuk ke ChaAI Office',
   aiModel: 'Model',
   aiCancel: 'Batal',
   aiSave: 'Simpan',
@@ -99,7 +99,7 @@ export const ms = {
   aiScopeColumns: 'Dipilih: {names} ({count} lajur)',
   aiScopeRangeTip: 'AI membaca "lajur ini / baris ini / bahagian yang dipilih" sebagai julat ini, dan ia dikunci sepanjang larian selepas anda hantar',
   aiScopeClearTitle: 'Buang skop julat dan gunakan seluruh helaian',
-  aiChatOfficeLoginBtn: 'Log masuk',
+  aiChaOfficeLoginBtn: 'Log masuk',
   aiPanelTitle: 'Pembantu AI',
   aiTabChat: 'Sembang',
   aiTabAssistant: 'Pembantu',

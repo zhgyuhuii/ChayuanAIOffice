@@ -274,7 +274,7 @@ export const ar = {
   aiSumBackground: "تعيين خلفية الشريحة {n}",
   aiSumSpeakerNotes: "تمت كتابة ملاحظات المتحدث على الشريحة {n}",
   aiSumDeleteElement: "حذف عنصر في الشريحة {n}",
-  aiChatOfficeLoginBtn: "تسجيل الدخول",
+  aiChaOfficeLoginBtn: "تسجيل الدخول",
   aiTabChat: "الدردشة",
   aiTabAssistant: "المساعد",
   aiAskDesc: "إصدار تعليمة تحرير للعنصر المحدد",

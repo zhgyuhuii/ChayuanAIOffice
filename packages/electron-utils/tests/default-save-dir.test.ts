@@ -53,7 +53,7 @@ describe('resolveDefaultSaveDir', () => {
   })
 
   it('creates and returns the fallback when nothing is configured', () => {
-    const fallback = join(root, 'Documents', 'ChatOffice')
+    const fallback = join(root, 'Documents', 'ChaOffice')
     expect(resolveDefaultSaveDir(null, fallback)).toBe(fallback)
     expect(existsSync(fallback)).toBe(true)
   })
@@ -96,12 +96,12 @@ describe('configuredDefaultSaveDir', () => {
   })
 
   // 2026-09-23 用户明令：默认保存目录一律 <Documents>/ChayuanAIOffice，
-  // 不再沿用 ChatOffice / ChaAI Office 等历史代目录
+  // 不再沿用 ChaOffice / ChaAI Office 等历史代目录
   it('always falls back to <Documents>/ChayuanAIOffice, ignoring legacy folders', () => {
     const userData = join(root, 'userData')
     const documents = join(root, 'Documents')
     mkdirSync(userData, { recursive: true })
-    mkdirSync(join(documents, 'ChatOffice'), { recursive: true })
+    mkdirSync(join(documents, 'ChaOffice'), { recursive: true })
     mkdirSync(join(documents, 'ChaAI Office'), { recursive: true })
     const app = {
       getPath: (name: 'userData' | 'documents') => (name === 'userData' ? userData : documents),

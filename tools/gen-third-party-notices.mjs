@@ -71,7 +71,7 @@ const NOTE = {
   '@fluentui/react-icons':
     'Copyright (c) Microsoft Corporation. Licensed under the MIT License.\nhttps://github.com/microsoft/fluentui-system-icons',
   '@genspark/cli':
-    'Copyright (c) ChatOffice. Licensed under the MIT License.\nhttps://www.npmjs.com/package/@genspark/cli',
+    'Copyright (c) ChaOffice. Licensed under the MIT License.\nhttps://www.npmjs.com/package/@genspark/cli',
 }
 
 /** SPDX strings that need a word on which side of a dual license we take */
@@ -247,7 +247,7 @@ const seed = importedNames()
 const { resolved, missing } = closure(seed)
 resolved.sort(([a], [b]) => a.localeCompare(b))
 
-let out = `ChatOffice — Third-Party Software Notices
+let out = `ChaOffice — Third-Party Software Notices
 
 This application includes third-party software components under the licenses
 reproduced below.
@@ -323,17 +323,17 @@ const FONTS = [
     '© Adobe / Google. This bundle ships a subset of the original fonts (reduced glyph coverage for size);\nno other modifications were made.',
   ],
   [
-    'ChatOffice Sans KR (Noto Sans CJK KR derivative)',
+    'ChaOffice Sans KR (Noto Sans CJK KR derivative)',
     'SIL OFL 1.1',
     'Copyright 2014-2021 Adobe (http://www.adobe.com/), Google LLC, Reserved Font Name "Source".\nSubset with modified advance widths and horizontally transformed Noto CJK outlines to match measured\nKorean Office-family metrics; renamed per OFL 1.1. No Microsoft font outlines are included.',
   ],
   [
-    'ChatOffice Serif KR (Noto Serif CJK KR derivative)',
+    'ChaOffice Serif KR (Noto Serif CJK KR derivative)',
     'SIL OFL 1.1',
     'Copyright 2017-2024 Adobe (http://www.adobe.com/), Reserved Font Name "Source".\nSubset with modified advance widths and horizontally transformed Noto CJK outlines to match measured\nKorean Office-family metrics; renamed per OFL 1.1. No Microsoft font outlines are included.',
   ],
   [
-    'ChatOffice Che Latin KR (Noto Sans CJK KR derivative)',
+    'ChaOffice Che Latin KR (Noto Sans CJK KR derivative)',
     'SIL OFL 1.1',
     'Copyright 2014-2021 Adobe (http://www.adobe.com/), Google LLC, Reserved Font Name "Source".\nASCII subset with fixed 0.5em advances and horizontally transformed Noto CJK outlines; Microsoft\nDotumChe is used only as a metric reference. Renamed per OFL 1.1. No Microsoft outlines are included.',
   ],
@@ -343,17 +343,17 @@ const FONTS = [
     '© The Noto Project Authors. This bundle ships a subset of the original fonts;\nglyphs and metrics are unmodified.',
   ],
   [
-    'ChatOffice Gothic KR (NanumGothic derivative)',
+    'ChaOffice Gothic KR (NanumGothic derivative)',
     'SIL OFL 1.1',
     `${GOTHIC_KR_COPYRIGHT}\nSubset with unmodified metrics; renamed per OFL 1.1.`,
   ],
   [
-    'ChatOffice Poppins (Poppins derivative)',
+    'ChaOffice Poppins (Poppins derivative)',
     'SIL OFL 1.1',
     'Copyright 2020 The Poppins Project Authors (https://github.com/itfoundry/Poppins).\nLatin subset with unmodified metrics and advances; renamed.',
   ],
   [
-    'ChatOffice Tamil (Noto Sans Tamil derivative)',
+    'ChaOffice Tamil (Noto Sans Tamil derivative)',
     'SIL OFL 1.1',
     '© The Noto Project Authors, original Reserved Font Name "Noto". Modified advance widths;\nrenamed per OFL 1.1.',
   ],

@@ -18,16 +18,16 @@ describe('aiFetch', () => {
     vi.stubGlobal('fetch', fetchMock)
     await aiFetch('https://x/', { headers: { Authorization: 'Bearer k' } })
     const headers = sentHeaders(fetchMock)
-    expect(headers.get('user-agent')).toBe('ChatOffice')
+    expect(headers.get('user-agent')).toBe('ChaOffice')
     expect(headers.get('authorization')).toBe('Bearer k')
   })
 
   it('lets the host refine the user agent and never overrides an explicit one', async () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response('ok'))
     vi.stubGlobal('fetch', fetchMock)
-    setAiUserAgent('ChatOffice/1.2.3')
+    setAiUserAgent('ChaOffice/1.2.3')
     await aiFetch('https://x/', {})
-    expect(sentHeaders(fetchMock).get('user-agent')).toBe('ChatOffice/1.2.3')
+    expect(sentHeaders(fetchMock).get('user-agent')).toBe('ChaOffice/1.2.3')
 
     fetchMock.mockClear()
     await aiFetch('https://x/', { headers: { 'User-Agent': 'custom/9' } })
@@ -40,7 +40,7 @@ describe('aiFetch', () => {
     setRescueFetch(rescue)
     await aiFetch('https://x/', {})
     const ua = sentHeaders(rescue).get('user-agent')
-    expect(ua).not.toBe('ChatOffice')
+    expect(ua).not.toBe('ChaOffice')
     expect(ua).toContain('Chrome')
   })
 

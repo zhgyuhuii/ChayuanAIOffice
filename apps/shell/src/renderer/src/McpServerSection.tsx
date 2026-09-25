@@ -87,7 +87,7 @@ export function McpServerSection({ t }: { t: TFunc }) {
 
   useEffect(() => {
     let alive = true
-    void window.chatOffice.getMcpStatus?.().then((s) => {
+    void window.chaOffice.getMcpStatus?.().then((s) => {
       if (alive) takeStatus(s)
     })
     return () => {
@@ -107,7 +107,7 @@ export function McpServerSection({ t }: { t: TFunc }) {
     logging?: boolean
   }) => {
     setSaving(true)
-    void window.chatOffice
+    void window.chaOffice
       .setMcpSettings({
         enabled: patch.enabled ?? enabled,
         port: patch.port ?? (Number(port) || 3093),
@@ -120,7 +120,7 @@ export function McpServerSection({ t }: { t: TFunc }) {
   }
 
   const fetchLogs = useCallback(() => {
-    void window.chatOffice
+    void window.chaOffice
       .getMcpLogs?.()
       .then((lines) => setLogs(Array.isArray(lines) ? lines : []))
       .catch(() => {})
@@ -269,14 +269,14 @@ export function McpServerSection({ t }: { t: TFunc }) {
                 </button>
                 <button
                   className="set-btn"
-                  onClick={() => void window.chatOffice.openMcpLogFile?.()}
+                  onClick={() => void window.chaOffice.openMcpLogFile?.()}
                 >
                   {t('setMcpLogOpen')}
                 </button>
                 <button
                   className="set-btn"
                   onClick={() => {
-                    void window.chatOffice.clearMcpLogs?.().then(fetchLogs)
+                    void window.chaOffice.clearMcpLogs?.().then(fetchLogs)
                   }}
                 >
                   {t('setMcpLogClear')}

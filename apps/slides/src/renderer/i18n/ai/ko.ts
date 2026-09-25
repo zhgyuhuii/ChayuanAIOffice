@@ -276,7 +276,7 @@ export const ko = {
   aiSumBackground: "슬라이드 {n} 배경 설정",
   aiSumSpeakerNotes: "슬라이드 {n} 발표자 노트 작성",
   aiSumDeleteElement: "슬라이드 {n} 요소 삭제",
-  aiChatOfficeLoginBtn: "로그인",
+  aiChaOfficeLoginBtn: "로그인",
   aiTabChat: "채팅",
   aiTabAssistant: "어시스턴트",
   aiAskDesc: "선택한 요소에 편집 지시 내리기",

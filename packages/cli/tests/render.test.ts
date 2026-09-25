@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { run, tempDir, writeMinimalPdf } from './helpers'
 
-/** A stand-in for the ChatOffice binary: copies a prepared PDF to --out and prints the envelope. */
+/** A stand-in for the ChaOffice binary: copies a prepared PDF to --out and prints the envelope. */
 function fakeApp(dir: string, pdf: string): string {
   const fake = join(dir, 'fake-chatoffice.sh')
   writeFileSync(

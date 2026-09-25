@@ -40,7 +40,7 @@ import {
   chatofficeApiKey,
   chatofficeAnalyzeMedia,
   chatofficeLoginInfo,
-  hasChatOfficeAuth,
+  hasChaOfficeAuth,
 } from '@chatoffice/ai-search'
 import { addPicture, editPictureSrcRect, replacePictureBytes } from '@chatoffice/pptx-engine'
 import { matchesElementRef } from '@chatoffice/pptx-engine/identity'
@@ -54,7 +54,7 @@ import { pushHistory, rebuildSlide, scheduleHistoryNotify, sessions } from './se
 
 const AI_SETTINGS_PATH = () => join(app.getPath('userData'), 'ai-settings.json')
 
-/** ChatOffice cloud backend removed — always false */
+/** ChaOffice cloud backend removed — always false */
 function chatofficeCloudToolsOn(): boolean {
   return false
 }
@@ -111,7 +111,7 @@ export function registerAiIpc(): void {
   app.once('before-quit', shutdownCodexAppServers)
   // Node fetch (undici) direct connections get reset under VPN/tun setups; retry over Chromium's stack
   setRescueFetch((url, init) => net.fetch(url, init))
-  setAiUserAgent(`ChatOffice/${app.getVersion()}`)
+  setAiUserAgent(`ChaOffice/${app.getVersion()}`)
 
   registerSharedKbIpc({ ipcMain, statePath: () => join(app.getPath('userData'), 'kb-source.json') })
   // LOCAL(2026-09-20): unified media capability channels; upstream: additive-only; converge: never (local feature)
@@ -140,9 +140,9 @@ export function registerAiIpc(): void {
     },
     chatoffice: {
       apiKey: () => chatofficeApiKey(),
-      hasAuth: () => hasChatOfficeAuth(),
+      hasAuth: () => hasChaOfficeAuth(),
       status: async (withEmail) => {
-        if (!hasChatOfficeAuth()) return { loggedIn: false }
+        if (!hasChaOfficeAuth()) return { loggedIn: false }
         if (!withEmail) return { loggedIn: true }
         const info = await chatofficeLoginInfo()
         return info?.email ? { loggedIn: true, email: info.email } : { loggedIn: true }
@@ -396,8 +396,8 @@ export function registerSlidesOnlyAiIpc(): void {
           // fall through to the chatoffice backend below
         }
       }
-      if (!hasChatOfficeAuth()) return { error: tm('errChatOfficeCli') }
-      if (!chatofficeCloudToolsOn()) return { error: tm('errChatOfficeToolsOff') }
+      if (!hasChaOfficeAuth()) return { error: tm('errChaOfficeCli') }
+      if (!chatofficeCloudToolsOn()) return { error: tm('errChaOfficeToolsOff') }
       try {
         const text = await chatofficeAnalyzeMedia({ mediaUrls, requirements })
         return { text }

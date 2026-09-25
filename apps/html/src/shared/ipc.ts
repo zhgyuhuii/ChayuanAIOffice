@@ -5,7 +5,7 @@ import type {
   AiModelSelection,
   AiSettingsV2,
   AiStreamChunk,
-  ChatOfficeAccountStatus,
+  ChaOfficeAccountStatus,
   DiscoveryTarget,
   AiModelEntry,
   LocalToolStatus,
@@ -305,8 +305,8 @@ export interface HtmlApi {
   setAiSettings(view: AiSettingsV2): Promise<void>
   setAiCurrentModel(selection: AiModelSelection): Promise<void>
   aiDiscoverModels(target: DiscoveryTarget): Promise<{ models: AiModelEntry[]; error?: string }>
-  aiChatOfficeStatus(withEmail?: boolean): Promise<ChatOfficeAccountStatus>
-  aiChatOfficeLogin(): Promise<void>
+  aiChaOfficeStatus(withEmail?: boolean): Promise<ChaOfficeAccountStatus>
+  aiChaOfficeLogin(): Promise<void>
   /** 本地与自建：探测 / 一键安装 / 启动（模型设置页状态卡） */
   aiLocalToolStatus(vendorId: string): Promise<LocalToolStatus>
   aiLocalToolInstall(vendorId: string, onLine?: (line: string) => void): Promise<LocalToolOpResult>

@@ -4,7 +4,7 @@ import {
   imageGenerationAvailable,
   mediaAnalysisAvailable,
 } from '@chatoffice/ai-provider'
-import { hasChatOfficeAuth, readAiSettingsFile } from '@chatoffice/ai-search'
+import { hasChaOfficeAuth, readAiSettingsFile } from '@chatoffice/ai-search'
 import { aiSettingsPath, prepareCloud } from '../cloud'
 import type { CommandDef } from '../registry'
 import { appLaunch } from '../resources'
@@ -25,8 +25,8 @@ export const capabilitiesCommand: CommandDef = {
     const searchProvider = activeSearchProvider(settings)
     const search = true
     const imageSearch = searchProvider === 'serper' || searchProvider === 'bing' || searchProvider === 'duckduckgo' || searchProvider === 'openverse'
-    const imageGeneration = imageGenerationAvailable(settings, hasChatOfficeAuth())
-    const mediaAnalysis = mediaAnalysisAvailable(settings, hasChatOfficeAuth())
+    const imageGeneration = imageGenerationAvailable(settings, hasChaOfficeAuth())
+    const mediaAnalysis = mediaAnalysisAvailable(settings, hasChaOfficeAuth())
     const detail = {
       search: { available: search, via: searchProvider },
       image_search: {

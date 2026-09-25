@@ -1,4 +1,4 @@
-/** dialogs strings, th (merged with ChatOffice-local keys) */
+/** dialogs strings, th (merged with ChaOffice-local keys) */
 import type { zh } from './zh'
 export const th = {
   dlgAllowEditRangesTitle: 'อนุญาตให้แก้ไขช่วง',

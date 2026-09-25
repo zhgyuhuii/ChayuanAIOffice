@@ -92,7 +92,7 @@ export function FeedbackModal({ onClose }: { onClose: () => void }) {
     if (logUploading) return
     let lines: string[] = []
     try {
-      lines = await window.chatOffice.getMcpLogs()
+      lines = await window.chaOffice.getMcpLogs()
     } catch {
       lines = []
     }

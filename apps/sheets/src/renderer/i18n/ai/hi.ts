@@ -1,4 +1,4 @@
-/** ai strings, hi (merged with ChatOffice-local keys) */
+/** ai strings, hi (merged with ChaOffice-local keys) */
 export const hi = {
   aiComposerPlaceholderBuild: 'बनाने के लिए तालिका, डेटा या चार्ट बताएँ…',
   aiEmptyBuildTitle: 'AI से यह वर्कबुक बनवाएँ',
@@ -45,13 +45,13 @@ export const hi = {
   aiInstructionAria: 'AI निर्देश',
   aiFileTooltip: 'SHA-256 {sha}\\nसहेजते समय केवल संपादित प्रविष्टियां फिर से लिखी जाती हैं; बाकी सब जस का तस रहता है।',
   aiFileMeta: '{sheets} शीट · {entries} प्रविष्टियां',
-  aiChatOfficeAccount: 'ChaAI Office खाता',
+  aiChaOfficeAccount: 'ChaAI Office खाता',
   aiAccountChecking: 'जांच हो रही है…',
   aiLoggedIn: 'साइन इन किया गया',
   aiLoggedInAs: 'साइन इन: {email}',
   aiNotLoggedIn: 'साइन इन नहीं है (AI सुविधाओं के लिए ChaAI Office खाता आवश्यक है)',
   aiWaitingBrowserLogin: 'ब्राउज़र में साइन इन की प्रतीक्षा…',
-  aiLoginChatOffice: 'ChaAI Office में साइन इन करें',
+  aiLoginChaOffice: 'ChaAI Office में साइन इन करें',
   aiModel: 'मॉडल',
   aiCancel: 'रद्द करें',
   aiSave: 'सहेजें',
@@ -99,7 +99,7 @@ export const hi = {
   aiScopeColumns: 'चयनित: {names} ({count} कॉलम)',
   aiScopeRangeTip: 'AI "इस कॉलम / इन पंक्तियों / चयनित भाग" को इसी श्रेणी के रूप में समझता है; भेजने पर यह पूरे रन के लिए तय हो जाता है',
   aiScopeClearTitle: 'श्रेणी दायरा हटाएँ और पूरी शीट पर काम करें',
-  aiChatOfficeLoginBtn: 'साइन इन करें',
+  aiChaOfficeLoginBtn: 'साइन इन करें',
   aiPanelTitle: 'AI सहायक',
   aiTabChat: 'चैट',
   aiTabAssistant: 'सहायक',

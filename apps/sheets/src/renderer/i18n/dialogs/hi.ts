@@ -1,4 +1,4 @@
-/** dialogs strings, hi (merged with ChatOffice-local keys) */
+/** dialogs strings, hi (merged with ChaOffice-local keys) */
 import type { zh } from './zh'
 export const hi = {
   dlgAllowEditRangesTitle: 'रेंज संपादन की अनुमति दें',

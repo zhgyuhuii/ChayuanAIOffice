@@ -15,7 +15,7 @@ export type {
   AiStreamRequest,
   AiStreamRequestV2,
   AiWireProtocol,
-  ChatOfficeAccountStatus,
+  ChaOfficeAccountStatus,
   LegacyAiSettings,
 } from './types'
 export {
@@ -182,7 +182,7 @@ export {
 } from './chatop-local'
 export type { ChatopLocalModelInfo, ChatopLocalSource } from './chatop-local'
 export { KEEP_KEY, createAiRuntime } from './runtime'
-export type { AiRuntime, AiRuntimeDeps, AiRuntimeChatOffice } from './runtime'
+export type { AiRuntime, AiRuntimeDeps, AiRuntimeChaOffice } from './runtime'
 export type { LocalToolStatus, LocalToolOpResult } from './local-tool'
 
 export type {

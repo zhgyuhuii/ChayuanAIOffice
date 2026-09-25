@@ -75,7 +75,7 @@ export function chatofficeProfile(): AiProviderProfile {
 }
 
 /** Fresh settings: nothing enabled and no default model — the settings page
- * guides configuration (sign in to ChatOffice or add an API-key vendor). */
+ * guides configuration (sign in to ChaOffice or add an API-key vendor). */
 export function defaultSettingsV2(): AiSettingsV2 {
   return {
     version: 2,

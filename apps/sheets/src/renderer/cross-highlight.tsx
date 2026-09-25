@@ -188,7 +188,7 @@ let renderState: CrossHighlightRenderState = {
  * fonts/borders. It renders no document content and is disabled for print.
  */
 export class CrossHighlightExtension extends SheetExtension {
-  readonly uKey = 'ChatOfficeCrossHighlightExtension'
+  readonly uKey = 'ChaOfficeCrossHighlightExtension'
   protected Z_INDEX = 22
 
   override draw(

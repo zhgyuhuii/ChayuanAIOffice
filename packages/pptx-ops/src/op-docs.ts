@@ -157,8 +157,8 @@ function parseGroup(group: OpGroup, md: string): { docs: Record<string, OpDoc>; 
 const parsed = GROUP_ORDER.map((g) => parseGroup(g, SOURCES[g]))
 
 export const OP_DOCS: Record<string, OpDoc> = Object.assign({}, ...parsed.map((p) => p.docs))
-// ChatOffice-local tools (no upstream ops/*.md counterpart)
-// ChatOffice-local ops (no upstream ops/*.md counterpart): sig + true group
+// ChaOffice-local tools (no upstream ops/*.md counterpart)
+// ChaOffice-local ops (no upstream ops/*.md counterpart): sig + true group
 // (+aiCallable:false flags) extracted from the pre-sync OP_DOCS table
 export const LOCAL_OP_DOCS: Record<string, { sig: string; group: OpGroup; aiCallable?: false }> = {
   setText: { sig: '{paragraphs:[{runs:[{text,bold?,italic?,fontSize?,color?}],align?}]} (group children: add group:"<group id>")', group: 'text' },

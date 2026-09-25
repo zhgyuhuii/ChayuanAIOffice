@@ -135,7 +135,7 @@ const PASTE_MIME_EXT: Record<string, string> = {
   'image/webp': 'webp',
 }
 
-/** File-type icons for attachment cards (ChatOffice attachment icon set); exts the
+/** File-type icons for attachment cards (ChaOffice attachment icon set); exts the
  *  attachment allowlist doesn't accept yet are mapped ahead so they light up when added */
 const ATTACHMENT_CARD_ICON_GROUPS: [icon: string, exts: string[]][] = [
   [fileWordIcon, ['doc', 'docx']],
@@ -275,7 +275,7 @@ interface ChatEntry {
   /** model id that produced this assistant turn (display only) */
   model?: string
   streaming?: boolean
-  /** the run failed because ChatOffice is signed out — render an inline sign-in button */
+  /** the run failed because ChaOffice is signed out — render an inline sign-in button */
   loginRequired?: boolean
   tools?: ToolActivity[]
   /** Generation progress card (only one per turn, replaced in real time) */
@@ -494,7 +494,7 @@ function AiConversationBody({
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null)
   const [attachments, setAttachments] = useState<AttachmentMeta[]>([])
   const [attachNotice, setAttachNotice] = useState<string | null>(null)
-  /** data-URL previews for image attachments, keyed by path (ChatOffice composer thumbnails) */
+  /** data-URL previews for image attachments, keyed by path (ChaOffice composer thumbnails) */
   const [attachmentPreviews, setAttachmentPreviews] = useState<Record<string, string>>({})
   /** image paths with a read already issued — one readAttachmentImage per attach, even while pending */
   const previewRequestedRef = useRef(new Set<string>())
@@ -645,7 +645,7 @@ function AiConversationBody({
     let alive = true
     const refresh = () => {
       void window.slidesApi
-        ?.aiChatOfficeStatus()
+        ?.aiChaOfficeStatus()
         .then((s) => {
           if (alive) chatofficeLoggedInRef.current = !!s?.loggedIn
         })
@@ -1728,12 +1728,12 @@ function AiConversationBody({
             return next
           })
           // Signed-out failures get an inline sign-in button — but only when the
-          // error is itself a chatoffice auth error (both locales name ChatOffice
+          // error is itself a chatoffice auth error (both locales name ChaOffice
           // next to a sign-in word). Gating on status alone stamped the CTA onto
           // generic failures (tool-error stops, BYOK key problems) where signing
           // in fixes nothing and the button reads as required.
           void window.slidesApi
-            .aiChatOfficeStatus()
+            .aiChaOfficeStatus()
             .then((status) => {
               if (status.loggedIn || !isChatofficeAuthError(error)) return
               setChat((prev) => {
@@ -2659,9 +2659,9 @@ function AiConversationBody({
               {USER_LOGIN_READY && entry.loginRequired && (
                 <button
                   className="ai-login-btn"
-                  onClick={() => void window.slidesApi.aiChatOfficeLogin()}
+                  onClick={() => void window.slidesApi.aiChaOfficeLogin()}
                 >
-                  {t('aiChatOfficeLoginBtn')}
+                  {t('aiChaOfficeLoginBtn')}
                 </button>
               )}
               {entry.deckProgress && <DeckProgressCard progress={entry.deckProgress} />}
@@ -2949,8 +2949,8 @@ function AiConversationBody({
 const IMAGE_URL_RE = /https?:\/\/[^\s"'<>]+\.(?:jpg|jpeg|png|webp|gif|bmp|svg)(?:\?[^\s"'<>]*)?/gi
 
 /** The error is a chatoffice sign-in failure (the sign-in CTA's only trigger):
- * every locale's auth message names ChatOffice next to a sign-in word
- * (zh「未登录 ChatOffice…登录」, en "Not signed in to ChatOffice… Sign in"). */
+ * every locale's auth message names ChaOffice next to a sign-in word
+ * (zh「未登录 ChaOffice…登录」, en "Not signed in to ChaOffice… Sign in"). */
 function isChatofficeAuthError(msg: string): boolean {
   return /chatoffice/i.test(msg) && /sign\s?in|log\s?in|登录/i.test(msg)
 }

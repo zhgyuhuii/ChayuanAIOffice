@@ -8,8 +8,8 @@ declare global {
   interface Window {
     markdownApi?: { [method: string]: unknown }
     desktop?: unknown
-    chatOffice?: { [method: string]: unknown }
-    chatOfficeProject?: { [method: string]: unknown }
-    chatOfficeTabs?: { [method: string]: unknown }
+    chaOffice?: { [method: string]: unknown }
+    chaOfficeProject?: { [method: string]: unknown }
+    chaOfficeTabs?: { [method: string]: unknown }
   }
 }

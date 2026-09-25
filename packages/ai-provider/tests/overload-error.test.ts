@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { isAiOverloadedError } from '../src/overload-error'
 
 describe('isAiOverloadedError', () => {
-  it('matches the ChatOffice gateway 429 engine-overloaded body', () => {
+  it('matches the ChaOffice gateway 429 engine-overloaded body', () => {
     expect(
       isAiOverloadedError(
         new Error(
@@ -34,7 +34,7 @@ describe('isAiOverloadedError', () => {
     expect(
       isAiOverloadedError(
         new Error(
-          'Your ChatOffice credits have been exhausted. Visit genspark.ai/pricing to top up',
+          'Your ChaOffice credits have been exhausted. Visit genspark.ai/pricing to top up',
         ),
       ),
     ).toBe(false)

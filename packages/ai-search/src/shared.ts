@@ -123,7 +123,7 @@ let explicitProxyUrl = ''
  * proxy via session.resolveProxy); consumed by chatofficeChildEnv() and the login
  * flow's proxy fallback.
  */
-export function setChatOfficeProxyUrl(url: string): void {
+export function setChaOfficeProxyUrl(url: string): void {
   explicitProxyUrl = url
 }
 

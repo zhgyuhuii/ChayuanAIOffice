@@ -47,8 +47,8 @@ import type {
 /** the chat needs stream + session IPC; the web shim degrades both for now */
 function chatSupported(): boolean {
   return (
-    typeof window.chatOffice.aiStream === 'function' &&
-    typeof window.chatOffice.chatSessionsSave === 'function'
+    typeof window.chaOffice.aiStream === 'function' &&
+    typeof window.chaOffice.chatSessionsSave === 'function'
   )
 }
 
@@ -372,7 +372,7 @@ function FoundFilesList({ files }: { files: Array<{ name: string; path: string }
           role="listitem"
           title={f.path}
           aria-label={t('chatOpenFile')}
-          onClick={() => void window.chatOffice.openPath(f.path, { dock: false })}
+          onClick={() => void window.chaOffice.openPath(f.path, { dock: false })}
         >
           <MonoFileIcon ext={f.name.split('.').pop()?.toLowerCase() ?? ''} />
           <span className="chat-file-name">{f.name}</span>
@@ -564,7 +564,7 @@ export function ChatPanel({
   ensureProjectRef.current = async (title) => {
     const existing = projectIdRef.current
     if (existing) return existing
-    const api = window.chatOfficeProject
+    const api = window.chaOfficeProject
     if (!api?.createProject) return null
     const name = title.trim().slice(0, 40) || t('chatUnattached')
     const project = await api.createProject(name, undefined)
@@ -617,7 +617,7 @@ export function ChatPanel({
   // refresh the model caches: mount, window focus (the settings modal close
   // path lives in Home and taps settingsRefreshNonce)
   const refreshAiSettings = useCallback(() => {
-    window.chatOffice
+    window.chaOffice
       .getAiSettings()
       .then(setAiSettings)
       .catch(() => setAiSettings(null))
@@ -781,7 +781,7 @@ export function ChatPanel({
     } catch {
       // storage unavailable (private mode shim): the pulse simply stops for this run
     }
-    void window.chatOffice.openGitHubRepo?.().catch(() => {})
+    void window.chaOffice.openGitHubRepo?.().catch(() => {})
   }
   const menuWrapRef = useRef<HTMLDivElement>(null)
   useDismissablePopover(menuOpen, () => setMenuOpen(false), {
@@ -938,7 +938,7 @@ export function ChatPanel({
 
   const pickAttachments = async () => {
     try {
-      const result = await window.chatOffice.pickAttachments?.()
+      const result = await window.chaOffice.pickAttachments?.()
       if (!result) return
       if (result.rejected.length > 0) window.alert(result.rejected.join('\n'))
       if (result.accepted.length > 0) {
@@ -1446,7 +1446,7 @@ export function ChatPanel({
             </span>
             <button
               className="chat-footer-link"
-              onClick={() => void window.chatOffice.openExternal?.('https://aidooo.com')}
+              onClick={() => void window.chaOffice.openExternal?.('https://aidooo.com')}
             >
               aidooo.com
             </button>

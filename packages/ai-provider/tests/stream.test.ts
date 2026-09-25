@@ -519,7 +519,7 @@ describe('streamForProvider: anthropic', () => {
 
   it('replaces an HTML error body (e.g. a gateway block page) with a readable note', async () => {
     const html =
-      '<!doctype html>\n<html>\n<head><title>ChatOffice</title></head><body>app shell</body></html>'
+      '<!doctype html>\n<html>\n<head><title>ChaOffice</title></head><body>app shell</body></html>'
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(html, { status: 403 })))
     const { cb } = collector()
     await expect(
@@ -1150,7 +1150,7 @@ describe('streamForProvider: chatoffice', () => {
 
 describe('streamForProvider: 200 + non-stream JSON instead of SSE', () => {
   const creditsNotice =
-    'Your ChatOffice credits have been exhausted. Please visit https://www.genspark.ai/pricing to purchase more credits.'
+    'Your ChaOffice credits have been exhausted. Please visit https://www.genspark.ai/pricing to purchase more credits.'
   const json = (value: unknown) =>
     new Response(JSON.stringify(value), {
       status: 200,

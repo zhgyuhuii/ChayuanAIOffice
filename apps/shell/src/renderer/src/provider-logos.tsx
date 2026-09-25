@@ -4,10 +4,10 @@ import type { AiProviderId } from '@chatoffice/ai-provider'
 
 // ── AI provider brand logos (settings → AI model provider picker) ─────────
 // Vector marks adapted from the MIT-licensed @lobehub/icons set, plus a
-// hand-traced ChatOffice mark and a generic icon for the "custom" endpoint.
+// hand-traced ChaOffice mark and a generic icon for the "custom" endpoint.
 // Brand-colored logos keep their official colors in both themes (brand
 // assets, not chrome — see CLAUDE.md theming rules); monochrome marks
-// (OpenAI, Kimi, Grok, OpenRouter, Requesty, Agnes, Opper, ChatOffice, Custom) use
+// (OpenAI, Kimi, Grok, OpenRouter, Requesty, Agnes, Opper, ChaOffice, Custom) use
 // currentColor so they stay legible in dark mode.
 //
 // Gradient-filled marks (Gemini, Qwen, MiniMax) are components so useId can

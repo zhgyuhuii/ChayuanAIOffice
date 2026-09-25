@@ -31,9 +31,9 @@ describe('protocol guards', () => {
 describe('degrade registry', () => {
   it('reports batch info for degraded channels', () => {
     registerBatch1Degradations()
-    const info = degradeInfo('chatOffice.cloudProjectsSync')
+    const info = degradeInfo('chaOffice.cloudProjectsSync')
     expect(info?.batch).toBeTruthy()
-    expect(degradedChannels()).toContain('chatOffice.cloudProjectsSync')
+    expect(degradedChannels()).toContain('chaOffice.cloudProjectsSync')
   })
 
   it('marks physically impossible channels as unsupported forever', () => {

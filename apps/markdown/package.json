@@ -1,6 +1,6 @@
 {
   "name": "@chatoffice/markdown",
-  "productName": "ChatOffice Markdown",
+  "productName": "ChaOffice Markdown",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -53,7 +53,7 @@
     "vite": "^7.3.1",
     "vitest": "^4.1.11"
   },
-  "author": "ChatOffice",
+  "author": "ChaOffice",
   "dependencies": {
     "@tiptap/extension-mathematics": "3.31.0",
     "katex": "^0.16.47",

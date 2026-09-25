@@ -224,7 +224,7 @@ export const cs = {
   aiSumSaveTemplate: 'Uložena šablona stylu „{name}“',
   aiSumTemplatesEmpty: 'Šablony stylu (prázdné)',
   aiSumListTemplates: 'Vypsáno šablon stylu: {count}',
-  aiChatOfficeLoginBtn: "Sign in",
+  aiChaOfficeLoginBtn: "Sign in",
   aiFailReadComments: 'Číst komentáře',
   aiFailAddComment: 'Přidat komentář',
   aiSumReadComments: 'Číst komentáře snímku {n}',

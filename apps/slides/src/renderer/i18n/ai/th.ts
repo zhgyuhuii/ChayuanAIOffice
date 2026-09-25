@@ -274,7 +274,7 @@ export const th = {
   aiSumBackground: "ตั้งค่าพื้นหลังของสไลด์ {n}",
   aiSumSpeakerNotes: "เขียนบันทึกย่อของผู้บรรยายบนสไลด์ {n}",
   aiSumDeleteElement: "ลบองค์ประกอบในสไลด์ {n}",
-  aiChatOfficeLoginBtn: "ลงชื่อเข้าใช้",
+  aiChaOfficeLoginBtn: "ลงชื่อเข้าใช้",
   aiTabChat: "แชท",
   aiTabAssistant: "ผู้ช่วย",
   aiAskDesc: "สั่งแก้ไของค์ประกอบที่เลือก",

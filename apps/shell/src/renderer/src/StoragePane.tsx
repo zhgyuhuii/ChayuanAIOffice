@@ -9,7 +9,7 @@ import { useI18n } from './locale'
 
 declare global {
   interface Window {
-    chatOfficeRemoteFiles?: RemoteFilesClient
+    chaOfficeRemoteFiles?: RemoteFilesClient
   }
 }
 
@@ -46,7 +46,7 @@ function isComplete(config: RemoteStorageConfig): boolean {
 /** "远程存储" pane (SettingsModal): provider configs + the default save pointer. */
 export function StoragePane() {
   const { t } = useI18n()
-  const client = window.chatOfficeRemoteFiles
+  const client = window.chaOfficeRemoteFiles
   const [settings, setSettings] = useState<RemoteStorageSettings | null>(null)
   const [draft, setDraft] = useState<RemoteStorageConfig | null>(null)
   const [feedback, setFeedback] = useState<Feedback | null>(null)

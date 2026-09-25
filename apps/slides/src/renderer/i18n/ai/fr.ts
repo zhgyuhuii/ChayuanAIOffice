@@ -278,7 +278,7 @@ export const fr = {
   aiSumBackground: "Arrière-plan défini sur la diapositive {n}",
   aiSumSpeakerNotes: "Notes du présentateur écrites sur la diapositive {n}",
   aiSumDeleteElement: "Élément supprimé sur la diapositive {n}",
-  aiChatOfficeLoginBtn: "Se connecter",
+  aiChaOfficeLoginBtn: "Se connecter",
   aiTabChat: "Discussion",
   aiTabAssistant: "Assistant",
   aiAskDesc: "Donner une consigne de modification à l\\'élément sélectionné",

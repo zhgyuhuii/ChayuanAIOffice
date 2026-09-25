@@ -16,8 +16,8 @@ export interface AiHttpBridge {
   setAiSettings(view: unknown): Promise<void>
   setAiCurrentModel(selection: unknown): Promise<void>
   aiDiscoverModels(target: unknown): Promise<unknown>
-  aiChatOfficeStatus(withEmail?: boolean): Promise<{ loggedIn: boolean }>
-  aiChatOfficeLogin(): Promise<void>
+  aiChaOfficeStatus(withEmail?: boolean): Promise<{ loggedIn: boolean }>
+  aiChaOfficeLogin(): Promise<void>
   aiStream(request: unknown): Promise<void>
   aiStreamCancel(requestId: string): Promise<void>
   onAiStream(handler: ChunkListener): () => void
@@ -93,10 +93,10 @@ export function createAiHttpBridge(baseUrl = defaultAiBase()): AiHttpBridge {
     async aiDiscoverModels(target) {
       return jsonPost<unknown>(`${baseUrl}/ai/discover-models`, target)
     },
-    async aiChatOfficeStatus() {
+    async aiChaOfficeStatus() {
       return { loggedIn: false }
     },
-    async aiChatOfficeLogin() {
+    async aiChaOfficeLogin() {
       /* chatoffice login is desktop-only; the web form is pure BYOK */
     },
     async aiStream(request) {

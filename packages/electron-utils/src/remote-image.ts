@@ -1,5 +1,5 @@
 /// Downloader for AI-inserted images. Image-search results largely live on the
-/// ChatOffice CDN (sspark.genspark.ai), which intermittently refuses bare
+/// ChaOffice CDN (sspark.genspark.ai), which intermittently refuses bare
 /// requests; browser-like headers plus a Referer on chatoffice hosts and a couple
 /// of retries turn most of those transient failures into successful inserts.
 
@@ -88,7 +88,7 @@ export function remoteImageHeaders(rawUrl: string): Record<string, string> {
 
 /**
  * fetchWithSsrfGuard specialized for image downloads: browser-like headers
- * (with a Referer for the ChatOffice CDN) and retries on transient failures
+ * (with a Referer for the ChaOffice CDN) and retries on transient failures
  * (network errors, 403/408/429, 5xx). An SSRF-blocked URL still returns null
  * immediately — that outcome never changes on retry.
  */

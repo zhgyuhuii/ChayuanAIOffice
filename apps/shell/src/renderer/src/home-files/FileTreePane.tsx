@@ -261,7 +261,7 @@ function useFolderListings() {
       return
     }
     inflight.current.set(dir, false)
-    void window.chatOffice
+    void window.chaOffice
       .listFolder(dir)
       .then((listing) => {
         setListings((prev) => {
@@ -356,7 +356,7 @@ function FolderPicker({ roots, currentDirs, movingDirs, count, onCancel, onPick 
     const parent = pending?.parent
     const name = pending?.name.trim()
     if (!parent || !name) return
-    const result = await window.chatOffice.createFolder(parent, name)
+    const result = await window.chaOffice.createFolder(parent, name)
     if (!result.ok) {
       window.alert(result.error ?? t('renameFailed'))
       return
@@ -658,7 +658,7 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
   })
 
   const loadRoot = useCallback(() => {
-    void window.chatOffice.folderRoots().then((next) => {
+    void window.chaOffice.folderRoots().then((next) => {
       setRoots((prev) => {
         if (prev[0] && prev[0].path !== next[0]?.path) {
           // the default save folder changed in settings: the old tree is meaningless
@@ -713,7 +713,7 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
   }, [roots, selectedFolder, listings, onSelectFolder])
 
   useEffect(() => {
-    return window.chatOffice.onFolderChanged((dirs) => {
+    return window.chaOffice.onFolderChanged((dirs) => {
       invalidateFolders(dirs.filter(trackedFolder))
     })
   }, [invalidateFolders, trackedFolder])
@@ -750,7 +750,7 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
   }
 
   const addFolderRoot = () => {
-    void window.chatOffice.addFolderRoot().then((added) => {
+    void window.chaOffice.addFolderRoot().then((added) => {
       if (added) loadRoot()
     })
   }
@@ -760,7 +760,7 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
     setFolderMenu(null)
     if (selectedFolder && isUnder(path, selectedFolder)) onSelectFolder(null)
     setExpanded((prev) => new Set([...prev].filter((dir) => !isUnder(path, dir))))
-    void window.chatOffice.removeFolderRoot(path).then(loadRoot)
+    void window.chaOffice.removeFolderRoot(path).then(loadRoot)
   }
 
   // folders dragged in from the OS join the tree in place; documents open as they do anywhere else
@@ -780,10 +780,10 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
       event.preventDefault()
       setPanelDrop(false)
       const paths = Array.from(event.dataTransfer.files)
-        .map((file) => window.chatOffice.pathForFile(file))
+        .map((file) => window.chaOffice.pathForFile(file))
         .filter(Boolean)
       if (paths.length === 0) return
-      void window.chatOffice.dropFolderRoots(paths).then((added) => {
+      void window.chaOffice.dropFolderRoots(paths).then((added) => {
         if (added.length > 0) loadRoot()
       })
     },
@@ -813,7 +813,7 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
     setCreating(null)
     setNewFolderName('')
     if (!pending || !name) return
-    const result = await window.chatOffice.createFolder(pending.parent, name)
+    const result = await window.chaOffice.createFolder(pending.parent, name)
     if (!result.ok) {
       window.alert(result.error ?? t('renameFailed'))
       return
@@ -833,7 +833,7 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
     if (!pending) return
     const value = pending.value.trim()
     if (!value || value === fileName(pending.path)) return
-    const result = await window.chatOffice.renameFolder(pending.path, value)
+    const result = await window.chaOffice.renameFolder(pending.path, value)
     if (!result.ok) {
       window.alert(result.error ?? t('renameFailed'))
       return
@@ -853,7 +853,7 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
     const dir = confirmDeleteFolder
     setConfirmDeleteFolder(null)
     if (!dir) return
-    await window.chatOffice.deleteFolder(dir)
+    await window.chaOffice.deleteFolder(dir)
     if (selectedFolder && (selectedFolder === dir || isUnder(dir, selectedFolder))) {
       onSelectFolder(dirOf(dir))
     }
@@ -869,7 +869,7 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
   const doMove = async (paths: string[], targetDir: string, policy: MoveConflictPolicy) => {
     setMovePicker(null)
     setConflict(null)
-    const result = await window.chatOffice.movePaths(paths, targetDir, policy)
+    const result = await window.chaOffice.movePaths(paths, targetDir, policy)
     if (result.moved.length > 0 && selectedFolder) {
       // a moved folder that held the selection drags the selection along
       for (const { from, to } of result.moved) {
@@ -887,23 +887,23 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
 
   const duplicateFile = (path: string) => {
     setFileMenu(null)
-    void window.chatOffice.duplicateFile(path).then(refresh)
+    void window.chaOffice.duplicateFile(path).then(refresh)
   }
 
   const deleteFiles = (paths: string[]) => {
     setFileMenu(null)
-    void window.chatOffice.deleteFiles(paths).then(refresh)
+    void window.chaOffice.deleteFiles(paths).then(refresh)
   }
 
   const toggleStar = (path: string) => {
-    void window.chatOffice.toggleStar(path).then(refresh)
+    void window.chaOffice.toggleStar(path).then(refresh)
   }
 
   const commitRename = async (entry: RecentEntry) => {
     const pending = renaming
     setRenaming(null)
     if (!pending || pending.value.trim() === entry.name) return
-    const result = await window.chatOffice.renameFile(entry.path, pending.value.trim())
+    const result = await window.chaOffice.renameFile(entry.path, pending.value.trim())
     if (!result.ok) {
       window.alert(result.error ?? t('renameFailed'))
       return
@@ -991,7 +991,7 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
         return
       }
       const seq = ++searchSeq.current
-      void window.chatOffice.searchFiles({ q, limit: 100 }).then((page) => {
+      void window.chaOffice.searchFiles({ q, limit: 100 }).then((page) => {
         if (seq !== searchSeq.current) return
         setSearchPage(page)
         // results grow while the background index catches up
@@ -1013,7 +1013,7 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
     const key = rerankKey
     const paths = key.split('\n').slice(1)
     const timer = window.setTimeout(() => {
-      void window.chatOffice.rerankSearch({ q, paths }).then((result) => {
+      void window.chaOffice.rerankSearch({ q, paths }).then((result) => {
         if (result) setRerank({ key, result })
         else setRerank((cur) => (cur && cur.key === key ? null : cur))
       })
@@ -1087,7 +1087,7 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
               role="menuitem"
               onClick={() => {
                 setFolderMenu(null)
-                void window.chatOffice.revealPath(entry.path)
+                void window.chaOffice.revealPath(entry.path)
               }}
             >
               {t('revealInFolder')}
@@ -1165,11 +1165,11 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
           onDragStart={(e) => onRowDragStart(e, [entry.path])}
           onClick={() => {
             if (isRenaming || entry.missing) return
-            void window.chatOffice.openPath(entry.path)
+            void window.chaOffice.openPath(entry.path)
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && e.target === e.currentTarget && !entry.missing) {
-              void window.chatOffice.openPath(entry.path)
+              void window.chaOffice.openPath(entry.path)
             }
           }}
         >
@@ -1218,7 +1218,7 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
                     role="menuitem"
                     onClick={() => {
                       setFileMenu(null)
-                      void window.chatOffice.openPath(entry.path)
+                      void window.chaOffice.openPath(entry.path)
                     }}
                   >
                     {t('open')}
@@ -1229,7 +1229,7 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
                     role="menuitem"
                     onClick={() => {
                       setFileMenu(null)
-                      void window.chatOffice.revealPath(entry.path)
+                      void window.chaOffice.revealPath(entry.path)
                     }}
                   >
                     {t('revealInFolder')}
@@ -1435,7 +1435,7 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
               <p>{t('rootUnusable')}</p>
               <button
                 className="btn btn-secondary"
-                onClick={() => void window.chatOffice.pickDefaultSaveDir().then(() => loadRoot())}
+                onClick={() => void window.chaOffice.pickDefaultSaveDir().then(() => loadRoot())}
               >
                 {t('pickSaveDir')}
               </button>
@@ -1461,9 +1461,9 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
       className="search-row"
       role="button"
       tabIndex={0}
-      onClick={() => void window.chatOffice.openPath(hit.path)}
+      onClick={() => void window.chaOffice.openPath(hit.path)}
       onKeyDown={(e) => {
-        if (e.key === 'Enter') void window.chatOffice.openPath(hit.path)
+        if (e.key === 'Enter') void window.chaOffice.openPath(hit.path)
       }}
     >
       <span className="search-icon">

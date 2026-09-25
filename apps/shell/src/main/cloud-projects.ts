@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto'
 import {
   chatofficeCliApiKey,
   chatofficeListPastProjects,
-  hasChatOfficeAuth,
+  hasChaOfficeAuth,
 } from '@chatoffice/ai-search'
 import type { CloudProjectEntry, CloudProjectKind, CloudProjectsSnapshot } from '../shared/home-api'
 
@@ -53,7 +53,7 @@ export function clearCloudProjectsStore(storePath: string): void {
 
 /** Locally stored full project list; filtering/paging happen in the renderer. */
 export function readCloudProjectsStore(storePath: string): CloudProjectsSnapshot | null {
-  if (!hasChatOfficeAuth()) return null
+  if (!hasChaOfficeAuth()) return null
   try {
     const raw = JSON.parse(readFileSync(storePath, 'utf-8')) as StoredSnapshot
     if (!Array.isArray(raw.projects)) return null
@@ -81,7 +81,7 @@ let syncInFlightOwner = ''
  * it starts its own run (the orphaned one aborts at its next owner check).
  */
 export function syncCloudProjects(storePath: string): Promise<CloudProjectsSnapshot> {
-  if (!hasChatOfficeAuth()) {
+  if (!hasChaOfficeAuth()) {
     return Promise.resolve({ available: false, projects: [], syncedAt: 0 })
   }
   const owner = cloudStoreOwner()

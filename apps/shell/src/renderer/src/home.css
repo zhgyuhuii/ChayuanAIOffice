@@ -1,7 +1,7 @@
 /* Shared chrome/AI-panel tokens come from @chatoffice/ui/tokens.css (imported
  * before this file in main.tsx); only shell-specific tokens live here. */
 :root {
-  /* ChatOffice DS v4.1: guide/onboarding accent is the brand blue */
+  /* ChaOffice DS v4.1: guide/onboarding accent is the brand blue */
   --accent: #0f7fff;
   --accent-hover: #0e72e5;
   /* selected-option tint for the shared dropdown (gs-dd) */
@@ -324,7 +324,7 @@ body.sidebar-resizing {
   font-variant-numeric: tabular-nums;
 }
 
-/* ---- bottom-left account entry (today = ChatOffice login, later = signup/account system) ---- */
+/* ---- bottom-left account entry (today = ChaOffice login, later = signup/account system) ---- */
 /* clicking it opens the settings modal (settings.css) directly, which hosts
    login/logout plus preferences (language / theme / save location / update channel) */
 
@@ -721,7 +721,7 @@ body.sidebar-resizing {
 
 /* segmented control: gray track, active segment = white card */
 /* segmented filter control: gray track, active segment = white card.
-   One shared 40px rail for the recents page and the ChatOffice Projects
+   One shared 40px rail for the recents page and the ChaOffice Projects
    toolbar (where it lines up with the 40px refresh button and search box). */
 .filter-pills,
 .cloud-seg {
@@ -1879,7 +1879,7 @@ body.sidebar-resizing {
   padding-top: 1px;
 }
 
-/* ── Cloud (ChatOffice web) projects ── */
+/* ── Cloud (ChaOffice web) projects ── */
 
 /* fixed header: the content column never scrolls; only .cloud-scroll does */
 /* whole page scrolls (same as the recents page) so the wheel works anywhere;
@@ -2028,7 +2028,7 @@ body.sidebar-resizing {
   margin-top: 0;
 }
 
-/* ChatOffice Projects list styled like the recent-files table: bordered
+/* ChaOffice Projects list styled like the recent-files table: bordered
    rounded container, column header, grid rows with hairline dividers */
 .cloud-table {
   border: 1px solid var(--border);

@@ -1,4 +1,4 @@
-/** Main-process i18n strings for ChatOffice Slides (dialogs, native menus, export, autosave prompts). */
+/** Main-process i18n strings for ChaOffice Slides (dialogs, native menus, export, autosave prompts). */
 import { createI18n, getUiLang } from '@chatoffice/i18n'
 
 export const tMain = createI18n({
@@ -70,12 +70,12 @@ export const tMain = createI18n({
     errParseFailed: '文件解析失败',
     errImageNoText: '图片附件不提供文本,已作为图像随用户消息发送,直接看图即可',
     errNotImage: '不是支持的图片类型',
-    errChatOfficeNotLoggedIn: '未登录 察元AIOffice:请点击下方「登录」完成登录后重试',
+    errChaOfficeNotLoggedIn: '未登录 察元AIOffice:请点击下方「登录」完成登录后重试',
     errNoApiKey: '未配置 {provider} 的 API Key',
     errNoModel: '未配置模型名称',
-    errChatOfficeCli: 'chatoffice 未登录:请先运行 chatoffice login 登录 察元AIOffice 账号',
+    errChaOfficeCli: 'chatoffice 未登录:请先运行 chatoffice login 登录 察元AIOffice 账号',
     errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
-    errChatOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
     errNoDeckAppend:
       '当前没有可追加的文稿（会话不存在）。请先用 mode:"replace" 生成首页，或改用原生工具新增页面。',
     errAppendFailed: '追加失败：{reason}',
@@ -182,15 +182,15 @@ export const tMain = createI18n({
     errParseFailed: 'Failed to parse file',
     errImageNoText: 'Image attachments have no text; the image is sent along with the user message',
     errNotImage: 'not a supported image type',
-    errChatOfficeNotLoggedIn:
+    errChaOfficeNotLoggedIn:
       'Not signed in to ChaAI Office: click “Sign in” below, sign in, then retry',
     errNoApiKey: 'No API key configured for {provider}',
     errNoModel: 'No model name configured',
-    errChatOfficeCli:
+    errChaOfficeCli:
       'chatoffice not signed in: run chatoffice login to sign in to your ChaAI Office account first',
     errNoImageModel:
       'No image model configured: enable an image-generation model in Model Settings',
-    errChatOfficeToolsOff:
+    errChaOfficeToolsOff:
       'ChaAI Office cloud tools are turned off in Model Settings; enable them to use this tool',
     errNoDeckAppend:
       'No deck to append to (session missing). Generate the first page with mode:"replace" or add pages with the native tools.',
@@ -298,14 +298,14 @@ export const tMain = createI18n({
     errImageNoText:
       '画像添付はテキストを提供しません。画像としてユーザー メッセージと一緒に送信済みのため、そのまま画像をご覧ください',
     errNotImage: 'サポートされていない画像形式です',
-    errChatOfficeNotLoggedIn:
+    errChaOfficeNotLoggedIn:
       'ChaAI Office にサインインしていません。下の「サインイン」からサインインして再試行してください',
     errNoApiKey: '{provider} の API キーが設定されていません',
     errNoModel: 'モデル名が設定されていません',
-    errChatOfficeCli:
+    errChaOfficeCli:
       'chatoffice が未サインインです。先に chatoffice login を実行して ChaAI Office アカウントにサインインしてください',
     errNoImageModel: '画像生成モデルが未設定です。モデル設定で画像生成モデルを有効にしてください',
-    errChatOfficeToolsOff:
+    errChaOfficeToolsOff:
       'ChaAI Office クラウドツールがモデル設定でオフになっています。使用するにはオンにしてください',
     errNoDeckAppend:
       '追加先のプレゼンテーションがありません（セッションが存在しません）。まず mode:"replace" で最初のページを生成するか、ネイティブ ツールでページを追加してください。',
@@ -417,15 +417,15 @@ export const tMain = createI18n({
     errImageNoText:
       '이미지 첨부는 텍스트를 제공하지 않으며, 이미지로 사용자 메시지와 함께 전송되었으니 이미지를 직접 확인하세요',
     errNotImage: '지원되는 이미지 형식이 아님',
-    errChatOfficeNotLoggedIn:
+    errChaOfficeNotLoggedIn:
       'ChaAI Office에 로그인되어 있지 않습니다. 아래 "로그인"을 눌러 로그인한 뒤 다시 시도하세요',
     errNoApiKey: '{provider}의 API 키가 설정되지 않았습니다',
     errNoModel: '모델 이름이 설정되지 않았습니다',
-    errChatOfficeCli:
+    errChaOfficeCli:
       'gsk가 로그인되어 있지 않습니다. 먼저 chatoffice login을 실행해 ChaAI Office 계정에 로그인하세요',
     errNoImageModel:
       '이미지 생성 모델이 구성되지 않았습니다. 모델 설정에서 이미지 생성 모델을 활성화하세요',
-    errChatOfficeToolsOff:
+    errChaOfficeToolsOff:
       'ChaAI Office 클라우드 도구가 모델 설정에서 꺼져 있습니다. 사용하려면 켜세요',
     errNoDeckAppend:
       '추가할 수 있는 문서가 없습니다(세션 없음). 먼저 mode:"replace"로 첫 페이지를 생성하거나 네이티브 도구로 페이지를 추가하세요.',
@@ -534,17 +534,17 @@ export const tMain = createI18n({
     errImageNoText:
       "Les pièces jointes image ne fournissent pas de texte ; l'image a été envoyée avec le message de l'utilisateur, consultez-la directement",
     errNotImage: "n'est pas un type d'image pris en charge",
-    errChatOfficeNotLoggedIn:
+    errChaOfficeNotLoggedIn:
       'Non connecté à ChaAI Office : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez',
     errNoApiKey: 'Aucune clé API configurée pour {provider}',
     errNoModel: 'Aucun nom de modèle configuré',
-    errChatOfficeCli:
+    errChaOfficeCli:
       "chatoffice non connecté : exécutez d'abord chatoffice login pour vous connecter à votre compte ChaAI Office",
     errNoDeckAppend:
       'Aucune présentation à compléter (session inexistante). Générez d\'abord la première page avec mode:"replace" ou ajoutez des pages avec les outils natifs.',
     errNoImageModel:
       "Aucun modèle d'image configuré : activez un modèle de génération d'images dans les paramètres des modèles",
-    errChatOfficeToolsOff:
+    errChaOfficeToolsOff:
       'Les outils cloud ChaAI Office sont désactivés dans les paramètres des modèles ; activez-les pour utiliser cet outil',
     errAppendFailed: "Échec de l'ajout : {reason}",
     errPartialAppend: "Échec de l'ajout de certaines pages : {reason}",
@@ -656,15 +656,15 @@ export const tMain = createI18n({
     errImageNoText:
       'Bildanlagen liefern keinen Text; das Bild wurde mit der Benutzernachricht gesendet, bitte direkt ansehen',
     errNotImage: 'kein unterstütztes Bildformat',
-    errChatOfficeNotLoggedIn:
+    errChaOfficeNotLoggedIn:
       'Nicht bei ChaAI Office angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut',
     errNoApiKey: 'Kein API-Schlüssel für {provider} konfiguriert',
     errNoModel: 'Kein Modellname konfiguriert',
-    errChatOfficeCli:
+    errChaOfficeCli:
       'chatoffice nicht angemeldet: Führen Sie zuerst chatoffice login aus, um sich bei Ihrem ChaAI Office-Konto anzumelden',
     errNoImageModel:
       'Kein Bildmodell konfiguriert: aktiviere ein Bildgenerierungsmodell in den Modelleinstellungen',
-    errChatOfficeToolsOff:
+    errChaOfficeToolsOff:
       'ChaAI Office-Cloud-Tools sind in den Modelleinstellungen deaktiviert; aktiviere sie, um dieses Tool zu nutzen',
     errNoDeckAppend:
       'Keine Präsentation zum Anfügen vorhanden (Sitzung fehlt). Generieren Sie zuerst die erste Seite mit mode:"replace" oder fügen Sie Seiten mit den nativen Tools hinzu.',
@@ -777,15 +777,15 @@ export const tMain = createI18n({
     errImageNoText:
       'Las imágenes adjuntas no proporcionan texto; la imagen se envió junto con el mensaje del usuario, consúltala directamente',
     errNotImage: 'no es un tipo de imagen compatible',
-    errChatOfficeNotLoggedIn:
+    errChaOfficeNotLoggedIn:
       'No has iniciado sesión en ChaAI Office: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo',
     errNoApiKey: 'No hay clave de API configurada para {provider}',
     errNoModel: 'No hay nombre de modelo configurado',
-    errChatOfficeCli:
+    errChaOfficeCli:
       'chatoffice sin sesión iniciada: ejecuta primero chatoffice login para iniciar sesión en tu cuenta de ChaAI Office',
     errNoImageModel:
       'No hay modelo de imagen configurado: activa un modelo de generación de imágenes en Ajustes de modelos',
-    errChatOfficeToolsOff:
+    errChaOfficeToolsOff:
       'Las herramientas en la nube de ChaAI Office están desactivadas en Ajustes de modelos; actívalas para usar esta herramienta',
     errNoDeckAppend:
       'No hay ninguna presentación a la que anexar (no existe la sesión). Genera primero la primera página con mode:"replace" o añade páginas con las herramientas nativas.',
@@ -897,14 +897,14 @@ export const tMain = createI18n({
     errImageNoText:
       'สิ่งที่แนบเป็นรูปภาพไม่มีข้อความ รูปถูกส่งไปพร้อมข้อความของผู้ใช้แล้ว โปรดดูรูปโดยตรง',
     errNotImage: 'ไม่ใช่ชนิดรูปภาพที่รองรับ',
-    errChatOfficeNotLoggedIn:
+    errChaOfficeNotLoggedIn:
       'ยังไม่ได้ลงชื่อเข้าใช้ ChaAI Office: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง',
     errNoApiKey: 'ยังไม่ได้ตั้งค่า API Key ของ {provider}',
     errNoModel: 'ยังไม่ได้ตั้งค่าชื่อโมเดล',
-    errChatOfficeCli:
+    errChaOfficeCli:
       'chatoffice ยังไม่ได้เข้าสู่ระบบ: โปรดรัน chatoffice login เพื่อเข้าสู่ระบบบัญชี ChaAI Office ก่อน',
     errNoImageModel: 'ยังไม่ได้ตั้งค่าโมเดลสร้างภาพ: เปิดใช้โมเดลสร้างภาพในการตั้งค่าโมเดล',
-    errChatOfficeToolsOff:
+    errChaOfficeToolsOff:
       'เครื่องมือคลาวด์ของ ChaAI Office ถูกปิดอยู่ในการตั้งค่าโมเดล เปิดใช้เพื่อใช้เครื่องมือนี้',
     errNoDeckAppend:
       'ไม่มีเอกสารให้เพิ่มต่อท้าย (ไม่มีเซสชัน) โปรดสร้างหน้าแรกด้วย mode:"replace" ก่อน หรือใช้เครื่องมือเนทีฟเพิ่มหน้าแทน',
@@ -1013,14 +1013,14 @@ export const tMain = createI18n({
     errImageNoText:
       'Lampiran gambar tidak menyediakan teks; gambar telah dikirim bersama pesan pengguna, silakan lihat gambarnya langsung',
     errNotImage: 'bukan jenis gambar yang didukung',
-    errChatOfficeNotLoggedIn: 'Belum masuk ke ChaAI Office: klik “Masuk” di bawah, lalu coba lagi',
+    errChaOfficeNotLoggedIn: 'Belum masuk ke ChaAI Office: klik “Masuk” di bawah, lalu coba lagi',
     errNoApiKey: 'API Key untuk {provider} belum dikonfigurasi',
     errNoModel: 'Nama model belum dikonfigurasi',
-    errChatOfficeCli:
+    errChaOfficeCli:
       'chatoffice belum masuk: jalankan chatoffice login dulu untuk masuk ke akun ChaAI Office',
     errNoImageModel:
       'Belum ada model gambar yang dikonfigurasi: aktifkan model pembuatan gambar di Pengaturan Model',
-    errChatOfficeToolsOff:
+    errChaOfficeToolsOff:
       'Alat cloud ChaAI Office dimatikan di Pengaturan Model; aktifkan untuk menggunakan alat ini',
     errNoDeckAppend:
       'Tidak ada dokumen yang bisa ditambahi (sesi tidak ada). Buat halaman pertama dengan mode:"replace" dulu, atau tambahkan halaman dengan alat bawaan.',
@@ -1133,14 +1133,14 @@ export const tMain = createI18n({
     errImageNoText:
       'Вложения-изображения не содержат текста; изображение отправлено вместе с сообщением пользователя, просто посмотрите на него',
     errNotImage: 'неподдерживаемый тип изображения',
-    errChatOfficeNotLoggedIn:
+    errChaOfficeNotLoggedIn:
       'Вы не вошли в ChaAI Office: нажмите «Войти» ниже, войдите и повторите попытку',
     errNoApiKey: 'API-ключ для {provider} не настроен',
     errNoModel: 'Не указано имя модели',
-    errChatOfficeCli:
+    errChaOfficeCli:
       'chatoffice не авторизован: сначала выполните chatoffice login, чтобы войти в учётную запись ChaAI Office',
     errNoImageModel: 'Модель генерации изображений не настроена: включите её в настройках моделей',
-    errChatOfficeToolsOff:
+    errChaOfficeToolsOff:
       'Облачные инструменты ChaAI Office отключены в настройках моделей; включите их, чтобы использовать этот инструмент',
     errNoDeckAppend:
       'Нет презентации для добавления страниц (сессия отсутствует). Сначала создайте первую страницу с mode:"replace" или добавьте страницы нативными инструментами.',
@@ -1252,14 +1252,14 @@ export const tMain = createI18n({
     errImageNoText:
       'المرفقات من نوع الصور لا توفر نصًا؛ وقد أُرسلت الصورة مع رسالة المستخدم، يكفي النظر إليها مباشرة',
     errNotImage: 'ليس نوع صورة مدعومًا',
-    errChatOfficeNotLoggedIn:
+    errChaOfficeNotLoggedIn:
       'لم تسجّل الدخول إلى ChaAI Office: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة',
     errNoApiKey: 'لم يتم تكوين مفتاح API لـ {provider}',
     errNoModel: 'لم يتم تكوين اسم النموذج',
-    errChatOfficeCli:
+    errChaOfficeCli:
       'chatoffice غير مسجَّل الدخول: شغّل chatoffice login أولًا لتسجيل الدخول إلى حساب ChaAI Office',
     errNoImageModel: 'لم يتم تهيئة نموذج توليد الصور: فعّل نموذجًا لتوليد الصور في إعدادات النماذج',
-    errChatOfficeToolsOff:
+    errChaOfficeToolsOff:
       'أدوات ChaAI Office السحابية معطلة في إعدادات النماذج؛ فعّلها لاستخدام هذه الأداة',
     errNoDeckAppend:
       'لا يوجد مستند يمكن الإلحاق به (الجلسة غير موجودة). أنشئ الصفحة الأولى باستخدام mode:"replace" أولًا، أو أضف صفحات بالأدوات الأصلية.',
@@ -1368,15 +1368,15 @@ export const tMain = createI18n({
     errImageNoText:
       'Anexos de imagem não têm texto; a imagem é enviada junto com a mensagem do usuário',
     errNotImage: 'não é um tipo de imagem suportado',
-    errChatOfficeNotLoggedIn:
+    errChaOfficeNotLoggedIn:
       'Não conectado ao ChaAI Office: clique em “Entrar” abaixo, entre e tente novamente',
     errNoApiKey: 'Nenhuma chave de API configurada para {provider}',
     errNoModel: 'Nenhum nome de modelo configurado',
-    errChatOfficeCli:
+    errChaOfficeCli:
       'chatoffice não conectado: execute chatoffice login primeiro para entrar na sua conta ChaAI Office',
     errNoImageModel:
       'Nenhum modelo de imagem configurado: ative um modelo de geração de imagens nas configurações de modelos',
-    errChatOfficeToolsOff:
+    errChaOfficeToolsOff:
       'As ferramentas de nuvem do ChaAI Office estão desativadas nas configurações de modelos; ative-as para usar esta ferramenta',
     errNoDeckAppend:
       'Não há apresentação para anexar (sessão inexistente). Gere a primeira página com mode:"replace" ou adicione páginas com as ferramentas nativas.',
@@ -1489,17 +1489,17 @@ export const tMain = createI18n({
     errImageNoText:
       "Gli allegati immagine non hanno testo; l'immagine viene inviata insieme al messaggio dell'utente",
     errNotImage: 'tipo di immagine non supportato',
-    errChatOfficeNotLoggedIn:
+    errChaOfficeNotLoggedIn:
       'Accesso a ChaAI Office non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova',
     errNoApiKey: 'Nessuna chiave API configurata per {provider}',
     errNoModel: 'Nessun nome di modello configurato',
-    errChatOfficeCli:
+    errChaOfficeCli:
       "chatoffice non ha effettuato l'accesso: esegui prima chatoffice login per accedere al tuo account ChaAI Office",
     errNoDeckAppend:
       'Nessuna presentazione a cui aggiungere pagine (sessione mancante). Genera la prima pagina con mode:"replace" o aggiungi pagine con gli strumenti nativi.',
     errNoImageModel:
       'Nessun modello immagine configurato: attiva un modello di generazione immagini nelle impostazioni modelli',
-    errChatOfficeToolsOff:
+    errChaOfficeToolsOff:
       'Gli strumenti cloud ChaAI Office sono disattivati nelle impostazioni modelli; attivali per usare questo strumento',
     errAppendFailed: 'Aggiunta non riuscita: {reason}',
     errPartialAppend: 'Aggiunta di alcune pagine non riuscita: {reason}',
@@ -1611,15 +1611,15 @@ export const tMain = createI18n({
     errImageNoText:
       'Załączniki graficzne nie zawierają tekstu; obraz jest wysyłany razem z wiadomością użytkownika',
     errNotImage: 'nieobsługiwany typ obrazu',
-    errChatOfficeNotLoggedIn:
+    errChaOfficeNotLoggedIn:
       'Nie zalogowano do ChaAI Office: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie',
     errNoApiKey: 'Nie skonfigurowano klucza API dla {provider}',
     errNoModel: 'Nie skonfigurowano nazwy modelu',
-    errChatOfficeCli:
+    errChaOfficeCli:
       'chatoffice nie jest zalogowany: najpierw uruchom chatoffice login, aby zalogować się na konto ChaAI Office',
     errNoImageModel:
       'Nie skonfigurowano modelu obrazów: włącz model generowania obrazów w ustawieniach modeli',
-    errChatOfficeToolsOff:
+    errChaOfficeToolsOff:
       'Narzędzia chmurowe ChaAI Office są wyłączone w ustawieniach modeli; włącz je, aby używać tego narzędzia',
     errNoDeckAppend:
       'Brak prezentacji do rozszerzenia (brak sesji). Najpierw wygeneruj pierwszą stronę z mode:"replace" albo dodaj strony narzędziami natywnymi.',
@@ -1731,11 +1731,11 @@ export const tMain = createI18n({
     errImageNoText:
       'Obrázkové přílohy neobsahují text; obrázek je odeslán spolu se zprávou uživatele',
     errNotImage: 'nepodporovaný typ obrázku',
-    errChatOfficeNotLoggedIn:
+    errChaOfficeNotLoggedIn:
       'Nejste přihlášeni ke Genspark: klikněte níže na „Přihlásit se ke Genspark“, přihlaste se a zkuste to znovu',
     errNoApiKey: 'Pro {provider} není nakonfigurován žádný klíč API',
     errNoModel: 'Není nakonfigurován název modelu',
-    errChatOfficeCli:
+    errChaOfficeCli:
       'gsk není přihlášen: nejprve spusťte gsk login a přihlaste se k účtu Genspark',
     errNoDeckAppend:
       'Není k čemu přidávat (chybí relace). Vygenerujte první stránku s mode:"replace" nebo přidejte stránky nativními nástroji.',
@@ -1776,7 +1776,7 @@ export const tMain = createI18n({
     menuZoomOut: 'Oddálit',
     menuActualSize: 'Skutečná velikost',
     errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
-    errChatOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
   },
   nl: {
     dlgInsertImage: 'Afbeelding invoegen',
@@ -1848,15 +1848,15 @@ export const tMain = createI18n({
     errImageNoText:
       'Afbeeldingsbijlagen bevatten geen tekst; de afbeelding wordt samen met het gebruikersbericht verzonden',
     errNotImage: 'geen ondersteund afbeeldingstype',
-    errChatOfficeNotLoggedIn:
+    errChaOfficeNotLoggedIn:
       'Niet aangemeld bij ChaAI Office: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw',
     errNoApiKey: 'Geen API-sleutel geconfigureerd voor {provider}',
     errNoModel: 'Geen modelnaam geconfigureerd',
-    errChatOfficeCli:
+    errChaOfficeCli:
       'chatoffice is niet aangemeld: voer eerst chatoffice login uit om u aan te melden bij uw ChaAI Office-account',
     errNoImageModel:
       'Geen afbeeldingsmodel geconfigureerd: schakel een model voor afbeeldingsgeneratie in bij de modelinstellingen',
-    errChatOfficeToolsOff:
+    errChaOfficeToolsOff:
       'ChaAI Office-cloudtools zijn uitgeschakeld in de modelinstellingen; schakel ze in om deze tool te gebruiken',
     errNoDeckAppend:
       'Geen presentatie om aan toe te voegen (sessie ontbreekt). Genereer eerst de eerste pagina met mode:"replace" of voeg pagina\'s toe met de native tools.',
@@ -1967,15 +1967,15 @@ export const tMain = createI18n({
     errParseFailed: 'Gagal menghurai fail',
     errImageNoText: 'Lampiran imej tiada teks; imej dihantar bersama mesej pengguna',
     errNotImage: 'bukan jenis imej yang disokong',
-    errChatOfficeNotLoggedIn:
+    errChaOfficeNotLoggedIn:
       'Belum log masuk ke ChaAI Office: klik “Log masuk” di bawah, kemudian cuba lagi',
     errNoApiKey: 'Kunci API untuk {provider} belum dikonfigurasikan',
     errNoModel: 'Nama model belum dikonfigurasikan',
-    errChatOfficeCli:
+    errChaOfficeCli:
       'chatoffice belum log masuk: jalankan chatoffice login dahulu untuk log masuk ke akaun ChaAI Office anda',
     errNoImageModel:
       'Tiada model imej dikonfigurasi: aktifkan model penjanaan imej dalam Tetapan Model',
-    errChatOfficeToolsOff:
+    errChaOfficeToolsOff:
       'Alat awan ChaAI Office dimatikan dalam Tetapan Model; aktifkan untuk menggunakan alat ini',
     errNoDeckAppend:
       'Tiada persembahan untuk ditambah (sesi tidak wujud). Jana halaman pertama dengan mode:"replace" dahulu, atau tambah halaman dengan alat asli.',
@@ -2085,13 +2085,13 @@ export const tMain = createI18n({
     errParseFailed: 'ניתוח הקובץ נכשל',
     errImageNoText: 'קבצים מצורפים מסוג תמונה אינם מכילים טקסט; התמונה נשלחת יחד עם הודעת המשתמש',
     errNotImage: 'סוג תמונה שאינו נתמך',
-    errChatOfficeNotLoggedIn: 'לא מחובר ל-ChaAI Office: לחץ על "התחבר" למטה, התחבר ונסה שוב',
+    errChaOfficeNotLoggedIn: 'לא מחובר ל-ChaAI Office: לחץ על "התחבר" למטה, התחבר ונסה שוב',
     errNoApiKey: 'לא הוגדר מפתח API עבור {provider}',
     errNoModel: 'לא הוגדר שם מודל',
-    errChatOfficeCli:
+    errChaOfficeCli:
       'chatoffice אינו מחובר: הרץ תחילה chatoffice login כדי להיכנס לחשבון ChaAI Office שלך',
     errNoImageModel: 'לא הוגדר מודל ליצירת תמונות: הפעל מודל יצירת תמונות בהגדרות המודלים',
-    errChatOfficeToolsOff:
+    errChaOfficeToolsOff:
       'כלי הענן של ChaAI Office כבויים בהגדרות המודלים; הפעל אותם כדי להשתמש בכלי זה',
     errNoDeckAppend:
       'אין מצגת להוסיף אליה (הפעלה חסרה). צור תחילה את העמוד הראשון עם mode:"replace" או הוסף עמודים בכלים המקוריים.',
@@ -2199,15 +2199,15 @@ export const tMain = createI18n({
     errParseFailed: 'फ़ाइल पार्स करने में विफल',
     errImageNoText: 'छवि अनुलग्नक में टेक्स्ट नहीं होता; छवि उपयोगकर्ता संदेश के साथ भेजी जाती है',
     errNotImage: 'समर्थित छवि प्रकार नहीं है',
-    errChatOfficeNotLoggedIn:
+    errChaOfficeNotLoggedIn:
       'ChaAI Office में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें',
     errNoApiKey: '{provider} के लिए कोई API कुंजी कॉन्फ़िगर नहीं है',
     errNoModel: 'कोई मॉडल नाम कॉन्फ़िगर नहीं है',
-    errChatOfficeCli:
+    errChaOfficeCli:
       'chatoffice साइन इन नहीं है: पहले chatoffice login चलाकर अपने ChaAI Office खाते में साइन इन करें',
     errNoImageModel:
       'कोई इमेज मॉडल कॉन्फ़िगर नहीं है: मॉडल सेटिंग्स में इमेज-जनरेशन मॉडल सक्षम करें',
-    errChatOfficeToolsOff:
+    errChaOfficeToolsOff:
       'ChaAI Office क्लाउड टूल मॉडल सेटिंग्स में बंद हैं; इस टूल का उपयोग करने के लिए उन्हें चालू करें',
     errNoDeckAppend:
       'जोड़ने के लिए कोई प्रस्तुति नहीं है (सत्र मौजूद नहीं)। पहले mode:"replace" से पहला पृष्ठ बनाएँ, या नेटिव टूल से पृष्ठ जोड़ें।',
@@ -2317,12 +2317,12 @@ export const tMain = createI18n({
     errParseFailed: '檔案解析失敗',
     errImageNoText: '圖片附件不提供文字,已作為影像隨使用者訊息傳送,直接看圖即可',
     errNotImage: '不是支援的圖片類型',
-    errChatOfficeNotLoggedIn: '未登入 察元AIOffice:請點擊下方「登入」完成登入後重試',
+    errChaOfficeNotLoggedIn: '未登入 察元AIOffice:請點擊下方「登入」完成登入後重試',
     errNoApiKey: '未設定 {provider} 的 API Key',
     errNoModel: '未設定模型名稱',
-    errChatOfficeCli: 'chatoffice 未登入:請先執行 chatoffice login 登入 察元AIOffice 帳號',
+    errChaOfficeCli: 'chatoffice 未登入:請先執行 chatoffice login 登入 察元AIOffice 帳號',
     errNoImageModel: '未配置生圖模型：請在模型設定中啟用生圖模型',
-    errChatOfficeToolsOff: '已在模型設定中關閉雲端工具：請開啟後使用該功能',
+    errChaOfficeToolsOff: '已在模型設定中關閉雲端工具：請開啟後使用該功能',
     errNoDeckAppend:
       '目前沒有可附加的簡報（工作階段不存在）。請先用 mode:"replace" 產生首頁，或改用原生工具新增頁面。',
     errAppendFailed: '附加失敗：{reason}',

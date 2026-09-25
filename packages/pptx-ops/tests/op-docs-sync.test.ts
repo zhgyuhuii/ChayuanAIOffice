@@ -17,7 +17,7 @@ const here = dirname(fileURLToPath(import.meta.url))
 const opsDir = join(here, '../src/prompts/ops')
 const groupFiles = readdirSync(opsDir).filter((f) => f.endsWith('.md'))
 const pending = new Set(Object.keys(OP_DOCS).filter((n) => OP_DOCS[n]!.pending))
-// adapted: ChatOffice-local superset ops documented only in LOCAL_OP_DOCS (sig,
+// adapted: ChaOffice-local superset ops documented only in LOCAL_OP_DOCS (sig,
 // no upstream ops/*.md block); round-8 parity with slides op-docs tests
 const LOCAL_SIG_ONLY = new Set([
   'setPictureLum',

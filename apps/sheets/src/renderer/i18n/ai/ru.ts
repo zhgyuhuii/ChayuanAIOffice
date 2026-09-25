@@ -1,4 +1,4 @@
-/** ai strings, ru (merged with ChatOffice-local keys) */
+/** ai strings, ru (merged with ChaOffice-local keys) */
 export const ru = {
   aiComposerPlaceholderBuild: 'Опишите таблицу, данные или диаграмму для создания…',
   aiEmptyBuildTitle: 'Пусть ИИ построит эту книгу за вас',
@@ -45,13 +45,13 @@ export const ru = {
   aiInstructionAria: 'Инструкция для ИИ',
   aiFileTooltip: 'SHA-256 {sha}\\nПри сохранении перезаписываются только изменённые элементы; всё остальное сохраняется без изменений.',
   aiFileMeta: 'Листов: {sheets} · элементов: {entries}',
-  aiChatOfficeAccount: 'Учётная запись ChaAI Office',
+  aiChaOfficeAccount: 'Учётная запись ChaAI Office',
   aiAccountChecking: 'Проверка…',
   aiLoggedIn: 'Вход выполнен',
   aiLoggedInAs: 'Вход выполнен: {email}',
   aiNotLoggedIn: 'Вход не выполнен (для функций ИИ требуется учётная запись ChaAI Office)',
   aiWaitingBrowserLogin: 'Ожидание входа в браузере…',
-  aiLoginChatOffice: 'Войти в ChaAI Office',
+  aiLoginChaOffice: 'Войти в ChaAI Office',
   aiModel: 'Модель',
   aiCancel: 'Отмена',
   aiSave: 'Сохранить',
@@ -99,7 +99,7 @@ export const ru = {
   aiScopeColumns: 'Выделено: {names} — столбцов: {count}',
   aiScopeRangeTip: 'ИИ понимает «этот столбец / эти строки / выделенную часть» как этот диапазон; после отправки он фиксируется на весь запуск',
   aiScopeClearTitle: 'Снять область диапазона и работать со всем листом',
-  aiChatOfficeLoginBtn: 'Войти',
+  aiChaOfficeLoginBtn: 'Войти',
   aiPanelTitle: 'ИИ-помощник',
   aiTabChat: 'Чат',
   aiTabAssistant: 'Помощник',

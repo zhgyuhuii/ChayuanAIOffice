@@ -1,4 +1,4 @@
-/** ai strings, de (merged with ChatOffice-local keys) */
+/** ai strings, de (merged with ChaOffice-local keys) */
 export const de = {
   aiComposerPlaceholderBuild: 'Beschreibe die zu erstellende Tabelle, Daten oder Diagramme…',
   aiEmptyBuildTitle: 'Lass die KI diese Arbeitsmappe für dich aufbauen',
@@ -45,13 +45,13 @@ export const de = {
   aiInstructionAria: 'KI-Anweisung',
   aiFileTooltip: 'SHA-256 {sha}\\nBeim Speichern werden nur die bearbeiteten Einträge neu geschrieben; alles andere bleibt erhalten.',
   aiFileMeta: '{sheets} Blätter · {entries} Einträge',
-  aiChatOfficeAccount: 'ChaAI Office-Konto',
+  aiChaOfficeAccount: 'ChaAI Office-Konto',
   aiAccountChecking: 'Wird überprüft…',
   aiLoggedIn: 'Angemeldet',
   aiLoggedInAs: 'Angemeldet: {email}',
   aiNotLoggedIn: 'Nicht angemeldet (KI-Funktionen erfordern ein ChaAI Office-Konto)',
   aiWaitingBrowserLogin: 'Warten auf Anmeldung im Browser…',
-  aiLoginChatOffice: 'Bei ChaAI Office anmelden',
+  aiLoginChaOffice: 'Bei ChaAI Office anmelden',
   aiModel: 'Modell',
   aiCancel: 'Abbrechen',
   aiSave: 'Speichern',
@@ -99,7 +99,7 @@ export const de = {
   aiScopeColumns: 'Ausgewählt: {names} ({count} Spalten)',
   aiScopeRangeTip: 'Die KI versteht „diese Spalte / diese Zeilen / die Auswahl“ als diesen Bereich; beim Senden wird er für den Lauf fixiert',
   aiScopeClearTitle: 'Bereichsvorgabe aufheben und das ganze Blatt verwenden',
-  aiChatOfficeLoginBtn: 'Anmelden',
+  aiChaOfficeLoginBtn: 'Anmelden',
   aiPanelTitle: 'KI-Assistent',
   aiTabChat: 'Chat',
   aiTabAssistant: 'Assistent',

@@ -1,55 +1,55 @@
 import { describe, it, expect, afterEach } from 'vitest'
 import {
   chatofficeChildEnv,
-  setChatOfficeProxyUrl,
-  parseChatOfficeOutput,
-  parseChatOfficeWebSearch,
-  parseChatOfficeImageSearch,
-  parseChatOfficeGeneratedImage,
-  parseChatOfficeConvertResult,
-  parseChatOfficePastProjects,
-  extractChatOfficeText,
+  setChaOfficeProxyUrl,
+  parseChaOfficeOutput,
+  parseChaOfficeWebSearch,
+  parseChaOfficeImageSearch,
+  parseChaOfficeGeneratedImage,
+  parseChaOfficeConvertResult,
+  parseChaOfficePastProjects,
+  extractChaOfficeText,
   parseToolCliNdjson,
 } from '../src/chatoffice'
 
-describe('parseChatOfficeOutput', () => {
+describe('parseChaOfficeOutput', () => {
   it('parses clean JSON', () => {
-    expect(parseChatOfficeOutput('{"status":"ok"}')).toEqual({ status: 'ok' })
+    expect(parseChaOfficeOutput('{"status":"ok"}')).toEqual({ status: 'ok' })
   })
 
   it('skips [INFO] noise lines before JSON', () => {
     const out = '[INFO] Calling /tools...\n[INFO] cache hit\n{"status":"ok","data":[1,2]}'
-    expect(parseChatOfficeOutput(out)).toEqual({ status: 'ok', data: [1, 2] })
+    expect(parseChaOfficeOutput(out)).toEqual({ status: 'ok', data: [1, 2] })
   })
 
   it('parses multi-line JSON after noise', () => {
     const out = '[INFO] x\n{\n "a": 1\n}'
-    expect(parseChatOfficeOutput(out)).toEqual({ a: 1 })
+    expect(parseChaOfficeOutput(out)).toEqual({ a: 1 })
   })
 
   it('skips trailing log lines after JSON', () => {
     const out = '{"status":"ok","data":[1,2]}\n[INFO] done in 120ms'
-    expect(parseChatOfficeOutput(out)).toEqual({ status: 'ok', data: [1, 2] })
+    expect(parseChaOfficeOutput(out)).toEqual({ status: 'ok', data: [1, 2] })
   })
 
   it('parses multi-line JSON surrounded by leading and trailing noise', () => {
     const out =
       '[INFO] Calling /tools...\n{\n "a": 1,\n "b": [1, 2]\n}\n[INFO] cache hit\n[INFO] done'
-    expect(parseChatOfficeOutput(out)).toEqual({ a: 1, b: [1, 2] })
+    expect(parseChaOfficeOutput(out)).toEqual({ a: 1, b: [1, 2] })
   })
 
   it('returns the root of a pretty-printed array followed by logs', () => {
     const out = '{\n  "items": [\n    { "id": 1 },\n    { "id": 2 }\n  ]\n}\n[INFO] done'
-    expect(parseChatOfficeOutput(out)).toEqual({ items: [{ id: 1 }, { id: 2 }] })
+    expect(parseChaOfficeOutput(out)).toEqual({ items: [{ id: 1 }, { id: 2 }] })
   })
 
   it('throws when no JSON present', () => {
-    expect(() => parseChatOfficeOutput('[INFO] nothing here')).toThrow()
+    expect(() => parseChaOfficeOutput('[INFO] nothing here')).toThrow()
   })
 })
 
 describe('chatofficeChildEnv', () => {
-  afterEach(() => setChatOfficeProxyUrl(''))
+  afterEach(() => setChaOfficeProxyUrl(''))
 
   it('sets ELECTRON_RUN_AS_NODE and no proxy vars when no proxy is known', () => {
     const env = chatofficeChildEnv({ PATH: '/bin' })
@@ -59,7 +59,7 @@ describe('chatofficeChildEnv', () => {
   })
 
   it('forwards the proxy registered by the main-process bootstrap', () => {
-    setChatOfficeProxyUrl('http://127.0.0.1:7890')
+    setChaOfficeProxyUrl('http://127.0.0.1:7890')
     const env = chatofficeChildEnv({ PATH: '/bin' })
     expect(env.NODE_USE_ENV_PROXY).toBe('1')
     expect(env.HTTPS_PROXY).toBe('http://127.0.0.1:7890')
@@ -73,13 +73,13 @@ describe('chatofficeChildEnv', () => {
   })
 
   it('prefers the registered proxy over env vars', () => {
-    setChatOfficeProxyUrl('http://127.0.0.1:7890')
+    setChaOfficeProxyUrl('http://127.0.0.1:7890')
     const env = chatofficeChildEnv({ HTTPS_PROXY: 'http://10.0.0.1:8080' })
     expect(env.HTTPS_PROXY).toBe('http://127.0.0.1:7890')
   })
 
   it('scrubs lowercase/ALL_PROXY variants so they cannot override the selection', () => {
-    setChatOfficeProxyUrl('http://127.0.0.1:7890')
+    setChaOfficeProxyUrl('http://127.0.0.1:7890')
     const env = chatofficeChildEnv({
       https_proxy: 'socks5://127.0.0.1:1080',
       http_proxy: 'http://10.0.0.1:8080',
@@ -92,14 +92,14 @@ describe('chatofficeChildEnv', () => {
   })
 
   it('ignores SOCKS proxies (undici env proxy is http(s)-only)', () => {
-    setChatOfficeProxyUrl('socks5://127.0.0.1:1080')
+    setChaOfficeProxyUrl('socks5://127.0.0.1:1080')
     const env = chatofficeChildEnv({ ALL_PROXY: 'socks5://127.0.0.1:1080' })
     expect(env.NODE_USE_ENV_PROXY).toBeUndefined()
     expect(env.HTTPS_PROXY).toBeUndefined()
   })
 })
 
-describe('parseChatOfficeWebSearch', () => {
+describe('parseChaOfficeWebSearch', () => {
   it('maps organic_results and respects maxResults', () => {
     const raw = {
       status: 'ok',
@@ -111,7 +111,7 @@ describe('parseChatOfficeWebSearch', () => {
         ],
       },
     }
-    const r = parseChatOfficeWebSearch(raw, 2)
+    const r = parseChaOfficeWebSearch(raw, 2)
     expect(r.results).toEqual([
       { title: 'A', url: 'https://a.com', snippet: 'sa' },
       { title: 'B', url: 'https://b.com', snippet: 'sb' },
@@ -120,7 +120,7 @@ describe('parseChatOfficeWebSearch', () => {
   })
 
   it('tolerates missing data', () => {
-    expect(parseChatOfficeWebSearch({ status: 'ok' }, 5).results).toEqual([])
+    expect(parseChaOfficeWebSearch({ status: 'ok' }, 5).results).toEqual([])
   })
 
   it('clamps maxResults and truncates long fields', () => {
@@ -128,14 +128,14 @@ describe('parseChatOfficeWebSearch', () => {
     const raw = {
       data: { organic_results: [{ title: big, link: 'https://a.com', snippet: big }] },
     }
-    const r = parseChatOfficeWebSearch(raw, 1e9)
+    const r = parseChaOfficeWebSearch(raw, 1e9)
     expect(r.results).toHaveLength(1)
     expect(r.results[0]!.snippet.length).toBeLessThanOrEqual(2000)
-    expect(parseChatOfficeWebSearch(raw, NaN).results).toHaveLength(1)
+    expect(parseChaOfficeWebSearch(raw, NaN).results).toHaveLength(1)
   })
 })
 
-describe('parseChatOfficeImageSearch', () => {
+describe('parseChaOfficeImageSearch', () => {
   it('maps image entries with numeric size coercion', () => {
     const raw = {
       status: 'ok',
@@ -150,7 +150,7 @@ describe('parseChatOfficeImageSearch', () => {
         },
       ],
     }
-    const images = parseChatOfficeImageSearch(raw, 8)
+    const images = parseChaOfficeImageSearch(raw, 8)
     expect(images).toEqual([
       {
         title: 'T1',
@@ -171,7 +171,7 @@ describe('parseChatOfficeImageSearch', () => {
         { image_url: 'https://ok.com/a.jpg', title: 'ok' },
       ],
     }
-    const images = parseChatOfficeImageSearch(raw, 8)
+    const images = parseChaOfficeImageSearch(raw, 8)
     expect(images.map((i) => i.title)).toEqual(['ok'])
   })
 
@@ -183,12 +183,12 @@ describe('parseChatOfficeImageSearch', () => {
         { image_url: 'https://media.gettyimages.com/x.jpg', title: 'blocked' },
       ],
     }
-    const images = parseChatOfficeImageSearch(raw, 8)
+    const images = parseChaOfficeImageSearch(raw, 8)
     expect(images.map((i) => i.title)).toEqual(['review', 'query'])
   })
 })
 
-describe('parseChatOfficePastProjects', () => {
+describe('parseChaOfficePastProjects', () => {
   // real `chatoffice projects --artifact_types slides` shape (trimmed)
   const raw = {
     version: 1,
@@ -228,7 +228,7 @@ describe('parseChatOfficePastProjects', () => {
   }
 
   it('maps projects, preferring session_state project_url and deriving the rest', () => {
-    const page = parseChatOfficePastProjects(raw)
+    const page = parseChaOfficePastProjects(raw)
     expect(page.total).toBe(222)
     expect(page.hasMore).toBe(true)
     expect(page.projects).toEqual([
@@ -250,7 +250,7 @@ describe('parseChatOfficePastProjects', () => {
   })
 
   it('skips entries without project_id and tolerates missing data', () => {
-    const page = parseChatOfficePastProjects({
+    const page = parseChaOfficePastProjects({
       status: 'ok',
       data: { projects: [{ title: 'no id' }], has_more: false },
     })
@@ -260,7 +260,7 @@ describe('parseChatOfficePastProjects', () => {
   })
 
   it('tolerates a completely empty response', () => {
-    expect(parseChatOfficePastProjects({ status: 'ok' })).toEqual({
+    expect(parseChaOfficePastProjects({ status: 'ok' })).toEqual({
       projects: [],
       total: 0,
       hasMore: false,
@@ -268,7 +268,7 @@ describe('parseChatOfficePastProjects', () => {
   })
 })
 
-describe('parseChatOfficeConvertResult', () => {
+describe('parseChaOfficeConvertResult', () => {
   it('extracts the markdown link from the result text', () => {
     const raw = {
       status: 'ok',
@@ -277,23 +277,23 @@ describe('parseChatOfficeConvertResult', () => {
           'Conversion complete. Download links:\n[report.docx](https://www.genspark.ai/api/files/s/JmS2WJHv)\n',
       },
     }
-    expect(parseChatOfficeConvertResult(raw)).toBe('https://www.genspark.ai/api/files/s/JmS2WJHv')
+    expect(parseChaOfficeConvertResult(raw)).toBe('https://www.genspark.ai/api/files/s/JmS2WJHv')
   })
 
   it('falls back to a bare URL without markdown', () => {
     const raw = { status: 'ok', data: { result: 'Done: https://example.com/f.docx' } }
-    expect(parseChatOfficeConvertResult(raw)).toBe('https://example.com/f.docx')
+    expect(parseChaOfficeConvertResult(raw)).toBe('https://example.com/f.docx')
   })
 
   it('throws when the result has no link', () => {
     expect(() =>
-      parseChatOfficeConvertResult({ status: 'ok', data: { result: 'no link' } }),
+      parseChaOfficeConvertResult({ status: 'ok', data: { result: 'no link' } }),
     ).toThrow()
-    expect(() => parseChatOfficeConvertResult({ status: 'ok' })).toThrow()
+    expect(() => parseChaOfficeConvertResult({ status: 'ok' })).toThrow()
   })
 })
 
-describe('parseChatOfficeGeneratedImage', () => {
+describe('parseChaOfficeGeneratedImage', () => {
   it('prefers no-watermark url', () => {
     const raw = {
       data: {
@@ -306,7 +306,7 @@ describe('parseChatOfficeGeneratedImage', () => {
         ],
       },
     }
-    expect(parseChatOfficeGeneratedImage(raw)).toEqual({
+    expect(parseChaOfficeGeneratedImage(raw)).toEqual({
       url: 'https://cdn/clean.png',
       taskId: 't1',
     })
@@ -314,26 +314,26 @@ describe('parseChatOfficeGeneratedImage', () => {
 
   it('falls back to image_urls, throws on empty', () => {
     expect(
-      parseChatOfficeGeneratedImage({
+      parseChaOfficeGeneratedImage({
         data: { generated_images: [{ image_urls: ['https://cdn/a.png'] }] },
       }).url,
     ).toBe('https://cdn/a.png')
-    expect(() => parseChatOfficeGeneratedImage({ data: { generated_images: [] } })).toThrow()
+    expect(() => parseChaOfficeGeneratedImage({ data: { generated_images: [] } })).toThrow()
   })
 })
 
-describe('extractChatOfficeText', () => {
+describe('extractChaOfficeText', () => {
   it('returns string data directly', () => {
-    expect(extractChatOfficeText({ data: 'hello' })).toBe('hello')
+    expect(extractChaOfficeText({ data: 'hello' })).toBe('hello')
   })
 
   it('picks known text fields', () => {
-    expect(extractChatOfficeText({ data: { analysis: 'deep' } })).toBe('deep')
-    expect(extractChatOfficeText({ data: { transcript: 'words' } })).toBe('words')
+    expect(extractChaOfficeText({ data: { analysis: 'deep' } })).toBe('deep')
+    expect(extractChaOfficeText({ data: { transcript: 'words' } })).toBe('words')
   })
 
   it('stringifies unknown shapes', () => {
-    expect(extractChatOfficeText({ data: { foo: 1 } })).toBe('{"foo":1}')
+    expect(extractChaOfficeText({ data: { foo: 1 } })).toBe('{"foo":1}')
   })
 })
 

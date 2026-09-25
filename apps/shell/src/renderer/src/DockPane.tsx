@@ -42,7 +42,7 @@ export function DockPane({
 
   // live dock list (absent on web/dsh until the shim lands → stays empty)
   useEffect(() => {
-    const dock = window.chatOfficeDock
+    const dock = window.chaOfficeDock
     if (!dock) return
     let alive = true
     void dock.list().then((list) => {
@@ -71,7 +71,7 @@ export function DockPane({
     cancelAnimationFrame(rafRef.current)
     rafRef.current = requestAnimationFrame(() => {
       const el = areaRef.current
-      const dock = window.chatOfficeDock
+      const dock = window.chaOfficeDock
       if (!el || !dock) return
       const rect = el.getBoundingClientRect()
       dock.setRect({ x: rect.x, y: rect.y, width: rect.width, height: rect.height })
@@ -94,13 +94,13 @@ export function DockPane({
   }, [hasTabs, mirror])
 
   const activate = (id: string) => {
-    void window.chatOfficeDock?.activate(id)
+    void window.chaOfficeDock?.activate(id)
   }
   const undock = (id: string) => {
-    void window.chatOfficeDock?.undock(id)
+    void window.chaOfficeDock?.undock(id)
   }
   const close = (id: string) => {
-    void window.chatOfficeDock?.close(id)
+    void window.chaOfficeDock?.close(id)
   }
 
   return (

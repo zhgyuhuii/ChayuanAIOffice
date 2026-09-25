@@ -1,4 +1,4 @@
-/** dialogs strings, nl (merged with ChatOffice-local keys) */
+/** dialogs strings, nl (merged with ChaOffice-local keys) */
 import type { zh } from './zh'
 export const nl = {
   dlgAllowEditRangesTitle: 'Bewerken van bereiken toestaan',

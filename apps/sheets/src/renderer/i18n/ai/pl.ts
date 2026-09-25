@@ -1,4 +1,4 @@
-/** ai strings, pl (merged with ChatOffice-local keys) */
+/** ai strings, pl (merged with ChaOffice-local keys) */
 export const pl = {
   aiComposerPlaceholderBuild: 'Opisz tabelę, dane lub wykres do utworzenia…',
   aiEmptyBuildTitle: 'Pozwól AI zbudować ten skoroszyt',
@@ -45,13 +45,13 @@ export const pl = {
   aiInstructionAria: 'Instrukcja dla AI',
   aiFileTooltip: 'SHA-256 {sha}\\nZapis nadpisuje tylko edytowane wpisy; cała reszta pozostaje bez zmian.',
   aiFileMeta: 'Arkusze: {sheets} · wpisy: {entries}',
-  aiChatOfficeAccount: 'Konto ChaAI Office',
+  aiChaOfficeAccount: 'Konto ChaAI Office',
   aiAccountChecking: 'Sprawdzanie…',
   aiLoggedIn: 'Zalogowano',
   aiLoggedInAs: 'Zalogowano: {email}',
   aiNotLoggedIn: 'Nie zalogowano (funkcje AI wymagają konta ChaAI Office)',
   aiWaitingBrowserLogin: 'Oczekiwanie na logowanie w przeglądarce…',
-  aiLoginChatOffice: 'Zaloguj się do ChaAI Office',
+  aiLoginChaOffice: 'Zaloguj się do ChaAI Office',
   aiModel: 'Model',
   aiCancel: 'Anuluj',
   aiSave: 'Zapisz',
@@ -99,7 +99,7 @@ export const pl = {
   aiScopeColumns: 'Zaznaczono: {names} (kolumny: {count})',
   aiScopeRangeTip: 'AI rozumie „tę kolumnę / te wiersze / zaznaczoną część” jako ten zakres; po wysłaniu pozostaje on stały przez cały przebieg',
   aiScopeClearTitle: 'Usuń zakres zaznaczenia i obejmij cały arkusz',
-  aiChatOfficeLoginBtn: 'Zaloguj się',
+  aiChaOfficeLoginBtn: 'Zaloguj się',
   aiPanelTitle: 'Asystent AI',
   aiTabChat: 'Czat',
   aiTabAssistant: 'Asystent',

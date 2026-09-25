@@ -121,7 +121,7 @@ describe('createIpcTransport', () => {
     const { cb, emit } = setup(undefined, () => 'credits used up')
     emit({
       type: 'error',
-      error: 'Your ChatOffice credits have been exhausted.',
+      error: 'Your ChaOffice credits have been exhausted.',
       errorCode: 'credits',
     })
     expect(cb.onError).toHaveBeenCalledWith('credits used up')
@@ -151,10 +151,10 @@ describe('createIpcTransport', () => {
     const { cb, emit } = setup()
     emit({
       type: 'error',
-      error: 'Your ChatOffice credits have been exhausted.',
+      error: 'Your ChaOffice credits have been exhausted.',
       errorCode: 'credits',
     })
-    expect(cb.onError).toHaveBeenCalledWith('Your ChatOffice credits have been exhausted.')
+    expect(cb.onError).toHaveBeenCalledWith('Your ChaOffice credits have been exhausted.')
   })
 
   it('maps an overloaded error code to the localized busy message', () => {

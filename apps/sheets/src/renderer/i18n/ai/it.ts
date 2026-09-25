@@ -1,4 +1,4 @@
-/** ai strings, it (merged with ChatOffice-local keys) */
+/** ai strings, it (merged with ChaOffice-local keys) */
 export const it = {
   aiComposerPlaceholderBuild: 'Descrivi la tabella, i dati o il grafico da creare…',
   aiEmptyBuildTitle: 'Lascia che l\'IA costruisca questa cartella di lavoro',
@@ -45,13 +45,13 @@ export const it = {
   aiInstructionAria: 'Istruzione per l\'IA',
   aiFileTooltip: 'SHA-256 {sha}\\nIl salvataggio riscrive solo le voci modificate; tutto il resto viene conservato.',
   aiFileMeta: '{sheets} fogli · {entries} voci',
-  aiChatOfficeAccount: 'Account ChaAI Office',
+  aiChaOfficeAccount: 'Account ChaAI Office',
   aiAccountChecking: 'Verifica in corso…',
   aiLoggedIn: 'Accesso effettuato',
   aiLoggedInAs: 'Accesso effettuato: {email}',
   aiNotLoggedIn: 'Accesso non effettuato (le funzioni IA richiedono un account ChaAI Office)',
   aiWaitingBrowserLogin: 'In attesa dell\'accesso nel browser…',
-  aiLoginChatOffice: 'Accedi a ChaAI Office',
+  aiLoginChaOffice: 'Accedi a ChaAI Office',
   aiModel: 'Modello',
   aiCancel: 'Annulla',
   aiSave: 'Salva',
@@ -99,7 +99,7 @@ export const it = {
   aiScopeColumns: 'Selezionato: {names} ({count} colonne)',
   aiScopeRangeTip: 'L\'IA interpreta «questa colonna / queste righe / la parte selezionata» come questo intervallo, che all\'invio resta fisso per tutta l\'esecuzione',
   aiScopeClearTitle: 'Rimuovi l\'ambito dell\'intervallo e usa tutto il foglio',
-  aiChatOfficeLoginBtn: 'Accedi',
+  aiChaOfficeLoginBtn: 'Accedi',
   aiPanelTitle: 'Assistente IA',
   aiTabChat: 'Chat',
   aiTabAssistant: 'Assistente',

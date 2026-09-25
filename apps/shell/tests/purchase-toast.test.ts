@@ -17,7 +17,7 @@ type EventListener = (payload: { kind: 'open-page' } | { kind: 'reminder' }) => 
 
 function mountWithBridge(onEvent: EventListener) {
   let listener: EventListener | null = null
-  Object.defineProperty(window, 'chatOfficePurchase', {
+  Object.defineProperty(window, 'chaOfficePurchase', {
     configurable: true,
     value: {
       onEvent: (l: EventListener) => {
@@ -60,7 +60,7 @@ describe('PurchaseToast', () => {
   })
   afterEach(() => {
     vi.useRealTimers()
-    delete (window as { chatOfficePurchase?: unknown }).chatOfficePurchase
+    delete (window as { chaOfficePurchase?: unknown }).chaOfficePurchase
     document.body.innerHTML = ''
     vi.restoreAllMocks()
   })

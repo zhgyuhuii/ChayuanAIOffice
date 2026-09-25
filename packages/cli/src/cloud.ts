@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
-import { setChatOfficeProxyUrl } from '@chatoffice/ai-search'
+import { setChaOfficeProxyUrl } from '@chatoffice/ai-search'
 import { chatofficeUserDataDir } from './gui'
 import { packagedResourcesDir } from './resources'
 
@@ -37,7 +37,7 @@ export async function prepareCloud(env: NodeJS.ProcessEnv): Promise<void> {
   prepared = true
   const proxy = proxyUrlFromEnv(env)
   if (proxy) {
-    setChatOfficeProxyUrl(proxy)
+    setChaOfficeProxyUrl(proxy)
     const { ProxyAgent, setGlobalDispatcher } = await import('undici')
     setGlobalDispatcher(new ProxyAgent(proxy))
   }

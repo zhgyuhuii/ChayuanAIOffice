@@ -27,7 +27,7 @@ vi.mock('electron', () => ({
 
 import '../src/preload/index'
 
-const homeApi = electronMocks.exposed.get('chatOffice') as HomeApi
+const homeApi = electronMocks.exposed.get('chaOffice') as HomeApi
 
 beforeEach(() => {
   electronMocks.invoke.mockReset()

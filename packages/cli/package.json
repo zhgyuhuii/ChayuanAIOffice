@@ -4,7 +4,7 @@
   "license": "Apache-2.0",
   "private": true,
   "type": "module",
-  "description": "chatoffice: the ChatOffice command line (create, convert, read, edit and render documents) built on the same engines as the app; runs headless on the app's bundled Node runtime",
+  "description": "chatoffice: the ChaOffice command line (create, convert, read, edit and render documents) built on the same engines as the app; runs headless on the app's bundled Node runtime",
   "exports": {
     ".": "./src/index.ts",
     "./install": "./src/install.ts",

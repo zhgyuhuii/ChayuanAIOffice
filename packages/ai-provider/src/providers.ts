@@ -3,7 +3,7 @@ import { defaultAiSearchSettings, resolveAiSearchSettings } from './search-setti
 import type { AiProviderId, AiProviderMeta, AiSettings, LegacyAiSettings } from './types'
 
 /**
- * ChatOffice server-side LLM proxy endpoints. All three protocols share the
+ * ChaOffice server-side LLM proxy endpoints. All three protocols share the
  * api_key from the chatoffice login; model ids follow the proxy's own naming scheme,
  * which differs from the official vendor ids.
  */
@@ -13,9 +13,9 @@ export const CHATOFFICE_LLM_BASE_URLS = {
 } as const
 
 /**
- * Splits ChatOffice usage out of the proxy's default "Claw" billing bucket
+ * Splits ChaOffice usage out of the proxy's default "Claw" billing bucket
  * (the backend attributes chatoffice-key traffic by X-Agent-Type). Only sent to the
- * ChatOffice proxy — never to direct vendor APIs.
+ * ChaOffice proxy — never to direct vendor APIs.
  */
 export const CHATOFFICE_AGENT_TYPE = 'chatoffice'
 

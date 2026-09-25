@@ -26,7 +26,7 @@ declare global {
   interface Window {
     /** Present only in the Electron shell (preload bridge); the web/dsh
      * iframe forms lack it, which is what keeps purchase UI silent there. */
-    chatOfficePurchase?: {
+    chaOfficePurchase?: {
       state(): Promise<import('../../shared/purchase-api').PurchaseSnapshot>
       activate(serial: string): Promise<import('../../shared/purchase-api').PurchaseActivateResult>
       onEvent(listener: (payload: import('../../shared/purchase-api').PurchaseEventPayload) => void): () => void
@@ -69,7 +69,7 @@ interface PurchaseSnapshotLite {
 }
 
 function snapshotBridge(): Promise<PurchaseSnapshotLite> | null {
-  const bridge = window.chatOfficePurchase
+  const bridge = window.chaOfficePurchase
   if (!bridge) return null
   return bridge.state().then((s) => ({
     fingerprint: s.fingerprint,
@@ -151,21 +151,21 @@ export function PurchaseModal() {
     // useShellModalSurface): without this the dialog paints UNDER the
     // covering editor WebContentsView.
     document.documentElement.classList.add('chatoffice-shell-modal')
-    if ('chatOfficeTabs' in window) void window.chatOfficeTabs.setShellModalOpen(true)
+    if ('chaOfficeTabs' in window) void window.chaOfficeTabs.setShellModalOpen(true)
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(false)
     }
     window.addEventListener('keydown', onKey)
     return () => {
       document.documentElement.classList.remove('chatoffice-shell-modal')
-      if ('chatOfficeTabs' in window) void window.chatOfficeTabs.setShellModalOpen(false)
+      if ('chaOfficeTabs' in window) void window.chaOfficeTabs.setShellModalOpen(false)
       window.removeEventListener('keydown', onKey)
     }
   }, [open, refresh])
 
   if (!open) return null
 
-  const bridge = window.chatOfficePurchase
+  const bridge = window.chaOfficePurchase
   const entitled = state?.entitled === true
 
   const flashCopied = (what: 'fp' | 'link') => {
@@ -185,7 +185,7 @@ export function PurchaseModal() {
 
   const openInBrowser = () => {
     if (!activeUrl) return
-    void window.chatOffice?.openExternal?.(activeUrl)
+    void window.chaOffice?.openExternal?.(activeUrl)
   }
 
   const grantText = (modules: number, days: number): string => {

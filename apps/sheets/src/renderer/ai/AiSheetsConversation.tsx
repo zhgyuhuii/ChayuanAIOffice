@@ -424,7 +424,7 @@ export function AiSheetsConversation({
             return next
           })
           void window.desktopApi
-            .aiChatOfficeStatus()
+            .aiChaOfficeStatus()
             .then((status) => {
               if (status.loggedIn) return
               setChat((previous) => {

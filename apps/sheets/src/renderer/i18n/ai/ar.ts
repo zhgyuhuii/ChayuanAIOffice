@@ -1,4 +1,4 @@
-/** ai strings, ar (merged with ChatOffice-local keys) */
+/** ai strings, ar (merged with ChaOffice-local keys) */
 export const ar = {
   aiComposerPlaceholderBuild: 'صف الجدول أو البيانات أو المخطط المطلوب إنشاؤه…',
   aiEmptyBuildTitle: 'دع الذكاء الاصطناعي ينشئ هذا المصنف لك',
@@ -45,13 +45,13 @@ export const ar = {
   aiInstructionAria: 'تعليمات الذكاء الاصطناعي',
   aiFileTooltip: 'SHA-256 {sha}\\nعند الحفظ تتم إعادة كتابة الإدخالات المحرَّرة فقط؛ ويُحتفظ بكل ما عداها كما هو.',
   aiFileMeta: '{sheets} أوراق · {entries} إدخالات',
-  aiChatOfficeAccount: 'حساب ChaAI Office',
+  aiChaOfficeAccount: 'حساب ChaAI Office',
   aiAccountChecking: 'جارٍ التحقق…',
   aiLoggedIn: 'تم تسجيل الدخول',
   aiLoggedInAs: 'تم تسجيل الدخول: {email}',
   aiNotLoggedIn: 'لم يتم تسجيل الدخول (تتطلب ميزات الذكاء الاصطناعي حساب ChaAI Office)',
   aiWaitingBrowserLogin: 'في انتظار تسجيل الدخول من المتصفح…',
-  aiLoginChatOffice: 'تسجيل الدخول إلى ChaAI Office',
+  aiLoginChaOffice: 'تسجيل الدخول إلى ChaAI Office',
   aiModel: 'النموذج',
   aiCancel: 'إلغاء',
   aiSave: 'حفظ',
@@ -99,7 +99,7 @@ export const ar = {
   aiScopeColumns: 'المحدد: {names} ({count} أعمدة)',
   aiScopeRangeTip: 'يفهم الذكاء الاصطناعي "هذا العمود / هذه الصفوف / الجزء المحدد" على أنه هذا النطاق، ويُثبَّت طوال التشغيل بعد الإرسال',
   aiScopeClearTitle: 'إلغاء نطاق التحديد واستهداف الورقة بأكملها',
-  aiChatOfficeLoginBtn: 'تسجيل الدخول',
+  aiChaOfficeLoginBtn: 'تسجيل الدخول',
   aiPanelTitle: 'مساعد الذكاء الاصطناعي',
   aiTabChat: 'الدردشة',
   aiTabAssistant: 'المساعد',

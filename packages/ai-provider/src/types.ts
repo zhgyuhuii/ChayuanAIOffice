@@ -121,8 +121,8 @@ export interface AiStreamRequestV2 {
   signal?: AbortSignal
 }
 
-/** ChatOffice account status (chatoffice login state; the sole auth source for AI features) */
-export interface ChatOfficeAccountStatus {
+/** ChaOffice account status (chatoffice login state; the sole auth source for AI features) */
+export interface ChaOfficeAccountStatus {
   loggedIn: boolean
   email?: string
 }
@@ -246,7 +246,7 @@ export interface AiSearchSettings {
 }
 
 export interface AiSettings {
-  /** media (generate_image / analyze_media) provider settings; absent = ChatOffice CLI behind the login gate */
+  /** media (generate_image / analyze_media) provider settings; absent = ChaOffice CLI behind the login gate */
   media?: AiMediaSettings | undefined
   /** web/image search backend settings; absent = CLI when signed in, then the free chain */
   search?: AiSearchSettings | undefined

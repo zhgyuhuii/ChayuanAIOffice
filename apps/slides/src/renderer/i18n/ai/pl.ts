@@ -276,7 +276,7 @@ export const pl = {
   aiSumBackground: "Ustawiono tło slajdu {n}",
   aiSumSpeakerNotes: "Zapisano notatki prelegenta na slajdzie {n}",
   aiSumDeleteElement: "Usunięto element na slajdzie {n}",
-  aiChatOfficeLoginBtn: "Zaloguj się",
+  aiChaOfficeLoginBtn: "Zaloguj się",
   aiTabChat: "Czat",
   aiTabAssistant: "Asystent",
   aiAskDesc: "Nadaj wybranemu elementowi instrukcję edycji",

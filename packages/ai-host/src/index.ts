@@ -3,12 +3,12 @@ import {
   createFileSource,
   type AiModelSelection,
   type AiRuntime,
-  type AiRuntimeChatOffice,
+  type AiRuntimeChaOffice,
   type AiSettingsV2,
   type AiStreamChunk,
   type DiscoveryTarget,
   type FileSourceFs,
-  type ChatOfficeAccountStatus,
+  type ChaOfficeAccountStatus,
 } from '@chatoffice/ai-provider'
 import {
   imageSearch,
@@ -40,14 +40,14 @@ export {
 /**
  * BYOK-only image generation for mains that host no shared ai:* registrar
  * (markdown / pdf): the per-app *:ai-generate-image channel wraps this instead
- * of going straight to the ChatOffice cloud. Resolution order matches the
+ * of going straight to the ChaOffice cloud. Resolution order matches the
  * registrar-backed editors (docs/sheets/slides): the settings default image
  * model (设置 → 生图、媒体与搜索); no cloud fallback exists.
  */
 export function createByokImageHandler(deps: {
   settingsPath: () => string
   fs: FileSourceFs
-  chatoffice: AiRuntimeChatOffice
+  chatoffice: AiRuntimeChaOffice
 }): (req: {
   prompt: string
   aspectRatio?: string
@@ -55,7 +55,7 @@ export function createByokImageHandler(deps: {
   const RUNTIME_ERRORS: Record<string, string> = {
     errNoModel: 'No usable model configured',
     errNoApiKey: 'Missing API key',
-    errChatOfficeNotLoggedIn: 'Not signed in to ChatOffice',
+    errChaOfficeNotLoggedIn: 'Not signed in to ChaOffice',
     errNoImageModel: 'No image model configured (Settings → 生图、媒体与搜索)',
   }
   const runtime = createAiRuntime({
@@ -135,7 +135,7 @@ export interface SharedAiIpcDeps {
   settingsPath: string
   /** injected Node fs (atomic write + watch live in the app) */
   fs: FileSourceFs
-  chatoffice: AiRuntimeChatOffice
+  chatoffice: AiRuntimeChaOffice
   /** opens the chatoffice device-code login flow (app closes over shell.openExternal) */
   chatofficeLogin: () => void
   translate: (key: string, params?: Record<string, unknown>) => string
@@ -174,7 +174,7 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
 
   ipcMain.handle(
     'ai:chatoffice-status',
-    async (_event, withEmail?: boolean): Promise<ChatOfficeAccountStatus> =>
+    async (_event, withEmail?: boolean): Promise<ChaOfficeAccountStatus> =>
       chatoffice.status(!!withEmail),
   )
 

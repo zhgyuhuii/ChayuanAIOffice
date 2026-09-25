@@ -7,7 +7,7 @@ import bootLogo from './assets/boot-logo.png'
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
 import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url'
-import { AiPanel, ChatOfficeMark } from './ai/AiPanel'
+import { AiPanel, ChaOfficeMark } from './ai/AiPanel'
 import { AiAskPopover, type AskAnchorRect } from './AiAskPopover'
 import { loadSavedAnnots } from './annotation-catalog'
 import {
@@ -6144,7 +6144,7 @@ export default function App() {
       <div className="ribbon-body" data-ribbon-body="">
         {ribbonTab === 'home' && (
           <>
-            {/* ---- ChatOffice AI one-click actions (entry lives in the tab-row bubble) ---- */}
+            {/* ---- ChaOffice AI one-click actions (entry lives in the tab-row bubble) ---- */}
             <div className="ribbon-group">
               <div className="ribbon-group-items">
                 <button
@@ -6281,7 +6281,7 @@ export default function App() {
                 >
                   <span className="rb-big-icon">
                     <span className="ai-feature-icon" aria-hidden="true">
-                      <ChatOfficeMark size={20} />
+                      <ChaOfficeMark size={20} />
                     </span>
                   </span>
                   <span>{t('aiProcessNotesBtn')}</span>
@@ -6461,7 +6461,7 @@ export default function App() {
                 >
                   <span className="rb-big-icon">
                     <span className="ai-feature-icon" aria-hidden="true">
-                      <ChatOfficeMark size={20} />
+                      <ChaOfficeMark size={20} />
                     </span>
                   </span>
                   <span>{t('aiFillFormBtn')}</span>

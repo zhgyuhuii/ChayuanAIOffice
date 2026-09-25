@@ -10,11 +10,11 @@ import {
   loadChatofficeAuth,
   resetChatofficeAuthCache,
   startChatofficeLogin,
-  type ChatOfficeLoginProgress,
+  type ChaOfficeLoginProgress,
 } from '../src/chatoffice-auth'
 import {
   chatofficeCliApiKey,
-  setChatOfficeProxyUrl,
+  setChaOfficeProxyUrl,
   watchChatofficeApiKey,
 } from '../src/chatoffice'
 
@@ -35,7 +35,7 @@ afterEach(() => {
   rmSync(dir, { recursive: true, force: true })
   delete process.env.CHATOFFICE_AUTH_DIR
   delete process.env.CHATOFFICE_API_KEY
-  setChatOfficeProxyUrl('')
+  setChaOfficeProxyUrl('')
   resetChatofficeAuthCache()
 })
 
@@ -89,8 +89,8 @@ function stubFlow(opts: { pendingPolls?: number; createResponse?: unknown } = {}
   return fetchMock
 }
 
-async function loginAndCollect(): Promise<ChatOfficeLoginProgress[]> {
-  const events: ChatOfficeLoginProgress[] = []
+async function loginAndCollect(): Promise<ChaOfficeLoginProgress[]> {
+  const events: ChaOfficeLoginProgress[] = []
   startChatofficeLogin((progress) => events.push(progress))
   await vi.waitFor(() => {
     expect(['success', 'error']).toContain(events.at(-1)?.phase)
@@ -145,7 +145,7 @@ describe('startChatofficeLogin', () => {
   })
 
   it('retries through the registered proxy channel when the direct fetch cannot connect', async () => {
-    setChatOfficeProxyUrl('http://127.0.0.1:7890')
+    setChaOfficeProxyUrl('http://127.0.0.1:7890')
     const flow = stubFlow()
     let deviceCodeCalls = 0
     vi.stubGlobal(
@@ -165,7 +165,7 @@ describe('startChatofficeLogin', () => {
   })
 
   it('treats a gateway status (502) as channel failure: fails over without adopting the channel', async () => {
-    setChatOfficeProxyUrl('http://127.0.0.1:7890')
+    setChaOfficeProxyUrl('http://127.0.0.1:7890')
     const fetchMock = vi.fn(async () => jsonResponse({}, { status: 502 }))
     vi.stubGlobal('fetch', fetchMock)
     const events = await loginAndCollect()
@@ -176,7 +176,7 @@ describe('startChatofficeLogin', () => {
   })
 
   it('counts an endpoint 4xx (authorization_pending) as channel success', async () => {
-    setChatOfficeProxyUrl('http://127.0.0.1:7890')
+    setChaOfficeProxyUrl('http://127.0.0.1:7890')
     const flow = stubFlow({ pendingPolls: 0 })
     let deviceCodeCalls = 0
     let tokenCalls = 0
@@ -266,7 +266,7 @@ describe('startChatofficeLogin', () => {
         return jsonResponse({ status: 'pending' })
       }),
     )
-    const first: ChatOfficeLoginProgress[] = []
+    const first: ChaOfficeLoginProgress[] = []
     startChatofficeLogin((progress) => first.push(progress))
     await vi.waitFor(() => expect(first.length).toBeGreaterThan(0))
     expect(chatofficeLoginInFlight()).toBe(true)

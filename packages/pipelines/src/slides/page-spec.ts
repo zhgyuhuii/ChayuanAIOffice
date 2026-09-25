@@ -4,7 +4,7 @@
  * PPTX with pptx-engine primitives — no HTML intermediate, no conversion step.
  *
  * The spec's element model mirrors what an editable deck needs (and what
- * ChatOffice's gen_pptx capture emits): absolutely positioned shapes, images
+ * ChaOffice's gen_pptx capture emits): absolutely positioned shapes, images
  * (center-cropped to their frame) and text runs on a fixed px canvas.
  *
  * Host facilities (network fetch, image decoding, font metrics) are injected so

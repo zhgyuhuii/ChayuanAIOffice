@@ -1,4 +1,4 @@
-/** dialogs strings, zh-TW (merged with ChatOffice-local keys) */
+/** dialogs strings, zh-TW (merged with ChaOffice-local keys) */
 import type { zh } from './zh'
 export const zhTW = {
   dlgAllowEditRangesTitle: '允許編輯範圍',

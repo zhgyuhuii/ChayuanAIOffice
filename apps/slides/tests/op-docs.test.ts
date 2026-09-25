@@ -46,7 +46,7 @@ describe('op docs coverage', () => {
   })
 
   it('every block carries a compact signature and a body', () => {
-    // adapted: 69b4ce0 — ChatOffice-local ops carry sig-only docs (their
+    // adapted: 69b4ce0 — ChaOffice-local ops carry sig-only docs (their
     // prose lives in the local skill prompt, not the upstream ops/*.md)
     const LOCAL_OPS = new Set(Object.keys(LOCAL_OP_DOCS))
     for (const [name, doc] of Object.entries(OP_DOCS)) {

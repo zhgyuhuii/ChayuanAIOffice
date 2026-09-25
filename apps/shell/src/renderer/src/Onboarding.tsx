@@ -186,7 +186,7 @@ export function Onboarding({ onDone }: OnboardingProps) {
                   <p className="onb-star-hint">{t('onbStarHint')}</p>
                   <button
                     className="onb-star-btn"
-                    onClick={() => void window.chatOffice.openGitHubRepo()}
+                    onClick={() => void window.chaOffice.openGitHubRepo()}
                   >
                     <svg
                       width="13"

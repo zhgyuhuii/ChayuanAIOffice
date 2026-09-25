@@ -38,10 +38,10 @@ cpSync(join(root, 'dsh-plugin', 'embedded'), join(out, 'embedded'), { recursive:
 
 writeFileSync(
   join(out, 'README.md'),
-  `# chatop × ChatOffice bundle (v${version})
+  `# chatop × ChaOffice bundle (v${version})
 
 This bundle gives the chatop desktop (chayuan-harness) a fully offline
-ChatOffice suite (plan v2.1, form 3).
+ChaOffice suite (plan v2.1, form 3).
 
 \`\`\`
 embedded/     self-contained BFF sidecar (run: node --import tsx
@@ -55,7 +55,7 @@ Integration (chayuan-harness side):
 1. Ship this directory as an app resource; stage it into userData/plugins with
    the same integrity self-heal the bundled chatop-shell plugin uses.
 2. In desktop main, call host-side.cjs \`start({ pluginDir, runtimeDir, log })\`
-   at startup and load the returned \`origin\` in the ChatOffice app windows.
+   at startup and load the returned \`origin\` in the ChaOffice app windows.
 3. The editor SPA: either point windows at the form-2 web bundle shipped
    alongside (\`npm run build:web\` output) or at the SaaS origin when online.
 

@@ -32,7 +32,7 @@ chatoffice convert report.docx --to html               # the Word editor's stand
 chatoffice convert page.html --to docx                 # html2docx, same as the HTML app's Export as Word
 chatoffice convert report.docx --to md                 # GFM via the markdown editor's serializer
 chatoffice convert book.xlsx --to csv [--sheet Data]   # one sheet, cell text as displayed, UTF-8 BOM, CRLF
-chatoffice capabilities --json                        # which cloud features ChatOffice has configured (no network call)
+chatoffice capabilities --json                        # which cloud features ChaOffice has configured (no network call)
 chatoffice search "electron headless export" [--images] [--max 6] --json
 chatoffice image "isometric office, soft light" --aspect 16:9 --out hero.png
 chatoffice media photo.jpg --ask "What text is in this picture?" --json
@@ -67,7 +67,7 @@ available.
 
 ## Putting chatoffice on the PATH
 
-- **macOS**: the app tries to symlink `/usr/local/bin/chatoffice` (or `/opt/homebrew/bin/chatoffice`) on every launch until one succeeds. If neither directory is writable it stays silent; run `chatoffice install-cli` from the launcher, or `sudo mkdir -p /usr/local/bin && sudo ln -sf "/Applications/ChatOffice.app/Contents/Resources/cli/chatoffice" /usr/local/bin/chatoffice`.
+- **macOS**: the app tries to symlink `/usr/local/bin/chatoffice` (or `/opt/homebrew/bin/chatoffice`) on every launch until one succeeds. If neither directory is writable it stays silent; run `chatoffice install-cli` from the launcher, or `sudo mkdir -p /usr/local/bin && sudo ln -sf "/Applications/ChaOffice.app/Contents/Resources/cli/chatoffice" /usr/local/bin/chatoffice`.
 - **Windows**: the installer appends `<install dir>\resources\cli` to the user PATH (`apps/shell/build/installer.nsh`, REG_EXPAND_SZ preserved, removed on uninstall) and the app re-checks once per version; new terminals see `chatoffice`. The directory holds `chatoffice.cmd` for cmd / PowerShell and the extension-less `chatoffice` for Git Bash.
 - **Linux**: the deb/rpm post-install links `/usr/bin/chatoffice`; the AppImage relies on the first-launch symlink into `/usr/local/bin` when it is writable.
 
@@ -97,7 +97,7 @@ Independently of the PATH, every launch of the packaged app writes the launcher 
   unrestricted.
 - `apply --out` onto another existing file needs `--force`, like `create` / `convert`;
   editing in place never does. Unknown options are rejected instead of ignored.
-- A file the running ChatOffice shell has open in a tab is not rewritten in place
+- A file the running ChaOffice shell has open in a tab is not rewritten in place
   (exit 2, `detail.gui_pid`): the shell publishes its open tabs to
   `userData/open-documents.json` and chatoffice reads it (`GENOFFICE_USER_DATA`
   overrides the location). `--force` writes anyway; the editor then warns about
@@ -112,7 +112,7 @@ Independently of the PATH, every launch of the packaged app writes the launcher 
 `search`, `image` and `media` reuse the editors' provider routing: Genspark
 when signed in (`~/.chatoffice/auth.json`) and cloud tools are on, otherwise the
 Serper / Tavily or BYOK image / media provider chosen in the app's AI settings
-(`ChatOffice/ai-settings.json` in the platform config directory, override with
+(`ChaOffice/ai-settings.json` in the platform config directory, override with
 `GENOFFICE_AI_SETTINGS`). `HTTPS_PROXY` / `HTTP_PROXY` / `ALL_PROXY` are honoured.
 Search results, image bytes and analysis text come back in the JSON `detail`;
 `image` also writes the file. These are the only commands that send data off
@@ -126,7 +126,7 @@ packages/cli/bin/chatoffice info file.docx  # falls back to the system node
 ```
 
 Conversions that need an app renderer (Word/PowerPoint/Excel/HTML/Markdown → PDF,
-Word → HTML, HTML → Word, `create --type pdf`) run inside the ChatOffice binary
+Word → HTML, HTML → Word, `create --type pdf`) run inside the ChaOffice binary
 through its hidden `--headless-export` mode: chatoffice spawns it (Dock hidden, no
 window), reads the JSON envelope it prints and maps its exit code. Set
 `GENOFFICE_APP_BIN` to point at a specific executable; in a checkout the dev Electron

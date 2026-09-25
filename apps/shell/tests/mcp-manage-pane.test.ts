@@ -16,7 +16,7 @@ import { McpManagePane } from '../src/renderer/src/McpManagePane'
 /**
  * Settings → MCP 管理 pane: add-form draft → online verify → save, then the
  * server list (expand → tools, enable toggle, two-step delete) against a fully
- * mocked chatOfficeMcp bridge.
+ * mocked chaOfficeMcp bridge.
  */
 
 const actEnvironment = globalThis as typeof globalThis & {
@@ -82,7 +82,7 @@ beforeEach(() => {
       { name: 'add', description: 'add numbers' },
     ],
   }))
-  window.chatOfficeMcp = {
+  window.chaOfficeMcp = {
     listServers: async () => servers,
     saveServer,
     deleteServer,
@@ -97,7 +97,7 @@ beforeEach(() => {
 afterEach(() => {
   act(() => root.unmount())
   host.remove()
-  delete window.chatOfficeMcp
+  delete window.chaOfficeMcp
 })
 
 async function renderPane(): Promise<void> {

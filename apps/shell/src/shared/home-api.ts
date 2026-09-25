@@ -4,7 +4,7 @@ import type {
   AiModelSelection,
   AiSettingsV2,
   DiscoveryTarget,
-  ChatOfficeAccountStatus,
+  ChaOfficeAccountStatus,
   LocalToolOpResult,
   LocalToolStatus,
 } from '@chatoffice/ai-provider'
@@ -271,9 +271,9 @@ export interface HomeApi {
   getUpdateChannel(): Promise<UpdateChannel>
   /** switch + persist the update channel; triggers an immediate update check */
   setUpdateChannel(channel: UpdateChannel): Promise<void>
-  /** ChatOffice account status (chatoffice login state; to be upgraded to a signup/account system later) */
+  /** ChaOffice account status (chatoffice login state; to be upgraded to a signup/account system later) */
   accountStatus(): Promise<AccountStatus>
-  /** start ChatOffice login (opens the browser; accountStatus flips to logged-in on completion); returns whether the launch succeeded */
+  /** start ChaOffice login (opens the browser; accountStatus flips to logged-in on completion); returns whether the launch succeeded */
   accountLogin(): Promise<boolean>
   /** progress events for the login started via accountLogin; returns an unsubscribe */
   onAccountLogin(handler: (ev: AccountLoginEvent) => void): () => void
@@ -324,7 +324,7 @@ export interface HomeApi {
   getAnalyticsEnabled(): Promise<boolean>
   /** persist an explicit analytics opt-in or opt-out */
   setAnalyticsEnabled(enabled: boolean): Promise<boolean>
-  /** effective default save folder for new/untitled files (configured in userData/app-settings.json, falls back to <Documents>/ChatOffice) */
+  /** effective default save folder for new/untitled files (configured in userData/app-settings.json, falls back to <Documents>/ChaOffice) */
   getDefaultSaveDir(): Promise<string>
   /** directory picker to change the default save folder; resolves to the new folder, or null when canceled or the pick was unusable */
   pickDefaultSaveDir(): Promise<string | null>
@@ -332,7 +332,7 @@ export interface HomeApi {
   onThemeChanged(handler: (theme: UiTheme) => void): () => void
   /** open the GenTeam community page in the default browser */
   openGenTeam(): Promise<void>
-  /** open the ChatOffice credit-usage page in the default browser */
+  /** open the ChaOffice credit-usage page in the default browser */
   openCreditUsage(): Promise<void>
   /** open the public GitHub repository in the default browser */
   openGitHubRepo(): Promise<void>
@@ -345,7 +345,7 @@ export interface HomeApi {
   starPromptAction(action: StarPromptAction): Promise<void>
   /** locally stored full cloud project list (instant; null when no store or logged out) */
   cloudProjectsCached(): Promise<CloudProjectsSnapshot | null>
-  /** sync the full list from ChatOffice and return it (1 request when nothing changed); null when the sync failed */
+  /** sync the full list from ChaOffice and return it (1 request when nothing changed); null when the sync failed */
   cloudProjectsSync(): Promise<CloudProjectsSnapshot | null>
   /** open a cloud project (relative '/agents?id=...' URL) in the default browser */
   openCloudProject(projectUrl: string): Promise<void>
@@ -358,8 +358,8 @@ export interface HomeApi {
   /** model list discovery; doubles as the settings page connection test */
   aiDiscoverModels(target: DiscoveryTarget): Promise<{ models: AiModelEntry[]; error?: string }>
   /** chatoffice login state */
-  chatofficeStatus(withEmail?: boolean): Promise<ChatOfficeAccountStatus>
-  /** open the browser to log in to ChatOffice */
+  chatofficeStatus(withEmail?: boolean): Promise<ChaOfficeAccountStatus>
+  /** open the browser to log in to ChaOffice */
   chatofficeLogin(): Promise<void>
   /** 本地与自建：探测 / 一键安装 / 启动（模型设置页状态卡） */
   aiLocalToolStatus(vendorId: string): Promise<LocalToolStatus>
@@ -555,7 +555,7 @@ export interface StarPromptShow {
 
 export type CloudProjectKind = 'docs' | 'sheets' | 'slides'
 
-/** a ChatOffice web project shown in the home cloud section */
+/** a ChaOffice web project shown in the home cloud section */
 export interface CloudProjectEntry {
   projectId: string
   title: string
@@ -581,7 +581,7 @@ export interface AccountStatus {
   /** chatoffice is installed and logged in */
   loggedIn: boolean
   email?: string
-  /** remaining ChatOffice credits (absent when the balance query failed) */
+  /** remaining ChaOffice credits (absent when the balance query failed) */
   creditBalance?: number
 }
 

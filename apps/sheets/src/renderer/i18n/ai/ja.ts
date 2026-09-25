@@ -1,4 +1,4 @@
-/** ai strings, ja (merged with ChatOffice-local keys) */
+/** ai strings, ja (merged with ChaOffice-local keys) */
 export const ja = {
   aiComposerPlaceholderBuild: '作りたい表・データ・グラフを入力…',
   aiEmptyBuildTitle: 'AI にシート作りを任せる',
@@ -45,13 +45,13 @@ export const ja = {
   aiInstructionAria: 'AI への指示',
   aiFileTooltip: 'SHA-256 {sha}\\n保存時は編集されたエントリのみを書き換え、その他はそのまま保持します。',
   aiFileMeta: 'シート {sheets} 件 · エントリ {entries} 件',
-  aiChatOfficeAccount: 'ChaAI Office アカウント',
+  aiChaOfficeAccount: 'ChaAI Office アカウント',
   aiAccountChecking: '確認中…',
   aiLoggedIn: 'サインイン済み',
   aiLoggedInAs: 'サインイン済み: {email}',
   aiNotLoggedIn: '未サインイン（AI 機能には ChaAI Office アカウントへのサインインが必要です）',
   aiWaitingBrowserLogin: 'ブラウザーでのサインインを待機中…',
-  aiLoginChatOffice: 'ChaAI Office にサインイン',
+  aiLoginChaOffice: 'ChaAI Office にサインイン',
   aiModel: 'モデル',
   aiCancel: 'キャンセル',
   aiSave: '保存',
@@ -99,7 +99,7 @@ export const ja = {
   aiScopeColumns: '{names} の {count} 列を選択中',
   aiScopeRangeTip: 'AI は「この列 / これらの行 / 選択部分」をこの範囲として解釈します。送信すると今回の実行中は固定されます',
   aiScopeClearTitle: '範囲指定を解除してシート全体を対象にする',
-  aiChatOfficeLoginBtn: 'サインイン',
+  aiChaOfficeLoginBtn: 'サインイン',
   aiPanelTitle: 'AI アシスタント',
   aiTabChat: 'チャット',
   aiTabAssistant: 'アシスタント',

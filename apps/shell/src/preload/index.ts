@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import type { IpcRendererEvent } from 'electron'
-import type { AiModelEntry, AiSettingsV2, ChatOfficeAccountStatus } from '@chatoffice/ai-provider'
+import type { AiModelEntry, AiSettingsV2, ChaOfficeAccountStatus } from '@chatoffice/ai-provider'
 import { normalizeAiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
 import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
 import { createRemoteFilesClient } from '@chatoffice/storage-adapter/remote-ipc'
@@ -257,7 +257,7 @@ const homeApi: HomeApi = {
   async setUpdateChannel(channel) {
     // validated inline: a runtime import from ../shared/update-api would be
     // shared with the update.ts preload entry and get split into a chunk,
-    // which sandboxed preload scripts cannot load (window.chatOffice would
+    // which sandboxed preload scripts cannot load (window.chaOffice would
     // silently disappear). Preload entries must stay single-file bundles.
     if (channel !== 'stable' && channel !== 'beta') throw new Error('Invalid update channel.')
     await ipcRenderer.invoke(HOME_CHANNELS.setUpdateChannel, channel)
@@ -488,7 +488,7 @@ const homeApi: HomeApi = {
     }
   },
   async chatofficeStatus(withEmail) {
-    return (await ipcRenderer.invoke('ai:chatoffice-status', withEmail)) as ChatOfficeAccountStatus
+    return (await ipcRenderer.invoke('ai:chatoffice-status', withEmail)) as ChaOfficeAccountStatus
   },
   async chatofficeLogin() {
     await ipcRenderer.invoke('ai:chatoffice-login')
@@ -645,7 +645,7 @@ function asCloudProjectsSnapshot(result: unknown): CloudProjectsSnapshot | null 
   return null
 }
 
-contextBridge.exposeInMainWorld('chatOffice', homeApi)
+contextBridge.exposeInMainWorld('chaOffice', homeApi)
 
 const projectApi: ProjectHomeApi = {
   async listProjects() {
@@ -684,7 +684,7 @@ const projectApi: ProjectHomeApi = {
   },
 }
 
-contextBridge.exposeInMainWorld('chatOfficeProject', projectApi)
+contextBridge.exposeInMainWorld('chaOfficeProject', projectApi)
 
 const integrationsApi: IntegrationsApi = {
   async status() {
@@ -714,7 +714,7 @@ const integrationsApi: IntegrationsApi = {
     await ipcRenderer.invoke(INTEGRATIONS_CHANNELS.copyText, text)
   },
 }
-contextBridge.exposeInMainWorld('chatOfficeIntegrations', integrationsApi)
+contextBridge.exposeInMainWorld('chaOfficeIntegrations', integrationsApi)
 
 // External MCP client (Settings → MCP 管理): add/verify/delete outbound servers,
 // and relay their tools to the home chat agent
@@ -764,7 +764,7 @@ const mcpClientApi: McpClientApi = {
     )) as ExternalMcpCallResult
   },
 }
-contextBridge.exposeInMainWorld('chatOfficeMcp', mcpClientApi)
+contextBridge.exposeInMainWorld('chaOfficeMcp', mcpClientApi)
 
 const tabsApi: TabsApi = {
   async list() {
@@ -838,10 +838,10 @@ const windowControlsApi: WindowControlsApi = {
     return () => ipcRenderer.removeListener(WINDOW_CHANNELS.maximizeChanged, listener)
   },
 }
-contextBridge.exposeInMainWorld('chatOfficeWindow', windowControlsApi)
-contextBridge.exposeInMainWorld('chatOfficeTabs', tabsApi)
+contextBridge.exposeInMainWorld('chaOfficeWindow', windowControlsApi)
+contextBridge.exposeInMainWorld('chaOfficeTabs', tabsApi)
 
-// Home 右栏停靠契约（P1）——与 chatOfficeTabs 同通道风格
+// Home 右栏停靠契约（P1）——与 chaOfficeTabs 同通道风格
 const dockApi: DockApi = {
   async open(kind, options) {
     const result: unknown = await ipcRenderer.invoke(DOCK_CHANNELS.open, kind, options ?? {})
@@ -883,11 +883,11 @@ const dockApi: DockApi = {
     return () => ipcRenderer.removeListener(DOCK_CHANNELS.panelTurn, listener)
   },
 }
-contextBridge.exposeInMainWorld('chatOfficeDock', dockApi)
+contextBridge.exposeInMainWorld('chaOfficeDock', dockApi)
 
 // remote storage (MinIO / OSS): settings, listing, object transfer, pending queue
 contextBridge.exposeInMainWorld(
-  'chatOfficeRemoteFiles',
+  'chaOfficeRemoteFiles',
   createRemoteFilesClient((channel, payload) => ipcRenderer.invoke(channel, payload)),
 )
 
@@ -896,7 +896,7 @@ installDropOpenBridge()
 
 // Knowledge-base read surface (docs/kb-integration-plan.md): one dedicated
 // global so every app shell / editor window shares the same facade contract.
-contextBridge.exposeInMainWorld('chatOfficeKb', {
+contextBridge.exposeInMainWorld('chaOfficeKb', {
   discover: () => ipcRenderer.invoke(KB_CHANNELS.discover),
   search: (args: { kbIds: string[]; q: string; topK?: number }) =>
     ipcRenderer.invoke(KB_CHANNELS.search, args),
@@ -907,9 +907,9 @@ contextBridge.exposeInMainWorld('chatOfficeKb', {
 })
 
 // LOCAL(purchase): offline purchase / license surface. Its own global (not
-// merged into chatOffice) so the web/dsh iframe forms — which have no Electron
+// merged into chaOffice) so the web/dsh iframe forms — which have no Electron
 // preload — simply lack the bridge and the purchase UI stays silent there.
-contextBridge.exposeInMainWorld('chatOfficePurchase', {
+contextBridge.exposeInMainWorld('chaOfficePurchase', {
   state: (): Promise<PurchaseSnapshot> => ipcRenderer.invoke(PURCHASE_CHANNELS.state),
   activate: (serial: string): Promise<PurchaseActivateResult> =>
     ipcRenderer.invoke(PURCHASE_CHANNELS.activate, serial),

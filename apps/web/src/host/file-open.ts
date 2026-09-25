@@ -17,6 +17,7 @@ function extToKind(name: string): TabKind | null {
   if (lower.endsWith('.pptx')) return 'slides'
   if (lower.endsWith('.pdf')) return 'pdf'
   if (lower.endsWith('.md') || lower.endsWith('.markdown')) return 'markdown'
+  if (lower.endsWith('.html') || lower.endsWith('.htm')) return 'markdown'
   return null
 }
 

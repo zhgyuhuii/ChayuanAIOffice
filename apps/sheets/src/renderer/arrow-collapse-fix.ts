@@ -28,7 +28,7 @@ import {
 import { MOVE_SELECTION_COMMAND } from './selection-wrap-fix'
 import type { UniverRuntime } from './univer-state'
 
-/** ChatOffice's Ctrl+Arrow data-edge jump (excel-jump-nav.ts) — same rule */
+/** ChaOffice's Ctrl+Arrow data-edge jump (excel-jump-nav.ts) — same rule */
 const JUMP_MOVE_COMMAND = 'chatoffice.command.move-selection-excel-jump'
 
 export interface PrimaryBlock {

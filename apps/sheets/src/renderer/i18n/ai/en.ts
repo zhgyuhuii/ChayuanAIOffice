@@ -1,4 +1,4 @@
-/** ai strings, en (merged with ChatOffice-local keys) */
+/** ai strings, en (merged with ChaOffice-local keys) */
 export const en = {
   aiComposerPlaceholderBuild: 'Describe the table, data, or chart to create…',
   aiEmptyBuildTitle: 'Let AI build this workbook for you',
@@ -45,13 +45,13 @@ export const en = {
   aiInstructionAria: 'AI instruction',
   aiFileTooltip: 'SHA-256 {sha}\\nSaving rewrites only the edited entries; everything else is preserved.',
   aiFileMeta: '{sheets} sheets · {entries} entries',
-  aiChatOfficeAccount: 'ChaAI Office account',
+  aiChaOfficeAccount: 'ChaAI Office account',
   aiAccountChecking: 'Checking…',
   aiLoggedIn: 'Signed in',
   aiLoggedInAs: 'Signed in: {email}',
   aiNotLoggedIn: 'Not signed in (AI features require a ChaAI Office account)',
   aiWaitingBrowserLogin: 'Waiting for browser sign-in…',
-  aiLoginChatOffice: 'Sign in to ChaAI Office',
+  aiLoginChaOffice: 'Sign in to ChaAI Office',
   aiModel: 'Model',
   aiCancel: 'Cancel',
   aiSave: 'Save',
@@ -99,7 +99,7 @@ export const en = {
   aiScopeColumns: 'Selected {names} — {count} columns',
   aiScopeRangeTip: 'AI reads "this column / these rows / the selected part" as this range, and it stays fixed for the run once you send',
   aiScopeClearTitle: 'Drop the range scope and target the whole sheet',
-  aiChatOfficeLoginBtn: 'Sign in',
+  aiChaOfficeLoginBtn: 'Sign in',
   aiPanelTitle: 'AI Assistant',
   aiTabChat: 'Chat',
   aiTabAssistant: 'Assistant',

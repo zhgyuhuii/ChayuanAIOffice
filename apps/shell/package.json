@@ -5,7 +5,7 @@
   "license": "Apache-2.0",
   "homepage": "https://github.com/zhgyuhuii/ChayuanAIOffice",
   "private": true,
-  "description": "Unified ChatOffice shell: one app hosting the docs and sheets modules behind a home/launcher window",
+  "description": "Unified ChaOffice shell: one app hosting the docs and sheets modules behind a home/launcher window",
   "main": "out/main/index.js",
   "desktopName": "chaoffice.desktop",
   "scripts": {
@@ -51,7 +51,7 @@
     "vite": "^7.3.1",
     "vitest": "^4.1.11"
   },
-  "author": "ChatOffice",
+  "author": "ChaOffice",
   "dependencies": {
     "qrcode": "^1.5.4"
   },

@@ -206,7 +206,7 @@ export const hi = {
   aiPolishDesc: 'लेखन को और स्पष्ट व सहज बनाएँ',
   aiAssistantNoMatch: 'कोई मेल खाता सहायक नहीं',
   aiAssistantScopeSelection: 'चयन',
-  aiChatOfficeLoginBtn: 'साइन इन करें',
+  aiChaOfficeLoginBtn: 'साइन इन करें',
   aiTabChat: 'चैट',
   aiSummarizeDesc: 'दस्तावेज़ का सारांश बनाकर मुख्य बिंदु समझें',
 

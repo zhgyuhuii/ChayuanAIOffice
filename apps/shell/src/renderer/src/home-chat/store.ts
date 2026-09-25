@@ -30,7 +30,7 @@ export function deriveTitle(text: string): string {
 
 /** persisted home-chat sessions (load once, debounced saves on every change) */
 export function useHomeChatStore(
-  bridge: Pick<typeof window.chatOffice, 'chatSessionsLoad' | 'chatSessionsSave'>,
+  bridge: Pick<typeof window.chaOffice, 'chatSessionsLoad' | 'chatSessionsSave'>,
 ): HomeChatStore {
   const [sessions, setSessions] = useState<HomeChatSession[] | null>(null)
   const [activeId, setActiveId] = useState<string | null>(null)

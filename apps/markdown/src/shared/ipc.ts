@@ -239,10 +239,10 @@ export interface MarkdownApi {
   aiDiscoverModels(
     target: import('@chatoffice/ai-provider').DiscoveryTarget,
   ): Promise<{ models: import('@chatoffice/ai-provider').AiModelEntry[]; error?: string }>
-  aiChatOfficeStatus(
+  aiChaOfficeStatus(
     withEmail?: boolean,
-  ): Promise<import('@chatoffice/ai-provider').ChatOfficeAccountStatus>
-  aiChatOfficeLogin(): Promise<void>
+  ): Promise<import('@chatoffice/ai-provider').ChaOfficeAccountStatus>
+  aiChaOfficeLogin(): Promise<void>
   /** 本地与自建：探测 / 一键安装 / 启动（模型设置页状态卡） */
   aiLocalToolStatus(vendorId: string): Promise<import('@chatoffice/ai-provider').LocalToolStatus>
   aiLocalToolInstall(
@@ -266,7 +266,7 @@ export interface MarkdownApi {
   imageSearch(query: string, maxResults?: number): Promise<ImageSearchResult>
   /** Download an image URL in the main process (CORS-free, scheme/target validated) */
   fetchImage(url: string): Promise<{ base64: string; mime: string } | null>
-  /** ChatOffice cloud image generation (markdown-owned channel, chatoffice login required) */
+  /** ChaOffice cloud image generation (markdown-owned channel, chatoffice login required) */
   aiGenerateImage(op: { prompt: string; aspectRatio?: string }): Promise<{
     url?: string
     error?: string

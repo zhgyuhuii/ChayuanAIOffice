@@ -102,7 +102,7 @@ function draftFromServer(server: ExternalMcpServerConfig): DraftForm {
 }
 
 export function McpManagePane({ t }: { t: TFunc }) {
-  const api = () => window.chatOfficeMcp
+  const api = () => window.chaOfficeMcp
   const [servers, setServers] = useState<ExternalMcpServerConfig[] | null>(null)
   const [draft, setDraft] = useState<DraftForm | null>(null)
   const [verifying, setVerifying] = useState(false)

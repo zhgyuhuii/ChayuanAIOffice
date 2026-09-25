@@ -1,6 +1,6 @@
 /**
  * Web/dsh-form knowledge-base bridge (docs/kb-integration-plan.md §5.1):
- * exposes the same `window.chatOfficeKb` contract the desktop preloads
+ * exposes the same `window.chaOfficeKb` contract the desktop preloads
  * install, backed by same-origin fetches against the sidecar's /kb/* proxy.
  * The base keeps the /chatoffice-app prefix when running behind the dsh
  * plugin's reverse proxy so both the shell page and editor pages resolve.
@@ -56,7 +56,7 @@ export function createKbFetchBridge(baseUrl = kbApiBase()): KbFetchBridge {
 
 /** idempotent: install only when no real preload bridge is present */
 export function installKbFetchBridge(): void {
-  const w = window as unknown as { chatOfficeKb?: unknown }
-  if (w.chatOfficeKb) return
-  w.chatOfficeKb = createKbFetchBridge()
+  const w = window as unknown as { chaOfficeKb?: unknown }
+  if (w.chaOfficeKb) return
+  w.chaOfficeKb = createKbFetchBridge()
 }

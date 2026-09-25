@@ -9,7 +9,7 @@ import { buildMcpToolDefs, mcpSystemSection } from './mcp-tools'
 import type { McpToolBinding } from './mcp-tools'
 import { extractDocumentBody, markdownToRestrictedHtml } from './doc-body'
 
-/** everything the home agent needs from the host (window.chatOffice on desktop, shims on web) */
+/** everything the home agent needs from the host (window.chaOffice on desktop, shims on web) */
 export interface HomeAgentBridge {
   aiStream: HomeApi['aiStream']
   aiStreamCancel: HomeApi['aiStreamCancel']
@@ -75,7 +75,7 @@ export interface HomeAgentBridge {
   mediaAsr?(op: { source: string; language?: string }): Promise<{ text?: string; error?: string }>
   mediaTts?(op: { text: string; voice?: string }): Promise<{ url?: string; mime?: string; error?: string }>
   /** 外部 MCP (MCP 管理): live tools of every enabled server; absent on shims
-   *  without the chatOfficeMcp bridge → the agent runs with built-ins only */
+   *  without the chaOfficeMcp bridge → the agent runs with built-ins only */
   listMcpTools?(): Promise<ExternalMcpServerTools[]>
   /** relay one tool call to an external MCP server (serverId from listMcpTools) */
   callMcpTool?(
@@ -329,7 +329,7 @@ const UPDATE_TASKS_TOOL = {
   },
 }
 
-const SYSTEM_PROMPT = `You are the ChatOffice home assistant. You create documents, answer questions, and work with the user's existing files.
+const SYSTEM_PROMPT = `You are the ChaOffice home assistant. You create documents, answer questions, and work with the user's existing files.
 
 ## Creating documents
 When the user asks to create/write a document (report, plan, letter, summary, note, ...):

@@ -64,7 +64,7 @@ async function renderModal(
       logLines ??
         (mcpStatus.logging ? ['[mcp] listening on', '[mcp] tool get_app_info ok (0ms)'] : []),
     )
-  window.chatOffice = {
+  window.chaOffice = {
     getTheme: async () => 'system',
     getDefaultSaveDir: async () => '',
     getAnalyticsEnabled: async () => true,
@@ -73,7 +73,7 @@ async function renderModal(
     getUpdateChannel: async () => 'stable',
     getAppVersion: async () => '1.0.0',
     githubStars: async () => null,
-    // adapted（本地）：本地 SettingsModal 直连 chatOffice 桥渲染 V2 模型设置页，需补最小桩
+    // adapted（本地）：本地 SettingsModal 直连 chaOffice 桥渲染 V2 模型设置页，需补最小桩
     getAiSettings: async () => null,
     setAiSettings: async () => undefined,
     setAiCurrentModel: async () => undefined,

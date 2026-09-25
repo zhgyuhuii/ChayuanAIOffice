@@ -30,7 +30,7 @@ import type {
   AiSettingsV2,
   AiStreamChunk,
   DiscoveryTarget,
-  ChatOfficeAccountStatus,
+  ChaOfficeAccountStatus,
   LocalToolOpResult,
   LocalToolStatus,
 } from '@chatoffice/ai-provider'
@@ -2775,12 +2775,12 @@ export interface DesktopApi {
   /// start a streaming AI call; the settings slot carries the model selection
   aiStream(request: AiStreamRequestInput): Promise<void>
   aiStreamCancel(requestId: string): Promise<void>
-  /// ChatOffice account status (chatoffice login state); withEmail also returns the email
+  /// ChaOffice account status (chatoffice login state); withEmail also returns the email
   /// (needs a network request, slower)
-  aiChatOfficeStatus(withEmail?: boolean): Promise<ChatOfficeAccountStatus>
-  /// Opens the browser to sign in to ChatOffice (fire-and-forget; aiChatOfficeStatus
+  aiChaOfficeStatus(withEmail?: boolean): Promise<ChaOfficeAccountStatus>
+  /// Opens the browser to sign in to ChaOffice (fire-and-forget; aiChaOfficeStatus
   /// becomes signed-in on completion)
-  aiChatOfficeLogin(): Promise<void>
+  aiChaOfficeLogin(): Promise<void>
   /// 本地与自建：探测 / 一键安装 / 启动（模型设置页状态卡）
   aiLocalToolStatus(vendorId: string): Promise<LocalToolStatus>
   aiLocalToolInstall(vendorId: string, onLine?: (line: string) => void): Promise<LocalToolOpResult>
@@ -2872,7 +2872,7 @@ export interface DesktopApi {
   videoRetry(id: string): Promise<{ error?: string }>
   videoPreview(id: string): Promise<{ dataUrl?: string; url?: string; error?: string }>
   onVideoTasksChanged(handler: (payload: { id: string; status: string }) => void): () => void
-  /// AI image generation via the ChatOffice account (sheets-owned channel)
+  /// AI image generation via the ChaOffice account (sheets-owned channel)
   generateImage(op: { prompt: string; aspectRatio?: string }): Promise<GenerateImageResult>
   /// Downloads an image URL in the main process (SSRF-guarded); null on failure
   fetchImage(url: string): Promise<{ base64: string; mime: string } | null>

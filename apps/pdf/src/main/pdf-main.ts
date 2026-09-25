@@ -36,7 +36,7 @@ import {
   rendererUrl,
 } from '@chatoffice/electron-utils'
 import { createI18n, getUiLang } from '@chatoffice/i18n'
-import { hasChatOfficeAuth } from '@chatoffice/ai-search'
+import { hasChaOfficeAuth } from '@chatoffice/ai-search'
 import {
   registerFetchImageIpc,
   registerMediaIpc,
@@ -508,7 +508,7 @@ interface RuntimePaths {
   preloadPath: string
   rendererUrl?: string
   rendererFile?: string
-  /** Shell router used to open generated PDFs in a new ChatOffice tab. */
+  /** Shell router used to open generated PDFs in a new ChaOffice tab. */
   openGeneratedPath?: (path: string) => boolean
   /** Host-owned cross-app document creator (the shell routes DOCX into Docs). */
   createDocument?: (request: CreateDocumentRequest) => Promise<CreateDocumentResult>
@@ -970,7 +970,7 @@ let ipcRegistered = false
 /**
  * BYOK-first image generation over ai-settings.json — same resolution order
  * as docs/sheets (设置 → 生图、媒体与搜索 default model, then the gated
- * ChatOffice cloud fallback). Lazy: constructed on the first tool call, after
+ * ChaOffice cloud fallback). Lazy: constructed on the first tool call, after
  * app.getPath is warm.
  */
 let byokImageSingleton: ReturnType<typeof createByokImageHandler> | null = null
@@ -993,8 +993,8 @@ function byokGenerateImage(req: { prompt: string; aspectRatio?: string }) {
     },
     chatoffice: {
       apiKey: () => '',
-      hasAuth: () => hasChatOfficeAuth(),
-      status: async () => ({ loggedIn: hasChatOfficeAuth() }),
+      hasAuth: () => hasChaOfficeAuth(),
+      status: async () => ({ loggedIn: hasChaOfficeAuth() }),
     },
   })
   return byokImageSingleton(req)

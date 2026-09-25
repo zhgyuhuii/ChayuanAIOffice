@@ -32,7 +32,7 @@ import type {
   AiSettingsV2,
   AiStreamChunk,
   AiStreamRequestV2,
-  ChatOfficeAccountStatus,
+  ChaOfficeAccountStatus,
 } from './types'
 import type { AgentMessage } from '@chatoffice/agent-core'
 
@@ -46,15 +46,15 @@ import type { AgentMessage } from '@chatoffice/agent-core'
 /** sentinel replacing a stored key in renderer-facing views; save merges it back */
 export const KEEP_KEY = '__keep__'
 
-export interface AiRuntimeChatOffice {
+export interface AiRuntimeChaOffice {
   apiKey(): string
   hasAuth(): boolean
-  status(withEmail: boolean): Promise<ChatOfficeAccountStatus>
+  status(withEmail: boolean): Promise<ChaOfficeAccountStatus>
 }
 
 export interface AiRuntimeDeps {
   source: AiSettingsSource
-  chatoffice: AiRuntimeChatOffice
+  chatoffice: AiRuntimeChaOffice
   translate: (key: string, params?: Record<string, unknown>) => string
   /**
    * server-side secret resolution for profiles that only carry a key reference
@@ -189,7 +189,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     if (!profile) throw new Error(translate('errNoModel'))
     if (profile.auth === 'chatoffice-login') {
       if (!chatoffice.hasAuth() || !chatoffice.apiKey())
-        throw new Error(translate('errChatOfficeNotLoggedIn'))
+        throw new Error(translate('errChaOfficeNotLoggedIn'))
       return resolveModelCall(settings, selection, chatoffice.apiKey())
     }
     if (profile.vendorId === 'codex' || profile.id === 'codex') {

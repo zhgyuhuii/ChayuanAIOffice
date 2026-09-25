@@ -100,7 +100,7 @@ export function McpServerSettings() {
     logging?: boolean
   }) => {
     setMcpSaving(true)
-    void window.chatOffice
+    void window.chaOffice
       .setMcpSettings({
         enabled: patch.enabled ?? mcpEnabled,
         port: patch.port ?? (Number(mcpPort) || 3093),
@@ -123,7 +123,7 @@ export function McpServerSettings() {
 
   /** tail of the MCP log for the in-pane viewer */
   const fetchMcpLogs = useCallback(() => {
-    void window.chatOffice
+    void window.chaOffice
       .getMcpLogs?.()
       .then((lines) => setMcpLogs(Array.isArray(lines) ? lines : []))
       .catch(() => {})
@@ -146,7 +146,7 @@ export function McpServerSettings() {
 
   useEffect(() => {
     let alive = true
-    void window.chatOffice.getMcpStatus?.().then((s) => {
+    void window.chaOffice.getMcpStatus?.().then((s) => {
       if (!alive) return
       setMcpRunning(s.running)
       setMcpEnabled(s.enabled)
@@ -289,13 +289,13 @@ export function McpServerSettings() {
               <button className="set-btn" onClick={fetchMcpLogs}>
                 {t('setMcpLogRefresh')}
               </button>
-              <button className="set-btn" onClick={() => void window.chatOffice.openMcpLogFile?.()}>
+              <button className="set-btn" onClick={() => void window.chaOffice.openMcpLogFile?.()}>
                 {t('setMcpLogOpen')}
               </button>
               <button
                 className="set-btn"
                 onClick={() => {
-                  void window.chatOffice.clearMcpLogs?.().then(fetchMcpLogs)
+                  void window.chaOffice.clearMcpLogs?.().then(fetchMcpLogs)
                 }}
               >
                 {t('setMcpLogClear')}

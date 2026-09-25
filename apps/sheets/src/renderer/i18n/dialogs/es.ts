@@ -1,4 +1,4 @@
-/** dialogs strings, es (merged with ChatOffice-local keys) */
+/** dialogs strings, es (merged with ChaOffice-local keys) */
 import type { zh } from './zh'
 export const es = {
   dlgAllowEditRangesTitle: 'Permitir editar rangos',

@@ -21,7 +21,7 @@
       "hi": "AI सहायक",
       "zh-TW": "AI 助手"
     },
-    "aiChatOfficeLoginBtn": {
+    "aiChaOfficeLoginBtn": {
       "zh": "登录",
       "en": "Sign in",
       "ja": "サインイン",
@@ -66,39 +66,39 @@
   },
   "apps/docs/src/renderer/i18n/strings-app.ts": {
     "appExpandAiPanel": null,
-    "appChatOfficeAccount": null,
+    "appChaOfficeAccount": null,
     "appNotLoggedIn": null,
-    "appLoginChatOffice": null
+    "appLoginChaOffice": null
   },
   "apps/docs/src/renderer/i18n/strings-ribbon.ts": {
     "ribbonAiAssistant": null,
     "ribbonAiAssistantTip": null
   },
   "apps/docs/src/main/docs-main.ts": {
-    "errChatOfficeNotLoggedIn": {
-      "zh": "未登录 ChatOffice:请点击下方「登录」完成登录后重试",
-      "en": "Not signed in to ChatOffice: click “Sign in” below, sign in, then retry",
-      "ja": "ChatOffice にサインインしていません。下の「サインイン」からサインインして再試行してください",
-      "ko": "ChatOffice에 로그인되어 있지 않습니다. 아래 \"로그인\"을 눌러 로그인한 뒤 다시 시도하세요",
-      "fr": "Non connecté à ChatOffice : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez",
-      "de": "Nicht bei ChatOffice angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut",
-      "es": "No has iniciado sesión en ChatOffice: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo",
-      "th": "ยังไม่ได้ลงชื่อเข้าใช้ ChatOffice: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง",
-      "id": "Belum masuk ke ChatOffice: klik “Masuk” di bawah, lalu coba lagi",
-      "ru": "Вы не вошли в ChatOffice: нажмите «Войти» ниже, войдите и повторите попытку",
-      "ar": "لم تسجّل الدخول إلى ChatOffice: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة",
-      "pt": "Não conectado ao ChatOffice: clique em “Entrar” abaixo, entre e tente novamente",
-      "it": "Accesso a ChatOffice non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova",
-      "pl": "Nie zalogowano do ChatOffice: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie",
-      "nl": "Niet aangemeld bij ChatOffice: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw",
-      "ms": "Belum log masuk ke ChatOffice: klik “Log masuk” di bawah, kemudian cuba lagi",
-      "he": "לא מחובר ל-ChatOffice: לחץ על \"התחבר\" למטה, התחבר ונסה שוב",
-      "hi": "ChatOffice में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें",
-      "zh-TW": "未登入 ChatOffice:請點擊下方「登入」完成登入後重試"
+    "errChaOfficeNotLoggedIn": {
+      "zh": "未登录 ChaOffice:请点击下方「登录」完成登录后重试",
+      "en": "Not signed in to ChaOffice: click “Sign in” below, sign in, then retry",
+      "ja": "ChaOffice にサインインしていません。下の「サインイン」からサインインして再試行してください",
+      "ko": "ChaOffice에 로그인되어 있지 않습니다. 아래 \"로그인\"을 눌러 로그인한 뒤 다시 시도하세요",
+      "fr": "Non connecté à ChaOffice : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez",
+      "de": "Nicht bei ChaOffice angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut",
+      "es": "No has iniciado sesión en ChaOffice: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo",
+      "th": "ยังไม่ได้ลงชื่อเข้าใช้ ChaOffice: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง",
+      "id": "Belum masuk ke ChaOffice: klik “Masuk” di bawah, lalu coba lagi",
+      "ru": "Вы не вошли в ChaOffice: нажмите «Войти» ниже, войдите и повторите попытку",
+      "ar": "لم تسجّل الدخول إلى ChaOffice: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة",
+      "pt": "Não conectado ao ChaOffice: clique em “Entrar” abaixo, entre e tente novamente",
+      "it": "Accesso a ChaOffice non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova",
+      "pl": "Nie zalogowano do ChaOffice: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie",
+      "nl": "Niet aangemeld bij ChaOffice: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw",
+      "ms": "Belum log masuk ke ChaOffice: klik “Log masuk” di bawah, kemudian cuba lagi",
+      "he": "לא מחובר ל-ChaOffice: לחץ על \"התחבר\" למטה, התחבר ונסה שוב",
+      "hi": "ChaOffice में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें",
+      "zh-TW": "未登入 ChaOffice:請點擊下方「登入」完成登入後重試"
     }
   },
   "apps/sheets/src/renderer/i18n/strings-ai.ts": {
-    "aiChatOfficeLoginBtn": {
+    "aiChaOfficeLoginBtn": {
       "zh": "登录",
       "en": "Sign in",
       "ja": "サインイン",
@@ -143,35 +143,35 @@
     "aiPanelTitle": {
       "zh-TW": "AI 助手"
     },
-    "aiChatOfficeAccount": null,
+    "aiChaOfficeAccount": null,
     "aiNotLoggedIn": null,
-    "aiLoginChatOffice": null
+    "aiLoginChaOffice": null
   },
   "apps/sheets/src/main/sheets-main.ts": {
-    "errChatOfficeNotLoggedIn": {
-      "zh": "未登录 ChatOffice:请点击下方「登录」完成登录后重试",
-      "en": "Not signed in to ChatOffice: click “Sign in” below, sign in, then retry",
-      "ja": "ChatOffice にサインインしていません。下の「サインイン」からサインインして再試行してください",
-      "ko": "ChatOffice에 로그인되어 있지 않습니다. 아래 \"로그인\"을 눌러 로그인한 뒤 다시 시도하세요",
-      "fr": "Non connecté à ChatOffice : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez",
-      "de": "Nicht bei ChatOffice angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut",
-      "es": "No has iniciado sesión en ChatOffice: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo",
-      "th": "ยังไม่ได้ลงชื่อเข้าใช้ ChatOffice: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง",
-      "id": "Belum masuk ke ChatOffice: klik “Masuk” di bawah, lalu coba lagi",
-      "ru": "Вы не вошли в ChatOffice: нажмите «Войти» ниже, войдите и повторите попытку",
-      "ar": "لم تسجّل الدخول إلى ChatOffice: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة",
-      "pt": "Não conectado ao ChatOffice: clique em “Entrar” abaixo, entre e tente novamente",
-      "it": "Accesso a ChatOffice non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova",
-      "pl": "Nie zalogowano do ChatOffice: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie",
-      "nl": "Niet aangemeld bij ChatOffice: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw",
-      "ms": "Belum log masuk ke ChatOffice: klik “Log masuk” di bawah, kemudian cuba lagi",
-      "he": "לא מחובר ל-ChatOffice: לחץ על \"התחבר\" למטה, התחבר ונסה שוב",
-      "hi": "ChatOffice में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें",
-      "zh-TW": "未登入 ChatOffice:請點擊下方「登入」完成登入後重試"
+    "errChaOfficeNotLoggedIn": {
+      "zh": "未登录 ChaOffice:请点击下方「登录」完成登录后重试",
+      "en": "Not signed in to ChaOffice: click “Sign in” below, sign in, then retry",
+      "ja": "ChaOffice にサインインしていません。下の「サインイン」からサインインして再試行してください",
+      "ko": "ChaOffice에 로그인되어 있지 않습니다. 아래 \"로그인\"을 눌러 로그인한 뒤 다시 시도하세요",
+      "fr": "Non connecté à ChaOffice : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez",
+      "de": "Nicht bei ChaOffice angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut",
+      "es": "No has iniciado sesión en ChaOffice: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo",
+      "th": "ยังไม่ได้ลงชื่อเข้าใช้ ChaOffice: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง",
+      "id": "Belum masuk ke ChaOffice: klik “Masuk” di bawah, lalu coba lagi",
+      "ru": "Вы не вошли в ChaOffice: нажмите «Войти» ниже, войдите и повторите попытку",
+      "ar": "لم تسجّل الدخول إلى ChaOffice: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة",
+      "pt": "Não conectado ao ChaOffice: clique em “Entrar” abaixo, entre e tente novamente",
+      "it": "Accesso a ChaOffice non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova",
+      "pl": "Nie zalogowano do ChaOffice: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie",
+      "nl": "Niet aangemeld bij ChaOffice: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw",
+      "ms": "Belum log masuk ke ChaOffice: klik “Log masuk” di bawah, kemudian cuba lagi",
+      "he": "לא מחובר ל-ChaOffice: לחץ על \"התחבר\" למטה, התחבר ונסה שוב",
+      "hi": "ChaOffice में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें",
+      "zh-TW": "未登入 ChaOffice:請點擊下方「登入」完成登入後重試"
     }
   },
   "apps/slides/src/renderer/i18n/strings-ai.ts": {
-    "aiChatOfficeLoginBtn": {
+    "aiChaOfficeLoginBtn": {
       "zh": "登录",
       "en": "Sign in",
       "ja": "サインイン",
@@ -226,26 +226,26 @@
     "ribbonAiAssistantTip": null
   },
   "apps/slides/src/main/i18n-main.ts": {
-    "errChatOfficeNotLoggedIn": {
-      "zh": "未登录 ChatOffice:请点击下方「登录」完成登录后重试",
-      "en": "Not signed in to ChatOffice: click “Sign in” below, sign in, then retry",
-      "ja": "ChatOffice にサインインしていません。下の「サインイン」からサインインして再試行してください",
-      "ko": "ChatOffice에 로그인되어 있지 않습니다. 아래 \"로그인\"을 눌러 로그인한 뒤 다시 시도하세요",
-      "fr": "Non connecté à ChatOffice : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez",
-      "de": "Nicht bei ChatOffice angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut",
-      "es": "No has iniciado sesión en ChatOffice: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo",
-      "th": "ยังไม่ได้ลงชื่อเข้าใช้ ChatOffice: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง",
-      "id": "Belum masuk ke ChatOffice: klik “Masuk” di bawah, lalu coba lagi",
-      "ru": "Вы не вошли в ChatOffice: нажмите «Войти» ниже, войдите и повторите попытку",
-      "ar": "لم تسجّل الدخول إلى ChatOffice: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة",
-      "pt": "Não conectado ao ChatOffice: clique em “Entrar” abaixo, entre e tente novamente",
-      "it": "Accesso a ChatOffice non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova",
-      "pl": "Nie zalogowano do ChatOffice: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie",
-      "nl": "Niet aangemeld bij ChatOffice: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw",
-      "ms": "Belum log masuk ke ChatOffice: klik “Log masuk” di bawah, kemudian cuba lagi",
-      "he": "לא מחובר ל-ChatOffice: לחץ על \"התחבר\" למטה, התחבר ונסה שוב",
-      "hi": "ChatOffice में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें",
-      "zh-TW": "未登入 ChatOffice:請點擊下方「登入」完成登入後重試"
+    "errChaOfficeNotLoggedIn": {
+      "zh": "未登录 ChaOffice:请点击下方「登录」完成登录后重试",
+      "en": "Not signed in to ChaOffice: click “Sign in” below, sign in, then retry",
+      "ja": "ChaOffice にサインインしていません。下の「サインイン」からサインインして再試行してください",
+      "ko": "ChaOffice에 로그인되어 있지 않습니다. 아래 \"로그인\"을 눌러 로그인한 뒤 다시 시도하세요",
+      "fr": "Non connecté à ChaOffice : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez",
+      "de": "Nicht bei ChaOffice angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut",
+      "es": "No has iniciado sesión en ChaOffice: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo",
+      "th": "ยังไม่ได้ลงชื่อเข้าใช้ ChaOffice: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง",
+      "id": "Belum masuk ke ChaOffice: klik “Masuk” di bawah, lalu coba lagi",
+      "ru": "Вы не вошли в ChaOffice: нажмите «Войти» ниже, войдите и повторите попытку",
+      "ar": "لم تسجّل الدخول إلى ChaOffice: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة",
+      "pt": "Não conectado ao ChaOffice: clique em “Entrar” abaixo, entre e tente novamente",
+      "it": "Accesso a ChaOffice non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova",
+      "pl": "Nie zalogowano do ChaOffice: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie",
+      "nl": "Niet aangemeld bij ChaOffice: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw",
+      "ms": "Belum log masuk ke ChaOffice: klik “Log masuk” di bawah, kemudian cuba lagi",
+      "he": "לא מחובר ל-ChaOffice: לחץ על \"התחבר\" למטה, התחבר ונסה שוב",
+      "hi": "ChaOffice में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें",
+      "zh-TW": "未登入 ChaOffice:請點擊下方「登入」完成登入後重試"
     }
   }
 }

@@ -56,7 +56,7 @@ const PASTE_MIME_EXT: Record<string, string> = {
   'image/webp': 'webp',
 }
 
-/** File-type icons for attachment cards (ChatOffice attachment icon set); exts the
+/** File-type icons for attachment cards (ChaOffice attachment icon set); exts the
  *  attachment allowlist doesn't accept yet are mapped ahead so they light up when added */
 const ATTACHMENT_CARD_ICON_GROUPS: [icon: string, exts: string[]][] = [
   [fileWordIcon, ['doc', 'docx']],
@@ -205,7 +205,7 @@ export interface AiChatMessage {
   readonly undelivered?: boolean | undefined
   /** this user message was written to the project-store chat log (Retry re-persists when it wasn't) */
   readonly persisted?: boolean | undefined
-  /** the run failed because ChatOffice is signed out — render an inline sign-in button */
+  /** the run failed because ChaOffice is signed out — render an inline sign-in button */
   readonly loginRequired?: boolean | undefined
   /** Set when this message reflects an auto-applied plan; renders an inline [Undo] button. */
   readonly autoApplied?: { readonly opCount: number; readonly undoSteps: number } | undefined
@@ -358,7 +358,7 @@ export function AiChatPanel({
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
   const stickToBottomRef = useRef(true)
   const [dragOver, setDragOver] = useState(false)
-  /** data-URL previews for image attachments, keyed by path (ChatOffice composer thumbnails) */
+  /** data-URL previews for image attachments, keyed by path (ChaOffice composer thumbnails) */
   const [attachmentPreviews, setAttachmentPreviews] = useState<Record<string, string>>({})
   /** image paths with a read already issued — one readAttachmentImage per attach, even while pending */
   const previewRequestedRef = useRef(new Set<string>())
@@ -693,9 +693,9 @@ export function AiChatPanel({
                 {entry.loginRequired && (
                   <button
                     className="ai-login-btn"
-                    onClick={() => void window.desktopApi.aiChatOfficeLogin()}
+                    onClick={() => void window.desktopApi.aiChaOfficeLogin()}
                   >
-                    {t('aiChatOfficeLoginBtn')}
+                    {t('aiChaOfficeLoginBtn')}
                   </button>
                 )}
               </>

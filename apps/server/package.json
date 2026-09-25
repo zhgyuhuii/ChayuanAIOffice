@@ -4,7 +4,7 @@
   "license": "Apache-2.0",
   "private": true,
   "type": "module",
-  "description": "ChatOffice BFF: hosts service-core over HTTP/WS for the web app (SaaS and embedded sidecar share this code)",
+  "description": "ChaOffice BFF: hosts service-core over HTTP/WS for the web app (SaaS and embedded sidecar share this code)",
   "exports": {
     ".": "./src/index.ts"
   },

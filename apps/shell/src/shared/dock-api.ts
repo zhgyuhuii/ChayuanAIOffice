@@ -5,7 +5,7 @@ import type { RelayCommand, RelayEvent } from './relay-protocol'
 /**
  * 右栏停靠契约（组件化 P1）：Home 右侧 content-pane 里停靠编辑器视图的
  * 渲染器↔主进程接口。与 tabs-api 同构（同通道风格、同双宿主策略——
- * web 形态由 apps/web 的 shim 提供同名 window.chatOfficeDock）。
+ * web 形态由 apps/web 的 shim 提供同名 window.chaOfficeDock）。
  *
  * 停靠态语义（已签共识）：
  * - 停靠 tab 是 TabManager 里的真 tab（顶部 tab 条带「已停靠」标记），
@@ -110,6 +110,6 @@ declare global {
   interface Window {
     /** right-pane dock contract (P1). Optional until the web/dsh shim lands,
      *  so renderer code guards for its absence in non-electron forms. */
-    chatOfficeDock?: DockApi
+    chaOfficeDock?: DockApi
   }
 }

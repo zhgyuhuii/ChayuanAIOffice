@@ -6,7 +6,7 @@
  * buttons, grouped model checklist with per-group toggles).
  *
  * First entry lands on a guide page — supported providers as cards, China
- * first then global; vendor forms and the ChatOffice sign-in card open on
+ * first then global; vendor forms and the ChaOffice sign-in card open on
  * explicit selection from the directory (or a guide card).
  *
  * Rendered through a portal onto document.body — the panel it opens from is
@@ -157,7 +157,7 @@ export function ModelSettingsPage({
   const locale = lang ?? (typeof document !== 'undefined' ? document.documentElement.lang : 'zh')
   const t = useMemo(() => modelSettingsStrings(locale), [locale])
   const [settings, setSettings] = useState<AiSettingsV2 | null>(null)
-  const [chatofficeAvailable, setChatOfficeAvailable] = useState(true)
+  const [chatofficeAvailable, setChaOfficeAvailable] = useState(true)
   /** '' = 说明页（初次进入的落地）；厂商 id = 该厂商的配置表单 */
   const [selected, setSelected] = useState<string>(
     initialVendor && VENDOR_BY_ID.has(initialVendor) ? initialVendor : '',
@@ -176,7 +176,7 @@ export function ModelSettingsPage({
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
   /** enabled-profile rows expanded to show their model sub-lists in the left pane */
   const [expandedVendors, setExpandedVendors] = useState<Set<string>>(new Set())
-  const [chatoffice, setChatOffice] = useState<{ loggedIn: boolean; email?: string } | null>(null)
+  const [chatoffice, setChaOffice] = useState<{ loggedIn: boolean; email?: string } | null>(null)
   /** 本地与自建：一键安装/探测状态（仅桌面桥实现） */
   const [tool, setTool] = useState<LocalToolStatus | null>(null)
   const [toolProbing, setToolProbing] = useState(false)
@@ -246,14 +246,14 @@ export function ModelSettingsPage({
     if (bridge.chatofficeStatus) {
       void bridge
         .chatofficeStatus(true)
-        .then(setChatOffice)
-        .catch(() => setChatOffice(null))
+        .then(setChaOffice)
+        .catch(() => setChaOffice(null))
     }
     if (bridge.capabilities) {
       void bridge
         .capabilities()
-        .then((c) => setChatOfficeAvailable(c.chatofficeAvailable !== false))
-        .catch(() => setChatOfficeAvailable(true))
+        .then((c) => setChaOfficeAvailable(c.chatofficeAvailable !== false))
+        .catch(() => setChaOfficeAvailable(true))
     }
     return () => {
       alive = false
@@ -276,8 +276,8 @@ export function ModelSettingsPage({
           .filter(Boolean)
           .join(keyJoiner)
       : apiKeyInput
-  const isChatOffice = selected === 'chatoffice'
-  /** 登录功能未开放（USER_LOGIN_READY=false）时，ChatOffice 视同不可用：
+  const isChaOffice = selected === 'chatoffice'
+  /** 登录功能未开放（USER_LOGIN_READY=false）时，ChaOffice 视同不可用：
    * 目录行、已启用列表与登录卡整体隐藏 */
   const chatofficeUsable = USER_LOGIN_READY && chatofficeAvailable
   /** 本地与自建厂商（排除自定义兼容入口）才探测本地安装 */
@@ -594,7 +594,7 @@ export function ModelSettingsPage({
     }
   }
 
-  const toggleChatOfficeModel = async (modelId: string, on: boolean) => {
+  const toggleChaOfficeModel = async (modelId: string, on: boolean) => {
     const profile = profiles.find((p) => p.id === 'chatoffice')
     if (!profile) return
     const currentIds = new Set(profile.models.map((m) => m.id))
@@ -986,7 +986,7 @@ export function ModelSettingsPage({
               ))}
               <p className="msp-note">{t.guideMore}</p>
             </div>
-          ) : isChatOffice ? (
+          ) : isChaOffice ? (
             <>
               <div className="msp-pane-head">
                 <span className="msp-avatar is-big" aria-hidden>
@@ -1029,7 +1029,7 @@ export function ModelSettingsPage({
                   id,
                   enabled: selectedProfile?.models.some((m) => m.id === id) ?? false,
                 }))}
-                onToggle={(id, on) => void toggleChatOfficeModel(id, on)}
+                onToggle={(id, on) => void toggleChaOfficeModel(id, on)}
               />
             </>
           ) : (

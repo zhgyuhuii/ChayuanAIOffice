@@ -1,4 +1,4 @@
-/** dialogs strings, ja (merged with ChatOffice-local keys) */
+/** dialogs strings, ja (merged with ChaOffice-local keys) */
 import type { zh } from './zh'
 export const ja = {
   dlgAllowEditRangesTitle: '範囲の編集の許可',

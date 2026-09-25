@@ -1,4 +1,4 @@
-/** dialogs strings, zh (merged with ChatOffice-local keys) */
+/** dialogs strings, zh (merged with ChaOffice-local keys) */
 export const zh = {
   dlgAllowEditRangesTitle: '允许编辑区域',
   dlgAllowEditRangesHint: '工作表受保护时这些区域仍可编辑。保存时写入；不支持密码。',

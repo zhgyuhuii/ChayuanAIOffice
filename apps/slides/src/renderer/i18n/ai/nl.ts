@@ -278,7 +278,7 @@ export const nl = {
   aiSumBackground: "Achtergrond ingesteld op dia {n}",
   aiSumSpeakerNotes: "Sprekersnotities geschreven op dia {n}",
   aiSumDeleteElement: "Element verwijderd op dia {n}",
-  aiChatOfficeLoginBtn: "Aanmelden",
+  aiChaOfficeLoginBtn: "Aanmelden",
   aiTabChat: "Chat",
   aiTabAssistant: "Assistent",
   aiAskDesc: "Geef het geselecteerde element een bewerkingsinstructie",

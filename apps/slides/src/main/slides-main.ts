@@ -1,5 +1,5 @@
 /**
- * ChatOffice Slides main process — pptx parsing/render-tree building/edit application/saving all live
+ * ChaOffice Slides main process — pptx parsing/render-tree building/edit application/saving all live
  * here (Node side). The renderer only gets plain-data RenderSlide; edit intents are sent back
  * here to apply. Structure mirrors apps/docs: exports embeddable configure/register/start for
  * future shell reuse.
@@ -37,7 +37,7 @@ import { exportSlidesPdf } from './pdf-export'
 import {
   chatofficeApiKey,
   chatofficeSlideGenerate,
-  setChatOfficeProxyUrl,
+  setChaOfficeProxyUrl,
 } from '@chatoffice/ai-search'
 import {
   appMenuLabels,
@@ -595,7 +595,7 @@ const AUTOSAVE_BACKOFF_TICKS = 10
 let autosaveRunning = false
 
 /**
- * Recovery drafts for never-saved decks (wcId → visible path in <Documents>/ChatOffice):
+ * Recovery drafts for never-saved decks (wcId → visible path in <Documents>/ChaOffice):
  * the sha1-keyed recovery copy needs session.path, so before the first save a freeze or
  * crash used to lose everything. Removed on save, explicit discard, or clean close.
  */
@@ -888,7 +888,7 @@ async function openAndBuild(
   }
 }
 
-/** Directory where AI-generated drafts are saved: the configurable default save folder (falls back to <Documents>/ChatOffice) */
+/** Directory where AI-generated drafts are saved: the configurable default save folder (falls back to <Documents>/ChaOffice) */
 function getDraftsDir(): string {
   return configuredDefaultSaveDir(app)
 }
@@ -5379,7 +5379,7 @@ async function applyMainProcessProxy(): Promise<void> {
   const setDispatcher = async (proxyUrl: string) => {
     // spawned chatoffice CLI children do their own fetch and never see the
     // dispatcher below — forward the proxy to them via env
-    setChatOfficeProxyUrl(proxyUrl)
+    setChaOfficeProxyUrl(proxyUrl)
     try {
       const { ProxyAgent, setGlobalDispatcher } = await import('undici')
       setGlobalDispatcher(new ProxyAgent(proxyUrl))
@@ -5404,7 +5404,7 @@ async function applyMainProcessProxy(): Promise<void> {
   try {
     await app.whenReady()
     // PAC/rule proxies answer per-host: probe the host the login flow, the
-    // ChatOffice LLM proxy and the chatoffice CLI actually target
+    // ChaOffice LLM proxy and the chatoffice CLI actually target
     const resolved = await electronSession.defaultSession.resolveProxy('https://www.genspark.ai/')
     // resolveProxy returns strings like "PROXY 127.0.0.1:1087" or "DIRECT"
     const m = /PROXY\s+([^;]+)/i.exec(resolved || '')

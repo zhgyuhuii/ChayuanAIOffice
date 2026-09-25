@@ -164,8 +164,8 @@ function installSlidesApi(): void {
     configurable: true,
     value: {
       aiGskStatus: vi.fn(async () => ({ loggedIn: true })),
-      // adapted: local AiPanel refreshes the ChatOffice login state on mount
-      aiChatOfficeStatus: vi.fn(async () => ({ loggedIn: true })),
+      // adapted: local AiPanel refreshes the ChaOffice login state on mount
+      aiChaOfficeStatus: vi.fn(async () => ({ loggedIn: true })),
       beginHistoryBatch: vi.fn(async () => false),
       endHistoryBatch: vi.fn(async () => null),
       aiLogRunFailure: vi.fn(async () => undefined),
@@ -295,7 +295,7 @@ describe('AiPanel agent run lifecycle (slides)', () => {
       configurable: true,
       value: {
         aiGskStatus: vi.fn(async () => ({ loggedIn: true })),
-        aiChatOfficeStatus: vi.fn(async () => ({ loggedIn: false })),
+        aiChaOfficeStatus: vi.fn(async () => ({ loggedIn: false })),
         beginHistoryBatch: vi.fn(async () => false),
         endHistoryBatch: vi.fn(async () => null),
         aiLogRunFailure: vi.fn(async () => undefined),
@@ -323,7 +323,7 @@ describe('AiPanel agent run lifecycle (slides)', () => {
     act(() => {
       agentHarness.events!.onTurnEnd?.()
       agentHarness.events!.onError?.(
-        'Not signed in to ChatOffice: click “Sign in” below, sign in, then retry',
+        'Not signed in to ChaOffice: click “Sign in” below, sign in, then retry',
       )
     })
     await flushEffects()

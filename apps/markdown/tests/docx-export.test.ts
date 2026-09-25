@@ -158,10 +158,10 @@ describe('docx export', () => {
   })
 
   it('links survive as hyperlink runs', async () => {
-    const parsed = await exportAndParse('Visit [ChatOffice](https://genspark.ai) now.')
+    const parsed = await exportAndParse('Visit [ChaOffice](https://genspark.ai) now.')
     const para = parsed.blocks.find((b) => b.type === 'paragraph')
     const link = para?.runs?.find((r) => r.link)
-    expect(link?.text).toBe('ChatOffice')
+    expect(link?.text).toBe('ChaOffice')
     expect(link?.link?.href).toBe('https://genspark.ai')
   })
 

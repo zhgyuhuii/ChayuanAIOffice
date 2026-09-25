@@ -208,15 +208,15 @@ function AiConversationBody({
   const mountedRef = useRef(true)
 
   const settingsRef = useRef<AiSettingsV2 | null>(null)
-  /** ChatOffice login state for the generate_image gate (refreshed on mount and window focus) */
-  const chatOfficeLoggedInRef = useRef(false)
+  /** ChaOffice login state for the generate_image gate (refreshed on mount and window focus) */
+  const chaOfficeLoggedInRef = useRef(false)
   useEffect(() => {
     let alive = true
     const refresh = () => {
       void window.markdownApi
-        .aiChatOfficeStatus?.()
+        .aiChaOfficeStatus?.()
         .then((s) => {
-          if (alive) chatOfficeLoggedInRef.current = !!s?.loggedIn
+          if (alive) chaOfficeLoggedInRef.current = !!s?.loggedIn
         })
         .catch(() => {})
     }

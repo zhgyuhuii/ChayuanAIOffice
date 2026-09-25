@@ -6,7 +6,7 @@ import type {
   AiModelEntry,
   AiSettingsV2,
   AiStreamChunk,
-  ChatOfficeAccountStatus,
+  ChaOfficeAccountStatus,
 } from '@chatoffice/ai-provider'
 import type { ProjectApi } from '@chatoffice/project-store'
 import type {
@@ -472,15 +472,15 @@ const desktopApi: DesktopApi = {
     if (!requestId) throw new Error('Invalid AI stream request id.')
     await ipcRenderer.invoke(IPC_CHANNELS.aiStreamCancel, requestId)
   },
-  async aiChatOfficeStatus(withEmail) {
-    const result: unknown = await ipcRenderer.invoke(IPC_CHANNELS.aiChatOfficeStatus, withEmail)
+  async aiChaOfficeStatus(withEmail) {
+    const result: unknown = await ipcRenderer.invoke(IPC_CHANNELS.aiChaOfficeStatus, withEmail)
     if (!isRecord(result) || typeof result.loggedIn !== 'boolean') {
-      throw new Error('Invalid ChatOffice account status response.')
+      throw new Error('Invalid ChaOffice account status response.')
     }
-    return result as unknown as ChatOfficeAccountStatus
+    return result as unknown as ChaOfficeAccountStatus
   },
-  async aiChatOfficeLogin() {
-    await ipcRenderer.invoke(IPC_CHANNELS.aiChatOfficeLogin)
+  async aiChaOfficeLogin() {
+    await ipcRenderer.invoke(IPC_CHANNELS.aiChaOfficeLogin)
   },
   async aiLocalToolStatus(vendorId: string) {
     return (await ipcRenderer.invoke(
@@ -3728,7 +3728,7 @@ function isOptionalEnum<T extends string>(
 
 // Knowledge-base read surface (docs/kb-integration-plan.md): one dedicated
 // global so every app shell / editor window shares the same facade contract.
-contextBridge.exposeInMainWorld('chatOfficeKb', {
+contextBridge.exposeInMainWorld('chaOfficeKb', {
   discover: () => ipcRenderer.invoke(KB_CHANNELS.discover),
   search: (args: { kbIds: string[]; q: string; topK?: number }) =>
     ipcRenderer.invoke(KB_CHANNELS.search, args),

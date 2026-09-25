@@ -76,7 +76,7 @@ describe('ModelSettingsPage', () => {
     expect(document.body.querySelector('[data-model-key]')).toBeTruthy()
   })
 
-  it('hides the ChatOffice login entry entirely while USER_LOGIN_READY is false', async () => {
+  it('hides the ChaOffice login entry entirely while USER_LOGIN_READY is false', async () => {
     await render()
     // no chatoffice row in the enabled group or any catalog group
     expect(document.body.querySelector('[data-vendor-row="chatoffice"]')).toBeNull()

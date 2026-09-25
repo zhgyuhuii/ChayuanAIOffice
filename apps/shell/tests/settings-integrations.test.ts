@@ -21,8 +21,8 @@ beforeEach(() => {
   host = document.createElement('div')
   document.body.append(host)
   root = createRoot(host)
-  // adapted（本地）：SettingsModal 直连本地 chatOffice 桥（主题/AI 设置/登录态），测试需补最小桩
-  window.chatOffice = {
+  // adapted（本地）：SettingsModal 直连本地 chaOffice 桥（主题/AI 设置/登录态），测试需补最小桩
+  window.chaOffice = {
     getTheme: async () => 'system',
     getDefaultSaveDir: async () => '',
     getAnalyticsEnabled: async () => true,
@@ -116,7 +116,7 @@ async function openIntegrations(
   api: Partial<IntegrationsApi>,
   extra: Partial<SettingsModalProps> = {},
 ): Promise<void> {
-  window.chatOfficeIntegrations = api as IntegrationsApi
+  window.chaOfficeIntegrations = api as IntegrationsApi
   await act(async () => {
     root.render(
       createElement(

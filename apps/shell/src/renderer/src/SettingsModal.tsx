@@ -29,7 +29,7 @@ import { McpManagePane } from './McpManagePane'
 import './settings.css'
 
 // ── Settings modal (opened from the account menu) ─────────
-// ChatOffice-style two-pane dialog: section nav on the left, fields on the right.
+// ChaOffice-style two-pane dialog: section nav on the left, fields on the right.
 // All values go through the existing home IPC; nothing is stored locally.
 
 // sorted by ISO 639 language code — native-script labels have no natural
@@ -307,7 +307,7 @@ function FileSearchPane() {
 
   useEffect(() => {
     let alive = true
-    void window.chatOffice.getFileSearchSettings?.().then((v) => {
+    void window.chaOffice.getFileSearchSettings?.().then((v) => {
       if (alive && v) setSettings(v)
     })
     return () => {
@@ -317,7 +317,7 @@ function FileSearchPane() {
 
   const patch = (next: Partial<FileSearchSettings>) => {
     // optimistic merge; the persisted answer (normalized keys) wins afterwards
-    void window.chatOffice.setFileSearchSettings?.(next).then((saved) => setSettings(saved))
+    void window.chaOffice.setFileSearchSettings?.(next).then((saved) => setSettings(saved))
     setSettings((prev) => (prev ? { ...prev, ...next } : prev))
   }
 
@@ -326,7 +326,7 @@ function FileSearchPane() {
     setTesting(true)
     setTestResult(null)
     try {
-      const result = await window.chatOffice.testFileSearchRerank?.({
+      const result = await window.chaOffice.testFileSearchRerank?.({
         endpoint: settings.jevEndpoint,
         apiKey: settings.jevKeys[settings.jevEndpoint] ?? '',
       })
@@ -444,7 +444,7 @@ function Field({
 function AiModelPane({ lang, initialVendor }: { lang: string; initialVendor?: string }) {
   // the model settings live inline in this pane (no second window, no extra
   // heading — the section nav names it); the page's own panes handle scrolling
-  const bridge = useMemo(() => windowChatOfficeBridge(), [])
+  const bridge = useMemo(() => windowChaOfficeBridge(), [])
   return (
     <div className="set-model-settings">
       <ModelSettingsPage
@@ -459,7 +459,7 @@ function AiModelPane({ lang, initialVendor }: { lang: string; initialVendor?: st
 
 function DefaultModelsPane({ lang }: { lang: string }) {
   const { t } = useI18n()
-  const bridge = useMemo(() => windowChatOfficeBridge(), [])
+  const bridge = useMemo(() => windowChaOfficeBridge(), [])
   return (
     <>
       <h3 className="set-pane-title">{t('setSecDefaultModels')}</h3>
@@ -469,11 +469,11 @@ function DefaultModelsPane({ lang }: { lang: string }) {
 }
 
 /** the v2 settings page over the shell-wide ai:* channels */
-function windowChatOfficeBridge(): ModelSettingsBridge {
+function windowChaOfficeBridge(): ModelSettingsBridge {
   return {
-    getSettings: () => window.chatOffice.getAiSettings(),
-    saveSettings: (view) => window.chatOffice.setAiSettings(view),
-    setCurrentModel: (selection) => window.chatOffice.setAiCurrentModel(selection),
+    getSettings: () => window.chaOffice.getAiSettings(),
+    saveSettings: (view) => window.chaOffice.setAiSettings(view),
+    setCurrentModel: (selection) => window.chaOffice.setAiCurrentModel(selection),
     discoverModels: async (target) => {
       // Always run discovery in the main process. The shell renderer's CSP
       // (index.html: connect-src 'self' ws://localhost:*) blocks EVERY
@@ -485,14 +485,14 @@ function windowChatOfficeBridge(): ModelSettingsBridge {
       // gateways whose edge blocks non-browser traffic, and it resolves
       // KEEP_KEY sentinels to the stored key when the renderer doesn't hold
       // it. Codex needs main regardless (Node child_process for the CLI).
-      return window.chatOffice.aiDiscoverModels(target)
+      return window.chaOffice.aiDiscoverModels(target)
     },
-    chatofficeStatus: (withEmail) => window.chatOffice.chatofficeStatus(withEmail),
-    chatofficeLogin: () => void window.chatOffice.chatofficeLogin(),
-    localToolStatus: (vendorId) => window.chatOffice.aiLocalToolStatus(vendorId),
-    localToolInstall: (vendorId, onLine) => window.chatOffice.aiLocalToolInstall(vendorId, onLine),
-    localToolStart: (vendorId) => window.chatOffice.aiLocalToolStart(vendorId),
-    testSearchPlatform: (req) => window.chatOffice.aiTestSearchPlatform(req),
+    chatofficeStatus: (withEmail) => window.chaOffice.chatofficeStatus(withEmail),
+    chatofficeLogin: () => void window.chaOffice.chatofficeLogin(),
+    localToolStatus: (vendorId) => window.chaOffice.aiLocalToolStatus(vendorId),
+    localToolInstall: (vendorId, onLine) => window.chaOffice.aiLocalToolInstall(vendorId, onLine),
+    localToolStart: (vendorId) => window.chaOffice.aiLocalToolStart(vendorId),
+    testSearchPlatform: (req) => window.chaOffice.aiTestSearchPlatform(req),
   }
 }
 
@@ -508,7 +508,7 @@ function AiMediaPane({
   lang: string
   onOpenModelSettings: (vendorId?: string) => void
 }) {
-  const bridge = useMemo(() => windowChatOfficeBridge(), [])
+  const bridge = useMemo(() => windowChaOfficeBridge(), [])
   return (
     <div className="set-capability-settings">
       <CapabilitySettingsPage
@@ -531,7 +531,7 @@ export interface SettingsModalProps {
   onOpenLoginUrl: () => void
   onCopyLoginUrl: () => void
   onClose: () => void
-  /** closes the modal and launches the ChatOffice login flow (progress shows on the account entry) */
+  /** closes the modal and launches the ChaOffice login flow (progress shows on the account entry) */
   onLogin: () => void
   onLogout: () => void
   /** an installed skill is older than the bundled one: dot on the Integrations entry */
@@ -560,28 +560,28 @@ export function SettingsModal({
 
   useEffect(() => {
     let alive = true
-    void window.chatOffice.getTheme?.().then((th) => {
+    void window.chaOffice.getTheme?.().then((th) => {
       if (alive) setTheme(th)
     })
-    void window.chatOffice.getDefaultSaveDir?.().then((dir) => {
+    void window.chaOffice.getDefaultSaveDir?.().then((dir) => {
       if (alive && dir) setSaveDir(dir)
     })
-    void window.chatOffice.getAnalyticsEnabled?.().then((on) => {
+    void window.chaOffice.getAnalyticsEnabled?.().then((on) => {
       if (alive) setAnalyticsOn(on !== false)
     })
-    void window.chatOffice.getAutoSaveDefault?.().then((v) => {
+    void window.chaOffice.getAutoSaveDefault?.().then((v) => {
       if (alive) setAutoSaveOn(v.on)
     })
-    void window.chatOffice.getAiPanelPrefs?.().then((prefs) => {
+    void window.chaOffice.getAiPanelPrefs?.().then((prefs) => {
       if (alive) setAiPrefs(prefs)
     })
-    void window.chatOffice.getUpdateChannel?.().then((ch) => {
+    void window.chaOffice.getUpdateChannel?.().then((ch) => {
       if (alive) setChannel(ch)
     })
-    void window.chatOffice.getAppVersion?.().then((v) => {
+    void window.chaOffice.getAppVersion?.().then((v) => {
       if (alive && v) setAppVersion(v)
     })
-    void window.chatOffice.githubStars?.().then((n) => {
+    void window.chaOffice.githubStars?.().then((n) => {
       if (alive && n !== null) setGithubStars(n)
     })
     return () => {
@@ -599,18 +599,18 @@ export function SettingsModal({
 
   const applyTheme = (next: UiTheme) => {
     setTheme(next)
-    void window.chatOffice.setTheme(next)
+    void window.chaOffice.setTheme(next)
     if (next === 'system') document.documentElement.removeAttribute('data-theme')
     else document.documentElement.setAttribute('data-theme', next)
   }
 
   const updateAiPrefs = (patch: Partial<AiPanelPrefs>) => {
     setAiPrefs((prev) => ({ ...prev, ...patch }))
-    void window.chatOffice.setAiPanelPrefs(patch).then(setAiPrefs)
+    void window.chaOffice.setAiPanelPrefs(patch).then(setAiPrefs)
   }
 
   const changeSaveDir = () => {
-    void window.chatOffice.pickDefaultSaveDir?.().then((dir) => {
+    void window.chaOffice.pickDefaultSaveDir?.().then((dir) => {
       if (dir) setSaveDir(dir)
     })
   }
@@ -784,7 +784,7 @@ export function SettingsModal({
                     onClick={() => {
                       const next = !autoSaveOn
                       setAutoSaveOn(next)
-                      void window.chatOffice.setAutoSaveDefault?.(next).catch(() => {})
+                      void window.chaOffice.setAutoSaveDefault?.(next).catch(() => {})
                     }}
                   />
                 </div>
@@ -804,7 +804,7 @@ export function SettingsModal({
                     onClick={() => {
                       const next = !analyticsOn
                       setAnalyticsSaving(true)
-                      void window.chatOffice
+                      void window.chaOffice
                         .setAnalyticsEnabled(next)
                         .then((persisted) => {
                           if (persisted) setAnalyticsOn(next)
@@ -843,7 +843,7 @@ export function SettingsModal({
                     onPick={(v) => {
                       const next = v === 'beta' ? 'beta' : 'stable'
                       setChannel(next)
-                      void window.chatOffice.setUpdateChannel(next)
+                      void window.chaOffice.setUpdateChannel(next)
                     }}
                   />
                 </div>
@@ -857,7 +857,7 @@ export function SettingsModal({
                   action={
                     <button
                       className="set-btn"
-                      onClick={() => void window.chatOffice.openGitHubRepo?.()}
+                      onClick={() => void window.chaOffice.openGitHubRepo?.()}
                     >
                       {t('starOnGitHub')}
                     </button>

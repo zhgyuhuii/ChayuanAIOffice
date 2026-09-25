@@ -772,7 +772,7 @@ interface RuntimePaths {
   preloadPath: string
   rendererUrl?: string
   rendererFile?: string
-  /** Shell router used to open exported PDFs in a new ChatOffice tab. */
+  /** Shell router used to open exported PDFs in a new ChaOffice tab. */
   openGeneratedPath?: (path: string) => boolean
 }
 

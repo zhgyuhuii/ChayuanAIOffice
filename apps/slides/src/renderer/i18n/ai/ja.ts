@@ -275,7 +275,7 @@ export const ja = {
   aiSumBackground: "スライド {n} の背景を設定",
   aiSumSpeakerNotes: "スライド {n} に発表者ノートを書き込み",
   aiSumDeleteElement: "スライド {n} の要素を削除",
-  aiChatOfficeLoginBtn: "サインイン",
+  aiChaOfficeLoginBtn: "サインイン",
   aiTabChat: "チャット",
   aiTabAssistant: "アシスタント",
   aiAskDesc: "選択した要素に編集指示を出す",

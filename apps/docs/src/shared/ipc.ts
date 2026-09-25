@@ -64,7 +64,7 @@ import type {
   AiStreamChunk,
   AiStreamRequest,
   DiscoveryTarget,
-  ChatOfficeAccountStatus,
+  ChaOfficeAccountStatus,
   LocalToolOpResult,
   LocalToolStatus,
 } from '@chatoffice/ai-provider'
@@ -89,7 +89,7 @@ export type {
   AiStreamRequestV2,
   AiWireProtocol,
   DiscoveryTarget,
-  ChatOfficeAccountStatus,
+  ChaOfficeAccountStatus,
 } from '@chatoffice/ai-provider'
 export { AI_PROVIDERS, KEEP_KEY } from '@chatoffice/ai-provider/browser'
 
@@ -496,10 +496,10 @@ export interface DesktopApi {
   saveImageAs(src: string): Promise<{ ok: boolean; path?: string; error?: string }>
   onViewImage(handler: (src: string) => void): () => void
   aiStreamCancel(requestId: string): Promise<void>
-  /** ChatOffice account status (chatoffice login state); withEmail also returns the email (needs a network request, slower) */
-  aiChatOfficeStatus(withEmail?: boolean): Promise<ChatOfficeAccountStatus>
-  /** Open the browser to log in to ChatOffice (fire-and-forget; aiChatOfficeStatus flips to logged-in when done) */
-  aiChatOfficeLogin(): Promise<void>
+  /** ChaOffice account status (chatoffice login state); withEmail also returns the email (needs a network request, slower) */
+  aiChaOfficeStatus(withEmail?: boolean): Promise<ChaOfficeAccountStatus>
+  /** Open the browser to log in to ChaOffice (fire-and-forget; aiChaOfficeStatus flips to logged-in when done) */
+  aiChaOfficeLogin(): Promise<void>
   /** 本地与自建：探测 / 一键安装 / 启动（模型设置页状态卡） */
   aiLocalToolStatus(vendorId: string): Promise<LocalToolStatus>
   aiLocalToolInstall(vendorId: string, onLine?: (line: string) => void): Promise<LocalToolOpResult>
@@ -614,7 +614,7 @@ export interface DesktopApi {
   videoRetry(id: string): Promise<{ error?: string }>
   videoPreview(id: string): Promise<{ dataUrl?: string; url?: string; error?: string }>
   onVideoTasksChanged(handler: (payload: { id: string; status: string }) => void): () => void
-  /** AI image generation via the ChatOffice cloud channel (requires login + cloud tools) */
+  /** AI image generation via the ChaOffice cloud channel (requires login + cloud tools) */
   aiGenerateImage(op: {
     prompt: string
     aspectRatio?: string

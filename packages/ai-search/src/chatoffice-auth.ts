@@ -1,8 +1,8 @@
 /**
- * ChatOffice's own ChatOffice identity: device-code login (office_addin_auth,
+ * ChaOffice's own ChaOffice identity: device-code login (office_addin_auth,
  * app_type=chatoffice) minting a chatoffice API key named "chatoffice" — the key_name
  * lands in billing as billing_tag, attributing all traffic (incl. chatoffice CLI
- * subprocesses) to ChatOffice. Stored in ~/.chatoffice/auth.json, deliberately
+ * subprocesses) to ChaOffice. Stored in ~/.chatoffice/auth.json, deliberately
  * NOT the shared config.json that Claw Desktop overwrites on every launch.
  *
  * Flow: POST /device_code → browser approve → poll /token for a 30-day Bearer
@@ -17,7 +17,7 @@ import { dirname, join } from 'node:path'
 import { asRecord, chatofficeProxyUrl } from './shared'
 
 /** Progress event for the browser login flow. */
-export interface ChatOfficeLoginProgress {
+export interface ChaOfficeLoginProgress {
   phase: 'url' | 'success' | 'error'
   url?: string
   expiresInSec?: number
@@ -142,7 +142,7 @@ export function loadChatofficeAuth(): ChatofficeAuth | null {
   return cachedAuth
 }
 
-/** The ChatOffice-named api key; '' when not signed in. Cached (invalidated by login/logout). */
+/** The ChaOffice-named api key; '' when not signed in. Cached (invalidated by login/logout). */
 export function chatofficeApiKey(): string {
   return loadChatofficeAuth()?.apiKey ?? ''
 }
@@ -180,7 +180,7 @@ function clearAuth(): void {
 
 class LoginFlowError extends Error {
   constructor(
-    /** matches ChatOfficeLoginProgress.error conventions */
+    /** matches ChaOfficeLoginProgress.error conventions */
     public reason: 'network' | 'expired' | string,
   ) {
     super(reason)
@@ -273,7 +273,7 @@ async function establishSession(accessToken: string, signal: AbortSignal): Promi
 
 async function runDeviceLogin(
   signal: AbortSignal,
-  emit: (progress: ChatOfficeLoginProgress) => void,
+  emit: (progress: ChaOfficeLoginProgress) => void,
 ): Promise<void> {
   const { resp, json } = await httpJson(
     `${baseUrl()}/api/office_addin_auth/device_code?app_type=${APP_TYPE}`,
@@ -338,12 +338,12 @@ async function runDeviceLogin(
 let activeLogin: { cancel: () => void } | null = null
 
 /**
- * Starts the ChatOffice device-code login, cancelling a previous in-flight one
+ * Starts the ChaOffice device-code login, cancelling a previous in-flight one
  * (its device code would otherwise be approved into a dead flow). The caller
  * opens `url` in the system browser. Returns whether the flow was started.
  */
 export function startChatofficeLogin(
-  onEvent?: (progress: ChatOfficeLoginProgress) => void,
+  onEvent?: (progress: ChaOfficeLoginProgress) => void,
 ): boolean {
   activeLogin?.cancel()
   const emit = onEvent ?? (() => {})
@@ -356,7 +356,7 @@ export function startChatofficeLogin(
     },
   }
   activeLogin = self
-  const finish = (progress: ChatOfficeLoginProgress) => {
+  const finish = (progress: ChaOfficeLoginProgress) => {
     if (done) return
     done = true
     if (activeLogin === self) activeLogin = null
@@ -394,7 +394,7 @@ export function ensureChatofficeLogin(openUrl: (url: string) => void): void {
 }
 
 /**
- * Signs out of ChatOffice only: best-effort server-side revoke of the
+ * Signs out of ChaOffice only: best-effort server-side revoke of the
  * chatoffice key, then local removal. The shared chatoffice CLI login
  * (~/.chatoffice-tool-cli) is untouched — terminal chatoffice and Claw keep working.
  */

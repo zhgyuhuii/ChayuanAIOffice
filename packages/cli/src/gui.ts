@@ -13,7 +13,7 @@ export function chatofficeUserDataDir(env: NodeJS.ProcessEnv): string {
       : process.platform === 'win32'
         ? env.APPDATA || join(homedir(), 'AppData', 'Roaming')
         : env.XDG_CONFIG_HOME || join(homedir(), '.config')
-  return join(base, 'ChatOffice')
+  return join(base, 'ChaOffice')
 }
 
 export interface GuiOpenDocuments {
@@ -63,7 +63,7 @@ export function assertNotOpenInGui(abs: string, env: NodeJS.ProcessEnv): void {
   if (!open.paths.some((p) => realizedPath(p) === target)) return
   throw new CliError(
     EXIT.file,
-    `ChatOffice has this file open: ${abs}`,
+    `ChaOffice has this file open: ${abs}`,
     { gui_pid: open.pid },
     {
       reason: 'file_open_in_gui',

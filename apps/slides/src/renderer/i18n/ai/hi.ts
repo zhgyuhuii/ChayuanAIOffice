@@ -276,7 +276,7 @@ export const hi = {
   aiSumBackground: "स्लाइड {n} की पृष्ठभूमि सेट की गई",
   aiSumSpeakerNotes: "स्लाइड {n} पर वक्ता नोट लिखे गए",
   aiSumDeleteElement: "स्लाइड {n} पर तत्व हटाया गया",
-  aiChatOfficeLoginBtn: "साइन इन करें",
+  aiChaOfficeLoginBtn: "साइन इन करें",
   aiTabChat: "चैट",
   aiTabAssistant: "सहायक",
   aiAskDesc: "चुने गए तत्व को संपादन निर्देश दें",

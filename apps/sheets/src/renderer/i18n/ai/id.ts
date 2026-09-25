@@ -1,4 +1,4 @@
-/** ai strings, id (merged with ChatOffice-local keys) */
+/** ai strings, id (merged with ChaOffice-local keys) */
 export const id = {
   aiComposerPlaceholderBuild: 'Jelaskan tabel, data, atau bagan yang akan dibuat…',
   aiEmptyBuildTitle: 'Biarkan AI membangun buku kerja ini untuk Anda',
@@ -45,13 +45,13 @@ export const id = {
   aiInstructionAria: 'Instruksi AI',
   aiFileTooltip: 'SHA-256 {sha}\\nPenyimpanan hanya menulis ulang entri yang diedit; sisanya tetap dipertahankan.',
   aiFileMeta: '{sheets} lembar · {entries} entri',
-  aiChatOfficeAccount: 'Akun ChaAI Office',
+  aiChaOfficeAccount: 'Akun ChaAI Office',
   aiAccountChecking: 'Memeriksa…',
   aiLoggedIn: 'Sudah masuk',
   aiLoggedInAs: 'Sudah masuk: {email}',
   aiNotLoggedIn: 'Belum masuk (fitur AI memerlukan akun ChaAI Office)',
   aiWaitingBrowserLogin: 'Menunggu proses masuk di browser…',
-  aiLoginChatOffice: 'Masuk ke ChaAI Office',
+  aiLoginChaOffice: 'Masuk ke ChaAI Office',
   aiModel: 'Model',
   aiCancel: 'Batal',
   aiSave: 'Simpan',
@@ -99,7 +99,7 @@ export const id = {
   aiScopeColumns: 'Terpilih: {names} ({count} kolom)',
   aiScopeRangeTip: 'AI membaca "kolom ini / baris ini / bagian yang dipilih" sebagai rentang ini, dan dikunci selama proses berjalan setelah Anda mengirim',
   aiScopeClearTitle: 'Hapus cakupan rentang dan gunakan seluruh lembar',
-  aiChatOfficeLoginBtn: 'Masuk',
+  aiChaOfficeLoginBtn: 'Masuk',
   aiPanelTitle: 'Asisten AI',
   aiTabChat: 'Obrolan',
   aiTabAssistant: 'Asisten',

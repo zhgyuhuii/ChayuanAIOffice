@@ -148,7 +148,7 @@ export function sseErrorText(error: unknown, fallback: string): string {
 
 /**
  * Gateways can answer a `stream: true` request with a complete non-SSE JSON body —
- * observed on the ChatOffice Anthropic route when credits are exhausted (HTTP 200,
+ * observed on the ChaOffice Anthropic route when credits are exhausted (HTTP 200,
  * Content-Type: application/json, the notice text inside a regular message). The SSE
  * parser would find no `data:` lines in such a body and dissolve it into an empty
  * "successful" turn. Returns the body text when that happens, else null.
@@ -160,7 +160,7 @@ export async function jsonBodyInsteadOfSse(response: Response): Promise<string |
 
 /**
  * A non-SSE JSON reply whose text is the gateway's credits-exhausted notice
- * (ChatOffice: "Your ChatOffice credits have been exhausted…") surfaces as a typed
+ * (ChaOffice: "Your ChaOffice credits have been exhausted…") surfaces as a typed
  * error so the apps show a localized "top up" message (errorCode 'credits')
  * instead of the English notice as a normal assistant reply.
  */

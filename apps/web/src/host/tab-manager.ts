@@ -128,7 +128,7 @@ export class TabManager {
     }
   }
 
-  /** shell modal lifetime relayed from the chatOfficeTabs shim */
+  /** shell modal lifetime relayed from the chaOfficeTabs shim */
   setModalOpen(open: boolean): void {
     this.modalOpen = open
     this.syncVisibility()

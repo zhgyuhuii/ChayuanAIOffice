@@ -1,4 +1,4 @@
-/** ai strings, fr (merged with ChatOffice-local keys) */
+/** ai strings, fr (merged with ChaOffice-local keys) */
 export const fr = {
   aiComposerPlaceholderBuild: 'Décrivez le tableau, les données ou le graphique à créer…',
   aiEmptyBuildTitle: 'Laissez l\'IA construire ce classeur pour vous',
@@ -45,13 +45,13 @@ export const fr = {
   aiInstructionAria: 'Instruction IA',
   aiFileTooltip: 'SHA-256 {sha}\\nL\'enregistrement ne réécrit que les entrées modifiées ; tout le reste est conservé.',
   aiFileMeta: '{sheets} feuilles · {entries} entrées',
-  aiChatOfficeAccount: 'Compte ChaAI Office',
+  aiChaOfficeAccount: 'Compte ChaAI Office',
   aiAccountChecking: 'Vérification…',
   aiLoggedIn: 'Connecté',
   aiLoggedInAs: 'Connecté : {email}',
   aiNotLoggedIn: 'Non connecté (les fonctions IA nécessitent un compte ChaAI Office)',
   aiWaitingBrowserLogin: 'En attente de la connexion dans le navigateur…',
-  aiLoginChatOffice: 'Se connecter à ChaAI Office',
+  aiLoginChaOffice: 'Se connecter à ChaAI Office',
   aiModel: 'Modèle',
   aiCancel: 'Annuler',
   aiSave: 'Enregistrer',
@@ -99,7 +99,7 @@ export const fr = {
   aiScopeColumns: 'Sélection : {names} ({count} colonnes)',
   aiScopeRangeTip: 'L\'IA interprète « cette colonne / ces lignes / la partie sélectionnée » comme cette plage, figée pendant toute l\'exécution dès l\'envoi',
   aiScopeClearTitle: 'Retirer la portée de la plage et viser toute la feuille',
-  aiChatOfficeLoginBtn: 'Se connecter',
+  aiChaOfficeLoginBtn: 'Se connecter',
   aiPanelTitle: 'Assistant IA',
   aiTabChat: 'Discussion',
   aiTabAssistant: 'Assistant',

@@ -33,17 +33,17 @@ import {
 import { fetchWithSsrfGuard } from '@chatoffice/electron-utils/safe-remote-url'
 import {
   chatofficeAnalyzeMedia,
-  hasChatOfficeAuth,
-  type ChatOfficeGenerateImageOptions,
+  hasChaOfficeAuth,
+  type ChaOfficeGenerateImageOptions,
 } from './chatoffice'
 
 export const CHATOFFICE_NOT_LOGGED_IN_ERROR =
-  'ChatOffice account is not logged in on this machine; ask the user to log in first'
+  'ChaOffice account is not logged in on this machine; ask the user to log in first'
 
 /** 200 MB: enough for a long clip through the Gemini Files API, small enough to hold in memory */
 const MAX_MEDIA_BYTES = 200 * 1024 * 1024
 
-/** the only load failure that may hand the request back to ChatOffice; validation failures never do */
+/** the only load failure that may hand the request back to ChaOffice; validation failures never do */
 export class MediaTooLargeError extends Error {}
 
 const MIME_BY_EXT: Record<string, string> = {
@@ -79,9 +79,9 @@ export function readAiSettingsFile(path: string): AiSettings {
 
 type Gate = { error: string } | null
 
-/** the ChatOffice route's preconditions; null when it may proceed */
+/** the ChaOffice route's preconditions; null when it may proceed */
 function gskGate(_settings: AiSettings, notLoggedInError: string): Gate {
-  if (!hasChatOfficeAuth()) return { error: notLoggedInError }
+  if (!hasChaOfficeAuth()) return { error: notLoggedInError }
   return null
 }
 
@@ -151,7 +151,7 @@ export interface MediaToolOptions {
 /** Genspark background-removal model — chained after generation for transparentBackground */
 export const GSK_RMBG_MODEL = 'fal-bria-rmbg'
 
-export type GenerateImageToolOp = ChatOfficeGenerateImageOptions & {
+export type GenerateImageToolOp = ChaOfficeGenerateImageOptions & {
   /** The result must have real PNG alpha (icons/logos/cutouts). Generation models cannot
    * produce transparency from the prompt alone — they paint a fake gray checkerboard into
    * the pixels — so the tool strips the background in a second pass instead. */
@@ -172,7 +172,7 @@ export async function generateImageTool(
     return { error: 'no image model configured (Settings → 生图、媒体与搜索)' }
   }
   try {
-    // `model` names ChatOffice-only special models (fal-*); BYOK uses the configured image model
+    // `model` names ChaOffice-only special models (fal-*); BYOK uses the configured image model
     const references = await Promise.all((op.referenceImageUrls ?? []).map(loadMediaReference))
     const image = await generateImageWithProvider(byok.provider, byok.config, {
       prompt,
@@ -211,7 +211,7 @@ export async function analyzeMediaTool(
     try {
       media = await Promise.all(mediaUrls.map(loadMediaReference))
     } catch (err) {
-      // only the size cap hands the request back to ChatOffice (the CLI streams large
+      // only the size cap hands the request back to ChaOffice (the CLI streams large
       // files itself); scheme / path / SSRF rejections stay rejections
       if (err instanceof MediaTooLargeError && (!imageByok || !videoByok)) return await viaGsk()
       return { error: errorText(err) }

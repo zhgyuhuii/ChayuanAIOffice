@@ -62,7 +62,7 @@ const MAX_NATIVE_SESSIONS = 64
 const MAX_MODEL_PAGES = 10
 const CODEX_TEMP_PREFIX = 'chatoffice-codex-app-server-'
 const CODEX_BASE_INSTRUCTIONS =
-  'You are the language-model backend embedded in ChatOffice. Never inspect or modify local files, run shell commands, browse, call MCP, use apps, or invoke any built-in Codex tool. The caller supplies the complete relevant conversation and a JSON Schema. Return exactly one assistant response matching that schema; ChatOffice itself executes document tools.'
+  'You are the language-model backend embedded in ChaOffice. Never inspect or modify local files, run shell commands, browse, call MCP, use apps, or invoke any built-in Codex tool. The caller supplies the complete relevant conversation and a JSON Schema. Return exactly one assistant response matching that schema; ChaOffice itself executes document tools.'
 
 function cleanCliPath(value: string | undefined): string {
   const trimmed = (value ?? '').trim()
@@ -419,7 +419,7 @@ class CodexAppServerClient {
       return
     }
     if (typeof message.method === 'string' && message.id !== undefined) {
-      // ChatOffice deliberately disables Codex-owned tools. Reply instead of
+      // ChaOffice deliberately disables Codex-owned tools. Reply instead of
       // leaving an unexpected server request pending forever.
       this.write({
         id: message.id,
@@ -590,9 +590,9 @@ export function buildCodexAppServerPrompt(
     })),
   }
   return [
-    'Treat the payload below as the new ChatOffice conversation events for this turn and follow its system instruction.',
-    'Do not use Codex tools. ChatOffice will execute only the tool calls returned in the required response schema.',
-    'Put user-visible prose in text. Put requested ChatOffice tool calls in toolCalls; inputJson must be a JSON-encoded object matching the listed inputSchema. Use only listed tool names. If no tool is needed, return an empty toolCalls array.',
+    'Treat the payload below as the new ChaOffice conversation events for this turn and follow its system instruction.',
+    'Do not use Codex tools. ChaOffice will execute only the tool calls returned in the required response schema.',
+    'Put user-visible prose in text. Put requested ChaOffice tool calls in toolCalls; inputJson must be a JSON-encoded object matching the listed inputSchema. Use only listed tool names. If no tool is needed, return an empty toolCalls array.',
     `Keep this one-turn response within roughly ${maxTokens} output tokens.`,
     '<chatoffice_payload>',
     JSON.stringify(payload),
@@ -665,7 +665,7 @@ function incrementalMessages(
   for (let index = 0; index < existing.messageFingerprints.length; index++) {
     if (fingerprint(messages[index]!) !== existing.messageFingerprints[index]) return null
   }
-  // The assistant response is already native app-server history. ChatOffice's
+  // The assistant response is already native app-server history. ChaOffice's
   // following tool results or user message are the only new events to inject.
   return messages.slice(existing.messageFingerprints.length).filter((m) => m.role !== 'assistant')
 }

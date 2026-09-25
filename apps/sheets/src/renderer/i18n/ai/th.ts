@@ -1,4 +1,4 @@
-/** ai strings, th (merged with ChatOffice-local keys) */
+/** ai strings, th (merged with ChaOffice-local keys) */
 export const th = {
   aiComposerPlaceholderBuild: 'อธิบายตาราง ข้อมูล หรือแผนภูมิที่จะสร้าง…',
   aiEmptyBuildTitle: 'ให้ AI สร้างเวิร์กบุ๊กนี้ให้คุณ',
@@ -45,13 +45,13 @@ export const th = {
   aiInstructionAria: 'คำสั่ง AI',
   aiFileTooltip: 'SHA-256 {sha}\\nการบันทึกจะเขียนทับเฉพาะรายการที่แก้ไขเท่านั้น ส่วนที่เหลือคงไว้ตามเดิม',
   aiFileMeta: 'แผ่นงาน {sheets} แผ่น · รายการ {entries} รายการ',
-  aiChatOfficeAccount: 'บัญชี ChaAI Office',
+  aiChaOfficeAccount: 'บัญชี ChaAI Office',
   aiAccountChecking: 'กำลังตรวจสอบ…',
   aiLoggedIn: 'ลงชื่อเข้าใช้แล้ว',
   aiLoggedInAs: 'ลงชื่อเข้าใช้แล้ว: {email}',
   aiNotLoggedIn: 'ยังไม่ได้ลงชื่อเข้าใช้ (ฟีเจอร์ AI ต้องใช้บัญชี ChaAI Office)',
   aiWaitingBrowserLogin: 'กำลังรอการลงชื่อเข้าใช้ในเบราว์เซอร์…',
-  aiLoginChatOffice: 'ลงชื่อเข้าใช้ ChaAI Office',
+  aiLoginChaOffice: 'ลงชื่อเข้าใช้ ChaAI Office',
   aiModel: 'โมเดล',
   aiCancel: 'ยกเลิก',
   aiSave: 'บันทึก',
@@ -99,7 +99,7 @@ export const th = {
   aiScopeColumns: 'เลือก {names} รวม {count} คอลัมน์',
   aiScopeRangeTip: 'AI จะตีความ "คอลัมน์นี้ / แถวเหล่านี้ / ส่วนที่เลือก" เป็นช่วงนี้ และจะถูกตรึงไว้ตลอดการทำงานเมื่อคุณส่ง',
   aiScopeClearTitle: 'ยกเลิกขอบเขตช่วงนี้และใช้ทั้งแผ่นงาน',
-  aiChatOfficeLoginBtn: 'ลงชื่อเข้าใช้',
+  aiChaOfficeLoginBtn: 'ลงชื่อเข้าใช้',
   aiPanelTitle: 'ผู้ช่วย AI',
   aiTabChat: 'แชท',
   aiTabAssistant: 'ผู้ช่วย',

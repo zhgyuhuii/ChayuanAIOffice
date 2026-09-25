@@ -60,11 +60,11 @@ beforeEach(() => {
   stateMock.mockClear()
   activateMock.mockClear()
   openExternalMock.mockClear()
-  Object.defineProperty(window, 'chatOfficePurchase', {
+  Object.defineProperty(window, 'chaOfficePurchase', {
     configurable: true,
     value: { state: stateMock, activate: activateMock, onEvent: () => () => {} },
   })
-  Object.defineProperty(window, 'chatOffice', {
+  Object.defineProperty(window, 'chaOffice', {
     configurable: true,
     value: { openExternal: openExternalMock },
   })
@@ -79,8 +79,8 @@ beforeEach(() => {
 afterEach(() => {
   act(() => root.unmount())
   host.remove()
-  delete (window as { chatOfficePurchase?: unknown }).chatOfficePurchase
-  delete (window as { chatOffice?: unknown }).chatOffice
+  delete (window as { chaOfficePurchase?: unknown }).chaOfficePurchase
+  delete (window as { chaOffice?: unknown }).chaOffice
 })
 
 const openDialog = async () => {
@@ -242,7 +242,7 @@ describe('PurchaseModal', () => {
   })
 
   it('without the Electron bridge (web/dsh form) it opens with the unavailable status and never activates', async () => {
-    delete (window as { chatOfficePurchase?: unknown }).chatOfficePurchase
+    delete (window as { chaOfficePurchase?: unknown }).chaOfficePurchase
     await openDialog()
     expect(q('[data-purchase-status]').textContent).toContain('当前环境暂不支持激活')
     const input = q<HTMLInputElement>('[data-purchase-serial-input]')

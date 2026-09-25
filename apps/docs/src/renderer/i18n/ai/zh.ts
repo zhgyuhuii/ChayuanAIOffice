@@ -197,7 +197,7 @@ export const zh = {
   aiPolishDesc: '润色文字，使表达更清晰流畅',
   aiAssistantNoMatch: '没有匹配的助手',
   aiAssistantScopeSelection: '选区',
-  aiChatOfficeLoginBtn: '登录',
+  aiChaOfficeLoginBtn: '登录',
   aiTabChat: '对话',
   aiSummarizeDesc: '总结全文要点，快速把握内容',
 

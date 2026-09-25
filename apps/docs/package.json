@@ -1,6 +1,6 @@
 {
   "name": "@chatoffice/docs",
-  "productName": "ChatOffice Docs",
+  "productName": "ChaOffice Docs",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -50,10 +50,10 @@
     "vite": "^7.3.1",
     "vitest": "^4.1.11"
   },
-  "author": "ChatOffice",
+  "author": "ChaOffice",
   "build": {
     "appId": "com.chatoffice.docs",
-    "productName": "ChatOffice Docs",
+    "productName": "ChaOffice Docs",
     "electronVersion": "43.3.0",
     "artifactName": "AIDocx-${version}-${arch}.${ext}",
     "directories": {

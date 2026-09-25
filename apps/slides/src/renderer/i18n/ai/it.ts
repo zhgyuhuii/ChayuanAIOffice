@@ -278,7 +278,7 @@ export const it = {
   aiSumBackground: "Sfondo impostato nella diapositiva {n}",
   aiSumSpeakerNotes: "Note del relatore scritte nella diapositiva {n}",
   aiSumDeleteElement: "Elemento eliminato nella diapositiva {n}",
-  aiChatOfficeLoginBtn: "Accedi",
+  aiChaOfficeLoginBtn: "Accedi",
   aiTabChat: "Chat",
   aiTabAssistant: "Assistente",
   aiAskDesc: "Dai un\\'istruzione di modifica all\\'elemento selezionato",

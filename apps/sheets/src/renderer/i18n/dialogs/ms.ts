@@ -1,4 +1,4 @@
-/** dialogs strings, ms (merged with ChatOffice-local keys) */
+/** dialogs strings, ms (merged with ChaOffice-local keys) */
 import type { zh } from './zh'
 export const ms = {
   dlgAllowEditRangesTitle: 'Benarkan Edit Julat',

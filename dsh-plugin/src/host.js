@@ -1,7 +1,7 @@
 /**
  * chatoffice — host 半（cordis 插件），运行在 dsh web 服务进程内。
  *
- * 职责：拉起/守护 ChatOffice BFF sidecar（vendor/chatoffice-sidecar，与
+ * 职责：拉起/守护 ChaOffice BFF sidecar（vendor/chatoffice-sidecar，与
  * chatop 桌面内置形态共用同一套制品：Node BFF + SQLite/本地对象目录 +
  * Web 宿主 + 五编辑器静态资源），监听 127.0.0.1 动态端口（避开 dsh 的
  * 3080），/healthz 就绪探测，卸载时回收子进程。HTTP 管理面
@@ -292,7 +292,7 @@ export function apply(ctx) {
   }
   const disposeRoute = ctx.webServer.register(route)
 
-  // Reverse proxy: the ChatOffice window lives on the STABLE dsh web origin
+  // Reverse proxy: the ChaOffice window lives on the STABLE dsh web origin
   // (/chatoffice-app/*), so a sidecar restart (new dynamic port) never kills
   // an open window — the app re-fetches /api/chatoffice/status and the proxy
   // follows the new origin.

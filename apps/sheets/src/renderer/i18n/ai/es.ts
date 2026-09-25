@@ -1,4 +1,4 @@
-/** ai strings, es (merged with ChatOffice-local keys) */
+/** ai strings, es (merged with ChaOffice-local keys) */
 export const es = {
   aiComposerPlaceholderBuild: 'Describe la tabla, los datos o el gráfico a crear…',
   aiEmptyBuildTitle: 'Deja que la IA construya este libro por ti',
@@ -45,13 +45,13 @@ export const es = {
   aiInstructionAria: 'Instrucción de IA',
   aiFileTooltip: 'SHA-256 {sha}\\nAl guardar solo se reescriben las entradas editadas; todo lo demás se conserva.',
   aiFileMeta: '{sheets} hojas · {entries} entradas',
-  aiChatOfficeAccount: 'Cuenta de ChaAI Office',
+  aiChaOfficeAccount: 'Cuenta de ChaAI Office',
   aiAccountChecking: 'Comprobando…',
   aiLoggedIn: 'Sesión iniciada',
   aiLoggedInAs: 'Sesión iniciada: {email}',
   aiNotLoggedIn: 'Sin sesión iniciada (las funciones de IA requieren una cuenta de ChaAI Office)',
   aiWaitingBrowserLogin: 'Esperando el inicio de sesión en el navegador…',
-  aiLoginChatOffice: 'Iniciar sesión en ChaAI Office',
+  aiLoginChaOffice: 'Iniciar sesión en ChaAI Office',
   aiModel: 'Modelo',
   aiCancel: 'Cancelar',
   aiSave: 'Guardar',
@@ -99,7 +99,7 @@ export const es = {
   aiScopeColumns: 'Seleccionado: {names} ({count} columnas)',
   aiScopeRangeTip: 'La IA interpreta «esta columna / estas filas / la parte seleccionada» como este rango, y al enviar queda fijo durante toda la ejecución',
   aiScopeClearTitle: 'Quitar el ámbito del rango y usar toda la hoja',
-  aiChatOfficeLoginBtn: 'Iniciar sesión',
+  aiChaOfficeLoginBtn: 'Iniciar sesión',
   aiPanelTitle: 'Asistente de IA',
   aiTabChat: 'Chat',
   aiTabAssistant: 'Asistente',

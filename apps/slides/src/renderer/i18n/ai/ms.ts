@@ -276,7 +276,7 @@ export const ms = {
   aiSumBackground: "Menetapkan latar belakang slaid {n}",
   aiSumSpeakerNotes: "Nota pembesar suara ditulis pada slaid {n}",
   aiSumDeleteElement: "Memadam elemen pada slaid {n}",
-  aiChatOfficeLoginBtn: "Log masuk",
+  aiChaOfficeLoginBtn: "Log masuk",
   aiTabChat: "Sembang",
   aiTabAssistant: "Pembantu",
   aiAskDesc: "Berikan arahan suntingan kepada elemen terpilih",

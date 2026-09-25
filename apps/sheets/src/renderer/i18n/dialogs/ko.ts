@@ -1,4 +1,4 @@
-/** dialogs strings, ko (merged with ChatOffice-local keys) */
+/** dialogs strings, ko (merged with ChaOffice-local keys) */
 import type { zh } from './zh'
 export const ko = {
   dlgAllowEditRangesTitle: '범위 편집 허용',

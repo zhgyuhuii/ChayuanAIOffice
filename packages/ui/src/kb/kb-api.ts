@@ -1,6 +1,6 @@
 /**
  * Renderer facade for the knowledge-base read surface (docs/kb-integration-plan.md
- * §4). One contract everywhere: the `window.chatOfficeKb` global installed by
+ * §4). One contract everywhere: the `window.chaOfficeKb` global installed by
  * the desktop preloads (IPC) and by the web-bridge shims (same-origin fetch
  * against the sidecar /kb/* proxy). Missing global = KB integration absent →
  * the UI degrades by hiding the picker, never by crashing.
@@ -64,14 +64,14 @@ export interface KbSourceState {
 
 declare global {
   interface Window {
-    chatOfficeKb?: KbBridgeApi
+    chaOfficeKb?: KbBridgeApi
   }
 }
 
 /** structural guard: never trust the global's shape (f1dcbd86 lesson) */
 export function kbBridge(): KbBridgeApi | null {
   if (typeof window === 'undefined') return null
-  const kb = window.chatOfficeKb
+  const kb = window.chaOfficeKb
   return kb && typeof kb.search === 'function' && typeof kb.discover === 'function' ? kb : null
 }
 

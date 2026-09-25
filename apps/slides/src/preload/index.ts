@@ -441,9 +441,9 @@ const api: SlidesApi = {
   aiDiscoverModels: (target: DiscoveryTarget) => ipcRenderer.invoke('ai:discover-models', target),
   aiStream: (request: AiStreamWireRequest) => ipcRenderer.invoke('ai:stream', request),
   aiStreamCancel: (requestId: string) => ipcRenderer.invoke('ai:stream-cancel', requestId),
-  aiChatOfficeStatus: (withEmail?: boolean) =>
+  aiChaOfficeStatus: (withEmail?: boolean) =>
     ipcRenderer.invoke('ai:chatoffice-status', withEmail),
-  aiChatOfficeLogin: () => ipcRenderer.invoke('ai:chatoffice-login'),
+  aiChaOfficeLogin: () => ipcRenderer.invoke('ai:chatoffice-login'),
   aiLocalToolStatus: (vendorId: string) => ipcRenderer.invoke('ai:local-tool-status', vendorId),
   aiLocalToolInstall: (vendorId: string, onLine?: (line: string) => void) => {
     if (!onLine) return ipcRenderer.invoke('ai:local-tool-install', vendorId)
@@ -631,7 +631,7 @@ installFilesPaneBridge()
 
 // Knowledge-base read surface (docs/kb-integration-plan.md): one dedicated
 // global so every app shell / editor window shares the same facade contract.
-contextBridge.exposeInMainWorld('chatOfficeKb', {
+contextBridge.exposeInMainWorld('chaOfficeKb', {
   discover: () => ipcRenderer.invoke(KB_CHANNELS.discover),
   search: (args: { kbIds: string[]; q: string; topK?: number }) =>
     ipcRenderer.invoke(KB_CHANNELS.search, args),

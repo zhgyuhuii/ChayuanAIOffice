@@ -46,10 +46,10 @@ import { FeedbackModal, FeedbackQrCard } from './FeedbackModal'
 
 declare global {
   interface Window {
-    chatOffice: HomeApi
-    chatOfficeProject?: ProjectHomeApi
-    chatOfficeIntegrations?: IntegrationsApi
-    chatOfficeMcp?: McpClientApi
+    chaOffice: HomeApi
+    chaOfficeProject?: ProjectHomeApi
+    chaOfficeIntegrations?: IntegrationsApi
+    chaOfficeMcp?: McpClientApi
   }
 }
 
@@ -59,10 +59,10 @@ declare global {
 function useShellModalSurface(open: boolean): void {
   useEffect(() => {
     document.documentElement.classList.toggle('chatoffice-shell-modal', open)
-    if ('chatOfficeTabs' in window) window.chatOfficeTabs.setShellModalOpen(open)
+    if ('chaOfficeTabs' in window) window.chaOfficeTabs.setShellModalOpen(open)
     return () => {
       document.documentElement.classList.remove('chatoffice-shell-modal')
-      if ('chatOfficeTabs' in window) window.chatOfficeTabs.setShellModalOpen(false)
+      if ('chaOfficeTabs' in window) window.chaOfficeTabs.setShellModalOpen(false)
     }
   }, [open])
 }
@@ -148,9 +148,9 @@ function baseName(entry: RecentEntry): string {
 
 // ── Project hooks ─────────────────────────────────────────
 
-/** whether we are inside the shell (chatOfficeProject API available) */
+/** whether we are inside the shell (chaOfficeProject API available) */
 function hasProjectApi(): boolean {
-  return typeof window.chatOfficeProject !== 'undefined'
+  return typeof window.chaOfficeProject !== 'undefined'
 }
 
 /** 最近使用 filter chips: extension-style tech terms (all/docx/xlsx/pptx/pdf/.md),
@@ -296,7 +296,7 @@ function TreeFilterBar({
   )
 }
 // ── Account entry (bottom-left) ──────────────────────────
-// Currently the ChatOffice (chatoffice) login entry; to be upgraded to a signup/account system later.
+// Currently the ChaOffice (chatoffice) login entry; to be upgraded to a signup/account system later.
 // Clicking it opens the settings modal directly (SettingsModal.tsx), which hosts
 // login/logout plus preferences (language, theme, save location, update channel).
 
@@ -342,7 +342,7 @@ function AccountEntry({
   // query login state once on mount
   useEffect(() => {
     let alive = true
-    void window.chatOffice.accountStatus?.().then((s) => {
+    void window.chaOffice.accountStatus?.().then((s) => {
       if (alive) setStatus(s)
     })
     return () => {
@@ -356,7 +356,7 @@ function AccountEntry({
   useEffect(() => {
     if (settingsOpen) return
     let alive = true
-    void window.chatOfficeIntegrations?.status().then((st) => {
+    void window.chaOfficeIntegrations?.status().then((st) => {
       if (alive) setSkillUpdate(skillUpdateDue(st))
     })
     return () => {
@@ -366,12 +366,12 @@ function AccountEntry({
 
   // login progress pushed from main (gsk login CLI output)
   useEffect(() => {
-    const off = window.chatOffice.onAccountLogin?.((ev) => {
+    const off = window.chaOffice.onAccountLogin?.((ev) => {
       if (ev.phase === 'url') {
         if (ev.url) setAuthUrl(ev.url)
         if (ev.expiresInSec) loginDeadline.current = Date.now() + ev.expiresInSec * 1000
       } else if (ev.phase === 'success') {
-        void window.chatOffice.accountStatus().then((s) => {
+        void window.chaOffice.accountStatus().then((s) => {
           if (s.loggedIn) {
             setStatus(s)
             setWaiting(false)
@@ -390,7 +390,7 @@ function AccountEntry({
   useEffect(() => {
     if (!waiting) return
     const timer = setInterval(() => {
-      void window.chatOffice.accountStatus().then((s) => {
+      void window.chaOffice.accountStatus().then((s) => {
         if (s.loggedIn) {
           setStatus(s)
           setWaiting(false)
@@ -407,7 +407,7 @@ function AccountEntry({
   const doLogout = () => {
     setLoggingOut(true)
     statusSeq.current++
-    void window.chatOffice.accountLogout().then(() => {
+    void window.chaOffice.accountLogout().then(() => {
       setLoggingOut(false)
       setStatus({ loggedIn: false })
     })
@@ -420,12 +420,12 @@ function AccountEntry({
     setUrlCopied(false)
     loginDeadline.current = Date.now() + LOGIN_MAX_WAIT_MS
     setLoginNonce((n) => n + 1)
-    void window.chatOffice.accountLogin().then((launched) => {
+    void window.chaOffice.accountLogin().then((launched) => {
       if (!launched) setWaiting(false)
     })
   }
 
-  const openLoginUrl = () => void window.chatOffice.openLoginUrl?.()
+  const openLoginUrl = () => void window.chaOffice.openLoginUrl?.()
 
   const copyLoginUrl = () => {
     if (!authUrl) return
@@ -439,7 +439,7 @@ function AccountEntry({
     // refresh the login state / credit balance; drop the response
     // when a logout happened while it was in flight
     const seq = statusSeq.current
-    void window.chatOffice.accountStatus?.().then((s) => {
+    void window.chaOffice.accountStatus?.().then((s) => {
       if (seq === statusSeq.current) setStatus(s)
     })
     onSettingsOpenChange(true)
@@ -449,10 +449,10 @@ function AccountEntry({
     if (feedbackProbing || feedbackOpen || feedbackQrOpen) return
     setFeedbackProbing(true)
     // main-process probe (renderer CSP blocks cross-origin fetch)
-    void Promise.resolve(window.chatOffice.feedbackProbe?.() ?? false)
+    void Promise.resolve(window.chaOffice.feedbackProbe?.() ?? false)
       .then((online) => {
         // 在线：打开嵌入的在线客服聊天窗（与官网同一聊天界面）；离线：二维码卡片兜底
-        if (online) void window.chatOffice.openChat?.()
+        if (online) void window.chaOffice.openChat?.()
         else setFeedbackQrOpen(true)
       })
       .catch(() => setFeedbackQrOpen(true))
@@ -594,7 +594,7 @@ function AccountEntry({
   )
 }
 
-// ── Cloud (ChatOffice web) projects view ──────────────────
+// ── Cloud (ChaOffice web) projects view ──────────────────
 
 /** kind filter segments; labels shared with the recents type filter */
 const CLOUD_FILTERS = [
@@ -629,7 +629,7 @@ function CloudProjectsView() {
   // !snapshot && !loading branch below renders the retry state
   const startSync = () => {
     setSyncing(true)
-    void window.chatOffice.cloudProjectsSync?.().then((synced) => {
+    void window.chaOffice.cloudProjectsSync?.().then((synced) => {
       setSyncing(false)
       setLoading(false)
       if (synced) setSnapshot(synced)
@@ -640,7 +640,7 @@ function CloudProjectsView() {
 
   useEffect(() => {
     let cancelled = false
-    void window.chatOffice.cloudProjectsCached?.().then((stored) => {
+    void window.chaOffice.cloudProjectsCached?.().then((stored) => {
       if (cancelled || !stored) return
       setSnapshot((prev) => prev ?? stored)
       setLoading(false)
@@ -653,7 +653,7 @@ function CloudProjectsView() {
 
   // the sign-in button reuses the account login flow; sync once it lands
   useEffect(() => {
-    const off = window.chatOffice.onAccountLogin?.((ev) => {
+    const off = window.chaOffice.onAccountLogin?.((ev) => {
       if (ev.phase === 'success') {
         setLoginWaiting(false)
         startSyncRef.current()
@@ -671,7 +671,7 @@ function CloudProjectsView() {
 
   const startLogin = () => {
     setLoginWaiting(true)
-    void window.chatOffice.accountLogin?.().then((ok) => {
+    void window.chaOffice.accountLogin?.().then((ok) => {
       if (!ok) setLoginWaiting(false)
     })
   }
@@ -683,7 +683,7 @@ function CloudProjectsView() {
   }
 
   const openProject = (projectUrl: string) => {
-    void window.chatOffice.openCloudProject?.(projectUrl)
+    void window.chaOffice.openCloudProject?.(projectUrl)
   }
 
   // filter / search / sort are all local over the snapshot — no requests
@@ -745,7 +745,7 @@ function CloudProjectsView() {
           </span>
           {USER_LOGIN_READY ? (
             <button className="btn btn-secondary" disabled={loginWaiting} onClick={startLogin}>
-              {loginWaiting ? t('waitingShort') : t('loginChatOffice')}
+              {loginWaiting ? t('waitingShort') : t('loginChaOffice')}
             </button>
           ) : (
             <button className="btn btn-secondary" onClick={() => startSync()}>
@@ -1004,14 +1004,14 @@ export function Home() {
   /** starred files for the always-on 收藏 section (small list, no paging) */
   const [starredEntries, setStarredEntries] = useState<RecentEntry[]>([])
   const [loadingMore, setLoadingMore] = useState(false)
-  // ChatOffice web projects take over the content area (the chat hides meanwhile)
+  // ChaOffice web projects take over the content area (the chat hides meanwhile)
   const [cloudMode, setCloudMode] = useState(false)
   const [filter, setFilter] = useState('all')
   // ── Pending-unsaved restore banner (documents that crashed before their first
   // save; created via 新建表格/PDF or AI generation, never written to disk) ──
   const [pendingUntitled, setPendingUntitled] = useState<PendingUntitledDocEntry[]>([])
   useEffect(() => {
-    void window.chatOffice
+    void window.chaOffice
       .listPendingUntitled()
       .then(setPendingUntitled)
       .catch(() => setPendingUntitled([]))
@@ -1051,7 +1051,7 @@ export function Home() {
   const [confirmMissing, setConfirmMissing] = useState<RecentEntry | null>(null)
   // name in the greeting; omitted when logged out
   const [accountName, setAccountName] = useState('')
-  // ChatOffice Projects is web-account data, so its nav entry only shows when logged in
+  // ChaOffice Projects is web-account data, so its nav entry only shows when logged in
   const [loggedIn, setLoggedIn] = useState(false)
   // single source of account state: AccountEntry reports every change (initial
   // load, login, logout), keeping the greeting name and the nav entry in sync
@@ -1073,7 +1073,7 @@ export function Home() {
     // the frame and have the main process hide the covering editor view for
     // the dialog's lifetime
     document.documentElement.classList.toggle('chatoffice-shell-modal', open)
-    if ('chatOfficeTabs' in window) window.chatOfficeTabs.setShellModalOpen(open)
+    if ('chaOfficeTabs' in window) window.chaOfficeTabs.setShellModalOpen(open)
     if (!open) {
       void refreshHomeModelCache()
       // ChatPanel re-reads AiSettingsV2 (composer model picker) on this bump
@@ -1088,10 +1088,10 @@ export function Home() {
   useEffect(() => {
     if (!shellModalBusy) return
     document.documentElement.classList.add('chatoffice-shell-modal')
-    if ('chatOfficeTabs' in window) window.chatOfficeTabs.setShellModalOpen(true)
+    if ('chaOfficeTabs' in window) window.chaOfficeTabs.setShellModalOpen(true)
     return () => {
       document.documentElement.classList.toggle('chatoffice-shell-modal', settingsOpen)
-      if ('chatOfficeTabs' in window) window.chatOfficeTabs.setShellModalOpen(settingsOpen)
+      if ('chaOfficeTabs' in window) window.chaOfficeTabs.setShellModalOpen(settingsOpen)
     }
   }, [shellModalBusy, settingsOpen])
   // a window-level fallback: with pointer capture unavailable (or the pointer
@@ -1120,9 +1120,9 @@ export function Home() {
   const chatStore = useHomeChatStore(
     useMemo(
       () => ({
-        chatSessionsLoad: async () => (await window.chatOffice.chatSessionsLoad?.()) ?? [],
+        chatSessionsLoad: async () => (await window.chaOffice.chatSessionsLoad?.()) ?? [],
         chatSessionsSave: async (sessions: HomeChatSession[]) => {
-          await window.chatOffice.chatSessionsSave?.(sessions)
+          await window.chaOffice.chatSessionsSave?.(sessions)
         },
       }),
       [],
@@ -1144,7 +1144,7 @@ export function Home() {
 
   // P2-3 中继事件回流:RelayEvent 镜像为所属会话的 assistant 消息(工具卡随行)
   useEffect(() => {
-    const dock = window.chatOfficeDock
+    const dock = window.chaOfficeDock
     if (!dock) return
     return dock.onRelayEvent((dockTabId, event) => {
       const sessionId = relayLink.current.sessionOfDock(dockTabId)
@@ -1189,7 +1189,7 @@ export function Home() {
             if (hit) {
               void dock.activate(hit.id)
             } else if (target.filePath) {
-              void window.chatOffice.openPath(target.filePath, { dock: false })
+              void window.chaOffice.openPath(target.filePath, { dock: false })
             }
           })
           .catch(() => undefined)
@@ -1205,7 +1205,7 @@ export function Home() {
 
   // P2-5 回流镜像:全 tab 面板完成的轮次镜像进项目主线(Q5'a:主线=唯一完整真相)
   useEffect(() => {
-    const dock = window.chatOfficeDock
+    const dock = window.chaOfficeDock
     if (!dock) return
     return dock.onPanelTurn((turn) => {
       if (turn.cancelled || !turn.filePath) return
@@ -1237,7 +1237,7 @@ export function Home() {
 
   // P2-3 所见即所驱:有激活 dock 的会话,消息经中继转发给文档 loop
   const dockRelay = useMemo(() => {
-    const dock = window.chatOfficeDock
+    const dock = window.chaOfficeDock
     if (!dock) return undefined
     return {
       trySend: (sessionId: string, text: string): boolean => {
@@ -1314,18 +1314,18 @@ export function Home() {
     const seq = ++requestSeq.current
     const ext = filter === 'all' ? undefined : filter
     const limit = keepCount ? Math.max(entriesLen.current, PAGE_SIZE) : PAGE_SIZE
-    void window.chatOffice.recents({ offset: 0, limit, ext }).then((page) => {
+    void window.chaOffice.recents({ offset: 0, limit, ext }).then((page) => {
       if (seq !== requestSeq.current) return
       setEntries(page.entries)
       setListTotal(page.total)
     })
     // the always-on 收藏 section refetches alongside (small list, unfiltered)
-    void window.chatOffice.starred({ offset: 0, limit: 60 }).then((page) => {
+    void window.chaOffice.starred({ offset: 0, limit: 60 }).then((page) => {
       if (seq !== requestSeq.current) return
       setStarredEntries(page.entries)
     })
     if (projectMode) {
-      void window.chatOfficeProject!.listProjects().then(setProjects)
+      void window.chaOfficeProject!.listProjects().then(setProjects)
     }
   }
   const reloadRef = useRef(reload)
@@ -1354,7 +1354,7 @@ export function Home() {
     setLoadingMore(true)
     const seq = requestSeq.current
     const ext = filter === 'all' ? undefined : filter
-    void window.chatOffice
+    void window.chaOffice
       .recents({ offset: entriesLen.current, limit: PAGE_SIZE, ext })
       .then((page) => {
         setLoadingMore(false)
@@ -1543,19 +1543,19 @@ export function Home() {
   }
 
   const toggleStar = (path: string) => {
-    void window.chatOffice.toggleStar(path).then(refresh)
+    void window.chaOffice.toggleStar(path).then(refresh)
   }
 
   const removeRecent = (paths: string[]) => {
     setRowMenu(null)
-    void window.chatOffice.removeRecent(paths).then(refresh)
+    void window.chaOffice.removeRecent(paths).then(refresh)
   }
 
   /** 清理最近：removeRecent 只接受路径，先按当前筛选拉全量再整表移除 */
   const clearAllRecent = () => {
     if (listTotal === 0) return
     const ext = filter === 'all' ? undefined : filter
-    void window.chatOffice
+    void window.chaOffice
       .recents({ offset: 0, limit: listTotal, ext })
       .then((page) => removeRecent(page.entries.map((e) => e.path)))
   }
@@ -1565,7 +1565,7 @@ export function Home() {
   const batchRemoveRecent = () => {
     const paths = [...(selection['recent'] ?? [])]
     if (paths.length === 0) return
-    void window.chatOffice.removeRecent(paths).then(refresh)
+    void window.chaOffice.removeRecent(paths).then(refresh)
     pruneSelection(paths)
   }
 
@@ -1597,13 +1597,13 @@ export function Home() {
     if (!pending) return
     setConfirmDelete(null)
     pending.sessionIds.forEach((id) => chatStore.removeSession(id))
-    void window.chatOffice.deleteFiles(pending.paths).then(refresh)
+    void window.chaOffice.deleteFiles(pending.paths).then(refresh)
     pruneSelection([...pending.paths, ...pending.sessionIds.map(chatKey)])
   }
 
   const duplicateFile = (path: string) => {
     setRowMenu(null)
-    void window.chatOffice.duplicateFile(path).then(refresh)
+    void window.chaOffice.duplicateFile(path).then(refresh)
   }
 
   const startRename = (entry: RecentEntry) => {
@@ -1616,7 +1616,7 @@ export function Home() {
     setRenaming(null)
     if (!value || value === baseName(entry)) return
     const newName = entry.ext ? `${value}.${entry.ext}` : value
-    void window.chatOffice.renameFile(entry.path, newName).then((result) => {
+    void window.chaOffice.renameFile(entry.path, newName).then((result) => {
       if (!result.ok) window.alert(result.error ?? t('renameFailed'))
       refresh()
     })
@@ -1626,7 +1626,7 @@ export function Home() {
     setMoveFileMenu(null)
     setRowMenu(null)
     try {
-      await window.chatOfficeProject?.moveFile(filePath, targetProjectId)
+      await window.chaOfficeProject?.moveFile(filePath, targetProjectId)
     } catch (error) {
       window.alert(error instanceof Error ? error.message : String(error))
       return
@@ -1640,27 +1640,27 @@ export function Home() {
     selectedProjectId ? { projectId: selectedProjectId } : newFileDir ? { dir: newFileDir } : undefined
 
   const handleNewDoc = () => {
-    void window.chatOffice.newDoc(newFileOpts())
+    void window.chaOffice.newDoc(newFileOpts())
   }
 
   const handleNewSheet = () => {
-    void window.chatOffice.newSheet(newFileOpts())
+    void window.chaOffice.newSheet(newFileOpts())
   }
 
   const handleNewSlide = () => {
-    void window.chatOffice.newSlide(newFileOpts())
+    void window.chaOffice.newSlide(newFileOpts())
   }
 
   const handleNewMarkdown = () => {
-    void window.chatOffice.newMarkdown(newFileOpts())
+    void window.chaOffice.newMarkdown(newFileOpts())
   }
 
   const handleNewHtml = () => {
-    void window.chatOffice.newHtml(newFileOpts())
+    void window.chaOffice.newHtml(newFileOpts())
   }
 
   const handleNewPdf = () => {
-    void window.chatOffice.newPdf(newFileOpts())
+    void window.chaOffice.newPdf(newFileOpts())
   }
 
   const NEW_ITEMS = [
@@ -1698,7 +1698,7 @@ export function Home() {
           <button
             className="side-new-browse"
             title={OPEN_LOCAL_EXTENSIONS}
-            onClick={() => void window.chatOffice.browse()}
+            onClick={() => void window.chaOffice.browse()}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
@@ -1755,13 +1755,13 @@ export function Home() {
           onClick={() => {
             if (!isRenaming) {
               if (entry.missing) setConfirmMissing(entry)
-              else void window.chatOffice.openPath(entry.path, { dock: false })
+              else void window.chaOffice.openPath(entry.path, { dock: false })
             }
           }}
           onKeyDown={(event) => {
             if (event.key === 'Enter' && event.target === event.currentTarget) {
               if (entry.missing) setConfirmMissing(entry)
-              else void window.chatOffice.openPath(entry.path, { dock: false })
+              else void window.chaOffice.openPath(entry.path, { dock: false })
             }
           }}
         >
@@ -1842,7 +1842,7 @@ export function Home() {
               title={t('open')}
               onClick={(event) => {
                 event.stopPropagation()
-                void window.chatOffice.openPath(entry.path, { dock: false })
+                void window.chaOffice.openPath(entry.path, { dock: false })
               }}
             >
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -1899,7 +1899,7 @@ export function Home() {
                 role="menuitem"
                 onClick={() => {
                   setRowMenu(null)
-                  void window.chatOffice.openPath(entry.path, { dock: false })
+                  void window.chaOffice.openPath(entry.path, { dock: false })
                 }}
               >
                 {t('open')}
@@ -1908,7 +1908,7 @@ export function Home() {
                 role="menuitem"
                 onClick={() => {
                   setRowMenu(null)
-                  void window.chatOffice.revealPath(entry.path)
+                  void window.chaOffice.revealPath(entry.path)
                 }}
               >
                 {t('revealInFolder')}
@@ -2094,12 +2094,12 @@ export function Home() {
   /** 新建项目＝选择本地文件夹（ZCode 式）：选完即以文件夹名建项目；
    *  目录选择器不可用（web shim）或选择失败时退回名输入流程 */
   const startNewProject = async () => {
-    if (typeof window.chatOfficeProject?.pickFolder === 'function') {
+    if (typeof window.chaOfficeProject?.pickFolder === 'function') {
       try {
-        const picked = await window.chatOfficeProject.pickFolder()
+        const picked = await window.chaOfficeProject.pickFolder()
         if (!picked) return // cancelled — nothing happens
         const name = picked.split(/[\\/]/).filter(Boolean).pop() || picked
-        await window.chatOfficeProject!.createProject(name, picked)
+        await window.chaOfficeProject!.createProject(name, picked)
         refresh()
         return
       } catch {
@@ -2118,7 +2118,7 @@ export function Home() {
     setNewProjectName('')
     if (!name) return
     try {
-      await window.chatOfficeProject?.createProject(name)
+      await window.chaOfficeProject?.createProject(name)
     } catch (error) {
       window.alert(error instanceof Error ? error.message : String(error))
       return
@@ -2132,7 +2132,7 @@ export function Home() {
     setRenamingProject(null)
     if (!name) return
     try {
-      await window.chatOfficeProject?.renameProject(id, name)
+      await window.chaOfficeProject?.renameProject(id, name)
     } catch (error) {
       window.alert(error instanceof Error ? error.message : String(error))
       return
@@ -2144,7 +2144,7 @@ export function Home() {
     setConfirmDeleteProject(null)
     if (!proj) return
     try {
-      await window.chatOfficeProject?.deleteProject(proj.id)
+      await window.chaOfficeProject?.deleteProject(proj.id)
     } catch (error) {
       window.alert(error instanceof Error ? error.message : String(error))
       return
@@ -2226,7 +2226,7 @@ export function Home() {
       items.push({
         key: 'files',
         label: t('viewFiles'),
-        action: () => void window.chatOffice.revealPath(root),
+        action: () => void window.chaOffice.revealPath(root),
       })
       items.push({
         key: 'copypath',
@@ -2261,14 +2261,14 @@ export function Home() {
           key: 'open',
           label: t('open'),
           disabled: entry.missing,
-          action: () => void window.chatOffice.openPath(entry.path, { dock: false }),
+          action: () => void window.chaOffice.openPath(entry.path, { dock: false }),
         },
         { key: 'unarchive', label: t('chatUnarchive'), action: () => toggleStar(entry.path) },
         { divider: true, key: 'd1' },
         {
           key: 'reveal',
           label: t('revealInFolder'),
-          action: () => void window.chatOffice.revealPath(entry.path),
+          action: () => void window.chaOffice.revealPath(entry.path),
         },
         {
           key: 'copy',
@@ -2734,7 +2734,7 @@ export function Home() {
                             aria-label={t('viewFiles')}
                             onClick={(event) => {
                               event.stopPropagation()
-                              void window.chatOffice.revealPath(proj.rootPath!)
+                              void window.chaOffice.revealPath(proj.rootPath!)
                             }}
                           >
                             <svg
@@ -2883,11 +2883,11 @@ export function Home() {
           tabIndex={0}
           title={`${formatModified(entry.mtimeMs, i18n)} · ${formatSize(entry.sizeBytes)} · ${entry.path}`}
           onClick={() => {
-            if (!entry.missing) void window.chatOffice.openPath(entry.path, { dock: false })
+            if (!entry.missing) void window.chaOffice.openPath(entry.path, { dock: false })
           }}
           onKeyDown={(event) => {
             if (event.key === 'Enter' && event.target === event.currentTarget && !entry.missing) {
-              void window.chatOffice.openPath(entry.path, { dock: false })
+              void window.chaOffice.openPath(entry.path, { dock: false })
             }
           }}
           onContextMenu={(event) => {
@@ -3079,7 +3079,7 @@ export function Home() {
             <button
               onClick={() => {
                 for (const doc of pendingUntitled)
-                  void window.chatOffice.restorePendingUntitled(doc.tempPath)
+                  void window.chaOffice.restorePendingUntitled(doc.tempPath)
                 setPendingUntitled([])
               }}
             >
@@ -3088,7 +3088,7 @@ export function Home() {
             <button
               onClick={() => {
                 for (const doc of pendingUntitled)
-                  void window.chatOffice.discardPendingUntitled(doc.tempPath)
+                  void window.chaOffice.discardPendingUntitled(doc.tempPath)
                 setPendingUntitled([])
               }}
             >

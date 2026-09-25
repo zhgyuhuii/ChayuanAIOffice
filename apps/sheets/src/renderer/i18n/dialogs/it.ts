@@ -1,4 +1,4 @@
-/** dialogs strings, it (merged with ChatOffice-local keys) */
+/** dialogs strings, it (merged with ChaOffice-local keys) */
 import type { zh } from './zh'
 export const it = {
   dlgAllowEditRangesTitle: 'Consenti modifica intervalli',

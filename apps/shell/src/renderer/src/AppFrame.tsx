@@ -18,12 +18,12 @@ export function AppFrame({ initialOnboardingSeen }: AppFrameProps) {
   const [starPromptDocOpens, setStarPromptDocOpens] = useState<number | null>(null)
 
   useEffect(() => {
-    const applyTabs = (tabs: Awaited<ReturnType<typeof window.chatOfficeTabs.list>>) => {
+    const applyTabs = (tabs: Awaited<ReturnType<typeof window.chaOfficeTabs.list>>) => {
       const active = tabs.find((tab) => tab.active)
       setHomeActive(!active || active.kind === 'home')
     }
-    void window.chatOfficeTabs.list().then(applyTabs)
-    return window.chatOfficeTabs.onChanged(applyTabs)
+    void window.chaOfficeTabs.list().then(applyTabs)
+    return window.chaOfficeTabs.onChanged(applyTabs)
   }, [])
 
   // The "star us" invitation is decided (and counted as shown) by the main
@@ -32,7 +32,7 @@ export function AppFrame({ initialOnboardingSeen }: AppFrameProps) {
   useEffect(() => {
     if (showOnboarding) return
     let alive = true
-    void window.chatOffice.starPromptShouldShow?.().then((result) => {
+    void window.chaOffice.starPromptShouldShow?.().then((result) => {
       if (alive && result.show) setStarPromptDocOpens(result.docOpens)
     })
     return () => {
@@ -42,7 +42,7 @@ export function AppFrame({ initialOnboardingSeen }: AppFrameProps) {
 
   const finishOnboarding = async (): Promise<boolean> => {
     try {
-      const persisted = await window.chatOffice.setOnboardingSeen()
+      const persisted = await window.chaOffice.setOnboardingSeen()
       if (!persisted) return false
       setShowOnboarding(false)
       return true
@@ -74,7 +74,7 @@ export function AppFrame({ initialOnboardingSeen }: AppFrameProps) {
       {/* LOCAL(purchase): scheduler-driven toast + dialog. The bridge only
        * exists in the Electron shell, so the web/dsh-iframe forms never mount
        * these — they structurally cannot self-remind inside the harness host. */}
-      {typeof window !== 'undefined' && 'chatOfficePurchase' in window && (
+      {typeof window !== 'undefined' && 'chaOfficePurchase' in window && (
         <>
           <PurchaseToast />
           <PurchaseModal />

@@ -320,7 +320,7 @@ describe('rebindChatToFile', () => {
     store.appendChatMessage('default', 'unsaved-9999', { role: 'user', text: 'generate a deck' })
     store.appendChatMessage('default', 'unsaved-9999', { role: 'assistant', text: 'generated' })
 
-    const draftPath = '/Users/x/Documents/ChatOffice/AI Strategy.pptx'
+    const draftPath = '/Users/x/Documents/ChaOffice/AI Strategy.pptx'
     const ids = store.rebindChatToFile('default', 'unsaved-9999', draftPath)
 
     expect(ids.chatId).toBe(ProjectStore.chatIdForFile(draftPath))
@@ -332,7 +332,7 @@ describe('rebindChatToFile', () => {
 
   it('moves history into the owning project when the file already belongs to another project', () => {
     const proj = store.createProject('Research Project')
-    const filePath = '/Users/x/Documents/ChatOffice/Beijing Research.pptx'
+    const filePath = '/Users/x/Documents/ChaOffice/Beijing Research.pptx'
     store.moveFileToProject(filePath, proj.id)
 
     store.appendChatMessage('default', 'unsaved-7777', { role: 'user', text: 'hi' })
@@ -364,12 +364,12 @@ describe('resolveChatForFile / fileRenamed', () => {
   })
 
   it('chatId stays the same after rename and history follows the file', () => {
-    const oldPath = '/Users/x/Documents/ChatOffice/old-name.pptx'
+    const oldPath = '/Users/x/Documents/ChaOffice/old-name.pptx'
     const ids = store.resolveChatForFile(oldPath)
     store.appendChatMessage(ids.projectId, ids.chatId, { role: 'user', text: 'q' })
     store.appendChatMessage(ids.projectId, ids.chatId, { role: 'assistant', text: 'a' })
 
-    const newPath = '/Users/x/Documents/ChatOffice/new-name.pptx'
+    const newPath = '/Users/x/Documents/ChaOffice/new-name.pptx'
     store.fileRenamed(oldPath, newPath)
 
     const after = store.resolveChatForFile(newPath)
@@ -378,13 +378,13 @@ describe('resolveChatForFile / fileRenamed', () => {
   })
 
   it('legacy data without mapping (path-hash chatId) can still recover history after rename', () => {
-    const oldPath = '/Users/x/Documents/ChatOffice/legacy.docx'
+    const oldPath = '/Users/x/Documents/ChaOffice/legacy.docx'
     const legacyChatId = ProjectStore.chatIdForFile(oldPath)
     store.resolveProjectForFile(oldPath) // registers only fileMap, not chatIdByPath (simulates old data)
     store.appendChatMessage('default', legacyChatId, { role: 'user', text: 'q' })
     store.appendChatMessage('default', legacyChatId, { role: 'assistant', text: 'a' })
 
-    const newPath = '/Users/x/Documents/ChatOffice/legacy-renamed.docx'
+    const newPath = '/Users/x/Documents/ChaOffice/legacy-renamed.docx'
     store.fileRenamed(oldPath, newPath)
 
     const after = store.resolveChatForFile(newPath)
@@ -395,10 +395,10 @@ describe('resolveChatForFile / fileRenamed', () => {
   it('rename after rebindChatToFile still resolves to the same history', () => {
     store.appendChatMessage('default', 'unsaved-1', { role: 'user', text: 'q' })
     store.appendChatMessage('default', 'unsaved-1', { role: 'assistant', text: 'a' })
-    const draft = '/Users/x/Documents/ChatOffice/draft.pptx'
+    const draft = '/Users/x/Documents/ChaOffice/draft.pptx'
     const ids = store.rebindChatToFile('default', 'unsaved-1', draft)
 
-    const renamed = '/Users/x/Documents/ChatOffice/final-name.pptx'
+    const renamed = '/Users/x/Documents/ChaOffice/final-name.pptx'
     store.fileRenamed(draft, renamed)
     const after = store.resolveChatForFile(renamed)
     expect(after.chatId).toBe(ids.chatId)
@@ -455,7 +455,7 @@ describe('appendChatMessage opening buffer', () => {
     const ids = store.rebindChatToFile(
       'default',
       'unsaved-buf3',
-      '/Users/x/Documents/ChatOffice/interrupted.pptx',
+      '/Users/x/Documents/ChaOffice/interrupted.pptx',
     )
     expect(store.loadChat(ids.projectId, ids.chatId).map((m) => m.text)).toEqual([
       'generation interrupted',
