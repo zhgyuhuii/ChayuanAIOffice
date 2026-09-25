@@ -70,6 +70,18 @@ for (const key of EDITORS) {
   }
 }
 
+// 3.5 Home page carries the product version (shell-shims getAppVersion reads
+//     window.CHATOFFICE_VERSION; the desktop form gets it from Electron).
+const version = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version
+const homeHtml = join(dist, 'index.html')
+if (existsSync(homeHtml)) {
+  let html = readFileSync(homeHtml, 'utf8')
+  if (!html.includes('CHATOFFICE_VERSION')) {
+    html = html.replace('<head>', '<head>' + String.fromCharCode(10) + '    <script>window.CHATOFFICE_VERSION = ' + JSON.stringify(version) + '</script>')
+    writeFileSync(homeHtml, html)
+  }
+}
+
 // 4. Same-origin editor map fallback (the host index.html already carries
 //    defaults; config.js remains for tooling/debugging).
 writeFileSync(

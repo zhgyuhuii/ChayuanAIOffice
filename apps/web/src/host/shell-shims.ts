@@ -283,6 +283,22 @@ export function installShellShims(): void {
     newMarkdown: async () => tabManager.openEditor('markdown', { newBlank: true }),
     newPdf: async () => tabManager.openEditor('pdf', { newBlank: true }),
 
+    // ── home folder tree (upstream 7036122): no local filesystem here — the
+    // tree renders empty and the mutating actions degrade. folderRoots MUST
+    // exist: FileTreePane calls it unguarded during mount and a missing
+    // method crashes the whole shell to a blank page. ──
+    folderRoots: async () => [],
+    addFolderRoot: async () => null,
+    dropFolderRoots: async () => [],
+    removeFolderRoot: async () => undefined,
+    pathForFile: () => '',
+    listFolder: async (dir: string) => ({ dir, folders: [], files: [], missing: true }),
+    createFolder: async () => degraded('chatOffice.createFolder'),
+    renameFolder: async () => degraded('chatOffice.renameFolder'),
+    movePaths: async () => degraded('chatOffice.movePaths'),
+    deleteFolder: async () => degraded('chatOffice.deleteFolder'),
+    onFolderChanged: (_handler: (dirs: string[]) => void) => () => undefined,
+
     // ── app state ──
     getLanguage: async () => (localStorage.getItem(LS.lang) as string) ?? 'zh',
     setLanguage: async (lang: string) => {
@@ -318,6 +334,31 @@ export function installShellShims(): void {
     deleteFiles: async () => degraded('chatOffice.deleteFiles'),
     revealPath: async () => degraded('chatOffice.revealPath'),
     openTrash: async () => degraded('chatOffice.openTrash'),
+
+    // ── local MCP server: the web host has none — report the disabled state
+    // (the settings panel reads these fields directly) and degrade mutations ──
+    getMcpStatus: async () => ({
+      running: false,
+      enabled: false,
+      port: 0,
+      background: false,
+      logging: false,
+      url: null,
+      capabilities: [],
+    }),
+    setMcpSettings: async () => ({
+      running: false,
+      enabled: false,
+      port: 0,
+      background: false,
+      logging: false,
+      url: null,
+      capabilities: [],
+    }),
+    getMcpLogs: async () => [],
+    clearMcpLogs: async () => undefined,
+    openMcpLogFile: async () => degraded('chatOffice.openMcpLogFile'),
+    searchCapabilities: async () => ({ search: false }),
 
     // ── account / cloud / AI: awaiting the BFF channels ──
     accountStatus: async () => null,
@@ -444,6 +485,12 @@ export function installShellShims(): void {
     // updater UI reads the channel; web has no auto-update
     getUpdateChannel: async () => 'stable' as const,
     setUpdateChannel: async () => undefined,
+    getAutoSaveDefault: async () => ({ on: true, updatedAt: 0 }),
+    setAutoSaveDefault: async () => undefined,
+    feedbackProbe: async () => false,
+    feedbackUpload: async () => degraded('chatOffice.feedbackUpload'),
+    feedbackSubmit: async () => degraded('chatOffice.feedbackSubmit'),
+    openExternal: async () => degraded('chatOffice.openExternal'),
     openGenTeam: () => undefined,
     // AI-authored standalone file: needs the desktop FS pipeline
     createDocument: async () => degraded('chatOffice.createDocument'),
