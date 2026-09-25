@@ -1,13 +1,13 @@
-import type { AiPanelPrefs } from '@genoffice/ui'
-import type { Lang } from '@genoffice/i18n'
-import type { AiSettings, AiStreamChunk, AiStreamRequest } from '@genoffice/ai-provider'
+import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
+import type { Lang } from '@chatoffice/i18n'
+import type { AiModelSelection, AiSettingsV2, AiStreamChunk } from '@chatoffice/ai-provider'
 
 export const PDF_CHANNELS = {
   consumePending: 'pdf:consume-pending',
   readFile: 'pdf:read-file',
   save: 'pdf:save',
+  writeRecovery: 'pdf:write-recovery',
   requestRedactionCopy: 'pdf:request-redaction-copy',
-  autoRename: 'pdf:auto-rename',
   isUntitled: 'pdf:is-untitled',
   validateTextEdits: 'pdf:validate-text-edits',
   listEditFonts: 'pdf:list-edit-fonts',
@@ -51,7 +51,7 @@ export const PDF_CHANNELS = {
   aiPanelPrefsChanged: 'app:ai-panel-prefs-changed',
 } as const
 
-export const VISUAL_SIGNATURE_CONTENT_PREFIX = 'GenOffice visual signature field: '
+export const VISUAL_SIGNATURE_CONTENT_PREFIX = 'ChatOffice visual signature field: '
 
 /** Signature strokes: pad pixel coords, scaled proportionally and y-flipped when placed on the page */
 export interface SignatureStrokes {
@@ -185,7 +185,7 @@ export type DrawingInput =
       color: [number, number, number]
       at: [number, number]
       contents: string
-      /** Annotation author (/T); omitted → 'GenOffice' */
+      /** Annotation author (/T); omitted → 'ChatOffice' */
       author?: string
       /** Creation time (ms since epoch) → /CreationDate and /M; omitted → save time */
       createdMs?: number
@@ -405,7 +405,7 @@ export interface PageImageRef {
   aboveText: boolean
 }
 
-/** Editable metadata for a GenOffice static form fill embedded as a page image. */
+/** Editable metadata for a ChatOffice static form fill embedded as a page image. */
 export interface StaticFormFillRecord {
   id: string
   kind: 'text' | 'check' | 'cross'
@@ -484,6 +484,9 @@ export interface SavePdfRequest {
    * Must match the target granted to the view by the main process (save dialog pick).
    */
   targetPath?: string
+  /** Content-derived base name for a still-untitled document's first-save dialog
+      (topmost inserted text); ignored for documents with a real path. */
+  suggestedName?: string
   markups: MarkupInput[]
   /** Saved markup annotations to remove (applied before every other stage) */
   annotDeletes?: AnnotDeleteInput[]
@@ -525,20 +528,18 @@ export interface TextInsertFailure {
   reason: string
 }
 
-/** Answer to autoRename; `path`/`name` present when renamed */
-export interface PdfAutoRenameResult {
-  renamed: boolean
-  path?: string
-  name?: string
-}
-
 export type SavePdfResult =
   | {
       ok: true
       skippedTextEdits?: TextEditFailure[]
       skippedTextInserts?: TextInsertFailure[]
       skippedImageEdits?: ImageEditFailure[]
+      /** Set when an untitled document landed on its first real path: the view
+          must adopt it (the temp backing path is gone). */
+      savedTo?: string
     }
+  /** First-save dialog dismissed: nothing was written, edits stay pending */
+  | { ok: false; canceled: true }
   | { ok: false; error: string }
 
 /** Dry-run matching for pending text edits against the file on disk (no mutation) */
@@ -547,7 +548,7 @@ export interface ValidateTextEditsRequest {
   edits: TextEditInput[]
 }
 
-/** Extract pages into a new PDF written to the GenOffice save dir and opened in a new tab */
+/** Extract pages into a new PDF written to the ChatOffice save dir and opened in a new tab */
 export interface ExtractPagesRequest {
   path: string
   /** Page indices in the file as saved (the renderer flushes first, so visible positions) */
@@ -637,7 +638,7 @@ export interface SetPageSizeRequest {
 export type SetPageSizeResult = { ok: true } | { ok: false; error: string }
 
 /** Split every page into a grid of pages (inverse of merge pages), written to the
- * GenOffice save dir and opened in a new tab */
+ * ChatOffice save dir and opened in a new tab */
 export interface SplitPagesRequest {
   path: string
   perPage: 2 | 4 | 9
@@ -674,7 +675,14 @@ export type ExportImagesResult =
 /** AI channels are app-wide shared ipcMain handlers (shell registers via docs-main registerAiIpc); pass-through only */
 export const AI_CHANNELS = {
   getSettings: 'ai:get-settings',
-  gskStatus: 'ai:gsk-status',
+  setSettings: 'ai:set-settings',
+  setCurrentModel: 'ai:set-current-model',
+  discoverModels: 'ai:discover-models',
+  chatofficeStatus: 'ai:chatoffice-status',
+  chatofficeLogin: 'ai:chatoffice-login',
+  localToolStatus: 'ai:local-tool-status',
+  localToolInstall: 'ai:local-tool-install',
+  localToolStart: 'ai:local-tool-start',
   stream: 'ai:stream',
   streamChunk: 'ai:stream-chunk',
   streamCancel: 'ai:stream-cancel',
@@ -702,16 +710,13 @@ export interface PdfApi {
   consumePending(): Promise<string | null>
   /** Read pdf bytes. Only paths granted to this view are allowed */
   readFile(path: string): Promise<ArrayBuffer>
-  /** Write markups/form values/page ops back to the original file (pdf-lib, content streams untouched); path grants same as readFile. With targetPath set (Save As), the original is only read and the result goes to targetPath */
+  /** Write markups/form values/page ops back to the original file (pdf-lib, content streams untouched); path grants same as readFile. With targetPath set (Save As), the original is only read and the result goes to targetPath. An untitled document's plain Save routes through the first-save Save As dialog (savedTo set on success) */
   save(request: SavePdfRequest): Promise<SavePdfResult>
+  /** Crash-recovery copy of an untitled document's pending edits, written under
+      userData (best-effort; never prompts, never touches the temp backing file). */
+  writeRecovery(request: SavePdfRequest): Promise<{ ok: boolean }>
   /** Creates a redacted working copy on first apply; subsequent applies save that copy in place. */
   requestRedactionCopy(path: string): Promise<boolean>
-  /** Content-derived naming (docs/sheets analog): propose a file base name after a save.
-      The main process renames only while the file still carries the shell's auto-created
-      untitled name, so user-chosen names are never touched. */
-  autoRename(path: string, baseName: string): Promise<PdfAutoRenameResult>
-  /** Whether the file is a shell-created blank still carrying its untitled name
-      (gates the after-AI-run silent save; a PDF the user merely opened must never auto-write) */
   isUntitled(path: string): Promise<boolean>
   /** Dry-run match of pending text edits against the file: reason null = would apply */
   validateTextEdits(request: ValidateTextEditsRequest): Promise<TextEditValidation[]>
@@ -722,7 +727,7 @@ export interface PdfApi {
   canDrawText(text: string, font?: string, bold?: boolean, italic?: boolean): Promise<boolean>
   /** Enumerate the content-stream images of every page (for image edit mode) */
   listPageImages(path: string): Promise<PageImageRef[]>
-  /** Read GenOffice static-fill metadata stored inside the PDF. */
+  /** Read ChatOffice static-fill metadata stored inside the PDF. */
   listStaticFormFills(path: string): Promise<StaticFormFillRecord[]>
   /** System-OCR one rendered page image (PNG, base64); null when no engine is
       available on this platform, [] when recognition failed for this image */
@@ -758,7 +763,7 @@ export interface PdfApi {
   imageSearch(query: string, maxResults?: number): Promise<ImageSearchResponse>
   /** Download an image URL in the main process (SSRF-guarded, avoids CORS); null on failure */
   fetchImage(url: string): Promise<{ base64: string; mime: string } | null>
-  /** AI image generation via Genspark (gsk); returns a downloadable URL or an error message */
+  /** AI image generation via ChatOffice (chatoffice); returns a downloadable URL or an error message */
   generateImage(op: { prompt: string; aspectRatio?: string }): Promise<{
     url?: string
     error?: string
@@ -796,10 +801,32 @@ export interface PdfApi {
   /** press on the shell chrome (tab strip is a sibling WebContentsView whose
    *  clicks produce no DOM event here) — dismiss open popovers */
   onChromePressed(handler: () => void): () => void
-  getAiSettings(): Promise<AiSettings>
-  /** Genspark login state (gsk); gates the cloud-only generate_image tool */
-  gskStatus(): Promise<{ loggedIn: boolean }>
-  aiStream(request: AiStreamRequest): Promise<void>
+  getAiSettings(): Promise<AiSettingsV2>
+  setAiSettings(view: AiSettingsV2): Promise<void>
+  setAiCurrentModel(selection: import('@chatoffice/ai-provider').AiModelSelection): Promise<void>
+  aiDiscoverModels(
+    target: import('@chatoffice/ai-provider').DiscoveryTarget,
+  ): Promise<{ models: import('@chatoffice/ai-provider').AiModelEntry[]; error?: string }>
+  aiChatOfficeLogin(): Promise<void>
+  /** 本地与自建：探测 / 一键安装 / 启动（模型设置页状态卡） */
+  aiLocalToolStatus(vendorId: string): Promise<import('@chatoffice/ai-provider').LocalToolStatus>
+  aiLocalToolInstall(
+    vendorId: string,
+    onLine?: (line: string) => void,
+  ): Promise<import('@chatoffice/ai-provider').LocalToolOpResult>
+  aiLocalToolStart(vendorId: string): Promise<import('@chatoffice/ai-provider').LocalToolOpResult>
+  /** ChatOffice login state (chatoffice); gates the cloud-only generate_image tool */
+  chatofficeStatus(
+    withEmail?: boolean,
+  ): Promise<import('@chatoffice/ai-provider').ChatOfficeAccountStatus>
+  aiStream(request: {
+    requestId: string
+    settings: AiModelSelection
+    system: string
+    messages: unknown[]
+    tools?: unknown[]
+    maxTokens?: number
+  }): Promise<void>
   aiStreamCancel(requestId: string): Promise<void>
   onAiStream(handler: (chunk: AiStreamChunk) => void): () => void
 }
