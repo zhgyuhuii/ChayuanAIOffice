@@ -11,7 +11,8 @@ import { b64ToBytes, bytesToB64, makeShim, pendingFromHash, sha256Hex } from '..
 interface OpenFileResult {
   path: string
   name: string
-  data: ArrayBuffer
+  /** 契约必需：docs 渲染层 loadFile 经 fetchDocBytes(result.dataUrl) 取字节（web 形态用 data: URL 承载） */
+  dataUrl: string
   hash: string
 }
 
@@ -21,12 +22,15 @@ export function installDocsShim(client: BridgeClient): void {
 
   async function openByFileId(fileId: string, name: string): Promise<OpenFileResult | null> {
     const doc = (await client.call('file', 'fs.read', fileId)) as { base64: string }
-    const bytes = b64ToBytes(doc.base64)
+    // 契约字段 dataUrl（file-actions 的 loadFile 经 fetchDocBytes(result.dataUrl)
+    // 取字节）：web 形态没有主进程 one-shot 服务，用 data: URL 等价承载——
+    // fetch 原生支持 data:。缺这字段时 fetch("undefined") 命中 SPA 回退拿到
+    // HTML，JSZip 报「Can't find end of central directory」（真机实测）。
     return {
       path: `webfs:${fileId}:${name}`,
       name,
-      data: bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer,
-      hash: await sha256Hex(bytes),
+      dataUrl: `data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,${doc.base64}`,
+      hash: await sha256Hex(b64ToBytes(doc.base64)),
     }
   }
 
