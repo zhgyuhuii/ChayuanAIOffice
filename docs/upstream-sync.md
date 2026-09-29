@@ -139,6 +139,26 @@
 **演示/文档/HTML**：云页面生成中途失败自动回退本地管线（cloudActive 跟踪+失败原因写回工具输出）、HTML 打印窗口链路、HTML 应用 vi+图片改写采纳。
 **AI/代理**：agent-core 工具调用错误消息三路重写（截断/解析失败/缺参）、本地模型命名 aiChaOffice 全局对齐、媒体/搜索设置层与 vi 词典补全。
 
+### 第十八轮 C（2026-09-30，施工于 sync/18c-docs 分支；docs 编辑器域同步 + A+B 残留失衡全收敛，全量测试首次全绿）
+
+| 域 | 落位 |
+|---|---|
+| docs 编辑器域 | convert/compare/comments/numbering-actions/extensions（上游严格 math tokenizer/字段代码/链接动作等 15+ 新 editor 模块连带安装）、line-metrics（main 版+上游 6 导出 graft：cssExactLineCap/hangulSpaceOffsets/cssLeadTop/runsLineFactor/autoLineMultOf/setEmbeddedLineMetrics+latinRunsFactor/embeddedLineBoxes 状态）、pagination-hf 整文件取上游（HfSet/PageHf/pageHfStrips/HfResolve）、pagination-measure/lines/sections/slices/types、25 个新组件按需安插（PaginationPreview 等）；i18n app/ribbon/ai shard×20 语言按「本地键保全+上游独有键并入」重建+vi 键级对账+聚合器重 entries 去重 |
+| 拷问裁定 | ①App/Ribbon/Ruler 三件套 UI 骨架不采上游（本地 DockShell 布局互斥+tabStrip 溢出+批量工具条为 A 区架构，上游 props 互锁混入即 r2-r4 式断裂）——App 保持本地版+services 修复（referencesServices/reviewServices/viewServices 重建、fileCtx 补 hfLinks/mirrorMargins/setMirrorMarginsDirty/onRevisionsLoaded 等价 stub、sectionHfOverride→resolveHf 适配）；②shell 新文件注册表（sheetsSuggestedPathTaken/pendingUnsavedNewRecoveries）改判采纳——A+B 时以「本地延迟落盘共识胜」弃用，但 A+B 已提交的 home-duplicate-atomic 测试即该行为契约，反转前裁定并移植注册表四导出+临时背书原子流；③Ruler 保本地（双独立 margin 实现，上游 indent-ruler 挂账 Round-D） |
+| sheets | xlsx-sidecar-client 重启语义、numfmt-dialog Accounting 归一（ACCOUNTING_SECTION 提取+canonical 转义）、GoToDialog/SubtotalDialog useModalDialog 焦点管理 |
+| shell | tab-manager did-finish-load spare-view 触发恢复（824643da 截断测试还原 1129 行）+DetachedTab 导出；electron-builder graft：CLI 版本一致块（chaoffice.cjs banner 校验+GENOFFICE_APP_VERSION 重建）+THIRD-PARTY 挂账块（ensureThirdPartyNotices）；rpm 探针改 spawnSync 通道（不污染 CLI 重建计数）；linux after-install/remove 脚本重建（#893 防护语义+/opt/ChaAI Office 空格 glob 引号+upgrade 保留链接） |
+| html/markdown | inspector-protocol KNOWN_FROM_INSPECTOR 伪造消息加固；math.ts 严格 tokenizer+markdownEscape（\$ 重转义）+boundedTokenizers 上游对齐；孤儿 export-image 测试删除（模块本地 docx-engine 无 svg NewImage，挂账 Round-D） |
+| 工具链 | tools/license-text.mjs 从 notices 生成器拆分（上游 test 契约）；docs vitest alias 补 electron-utils/atomic-write 子路径 |
+
+**门禁**：typecheck 0（全仓 21 工作区）；全量测试 15325 全绿 0 失败（A+B 收口时 5 红 + sheets 批 7 红 + shell 批 35 红 全部收敛， EXIT 0）。
+
+### 第十八轮 C 更新内容汇总
+
+- **文档**：AI 字段/页眉页脚解析域对齐（PAGEREF 行内域折叠、HF 镜像边距/逐节 HF 解析器）、严格行内公式分词器（转义美元/拒绝数字后缀闭合）、保存时 \$ 重转义、表格原生转换 run 模型对齐、Zotero 引文归一（跨段域部件重算）、修订视图/拼写替换/选择条/导航大纲等 15 个编辑器子系统随上游落地
+- **表格**：Sidecar 崩溃自动重启（新进程惰性拉起）、Format Cells Accounting 格式归一识别、Go To/Subtotal 对话框焦点管理（aria-modal+焦点返还）、新建工作簿临时文件原子发布+崩溃恢复索引
+- **桌面壳**：/usr/bin/chaoffice 链接脚本防外来程序覆盖（#893 防护）、升级保留链接/卸载才删除、CLI 与应用版本一致性构建期校验、第三方声明 PDFium 条款挂账
+- **HTML 预览**：inspector 消息伪造防护（已知消息标签白名单+数值版本校验）
+
 ### 第十七轮增量（2026-09-25，0d90149..3f9d07d：18 提交，施工于 sync/upstream-20260922b 分支；本地 shell 版本 1.0.3 自主线，上游 0.10.0 不跟随——激活 UI/购买体系为本地 B 区，版本号本地为准）
 
 | 内容 | 结果 |
