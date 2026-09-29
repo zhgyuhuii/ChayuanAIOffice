@@ -273,23 +273,17 @@ function buildEditItems(params: BuildParams, labels: ContextMenuLabels): Context
 }
 
 // Symbol.for: survives multiple bundled copies (see navigation-guard.ts).
-<<<<<<< ours
 const INSTALLED = Symbol.for('chatoffice.context-menu-installed')
-=======
-const INSTALLED = Symbol.for('genoffice.context-menu-installed')
-const INTERCEPTORS = Symbol.for('genoffice.context-menu-interceptors')
-
+const INTERCEPTORS = Symbol.for('chatoffice.context-menu-interceptors')
 /** Resolves true when the renderer showed its own menu for this right-click. */
 export type ContextMenuInterceptor = (
   contents: WebContents,
   params: ContextMenuParams,
 ) => Promise<boolean>
-
 function interceptorMap(app: App): Map<number, ContextMenuInterceptor> {
   const holder = app as unknown as Record<symbol, Map<number, ContextMenuInterceptor> | undefined>
   return (holder[INTERCEPTORS] ??= new Map())
 }
-
 /** Let a renderer with its own DOM context menu claim right-clicks before the native menu pops. */
 export function setContextMenuInterceptor(
   app: App,
@@ -300,7 +294,6 @@ export function setContextMenuInterceptor(
   if (interceptor) map.set(contents.id, interceptor)
   else map.delete(contents.id)
 }
->>>>>>> theirs
 
 export function installContextMenu(app: App, getLabels: () => ContextMenuLabels): void {
   const holder = app as unknown as Record<symbol, boolean | undefined>

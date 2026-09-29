@@ -1021,7 +1021,7 @@
  * these aliases in the chain. */
 @font-face {
   font-family: 'Meiryo UI GO';
-  src: url('./ChaOfficeUIKanaJP-Regular.woff2') format('woff2');
+  src: url('./ChatOfficeUIKanaJP-Regular.woff2') format('woff2');
   unicode-range: U+3000-3002, U+3008-3011, U+3014-3015, U+3041-3096, U+3099-30FF;
   font-weight: normal;
   font-style: normal;
@@ -1029,7 +1029,7 @@
 }
 @font-face {
   font-family: 'Meiryo UI GO';
-  src: url('./ChaOfficeUIKanaJP-Bold.woff2') format('woff2');
+  src: url('./ChatOfficeUIKanaJP-Bold.woff2') format('woff2');
   unicode-range: U+3000-3002, U+3008-3011, U+3014-3015, U+3041-3096, U+3099-30FF;
   font-weight: bold;
   font-style: normal;
