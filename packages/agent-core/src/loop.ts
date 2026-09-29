@@ -910,22 +910,13 @@ export class AgentLoop<TSnapshot = unknown> {
     // into a user message below.
     this.history.push({
       role: 'assistant',
-<<<<<<< ours
       text: this.turnText || COMPLETED_VIA_TOOLS_TEXT,
-      ...(this.degraded || this.degradedProbe
-        ? {}
-        : {
-            toolCalls: toolCalls.map(({ id, name, input }) => ({ id, name, input })),
-          }),
-=======
-      text: this.turnText,
       toolCalls: toolCalls.map(({ id, name, input, signature }) => ({
         id,
         name,
         input,
         ...(signature ? { signature } : {}),
       })),
->>>>>>> theirs
       // interleaved-thinking models degrade in tool loops unless their reasoning is echoed back
       ...(this.turnReasoning ? { reasoning: this.turnReasoning } : {}),
     })
@@ -960,15 +951,10 @@ export class AgentLoop<TSnapshot = unknown> {
       if (call.truncated || call.inputError || missing.length > 0) {
         unusableInTurn = true
         const output = call.truncated
-<<<<<<< ours
-          ? 'Tool arguments were cut off by the output length limit; the tool was not executed. Split this operation into several smaller tool calls (less content per call) and try again — e.g. hand over page briefs in batches of at most 4.'
-          : `Tool input JSON failed to parse; the tool was not executed: ${call.inputError}\nFix the arguments (make sure quotes inside strings are escaped) and call again.`
-=======
           ? 'Tool arguments were cut off by the output length limit; the tool was not executed. Split this operation into several smaller tool calls (less content per call) and try again.'
           : call.inputError
             ? `Tool input JSON failed to parse; the tool was not executed: ${call.inputError}\nFix the arguments (make sure quotes inside strings are escaped) and call again.`
             : `Tool call ${call.name} is missing the required argument(s) ${missing.map((f) => `"${f}"`).join(', ')}; the tool was not executed. Put the arguments in the tool call itself (not in your reply text) and call again with every required field.`
->>>>>>> theirs
         results.push({ id: call.id, name: call.name, output, isError: true })
         events?.onToolExecuted?.({
           call,
@@ -1023,7 +1009,6 @@ export class AgentLoop<TSnapshot = unknown> {
         snapshotBefore: firstMutation ? snapshot : undefined,
       })
     }
-<<<<<<< ours
     // Degraded mode: fold results into one user text message — no-FC model
     // APIs reject role:'tool' messages outright.
     if (this.degraded || this.degradedProbe) {
@@ -1037,11 +1022,8 @@ export class AgentLoop<TSnapshot = unknown> {
     } else {
       this.history.push({ role: 'tool', results })
     }
-=======
-    this.history.push({ role: 'tool', results })
     if (executedInTurn) this.inputParseFails = 0
     else if (unusableInTurn) this.inputParseFails++
->>>>>>> theirs
 
     // Cancelled while tools were executing: finish immediately, no further model request
     if (this.cancelled) {
