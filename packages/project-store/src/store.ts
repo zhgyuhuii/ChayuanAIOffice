@@ -702,12 +702,21 @@ export class ProjectStore {
             : {}),
         }))
       }
-<<<<<<< ours
-      if (msg.attachments !== undefined) record.attachments = msg.attachments
+      if (msg.attachments !== undefined) {
+        record.attachments = msg.attachments.slice(0, MAX_ATTACHMENTS_PER_MESSAGE).map((a) => ({
+          ...a,
+          name: clampChatField(a.name, ATTACHMENT_FIELD_MAX_CHARS),
+          ...(a.path !== undefined
+            ? { path: clampChatField(a.path, ATTACHMENT_FIELD_MAX_CHARS) }
+            : {}),
+          ...(a.ext !== undefined
+            ? { ext: clampChatField(a.ext, ATTACHMENT_FIELD_MAX_CHARS) }
+            : {}),
+        }))
+      }
       // LOCAL(2026-09-21, d8201ad0): D10 中断标记随消息落盘(向后兼容,旧记录无字段)
       if (msg.interrupted === true) record.interrupted = true
-=======
->>>>>>> theirs
+
       if (msg.scope !== undefined) {
         record.scope = {
           label: msg.scope.label,
