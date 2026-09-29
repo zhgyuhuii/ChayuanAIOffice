@@ -202,7 +202,5 @@ export const zhTW = {
   aiChaOfficeLoginBtn: '登入',
   aiTabChat: 'चैट',
   aiSummarizeDesc: 'दस्तावेज़ का सारांश बनाकर मुख्य बिंदु समझें',
-
   aiNoModelErrorBody: '設定一個自己的供應商（金鑰即用），或登入 察元AIOffice 使用預設模型。全程無需帳號。',
-
 } satisfies Record<keyof typeof zh, string>

@@ -9,7 +9,7 @@ const shellRoot = resolve(import.meta.dirname, '..')
 const shellPackage = JSON.parse(readFileSync(resolve(shellRoot, 'package.json'), 'utf-8')) as {
   version: string
 }
-const CLI_BUNDLE_REL = '../../packages/cli/dist/genoffice.cjs'
+const CLI_BUNDLE_REL = '../../packages/cli/dist/chaoffice.cjs'
 
 interface Rebuild {
   script: string
@@ -52,8 +52,8 @@ function loadConfig(opts: {
           ...require(id),
           existsSync: () => true,
           readFileSync: (path: string, encoding: string) => {
-            if (String(path).endsWith('genoffice.cjs')) {
-              return `const __cliAppVersion = ${JSON.stringify(baked)};\n`
+            if (String(path).endsWith('chaoffice.cjs')) {
+              return `var __GENOFFICE_VERSION__ = ${JSON.stringify(baked)};\n`
             }
             // Packaging also gates on a generated third-party notice. Serve a
             // valid one so the CLI version check is what these tests exercise.

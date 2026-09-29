@@ -58,7 +58,7 @@ import {
 import { firstStrongDir } from './direction'
 import { inlineMathML } from './equation'
 import { isStraightLineKind } from './shape-svg'
-import { borderDrawnPx, borderTotalPt } from './border-metrics'
+import { borderDrawnPx, borderTotalPt, collapsedEdgePx } from './border-metrics'
 import { parseRunBorderAttr } from './run-border'
 import { parseTextOutlineAttr } from './text-outline'
 import { charScaleXAttr, parseGlowAttr, parseTextEffectAttr } from './text-effects'
@@ -84,10 +84,27 @@ export interface PmDocOptions {
    *  the table border sits one left cell margin further out (Word 2013+ measures
    *  to the border) */
   legacyTableIndent?: boolean
+  /** rPrDefault size and Latin face: runs inheriting them carry neither */
+  defaultRun?: RunDefaults
 }
 
-export function pmDocOptions(parsed: { compatibilityMode?: number }): PmDocOptions {
-  return { legacyTableIndent: (parsed.compatibilityMode ?? 0) < 15 }
+export interface RunDefaults {
+  sizeHalfPoints?: number
+  font?: string
+}
+
+export function pmDocOptions(parsed: {
+  compatibilityMode?: number
+  docDefaults?: { sizeHalfPoints?: number; asciiFont?: string }
+}): PmDocOptions {
+  const { sizeHalfPoints, asciiFont } = parsed.docDefaults ?? {}
+  return {
+    legacyTableIndent: (parsed.compatibilityMode ?? 0) < 15,
+    defaultRun: {
+      ...(sizeHalfPoints ? { sizeHalfPoints } : {}),
+      ...(asciiFont ? { font: asciiFont } : {}),
+    },
+  }
 }
 
 export function blocksToPmDoc(
@@ -141,6 +158,10 @@ function formatAttrs(format: ParaFormat | undefined, runs?: Run[]): Record<strin
     spaceBeforeAuto: format?.spaceBeforeAuto ?? null,
     spaceAfterAuto: format?.spaceAfterAuto ?? null,
     contextualSpacing: format?.contextualSpacing ?? null,
+    keepNext: format?.keepNext ?? null,
+    keepLines: format?.keepLines ?? null,
+    widowControl: format?.widowControl ?? null,
+    suppressLineNumbers: format?.suppressLineNumbers ?? null,
     pageBreakBefore: format?.pageBreakBefore ?? false,
     shadingFill: format?.shadingFill ?? null,
     shadingDisplay: format?.shadingDisplay ?? null,
@@ -162,6 +183,7 @@ function formatAttrs(format: ParaFormat | undefined, runs?: Run[]): Record<strin
     snapToGrid: format?.snapToGrid ?? null,
     emptyRunSize: format?.emptyRunSizeHalfPoints ?? null,
     emptyRunFont: format?.emptyRunFontFamily ?? null,
+    markSize: format?.markSizeHalfPoints ?? null,
   }
 }
 
@@ -356,6 +378,7 @@ function minContentColTwips(
   colCount: number,
   metrics: FontMetricsProvider | null,
   bare = false,
+  defaults?: RunDefaults,
 ): number[] {
   const slack = bare ? 1 : metrics ? MEASURED_SLACK : MIN_CONTENT_SLACK
   const mins = new Array<number>(colCount).fill(0)
@@ -370,10 +393,10 @@ function minContentColTwips(
       const mar = cell.cellMarTwips ?? model.cellMarTwips
       const pad = (mar?.left ?? DEFAULT_CELL_MAR) + (mar?.right ?? DEFAULT_CELL_MAR)
       for (const nt of cell.nestedTables ?? []) {
-        const ntMin = nestedTableMinTwips(nt, metrics)
+        const ntMin = nestedTableMinTwips(nt, metrics, defaults)
         if (ntMin > 0) mins[start] = Math.max(mins[start], ntMin + pad)
       }
-      let wordPx = cellMaxWordPx(cell, metrics)
+      let wordPx = cellMaxWordPx(cell, metrics, defaults)
       if (wordPx <= 0) continue
       if (metrics && !bare) wordPx += MEASURED_EDGE_PX
       mins[start] = Math.max(mins[start], Math.ceil(wordPx * slack * 15) + pad)
@@ -388,6 +411,17 @@ function reclaimFloorTwips(width: number, minContent: number): number {
   return Math.max(minContent, Math.min(width, MIN_COL_TWIPS))
 }
 
+/** w:tblCellSpacing: the table spans its w:tblGrid and the (n + 1) gaps of 2s come
+ * out of the columns as 2s each plus s more on the two outer ones (Word-saved grids:
+ * 45/30/30/45 for s = 15, 60 for a single column) */
+export function cellSpacingGridSharesTwips(colCount: number, spacingTwips: number): number[] {
+  const n = Math.max(1, colCount)
+  return Array.from(
+    { length: n },
+    (_, i) => 2 * spacingTwips + (i === 0 ? spacingTwips : 0) + (i === n - 1 ? spacingTwips : 0),
+  )
+}
+
 /** side cell margins of a table's own cells (twips) */
 function sideMarginTwips(model: TableModel): number {
   const mar = model.cellMarTwips
@@ -400,13 +434,17 @@ function sideMarginTwips(model: TableModel): number {
  * straddles the outer vertical borders, so the box is half a border wider on
  * each side (a regression sample: eight nesting levels, each parent column
  * = nested grid + 216 + 10 twips for sz 4 borders). */
-function nestedTableMinTwips(nt: TableModel, metrics: FontMetricsProvider | null): number {
+function nestedTableMinTwips(
+  nt: TableModel,
+  metrics: FontMetricsProvider | null,
+  defaults?: RunDefaults,
+): number {
   const widths = nt.colWidthsTwips
   if (!widths?.length || nt.widthPct) return 0
   const indent = tableIndentTwips(nt)
   const border = ((borderTotalPt(nt.borders?.left) + borderTotalPt(nt.borders?.right)) / 2) * 20
   if (nt.fixedLayout) return widths.reduce((a, b) => a + b, 0) + indent + border
-  const mins = minContentColTwips(nt, widths.length, metrics)
+  const mins = minContentColTwips(nt, widths.length, metrics, false, defaults)
   return (
     mins.reduce((sum, m, i) => sum + nestedFloorTwips(widths[i], m, sideMarginTwips(nt)), 0) +
     indent +
@@ -429,7 +467,11 @@ function paraIndentPx(para: TableParagraph): number {
   return Math.max(leftTw + firstTw, 0) / 15
 }
 
-function cellMaxWordPx(cell: TableCell, metrics: FontMetricsProvider | null): number {
+function cellMaxWordPx(
+  cell: TableCell,
+  metrics: FontMetricsProvider | null,
+  defaults?: RunDefaults,
+): number {
   const measure = (runs: Parameters<typeof maxWordWidthPx>[0]) =>
     metrics ? maxWordWidthPx(runs, metrics) : maxWordWidthPx(runs)
   let max = 0
@@ -438,10 +480,13 @@ function cellMaxWordPx(cell: TableCell, metrics: FontMetricsProvider | null): nu
       const runs: Parameters<typeof maxWordWidthPx>[0] = []
       for (const r of para.runs) {
         if (!r.text) continue
+        // Latin words render in the ascii slot; `font` may be the East Asian face
+        const family = r.fontAscii ?? r.font ?? defaults?.font
+        const size = r.sizeHalfPoints ?? defaults?.sizeHalfPoints
         runs.push({
           text: r.text,
-          ...(r.font ? { fontFamily: r.font } : {}),
-          ...(r.sizeHalfPoints ? { sizeHalfPoints: r.sizeHalfPoints } : {}),
+          ...(family ? { fontFamily: family } : {}),
+          ...(size ? { sizeHalfPoints: size } : {}),
           ...(r.bold ? { bold: true } : {}),
           ...(r.italic ? { italic: true } : {}),
         })
@@ -452,7 +497,17 @@ function cellMaxWordPx(cell: TableCell, metrics: FontMetricsProvider | null): nu
   } else {
     for (const text of cell.paras) {
       if (!text) continue
-      max = Math.max(max, measure([{ text, ...(cell.bold ? { bold: true } : {}) }]))
+      max = Math.max(
+        max,
+        measure([
+          {
+            text,
+            ...(cell.bold ? { bold: true } : {}),
+            ...(defaults?.font ? { fontFamily: defaults.font } : {}),
+            ...(defaults?.sizeHalfPoints ? { sizeHalfPoints: defaults.sizeHalfPoints } : {}),
+          },
+        ]),
+      )
     }
   }
   return max
@@ -474,6 +529,7 @@ export function expandAutofitColWidths(
   metrics: FontMetricsProvider | null = canvasMetrics(),
   nested = false,
   legacy = false,
+  defaults?: RunDefaults,
 ): TableModel {
   const indent = tableIndentTwips(model)
   const budget = availTwips - indent
@@ -498,9 +554,13 @@ export function expandAutofitColWidths(
     }
   }
   if (autofit && (resolvedPct || !model.widthPct) && widths?.length && budget > 0) {
-    const mins = minContentColTwips(model, widths.length, metrics, !!model.layoutGrid).map((m) =>
-      Math.min(m, budget),
-    )
+    const mins = minContentColTwips(
+      model,
+      widths.length,
+      metrics,
+      !!model.layoutGrid,
+      defaults,
+    ).map((m) => Math.min(m, budget))
     const declared = widths.reduce((a, b) => a + b, 0)
     const fit = Math.min(fitTwips, availTwips)
     const target = fit - indent
@@ -557,7 +617,7 @@ export function expandAutofitColWidths(
     }
   }
   const { rows, changed: rowsChanged } = mapNestedTables(model, widths, budget, (nt, avail) =>
-    expandAutofitColWidths(nt, avail, avail, metrics, true),
+    expandAutofitColWidths(nt, avail, avail, metrics, true, false, defaults),
   )
   if (!widthsChanged && !rowsChanged) return model
   const result = withColWidths(model, rows, widthsChanged ? widths : undefined)
@@ -565,11 +625,29 @@ export function expandAutofitColWidths(
   return result
 }
 
+/** a floating table hung on the left margin without an offset: Word places
+ *  its cell text at the margin like an inline table (compat < 15 probe) */
+function marginHungFloat(model: TableModel): boolean {
+  const pos = model.floatPos
+  return model.floatSide === 'left' && pos?.horzAnchor === 'margin' && !pos.xSpec && !pos.xTwips
+}
+
 /** legacy tblInd (measured to the cell text) as a border-edge indent; display-only */
 export function legacyIndentTable(model: TableModel): TableModel {
-  if (model.align === 'center' || model.align === 'right' || model.floatSide) return model
-  const shift = model.cellMarTwips?.left ?? DEFAULT_CELL_MAR
-  return shift > 0 ? { ...model, indentTwips: (model.indentTwips ?? 0) - shift } : model
+  if (model.align === 'center' || model.align === 'right') return model
+  if (model.floatSide && !marginHungFloat(model)) return model
+  // measured to the first cell's text: its own w:tcMar, then the 2s gap and
+  // the whole (uncollapsed) border a w:tblCellSpacing table draws before it
+  const first = model.rows[0]?.[0]
+  const spacing = model.cellSpacingTwips ?? 0
+  const shift =
+    (first?.cellMarTwips?.left ?? model.cellMarTwips?.left ?? DEFAULT_CELL_MAR) +
+    (spacing > 0
+      ? 2 * spacing + borderDrawnPx(first?.borders?.left ?? model.borders?.left) * 15
+      : 0)
+  if (shift <= 0) return model
+  // w:tblpPr supersedes w:tblInd, so a float hangs by the cell margin alone
+  return { ...model, indentTwips: (model.floatSide ? 0 : (model.indentTwips ?? 0)) - shift }
 }
 
 function displayTable(
@@ -590,6 +668,7 @@ function displayTable(
       undefined,
       false,
       options.legacyTableIndent ?? false,
+      options.defaultRun,
     )
     t = clampTableColWidths(t, budget.paper)
   }
@@ -677,6 +756,7 @@ function blockToPmNode(
         budget?.fit ?? null,
         budget?.paper ?? null,
         options.legacyTableIndent ?? false,
+        options.defaultRun,
       )
       // content-control member tables need the shell for chrome hit-testing
       if (block.sdtShell) node.attrs = { ...node.attrs, sdtShell: JSON.stringify(block.sdtShell) }
@@ -711,6 +791,10 @@ function blockToPmNode(
           imageParagraphIndentLeft: block.imageParagraphIndentLeft ?? null,
           imageParagraphIndentRight: block.imageParagraphIndentRight ?? null,
           imageParagraphIndentFirstLine: block.imageParagraphIndentFirstLine ?? null,
+          imageParagraphSpaceBefore: block.imageParagraphSpaceBefore ?? null,
+          imageParagraphSpaceAfter: block.imageParagraphSpaceAfter ?? null,
+          imageEffectExtentTopPx: block.imageEffectExtentTopPx ?? null,
+          imageEffectExtentBottomPx: block.imageEffectExtentBottomPx ?? null,
           imageAlign: block.imageAlign ?? null,
           imageWrap: block.imageWrap ?? null,
           imageBand: block.imageBand ?? false,
@@ -745,7 +829,11 @@ function blockToPmNode(
           brokenImage: block.brokenImage ?? false,
           invisibleMarker: block.invisibleMarker ?? false,
           anchorLine: block.anchorLine
-            ? { styleId: block.anchorLine.styleId ?? null, ...formatAttrs(block.anchorLine.format) }
+            ? {
+                styleId: block.anchorLine.styleId ?? null,
+                ...formatAttrs(block.anchorLine.format),
+                ...(block.anchorLine.clear ? { clear: block.anchorLine.clear } : {}),
+              }
             : null,
           textboxes: block.textboxes ?? null,
           anchorSnapToGrid: block.anchorSnapToGrid ?? null,
@@ -779,6 +867,19 @@ const cellBorderPx = borderDrawnPx
 /** Inner clip-box height (twips) for cells of hRule="exact" rows — Word clips overflow
  *  instead of growing the row. null = not exact, or the cell spans rows (its clip height
  *  would be the sum of the spanned rows; not handled yet). */
+/** collapsed left/right line widths (drawn px) a cell's text inset must absorb, the
+ *  neighbours' lines included; null when both sides fall back to the table-level default */
+export function collapsedCellBw(
+  row: TableModel['rows'][number],
+  index: number,
+): { l?: number; r?: number } | null {
+  const cell = row[index]
+  const l = collapsedEdgePx(cell.borders?.left, row[index - 1]?.borders?.right)
+  const r = collapsedEdgePx(cell.borders?.right, row[index + 1]?.borders?.left)
+  if (l === undefined && r === undefined) return null
+  return { ...(l !== undefined ? { l } : {}), ...(r !== undefined ? { r } : {}) }
+}
+
 export function cellClipTwips(
   model: TableModel,
   rowIndex: number,
@@ -811,6 +912,7 @@ export function tableModelToPmNode(
   fitTwips: number | null = null,
   paperTwips: number | null = null,
   legacyIndent = false,
+  defaults?: RunDefaults,
 ): PmNode {
   if (legacyIndent) model = legacyIndentTable(model)
   if (rowCapTwips != null) model = capTableRowHeights(model, rowCapTwips)
@@ -822,6 +924,7 @@ export function tableModelToPmNode(
       undefined,
       false,
       legacyIndent,
+      defaults,
     )
     model = clampTableColWidths(model, paperTwips ?? availTwips)
   }
@@ -879,9 +982,14 @@ export function tableModelToPmNode(
       docxIndex,
       blockRevision,
       colWidthsPct: model.colWidthsPct ?? null,
+      // never narrower than the grid: Word's autofit columns hold their widest
+      // line with zero slack, so rounding the table down wraps that line
       widthPx:
         !model.widthPct && model.colWidthsTwips && widthPx
-          ? widthPx.reduce((sum, width) => sum + width, 0)
+          ? Math.max(
+              widthPx.length,
+              Math.ceil(model.colWidthsTwips.reduce((sum, width) => sum + width, 0) / 15 - 1e-6),
+            )
           : null,
       widthPct: model.widthPct ?? null,
       cellMar: model.cellMarTwips ?? null,
@@ -906,11 +1014,16 @@ export function tableModelToPmNode(
       tblAutoFit: model.autoFit ?? (model.autoLayout ? 'contents' : 'fixed'),
       tblAutoFitEdited: false,
       tblFixedLayout: model.fixedLayout ?? false,
-      indentTwips: model.indentTwips ?? null,
+      // w:tblpPr supersedes w:tblInd: a float keeps only the legacy cell-margin hang
+      indentTwips:
+        tblFloat && !(legacyIndent && marginHungFloat(model)) ? null : (model.indentTwips ?? null),
       tblStyleId: model.tblStyleId ?? null,
       tblLook: model.tableLook ?? null,
       tblLookEdited: false,
       bidiVisual: model.bidiVisual ?? false,
+      tblCaption: model.caption ?? null,
+      tblDescription: model.description ?? null,
+      tblAltEdited: false,
       originalStructure: null,
       originalFormatting: null,
     },
@@ -921,6 +1034,8 @@ export function tableModelToPmNode(
         heightRule: model.rowHeightRules?.[rowIndex] ?? null,
         repeatHeader: model.repeatHeaderRows?.[rowIndex] ?? false,
         repeatHeaderEdited: false,
+        cantSplit: model.rowCantSplit?.[rowIndex] ?? false,
+        cantSplitEdited: false,
         rawTrPr: model.rawTrPrs?.[rowIndex] ?? null,
         rowRevision: model.rowRevisions?.[rowIndex] ?? null,
       },
@@ -940,12 +1055,15 @@ export function tableModelToPmNode(
               gridGap: cell.gridGap ?? false,
               cellMar: cell.cellMarTwips ?? null,
               textDirection: cell.textDirection ?? null,
+              noWrap: cell.noWrap ?? null,
+              tcPrEdited: false,
               fill: cell.fill ?? null,
               color: cell.styleColor ?? null,
               bold: cell.styleBold ?? false,
               align: cell.align ?? null,
               vAlign: cell.vAlign ?? null,
               borders: cell.borders ?? null,
+              collapsedBw: collapsedCellBw(row, cellIndex),
               rawTcPr: cell.rawTcPr ?? null,
               cellRevision: cell.cellRevision ?? null,
             },
@@ -1041,10 +1159,16 @@ export function tableStructureSignature(table: PmNode): string {
     tblFloatEdited: table.attrs?.tblFloatEdited ?? false,
     tblLook: table.attrs?.tblLook ?? null,
     tblLookEdited: table.attrs?.tblLookEdited ?? false,
+    tblCaption: table.attrs?.tblCaption ?? null,
+    tblDescription: table.attrs?.tblDescription ?? null,
+    tblAltEdited: table.attrs?.tblAltEdited ?? false,
     rows: (table.content ?? []).map((row) => [
       row.attrs?.heightTwips ?? null,
+      row.attrs?.heightRule ?? null,
       row.attrs?.repeatHeader ?? false,
       row.attrs?.repeatHeaderEdited ?? false,
+      row.attrs?.cantSplit ?? false,
+      row.attrs?.cantSplitEdited ?? false,
       // accepting/rejecting revisions strips records from trPr/tcPr: include them in the signature to trigger regeneration (works for empty rows too)
       row.attrs?.rawTrPr ?? null,
       row.attrs?.rowRevision ?? null,
@@ -1061,6 +1185,10 @@ export function tableStructureSignature(table: PmNode): string {
         cell.attrs?.borders ?? null,
         cell.attrs?.rawTcPr ?? null,
         cell.attrs?.cellRevision ?? null,
+        cell.attrs?.textDirection ?? null,
+        cell.attrs?.cellMar ?? null,
+        cell.attrs?.noWrap ?? null,
+        cell.attrs?.tcPrEdited ?? false,
       ]),
     ]),
   })
@@ -1125,6 +1253,7 @@ export function pmTableToModel(table: PmNode): TableModel {
   const rowHeightsTwips: Array<number | null> = []
   const rowHeightRules: NonNullable<TableModel['rowHeightRules']> = []
   const repeatHeaderRows: Array<boolean | null> = []
+  const rowCantSplit: Array<boolean | null> = []
   const rawTrPrs: Array<string | null> = []
   const rowRevisions: TableModel['rowRevisions'] = []
   for (const rowNode of table.content ?? []) {
@@ -1135,6 +1264,11 @@ export function pmTableToModel(table: PmNode): TableModel {
     repeatHeaderRows.push(
       rowNode.attrs?.repeatHeaderEdited || table.attrs?.docxIndex == null
         ? !!rowNode.attrs?.repeatHeader
+        : null,
+    )
+    rowCantSplit.push(
+      rowNode.attrs?.cantSplitEdited || table.attrs?.docxIndex == null
+        ? !!rowNode.attrs?.cantSplit
         : null,
     )
     rawTrPrs.push((rowNode.attrs?.rawTrPr as string | null) ?? null)
@@ -1171,6 +1305,17 @@ export function pmTableToModel(table: PmNode): TableModel {
         borders: (cellNode.attrs?.borders as TableCell['borders'] | null) ?? undefined,
         rawTcPr: (cellNode.attrs?.rawTcPr as string | null) ?? undefined,
         gridGap: cellNode.attrs?.gridGap ? true : undefined,
+        // edited tcPr groups are written from the attrs; a null direction / margin
+        // set means "explicitly horizontal" / "same as the table" (element removed)
+        ...(cellNode.attrs?.tcPrEdited || table.attrs?.docxIndex == null
+          ? {
+              tcPrEdited: true,
+              textDirection:
+                (cellNode.attrs?.textDirection as TableCell['textDirection']) ?? 'lrTb',
+              cellMarTwips: (cellNode.attrs?.cellMar as TableCell['cellMarTwips']) ?? {},
+              noWrap: !!cellNode.attrs?.noWrap,
+            }
+          : {}),
       }
       const cellParas = (cellNode.content ?? []).filter(
         (n) => n.type === 'docParagraph' || n.type === 'docListItem',
@@ -1298,6 +1443,7 @@ export function pmTableToModel(table: PmNode): TableModel {
     ...(table.attrs?.tblFill ? { fill: String(table.attrs.tblFill) } : {}),
     ...(rowHeightsTwips.some((h) => h !== null) ? { rowHeightsTwips, rowHeightRules } : {}),
     ...(repeatHeaderRows.some((value) => value !== null) ? { repeatHeaderRows } : {}),
+    ...(rowCantSplit.some((value) => value !== null) ? { rowCantSplit } : {}),
     ...(rawTrPrs.some((r) => r !== null) ? { rawTrPrs } : {}),
     ...(rowRevisions.some((revision) => revision !== null) ? { rowRevisions } : {}),
     // null (cleared) → '' removes explicitly; undefined leaves it alone
@@ -1316,6 +1462,14 @@ export function pmTableToModel(table: PmNode): TableModel {
       : {}),
     ...(tablePropsEdited('tblLookEdited') && table.attrs?.tblLook
       ? { tableLook: table.attrs.tblLook as NonNullable<TableModel['tableLook']> }
+      : {}),
+    // new tables only carry alt text when set; edited ones write '' to drop the element
+    ...(table.attrs?.tblAltEdited ||
+    (isNew && (table.attrs?.tblCaption || table.attrs?.tblDescription))
+      ? {
+          caption: String(table.attrs?.tblCaption ?? ''),
+          description: String(table.attrs?.tblDescription ?? ''),
+        }
       : {}),
   }
 }
@@ -1355,14 +1509,17 @@ export function runsToInline(runs: Run[]): PmNode[] {
       continue
     }
     const marks = runMarks(run)
-    // \n = soft line break, \f = in-paragraph page break, \v = column break
+    // \n = soft line break, \f = in-paragraph page break, \v = column break, \u001e = text wrapping break
     const breakMarks = marks.length > 0 ? { marks } : {}
-    for (const segment of symDisplayText(run).split(/([\n\f\v])/)) {
+    // eslint-disable-next-line no-control-regex
+    for (const segment of symDisplayText(run).split(/([\n\f\v\u001e])/)) {
       if (segment === '\n') nodes.push({ type: 'hardBreak', ...breakMarks })
       else if (segment === '\f')
         nodes.push({ type: 'hardBreak', attrs: { pageBreak: true }, ...breakMarks })
       else if (segment === '\v')
         nodes.push({ type: 'hardBreak', attrs: { colBreak: true }, ...breakMarks })
+      else if (segment === '\u001e')
+        nodes.push({ type: 'hardBreak', attrs: { wrapBreak: true }, ...breakMarks })
       else if (segment !== '') {
         nodes.push({ type: 'text', text: segment, ...(marks.length > 0 ? { marks } : {}) })
       }
@@ -1429,7 +1586,12 @@ function runMarks(run: Run): PmMark[] {
   if (run.link)
     marks.push({
       type: 'link',
-      attrs: { href: run.link.href, rId: run.link.rId ?? null, tooltip: run.link.tooltip ?? null },
+      attrs: {
+        href: run.link.href,
+        rId: run.link.rId ?? null,
+        tooltip: run.link.tooltip ?? null,
+        plain: run.link.plain === true,
+      },
     })
   if (run.refField !== undefined)
     marks.push({
@@ -1536,7 +1698,9 @@ function runMarks(run: Run): PmMark[] {
         charSpacingTwips: run.charSpacingTwips ?? null,
         charScaleEm: run.charScalePct && !scaleX ? charScaleEm(run.text, run.charScalePct) : null,
         charScaleX: scaleX,
+        charScalePct: run.charScalePct ?? null,
         kern: wordKerns(run.kernHalfPoints, run.sizeHalfPoints) ?? null,
+        kernHalfPoints: run.kernHalfPoints ?? null,
         highlight: run.highlight ?? null,
         shading: run.shading ?? null,
         border: run.charBorder ?? null,
@@ -1553,6 +1717,7 @@ function runMarks(run: Run): PmMark[] {
         italicOff: run.italic === false || null,
         caps: run.caps ?? null,
         vanish: run.vanish ?? null,
+        vanishOwn: run.vanishOwn ?? null,
         eaLang: run.eastAsiaLang ?? null,
         cs: run.cs ?? null,
         rtl: run.rtl ?? null,
@@ -2207,10 +2372,11 @@ export function pmDocToSavePlan(inputDoc: PmNode, originalBlocks: Block[]): Save
       // deleted — and may reuse the anchor's original pPr bytes. A split twin
       // (anchor already consumed) gets no rawPPr, so revision records and
       // section props are never duplicated.
-      if (original && !usedIndexes.has(idx!)) {
+      const replacesOriginal = original !== undefined && !usedIndexes.has(idx!)
+      if (replacesOriginal) {
         usedIndexes.add(idx!)
         mapAnchor(idx!)
-        applyRawPPr(generated, original)
+        applyRawPPr(generated, original!)
       } else if (original) {
         // A split twin inherits the source node's attrs, but pPrChange and
         // bookmark/comment anchors belong only to the anchored original.
@@ -2223,7 +2389,11 @@ export function pmDocToSavePlan(inputDoc: PmNode, originalBlocks: Block[]): Save
         // emitted exactly once, by the anchor.
         if (generated.sdtShell?.group !== undefined) delete generated.sdtShell
       }
-      pushBlock({ kind: 'generated', block: generated })
+      pushBlock({
+        kind: 'generated',
+        block: generated,
+        ...(replacesOriginal ? { docxIndex: idx! } : {}),
+      })
     }
   }
 
@@ -2739,6 +2909,7 @@ function formulaTokensPatch(node: PmNode, original: Block): string[] | null {
 function applyRawPPr(generated: GeneratedBlock, original: Block): void {
   const structureSame =
     original.type === generated.type &&
+    (original.level ?? null) === (generated.level ?? null) &&
     (original.styleId ?? null) === (generated.styleId ?? null) &&
     JSON.stringify(original.list ?? null) === JSON.stringify(generated.list ?? null)
   if (original.rawPPr === undefined) {
@@ -2774,6 +2945,13 @@ function applyRawPPr(generated: GeneratedBlock, original: Block): void {
   generated.rawPPr = rawPPr
 }
 
+const PAGINATION_FLAG_KEYS = [
+  'keepNext',
+  'keepLines',
+  'widowControl',
+  'suppressLineNumbers',
+] as const
+
 function nodeFormat(node: PmNode): ParaFormat | undefined {
   const format: ParaFormat = {}
   if (node.attrs?.align) format.align = node.attrs.align as ParaFormat['align']
@@ -2793,6 +2971,8 @@ function nodeFormat(node: PmNode): ParaFormat | undefined {
     format.spaceAfterAuto = node.attrs.spaceAfterAuto as boolean
   if (node.attrs?.contextualSpacing != null)
     format.contextualSpacing = node.attrs.contextualSpacing as boolean
+  for (const key of PAGINATION_FLAG_KEYS)
+    if (node.attrs?.[key] != null) format[key] = node.attrs[key] as boolean
   if (node.attrs?.pageBreakBefore) format.pageBreakBefore = true
   if (node.attrs?.bidi) format.bidi = true
   if (node.attrs?.autoSpace != null) format.autoSpace = node.attrs.autoSpace as boolean
@@ -2843,6 +3023,7 @@ function nodeFormat(node: PmNode): ParaFormat | undefined {
   }
   if (node.attrs?.emptyRunSize) format.emptyRunSizeHalfPoints = Number(node.attrs.emptyRunSize)
   if (node.attrs?.emptyRunFont) format.emptyRunFontFamily = String(node.attrs.emptyRunFont)
+  if (node.attrs?.markSize) format.markSizeHalfPoints = Number(node.attrs.markSize)
   return Object.keys(format).length > 0 ? format : undefined
 }
 
@@ -2947,7 +3128,13 @@ export function inlineToRuns(content: PmNode[]): Run[] {
   const runs: Run[] = []
   for (const node of content) {
     if (node.type === 'hardBreak') {
-      const ch = node.attrs?.pageBreak ? '\f' : node.attrs?.colBreak ? '\v' : '\n'
+      const ch = node.attrs?.pageBreak
+        ? '\f'
+        : node.attrs?.colBreak
+          ? '\v'
+          : node.attrs?.wrapBreak
+            ? '\u001e'
+            : '\n'
       const prev = runs[runs.length - 1]
       const prevAtomic =
         prev &&
@@ -3049,6 +3236,7 @@ function runFromMarks(text: string, marks: PmMark[]): Run {
         href: String(mark.attrs?.href ?? ''),
         rId: (mark.attrs?.rId as string) ?? undefined,
         tooltip: (mark.attrs?.tooltip as string) ?? undefined,
+        ...(mark.attrs?.plain ? { plain: true } : {}),
       }
     } else if (mark.type === 'refField') {
       run.refField = String(mark.attrs?.name ?? '')
@@ -3097,6 +3285,8 @@ function runFromMarks(text: string, marks: PmMark[]): Run {
       if (mark.attrs?.csFont) run.csFont = String(mark.attrs.csFont)
       if (mark.attrs?.charSpacingTwips != null)
         run.charSpacingTwips = Number(mark.attrs.charSpacingTwips)
+      if (mark.attrs?.charScalePct) run.charScalePct = Number(mark.attrs.charScalePct)
+      if (mark.attrs?.kernHalfPoints != null) run.kernHalfPoints = Number(mark.attrs.kernHalfPoints)
       if (mark.attrs?.highlight) run.highlight = String(mark.attrs.highlight)
       if (mark.attrs?.shading) run.shading = String(mark.attrs.shading)
       if (mark.attrs?.textOutline) {
@@ -3105,7 +3295,7 @@ function runFromMarks(text: string, marks: PmMark[]): Run {
       }
       const effect = parseTextEffectAttr(mark.attrs?.textEffect)
       if (effect) run.textEffect = effect
-      if (mark.attrs?.dstrike) run.dstrike = true
+      if (mark.attrs?.dstrike != null) run.dstrike = Boolean(mark.attrs.dstrike)
       if (mark.attrs?.glow) {
         const glow = parseGlowAttr(String(mark.attrs.glow))
         if (glow) run.glow = glow
@@ -3122,6 +3312,8 @@ function runFromMarks(text: string, marks: PmMark[]): Run {
       if (mark.attrs?.em) run.em = mark.attrs.em as NonNullable<Run['em']>
       if (mark.attrs?.cs) run.cs = true
       if (mark.attrs?.vanish) run.vanish = true
+      if (mark.attrs?.vanishOwn != null) run.vanishOwn = Boolean(mark.attrs.vanishOwn)
+      if (mark.attrs?.caps) run.caps = mark.attrs.caps as Run['caps']
       if (mark.attrs?.eaLang) run.eastAsiaLang = String(mark.attrs.eaLang)
       if (mark.attrs?.rtl != null) run.rtl = Boolean(mark.attrs.rtl)
       if (mark.attrs?.styleId) run.styleId = String(mark.attrs.styleId)
@@ -3171,6 +3363,19 @@ function mergeRuns(runs: Run[]): Run[] {
   return merged
 }
 
+/** Font-dialog fields that save from the model (mergeRPrModel rebuilds them when edited) */
+function charFormatKey(run: Run): unknown[] {
+  return [
+    run.charSpacingTwips ?? null,
+    run.charScalePct ?? null,
+    run.kernHalfPoints ?? null,
+    run.positionHalfPoints ?? null,
+    run.caps ?? null,
+    run.dstrike ?? null,
+    run.vanishOwn ?? null,
+  ]
+}
+
 function runStyleKey(run: Run): string {
   return JSON.stringify([
     run.rawRPr ?? null,
@@ -3186,6 +3391,7 @@ function runStyleKey(run: Run): string {
     run.eastAsiaFont ?? null,
     run.highlight ?? null,
     run.shading ?? null,
+    ...charFormatKey(run),
     !!run.charBorder,
     run.textOutline ? JSON.stringify(run.textOutline) : null,
     run.vertAlign ?? null,
@@ -3240,6 +3446,7 @@ function normalizedRuns(runs: Run[]): unknown[] {
           r.fontAscii ?? null,
           r.eastAsiaFont ?? null,
           r.highlight ?? null,
+          ...charFormatKey(r),
           r.vertAlign ?? null,
           r.link?.href ?? null,
           r.commentIds?.join(' ') ?? null,
@@ -3284,6 +3491,11 @@ function normalizedFormat(format: ParaFormat | undefined): unknown {
     format.spaceBefore ?? null,
     format.spaceAfter ?? null,
     format.pageBreakBefore ?? false,
+    format.keepNext ?? null,
+    format.keepLines ?? null,
+    format.widowControl ?? null,
+    format.suppressLineNumbers ?? null,
+    format.contextualSpacing ?? null,
     format.shadingFill ?? null,
     format.borders ?? null,
     format.borderLines ? JSON.stringify(format.borderLines) : null,

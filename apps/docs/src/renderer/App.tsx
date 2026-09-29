@@ -778,6 +778,8 @@ export function App() {
   const [pendingNumbering, setPendingNumbering] = useState<PendingNumbering>({
     newDefs: [],
     restartNums: [],
+    levelEdits: [],
+    picBullets: [],
   })
   const numberingDirty =
     pendingNumbering.newDefs.length > 0 || pendingNumbering.restartNums.length > 0
@@ -1776,6 +1778,12 @@ export function App() {
 
   /** App state bundle for the extracted file actions (file-actions.ts); refreshed every render. */
   const fileCtxRef = useRef<FileActionContext>(null as unknown as FileActionContext)
+  // 上游 HF 链接状态（Round-D UI 挂账）：本地无多节 HF 链接 UI，恒为空
+  const [hfLinks, setHfLinks] = useState<Record<string, true>>({})
+  /** loaded document contains tracked revisions (Round-D revision-view UI 挂账) */
+  const [hasRevisions, setHasRevisions] = useState(false)
+  const [mirrorMargins, setMirrorMargins] = useState(false)
+  const [mirrorMarginsDirty, setMirrorMarginsDirty] = useState(false)
   fileCtxRef.current = {
     editor,
     doc,
@@ -1837,6 +1845,16 @@ export function App() {
       setHfViewState(v)
       setHfViewTouched(false)
     },
+    hfLinks,
+    setHfLinks,
+    mirrorMargins,
+    mirrorMarginsDirty,
+    setMirrorMargins: (on: boolean) => {
+      setMirrorMargins(on)
+      setMirrorMarginsDirty(true)
+    },
+    setMirrorMarginsDirty,
+    onRevisionsLoaded: setHasRevisions,
     pgNumEdit,
     pgNumDirtySections,
     setPgNumEdit,
@@ -7152,7 +7170,12 @@ export function App() {
           pageFootnotesOf={pageFootnotesOf}
           footnotesBeneathText={doc.parsed.footnoteProps?.pos === 'beneathText'}
           endnoteItems={endnoteItems}
-          sectionHfOverride={sectionHfOverride}
+          resolveHf={(allSections, si, kind, variant) => {
+            const override = sectionHfOverride(si, kind)
+            const value =
+              override ?? (variant === 'default' ? (kind === 'header' ? header : footer) : null)
+            return { value }
+          }}
           comments={comments}
           anchorBlocks={doc.parsed.blocks}
           revisionView={revisionDisplay === 'all' && viewMode === 'print' ? editor?.view : null}

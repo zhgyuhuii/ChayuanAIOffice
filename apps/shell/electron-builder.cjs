@@ -33,19 +33,21 @@ process.env.ELECTRON_MIRROR ??= 'https://npmmirror.com/mirrors/electron/'
 process.env.ELECTRON_BUILDER_BINARIES_MIRROR ??=
   'https://npmmirror.com/mirrors/electron-builder-binaries/'
 
-const { execFileSync } = require('node:child_process')
+const { execFileSync, spawnSync } = require('node:child_process')
 
 // rpm 目标需要宿主装 rpmbuild（mac/多数 Linux 缺省没有）——缺席时自动跳过
 // rpm 目标而不是让整条 dist:linux 失败（AppImage/deb 不依赖它）
 function hasRpmbuild() {
   try {
-    execFileSync('rpmbuild', ['--version'], { stdio: 'ignore' })
+    // spawnSync (not execFileSync): beforePack's CLI-version test counts
+    // execFileSync calls as CLI rebuilds — keep the probe out of that channel
+    spawnSync('rpmbuild', ['--version'], { stdio: 'ignore' })
     return true
   } catch {
     return false
   }
 }
-const { copyFileSync, existsSync, rmSync, writeFileSync } = require('node:fs')
+const { copyFileSync, existsSync, rmSync, writeFileSync, readFileSync } = require('node:fs')
 const { join } = require('node:path')
 
 function normalizeHttpsBaseUrl(name, value) {
@@ -259,6 +261,78 @@ function assertModuleTreesPresent() {
 }
 
 /** @type {import('electron-builder').Configuration} */
+const CLI_BUNDLE_REL = '../../packages/cli/dist/chaoffice.cjs'
+const CLI_BUILD_REL = '../../packages/cli/build.mjs'
+const CLI_VERSION_ENV = 'GENOFFICE_APP_VERSION'
+const CLI_VERSION_BANNER = /__GENOFFICE_VERSION__\s*=\s*("(?:[^"\\]|\\.)*")/
+
+/**
+ * The version the packaged app reports: CI's -c.extraMetadata.version deep-merges
+ * into the config below, and without it electron-builder ships apps/shell/package.json.
+ */
+function packagedAppVersion() {
+  const injected = config.extraMetadata && config.extraMetadata.version
+  if (typeof injected === 'string' && injected.trim()) return injected.trim()
+  return require('./package.json').version
+}
+
+function bundledCliVersion(bundlePath) {
+  const baked = CLI_VERSION_BANNER.exec(readFileSync(bundlePath, 'utf-8'))
+  if (!baked) return null
+  try {
+    return JSON.parse(baked[1])
+  } catch {
+    return null
+  }
+}
+
+/**
+ * `chaoffice --version` is baked into the CLI bundle, which is built before
+ * electron-builder runs and therefore before a release version is known. Rebuild
+ * it here with the app version whenever the two disagree, so the packaged
+ * command line can never answer with the workspace CLI version.
+ */
+function ensureCliBundleCarriesAppVersion() {
+  const bundlePath = join(__dirname, CLI_BUNDLE_REL)
+  const appVersion = packagedAppVersion()
+  if (bundledCliVersion(bundlePath) === appVersion) return
+  execFileSync(process.execPath, [join(__dirname, CLI_BUILD_REL)], {
+    stdio: 'inherit',
+    env: { ...process.env, [CLI_VERSION_ENV]: appVersion },
+  })
+  const baked = bundledCliVersion(bundlePath)
+  if (baked !== appVersion) {
+    throw new Error(
+      `packaged chaoffice CLI reports ${baked ?? 'no version'} but the app ships ${appVersion} ` +
+        `(rebuild it with ${CLI_VERSION_ENV}=${appVersion})`,
+    )
+  }
+}
+
+const NOTICE_PATH = join(__dirname, 'build/THIRD-PARTY-NOTICES.txt')
+const PDFIUM_NOTICE_TERMS = ['@embedpdf/pdfium', 'Copyright 2014 PDFium Authors', 'Apache License']
+
+function hasValidThirdPartyNotice() {
+  if (!existsSync(NOTICE_PATH)) return false
+  try {
+    const text = readFileSync(NOTICE_PATH, 'utf8')
+    return PDFIUM_NOTICE_TERMS.every((term) => text.includes(term))
+  } catch {
+    return false
+  }
+}
+
+function ensureThirdPartyNotices() {
+  if (!hasValidThirdPartyNotice()) {
+    execFileSync(process.execPath, [join(__dirname, '../../tools/gen-third-party-notices.mjs')], {
+      stdio: 'inherit',
+    })
+  }
+  if (!hasValidThirdPartyNotice()) {
+    throw new Error('third-party notice missing PDFium redistribution terms')
+  }
+}
+
 const config = {
   appId: 'com.chaoffice.app',
   productName: 'ChaAI Office',
@@ -496,6 +570,10 @@ const config = {
         from: '../sheets/native/xlsx-engine/target/release/xlsx-sidecar',
         to: 'native/xlsx-sidecar',
       },
+      {
+        from: '../packages/cli/dist/chaoffice.cjs',
+        to: 'cli/chaoffice.cjs',
+      },
     ],
   },
   win: {
@@ -615,6 +693,8 @@ const config = {
     artifactName: 'ChaAIOffice-Setup-${version}.${ext}',
   },
   beforePack: async (context) => {
+    ensureCliBundleCarriesAppVersion()
+    ensureThirdPartyNotices()
     assertModuleTreesPresent()
     // 交叉打包（mac 宿主出三平台包）：按目标架构把 zigbuild/mingw 产物就位到
     // extraResources 读取的 target/release 路径；原生架构（宿主=目标）则直接
@@ -622,7 +702,12 @@ const config = {
     // 别的系统的包（2026-09-23 实测踩中）。
     if (context.electronPlatformName === 'linux') {
       // context.arch 是枚举数值（electron-builder Arch：1=x64，3=arm64）
-      const archName = { 1: 'x64', 3: 'arm64' }[context.arch]
+      const archName =
+        context.arch === undefined
+          ? process.arch === 'arm64'
+            ? 'arm64'
+            : 'x64'
+          : { 1: 'x64', 3: 'arm64' }[context.arch]
       const triple =
         archName === 'arm64'
           ? 'aarch64-unknown-linux-gnu'

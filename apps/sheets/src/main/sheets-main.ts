@@ -1714,6 +1714,59 @@ const MAX_REMOTE_IMAGE_BYTES = 20 * 1024 * 1024
 /** Max CSV bytes converted on open: prevents 500MB CSV OOMing main before sidecar limits. */
 const MAX_CSV_IMPORT_BYTES = 32 * 1024 * 1024
 
+
+const unsavedNewWorkbooks = new Map<string, { suggestSaveAs: string; tempDir: string }>()
+const unsavedNewIndexPath = () => join(app.getPath('userData'), 'unsaved-new-workbooks.json')
+
+function readUnsavedNewIndex(): string[] {
+  try {
+    return JSON.parse(readFileSync(unsavedNewIndexPath(), 'utf8')) as string[]
+  } catch {
+    return []
+  }
+}
+
+function writeUnsavedNewIndex(list: string[]): void {
+  try {
+    writeFileSync(unsavedNewIndexPath(), JSON.stringify(list))
+  } catch (error) {
+    console.warn('[sheets] unsaved-new index write failed:', error)
+  }
+}
+
+/**
+ * shell: a would-be path already promised to another unsaved new workbook (open
+ * tab, tab about to open, or a crash copy waiting to be re-offered). The file
+ * itself does not exist yet, so uniqueness on disk is not enough.
+ */
+export function sheetsSuggestedPathTaken(path: string): boolean {
+  for (const pending of unsavedNewWorkbooks.values())
+    if (pending.suggestSaveAs === path) return true
+  return readUnsavedNewIndex().includes(path)
+}
+
+/** shell: mark a backing workbook it just created as not-yet-saved (see above) */
+export function markSheetsUnsavedNew(
+  openPath: string,
+  suggestSaveAs: string,
+  tempDir: string,
+): void {
+  unsavedNewWorkbooks.set(openPath, { suggestSaveAs, tempDir })
+  rememberUnsavedNewRecovery(suggestSaveAs)
+}
+
+/** shell: the backing workbook could not be written, release its name */
+export function unmarkSheetsUnsavedNew(openPath: string): void {
+  unsavedNewWorkbooks.delete(openPath)
+}
+
+/** shell, at launch: would-be paths of new workbooks whose recovery copy survived a crash */
+export function pendingUnsavedNewRecoveries(): string[] {
+  const live = readUnsavedNewIndex().filter((p) => existsSync(recoveryPathFor(p)))
+  writeUnsavedNewIndex(live)
+  return live
+}
+
 const sheetsTabs = new Map<number, SheetsTabSession>()
 let activeSheetsWebContents: WebContents | null = null
 let pastedTempCleanupStarted = false
@@ -1884,6 +1937,11 @@ function userDataPath(...parts: string[]): string {
 const recoveryDir = () => userDataPath('sheets-autosave')
 const recoveryPathFor = (filePath: string) =>
   join(recoveryDir(), `${createHash('sha1').update(filePath).digest('hex').slice(0, 16)}.xlsx`)
+
+function rememberUnsavedNewRecovery(suggestSaveAs: string): void {
+  const list = readUnsavedNewIndex()
+  if (!list.includes(suggestSaveAs)) writeUnsavedNewIndex([...list, suggestSaveAs])
+}
 
 function clearWorkbookRecovery(filePath: string): void {
   try {

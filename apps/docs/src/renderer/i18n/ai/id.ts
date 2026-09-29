@@ -209,7 +209,5 @@ export const id = {
   aiChaOfficeLoginBtn: 'Masuk',
   aiTabChat: 'Obrolan',
   aiSummarizeDesc: 'Ringkas dokumen dan tangkap poin-poin pentingnya',
-
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
-
 } satisfies Record<keyof typeof zh, string>

@@ -211,7 +211,5 @@ export const ja = {
   aiChaOfficeLoginBtn: 'サインイン',
   aiTabChat: 'チャット',
   aiSummarizeDesc: '文書の要点をまとめて内容を素早く把握',
-
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
-
 } satisfies Record<keyof typeof zh, string>

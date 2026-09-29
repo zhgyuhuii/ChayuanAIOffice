@@ -26,6 +26,10 @@ export default defineConfig({
         replacement: local('../../packages/font-metrics/src/index.ts'),
       },
       {
+        find: '@chatoffice/electron-utils/atomic-write',
+        replacement: local('../../packages/electron-utils/src/atomic-write.ts'),
+      },
+      {
         find: '@chatoffice/electron-utils/headless-export',
         replacement: local('../../packages/electron-utils/src/headless-export.ts'),
       },

@@ -2,6 +2,7 @@
 // per-block column / width / vertical-alignment specs derived from sections.
 import type { SectionInfo, SectionSettings, TextFlowDirection } from '@chatoffice/docx-engine'
 
+import { mirrorShiftPx } from './page-margins'
 import { columnLineSplits } from './pagination-slices'
 import type {
   BlockBox,
@@ -611,6 +612,34 @@ export function vAlignShiftSpecs(
   return specs
 }
 
+/**
+ * w:mirrorMargins: the canvas pads every page by the first section's odd-page
+ * margins, so the blocks of even-numbered pages (displayed numbers, `nums`)
+ * translate by outside − inside onto the swapped text column. Same visual
+ * channel and block granularity as the column layout: a block is placed by
+ * the page holding its top, page-relative anchors undo the shift.
+ */
+export function mirrorMarginSpecs(
+  blocks: BlockBox[],
+  slices: PageSlice[],
+  sections: SectionInfo[],
+  fallback: SectionSettings | undefined,
+  nums: number[],
+): ColumnBlockPlacement[] {
+  const specs: ColumnBlockPlacement[] = []
+  let bi = 0
+  slices.forEach((slice, i) => {
+    const set = sections[Math.min(slice.section, sections.length - 1)]?.settings ?? fallback
+    const dx = set ? mirrorShiftPx(set, nums[i] ?? i + 1, true) : 0
+    while (bi < blocks.length && blocks[bi].top < slice.end - 0.5) {
+      const b = blocks[bi++]
+      if (Math.abs(dx) < 0.01 || !b.el || b.floated || b.top < slice.start - 0.5) continue
+      specs.push({ el: b.el, dx, dy: 0 })
+    }
+  })
+  return specs
+}
+
 /** sectPr w:textDirection modes the renderer lays out sideways (lrTbV and unknown values stay horizontal) */
 export function sectionVertical(set: SectionSettings | undefined): TextFlowDirection | undefined {
   const d = set?.textDirection
@@ -786,6 +815,25 @@ export function liveSections(
     out.push(first === s.firstBlockIndex ? s : { ...s, firstBlockIndex: first })
   })
   return changed ? out : sections
+}
+
+/**
+ * Same section list by content: entries are identical objects, or (the merged
+ * ones liveSections re-creates) objects whose own fields are all identical.
+ * Lets a per-transaction memo keep its identity while a document streams in.
+ */
+export function sameSectionInfos(a: readonly SectionInfo[], b: readonly SectionInfo[]): boolean {
+  if (a === b) return true
+  if (a.length !== b.length) return false
+  for (let i = 0; i < a.length; i++) {
+    const x = a[i]!
+    const y = b[i]!
+    if (x === y) continue
+    const keys = Object.keys(x) as Array<keyof SectionInfo>
+    if (keys.length !== Object.keys(y).length) return false
+    for (const k of keys) if (x[k] !== y[k]) return false
+  }
+  return true
 }
 
 /** Tag each block's owning section by the sections' block ranges (lastBlockIndex); new blocks without docxIndex inherit from the previous block */

@@ -209,7 +209,5 @@ export const hi = {
   aiChaOfficeLoginBtn: 'साइन इन करें',
   aiTabChat: 'चैट',
   aiSummarizeDesc: 'दस्तावेज़ का सारांश बनाकर मुख्य बिंदु समझें',
-
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
-
 } satisfies Record<keyof typeof zh, string>
