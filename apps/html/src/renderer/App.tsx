@@ -11,6 +11,8 @@ import {
   type FindTarget,
 } from '@chatoffice/ui'
 import bootLogo from './assets/boot-logo.png'
+  aiPanelInitiallyOpen,
+  rememberAiPanelOpen,
 import {
   pollUntilReady,
   runHeadlessRendererExport,
@@ -117,7 +119,7 @@ async function loadImageDataUrl(src: string): Promise<string | null> {
 }
 
 export default function App() {
-  const { t } = useI18n()
+  const { lang, t } = useI18n()
   const [status, setStatus] = useState<LoadStatus>('loading')
   const [path, setPath] = useState<string | null>(null)
   const [text, setText] = useState('')
@@ -152,6 +154,7 @@ export default function App() {
   const [aiOpen, setAiOpen] = useState(
     () => !DOCKED_BOOT && localStorage.getItem('htmlapp.showAi') !== '0',
   )
+  const [aiOpen, setAiOpen] = useState(() => aiPanelInitiallyOpen('htmlapp.showAi'))
   const [aiPreset, setAiPreset] = useState<AiPreset | null>(null)
   const [editQueue, setEditQueue] = useState<EditQueueItem[]>([])
   const [askMode, setAskMode] = useState<AskMode | null>(null)
@@ -357,6 +360,7 @@ export default function App() {
     // a docked boot must not clobber the user's persisted preference
     if (dockedRef.current) return
     localStorage.setItem('htmlapp.showAi', aiOpen ? '1' : '0')
+    rememberAiPanelOpen('htmlapp.showAi', aiOpen)
   }, [aiOpen])
 
   useEffect(() => {
@@ -444,8 +448,17 @@ export default function App() {
     [commitText, getMap],
   )
 
+  const flushStylesRef = useRef<(() => void) | null>(null)
+  const flushDraftsRef = useRef<(() => void) | null>(null)
+  /** land live style pokes and open panel drafts in the source before anything reads, saves or edits it */
+  const flushPending = useCallback(() => {
+    flushDraftsRef.current?.()
+    flushStylesRef.current?.()
+  }, [])
+
   const replaceAll = useCallback(
     (html: string, highlight: boolean) => {
+      flushPending()
       // a generated document carries the confirmed brief so later turns (and re-opens) stay anchored to it
       const pinned =
         highlight && briefRef.current && !parseBrief(html)
@@ -456,16 +469,8 @@ export default function App() {
       frameScrollRef.current = null
       commitText(pinned, false)
     },
-    [commitText],
+    [commitText, flushPending],
   )
-
-  const flushStylesRef = useRef<(() => void) | null>(null)
-  const flushDraftsRef = useRef<(() => void) | null>(null)
-  /** land live style pokes and open panel drafts in the source before anything reads, saves or edits it */
-  const flushPending = useCallback(() => {
-    flushStylesRef.current?.()
-    flushDraftsRef.current?.()
-  }, [])
 
   /** apply a toolbar/inspector batch; the selection follows the edited element (or clears when it is gone) */
   const runManual = useCallback(
@@ -1187,6 +1192,11 @@ export default function App() {
         setNotice(t('exportFailed'))
         return false
       }
+      if ('skipped' in result && result.skipped?.length) {
+        setNotice(
+          t('exportHtmlSkipped', { count: result.skipped.length, first: result.skipped[0]! }),
+        )
+      }
       return !('canceled' in result)
     } finally {
       exportingRef.current = false
@@ -1512,6 +1522,113 @@ export default function App() {
             canvasMode={canvasMode}
             onPresent={startPresent}
           />
+        </div>
+        <div className="app-content">
+          {findTarget && (
+            <FindPanel
+              target={findTarget}
+              strings={findStrings}
+              onClose={closeFind}
+              focusRequest={findFocus}
+          {view !== 'preview' && (
+            <Breadcrumb
+              text={text}
+              map={getMap()}
+              sid={selectedSid}
+              state={selectedState}
+              onSelect={(sid) => selectSid(sid, { reveal: true })}
+          <div className={`workspace view-${canvasMode === 'present' ? 'preview' : view}`}>
+            <div className="pane pane-preview">
+              <div
+                className="preview-stage"
+                ref={stageRef}
+                data-device={device}
+                onPointerDown={(e) => {
+                  if (e.target === e.currentTarget) selectSid(null)
+                <PreviewFrame
+                  ref={previewRef}
+                  url={previewUrl}
+                  nonce={previewNonce}
+                  zoom={zoom}
+                  onMessage={onInspectorMessage}
+                  onLoad={onPreviewLoad}
+                  draft={draftHtml}
+                {canvasMode === 'present' && (
+                  <button
+                    type="button"
+                    className="present-exit"
+                    onClick={() => setCanvasMode('edit')}
+                    {t('presentExit')}
+                  </button>
+                {canvasMode === 'edit' &&
+                  !dragging &&
+                  hasElement &&
+                  selectedEntry &&
+                  selRect &&
+                  selComputed && (
+                    <FloatToolbar
+                      barRef={barRef}
+                      {...floatPosition(selRect, floatLayout())}
+                      computed={selComputed}
+                      pending={pendingStylesRef.current}
+                      canEditText={selText.editable}
+                      onStyle={previewStyle}
+                      onEditText={() =>
+                        previewRef.current?.post({
+                          type: 'gx:beginTextEdit',
+                          sid: selectedEntry.sid,
+                        })
+                      }
+                      onReplaceImage={replaceImage}
+                      onCropImage={() => void openPictureDialog('crop')}
+                      onCutoutImage={() => void openPictureDialog('cutout')}
+                      canAskAi={askTarget !== null}
+                      onAskAi={askAi}
+                      tag={selectedEntry.tag}
+                      onMove={moveSelected}
+                      onDuplicate={duplicateSelected}
+                      onDelete={() =>
+                        runManual([{ op: 'remove', sid: selectedEntry.sid }], 'clear')
+                      }
+                      panelOpen={panelShown}
+                      onTogglePanel={() => {
+                        if (panelShown) setPanelOpen(false)
+                        else {
+                          setPanelDismissedSid(null)
+                          setPanelOpen(true)
+                        }
+                {canvasMode === 'edit' &&
+                  hasElement &&
+                  selectedEntry &&
+                  selComputed &&
+                  panelShown && (
+                    <StylePanel
+                      key={selectedEntry.sid}
+                      tag={selectedEntry.tag}
+                      computed={selComputed}
+                      textRun={selText.run}
+                      onStyle={previewStyle}
+                      onText={setRunText}
+                      onAttr={setAttr}
+                      draftRef={flushDraftsRef}
+                      onCustomCss={(css) => {
+                        const decls = parseDeclarations(css)
+                        if (Object.keys(decls).length) previewStyle(decls)
+                      pending={pendingCount > 0}
+                      onRevert={revertStyles}
+                      onClose={() => setPanelDismissedSid(selectedEntry.sid)}
+              </div>
+            </div>
+            <div className="pane pane-source">
+              <SourceEditor
+                ref={editorRef}
+                className="source-editor"
+                initialText={text}
+                onChange={onEditorChange}
+                onCursor={onCursor}
+                onBeforeReplace={flushPending}
+            </div>
+          </div>
 
           <div className="app-content">
             {findTarget && (
@@ -1730,6 +1847,7 @@ export default function App() {
       {pictureDialog?.kind === 'crop' && (
         <CropDialog
           labels={imageDialogLabels}
+          lang={lang}
           image={pictureDialog.image}
           onApply={(png) => void applyPictureBytes(pictureDialog.sid, pictureDialog.src, png)}
           onCancel={() => setPictureDialog(null)}

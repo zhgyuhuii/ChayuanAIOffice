@@ -3,6 +3,7 @@ import { useState } from 'react'
 import type { GoalSeekResult } from './goal-seek'
 import { useI18n } from './i18n/locale'
 import { RangePickButton, useRangePickSession, type RangePickHandler } from './range-pick'
+import { useModalDialog } from './modal-dialog'
 
 /// Excel's Goal Seek: three fields, then an async solve whose guesses are
 /// journaled edits (undo restores everything). The dialog stays open to show
@@ -62,12 +63,15 @@ export function GoalSeekDialog({
 
   // The dialog folds away while a target cell is picked on the grid.
   if (picking) return <></>
-
+  const modal = useModalDialog(() => {
+    if (!busy) onClose()
+  })
   return (
     <div className="dialog-backdrop" onClick={busy ? undefined : onClose}>
       <div
         className="format-cells-dialog"
         role="dialog"
+        {...modal}
         aria-label={t('dlgGoalSeekTitle')}
         onClick={(event) => event.stopPropagation()}
       >

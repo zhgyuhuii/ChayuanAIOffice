@@ -22,6 +22,10 @@ import type {
 import { useDismissablePopover, USER_LOGIN_READY } from '@chatoffice/ui'
 import { fileCountKey, chatCountKey } from './counts'
 import { MonoFileIcon } from './file-icons'
+import type { IntegrationsApi } from '../../shared/integrations-api'
+import { markText } from '../../shared/text-marks'
+import { useDismissablePopover } from '@chatoffice/ui'
+import { fileCountLabel, visiblePageCount } from './counts'
 import { useI18n } from './locale'
 import type { I18n, StringKey } from './locale'
 import { skillUpdateDue } from './IntegrationsPane'
@@ -43,6 +47,7 @@ import type { McpClientApi } from '../../shared/mcp-client-api'
 
 import { SettingsModal } from './SettingsModal'
 import { FeedbackModal, FeedbackQrCard } from './FeedbackModal'
+import { onFilesChanged } from './file-events'
 
 declare global {
   interface Window {
@@ -92,7 +97,8 @@ const FILE_ICONS: Record<string, string> = {
 /* Formats the open-local card advertises. Too long for the card at any window
    width, so it ellipsizes and a hover ScreenTip carries the full list. Keep in
    sync with the main-process open-dialog filter (OPEN_DIALOG_EXTENSIONS). */
-const OPEN_LOCAL_EXTENSIONS = '.docx / .xlsx / .xlsm / .xls / .csv / .pptx / .pdf / .md / .html'
+const OPEN_LOCAL_EXTENSIONS =
+  '.docx / .xlsx / .xlsm / .xls / .csv / .tsv / .pptx / .pdf / .md / .html'
 
 function FileBadge({ ext, size }: { ext: string; size: number }) {
   const icon = FILE_ICONS[ext]
@@ -163,6 +169,36 @@ const RECENT_FILTERS: { key: string; label: string }[] = [
   { key: 'pdf', label: 'pdf' },
   { key: 'md', label: '.md' },
 ]
+
+=======
+/** sidebar filter keys that stand for a family of extensions (mirrors recent-files.ts) */
+const FILTER_FAMILY: Record<string, readonly string[]> = {
+  docx: ['docx', 'doc'],
+  xlsx: ['xlsx', 'xlsm', 'xls', 'csv', 'tsv'],
+  pptx: ['pptx', 'ppt'],
+  md: ['md', 'markdown'],
+  html: ['html', 'htm'],
+}
+
+function matchesFilter(entry: RecentEntry, filter: string): boolean {
+  if (filter === 'all') return true
+  return (FILTER_FAMILY[filter] ?? [filter]).includes(entry.ext)
+}
+
+/** wrap every matched fragment of a name or folder label in the shared search-hit mark */
+function highlightText(text: string, needles: readonly string[]): ReactElement[] | string {
+  const marks = markText(text, needles)
+  if (!marks.some((m) => m.hit)) return text
+  return marks.map((m, i) =>
+    m.hit ? (
+      <mark key={i} className="search-hit">
+        {m.text}
+      </mark>
+    ) : (
+      <span key={i}>{m.text}</span>
+    ),
+  )
+}
 
 /** Check glyph marking the selected sort option; invisible on the others so labels stay aligned */
 function SortCheck({ visible }: { visible: boolean }): ReactElement {
@@ -1357,6 +1393,9 @@ export function Home() {
     window.addEventListener('focus', onFocus)
     return () => window.removeEventListener('focus', onFocus)
   }, [])
+
+  // a rename from the tab strip happens while this renderer already has focus
+  useEffect(() => onFilesChanged(() => refreshRef.current()), [])
 
   const hasMore = entries.length < listTotal
 
@@ -3064,6 +3103,21 @@ export function Home() {
             <p className="side-files-empty">
               {listTotal === 0 ? t('emptyRecent') : t('emptyFiltered')}
             </p>
+            {searchActive ? (
+              renderSearchHeading()
+              <div className="recents-heading">
+                <span className="section-label">
+                  {view === 'recent' ? t('secRecent') : t('secStarred')}
+                <span className="file-count">{fileCountLabel(listTotal, lang, t)}</span>
+          {searchActive ? (
+            renderSearchResults()
+          ) : entries.length === 0 ? (
+            renderEmpty(
+              view === 'starred'
+                ? t('emptyStarred')
+                : navCounts.recent === 0
+                  ? t('emptyRecent')
+                  : t('emptyFiltered'),
           ) : (
             <div className="side-files-scroll">
               <ul className="side-file-list">

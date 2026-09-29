@@ -22,7 +22,7 @@ export interface DeckProgressSnapshot {
   doneOutcome?: 'failed' | 'cancelled'
 }
 
-export type StepStatus = 'done' | 'error' | 'running'
+export type StepStatus = 'done' | 'error' | 'running' | 'stopped'
 
 export interface DeckProgressView {
   head: { text: string; tone: 'running' | 'done' | 'error' }
@@ -63,6 +63,7 @@ export function deriveDeckProgressView(progress: DeckProgressSnapshot, t: TFunc)
       label:
         failed && doneSummary ? doneSummary : allDone ? settledLabel : pages.summary || pages.label,
       stepStatus: allDone ? (hasError ? 'error' : 'done') : 'running',
+      stepStatus: allDone ? (hasError ? 'error' : 'done') : cancelled ? 'stopped' : 'running',
     })
   }
 

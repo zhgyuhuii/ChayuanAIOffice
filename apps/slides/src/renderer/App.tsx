@@ -41,6 +41,7 @@ import { ZOOM_MAX, ZOOM_MIN, clampZoom, nextPreset, notchStep, prevPreset } from
 import type { DrawRect } from './draw-shape'
 import { paragraphsBlank } from './textbox-insert'
 import { SlideThumb } from './SlideThumb'
+import { useVisibleThumbs } from './use-visible-thumbs'
 import { MasterView } from './MasterView'
 import {
   TextEditOverlay,
@@ -113,6 +114,9 @@ import {
   useAutoSavePref,
   type AiScopeQuoteData,
 } from '@chatoffice/ui'
+  type WordArtPreset,
+  aiPanelInitiallyOpen,
+  rememberAiPanelOpen,
 import type { ChartPresetDef, IconDef, SmartArtDef } from './insert-presets'
 import { InsertImageDialog } from '@chatoffice/ui/InsertImageDialog'
 import type { InsertImageBridge } from '@chatoffice/ui/InsertImageDialog'
@@ -370,6 +374,11 @@ function collectRtls(node: RenderNode, out: Set<boolean>) {
   else if (node.type === 'group') for (const child of node.children) collectRtls(child, out)
 }
 
+/** Same box a SlideThumb Stage would occupy, so an unmounted thumbnail keeps the list's scroll geometry */
+function thumbBox(slide: RenderSlide, width: number) {
+  return { width, height: (slide.heightPx * width) / slide.widthPx }
+}
+
 export function App() {
   const { lang } = useI18n()
   const [slides, setSlides] = useState<RenderSlide[]>([])
@@ -514,6 +523,7 @@ export function App() {
   const [showAi, setShowAi] = useState(
     () => !DOCKED_BOOT && localStorage.getItem('ai-slides-show-ai') !== '0',
   )
+  const [showAi, setShowAi] = useState(() => aiPanelInitiallyOpen('ai-slides-show-ai'))
   const [showFormat, setShowFormat] = useState(false)
   const [showBgFormat, setShowBgFormat] = useState(false)
   const [aiSettings, setAiSettings] = useState<AiSettingsV2 | null>(null)
@@ -1332,7 +1342,7 @@ export function App() {
   const toggleAi = useCallback(() => {
     if (dockedRef.current) return
     setShowAi((v) => {
-      localStorage.setItem('ai-slides-show-ai', v ? '0' : '1')
+      rememberAiPanelOpen('ai-slides-show-ai', !v)
       return !v
     })
   }, [])
@@ -1359,6 +1369,7 @@ export function App() {
           return true
         })
       }
+        rememberAiPanelOpen('ai-slides-show-ai', true)
       setAiPreset({
         text,
         nonce: Date.now(),
@@ -1501,6 +1512,7 @@ export function App() {
           return true
         })
       }
+        rememberAiPanelOpen('ai-slides-show-ai', true)
     },
     [askState, askTargets, current],
   )
@@ -2678,6 +2690,18 @@ export function App() {
     () => groupSections(sections, slides.length),
     [sections, slides.length],
   )
+  const sorterViewRef = useRef<HTMLDivElement | null>(null)
+  const visibleThumbs = useVisibleThumbs(thumbsListRef, '.thumb', [
+    slides.length,
+    sectionGroups,
+    collapsedSecs,
+    showThumbs,
+    viewMode,
+  ])
+  const visibleSorterItems = useVisibleThumbs(sorterViewRef, '.sorter-item', [
+    slides.length,
+    viewMode,
+  ])
 
   /** Canvas right-click: select the hit element first (replace the selection if it isn't in it), clear selection on blank */
   const onCanvasContextMenu = useCallback(
@@ -4214,6 +4238,41 @@ export function App() {
                 >
                   {t('fontMissingDismiss')}
                 </button>
+            ) : viewMode === 'sorter' ? (
+              <div
+                className="sorter-view"
+                role="listbox"
+                tabIndex={0}
+                ref={sorterViewRef}
+                onContextMenu={(e) => onGapContextMenu(e, true)}
+                {slides.map((s, i) => (
+                  <div
+                    key={i}
+                    data-index={i}
+                    role="option"
+                    aria-selected={selectedSlides.includes(i)}
+                    className={`sorter-item ${i === current ? 'active' : selectedSlides.includes(i) ? 'selected' : ''} ${s.hidden ? 'thumb-hidden' : ''}${thumbDragCls(i)}`}
+                    data-tip={s.hidden ? t('appSorterHiddenTitle') : t('appSorterItemTitle')}
+                    {...thumbDragProps(i, true)}
+                    onClick={(e) => selectThumb(i, e)}
+                    onDoubleClick={() => {
+                      selectThumb(i)
+                      onViewMode('normal')
+                    onContextMenu={(e) => openThumbMenu(i, e)}
+                    {visibleSorterItems.has(i) ? (
+                      <SlideThumb slide={s} images={images} width={208} />
+                    ) : (
+                      <div className="thumb-placeholder" style={thumbBox(s, 208)} />
+                    )}
+                    <span className="sorter-num">{i + 1}</span>
+                    {pasteFloater?.index === i && (
+                      <PasteOptionsFloater
+                        mode={pasteFloater.mode}
+                        onSelect={repasteSlideAs}
+                        onDismiss={() => setPasteFloater(null)}
+                    )}
+                  </div>
+                ))}
               </div>
             )}
             <div className="workspace">
@@ -4320,6 +4379,17 @@ export function App() {
                               ))}
                               {o.lines.length > 5 && (
                                 <div className="outline-line outline-more">…</div>
+                        {(() => {
+                          // width = sidebar minus horizontal padding (20) and .thumb border (4)
+                          const thumbW = Math.max(60, thumbsW - 24)
+                          const thumbItem = (s: RenderSlide, i: number) => (
+                              className={`thumb ${i === current ? 'active' : selectedSlides.includes(i) ? 'selected' : ''} ${s.hidden ? 'thumb-hidden' : ''}${thumbDragCls(i)}`}
+                              data-tip={s.hidden ? t('appThumbHiddenTitle') : undefined}
+                              {...thumbDragProps(i)}
+                              {visibleThumbs.has(i) ? (
+                                <SlideThumb slide={s} images={images} width={thumbW} />
+                                <div className="thumb-placeholder" style={thumbBox(s, thumbW)} />
+                              <span className="thumb-num">{i + 1}</span>
                               )}
                             </div>
                           </div>

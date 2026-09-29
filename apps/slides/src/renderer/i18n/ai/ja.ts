@@ -330,4 +330,5 @@ export const ja = {
   aiToolRunWebSearch: 'ウェブを検索中…',
   aiToolRunImageSearch: '画像を検索中…',
   aiToolRunReadUrl: 'ページを読み込み中…',
+  aiPageCloudToLocal: 'クラウド生成不可効 — ローカルで生成',
 } satisfies Record<keyof typeof zh, string>

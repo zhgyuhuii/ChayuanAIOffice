@@ -13,6 +13,7 @@ import {
 } from './function-catalog'
 import { useI18n, type StringKey } from './i18n/locale'
 import { RangePickButton, useRangePickSession, type RangePickHandler } from './range-pick'
+import { useModalDialog } from './modal-dialog'
 
 /// Excel's Insert Function: browse/search the engine's function catalog,
 /// then fill each argument in its own row — typed, or picked by collapsing
@@ -446,12 +447,13 @@ export function InsertFunctionDialog({
 
   // The dialog folds away while an argument is being picked on the grid.
   if (picking) return <></>
-
+  const modal = useModalDialog(onClose)
   return (
     <div className="dialog-backdrop" onClick={onClose}>
       <div
         className={`format-cells-dialog insert-function-dialog${picked ? ' has-picked' : ''}`}
         role="dialog"
+        {...modal}
         aria-label={t('appInsertFunction')}
         onClick={(event) => event.stopPropagation()}
       >

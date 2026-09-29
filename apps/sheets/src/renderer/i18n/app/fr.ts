@@ -541,6 +541,7 @@ export const fr = {
   appBridgeUnavailable:
     "Le pont de fichiers du bureau est indisponible. Redémarrez l'application Electron.",
   appOpenCanceled: 'Sélection du classeur annulée.',
+  appOpeningWorkbook: 'Ouverture du classeur…',
   appOpened: '{name} ouvert — les modifications de cellules se réenregistrent avec ⌘S.',
   appOpenFailed: "Impossible d'ouvrir le classeur.",
   appPageSetupNeedsFile:
@@ -720,7 +721,7 @@ export const fr = {
   appTabData: 'Données',
   appTabReview: 'Révision',
   appRibbonCollapse: 'Réduire le ruban',
-  appRibbonPin: 'Épingler le ruban',
+  appRibbonExpand: 'Développer le ruban',
   appTabView: 'Affichage',
   appTabAi: 'IA',
   appTabChartDesign: 'Création de graphique',
@@ -1264,6 +1265,15 @@ export const fr = {
   appResetZoom: 'Réinitialiser le zoom',
   appZoomToSelection: 'Zoom sur la sélection',
   appZoomToSelectionDetail: 'Ajuster à la sélection',
+  appStatAverage: 'Moyenne',
+  appStatCount: 'Nb (nombre)',
+  appStatNumericalCount: 'Nb (nombres uniquement)',
+  appStatMin: 'Min.',
+  appStatMax: 'Max.',
+  appStatSum: 'Somme',
+  appZoomLevel: 'Niveau de zoom',
+  appNormalViewTip: 'Affichage normal',
+  appPageBreakPreviewTip: 'Aperçu des sauts de page',
   appGroupWindow: 'Fenêtre',
   appFreezePanes: 'Figer les volets',
   appFreezeTitle: 'Figer des lignes et des colonnes',
@@ -1307,6 +1317,10 @@ export const fr = {
   appCutTitle: 'Couper ⌘X',
   appCopyTitle: 'Copier ⌘C',
   appFormatPainter: 'Reproduire la mise en forme',
+  appFormatPainterTip:
+    "Reproduire la mise en forme — double-cliquez pour la conserver jusqu'à Échap",
+  appFormatPainterLocked:
+    'Reproduction de la mise en forme verrouillée — sélectionnez des plages ; Échap ou un clic sur le bouton arrête.',
   appGroupFont: 'Police',
   appIncreaseFontSize: 'Augmenter la taille de police',
   appDecreaseFontSize: 'Réduire la taille de police',
@@ -1758,4 +1772,6 @@ export const fr = {
   appNoObjects: "Aucun objet sur cette feuille",
   appShapeName: "Forme",
   appCfAiPrompt: "Mise en forme conditionnelle IA : proposez et appliquez des règles adaptées à ma sélection.",
+  appInsertCells: 'Insérer des cellules…',
+  appDeleteCells: 'Supprimer des cellules…',
 } satisfies Record<keyof typeof zh, string>

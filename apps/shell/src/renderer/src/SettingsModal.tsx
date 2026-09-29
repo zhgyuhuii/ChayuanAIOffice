@@ -14,6 +14,23 @@ import { CapabilitySettingsPage } from '@chatoffice/ui/CapabilitySettingsPage'
 import type { ModelSettingsBridge } from '@chatoffice/ui/ModelSettingsPage'
 import { ModelDefaultsPage } from '@chatoffice/ui/ModelDefaultsPage'
 import { Dropdown } from '@chatoffice/ui'
+} from '@chatoffice/ui'
+import type { AiFontSize, AiPanelPrefs, AiPanelSide } from '@chatoffice/ui'
+import type { DefaultAppStatus, FileSearchSettings, JevEndpoint } from '../../shared/home-api'
+import {
+  DEFAULT_MAX_OUTPUT_TOKENS,
+  MAX_MAX_OUTPUT_TOKENS,
+  MIN_MAX_OUTPUT_TOKENS,
+  clampMaxOutputTokens,
+} from '@chatoffice/ai-provider/browser'
+import type {
+  AiMediaProviderId,
+  AiMediaProviderMeta,
+  AiMediaSettings,
+  AiSearchProviderMeta,
+  AiSearchSettings,
+  AiSettings,
+} from '@chatoffice/ai-provider'
 import { useI18n } from './locale'
 import type { StringKey } from './locale'
 import type {
@@ -343,6 +360,46 @@ function FileSearchPane() {
       <h3 className="set-pane-title">{t('setAiCapFileSearch')}</h3>
       {settings && (
         <>
+      <div className="set-pane-head">
+        <h3 className="set-pane-title">{t('setSecAiMedia')}</h3>
+        <div className="set-pane-actions">
+          <AiStatusPill status={headStatus} />
+          <button className="set-btn" disabled={testing} onClick={() => void test()}>
+            {t('setAiTest')}
+          </button>
+          <button className="set-btn primary" disabled={!dirty} onClick={save}>
+            {t('setAiSave')}
+          </button>
+        </div>
+      </div>
+      <div className="set-field-desc set-ai-note">{t('setAiSharedKeyHint')}</div>
+      <section>
+        {subhead('search', t('setAiCapSearch'))}
+        {providerRow(t('setAiCapSearch'), search.provider, searchCatalog, (v) =>
+          setSearch({ ...search, provider: v as AiSearchSettings['provider'] }),
+        )}
+        <div className="set-field-desc set-ai-note">
+          {search.provider === 'genspark'
+            ? t('setAiSearchGensparkHint')
+            : search.provider === 'parallel'
+              ? t('setAiSearchParallelHint')
+              : search.provider === 'serply'
+                ? t('setAiSearchSerplyHint')
+                : searchMeta?.imageSearch
+                  ? t('setAiSearchSerperHint')
+                  : t('setAiSearchTavilyHint')}
+        </div>
+        {search.provider !== 'genspark' &&
+          keyRow('set-ai-search-key', searchKey, searchMeta?.keyPlaceholder ?? 'API Key', (v) =>
+            setSearch({
+              ...search,
+              providers: { ...search.providers, [search.provider]: { apiKey: v } },
+            }),
+          )}
+      </section>
+      {fileSearch && (
+        <section>
+          {subhead('rerank', t('setAiCapFileSearch'))}
           <div className="set-field">
             <div className="set-field-text">
               <div className="set-field-stack">
@@ -553,6 +610,9 @@ export function SettingsModal({
   const [analyticsOn, setAnalyticsOn] = useState(true)
   const [analyticsSaving, setAnalyticsSaving] = useState(false)
   const [autoSaveOn, setAutoSaveOn] = useState(false)
+  const [defaultApp, setDefaultApp] = useState<DefaultAppStatus | null>(null)
+  const [defaultAppBusy, setDefaultAppBusy] = useState(false)
+  const [defaultAppFailed, setDefaultAppFailed] = useState(false)
   const [aiPrefs, setAiPrefs] = useState<AiPanelPrefs>(DEFAULT_AI_PANEL_PREFS)
   const [channel, setChannel] = useState<'stable' | 'beta'>('stable')
   const [appVersion, setAppVersion] = useState('')
@@ -573,6 +633,10 @@ export function SettingsModal({
       if (alive) setAutoSaveOn(v.on)
     })
     void window.chaOffice.getAiPanelPrefs?.().then((prefs) => {
+    void window.aiOffice.getDefaultAppStatus?.().then((st) => {
+      if (alive) setDefaultApp(st)
+    })
+    void window.aiOffice.getAiPanelPrefs?.().then((prefs) => {
       if (alive) setAiPrefs(prefs)
     })
     void window.chaOffice.getUpdateChannel?.().then((ch) => {
@@ -614,6 +678,41 @@ export function SettingsModal({
       if (dir) setSaveDir(dir)
     })
   }
+
+  // Windows only opens the system page; re-read ownership when the user comes back
+  useEffect(() => {
+    if (!defaultApp?.manualOnly) return
+    const refresh = () => {
+      void window.aiOffice.getDefaultAppStatus?.().then(setDefaultApp)
+    }
+    window.addEventListener('focus', refresh)
+    return () => window.removeEventListener('focus', refresh)
+  }, [defaultApp?.manualOnly])
+
+  const claimDefaultApp = () => {
+    setDefaultAppBusy(true)
+    setDefaultAppFailed(false)
+    void window.aiOffice
+      .setDefaultApp()
+      .then((st) => {
+        setDefaultApp(st)
+        if (!st.manualOnly && st.state !== 'default') setDefaultAppFailed(true)
+      })
+      .catch(() => setDefaultAppFailed(true))
+      .finally(() => setDefaultAppBusy(false))
+  }
+
+  const defaultAppDesc = (() => {
+    if (!defaultApp) return ''
+    if (defaultAppFailed) return t('setDefaultAppFailed')
+    if (defaultApp.state === 'default') return t('setDefaultAppIs')
+    if (defaultApp.state === 'other' && defaultApp.others.length > 0)
+      return t('setDefaultAppOther', { app: defaultApp.others.join(', ') })
+    return t('setDefaultAppDesc')
+  })()
+
+  const loggedIn = status?.loggedIn ?? false
+  const email = status?.email ?? ''
 
   return (
     <div
@@ -759,6 +858,40 @@ export function SettingsModal({
                     onClick={() => updateAiPrefs({ spellcheck: !aiPrefs.spellcheck })}
                   />
                 </div>
+                <div className="set-field">
+                  <div className="set-field-text">
+                    <div className="set-field-stack">
+                      <div className="set-field-label">{t('setAiOpenInNewDocs')}</div>
+                      <div className="set-field-desc">{t('setAiOpenInNewDocsDesc')}</div>
+                    </div>
+                  </div>
+                  <button
+                    className="set-switch"
+                    role="switch"
+                    aria-checked={aiPrefs.openInNewDocs}
+                    aria-label={t('setAiOpenInNewDocs')}
+                    onClick={() => updateAiPrefs({ openInNewDocs: !aiPrefs.openInNewDocs })}
+                  />
+                </div>
+                {defaultApp && defaultApp.state !== 'unsupported' && (
+                  <div className="set-field">
+                    <div className="set-field-text">
+                      <div className="set-field-stack">
+                        <div className="set-field-label">{t('setDefaultApp')}</div>
+                        <div className="set-field-desc">{defaultAppDesc}</div>
+                      </div>
+                    </div>
+                    <button
+                      className="set-btn"
+                      disabled={defaultAppBusy || defaultApp.state === 'default'}
+                      onClick={claimDefaultApp}
+                    >
+                      {defaultApp.manualOnly
+                        ? t('setDefaultAppOpenSettings')
+                        : t('setDefaultAppSet')}
+                    </button>
+                  </div>
+                )}
                 <Field
                   label={t('saveLocation')}
                   value={saveDir || '—'}

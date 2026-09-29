@@ -136,6 +136,33 @@ describe('applyStructuralOps columns', () => {
     expect(xml).toContain('<row r="1" spans="1:4"><c r="A1"><v>1</v></c>')
     expect(xml).toContain('<f>SUM(A1:A2)</f>')
   })
+
+  it('infers omitted row and cell addresses before shifting', () => {
+    const xml = applyStructuralOps(
+      '<worksheet><sheetData><row><c r="A1"><v>1</v></c><c><v>2</v></c></row><row><c r="A2"><v>3</v></c><c><v>4</v></c></row></sheetData></worksheet>',
+      [{ kind: 'insert-cols', index: 0, count: 1 }],
+      SHEET,
+    )
+    expect(xml).toContain('<row r="1"><c r="B1"><v>1</v></c><c r="C1"><v>2</v></c></row>')
+    expect(xml).toContain('<row r="2"><c r="B2"><v>3</v></c><c r="C2"><v>4</v></c></row>')
+  })
+
+  it('infers omitted row addresses before deleting and sizing', () => {
+    const removed = applyStructuralOps(
+      '<worksheet><sheetData><row><c r="A1"><v>1</v></c></row><row><c r="A2"><v>2</v></c></row></sheetData></worksheet>',
+      [{ kind: 'remove-rows', index: 0, count: 1 }],
+      SHEET,
+    )
+    expect(removed).toContain('<row r="1"><c r="A1"><v>2</v></c></row>')
+    expect(removed).not.toContain('<v>1</v>')
+
+    const sized = applyStructuralOps(
+      '<worksheet><sheetData><row><c r="A1"><v>1</v></c></row></sheetData></worksheet>',
+      [{ kind: 'set-row-size', start: 0, end: 0, size: 20 }],
+      SHEET,
+    )
+    expect(sized).toContain('<row r="1" ht="20" customHeight="1"><c r="A1"><v>1</v></c></row>')
+  })
 })
 
 describe('merge operations', () => {

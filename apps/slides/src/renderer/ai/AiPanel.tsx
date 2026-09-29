@@ -21,6 +21,12 @@ import {
   ATTACHMENT_IMAGE_EXTS,
   ATTACHMENT_VIDEO_EXTS,
 } from '../../shared/ipc'
+  cloudToolsEnabled,
+  imageGenerationAvailable,
+  mediaAnalysisAvailable,
+} from '@chatoffice/ai-provider/browser'
+import type { AiSettings, AttachmentAddResult, AttachmentMeta } from '../../shared/ipc'
+import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
 import {
   createSlidesSkill,
   type DeckAccess,
@@ -1206,6 +1212,14 @@ function AiConversationBody({
         })
       },
       isCloudPageGenEnabled: async () => {
+        // Cloud page generation runs on Genspark's own slide model and spends
+        // Genspark credits, so it is gated by the "Genspark cloud tools" toggle
+        // plus the main-process account status only — the chat provider does not
+        // gate it (search/media gate per capability, not per chat provider). A
+        // free-plan or credits-exhausted account is covered by the mid-run
+        // fallback to the local pipeline instead of disabling cloud up front.
+        const cur = settingsRef.current
+        if (!cloudToolsEnabled(cur)) return false
         try {
           return !!(await window.slidesApi.cloudGenStatus())?.enabled
         } catch {
@@ -3296,6 +3310,15 @@ function DeckProgressCard({ progress }: { progress: DeckProgressSnapshot }) {
                 <span className={`deck-progress-icon ${step.stepStatus}`}>
                   {step.stepStatus === 'running' ? (
                     <span className="deck-progress-spinner" />
+                  ) : step.stepStatus === 'stopped' ? (
+                    <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                      <path
+                        d="M2.5 6h7"
+                        stroke="currentColor"
+                        strokeWidth="0.75"
+                        strokeLinecap="round"
+                      />
+                    </svg>
                   ) : step.stepStatus === 'done' ? (
                     <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
                       <path

@@ -331,4 +331,5 @@ export const hi = {
   aiToolRunWebSearch: 'वेब खोजा जा रहा है…',
   aiToolRunImageSearch: 'इमेज खोजी जा रही है…',
   aiToolRunReadUrl: 'पेज पढ़ा जा रहा है…',
+  aiPageCloudToLocal: 'क्लाउड अनुपलब्ध — स्थानीय रूप से जनरेट',
 } satisfies Record<keyof typeof zh, string>

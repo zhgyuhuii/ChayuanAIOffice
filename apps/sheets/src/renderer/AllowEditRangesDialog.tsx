@@ -7,6 +7,7 @@ import { useState } from 'react'
 
 import { useI18n } from './i18n/locale'
 import { RangePickButton, useRangePickSession, type RangePickHandler } from './range-pick'
+import { useModalDialog } from './modal-dialog'
 
 export interface AllowEditRange {
   readonly name: string
@@ -72,12 +73,13 @@ export function AllowEditRangesDialog({
 
   // The dialog folds away while the range is picked on the grid.
   if (picking) return <></>
-
+  const modal = useModalDialog(onClose)
   return (
     <div className="dialog-backdrop" onClick={onClose}>
       <div
         className="format-cells-dialog"
         role="dialog"
+        {...modal}
         aria-label={t('dlgAllowEditRangesTitle')}
         onClick={(event) => event.stopPropagation()}
       >

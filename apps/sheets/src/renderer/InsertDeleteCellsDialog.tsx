@@ -63,6 +63,50 @@ export function InsertDeleteCellsDialog({
               </label>
             ))}
           </div>
+import { CELLS_CHOICES, DEFAULT_CELLS_CHOICE } from './insert-delete-cells'
+import type { CellsChoice, CellsMode } from './insert-delete-cells'
+import { useModalDialog } from './modal-dialog'
+const LABEL_KEYS = {
+  insert: {
+    'shift-horizontal': 'dlgCellsShiftRight',
+    'shift-vertical': 'dlgCellsShiftDown',
+    'entire-row': 'dlgCellsEntireRow',
+    'entire-column': 'dlgCellsEntireColumn',
+  },
+  delete: {
+    'shift-horizontal': 'dlgCellsShiftLeft',
+    'shift-vertical': 'dlgCellsShiftUp',
+    'entire-row': 'dlgCellsEntireRow',
+    'entire-column': 'dlgCellsEntireColumn',
+  },
+} as const
+  onApply,
+  readonly mode: CellsMode
+  readonly onApply: (choice: CellsChoice) => void
+  const modal = useModalDialog(onClose)
+  const [choice, setChoice] = useState<CellsChoice>(DEFAULT_CELLS_CHOICE)
+  const title = t(mode === 'insert' ? 'dlgInsertCellsTitle' : 'dlgDeleteCellsTitle')
+    onApply(choice)
+        {...modal}
+        className="format-cells-dialog cells-dialog"
+        aria-label={title}
+        onKeyDown={(event) => {
+          // Buttons keep their own Enter (Cancel must not apply)
+          if (event.key === 'Enter' && !(event.target instanceof HTMLButtonElement)) {
+            event.preventDefault()
+            apply()
+            return
+          modal.onKeyDown(event)
+        }}
+        <header>{title}</header>
+        <section className="dialog-body cells-dialog-body" role="radiogroup" aria-label={title}>
+          {CELLS_CHOICES.map((option) => (
+            <label key={option} className="dialog-check">
+                name="insert-delete-cells"
+                autoFocus={option === DEFAULT_CELLS_CHOICE}
+                checked={choice === option}
+                onChange={() => setChoice(option)}
+              {t(LABEL_KEYS[mode][option])}
         </section>
         <div className="dialog-actions">
           <button className="secondary" onClick={onClose}>

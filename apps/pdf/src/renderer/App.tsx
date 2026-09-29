@@ -9,7 +9,11 @@ import type { PDFDocumentProxy } from 'pdfjs-dist'
 import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url'
 import { AiPanel, ChaOfficeMark } from './ai/AiPanel'
 import { AiAskPopover, type AskAnchorRect } from './AiAskPopover'
-import { loadSavedAnnots } from './annotation-catalog'
+import {
+  createSavedAnnotCountsLoader,
+  loadSavedAnnots,
+  type SavedAnnotCounts,
+} from './annotation-catalog'
 import {
   OcrTextLayer,
   buildOcrPageData,
@@ -104,6 +108,9 @@ import {
   AiPanelToggle,
   DockShell,
   Dropdown,
+=======
+  aiPanelInitiallyOpen,
+  rememberAiPanelOpen,
   useDismissablePopover,
   isMacStandaloneWindow,
 } from '@chatoffice/ui'
@@ -287,6 +294,10 @@ export default function App() {
   const { lang, t } = useI18n()
   // tab row clips instead of wrapping when narrow; wheel + edge arrows page it
   const tabStrip = useTabStripOverflow()
+  const collapse = useRibbonCollapse('genoffice-pdf-ribbon-collapsed', {
+    collapse: t('ribbonCollapse'),
+    expand: t('ribbonExpand'),
+  })
   const [doc, setDoc] = useState<PDFDocumentProxy | null>(null)
   const [filePath, setFilePath] = useState('')
   const [status, setStatus] = useState<'loading' | 'error' | 'empty' | 'password' | 'ready'>(
@@ -343,6 +354,8 @@ export default function App() {
   )
   useEffect(() => {
     localStorage.setItem('chatoffice-pdf-show-ai', aiCollapsed ? '0' : '1')
+    () => !aiPanelInitiallyOpen('genoffice-pdf-show-ai'),
+    rememberAiPanelOpen('genoffice-pdf-show-ai', !aiCollapsed)
   }, [aiCollapsed])
   /** One-shot prompt pushed by the ribbon AI buttons; the panel auto-runs it (docs preset pattern) */
   const [aiPreset, setAiPreset] = useState<{ text: string; nonce: number } | null>(null)
@@ -752,30 +765,41 @@ export default function App() {
   } | null>(null)
   /** Ask-AI popover opened from the markup bar; the anchor rect is captured at open */
   const [askPop, setAskPop] = useState<{ rect: AskAnchorRect; excerpt: string } | null>(null)
-  /** Whole-document saved-annotation counts per original page for the AI context
-      (scanned once per doc; kept per-page so deleted pages can be excluded) */
-  const [aiAnnotCounts, setAiAnnotCounts] = useState<{
-    threads: number[]
-    markups: number[]
+  /** Whole-document saved-annotation counts per original page for the AI context.
+      The scan starts on first AI use, not when the document opens. */
+  const [aiAnnotCounts, setAiAnnotCounts] = useState<SavedAnnotCounts | null>(null)
+  const aiAnnotCountsLoaderRef = useRef<{
+    doc: PDFDocumentProxy
+    controller: AbortController
+    load: () => Promise<SavedAnnotCounts>
   } | null>(null)
   useEffect(() => {
     setAiAnnotCounts(null)
-    if (!doc) return
-    let stale = false
-    void (async () => {
-      const threads: number[] = []
-      const markupCounts: number[] = []
-      for (let i = 0; i < doc.numPages && !stale; i++) {
-        const a = await loadSavedAnnots(doc, i)
-        threads.push(a.notes.filter((n) => n.inReplyTo === null).length)
-        markupCounts.push(a.markups.length)
-      }
-      if (!stale) setAiAnnotCounts({ threads, markups: markupCounts })
-    })()
+    aiAnnotCountsLoaderRef.current?.controller.abort()
+    aiAnnotCountsLoaderRef.current = null
     return () => {
-      stale = true
+      aiAnnotCountsLoaderRef.current?.controller.abort()
+      aiAnnotCountsLoaderRef.current = null
     }
   }, [doc])
+  const startAiAnnotCountScan = useCallback(() => {
+    if (!doc || aiAnnotCountsLoaderRef.current?.doc === doc) return
+    const controller = new AbortController()
+    const entry = {
+      doc,
+      controller,
+      load: createSavedAnnotCountsLoader(doc, loadSavedAnnots, controller.signal),
+    }
+    aiAnnotCountsLoaderRef.current = entry
+    void entry.load().then((counts) => {
+      if (aiAnnotCountsLoaderRef.current === entry) setAiAnnotCounts(counts)
+    })
+  }, [doc])
+  // the first AI turn should already know whether the file carries review
+  // feedback, so an open panel starts the scan before the user sends anything
+  useEffect(() => {
+    if (!aiCollapsed) startAiAnnotCountScan()
+  }, [aiCollapsed, startAiAnnotCountScan])
   const [selected, setSelected] = useState<AnnotSelection | null>(null)
   /** Transparency presets fold-out inside the image selection popup */
   const [opacityMenu, setOpacityMenu] = useState(false)
@@ -3559,6 +3583,10 @@ export default function App() {
       setStatus('loading')
       try {
         await loadDoc(targetPath, doc)
+        // loadDoc leaves the text index and hits alone; both still hold the removed text
+        searchIndexRef.current = null
+        setSearchMatches([])
+        setSearchCur(0)
         setStatus('ready')
         requestAnimationFrame(() => {
           if (scrollRef.current) scrollRef.current.scrollTop = scrollTop
@@ -5224,6 +5252,7 @@ export default function App() {
     // scan still running: "unknown" must not read as "none" — a run started right
     // after open would otherwise never hear the file carries review feedback
     if (!aiAnnotCounts) {
+      startAiAnnotCountScan()
       return 'Whether the file contains notes/markups has not been determined yet; use read_annotations to check when the user asks about review feedback.'
     }
     let savedThreads = 0
@@ -5644,6 +5673,8 @@ export default function App() {
         return
       }
       if (e.key === 'Escape') {
+        // Modal dialogs own Escape; the states behind them must not react too
+        if (signDlg || stampDlg || propsDlg) return
         if (askPop) setAskPop(null)
         else if (textDraft) setTextDraft(null)
         else if (pendingTextInsert) setPendingTextInsert(null)
@@ -6116,6 +6147,39 @@ export default function App() {
             leadLabel={t('ribbonTabScrollLeft')}
             tailLabel={t('ribbonTabScrollRight')}
           />
+  return (
+    <div className="app" inert={redactionCopyInFlight} aria-busy={redactionCopyInFlight}>
+      <div className={`ribbon ${collapse.rootClass}`} ref={collapse.rootRef}>
+        <div className="ribbon-tabs" onDoubleClick={collapse.onTabsDoubleClick}>
+              className={`ribbon-tab ${collapse.tabClass(ribbonTab === id)}`}
+              data-tip={collapse.tabTip(ribbonTab === id)}
+              onClick={() => {
+                collapse.onTabPress(ribbonTab === id)
+                setRibbonTab(id)
+              }}
+              className={`ribbon-tab ribbon-tab-context ${collapse.tabClass(ribbonTab === 'fillForm')}`}
+              data-tip={collapse.tabTip(ribbonTab === 'fillForm')}
+              onClick={() => {
+                collapse.onTabPress(ribbonTab === 'fillForm')
+                setRibbonTab('fillForm')
+              }}
+          <span className="ribbon-tabs-spacer" />
+          {readOnly && <span className="tb-readonly">{t('roEncrypted')}</span>}
+          {/* The file on disk is only touched by an explicit save until then. */}
+          {saveState === 'saving' ? (
+            <span className="tb-save-pending">{t('saving')}</span>
+          ) : (
+            dirty &&
+            saveState !== 'error' && <span className="tb-save-pending">{t('unsaved')}</span>
+          {saveState === 'error' && (
+            <span className="tb-save-error" data-tip={saveError}>
+              {t('saveFailed')}
+            </span>
+          {saveState === 'saved' && <span className="tb-save-ok">{t('savedOk')}</span>}
+          {formHasXfa && (
+            <span className="tb-form-warning" data-tip={t('formXfaWarning')}>
+              XFA
+            </span>
         </div>
         {readOnly && <span className="tb-readonly">{t('roEncrypted')}</span>}
         {/* The file on disk is only touched by an explicit save until then. */}

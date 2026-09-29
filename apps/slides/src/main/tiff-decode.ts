@@ -13,6 +13,30 @@ export interface DecodedTiff {
   height: number
 }
 
+=======
+/** Pixel budget: a crafted ppt/media/*.tif with giant IFD dims would OOM
+ *  the main process in toRGBA8 (w*h*4 bytes). Fail closed (blank placeholder)
+ *  past 64MP or 16384px per side. */
+const MAX_TIFF_PIXELS = 64 * 1024 * 1024
+const MAX_TIFF_DIM = 16384
+ *  past 256MP or 32767px per side (a 600 dpi A3 scan is ~69MP). */
+const MAX_TIFF_PIXELS = 256 * 1024 * 1024
+const MAX_TIFF_DIM = 32767
+
+function tiffDimsOk(width: unknown, height: unknown): width is number {
+  return (
+    typeof width === 'number' &&
+    typeof height === 'number' &&
+    Number.isInteger(width) &&
+    Number.isInteger(height) &&
+    width > 0 &&
+    height > 0 &&
+    width <= MAX_TIFF_DIM &&
+    height <= MAX_TIFF_DIM &&
+    width * height <= MAX_TIFF_PIXELS
+  )
+}
+
 export function tiffToPng(bytes: Uint8Array): DecodedTiff | null {
   try {
     const buf = Buffer.from(bytes)
@@ -28,6 +52,16 @@ export function tiffToPng(bytes: Uint8Array): DecodedTiff | null {
     const width = page.width
     const height = page.height
     if (!width || !height) return null
+    let page: (typeof ifds)[number] | null = null
+    let pagePixels = 0
+      const cur = dims.width * (dims.height as number)
+      if (!page || cur > pagePixels) {
+        pagePixels = cur
+    if (!page) return null
+    UTIF.decodeImage(buf, page)
+    const width = page.width as number
+    const height = page.height as number
+    if (!tiffDimsOk(width, height)) return null
     const rgba = UTIF.toRGBA8(page)
     const png = new PNG({ width, height })
     png.data = Buffer.from(rgba.buffer, rgba.byteOffset, rgba.byteLength)

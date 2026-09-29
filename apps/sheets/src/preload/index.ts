@@ -822,6 +822,7 @@ function parseWorkbookFile(input: unknown): WorkbookFile {
     readOnly,
     needsSaveAs,
     csvPath,
+    emptyCsv,
     restoredFromRecovery,
   } = input
   if (
@@ -840,6 +841,7 @@ function parseWorkbookFile(input: unknown): WorkbookFile {
     typeof readOnly !== 'boolean' ||
     (needsSaveAs !== undefined && typeof needsSaveAs !== 'boolean') ||
     (csvPath !== undefined && (typeof csvPath !== 'string' || csvPath.length === 0)) ||
+    (emptyCsv !== undefined && typeof emptyCsv !== 'boolean') ||
     (restoredFromRecovery !== undefined && typeof restoredFromRecovery !== 'boolean')
   ) {
     throw new Error('Invalid workbook response.')
@@ -1131,6 +1133,7 @@ function parseWorkbookFile(input: unknown): WorkbookFile {
     readOnly,
     ...(needsSaveAs === undefined ? {} : { needsSaveAs }),
     ...(csvPath === undefined ? {} : { csvPath }),
+    ...(emptyCsv === undefined ? {} : { emptyCsv }),
     ...(restoredFromRecovery === undefined ? {} : { restoredFromRecovery }),
     ...(themeColors === undefined ? {} : { themeColors: themeColors as string[] }),
     ...(parsedThemeFonts === undefined ? {} : { themeFonts: parsedThemeFonts }),

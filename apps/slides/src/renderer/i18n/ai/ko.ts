@@ -331,4 +331,5 @@ export const ko = {
   aiToolRunWebSearch: '웹 검색 중…',
   aiToolRunImageSearch: '이미지 검색 중…',
   aiToolRunReadUrl: '페이지 읽는 중…',
+  aiPageCloudToLocal: '클라우드 생성 불가 — 로컬로 생성',
 } satisfies Record<keyof typeof zh, string>

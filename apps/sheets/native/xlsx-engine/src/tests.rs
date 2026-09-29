@@ -1,6 +1,8 @@
 use std::borrow::Cow;
 
 use super::*;
+use crate::visuals::resolve_part_target;
+use crate::visuals::{reset_sheet_passes, sheet_passes};
 
 #[test]
 fn normalizes_crlf_and_stray_cr_to_lf() {
@@ -188,6 +190,68 @@ fn normalizes_worksheet_paths_with_forward_slashes() {
         "xl/worksheets/sheet1.xml"
     );
     assert!(normalize_worksheet_path("../../etc/passwd").is_err());
+}
+
+#[test]
+fn resolves_encoded_internal_relationship_targets() {
+    assert_eq!(
+        normalize_worksheet_path("worksheets/sheet%201.xml").unwrap(),
+        "xl/worksheets/sheet 1.xml"
+    );
+    assert_eq!(
+        normalize_worksheet_path("worksheets/%E6%95%B0%E6%8D%AE.xml").unwrap(),
+        "xl/worksheets/\u{6570}\u{636e}.xml"
+    );
+    assert_eq!(
+        resolve_part_target("xl/worksheets/sheet.xml", "../drawings/drawing%201.xml").unwrap(),
+        "xl/drawings/drawing 1.xml"
+    );
+    assert!(normalize_worksheet_path("worksheets/%ZZ.xml").is_err());
+    assert!(normalize_worksheet_path("../../outside.xml").is_err());
+    assert!(resolve_part_target("xl/worksheets/sheet.xml", "../../../outside.xml").is_err());
+
+    let (_dir, path) = open_fixture(&[("xl/media/image 1.png", "image")]);
+    let mut archive = zip::ZipArchive::new(File::open(&path).unwrap()).unwrap();
+    assert!(crate::xml_util::zip_entry(&mut archive, "xl/media/image%201.png").is_ok());
+}
+
+#[test]
+fn opens_percent_encoded_worksheet_target() {
+    let (_dir, path) = open_fixture(&[
+        (
+            "xl/workbook.xml",
+            r#"<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="S" sheetId="1" r:id="rId1"/></sheets></workbook>"#,
+        ),
+        (
+            "xl/_rels/workbook.xml.rels",
+            r#"<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet%201.xml"/></Relationships>"#,
+        ),
+        (
+            "xl/worksheets/sheet 1.xml",
+            r#"<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><dimension ref="A1"/><sheetData><row r="1"><c r="A1"><v>7</v></c></row></sheetData></worksheet>"#,
+        ),
+    ]);
+    let mut sessions = WorkbookSessions::new();
+    let metadata = sessions.open(&path).unwrap();
+    assert_eq!(metadata.sheets[0].name, "S");
+    let result = sessions
+        .read_range(
+            &metadata.session_id,
+            "sheet-1",
+            &CellRange {
+                start_row: 0,
+                end_row: 0,
+                start_column: 0,
+                end_column: 0,
+            },
+        )
+        .unwrap();
+    assert!(
+        result
+            .cells
+            .iter()
+            .any(|cell| { matches!(&cell.value, Some(CellValue::Number(value)) if *value == 7.0) })
+    );
 }
 
 #[test]
@@ -3559,4 +3623,129 @@ fn source_linked_chart_formats_follow_the_cells() {
     assert_eq!(style.color.as_deref(), Some("#FFFFFF"));
     assert_eq!(style.size, Some(12.0));
     assert_eq!(style.bold, Some(true));
+}
+
+/// Each `sourceLinked` axis format is read from the first cell of the series'
+/// range, so a workbook with many such series used to reopen the worksheet
+/// part once per referenced cell and stream it from byte zero. Every
+/// reference must now be resolved in a single pass per worksheet, with the
+/// per-cell formats unchanged.
+#[test]
+fn source_linked_chart_formats_resolve_in_one_pass_per_worksheet() {
+    // Six charts over one large sheet, each pointing at a different first
+    // cell far down the rows.
+    const CHARTS: [(u32, &str); 6] = [
+        (10, "#,##0"),
+        (20, "#,##0.00"),
+        (30, "0.00%"),
+        (40, "#,##0"),
+        (50, "#,##0.00"),
+        (60, "0.00%"),
+    ];
+    // cellXfs: 0 General, 1 -> numFmtId 3, 2 -> 4, 3 -> 10.
+    let styles = r#"<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="0"/><cellXfs count="4"><xf numFmtId="0"/><xf numFmtId="3"/><xf numFmtId="4"/><xf numFmtId="10"/></cellXfs></styleSheet>"#;
+    let mut rows = String::new();
+    for (index, (row, _)) in CHARTS.iter().enumerate() {
+        rows.push_str(&format!(
+            r#"<row r="{row}"><c r="A{row}" t="inlineStr"><is><t>label</t></is></c><c r="B{row}" s="{}"><v>1</v></c></row>"#,
+            index % 3 + 1
+        ));
+    }
+    // Padding rows after the referenced ones, so a per-cell prefix scan has
+    // real work to redo.
+    for row in 70..=400 {
+        rows.push_str(&format!(
+            r#"<row r="{row}"><c r="D{row}"><v>0</v></c></row>"#
+        ));
+    }
+    let sheet = format!(
+        r#"<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>{rows}</sheetData></worksheet>"#
+    );
+    let mut anchors = String::new();
+    let mut chart_rels = String::new();
+    let mut entries: Vec<(String, String)> = vec![
+        (
+            "xl/workbook.xml".into(),
+            r#"<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Data" sheetId="1" r:id="rId1"/></sheets></workbook>"#.into(),
+        ),
+        (
+            "xl/_rels/workbook.xml.rels".into(),
+            r#"<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>"#.into(),
+        ),
+        ("xl/styles.xml".into(), styles.into()),
+        ("xl/worksheets/sheet1.xml".into(), sheet),
+        (
+            "xl/worksheets/_rels/sheet1.xml.rels".into(),
+            r#"<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing1.xml"/></Relationships>"#.into(),
+        ),
+    ];
+    for (index, (row, _)) in CHARTS.iter().enumerate() {
+        let number = index + 1;
+        anchors.push_str(&format!(
+            r#"<xdr:absoluteAnchor><xdr:pos x="0" y="0"/><xdr:ext cx="100" cy="100"/><xdr:graphicFrame macro=""><xdr:nvGraphicFramePr><xdr:cNvPr id="{number}" name="Chart {number}"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr><xdr:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/></xdr:xfrm><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:chart xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:id="rId{number}"/></a:graphicData></a:graphic></xdr:graphicFrame><xdr:clientData/></xdr:absoluteAnchor>"#
+        ));
+        chart_rels.push_str(&format!(
+            r#"<Relationship Id="rId{number}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart" Target="../charts/chart{number}.xml"/>"#
+        ));
+        entries.push((
+            format!("xl/charts/chart{number}.xml"),
+            format!(
+                r#"<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><c:chart><c:plotArea><c:barChart><c:barDir val="col"/><c:ser><c:idx val="0"/><c:val><c:numRef><c:f>Data!$B${row}:$B${row}</c:f><c:numCache><c:pt idx="0"><c:v>1</c:v></c:pt></c:numCache></c:numRef></c:val></c:ser></c:barChart><c:valAx><c:axPos val="l"/><c:numFmt formatCode="0.0" sourceLinked="1"/></c:valAx></c:plotArea></c:chart></c:chartSpace>"#
+            ),
+        ));
+    }
+    entries.push((
+        "xl/drawings/drawing1.xml".into(),
+        format!(
+            r#"<xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">{anchors}</xdr:wsDr>"#
+        ),
+    ));
+    entries.push((
+        "xl/drawings/_rels/drawing1.xml.rels".into(),
+        format!(
+            r#"<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">{chart_rels}</Relationships>"#
+        ),
+    ));
+
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("fixture.xlsx");
+    {
+        let mut writer = zip::ZipWriter::new(File::create(&path).unwrap());
+        let options = zip::write::SimpleFileOptions::default()
+            .compression_method(zip::CompressionMethod::Deflated);
+        for (name, content) in &entries {
+            writer.start_file(name.as_str(), options).unwrap();
+            writer.write_all(content.as_bytes()).unwrap();
+        }
+        writer.finish().unwrap();
+    }
+
+    reset_sheet_passes();
+    let mut sessions = WorkbookSessions::new();
+    let metadata = sessions.open(&path).unwrap();
+    assert_eq!(
+        sheet_passes(),
+        1,
+        "every chart reference must resolve in one worksheet pass"
+    );
+    let mut seen = 0;
+    for visual in &metadata.visuals {
+        let Some(chart) = visual.chart.as_ref() else {
+            continue;
+        };
+        let row = CHARTS[seen].0;
+        let expected = CHARTS[seen].1;
+        assert_eq!(
+            chart
+                .y_axis
+                .as_ref()
+                .expect("value axis")
+                .num_fmt
+                .as_deref(),
+            Some(expected),
+            "chart {seen} keeps the format of Data!B{row}"
+        );
+        seen += 1;
+    }
+    assert_eq!(seen, CHARTS.len(), "every chart visual was resolved");
 }

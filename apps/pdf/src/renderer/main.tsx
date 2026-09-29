@@ -31,7 +31,7 @@ void (async () => {
   document.documentElement.lang = htmlLang(lang as Lang)
   applyTheme(theme)
   window.pdfApi.onThemeChanged(applyTheme)
-  void window.pdfApi
+  await window.pdfApi
     ?.getAiPanelPrefs?.()
     .then(applyAiPanelPrefs)
     .catch(() => {})

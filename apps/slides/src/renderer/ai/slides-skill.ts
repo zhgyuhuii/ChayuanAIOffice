@@ -92,6 +92,10 @@ function toEditParagraphs(raw: unknown): EditParagraph[] | null {
 
 // ── Generation progress events (for the onProgress callback; renderer memory only, never persisted or journaled) ──
 
+/** Upper bound on generate_deck approx_pages; bounds planner round trips and the progress note. */
+export const MAX_APPROX_PAGES = 200
+const MAX_PROGRESS_NOTE_PAGES = 40
+
 /** Per-page progress status */
 export type PageProgressStatus = 'pending' | 'running' | 'done' | 'error'
 
@@ -792,7 +796,9 @@ const TOOLS: AgentToolDef[] = [
         },
         approx_pages: {
           type: 'integer',
-          description: 'Expected page count (used together with topic)',
+          minimum: 1,
+          maximum: MAX_APPROX_PAGES,
+          description: `Expected page count (used together with topic; at most ${MAX_APPROX_PAGES})`,
         },
         context: {
           type: 'string',
@@ -1677,9 +1683,14 @@ function buildProgressNote(state?: SkillState): string {
   }
   // Name unfinished pages one by one from pageDone (page numbers stay accurate when a middle page fails)
   const remaining: string[] = []
+  let omitted = 0
   for (let i = 0; i < planned; i++) {
-    if (!flags[i]) remaining.push(`page ${i + 1}${titles[i] ? ` "${titles[i]}"` : ''}`)
+    if (flags[i]) continue
+    if (remaining.length < MAX_PROGRESS_NOTE_PAGES) {
+      remaining.push(`page ${i + 1}${titles[i] ? ` "${titles[i]}"` : ''}`)
+    } else omitted++
   }
+  if (omitted > 0) remaining.push(`and ${omitted} more`)
   return (
     `<generation-progress>\n` +
     `⚠️ Incomplete: ${planned} pages planned, ${done} generated, ${planned - done} still missing.\n` +
@@ -2434,15 +2445,24 @@ ${r.text}`,
         canvasW: 1280,
         canvasH: 720,
       }
-      const regenGen = regenUseCloud ? access.generatePageCloud! : access.generatePageLocal!
-      for (let attempt = 0; attempt < 2 && !marker; attempt++) {
-        if (attempt > 0 && backoff > 0) await new Promise((r) => setTimeout(r, backoff))
-        const res = await regenGen(regenArgs)
-        if (res.ok && res.marker) {
-          marker = res.marker
-          if ('imageFailures' in res && Array.isArray(res.imageFailures))
-            genImageFails = res.imageFailures
-        } else lastErr = res.error ?? t('aiErrUnknown')
+      const runRegen = async (gen: NonNullable<DeckAccess['generatePageLocal']>) => {
+        for (let attempt = 0; attempt < 2 && !marker; attempt++) {
+          if (attempt > 0 && backoff > 0) await new Promise((r) => setTimeout(r, backoff))
+          const res = await gen(regenArgs)
+          if (res.ok && res.marker) {
+            marker = res.marker
+            if ('imageFailures' in res && Array.isArray(res.imageFailures))
+              genImageFails = res.imageFailures
+          } else lastErr = res.error ?? t('aiErrUnknown')
+        }
+      }
+      // Cloud first when enabled; a cloud failure (free plan / credits / outage) falls back
+      // to the local BYOK pipeline instead of failing the redo outright.
+      if (regenUseCloud && access.generatePageCloud) {
+        await runRegen(access.generatePageCloud)
+        if (!marker && access.generatePageLocal) await runRegen(access.generatePageLocal)
+      } else {
+        await runRegen(access.generatePageLocal!)
       }
       if (!marker)
         return fail(
@@ -2500,6 +2520,10 @@ ${r.text}`,
         resolvedDeckSource.source !== 'svg' &&
         deckAssets.length === 0 &&
         !!(await access.isCloudPageGenEnabled?.().catch(() => false))
+        !!access.generatePageCloud && !!(await access.isCloudPageGenEnabled?.().catch(() => false))
+      // Cloud can still fail mid-run (free plan / exhausted credits / outage). When it does
+      // the deck finishes on the local BYOK pipeline instead; cloudActive tracks that switch.
+      let cloudActive = useCloud
       if (!useCloud && !access.generatePageLocal)
         return fail(
           t('aiFailGenDeck'),
@@ -2609,9 +2633,9 @@ ${r.text}`,
       if (!styleSkill) styleSkill = style // Fallback: use the user-passed style, or empty
 
       // ── Step 1: plan the outline — without pages, plan in-tool from topic (batched recursion over PLAN_BATCH; layouts chosen per the Style Skill).
-      const approxForProgress = Math.max(
-        1,
-        parseInt(String(call.input.approx_pages ?? '0'), 10) || pages.length || 1,
+      const approxForProgress = Math.min(
+        MAX_APPROX_PAGES,
+        Math.max(1, parseInt(String(call.input.approx_pages ?? '0'), 10) || pages.length || 1),
       )
       if (pages.length === 0) {
         const approx = approxForProgress
@@ -2831,6 +2855,7 @@ ${r.text}`,
       const degraded: number[] = [] // Page indexes (0-based) that "landed" via the plain-text fallback — must be reported, otherwise dead pages appear silently
       const deckImageFails: { page: number; url: string }[] = [] // Image download/conversion failures (page numbers are deck-global 1-based)
       const pageErrors: (string | undefined)[] = new Array(total).fill(undefined) // Last failure reason per page
+      let cloudFallbackReason: string | null = null // First cloud failure that switched the run to the local pipeline
       let landedPages = 0
       let firstDone = false
       let baseOffset = 0 // Number of existing pages before generated page 0 in the deck (>0 in append mode); used to re-insert retries at their original position
@@ -2852,6 +2877,28 @@ ${r.text}`,
         summary: t('aiStagePageRunning', { n: 1, total }),
         pages: [...pageProgressItems],
       })
+
+      type PageGen = NonNullable<DeckAccess['generatePageLocal']>
+      // Up to two attempts on one pipeline; returns the marker or the last error.
+      const tryGenerate = async (
+        gen: PageGen,
+        pageArgs: Parameters<PageGen>[0],
+        pageIndex: number,
+      ): Promise<{ marker: string | null; err: string }> => {
+        let lastErr = ''
+        for (let attempt = 0; attempt < 2; attempt++) {
+          if (cancelled()) return { marker: null, err: lastErr }
+          if (attempt > 0 && BACKOFF_MS > 0) await new Promise((r) => setTimeout(r, BACKOFF_MS))
+          const res = await gen(pageArgs)
+          if (res.ok && res.marker) {
+            if ('imageFailures' in res && Array.isArray(res.imageFailures))
+              deckImageFails.push(...res.imageFailures.map((url) => ({ page: pageIndex, url })))
+            return { marker: res.marker, err: '' }
+          }
+          lastErr = res.error ?? t('aiErrUnknown')
+        }
+        return { marker: null, err: lastErr }
+      }
 
       const genOne = async (p: Record<string, unknown>, pageIndex: number) => {
         // Mark as running
@@ -2876,7 +2923,6 @@ ${r.text}`,
         const briefs = Array.isArray(p.image_briefs)
           ? (p.image_briefs as unknown[]).map((x) => String(x)).filter(Boolean)
           : []
-        let lastErr = ''
         const pageArgs = {
           pageIndex,
           totalPages: total,
@@ -2894,24 +2940,34 @@ ${r.text}`,
           canvasH,
           ...(signal ? { signal } : {}),
         }
-        // Both paths return a marker pointing at a one-slide pptx temp file. One retry, then the
-        // page is skipped for now (locally-failed pages get one more chance in the retry round)
-        // and the rest of the deck keeps generating.
-        const gen = useCloud ? access.generatePageCloud! : access.generatePageLocal!
-        for (let attempt = 0; attempt < 2; attempt++) {
-          if (cancelled()) return null
-          if (attempt > 0 && BACKOFF_MS > 0) await new Promise((r) => setTimeout(r, BACKOFF_MS))
-          const res = await gen(pageArgs)
-          if (res.ok && res.marker) {
+        // Cloud first when enabled; on failure fall back to the local BYOK pipeline and stay
+        // there — a cloud failure is normally account-wide (free plan / exhausted credits /
+        // expired key / outage), so retrying the cloud for every remaining page only wastes
+        // time. Both paths return a marker for the same one-slide pptx landing contract.
+        if (cloudActive && access.generatePageCloud) {
+          const cloud = await tryGenerate(access.generatePageCloud, pageArgs, pageIndex)
+          if (cloud.marker) {
             pageErrors[pageIndex - 1] = undefined
-            if ('imageFailures' in res && Array.isArray(res.imageFailures))
-              deckImageFails.push(...res.imageFailures.map((url) => ({ page: pageIndex, url })))
-            return res.marker
+            return cloud.marker
           }
-          lastErr = res.error ?? t('aiErrUnknown')
+          if (access.generatePageLocal) {
+            if (!cloudFallbackReason) {
+              cloudFallbackReason = cloud.err
+              // surface the downgrade where the user is looking: the switching page's item
+              pageProgressItems[pageIndex - 1] = {
+                ...pageProgressItems[pageIndex - 1]!,
+                title: `${pageProgressItems[pageIndex - 1]!.title} · ${t('aiPageCloudToLocal')}`,
+              }
+            }
+            cloudActive = false
+          } else {
+            pageErrors[pageIndex - 1] = cloud.err
+            return null
+          }
         }
-        pageErrors[pageIndex - 1] = lastErr
-        return null
+        const local = await tryGenerate(access.generatePageLocal!, pageArgs, pageIndex)
+        pageErrors[pageIndex - 1] = local.marker ? undefined : local.err
+        return local.marker
       }
 
       // Land in page order: starting from nextToLand, land as many as possible (stop at a gap and wait for it to generate).
@@ -2987,18 +3043,18 @@ ${r.text}`,
 
       // ── One retry round for failed pages, re-inserted at their original page position with
       //   insert_at (target position = existing-page offset + pages completed before this one).
-      //   Landing-failed pages re-land (cheap: the one-slide pptx already exists). Cloud
-      //   generation-failed pages already spent their single retry and stay skipped; local
-      //   generation-failed pages get one more generation attempt here (LLM calls are the
-      //   user's own quota, and a JSON spec retry is cheap).
+      //   Landing-failed pages re-land (cheap: the one-slide pptx already exists). Pages whose
+      //   generation failed get one more local attempt here when the run ended on the local
+      //   pipeline (LLM calls are the user's own quota, and a JSON spec retry is cheap) — that
+      //   includes pages that failed during a mid-run cloud→local switch.
       if (!cancelled()) {
-        const retryIdxs = [...new Set([...(useCloud ? [] : genFailed), ...landFailed])].sort(
+        const retryIdxs = [...new Set([...(cloudActive ? [] : genFailed), ...landFailed])].sort(
           (a, b) => a - b,
         )
         for (const idx of retryIdxs) {
           if (cancelled()) break
           let marker = markerByIndex[idx]
-          if (!marker && !useCloud) marker = await genOne(pages[idx]!, idx + 1)
+          if (!marker && !cloudActive) marker = await genOne(pages[idx]!, idx + 1)
           if (!marker) {
             pageProgressItems[idx] = {
               ...pageProgressItems[idx]!,
@@ -3120,6 +3176,9 @@ ${r.text}`,
         `Self-driven generation produced ${landedPages}/${total} pages (${useCloud ? 'cloud HTML' : 'local spec'} written page by page, displayed as generated; failed pages were auto-retried).` +
         writerNote +
         imageNotesTail
+      const cloudNote = cloudFallbackReason
+        ? ` Cloud page generation was unavailable (${briefErr(cloudFallbackReason)}); the deck was generated locally with your configured AI model instead.`
+      const okMsg = `Self-driven generation produced ${landedPages}/${total} pages (HTML written page by page, displayed as generated; failed pages were auto-retried).`
       const failDetail = stillFailed
         .map((n) => `page ${n}${pageErrors[n - 1] ? ` (${briefErr(pageErrors[n - 1])})` : ''}`)
         .join(', ')
@@ -3151,6 +3210,7 @@ ${r.text}`,
             const findings = auditDeckConsistency(access.getSlides())
             return findings.length ? `\n\nDeck consistency check:\n- ${findings.join('\n- ')}` : ''
           })(),
+          okMsg + failMsg + degradedMsg + cloudNote + imageFailNote(deckImageFails) + progressTail,
         mutated: true,
         summary: t('aiSumDeckGenerated', { done: landedPages, total }),
       }

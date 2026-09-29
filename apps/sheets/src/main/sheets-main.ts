@@ -65,6 +65,7 @@ import { createI18n, getUiLang, type Lang, normalizeLang, setUiLang } from '@cha
 import { ProjectStore } from '@chatoffice/project-store'
 // LOCAL(2026-09-21, d8201ad0): 多会话对话索引(B 区新模块)
 import { ConversationStore, bindConversationsIpc } from '@chatoffice/project-store'
+  writeJsonAtomic,
 
 import {
   isAiOverloadedError,
@@ -82,6 +83,7 @@ import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-serve
 import {
   blankXlsxBuffer,
   csvToXlsxBuffer,
+  csvToXlsxBufferForOpen,
   decodeCsvBuffer,
   sheetCsvToXlsxBuffer,
 } from '@chatoffice/xlsx-gateway/gateway/csv-import'
@@ -156,6 +158,7 @@ import {
 } from './temp-files'
 import { attachEchartMetadata } from './echart-meta-attach'
 import { XlsxSidecarClient } from './xlsx-sidecar-client'
+import { sessionAfterRename } from './session-rename'
 
 /**
  * Sheets main-process logic as an embeddable module: no top-level lifecycle.
@@ -289,6 +292,72 @@ const tMain = createI18n({
     csvKeepFormatDetail:
       'CSV keeps plain values of a single sheet only — formulas, formatting, and any additional sheets are not saved to the .csv file.',
   },
+=======
+  vi: {
+    filterSpreadsheets: 'Bảng tính',
+    filterXlsx: 'Sổ làm việc Excel',
+    filterXlsm: 'Sổ làm việc Excel hỗ trợ Macro',
+    dlgAddAttachment: 'Thêm tệp đính kèm',
+    filterSupported: 'Các tệp được hỗ trợ',
+    filterAll: 'Tất cả các tệp',
+    errUnsupportedExt: 'Tệp .{ext} không được hỗ trợ',
+    errNotFile: 'không phải là tệp',
+    errTooLarge: 'vượt quá giới hạn {mb}MB',
+    errImageTooLarge: 'hình ảnh vượt quá giới hạn 5MB',
+    errUnreadable: 'không thể đọc được',
+    errFileTooLarge: 'Tệp vượt quá giới hạn kích thước',
+    errParseFailed: 'Không thể phân tích tệp',
+    errImageNoText:
+      'Tệp đính kèm hình ảnh không có văn bản; hình ảnh được gửi cùng với tin nhắn của người dùng',
+    errNotImage: 'loại hình ảnh không được hỗ trợ',
+    errGskNotLoggedIn:
+      'Chưa đăng nhập vào Genspark: nhấp vào “Đăng nhập vào Genspark” bên dưới, đăng nhập, sau đó thử lại',
+    errNoApiKey: 'Chưa cấu hình khóa API cho {provider}',
+    errAiBusy: 'Dịch vụ AI hiện đang bận — vui lòng thử lại sau giây lát',
+    errNoModel: 'Chưa cấu hình tên mô hình',
+    errImgAbsPath: 'Đường dẫn hình ảnh phải là đường dẫn tuyệt đối.',
+    errImgNotFound: 'Không tìm thấy tệp hình ảnh: {path}',
+    errImgTooLarge20: 'Hình ảnh vượt quá 20MB và không thể chèn.',
+    errImgBadType: 'Tệp không phải là hình ảnh PNG/JPEG/GIF.',
+    errDiskChanged: 'Sổ làm việc đã thay đổi trên đĩa sau khi mở — hãy sử dụng Lưu dưới dạng.',
+    autosaveFoundTitle: 'Tìm thấy phiên bản khôi phục',
+    autosaveFoundBody:
+      'Có những thay đổi chưa được lưu từ phiên làm việc trước của bạn. Khôi phục phiên bản đã lưu tự động? Việc lưu sau khi khôi phục sẽ ghi đè lên tệp gốc.',
+    autosaveRestore: 'Khôi phục',
+    autosaveDiscard: 'Bỏ qua',
+    menuFile: 'Tệp',
+    menuOpenWorkbook: 'Mở sổ làm việc…',
+    menuSave: 'Lưu',
+    menuSaveAs: 'Lưu dưới dạng…',
+    menuExportPdf: 'Xuất PDF…',
+    menuPrint: 'In…',
+    menuClose: 'Đóng',
+    menuQuit: 'Thoát',
+    menuEdit: 'Chỉnh sửa',
+    menuUndo: 'Hoàn tác',
+    menuRedo: 'Làm lại',
+    closeUnsavedMsg: '{count} thay đổi chưa lưu',
+    closeUnsavedDetail: 'Các thay đổi của bạn sẽ bị mất nếu bạn đóng mà không lưu.',
+    btnDontSave: 'Không lưu',
+    btnCancel: 'Hủy',
+    csvSaveAsNotice:
+      'Tệp CSV không thể giữ lại định dạng — lưu dưới dạng .xlsx sẽ giữ lại tất cả các thay đổi của bạn.',
+    menuExportCsv: 'Xuất CSV…',
+    filterCsv: 'CSV (Phân tách bằng dấu phẩy)',
+    csvFormulaLossMsg: 'Trang tính này chứa các công thức mà định dạng CSV không thể lưu giữ.',
+    csvFormulaLossDetail:
+      'CSV chỉ giữ các giá trị thuần — các công thức được làm phẳng thành kết quả hiện tại của chúng và định dạng sẽ bị mất.',
+    csvKeepXlsxBtn: 'Lưu dưới dạng .xlsx',
+    csvContinueBtn: 'Tiếp tục dưới dạng CSV',
+    csvActiveSheetOnlyNotice:
+      'Tệp CSV chỉ chứa một trang tính duy nhất — chỉ trang tính đang hoạt động "{name}" sẽ được xuất.',
+    csvKeepFormatMsg: 'Tiếp tục lưu ở định dạng CSV?',
+    csvKeepFormatDetail:
+      'CSV chỉ giữ các giá trị thuần của một trang tính duy nhất — các công thức, định dạng và mọi trang tính bổ sung sẽ không được lưu vào tệp .csv.',
+    errChaOfficeNotLoggedIn: '未登录 察元AIOffice:请点击下方「登录」完成登录后重试',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+  },
   ja: {
     filterSpreadsheets: 'スプレッドシート',
     filterXlsx: 'Excel ブック',
@@ -321,7 +390,6 @@ const tMain = createI18n({
     errDiskChanged:
       'ブックを開いた後にディスク上で変更されています — 名前を付けて保存を使用してください。',
     autosaveFoundTitle: '自動回復バージョンがあります',
-    autosaveFoundBody:
       '前回のセッションに未保存の変更があります。自動保存版を復元しますか?復元後に保存すると、元のファイルは上書きされます。',
     autosaveRestore: '復元',
     autosaveDiscard: '破棄',
@@ -340,19 +408,15 @@ const tMain = createI18n({
     closeUnsavedDetail: '保存せずに閉じると、これらの変更は失われます。',
     btnDontSave: '保存しない',
     btnCancel: 'キャンセル',
-    csvSaveAsNotice:
       'CSV 形式は書式を保持できません。.xlsx として保存すると変更をすべて保持できます。',
     menuExportCsv: 'CSV をエクスポート…',
     filterCsv: 'CSV (コンマ区切り)',
     csvFormulaLossMsg: 'このシートには CSV 形式では保持できない数式が含まれています。',
-    csvFormulaLossDetail:
       'CSV は値のみを保持します。数式は現在の計算結果に置き換えられ、書式も失われます。',
     csvKeepXlsxBtn: '.xlsx として保存',
     csvContinueBtn: 'CSV のまま保存',
-    csvActiveSheetOnlyNotice:
       'CSV ファイルには 1 枚のシートしか含められません — アクティブなシート「{name}」のみがエクスポートされます。',
     csvKeepFormatMsg: 'CSV 形式のまま保存しますか?',
-    csvKeepFormatDetail:
       'CSV は 1 枚のシートの値のみを保持します。数式、書式、追加のシートは .csv ファイルには保存されません。',
   },
   ko: {
@@ -388,7 +452,6 @@ const tMain = createI18n({
     errDiskChanged:
       '통합 문서가 열린 후 디스크에서 변경되었습니다. 다른 이름으로 저장을 사용하세요.',
     autosaveFoundTitle: '자동 복구 버전 발견',
-    autosaveFoundBody:
       '마지막 세션에 저장되지 않은 변경 내용이 있습니다. 자동 저장 버전을 복원할까요? 복원 후 저장하면 원본 파일을 덮어씁니다.',
     autosaveRestore: '복원',
     autosaveDiscard: '취소',
@@ -407,19 +470,15 @@ const tMain = createI18n({
     closeUnsavedDetail: '저장하지 않고 닫으면 변경 내용이 손실됩니다.',
     btnDontSave: '저장 안 함',
     btnCancel: '취소',
-    csvSaveAsNotice:
       'CSV 형식은 서식을 저장할 수 없습니다. .xlsx로 저장하면 모든 변경 내용이 유지됩니다.',
     menuExportCsv: 'CSV 내보내기…',
     filterCsv: 'CSV (쉼표로 분리)',
     csvFormulaLossMsg: '현재 시트에 CSV 형식이 유지할 수 없는 수식이 포함되어 있습니다.',
-    csvFormulaLossDetail:
       'CSV는 값만 유지합니다 — 수식은 현재 계산 결과로 바뀌고 서식은 손실됩니다.',
     csvKeepXlsxBtn: '.xlsx로 저장',
     csvContinueBtn: 'CSV로 계속 저장',
-    csvActiveSheetOnlyNotice:
       'CSV 파일에는 시트 하나만 포함됩니다 — 활성 시트 "{name}"만 내보냅니다.',
     csvKeepFormatMsg: 'CSV 형식으로 계속 저장하시겠습니까?',
-    csvKeepFormatDetail:
       'CSV는 시트 하나의 값만 유지합니다 — 수식, 서식, 추가 시트는 .csv 파일에 저장되지 않습니다.',
   },
   fr: {
@@ -455,7 +514,6 @@ const tMain = createI18n({
     errDiskChanged:
       'Le classeur a été modifié sur le disque après son ouverture — utilisez Enregistrer sous.',
     autosaveFoundTitle: 'Version récupérée trouvée',
-    autosaveFoundBody:
       "Des modifications non enregistrées existent. Restaurer la version auto-enregistrée ? Après restauration, l'enregistrement remplacera le fichier d'origine.",
     autosaveRestore: 'Restaurer',
     autosaveDiscard: 'Ignorer',
@@ -474,20 +532,16 @@ const tMain = createI18n({
     closeUnsavedDetail: 'Vos modifications seront perdues si vous fermez sans enregistrer.',
     btnDontSave: 'Ne pas enregistrer',
     btnCancel: 'Annuler',
-    csvSaveAsNotice:
       'Le format CSV ne conserve pas la mise en forme — enregistrez en .xlsx pour conserver toutes vos modifications.',
     menuExportCsv: 'Exporter en CSV…',
     filterCsv: 'CSV (délimité par des virgules)',
     csvFormulaLossMsg:
       'Cette feuille contient des formules que le format CSV ne peut pas conserver.',
-    csvFormulaLossDetail:
       'Le CSV ne conserve que les valeurs — les formules sont remplacées par leur résultat actuel et la mise en forme est perdue.',
     csvKeepXlsxBtn: 'Enregistrer en .xlsx',
     csvContinueBtn: 'Continuer en CSV',
-    csvActiveSheetOnlyNotice:
       "Les fichiers CSV ne contiennent qu'une seule feuille — seule la feuille active « {name} » sera exportée.",
     csvKeepFormatMsg: 'Continuer à enregistrer au format CSV ?',
-    csvKeepFormatDetail:
       "Le CSV ne conserve que les valeurs d'une seule feuille — les formules, la mise en forme et les feuilles supplémentaires ne sont pas enregistrées dans le fichier .csv.",
   },
   de: {
@@ -523,7 +577,6 @@ const tMain = createI18n({
     errDiskChanged:
       'Die Arbeitsmappe wurde nach dem Öffnen auf dem Datenträger geändert — verwenden Sie stattdessen „Speichern unter“.',
     autosaveFoundTitle: 'Wiederhergestellte Version gefunden',
-    autosaveFoundBody:
       'Es gibt ungespeicherte Änderungen. Automatisch gespeicherte Version wiederherstellen? Nach der Wiederherstellung überschreibt Speichern die Originaldatei.',
     autosaveRestore: 'Wiederherstellen',
     autosaveDiscard: 'Verwerfen',
@@ -542,19 +595,15 @@ const tMain = createI18n({
     closeUnsavedDetail: 'Ihre Änderungen gehen verloren, wenn Sie ohne Speichern schließen.',
     btnDontSave: 'Nicht speichern',
     btnCancel: 'Abbrechen',
-    csvSaveAsNotice:
       'CSV-Dateien können keine Formatierung speichern – als .xlsx speichern, um alle Änderungen zu behalten.',
     menuExportCsv: 'CSV exportieren…',
     filterCsv: 'CSV (Trennzeichen-getrennt)',
     csvFormulaLossMsg: 'Dieses Blatt enthält Formeln, die das CSV-Format nicht speichern kann.',
-    csvFormulaLossDetail:
       'CSV speichert nur reine Werte – Formeln werden durch ihre aktuellen Ergebnisse ersetzt, und die Formatierung geht verloren.',
     csvKeepXlsxBtn: 'Als .xlsx speichern',
     csvContinueBtn: 'Als CSV fortfahren',
-    csvActiveSheetOnlyNotice:
       'CSV-Dateien enthalten nur ein Blatt – nur das aktive Blatt „{name}“ wird exportiert.',
     csvKeepFormatMsg: 'Weiter im CSV-Format speichern?',
-    csvKeepFormatDetail:
       'CSV speichert nur die Werte eines einzelnen Blatts – Formeln, Formatierungen und weitere Blätter werden nicht in der .csv-Datei gespeichert.',
   },
   es: {
@@ -590,7 +639,6 @@ const tMain = createI18n({
     errImgBadType: 'El archivo no es una imagen PNG/JPEG/GIF.',
     errDiskChanged: 'El libro cambió en el disco después de abrirse; usa Guardar como en su lugar.',
     autosaveFoundTitle: 'Se encontró una versión recuperada',
-    autosaveFoundBody:
       'Hay cambios sin guardar de la última sesión. ¿Restaurar la versión autoguardada? Tras restaurar, guardar sobrescribirá el archivo original.',
     autosaveRestore: 'Restaurar',
     autosaveDiscard: 'Descartar',
@@ -609,19 +657,15 @@ const tMain = createI18n({
     closeUnsavedDetail: 'Los cambios se perderán si cierras sin guardar.',
     btnDontSave: 'No guardar',
     btnCancel: 'Cancelar',
-    csvSaveAsNotice:
       'El formato CSV no conserva el formato: guarda como .xlsx para conservar todos tus cambios.',
     menuExportCsv: 'Exportar a CSV…',
     filterCsv: 'CSV (delimitado por comas)',
     csvFormulaLossMsg: 'Esta hoja contiene fórmulas que el formato CSV no puede conservar.',
-    csvFormulaLossDetail:
       'El CSV solo conserva valores: las fórmulas se sustituyen por sus resultados actuales y el formato se pierde.',
     csvKeepXlsxBtn: 'Guardar como .xlsx',
     csvContinueBtn: 'Continuar como CSV',
-    csvActiveSheetOnlyNotice:
       'Los archivos CSV solo contienen una hoja: solo se exportará la hoja activa «{name}».',
     csvKeepFormatMsg: '¿Seguir guardando en formato CSV?',
-    csvKeepFormatDetail:
       'CSV solo conserva los valores de una única hoja: las fórmulas, el formato y las hojas adicionales no se guardan en el archivo .csv.',
   },
   th: {
@@ -655,7 +699,6 @@ const tMain = createI18n({
     errImgBadType: 'ไฟล์นี้ไม่ใช่รูปภาพ PNG/JPEG/GIF',
     errDiskChanged: 'เวิร์กบุ๊กถูกเปลี่ยนแปลงบนดิสก์หลังจากเปิด — โปรดใช้บันทึกเป็นแทน',
     autosaveFoundTitle: 'พบเวอร์ชันกู้คืนอัตโนมัติ',
-    autosaveFoundBody:
       'มีการเปลี่ยนแปลงที่ยังไม่ได้บันทึกจากครั้งก่อน ต้องการกู้คืนหรือไม่? หลังกู้คืน การบันทึกจะเขียนทับไฟล์ต้นฉบับ',
     autosaveRestore: 'กู้คืน',
     autosaveDiscard: 'ละทิ้ง',
@@ -674,19 +717,15 @@ const tMain = createI18n({
     closeUnsavedDetail: 'หากปิดโดยไม่บันทึก การเปลี่ยนแปลงเหล่านี้จะหายไป',
     btnDontSave: 'ไม่บันทึก',
     btnCancel: 'ยกเลิก',
-    csvSaveAsNotice:
       'ไฟล์ CSV ไม่สามารถเก็บการจัดรูปแบบได้ — บันทึกเป็น .xlsx เพื่อเก็บการเปลี่ยนแปลงทั้งหมดของคุณ',
     menuExportCsv: 'ส่งออก CSV…',
     filterCsv: 'CSV (คั่นด้วยเครื่องหมายจุลภาค)',
     csvFormulaLossMsg: 'ชีตนี้มีสูตรที่รูปแบบ CSV เก็บไว้ไม่ได้',
-    csvFormulaLossDetail:
       'CSV เก็บเฉพาะค่าเท่านั้น — สูตรจะถูกแทนที่ด้วยผลลัพธ์ปัจจุบัน และการจัดรูปแบบจะหายไป',
     csvKeepXlsxBtn: 'บันทึกเป็น .xlsx',
     csvContinueBtn: 'บันทึกเป็น CSV ต่อไป',
-    csvActiveSheetOnlyNotice:
       'ไฟล์ CSV มีได้เพียงชีตเดียว — จะส่งออกเฉพาะชีตที่ใช้งานอยู่ “{name}” เท่านั้น',
     csvKeepFormatMsg: 'บันทึกเป็นรูปแบบ CSV ต่อไปหรือไม่',
-    csvKeepFormatDetail:
       'CSV เก็บเฉพาะค่าของชีตเดียวเท่านั้น — สูตร การจัดรูปแบบ และชีตอื่น ๆ จะไม่ถูกบันทึกลงในไฟล์ .csv',
   },
   id: {
@@ -719,7 +758,6 @@ const tMain = createI18n({
     errImgBadType: 'File ini bukan gambar PNG/JPEG/GIF.',
     errDiskChanged: 'Buku kerja berubah di disk setelah dibuka — gunakan Simpan Sebagai.',
     autosaveFoundTitle: 'Versi pemulihan ditemukan',
-    autosaveFoundBody:
       'Ada perubahan yang belum disimpan dari sesi terakhir. Pulihkan versi tersimpan otomatis? Setelah dipulihkan, menyimpan akan menimpa file asli.',
     autosaveRestore: 'Pulihkan',
     autosaveDiscard: 'Buang',
@@ -738,19 +776,15 @@ const tMain = createI18n({
     closeUnsavedDetail: 'Perubahan Anda akan hilang jika menutup tanpa menyimpan.',
     btnDontSave: 'Jangan Simpan',
     btnCancel: 'Batal',
-    csvSaveAsNotice:
       'File CSV tidak dapat menyimpan pemformatan — simpan sebagai .xlsx untuk mempertahankan semua perubahan Anda.',
     menuExportCsv: 'Ekspor CSV…',
     filterCsv: 'CSV (dipisahkan koma)',
     csvFormulaLossMsg: 'Lembar ini berisi rumus yang tidak dapat disimpan dalam format CSV.',
-    csvFormulaLossDetail:
       'CSV hanya menyimpan nilai — rumus diganti dengan hasil saat ini, dan pemformatan akan hilang.',
     csvKeepXlsxBtn: 'Simpan sebagai .xlsx',
     csvContinueBtn: 'Lanjutkan sebagai CSV',
-    csvActiveSheetOnlyNotice:
       'File CSV hanya memuat satu lembar — hanya lembar aktif “{name}” yang akan diekspor.',
     csvKeepFormatMsg: 'Terus menyimpan dalam format CSV?',
-    csvKeepFormatDetail:
       'CSV hanya menyimpan nilai dari satu lembar — rumus, pemformatan, dan lembar tambahan tidak disimpan ke file .csv.',
   },
   ru: {
@@ -784,7 +818,6 @@ const tMain = createI18n({
     errImgBadType: 'Этот файл не является изображением PNG/JPEG/GIF.',
     errDiskChanged: 'Книга была изменена на диске после открытия — используйте «Сохранить как».',
     autosaveFoundTitle: 'Найдена восстановленная версия',
-    autosaveFoundBody:
       'Есть несохранённые изменения из прошлого сеанса. Восстановить автосохранённую версию? После восстановления сохранение перезапишет исходный файл.',
     autosaveRestore: 'Восстановить',
     autosaveDiscard: 'Отклонить',
@@ -803,19 +836,15 @@ const tMain = createI18n({
     closeUnsavedDetail: 'Если закрыть без сохранения, эти изменения будут потеряны.',
     btnDontSave: 'Не сохранять',
     btnCancel: 'Отмена',
-    csvSaveAsNotice:
       'Формат CSV не сохраняет форматирование — сохраните в .xlsx, чтобы не потерять изменения.',
     menuExportCsv: 'Экспорт в CSV…',
     filterCsv: 'CSV (разделители — запятые)',
     csvFormulaLossMsg: 'Этот лист содержит формулы, которые формат CSV не сохраняет.',
-    csvFormulaLossDetail:
       'CSV сохраняет только значения — формулы заменяются текущими результатами, а форматирование теряется.',
     csvKeepXlsxBtn: 'Сохранить как .xlsx',
     csvContinueBtn: 'Продолжить в CSV',
-    csvActiveSheetOnlyNotice:
       'Файлы CSV содержат только один лист — будет экспортирован только активный лист «{name}».',
     csvKeepFormatMsg: 'Продолжить сохранение в формате CSV?',
-    csvKeepFormatDetail:
       'CSV сохраняет только значения одного листа — формулы, форматирование и дополнительные листы не сохраняются в файле .csv.',
   },
   ar: {
@@ -848,7 +877,6 @@ const tMain = createI18n({
     errImgBadType: 'هذا الملف ليس صورة PNG/JPEG/GIF.',
     errDiskChanged: 'تم تغيير المصنف على القرص بعد فتحه — استخدم «حفظ باسم» بدلاً من ذلك.',
     autosaveFoundTitle: 'تم العثور على نسخة مستردة',
-    autosaveFoundBody:
       'توجد تغييرات غير محفوظة من الجلسة الأخيرة. هل تريد استعادة النسخة المحفوظة تلقائيًا؟ بعد الاستعادة، سيؤدي الحفظ إلى استبدال الملف الأصلي.',
     autosaveRestore: 'استعادة',
     autosaveDiscard: 'تجاهل',
@@ -874,10 +902,8 @@ const tMain = createI18n({
     csvFormulaLossDetail: 'يحتفظ CSV بالقيم فقط — تُستبدل الصيغ بنتائجها الحالية ويُفقد التنسيق.',
     csvKeepXlsxBtn: 'حفظ بصيغة .xlsx',
     csvContinueBtn: 'المتابعة بتنسيق CSV',
-    csvActiveSheetOnlyNotice:
       'ملفات CSV تحتوي على ورقة واحدة فقط — سيتم تصدير الورقة النشطة «{name}» فقط.',
     csvKeepFormatMsg: 'هل تريد متابعة الحفظ بتنسيق CSV؟',
-    csvKeepFormatDetail:
       'يحتفظ CSV بقيم ورقة واحدة فقط — لا تُحفظ الصيغ والتنسيق والأوراق الإضافية في ملف .csv.',
   },
   pt: {
@@ -912,7 +938,6 @@ const tMain = createI18n({
     errImgBadType: 'O arquivo não é uma imagem PNG/JPEG/GIF.',
     errDiskChanged: 'A pasta de trabalho foi alterada no disco após ser aberta — use Salvar Como.',
     autosaveFoundTitle: 'Versão recuperada encontrada',
-    autosaveFoundBody:
       'Há alterações não salvas da sua última sessão. Restaurar a versão salva automaticamente? Após restaurar, salvar sobrescreverá o arquivo original.',
     autosaveRestore: 'Restaurar',
     autosaveDiscard: 'Descartar',
@@ -931,19 +956,15 @@ const tMain = createI18n({
     closeUnsavedDetail: 'Suas alterações serão perdidas se você fechar sem salvar.',
     btnDontSave: 'Não Salvar',
     btnCancel: 'Cancelar',
-    csvSaveAsNotice:
       'Arquivos CSV não mantêm a formatação — salve como .xlsx para manter todas as suas alterações.',
     menuExportCsv: 'Exportar CSV…',
     filterCsv: 'CSV (separado por vírgulas)',
     csvFormulaLossMsg: 'Esta planilha contém fórmulas que o formato CSV não pode manter.',
-    csvFormulaLossDetail:
       'O CSV mantém apenas valores — as fórmulas são substituídas pelos resultados atuais e a formatação é perdida.',
     csvKeepXlsxBtn: 'Salvar como .xlsx',
     csvContinueBtn: 'Continuar como CSV',
-    csvActiveSheetOnlyNotice:
       'Arquivos CSV contêm apenas uma planilha — apenas a planilha ativa “{name}” será exportada.',
     csvKeepFormatMsg: 'Continuar salvando no formato CSV?',
-    csvKeepFormatDetail:
       'O CSV mantém apenas os valores de uma única planilha — fórmulas, formatação e planilhas adicionais não são salvas no arquivo .csv.',
   },
   it: {
@@ -979,7 +1000,6 @@ const tMain = createI18n({
     errDiskChanged:
       "La cartella di lavoro è stata modificata sul disco dopo l'apertura — usa Salva con nome.",
     autosaveFoundTitle: 'Trovata versione recuperata',
-    autosaveFoundBody:
       "Ci sono modifiche non salvate dall'ultima sessione. Ripristinare la versione salvata automaticamente? Dopo il ripristino, il salvataggio sovrascriverà il file originale.",
     autosaveRestore: 'Ripristina',
     autosaveDiscard: 'Ignora',
@@ -998,19 +1018,15 @@ const tMain = createI18n({
     closeUnsavedDetail: 'Le modifiche andranno perse se chiudi senza salvare.',
     btnDontSave: 'Non salvare',
     btnCancel: 'Annulla',
-    csvSaveAsNotice:
       'I file CSV non conservano la formattazione: salva come .xlsx per mantenere tutte le modifiche.',
     menuExportCsv: 'Esporta CSV…',
     filterCsv: 'CSV (delimitato da virgole)',
     csvFormulaLossMsg: 'Questo foglio contiene formule che il formato CSV non può conservare.',
-    csvFormulaLossDetail:
       'Il CSV conserva solo i valori: le formule vengono sostituite dai risultati attuali e la formattazione viene persa.',
     csvKeepXlsxBtn: 'Salva come .xlsx',
     csvContinueBtn: 'Continua come CSV',
-    csvActiveSheetOnlyNotice:
       'I file CSV contengono un solo foglio: verrà esportato solo il foglio attivo “{name}”.',
     csvKeepFormatMsg: 'Continuare a salvare in formato CSV?',
-    csvKeepFormatDetail:
       'Il CSV conserva solo i valori di un singolo foglio: formule, formattazione e fogli aggiuntivi non vengono salvati nel file .csv.',
   },
   pl: {
@@ -1045,7 +1061,6 @@ const tMain = createI18n({
     errImgBadType: 'Plik nie jest obrazem PNG/JPEG/GIF.',
     errDiskChanged: 'Skoroszyt został zmieniony na dysku po otwarciu — użyj polecenia Zapisz jako.',
     autosaveFoundTitle: 'Znaleziono odzyskaną wersję',
-    autosaveFoundBody:
       'Istnieją niezapisane zmiany z ostatniej sesji. Przywrócić wersję zapisaną automatycznie? Po przywróceniu zapisanie nadpisze oryginalny plik.',
     autosaveRestore: 'Przywróć',
     autosaveDiscard: 'Odrzuć',
@@ -1064,19 +1079,15 @@ const tMain = createI18n({
     closeUnsavedDetail: 'Zmiany zostaną utracone, jeśli zamkniesz bez zapisywania.',
     btnDontSave: 'Nie zapisuj',
     btnCancel: 'Anuluj',
-    csvSaveAsNotice:
       'Pliki CSV nie zachowują formatowania — zapisz jako .xlsx, aby zachować wszystkie zmiany.',
     menuExportCsv: 'Eksportuj CSV…',
     filterCsv: 'CSV (rozdzielany przecinkami)',
     csvFormulaLossMsg: 'Ten arkusz zawiera formuły, których format CSV nie zachowuje.',
-    csvFormulaLossDetail:
       'CSV zachowuje tylko wartości — formuły są zastępowane bieżącymi wynikami, a formatowanie jest tracone.',
     csvKeepXlsxBtn: 'Zapisz jako .xlsx',
     csvContinueBtn: 'Kontynuuj jako CSV',
-    csvActiveSheetOnlyNotice:
       'Pliki CSV zawierają tylko jeden arkusz — wyeksportowany zostanie tylko aktywny arkusz „{name}”.',
     csvKeepFormatMsg: 'Kontynuować zapisywanie w formacie CSV?',
-    csvKeepFormatDetail:
       'CSV zachowuje tylko wartości jednego arkusza — formuły, formatowanie i dodatkowe arkusze nie są zapisywane w pliku .csv.',
   },
   cs: {
@@ -1107,7 +1118,6 @@ const tMain = createI18n({
     errImgBadType: 'Soubor není obrázek PNG/JPEG/GIF.',
     errDiskChanged: 'Sešit byl po otevření změněn na disku — použijte místo toho Uložit jako.',
     autosaveFoundTitle: 'Nalezena obnovená verze',
-    autosaveFoundBody:
       'Z poslední relace existují neuložené změny. Obnovit automaticky uloženou verzi? Uložení po obnovení přepíše původní soubor.',
     autosaveRestore: 'Obnovit',
     autosaveDiscard: 'Zahodit',
@@ -1126,19 +1136,15 @@ const tMain = createI18n({
     closeUnsavedDetail: 'Pokud zavřete bez uložení, změny budou ztraceny.',
     btnDontSave: 'Neukládat',
     btnCancel: 'Zrušit',
-    csvSaveAsNotice:
       'Soubory CSV nezachovávají formátování — uložením jako .xlsx zachováte všechny změny.',
     menuExportCsv: 'Exportovat CSV…',
     filterCsv: 'CSV (oddělený čárkami)',
     csvFormulaLossMsg: 'Tento list obsahuje vzorce, které formát CSV nezachová.',
-    csvFormulaLossDetail:
       'CSV zachovává pouze hodnoty — vzorce se nahradí aktuálními výsledky a formátování se ztratí.',
     csvKeepXlsxBtn: 'Uložit jako .xlsx',
     csvContinueBtn: 'Pokračovat jako CSV',
-    csvActiveSheetOnlyNotice:
       'Soubory CSV obsahují jen jeden list — exportován bude pouze aktivní list „{name}“.',
     csvKeepFormatMsg: 'Pokračovat v ukládání ve formátu CSV?',
-    csvKeepFormatDetail:
       'CSV zachovává pouze hodnoty jednoho listu — vzorce, formátování a další listy se do souboru .csv neuloží.',
     errNoImageModel:
       'No image model configured: enable an image-generation model in Model Settings',
@@ -1178,7 +1184,6 @@ const tMain = createI18n({
     errDiskChanged:
       'De werkmap is op de schijf gewijzigd nadat deze was geopend — gebruik Opslaan als.',
     autosaveFoundTitle: 'Herstelde versie gevonden',
-    autosaveFoundBody:
       'Er zijn niet-opgeslagen wijzigingen van uw laatste sessie. De automatisch opgeslagen versie herstellen? Na herstel overschrijft opslaan het originele bestand.',
     autosaveRestore: 'Herstellen',
     autosaveDiscard: 'Negeren',
@@ -1197,19 +1202,15 @@ const tMain = createI18n({
     closeUnsavedDetail: 'Uw wijzigingen gaan verloren als u sluit zonder op te slaan.',
     btnDontSave: 'Niet opslaan',
     btnCancel: 'Annuleren',
-    csvSaveAsNotice:
       'CSV-bestanden bewaren geen opmaak — sla op als .xlsx om al uw wijzigingen te behouden.',
     menuExportCsv: 'CSV exporteren…',
     filterCsv: 'CSV (kommagescheiden)',
     csvFormulaLossMsg: 'Dit blad bevat formules die het CSV-formaat niet kan bewaren.',
-    csvFormulaLossDetail:
       'CSV bewaart alleen waarden — formules worden vervangen door hun huidige resultaten en opmaak gaat verloren.',
     csvKeepXlsxBtn: 'Opslaan als .xlsx',
     csvContinueBtn: 'Doorgaan als CSV',
-    csvActiveSheetOnlyNotice:
       'CSV-bestanden bevatten slechts één blad — alleen het actieve blad “{name}” wordt geëxporteerd.',
     csvKeepFormatMsg: 'Doorgaan met opslaan in CSV-indeling?',
-    csvKeepFormatDetail:
       'CSV bewaart alleen de waarden van één blad — formules, opmaak en extra bladen worden niet in het .csv-bestand opgeslagen.',
   },
   ms: {
@@ -1243,7 +1244,6 @@ const tMain = createI18n({
     errImgBadType: 'Fail ini bukan imej PNG/JPEG/GIF.',
     errDiskChanged: 'Buku kerja telah diubah pada cakera selepas dibuka — gunakan Simpan Sebagai.',
     autosaveFoundTitle: 'Versi pulihan ditemui',
-    autosaveFoundBody:
       'Terdapat perubahan yang belum disimpan daripada sesi terakhir anda. Pulihkan versi yang disimpan secara automatik? Selepas pemulihan, menyimpan akan menulis ganti fail asal.',
     autosaveRestore: 'Pulihkan',
     autosaveDiscard: 'Buang',
@@ -1262,20 +1262,16 @@ const tMain = createI18n({
     closeUnsavedDetail: 'Perubahan anda akan hilang jika anda menutup tanpa menyimpan.',
     btnDontSave: 'Jangan Simpan',
     btnCancel: 'Batal',
-    csvSaveAsNotice:
       'Fail CSV tidak dapat menyimpan pemformatan — simpan sebagai .xlsx untuk mengekalkan semua perubahan anda.',
     menuExportCsv: 'Eksport CSV…',
     filterCsv: 'CSV (dipisahkan koma)',
     csvFormulaLossMsg:
       'Helaian ini mengandungi formula yang tidak dapat disimpan dalam format CSV.',
-    csvFormulaLossDetail:
       'CSV hanya menyimpan nilai — formula digantikan dengan hasil semasa, dan pemformatan akan hilang.',
     csvKeepXlsxBtn: 'Simpan sebagai .xlsx',
     csvContinueBtn: 'Teruskan sebagai CSV',
-    csvActiveSheetOnlyNotice:
       'Fail CSV hanya mengandungi satu helaian — hanya helaian aktif “{name}” akan dieksport.',
     csvKeepFormatMsg: 'Terus simpan dalam format CSV?',
-    csvKeepFormatDetail:
       'CSV hanya menyimpan nilai satu helaian — formula, pemformatan dan helaian tambahan tidak disimpan ke fail .csv.',
   },
   he: {
@@ -1307,7 +1303,6 @@ const tMain = createI18n({
     errImgBadType: 'הקובץ אינו תמונת PNG/JPEG/GIF.',
     errDiskChanged: 'חוברת העבודה השתנתה בדיסק לאחר פתיחתה — השתמש בשמירה בשם.',
     autosaveFoundTitle: 'נמצאה גרסה משוחזרת',
-    autosaveFoundBody:
       'קיימים שינויים שלא נשמרו מהפעלה הקודמת. לשחזר את הגרסה שנשמרה אוטומטית? לאחר השחזור, שמירה תדרוס את הקובץ המקורי.',
     autosaveRestore: 'שחזר',
     autosaveDiscard: 'התעלם',
@@ -1330,13 +1325,11 @@ const tMain = createI18n({
     menuExportCsv: 'ייצוא CSV…',
     filterCsv: 'CSV (מופרד באמצעות פסיקים)',
     csvFormulaLossMsg: 'גיליון זה מכיל נוסחאות שתבנית CSV אינה יכולה לשמור.',
-    csvFormulaLossDetail:
       'CSV שומר ערכים בלבד — נוסחאות מוחלפות בתוצאות הנוכחיות שלהן, והעיצוב אובד.',
     csvKeepXlsxBtn: 'שמירה כ-.xlsx',
     csvContinueBtn: 'המשך שמירה כ-CSV',
     csvActiveSheetOnlyNotice: 'קובצי CSV מכילים גיליון אחד בלבד — רק הגיליון הפעיל "{name}" ייוצא.',
     csvKeepFormatMsg: 'להמשיך לשמור בתבנית CSV?',
-    csvKeepFormatDetail:
       'CSV שומר רק את הערכים של גיליון אחד — נוסחאות, עיצוב וגיליונות נוספים אינם נשמרים בקובץ ה-.csv.',
   },
   hi: {
@@ -1371,7 +1364,6 @@ const tMain = createI18n({
     errDiskChanged:
       'खोले जाने के बाद कार्यपुस्तिका डिस्क पर बदल गई — इसके बजाय इस रूप में सहेजें का उपयोग करें।',
     autosaveFoundTitle: 'पुनर्प्राप्त संस्करण मिला',
-    autosaveFoundBody:
       'आपके पिछले सत्र से सहेजे नहीं गए परिवर्तन हैं। स्वतः सहेजा गया संस्करण पुनर्स्थापित करें? पुनर्स्थापना के बाद, सहेजने पर मूल फ़ाइल अधिलेखित हो जाएगी।',
     autosaveRestore: 'पुनर्स्थापित करें',
     autosaveDiscard: 'छोड़ें',
@@ -1390,19 +1382,15 @@ const tMain = createI18n({
     closeUnsavedDetail: 'यदि आप बिना सहेजे बंद करते हैं तो आपके परिवर्तन खो जाएँगे।',
     btnDontSave: 'न सहेजें',
     btnCancel: 'रद्द करें',
-    csvSaveAsNotice:
       'CSV फ़ाइलें फ़ॉर्मेटिंग सहेज नहीं सकतीं — सभी बदलाव बनाए रखने के लिए .xlsx के रूप में सहेजें।',
     menuExportCsv: 'CSV निर्यात करें…',
     filterCsv: 'CSV (अल्पविराम द्वारा सीमांकित)',
     csvFormulaLossMsg: 'इस शीट में ऐसे सूत्र हैं जिन्हें CSV प्रारूप सहेज नहीं सकता।',
-    csvFormulaLossDetail:
       'CSV केवल मान रखता है — सूत्र उनके वर्तमान परिणामों से बदल दिए जाते हैं और फ़ॉर्मेटिंग खो जाती है।',
     csvKeepXlsxBtn: '.xlsx के रूप में सहेजें',
     csvContinueBtn: 'CSV के रूप में जारी रखें',
-    csvActiveSheetOnlyNotice:
       'CSV फ़ाइलों में केवल एक शीट होती है — केवल सक्रिय शीट “{name}” निर्यात की जाएगी।',
     csvKeepFormatMsg: 'CSV प्रारूप में सहेजना जारी रखें?',
-    csvKeepFormatDetail:
       'CSV केवल एक शीट के मान रखता है — सूत्र, स्वरूपण और अतिरिक्त शीट .csv फ़ाइल में सहेजे नहीं जाते।',
   },
   'zh-TW': {
@@ -1433,7 +1421,6 @@ const tMain = createI18n({
     errImgBadType: '該檔案不是 PNG/JPEG/GIF 圖片。',
     errDiskChanged: '活頁簿在開啟後被磁碟上的變更覆蓋——請改用另存新檔。',
     autosaveFoundTitle: '發現自動復原版本',
-    autosaveFoundBody:
       '上次工作階段有未儲存的變更。要復原自動儲存的版本嗎?復原後,儲存將直接覆寫原檔案。',
     autosaveRestore: '復原',
     autosaveDiscard: '放棄',
@@ -1466,7 +1453,6 @@ const tMain = createI18n({
 })
 const tm = (key: Parameters<typeof tMain>[1], params?: Parameters<typeof tMain>[2]) =>
   tMain(getUiLang(), key, params)
-
 interface SessionInfo {
   readonly path: string
   /// Byte-for-byte copy of the file as it was opened (in the OS temp dir).
@@ -1486,6 +1472,10 @@ interface SessionInfo {
   /// crash-recovery copies stay enabled, and the temp backing file is deleted
   /// when the session retargets or closes.
   readonly blankDraft?: boolean
+  /// The shell's "New spreadsheet" backing file in a temp directory: like an
+  /// import the first Save is a Save As, but AutoSave and the recovery copy
+  /// keep running (keyed on suggestSaveAs), and a quiet save writes in place.
+  readonly unsavedNew?: boolean
   /// The converted copy came from a CSV: the Save As dialog explains that
   /// formatting requires .xlsx (CSV keeps values only).
   readonly csvImport?: boolean
@@ -1507,6 +1497,11 @@ interface SessionInfo {
   /// write-back against external modification, mirroring the sha256 check on
   /// the session's own path.
   readonly restoreTargetSha?: string
+  /// The opened file was 0 bytes: the session runs on a blank archive in the
+  /// temp dir and restoreTarget is the empty original. Unlike a restored
+  /// recovery copy, this session still needs its own crash-recovery copy,
+  /// keyed by the original.
+  readonly emptySource?: boolean
 }
 
 // ---- runtime configuration (paths differ when bundled into the shell) ----
@@ -1647,8 +1642,8 @@ interface SheetsTabSession {
  * tab (or a closed-then-reopened tab) registered and overwrote the previous closure. */
 /// Same ceiling as local add_image (readLocalImage's 20MB check)
 const MAX_REMOTE_IMAGE_BYTES = 20 * 1024 * 1024
-/** Max CSV bytes converted on open: prevents 500MB CSV OOMing main before sidecar limits. */
-const MAX_CSV_IMPORT_BYTES = 32 * 1024 * 1024
+/** Max .csv/.tsv bytes converted on open: stops a 500MB text file OOMing main before sidecar limits. */
+const MAX_DELIMITED_IMPORT_BYTES = 32 * 1024 * 1024
 
 const sheetsTabs = new Map<number, SheetsTabSession>()
 let activeSheetsWebContents: WebContents | null = null
@@ -1743,8 +1738,25 @@ export function sheetsFileRenamed(wc: WebContents, oldPath: string, newPath: str
   if (!entry) return
   let matched = false
   for (const [id, session] of entry.sessions) {
-    if (session.path !== oldPath) continue
-    entry.sessions.set(id, { ...session, path: newPath })
+    // Converted copies (.csv / .xls / .tsv) and restored recovery copies keep
+    // the user's file in a side field, not in `path`; move those too, or the
+    // next Save recreates the file under the old name.
+    let renamed = sessionAfterRename(session, oldPath, newPath)
+    if (renamed === null) continue
+    // An unsaved new workbook's tab renames its hidden backing file; the name
+    // the user typed is what the first Save As should offer, and the crash copy
+    // is keyed on that name.
+    if (session.unsavedNew && session.path === oldPath && session.suggestSaveAs !== undefined) {
+      const suggested = join(dirname(session.suggestSaveAs), basename(newPath))
+      if (
+        suggested !== session.suggestSaveAs &&
+        !existsSync(suggested) &&
+        !sheetsSuggestedPathTaken(suggested) &&
+        retargetUnsavedNewRecovery(session.suggestSaveAs, suggested)
+      )
+        renamed = { ...renamed, suggestSaveAs: suggested }
+    }
+    entry.sessions.set(id, renamed)
     matched = true
   }
   if (matched) wc.send(IPC_CHANNELS.workbookRenamed, basename(newPath))
@@ -1758,6 +1770,42 @@ export function sheetsFileRenamed(wc: WebContents, oldPath: string, newPath: str
 const untitledWorkbookPaths = new Set<string>()
 export function markSheetsUntitledPath(path: string): void {
   untitledWorkbookPaths.add(path)
+}
+
+/**
+ * Backing workbooks the shell created in a temp directory for "New
+ * spreadsheet". The user has no file yet — it only comes into existence at the
+ * first Save, which this routes through Save As — and a tab closed without
+ * saving discards the temp directory with it. Same shape as an .xls/.tsv
+ * import: the file the session edits is not the user's file.
+ */
+const unsavedNewWorkbooks = new Map<string, { suggestSaveAs: string; tempDir: string }>()
+
+/**
+ * shell: a would-be path already promised to another unsaved new workbook (open
+ * tab, tab about to open, or a crash copy waiting to be re-offered). The file
+ * itself does not exist yet, so uniqueness on disk is not enough.
+ */
+export function sheetsSuggestedPathTaken(path: string): boolean {
+  for (const pending of unsavedNewWorkbooks.values())
+    if (pending.suggestSaveAs === path) return true
+  for (const tab of sheetsTabs.values())
+    for (const session of tab.sessions.values()) if (session.suggestSaveAs === path) return true
+  return readUnsavedNewIndex().includes(path)
+}
+
+/** shell: mark a backing workbook it just created as not-yet-saved (see above) */
+export function markSheetsUnsavedNew(
+  openPath: string,
+  suggestSaveAs: string,
+  tempDir: string,
+): void {
+  unsavedNewWorkbooks.set(openPath, { suggestSaveAs, tempDir })
+}
+
+/** shell: the backing workbook could not be written, release its name */
+export function unmarkSheetsUnsavedNew(openPath: string): void {
+  unsavedNewWorkbooks.delete(openPath)
 }
 
 const mcpWritablePaths = new Map<number, Set<string>>()
@@ -1827,6 +1875,62 @@ function clearWorkbookRecovery(filePath: string): void {
   } catch {
     /* nothing to clean */
   }
+}
+
+// An unsaved new workbook has no file for pendingRecoveryFor to compare
+// against, so the would-be paths of its recovery copies are listed here and
+// the shell re-offers them at launch (and "New spreadsheet" reuses the name).
+const unsavedNewIndexPath = () => join(recoveryDir(), 'unsaved-new.json')
+
+function readUnsavedNewIndex(): string[] {
+  const list = readJson<unknown>(unsavedNewIndexPath(), [])
+  return Array.isArray(list) ? list.filter((p): p is string => typeof p === 'string') : []
+}
+
+function writeUnsavedNewIndex(list: string[]): void {
+  try {
+    mkdirSync(recoveryDir(), { recursive: true })
+    writeFileSync(unsavedNewIndexPath(), JSON.stringify(list))
+  } catch (error) {
+    console.warn('[sheets] unsaved-new index write failed:', error)
+  }
+}
+
+function rememberUnsavedNewRecovery(suggestSaveAs: string): void {
+  const list = readUnsavedNewIndex()
+  if (!list.includes(suggestSaveAs)) writeUnsavedNewIndex([...list, suggestSaveAs])
+}
+
+function forgetUnsavedNewRecovery(suggestSaveAs: string): void {
+  clearWorkbookRecovery(suggestSaveAs)
+  const list = readUnsavedNewIndex()
+  if (list.includes(suggestSaveAs)) writeUnsavedNewIndex(list.filter((p) => p !== suggestSaveAs))
+}
+
+/** shell, at launch: would-be paths of new workbooks whose recovery copy survived a crash */
+export function pendingUnsavedNewRecoveries(): string[] {
+  const live = readUnsavedNewIndex().filter((p) => existsSync(recoveryPathFor(p)))
+  writeUnsavedNewIndex(live)
+  return live
+}
+
+/** the would-be name changed: the crash copy keyed on it follows (false = copy stays under the old key) */
+function retargetUnsavedNewRecovery(from: string, to: string): boolean {
+  if (!pendingUnsavedNewRecoveryFor(from)) return true
+  try {
+    renameSync(recoveryPathFor(from), recoveryPathFor(to))
+    rememberUnsavedNewRecovery(to)
+    forgetUnsavedNewRecovery(from)
+    return true
+  } catch (err) {
+    console.warn('[sheets] recovery copy rename failed:', err)
+    return false
+  }
+}
+
+function pendingUnsavedNewRecoveryFor(suggestSaveAs: string): string | null {
+  const copy = recoveryPathFor(suggestSaveAs)
+  return readUnsavedNewIndex().includes(suggestSaveAs) && existsSync(copy) ? copy : null
 }
 
 /// Restore/Discard choice for a pending recovery copy. Rendered as a styled
@@ -1915,6 +2019,7 @@ function getAiRuntime(): AiRuntime {
   if (!aiRuntime) throw new Error('AI runtime used before registerSheetsAiIpc()')
   return aiRuntime
 }
+const SETTINGS_PATH = () => userDataPath('ai-settings.json')
 
 // Dev-only automation hooks: a fixed CDP port for driving the app from test
 // scripts, and a workbook path that bypasses the native file dialog.
@@ -2192,6 +2297,7 @@ export async function exportSheetsPdfHeadless(
 /** tab-mode equivalent of createSheetsWindow: same runtime/IPC wiring, no BrowserWindow of its own. */
 export function createSheetsView(
   options: { includeAiHandlers?: boolean; hidePanel?: boolean } = {},
+  options: { includeAiHandlers?: boolean; openingWorkbook?: boolean } = {},
 ): WebContentsView {
   const client = sidecar ?? new XlsxSidecarClient(resolveSidecarPath())
   sidecar = client
@@ -2222,6 +2328,13 @@ export function createSheetsView(
   const query: Record<string, string> = { mode: 'tab' }
   if (options.hidePanel) query.panel = '0'
   void view.webContents.loadURL(rendererUrl(runtime.rendererUrl, 'sheets', query))
+  // so the ribbon must not reserve space for them
+  void view.webContents.loadURL(
+    rendererUrl(runtime.rendererUrl, 'sheets', {
+      mode: 'tab',
+      ...(options.openingWorkbook ? { openingWorkbook: '1' } : {}),
+    }),
+  )
   return view
 }
 
@@ -2401,7 +2514,15 @@ export async function requestSheetsClose(
   contents: WebContents,
   parent?: BrowserWindow | null,
 ): Promise<boolean> {
-  const count = pendingEditCounts.get(contents.id) ?? 0
+  // A quiet AutoSave leaves an unsaved new workbook's journal empty, but its
+  // work still sits on no user-visible path: closing it is discarding it.
+  const autosavedNew = [...(sheetsTabs.get(contents.id)?.sessions.values() ?? [])].filter(
+    (s) =>
+      s.unsavedNew &&
+      s.suggestSaveAs !== undefined &&
+      pendingUnsavedNewRecoveryFor(s.suggestSaveAs),
+  ).length
+  const count = (pendingEditCounts.get(contents.id) ?? 0) + autosavedNew
   const decision = closeGuardDecision({
     pendingEdits: count,
     destroyed: contents.isDestroyed(),
@@ -2575,7 +2696,9 @@ export function registerSheetsIpc(): void {
     if (!path) {
       const selection = await openFileDialog(event, {
         properties: ['openFile'],
-        filters: [{ name: tm('filterSpreadsheets'), extensions: ['xlsx', 'xlsm', 'xls', 'csv'] }],
+        filters: [
+          { name: tm('filterSpreadsheets'), extensions: ['xlsx', 'xlsm', 'xls', 'csv', 'tsv'] },
+        ],
       })
       if (selection.canceled || !selection.filePaths[0]) return null
       path = selection.filePaths[0]
@@ -2595,6 +2718,7 @@ export function registerSheetsIpc(): void {
       if (prepared.importTempDir !== undefined) {
         await cleanupImportTempDirectory(app.getPath('temp'), prepared.importTempDir)
       }
+      await discardPreparedOpen(prepared)
       return null
     }
     const saveDir = blankRequest?.saveDir
@@ -2609,9 +2733,12 @@ export function registerSheetsIpc(): void {
           : undefined),
       csvImport: prepared.csvImport,
       csvSourcePath: prepared.csvSourcePath,
+      emptyCsv: prepared.emptyCsv,
       importTempDir: prepared.importTempDir,
       restoreTarget: prepared.restoreTarget,
       blankDraft,
+      emptySource: prepared.emptySource,
+      unsavedNew: prepared.unsavedNew,
     })
     // The sidecar open itself can also outlive the tab after the pre-open
     // check. Close the newly registered session instead of stranding it in
@@ -2635,6 +2762,9 @@ export function registerSheetsIpc(): void {
     // dedicated blank-draft hook only feeds the shell's pending-unsaved registry.
     if (blankDraft) blankDraftHook?.(event.sender, path, saveDir ?? configuredDefaultSaveDir(app))
     else workbookOpenedHook?.(event.sender, path)
+    // an unsaved new workbook's tab already shows the untitled name; its temp
+    // backing path must not become a recent file
+    if (!prepared.unsavedNew) workbookOpenedHook?.(event.sender, path)
     return result
   }
 
@@ -2686,9 +2816,7 @@ export function registerSheetsIpc(): void {
           { skipRecoveryPrompt: true },
         )
         if (event.sender.isDestroyed()) {
-          if (prepared.importTempDir !== undefined) {
-            await cleanupImportTempDirectory(app.getPath('temp'), prepared.importTempDir)
-          }
+          await discardPreparedOpen(prepared)
           break
         }
         const result = await openWorkbookSession(entry.client, prepared.openPath, entry.sessions, {
@@ -2697,6 +2825,8 @@ export function registerSheetsIpc(): void {
           csvSourcePath: prepared.csvSourcePath,
           importTempDir: prepared.importTempDir,
           restoreTarget: prepared.restoreTarget,
+          emptySource: prepared.emptySource,
+          unsavedNew: prepared.unsavedNew,
         })
         opened.push(result as { sessionId: string })
         if (event.sender.isDestroyed()) break
@@ -2716,13 +2846,15 @@ export function registerSheetsIpc(): void {
   ipcMain.handle(IPC_CHANNELS.selectWorkbooksForMerge, async (event) => {
     const selection = await openFileDialog(event, {
       properties: ['openFile', 'multiSelections'],
-      filters: [{ name: tm('filterSpreadsheets'), extensions: ['xlsx', 'xlsm', 'xls', 'csv'] }],
+      filters: [
+        { name: tm('filterSpreadsheets'), extensions: ['xlsx', 'xlsm', 'xls', 'csv', 'tsv'] },
+      ],
     })
     if (selection.canceled || selection.filePaths.length === 0) return null
     return openMergeSources(event, selection.filePaths)
   })
 
-  const MERGE_SOURCE_EXTS = new Set(['xlsx', 'xlsm', 'xls', 'csv'])
+  const MERGE_SOURCE_EXTS = new Set(['xlsx', 'xlsm', 'xls', 'csv', 'tsv'])
   ipcMain.handle(IPC_CHANNELS.openWorkbooksForMerge, async (event, input: unknown) => {
     const paths = z.array(z.string().min(1)).min(1).max(20).parse(input)
     for (const path of paths) {
@@ -3113,6 +3245,11 @@ export function registerSheetsIpc(): void {
       if (existsSync(targetPath) && request.overwrite !== true) {
         throw new Error(`file already exists: ${targetPath}`)
       }
+    } else if (request.mode === 'save' && request.quiet && session.unsavedNew) {
+      // AutoSave / AI-run autosave of a workbook the user has not named yet:
+      // no dialog mid-flow, the edits land in the backing temp file and the
+      // session stays an unsaved new one (Ctrl+S still asks where to save)
+      targetPath = session.path
     } else if (request.mode === 'save-as' || session.suggestSaveAs !== undefined) {
       // .xlsm keeps its extension: untouched archive entries (vbaProject.bin,
       // the macro-enabled content type) round-trip verbatim through the save.
@@ -3196,13 +3333,15 @@ export function registerSheetsIpc(): void {
 
     // The sidecar session still streams the pre-save bytes; swap it for a
     // fresh session over the saved file so future reads match the disk state.
+    const quietUnsavedNew = targetPath === session.path && session.unsavedNew === true
     entry.sessions.delete(request.sessionId)
     await cleanupSessionResources({
       tempRoot: app.getPath('temp'),
       snapshotPath: session.snapshotPath,
-      // A CSV in-place save keeps saving into the temp copy — its directory
+      // A CSV in-place save keeps saving into the temp copy, and a quiet save of
+      // an unsaved new workbook just wrote its backing file — the directory
       // must survive the session swap.
-      importTempDir: csvInPlace ? undefined : session.importTempDir,
+      importTempDir: csvInPlace || quietUnsavedNew ? undefined : session.importTempDir,
       closeSidecar: () => client.close(request.sessionId),
     })
     const file = await openWorkbookSession(
@@ -3215,8 +3354,26 @@ export function registerSheetsIpc(): void {
             csvSourcePath: session.csvSourcePath,
             importTempDir: session.importTempDir,
           }
-        : undefined,
+        : quietUnsavedNew
+          ? {
+              suggestSaveAs: session.suggestSaveAs,
+              importTempDir: session.importTempDir,
+              unsavedNew: true,
+            }
+          : undefined,
     )
+    if (quietUnsavedNew && session.suggestSaveAs !== undefined) {
+      // the temp path must not reach the title or recents; the recovery copy
+      // is what a crash restores from, so it tracks the saved bytes
+      try {
+        await mkdir(recoveryDir(), { recursive: true })
+        await copyFile(targetPath, recoveryPathFor(session.suggestSaveAs))
+        rememberUnsavedNewRecovery(session.suggestSaveAs)
+      } catch (error) {
+        console.warn('[sheets] recovery copy of an unsaved new workbook failed:', error)
+      }
+      return { canceled: false, file, touchedEntries: mutation.touchedEntries }
+    }
     // Notify shell (if running) so it can update the tab title and record the
     // saved path in recent files (mirrors the open hook; covers Save As + first
     // save after converting an .xls/.csv import). A CSV session's user-visible
@@ -3235,7 +3392,10 @@ export function registerSheetsIpc(): void {
     }
     // The file on disk now carries these edits
     clearWorkbookRecovery(targetPath)
-    if (session.suggestSaveAs !== undefined) clearWorkbookRecovery(session.suggestSaveAs)
+    if (session.suggestSaveAs !== undefined) {
+      if (session.unsavedNew) forgetUnsavedNewRecovery(session.suggestSaveAs)
+      else clearWorkbookRecovery(session.suggestSaveAs)
+    }
     // Restored session saved (possibly Save As elsewhere): the unsaved work is
     // persisted, so the original's recovery copy must not re-offer it.
     if (session.restoreTarget !== undefined) clearWorkbookRecovery(session.restoreTarget)
@@ -3288,14 +3448,23 @@ export function registerSheetsIpc(): void {
     if (
       !session ||
       (session.suggestSaveAs !== undefined && !session.blankDraft) ||
+      (session.suggestSaveAs !== undefined && !session.unsavedNew) ||
       session.csvSourcePath !== undefined ||
-      session.restoreTarget !== undefined
+      (session.restoreTarget !== undefined && !session.emptySource)
     )
       return { ok: false }
     if (session.automaticRecoveryDisabled) return { ok: false }
+    // an unsaved new workbook recovers under the name its first save would get;
+    // an empty original's session runs on a temp blank and recovers into the file the user opened
+    const recoveryKey = session.unsavedNew
+      ? session.suggestSaveAs!
+      : session.emptySource
+        ? (session.restoreTarget ?? session.path)
+        : session.path
     try {
       await mkdir(recoveryDir(), { recursive: true })
-      await writeWorkbookTo(entry.client, session, request, recoveryPathFor(session.path))
+      await writeWorkbookTo(entry.client, session, request, recoveryPathFor(recoveryKey))
+      if (session.unsavedNew) rememberUnsavedNewRecovery(recoveryKey)
       return { ok: true }
     } catch (error) {
       console.warn('[sheets] recovery copy failed:', error)
@@ -3310,6 +3479,8 @@ export function registerSheetsIpc(): void {
     const session = entry.sessions.get(validatedSessionId)
     if (!entry.sessions.delete(validatedSessionId)) return
     if (session === undefined) return
+    if (session.unsavedNew && session.suggestSaveAs !== undefined)
+      forgetUnsavedNewRecovery(session.suggestSaveAs)
     await cleanupSessionResources({
       tempRoot: app.getPath('temp'),
       snapshotPath: session.snapshotPath,
@@ -3342,6 +3513,44 @@ export function registerSheetsIpc(): void {
         ...session,
         suggestSaveAs: join(dirname(session.suggestSaveAs), `${base}.xlsx`),
       })
+      if (!base) return { renamed: false }
+      // An unsaved new workbook has no user-visible file to rename — it sits in
+      // a temp directory that closing the tab discards. Retarget the suggested
+      // Save As name instead, so the AI-derived name is what the first save
+      // offers, and leave the mark in place for a later run. No rename on disk
+      // and no open hook: the temp path must not reach the title or recents.
+      if (session.suggestSaveAs !== undefined) {
+        const suggestDir = dirname(session.suggestSaveAs)
+        let suggested = join(suggestDir, `${base}.xlsx`)
+        const taken = (p: string) =>
+          p !== session.suggestSaveAs && (existsSync(p) || sheetsSuggestedPathTaken(p))
+        for (let i = 2; taken(suggested) && i < 100; i++) {
+          suggested = join(suggestDir, `${base}-${i}.xlsx`)
+        }
+        if (suggested === session.suggestSaveAs || taken(suggested)) return { renamed: false }
+        // a failed move leaves the copy valid under the old name; a crash can still restore it
+        if (session.unsavedNew && !retargetUnsavedNewRecovery(session.suggestSaveAs, suggested))
+          return { renamed: false }
+        entry.sessions.set(validatedSessionId, { ...session, suggestSaveAs: suggested })
+        event.sender.send(IPC_CHANNELS.workbookRenamed, basename(suggested))
+        return { renamed: true, name: basename(suggested) }
+      }
+      const dir = dirname(session.path)
+      let target = join(dir, `${base}.xlsx`)
+      for (let i = 2; existsSync(target) && i < 100; i++) target = join(dir, `${base}-${i}.xlsx`)
+      if (existsSync(target) || target === session.path) return { renamed: false }
+      try {
+        renameSync(session.path, target)
+      } catch (err) {
+        console.warn('[sheets] auto-rename failed:', err)
+        return { renamed: false }
+      }
+      untitledWorkbookPaths.delete(session.path)
+      entry.sessions.set(validatedSessionId, { ...session, path: target })
+      event.sender.send(IPC_CHANNELS.workbookRenamed, basename(target))
+      // Same contract as open/save: shell updates the tab title and recents
+      workbookOpenedHook?.(event.sender, target)
+      return { renamed: true, name: basename(target) }
     },
   )
 
@@ -3511,6 +3720,10 @@ export function registerSheetsAiIpc(): void {
         for (const w of BrowserWindow.getAllWindows()) w.webContents.send(channel, payload)
       },
     },
+  ipcMain.handle(IPC_CHANNELS.aiSetSettings, async (event, input: unknown) => {
+    sessionFor(event)
+    const settings = aiSettingsInputSchema.parse(input)
+    writeJsonAtomic(SETTINGS_PATH(), settings)
   })
 
   ipcMain.handle(IPC_CHANNELS.aiChat, async (event, input: unknown) => {
@@ -4026,6 +4239,16 @@ function systemShortDate(): string {
   return cachedShortDate
 }
 
+/** the tab died between prepare and open: release the temp copy and any name reserved for it */
+async function discardPreparedOpen(prepared: {
+  openPath: string
+  importTempDir?: string | undefined
+}): Promise<void> {
+  unsavedNewWorkbooks.delete(prepared.openPath)
+  if (prepared.importTempDir !== undefined)
+    await cleanupImportTempDirectory(app.getPath('temp'), prepared.importTempDir)
+}
+
 async function openWorkbookSession(
   client: XlsxSidecarClient,
   path: string,
@@ -4034,6 +4257,7 @@ async function openWorkbookSession(
     suggestSaveAs?: string | undefined
     csvImport?: boolean | undefined
     csvSourcePath?: string | undefined
+    emptyCsv?: boolean | undefined
     importTempDir?: string | undefined
     restoreTarget?: string | undefined
     blankDraft?: boolean | undefined
@@ -4041,6 +4265,18 @@ async function openWorkbookSession(
 ): Promise<WorkbookFile> {
   const { suggestSaveAs, csvImport, csvSourcePath, importTempDir, restoreTarget, blankDraft } =
     options ?? {}
+    emptySource?: boolean | undefined
+    unsavedNew?: boolean | undefined
+  const {
+    suggestSaveAs,
+    csvImport,
+    csvSourcePath,
+    emptyCsv,
+    importTempDir,
+    restoreTarget,
+    emptySource,
+    unsavedNew,
+  } = options ?? {}
   // Snapshot first, then the sidecar opens the snapshot (not the live path):
   // everything the session serves — cell reads, media, recalc, saves — comes
   // from the same bytes, even if the file on disk changes right after the
@@ -4075,8 +4311,12 @@ async function openWorkbookSession(
       ...(importTempDir === undefined ? {} : { importTempDir }),
       ...(restoreTarget === undefined ? {} : { restoreTarget }),
       ...(restoreTargetSha === undefined ? {} : { restoreTargetSha }),
+      ...(emptySource ? { emptySource } : {}),
+      ...(unsavedNew ? { unsavedNew } : {}),
     })
     const parsedFile = workbookFileSchema.parse({
+    unsavedNewWorkbooks.delete(path)
+    return workbookFileSchema.parse({
       ...opened,
       // The renderer-facing path is what the user opened: for a restored
       // recovery copy that is the original file, not the copy under userData.
@@ -4086,7 +4326,9 @@ async function openWorkbookSession(
       readOnly: false,
       needsSaveAs: suggestSaveAs !== undefined,
       ...(blankDraft ? { blankDraft: true } : {}),
+      ...(unsavedNew ? { unsavedNew: true } : {}),
       ...(csvSourcePath === undefined ? {} : { csvPath: csvSourcePath }),
+      ...(emptyCsv ? { emptyCsv: true } : {}),
       restoredFromRecovery: restoreTarget !== undefined,
       automaticRecoveryDisabled: !allowsAutomaticWorkbookRecovery(opened.sheets),
     })
@@ -4094,11 +4336,33 @@ async function openWorkbookSession(
     return attachEchartMetadata(client, snapshotPath, parsedFile)
   } catch (error) {
     await rm(snapshotPath, { force: true }).catch(() => undefined)
+    unsavedNewWorkbooks.delete(path)
     if (importTempDir !== undefined) {
       await cleanupImportTempDirectory(app.getPath('temp'), importTempDir)
     }
     throw error
   }
+}
+
+/// A 0-byte .xlsx is an empty workbook, not a corrupt one. The sidecar needs a
+/// real archive, so a blank one opens from the temp dir with the original as
+/// the write-back target (the restore path: Save writes it even with no edits).
+async function openEmptyXlsx(path: string): Promise<{
+  openPath: string
+  importTempDir: string
+  restoreTarget: string
+  emptySource: true
+}> {
+  const directory = join(app.getPath('temp'), 'genoffice-imports', randomUUID())
+  await mkdir(directory, { recursive: true })
+  const openPath = join(directory, basename(path))
+  try {
+    await writeFile(openPath, (await csvToXlsxBufferForOpen('', 'Sheet1')).buffer)
+  } catch (error) {
+    await cleanupImportTempDirectory(app.getPath('temp'), directory)
+    throw error
+  }
+  return { openPath, importTempDir: directory, restoreTarget: path, emptySource: true }
 }
 
 /** which legacy charset an Excel CSV most likely uses, judged by the UI language */
@@ -4112,8 +4376,9 @@ function legacyCsvCharset(): string | undefined {
   return byLang[getUiLang()]
 }
 
-/// .xls and .csv open as a converted copy in the temp dir; the session
-/// remembers the original's .xlsx sibling as the Save As default.
+/// .xls and .tsv open as a converted copy in the temp dir; the session
+/// remembers the original's .xlsx sibling as the Save As default. .csv converts
+/// the same way but keeps its file identity, so Save writes values back to it.
 async function prepareWorkbookForOpen(
   client: XlsxSidecarClient,
   path: string,
@@ -4125,11 +4390,47 @@ async function prepareWorkbookForOpen(
   suggestSaveAs?: string
   csvImport?: boolean
   csvSourcePath?: string
+  emptyCsv?: boolean
   importTempDir?: string
   restoreTarget?: string
+  emptySource?: boolean
+  unsavedNew?: boolean
 }> {
+  // A shell-created "New spreadsheet" opens from a temp directory and has no
+  // user-visible file yet: Save As produces it, and closing unsaved discards
+  // the directory. The mark is consumed once the session exists (see
+  // openWorkbookSession) so the name stays reserved through the open and a
+  // reopened path is a normal file.
+  const unsavedNew = unsavedNewWorkbooks.get(path)
+  if (unsavedNew !== undefined) {
+    const base = {
+      suggestSaveAs: unsavedNew.suggestSaveAs,
+      importTempDir: unsavedNew.tempDir,
+      unsavedNew: true,
+    }
+    // a crash left work under this would-be name: offer it like a file's
+    // recovery copy, opening the copy itself as the (still unsaved) workbook
+    const recovery = pendingUnsavedNewRecoveryFor(unsavedNew.suggestSaveAs)
+    if (recovery) {
+      const choice =
+        contents && !contents.isDestroyed()
+          ? await promptRecoveryRestore(contents, unsavedNew.suggestSaveAs, recovery)
+          : await promptRecoveryRestoreNative(parent)
+      // the copy is what the recovery writer keeps overwriting, so the session
+      // streams from the backing file, not from the copy
+      if (choice === 'restore') {
+        try {
+          await copyFile(recovery, path)
+        } catch (error) {
+          await discardPreparedOpen({ openPath: path, importTempDir: unsavedNew.tempDir })
+          throw error
+        }
+      } else if (choice === 'discard') forgetUnsavedNewRecovery(unsavedNew.suggestSaveAs)
+    }
+    return { openPath: path, ...base }
+  }
   const extension = path.slice(path.lastIndexOf('.') + 1).toLowerCase()
-  if (extension !== 'csv' && extension !== 'xls') {
+  if (extension !== 'csv' && extension !== 'tsv' && extension !== 'xls') {
     // Unsaved work from a lost session: offer the recovery copy. Restoring
     // opens it with restoreTarget pointing back at the original, so a plain
     // Save writes straight back over the file the user opened — the restore
@@ -4145,20 +4446,31 @@ async function prepareWorkbookForOpen(
       if (choice === 'restore') return { openPath: recovery, restoreTarget: path }
       if (choice === 'discard') clearWorkbookRecovery(path)
     }
+    if (extension === 'xlsx' && (await stat(path)).size === 0) return openEmptyXlsx(path)
     return { openPath: path }
   }
   const stem = basename(path).replace(/\.[^.]+$/, '')
   const directory = join(app.getPath('temp'), 'chatoffice-imports', randomUUID())
   await mkdir(directory, { recursive: true })
   const openPath = join(directory, `${stem}.xlsx`)
+  let emptyCsv = false
   try {
-    if (extension === 'csv') {
+    if (extension === 'csv' || extension === 'tsv') {
       const csvStat = await stat(path)
-      if (csvStat.size > MAX_CSV_IMPORT_BYTES) throw new Error(tm('errFileTooLarge'))
-      await writeFile(
-        openPath,
-        await csvToXlsxBuffer(decodeCsvBuffer(await readFile(path), legacyCsvCharset())),
+      if (csvStat.size > MAX_DELIMITED_IMPORT_BYTES) throw new Error(tm('errFileTooLarge'))
+      const converted = await csvToXlsxBufferForOpen(
+        decodeCsvBuffer(await readFile(path), legacyCsvCharset()),
+        'Sheet1',
+        // A .tsv's delimiter is declared by its extension, and sniffing by
+        // frequency can get it wrong: annotation-heavy exports (gene
+        // descriptions, database cross-references) hold comma-separated
+        // lists, so a narrow table ends up with more commas than tabs and
+        // every row shatters on the comma. A .csv keeps the sniff — the prose
+        // guard in resolveImportDelimiter is what that path needs.
+        extension === 'tsv' ? '\t' : undefined,
       )
+      emptyCsv = converted.empty
+      await writeFile(openPath, converted.buffer)
     } else {
       await client.convertWorkbook({ path, targetPath: openPath })
     }
@@ -4167,10 +4479,17 @@ async function prepareWorkbookForOpen(
     throw error
   }
   // CSV keeps its file identity: Save writes the values back to the original
-  // .csv (Excel's behavior), so no Save As detour is suggested. Legacy .xls
-  // still routes the first save through Save As to a fresh .xlsx.
+  // .csv (Excel's behavior), so no Save As detour is suggested. Legacy .xls and
+  // view-only .tsv route the first save through Save As to a fresh .xlsx —
+  // writing values back to a .tsv would need a tab serializer this path lacks.
   return extension === 'csv'
-    ? { openPath, importTempDir: directory, csvImport: true, csvSourcePath: path }
+    ? {
+        openPath,
+        importTempDir: directory,
+        csvImport: true,
+        csvSourcePath: path,
+        ...(emptyCsv ? { emptyCsv: true } : {}),
+      }
     : { openPath, importTempDir: directory, suggestSaveAs: path.replace(/\.[^.]+$/, '.xlsx') }
 }
 
@@ -4267,7 +4586,9 @@ function installApplicationMenu(): void {
           { role: 'selectAll', label: labels.selectAll },
         ],
       },
-      viewMenuTemplate(labels),
+      // ⌘R is Fill Right and ⌘0/⌘+/⌘- hide columns / zoom the sheet; menu
+      // accelerators would swallow them on macOS.
+      viewMenuTemplate(labels, { devItems: !app.isPackaged, pageZoom: false }),
       windowMenuTemplate(process.platform, labels),
     ]),
   )

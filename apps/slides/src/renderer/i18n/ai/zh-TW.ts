@@ -324,4 +324,5 @@ export const zhTW = {
   aiToolRunWebSearch: '正在搜尋網頁…',
   aiToolRunImageSearch: '正在搜尋圖片…',
   aiToolRunReadUrl: '正在讀取網頁…',
+  aiPageCloudToLocal: '雲端不可用,已本地生成',
 } satisfies Record<keyof typeof zh, string>

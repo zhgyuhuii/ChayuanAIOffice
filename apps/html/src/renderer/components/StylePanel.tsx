@@ -53,10 +53,19 @@ function PxInput({
       <input
         type="number"
         min={def.min}
+        max={def.max}
         value={value}
         onChange={(e) => {
           const v = e.target.value
           if (v !== '' && Number(v) >= def.min) onStyle({ [def.prop]: `${v}px` })
+          // Infinity passes a >= check, so require finiteness and clamp to
+          // the field max: unbounded values would persist as Infinitypx.
+          const n = Number(v)
+          if (v !== '' && Number.isFinite(n) && n >= def.min && n <= def.max) {
+            onStyle({ [def.prop]: `${v}px` })
+          }
+          // Infinity passes a >= check and would persist as Infinitypx
+          if (v !== '' && Number.isFinite(n) && n >= def.min) onStyle({ [def.prop]: `${v}px` })
         }}
       />
     </label>
@@ -179,10 +188,22 @@ export function StylePanel(p: Props) {
     if (p.textRun !== null) p.onText(v)
   })
   const altCommitRef = useRef<() => void>(() => {})
-  const [css, setCss] = useState('')
+  const {
+    value: css,
+    setValue: setCss,
+    commitRef: cssCommitRef,
+  } = useDraft('', (value) => {
+    const trimmed = value.trim()
+    if (trimmed) p.onCustomCss(trimmed)
+  })
+  const commitCss = () => {
+    cssCommitRef.current()
+    if (css.trim()) setCss('')
+  }
   const flushDrafts = () => {
     textCommitRef.current()
     altCommitRef.current()
+    commitCss()
   }
   p.draftRef.current = flushDrafts
   const draftRef = p.draftRef
@@ -193,12 +214,6 @@ export function StylePanel(p: Props) {
     },
     [draftRef],
   )
-  const commitCss = () => {
-    if (css.trim()) {
-      p.onCustomCss(css.trim())
-      setCss('')
-    }
-  }
 
   return (
     <aside className="hx-panel" aria-label={t('stylePanel')}>

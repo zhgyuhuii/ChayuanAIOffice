@@ -326,4 +326,5 @@ export const he = {
   aiToolRunWebSearch: 'מחפש באינטרנט…',
   aiToolRunImageSearch: 'מחפש תמונות…',
   aiToolRunReadUrl: 'העמוד נקרא…',
+  aiPageCloudToLocal: 'הענן לא זמין — נוצר מקומית',
 } satisfies Record<keyof typeof zh, string>

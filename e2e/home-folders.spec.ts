@@ -6,7 +6,6 @@ import {
   readFileSync,
 =======
   readdirSync,
->>>>>>> efb9247a (Sync snapshot (2026-09-22) (#757))
   realpathSync,
   rmSync,
   writeFileSync,
@@ -137,7 +136,6 @@ test.describe('home folders panel', () => {
   })
 
   test('an added folder joins the tree in place and leaves the list without touching disk', async () => {
-<<<<<<< HEAD
     const extra = realpathSync(mkdtempSync(join(tmpdir(), 'chatoffice-e2e-extra-')))
     mkdirSync(join(extra, 'Projects', 'Alpha'), { recursive: true })
     writeFileSync(join(extra, 'Projects', 'plan.md'), '# plan')
