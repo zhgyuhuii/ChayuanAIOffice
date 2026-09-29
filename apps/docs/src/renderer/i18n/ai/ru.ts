@@ -208,7 +208,7 @@ export const ru = {
   aiPolishDesc: 'Отполировать текст для ясности и гладкости изложения',
   aiAssistantNoMatch: 'Подходящих ассистентов нет',
   aiAssistantScopeSelection: 'Выделение',
-  aiChaOfficeLoginBtn: 'Войти',
+  aiChatOfficeLoginBtn: 'Войти',
   aiTabChat: 'Чат',
   aiSummarizeDesc: 'Составить краткое резюме документа и выделить главное',
 

@@ -199,7 +199,7 @@ export const zhTW = {
   aiPolishDesc: 'लेखन को और स्पष्ट व सहज बनाएँ',
   aiAssistantNoMatch: '沒有符合的助手',
   aiAssistantScopeSelection: '選取範圍',
-  aiChaOfficeLoginBtn: '登入',
+  aiChatOfficeLoginBtn: '登入',
   aiTabChat: 'चैट',
   aiSummarizeDesc: 'दस्तावेज़ का सारांश बनाकर मुख्य बिंदु समझें',
 

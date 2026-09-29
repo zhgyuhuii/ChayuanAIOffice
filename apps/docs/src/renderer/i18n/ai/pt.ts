@@ -211,7 +211,7 @@ export const pt = {
   aiPolishDesc: 'Aperfeiçoar o texto para mais clareza e fluidez',
   aiAssistantNoMatch: 'Nenhum assistente correspondente',
   aiAssistantScopeSelection: 'Seleção',
-  aiChaOfficeLoginBtn: 'Entrar',
+  aiChatOfficeLoginBtn: 'Entrar',
   aiTabChat: 'Bate-papo',
   aiSummarizeDesc: 'Resumir o documento e captar os pontos principais',
 

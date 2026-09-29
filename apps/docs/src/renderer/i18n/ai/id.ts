@@ -206,7 +206,7 @@ export const id = {
   aiPolishDesc: 'Perhalus tulisan agar lebih jelas dan mengalir',
   aiAssistantNoMatch: 'Tidak ada asisten yang cocok',
   aiAssistantScopeSelection: 'Pilihan',
-  aiChaOfficeLoginBtn: 'Masuk',
+  aiChatOfficeLoginBtn: 'Masuk',
   aiTabChat: 'Obrolan',
   aiSummarizeDesc: 'Ringkas dokumen dan tangkap poin-poin pentingnya',
 

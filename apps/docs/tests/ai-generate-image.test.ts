@@ -89,7 +89,7 @@ describe('generate_image', () => {
   it('surfaces the channel error (not logged in / cloud tools off / generation failure)', async () => {
     const { exec, editor } = await runWithDesktop(
       {
-        aiGenerateImage: () => Promise.resolve({ error: 'ChaOffice account is not logged in' }),
+        aiGenerateImage: () => Promise.resolve({ error: 'ChatOffice account is not logged in' }),
         // no-url generation falls back to web search; empty results keep the channel error path
         imageSearch: () => Promise.resolve({ method: 'web', images: [] }),
       },
@@ -136,7 +136,7 @@ describe('generate_image', () => {
 
 describe('generate_image no-login web fallback (image-source-plan #9)', () => {
   const CHANNEL_DOWN = {
-    aiGenerateImage: () => Promise.resolve({ error: 'ChaOffice account is not logged in' }),
+    aiGenerateImage: () => Promise.resolve({ error: 'ChatOffice account is not logged in' }),
   }
 
   it('generation fails → a matching web image is picked and downloaded instead', async () => {

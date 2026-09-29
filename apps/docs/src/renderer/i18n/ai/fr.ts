@@ -210,7 +210,7 @@ export const fr = {
   aiPolishDesc: 'Peaufiner le texte pour un style plus clair et fluide',
   aiAssistantNoMatch: 'Aucun assistant correspondant',
   aiAssistantScopeSelection: 'Sélection',
-  aiChaOfficeLoginBtn: 'Se connecter',
+  aiChatOfficeLoginBtn: 'Se connecter',
   aiTabChat: 'Discussion',
   aiSummarizeDesc: 'Résumer le document et en saisir les points clés',
 

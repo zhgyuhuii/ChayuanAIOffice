@@ -209,7 +209,7 @@ export const pl = {
   aiPolishDesc: 'Wygładź tekst, aby był jaśniejszy i płynniejszy',
   aiAssistantNoMatch: 'Brak pasujących asystentów',
   aiAssistantScopeSelection: 'Zaznaczenie',
-  aiChaOfficeLoginBtn: 'Zaloguj się',
+  aiChatOfficeLoginBtn: 'Zaloguj się',
   aiTabChat: 'Czat',
   aiSummarizeDesc: 'Podsumuj dokument i uchwyć jego kluczowe punkty',
 

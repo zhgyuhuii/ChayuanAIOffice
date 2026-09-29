@@ -204,7 +204,7 @@ export const th = {
   aiPolishDesc: 'ขัดเกลาถ้อยคำให้ชัดเจนและลื่นไหล',
   aiAssistantNoMatch: 'ไม่พบผู้ช่วยที่ตรงกัน',
   aiAssistantScopeSelection: 'ส่วนที่เลือก',
-  aiChaOfficeLoginBtn: 'ลงชื่อเข้าใช้',
+  aiChatOfficeLoginBtn: 'ลงชื่อเข้าใช้',
   aiTabChat: 'แชท',
   aiSummarizeDesc: 'สรุปเนื้อหาเอกสารและเข้าใจประเด็นสำคัญได้เร็ว',
 

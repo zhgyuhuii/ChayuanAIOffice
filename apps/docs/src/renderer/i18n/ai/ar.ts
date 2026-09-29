@@ -204,7 +204,7 @@ export const ar = {
   aiPolishDesc: 'تحسين الصياغة لجعل النص أوضح وأكثر انسيابية',
   aiAssistantNoMatch: 'لا يوجد مساعدون مطابقون',
   aiAssistantScopeSelection: 'التحديد',
-  aiChaOfficeLoginBtn: 'تسجيل الدخول',
+  aiChatOfficeLoginBtn: 'تسجيل الدخول',
   aiTabChat: 'الدردشة',
   aiSummarizeDesc: 'تلخيص المستند واستيعاب نقاطه الرئيسية',
 

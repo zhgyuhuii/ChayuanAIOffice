@@ -207,7 +207,7 @@ export const en = {
   aiPolishDesc: 'Polish the writing for clearer, smoother prose',
   aiAssistantNoMatch: 'No matching assistants',
   aiAssistantScopeSelection: 'Selection',
-  aiChaOfficeLoginBtn: 'Sign in',
+  aiChatOfficeLoginBtn: 'Sign in',
   aiTabChat: 'Chat',
   aiSummarizeDesc: 'Summarize the document and capture its key points',
 

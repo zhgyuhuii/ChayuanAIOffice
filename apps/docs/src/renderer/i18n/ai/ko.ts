@@ -204,7 +204,7 @@ export const ko = {
   aiPolishDesc: '문장을 다듬어 표현을 명확하게',
   aiAssistantNoMatch: '일치하는 어시스턴트가 없습니다',
   aiAssistantScopeSelection: '선택 영역',
-  aiChaOfficeLoginBtn: '로그인',
+  aiChatOfficeLoginBtn: '로그인',
   aiTabChat: '채팅',
   aiSummarizeDesc: '문서의 요점을 정리해 핵심을 빠르게 파악',
 

@@ -52,7 +52,7 @@ export interface ChatEntry {
   turnLimit?: boolean
   /** D10: restored interrupted turn (half text kept, rendered with the badge) */
   interrupted?: boolean
-  /** the run failed because ChaOffice is signed out — render an inline sign-in button */
+  /** the run failed because ChatOffice is signed out — render an inline sign-in button */
   loginRequired?: boolean
   /** tool executions performed during this assistant turn */
   tools?: ToolActivity[]
@@ -91,7 +91,7 @@ export const PASTE_MIME_EXT: Record<string, string> = {
   'image/webp': 'webp',
 }
 
-/** File-type icons for attachment cards (ChaOffice attachment icon set) */
+/** File-type icons for attachment cards (ChatOffice attachment icon set) */
 export const ATTACHMENT_CARD_ICON_GROUPS: [icon: string, exts: string[]][] = [
   [fileWordIcon, ['doc', 'docx']],
   [fileExcelIcon, ['xls', 'xlsx', 'xlsm', 'csv', 'tsv']],
