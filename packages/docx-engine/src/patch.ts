@@ -82,6 +82,7 @@ import {
   upsertStyleXml,
   type DefaultFonts,
   type StyleUpsert,
+  mergeStyleXml,
 } from './style-upsert'
 import {
   WATERMARK_NS,
@@ -1087,7 +1088,6 @@ export async function saveDocx(
       ? await file.async('string')
       : '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n' +
         '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"></w:styles>'
-<<<<<<< ours
     for (const styleId of options.styleDeletes ?? []) {
       const escaped = styleId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
       const block = new RegExp(
@@ -1096,19 +1096,8 @@ export async function saveDocx(
       )
       xml = xml.replace(block, '')
     }
-    for (const up of options.styleUpserts ?? []) {
-      const existing = new RegExp(
-        `<w:style [^>]*w:styleId="${up.styleId.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\$&')}"[\\s\\S]*?</w:style>`,
-      )
-      const match = existing.exec(xml)
-      const styleXml = mergeStyleXml(match?.[0] ?? null, up)
-      xml = match
-        ? xml.replace(existing, () => styleXml)
-        : xml.replace('</w:styles>', `${styleXml}</w:styles>`)
-    }
-=======
     for (const up of options.styleUpserts ?? []) xml = upsertStyleXml(xml, up)
->>>>>>> theirs
+    for (const up of options.styleUpserts ?? []) xml = upsertStyleXml(xml, up)
     stylesXmlOut = options.defaultFonts ? mergeDefaultFontsXml(xml, options.defaultFonts) : xml
   }
 
