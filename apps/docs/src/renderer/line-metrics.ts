@@ -2155,7 +2155,7 @@ export function estimateHfHeight(
     behind?: boolean
     wrap?: 'none' | 'square' | 'tight' | 'through' | 'topBottom'
     posYPx?: number
-    posVRel?: 'page' | 'margin' | 'paragraph'
+    posVRel?: 'page' | 'margin' | 'paragraph' | 'topMargin' | 'bottomMargin'
   }> | null,
   /** header geometry (px): pass for headers so wrapped anchored images push the body below their bottom edge (Word); watermarks (wrapNone/behindDoc) still reserve nothing */
   geom?: { marginTopPx: number; headerDistPx: number },
