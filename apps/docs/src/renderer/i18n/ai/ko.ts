@@ -207,7 +207,5 @@ export const ko = {
   aiChaOfficeLoginBtn: '로그인',
   aiTabChat: '채팅',
   aiSummarizeDesc: '문서의 요점을 정리해 핵심을 빠르게 파악',
-
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
-
 } satisfies Record<keyof typeof zh, string>

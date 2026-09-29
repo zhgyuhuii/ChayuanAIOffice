@@ -23,7 +23,7 @@
  *   - space-before/space-after keep their face value (Word does not grid-snap them)
  */
 
-import type { DocGrid } from '@chatoffice/docx-engine'
+import type { DocGrid, Run } from '@chatoffice/docx-engine'
 
 // ─── Font metrics interface (same interface as pptx-render/metrics.ts) ─────
 
@@ -2390,4 +2390,106 @@ export function noteLineHeightPx(docGrid: DocGrid | undefined, style?: NoteStyle
 /** noteLineHeightPx of the default (styleless, 10pt) note model */
 export function footnoteLineHeightPx(docGrid: DocGrid | undefined): number {
   return noteLineHeightPx(docGrid)
+}
+
+
+/** line boxes of the open document's embedded faces, keyed like docFontTable */
+let embeddedLineBoxes = new Map<string, { factor: number; descent: number }>()
+
+/** an exact rule caps every run's line box at the rule (--doc-lh-cap, styles.css .doc-lh-fixed span) */
+export function cssExactLineCap(
+  lineRule: 'auto' | 'atLeast' | 'exact' | undefined,
+  lineRawTwips: number | undefined,
+): string | null {
+  return lineRule === 'exact' && lineRawTwips ? `${(lineRawTwips / 20).toFixed(1)}pt` : null
+}
+
+
+export function hangulSpaceOffsets(text: string, prev = '', next = ''): number[] {
+  const out: number[] = []
+  let prevCp = prev ? lastCodePoint(prev) : -1
+  for (let i = 0; i < text.length;) {
+    const cp = text.codePointAt(i)!
+    if (cp === 0x20) {
+      const nextCp =
+        i + 1 < text.length ? text.codePointAt(i + 1)! : next ? next.codePointAt(0)! : -1
+      if (isHangul(prevCp) || isHangul(nextCp)) out.push(i)
+    }
+    prevCp = cp
+    i += cp > 0xffff ? 2 : 1
+  }
+  return out
+}
+
+
+export function cssLeadTop(
+  lineRule: 'auto' | 'atLeast' | 'exact' | undefined,
+  lineRawTwips: number | undefined,
+  lineSpacing: number | undefined,
+): string | null {
+  if (lineRule === 'exact' && lineRawTwips) return '0px'
+  if (lineRule === 'atLeast' && lineRawTwips != null) {
+    if (lineRawTwips === 0) return '0px'
+    return `max(0px, (${(lineRawTwips / 20).toFixed(1)}pt - var(--doc-line-grid, calc(var(--doc-line-factor,1.2) * 1em))) / 2)`
+  }
+  return cssAutoLineMult(lineRule, lineRawTwips, lineSpacing) ? 'initial' : null
+}
+
+
+/** Run[] port of extensions' latinParaFactor (declared run fonts override the doc factor). */
+export function latinRunsFactor(runs: Run[], scriptVar: string): string {
+  let declaredMax = 0
+  let undeclared = false
+  for (const run of runs) {
+    // ascii slot only, like extensions' latinParaFactor: an eastAsia-only
+    // declaration must not set a Latin line's factor
+    const family = run.fontAscii
+    if (family) declaredMax = Math.max(declaredMax, lineHeightFactor(family))
+    else undeclared = true
+  }
+  if (declaredMax <= 0) return scriptVar
+  return undeclared ? `max(${scriptVar}, ${declaredMax})` : String(declaredMax)
+}
+
+/** Per-paragraph --doc-line-factor from runs (Run[] port of extensions' paraLineFactor). */
+export function runsLineFactor(runs: Run[], text: string): string {
+  const scriptVar = paraLineFactorCss(text)
+  if (!textHasCjk(text)) return latinRunsFactor(runs, scriptVar)
+  let declaredMax = 0
+  let undeclaredCjk = false
+  for (const run of runs) {
+    if (!textHasCjk(run.text)) continue
+    const family = run.eaSlotEmpty === true ? null : (run.font ?? run.fontAscii)
+    if (family && isCjkFontName(family)) {
+      declaredMax = Math.max(declaredMax, cjkDeclaredLineFactor(family) ?? lineHeightFactor(family))
+    } else undeclaredCjk = true
+  }
+  if (declaredMax <= 0) return scriptVar
+  return undeclaredCjk ? `max(${scriptVar}, ${declaredMax})` : String(declaredMax)
+}
+
+
+export function autoLineMultOf(el: HTMLElement): number {
+  if (el.classList.contains('doc-lh-fixed')) return 1
+  const inlineMult = el.style.getPropertyValue('--doc-line-mult')
+  if (inlineMult) return parseFloat(inlineMult) || 1
+  const cs = getComputedStyle(el)
+  const fixed =
+    el.style.getPropertyValue('--doc-line-fixed') || cs.getPropertyValue('--doc-line-fixed')
+  if (fixed.trim() === '1') return 1
+  return parseFloat(cs.getPropertyValue('--doc-line-mult')) || 1
+}
+
+
+/** first entry per family wins: callers list the regular cut first */
+export function setEmbeddedLineMetrics(
+  faces: ReadonlyArray<{ family: string; ascent: number; descent: number; lineGap: number }>,
+): void {
+  embeddedLineBoxes = new Map()
+  for (const f of faces) {
+    const key = f.family.normalize('NFKC').toLowerCase().trim()
+    const factor = f.ascent + f.descent + f.lineGap
+    if (embeddedLineBoxes.has(key) || !(factor > 0.5 && factor < 4)) continue
+    embeddedLineBoxes.set(key, { factor: Math.round(factor * 1e4) / 1e4, descent: f.descent })
+  }
 }

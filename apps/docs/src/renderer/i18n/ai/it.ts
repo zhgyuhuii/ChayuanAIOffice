@@ -215,7 +215,5 @@ export const it = {
   aiChaOfficeLoginBtn: 'Accedi',
   aiTabChat: 'Chat',
   aiSummarizeDesc: 'Riassumere il documento e coglierne i punti chiave',
-
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
-
 } satisfies Record<keyof typeof zh, string>

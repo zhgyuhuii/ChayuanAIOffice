@@ -7,7 +7,10 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const here = dirname(fileURLToPath(import.meta.url))
-const { version } = JSON.parse(await readFile(join(here, 'package.json'), 'utf8'))
+const { version: pkgVersion } = JSON.parse(await readFile(join(here, 'package.json'), 'utf8'))
+// electron-builder's beforePack rebuilds the bundle with the release version
+// injected through this env (packaged-cli-version.test.ts pins the contract)
+const version = process.env.GENOFFICE_APP_VERSION || pkgVersion
 
 // Vite's `?raw` text imports (the pptx op guides are markdown files)
 const rawText = {

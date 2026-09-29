@@ -206,6 +206,10 @@ import {
   requestSheetsClose,
   resolveSheetsSessionPath,
   markSheetsUntitledPath,
+  markSheetsUnsavedNew,
+  unmarkSheetsUnsavedNew,
+  sheetsSuggestedPathTaken,
+  pendingUnsavedNewRecoveries,
   authorizeMcpSheetWrite,
   sendSheetsMenuAction,
   setSheetsBlankDraftHook,
@@ -4238,23 +4242,54 @@ function removePendingUntitled(tempPath: string): void {
  * "New spreadsheet" opens a hidden temp-backed blank workbook session — nothing
  * lands in the user's project folder at creation. The user-visible file is only
  * written when they first save, which routes through Save As prefilled with the
- * pending project folder and the untitled name (sheets-main's blank-draft flow).
+ * pending project folder and the untitled name. A hidden backing file is
+ * written atomically under the temp import root so a crash before the first
+ * save can offer the content back on the next launch.
  */
 async function newSheetTab(recoverAs?: string): Promise<void> {
   // recoverAs: the would-be path of a new workbook whose recovery copy
   // survived a crash; the sheets module offers it under that name
   const dir = newFileDir('sheet')
-  void dir
+  let suggestedPath = recoverAs ?? uniquePathIn(dir, `${tm('untitledSheet')}.xlsx`)
+  // nothing is on disk yet, so two new tabs would otherwise be promised the same name
+  for (let i = 2; !recoverAs && sheetsSuggestedPathTaken(suggestedPath); i++)
+    suggestedPath = uniquePathIn(dir, `${tm('untitledSheet')} ${i}.xlsx`)
   try {
-    tabManager?.openSheetsTab(undefined, {
-      newBlank: true,
-      newBlankSaveDir: pendingProjectSaveDir('sheet'),
-      newBlankName: tm('untitledSheet'),
-    })
+    // under the import root so the session-close cleanup removes it like an import copy
+    const tempDir = join(app.getPath('temp'), 'chatoffice-imports', randomUUID())
+    mkdirSync(tempDir, { recursive: true })
+    const backingPath = join(tempDir, basename(suggestedPath))
+    // reserve the name before the first await so a second new tab picks another;
+    // the first Save As starts from the name the file would have had
+    markSheetsUnsavedNew(backingPath, suggestedPath, tempDir)
+    try {
+      await atomicWriteFile(backingPath, await blankXlsxBuffer())
+    } catch (err) {
+      unmarkSheetsUnsavedNew(backingPath)
+      throw err
+    }
+    // eligible for content-derived auto-rename after the first AI generation
+    markSheetsUntitledPath(backingPath)
+    tabManager?.openSheetsTab(backingPath)
+    startQueuedWorkbookNudge()
+    // no recent-file entry yet: there is no user-visible file until it is saved
     recordStarPromptDocOpen()
     analytics.track('file_new', { kind: 'xlsx' })
   } catch (err) {
-    surfaceNewTabError(err)
+    console.warn('[shell] temp workbook create failed, writing to the default folder:', err)
+    try {
+      await atomicWriteFile(suggestedPath, await blankXlsxBuffer())
+      markSheetsUntitledPath(suggestedPath)
+      if (routeDocumentPath(suggestedPath)) recordStarPromptDocOpen()
+      analytics.track('file_new', { kind: 'xlsx' })
+    } catch (fallbackErr) {
+      console.warn('[shell] blank workbook create failed, opening in-memory blank tab:', fallbackErr)
+      try {
+        tabManager?.openSheetsTab(undefined, { newBlank: true })
+      } catch (finalErr) {
+        surfaceNewTabError(finalErr)
+      }
+    }
   }
 }
 
@@ -4416,14 +4451,13 @@ function newHtmlTab(): void {
  */
 async function newPdfTab(): Promise<void> {
   try {
-    mkdirSync(blankDraftsDir(), { recursive: true })
-    const tempPath = uniquePathIn(blankDraftsDir(), `blank-${randomUUID()}.pdf`)
-    writeFileSync(tempPath, await blankPdfBuffer())
-    markPdfUntitledPath(tempPath, { defaultDir: pendingProjectSaveDir('pdf') })
-    registerPendingUntitled({ kind: 'pdf', tempPath, defaultDir: pendingProjectSaveDir('pdf') })
+    const filePath = uniquePathIn(newFileDir('pdf'), `${tm('untitledPdf')}.pdf`)
+    await atomicWriteFile(filePath, await blankPdfBuffer())
+    // Opt the file into content-derived auto-naming on its first save
+    markPdfUntitledPath(filePath)
     // Direct tab open (not routeDocumentPath): a temp-backed untitled document
     // must not hit the recents list or claim a project — that happens at first save.
-    tabManager?.openPdfTab(tempPath, { untitledTitle: tm('untitledPdf') })
+    tabManager?.openPdfTab(filePath, { untitledTitle: tm('untitledPdf') })
     recordStarPromptDocOpen()
     analytics.track('file_new', { kind: 'pdf' })
   } catch (err) {

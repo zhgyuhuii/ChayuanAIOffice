@@ -136,19 +136,20 @@ export class TabManager {
       this.layout()
       setImmediate(() => this.layout())
     })
+    shellWindow.webContents.once('did-finish-load', () => this.scheduleSpareSheetsView(1500))
   }
 
   private scheduleSpareSheetsView(delayMs: number): void {
-    if (process.env.GENOFFICE_NO_SPARE_VIEW || this.spareSheetsTimer || this.spareSheetsView) return
-    if (this.tabs.find((t) => t.id === this.activeId)?.kind !== 'sheets') return
+    if (process.env.GENOFFICE_NO_SPARE_VIEW || this.spareSheetsTimer) return
     this.spareSheetsTimer = setTimeout(() => {
       this.spareSheetsTimer = null
       if (this.spareSheetsView || this.shellWindow.isDestroyed()) return
-      const active = this.tabs.find((t) => t.id === this.activeId)
-      if (active?.kind !== 'sheets') return
       const view = createSheetsView({ includeAiHandlers: false })
       // registering the session made the spare the menu-action target
-      setActiveSheetsWebContents(active.view?.webContents ?? null)
+      const active = this.tabs.find((t) => t.id === this.activeId)
+      setActiveSheetsWebContents(
+        active?.kind === 'sheets' && active.view ? active.view.webContents : null,
+      )
       this.shellWindow.contentView.addChildView(view)
       view.setVisible(false)
       view.setBounds(this.contentBounds())

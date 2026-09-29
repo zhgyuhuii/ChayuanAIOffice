@@ -737,7 +737,6 @@ const upstreamStrings = {
     redactSaveAsHint: 'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
     redactSaveFirst: 'Save other pending changes before applying redactions.',
     redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
-    ribbonExpand: 'Expand the Ribbon',
   },
   ja: {
     ribbonTabFillForm: "Fill Form",
@@ -1106,7 +1105,6 @@ const upstreamStrings = {
     redactSaveAsHint: 'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
     redactSaveFirst: 'Save other pending changes before applying redactions.',
     redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
-    ribbonExpand: 'リボンを展開する',
   },
   ko: {
     ribbonTabFillForm: "Fill Form",
@@ -1475,7 +1473,6 @@ const upstreamStrings = {
     redactSaveAsHint: 'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
     redactSaveFirst: 'Save other pending changes before applying redactions.',
     redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
-    ribbonExpand: '리본 확장',
   },
   fr: {
     ribbonTabFillForm: "Fill Form",
@@ -1844,7 +1841,6 @@ const upstreamStrings = {
     redactSaveAsHint: 'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
     redactSaveFirst: 'Save other pending changes before applying redactions.',
     redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
-    ribbonExpand: 'Développer le ruban',
   },
   de: {
     ribbonTabFillForm: "Fill Form",
@@ -2213,7 +2209,6 @@ const upstreamStrings = {
     redactSaveAsHint: 'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
     redactSaveFirst: 'Save other pending changes before applying redactions.',
     redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
-    ribbonExpand: 'Menüband erweitern',
   },
   es: {
     ribbonTabFillForm: "Fill Form",
@@ -2582,7 +2577,6 @@ const upstreamStrings = {
     redactSaveAsHint: 'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
     redactSaveFirst: 'Save other pending changes before applying redactions.',
     redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
-    ribbonExpand: 'Expandir la cinta de opciones',
   },
   th: {
     ribbonTabFillForm: "Fill Form",
@@ -2951,7 +2945,6 @@ const upstreamStrings = {
     redactSaveAsHint: 'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
     redactSaveFirst: 'Save other pending changes before applying redactions.',
     redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
-    ribbonExpand: 'ขยาย Ribbon',
   },
   id: {
     ribbonTabFillForm: "Fill Form",
@@ -3320,7 +3313,6 @@ const upstreamStrings = {
     redactSaveAsHint: 'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
     redactSaveFirst: 'Save other pending changes before applying redactions.',
     redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
-    ribbonExpand: 'Perluas Pita',
   },
   ru: {
     ribbonTabFillForm: "Fill Form",
@@ -3689,7 +3681,6 @@ const upstreamStrings = {
     redactSaveAsHint: 'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
     redactSaveFirst: 'Save other pending changes before applying redactions.',
     redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
-    ribbonExpand: 'Развернуть ленту',
   },
   ar: {
     ribbonTabFillForm: "Fill Form",
@@ -4058,7 +4049,6 @@ const upstreamStrings = {
     redactSaveAsHint: 'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
     redactSaveFirst: 'Save other pending changes before applying redactions.',
     redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
-    ribbonExpand: 'توسيع الشريط',
   },
   pt: {
     ribbonTabFillForm: "Fill Form",
@@ -4427,7 +4417,6 @@ const upstreamStrings = {
     redactSaveAsHint: 'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
     redactSaveFirst: 'Save other pending changes before applying redactions.',
     redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
-    ribbonExpand: 'Expandir a Faixa de Opções',
   },
   it: {
     ribbonTabFillForm: "Fill Form",
@@ -4796,7 +4785,6 @@ const upstreamStrings = {
     redactSaveAsHint: 'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
     redactSaveFirst: 'Save other pending changes before applying redactions.',
     redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
-    ribbonExpand: 'Espandi la barra multifunzione',
   },
   pl: {
     ribbonTabFillForm: "Fill Form",
@@ -5165,7 +5153,6 @@ const upstreamStrings = {
     redactSaveAsHint: 'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
     redactSaveFirst: 'Save other pending changes before applying redactions.',
     redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
-    ribbonExpand: 'Rozwiń Wstążkę',
   },
   cs: {
     ribbonTabFillForm: "Vyplnit formulář",
@@ -5902,7 +5889,6 @@ const upstreamStrings = {
     redactSaveAsHint: 'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
     redactSaveFirst: 'Save other pending changes before applying redactions.',
     redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
-    ribbonExpand: 'Het lint uitvouwen',
   },
   ms: {
     ribbonTabFillForm: "Fill Form",
@@ -6271,7 +6257,6 @@ const upstreamStrings = {
     redactSaveAsHint: 'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
     redactSaveFirst: 'Save other pending changes before applying redactions.',
     redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
-    ribbonExpand: 'Kembangkan Reben',
   },
   he: {
     ribbonTabFillForm: "Fill Form",
@@ -6640,7 +6625,6 @@ const upstreamStrings = {
     redactSaveAsHint: 'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
     redactSaveFirst: 'Save other pending changes before applying redactions.',
     redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
-    ribbonExpand: 'הרחב את רצועת הכלים',
   },
   hi: {
     ribbonTabFillForm: "Fill Form",
@@ -7009,7 +6993,6 @@ const upstreamStrings = {
     redactSaveAsHint: 'Redactions were not applied. Click Apply redactions to apply these marks to the working copy; Normal Save never applies these marks.',
     redactSaveFirst: 'Save other pending changes before applying redactions.',
     redactStructureBlocked: 'Apply or clear pending redactions before changing page structure.',
-    ribbonExpand: 'रिबन विस्तृत करें',
   },
   vi: {
     ribbonTabFillForm: 'Điền biểu mẫu',

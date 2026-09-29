@@ -36,7 +36,7 @@ async function click(button: HTMLButtonElement): Promise<void> {
 }
 
 async function openGeneral(api: Partial<HomeApi>): Promise<void> {
-  window.aiOffice = {
+  window.chaOffice = {
     getTheme: async () => 'system',
     getDefaultSaveDir: async () => '',
     getAnalyticsEnabled: async () => true,
@@ -46,6 +46,16 @@ async function openGeneral(api: Partial<HomeApi>): Promise<void> {
     getUpdateChannel: async () => 'stable',
     getAppVersion: async () => '1.0.0',
     githubStars: async () => null,
+    getAiSettings: async () => ({}),
+    setAiSettings: async (view) => view,
+    setAiCurrentModel: async (sel) => sel,
+    aiDiscoverModels: async () => [],
+    chatofficeStatus: async () => ({ loggedIn: false }),
+    chatofficeLogin: async () => {},
+    aiLocalToolStatus: async () => ({ installed: false, running: false }),
+    aiLocalToolInstall: async () => {},
+    aiLocalToolStart: async () => {},
+    aiTestSearchPlatform: async () => ({ ok: false }),
     ...api,
   } as unknown as HomeApi
 
