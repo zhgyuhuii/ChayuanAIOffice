@@ -261,7 +261,7 @@ export function animClassOf(effect: AnimEffectKind): AnimClass {
 
 /** Extract the element's own <p:cNvPr id> from its raw bytes (the first one is the element itself; group children follow). */
 export function elementSpid(el: SlideElement): number | null {
-  const m = /<p:cNvPr\s[^>]*\bid="(\d+)"/.exec(el.anchor.originalXml)
+  const m = /<p:cNvPr\s[^>]*\bid=["'](\d+)["']/.exec(el.anchor.originalXml)
   return m ? Number(m[1]) : null
 }
 
@@ -1432,6 +1432,8 @@ function isTriggerRef(xml: string, at: number): boolean {
   return wrappedBy(xml, at, 'p:cond')
 }
 
+const MAX_TIMING_COLLAPSE_PASSES = 64
+
 /**
  * Remove the effect blocks targeting the given cNvPr ids from the slide's
  * <p:timing>. Element removal must go through this or the timing keeps
@@ -1451,10 +1453,15 @@ export function pruneTimingForSpids(slide: Slide, spids: ReadonlySet<number>): b
   if (!timing) return false
   let xml = timing
   let changed = false
+  const spTgt = /<p:spTgt spid="(\d+)"/g
+  let from = 0
   for (;;) {
-    const hits = [...xml.matchAll(/<p:spTgt spid="(\d+)"/g)].filter((x) => spids.has(Number(x[1])))
+    spTgt.lastIndex = from
     let removed = false
-    for (const hit of hits) {
+    let blockedAt = Infinity
+    let hit: RegExpExecArray | null
+    while ((hit = spTgt.exec(xml)) !== null) {
+      if (!spids.has(Number(hit[1]))) continue
       const at = hit.index
       let span: { start: number; end: number } | null = null
       if (isTriggerRef(xml, at)) {
@@ -1477,10 +1484,14 @@ export function pruneTimingForSpids(slide: Slide, spids: ReadonlySet<number>): b
               ),
           ) ?? null
       }
-      if (!span) continue
+      if (!span) {
+        blockedAt = Math.min(blockedAt, at)
+        continue
+      }
       xml = xml.slice(0, span.start) + xml.slice(span.end)
       changed = true
       removed = true
+      from = Math.min(span.start, blockedAt)
       break
     }
     if (!removed) break
@@ -1498,14 +1509,13 @@ export function pruneTimingForSpids(slide: Slide, spids: ReadonlySet<number>): b
   if (!changed) return false
   xml = xml.replace(/<p:bldLst\s*\/>|<p:bldLst\s*>\s*<\/p:bldLst>/g, '')
   if (/<p:spTgt\b/.test(xml)) {
-    // Collapse innermost pars that lost every target, then their emptied ancestors
-    let prev: string
-    do {
-      prev = xml
+    for (let pass = 0; pass < MAX_TIMING_COLLAPSE_PASSES; pass++) {
+      const prev = xml
       xml = xml.replace(/<p:par\b[^>]*>(?:(?!<p:par\b|<\/p:par>)[\s\S])*?<\/p:par>/g, (blk) =>
         /<p:spTgt\b/.test(blk) ? blk : '',
       )
-    } while (xml !== prev)
+      if (xml === prev) break
+    }
   }
   slide.bodySuffix =
     /<p:spTgt\b/.test(xml) || /<p:bldDgm\b/.test(xml)
@@ -1518,6 +1528,6 @@ export function pruneTimingForSpids(slide: Slide, spids: ReadonlySet<number>): b
 /** Every cNvPr id inside an element's XML fragment (group children included). */
 export function cNvPrIdsInXml(xml: string): Set<number> {
   const out = new Set<number>()
-  for (const m of xml.matchAll(/<p:cNvPr\b[^>]*?\bid="(\d+)"/g)) out.add(Number(m[1]))
+  for (const m of xml.matchAll(/<p:cNvPr\b[^>]*?\bid=["'](\d+)["']/g)) out.add(Number(m[1]))
   return out
 }

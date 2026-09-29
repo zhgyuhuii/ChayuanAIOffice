@@ -57,6 +57,14 @@ describe('parseCsv with explicit delimiters', () => {
     ])
   })
 
+  it('normalizes a CRLF or lone CR inside a quoted field to one newline', () => {
+    expect(parseCsv('"line1\r\nline2",c\n1,2', ',')).toEqual([
+      ['line1\nline2', 'c'],
+      ['1', '2'],
+    ])
+    expect(parseCsv('"line1\rline2",c', ',')).toEqual([['line1\nline2', 'c']])
+  })
+
   it('handles CRLF and drops the trailing empty row', () => {
     expect(parseCsv('a,b\r\n1,2\r\n', ',')).toEqual([
       ['a', 'b'],
@@ -169,6 +177,15 @@ describe('isNumericCell', () => {
     expect(isNumericCell('-12.5')).toBe(true)
     expect(isNumericCell('1e10')).toBe(true)
     expect(isNumericCell('0')).toBe(true)
+  })
+
+  it('accepts Excel-style bare-dot decimals but keeps a leading plus as text', () => {
+    for (const value of ['.5', '1.', '-.5', '-1.', '.5e2']) {
+      expect(isNumericCell(value), value).toBe(true)
+    }
+    for (const value of ['+1', '+86', '.', '-.', '-', '1..5', '.5.']) {
+      expect(isNumericCell(value), value).toBe(false)
+    }
   })
 
   it('rejects leading-zero codes so they stay text', () => {

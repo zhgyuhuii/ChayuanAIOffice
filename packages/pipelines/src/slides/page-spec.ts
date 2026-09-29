@@ -4,7 +4,7 @@
  * PPTX with pptx-engine primitives — no HTML intermediate, no conversion step.
  *
  * The spec's element model mirrors what an editable deck needs (and what
- * ChaOffice's gen_pptx capture emits): absolutely positioned shapes, images
+ * ChaAI Office's gen_pptx capture emits): absolutely positioned shapes, images
  * (center-cropped to their frame) and text runs on a fixed px canvas.
  *
  * Host facilities (network fetch, image decoding, font metrics) are injected so
@@ -13,8 +13,6 @@
 import {
   addElement,
   addPicture,
-  addSvgPicture,
-  setSlideNotes,
   createBlankPptx,
   editPictureSrcRect,
   openPptx,
@@ -33,13 +31,6 @@ export const SPEC_CANVAS_H = 720
 const MAX_ELEMENTS = 48
 const MAX_IMAGES = 8
 const MAX_TEXT_LEN = 4000
-/** hard parser cap for an inline SVG element (the writer prompt asks for ≤1500) */
-const MAX_SVG_CHARS = 4000
-/** hard parser cap for an inline data URI (≈9MB binary) */
-const MAX_DATAURI_CHARS = 12_000_000
-/** raster mimes a data URI may carry (svg payloads go through the `svg` field) */
-const DATA_URI_RE = /^data:image\/(png|jpeg|jpg|webp|gif);base64,[A-Za-z0-9+/=\s]+$/
-const PNG_DATA_URI_RE = /^data:image\/png;base64,[A-Za-z0-9+/=\s]+$/
 
 /** Preset geometries the spec may use; unknown kinds fall back to rect instead of emitting invalid prst XML. */
 const SHAPE_KINDS = new Set([
@@ -98,6 +89,10 @@ export interface SpecShape extends SpecBase {
   stroke?: { color: string; widthPt: number }
   paragraphs?: SpecParagraph[]
   valign?: 'top' | 'middle' | 'bottom'
+  /** mirror the shape horizontally (an arrow points the other way) */
+  flipH?: boolean
+  /** mirror vertically; a `line` box draws bottom-left to top-right */
+  flipV?: boolean
 }
 
 export interface SpecText extends SpecBase {
@@ -108,15 +103,7 @@ export interface SpecText extends SpecBase {
 
 export interface SpecImage extends SpecBase {
   type: 'image'
-  /** one of the three sources below must be present (validated in that order) */
-  /** http(s) URL fetched at build time */
-  url?: string
-  /** inline raster data URI (data:image/png|jpeg|webp|gif;base64,...) */
-  dataUri?: string
-  /** inline SVG source — vector picture (double part with the PNG fallback) */
-  svg?: string
-  /** required companion of `svg`: renderer-rasterized PNG fallback data URI */
-  pngDataUri?: string
+  url: string
 }
 
 export type SpecElement = SpecShape | SpecText | SpecImage
@@ -124,69 +111,6 @@ export type SpecElement = SpecShape | SpecText | SpecImage
 export interface PageSpec {
   background?: string
   elements: SpecElement[]
-  /**
-   * Optional deterministic layout skeleton (item 11): when set, the named
-   * skeleton's elements are emitted FIRST and the model's own elements layer
-   * on top — the model fills content, the skeleton fixes the geometry.
-   */
-  layout?: string
-  layoutContent?: Record<string, string>
-  /** speaker notes produced in the same LLM call (item 12) — written into the page pptx */
-  notes?: string
-}
-
-// ── Deterministic layout skeletons ──
-// Each maps semantic content slots to fixed geometry on the 1280×720 canvas.
-// Colors are neutral on purpose; a page's accent comes from background/covers
-// and the model's own layered elements.
-
-const textEl = (x: number, y: number, w: number, h: number, text: string, sizePt: number, o: Partial<SpecText> = {}): SpecText => ({
-  type: 'text',
-  x,
-  y,
-  w,
-  h,
-  valign: 'top',
-  paragraphs: [{ runs: [{ text, sizePt, bold: o.paragraphs ? true : false, color: '#1A1A1A' }] }],
-  ...o,
-})
-
-function stripTo(text: string, max: number): string {
-  return text.length > max ? `${text.slice(0, max)}…` : text
-}
-
-export const LAYOUT_SKELETONS: Record<string, (W: number, H: number, c: Record<string, string>) => SpecElement[]> = {
-  // big centered title + subtitle line
-  titleSlide: (W, H, c) => [
-    textEl(W * 0.08, H * 0.34, W * 0.84, H * 0.18, stripTo(c.title ?? '', 60), 44, { valign: 'top', paragraphs: [{ runs: [{ text: stripTo(c.title ?? '', 60), sizePt: 44, bold: true, color: '#1A1A1A' }] }] }),
-    textEl(W * 0.08, H * 0.58, W * 0.84, H * 0.12, stripTo(c.subtitle ?? '', 100), 20, { paragraphs: [{ runs: [{ text: stripTo(c.subtitle ?? '', 100), sizePt: 20, color: '#555555' }] }] }),
-  ],
-  // title band + one content block
-  titleContent: (W, H, c) => [
-    textEl(W * 0.07, H * 0.08, W * 0.86, H * 0.14, stripTo(c.title ?? '', 60), 32, { paragraphs: [{ runs: [{ text: stripTo(c.title ?? '', 60), sizePt: 32, bold: true, color: '#1A1A1A' }] }] }),
-    { type: 'shape', shape: 'rect', x: W * 0.07, y: H * 0.26, w: W * 0.86, h: H * 0.64, fill: '#F2F2F2', paragraphs: c.body ? [{ runs: [{ text: stripTo(c.body, 500), sizePt: 15, color: '#333333' }] }] : [], valign: 'top' },
-  ],
-  // title band + left/right cards
-  twoCol: (W, H, c) => [
-    textEl(W * 0.07, H * 0.08, W * 0.86, H * 0.14, stripTo(c.title ?? '', 60), 32, { paragraphs: [{ runs: [{ text: stripTo(c.title ?? '', 60), sizePt: 32, bold: true, color: '#1A1A1A' }] }] }),
-    { type: 'shape', shape: 'roundRect', x: W * 0.05, y: H * 0.28, w: W * 0.43, h: H * 0.6, fill: '#F2F2F2', paragraphs: c.left ? [{ runs: [{ text: stripTo(c.left, 300), sizePt: 14, color: '#333333' }] }] : [], valign: 'top' },
-    { type: 'shape', shape: 'roundRect', x: W * 0.52, y: H * 0.28, w: W * 0.43, h: H * 0.6, fill: '#F2F2F2', paragraphs: c.right ? [{ runs: [{ text: stripTo(c.right, 300), sizePt: 14, color: '#333333' }] }] : [], valign: 'top' },
-  ],
-  // full-bleed image with a bottom title bar
-  fullImage: (W, H, c) => [
-    ...(c.image_url ? [{ type: 'image', url: c.image_url, x: 0, y: 0, w: W, h: H } as SpecImage] : []),
-    { type: 'shape', shape: 'rect', x: 0, y: H * 0.74, w: W, h: H * 0.26, fill: '#111111' },
-    textEl(W * 0.06, H * 0.79, W * 0.88, H * 0.16, stripTo(c.title ?? '', 70), 30, { paragraphs: [{ runs: [{ text: stripTo(c.title ?? '', 70), sizePt: 30, bold: true, color: '#FFFFFF' }] }] }),
-  ],
-  // one giant statement, centered
-  statement: (W, H, c) => [
-    textEl(W * 0.1, H * 0.38, W * 0.8, H * 0.24, stripTo(c.text ?? c.title ?? '', 40), 48, { valign: 'middle', paragraphs: [{ runs: [{ text: stripTo(c.text ?? c.title ?? '', 40), sizePt: 48, bold: true, color: '#1A1A1A' }] }] }),
-  ],
-  // section divider: number + section title
-  sectionHeader: (W, H, c) => [
-    textEl(W * 0.07, H * 0.3, W * 0.2, H * 0.25, stripTo(c.index ?? '01', 8), 64, { paragraphs: [{ runs: [{ text: stripTo(c.index ?? '01', 8), sizePt: 64, bold: true, color: '#DDDDDD' }] }] }),
-    textEl(W * 0.3, H * 0.4, W * 0.62, H * 0.18, stripTo(c.title ?? '', 40), 36, { paragraphs: [{ runs: [{ text: stripTo(c.title ?? '', 40), sizePt: 36, bold: true, color: '#1A1A1A' }] }] }),
-  ],
 }
 
 const EMU_PER_PT = 12700
@@ -209,6 +133,30 @@ function num(v: unknown): number | undefined {
 }
 
 /**
+ * Index of the `}` that closes the object opening at `start`, tracking string
+ * literals and escapes so a brace inside one does not count. -1 when the walk
+ * runs out of text or the braces never balance.
+ */
+function matchingBrace(text: string, start: number): number {
+  let depth = 0
+  let inString = false
+  let escaped = false
+  for (let i = start; i < text.length; i++) {
+    const c = text[i]
+    if (inString) {
+      if (escaped) escaped = false
+      else if (c === '\\') escaped = true
+      else if (c === '"') inString = false
+      continue
+    }
+    if (c === '"') inString = true
+    else if (c === '{') depth++
+    else if (c === '}' && --depth === 0) return i
+  }
+  return -1
+}
+
+/**
  * Extracts and validates the spec from raw LLM output. Tolerant of fences and
  * junk around the JSON; invalid elements are dropped with a warning rather
  * than failing the page. Returns an error only when nothing usable remains,
@@ -227,8 +175,13 @@ export function parsePageSpec(
 ): { ok: true; spec: PageSpec; warnings: string[] } | { ok: false; error: string } {
   const text = String(raw ?? '')
   const start = text.indexOf('{')
-  const end = text.lastIndexOf('}')
-  if (start < 0 || end <= start) return { ok: false, error: 'no JSON object found in the output' }
+  if (start < 0) return { ok: false, error: 'no JSON object found in the output' }
+  // Prose around the spec can carry braces of its own, so the object's own
+  // closing brace is the one that matches it; the last brace in the text is
+  // only a fallback for output the walk cannot balance.
+  const matched = matchingBrace(text, start)
+  const end = matched >= 0 ? matched : text.lastIndexOf('}')
+  if (end <= start) return { ok: false, error: 'no JSON object found in the output' }
   let parsed: unknown
   try {
     parsed = JSON.parse(text.slice(start, end + 1))
@@ -251,6 +204,13 @@ export function parsePageSpecObject(
 
   const warnings: string[] = []
   const elements: SpecElement[] = []
+  /** Index each retained element had in the model's own array, so duplicate
+      advice still names the element numbers the model wrote. */
+  const keptRawIdx: number[] = []
+  const keep = (el: SpecElement, rawIdx: number): void => {
+    elements.push(el)
+    keptRawIdx.push(rawIdx)
+  }
   let images = 0
 
   const parseParagraphs = (v: unknown): SpecParagraph[] => {
@@ -329,50 +289,10 @@ export function parsePageSpecObject(
     const type = el.type
 
     if (type === 'image') {
-      const url = typeof el.url === 'string' ? el.url.trim() : ''
-      const dataUri = typeof el.dataUri === 'string' ? el.dataUri.trim() : ''
-      const svg = typeof el.svg === 'string' ? el.svg.trim() : ''
-      const pngDataUri = typeof el.pngDataUri === 'string' ? el.pngDataUri.trim() : ''
-      if (svg) {
-        if (svg.length > MAX_SVG_CHARS) {
-          warnings.push(`element ${i}: inline svg exceeds ${MAX_SVG_CHARS} chars, dropped`)
-          continue
-        }
-        if (!/^<svg[\s>]/i.test(svg)) {
-          warnings.push(`element ${i}: inline svg must start with <svg>, dropped`)
-          continue
-        }
-        if (!PNG_DATA_URI_RE.test(pngDataUri)) {
-          warnings.push(`element ${i}: inline svg without a pngDataUri raster fallback, dropped`)
-          continue
-        }
-        if (images >= MAX_IMAGES) {
-          warnings.push(`element ${i}: image cap ${MAX_IMAGES} reached, dropped`)
-          continue
-        }
-        images += 1
-        elements.push({ type: 'image', svg, pngDataUri, ...base })
-        continue
-      }
-      if (dataUri) {
-        if (dataUri.length > MAX_DATAURI_CHARS) {
-          warnings.push(`element ${i}: inline dataUri exceeds the size cap, dropped`)
-          continue
-        }
-        if (!DATA_URI_RE.test(dataUri)) {
-          warnings.push(
-            `element ${i}: dataUri must be data:image/png|jpeg|webp|gif;base64, dropped`,
-          )
-          continue
-        }
-        if (images >= MAX_IMAGES) {
-          warnings.push(`element ${i}: image cap ${MAX_IMAGES} reached, dropped`)
-          continue
-        }
-        images += 1
-        elements.push({ type: 'image', dataUri, ...base })
-        continue
-      }
+      const url =
+        typeof el.url === 'string'
+          ? el.url.trim().replace(/^https?:\/\//i, (scheme) => scheme.toLowerCase())
+          : ''
       if (!/^https?:\/\//.test(url) && !(opts.localImages && url)) {
         warnings.push(`element ${i}: image url must be http(s), dropped`)
         continue
@@ -382,7 +302,7 @@ export function parsePageSpecObject(
         continue
       }
       images += 1
-      elements.push({ type: 'image', url, ...base })
+      keep({ type: 'image', url, ...base }, i)
       continue
     }
 
@@ -393,12 +313,15 @@ export function parsePageSpecObject(
         continue
       }
       const valign = el.valign
-      elements.push({
-        type: 'text',
-        ...base,
-        paragraphs,
-        ...(valign === 'top' || valign === 'middle' || valign === 'bottom' ? { valign } : {}),
-      })
+      keep(
+        {
+          type: 'text',
+          ...base,
+          paragraphs,
+          ...(valign === 'top' || valign === 'middle' || valign === 'bottom' ? { valign } : {}),
+        },
+        i,
+      )
       continue
     }
 
@@ -422,15 +345,20 @@ export function parsePageSpecObject(
       }
       const paragraphs = parseParagraphs(el.paragraphs)
       const valign = el.valign
-      elements.push({
-        type: 'shape',
-        shape,
-        ...base,
-        ...(fill ? { fill } : {}),
-        ...(stroke ? { stroke } : {}),
-        ...(paragraphs.some((p) => p.runs.some((r) => r.text.trim())) ? { paragraphs } : {}),
-        ...(valign === 'top' || valign === 'middle' || valign === 'bottom' ? { valign } : {}),
-      })
+      keep(
+        {
+          type: 'shape',
+          shape,
+          ...base,
+          ...(fill ? { fill } : {}),
+          ...(stroke ? { stroke } : {}),
+          ...(paragraphs.some((p) => p.runs.some((r) => r.text.trim())) ? { paragraphs } : {}),
+          ...(valign === 'top' || valign === 'middle' || valign === 'bottom' ? { valign } : {}),
+          ...(el.flipH === true ? { flipH: true } : {}),
+          ...(el.flipV === true ? { flipV: true } : {}),
+        },
+        i,
+      )
       continue
     }
 
@@ -443,33 +371,18 @@ export function parsePageSpecObject(
       error: `no valid elements (${warnings.join('; ') || 'all dropped'})`,
     }
   }
-  warnings.push(...nearDuplicateTextWarnings(rawEls))
+  warnings.push(...duplicateTextWarnings(elements, keptRawIdx))
   return {
     ok: true,
     spec: {
       ...(normColor(root.background) ? { background: normColor(root.background) } : {}),
-      ...(typeof root.layout === 'string' && LAYOUT_SKELETONS[root.layout]
-        ? { layout: root.layout }
-        : {}),
-      ...(typeof root.notes === 'string' && root.notes.trim()
-        ? { notes: root.notes.trim().slice(0, 2000) }
-        : {}),
-      ...(root.layoutContent && typeof root.layoutContent === 'object' && !Array.isArray(root.layoutContent)
-        ? {
-            layoutContent: Object.fromEntries(
-              Object.entries(root.layoutContent as Record<string, unknown>)
-                .filter(([, v]) => typeof v === 'string')
-                .map(([k, v]) => [k, String(v)]),
-            ),
-          }
-        : {}),
       elements,
     },
     warnings,
   }
 }
 
-/** Text of a raw spec element for the duplicate check, or null when it has none. */
+/** Text of a spec element for the duplicate check, or null when it has none. */
 function rawElementText(el: unknown): string | null {
   const rec = asRecord(el)
   if (rec.type !== 'text' && rec.type !== 'shape') return null
@@ -495,14 +408,26 @@ const DUP_PREFIX_SHARE = 0.6
  * always an authoring slip — a subtitle restating the chart caption, a
  * heading pasted twice. Compared on normalized text: identical, or sharing a
  * long common prefix that covers most of the shorter one. Advice only.
+ *
+ * The pairwise pass is quadratic in the elements handed in, so feed it the
+ * retained set only. `rawIdx[k]` is the element number to name for position k,
+ * letting a caller that already dropped elements still cite the numbering the
+ * model itself wrote.
  */
 export function nearDuplicateTextWarnings(rawEls: unknown[]): string[] {
+  return duplicateTextWarnings(
+    rawEls,
+    rawEls.map((_el, i) => i),
+  )
+}
+
+function duplicateTextWarnings(els: readonly unknown[], rawIdx: readonly number[]): string[] {
   const texts: { i: number; text: string; norm: string }[] = []
-  for (const [i, el] of rawEls.entries()) {
-    const text = rawElementText(el)
+  for (let k = 0; k < els.length; k++) {
+    const text = rawElementText(els[k])
     if (text === null) continue
     const norm = normalizeText(text)
-    if (norm.length >= DUP_MIN_CHARS) texts.push({ i, text, norm })
+    if (norm.length >= DUP_MIN_CHARS) texts.push({ i: rawIdx[k]!, text, norm })
   }
   const out: string[] = []
   for (let a = 0; a < texts.length; a++) {
@@ -530,26 +455,6 @@ export interface BuildPageDeps {
   imageDims?: (bytes: Uint8Array) => { width: number; height: number } | null
   /** Font metrics for the post-build text measurement; absent skips the box-height fix */
   fontMetrics?: FontMetricsProvider
-}
-
-interface ResolvedImage {
-  bytes: Uint8Array
-  ext: string
-  /** set for inline svg elements: the vector source for the double part */
-  svgBytes?: Uint8Array
-}
-
-/** data URI → image bytes; null when the mime or base64 payload is unusable */
-function decodeDataUri(uri: string): ResolvedImage | null {
-  const m = /^data:image\/(png|jpeg|jpg|webp|gif|svg\+xml);base64,([\sA-Za-z0-9+/=]+)$/.exec(uri)
-  if (!m) return null
-  const ext = m[1] === 'jpeg' || m[1] === 'jpg' ? 'jpg' : m[1] === 'svg+xml' ? 'svg' : m[1]!
-  const b64 = m[2]!.replace(/\s+/g, '')
-  try {
-    return { bytes: Uint8Array.from(atob(b64), (c) => c.charCodeAt(0)), ext }
-  } catch {
-    return null
-  }
 }
 
 /**
@@ -636,29 +541,17 @@ export async function buildPagePptx(
   // insets would shift every text off its planned spot.
   const zeroInsets = { l: 0, t: 0, r: 0, b: 0 }
 
-  const resolved = resolvedSpecElements(spec)
   const imageFailures: string[] = []
   const imageWarnings: string[] = []
-  // Three image sources resolve differently (fetch / decode / decode+vector) but
-  // share the cover-crop and insert path below; keyed by resolved-array index.
-  const imgByIndex = new Map<number, ResolvedImage | null>()
+  const fetched = new Map<string, { bytes: Uint8Array; ext: string } | null>()
   await Promise.all(
-    resolved.map(async (el, idx) => {
-      if (el.type !== 'image') return
+    [
+      ...new Set(spec.elements.filter((e) => e.type === 'image').map((e) => (e as SpecImage).url)),
+    ].map(async (url) => {
       try {
-        if (el.svg) {
-          const png = decodeDataUri(el.pngDataUri ?? '')
-          // Uint8Array.from copies into the local realm — cross-realm typed
-          // arrays (e.g. TextEncoder output under jsdom) fail jszip's instanceof
-          const svgBytes = Uint8Array.from(new TextEncoder().encode(el.svg))
-          imgByIndex.set(idx, png ? { ...png, ext: 'png', svgBytes } : null)
-        } else if (el.dataUri) {
-          imgByIndex.set(idx, decodeDataUri(el.dataUri))
-        } else {
-          imgByIndex.set(idx, await deps.fetchImage(el.url ?? ''))
-        }
+        fetched.set(url, await deps.fetchImage(url))
       } catch {
-        imgByIndex.set(idx, null)
+        fetched.set(url, null)
       }
     }),
   )
@@ -671,7 +564,7 @@ export async function buildPagePptx(
     })
   }
 
-  for (const [idx, el] of resolved.entries()) {
+  for (const el of spec.elements) {
     const offset = {
       x: toEmu(el.x),
       y: toEmu(el.y),
@@ -679,22 +572,14 @@ export async function buildPagePptx(
       cy: Math.max(1, toEmu(el.h)),
     }
     if (el.type === 'image') {
-      const img = imgByIndex.get(idx)
-      const label = el.svg ? 'inline svg' : el.dataUri ? 'inline image' : (el.url ?? 'image')
+      const img = fetched.get(el.url)
       if (!img) {
-        imageFailures.push(label)
+        imageFailures.push(el.url)
         continue
       }
-      const pic = img.svgBytes
-        ? addSvgPicture(opened, slide, {
-            svgBytes: img.svgBytes,
-            bytes: img.bytes,
-            fallbackExt: img.ext,
-            offset,
-          })
-        : addPicture(opened, slide, { bytes: img.bytes, ext: img.ext, offset })
+      const pic = addPicture(opened, slide, { bytes: img.bytes, ext: img.ext, offset })
       if (!pic) {
-        imageFailures.push(label)
+        imageFailures.push(el.url)
         continue
       }
       const dims = deps.imageDims?.(img.bytes) ?? null
@@ -729,6 +614,8 @@ export async function buildPagePptx(
             },
           }
         : {}),
+      ...(el.flipH ? { flipH: true } : {}),
+      ...(el.flipV ? { flipV: true } : {}),
       ...(el.paragraphs ? { paragraphs: toEngineParagraphs(el.paragraphs) } : {}),
       ...(el.paragraphs
         ? { bodyPr: { wrap: 'square', anchor: anchorOf(el.valign, 'ctr'), insetsEmu: zeroInsets } }
@@ -737,7 +624,6 @@ export async function buildPagePptx(
   }
 
   promoteSlideBackground(slide, opened.deck.size)
-  if (spec.notes) setSlideNotes(opened, 0, spec.notes)
   let bytes = await savePptx(opened)
   if (deps.fontMetrics) bytes = (await growTextBoxesToContent(bytes, deps.fontMetrics)) ?? bytes
   return { bytes, imageFailures, imageWarnings }
@@ -761,14 +647,4 @@ function heavyCropWarning(
   if (kept >= HEAVY_CROP_KEEP) return null
   const axis = crop.t > 0 ? 'top and bottom' : 'left and right'
   return `image ${el.url}: the ${Math.round(el.w)}×${Math.round(el.h)} box shows only ${Math.round(kept * 100)}% of the ${dims.width}×${dims.height} picture (center crop, ${axis} cut off); size the box nearer the picture's aspect ratio or crop the file first`
-}
-
-/** Layout skeleton (item 11): when the spec names a known layout, its
- * deterministic elements go FIRST (z-order bottom) and the model's own
- * elements layer on top as supplements. */
-function resolvedSpecElements(spec: PageSpec): SpecElement[] {
-  const skeleton = spec.layout
-    ? LAYOUT_SKELETONS[spec.layout]?.(SPEC_CANVAS_W, SPEC_CANVAS_H, spec.layoutContent ?? {})
-    : undefined
-  return skeleton ? [...skeleton, ...spec.elements] : spec.elements
 }

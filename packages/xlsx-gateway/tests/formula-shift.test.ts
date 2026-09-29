@@ -6,6 +6,8 @@ import {
   shiftSpecForOp,
 } from '../src/domain/formula-shift'
 import type { StructuralOperation } from '../src/domain/workbook-dsl'
+import { applyDefinedNamesState } from '../src/gateway/xlsx-defined-names'
+import { spillsDynamicArray, withFutureFunctionMarkers } from '../src/gateway/future-functions'
 
 const SHEET = 'Sheet1'
 
@@ -225,5 +227,45 @@ describe('shiftFormulaRefs literals and names', () => {
   it('returns the input unchanged for sheet-level ops', () => {
     const result = shiftFormulaRefs('=A1', { op: 'add_sheet', name: 'New' }, true, SHEET)
     expect(result).toEqual({ formula: '=A1', changed: false, hasRefError: false })
+  })
+})
+
+describe('future function markers', () => {
+  it('marks calls after a quoted sheet qualifier', () => {
+    expect(withFutureFunctionMarkers('\'Data Sheet\'!MINIFS(A1:A3,A1:A3,">0")')).toBe(
+      '\'Data Sheet\'!_xlfn.MINIFS(A1:A3,A1:A3,">0")',
+    )
+  })
+
+  it('leaves callable defined names containing the marker unchanged', () => {
+    const formula = 'Budget_xlfn.Total(A1)+Other_xlfn.FILTER(A1)'
+    expect(withFutureFunctionMarkers(formula)).toBe(formula)
+    expect(spillsDynamicArray('Budget_xlfn.FILTER(A1)')).toBe(false)
+  })
+
+  it('does not treat a marked sheet name as a spill function', () => {
+    expect(spillsDynamicArray("'Data_xlfn.FILTER'!A1+FILTER(A1:A2)")).toBe(true)
+    expect(withFutureFunctionMarkers("'Data_xlfn.FILTER'!FILTER(A1:A2)")).toBe(
+      "'Data_xlfn.FILTER'!_xlfn._xlws.FILTER(A1:A2)",
+    )
+  })
+
+  it('protects marker-bearing callable names in defined-name save XML', () => {
+    const workbook =
+      '<workbook><sheets><sheet name="Sheet1" sheetId="1" r:id="rId1"/></sheets></workbook>'
+    const saved = applyDefinedNamesState(workbook, {
+      names: [
+        { name: 'Budget_xlfn.Total', formula: 'Budget_xlfn.Total(A1)' },
+        { name: 'FutureTotal', formula: `'Data_xlfn.Total'!MINIFS(A1:A3,A1:A3,">0")` },
+      ],
+      preserveNames: [],
+    })
+
+    expect(saved).toContain(
+      '<definedName name="Budget_xlfn.Total">Budget_xlfn.Total(A1)</definedName>',
+    )
+    expect(saved).toContain(
+      `<definedName name="FutureTotal">'Data_xlfn.Total'!_xlfn.MINIFS(A1:A3,A1:A3,"&gt;0")</definedName>`,
+    )
   })
 })

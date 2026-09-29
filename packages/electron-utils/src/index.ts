@@ -2,7 +2,9 @@ export {
   buildContextMenuItems,
   contextMenuLabels,
   installContextMenu,
+  setContextMenuInterceptor,
   VIEW_IMAGE_CHANNEL,
+  type ContextMenuInterceptor,
   type ContextMenuItem,
   type ContextMenuLabels,
 } from './context-menu'
@@ -24,6 +26,7 @@ export {
   viewMenuTemplate,
   windowMenuTemplate,
   type AppMenuLabels,
+  type ViewMenuOptions,
 } from './app-menu'
 export { GITHUB_REPO_URL } from './github-menu'
 export { displayVersion } from './display-version'
@@ -99,3 +102,4 @@ export {
   type RendererHost,
 } from './renderer-scheme'
 export { installRendererProtocol, registerRendererScheme } from './renderer-protocol'
+export { atomicWriteFile, writeJsonAtomic } from './atomic-write'

@@ -1,5 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+<<<<<<< ours
 import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+=======
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+>>>>>>> theirs
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { ProjectStore } from '../src/store.js'
@@ -296,6 +300,70 @@ describe('rebindChat', () => {
     store.appendChatMessage('default', newId, { role: 'assistant', text: 'after' })
     expect(store.loadChat('default', newId).map((m) => m.seq)).toEqual([0, 1, 2, 3])
   })
+
+  it('keeps target and source records separate when the target has no final newline', () => {
+    const sourceId = 'unsaved-unterminated'
+    const targetId = 'existing-unterminated'
+    store.appendChatMessage('default', sourceId, { role: 'assistant', text: 'source' })
+    store.appendChatMessage('default', targetId, { role: 'assistant', text: 'target' })
+    const chatsDir = join(tmpDir, 'projects', 'default', 'chats')
+    const sourcePath = join(chatsDir, `${sourceId}.jsonl`)
+    const targetPath = join(chatsDir, `${targetId}.jsonl`)
+    const source = JSON.stringify({
+      seq: 4,
+      ts: new Date(4).toISOString(),
+      role: 'user',
+      text: 'source',
+    })
+    const target = JSON.stringify({
+      seq: 2,
+      ts: new Date(2).toISOString(),
+      role: 'assistant',
+      text: 'target',
+    })
+    writeFileSync(sourcePath, source, 'utf8')
+    writeFileSync(targetPath, target, 'utf8')
+
+    store.rebindChat('default', sourceId, targetId)
+
+    const merged = readFileSync(targetPath, 'utf8')
+      .split('\n')
+      .filter(Boolean)
+      .map((line) => JSON.parse(line))
+    expect(merged.map((message) => message.text)).toEqual(['target', 'source'])
+    expect(merged.map((message) => message.seq)).toEqual([2, 3])
+    expect(existsSync(sourcePath)).toBe(false)
+  })
+
+  it('preserves every source record when merging a chat longer than the display cap', () => {
+    const sourceId = 'unsaved-long'
+    const targetId = 'existing-long'
+    store.appendChatMessage('default', targetId, { role: 'assistant', text: 'target' })
+    store.appendChatMessage('default', sourceId, { role: 'assistant', text: 'seed' })
+    const chatsDir = join(tmpDir, 'projects', 'default', 'chats')
+    const sourcePath = join(chatsDir, `${sourceId}.jsonl`)
+    const targetPath = join(chatsDir, `${targetId}.jsonl`)
+    const source = Array.from({ length: 10_001 }, (_, index) =>
+      JSON.stringify({
+        seq: index,
+        ts: new Date(index).toISOString(),
+        role: index % 2 === 0 ? 'user' : 'assistant',
+        text: `source-${index}`,
+      }),
+    )
+    writeFileSync(sourcePath, `${source.join('\n')}\n`, 'utf8')
+
+    store.rebindChat('default', sourceId, targetId)
+
+    const merged = readFileSync(targetPath, 'utf8')
+      .trim()
+      .split('\n')
+      .map((line) => JSON.parse(line))
+    expect(merged).toHaveLength(10_002)
+    expect(merged[1]?.text).toBe('source-0')
+    expect(merged.at(-1)?.text).toBe('source-10000')
+    expect(existsSync(sourcePath)).toBe(false)
+  })
 })
 
 // ────────────────────────────────────────────────────────────
@@ -481,6 +549,57 @@ describe('appendChatMessage opening buffer', () => {
     expect(msgs[1].tools?.[0].input).toHaveLength(16_000)
     expect(msgs[1].tools?.[0].output).toHaveLength(16_000)
     expect(msgs[1].tools?.[0].summary).toBe('read page 1')
+  })
+
+  it('caps the tool count and the per-tool name and summary on disk', () => {
+    store.appendChatMessage('default', 'tool-flood', {
+      role: 'assistant',
+      text: 'a',
+      tools: Array.from({ length: 500 }, (_, i) => ({
+        name: `tool_${i}_${'n'.repeat(5_000)}`,
+        summary: 's'.repeat(9_000),
+      })),
+    })
+    const tools = store.loadChat('default', 'tool-flood')[0]!.tools!
+    expect(tools).toHaveLength(64)
+    expect(tools[0]!.name).toHaveLength(200)
+    expect(tools[0]!.summary).toHaveLength(2_000)
+  })
+
+  it('caps the attachment count and the per-attachment name and path on disk', () => {
+    store.appendChatMessage('default', 'attach-flood', {
+      role: 'user',
+      text: 'q',
+      attachments: Array.from({ length: 5_000 }, (_, i) => ({
+        name: `file_${i}_${'a'.repeat(4_000)}`,
+        path: `/${'p'.repeat(4_000)}/${i}.bin`,
+        ext: 'bin',
+        sizeBytes: 1,
+      })),
+    })
+    const attachments = store.loadChat('default', 'attach-flood')[0]!.attachments!
+    expect(attachments).toHaveLength(32)
+    expect(attachments[0]!.name).toHaveLength(1_000)
+    expect(attachments[0]!.path).toHaveLength(1_000)
+    expect(attachments[0]!.ext).toBe('bin')
+  })
+
+  it('keeps a message with well-formed tools and attachments intact', () => {
+    store.appendChatMessage('default', 'meta-ok', {
+      role: 'user',
+      text: 'q',
+      attachments: [{ name: 'asset.pdf', path: '/tmp/asset.pdf', ext: 'pdf', sizeBytes: 123 }],
+    })
+    store.appendChatMessage('default', 'meta-ok', {
+      role: 'assistant',
+      text: 'a',
+      tools: [{ name: 'read_slide', summary: 'read page 1', isError: false }],
+    })
+    const msgs = store.loadChat('default', 'meta-ok')
+    expect(msgs[0]!.attachments).toEqual([
+      { name: 'asset.pdf', path: '/tmp/asset.pdf', ext: 'pdf', sizeBytes: 123 },
+    ])
+    expect(msgs[1]!.tools).toEqual([{ name: 'read_slide', summary: 'read page 1', isError: false }])
   })
 
   it('scope survives the round trip; its excerpt is capped at 400 chars', () => {

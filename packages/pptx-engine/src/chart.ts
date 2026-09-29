@@ -432,6 +432,7 @@ export function parseChartXml(
     const plotMarkerNode = plotNode['c:marker']
     const plotMarker = plotMarkerNode != null && plotMarkerNode?.['@_val'] !== '0'
     for (const ser of sers) {
+      if (series.length >= MAX_CHART_SERIES) break
       // Scatter: y values in c:yVal, x values in c:xVal; other types use c:val
       const s: ChartSeries = {
         values: readNumPoints(plotKind === 'scatter' ? ser['c:yVal'] : ser['c:val']),
@@ -566,7 +567,7 @@ export function parseChartXml(
         const pointExpl: Array<number | undefined> = []
         for (const dPt of dPts) {
           const idx = parseInt(dPt['c:idx']?.['@_val'], 10)
-          if (Number.isNaN(idx)) continue
+          if (!Number.isFinite(idx) || idx < 0 || idx >= s.values.length) continue
           const dSp = dPt['c:spPr']
           const c = resolveColorNode(dSp?.['a:solidFill'], theme)
           if (c != null) pointColors[idx] = c
@@ -644,7 +645,8 @@ export function parseChartXml(
   if (!series.length) return null
   if (!categories.length) {
     // With no category cache, keep names empty (length from the longest series); never inject placeholders
-    const n = Math.max(...series.map((s) => s.values.length), 0)
+    let n = 0
+    for (const s of series) if (s.values.length > n) n = s.values.length
     categories = Array.from({ length: n }, () => '')
   }
 
@@ -1149,6 +1151,7 @@ function sortByDate(model: ChartModel, serials: number[]): void {
   const newIdx = new Map(order.map((i, k) => [i, k]))
   for (const s of model.series) {
     s.values = permute(s.values).map((v) => v ?? null)
+    if (s.pointLabels) s.pointLabels = permute(s.pointLabels)
     s.pointColors = pick(s.pointColors)
     s.pointFills = pick(s.pointFills)
     s.pointNoFill = pick(s.pointNoFill)
@@ -1191,14 +1194,25 @@ function formatDateSerial(serial: number, fmt: string, date1904: boolean): strin
 }
 
 /** c:pt list → value array ordered by idx. */
+/** Largest point count honored: a hostile ptCount must not allocate the array. */
+const MAX_CHART_POINTS = 1_048_576
+/** Largest series count honored: bounds the series spreads and per-series work. */
+const MAX_CHART_SERIES = 256
+
 function readPoints(cache: any): Array<string | null> {
   const ptsRaw = cache?.['c:pt']
   const pts: any[] = Array.isArray(ptsRaw) ? ptsRaw : ptsRaw ? [ptsRaw] : []
   const count = cache?.['c:ptCount']?.['@_val']
-  const n = count != null ? parseInt(count, 10) : pts.length
-  const out: Array<string | null> = new Array(Math.max(n, pts.length)).fill(null)
+  const parsed = count != null ? parseInt(count, 10) : pts.length
+  const n = Number.isFinite(parsed) ? Math.min(Math.max(0, parsed), MAX_CHART_POINTS) : pts.length
+  const out: Array<string | null> = new Array(
+    Math.max(n, Math.min(pts.length, MAX_CHART_POINTS)),
+  ).fill(null)
   for (const pt of pts) {
     const idx = parseInt(pt['@_idx'], 10) || 0
+    // A sparse hostile idx would grow the array without bound: ignore
+    // out-of-range entries instead.
+    if (idx < 0 || idx >= out.length) continue
     const v = pt['c:v']
     out[idx] = typeof v === 'string' ? v : v != null ? String(v['#text'] ?? v) : null
   }
@@ -1250,7 +1264,7 @@ function parseAxis(ax: any, theme?: Theme): ChartAxisStyle | undefined {
   if (scaling?.['c:max']?.['@_val'] != null && Number.isFinite(max)) out.max = max
   if (scaling?.['c:orientation']?.['@_val'] === 'maxMin') out.reversed = true
   const logBase = Number(scaling?.['c:logBase']?.['@_val'])
-  if (Number.isFinite(logBase) && logBase > 1) out.logBase = logBase
+  if (Number.isFinite(logBase) && logBase >= 2 && logBase <= 1000) out.logBase = logBase
   const crosses = ax['c:crosses']?.['@_val']
   if (crosses === 'autoZero' || crosses === 'min' || crosses === 'max') out.crosses = crosses
   const tickLblPos = ax['c:tickLblPos']?.['@_val']
@@ -1262,7 +1276,9 @@ function parseAxis(ax: any, theme?: Theme): ChartAxisStyle | undefined {
   if (defRPr) {
     const c = resolveColorNode(defRPr['a:solidFill'], theme)
     if (c) out.labelColor = c
-    if (defRPr['@_sz']) out.labelSizePt = parseInt(defRPr['@_sz'], 10) / 100
+    // sz="auto" parses to NaN, and a NaN labelSizePt beats the render default
+    const axSz = parseInt(defRPr['@_sz'], 10)
+    if (Number.isFinite(axSz) && axSz > 0) out.labelSizePt = axSz / 100
     if (defRPr['@_b'] === '1') out.labelBold = true
     // INT_MIN baseline sentinel (Aspose-written): PowerPoint reserves the label space
     // but renders nothing there

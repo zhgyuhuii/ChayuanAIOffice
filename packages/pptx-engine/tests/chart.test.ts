@@ -45,6 +45,19 @@ describe('parseChartXml', () => {
     expect(m.valAxis?.labelSizePt).toBe(12)
   })
 
+  /**
+   * sz="auto" is a legal attribute value that parseInt turns into NaN, and a
+   * NaN labelSizePt is not nullish: the render layer's
+   * `valAxis?.labelSizePt ?? default` takes the NaN and the value axis label
+   * gutter collapses.
+   */
+  it('ignores a non-numeric axis label size instead of storing NaN', () => {
+    const m = parseChartXml(LINE_CHART.replace('sz="1200"', 'sz="auto"'))!
+    expect(m.valAxis?.labelSizePt).toBeUndefined()
+    // the rest of the axis text properties still parse
+    expect(m.valAxis?.labelColor).toBe('#666666')
+  })
+
   it('parses clustered bar chart with fill color and gapWidth', () => {
     const m = parseChartXml(BAR_CHART)!
     expect(m.kind).toBe('bar')
@@ -223,6 +236,34 @@ describe('parseChartXml', () => {
     expect(m.series[0]!.values).toEqual([3, 4, 5, 2])
   })
 
+  it('caps hostile ptCount and ignores sparse out-of-range idx', () => {
+    const HOSTILE = `<c:chartSpace xmlns:c="c" xmlns:a="a"><c:chart><c:plotArea>
+<c:barChart><c:barDir val="col"/>
+<c:ser><c:idx val="0"/>
+  <c:cat><c:strRef><c:f>x</c:f><c:strCache><c:ptCount val="1000000000"/><c:pt idx="0"><c:v>A</c:v></c:pt><c:pt idx="999999999"><c:v>Z</c:v></c:pt></c:strCache></c:strRef></c:cat>
+  <c:val><c:numRef><c:f>y</c:f><c:numCache><c:ptCount val="2"/><c:pt idx="0"><c:v>1</c:v></c:pt><c:pt idx="1"><c:v>2</c:v></c:pt></c:numCache></c:numRef></c:val>
+</c:ser></c:barChart>
+</c:plotArea></c:chart></c:chartSpace>`
+    const start = Date.now()
+    const m = parseChartXml(HOSTILE)!
+    expect(Date.now() - start).toBeLessThan(10000)
+    expect(m.categories?.length).toBeLessThanOrEqual(1_048_576)
+    expect(m.categories?.[0]).toBe('A')
+    expect(m.series[0]!.values).toEqual([1, 2])
+  })
+
+  it('ignores per-point overrides outside the series point count', () => {
+    const xml = `<c:chartSpace xmlns:c="c" xmlns:a="a"><c:chart><c:plotArea>
+<c:pieChart><c:ser><c:idx val="0"/>
+  <c:dPt><c:idx val="0"/><c:spPr><a:solidFill><a:srgbClr val="AA0000"/></a:solidFill></c:spPr></c:dPt>
+  <c:dPt><c:idx val="20000000"/><c:spPr><a:solidFill><a:srgbClr val="0000AA"/></a:solidFill></c:spPr><c:explosion val="10"/></c:dPt>
+  <c:val><c:numRef><c:numCache><c:ptCount val="1"/><c:pt idx="0"><c:v>1</c:v></c:pt></c:numCache></c:numRef></c:val>
+</c:ser></c:pieChart></c:plotArea></c:chart></c:chartSpace>`
+    const s = parseChartXml(xml)!.series[0]!
+    expect(s.pointColors).toEqual(['#AA0000'])
+    expect(s.pointExplosionPct).toBeUndefined()
+  })
+
   it('parses bar+line combo: both plots kept, series tagged with plotKind', () => {
     const COMBO = `<c:chartSpace xmlns:c="c" xmlns:a="a"><c:chart><c:plotArea><c:layout/>
 <c:barChart><c:barDir val="col"/><c:grouping val="clustered"/>
@@ -340,6 +381,21 @@ describe('buildChartSpaceXml comboBarLine (generate → parse round-trip)', () =
     const m = parseChartXml(xml)!
     expect(m.kind).toBe('bar')
     expect(m.series[0]!.plotKind).toBeUndefined()
+  })
+})
+
+describe('buildChartSpaceXml spreadsheet column references', () => {
+  it('uses base-26 columns after Z', () => {
+    const xml = buildChartSpaceXml({
+      kind: 'line',
+      categories: ['x'],
+      series: Array.from({ length: 27 }, (_, i) => ({ name: `S${i}`, values: [i] })),
+      offset: { x: 0, y: 0, cx: 100, cy: 100 },
+    })
+    expect(xml).toContain('Sheet1!$AA$1')
+    expect(xml).toContain('Sheet1!$AA$2:$AA$2')
+    expect(xml).toContain('Sheet1!$AB$1')
+    expect(xml).not.toMatch(/Sheet1!\$[[\\]/)
   })
 })
 
@@ -1276,6 +1332,21 @@ it('reads a logarithmic value axis base from c:scaling', () => {
   expect(m.valAxis?.max).toBe(10000)
 })
 
+it('drops logarithmic bases outside the OOXML range', () => {
+  const withBase = (base: string) =>
+    parseChartXml(
+      LINE_CHART.replace(
+        '<c:scaling><c:orientation val="minMax"/></c:scaling>',
+        `<c:scaling><c:logBase val="${base}"/><c:orientation val="minMax"/></c:scaling>`,
+      ),
+    )!
+  expect(withBase('1.999').valAxis?.logBase).toBeUndefined()
+  expect(withBase('2').valAxis?.logBase).toBe(2)
+  expect(withBase('1000').valAxis?.logBase).toBe(1000)
+  expect(withBase('1001').valAxis?.logBase).toBeUndefined()
+  expect(withBase('1000000000').valAxis?.logBase).toBeUndefined()
+})
+
 describe('date axis chronological order', () => {
   const chartXml = (orientation: string, serials: number[]) => {
     const pts = (vals: Array<number | string>) =>
@@ -1300,6 +1371,16 @@ describe('date axis chronological order', () => {
     expect(m.catAxis?.reversed).toBe(true)
   })
 
+  it('keeps date-axis sorting bounded when a point override has a huge index', () => {
+    const xml = chartXml('maxMin', [46174, 46143, 46113]).replace(
+      '</c:dPt>',
+      '</c:dPt><c:dPt><c:idx val="20000000"/><c:spPr><a:solidFill><a:srgbClr val="0000FF"/></a:solidFill></c:spPr></c:dPt>',
+    )
+    const m = parseChartXml(xml)!
+    expect(m.series[0]!.pointColors).toHaveLength(3)
+    expect(m.series[0]!.pointColors?.[2]).toBe('#FF0000')
+  })
+
   it('reorders a series shorter than the categories by point index', () => {
     const xml = chartXml('maxMin', [46174, 46143, 46113]).replace(
       /<c:val>.*?<\/c:val>/s,
@@ -1314,6 +1395,17 @@ describe('date axis chronological order', () => {
     const m = parseChartXml(chartXml('minMax', [46113, 46143, 46174]), undefined as never)!
     expect(m.categories).toEqual(['Apr-26', 'May-26', 'Jun-26'])
     expect(m.series[0]!.values).toEqual([10, 20, 30])
+  })
+
+  it('moves value-from-cells labels with their points', () => {
+    const dlbls = `<c:dLbls><c:extLst><c:ext uri="{CE6537A1-D6FC-4f65-9D91-7224C49458BB}" xmlns:c15="http://schemas.microsoft.com/office/drawing/2012/chart"><c15:showDataLabelsRange val="1"/></c:ext></c:extLst></c:dLbls>`
+    const dlblRange = `<c:extLst><c:ext uri="{02D57815-91ED-43cb-92C2-25804820EDAC}" xmlns:c15="http://schemas.microsoft.com/office/drawing/2012/chart"><c15:datalabelsRange><c15:dlblRangeCache><c:pt idx="0"><c:v>Jun cell</c:v></c:pt><c:pt idx="1"><c:v>May cell</c:v></c:pt><c:pt idx="2"><c:v>Apr cell</c:v></c:pt></c15:dlblRangeCache></c15:datalabelsRange></c:ext></c:extLst>`
+    const xml = chartXml('maxMin', [46174, 46143, 46113])
+      .replace('<c:cat>', `${dlbls}<c:cat>`)
+      .replace('</c:val>', `</c:val>${dlblRange}`)
+    const m = parseChartXml(xml, undefined as never)!
+    // sheet order Jun/May/Apr carries labels Jun/May/Apr: the plot reads Apr/May/Jun
+    expect(m.series[0]!.pointLabels).toEqual(['Apr cell', 'May cell', 'Jun cell'])
   })
 })
 

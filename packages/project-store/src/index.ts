@@ -1,6 +1,10 @@
+<<<<<<< ours
 export { ProjectStore } from './store.js'
 export { ConversationStore } from './conversations.js'
 export { bindConversationsIpc, type ConversationsScopeInput } from './conversations-ipc.js'
+=======
+export { ProjectStore, canonicalPathKey } from './store.js'
+>>>>>>> theirs
 export type {
   ChatMessage,
   ChatMeta,

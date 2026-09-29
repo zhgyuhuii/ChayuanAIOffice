@@ -39,6 +39,20 @@ describe('parsePageSpec', () => {
     expect(r.spec.elements).toHaveLength(1)
   })
 
+  it('stops at the spec when the trailing prose carries a brace', () => {
+    // A brace in the run text and a brace in the model's sign-off: the spec
+    // itself is intact, so neither may decide where the JSON ends.
+    const raw =
+      'Here is the design:\n```json\n{"background":"#0E1A2B","elements":[' +
+      JSON.stringify(textSpec('Close } brace')) +
+      ']}\n```\nLet me know if you want changes {x}'
+    const r = parsePageSpec(raw)
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.spec.background).toBe('#0E1A2B')
+    expect(r.spec.elements).toHaveLength(1)
+  })
+
   it('rejects output without a usable JSON object', () => {
     expect(parsePageSpec('sorry, I cannot').ok).toBe(false)
     expect(parsePageSpec('{"elements":[]}').ok).toBe(false)
@@ -82,6 +96,48 @@ describe('parsePageSpec', () => {
     expect(r.spec.elements).toHaveLength(2)
     expect((r.spec.elements[0] as { shape: string }).shape).toBe('rect')
   })
+
+  it('accepts and normalizes uppercase HTTP(S) image URL schemes', () => {
+    const r = parsePageSpec(
+      JSON.stringify({
+        elements: [
+          { type: 'image', url: 'HTTPS://example.com/a.png', x: 0, y: 0, w: 10, h: 10 },
+          { type: 'image', url: 'HtTp://example.com/b.png', x: 10, y: 0, w: 10, h: 10 },
+        ],
+      }),
+    )
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.spec.elements.map((el) => (el.type === 'image' ? el.url : undefined))).toEqual([
+      'https://example.com/a.png',
+      'http://example.com/b.png',
+    ])
+  })
+
+  it('keeps boolean flipH/flipV on shapes and drops other values', () => {
+    const r = parsePageSpec(
+      JSON.stringify({
+        elements: [
+          {
+            type: 'shape',
+            shape: 'line',
+            x: 0,
+            y: 0,
+            w: 100,
+            h: 60,
+            stroke: { color: '#fff' },
+            flipV: true,
+            flipH: 'yes',
+          },
+        ],
+      }),
+    )
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    const el = r.spec.elements[0] as { flipV?: boolean; flipH?: boolean }
+    expect(el.flipV).toBe(true)
+    expect(el.flipH).toBeUndefined()
+  })
 })
 
 describe('parsePageSpec near-duplicate text', () => {
@@ -93,6 +149,10 @@ describe('parsePageSpec near-duplicate text', () => {
     h: 40,
     paragraphs: [{ runs: [{ text, sizePt: 14 }] }],
   })
+
+  /** Both phrasings the advice uses: "near-duplicate text" and "identical text". */
+  const dupWarnings = (warnings: string[]): string[] =>
+    warnings.filter((w) => w.includes('duplicate') || w.includes('identical text'))
 
   it('warns when two boxes restate each other (a subtitle repeating the chart caption)', () => {
     const r = parsePageSpec(
@@ -147,6 +207,61 @@ describe('parsePageSpec near-duplicate text', () => {
     expect(r.ok).toBe(true)
     if (!r.ok) return
     expect(r.warnings).toEqual([])
+  })
+
+  it('ignores duplicate text among elements the parse discarded', () => {
+    const r = parsePageSpec(
+      JSON.stringify({
+        elements: [
+          box('Quarterly revenue by region and channel', 60),
+          // same text, but pushed off-canvas and dropped before any advice runs
+          { ...box('Quarterly revenue by region and channel', 60), x: 99999 },
+        ],
+      }),
+    )
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.spec.elements).toHaveLength(1)
+    expect(dupWarnings(r.warnings)).toEqual([])
+  })
+
+  it('names the model element numbers, not positions in the retained set', () => {
+    const r = parsePageSpec(
+      JSON.stringify({
+        elements: [
+          { ...box('Quarterly revenue by region and channel', 60), x: 99999 },
+          box('Quarterly revenue by region and channel', 60),
+          box('QUARTERLY REVENUE, BY REGION AND CHANNEL.', 100),
+        ],
+      }),
+    )
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    // Raw indices 1 and 2 are retained and duplicate; the dropped index 0 is not
+    // position 0 in the kept set, so the advice must still say 1 and 2.
+    const dupes = r.warnings.filter((w) => w.includes('identical text'))
+    expect(dupes).toHaveLength(1)
+    expect(dupes[0]).toContain('elements 1 and 2: identical text')
+  })
+
+  it('keeps duplicate analysis bounded when a spec is mostly discarded', () => {
+    const dup = 'Quarterly revenue by region and channel'
+    // Thousands of elements past the canvas are discarded, and they all duplicate
+    // one another: only the first survives, so the pairwise pass must not scale
+    // with the raw input. Quadratic over the raw array also emits ~millions of
+    // warnings, so the count below is the real regression signal.
+    const elements = [
+      box(dup, 60),
+      ...Array.from({ length: 4000 }, (_x, i) => ({ ...box(dup, 60), x: 99999 + i })),
+    ]
+    const started = performance.now()
+    const r = parsePageSpec(JSON.stringify({ elements }))
+    const elapsed = performance.now() - started
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.spec.elements).toHaveLength(1)
+    expect(dupWarnings(r.warnings)).toEqual([])
+    expect(elapsed).toBeLessThan(2000)
   })
 })
 
@@ -336,72 +451,28 @@ describe('buildPagePptx text-box height fix', () => {
   })
 })
 
-describe('three-state image elements (url / dataUri / svg)', () => {
-  const noImages = { fetchImage: async () => null }
-  const SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><rect width="10" height="10" fill="#ff0000"/></svg>'
-  const PNG_DATA_URI = `data:image/png;base64,${btoa(
-    String.fromCharCode(...PNG_1PX),
-  )}`
-
-  it('parses dataUri and svg elements alongside url elements', () => {
-    const raw = JSON.stringify({
-      elements: [
-        { type: 'image', url: 'https://ok.example/a.png', x: 0, y: 0, w: 100, h: 100 },
-        { type: 'image', dataUri: PNG_DATA_URI, x: 100, y: 0, w: 100, h: 100 },
-        { type: 'image', svg: SVG, pngDataUri: PNG_DATA_URI, x: 200, y: 0, w: 100, h: 100 },
-      ],
-    })
-    const r = parsePageSpec(raw)
-    expect(r.ok).toBe(true)
-    if (!r.ok) return
-    expect(r.warnings).toEqual([])
-    const imgs = r.spec.elements.filter((e) => e.type === 'image')
-    expect(imgs).toHaveLength(3)
-  })
-
-  it('rejects svg without a pngDataUri raster fallback and non-raster dataUris', () => {
-    const raw = JSON.stringify({
-      elements: [
-        { type: 'image', svg: SVG, x: 0, y: 0, w: 100, h: 100 },
-        { type: 'image', dataUri: 'data:text/html;base64,PGI+', x: 0, y: 0, w: 100, h: 100 },
-        { type: 'image', url: 'javascript:alert(1)', x: 0, y: 0, w: 100, h: 100 },
-      ],
-    })
-    const r = parsePageSpec(raw)
-    expect(r.ok).toBe(false)
-    if (r.ok) return
-    expect(r.error).toContain('no valid elements')
-  })
-
-  it('builds an svg element as a double part (raster blip + svgBlip extension)', async () => {
+describe('buildPagePptx shape flip', () => {
+  it('writes flipV on a line into the saved pptx (bottom-left to top-right)', async () => {
     const spec: PageSpec = {
       elements: [
-        { type: 'image', svg: SVG, pngDataUri: PNG_DATA_URI, x: 0, y: 0, w: 200, h: 200 },
-        { type: 'image', dataUri: PNG_DATA_URI, x: 200, y: 0, w: 200, h: 200 },
+        {
+          type: 'shape',
+          shape: 'line',
+          x: 40,
+          y: 40,
+          w: 400,
+          h: 200,
+          stroke: { color: '#0070C0', widthPt: 2 },
+          flipV: true,
+        },
       ],
     }
-    const { bytes, imageFailures } = await buildPagePptx(spec, noImages)
-    expect(imageFailures).toEqual([])
+    const { bytes } = await buildPagePptx(spec, { fetchImage: async () => null })
     const opened = await openPptx(bytes)
-    const pics = opened.deck.slides[0]!.elements.filter(
-      (e): e is PictureElement => e.type === 'picture',
-    )
-    expect(pics).toHaveLength(2)
-    // the svg element carries the Office 2016 svgBlip part; the dataUri one does not
-    expect(pics[0]!.svgMediaRef).toBeTruthy()
-    expect(pics[0]!.mediaRef).toBeTruthy()
-    expect(pics[1]!.svgMediaRef).toBeUndefined()
-  })
-
-  it('reports a failed inline decode without failing the page', async () => {
-    const spec: PageSpec = {
-      elements: [
-        { type: 'image', svg: SVG, pngDataUri: 'data:image/png;base64,!!!notb64!!!', x: 0, y: 0, w: 100, h: 100 },
-      ],
-    }
-    const { bytes, imageFailures } = await buildPagePptx(spec, noImages)
-    expect(imageFailures).toEqual(['inline svg'])
-    const opened = await openPptx(bytes)
-    expect(opened.deck.slides[0]!.elements).toHaveLength(0)
+    const el = opened.deck.slides[0]!.elements.find(
+      (e) => (e as TextElement).presetGeometry === 'line',
+    ) as TextElement | undefined
+    expect(el?.transform.flipV).toBe(true)
+    expect(el?.anchor.originalXml).toContain('flipV="1"')
   })
 })

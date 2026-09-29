@@ -4,7 +4,10 @@
 /// [Content_Types].xml entries. Non-note VML shapes (checkboxes, buttons)
 /// survive a rewrite untouched.
 
+import { encodeXlsxEscapes } from './xlsx-escapes'
+import { resolveRelTarget } from './xlsx-drawing-add'
 import { ensureRelationshipNamespace } from './xlsx-namespace'
+import { nextFreeRelationshipId } from './xlsx-sheets'
 
 export class NoteEditError extends Error {}
 
@@ -60,22 +63,6 @@ function relTarget(relsXml: string, type: string): string | null {
   return target?.[1] ?? null
 }
 
-/// "../comments1.xml" or "/xl/comments1.xml" → package path.
-function resolveRelTarget(worksheetPath: string, target: string): string {
-  if (target.startsWith('/')) return target.slice(1)
-  const base = worksheetPath.split('/').slice(0, -1)
-  for (const part of target.split('/')) {
-    if (part === '..') base.pop()
-    else if (part !== '.') base.push(part)
-  }
-  return base.join('/')
-}
-
-function nextFreeRid(relsXml: string): string {
-  const ids = [...relsXml.matchAll(/ Id="rId(\d+)"/g)].map((match) => Number(match[1]))
-  return `rId${ids.length === 0 ? 1 : Math.max(...ids) + 1}`
-}
-
 async function nextFreePath(
   pkg: MutableNotePackage,
   template: (index: number) => string,
@@ -100,14 +87,14 @@ function buildCommentsXml(notes: readonly SheetNote[]): string {
       const ref = `${columnName(note.column)}${note.row + 1}`
       return (
         `<comment ref="${ref}" authorId="${authorId(note.author)}">` +
-        `<text><t xml:space="preserve">${escapeXml(note.text)}</t></text></comment>`
+        `<text><t xml:space="preserve">${escapeXml(encodeXlsxEscapes(note.text))}</t></text></comment>`
       )
     })
     .join('')
   return (
     '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
     '<comments xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
-    `<authors>${authors.map((author) => `<author>${escapeXml(author)}</author>`).join('')}</authors>` +
+    `<authors>${authors.map((author) => `<author>${escapeXml(encodeXlsxEscapes(author))}</author>`).join('')}</authors>` +
     `<commentList>${comments}</commentList></comments>`
   )
 }
@@ -122,11 +109,22 @@ const VML_HEADER =
   '<v:stroke joinstyle="miter"/><v:path gradientshapeok="t" o:connecttype="rect"/>' +
   '</v:shapetype>'
 
-function noteShape(note: SheetNote, index: number): string {
+const FIRST_NOTE_SHAPE_ID = 1025
+
+function nextShapeId(vmlXml: string): number {
+  let next = FIRST_NOTE_SHAPE_ID
+  for (const match of vmlXml.matchAll(/\bid="_x0000_s(\d+)"/g)) {
+    const id = Number(match[1])
+    if (id >= next) next = id + 1
+  }
+  return next
+}
+
+function noteShape(note: SheetNote, index: number, firstId: number): string {
   // Anchor: from one column right of the cell, spanning ~3 columns / 4 rows.
   const anchor = [note.column + 1, 15, note.row, 2, note.column + 4, 15, note.row + 4, 2].join(',')
   return (
-    `<v:shape id="_x0000_s${1025 + index}" type="#_x0000_t202"` +
+    `<v:shape id="_x0000_s${firstId + index}" type="#_x0000_t202"` +
     ' style="position:absolute;margin-left:80pt;margin-top:2pt;width:108pt;height:60pt;' +
     `z-index:${index + 1};visibility:hidden" fillcolor="#ffffe1" o:insetmode="auto">` +
     '<v:fill color2="#ffffe1"/><v:shadow on="t" color="black" obscured="t"/>' +
@@ -142,7 +140,7 @@ function noteShape(note: SheetNote, index: number): string {
 
 /// Drops every Note-typed shape, keeping other legacy objects verbatim.
 function stripNoteShapes(vmlXml: string): string {
-  return vmlXml.replace(/<v:shape\b[\s\S]*?<\/v:shape>/g, (shape) =>
+  return vmlXml.replace(/<v:shape\b(?![^>]*\/>)[\s\S]*?<\/v:shape>/g, (shape) =>
     shape.includes('ObjectType="Note"') ? '' : shape,
   )
 }
@@ -256,7 +254,7 @@ export async function applySheetNotes(
   let commentsPath = existingCommentsPath
   if (commentsPath === null) {
     commentsPath = await nextFreePath(pkg, (index) => `xl/comments${index}.xml`)
-    const rid = nextFreeRid(relsXml)
+    const rid = nextFreeRelationshipId(relsXml)
     const target = `../${commentsPath.replace(/^xl\//, '')}`
     relsXml = appendRel(relsXml, rid, COMMENTS_REL_TYPE, target)
     relsChanged = true
@@ -267,18 +265,20 @@ export async function applySheetNotes(
   touchedEntries.add(commentsPath)
 
   // VML part: keep foreign shapes, replace the note shapes.
-  const shapes = notes.map((note, index) => noteShape(note, index)).join('')
   if (existingVmlPath !== null && (await pkg.has(existingVmlPath))) {
     const vml = stripNoteShapes(await pkg.readText(existingVmlPath))
     const end = vml.lastIndexOf('</xml>')
     if (end === -1) throw new NoteEditError(`${existingVmlPath} is not a VML drawing.`)
+    const firstId = nextShapeId(vml)
+    const shapes = notes.map((note, index) => noteShape(note, index, firstId)).join('')
     pkg.write(existingVmlPath, vml.slice(0, end) + shapes + vml.slice(end))
     touchedEntries.add(existingVmlPath)
   } else {
     const vmlPath = await nextFreePath(pkg, (index) => `xl/drawings/vmlDrawing${index}.vml`)
-    const rid = nextFreeRid(relsXml)
+    const rid = nextFreeRelationshipId(relsXml)
     relsXml = appendRel(relsXml, rid, VML_REL_TYPE, `../drawings/${vmlPath.split('/').pop()}`)
     relsChanged = true
+    const shapes = notes.map((note, index) => noteShape(note, index, FIRST_NOTE_SHAPE_ID)).join('')
     pkg.add(vmlPath, `${VML_HEADER}${shapes}</xml>`)
     touchedEntries.add(vmlPath)
     const worksheetXml = await pkg.readText(worksheetPath)

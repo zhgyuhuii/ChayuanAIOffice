@@ -21,7 +21,12 @@ export {
   AgentLoop,
   COMPLETED_VIA_TOOLS_TEXT,
   DEFAULT_MAX_TURNS,
+<<<<<<< ours
   parseDegradedToolCalls,
+=======
+  TOOL_ABORTED_OUTPUT,
+  missingRequiredFields,
+>>>>>>> theirs
   runtimePreamble,
   sanitizeAgentPayload,
 } from './loop'

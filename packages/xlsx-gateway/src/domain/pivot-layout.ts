@@ -5,6 +5,15 @@ import type { AddPivotOperation } from './workbook-dsl'
 
 export type PivotScalar = string | number | boolean | null
 
+/// Mirror pivot-engine's numeric coercion so the grid baked here and a later
+/// refresh total the same thing. A cell holding the text "42" is a number to
+/// both; blank, empty and unparseable cells are not.
+function numericValue(value: PivotScalar): number | null {
+  if (value === null || value === '') return null
+  const numeric = typeof value === 'number' ? value : Number(String(value).trim())
+  return Number.isFinite(numeric) ? numeric : null
+}
+
 export type PivotLayoutErrorCode =
   | 'sourceNeedsRows'
   | 'sourceRowLimit'
@@ -259,8 +268,8 @@ export function buildPivotLayout(
       return evaluatePivotFormula(spec.ast, (name) => {
         const refIndex = fieldIndex(name)
         return rows
-          .map((row) => row[refIndex])
-          .filter((value): value is number => typeof value === 'number' && Number.isFinite(value))
+          .map((row) => numericValue(row[refIndex] ?? null))
+          .filter((value): value is number => value !== null)
           .reduce((total, value) => total + value, 0)
       })
     }
@@ -269,8 +278,8 @@ export function buildPivotLayout(
         .length
     }
     const numbers = rows
-      .map((row) => row[spec.fieldIndex])
-      .filter((value): value is number => typeof value === 'number' && Number.isFinite(value))
+      .map((row) => numericValue(row[spec.fieldIndex] ?? null))
+      .filter((value): value is number => value !== null)
     if (numbers.length === 0) return null
     switch (spec.agg) {
       case 'sum':
@@ -278,9 +287,9 @@ export function buildPivotLayout(
       case 'average':
         return numbers.reduce((total, value) => total + value, 0) / numbers.length
       case 'max':
-        return Math.max(...numbers)
+        return numbers.reduce((max, value) => (value > max ? value : max))
       case 'min':
-        return Math.min(...numbers)
+        return numbers.reduce((min, value) => (value < min ? value : min))
     }
   }
 

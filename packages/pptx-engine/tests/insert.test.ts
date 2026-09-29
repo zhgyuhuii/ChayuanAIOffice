@@ -7,9 +7,12 @@ import {
   savePptx,
   addElement,
   addTable,
+  buildTableGridXml,
   deleteElement,
   createBlankPptx,
+  type NewTableGridOptions,
 } from '../src/index'
+import { nextCNvPrId } from '../src/insert'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const fx = (name: string) => readFileSync(join(here, 'fixtures', name))
@@ -78,6 +81,31 @@ describe('add/delete element', () => {
     const b = addElement(slide, { kind: 'rect', offset: { ...OFF } })
     const idOf = (xml: string) => /<p:cNvPr\s[^>]*\bid="(\d+)"/.exec(xml)![1]
     expect(idOf(a.anchor.originalXml)).not.toBe(idOf(b.anchor.originalXml))
+  })
+
+  /**
+   * nextCNvPrId counted only double-quoted ids, so in a deck that single-quotes
+   * its attributes it saw none of them, returned a low id and minted a shape id
+   * that collided with an existing one.
+   */
+  it('counts single-quoted cNvPr ids so an insert cannot reuse one', async () => {
+    const opened = await openPptx(fx('01_standard_business.pptx'))
+    const slide = opened.deck.slides[0]!
+    const singleQuote = (xml: string) => xml.replace(/\bid="(\d+)"/g, "id='$1'")
+    slide.originalXml = singleQuote(slide.originalXml)
+    for (const el of slide.elements) el.anchor.originalXml = singleQuote(el.anchor.originalXml)
+    const maxId = Math.max(
+      ...[...slide.elements.map((e) => e.anchor.originalXml)].flatMap((xml) =>
+        [...xml.matchAll(/<p:cNvPr\s[^>]*\bid=["'](\d+)["']/g)].map((m) => Number(m[1])),
+      ),
+    )
+    expect(maxId).toBeGreaterThan(2)
+
+    expect(nextCNvPrId(slide)).toBe(maxId + 1)
+    const added = addElement(slide, { kind: 'rect', offset: { ...OFF } })
+    const newId = Number(/<p:cNvPr\s[^>]*\bid=["'](\d+)["']/.exec(added.anchor.originalXml)![1])
+    expect(newId).toBe(maxId + 1)
+    expect(newId).toBeGreaterThan(maxId)
   })
 
   it('delete element persists through save → reopen', async () => {
@@ -229,6 +257,104 @@ describe('addTable explicit grid options (genpptx parity)', () => {
     })!
     const el: any = opened.deck.slides[0]!.elements.find((e) => e.id === r.elementId)
     expect(el.anchor.originalXml).toContain('<a:gridCol w="1000000"/>'.repeat(3))
+  })
+
+  it('clamps hostile dims and spans instead of throwing or emitting NaN', async () => {
+    const opened = await openPptx(fx('01_standard_business.pptx'))
+    const start = Date.now()
+    const r = addTable(opened, 0, {
+      rows: NaN,
+      cols: Infinity,
+      offset: { x: 0, y: 0, cx: 3000000, cy: 1000000 },
+      cellProps: [[{ gridSpan: Infinity }]],
+    })!
+    expect(Date.now() - start).toBeLessThan(10000)
+    const xml = (opened.deck.slides[0]!.elements.find((e) => e.id === r.elementId) as any).anchor
+      .originalXml as string
+    expect(xml).not.toContain('NaN')
+    expect(xml).not.toContain('Infinity')
+    expect(xml.match(/<a:tr /g)?.length).toBeLessThanOrEqual(75)
+  })
+
+  it('clamps spans to the cells remaining right of / below the cell', async () => {
+    const opened = await openPptx(fx('01_standard_business.pptx'))
+    const r = addTable(opened, 0, {
+      rows: 2,
+      cols: 3,
+      offset: { x: 0, y: 0, cx: 3000000, cy: 1000000 },
+      cellProps: [[undefined, { gridSpan: 5 }, { gridSpan: 3, rowSpan: 4 }], [{ rowSpan: 2 }]],
+    })!
+    const xml = (opened.deck.slides[0]!.elements.find((e) => e.id === r.elementId) as any).anchor
+      .originalXml as string
+    expect(xml.match(/gridSpan="\d+"/g)).toEqual(['gridSpan="2"'])
+    expect(xml.match(/rowSpan="\d+"/g)).toEqual(['rowSpan="2"'])
+  })
+})
+
+/**
+ * ST_Coordinate ceiling (generate.ts COORD_MAX): the largest value the
+ * schema accepts for a:off/a:ext.
+ */
+const COORD_MAX = '27273042316900'
+
+/** x/y/cx/cy values of the first xfrm, in document order. */
+function xfrmNums(xml: string): string[] {
+  const block = /<(?:a|p):xfrm\b[^>]*>[\s\S]*?<\/(?:a|p):xfrm>/.exec(xml)?.[0] ?? ''
+  return [...block.matchAll(/\b(?:x|y|cx|cy)="([^"]*)"/g)].map((m) => m[1]!)
+}
+
+/**
+ * The shape/connector/table builders hand-interpolated the offset straight into
+ * <a:off>/<a:ext>, so a hostile op payload wrote the raw number into the
+ * attribute: x="0.5" and cx="1e+30" are both invalid ST_Coordinate values and
+ * PowerPoint rejects the file. They now go through generateXfrmXml, the
+ * clamping helper the picture builder already used.
+ */
+describe('insert geometry attribute bounds', () => {
+  const HOSTILE = { x: 0.5, y: 1e30, cx: 1e30, cy: Number.NaN }
+
+  it('clamps shape, connector and table offsets to finite integers', async () => {
+    const opened = await openPptx(fx('01_standard_business.pptx'))
+    const slide = opened.deck.slides[0]!
+
+    const shape = addElement(slide, { kind: 'ellipse', offset: { ...HOSTILE } })
+    const conn = addElement(slide, { kind: 'line', offset: { ...HOSTILE } })
+    const tbl = addTable(opened, 0, { rows: 2, cols: 2, offset: { ...HOSTILE } })!
+    const grid: NewTableGridOptions = {
+      offset: { ...HOSTILE },
+      colWidthsEmu: [1000000, 1000000],
+      rowHeightsEmu: [500000, 500000],
+      cells: [
+        [{}, {}],
+        [{}, {}],
+      ],
+    }
+
+    for (const xml of [
+      shape.anchor.originalXml,
+      conn.anchor.originalXml,
+      (tbl.slide.elements.find((e) => e.id === tbl.elementId) as any).anchor.originalXml as string,
+      buildTableGridXml(slide, grid),
+    ]) {
+      for (const v of xfrmNums(xml)) expect(v).toMatch(/^-?\d+$/)
+      expect(xml).not.toMatch(/="(?:NaN|Infinity|1e[+-])/)
+      expect(xml).not.toMatch(/="-?\d+\.\d+"/)
+    }
+
+    // 0.5 rounds to an integer, 1e30 lands on the ST_Coordinate ceiling and the
+    // NaN height falls back to the 0 lower bound
+    expect(xfrmNums(shape.anchor.originalXml)).toEqual(['1', COORD_MAX, COORD_MAX, '0'])
+  })
+
+  it('a clamped table offset survives save → reopen as a finite rect', async () => {
+    const opened = await openPptx(fx('01_standard_business.pptx'))
+    addTable(opened, 0, { rows: 2, cols: 2, offset: { ...HOSTILE } })
+
+    const reopened = await openPptx(await savePptx(opened))
+    const o = (reopened.deck.slides[0]!.elements.find((e) => e.type === 'table') as any).transform
+      .offset
+    expect(Number.isFinite(o.x) && Number.isFinite(o.y)).toBe(true)
+    expect(Number.isFinite(o.cx) && Number.isFinite(o.cy)).toBe(true)
   })
 })
 

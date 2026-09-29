@@ -19,6 +19,18 @@ import { resolveFill, type MediaResolver } from './fill'
 /** Default series palette (approximation of PowerPoint's default theme accent sequence). */
 const PALETTE = ['#4472C4', '#ED7D31', '#A5A5A5', '#FFC000', '#5B9BD5', '#70AD47']
 
+function arrayMax(values: readonly number[], initial = -Infinity): number {
+  let result = initial
+  for (const value of values) result = Math.max(result, value)
+  return result
+}
+
+function arrayMin(values: readonly number[], initial = Infinity): number {
+  let result = initial
+  for (const value of values) result = Math.min(result, value)
+  return result
+}
+
 // PowerPoint chart text defaults to the theme minor font (Calibri in practice);
 // metrics resolve it through the Carlito alias so widths match PPT
 const LABEL_FONT = 'Calibri'
@@ -364,7 +376,10 @@ function buildChartNodeInner(
 
   // ── Value range + nice ticks (primary/secondary axes independent) ──
   if (!priVals.length) return null
-  const catCount = Math.max(model.categories.length, ...model.series.map((s) => s.values.length), 1)
+  const catCount = arrayMax(
+    model.series.map((s) => s.values.length),
+    Math.max(model.categories.length, 1),
+  )
   // Percent stacked: normalize each value to its category share (%) — stacking only applies to bar series
   // Pure line charts stack their lines in stacked/percentStacked grouping (PPT accumulates
   // per category); in combos the overlay lines stay raw
@@ -395,11 +410,11 @@ function buildChartNodeInner(
     )
     // Overlaid line series on the secondary axis don't feed into the primary range
     const overlayVals = model.series.filter((s) => !isStackSer(s) && !onSecAxis(s)).flatMap(numVals)
-    dataMax = Math.max(...posSums, ...overlayVals, 0)
-    dataMin = Math.min(...negSums, ...overlayVals, 0)
+    dataMax = arrayMax(overlayVals, arrayMax(posSums, 0))
+    dataMin = arrayMin(overlayVals, arrayMin(negSums, 0))
   } else {
-    dataMax = Math.max(...priVals, 0)
-    dataMin = Math.min(...priVals, 0)
+    dataMax = arrayMax(priVals, 0)
+    dataMin = arrayMin(priVals, 0)
   }
   // Percent stacked: the value axis is exactly 0-100% (−100% with negative stacks)
   if (grouping === 'percentStacked') {
@@ -415,7 +430,7 @@ function buildChartNodeInner(
   const logBase = model.valAxis?.logBase
   const { min, max, ticks } = logBase
     ? logTicks(
-        Math.min(...priVals.filter((v) => v > 0), Infinity),
+        arrayMin(priVals.filter((v) => v > 0)),
         dataMax,
         model.valAxis?.min,
         model.valAxis?.max,
@@ -434,8 +449,8 @@ function buildChartNodeInner(
   // Secondary value axis ticks (right side): range fully independent of the primary (e.g. left axis revenue 0-250, right axis growth% 0-30)
   const sec = secVals.length
     ? ppTicks(
-        model.valAxis2?.min ?? Math.min(...secVals, 0),
-        model.valAxis2?.max ?? Math.max(...secVals, 0),
+        model.valAxis2?.min ?? arrayMin(secVals, 0),
+        model.valAxis2?.max ?? arrayMax(secVals, 0),
         model.valAxis2?.min == null,
         model.valAxis2?.max == null,
         false,
@@ -504,7 +519,10 @@ function buildChartNodeInner(
     ? 0
     : model.valAxis?.tickLblGarbage
       ? measure(fmtDataLabel(0, model.valAxis?.numFmt), labelSizePx) * 1.2
-      : Math.max(...tickLabels.map((t) => measure(t, labelSizePx)), 0)
+      : arrayMax(
+          tickLabels.map((t) => measure(t, labelSizePx)),
+          0,
+        )
   // Axis titles draw at their own run size/weight; measure and reserve with that style
   const titleSizePxOf = (a: { titleSizePt?: number } | undefined, dflt: number) =>
     a?.titleSizePt ? ptToPx(a.titleSizePt, vp.scale) : dflt
@@ -532,7 +550,12 @@ function buildChartNodeInner(
     vp.scale,
   )
   const secTickLabels = sec ? sec.ticks.map((t) => fmtNum(t)) : []
-  const y2LabelW = sec ? Math.max(...secTickLabels.map((t) => measure(t, secLabelSizePx)), 0) : 0
+  const y2LabelW = sec
+    ? arrayMax(
+        secTickLabels.map((t) => measure(t, secLabelSizePx)),
+        0,
+      )
+    : 0
   const valTitle2SizePx = titleSizePxOf(model.valAxis2, secLabelSizePx)
   const axisTitle2W =
     sec && model.valAxis2?.title && !model.valAxis2.titleOverlay
@@ -557,7 +580,10 @@ function buildChartNodeInner(
     (sec ? y2LabelW + axisTitle2W + 10 : valRight ? valSideW : labelSizePx * 0.7) -
     legendW
   const nCats = Math.max(model.categories.length, 1)
-  const maxCatW = Math.max(...model.categories.map((c) => measure(c, catLabelSizePx)), 1)
+  const maxCatW = arrayMax(
+    model.categories.map((c) => measure(c, catLabelSizePx)),
+    1,
+  )
   // Category label mode: an explicit txPr rotation wins; otherwise crowded labels wrap
   // to ≤3 horizontal lines when the words fit the slot, and rotate ~45° as a last resort
   // (PowerPoint thins labels only after that)
@@ -596,7 +622,7 @@ function buildChartNodeInner(
     ? Math.min(maxCatW * rotReserve + catLabelSizePx * rotReserveCos, box.h * 0.35) +
       catLabelSizePx * 0.2
     : catLabelSizePx * 0.75 +
-      catLabelSizePx * 1.2 * (heuristicWrap ? Math.max(...heuristicWrap.map((l) => l.length)) : 1) +
+      catLabelSizePx * 1.2 * (heuristicWrap ? arrayMax(heuristicWrap.map((l) => l.length)) : 1) +
       catLabelSizePx * 0.15
   // Value range spans zero (crosses=autoZero): the category axis and its labels sit at the
   // zero line, so the bottom keeps only the last tick label's half-height (PPT measured)
@@ -1189,9 +1215,9 @@ function buildChartNodeInner(
       if (model.stock.hiLowLines) {
         node.axisLines.push({
           x1: x,
-          y1: yOfS(Math.max(...vals)),
+          y1: yOfS(arrayMax(vals)),
           x2: x,
-          y2: yOfS(Math.min(...vals)),
+          y2: yOfS(arrayMin(vals)),
           color: '#000000',
           widthPx: lineWidth,
         })
@@ -1347,7 +1373,11 @@ function buildOfPieNode(
   const legendW = sideLegend
     ? Math.min(
         box.w * 0.4,
-        Math.max(...items.map((it) => measure(it.label)), 0) + labelSizePx * 2.2,
+        arrayMax(
+          items.map((it) => measure(it.label)),
+          0,
+        ) +
+          labelSizePx * 2.2,
       )
     : 0
   const legendRowH = labelSizePx * 1.5
@@ -1557,7 +1587,11 @@ function buildPieNode(
     legendPos === 'l' || legendPos === 'r' || legendPos === 'tr'
       ? Math.min(
           box.w * 0.4,
-          Math.max(...legendItems.map((it) => measure(it.label)), 0) + labelSizePx * 2.2,
+          arrayMax(
+            legendItems.map((it) => measure(it.label)),
+            0,
+          ) +
+            labelSizePx * 2.2,
         )
       : 0
   if (legendPos === 'r' || legendPos === 'tr') plotW -= sideLegendW
@@ -1859,8 +1893,8 @@ function buildBar3DNode(
   const allVals = model.series.flatMap((s) => s.values.filter((v): v is number => v != null))
   if (!allVals.length) return null
   const { min, max, ticks } = ppTicks(
-    model.valAxis?.min ?? Math.min(...allVals, 0),
-    model.valAxis?.max ?? Math.max(...allVals, 0),
+    model.valAxis?.min ?? arrayMin(allVals, 0),
+    model.valAxis?.max ?? arrayMax(allVals, 0),
     model.valAxis?.min == null,
     model.valAxis?.max == null,
     false,
@@ -1877,20 +1911,36 @@ function buildBar3DNode(
     !!model.valAxis?.hidden || !!model.valAxis?.tickLblHidden || !!model.valAxis?.tickLblGarbage
   const valNoReserve = !!model.valAxis?.hidden || !!model.valAxis?.tickLblHidden
   const tickLabels = ticks.map((t) => fmtNum(t))
-  const tickW = valNoReserve ? 0 : Math.max(...tickLabels.map((t) => measure(t, labelSizePx)), 0)
+  const tickW = valNoReserve
+    ? 0
+    : arrayMax(
+        tickLabels.map((t) => measure(t, labelSizePx)),
+        0,
+      )
   // Side legends draw on the right (addSeriesLegend's convention, matching the 2D builders)
   const legendW =
     legendPos === 'r' || legendPos === 'l'
       ? labelSizePx +
-        Math.max(...model.series.map((s) => measure(s.name ?? '', labelSizePx)), 0) +
+        arrayMax(
+          model.series.map((s) => measure(s.name ?? '', labelSizePx)),
+          0,
+        ) +
         12
       : 0
-  const nCats = Math.max(model.categories.length, ...model.series.map((s) => s.values.length), 1)
+  const nCats = arrayMax(
+    model.series.map((s) => s.values.length),
+    Math.max(model.categories.length, 1),
+  )
   const nSer = Math.max(model.series.length, 1)
   // Series names ride the depth axis on the right (c:serAx); PowerPoint lets them run
   // into the legend gutter, so only half their width narrows the stage
   const serAxW = b3.serAxLabels
-    ? (Math.max(...model.series.map((s) => measure(s.name ?? '', catLabelSizePx)), 0) + 8) / 2
+    ? (arrayMax(
+        model.series.map((s) => measure(s.name ?? '', catLabelSizePx)),
+        0,
+      ) +
+        8) /
+      2
     : 0
   const availX = pad + tickW + 8
   const availR = box.w - pad - legendW - serAxW
@@ -2092,7 +2142,10 @@ function buildArea3DNode(
 
   const allVals = model.series.flatMap((s) => s.values.filter((v): v is number => v != null))
   if (!allVals.length) return null
-  const nCats = Math.max(model.categories.length, ...model.series.map((s) => s.values.length), 1)
+  const nCats = arrayMax(
+    model.series.map((s) => s.values.length),
+    Math.max(model.categories.length, 1),
+  )
   const nSer = Math.max(model.series.length, 1)
   const catAbsTotals = Array.from({ length: nCats }, (_, i) =>
     model.series.reduce((a, s) => a + Math.abs(s.values[i] ?? 0), 0),
@@ -2111,11 +2164,11 @@ function buildArea3DNode(
     const negSums = Array.from({ length: nCats }, (_, i) =>
       model.series.reduce((a, _s, si) => a + Math.min(valueAt(si, i), 0), 0),
     )
-    dataMax = Math.max(...posSums, 0)
-    dataMin = Math.min(...negSums, 0)
+    dataMax = arrayMax(posSums, 0)
+    dataMin = arrayMin(negSums, 0)
   } else {
-    dataMax = Math.max(...allVals, 0)
-    dataMin = Math.min(...allVals, 0)
+    dataMax = arrayMax(allVals, 0)
+    dataMin = arrayMin(allVals, 0)
   }
   if (grouping === 'percentStacked') {
     dataMax = 100
@@ -2134,11 +2187,19 @@ function buildArea3DNode(
   const legendW =
     legendPos === 'r' || legendPos === 'l'
       ? labelSizePx +
-        Math.max(...model.series.map((s) => measure(s.name ?? '', labelSizePx)), 0) +
+        arrayMax(
+          model.series.map((s) => measure(s.name ?? '', labelSizePx)),
+          0,
+        ) +
         12
       : 0
   const serAxW = a3.serAxLabels
-    ? (Math.max(...model.series.map((s) => measure(s.name ?? '', catLabelSizePx)), 0) + 8) / 2
+    ? (arrayMax(
+        model.series.map((s) => measure(s.name ?? '', catLabelSizePx)),
+        0,
+      ) +
+        8) /
+      2
     : 0
   const catLabelsOff =
     !!model.catAxis?.hidden || !!model.catAxis?.tickLblHidden || !!model.catAxis?.tickLblGarbage
@@ -2165,7 +2226,12 @@ function buildArea3DNode(
     const tickLabels = t.ticks.map((v) =>
       grouping === 'percentStacked' ? `${fmtNum(v)}%` : fmtNum(v),
     )
-    const tickW = valNoReserve ? 0 : Math.max(...tickLabels.map((s) => measure(s, labelSizePx)), 0)
+    const tickW = valNoReserve
+      ? 0
+      : arrayMax(
+          tickLabels.map((s) => measure(s, labelSizePx)),
+          0,
+        )
     const availX = pad + tickW + 8
     const availR = box.w - pad - legendW - serAxW
     const availY = pad + (legendPos === 't' ? legendH + 4 : 0) + labelSizePx * 0.6
@@ -2386,7 +2452,10 @@ function buildHBarNode(
 
   const allVals = model.series.flatMap((s) => s.values.filter((v): v is number => v != null))
   if (!allVals.length) return null
-  const catCount = Math.max(model.categories.length, ...model.series.map((s) => s.values.length), 1)
+  const catCount = arrayMax(
+    model.series.map((s) => s.values.length),
+    Math.max(model.categories.length, 1),
+  )
   const catAbsTotals = Array.from({ length: catCount }, (_, i) =>
     model.series.reduce((a, s) => a + Math.abs(s.values[i] ?? 0), 0),
   )
@@ -2405,11 +2474,11 @@ function buildHBarNode(
     const negSums = Array.from({ length: catCount }, (_, i) =>
       model.series.reduce((a, _s, si) => a + Math.min(valueAt(si, i) ?? 0, 0), 0),
     )
-    dataMax = Math.max(...posSums, 0)
-    dataMin = Math.min(...negSums, 0)
+    dataMax = arrayMax(posSums, 0)
+    dataMin = arrayMin(negSums, 0)
   } else {
-    dataMax = Math.max(...allVals, 0)
-    dataMin = Math.min(...allVals, 0)
+    dataMax = arrayMax(allVals, 0)
+    dataMin = arrayMin(allVals, 0)
   }
   // Percent stacked: the value axis is exactly 0-100% (−100% with negative stacks)
   if (grouping === 'percentStacked') {
@@ -2441,7 +2510,10 @@ function buildHBarNode(
   const catNoReserve = !!model.catAxis?.hidden || !!model.catAxis?.tickLblHidden
   const catLabelW = catNoReserve
     ? 0
-    : Math.max(...model.categories.map((c) => measure(c, catLabelSizePx)), 0)
+    : arrayMax(
+        model.categories.map((c) => measure(c, catLabelSizePx)),
+        0,
+      )
   // Axis titles: the category title stands on the left (rotated), the value title lies under the tick row
   const axisTitleStyle = (a: ChartModel['valAxis'], dflt: number): RunStyle => ({
     fontFamily: chartFont(model),
@@ -2467,7 +2539,10 @@ function buildHBarNode(
     model.series.some((s) => s.name)
       ? labelSizePx * 0.5 +
         4 +
-        Math.max(...model.series.map((s) => measure(s.name ?? '', labelSizePx)), 0) +
+        arrayMax(
+          model.series.map((s) => measure(s.name ?? '', labelSizePx)),
+          0,
+        ) +
         8
       : 0
   const plotR = box.w - pad - labelSizePx * 0.7 - legendW
@@ -2739,20 +2814,24 @@ function buildScatterNode(
   const hasBubbles = model.series.some((s) => s.bubbleSizes?.length)
   const bubblePad = (lo: number, hi: number) =>
     hasBubbles ? ((hi - lo) * 0.25 * ((model.bubbleScale ?? 100) / 100)) / 2 : 0
-  const xPad = bubblePad(Math.min(...allX, 0), Math.max(...allX, 0))
-  const yPad = bubblePad(Math.min(...allY, 0), Math.max(...allY, 0))
+  const xMin = arrayMin(allX, 0)
+  const xMax = arrayMax(allX, 0)
+  const yMin = arrayMin(allY, 0)
+  const yMax = arrayMax(allY, 0)
+  const xPad = bubblePad(xMin, xMax)
+  const yPad = bubblePad(yMin, yMax)
 
   // The catAxis slot = the x axis (the engine dispatched by axPos)
   const xTicksR = ppTicks(
-    model.catAxis?.min ?? Math.min(...allX, 0) - (Math.min(...allX, 0) < 0 ? xPad : 0),
-    model.catAxis?.max ?? Math.max(...allX, 0) + xPad,
+    model.catAxis?.min ?? xMin - (xMin < 0 ? xPad : 0),
+    model.catAxis?.max ?? xMax + xPad,
     model.catAxis?.min == null,
     model.catAxis?.max == null,
     true,
   )
   const yTicksR = ppTicks(
-    model.valAxis?.min ?? Math.min(...allY, 0) - (Math.min(...allY, 0) < 0 ? yPad : 0),
-    model.valAxis?.max ?? Math.max(...allY, 0) + yPad,
+    model.valAxis?.min ?? yMin - (yMin < 0 ? yPad : 0),
+    model.valAxis?.max ?? yMax + yPad,
     model.valAxis?.min == null,
     model.valAxis?.max == null,
     true,
@@ -2761,7 +2840,10 @@ function buildScatterNode(
   const pad = Math.max(4, box.w * 0.01)
   const legendPos = model.legendPos
   const legendH = legendPos === 't' || legendPos === 'b' ? labelSizePx * 1.6 : 0
-  const yLabelW = Math.max(...yTicksR.ticks.map((t) => measure(fmtNum(t), labelSizePx)), 0)
+  const yLabelW = arrayMax(
+    yTicksR.ticks.map((t) => measure(fmtNum(t), labelSizePx)),
+    0,
+  )
   const plotX = pad + yLabelW + 10
   const plotY = pad + (legendPos === 't' ? legendH + 4 : 0) + labelSizePx * 0.6
   const plotR = box.w - pad - labelSizePx * 0.7
@@ -2936,7 +3018,7 @@ function buildFunnelNode(
 ): ChartRenderNode | null {
   const vals = model.series[0]?.values
   if (!vals?.length) return null
-  const maxVal = Math.max(...vals.map((v) => Math.abs(v ?? 0)))
+  const maxVal = arrayMax(vals.map((v) => Math.abs(v ?? 0)))
   if (maxVal <= 0) return null
   const node = emptyChartNode(id, sourceId, box)
 
@@ -2951,7 +3033,10 @@ function buildFunnelNode(
   const color = model.series[0]!.color ?? chartPalette(model)[0]!
   const pad = Math.max(6, Math.min(box.w, box.h) * 0.03)
 
-  const labelW = Math.max(...model.categories.map((c) => measure(c)), 0)
+  const labelW = arrayMax(
+    model.categories.map((c) => measure(c)),
+    0,
+  )
   const plotX = pad + labelW + labelSizePx
   const plotW = box.w - plotX - pad
   const plotH = box.h - pad * 2
@@ -3118,7 +3203,10 @@ function buildRadarNode(
   vp: Viewport,
   metrics: FontMetricsProvider,
 ): ChartRenderNode | null {
-  const n = Math.max(model.categories.length, ...model.series.map((s) => s.values.length))
+  const n = arrayMax(
+    model.series.map((s) => s.values.length),
+    model.categories.length,
+  )
   if (n < 3) return null
   const allVals = model.series.flatMap((s) => s.values.filter((v): v is number => v != null))
   if (!allVals.length) return null
@@ -3139,8 +3227,8 @@ function buildRadarNode(
     model.series[i]?.color ?? palette[(model.series[i]?.paletteIdx ?? i) % palette.length]!
 
   const { min, max, ticks } = ppTicks(
-    model.valAxis?.min ?? Math.min(...allVals, 0),
-    model.valAxis?.max ?? Math.max(...allVals, 0),
+    model.valAxis?.min ?? arrayMin(allVals, 0),
+    model.valAxis?.max ?? arrayMax(allVals, 0),
     model.valAxis?.min == null,
     model.valAxis?.max == null,
     true,
@@ -3149,10 +3237,16 @@ function buildRadarNode(
   const pad = Math.max(6, Math.min(box.w, box.h) * 0.03)
   const legendPos = model.legendPos
   const legendH = legendPos === 't' || legendPos === 'b' ? labelSizePx * 1.6 : 0
-  const maxCatW = Math.max(...model.categories.map((c) => measure(c, labelSizePx)), 0)
+  const maxCatW = arrayMax(
+    model.categories.map((c) => measure(c, labelSizePx)),
+    0,
+  )
   const sideLegendW =
     legendPos === 'l' || legendPos === 'r' || legendPos === 'tr'
-      ? Math.max(...model.series.map((s) => measure(s.name ?? '', labelSizePx)), 0) +
+      ? arrayMax(
+          model.series.map((s) => measure(s.name ?? '', labelSizePx)),
+          0,
+        ) +
         labelSizePx * 2.2
       : 0
   const plotW = box.w - pad * 2 - sideLegendW - maxCatW * 2

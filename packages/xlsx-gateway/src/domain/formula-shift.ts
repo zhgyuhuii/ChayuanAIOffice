@@ -122,7 +122,8 @@ function sheetPrefixApplies(
 ): boolean {
   if (quoted === undefined && bare === undefined) return formulaSheetMatchesOp
   const prefixSheet = quoted !== undefined ? decodeQuotedSheetName(quoted) : bare
-  return prefixSheet === opSheetName
+  if (prefixSheet === undefined) return false
+  return prefixSheet.toLowerCase() === opSheetName.toLowerCase()
 }
 
 // Whole-row spans (2:4) — the row-axis mirror of COLUMN_SPAN_RE, same
