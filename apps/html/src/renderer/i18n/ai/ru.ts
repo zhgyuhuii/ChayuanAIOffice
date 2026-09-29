@@ -192,4 +192,4 @@ export const ru = {
   aiThemeTechDesc: 'Современный технологичный вид',
   aiThemePlayfulDesc: 'Яркие цвета и игривые формы',
   aiThemeDarkDesc: 'Современное тёмное оформление страницы',
-} satisfies Record<keyof typeof zh, string>
+}

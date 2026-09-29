@@ -194,4 +194,4 @@ export const nl = {
   aiThemeTechDesc: 'Moderne high-tech uitstraling',
   aiThemePlayfulDesc: 'Felle kleuren en speelse vormen',
   aiThemeDarkDesc: 'Moderne pagina-stijl in donkere modus',
-} satisfies Record<keyof typeof zh, string>
+}

@@ -1734,4 +1734,5 @@ export const it = {
   appNoObjects: "Nessun oggetto in questo foglio",
   appShapeName: "Forma",
   appCfAiPrompt: "Formattazione condizionale IA: suggerisci e applica regole adatte alla mia selezione.",
+  appOpeningWorkbook: 'Apertura della cartella di lavoro…',
 } satisfies Record<keyof typeof zh, string>

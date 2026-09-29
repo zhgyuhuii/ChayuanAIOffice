@@ -1,6 +1,21 @@
 import { existsSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import type { RunStyle } from '@chatoffice/pptx-render'
+
+// Vitest turns ?asset imports into /@fs URLs, while font metrics reads the files from disk.
+vi.mock('@genoffice/ui/fonts/Carlito-Regular.ttf?asset', () => ({
+  default: resolve(process.cwd(), '../../packages/ui/src/fonts/Carlito-Regular.ttf'),
+}))
+vi.mock('@genoffice/ui/fonts/Carlito-Bold.ttf?asset', () => ({
+  default: resolve(process.cwd(), '../../packages/ui/src/fonts/Carlito-Bold.ttf'),
+}))
+vi.mock('@genoffice/ui/fonts/Carlito-Italic.ttf?asset', () => ({
+  default: resolve(process.cwd(), '../../packages/ui/src/fonts/Carlito-Italic.ttf'),
+}))
+vi.mock('@genoffice/ui/fonts/Carlito-BoldItalic.ttf?asset', () => ({
+  default: resolve(process.cwd(), '../../packages/ui/src/fonts/Carlito-BoldItalic.ttf'),
+}))
 
 // shaped-metrics pulls in the harfbuzz wasm (?asset only resolves in electron builds); disconnected in unit tests
 vi.mock('../src/main/shaped-metrics', () => ({
@@ -31,7 +46,7 @@ describe.runIf(mac)(
   () => {
     const m = createSystemFontMetrics()
 
-    it('missing Japanese fonts substitute to Hiragino (same family for metrics and rendering)', () => {
+    it('Japanese font requests resolve to matching system faces', () => {
       const yuSans = office ? /^Yu Gothic/ : /^Hiragino Sans$/
       expect(m.displayFamily!(style('游ゴシック'))).toMatch(yuSans)
       expect(m.displayFamily!(style('Yu Gothic'))).toMatch(yuSans)
@@ -42,6 +57,7 @@ describe.runIf(mac)(
       // Yu Mincho ships with recent macOS as the "YuMincho" family, so the real
       // font can win even without Office installed
       expect(m.displayFamily!(style('游明朝'))).toMatch(/Yu ?Mincho|Hiragino Mincho/)
+      expect(m.displayFamily!(style('游明朝'))).toMatch(/Yu ?Mincho|Hiragino Mincho/) // public-hygiene: fixture
       expect(m.displayFamily!(style('MS Mincho'))).toMatch(
         office ? /MS Mincho|Hiragino Mincho/ : /^Hiragino Mincho ProN$/,
       )

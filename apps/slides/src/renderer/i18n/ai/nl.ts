@@ -333,4 +333,5 @@ export const nl = {
   aiToolRunWebSearch: 'Zoeken op het web…',
   aiToolRunImageSearch: 'Afbeeldingen worden gezocht…',
   aiToolRunReadUrl: 'Pagina wordt gelezen…',
+  aiPageCloudToLocal: 'Cloud niet beschikbaar — lokaal gegenereerd',
 } satisfies Record<keyof typeof zh, string>

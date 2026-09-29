@@ -7,6 +7,7 @@ export const he = {
   saveFailed: 'השמירה נכשלה: {error}',
   saveFailedStatus: 'השמירה נכשלה',
   exportFailed: 'הייצוא נכשל',
+  exportHtmlSkipped: 'יוצא, אך לא ניתן היה להטמיע {count} משאבים (למשל {first})',
   viewPreview: 'תצוגה מקדימה',
   viewSplit: 'מפוצל',
   viewSource: 'מקור',
@@ -51,7 +52,6 @@ export const he = {
   save: 'שמירה (⌘S)',
   saveAs: 'שמירה בשם…',
   ribbonCollapse: 'כווץ את רצועת הכלים',
-  ribbonPin: 'הצמד את רצועת הכלים',
   ribbonExpand: 'הרחב את רצועת הכלים',
   ribbonGroupInsert: 'הוספה',
   editText: 'עריכת טקסט',
@@ -141,4 +141,5 @@ export const he = {
   presentInTab: 'בכרטיסייה זו',
   presentFullscreen: 'מסך מלא',
   presentNewTab: 'כרטיסייה חדשה',
-} satisfies Record<keyof typeof zh, string>
+  ribbonPin: '固定功能区'
+}

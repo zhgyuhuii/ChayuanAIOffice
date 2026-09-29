@@ -10,8 +10,8 @@
  */
 import { cNvPrIdsInXml, pruneTimingForSpids } from './animation'
 import type { EmuRect, Paragraph, PictureElement, Slide, SlideElement, TextElement } from './types'
-import { generateParagraphXml, generateXfrmXml } from './generate'
-import { creationIdXml, escapeXmlAttr } from './xml-utils'
+import { clampPosEmu, generateParagraphXml, generateXfrmXml } from './generate'
+import { creationIdXml, escapeXmlAttr, maxRelationshipIdNumber } from './xml-utils'
 import { relsPathFor } from './zip'
 import type { OpenedPptx } from './index'
 import { cleanupDeletedElementResources } from './resource-cleanup'
@@ -52,6 +52,10 @@ export interface NewElementOptions {
   bodyPr?: NewElementBodyPr
   /** prstGeom adjustment values (<a:avLst><a:gd name fmla="val N"/>), e.g. {adj: 25000} for roundRect radius */
   adjustments?: Record<string, number>
+  /** Mirror horizontally (a:xfrm flipH="1") — a rightArrow points left */
+  flipH?: boolean
+  /** Mirror vertically (a:xfrm flipV="1") — a line runs bottom-left to top-right */
+  flipV?: boolean
 }
 
 /**
@@ -121,6 +125,8 @@ export function isLineKind(kind: string): boolean {
 
 const DEFAULT_LINE_STROKE = { color: '#000000', widthEmu: 12700 }
 
+/** a:xfrm flip attributes for generated fragments; empty when neither flag is set */
+
 function buildCxnSpXml(
   slide: Slide,
   opts: NewElementOptions,
@@ -142,7 +148,7 @@ function buildCxnSpXml(
   return (
     `<p:cxnSp><p:nvCxnSpPr><p:cNvPr id="${id}" name="${escapeXmlAttr(name)}">${creationIdXml()}</p:cNvPr>` +
     '<p:cNvCxnSpPr/><p:nvPr/></p:nvCxnSpPr>' +
-    `<p:spPr><a:xfrm><a:off x="${o.x}" y="${o.y}"/><a:ext cx="${o.cx}" cy="${o.cy}"/></a:xfrm>` +
+    `<p:spPr>${generateXfrmXml({ offset: o, rot: 0, flipH: opts.flipH === true, flipV: opts.flipV === true })}` +
     `<a:prstGeom prst="${def.prst}">${buildAvLstXml(opts.adjustments)}</a:prstGeom>` +
     `<a:ln w="${Math.round(stroke.widthEmu)}" cap="flat">` +
     `<a:solidFill><a:srgbClr val="${color}"/></a:solidFill>${head}${tail}</a:ln>` +
@@ -154,7 +160,8 @@ function buildCxnSpXml(
 export function nextCNvPrId(slide: Slide): number {
   let max = 1
   const scan = (xml: string) => {
-    for (const m of xml.matchAll(/<p:cNvPr\s[^>]*\bid="(\d+)"/g)) {
+    // quote-agnostic: a writer that single-quotes its attributes still owns those ids
+    for (const m of xml.matchAll(/<p:cNvPr\s[^>]*\bid=["'](\d+)["']/g)) {
       max = Math.max(max, Number(m[1]))
     }
   }
@@ -168,7 +175,12 @@ export function buildSpXml(slide: Slide, opts: NewElementOptions): string {
   const isTextbox = opts.kind === 'textbox'
   const name = isTextbox ? `TextBox ${id}` : `Shape ${id}`
   const o = opts.offset
-  const xfrm = `<a:xfrm><a:off x="${o.x}" y="${o.y}"/><a:ext cx="${o.cx}" cy="${o.cy}"/></a:xfrm>`
+  const xfrm = generateXfrmXml({
+    offset: o,
+    rot: 0,
+    flipH: opts.flipH === true,
+    flipV: opts.flipV === true,
+  })
   // Parser convention: has txBody and no prstGeom → 'text'; textbox omits prstGeom
   const geom = isTextbox
     ? ''
@@ -201,7 +213,12 @@ export function addElement(slide: Slide, opts: NewElementOptions): TextElement {
         originalXml: buildCxnSpXml(slide, opts, lineDef),
         range: [0, 0],
       },
-      transform: { offset: { ...opts.offset }, rot: 0, flipH: false, flipV: false },
+      transform: {
+        offset: { ...opts.offset },
+        rot: 0,
+        flipH: opts.flipH === true,
+        flipV: opts.flipV === true,
+      },
       presetGeometry: lineDef.prst,
       ...(opts.adjustments ? { adjust: { ...opts.adjustments } } : {}),
       fill: { type: 'none' },
@@ -222,7 +239,12 @@ export function addElement(slide: Slide, opts: NewElementOptions): TextElement {
     id: `spnew_${(insertCounter++).toString(36)}_${Date.now().toString(36)}`,
     type: opts.kind === 'textbox' ? 'text' : 'shape',
     anchor: { spIndex: slide.elements.length, originalXml: xml, range: [0, 0] },
-    transform: { offset: { ...opts.offset }, rot: 0, flipH: false, flipV: false },
+    transform: {
+      offset: { ...opts.offset },
+      rot: 0,
+      flipH: opts.flipH === true,
+      flipV: opts.flipV === true,
+    },
     ...(opts.kind !== 'textbox' ? { presetGeometry: opts.kind } : {}),
     ...(opts.kind !== 'textbox' && opts.adjustments ? { adjust: { ...opts.adjustments } } : {}),
     ...(opts.fillColor ? { fill: { type: 'solid' as const, color: opts.fillColor } } : {}),
@@ -270,6 +292,15 @@ export interface NewTableOptions {
 /** PowerPoint's default style for new tables (Medium Style 2 - Accent 1, built-in fallback in the render layer) */
 const DEFAULT_TABLE_STYLE_ID = '{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}'
 
+/** Largest row/column count an inserted table may have (PowerPoint's Insert Table limit). */
+export const MAX_INSERT_TABLE_DIM = 75
+
+/** Finite integer clamp with a safe fallback (NaN/Infinity land on `fallback`). */
+function clampInt(v: number, min: number, max: number, fallback = min): number {
+  if (!Number.isFinite(v)) return fallback
+  return Math.min(Math.max(min, Math.floor(v)), max)
+}
+
 /**
  * Build the table graphicFrame fragment (equal-width columns / equal-height rows,
  * default built-in style, empty cells). Insertion goes through appendRawElements
@@ -277,24 +308,32 @@ const DEFAULT_TABLE_STYLE_ID = '{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}'
  */
 export function buildTableXml(slide: Slide, opts: NewTableOptions): string {
   const id = nextCNvPrId(slide)
-  const rows = Math.max(1, Math.floor(opts.rows))
-  const cols = Math.max(1, Math.floor(opts.cols))
-  const colW = Math.max(1, Math.floor(opts.offset.cx / cols))
-  const rowH = Math.max(1, Math.floor(opts.offset.cy / rows))
+  // Hostile op JSON can carry NaN/Infinity rows/cols (Math.max passes them
+  // through, Array.from({length: Infinity}) throws) and Infinity spans
+  // (w="Infinity" is Word-unopenable): clamp everything up front.
+  const rows = clampInt(opts.rows, 1, MAX_INSERT_TABLE_DIM)
+  const cols = clampInt(opts.cols, 1, MAX_INSERT_TABLE_DIM)
+  // the frame ext is written through the ST_Coordinate clamp, so size the grid
+  // from the same bounds (Math.max alone leaves NaN/1e+30 in w= and h=)
+  const gridEmu = (v: number) => Math.max(1, Math.round(clampPosEmu(v)))
+  const colW = gridEmu(Math.floor(clampPosEmu(opts.offset.cx) / cols))
+  const rowH = gridEmu(Math.floor(clampPosEmu(opts.offset.cy) / rows))
   const colWs =
     opts.colWidthsEmu?.length === cols
-      ? opts.colWidthsEmu.map((w) => Math.max(1, Math.round(w)))
+      ? opts.colWidthsEmu.map(gridEmu)
       : Array.from({ length: cols }, () => colW)
   const rowHs =
     opts.rowHeightsEmu?.length === rows
-      ? opts.rowHeightsEmu.map((h) => Math.max(1, Math.round(h)))
+      ? opts.rowHeightsEmu.map(gridEmu)
       : Array.from({ length: rows }, () => rowH)
   const grid = colWs.map((w) => `<a:gridCol w="${w}"/>`).join('')
   const cellXml = (r: number, c: number): string => {
     const p = opts.cellProps?.[r]?.[c]
     const attrs: string[] = []
-    if (p?.gridSpan && p.gridSpan > 1) attrs.push(`gridSpan="${Math.floor(p.gridSpan)}"`)
-    if (p?.rowSpan && p.rowSpan > 1) attrs.push(`rowSpan="${Math.floor(p.rowSpan)}"`)
+    const gridSpan = p?.gridSpan !== undefined ? clampInt(p.gridSpan, 1, cols - c) : 1
+    const rowSpan = p?.rowSpan !== undefined ? clampInt(p.rowSpan, 1, rows - r) : 1
+    if (gridSpan > 1) attrs.push(`gridSpan="${gridSpan}"`)
+    if (rowSpan > 1) attrs.push(`rowSpan="${rowSpan}"`)
     if (p?.hMerge) attrs.push('hMerge="1"')
     if (p?.vMerge) attrs.push('vMerge="1"')
     const tcPr = p?.anchor && p.anchor !== 't' ? `<a:tcPr anchor="${p.anchor}"/>` : '<a:tcPr/>'
@@ -309,7 +348,7 @@ export function buildTableXml(slide: Slide, opts: NewTableOptions): string {
   return (
     `<p:graphicFrame><p:nvGraphicFramePr><p:cNvPr id="${id}" name="Table ${id}">${creationIdXml()}</p:cNvPr>` +
     '<p:cNvGraphicFramePr><a:graphicFrameLocks noGrp="1"/></p:cNvGraphicFramePr><p:nvPr/></p:nvGraphicFramePr>' +
-    `<p:xfrm><a:off x="${opts.offset.x}" y="${opts.offset.y}"/><a:ext cx="${opts.offset.cx}" cy="${opts.offset.cy}"/></p:xfrm>` +
+    `${generateXfrmXml({ offset: opts.offset, rot: 0, flipH: false, flipV: false }, 'p:xfrm')}` +
     '<a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/table">' +
     `<a:tbl><a:tblPr firstRow="1" bandRow="1"><a:tableStyleId>${DEFAULT_TABLE_STYLE_ID}</a:tableStyleId></a:tblPr>` +
     `<a:tblGrid>${grid}</a:tblGrid>${trs}</a:tbl></a:graphicData></a:graphic></p:graphicFrame>`
@@ -354,10 +393,16 @@ function tableCellXml(
   cell: NewTableCellSpec,
   colIdx: number,
   border: NewTableGridOptions['border'],
+  maxGridSpan: number,
+  maxRowSpan: number,
 ): string {
   const attrs: string[] = []
-  if ((cell.gridSpan ?? 1) > 1) attrs.push(`gridSpan="${Math.floor(cell.gridSpan!)}"`)
-  if ((cell.rowSpan ?? 1) > 1) attrs.push(`rowSpan="${Math.floor(cell.rowSpan!)}"`)
+  // cap a span at the cells remaining right of / below it, as buildTableXml
+  // does: Math.floor alone emits gridSpan="Infinity" for a hostile payload
+  const gridSpan = cell.gridSpan !== undefined ? clampInt(cell.gridSpan, 1, maxGridSpan) : 1
+  const rowSpan = cell.rowSpan !== undefined ? clampInt(cell.rowSpan, 1, maxRowSpan) : 1
+  if (gridSpan > 1) attrs.push(`gridSpan="${gridSpan}"`)
+  if (rowSpan > 1) attrs.push(`rowSpan="${rowSpan}"`)
   if (cell.hMerge) attrs.push('hMerge="1"')
   if (cell.vMerge) attrs.push('vMerge="1"')
   const tcAttrs = attrs.length ? ` ${attrs.join(' ')}` : ''
@@ -411,21 +456,26 @@ function tableCellXml(
  */
 export function buildTableGridXml(slide: Slide, opts: NewTableGridOptions): string {
   const id = nextCNvPrId(slide)
+  const cols = opts.colWidthsEmu.length
   const grid = opts.colWidthsEmu
-    .map((w) => `<a:gridCol w="${Math.max(1, Math.round(w))}"/>`)
+    .map((w) => `<a:gridCol w="${Math.max(1, Math.round(clampPosEmu(w)))}"/>`)
     .join('')
   const trs = opts.cells
     .map((row, r) => {
-      const h = Math.max(1, Math.round(opts.rowHeightsEmu[r] ?? 1))
+      const h = Math.max(1, Math.round(clampPosEmu(opts.rowHeightsEmu[r] ?? 1)))
       // one <a:tc> per grid column (covered columns keep their own hMerge tc)
-      const tcs = row.map((cell, colIdx) => tableCellXml(cell, colIdx, opts.border)).join('')
+      const tcs = row
+        .map((cell, colIdx) =>
+          tableCellXml(cell, colIdx, opts.border, cols - colIdx, opts.cells.length - r),
+        )
+        .join('')
       return `<a:tr h="${h}">${tcs}</a:tr>`
     })
     .join('')
   return (
     `<p:graphicFrame><p:nvGraphicFramePr><p:cNvPr id="${id}" name="Table ${id}">${creationIdXml()}</p:cNvPr>` +
     '<p:cNvGraphicFramePr><a:graphicFrameLocks noGrp="1"/></p:cNvGraphicFramePr><p:nvPr/></p:nvGraphicFramePr>' +
-    `<p:xfrm><a:off x="${opts.offset.x}" y="${opts.offset.y}"/><a:ext cx="${opts.offset.cx}" cy="${opts.offset.cy}"/></p:xfrm>` +
+    `${generateXfrmXml({ offset: opts.offset, rot: 0, flipH: false, flipV: false }, 'p:xfrm')}` +
     '<a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/table">' +
     `<a:tbl><a:tblPr/><a:tblGrid>${grid}</a:tblGrid>${trs}</a:tbl></a:graphicData></a:graphic></p:graphicFrame>`
   )
@@ -527,8 +577,7 @@ export function addImageMediaAndRel(
   const rels =
     archive.readText(relsPath) ??
     '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>'
-  let maxRid = 0
-  for (const m of rels.matchAll(/Id="rId(\d+)"/g)) maxRid = Math.max(maxRid, Number(m[1]))
+  const maxRid = maxRelationshipIdNumber(rels)
   const rid = `rId${maxRid + 1}`
   const relXml = `<Relationship Id="${rid}" Type="${IMAGE_REL_TYPE}" Target="../media/${mediaPath.slice('ppt/media/'.length)}"/>`
   archive.entries.set(

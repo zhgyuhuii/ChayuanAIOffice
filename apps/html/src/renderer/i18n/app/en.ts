@@ -7,6 +7,7 @@ export const en = {
   saveFailed: 'Save failed: {error}',
   saveFailedStatus: 'Save failed',
   exportFailed: 'Export failed',
+  exportHtmlSkipped: 'Exported, but {count} asset(s) could not be inlined (e.g. {first})',
   viewPreview: 'Preview',
   viewSplit: 'Split',
   viewSource: 'Source',
@@ -53,7 +54,6 @@ export const en = {
   save: 'Save (⌘S)',
   saveAs: 'Save As…',
   ribbonCollapse: 'Collapse the Ribbon',
-  ribbonPin: 'Pin the ribbon',
   ribbonExpand: 'Expand the Ribbon',
   ribbonGroupInsert: 'Insert',
   editText: 'Edit text',
@@ -143,4 +143,5 @@ export const en = {
   presentInTab: 'In this tab',
   presentFullscreen: 'Fullscreen',
   presentNewTab: 'New tab',
-} satisfies Record<keyof typeof zh, string>
+  ribbonPin: '固定功能区'
+}

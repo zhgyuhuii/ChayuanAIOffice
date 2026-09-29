@@ -49,6 +49,15 @@ import {
 } from '../../../slides/src/main/slides-main'
 import type { DockEditorOptions, DockKind, DockRect, DockTabSummary } from '../shared/dock-api'
 import type { DocumentTabKind, OpenDocumentTab, TabKind, TabSummary } from '../shared/tabs-api'
+/** a tab lifted out of the strip with its live view: what "Open in New Window",
+ *  tear-off and dock hand back and forth between the shell and a detached window */
+export interface DetachedTab {
+  view: WebContentsView
+  kind: TabKind
+  title: string
+  filePath?: string
+}
+
 interface TabRecord {
   id: string
   kind: TabKind
@@ -127,20 +136,19 @@ export class TabManager {
       this.layout()
       setImmediate(() => this.layout())
     })
-    shellWindow.webContents.once('did-finish-load', () => this.scheduleSpareSheetsView(1500))
   }
 
   private scheduleSpareSheetsView(delayMs: number): void {
-    if (process.env.GENOFFICE_NO_SPARE_VIEW || this.spareSheetsTimer) return
+    if (process.env.GENOFFICE_NO_SPARE_VIEW || this.spareSheetsTimer || this.spareSheetsView) return
+    if (this.tabs.find((t) => t.id === this.activeId)?.kind !== 'sheets') return
     this.spareSheetsTimer = setTimeout(() => {
       this.spareSheetsTimer = null
       if (this.spareSheetsView || this.shellWindow.isDestroyed()) return
+      const active = this.tabs.find((t) => t.id === this.activeId)
+      if (active?.kind !== 'sheets') return
       const view = createSheetsView({ includeAiHandlers: false })
       // registering the session made the spare the menu-action target
-      const active = this.tabs.find((t) => t.id === this.activeId)
-      setActiveSheetsWebContents(
-        active?.kind === 'sheets' && active.view ? active.view.webContents : null,
-      )
+      setActiveSheetsWebContents(active.view?.webContents ?? null)
       this.shellWindow.contentView.addChildView(view)
       view.setVisible(false)
       view.setBounds(this.contentBounds())
@@ -157,6 +165,16 @@ export class TabManager {
     const view = this.spareSheetsView
     this.spareSheetsView = null
     return view && !view.webContents.isDestroyed() ? view : null
+  }
+
+  private discardSpareSheetsView(): void {
+    if (this.spareSheetsTimer) clearTimeout(this.spareSheetsTimer)
+    this.spareSheetsTimer = null
+    const spare = this.spareSheetsView
+    this.spareSheetsView = null
+    if (!spare) return
+    this.shellWindow.contentView.removeChildView(spare)
+    spare.webContents.close()
   }
 
   private untitled(kind: TabKind, fallback: string): string {
@@ -340,6 +358,39 @@ export class TabManager {
    * families answer synchronously in the main process, docs has to ask its
    * renderer. Hence the async signature.
    */
+  canDetachTab(id: string): boolean {
+    const tab = this.tabs.find((t) => t.id === id)
+    return !!tab?.view && !tab.present && !this.closingIds.has(id)
+  }
+
+  /**
+   * The inverse of detachTab: a live view coming back from a detached window
+   * (dock by dragging the window onto the strip, or a tear-off that returned
+   * mid-gesture) becomes a tab again at `index` — Home stays pinned at 0, an
+   * out-of-range or omitted index appends — and is activated. The document,
+   * unsaved edits included, is untouched: only the view's parent changes.
+   */
+  attachTab(record: DetachedTab, index?: number): string {
+    const id = `t${this.nextId++}`
+    const { view } = record
+    this.shellWindow.contentView.addChildView(view)
+    view.setVisible(false)
+    this.trackHtmlFullScreen(`t${this.nextId - 1}`, view)
+    const slot =
+      index === undefined || !Number.isFinite(index)
+        ? this.tabs.length
+        : Math.min(Math.max(Math.trunc(index), 1), this.tabs.length)
+    this.tabs.splice(slot, 0, {
+      id,
+      kind: record.kind,
+      view,
+      title: record.title,
+      filePath: record.filePath,
+    })
+    this.activateTab(id)
+    return id
+  }
+
   webContentsForTab(id: string): WebContents | undefined {
     return this.tabs.find((t) => t.id === id)?.view?.webContents
   }
@@ -572,7 +623,8 @@ export class TabManager {
     if (options?.newBlank)
       setSheetsNewBlank(options?.newBlankSaveDir, options?.restoreFrom, options?.newBlankName)
     const spare = this.takeSpareSheetsView()
-    const view = spare ?? createSheetsView({ includeAiHandlers: false })
+    const view =
+      spare ?? createSheetsView({ includeAiHandlers: false })
     // bind the path to this tab's webContents: a multi-select Open creates
     // several sheets tabs in one loop, so a single global path would be
     // overwritten before the earlier tabs consume it
@@ -749,6 +801,8 @@ export class TabManager {
       t.view.setVisible(!t.docked && t.id === id && !this.shellModalOpen)
     }
     this.activeId = id
+    if (target.kind === 'sheets') this.scheduleSpareSheetsView(3000)
+    else this.discardSpareSheetsView()
     this.refreshActiveTargets()
     this.layout()
     // 上游 #757: 激活后显式交还键盘焦点（可见不等于聚焦，否则键入落进隐藏 view）
@@ -801,6 +855,14 @@ export class TabManager {
   webContentsIdOf(id: string): number | undefined {
     const wc = this.tabs.find((t) => t.id === id)?.view?.webContents
     return wc && !wc.isDestroyed() ? wc.id : undefined
+  }
+
+  describeWebContents(
+    webContentsId: number,
+  ): { kind: TabKind; title: string; filePath?: string } | null {
+    const tab = this.tabs.find((t) => t.view?.webContents.id === webContentsId)
+    if (!tab) return null
+    return { kind: tab.kind, title: tab.title, ...(tab.filePath ? { filePath: tab.filePath } : {}) }
   }
 
   tabIdForWebContents(webContentsId: number): string | undefined {
@@ -1001,9 +1063,7 @@ export class TabManager {
    *  hand it to the caller ("Open in New Window" — the live document, unsaved
    *  edits included, moves into a detached editor window). Null while a close
    *  prompt is pending on the tab. */
-  detachTab(
-    id: string,
-  ): { view: WebContentsView; kind: TabKind; title: string; filePath?: string } | null {
+  detachTab(id: string): DetachedTab | null {
     if (id === HOME_ID) return null
     const idx = this.tabs.findIndex((t) => t.id === id)
     const tab = idx >= 0 ? this.tabs[idx] : undefined

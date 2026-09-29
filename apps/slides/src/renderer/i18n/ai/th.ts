@@ -329,4 +329,5 @@ export const th = {
   aiToolRunWebSearch: 'กำลังค้นเว็บ…',
   aiToolRunImageSearch: 'กำลังค้นหารูปภาพ…',
   aiToolRunReadUrl: 'กำลังอ่านหน้าเว็บ…',
+  aiPageCloudToLocal: 'คลาวด์ไม่พร้อมใช้ — สร้างในเครื่อง',
 } satisfies Record<keyof typeof zh, string>

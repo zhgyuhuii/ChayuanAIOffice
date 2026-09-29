@@ -22,7 +22,7 @@ export interface DeckProgressSnapshot {
   doneOutcome?: 'failed' | 'cancelled'
 }
 
-export type StepStatus = 'done' | 'error' | 'running'
+export type StepStatus = 'done' | 'error' | 'running' | 'stopped'
 
 export interface DeckProgressView {
   head: { text: string; tone: 'running' | 'done' | 'error' }

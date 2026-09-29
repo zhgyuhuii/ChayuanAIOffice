@@ -192,4 +192,4 @@ export const id = {
   aiThemeTechDesc: 'Tampilan modern yang berteknologi tinggi',
   aiThemePlayfulDesc: 'Warna cerah dan bentuk yang playful',
   aiThemeDarkDesc: 'Gaya halaman gelap yang modern',
-} satisfies Record<keyof typeof zh, string>
+}

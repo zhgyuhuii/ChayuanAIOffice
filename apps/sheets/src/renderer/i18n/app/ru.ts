@@ -1713,4 +1713,5 @@ export const ru = {
   appNoObjects: "На этом листе нет объектов",
   appShapeName: "Фигура",
   appCfAiPrompt: "ИИ-условное форматирование: предложи и примени подходящие правила для моего выделения.",
+  appOpeningWorkbook: 'Открытие книги…',
 } satisfies Record<keyof typeof zh, string>

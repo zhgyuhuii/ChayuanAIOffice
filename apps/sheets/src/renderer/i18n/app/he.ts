@@ -1638,4 +1638,5 @@ export const he = {
   appNoObjects: "אין אובייקטים בגיליון זה",
   appShapeName: "צורה",
   appCfAiPrompt: "עיצוב מותנה AI: הצע והחל כללים מתאימים לבחירה שלי.",
+  appOpeningWorkbook: 'פותח חוברת עבודה…',
 } satisfies Record<keyof typeof zh, string>

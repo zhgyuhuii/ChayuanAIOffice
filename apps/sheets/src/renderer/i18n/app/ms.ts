@@ -1696,4 +1696,5 @@ export const ms = {
   appNoObjects: "Tiada objek pada helaian ini",
   appShapeName: "Bentuk",
   appCfAiPrompt: "Pemformatan bersyarat AI: cadangkan dan gunakan peraturan yang sesuai untuk pilihan saya.",
+  appOpeningWorkbook: 'Membuka buku kerja…',
 } satisfies Record<keyof typeof zh, string>

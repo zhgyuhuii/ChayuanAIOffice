@@ -193,4 +193,4 @@ export const ja = {
   aiThemeTechDesc: 'ハイテクなモダンデザイン',
   aiThemePlayfulDesc: '明るく遊び心のあるポップデザイン',
   aiThemeDarkDesc: 'ダーク背景のモダンなページデザイン',
-} satisfies Record<keyof typeof zh, string>
+}

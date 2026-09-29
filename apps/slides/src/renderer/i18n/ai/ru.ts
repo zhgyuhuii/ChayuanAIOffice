@@ -332,4 +332,5 @@ export const ru = {
   aiToolRunWebSearch: 'Поиск в интернете…',
   aiToolRunImageSearch: 'Поиск изображений…',
   aiToolRunReadUrl: 'Чтение страницы…',
+  aiPageCloudToLocal: 'Облако недоступно — создано локально',
 } satisfies Record<keyof typeof zh, string>

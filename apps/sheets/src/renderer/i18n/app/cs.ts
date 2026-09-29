@@ -1597,4 +1597,5 @@ export const cs = {
   appNoObjects: "V tomto listu nejsou žádné objekty",
   appShapeName: "Tvar",
   appCfAiPrompt: "Podmíněné formátování AI: navrhněte a použijte vhodná pravidla pro můj výběr.",
+  appOpeningWorkbook: 'Otevírání sešitu…',
 } satisfies Record<keyof typeof zh, string>

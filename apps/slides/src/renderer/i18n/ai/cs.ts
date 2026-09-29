@@ -331,4 +331,5 @@ export const cs = {
   aiToolRunWebSearch: 'Prohledávám web…',
   aiToolRunImageSearch: 'Hledám obrázky…',
   aiToolRunReadUrl: 'Čtu stránku…',
+  aiPageCloudToLocal: 'Cloud není dostupný — vygenerováno lokálně',
 } satisfies Record<keyof typeof zh, string>

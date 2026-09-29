@@ -18,6 +18,7 @@ import { useI18n } from './locale'
 import type { StringKey } from './locale'
 import type {
   AccountStatus,
+  DefaultAppStatus,
   FileSearchSettings,
   JevEndpoint,
   UiTheme,
@@ -53,6 +54,7 @@ const LANG_OPTIONS = [
   { value: 'pt', label: 'Português' },
   { value: 'ru', label: 'Русский' },
   { value: 'th', label: 'ไทย' },
+  { value: 'vi', label: 'Tiếng Việt' },
   { value: 'zh', label: '简体中文' },
   { value: 'zh-TW', label: '繁體中文' },
 ] as const
@@ -553,6 +555,9 @@ export function SettingsModal({
   const [analyticsOn, setAnalyticsOn] = useState(true)
   const [analyticsSaving, setAnalyticsSaving] = useState(false)
   const [autoSaveOn, setAutoSaveOn] = useState(false)
+  const [defaultApp, setDefaultApp] = useState<DefaultAppStatus | null>(null)
+  const [defaultAppBusy, setDefaultAppBusy] = useState(false)
+  const [defaultAppFailed, setDefaultAppFailed] = useState(false)
   const [aiPrefs, setAiPrefs] = useState<AiPanelPrefs>(DEFAULT_AI_PANEL_PREFS)
   const [channel, setChannel] = useState<'stable' | 'beta'>('stable')
   const [appVersion, setAppVersion] = useState('')
@@ -571,6 +576,9 @@ export function SettingsModal({
     })
     void window.chaOffice.getAutoSaveDefault?.().then((v) => {
       if (alive) setAutoSaveOn(v.on)
+    })
+    void window.chaOffice.getDefaultAppStatus?.().then((st) => {
+      if (alive) setDefaultApp(st)
     })
     void window.chaOffice.getAiPanelPrefs?.().then((prefs) => {
       if (alive) setAiPrefs(prefs)
@@ -603,6 +611,38 @@ export function SettingsModal({
     if (next === 'system') document.documentElement.removeAttribute('data-theme')
     else document.documentElement.setAttribute('data-theme', next)
   }
+
+  // Windows only opens the system page; re-read ownership when the user comes back
+  useEffect(() => {
+    if (!defaultApp?.manualOnly) return
+    const refresh = () => {
+      void window.chaOffice.getDefaultAppStatus?.().then(setDefaultApp)
+    }
+    window.addEventListener('focus', refresh)
+    return () => window.removeEventListener('focus', refresh)
+  }, [defaultApp?.manualOnly])
+
+  const claimDefaultApp = () => {
+    setDefaultAppBusy(true)
+    setDefaultAppFailed(false)
+    void window.chaOffice
+      .setDefaultApp()
+      .then((st) => {
+        setDefaultApp(st)
+        if (!st.manualOnly && st.state !== 'default') setDefaultAppFailed(true)
+      })
+      .catch(() => setDefaultAppFailed(true))
+      .finally(() => setDefaultAppBusy(false))
+  }
+
+  const defaultAppDesc = (() => {
+    if (!defaultApp) return ''
+    if (defaultAppFailed) return t('setDefaultAppFailed')
+    if (defaultApp.state === 'default') return t('setDefaultAppIs')
+    if (defaultApp.state === 'other' && defaultApp.others.length > 0)
+      return t('setDefaultAppOther', { app: defaultApp.others.join(', ') })
+    return t('setDefaultAppDesc')
+  })()
 
   const updateAiPrefs = (patch: Partial<AiPanelPrefs>) => {
     setAiPrefs((prev) => ({ ...prev, ...patch }))
@@ -759,6 +799,40 @@ export function SettingsModal({
                     onClick={() => updateAiPrefs({ spellcheck: !aiPrefs.spellcheck })}
                   />
                 </div>
+                <div className="set-field">
+                  <div className="set-field-text">
+                    <div className="set-field-stack">
+                      <div className="set-field-label">{t('setAiOpenInNewDocs')}</div>
+                      <div className="set-field-desc">{t('setAiOpenInNewDocsDesc')}</div>
+                    </div>
+                  </div>
+                  <button
+                    className="set-switch"
+                    role="switch"
+                    aria-checked={aiPrefs.openInNewDocs}
+                    aria-label={t('setAiOpenInNewDocs')}
+                    onClick={() => updateAiPrefs({ openInNewDocs: !aiPrefs.openInNewDocs })}
+                  />
+                </div>
+                {defaultApp && defaultApp.state !== 'unsupported' && (
+                  <div className="set-field">
+                    <div className="set-field-text">
+                      <div className="set-field-stack">
+                        <div className="set-field-label">{t('setDefaultApp')}</div>
+                        <div className="set-field-desc">{defaultAppDesc}</div>
+                      </div>
+                    </div>
+                    <button
+                      className="set-btn"
+                      disabled={defaultAppBusy || defaultApp.state === 'default'}
+                      onClick={claimDefaultApp}
+                    >
+                      {defaultApp.manualOnly
+                        ? t('setDefaultAppOpenSettings')
+                        : t('setDefaultAppSet')}
+                    </button>
+                  </div>
+                )}
                 <Field
                   label={t('saveLocation')}
                   value={saveDir || '—'}

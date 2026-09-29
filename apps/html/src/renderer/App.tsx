@@ -62,6 +62,7 @@ import {
 import { compileOps, type HtmlOp, type OpError } from './document/ops'
 import { injectBrief, parseBrief, type Brief } from './document/brief'
 import { applyPatches } from './document/patch'
+import { adoptImageRewrites } from './document/image-rewrites'
 import { deriveAutoFileName, deriveNameFromPrompt, derivePageTitleName } from './document/auto-name'
 import type { ExportFormat, SaveMode } from '../shared/ipc'
 
@@ -117,7 +118,7 @@ async function loadImageDataUrl(src: string): Promise<string | null> {
 }
 
 export default function App() {
-  const { t } = useI18n()
+  const { lang, t } = useI18n()
   const [status, setStatus] = useState<LoadStatus>('loading')
   const [path, setPath] = useState<string | null>(null)
   const [text, setText] = useState('')
@@ -218,6 +219,7 @@ export default function App() {
   const savingRef = useRef(false)
   const statusRef = useRef<LoadStatus>('loading')
   const pushedTextRef = useRef<string | null>(null)
+  const previewTimerRef = useRef<number | null>(null)
   /** parse-map version of the copy currently served to the preview; messages from older copies are ignored */
   const pushedVersionRef = useRef(-1)
   /** versions whose sids the running frame still describes: the loaded copy plus every in-place commit since
@@ -321,6 +323,10 @@ export default function App() {
    */
   const pushPreview = useCallback(
     (nextText: string, reload = true) => {
+      if (previewTimerRef.current !== null) {
+        window.clearTimeout(previewTimerRef.current)
+        previewTimerRef.current = null
+      }
       if (pushedTextRef.current === nextText) return
       const map = getMap()
       window.htmlApi.updatePreview(instrumentForPreview(nextText, map, inspectorSource))
@@ -336,8 +342,17 @@ export default function App() {
   // push the instrumented buffer to html-preview:// and reload the frame, debounced per keystroke
   useEffect(() => {
     if (status !== 'ready' || pushedTextRef.current === text) return
-    const id = window.setTimeout(() => pushPreview(text), PREVIEW_DEBOUNCE_MS)
-    return () => window.clearTimeout(id)
+    if (previewTimerRef.current !== null) window.clearTimeout(previewTimerRef.current)
+    previewTimerRef.current = window.setTimeout(() => {
+      previewTimerRef.current = null
+      pushPreview(text)
+    }, PREVIEW_DEBOUNCE_MS)
+    return () => {
+      if (previewTimerRef.current !== null) {
+        window.clearTimeout(previewTimerRef.current)
+        previewTimerRef.current = null
+      }
+    }
   }, [text, status, pushPreview])
 
   useEffect(() => {
@@ -397,7 +412,7 @@ export default function App() {
 
   /** every text change goes through here so the version counter and the map cache stay coherent */
   const commitText = useCallback(
-    (next: string, manual: boolean) => {
+    (next: string, manual: boolean, preservePending = false) => {
       textRef.current = next
       versionRef.current += 1
       if (manual) lastManualVersionRef.current = versionRef.current
@@ -405,7 +420,7 @@ export default function App() {
       setTextSel(null)
       // any other document change reloads the preview and drops the live pokes; forget them too rather than
       // committing them later against sids the rebuilt parse map may have reassigned
-      if (!flushingStylesRef.current) {
+      if (!flushingStylesRef.current && !preservePending) {
         if (styleTimerRef.current !== null) window.clearTimeout(styleTimerRef.current)
         styleTimerRef.current = null
         pendingStylesRef.current = {}
@@ -444,8 +459,17 @@ export default function App() {
     [commitText, getMap],
   )
 
+  const flushStylesRef = useRef<(() => void) | null>(null)
+  const flushDraftsRef = useRef<(() => void) | null>(null)
+  /** land live style pokes and open panel drafts in the source before anything reads, saves or edits it */
+  const flushPending = useCallback(() => {
+    flushDraftsRef.current?.()
+    flushStylesRef.current?.()
+  }, [])
+
   const replaceAll = useCallback(
     (html: string, highlight: boolean) => {
+      flushPending()
       // a generated document carries the confirmed brief so later turns (and re-opens) stay anchored to it
       const pinned =
         highlight && briefRef.current && !parseBrief(html)
@@ -456,16 +480,8 @@ export default function App() {
       frameScrollRef.current = null
       commitText(pinned, false)
     },
-    [commitText],
+    [commitText, flushPending],
   )
-
-  const flushStylesRef = useRef<(() => void) | null>(null)
-  const flushDraftsRef = useRef<(() => void) | null>(null)
-  /** land live style pokes and open panel drafts in the source before anything reads, saves or edits it */
-  const flushPending = useCallback(() => {
-    flushStylesRef.current?.()
-    flushDraftsRef.current?.()
-  }, [])
 
   /** apply a toolbar/inspector batch; the selection follows the edited element (or clears when it is gone) */
   const runManual = useCallback(
@@ -1118,15 +1134,21 @@ export default function App() {
           defaultName: provisionalNameRef.current ?? undefined,
         })
         if (result.ok && 'path' in result) {
+          const adopted = adoptImageRewrites(textAtSave, textRef.current, result.imageRewrites)
+          if (adopted.liveText !== textRef.current) {
+            editorRef.current?.setDoc(adopted.liveText)
+            commitText(adopted.liveText, false, true)
+          }
           setPath((previous) => {
-            // a new path changes the preview's <base>; relative assets only resolve after a reload
             if (previous !== result.path) setPreviewNonce((n) => n + 1)
             return result.path
           })
-          setSavedText(textAtSave)
-          // edits that landed during the write keep the document dirty
-          setSaveState(textRef.current === textAtSave ? 'saved' : 'idle')
-          if (textRef.current !== textAtSave) window.htmlApi.setDirty(true)
+          savedTextRef.current = adopted.savedText
+          setSavedText(adopted.savedText)
+          const saved = adopted.liveText === adopted.savedText
+          setSaveState(saved ? 'saved' : 'idle')
+          if (!saved) window.htmlApi.setDirty(true)
+          pushPreview(adopted.liveText)
           return true
         }
         setSaveState(result.ok ? 'idle' : 'failed')
@@ -1139,7 +1161,7 @@ export default function App() {
         savingRef.current = false
       }
     },
-    [flushPending],
+    [commitText, flushPending, pushPreview],
   )
 
   const zoomIn = useCallback(() => setZoom((z) => clampZoom(Math.round(z) + ZOOM_STEP)), [])
@@ -1186,6 +1208,11 @@ export default function App() {
         console.error('[html] export failed:', result.error)
         setNotice(t('exportFailed'))
         return false
+      }
+      if ('skipped' in result && result.skipped?.length) {
+        setNotice(
+          t('exportHtmlSkipped', { count: result.skipped.length, first: result.skipped[0]! }),
+        )
       }
       return !('canceled' in result)
     } finally {

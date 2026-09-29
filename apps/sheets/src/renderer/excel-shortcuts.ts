@@ -46,6 +46,8 @@ const KEY_PAGE_UP = 33
 const KEY_PAGE_DOWN = 34
 const KEY_END = 35
 const KEY_HOME = 36
+const KEY_NUMPAD_ADD = 107
+const KEY_NUMPAD_SUBTRACT = 109
 
 const ACTIVATE_ADJACENT_SHEET_ID = 'chatoffice.command.activate-adjacent-sheet'
 const SELECT_SHEET_HOME_ID = 'chatoffice.command.select-sheet-home'
@@ -426,5 +428,7 @@ export const _shortcutInternals = {
   KEY_PAGE_DOWN,
   KEY_END,
   KEY_HOME,
+  KEY_NUMPAD_ADD,
+  KEY_NUMPAD_SUBTRACT,
   unfrozenOrigin,
 }

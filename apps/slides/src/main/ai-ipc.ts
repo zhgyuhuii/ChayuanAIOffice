@@ -7,9 +7,9 @@
 import { app, dialog, ipcMain, nativeImage, net, shell, BrowserWindow } from 'electron'
 import {
   appendFileSync,
+  mkdirSync,
   createWriteStream,
   existsSync,
-  mkdirSync,
   readdirSync,
   readFileSync,
   renameSync,
@@ -30,7 +30,7 @@ import {
 } from '@chatoffice/ai-provider'
 import { persistGeneratedImage } from '@chatoffice/ai-host'
 import { registerMediaIpc, registerSharedAiIpc, registerSharedKbIpc } from '@chatoffice/ai-host'
-import { MAX_REMOTE_IMAGE_BYTES, fetchRemoteImage, readBodyCapped } from '@chatoffice/electron-utils'
+import { MAX_REMOTE_IMAGE_BYTES, fetchRemoteImage, readBodyCapped, writeJsonAtomic } from '@chatoffice/electron-utils'
 import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server' 
 import {
   webSearch,
@@ -594,18 +594,17 @@ export function registerSlidesOnlyAiIpc(): void {
 
   ipcMain.handle(
     'ai:save-style-template',
-    (
+    async (
       _event,
       name: string,
       data: { topic: string; styleSkill: string; createdAt: string },
-    ): { ok: boolean; error?: string } => {
+    ): Promise<{ ok: boolean; error?: string }> => {
       try {
         const dir = STYLE_TEMPLATES_DIR()
-        mkdirSync(dir, { recursive: true })
         // Filename: replace illegal characters in the name with _ then truncate to 64 chars
         const safeName = name.replace(/[/\\:*?"<>|]/g, '_').slice(0, 64)
         if (!safeName) return { ok: false, error: tm('errTplNameInvalid') }
-        writeJson(join(dir, `${safeName}.json`), { ...data, name: safeName })
+        writeJsonAtomic(join(dir, `${safeName}.json`), { ...data, name: safeName })
         return { ok: true }
       } catch (err) {
         return { ok: false, error: err instanceof Error ? err.message : String(err) }

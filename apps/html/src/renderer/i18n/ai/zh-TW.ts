@@ -183,4 +183,4 @@ export const zhTW = {
   aiThemeTechDesc: '科技感十足的現代風格',
   aiThemePlayfulDesc: '明快活潑的色彩與造型',
   aiThemeDarkDesc: '深色背景的現代頁面風格',
-} satisfies Record<keyof typeof zh, string>
+}

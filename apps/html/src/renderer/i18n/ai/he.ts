@@ -187,4 +187,4 @@ export const he = {
   aiThemeTechDesc: 'מראה מודרני וטכנולוגי',
   aiThemePlayfulDesc: 'צבעים עליזים וצורות שובבות',
   aiThemeDarkDesc: 'עיצוב עמוד מודרני במצב כהה',
-} satisfies Record<keyof typeof zh, string>
+}

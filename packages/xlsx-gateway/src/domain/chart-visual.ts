@@ -179,8 +179,8 @@ export function scatterAxisBounds(
   explicit?: { min?: number | undefined; max?: number | undefined; majorUnit?: number | undefined },
 ): ScatterAxis {
   const finite = values.filter((value) => Number.isFinite(value))
-  const dataMin = finite.length > 0 ? Math.min(...finite) : 0
-  const dataMax = finite.length > 0 ? Math.max(...finite) : 1
+  const dataMin = finite.length > 0 ? finite.reduce((min, value) => (value < min ? value : min)) : 0
+  const dataMax = finite.length > 0 ? finite.reduce((max, value) => (value > max ? value : max)) : 1
   const min = explicit?.min ?? (dataMin >= 0 ? 0 : -niceCeiling(-dataMin))
   let max = explicit?.max ?? (dataMax <= 0 ? 0 : niceCeiling(dataMax))
   if (!(max > min)) max = min + 1
@@ -227,9 +227,21 @@ function autoAxisUnit(span: number): number {
   return 10 ** Math.ceil(Math.log10(span))
 }
 
+/// Ceiling for `unitTicks`; far above any axis a reader can draw, and only
+/// reachable when a c:majorUnit is finer than float noise.
+const MAX_AXIS_TICKS = 10_000
+
 function unitTicks(min: number, max: number, unit: number): number[] {
+  // A zero or non-finite unit has no tick count at all: min + index · 0
+  // never advances, so fall back to the bounds pair instead of looping.
+  if (!Number.isFinite(unit) || !(unit > 0)) return [min, max]
   const ticks: number[] = []
-  for (let index = 0; index < 25; index += 1) {
+  // Walk exactly the ticks min..max imply, rather than a fixed number of
+  // iterations: a fine c:majorUnit (0.1 over 0..10) needs 101 of them, and a
+  // fixed cap left the axis short of its own data. MAX_AXIS_TICKS only stops
+  // a unit so fine that the implied count is effectively unbounded.
+  const count = Math.min(Math.floor((max - min) / unit + 1e-6) + 1, MAX_AXIS_TICKS)
+  for (let index = 0; index < count; index += 1) {
     const tick = min + index * unit
     if (tick > max + unit * 1e-6) break
     ticks.push(Number(tick.toPrecision(12)))

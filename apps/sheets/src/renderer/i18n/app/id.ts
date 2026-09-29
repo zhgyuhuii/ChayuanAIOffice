@@ -1695,4 +1695,5 @@ export const id = {
   appNoObjects: "Tidak ada objek di lembar ini",
   appShapeName: "Bentuk",
   appCfAiPrompt: "Format bersyarat AI: sarankan dan terapkan aturan yang sesuai untuk pilihan saya.",
+  appOpeningWorkbook: 'Membuka buku kerja…',
 } satisfies Record<keyof typeof zh, string>

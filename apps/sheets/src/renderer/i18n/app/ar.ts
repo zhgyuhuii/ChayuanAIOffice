@@ -1660,4 +1660,5 @@ export const ar = {
   appNoObjects: "لا توجد كائنات في هذه الورقة",
   appShapeName: "شكل",
   appCfAiPrompt: "تنسيق شرطي بالذكاء الاصطناعي: اقترح قواعد مناسبة لتحديدي وطبقها.",
+  appOpeningWorkbook: 'جارٍ فتح المصنف…',
 } satisfies Record<keyof typeof zh, string>

@@ -22,6 +22,8 @@ export {
   COMPLETED_VIA_TOOLS_TEXT,
   DEFAULT_MAX_TURNS,
   parseDegradedToolCalls,
+  TOOL_ABORTED_OUTPUT,
+  missingRequiredFields,
   runtimePreamble,
   sanitizeAgentPayload,
 } from './loop'

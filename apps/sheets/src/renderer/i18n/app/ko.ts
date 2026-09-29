@@ -1717,4 +1717,5 @@ export const ko = {
   appNoObjects: "이 시트에는 개체가 없습니다",
   appShapeName: "도형",
   appCfAiPrompt: "AI 조건부 서식: 선택 영역 데이터에 맞는 규칙을 제안하고 적용해 주세요.",
+  appOpeningWorkbook: '통합 문서를 여는 중…',
 } satisfies Record<keyof typeof zh, string>

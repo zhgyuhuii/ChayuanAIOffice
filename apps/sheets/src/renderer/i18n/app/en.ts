@@ -1675,4 +1675,5 @@ export const en = {
   appNoObjects: "No objects on this worksheet",
   appShapeName: "Shape",
   appCfAiPrompt: "AI conditional formatting: please suggest and apply suitable conditional-formatting rules for my selection.",
+  appOpeningWorkbook: 'Opening workbook…',
 } satisfies Record<keyof typeof zh, string>

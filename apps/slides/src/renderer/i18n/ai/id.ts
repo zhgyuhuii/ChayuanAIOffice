@@ -332,4 +332,5 @@ export const id = {
   aiToolRunWebSearch: 'Mencari di web…',
   aiToolRunImageSearch: 'Mencari gambar…',
   aiToolRunReadUrl: 'Membaca halaman…',
+  aiPageCloudToLocal: 'Awan tidak tersedia — dibuat secara lokal',
 } satisfies Record<keyof typeof zh, string>

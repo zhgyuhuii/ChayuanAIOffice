@@ -1723,4 +1723,5 @@ export const pl = {
   appNoObjects: "Brak obiektów w tym arkuszu",
   appShapeName: "Kształt",
   appCfAiPrompt: "Formatowanie warunkowe AI: zaproponuj i zastosuj odpowiednie reguły dla mojego zaznaczenia.",
+  appOpeningWorkbook: 'Otwieranie skoroszytu…',
 } satisfies Record<keyof typeof zh, string>

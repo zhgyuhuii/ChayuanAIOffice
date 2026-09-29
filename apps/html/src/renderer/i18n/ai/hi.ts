@@ -192,4 +192,4 @@ export const hi = {
   aiThemeTechDesc: 'चिकना, हाई-टेक आधुनिक लुक',
   aiThemePlayfulDesc: 'चटकीले रंग और चंचल आकार',
   aiThemeDarkDesc: 'आधुनिक डार्क-मोड पेज स्टाइलिंग',
-} satisfies Record<keyof typeof zh, string>
+}

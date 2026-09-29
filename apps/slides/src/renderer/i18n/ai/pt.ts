@@ -332,4 +332,5 @@ export const pt = {
   aiToolRunWebSearch: 'Pesquisando na web…',
   aiToolRunImageSearch: 'Pesquisando imagens…',
   aiToolRunReadUrl: 'Lendo a página…',
+  aiPageCloudToLocal: 'Nuvem indisponível — gerado localmente',
 } satisfies Record<keyof typeof zh, string>

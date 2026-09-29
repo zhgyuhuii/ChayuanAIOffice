@@ -1758,4 +1758,5 @@ export const fr = {
   appNoObjects: "Aucun objet sur cette feuille",
   appShapeName: "Forme",
   appCfAiPrompt: "Mise en forme conditionnelle IA : proposez et appliquez des règles adaptées à ma sélection.",
+  appOpeningWorkbook: 'Ouverture du classeur…',
 } satisfies Record<keyof typeof zh, string>

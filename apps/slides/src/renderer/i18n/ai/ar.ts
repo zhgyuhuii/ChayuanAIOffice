@@ -329,4 +329,5 @@ export const ar = {
   aiToolRunWebSearch: 'جارٍ البحث في الويب…',
   aiToolRunImageSearch: 'جارٍ البحث عن صور…',
   aiToolRunReadUrl: 'جارٍ قراءة الصفحة…',
+  aiPageCloudToLocal: 'السحابة غير متاحة — تم التوليد محليًا',
 } satisfies Record<keyof typeof zh, string>

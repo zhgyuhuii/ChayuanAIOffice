@@ -8,7 +8,13 @@
  * fine, but "Edit Data" is unavailable).
  */
 import type { EmuRect, Slide } from './types'
-import { escapeXmlAttr, escapeXmlText, creationIdXml } from './xml-utils'
+import {
+  creationIdXml,
+  escapeXmlAttr,
+  escapeXmlText,
+  hasContentTypeOverride,
+  maxRelationshipIdNumber,
+} from './xml-utils'
 import { relsPathFor } from './zip'
 import { appendRawElements, type OpenedPptx } from './index'
 import { nextCNvPrId } from './insert'
@@ -70,7 +76,16 @@ const C_NS = 'http://schemas.openxmlformats.org/drawingml/2006/chart'
 const A_NS = 'http://schemas.openxmlformats.org/drawingml/2006/main'
 const R_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
 
-const colLetter = (i: number) => String.fromCharCode(66 + i) // B, C, D…
+const colLetter = (i: number): string => {
+  let n = i + 2
+  let label = ''
+  while (n > 0) {
+    const rem = (n - 1) % 26
+    label = String.fromCharCode(65 + rem) + label
+    n = Math.floor((n - 1) / 26)
+  }
+  return label
+}
 
 function strCacheXml(values: string[], f: string): string {
   return (
@@ -367,7 +382,7 @@ export function addChart(
   // 2) [Content_Types].xml Override
   const ctPath = '[Content_Types].xml'
   const ct = archive.readText(ctPath)
-  if (ct && !ct.includes(`PartName="/${chartPath}"`)) {
+  if (ct && !hasContentTypeOverride(ct, chartPath)) {
     const override = `<Override PartName="/${chartPath}" ContentType="${CHART_CONTENT_TYPE}"/>`
     archive.entries.set(
       ctPath,
@@ -383,8 +398,7 @@ export function addChart(
   const rels =
     archive.readText(relsPath) ??
     '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>'
-  let maxRid = 0
-  for (const m of rels.matchAll(/Id="rId(\d+)"/g)) maxRid = Math.max(maxRid, Number(m[1]))
+  const maxRid = maxRelationshipIdNumber(rels)
   const rid = `rId${maxRid + 1}`
   const relXml = `<Relationship Id="${rid}" Type="${CHART_REL_TYPE}" Target="../charts/chart${maxNum + 1}.xml"/>`
   archive.entries.set(

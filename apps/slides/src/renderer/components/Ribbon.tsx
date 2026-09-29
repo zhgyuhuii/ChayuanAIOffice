@@ -23,7 +23,6 @@ import {
   useDismissablePopover,
   useRibbonCollapse,
   Dropdown,
-  RibbonCollapseButton,
   THEME_COLORS,
   THEME_COLOR_SHADES,
   STANDARD_COLORS,
@@ -4419,10 +4418,6 @@ export function Ribbon({
           </>
         ) : null}
       </div>
-      <RibbonCollapseButton
-        state={collapse}
-        labels={{ collapse: t('ribbonCollapse'), pin: t('ribbonPin') }}
-      />
     </div>
   )
 }

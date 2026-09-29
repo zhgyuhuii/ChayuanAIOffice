@@ -4486,5 +4486,6 @@ export const strings = {
   ms: { ...upstreamStrings.ms, ...localStrings.ms },
   he: { ...upstreamStrings.he, ...localStrings.he },
   hi: { ...upstreamStrings.hi, ...localStrings.hi },
+  vi: { ...upstreamStrings.en, ...localStrings.vi },
   'zh-TW': { ...upstreamStrings['zh-TW'], ...localStrings['zh-TW'] },
 } as const

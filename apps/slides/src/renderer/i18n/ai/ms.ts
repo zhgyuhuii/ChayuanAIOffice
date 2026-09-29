@@ -331,4 +331,5 @@ export const ms = {
   aiToolRunWebSearch: 'Mencari di web…',
   aiToolRunImageSearch: 'Mencari imej…',
   aiToolRunReadUrl: 'Membaca halaman…',
+  aiPageCloudToLocal: 'Awan tidak tersedia — dijana secara setempat',
 } satisfies Record<keyof typeof zh, string>

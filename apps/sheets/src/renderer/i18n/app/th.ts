@@ -1660,4 +1660,5 @@ export const th = {
   appNoObjects: "ไม่มีวัตถุในชีตนี้",
   appShapeName: "รูปทรง",
   appCfAiPrompt: "การจัดรูปแบบเงื่อนไข AI: โปรดแนะนำและใช้กฎที่เหมาะสมกับการเลือกของฉัน",
+  appOpeningWorkbook: 'กำลังเปิดสมุดงาน…',
 } satisfies Record<keyof typeof zh, string>

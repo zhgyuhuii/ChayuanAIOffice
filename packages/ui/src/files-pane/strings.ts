@@ -506,6 +506,31 @@ const zhTW = {
   failed: '操作失敗',
 } satisfies Record<keyof typeof zh, string>
 
+const vi = {
+  title: '檔案',
+  close: '關閉檔案面板',
+  newFolder: '新增資料夾',
+  newSubfolder: '新增子資料夾',
+  untitledFolder: '未命名資料夾',
+  open: '開啟',
+  rename: '重新命名',
+  revealInFolder: '在資料夾中顯示',
+  deleteFolder: '刪除資料夾…',
+  deleteFile: '刪除檔案…',
+  deleteFolderConfirm: '「{name}」及其中的全部內容將移到垃圾桶。',
+  deleteFileConfirm: '「{name}」將移到垃圾桶。',
+  cancel: '取消',
+  delete: '刪除',
+  moreActions: '{name} 更多動作',
+  conflictTitle: '已有同名項目',
+  conflictBody: '目標資料夾中已有同名項目。要如何處理？',
+  conflictKeepBoth: '保留兩者',
+  conflictReplace: '取代',
+  emptyFolder: '空資料夾',
+  rootUnusable: '預設儲存位置無法使用。',
+  failed: '操作失敗',
+} satisfies Record<keyof typeof zh, string>
+
 export const tFilesPane = createI18n({
   zh,
   en,
@@ -526,6 +551,7 @@ export const tFilesPane = createI18n({
   ms,
   he,
   hi,
+  vi,
   'zh-TW': zhTW,
 })
 

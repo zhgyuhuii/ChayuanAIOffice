@@ -194,4 +194,4 @@ export const it = {
   aiThemeTechDesc: 'Look moderno e tecnologico',
   aiThemePlayfulDesc: 'Colori vivaci e forme giocose',
   aiThemeDarkDesc: 'Stile di pagina scuro e moderno',
-} satisfies Record<keyof typeof zh, string>
+}

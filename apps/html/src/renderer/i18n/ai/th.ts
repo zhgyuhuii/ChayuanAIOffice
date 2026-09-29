@@ -190,4 +190,4 @@ export const th = {
   aiThemeTechDesc: 'ลุคโมเดิร์นเต็มไปด้วยเทคโนโลยี',
   aiThemePlayfulDesc: 'สีสันสดใสและรูปทรงสนุกสนาน',
   aiThemeDarkDesc: 'สไตล์หน้าโทนมืดสมัยใหม่',
-} satisfies Record<keyof typeof zh, string>
+}

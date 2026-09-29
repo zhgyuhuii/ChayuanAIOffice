@@ -195,6 +195,46 @@ function normalizeSelectionRects(rects: readonly ViewRect[]): ViewRect[] {
 }
 
 /**
+ * Drop the element-level boxes that merely enclose span-level ones, so the union a
+ * line cluster collapses to stays tight. getClientRects hands back both, and a big
+ * box left in place would widen every quad on its line to the whole paragraph.
+ *
+ * getClientRects is in tree order, so a box precedes what it contains: one sweep
+ * keeping the containers still open to the right of and above the cursor replaces
+ * the all-pairs containment test, which was quadratic over the thousands of boxes
+ * a selection across a large text page returns.
+ */
+function dropEnclosingRects(rects: readonly DOMRect[]): DOMRect[] {
+  const enclosing = new Set<DOMRect>()
+  const open: DOMRect[] = []
+  for (const r of rects) {
+    // a container can hold nothing more once the sweep has moved past its box:
+    // tree order only ever moves right along a line and down to the next line
+    while (open.length > 0) {
+      const top = open[open.length - 1]!
+      if (r.left <= top.right + 1 && r.top <= top.bottom + 1) break
+    // tree order only ever moves right along a line and down to the next line.
+    // A box starting at another's right edge is a sibling, not a child, so
+    // abutting spans on one line drop off the stack instead of piling up
+      if (r.left < top.right - 1 && r.top < top.bottom - 1) break
+      open.pop()
+    }
+    for (const c of open) {
+      if (
+        r.left < c.left - 1 ||
+        r.right > c.right + 1 ||
+        r.top < c.top - 1 ||
+        r.bottom > c.bottom + 1
+      )
+        continue
+      if (r.width < c.width - 1 || r.height < c.height - 1) enclosing.add(c)
+    }
+    open.push(r)
+  }
+  return rects.filter((r) => !enclosing.has(r))
+}
+
+/**
  * Current selection → PDF-coordinate quads grouped by visible page (y up; each quad
  * [x1,yMax,x2,yMax,x1,yMin,x2,yMin]). Returns null when the selection is empty.
  * geoms map 1:1 to .pdf-page elements and include rotation conversion.

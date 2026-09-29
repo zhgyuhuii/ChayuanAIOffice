@@ -21,7 +21,6 @@ export * from './preset-geometry'
 export * from './scene3d'
 export * from './cell-bevel'
 export { patternGrid } from './pattern-fills'
-export { imageDpiFromBytes, type ImageDpi } from './image-dpi'
-// LOCAL: markdown SVG 导出/栅格化(第四轮 eaa1877a 本地件,上游无)
+export { imageDpiFromBytes, imageSizeFromBytes, type ImageDpi, type ImageSize } from './image-dpi'
 export { sanitizeSvg, type SvgSanitizeResult } from './svg-sanitize'
 export { rasterizeSvg, type SvgRasterResult } from './svg-raster'

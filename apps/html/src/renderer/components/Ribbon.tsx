@@ -567,10 +567,7 @@ export function Ribbon(p: Props) {
           </div>
         </div>
       </div>
-      <RibbonCollapseButton
-        state={collapse}
-        labels={{ collapse: t('ribbonCollapse'), pin: t('ribbonPin') }}
-      />
+      <RibbonCollapseButton state={collapse} labels={{ collapse: t('ribbonCollapse'), pin: t('ribbonPin') }} />
     </div>
   )
 }

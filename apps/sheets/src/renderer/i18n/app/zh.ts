@@ -1637,4 +1637,5 @@ export const zh = {
   appNoObjects: "当前工作表没有对象",
   appShapeName: "形状",
   appCfAiPrompt: "AI条件格式：请根据选区数据推荐并应用合适的条件格式规则。",
+  appOpeningWorkbook: '正在打开工作簿…',
 }

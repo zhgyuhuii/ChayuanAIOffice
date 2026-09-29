@@ -1730,4 +1730,5 @@ export const nl = {
   appNoObjects: "Geen objecten op dit blad",
   appShapeName: "Vorm",
   appCfAiPrompt: "AI-voorwaardelijke opmaak: stel geschikte regels voor mijn selectie voor en pas ze toe.",
+  appOpeningWorkbook: 'Werkmap openen…',
 } satisfies Record<keyof typeof zh, string>

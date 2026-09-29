@@ -1692,4 +1692,5 @@ export const hi = {
   appNoObjects: "इस शीट पर कोई ऑब्जेक्ट नहीं",
   appShapeName: "आकृति",
   appCfAiPrompt: "AI सशर्त फ़ॉर्मेटिंग: कृपया मेरे चयन के लिए उपयुक्त नियम सुझाएँ और लागू करें।",
+  appOpeningWorkbook: 'कार्यपुस्तिका खोली जा रही है…',
 } satisfies Record<keyof typeof zh, string>

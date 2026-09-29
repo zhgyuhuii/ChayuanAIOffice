@@ -1608,4 +1608,5 @@ export const zhTW = {
   appNoObjects: "目前工作表沒有物件",
   appShapeName: "形狀",
   appCfAiPrompt: "AI條件式格式：請根據選取範圍資料建議並套用合適的條件式格式規則。",
+  appOpeningWorkbook: '正在開啟活頁簿…',
 } satisfies Record<keyof typeof zh, string>

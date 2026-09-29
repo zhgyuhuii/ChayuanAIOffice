@@ -7,6 +7,7 @@ export const es = {
   saveFailed: 'Error al guardar: {error}',
   saveFailedStatus: 'Error al guardar',
   exportFailed: 'Error al exportar',
+  exportHtmlSkipped: 'Exportado, pero {count} recurso(s) no se pudieron incrustar (p. ej. {first})',
   viewPreview: 'Vista previa',
   viewSplit: 'Dividido',
   viewSource: 'Código',
@@ -55,7 +56,6 @@ export const es = {
   save: 'Guardar (⌘S)',
   saveAs: 'Guardar como…',
   ribbonCollapse: 'Contraer la cinta de opciones',
-  ribbonPin: 'Anclar la cinta de opciones',
   ribbonExpand: 'Expandir la cinta de opciones',
   ribbonGroupInsert: 'Insertar',
   editText: 'Editar texto',
@@ -145,4 +145,5 @@ export const es = {
   presentInTab: 'En esta pestaña',
   presentFullscreen: 'Pantalla completa',
   presentNewTab: 'Nueva pestaña',
-} satisfies Record<keyof typeof zh, string>
+  ribbonPin: '固定功能区'
+}

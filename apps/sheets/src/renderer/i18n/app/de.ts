@@ -1745,4 +1745,5 @@ export const de = {
   appNoObjects: "Keine Objekte auf diesem Blatt",
   appShapeName: "Form",
   appCfAiPrompt: "KI-bedingte Formatierung: Bitte schlägt passende Regeln für meine Auswahl vor und wendet sie an.",
+  appOpeningWorkbook: 'Arbeitsmappe wird geöffnet…',
 } satisfies Record<keyof typeof zh, string>

@@ -21,6 +21,7 @@ import { hi } from './ai/hi'
 import { zhTW } from './ai/zh-TW'
 // LOCAL(2026-09-21, d8201ad0): 多会话词条物理分离(B 区,制度 §3.1);C 区仅此一行 import + 下方 spread
 import { localStrings } from './local/ai-local'
+import { vi } from './ai/vi'
 
 /** User-visible copy for the ai/ panel and tool feedback (LLM prompts excluded) */
 export const aiStrings = defineStrings({
@@ -43,5 +44,6 @@ export const aiStrings = defineStrings({
   ms: { ...ms, ...localStrings.ms },
   he: { ...he, ...localStrings.he },
   hi: { ...hi, ...localStrings.hi },
+  vi: { ...vi, ...localStrings.vi },
   'zh-TW': { ...zhTW, ...localStrings['zh-TW'] },
 })

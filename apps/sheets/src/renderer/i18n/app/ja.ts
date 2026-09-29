@@ -1744,4 +1744,5 @@ export const ja = {
   appNoObjects: "このシートにオブジェクトはありません",
   appShapeName: "図形",
   appCfAiPrompt: "AI条件付き書式：選択範囲のデータに合わせて適切なルールを提案し、適用してください。",
+  appOpeningWorkbook: 'ブックを開いています…',
 } satisfies Record<keyof typeof zh, string>

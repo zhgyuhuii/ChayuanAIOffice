@@ -7,6 +7,7 @@ export const cs = {
   saveFailed: 'Uložení se nezdařilo: {error}',
   saveFailedStatus: 'Uložení se nezdařilo',
   exportFailed: 'Export se nezdařil',
+  exportHtmlSkipped: 'Exportováno, ale {count} zdrojů se nepodařilo vložit (např. {first})',
   viewPreview: 'Náhled',
   viewSplit: 'Rozdělit',
   viewSource: 'Zdroj',
@@ -41,7 +42,6 @@ export const cs = {
   save: 'Uložit (⌘S)',
   saveAs: 'Uložit jako…',
   ribbonCollapse: 'Sbalit pás karet',
-  ribbonPin: 'Připnout pás karet',
   ribbonExpand: 'Rozbalit pás karet',
   ribbonGroupInsert: 'Vložit',
   editText: 'Upravit text',
@@ -142,4 +142,5 @@ export const cs = {
   replace: 'Nahradit',
   replaceAll: 'Nahradit vše',
   findTip: 'Najít a nahradit (⌘F)',
-} satisfies Record<keyof typeof zh, string>
+  ribbonPin: '固定功能区'
+}
