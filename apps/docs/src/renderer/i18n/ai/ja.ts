@@ -208,7 +208,7 @@ export const ja = {
   aiPolishDesc: '文章を推敲して表現を明快に',
   aiAssistantNoMatch: '一致するアシスタントがありません',
   aiAssistantScopeSelection: '選択範囲',
-  aiChatOfficeLoginBtn: 'サインイン',
+  aiChaOfficeLoginBtn: 'サインイン',
   aiTabChat: 'チャット',
   aiSummarizeDesc: '文書の要点をまとめて内容を素早く把握',
 

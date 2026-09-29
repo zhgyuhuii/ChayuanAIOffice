@@ -212,7 +212,7 @@ export const it = {
   aiPolishDesc: 'Migliorare la scrittura per una prosa più chiara e scorrevole',
   aiAssistantNoMatch: 'Nessun assistente corrispondente',
   aiAssistantScopeSelection: 'Selezione',
-  aiChatOfficeLoginBtn: 'Accedi',
+  aiChaOfficeLoginBtn: 'Accedi',
   aiTabChat: 'Chat',
   aiSummarizeDesc: 'Riassumere il documento e coglierne i punti chiave',
 

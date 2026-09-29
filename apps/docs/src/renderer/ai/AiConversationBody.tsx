@@ -575,7 +575,7 @@ export function AiConversationBody({
           })
           // Signed-out failures get an inline sign-in button
           void window.desktop
-            .aiChatOfficeStatus()
+            .aiChaOfficeStatus()
             .then((status) => {
               if (status.loggedIn) return
               setChat((prev) => {
@@ -1161,9 +1161,9 @@ export function AiConversationBody({
               {USER_LOGIN_READY && entry.loginRequired && (
                 <button
                   className="ai-login-btn"
-                  onClick={() => void window.desktop.aiChatOfficeLogin()}
+                  onClick={() => void window.desktop.aiChaOfficeLogin()}
                 >
-                  {t('aiChatOfficeLoginBtn')}
+                  {t('aiChaOfficeLoginBtn')}
                 </button>
               )}
               {showToolbar && (

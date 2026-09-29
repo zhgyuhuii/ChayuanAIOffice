@@ -201,7 +201,7 @@ export const he = {
   aiPolishDesc: 'ליטוש הניסוח לכתיבה ברורה וזורמת',
   aiAssistantNoMatch: 'אין עוזרים תואמים',
   aiAssistantScopeSelection: 'בחירה',
-  aiChatOfficeLoginBtn: 'התחבר',
+  aiChaOfficeLoginBtn: 'התחבר',
   aiTabChat: 'צ׳אט',
   aiSummarizeDesc: 'סיכום המסמך ותפיסת הנקודות המרכזיות',
 

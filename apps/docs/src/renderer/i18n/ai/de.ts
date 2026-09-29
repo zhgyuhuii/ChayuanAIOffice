@@ -212,7 +212,7 @@ export const de = {
   aiPolishDesc: 'Den Text für klares, flüssiges Deutsch überarbeiten',
   aiAssistantNoMatch: 'Keine passenden Assistenten',
   aiAssistantScopeSelection: 'Auswahl',
-  aiChatOfficeLoginBtn: 'Anmelden',
+  aiChaOfficeLoginBtn: 'Anmelden',
   aiTabChat: 'Chat',
   aiSummarizeDesc: 'Das Dokument zusammenfassen und die Kernpunkte erfassen',
 

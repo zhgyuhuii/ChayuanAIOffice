@@ -210,7 +210,7 @@ export const nl = {
   aiPolishDesc: 'De tekst verbeteren voor meer duidelijkheid en leesbaarheid',
   aiAssistantNoMatch: 'Geen passende assistenten',
   aiAssistantScopeSelection: 'Selectie',
-  aiChatOfficeLoginBtn: 'Aanmelden',
+  aiChaOfficeLoginBtn: 'Aanmelden',
   aiTabChat: 'Chat',
   aiSummarizeDesc: 'Vat het document samen met de kernpunten',
 
