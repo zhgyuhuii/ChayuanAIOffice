@@ -4,7 +4,6 @@
  * per-paragraph additions / removals / edits for a side panel.
  */
 import type { Block } from '@chatoffice/docx-engine'
-import { inlineToRuns, type PmNode } from './convert'
 
 export interface CompareEntry {
   kind: 'same' | 'removed' | 'added' | 'changed'
@@ -80,23 +79,4 @@ export function summarize(entries: CompareEntry[]): CompareSummary {
     removed: entries.filter((e) => e.kind === 'removed').length,
     changed: entries.filter((e) => e.kind === 'changed').length,
   }
-}
-
-/** Comparable text from the live editor, including paragraphs not yet saved to the DOCX. */
-export function editorBlockTexts(doc: PmNode, originalBlocks: Block[]): string[] {
-  const originalByIndex = new Map(
-    originalBlocks
-      .filter((block) => block.docxIndex !== null)
-      .map((block) => [block.docxIndex, block]),
-  )
-  return (doc.content ?? []).map((node) => {
-    if (node.type === 'docProtected') return String(node.attrs?.previewText ?? '')
-    if (node.type === 'docTable') {
-      const original = originalByIndex.get(node.attrs?.docxIndex as number)
-      return original?.previewText ?? ''
-    }
-    return inlineToRuns(node.content ?? [])
-      .map((run) => run.text)
-      .join('')
-  })
 }
