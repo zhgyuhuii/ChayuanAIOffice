@@ -15,7 +15,7 @@ import { geomDispSize, pdfRectToCss, viewToPdf } from './annotations'
 import type { PageGeom } from './annotations'
 import type { PageEntry } from './search'
 import { measurePt } from './text-wrap'
-import { foldCase } from '@genoffice/ui'
+import { foldCase } from '@chatoffice/ui'
 import { isNoSpaceScript, scriptOf } from '../../../../packages/pdf2docx/src/script'
 
 export interface OcrWord {

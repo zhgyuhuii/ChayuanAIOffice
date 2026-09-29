@@ -3,7 +3,6 @@ import { useState } from 'react'
 import { useI18n } from './i18n/locale'
 
 import type { GoToNameEntry } from './goto'
-import { useModalDialog } from './modal-dialog'
 
 /// Excel's Go To (⌘G / Ctrl+G), minimal: a reference input plus the
 /// workbook's defined names. Go (or Enter, or double-clicking a name) hands
@@ -29,13 +28,11 @@ export function GoToDialog({
     if (failure === null) onClose()
   }
 
-  const modal = useModalDialog(onClose)
   return (
     <div className="dialog-backdrop" onClick={onClose}>
       <div
         className="format-cells-dialog"
         role="dialog"
-        {...modal}
         aria-label={t('dlgGoToTitle')}
         onClick={(event) => event.stopPropagation()}
       >

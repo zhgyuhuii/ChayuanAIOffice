@@ -190,4 +190,4 @@ export const ko = {
   aiThemeTechDesc: '하이테크한 모던 스타일',
   aiThemePlayfulDesc: '밝고 경쾌한 색감의 스타일',
   aiThemeDarkDesc: '다크 배경의 모던한 페이지 스타일',
-} satisfies Record<keyof typeof zh, string>
+}

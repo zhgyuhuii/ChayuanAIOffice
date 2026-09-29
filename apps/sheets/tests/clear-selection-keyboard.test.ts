@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 
 import {
   isClearSelectionHotkey,
-  isFormulaBarKeyTarget,
   isGridKeyTarget,
   shouldInterceptClearSelection,
   SKIP_HOST_SELECTOR,
@@ -180,13 +179,5 @@ describe('shouldInterceptClearSelection', () => {
         false,
       ),
     ).toBe(false)
-  })
-})
-
-describe('isFormulaBarKeyTarget', () => {
-  it('is true only inside the formula bar', () => {
-    expect(isFormulaBarKeyTarget(keyEvent('u', ['formula-bar']).target)).toBe(true)
-    expect(isFormulaBarKeyTarget(keyEvent('u', ['input']).target)).toBe(false)
-    expect(isFormulaBarKeyTarget(null)).toBe(false)
   })
 })

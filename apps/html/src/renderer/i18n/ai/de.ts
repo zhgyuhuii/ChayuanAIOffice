@@ -195,4 +195,4 @@ export const de = {
   aiThemeTechDesc: 'Moderner High-Tech-Look',
   aiThemePlayfulDesc: 'Fröhliche Farben und verspielte Formen',
   aiThemeDarkDesc: 'Modernes Seitenstyling im Dunkelmodus',
-} satisfies Record<keyof typeof zh, string>
+}

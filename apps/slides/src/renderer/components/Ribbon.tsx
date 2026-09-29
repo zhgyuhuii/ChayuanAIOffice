@@ -1998,10 +1998,7 @@ export function Ribbon({
   // Expanded/collapsed widths are cached per group so the required width is
   // computable in every state (before the first fold the collapsed width is
   // an estimate, corrected by measurement as soon as the group first folds).
-  const collapse = useRibbonCollapse('ai-slides-ribbon-collapsed', {
-    collapse: t('ribbonCollapse'),
-    expand: t('ribbonExpand'),
-  })
+  const collapse = useRibbonCollapse('ai-slides-ribbon-collapsed')
   const bodyRef = useRef<HTMLDivElement | null>(null)
   const inlineWidthsRef = useRef(new Map<string, number>())
   const collapsedWidthsRef = useRef(new Map<string, number>())
@@ -2519,13 +2516,6 @@ export function Ribbon({
             onToggle={onToggleAiPanel}
             label={t('aiOpenAssistant')}
           />
-            className={`ribbon-tab ${collapse.tabClass(tab === tb)}`}
-            data-tip={collapse.tabTip(tab === tb)}
-              collapse.onTabPress(tab === tb)
-            className={`ribbon-tab ribbon-tab-context ${collapse.tabClass(tab === contextTab)}`}
-              collapse.onTabPress(tab === contextTab)
-              setTab(contextTab)
-            data-tip={collapse.tabTip(tab === contextTab) ?? t(TAB_LABEL[contextTab])}
         )}
       </div>
 

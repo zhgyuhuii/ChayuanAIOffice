@@ -5,13 +5,8 @@
  * "planned N pages but only 1 remains" for good.
  */
 import { describe, it, expect } from 'vitest'
-import { createSlidesSkill, type DeckAccess } from '../src/renderer/ai/slides-skill'
+import { createSlidesSkill, MAX_APPROX_PAGES, type DeckAccess } from '../src/renderer/ai/slides-skill'
 import type { RenderSlide } from '@chatoffice/pptx-render'
-import {
-  createSlidesSkill,
-  MAX_APPROX_PAGES,
-  type DeckAccess,
-} from '../src/renderer/ai/slides-skill'
 import type { AgentToolCall } from '../src/shared/ipc'
 
 function makeAccess(opts?: {

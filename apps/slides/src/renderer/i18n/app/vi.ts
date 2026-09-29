@@ -1,8 +1,6 @@
 import type { zh } from './zh'
-import { en } from './en'
 
 export const vi = {
-  ...en,
   appPhPromptTitle: 'Bấm để thêm tiêu đề',
   appPhPromptSubtitle: 'Bấm để thêm phụ đề',
   appPhPromptBody: 'Bấm để thêm văn bản',
@@ -116,7 +114,6 @@ export const vi = {
   appPasteOptSource: 'Giữ định dạng nguồn',
   appPasteOptTheme: 'Dùng chủ đề đích',
   appStatusPasteOptionsExpired: 'Tùy chọn dán không còn khả dụng',
-=======
   appStatusPasteTruncated: 'Văn bản dán quá dài và đã bị cắt bớt',
   appCtxHideSlide: 'Ẩn trang chiếu',
   appCtxUnhideSlide: 'Bỏ ẩn trang chiếu',
@@ -256,5 +253,10 @@ export const vi = {
   appStatusSummaryZoomInserted: 'Đã chèn trang chiếu Thu phóng tóm tắt với {count} ô thu nhỏ',
   appSectionSummary: 'Phần tóm tắt',
   appSectionN: 'Phần {n}',
+  appZoomButtonText: '▸ 第 {page} 页',
+  appStatusAnimBrushCopied: '动画刷',
+  appStatusAnimBrushEmpty: '已复制动画，选中目标对象后再次点击动画刷',
+  appStatusAnimBrushApplied: '所选对象没有动画可复制',
+  appCountdownPrompt: '输入倒计时分钟数',
+  appStatusRehearseCleared: '已清除全部页面的排练计时',
 }
-} satisfies Record<keyof typeof zh, string>

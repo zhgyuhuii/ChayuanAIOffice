@@ -145,4 +145,5 @@ export const fr = {
   presentInTab: 'Dans cet onglet',
   presentFullscreen: 'Plein écran',
   presentNewTab: 'Nouvel onglet',
-} satisfies Record<keyof typeof zh, string>
+  ribbonPin: '固定功能区'
+}

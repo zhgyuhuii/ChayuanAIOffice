@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
-import type { CSSProperties, ReactElement } from 'react'
-import type { TabsApi, TabSummary, WindowControlsApi } from '../../shared/tabs-api'
-import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties, PointerEvent as ReactPointerEvent, ReactElement } from 'react'
-import type { TabsApi, TabSummary } from '../../shared/tabs-api'
+import type { TabsApi, TabSummary, WindowControlsApi } from '../../shared/tabs-api'
 import { TEAR_OFF_SLACK, insertionIndexForX, isBeyondBand } from '../../shared/tab-drag-geometry'
 import { notifyFilesChanged } from './file-events'
 import { useI18n } from './locale'
@@ -195,7 +192,7 @@ export function TabBar() {
     const ext = fileExtension(tab.filePath)
     const newName = ext ? `${value}.${ext}` : value
     if (newName === tab.title) return
-    void window.aiOffice.renameFile(tab.filePath, newName).then((result) => {
+    void window.chaOffice.renameFile(tab.filePath, newName).then((result) => {
       if (!result.ok) window.alert(result.error ?? t('renameFailed'))
       // Home shares this renderer and only re-pulls on window focus, which the
       // rename input already holds: tell it the recents / folder rows moved.
@@ -249,7 +246,7 @@ export function TabBar() {
     dragRef.current = null
     if (drag.torn) {
       // release: the window under the pointer stays where it is and takes focus
-      void window.aiOfficeTabs.endTornDrag()
+      void window.chaOfficeTabs.endTornDrag()
       return
     }
     // released while main is still creating the window: the tearOff callback
@@ -329,7 +326,7 @@ export function TabBar() {
   // A detached window dragged over this strip: place the insertion indicator
   // at the slot under the pointer and tell main which slot that is.
   useEffect(() => {
-    return window.aiOfficeTabs.onDockPreview?.((preview) => {
+    return window.chaOfficeTabs.onDockPreview?.((preview) => {
       const strip = stripRef.current
       if (!preview || !strip) {
         setDockX(null)
@@ -337,7 +334,7 @@ export function TabBar() {
       }
       const rects = tabRects()
       const index = insertionIndexForX(rects, preview.x)
-      window.aiOfficeTabs.reportDockIndex(index)
+      window.chaOfficeTabs.reportDockIndex(index)
       const stripLeft = strip.getBoundingClientRect().left - strip.scrollLeft
       const slot = rects[index]
       const last = rects[rects.length - 1]
@@ -351,11 +348,11 @@ export function TabBar() {
     const drag = dragRef.current
     if (!drag || event.pointerId !== drag.pointerId) return
     if (drag.torn) {
-      window.aiOfficeTabs.dragTornWindow(event.screenX, event.screenY)
+      window.chaOfficeTabs.dragTornWindow(event.screenX, event.screenY)
       // back over the strip: the window folds back into a tab at the pointer's slot
       if (!isBeyondBand(event.clientY, drag.stripTop, drag.stripBottom, 0)) {
         dragRef.current = null
-        void window.aiOfficeTabs.dockTornWindow(insertionIndexForX(tabRects(), event.clientX))
+        void window.chaOfficeTabs.dockTornWindow(insertionIndexForX(tabRects(), event.clientX))
       }
       return
     }
@@ -376,11 +373,11 @@ export function TabBar() {
     if (isBeyondBand(event.clientY, drag.stripTop, drag.stripBottom, TEAR_OFF_SLACK)) {
       drag.tearing = true
       const { screenX, screenY, pointerId } = event
-      void window.aiOfficeTabs.tearOff(drag.id, screenX, screenY).then((ok) => {
+      void window.chaOfficeTabs.tearOff(drag.id, screenX, screenY).then((ok) => {
         const current = dragRef.current
         if (!current || current.pointerId !== pointerId) {
           // released meanwhile: let the window go (it exists only when ok)
-          if (ok) void window.aiOfficeTabs.endTornDrag()
+          if (ok) void window.chaOfficeTabs.endTornDrag()
           return
         }
         current.tearing = false
@@ -489,7 +486,7 @@ export function TabBar() {
       >
         <PaneToggleIcon side="left" />
       </button>
-      <div className={dragVisual ? 'tab-strip dragging' : 'tab-strip'} ref={stripRef}>
+
       <div
         className={`tab-strip ${dragVisual ? 'dragging' : ''} ${dockX !== null ? 'dock-target' : ''}`}
         ref={stripRef}
@@ -499,6 +496,7 @@ export function TabBar() {
         onPointerUp={(event) => finishDrag(event.pointerId, true)}
         onPointerCancel={(event) => finishDrag(event.pointerId, false)}
         onLostPointerCapture={(event) => finishDrag(event.pointerId, false)}
+      >
         {dockX !== null && (
           <div className="tab-dock-indicator" style={{ left: dockX }} aria-hidden="true" />
         )}
@@ -523,16 +521,6 @@ export function TabBar() {
               // full title (the close button's own tooltip still wins there)
               title={tab.title}
               style={dragStyle}
-=======
-              onContextMenu={(event) => {
-                event.preventDefault()
-                if (tab.id === 'home') return
-                void window.aiOfficeTabs.showTabMenu(
-                  tab.id,
-                  Math.round(event.clientX),
-                  Math.round(event.clientY),
-                )
-              }}
               onMouseDown={(event) => {
                 // the strip captures the pointer for dragging, which retargets
                 // the derived dblclick to the strip; pointer events carry no
@@ -579,9 +567,6 @@ export function TabBar() {
                 }
                 strip.setPointerCapture(event.pointerId)
               }}
-              onPointerUp={(event) => finishDrag(event.pointerId, true)}
-              onPointerCancel={(event) => finishDrag(event.pointerId, false)}
-              onLostPointerCapture={(event) => finishDrag(event.pointerId, false)}
               onContextMenu={(event) => {
                 event.preventDefault()
                 if (tab.id === 'home') return
@@ -595,10 +580,6 @@ export function TabBar() {
               {/* highlight plate behind the content — hover capsule / active white body */}
               <span className="tab-plate" aria-hidden="true" />
               <span className="tab-icon">{KIND_ICON[tab.kind]}</span>
-              <span className="tab-title">
-                {tab.kind === 'home' ? t('brandName') : tab.title}
-              </span>
-              {tab.docked && <span className="tab-docked-dot" aria-hidden="true" />}
               {renaming?.id === tab.id ? (
                 <input
                   className="tab-rename-input"
@@ -617,10 +598,17 @@ export function TabBar() {
                     else if (event.key === 'Escape') {
                       renamingRef.current = null
                       setRenaming(null)
+                    }
+                  }}
                   onBlur={commitRename}
                 />
               ) : (
-                <span className="tab-title">{tab.title}</span>
+                <>
+                  <span className="tab-title">
+                    {tab.kind === 'home' ? t('brandName') : tab.title}
+                  </span>
+                  {tab.docked && <span className="tab-docked-dot" aria-hidden="true" />}
+                </>
               )}
               {tab.closable && (
                 <button

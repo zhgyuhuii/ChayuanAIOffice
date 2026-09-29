@@ -1,8 +1,6 @@
 import type { zh } from './zh'
-import { en } from './en'
 
 export const vi = {
-  ...en,
   aiComposerPlaceholderBuild: 'Mô tả bảng, dữ liệu hoặc biểu đồ cần tạo…',
   aiEmptyBuildTitle: 'Để AI xây dựng sổ làm việc này cho bạn',
   aiEmptyBuildBody: 'Mô tả bảng, dữ liệu hoặc biểu đồ bạn cần — AI sẽ tạo trực tiếp tại chỗ.',
@@ -12,11 +10,7 @@ export const vi = {
   aiOpenAssistant: 'Mở trợ lý AI',
   aiAskBtn: 'Hỏi AI',
   aiCheckBtn: 'Kiểm tra bằng AI',
-  aiCheckPrompt:
-    'Kiểm tra các sự cố trong trang tính này: 1) lỗi công thức (#REF!, #DIV/0!, v.v.), dải ô không bao gồm toàn bộ dữ liệu, hàng tổng cộng bị thiếu cột; 2) số và văn bản lẫn lộn trong một cột, định dạng ngày tháng không nhất quán, các giá trị ngoại lệ rõ ràng và các hàng trùng lặp; 3) tổng không khớp với các hàng chi tiết, cột phần trăm không có tổng bằng 100%. Liệt kê các vấn đề tìm thấy và đề xuất cách khắc phục',
   aiAnalyzeBtn: 'Phân tích bằng AI',
-  aiAnalyzePrompt:
-    'Phân tích dữ liệu trong trang tính này và tóm tắt các phát hiện chính, xu hướng và điểm bất thường',
   aiSettingsTitle: 'Cài đặt AI',
   aiSetUp: 'Thiết lập AI',
   aiNewChat: 'Cuộc trò chuyện mới',
@@ -48,26 +42,20 @@ export const vi = {
   aiSend: 'Gửi',
   aiStop: 'Dừng',
   aiInstructionAria: 'Chỉ dẫn AI',
-  aiFileTooltip:
-    'SHA-256 {sha}\nLưu chỉ ghi đè các mục đã chỉnh sửa; tất cả nội dung khác được giữ nguyên.',
   aiFileMeta: '{sheets} trang tính · {entries} mục',
-  aiGensparkAccount: 'Tài khoản Genspark',
+  aiChaOfficeAccount: 'Tài khoản ChaAI Office',
   aiAccountChecking: 'Đang kiểm tra…',
   aiLoggedIn: 'Đã đăng nhập',
   aiLoggedInAs: 'Đã đăng nhập: {email}',
   aiNotLoggedIn: 'Chưa đăng nhập (Tính năng AI yêu cầu tài khoản Genspark)',
   aiWaitingBrowserLogin: 'Đang chờ đăng nhập trên trình duyệt…',
-  aiLoginGenspark: 'Đăng nhập vào Genspark',
+  aiLoginChaOffice: 'Đăng nhập vào ChaAI Office',
   aiModel: 'Mô hình',
   aiCancel: 'Hủy',
   aiSave: 'Lưu',
   aiUnknownError: 'Lỗi không xác định',
-  aiTimeoutError:
-    'Yêu cầu AI đã hết thời gian: mạng không phản hồi nên quá trình đã dừng lại. Hãy kiểm tra kết nối và thử lại',
   aiOverloadedError: 'Dịch vụ AI hiện đang bận — vui lòng thử lại sau giây lát',
   aiNetworkError: 'Sự cố mạng: không thể kết nối với dịch vụ AI. Hãy kiểm tra kết nối và thử lại',
-  aiCreditsExhausted:
-    'Điểm tín dụng Genspark của bạn đã hết. Hãy truy cập genspark.ai/pricing để nạp thêm rồi thử lại',
   aiToolWorkbookContext: 'Đọc thông tin sổ làm việc',
   aiToolReadRange: 'Đọc dải ô',
   aiToolReadRangeOf: 'Đọc dải ô {range}',
@@ -105,8 +93,30 @@ export const vi = {
   aiScopeRange: 'Đã chọn {range}',
   aiScopeColumn: 'Đã chọn cột "{name}"',
   aiScopeColumns: 'Đã chọn {names} — {count} cột',
-  aiScopeRangeTip:
-    'AI sẽ hiểu "cột này / các hàng này / phần đã chọn" là dải ô này và vùng này sẽ được cố định cho lượt chạy sau khi bạn gửi',
   aiScopeClearTitle: 'Bỏ phạm vi dải ô và áp dụng cho toàn bộ trang tính',
-}
+  aiCheckPrompt: '检查这个表格的问题:1) 公式错误(#REF!、#DIV/0! 等)、引用范围没覆盖全部数据、合计行漏加列;2) 同一列数字和文本混用、日期格式不统一、明显的异常值和重复行;3) 合计与明细对不上、百分比加总不是 100% 等结构问题。列出发现的问题并给出修复建议',
+  aiAnalyzePrompt: '分析这个表格的数据,总结关键发现、趋势和异常',
+  aiFileTooltip: 'SHA-256 {sha}\\n保存只重写被编辑的条目，其余内容原样保留。',
+  aiTimeoutError: 'AI 请求超时：网络长时间无响应，已停止。请检查网络后重试',
+  aiCreditsExhausted: '积分不足，请前往充值页充值',
+  aiScopeRangeTip: 'AI 会把"这一列 / 这些行 / 选中部分"理解为该区域；发送后本轮固定不变',
+  aiChaOfficeLoginBtn: '登录',
+  aiPanelTitle: 'AI 助手',
+  aiTabChat: '对话',
+  aiTabAssistant: '助手',
+  aiCheckDesc: '校验公式错误与数据异常，并给出修复建议',
+  aiNoModelErrorTitle: '还没有可用的模型',
+  aiNoModelErrorBody: '配置一个自己的供应商（密钥即用）即可开始。',
+  aiOpenModelSettings: '打开模型设置',
+  aiAnalyzeDesc: '总结关键发现、趋势和异常',
+  aiDockLayoutTitle: '面板布局',
+  aiDockLeft: '停靠到左侧',
+  aiDockRight: '停靠到右侧',
+  aiDockBottom: '停靠到底部',
+  aiDockFloat: '悬浮窗口',
+  aiDockMaximize: '最大化面板',
+  aiDockRestore: '还原面板',
+  aiToolGenSvg: '绘制 SVG 插图',
+  aiToolGenSvgDone: '已生成 SVG 插图，可用 add_image 放置',
+
 } satisfies Record<keyof typeof zh, string>

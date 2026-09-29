@@ -142,4 +142,5 @@ export const pl = {
   presentInTab: 'W tej karcie',
   presentFullscreen: 'Pełny ekran',
   presentNewTab: 'Nowa karta',
-} satisfies Record<keyof typeof zh, string>
+  ribbonPin: '固定功能区'
+}

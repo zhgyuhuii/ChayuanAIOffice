@@ -9,7 +9,6 @@ import {
 import { ColorDropdown } from './ColorDropdown'
 import { useI18n, type StringKey, type TFunc } from './i18n/locale'
 import type { ChartEditData, ChartElementRef, ChartVectorRead } from './WorkbookVisuals'
-import { useModalDialog } from './modal-dialog'
 
 const LEGEND_OPTIONS: readonly (readonly [string, StringKey])[] = [
   ['right', 'appLegendRight'],
@@ -460,13 +459,11 @@ export function SelectDataDialog({
     onClose()
   }
 
-  const modal = useModalDialog(onClose)
   return (
     <div className="dialog-backdrop" onClick={onClose}>
       <div
         className="format-cells-dialog select-data-dialog"
         role="dialog"
-        {...modal}
         aria-label={t('appSelectDataSource')}
         onClick={(event) => event.stopPropagation()}
       >

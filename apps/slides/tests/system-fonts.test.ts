@@ -91,7 +91,6 @@ describe.runIf(mac)(
       // adapted: 9f971ed — the bundled Carlito build's internal family name is
       // "Carlito GO"; no-Office machines resolve onto it instead of real Calibri
       const cal = office ? /^Calibri$/ : /^Carlito( GO)?$/
-      const cal = office ? /^Calibri$/ : /^Carlito(?: GO)?$/
       expect(m.displayFamily!(style('Zxqvwt Nonexistent'))).toMatch(cal)
       expect(m.displayFamily!(style('Qqzgaramond'))).toMatch(cal) // serif-looking name
       expect(m.displayFamily!(style('Zxqvwt Mono Courier'))).toMatch(cal) // mono-looking name

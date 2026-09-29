@@ -63,7 +63,6 @@ export function deriveDeckProgressView(progress: DeckProgressSnapshot, t: TFunc)
       label:
         failed && doneSummary ? doneSummary : allDone ? settledLabel : pages.summary || pages.label,
       stepStatus: allDone ? (hasError ? 'error' : 'done') : 'running',
-      stepStatus: allDone ? (hasError ? 'error' : 'done') : cancelled ? 'stopped' : 'running',
     })
   }
 

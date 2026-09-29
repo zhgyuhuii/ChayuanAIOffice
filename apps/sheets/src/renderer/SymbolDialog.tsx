@@ -1,7 +1,6 @@
 import { useState } from 'react'
 
 import { useI18n, type StringKey } from './i18n/locale'
-import { useModalDialog } from './modal-dialog'
 
 /// Excel's Insert → Symbol, minimal: a tabbed grid of common special
 /// characters. Clicking a symbol emits it to App (which appends it to the
@@ -184,13 +183,11 @@ export function SymbolDialog({
   const [categoryIndex, setCategoryIndex] = useState(0)
   const active = SYMBOL_CATEGORIES[categoryIndex]
 
-  const modal = useModalDialog(onClose)
   return (
     <div className="dialog-backdrop" onClick={onClose}>
       <div
         className="format-cells-dialog"
         role="dialog"
-        {...modal}
         aria-label={t('dlgSymbolTitle')}
         onClick={(event) => event.stopPropagation()}
       >

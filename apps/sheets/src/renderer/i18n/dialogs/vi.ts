@@ -1,6 +1,8 @@
 import type { zh } from './zh'
+import { en } from './en'
 
 export const vi = {
+  ...en,
   dlgAllowEditRangesTitle: 'Cho phép chỉnh sửa dải ô',
   dlgAllowEditRangesHint:
     'Các dải ô này vẫn có thể chỉnh sửa khi trang tính được bảo vệ. Được lưu khi lưu tệp; không hỗ trợ mật khẩu.',
@@ -54,7 +56,6 @@ export const vi = {
     'Nhập tham chiếu ô hoặc chọn dải ô đã đặt tên; nút Đi tới sẽ chuyển đến và chọn mục tiêu. Nhấp vào tên để điền, nhấp đúp để chuyển tới trực tiếp.',
   dlgGoToGo: 'Đi tới',
 
-=======
   dlgZoomTitle: 'Thu phóng',
   dlgZoomMagnification: 'Tỷ lệ thu phóng',
   dlgZoomFitSelection: 'Vừa với vùng chọn',
@@ -414,17 +415,6 @@ export const vi = {
   dlgFnCatWeb: 'Web',
   dlgFnCatArray: 'Mảng',
   dlgFnCatOther: 'Khác',
-
-
-  dlgFnParams: '函数参数',
-  dlgFnPickRange: '从表格选取区域',
-  dlgFnPickCell: '从表格选取单元格',
-  dlgFnAddParam: '添加参数',
-  dlgFnRemoveParam: '移除此参数',
-  dlgFnResult: '计算结果：',
-  dlgFnNeedRequired: '必填参数「{name}」不能为空。',
-  dlgRangePickTitle: '选取区域',
-  dlgRangePickHint: '在表格中拖选单元格、行或列后确定',
   dlgInsertCellsTitle: 'Chèn',
   dlgDeleteCellsTitle: 'Xóa',
   dlgCellsShiftRight: 'Dịch các ô sang phải',
@@ -433,6 +423,7 @@ export const vi = {
   dlgCellsShiftUp: 'Dịch các ô lên trên',
   dlgCellsEntireRow: 'Toàn bộ hàng',
   dlgCellsEntireColumn: 'Toàn bộ cột',
+
   dlgFrTitle: 'Tìm và thay thế',
   dlgFrTabFind: 'Tìm',
   dlgFrTabReplace: 'Thay thế',
@@ -463,4 +454,4 @@ export const vi = {
   dlgFrResultValue: 'Nội dung',
   dlgFrResultsCount: 'Tìm thấy {count} ô',
   dlgFrResultsTruncated: 'Hiển thị {shown} đầu tiên trong {count}',
-} satisfies Record<keyof typeof zh, string>
+}

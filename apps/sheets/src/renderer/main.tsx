@@ -91,18 +91,15 @@ async function bootstrap(): Promise<void> {
   document.documentElement.lang = htmlLang(lang)
   applyTheme(theme)
   await loadCellFonts()
-  // A spare view can receive a file while its renderer is still booting.
-  // Check the queued path before the first React paint so it never looks Ready.
-  const queuedWorkbookAtBoot = await window.desktopApi?.hasQueuedWorkbook?.().catch(() => false)
   window.desktopApi?.onThemeChanged(applyTheme)
-  await window.desktopApi
+  void window.desktopApi
     ?.getAiPanelPrefs?.()
     .then(applyAiPanelPrefs)
     .catch(() => {})
   window.desktopApi?.onAiPanelPrefsChanged?.(applyAiPanelPrefs)
   ReactDOM.createRoot(root!).render(
     <LocaleProvider initial={lang}>
-      <App queuedWorkbookAtBoot={queuedWorkbookAtBoot === true} />
+      <App />
     </LocaleProvider>,
   )
 }

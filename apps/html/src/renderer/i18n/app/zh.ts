@@ -51,6 +51,7 @@ export const zh = {
   save: '保存 (⌘S)',
   saveAs: '另存为…',
   ribbonCollapse: '折叠功能区',
+  ribbonPin: '固定功能区',
   ribbonExpand: '展开功能区',
   ribbonGroupInsert: '插入',
   editText: '编辑文字',

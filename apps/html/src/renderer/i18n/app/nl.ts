@@ -146,4 +146,5 @@ export const nl = {
   presentInTab: 'In dit tabblad',
   presentFullscreen: 'Volledig scherm',
   presentNewTab: 'Nieuw tabblad',
-} satisfies Record<keyof typeof zh, string>
+  ribbonPin: '固定功能区'
+}

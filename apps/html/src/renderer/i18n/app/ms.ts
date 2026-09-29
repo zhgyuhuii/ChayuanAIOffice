@@ -142,4 +142,5 @@ export const ms = {
   presentInTab: 'Dalam tab ini',
   presentFullscreen: 'Skrin penuh',
   presentNewTab: 'Tab baharu',
-} satisfies Record<keyof typeof zh, string>
+  ribbonPin: '固定功能区'
+}

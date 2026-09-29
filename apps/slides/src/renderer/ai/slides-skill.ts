@@ -2520,7 +2520,6 @@ ${r.text}`,
         resolvedDeckSource.source !== 'svg' &&
         deckAssets.length === 0 &&
         !!(await access.isCloudPageGenEnabled?.().catch(() => false))
-        !!access.generatePageCloud && !!(await access.isCloudPageGenEnabled?.().catch(() => false))
       // Cloud can still fail mid-run (free plan / exhausted credits / outage). When it does
       // the deck finishes on the local BYOK pipeline instead; cloudActive tracks that switch.
       let cloudActive = useCloud
@@ -3162,6 +3161,9 @@ ${r.text}`,
       const stillFailed: number[] = []
       for (let i = 0; i < total; i++) if (!doneFlags[i]) stillFailed.push(i + 1)
       const briefErr = (s?: string) => (s ? (s.length > 80 ? `${s.slice(0, 80)}…` : s) : '')
+      const cloudNote = cloudFallbackReason
+        ? ` Cloud page generation was unavailable (${briefErr(cloudFallbackReason)}); the deck was generated locally with your configured AI model instead.`
+        : ''
       const imageNotesTail = imageNotes.length ? `\n${imageNotes.join('\n')}` : ''
       const writerNote = !useCloud
         ? resolvedDeckSource.source === 'svg' && deckAssets.length
@@ -3175,10 +3177,8 @@ ${r.text}`,
       const okMsg =
         `Self-driven generation produced ${landedPages}/${total} pages (${useCloud ? 'cloud HTML' : 'local spec'} written page by page, displayed as generated; failed pages were auto-retried).` +
         writerNote +
-        imageNotesTail
-      const cloudNote = cloudFallbackReason
-        ? ` Cloud page generation was unavailable (${briefErr(cloudFallbackReason)}); the deck was generated locally with your configured AI model instead.`
-      const okMsg = `Self-driven generation produced ${landedPages}/${total} pages (HTML written page by page, displayed as generated; failed pages were auto-retried).`
+        imageNotesTail +
+        cloudNote
       const failDetail = stillFailed
         .map((n) => `page ${n}${pageErrors[n - 1] ? ` (${briefErr(pageErrors[n - 1])})` : ''}`)
         .join(', ')
@@ -3202,6 +3202,7 @@ ${r.text}`,
           okMsg +
           failMsg +
           degradedMsg +
+          cloudNote +
           imageFailNote(deckImageFails) +
           progressTail +
           (() => {
@@ -3210,7 +3211,6 @@ ${r.text}`,
             const findings = auditDeckConsistency(access.getSlides())
             return findings.length ? `\n\nDeck consistency check:\n- ${findings.join('\n- ')}` : ''
           })(),
-          okMsg + failMsg + degradedMsg + cloudNote + imageFailNote(deckImageFails) + progressTail,
         mutated: true,
         summary: t('aiSumDeckGenerated', { done: landedPages, total }),
       }

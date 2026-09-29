@@ -3,7 +3,6 @@ import { useRef, useState } from 'react'
 import { useI18n, type StringKey } from './i18n/locale'
 
 import type { HeaderFooterParts } from './edit-journal'
-import { useModalDialog } from './modal-dialog'
 
 /// Excel's Insert → Header & Footer as a dialog (the app has no Page Layout
 /// view): three sections each for the printed header and footer. Field codes
@@ -100,13 +99,11 @@ export function HeaderFooterDialog({
     })
   }
 
-  const modal = useModalDialog(onClose)
   return (
     <div className="dialog-backdrop" onClick={onClose}>
       <div
         className="format-cells-dialog"
         role="dialog"
-        {...modal}
         aria-label={t('dlgHfTitle')}
         onClick={(event) => event.stopPropagation()}
       >

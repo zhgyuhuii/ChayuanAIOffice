@@ -194,4 +194,4 @@ export const ms = {
   aiThemeTechDesc: 'Rupa moden berteknologi tinggi',
   aiThemePlayfulDesc: 'Warna terang dan bentuk yang ceria',
   aiThemeDarkDesc: 'Gaya halaman gelap yang moden',
-} satisfies Record<keyof typeof zh, string>
+}

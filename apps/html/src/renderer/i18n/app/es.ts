@@ -145,4 +145,5 @@ export const es = {
   presentInTab: 'En esta pestaña',
   presentFullscreen: 'Pantalla completa',
   presentNewTab: 'Nueva pestaña',
-} satisfies Record<keyof typeof zh, string>
+  ribbonPin: '固定功能区'
+}

@@ -190,4 +190,4 @@ export const ar = {
   aiThemeTechDesc: 'مظهر حديث بطابع تقني',
   aiThemePlayfulDesc: 'ألوان زاهية وأشكال مرحّة',
   aiThemeDarkDesc: 'تنسيق صفحة حديث بخلفية داكنة',
-} satisfies Record<keyof typeof zh, string>
+}

@@ -1,13 +1,10 @@
 import type { zh } from './zh'
-import { en } from './en'
 
 export const vi = {
-  ...en,
   paneCancel: 'Hủy',
   paneOk: 'OK',
   paneMoveUp: 'Di chuyển lên',
   paneMoveDown: 'Di chuyển xuống',
-
   paneAnimTitle: 'Ngăn hoạt ảnh · Trang chiếu {n}',
   paneAnimPreview: 'Phát bản xem trước hoạt ảnh cho trang chiếu này',
   paneAnimCollapse: 'Thu gọn ngăn hoạt ảnh',
@@ -45,7 +42,6 @@ export const vi = {
   paneAnimEffMediaPlay: 'Phát',
   paneAnimEffMediaPause: 'Tạm dừng',
   paneAnimEffMediaStop: 'Dừng',
-
   paneChartEditTitle: 'Chỉnh sửa dữ liệu biểu đồ',
   paneChartCategoryN: 'Danh mục {n}',
   paneChartSeriesN: 'Chuỗi {n}',
@@ -55,7 +51,6 @@ export const vi = {
   paneChartDelCategory: 'Xóa danh mục này',
   paneChartAddCategory: 'Thêm danh mục',
   paneChartAddCategoryBtn: '+ Danh mục',
-
   paneCommentsTitle: 'Bình luận · Trang chiếu {n}',
   paneCommentsCollapse: 'Thu gọn ngăn bình luận',
   paneCommentsEmpty: 'Không có bình luận nào trên trang chiếu này',
@@ -64,7 +59,6 @@ export const vi = {
   paneCommentsDelete: 'Xóa bình luận',
   paneCommentsPlaceholder: 'Bình luận mới… (⌘/Ctrl+Enter để gửi)',
   paneCommentsPost: 'Gửi',
-
   paneCsdTitle: 'Trình chiếu tùy chỉnh',
   paneCsdDefaultName: 'Trình chiếu tùy chỉnh {n}',
   paneFrTitle: 'Tìm kiếm và Thay thế',
@@ -99,7 +93,6 @@ export const vi = {
   paneCsdCreateHint: 'Nhấp vào "Mới" để tạo một trình chiếu tùy chỉnh',
   paneCsdClose: 'Đóng',
   paneCsdPlay: 'Trình chiếu',
-
   paneCutoutTitle: 'Xóa nền',
   paneCutoutDecodeFail: 'Không thể giải mã hình ảnh',
   paneCutoutLoadFail: 'Không thể tải hình ảnh',
@@ -110,7 +103,6 @@ export const vi = {
     'Màu nền được lấy mẫu từ các cạnh của hình ảnh; dung sai càng cao thì càng xóa được nhiều màu tương đồng. Đã xóa khoảng {pct}% số pixel trong bản xem trước này.',
   paneCutoutApplying: 'Đang xử lý…',
   paneCutoutApply: 'Áp dụng',
-
   paneFormatTitle: 'Định dạng',
   paneFormatTitleTyped: 'Định dạng {type}',
   paneFormatTabShape: 'Tùy chọn hình dạng',
@@ -245,7 +237,6 @@ export const vi = {
   paneInsetT: 'Lề trên',
   paneInsetB: 'Lề dưới',
   paneTextWrap: 'Tự động ngắt dòng văn bản trong hình dạng',
-
   panePresenterEndShow: 'Kết thúc trình chiếu',
   panePresenterEndTip: 'Kết thúc trình chiếu (Esc)',
   panePresenterSwap: 'Hoán đổi màn hình',
@@ -276,7 +267,6 @@ export const vi = {
   panePresenterNotesBigger: 'Tăng cỡ chữ ghi chú',
   panePresenterNotesSmaller: 'Giảm cỡ chữ ghi chú',
   panePresenterFilmSlideN: 'Trang chiếu {n}',
-
   paneShowEndedClick: 'Kết thúc trình chiếu. Nhấp để thoát.',
   paneShowEnded: 'Kết thúc trình chiếu.',
   paneShowRehearseTip: 'Luyện tập thời gian: thời gian trên trang chiếu này / tổng thời gian',
@@ -290,5 +280,5 @@ export const vi = {
   paneShowMenuWhite: 'Màn hình trắng',
   paneShowMenuEnd: 'Kết thúc trình chiếu',
   panePresenterWhiteOn: 'Màn hình trắng (nhấn W để tiếp tục)',
+  paneAnimRewind: '播完快退',
 }
-} satisfies Record<keyof typeof zh, string>

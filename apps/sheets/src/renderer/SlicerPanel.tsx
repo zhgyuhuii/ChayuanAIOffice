@@ -1,5 +1,4 @@
 import { useI18n } from './i18n/locale'
-import { useModalDialog } from './modal-dialog'
 
 /// Slicer: a visual filter control bound to one pivot dimension field. When
 /// members are clicked, App writes the unselected members as the pivot's hidden
@@ -47,13 +46,11 @@ export function SlicerFieldPicker({
   readonly onClose: () => void
 }): React.JSX.Element {
   const { t } = useI18n()
-  const modal = useModalDialog(onClose)
   return (
     <div className="dialog-backdrop" onClick={onClose}>
       <div
         className="format-cells-dialog slicer-picker"
         role="dialog"
-        {...modal}
         aria-label={t('dlgSlicerInsertTitle')}
         onClick={(event) => event.stopPropagation()}
       >

@@ -153,20 +153,13 @@ export async function repasteSlideAs(ctx: ActionCtx, mode: PasteSlideMode): Prom
  * Paste: whole slide (slide marker newest) → app elements (element marker not
  * overwritten externally) → external images → external text into a text box
  */
-=======
 /**
  * OS clipboard text is attacker-influenced input: cap the expansion before
  * building the addElement op (a multi-MB paste would blow up IPC + engine).
  */
-export const MAX_PASTE_TEXT_CHARS = 48_000
-export const MAX_PASTE_PARAGRAPHS = 2000
-
-export function pasteParagraphs(text: string): { runs: { text: string }[] }[] {
-  const capped = text.slice(0, MAX_PASTE_TEXT_CHARS)
-  const lines = capped.split(/\r?\n/)
-  return lines.slice(0, MAX_PASTE_PARAGRAPHS).map((line) => ({ runs: [{ text: line }] }))
 export const MAX_PASTE_TEXT_CHARS = 1_000_000
 export const MAX_PASTE_PARAGRAPHS = 50_000
+
 export function pasteParagraphs(text: string): {
   paragraphs: { runs: { text: string }[] }[]
   truncated: boolean
@@ -200,8 +193,6 @@ export async function pasteClipboard(ctx: ActionCtx): Promise<void> {
       wPx: w,
       hPx: 80,
       fitWidthPx: FIT_WIDTH,
-      paragraphs: external.text.split(/\r?\n/).map((line) => ({ runs: [{ text: line }] })),
-      paragraphs: pasteParagraphs(external.text),
       paragraphs,
     })
     if (r) {

@@ -172,14 +172,6 @@ export function numfmtPattern(options: NumfmtOptions): string {
   }
 }
 
-/// Leading `_(<symbol>* #,##0` section shared by Excel's Accounting and
-/// (symbol-less) Comma styles.
-const ACCOUNTING_SECTION = /^_\((?:"([^"]+)"|([^*\s]))?\* #,##0(?:\.(0+))?_\)/
-
-export function isAccountingPattern(pattern: string): boolean {
-  return ACCOUNTING_SECTION.test(pattern)
-}
-
 /// Best-effort reverse of numfmtPattern: extract candidate options, rebuild,
 /// and only accept on an exact round-trip; anything else lands in Custom.
 export function numfmtOptionsOf(pattern: string): NumfmtOptions {
@@ -197,7 +189,7 @@ export function numfmtOptionsOf(pattern: string): NumfmtOptions {
   if (match) return { ...defaults, category: 'percentage', decimals: match[1]?.length ?? 0 }
   match = /^0(?:\.(0+))?E\+00$/.exec(pattern)
   if (match) return { ...defaults, category: 'scientific', decimals: match[1]?.length ?? 0 }
-  match = ACCOUNTING_SECTION.exec(pattern)
+  match = /^_\((?:"([^"]+)"|([^*\s]))?\* #,##0(?:\.(0+))?_\)/.exec(pattern)
   if (match) {
     const candidate: NumfmtOptions = {
       ...defaults,
@@ -205,9 +197,7 @@ export function numfmtOptionsOf(pattern: string): NumfmtOptions {
       symbol: match[1] ?? match[2] ?? '',
       decimals: match[3]?.length ?? 0,
     }
-    // Excel's own accounting codes escape the parens and quote the symbol.
-    const canonical = pattern.replace(/\\([()])/g, '$1').replace(/_\("([^"])"\* /g, '_($1* ')
-    if (numfmtPattern(candidate) === canonical) return candidate
+    if (numfmtPattern(candidate) === pattern) return candidate
   }
   match = /^(?:"([^"]+)"|([^0#".,;[\]_]))?(#,##0|0)(?:\.(0+))?(?:[_;].*)?$/.exec(pattern)
   if (match) {

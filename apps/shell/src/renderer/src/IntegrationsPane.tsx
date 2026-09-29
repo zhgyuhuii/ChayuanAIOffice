@@ -1,4 +1,3 @@
-import { mcpLaunch, type McpLaunch } from '@genoffice/cli/mcp-launch'
 import { useCallback, useEffect, useState } from 'react'
 import {
   kbDiscover,
@@ -66,7 +65,6 @@ export function mcpLaunch(cli: { status: string; launcherDir: string }): McpLaun
   }
   return { command: cli.status === 'present' ? 'chaoffice' : `${dir}/chaoffice`, args: ['mcp'] }
 }
-export { mcpLaunch, type McpLaunch }
 
 const shellWord = (w: string) => (/\s/.test(w) ? `"${w}"` : w)
 

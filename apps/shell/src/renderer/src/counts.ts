@@ -1,4 +1,4 @@
-import type { Lang, Params } from '@genoffice/i18n'
+import type { Lang, Params } from '@chatoffice/i18n'
 import type { RecentPage } from '../../shared/home-api'
 
 export type FileCountKey = 'fileCount' | 'fileCountOne'
@@ -42,4 +42,14 @@ export function fileCountLabel(
 /** conversation-list pills (对话 group / project rows) */
 export function chatCountKey(count: number): ChatCountKey {
   return count === 1 ? 'chatCountOne' : 'chatCount'
+}
+
+// every locale defines the One keys; plural-less locales duplicate the string
+// (LOCAL A-zone group heads still select keys; upstream label path uses fileCountLabel)
+export function fileCountKey(count: number): FileCountKey {
+  return count === 1 ? 'fileCountOne' : 'fileCount'
+}
+
+export function timelineCountKey(count: number): TimelineCountKey {
+  return count === 1 ? 'timelineCountOne' : 'timelineCount'
 }

@@ -45,5 +45,5 @@ export const aiStrings = defineStrings({
   he: { ...he, ...localStrings.he },
   hi: { ...hi, ...localStrings.hi },
   'zh-TW': { ...zhTW, ...localStrings['zh-TW'] },
+  vi: { ...vi, ...localStrings.vi },
 })
-  vi: { ...en, ...vi, ...localStrings.vi },

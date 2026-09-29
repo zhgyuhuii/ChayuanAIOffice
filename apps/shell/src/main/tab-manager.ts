@@ -49,9 +49,6 @@ import {
 } from '../../../slides/src/main/slides-main'
 import type { DockEditorOptions, DockKind, DockRect, DockTabSummary } from '../shared/dock-api'
 import type { DocumentTabKind, OpenDocumentTab, TabKind, TabSummary } from '../shared/tabs-api'
-=======
-import { TAB_STRIP_HEIGHT } from '../shared/tab-drag-geometry'
-
 /** a tab lifted out of the strip with its live view: what "Open in New Window",
  *  tear-off and dock hand back and forth between the shell and a detached window */
 export interface DetachedTab {
@@ -82,6 +79,7 @@ const TAB_STRIP_HEIGHT = 40
  *  live width over setTreeWidth, so this is only the pre-first-message value */
 const TREE_SIDEBAR_DEFAULT = 232
 const HOME_ID = 'home'
+
 /**
  * Owns every open tab (Home + docs + sheets) inside the shell's single
  * BrowserWindow. Docs/sheets tabs are WebContentsView children of that
@@ -115,9 +113,6 @@ export class TabManager {
    *  the active tab */
   private dockRect: DockRect | null = null
   private activeDockId: string | null = null
-  /** views whose HTML-fullscreen listeners are installed: a view that leaves
-   *  for a detached window and docks back must not get a second pair */
-  private readonly fullScreenTracked = new WeakSet<WebContentsView>()
   /** Sheets renderer mounted ahead of the next open: parsing its bundle and
    *  booting Univer is the bulk of a workbook's open time, and the shell hands
    *  the path over after mount anyway. */
@@ -249,23 +244,16 @@ export class TabManager {
    * grow its view over the tab strip so nothing of the shell chrome shows;
    * restore the normal bounds on leave.
    */
-  private trackHtmlFullScreen(view: WebContentsView): void {
-    if (this.fullScreenTracked.has(view)) return
-    this.fullScreenTracked.add(view)
-    // resolved at event time: the same view gets a fresh id every time it docks
-    const currentId = () => this.tabs.find((t) => t.view === view)?.id
+  private trackHtmlFullScreen(id: string, view: WebContentsView): void {
     view.webContents.on('enter-html-full-screen', () => {
       // a docked editor cannot bleed its fullscreen over Home — pop it out
       // to a full tab first (activateTab clears the docked flag)
       if (this.tabs.find((t) => t.id === id)?.docked) this.activateTab(id)
-      const id = currentId()
-      if (id === undefined) return
       this.htmlFullScreenId = id
       this.layout()
     })
     view.webContents.on('leave-html-full-screen', () => {
-      const id = currentId()
-      if (id !== undefined && this.htmlFullScreenId === id) this.htmlFullScreenId = null
+      if (this.htmlFullScreenId === id) this.htmlFullScreenId = null
       this.layout()
     })
   }
@@ -370,6 +358,39 @@ export class TabManager {
    * families answer synchronously in the main process, docs has to ask its
    * renderer. Hence the async signature.
    */
+  canDetachTab(id: string): boolean {
+    const tab = this.tabs.find((t) => t.id === id)
+    return !!tab?.view && !tab.present && !this.closingIds.has(id)
+  }
+
+  /**
+   * The inverse of detachTab: a live view coming back from a detached window
+   * (dock by dragging the window onto the strip, or a tear-off that returned
+   * mid-gesture) becomes a tab again at `index` — Home stays pinned at 0, an
+   * out-of-range or omitted index appends — and is activated. The document,
+   * unsaved edits included, is untouched: only the view's parent changes.
+   */
+  attachTab(record: DetachedTab, index?: number): string {
+    const id = `t${this.nextId++}`
+    const { view } = record
+    this.shellWindow.contentView.addChildView(view)
+    view.setVisible(false)
+    this.trackHtmlFullScreen(`t${this.nextId - 1}`, view)
+    const slot =
+      index === undefined || !Number.isFinite(index)
+        ? this.tabs.length
+        : Math.min(Math.max(Math.trunc(index), 1), this.tabs.length)
+    this.tabs.splice(slot, 0, {
+      id,
+      kind: record.kind,
+      view,
+      title: record.title,
+      filePath: record.filePath,
+    })
+    this.activateTab(id)
+    return id
+  }
+
   webContentsForTab(id: string): WebContents | undefined {
     return this.tabs.find((t) => t.id === id)?.view?.webContents
   }
@@ -579,7 +600,6 @@ export class TabManager {
     view.setVisible(false)
     this.trackHtmlFullScreen(id, view)
     this.watchViewLifetime(id, view)
-    this.trackHtmlFullScreen(view)
     this.tabs.push({
       id,
       kind: 'docs',
@@ -604,7 +624,7 @@ export class TabManager {
       setSheetsNewBlank(options?.newBlankSaveDir, options?.restoreFrom, options?.newBlankName)
     const spare = this.takeSpareSheetsView()
     const view =
-      spare ?? createSheetsView({ includeAiHandlers: false, openingWorkbook: Boolean(openPath) })
+      spare ?? createSheetsView({ includeAiHandlers: false })
     // bind the path to this tab's webContents: a multi-select Open creates
     // several sheets tabs in one loop, so a single global path would be
     // overwritten before the earlier tabs consume it
@@ -620,7 +640,6 @@ export class TabManager {
     this.trackHtmlFullScreen(id, view)
     this.watchViewLifetime(id, view)
     this.scheduleSpareSheetsView(3000)
-    this.trackHtmlFullScreen(view)
     this.tabs.push({
       id,
       kind: 'sheets',
@@ -639,7 +658,6 @@ export class TabManager {
     view.setVisible(false)
     this.trackHtmlFullScreen(id, view)
     this.watchViewLifetime(id, view)
-    this.trackHtmlFullScreen(view)
     this.tabs.push({
       id,
       kind: 'slides',
@@ -674,8 +692,6 @@ export class TabManager {
       title: options?.untitledTitle ?? basename(openPath),
       filePath: openPath,
     })
-    this.trackHtmlFullScreen(view)
-    this.tabs.push({ id, kind: 'pdf', view, title: basename(openPath), filePath: openPath })
     this.activateTab(id)
     return id
   }
@@ -706,7 +722,6 @@ export class TabManager {
     view.setVisible(false)
     this.trackHtmlFullScreen(id, view)
     this.watchViewLifetime(id, view)
-    this.trackHtmlFullScreen(view)
     this.tabs.push({
       id,
       kind: 'markdown',
@@ -725,7 +740,6 @@ export class TabManager {
     view.setVisible(false)
     this.trackHtmlFullScreen(id, view)
     this.watchViewLifetime(id, view)
-    this.trackHtmlFullScreen(view)
     this.tabs.push({
       id,
       kind: 'html',
@@ -756,7 +770,6 @@ export class TabManager {
     view.setVisible(false)
     this.trackHtmlFullScreen(id, view)
     this.watchViewLifetime(id, view)
-    this.trackHtmlFullScreen(view)
     this.tabs.push({
       id,
       kind: 'html',
@@ -842,7 +855,8 @@ export class TabManager {
   webContentsIdOf(id: string): number | undefined {
     const wc = this.tabs.find((t) => t.id === id)?.view?.webContents
     return wc && !wc.isDestroyed() ? wc.id : undefined
-  /** kind, title and file of the document tab rendered by `webContentsId` (Home has no view) */
+  }
+
   describeWebContents(
     webContentsId: number,
   ): { kind: TabKind; title: string; filePath?: string } | null {
@@ -1078,48 +1092,6 @@ export class TabManager {
     if (idx <= 0) return
     const ids = this.tabs.slice(0, idx).filter((t) => t.id !== HOME_ID).map((t) => t.id)
     for (const id of ids) await this.closeTab(id)
-  /** Whether a tab can leave the strip for its own window (tear-off / Open in
-   *  New Window): every document tab except a chrome-free Present tab. */
-  canDetachTab(id: string): boolean {
-    const tab = this.tabs.find((t) => t.id === id)
-    return !!tab?.view && !tab.present && !this.closingIds.has(id)
-  }
-  /**
-   * The inverse of detachTab: a live view coming back from a detached window
-   * (dock by dragging the window onto the strip, or a tear-off that returned
-   * mid-gesture) becomes a tab again at `index` — Home stays pinned at 0, an
-   * out-of-range or omitted index appends — and is activated. The document,
-   * unsaved edits included, is untouched: only the view's parent changes.
-   */
-  attachTab(record: DetachedTab, index?: number): string {
-    const id = `t${this.nextId++}`
-    const { view } = record
-    this.shellWindow.contentView.addChildView(view)
-    view.setVisible(false)
-    this.trackHtmlFullScreen(view)
-    const slot =
-      index === undefined || !Number.isFinite(index)
-        ? this.tabs.length
-        : Math.min(Math.max(Math.trunc(index), 1), this.tabs.length)
-    this.tabs.splice(slot, 0, {
-      id,
-      kind: record.kind,
-      view,
-      title: record.title,
-      filePath: record.filePath,
-    })
-    this.activateTab(id)
-    return id
-  }
-  /** the editor tab showing this file, whichever module owns it (path compared after resolving links) */
-  findTabByPath(
-    path?: string,
-  ): { id: string; kind: TabKind; webContents: WebContents } | undefined {
-    const wanted = canonicalPath(path)
-    const tab = this.tabs.find(
-      (t) => t.view && t.filePath && !t.present && canonicalPath(t.filePath) === wanted,
-    )
-    return tab?.view ? { id: tab.id, kind: tab.kind, webContents: tab.view.webContents } : undefined
   }
 
   /** close every closable tab to the right of the given tab */

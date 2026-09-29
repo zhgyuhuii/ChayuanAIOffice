@@ -240,24 +240,15 @@ export function readPivotSourceGrid(
     getFormulas(): string[][]
   },
   date1904: boolean,
-  valueFields: readonly string[] = [],
 ): (string | number | boolean | null)[][] {
-  const rawValues = range.getRawValues() as (string | number | boolean | null)[][]
-  const valueColumns = new Set(
-    (rawValues[0] ?? []).flatMap((header, index) =>
-      valueFields.includes(String(header ?? '').trim()) ? [index] : [],
-    ),
-  )
   const patterns = range.getNumberFormats()
   // 1904 workbooks: file-loaded static serials count from 1904-01-01, but
   // formula results come from the 1900-based engine — same rule as the
   // display interceptor's calendar-date shift.
   const formulas = date1904 ? range.getFormulas() : null
-  return rawValues.map((row, rowOffset) =>
+  return (range.getRawValues() as (string | number | boolean | null)[][]).map((row, rowOffset) =>
     row.map((value, columnOffset) => {
       if (typeof value !== 'number') return value
-      // Measures must remain numeric; currency display strings aggregate as blanks.
-      if (rowOffset > 0 && valueColumns.has(columnOffset)) return value
       const pattern = patterns[rowOffset]?.[columnOffset] ?? ''
       if (pattern === '' || isDefaultFormat(pattern)) return value
       const shift =
@@ -314,7 +305,6 @@ export function applyAiPivotAdd(
   const grid = readPivotSourceGrid(
     sourceSheet.getRange(source.startRow, source.startColumn, sourceRows, sourceColumns),
     state.file.date1904 === true,
-    op.values.filter((value) => value.formula === undefined).map((value) => value.field),
   )
   const fieldNames = (grid[0] ?? []).map((value) => String(value ?? '').trim())
   if (fieldNames.some((name) => name.length === 0)) {

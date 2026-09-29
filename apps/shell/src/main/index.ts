@@ -12,8 +12,8 @@ import {
   rmSync,
   statSync,
   writeFileSync,
+  copyFileSync,
 } from 'node:fs'
-import { randomUUID } from 'node:crypto'
 import { basename, dirname, extname, join, resolve } from 'node:path'
 import os from 'node:os'
 import {
@@ -30,8 +30,6 @@ import {
   webContents,
 } from 'electron'
 import type { MenuItemConstructorOptions, NativeImage, WebContents } from 'electron'
-=======
-import { atomicWriteFile } from './atomic-write'
 import { atomicCopyFile, atomicWriteFile } from './atomic-write'
 import { tabStripOverlay } from './title-bar-overlay'
 import { createFeedbackClient } from './feedback'
@@ -81,13 +79,7 @@ import {
   setUpdateCheckInvoker,
   installRendererProtocol,
 } from '@chatoffice/electron-utils'
-import { readAppSettings, writeAppSetting, writeAppSettings } from './app-settings'
-import {
-  readAppSettings,
-  writeAppSetting,
-  writeAppSettings,
-  writeAppSettingThen,
-} from './app-settings'
+import { readAppSettings, writeAppSetting, writeAppSettings, writeAppSettingThen } from './app-settings'
 import { OPEN_DOCUMENTS_FILE, clearOpenDocuments, publishOpenDocuments } from './open-documents'
 import { startControlServer, type ControlServer } from './control-server'
 import { controlHandler } from './control-handlers'
@@ -213,11 +205,7 @@ import {
   markSheetsShuttingDown,
   requestSheetsClose,
   resolveSheetsSessionPath,
-  markSheetsUnsavedNew,
   markSheetsUntitledPath,
-  pendingUnsavedNewRecoveries,
-  unmarkSheetsUnsavedNew,
-  sheetsSuggestedPathTaken,
   authorizeMcpSheetWrite,
   sendSheetsMenuAction,
   setSheetsBlankDraftHook,
@@ -231,6 +219,7 @@ import {
   startSheetsCaptureServer,
   stopSheetsSidecar,
 } from '../../../sheets/src/main/sheets-main'
+import {
   configureSlidesRuntime,
   discardSlidesRecovery,
   exportSlidesPdfHeadless,
@@ -246,6 +235,7 @@ import {
   setSlidesShowBleed,
   slidesFileRenamed,
 } from '../../../slides/src/main/slides-main'
+import {
   configurePdfRuntime,
   finalizePdfUntitled,
   flushPdfSave,
@@ -266,6 +256,7 @@ import { convertPdfFileToDocxLocalWithPrompt, PdfLoadError } from './pdf2docx-lo
 import { convertPdfFileToPptxLocalWithPrompt } from './pdf2pptx-local'
 import { convertPdfFileToXlsxLocalWithPrompt } from './pdf2xlsx-local'
 import { closePdfPasswordDialog, promptPdfPassword } from './pdf-password-dialog'
+import {
   configureMarkdownRuntime,
   exportMarkdownPdfHeadless,
   markdownDiscardPendingAssets,
@@ -279,6 +270,7 @@ import { closePdfPasswordDialog, promptPdfPassword } from './pdf-password-dialog
   setMarkdownDocxExportedHook,
   setMarkdownFileSavedHook,
 } from '../../../markdown/src/main/markdown-main'
+import {
   configureHtmlRuntime,
   exportHtmlHeadless,
   htmlDiscardPendingAssets,
@@ -316,6 +308,7 @@ import type {
   FileSearchSettings,
 } from '../shared/home-api'
 import { HOME_CHANNELS, type SystemSearchEntry, type SystemSearchResult } from '../shared/home-api'
+import {
   normalizeAiPanelPrefs,
   sameAiPanelPrefs,
   type AiPanelPrefs,
@@ -326,12 +319,14 @@ import type { DockEditorOptions, DockKind, DockRect } from '../shared/dock-api'
 import { DOCK_CHANNELS } from '../shared/dock-api'
 import { showErrorDialog } from './error-dialog'
 import { startRendererWatchdog } from './renderer-watchdog'
+import {
   matchesExtFamily,
   normalizeRecentQuery,
   pageRecentPaths,
   statPathEntries,
 } from './recent-files'
 import { isSameFile, pdfSaveAsTarget, isValidRawRenameName } from './rename-validation'
+import {
   FolderWatcher,
   createFolder,
   describeRoot,
@@ -344,6 +339,7 @@ import { isSameFile, pdfSaveAsTarget, isValidRawRenameName } from './rename-vali
   uniqueNameIn,
   type FolderErrors,
 } from './folder-tree'
+import {
   FOLDER_ROOTS_KEY,
   describeExtraRoot,
   readExtraRoots,
@@ -353,6 +349,7 @@ import { isSameFile, pdfSaveAsTarget, isValidRawRenameName } from './rename-vali
 import extractWorkerPath from './file-index/extract-worker?modulePath'
 import { FileIndexer } from './file-index/indexer'
 import { FileIndexStore } from './file-index/store'
+import {
   jevEndpointOf,
   normalizeFileSearchSettings,
   probeJev,
@@ -360,6 +357,7 @@ import { FileIndexStore } from './file-index/store'
 } from './file-index/rerank'
 import { runHeadlessExport, type HeadlessExporters } from './headless-export'
 import { TabManager } from './tab-manager'
+import {
   activateDetached,
   closeDetachedWithoutPrompt,
   createDetachedEditorWindow,
@@ -386,6 +384,7 @@ import { TabManager } from './tab-manager'
 } from './detached-windows'
 import { applyUpdateChannel, checkForUpdatesNow, initAutoUpdater } from './updater'
 import { isUpdateChannel, type UpdateChannel } from '../shared/update-api'
+
 /**
  * ChaOffice unified shell: ONE Electron app, ONE BrowserWindow, hosting the
  * docs and sheets modules as WebContentsView tabs behind a WPS-style tab
@@ -394,6 +393,7 @@ import { isUpdateChannel, type UpdateChannel } from '../shared/update-api'
  * Renderers load from each module's build output (apps/docs/out,
  * apps/sheets/out), so build those before running the shell.
  */
+
 // ANY unpacked run (`npm run shell`, `npm run dev`, `npx electron .`) must not
 // share the installed app's userData or single-instance lock — otherwise a dev
 // run silently quits and forwards its argv to the running installed ChaOffice.
@@ -404,6 +404,7 @@ if (!app.isPackaged)
     'userData',
     process.env.CHATOFFICE_USER_DATA ?? join(app.getPath('appData'), 'ChaOffice Dev'),
   )
+
 /**
  * `--headless-export <file> --to <format> --out <path> [--json]`: one document, no
  * window, one stdout line, then exit. Parsed at module scope so the dock icon
@@ -415,6 +416,7 @@ if (headlessArgv.kind !== 'none') {
   setHeadlessMode(true)
   app.dock?.hide()
 }
+
 // Product renames changed the userData path ("AI Office" → "ChaOffice" → "ChaAI Office"); migrate old user data once on each rename hop.
 if (app.isPackaged) {
   const newDir = app.getPath('userData')
@@ -438,6 +440,7 @@ if (app.isPackaged) {
     }
   }
 }
+
 // module build outputs: packaged builds carry them as extraResources
 // (resources/modules/*, resources/native/*); dev/unpacked resolves them
 // relative to apps/shell in the monorepo layout.
@@ -464,6 +467,7 @@ const HTML_OUT = app.isPackaged
 const SIDECAR_BIN = app.isPackaged
   ? join(process.resourcesPath, 'native', SIDECAR_EXE)
   : join(APPS_ROOT, 'sheets', 'native', 'xlsx-engine', 'target', 'release', SIDECAR_EXE)
+
 configureDocsRuntime({
   preloadPath: join(DOCS_OUT, 'preload', 'index.js'),
   rendererUrl: process.env.DOCS_RENDERER_URL,
@@ -507,9 +511,11 @@ configureHtmlRuntime({
 })
 // privileged-scheme registration is only legal before app ready
 registerPrivilegedSchemes()
+
 // ---- UI language ----
 // Persisted in userData/app-settings.json so the editor modules can read the
 // same file when they pick up i18n later. CHATOFFICE_LANG overrides for tests.
+
 const APP_SETTINGS_PATH = () => join(app.getPath('userData'), 'app-settings.json')
 const OPEN_DOCUMENTS_PATH = () => join(app.getPath('userData'), OPEN_DOCUMENTS_FILE)
 /** only the instance holding the single-instance lock may write or remove the registry */
@@ -518,12 +524,15 @@ let stopAuthWatch: (() => void) | null = null
 const publishOpenDocumentsIfOwner = (paths: readonly string[]) => {
   if (ownsOpenDocumentsRegistry) publishOpenDocuments(OPEN_DOCUMENTS_PATH(), paths)
 }
+
 /** every open file: the shell's tabs plus the detached editor windows */
 function publishAllOpenDocuments(): void {
   publishOpenDocumentsIfOwner([...(tabManager?.openFilePaths() ?? []), ...detachedFilePaths()])
 }
 setDetachedChangedListener(publishAllOpenDocuments)
+
 let uiLang: Lang | null = null
+
 function currentLang(): Lang {
   if (uiLang) return uiLang
   if (process.env.CHATOFFICE_LANG) {
@@ -537,6 +546,7 @@ function currentLang(): Lang {
   setUiLang(uiLang)
   return uiLang
 }
+
 function persistLang(lang: Lang): void {
   // write first: app-settings.json can be unwritable, and a language committed to
   // memory before the write survives only until the next launch
@@ -545,21 +555,27 @@ function persistLang(lang: Lang): void {
     setUiLang(persisted)
   })
 }
+
 let cachedUpdateChannel: UpdateChannel | null = null
+
 function currentUpdateChannel(): UpdateChannel {
   if (cachedUpdateChannel) return cachedUpdateChannel
   const saved = readAppSettings(APP_SETTINGS_PATH()).updateChannel
   cachedUpdateChannel = isUpdateChannel(saved) ? saved : 'stable'
   return cachedUpdateChannel
 }
+
 let cachedTheme: UiTheme | null = null
+
 function currentTheme(): UiTheme {
   if (cachedTheme) return cachedTheme
   const saved = readAppSettings(APP_SETTINGS_PATH()).theme
   cachedTheme = saved === 'light' || saved === 'dark' ? saved : 'system'
   return cachedTheme
 }
+
 let cachedAutoSaveDefault: AutoSaveDefault | null = null
+
 function currentAutoSaveDefault(): AutoSaveDefault {
   if (cachedAutoSaveDefault) return cachedAutoSaveDefault
   const saved = readAppSettings(APP_SETTINGS_PATH())
@@ -570,6 +586,7 @@ function currentAutoSaveDefault(): AutoSaveDefault {
   }
   return cachedAutoSaveDefault
 }
+
 /** MCP server settings (persisted in userData/app-settings.json; default off). */
 function currentMcpSettings(): McpSettings {
   const saved = readAppSettings(APP_SETTINGS_PATH())
@@ -584,6 +601,7 @@ function currentMcpSettings(): McpSettings {
     logging: saved.mcpLogging === true,
   }
 }
+
 let cachedAiPanelPrefs: AiPanelPrefs | null = null
 function currentAiPanelPrefs(): AiPanelPrefs {
   if (cachedAiPanelPrefs) return cachedAiPanelPrefs
@@ -597,15 +615,20 @@ function currentAiPanelPrefs(): AiPanelPrefs {
   })
   return cachedAiPanelPrefs
 }
+
 // ---- anonymous usage analytics (see src/main/analytics.ts) ----
 // Stays a no-op until initAnalytics() runs at startup; keyless builds
 // (source/forks) keep the no-op forever, so every track() call is safe.
+
 let analytics: Analytics = { active: false, track: () => {} }
+
 let cachedAnalyticsEnabled: boolean | null = null
+
 function analyticsEnabled(): boolean {
   cachedAnalyticsEnabled ??= analyticsEnabledFrom(readAppSettings(APP_SETTINGS_PATH()))
   return cachedAnalyticsEnabled
 }
+
 function resolveAnalyticsKeys(): AnalyticsKeys | null {
   // Only packaged extraMetadata is authoritative. Source/dev runs never read
   // runtime credentials and therefore remain a strict no-op.
@@ -619,6 +642,7 @@ function resolveAnalyticsKeys(): AnalyticsKeys | null {
     return null
   }
 }
+
 function persistAnalyticsPreference(enabled: boolean): boolean {
   const previous = cachedAnalyticsEnabled
   // Change the in-memory gate before touching disk. The synchronous atomic
@@ -632,6 +656,7 @@ function persistAnalyticsPreference(enabled: boolean): boolean {
     throw error
   }
 }
+
 function initAnalytics(): void {
   try {
     let clientState: ReturnType<typeof ensureAnalyticsClientState> | null = null
@@ -657,26 +682,33 @@ function initAnalytics(): void {
     // analytics must never block startup
   }
 }
+
 // ---- first-run onboarding ----
 // The GenTeam community page opened from the onboarding's second slide.
 // Stable short link served by the genspark.ai site; it 302s to the tokened
 // invite link, which stays out of this repo and rotates server-side.
 const GENTEAM_URL = 'https://genspark.ai/join'
+
 // ChaOffice credit-usage page opened from the account menu's credits row.
 // Kept main-side so the renderer never supplies the URL.
 const CREDIT_USAGE_URL = 'https://www.genspark.ai/credit-usage'
+
 // ---- "star us on GitHub" prompt (see star-prompt.ts for the rules) ----
+
 const readStarPrompt = () =>
   asStarPromptState(readAppSettings(APP_SETTINGS_PATH())[STAR_PROMPT_KEY])
 const writeStarPrompt = (state: ReturnType<typeof readStarPrompt>) =>
   writeAppSetting(APP_SETTINGS_PATH(), STAR_PROMPT_KEY, state)
+
 /** set at startup when this is the first launch after an upgrade; consumed by
  * the first starPromptShouldShow query of the session */
 let upgradeStarPromptPending = false
+
 /** a granted show, cached for the session: repeated queries (React StrictMode
  * double-effects, AppFrame remounts) must return the same answer instead of
  * burning another lifetime show or flipping to a snoozed "false" */
 let starPromptSessionGrant: StarPromptShow | null = null
+
 /** every successful document open counts toward the prompt's value threshold */
 function recordStarPromptDocOpen(): void {
   try {
@@ -687,10 +719,12 @@ function recordStarPromptDocOpen(): void {
     // settings write failures must never break opening a document
   }
 }
+
 // Stargazer count for the settings About pane; fetched main-side (the
 // renderer CSP has no api.github.com) and cached per session — the exact
 // number is decoration, staleness is fine.
 let cachedGithubStars: number | null = null
+
 async function fetchGithubStars(): Promise<number | null> {
   if (cachedGithubStars !== null) return cachedGithubStars
   try {
@@ -708,6 +742,7 @@ async function fetchGithubStars(): Promise<number | null> {
     return null
   }
 }
+
 const tMain = createI18n({
   zh: {
     dlgAddFolderRoot: '添加文件夹到首页',
@@ -946,119 +981,6 @@ const tMain = createI18n({
   },
   vi: {
     dlgAddFolderRoot: 'Thêm thư mục vào Trang chủ',
-    errFolderRootUnusable: 'Không thể đọc thư mục đã chọn',
-    menuFile: 'Tệp',
-    menuSectionNew: 'Mới',
-    menuOpenInNewWindow: 'Mở trong cửa sổ mới',
-    menuNewDoc: 'AI Docs',
-    menuNewSheet: 'AI Sheets',
-    untitledSheet: 'Bảng tính chưa có tiêu đề',
-    untitledDoc: 'Tài liệu chưa có tiêu đề',
-    untitledDeck: 'Bản trình bày chưa có tiêu đề',
-    untitledMarkdown: 'Markdown chưa có tiêu đề',
-    untitledHtml: 'HTML chưa có tiêu đề',
-    untitledPdf: 'PDF chưa có tiêu đề',
-    menuNewSlide: 'AI Slides',
-    menuNewMarkdown: 'AI Markdown',
-    menuNewHtml: 'AI HTML',
-    menuNewPdf: 'AI PDF',
-    menuExportPdf: 'Xuất dưới dạng PDF…',
-    menuExportImages: 'Xuất dưới dạng hình ảnh…',
-    menuExportHtml: 'Xuất dưới dạng HTML một tệp…',
-    menuOpenInDocs: 'Chuyển đổi và mở trong Docs',
-    menuPrint: 'In…',
-    menuOpen: 'Mở…',
-    menuSave: 'Lưu',
-    menuSaveAs: 'Lưu dưới dạng…',
-    menuClose: 'Đóng',
-    menuEdit: 'Chỉnh sửa',
-    menuWindow: 'Cửa sổ',
-    menuHome: 'Trang chủ',
-    backToHome: 'Quay lại Trang chủ',
-    dlgOpenTitle: 'Mở tệp',
-    filterSupported: 'Các tệp được hỗ trợ',
-    filterWord: 'Tài liệu Word',
-    filterExcel: 'Sổ làm việc Excel',
-    filterPpt: 'Bản trình bày PowerPoint',
-    filterMarkdown: 'Tài liệu Markdown',
-    filterHtml: 'Tài liệu HTML',
-    filterPdf: 'Tài liệu PDF',
-    errBadArgs: 'Đối số không hợp lệ',
-    errBadName: 'Tên tệp không hợp lệ',
-    errMissing: 'Không tìm thấy tệp',
-    errExists: 'Một tệp có tên đó đã tồn tại',
-    errRenameFailed: 'Đổi tên thất bại',
-    errNewTabFailed: 'Không thể tạo tài liệu mới',
-    errUnsupportedExt: 'Tệp .{ext} không được hỗ trợ',
-    copySuffix: 'bản sao',
-    menuHelp: 'Trợ giúp',
-    thirdPartyNotices: 'Thông báo của bên thứ ba',
-    menuExportDocx: 'Xuất dưới dạng Word…',
-    btnCancel: 'Hủy',
-    pdfDocxFailedMsg: 'Xuất dưới dạng Word thất bại',
-    pdfDocxBusyMsg: 'Một tác vụ xuất Word đang được tiến hành. Vui lòng đợi tác vụ hoàn tất.',
-    menuExportPptx: 'Xuất dưới dạng PowerPoint…',
-    pdfPptxFailedMsg: 'Xuất dưới dạng PowerPoint thất bại',
-    pdfPptxBusyMsg: 'Một tác vụ xuất đang được tiến hành. Vui lòng đợi tác vụ hoàn tất.',
-    pdfPptxLocalScannedDetail:
-      'Mỗi trang đã được xuất dưới dạng hình ảnh toàn trang; văn bản trên các trang trình bày không thể chỉnh sửa.',
-    menuExportXlsx: 'Xuất dưới dạng Excel…',
-    pdfXlsxFailedMsg: 'Xuất dưới dạng Excel thất bại',
-    pdfXlsxBusyMsg: 'Một tác vụ xuất đang được tiến hành. Vui lòng đợi tác vụ hoàn tất.',
-    pdfXlsxLocalScannedDetail:
-      'Các trang quét không thể chuyển đổi thành các ô; thay vào đó, trang tính của mỗi trang có một hàng thông báo.',
-    pdfXlsxLocalSkippedMsg: 'Một số trang không được chuyển đổi thành ô',
-    pdfXlsxLocalSkippedDetail:
-      'Các trang {pages} không thể chuyển đổi thành ô; thay vào đó bảng tính của chúng có một hàng thông báo.',
-    pdfDocxLocalScannedMsg: 'Phát hiện tài liệu quét',
-    pdfDocxLocalScannedDetail:
-      'Các trang được xuất dưới dạng hình ảnh để bảo toàn giao diện; không nhận dạng được văn bản có thể chỉnh sửa.',
-    pdfDocxLocalDegradedMsg: 'Một số trang được xuất dưới dạng hình ảnh',
-    pdfDocxLocalDegradedDetail:
-      '(Các) trang {pages} không thể tái cấu trúc đáng tin cậy và đã được xuất dưới dạng hình ảnh toàn trang.',
-    pdfDocxLocalOcrMsg: 'Các trang quét đã được chuyển đổi thành văn bản có thể chỉnh sửa',
-    pdfDocxLocalOcrDetail:
-      '(Các) trang {pages} là bản quét; văn bản của chúng đã được phục hồi bằng OCR trên thiết bị. Vui lòng kiểm tra lại kết quả.',
-    pdfDocxLocalEncryptedDetail:
-      'Tệp PDF này đã được mã hóa và không thể mở nếu không có mật khẩu chính xác.',
-    pdfDocxLocalUnsupportedEncDetail:
-      'Tệp PDF này sử dụng mã hóa dựa trên chứng thư số hoặc mã hóa không được hỗ trợ khác và không thể chuyển đổi.',
-    pdfPwdTitle: 'Nhập mật khẩu',
-    pdfPwdPrompt: 'Tệp PDF này đã được mã hóa. Nhập mật khẩu để mở:',
-    pdfPwdRetryPrompt: 'Mật khẩu không chính xác. Vui lòng thử lại.',
-    pdfPwdOk: 'OK',
-    pdfPwdVerifying: 'Đang xác minh mật khẩu…',
-    pdfPwdLabel: 'Mật khẩu',
-    pdfPwdPlaceholder: 'Nhập mật khẩu để mở',
-    pdfPwdShow: 'Hiện mật khẩu',
-    pdfPwdHide: 'Ẩn mật khẩu',
-    pdfDocxLocalCorruptDetail:
-      'Tệp bị hỏng hoặc không phải là tệp PDF hợp lệ và không thể chuyển đổi.',
-    dlgPickSaveDir: 'Chọn vị trí lưu mặc định',
-    errSaveDirUnusable: 'Thư mục đã chọn không thể ghi và không thể dùng làm vị trí lưu mặc định',
-    menuActivate: '激活',
-    menuActivateEntitled: '已激活 · 有效期至 {date}',
-    menuActivateExpired: '体验期已结束 · 购买后提醒消失',
-    menuActivateFree: '免费体验中 · 剩 {n} 天',
-    menuActivateLoading: '正在读取授权状态…',
-    menuExportDocxLocal: '导出为 Word（本地）…',
-    menuPurchaseActivate: '购买 / 激活…',
-    pdfDocxBtnConvert: '继续',
-    pdfDocxBtnLogin: '登录',
-    pdfDocxConfirmBalance: '当前余额 {balance} credits。',
-    pdfDocxConfirmDetail: '本次转换将消耗 5 credits，文件将上传至云端处理。',
-    pdfDocxConfirmMsg: '将此 PDF 上传到 察元AIOffice 云端转换为 Word？',
-    pdfDocxLoginDetail: '点击“登录”将打开浏览器完成授权，完成后请重新点击导出。',
-    pdfDocxLoginMsg: '导出为 Word 需要登录 察元AIOffice 账号。',
-    pdfDocxNoCliMsg: '无法登录 察元AIOffice：缺少必需组件（chatoffice），请重新安装应用。',
-    tabCtxClose: '关闭',
-    tabCtxCloseLeft: '关闭左侧',
-    tabCtxCloseOthers: '关闭其他',
-    tabCtxCloseRight: '关闭右侧',
-    tabCtxCloseAll: 'Close All',
-  },
-  vi: {
-    dlgAddFolderRoot: 'Thêm thư mục vào Trang chủ',
     watchdogTitle: 'Tài liệu đang dùng quá nhiều tài nguyên',
     watchdogBody:
       '"{title}" đã dùng nhiều bộ nhớ hoặc CPU trong vài phút ({memory} MB, {cpu}% CPU). Bạn có thể tiếp tục chờ hoặc đóng tài liệu này (sẽ hỏi lưu các thay đổi chưa lưu trước). Thông tin chẩn đoán đã được ghi lại.',
@@ -1156,6 +1078,26 @@ const tMain = createI18n({
       'Tệp bị hỏng hoặc không phải là tệp PDF hợp lệ và không thể chuyển đổi.',
     dlgPickSaveDir: 'Chọn vị trí lưu mặc định',
     errSaveDirUnusable: 'Thư mục đã chọn không thể ghi và không thể dùng làm vị trí lưu mặc định',
+    menuActivate: '激活',
+    menuActivateLoading: '正在读取授权状态…',
+    menuActivateEntitled: '已激活 · 有效期至 {date}',
+    menuActivateFree: '免费体验中 · 剩 {n} 天',
+    menuActivateExpired: '体验期已结束 · 购买后提醒消失',
+    menuPurchaseActivate: '购买 / 激活…',
+    menuExportDocxLocal: '导出为 Word（本地）…',
+    pdfDocxLoginMsg: '导出为 Word 需要登录 察元AIOffice 账号。',
+    pdfDocxLoginDetail: '点击“登录”将打开浏览器完成授权，完成后请重新点击导出。',
+    pdfDocxBtnLogin: '登录',
+    pdfDocxConfirmMsg: '将此 PDF 上传到 察元AIOffice 云端转换为 Word？',
+    pdfDocxConfirmDetail: '本次转换将消耗 5 credits，文件将上传至云端处理。',
+    pdfDocxConfirmBalance: '当前余额 {balance} credits。',
+    pdfDocxBtnConvert: '继续',
+    pdfDocxNoCliMsg: '无法登录 察元AIOffice：缺少必需组件（chatoffice），请重新安装应用。',
+    tabCtxClose: '关闭',
+    tabCtxCloseOthers: '关闭其他',
+    tabCtxCloseLeft: '关闭左侧',
+    tabCtxCloseRight: '关闭右侧',
+    tabCtxCloseAll: '关闭全部',
   },
   ja: {
     dlgAddFolderRoot: 'フォルダーをホームに追加',
@@ -3890,12 +3832,17 @@ function createShellWindow(): void {
     applyPendingProject(path, wc.id)
     applyPendingDir(wc.id, path)
   })
-  setHtmlProvisionalTitleHook((wc, title) => manager.setTabTitleFor(wc.id, title))
   setHtmlProvisionalTitleHook((wc, title) => {
     manager.setTabTitleFor(wc.id, title)
     detachedSetTitleFor(wc.id, title)
+  })
   // A redacted copy becomes this tab's document; the source still exists.
   setPdfRedactionSavedHook((wc, path) => {
+    manager.setTabFileFor(wc.id, path)
+    detachedSetFileFor(wc.id, path)
+    recordRecentFile(path)
+    applyPendingDir(wc.id, path)
+  })
   // pdf content-derived auto-rename: the file moved on disk, follow it everywhere
   setPdfRenamedHook((wc, oldPath, newPath) => {
     // An untitled document's first save landed: drop its registry entry.
@@ -4292,22 +4239,12 @@ function removePendingUntitled(tempPath: string): void {
  * lands in the user's project folder at creation. The user-visible file is only
  * written when they first save, which routes through Save As prefilled with the
  * pending project folder and the untitled name (sheets-main's blank-draft flow).
- * "New spreadsheet" no longer drops a file in the default folder up front: the
- * blank workbook is created in a temp directory and its first Save goes through
- * Save As (the same path an .xls/.tsv import takes), so a new tab that is
- * closed without saving leaves nothing behind to delete by hand — the temp
- * directory is discarded with the session. The save pipeline still needs a real
- * file to edit, hence the backing workbook rather than the in-memory blank grid.
- * Falls back to a file in the default folder, then to the in-memory blank tab.
  */
 async function newSheetTab(recoverAs?: string): Promise<void> {
   // recoverAs: the would-be path of a new workbook whose recovery copy
   // survived a crash; the sheets module offers it under that name
   const dir = newFileDir('sheet')
-  let suggestedPath = recoverAs ?? uniquePathIn(dir, `${tm('untitledSheet')}.xlsx`)
-  // nothing is on disk yet, so two new tabs would otherwise be promised the same name
-  for (let i = 2; !recoverAs && sheetsSuggestedPathTaken(suggestedPath); i++)
-    suggestedPath = uniquePathIn(dir, `${tm('untitledSheet')} ${i}.xlsx`)
+  void dir
   try {
     tabManager?.openSheetsTab(undefined, {
       newBlank: true,
@@ -4318,41 +4255,6 @@ async function newSheetTab(recoverAs?: string): Promise<void> {
     analytics.track('file_new', { kind: 'xlsx' })
   } catch (err) {
     surfaceNewTabError(err)
-    // under the import root so the session-close cleanup removes it like an import copy
-    const tempDir = join(app.getPath('temp'), 'genoffice-imports', randomUUID())
-    mkdirSync(tempDir, { recursive: true })
-    const backingPath = join(tempDir, basename(suggestedPath))
-    // reserve the name before the first await so a second new tab picks another;
-    // the first Save As starts from the name the file would have had
-    markSheetsUnsavedNew(backingPath, suggestedPath, tempDir)
-    try {
-      await atomicWriteFile(backingPath, await blankXlsxBuffer())
-      unmarkSheetsUnsavedNew(backingPath)
-      throw err
-    }
-    // eligible for content-derived auto-rename after the first AI generation
-    markSheetsUntitledPath(backingPath)
-    tabManager?.openSheetsTab(backingPath)
-    startQueuedWorkbookNudge()
-    // no recent-file entry yet: there is no user-visible file until it is saved
-    console.warn('[shell] temp workbook create failed, writing to the default folder:', err)
-    try {
-      await atomicWriteFile(suggestedPath, await blankXlsxBuffer())
-      markSheetsUntitledPath(suggestedPath)
-      // route directly (not via openDocumentPath) so creating a sheet emits
-      // only file_new — the file_open event is reserved for opening existing files
-      if (routeDocumentPath(suggestedPath)) recordStarPromptDocOpen()
-    } catch (fallbackErr) {
-      console.warn(
-        '[shell] blank workbook create failed, opening in-memory blank tab:',
-        fallbackErr,
-      )
-      try {
-        tabManager?.openSheetsTab(undefined, { newBlank: true })
-      } catch (finalErr) {
-        surfaceNewTabError(finalErr)
-      }
-    }
   }
 }
 
@@ -4523,13 +4425,6 @@ async function newPdfTab(): Promise<void> {
     // must not hit the recents list or claim a project — that happens at first save.
     tabManager?.openPdfTab(tempPath, { untitledTitle: tm('untitledPdf') })
     recordStarPromptDocOpen()
-    const filePath = uniquePathIn(newFileDir('pdf'), `${tm('untitledPdf')}.pdf`)
-    await atomicWriteFile(filePath, await blankPdfBuffer())
-    // Opt the file into content-derived auto-naming on its first save
-    markPdfUntitledPath(filePath)
-    // route directly (not via openDocumentPath) so creating a pdf emits only
-    // file_new and counts one doc-open — same as the blank workbook above
-    if (routeDocumentPath(filePath)) recordStarPromptDocOpen()
     analytics.track('file_new', { kind: 'pdf' })
   } catch (err) {
     surfaceNewTabError(err)
@@ -6609,9 +6504,6 @@ async function savePdfAs(): Promise<void> {
   // An untitled (temp-backed) tab's Save As prefills the pending project folder
   // and untitled/AI name instead of the hidden temp path.
   const untitledDefault = pdfUntitledDialogDefault(tab.webContents.id)
-  const tab = activePdfTarget()
-  const host = pdfHostWindow(tab)
-  if (!tab?.filePath || !host || savingPdfAs) return
   savingPdfAs = true
   // Pause renderer autosave for the whole flow: the dialog blurs the window, and a
   // blur-triggered autosave would write the pending edits into the original file
@@ -6619,8 +6511,6 @@ async function savePdfAs(): Promise<void> {
   try {
     const picked = await showSaveDialogWithMemory(dialog, shellWindow, {
       defaultPath: untitledDefault ?? tab.filePath,
-    const picked = await showSaveDialogWithMemory(dialog, host, {
-      defaultPath: tab.filePath,
       filters: [{ name: tm('filterPdf'), extensions: ['pdf'] }],
     })
     const target = pdfSaveAsTarget(picked, tab.filePath)
@@ -6634,14 +6524,11 @@ async function savePdfAs(): Promise<void> {
       // No pending edits → a byte-identical copy
       copyFileSync(tab.filePath, picked.filePath)
       if (untitledDefault) finalizePdfUntitled(tab.webContents, tab.filePath, picked.filePath)
-      // process writes the result to the picked path only
-      if (!(await requestPdfSaveAs(tab.webContents, target))) return
-      await atomicCopyFile(tab.filePath, target)
     }
     openDocumentPath(target)
   } catch (err) {
     console.error('[shell] pdf save as failed:', err)
-    showErrorDialog(host, tm('errPdfSaveAsFailed'), err)
+    showErrorDialog(shellWindow, tm('errPdfSaveAsFailed'), err)
   } finally {
     savingPdfAs = false
     setPdfSaveAsInFlight(tab.webContents, false)
@@ -6817,7 +6704,7 @@ async function exportPdfAsDocxLocal(): Promise<void> {
       },
     )
     if (result === null) return
-    writeFileSync(picked.filePath, result.docx)
+    await atomicWriteFile(picked.filePath, result.docx)
 
     // degrade transparency (plan §7.6 dual-track split): whole scan → say so
     // once; individual image-fallback pages → name them;
@@ -6956,7 +6843,7 @@ async function exportPdfAsPptxLocal(): Promise<void> {
       },
     )
     if (result === null) return
-    writeFileSync(picked.filePath, result.pptx)
+    await atomicWriteFile(picked.filePath, result.pptx)
 
     // degrade transparency (same split as the Word export): whole scan vs
     // individual image-fallback pages
@@ -7067,7 +6954,7 @@ async function exportPdfAsXlsxLocal(): Promise<void> {
       },
     )
     if (result === null) return
-    writeFileSync(picked.filePath, result.xlsx)
+    await atomicWriteFile(picked.filePath, result.xlsx)
 
     // degrade transparency: pages that could not become cells got a notice
     // row on their worksheet instead of an image (a spreadsheet has none)
@@ -7567,7 +7454,6 @@ app.whenReady().then(async () => {
 
   openLaunchPaths(pendingLaunchPaths)
   pendingLaunchPaths = []
-  for (const recoverAs of pendingUnsavedNewRecoveries()) void newSheetTab(recoverAs)
 
   startControlServer(
     app.getPath('userData'),

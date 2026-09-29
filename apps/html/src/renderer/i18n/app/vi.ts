@@ -1,15 +1,12 @@
 import type { zh } from './zh'
-import { en } from './en'
 
 export const vi = {
-  ...en,
   loading: 'Đang tải…',
   loadFailed: 'Không thể mở tệp',
   untitled: 'Không có tiêu đề',
   saveFailed: 'Lưu thất bại: {error}',
   saveFailedStatus: 'Lưu thất bại',
   exportFailed: 'Xuất thất bại',
-=======
   exportHtmlSkipped: 'Đã xuất, nhưng {count} tài nguyên không thể nhúng (ví dụ {first})',
   viewPreview: 'Xem trước',
   viewSplit: 'Chia đôi',
@@ -58,7 +55,6 @@ export const vi = {
   save: 'Lưu (⌘S)',
   saveAs: 'Lưu dưới dạng…',
   ribbonCollapse: 'Thu gọn dải băng',
-  ribbonPin: 'Ghim dải băng',
   ribbonExpand: 'Mở rộng dải băng',
   ribbonGroupInsert: 'Chèn',
   editText: 'Chỉnh sửa văn bản',
@@ -148,5 +144,5 @@ export const vi = {
   presentInTab: 'Trong thẻ này',
   presentFullscreen: 'Toàn màn hình',
   presentNewTab: 'Thẻ mới',
+  ribbonPin: '固定功能区',
 }
-} satisfies Record<keyof typeof zh, string>

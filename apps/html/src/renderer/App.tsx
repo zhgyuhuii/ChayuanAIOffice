@@ -11,8 +11,6 @@ import {
   type FindTarget,
 } from '@chatoffice/ui'
 import bootLogo from './assets/boot-logo.png'
-  aiPanelInitiallyOpen,
-  rememberAiPanelOpen,
 import {
   pollUntilReady,
   runHeadlessRendererExport,
@@ -64,6 +62,7 @@ import {
 import { compileOps, type HtmlOp, type OpError } from './document/ops'
 import { injectBrief, parseBrief, type Brief } from './document/brief'
 import { applyPatches } from './document/patch'
+import { adoptImageRewrites } from './document/image-rewrites'
 import { deriveAutoFileName, deriveNameFromPrompt, derivePageTitleName } from './document/auto-name'
 import type { ExportFormat, SaveMode } from '../shared/ipc'
 
@@ -154,7 +153,6 @@ export default function App() {
   const [aiOpen, setAiOpen] = useState(
     () => !DOCKED_BOOT && localStorage.getItem('htmlapp.showAi') !== '0',
   )
-  const [aiOpen, setAiOpen] = useState(() => aiPanelInitiallyOpen('htmlapp.showAi'))
   const [aiPreset, setAiPreset] = useState<AiPreset | null>(null)
   const [editQueue, setEditQueue] = useState<EditQueueItem[]>([])
   const [askMode, setAskMode] = useState<AskMode | null>(null)
@@ -221,6 +219,7 @@ export default function App() {
   const savingRef = useRef(false)
   const statusRef = useRef<LoadStatus>('loading')
   const pushedTextRef = useRef<string | null>(null)
+  const previewTimerRef = useRef<number | null>(null)
   /** parse-map version of the copy currently served to the preview; messages from older copies are ignored */
   const pushedVersionRef = useRef(-1)
   /** versions whose sids the running frame still describes: the loaded copy plus every in-place commit since
@@ -324,6 +323,10 @@ export default function App() {
    */
   const pushPreview = useCallback(
     (nextText: string, reload = true) => {
+      if (previewTimerRef.current !== null) {
+        window.clearTimeout(previewTimerRef.current)
+        previewTimerRef.current = null
+      }
       if (pushedTextRef.current === nextText) return
       const map = getMap()
       window.htmlApi.updatePreview(instrumentForPreview(nextText, map, inspectorSource))
@@ -339,8 +342,17 @@ export default function App() {
   // push the instrumented buffer to html-preview:// and reload the frame, debounced per keystroke
   useEffect(() => {
     if (status !== 'ready' || pushedTextRef.current === text) return
-    const id = window.setTimeout(() => pushPreview(text), PREVIEW_DEBOUNCE_MS)
-    return () => window.clearTimeout(id)
+    if (previewTimerRef.current !== null) window.clearTimeout(previewTimerRef.current)
+    previewTimerRef.current = window.setTimeout(() => {
+      previewTimerRef.current = null
+      pushPreview(text)
+    }, PREVIEW_DEBOUNCE_MS)
+    return () => {
+      if (previewTimerRef.current !== null) {
+        window.clearTimeout(previewTimerRef.current)
+        previewTimerRef.current = null
+      }
+    }
   }, [text, status, pushPreview])
 
   useEffect(() => {
@@ -360,7 +372,6 @@ export default function App() {
     // a docked boot must not clobber the user's persisted preference
     if (dockedRef.current) return
     localStorage.setItem('htmlapp.showAi', aiOpen ? '1' : '0')
-    rememberAiPanelOpen('htmlapp.showAi', aiOpen)
   }, [aiOpen])
 
   useEffect(() => {
@@ -401,7 +412,7 @@ export default function App() {
 
   /** every text change goes through here so the version counter and the map cache stay coherent */
   const commitText = useCallback(
-    (next: string, manual: boolean) => {
+    (next: string, manual: boolean, preservePending = false) => {
       textRef.current = next
       versionRef.current += 1
       if (manual) lastManualVersionRef.current = versionRef.current
@@ -409,7 +420,7 @@ export default function App() {
       setTextSel(null)
       // any other document change reloads the preview and drops the live pokes; forget them too rather than
       // committing them later against sids the rebuilt parse map may have reassigned
-      if (!flushingStylesRef.current) {
+      if (!flushingStylesRef.current && !preservePending) {
         if (styleTimerRef.current !== null) window.clearTimeout(styleTimerRef.current)
         styleTimerRef.current = null
         pendingStylesRef.current = {}
@@ -1123,15 +1134,21 @@ export default function App() {
           defaultName: provisionalNameRef.current ?? undefined,
         })
         if (result.ok && 'path' in result) {
+          const adopted = adoptImageRewrites(textAtSave, textRef.current, result.imageRewrites)
+          if (adopted.liveText !== textRef.current) {
+            editorRef.current?.setDoc(adopted.liveText)
+            commitText(adopted.liveText, false, true)
+          }
           setPath((previous) => {
-            // a new path changes the preview's <base>; relative assets only resolve after a reload
             if (previous !== result.path) setPreviewNonce((n) => n + 1)
             return result.path
           })
-          setSavedText(textAtSave)
-          // edits that landed during the write keep the document dirty
-          setSaveState(textRef.current === textAtSave ? 'saved' : 'idle')
-          if (textRef.current !== textAtSave) window.htmlApi.setDirty(true)
+          savedTextRef.current = adopted.savedText
+          setSavedText(adopted.savedText)
+          const saved = adopted.liveText === adopted.savedText
+          setSaveState(saved ? 'saved' : 'idle')
+          if (!saved) window.htmlApi.setDirty(true)
+          pushPreview(adopted.liveText)
           return true
         }
         setSaveState(result.ok ? 'idle' : 'failed')
@@ -1144,7 +1161,7 @@ export default function App() {
         savingRef.current = false
       }
     },
-    [flushPending],
+    [commitText, flushPending, pushPreview],
   )
 
   const zoomIn = useCallback(() => setZoom((z) => clampZoom(Math.round(z) + ZOOM_STEP)), [])
@@ -1522,113 +1539,6 @@ export default function App() {
             canvasMode={canvasMode}
             onPresent={startPresent}
           />
-        </div>
-        <div className="app-content">
-          {findTarget && (
-            <FindPanel
-              target={findTarget}
-              strings={findStrings}
-              onClose={closeFind}
-              focusRequest={findFocus}
-          {view !== 'preview' && (
-            <Breadcrumb
-              text={text}
-              map={getMap()}
-              sid={selectedSid}
-              state={selectedState}
-              onSelect={(sid) => selectSid(sid, { reveal: true })}
-          <div className={`workspace view-${canvasMode === 'present' ? 'preview' : view}`}>
-            <div className="pane pane-preview">
-              <div
-                className="preview-stage"
-                ref={stageRef}
-                data-device={device}
-                onPointerDown={(e) => {
-                  if (e.target === e.currentTarget) selectSid(null)
-                <PreviewFrame
-                  ref={previewRef}
-                  url={previewUrl}
-                  nonce={previewNonce}
-                  zoom={zoom}
-                  onMessage={onInspectorMessage}
-                  onLoad={onPreviewLoad}
-                  draft={draftHtml}
-                {canvasMode === 'present' && (
-                  <button
-                    type="button"
-                    className="present-exit"
-                    onClick={() => setCanvasMode('edit')}
-                    {t('presentExit')}
-                  </button>
-                {canvasMode === 'edit' &&
-                  !dragging &&
-                  hasElement &&
-                  selectedEntry &&
-                  selRect &&
-                  selComputed && (
-                    <FloatToolbar
-                      barRef={barRef}
-                      {...floatPosition(selRect, floatLayout())}
-                      computed={selComputed}
-                      pending={pendingStylesRef.current}
-                      canEditText={selText.editable}
-                      onStyle={previewStyle}
-                      onEditText={() =>
-                        previewRef.current?.post({
-                          type: 'gx:beginTextEdit',
-                          sid: selectedEntry.sid,
-                        })
-                      }
-                      onReplaceImage={replaceImage}
-                      onCropImage={() => void openPictureDialog('crop')}
-                      onCutoutImage={() => void openPictureDialog('cutout')}
-                      canAskAi={askTarget !== null}
-                      onAskAi={askAi}
-                      tag={selectedEntry.tag}
-                      onMove={moveSelected}
-                      onDuplicate={duplicateSelected}
-                      onDelete={() =>
-                        runManual([{ op: 'remove', sid: selectedEntry.sid }], 'clear')
-                      }
-                      panelOpen={panelShown}
-                      onTogglePanel={() => {
-                        if (panelShown) setPanelOpen(false)
-                        else {
-                          setPanelDismissedSid(null)
-                          setPanelOpen(true)
-                        }
-                {canvasMode === 'edit' &&
-                  hasElement &&
-                  selectedEntry &&
-                  selComputed &&
-                  panelShown && (
-                    <StylePanel
-                      key={selectedEntry.sid}
-                      tag={selectedEntry.tag}
-                      computed={selComputed}
-                      textRun={selText.run}
-                      onStyle={previewStyle}
-                      onText={setRunText}
-                      onAttr={setAttr}
-                      draftRef={flushDraftsRef}
-                      onCustomCss={(css) => {
-                        const decls = parseDeclarations(css)
-                        if (Object.keys(decls).length) previewStyle(decls)
-                      pending={pendingCount > 0}
-                      onRevert={revertStyles}
-                      onClose={() => setPanelDismissedSid(selectedEntry.sid)}
-              </div>
-            </div>
-            <div className="pane pane-source">
-              <SourceEditor
-                ref={editorRef}
-                className="source-editor"
-                initialText={text}
-                onChange={onEditorChange}
-                onCursor={onCursor}
-                onBeforeReplace={flushPending}
-            </div>
-          </div>
 
           <div className="app-content">
             {findTarget && (
@@ -1847,7 +1757,6 @@ export default function App() {
       {pictureDialog?.kind === 'crop' && (
         <CropDialog
           labels={imageDialogLabels}
-          lang={lang}
           image={pictureDialog.image}
           onApply={(png) => void applyPictureBytes(pictureDialog.sid, pictureDialog.src, png)}
           onCancel={() => setPictureDialog(null)}

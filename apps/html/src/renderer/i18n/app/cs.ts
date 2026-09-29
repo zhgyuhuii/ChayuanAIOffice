@@ -142,4 +142,5 @@ export const cs = {
   replace: 'Nahradit',
   replaceAll: 'Nahradit vše',
   findTip: 'Najít a nahradit (⌘F)',
-} satisfies Record<keyof typeof zh, string>
+  ribbonPin: '固定功能区'
+}

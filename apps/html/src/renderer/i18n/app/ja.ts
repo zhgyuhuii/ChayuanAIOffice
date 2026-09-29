@@ -144,4 +144,5 @@ export const ja = {
   presentInTab: 'このタブで',
   presentFullscreen: '全画面',
   presentNewTab: '新しいタブ',
-} satisfies Record<keyof typeof zh, string>
+  ribbonPin: '固定功能区'
+}

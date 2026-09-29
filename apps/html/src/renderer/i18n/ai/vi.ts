@@ -1,8 +1,6 @@
 import type { zh } from './zh'
-import { en } from './en'
 
 export const vi = {
-  ...en,
   aiCollapsePanel: 'Thu gọn bảng điều khiển',
   aiComposerPlaceholder: 'Yêu cầu AI viết hoặc chỉnh sửa tài liệu…',
   aiCopyReplyTitle: 'Sao chép câu trả lời',
@@ -180,5 +178,21 @@ export const vi = {
     'Soạn thảo giúp tôi một thông báo sản phẩm. Sản phẩm và các điểm chính: ',
   aiStarterGuide: 'Viết hướng dẫn từng bước',
   aiStarterGuidePrompt: 'Viết giúp tôi một hướng dẫn từng bước. Quy trình cần giải thích: ',
+  aiPanelTitle: 'AI 助手',
+  aiTabChat: '对话',
+  aiTabAssistant: '助手',
+  aiDockLayoutTitle: '面板布局',
+  aiDockLeft: '停靠到左侧',
+  aiDockRight: '停靠到右侧',
+  aiDockBottom: '停靠到底部',
+  aiDockFloat: '悬浮窗口',
+  aiDockMaximize: '最大化面板',
+  aiDockRestore: '还原面板',
+  aiSummarizeDesc: '总结全文的主要内容和要点',
+  aiRestyleDesc: '让 AI 重新调整页面的布局与配色',
+  aiThemeMinimalDesc: '留白充分的现代极简风格',
+  aiThemeEditorialDesc: '杂志式编辑排版风格',
+  aiThemeTechDesc: '科技感十足的现代风格',
+  aiThemePlayfulDesc: '明快活泼的色彩与造型',
+  aiThemeDarkDesc: '深色背景的现代页面风格',
 }
-} satisfies Record<keyof typeof zh, string>

@@ -257,20 +257,19 @@ export class XlsxSidecarClient {
     child.stderr.on('data', (chunk: string) => {
       this.stderr = `${this.stderr}${chunk}`.slice(-MAX_STDERR_LENGTH)
     })
-    const teardown = (reason: Error): void => {
-      if (this.process !== child) return
+    child.once('error', (error) => {
+      this.process = null
+      this.rejectPending(error)
+    })
+    child.once('exit', (code, signal) => {
       this.process = null
       this.lines?.close()
       this.lines = null
-      this.rejectPending(reason)
-    }
-    child.once('error', teardown)
-    child.once('exit', (code, signal) => {
       const detail = this.stderr.trim()
       const reason = detail
         ? `XLSX sidecar exited: ${detail}`
         : `XLSX sidecar exited with code ${String(code)} and signal ${String(signal)}.`
-      teardown(new Error(reason))
+      this.rejectPending(new Error(reason))
     })
     return child
   }

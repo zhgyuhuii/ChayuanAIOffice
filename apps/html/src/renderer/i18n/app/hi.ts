@@ -144,4 +144,5 @@ export const hi = {
   presentInTab: 'इसी टैब में',
   presentFullscreen: 'पूर्ण स्क्रीन',
   presentNewTab: 'नया टैब',
-} satisfies Record<keyof typeof zh, string>
+  ribbonPin: '固定功能区'
+}

@@ -57,7 +57,7 @@ import { CropDialog, CutoutDialog, cropImagePng } from './ImageDialogs'
 import { cropRect, flipPixels, multiplyAlpha } from './image-bake'
 import type { CropFractions, ImageBakeOp } from './image-bake'
 import { removeBackground, type PixelImage } from './cutout'
-import { navAction } from './keyNav'
+import { navAction, shouldHandleDocumentUndo } from './keyNav'
 import { rowOfVisIdx, spreadRows, stepPage } from './spread'
 import { captureViewState, loadViewState, saveViewState } from './view-state'
 import type { PdfViewState } from './view-state'
@@ -108,9 +108,6 @@ import {
   AiPanelToggle,
   DockShell,
   Dropdown,
-=======
-  aiPanelInitiallyOpen,
-  rememberAiPanelOpen,
   useDismissablePopover,
   isMacStandaloneWindow,
 } from '@chatoffice/ui'
@@ -294,10 +291,6 @@ export default function App() {
   const { lang, t } = useI18n()
   // tab row clips instead of wrapping when narrow; wheel + edge arrows page it
   const tabStrip = useTabStripOverflow()
-  const collapse = useRibbonCollapse('genoffice-pdf-ribbon-collapsed', {
-    collapse: t('ribbonCollapse'),
-    expand: t('ribbonExpand'),
-  })
   const [doc, setDoc] = useState<PDFDocumentProxy | null>(null)
   const [filePath, setFilePath] = useState('')
   const [status, setStatus] = useState<'loading' | 'error' | 'empty' | 'password' | 'ready'>(
@@ -354,8 +347,6 @@ export default function App() {
   )
   useEffect(() => {
     localStorage.setItem('chatoffice-pdf-show-ai', aiCollapsed ? '0' : '1')
-    () => !aiPanelInitiallyOpen('genoffice-pdf-show-ai'),
-    rememberAiPanelOpen('genoffice-pdf-show-ai', !aiCollapsed)
   }, [aiCollapsed])
   /** One-shot prompt pushed by the ribbon AI buttons; the panel auto-runs it (docs preset pattern) */
   const [aiPreset, setAiPreset] = useState<{ text: string; nonce: number } | null>(null)
@@ -5644,6 +5635,7 @@ export default function App() {
           target.tagName === 'TEXTAREA' ||
           target.tagName === 'SELECT' ||
           target.isContentEditable)
+      if (!shouldHandleDocumentUndo(e.target, e.key, e.metaKey || e.ctrlKey)) return
       if (e.metaKey || e.ctrlKey) {
         const k = e.key.toLowerCase()
         if (k === 's') {
@@ -6147,39 +6139,6 @@ export default function App() {
             leadLabel={t('ribbonTabScrollLeft')}
             tailLabel={t('ribbonTabScrollRight')}
           />
-  return (
-    <div className="app" inert={redactionCopyInFlight} aria-busy={redactionCopyInFlight}>
-      <div className={`ribbon ${collapse.rootClass}`} ref={collapse.rootRef}>
-        <div className="ribbon-tabs" onDoubleClick={collapse.onTabsDoubleClick}>
-              className={`ribbon-tab ${collapse.tabClass(ribbonTab === id)}`}
-              data-tip={collapse.tabTip(ribbonTab === id)}
-              onClick={() => {
-                collapse.onTabPress(ribbonTab === id)
-                setRibbonTab(id)
-              }}
-              className={`ribbon-tab ribbon-tab-context ${collapse.tabClass(ribbonTab === 'fillForm')}`}
-              data-tip={collapse.tabTip(ribbonTab === 'fillForm')}
-              onClick={() => {
-                collapse.onTabPress(ribbonTab === 'fillForm')
-                setRibbonTab('fillForm')
-              }}
-          <span className="ribbon-tabs-spacer" />
-          {readOnly && <span className="tb-readonly">{t('roEncrypted')}</span>}
-          {/* The file on disk is only touched by an explicit save until then. */}
-          {saveState === 'saving' ? (
-            <span className="tb-save-pending">{t('saving')}</span>
-          ) : (
-            dirty &&
-            saveState !== 'error' && <span className="tb-save-pending">{t('unsaved')}</span>
-          {saveState === 'error' && (
-            <span className="tb-save-error" data-tip={saveError}>
-              {t('saveFailed')}
-            </span>
-          {saveState === 'saved' && <span className="tb-save-ok">{t('savedOk')}</span>}
-          {formHasXfa && (
-            <span className="tb-form-warning" data-tip={t('formXfaWarning')}>
-              XFA
-            </span>
         </div>
         {readOnly && <span className="tb-readonly">{t('roEncrypted')}</span>}
         {/* The file on disk is only touched by an explicit save until then. */}

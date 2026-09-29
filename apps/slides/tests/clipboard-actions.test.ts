@@ -1,7 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { CopyElementsOp, DeleteElementsOp } from '../src/shared/ipc'
 import type { ActionCtx } from '../src/renderer/action-context'
-import { copySelected, cutSelected, deleteSelected } from '../src/renderer/clipboard-actions'
+import {
+  copySelected,
+  cutSelected,
+  deleteSelected,
+  pasteParagraphs,
+} from '../src/renderer/clipboard-actions'
 import { renderSelectionToPngBase64 } from '../src/renderer/selection-image'
 
 vi.mock('../src/renderer/selection-image', () => ({ renderSelectionToPngBase64: vi.fn() }))
@@ -130,27 +135,22 @@ describe('delete selected slide elements', () => {
 
 describe('pasteParagraphs', () => {
   it('maps lines to single-run paragraphs unchanged', () => {
-    expect(pasteParagraphs('a\nb\r\nc')).toEqual([
-      { runs: [{ text: 'a' }] },
-      { runs: [{ text: 'b' }] },
-      { runs: [{ text: 'c' }] },
-    ])
-  })
-
-  it('caps hostile clipboard text instead of expanding it unbounded', () => {
-    const start = Date.now()
-    const out = pasteParagraphs(`${'x'.repeat(100000)}\n`.repeat(5000))
-    expect(Date.now() - start).toBeLessThan(5000)
-    expect(out.length).toBeLessThanOrEqual(2000)
-    expect(out.flatMap((p) => p.runs.map((r) => r.text)).join('').length).toBeLessThanOrEqual(48000)
     expect(pasteParagraphs('a\nb\r\nc')).toEqual({
       paragraphs: [{ runs: [{ text: 'a' }] }, { runs: [{ text: 'b' }] }, { runs: [{ text: 'c' }] }],
       truncated: false,
+    })
+  })
+
   it('keeps a large but ordinary paste intact', () => {
     const out = pasteParagraphs(`${'x'.repeat(200)}\n`.repeat(4000))
     expect(out.truncated).toBe(false)
     expect(out.paragraphs).toHaveLength(4001)
+  })
+
   it('caps hostile clipboard text and reports the trim', () => {
+    const start = Date.now()
+    const out = pasteParagraphs(`${'x'.repeat(100000)}\n`.repeat(5000))
+    expect(Date.now() - start).toBeLessThan(5000)
     expect(out.truncated).toBe(true)
     expect(out.paragraphs.length).toBeLessThanOrEqual(50_000)
     const chars = out.paragraphs.flatMap((p) => p.runs.map((r) => r.text)).join('').length

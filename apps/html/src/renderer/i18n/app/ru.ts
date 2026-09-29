@@ -143,4 +143,5 @@ export const ru = {
   presentInTab: 'В этой вкладке',
   presentFullscreen: 'Во весь экран',
   presentNewTab: 'Новая вкладка',
-} satisfies Record<keyof typeof zh, string>
+  ribbonPin: '固定功能区'
+}

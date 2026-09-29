@@ -45,10 +45,7 @@ export interface SaveContext {
   setMessage: (message: string) => void
   /** `continueChat`: the reopen is a session swap over the same document, so
       the AI conversation carries on rather than rehydrating from the store. */
-  openLazyWorkbook: (
-    opened: WorkbookFile,
-    opts?: { continueChat?: boolean; onInitialRangeLoaded?: () => void },
-  ) => void | Promise<boolean>
+  openLazyWorkbook: (opened: WorkbookFile, opts?: { continueChat?: boolean }) => void
   /** live cell readout, for the cached values of formulas an MCP batch wrote (optional in tests) */
   readCells?: (addresses: string[], sheetId: string) => Record<string, CellState>
   /** Saving swaps the session and reinstalls the workbook, which resets the
@@ -269,10 +266,7 @@ export async function handleSave(
   // bytes themselves, not the journal: a plain Save with nothing pending must
   // still write back to the original file (and clear the recovery copy).
   const restoreWriteBack = mode === 'save' && state.file.restoredFromRecovery === true
-  // An unsaved new workbook's Save is its first Save As, journal or not: a
-  // quiet AutoSave may already have moved the work into the backing file.
-  const firstSaveAs = mode === 'save' && state.file.unsavedNew === true && !quiet
-  if (total === 0 && mode !== 'save-as' && !restoreWriteBack && !firstSaveAs) {
+  if (total === 0 && mode !== 'save-as' && !restoreWriteBack) {
     if (mode !== 'recovery') ctx.setMessage(t('appNoEditsToSave'))
     return { ok: false }
   }
@@ -397,7 +391,6 @@ export async function handleSave(
       sessionId: state.file.sessionId,
       mode,
       ...(restoreWriteBack ? { restoreWriteBack: true } : {}),
-      ...(quiet ? { quiet: true } : {}),
       ...(csvContent === undefined ? {} : { csvContent }),
       // MCP explicit-path save: main skips the Save-As dialog for these
       ...(explicitTarget
@@ -463,9 +456,7 @@ export async function handleSave(
           : null,
       )
       ctx.stashViewRestore(viewAtSave)
-      if ((await ctx.openLazyWorkbook(result.file, { continueChat: true })) === false) {
-        return { ok: false }
-      }
+      ctx.openLazyWorkbook(result.file, { continueChat: true })
       const saved = t('appSaved')
       ctx.setMessage(saved)
       if (!quiet) showToast(saved)
@@ -478,9 +469,6 @@ export async function handleSave(
       const second = await window.desktopApi.saveWorkbookEdits({
         sessionId: result.file.sessionId,
         mode: 'save',
-        // an unsaved new workbook's quiet save writes its backing file in
-        // place; without the flag the second phase would open Save As
-        ...(quiet ? { quiet: true } : {}),
         edits: [],
         bulkConstantFills: [],
         structuralOps: [],
@@ -511,16 +499,12 @@ export async function handleSave(
       if (ctx.lazyWorkbookRef.current !== state) return { ok: false }
       if (second.canceled) {
         ctx.stashViewRestore(viewAtSave)
-        if ((await ctx.openLazyWorkbook(result.file, { continueChat: true })) === false) {
-          return { ok: false }
-        }
+        ctx.openLazyWorkbook(result.file, { continueChat: true })
         ctx.setMessage(t('appSaveSecondCanceled'))
         return { ok: false }
       }
       ctx.stashViewRestore(viewAtSave)
-      if ((await ctx.openLazyWorkbook(second.file, { continueChat: true })) === false) {
-        return { ok: false }
-      }
+      ctx.openLazyWorkbook(second.file, { continueChat: true })
       const saved = t('appSavedTwoPhase')
       ctx.setMessage(saved)
       if (!quiet) showToast(saved)
@@ -528,9 +512,7 @@ export async function handleSave(
     } catch (error: unknown) {
       if (ctx.lazyWorkbookRef.current !== state) return { ok: false }
       ctx.stashViewRestore(viewAtSave)
-      if ((await ctx.openLazyWorkbook(result.file, { continueChat: true })) === false) {
-        return { ok: false }
-      }
+      ctx.openLazyWorkbook(result.file, { continueChat: true })
       const failed = t('appSaveSecondFailed', {
         reason: error instanceof Error ? error.message : String(error),
       })

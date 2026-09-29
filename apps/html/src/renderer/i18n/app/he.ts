@@ -141,4 +141,5 @@ export const he = {
   presentInTab: 'בכרטיסייה זו',
   presentFullscreen: 'מסך מלא',
   presentNewTab: 'כרטיסייה חדשה',
-} satisfies Record<keyof typeof zh, string>
+  ribbonPin: '固定功能区'
+}

@@ -24,7 +24,6 @@ import {
 
 import type { SelectionFormat } from './selection-format'
 import { fontFamilyGroups, useSystemFontFamilies } from './system-fonts'
-import { useModalDialog } from './modal-dialog'
 
 /// Excel's Format Cells dialog (⌘1), scoped to what the save pipeline can
 /// persist today: number format, alignment, font, border, fill, and
@@ -149,7 +148,6 @@ export function FormatCellsDialog({
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
-  const [tab, setTab] = useState<Tab>('Number')
   // The selection format at open time is the change baseline; the live echo
   // must not move it while the dialog is up.
   const initialRef = useRef(draftFromSelection(selectionFormat))
@@ -189,13 +187,11 @@ export function FormatCellsDialog({
     onClose()
   }
 
-  const modal = useModalDialog(onClose)
   return (
     <div className="dialog-backdrop" onClick={onClose}>
       <div
         className="format-cells-dialog"
         role="dialog"
-        {...modal}
         aria-label={t('dlgFcTitle')}
         onClick={(event) => event.stopPropagation()}
       >

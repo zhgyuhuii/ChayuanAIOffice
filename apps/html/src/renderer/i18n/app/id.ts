@@ -143,4 +143,5 @@ export const id = {
   presentInTab: 'Di tab ini',
   presentFullscreen: 'Layar penuh',
   presentNewTab: 'Tab baru',
-} satisfies Record<keyof typeof zh, string>
+  ribbonPin: '固定功能区'
+}

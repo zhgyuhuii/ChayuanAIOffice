@@ -3,7 +3,6 @@ import { useState } from 'react'
 import { Dropdown } from '@chatoffice/ui'
 
 import { useI18n, type StringKey } from './i18n/locale'
-import { useModalDialog } from './modal-dialog'
 
 /// Native OOXML pivot table dialog: creates a real PivotTable part (not
 /// formula-based) via the same add_pivot pathway the AI assistant uses.
@@ -363,13 +362,11 @@ export function PivotDialog({
     </>
   )
 
-  const modal = useModalDialog(onClose)
   return (
     <div className="dialog-backdrop" onClick={onClose}>
       <div
         className="format-cells-dialog pivot-dialog"
         role="dialog"
-        {...modal}
         aria-label={mode === 'edit' ? t('dlgPivotEditTitle') : t('dlgPivotCreateTitle')}
         style={{ minWidth: 380 }}
         onClick={(event) => event.stopPropagation()}

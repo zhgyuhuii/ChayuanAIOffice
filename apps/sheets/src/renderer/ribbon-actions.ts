@@ -23,7 +23,6 @@ import type { WorkbookOperation } from '@chatoffice/xlsx-gateway/domain/workbook
 import type { ApplyOutcome } from '@chatoffice/xlsx-gateway/domain/workbook.types'
 import { SET_ROW_IS_AUTO_HEIGHT_COMMAND } from './autofit-multi-row'
 import { fullColumnSpans, fullRowSpans } from './autofit-selection'
-import { applyFormatPainterClick } from './format-painter'
 import { nextSheetName } from './op-executor'
 import { transposeChartSeries, type ChartSeriesVisualState } from '@chatoffice/xlsx-gateway/domain/chart-visual'
 import { applyFlashFillTemplate, inferFlashFillTemplate } from '@chatoffice/xlsx-gateway/domain/flash-fill'
@@ -86,8 +85,6 @@ import {
 } from './edit-journal'
 import { applyShowFormulasView, formulaViewSheets } from './formula-view'
 import { t } from './i18n/locale'
-import { requestCellsAction } from './insert-delete-cells'
-import type { CellsMode } from './insert-delete-cells'
 import { mergeWorkbooksIntoCurrent } from './merge-workbooks'
 import {
   handleOpenSlicerPicker,
@@ -97,7 +94,6 @@ import {
 } from './pivot-actions'
 import { INDENT_STEP_PX, normalizeHexColor } from './selection-format'
 import { collectDependents, collectPrecedents, installTraceArrows } from './trace-arrows'
-import { stepFontSize } from './font-size-ladder'
 import {
   absRangeRef,
   applyFormatPatchToRange,
@@ -128,7 +124,6 @@ import {
   type VisualActionContext,
 } from './visual-actions'
 import type { ChartDialogKind, ChartEditData, ShapeEditChanges } from './WorkbookVisuals'
-import { clampZoomPercent, clampZoomRatio, stepZoomPercent } from './zoom-range'
 
 /** The App refs/state the ribbon dispatcher needs; built fresh per call. */
 export interface RibbonCommandContext {
@@ -158,7 +153,6 @@ export interface RibbonCommandContext {
   setMessage: (message: string) => void
   setChartDialog: (dialog: { kind: ChartDialogKind; editKey: string }) => void
   setSymbolDialogOpen: (open: boolean) => void
-  openCellsDialog: (mode: CellsMode) => void
   setScreenshotDialogOpen: (open: boolean) => void
   setIconsDialogOpen: (open: boolean) => void
   setEquationDialogOpen: (open: boolean) => void
@@ -1558,14 +1552,12 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
       return
     }
     case 'format-painter':
-    case 'format-painter:dblclick': {
+      // One-shot painter: the next selection receives the copied format.
       // Style deltas land as set-range-values mutations, so they journal
       // and save like any ribbon style edit.
-      const action = applyFormatPainterClick(runtime, command === 'format-painter' ? 1 : 2)
-      if (action === 'once') ctx.setMessage(t('appFormatCopied'))
-      else if (action === 'lock') ctx.setMessage(t('appFormatPainterLocked'))
+      void runtime.univerAPI.executeCommand('sheet.command.set-once-format-painter')
+      ctx.setMessage(t('appFormatCopied'))
       return
-    }
     case 'cf-open':
       // value 2 = the manage-rules list; other values preseed a new rule.
       void runtime.univerAPI.executeCommand('sheet.operation.open.conditional.formatting.panel', {
@@ -1847,12 +1839,12 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
     case 'zoom-out':
     case 'zoom-reset': {
       if (!worksheet) return
-      const percent =
+      const next =
         command === 'zoom-reset'
-          ? 100
-          : stepZoomPercent(Math.round(worksheet.getZoom() * 100), command === 'zoom-in' ? 1 : -1)
-      worksheet.zoom(percent / 100)
-      ctx.setMessage(t('appZoom', { percent }))
+          ? 1
+          : Math.min(4, Math.max(0.5, worksheet.getZoom() + (command === 'zoom-in' ? 0.1 : -0.1)))
+      worksheet.zoom(Number(next.toFixed(2)))
+      ctx.setMessage(t('appZoom', { percent: Math.round(next * 100) }))
       return
     }
     case 'zoom-to-selection': {
@@ -1879,8 +1871,9 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
       const viewWidth = render.engine.width - skeleton.rowHeaderWidthAndMarginLeft
       const viewHeight = render.engine.height - skeleton.columnHeaderHeightAndMarginTop
       if (right <= left || bottom <= top || viewWidth <= 0 || viewHeight <= 0) return
-      const ratio = clampZoomRatio(
-        Math.min(viewWidth / (right - left), viewHeight / (bottom - top)),
+      const ratio = Math.min(
+        4,
+        Math.max(0.5, Math.min(viewWidth / (right - left), viewHeight / (bottom - top))),
       )
       // Scroll only after the zoom lands: the scroll target clamps against
       // the viewport extents, and at the old ratio a selection near the grid
@@ -2265,14 +2258,6 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
       }
       ctx.setMessage(
         touched === 0 ? t('appSheetNoHidden') : t('appFillToSheetsDone', { n: touched }),
-    case 'insert-cells':
-    case 'delete-cells': {
-      if (!worksheet) {
-        ctx.setMessage(t('appSelectCellFirst'))
-      requestCellsAction(
-        runtime,
-        command === 'insert-cells' ? 'insert' : 'delete',
-        ctx.openCellsDialog,
       )
       return
     }
@@ -2765,9 +2750,8 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
     return
   }
   if (command.startsWith('zoom:')) {
-    const raw = Number(command.slice('zoom:'.length))
-    if (worksheet && Number.isFinite(raw)) {
-      const percent = clampZoomPercent(raw)
+    const percent = Number(command.slice('zoom:'.length))
+    if (worksheet && Number.isInteger(percent) && percent >= 25 && percent <= 400) {
       worksheet.zoom(percent / 100)
       ctx.setMessage(t('appZoom', { percent }))
     }
@@ -3054,12 +3038,8 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
         }
         break
       }
-      case 'font-size':
-      case 'font-size-step': {
-        const sizePt =
-          name === 'font-size-step'
-            ? stepFontSize(range.getFontSize() ?? 11, argument === '-1' ? -1 : 1)
-            : Number(argument)
+      case 'font-size': {
+        const sizePt = Number(argument)
         const undoTopBefore = topUndoElement(runtime)
         range.setFontSize(sizePt)
         if (Number.isFinite(sizePt) && sizePt > 0 && sizePt <= 409) {

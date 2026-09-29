@@ -29,4 +29,10 @@ export const strings = {
     ...paneStrings['zh-TW'],
     ...aiStrings['zh-TW'],
   },
+  vi: {
+    ...appStrings.vi,
+    ...ribbonStrings.vi,
+    ...paneStrings.vi,
+    ...aiStrings.vi,
+  },
 }

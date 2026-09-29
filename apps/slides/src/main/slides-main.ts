@@ -32,6 +32,7 @@ import { createHash, randomUUID } from 'node:crypto'
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { userInfo } from 'node:os'
 import { basename, dirname, join, resolve } from 'node:path'
+import { printSlidesHtml } from './print-window'
 import { cleanupExpiredGeneratedPages } from './generated-page-temp'
 import { exportSlidesPdf } from './pdf-export'
 import {
@@ -39,8 +40,6 @@ import {
   chatofficeSlideGenerate,
   setChaOfficeProxyUrl,
 } from '@chatoffice/ai-search'
-import { printSlidesHtml } from './print-window'
-import { gskApiKey, gskSlideGenerate, setGskProxyUrl } from '@chatoffice/ai-search'
 import {
   appMenuLabels,
   configuredDefaultSaveDir,
@@ -4919,9 +4918,6 @@ export function registerSlidesIpc(): void {
   })
   ipcMain.handle('slides:show-fullscreen', (e, on: boolean, displayId?: number) => {
     const win = BrowserWindow.fromWebContents(e.sender) ?? windowRefs.shellWindow
-  ipcMain.handle('slides:show-fullscreen', (e, on: boolean) => {
-    // a detached editor window fullscreens itself, never the shell behind it
-    const win = hostWindowFor(e.sender)
     if (!win || win.isDestroyed()) return
     const wc = e.sender
     if (showFsRelease) {

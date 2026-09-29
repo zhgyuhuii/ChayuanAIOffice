@@ -20,12 +20,9 @@ import type {
   RecentEntry,
 } from '../../shared/home-api'
 import { useDismissablePopover, USER_LOGIN_READY } from '@chatoffice/ui'
-import { fileCountKey, chatCountKey } from './counts'
+import { fileCountKey, fileCountLabel, visiblePageCount, chatCountKey } from './counts'
 import { MonoFileIcon } from './file-icons'
-import type { IntegrationsApi } from '../../shared/integrations-api'
 import { markText } from '../../shared/text-marks'
-import { useDismissablePopover } from '@chatoffice/ui'
-import { fileCountLabel, visiblePageCount } from './counts'
 import { useI18n } from './locale'
 import type { I18n, StringKey } from './locale'
 import { skillUpdateDue } from './IntegrationsPane'
@@ -170,7 +167,6 @@ const RECENT_FILTERS: { key: string; label: string }[] = [
   { key: 'md', label: '.md' },
 ]
 
-=======
 /** sidebar filter keys that stand for a family of extensions (mirrors recent-files.ts) */
 const FILTER_FAMILY: Record<string, readonly string[]> = {
   docx: ['docx', 'doc'],
@@ -1395,7 +1391,7 @@ export function Home() {
   }, [])
 
   // a rename from the tab strip happens while this renderer already has focus
-  useEffect(() => onFilesChanged(() => refreshRef.current()), [])
+  useEffect(() => onFilesChanged(() => refresh()), [])
 
   const hasMore = entries.length < listTotal
 
@@ -3103,21 +3099,6 @@ export function Home() {
             <p className="side-files-empty">
               {listTotal === 0 ? t('emptyRecent') : t('emptyFiltered')}
             </p>
-            {searchActive ? (
-              renderSearchHeading()
-              <div className="recents-heading">
-                <span className="section-label">
-                  {view === 'recent' ? t('secRecent') : t('secStarred')}
-                <span className="file-count">{fileCountLabel(listTotal, lang, t)}</span>
-          {searchActive ? (
-            renderSearchResults()
-          ) : entries.length === 0 ? (
-            renderEmpty(
-              view === 'starred'
-                ? t('emptyStarred')
-                : navCounts.recent === 0
-                  ? t('emptyRecent')
-                  : t('emptyFiltered'),
           ) : (
             <div className="side-files-scroll">
               <ul className="side-file-list">

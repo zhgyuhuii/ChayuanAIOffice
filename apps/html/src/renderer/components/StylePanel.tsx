@@ -28,13 +28,14 @@ interface Props {
 
 type NumberField = 'fontSize' | 'width' | 'height' | 'borderRadius' | 'padding'
 
-const PX_FIELDS: Record<NumberField, { prop: string; label: StringKey; min: number }> = {
-  fontSize: { prop: 'font-size', label: 'fontSize', min: 1 },
-  width: { prop: 'width', label: 'width', min: 0 },
-  height: { prop: 'height', label: 'height', min: 0 },
-  borderRadius: { prop: 'border-radius', label: 'radius', min: 0 },
-  padding: { prop: 'padding', label: 'padding', min: 0 },
-}
+const PX_FIELDS: Record<NumberField, { prop: string; label: StringKey; min: number; max: number }> =
+  {
+    fontSize: { prop: 'font-size', label: 'fontSize', min: 1, max: 500 },
+    width: { prop: 'width', label: 'width', min: 0, max: 5000 },
+    height: { prop: 'height', label: 'height', min: 0, max: 5000 },
+    borderRadius: { prop: 'border-radius', label: 'radius', min: 0, max: 2500 },
+    padding: { prop: 'padding', label: 'padding', min: 0, max: 2500 },
+  }
 
 function PxInput({
   field,
@@ -57,14 +58,8 @@ function PxInput({
         value={value}
         onChange={(e) => {
           const v = e.target.value
-          if (v !== '' && Number(v) >= def.min) onStyle({ [def.prop]: `${v}px` })
-          // Infinity passes a >= check, so require finiteness and clamp to
-          // the field max: unbounded values would persist as Infinitypx.
-          const n = Number(v)
-          if (v !== '' && Number.isFinite(n) && n >= def.min && n <= def.max) {
-            onStyle({ [def.prop]: `${v}px` })
-          }
           // Infinity passes a >= check and would persist as Infinitypx
+          const n = Number(v)
           if (v !== '' && Number.isFinite(n) && n >= def.min) onStyle({ [def.prop]: `${v}px` })
         }}
       />

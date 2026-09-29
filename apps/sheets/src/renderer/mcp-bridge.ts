@@ -1,7 +1,6 @@
 import { z } from 'zod'
 import type { McpCommandMessage } from '../shared/desktop-api'
 import {
-  describeOperationErrors,
   workbookOperationSchema,
   type WorkbookOperation,
 } from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
@@ -89,10 +88,19 @@ export function installSheetsMcpBridge(handlers: McpSheetHandlers): () => void {
 
   /** First schema issue, with the offending op named so the client can fix it. */
   function describeOpError(ops: unknown[], error: z.ZodError): string {
-    const text = describeOperationErrors(ops, error)
-    return error.issues.some((issue) => issue.path.includes('sheetId'))
-      ? `${text}\nCall read_sheet first and use a sheetId from its output.`
-      : text
+    const issue = error.issues[0]
+    if (!issue) return 'invalid ops'
+    const index = typeof issue.path[0] === 'number' ? issue.path[0] : -1
+    const raw = index >= 0 ? ops[index] : undefined
+    const opName =
+      raw && typeof raw === 'object' && 'op' in raw
+        ? String((raw as { op: unknown }).op)
+        : 'unknown'
+    const field = issue.path.slice(1).join('.')
+    const hint = issue.path.includes('sheetId')
+      ? ' — call read_sheet first and use a sheetId from its output'
+      : ''
+    return `op #${index} (${opName}) is invalid${field ? ` (${field})` : ''}: ${issue.message}${hint}`
   }
 
   /**

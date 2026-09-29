@@ -10,6 +10,10 @@ import {
   type ToolDisplay,
 } from '@chatoffice/agent-core'
 import type { RenderSlide } from '@chatoffice/pptx-render'
+import {
+  imageGenerationAvailable,
+  mediaAnalysisAvailable,
+} from '@chatoffice/ai-provider/browser'
 import type {
   AiModelSelection,
   AiSettingsV2,
@@ -21,12 +25,6 @@ import {
   ATTACHMENT_IMAGE_EXTS,
   ATTACHMENT_VIDEO_EXTS,
 } from '../../shared/ipc'
-  cloudToolsEnabled,
-  imageGenerationAvailable,
-  mediaAnalysisAvailable,
-} from '@chatoffice/ai-provider/browser'
-import type { AiSettings, AttachmentAddResult, AttachmentMeta } from '../../shared/ipc'
-import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
 import {
   createSlidesSkill,
   type DeckAccess,
@@ -1218,8 +1216,6 @@ function AiConversationBody({
         // gate it (search/media gate per capability, not per chat provider). A
         // free-plan or credits-exhausted account is covered by the mid-run
         // fallback to the local pipeline instead of disabling cloud up front.
-        const cur = settingsRef.current
-        if (!cloudToolsEnabled(cur)) return false
         try {
           return !!(await window.slidesApi.cloudGenStatus())?.enabled
         } catch {

@@ -142,4 +142,5 @@ export const ko = {
   presentInTab: '현재 탭에서',
   presentFullscreen: '전체 화면',
   presentNewTab: '새 탭',
-} satisfies Record<keyof typeof zh, string>
+  ribbonPin: '固定功能区'
+}

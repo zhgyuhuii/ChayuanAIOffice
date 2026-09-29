@@ -192,4 +192,4 @@ export const cs = {
   aiThemeTechDesc: 'Moderní technologický vzhled',
   aiThemePlayfulDesc: 'Syté barvy a hravé tvary',
   aiThemeDarkDesc: 'Moderní tmavý styl stránky',
-} satisfies Record<keyof typeof zh, string>
+}

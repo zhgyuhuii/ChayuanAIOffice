@@ -7,6 +7,7 @@
 import { app, dialog, ipcMain, nativeImage, net, shell, BrowserWindow } from 'electron'
 import {
   appendFileSync,
+  mkdirSync,
   createWriteStream,
   existsSync,
   readdirSync,
@@ -29,20 +30,8 @@ import {
 } from '@chatoffice/ai-provider'
 import { persistGeneratedImage } from '@chatoffice/ai-host'
 import { registerMediaIpc, registerSharedAiIpc, registerSharedKbIpc } from '@chatoffice/ai-host'
-import { MAX_REMOTE_IMAGE_BYTES, fetchRemoteImage, readBodyCapped } from '@chatoffice/electron-utils'
+import { MAX_REMOTE_IMAGE_BYTES, fetchRemoteImage, readBodyCapped, writeJsonAtomic } from '@chatoffice/electron-utils'
 import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server' 
-  streamForProvider,
-  type AiSettings,
-  type AiStreamChunk,
-  type AiStreamRequest,
-  type GenSparkAccountStatus,
-  type LegacyAiSettings,
-import {
-  MAX_REMOTE_IMAGE_BYTES,
-  fetchRemoteImage,
-  readBodyCapped,
-  writeJsonAtomic,
-} from '@chatoffice/electron-utils'
 import {
   webSearch,
   imageSearch,
@@ -90,7 +79,6 @@ function writeJson(path: string, value: unknown): void {
   mkdirSync(join(path, '..'), { recursive: true })
   writeFileSync(path, JSON.stringify(value, null, 2))
 }
-const activeAiStreams = new Map<string, AbortController>()
 
 // ---- Post-mortem log for runs that produced no usable reply ----
 
@@ -176,14 +164,6 @@ export function registerAiIpc(): void {
         for (const w of BrowserWindow.getAllWindows()) w.webContents.send(channel, payload)
       },
     },
-  )
-
-  ipcMain.handle('ai:gsk-login', () => {
-    ensureGenofficeLogin((url) => void shell.openExternal(url))
-  })
-
-  ipcMain.handle('ai:set-settings', (_event, settings: AiSettings) => {
-    writeJsonAtomic(AI_SETTINGS_PATH(), settings)
   })
 
   ipcMain.handle('ai:log-run-failure', (_event, entry: AiRunFailure) => {
