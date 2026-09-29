@@ -108,18 +108,36 @@
 
 **⚠️ 第八轮施工中（2026-09-16 深夜，未完成未合并）**：上游 `f4d8da2..09485f8`（15 提交：MCP×4+9-16 快照 525 文件+pptx 系列×5+小修）已全部 pick 到 `sync/upstream-20260916` 分支（已推 origin，含冲突裁决+品牌映射+动画引擎超集收敛，pptx-engine 1018/docs 2541 测试绿）。合并重做于 `merge-r8-wip` 分支（已推 origin）：merge 本体冲突仅 shell index/preload 导入并集×2 已解+pdf-main map 语义修复+pdf/markdown strings 按干净配方重建（pristine+品牌+本地键，锚=节 opener 后）。**剩余**：pdf LangDicts 节键集差×1+sheets workbook-ops(13)/ExcelShell(3)/save-pipeline(1) 等~30 类型错误收敛+slides/markdown 数个测试适配→全量门禁→合 main。**main 保持 310596b0 绿基线**（并行 WIP Home/strings 两文件在工作树）。新知：strings 断裂正解=main 绿版为基底+按节织入 sync 独有键（锚=节 opener 后；捕获须剥尾）；三方 merge-file+「theirs+品牌重放+HEAD 键补回」配方已在分支验证。
 
-**⚠️ 第十八轮未完成（2026-09-29，0d90149..3f9d07d 后的增量 234 提交——中止未合并）**
+### 第十八轮 A+B（2026-09-30，施工于 sync/18-engine：14 提交 72ddda0f..收口提交；上游区间 3f9d07d..upstream/main 共 234 提交，本轮吸收约 90 提交当量的引擎域+shell 域+vi 特性批；本地 shell 版本 1.0.3 自主线不跟随上游）
 
-增量=两快照（#1159 711 文件 58k 行、#1444 222 文件 7k 行、#1469 32 文件）+211 修+8 特性，合计 234 提交、1141 文件。三次尝试（r2/r3/r4 分支）均中止：
-- r2: 逐 pick+union，bulk pick 循环 bash 作用域 bug 致计数错误，后续 union 行级状态机破坏 docs 渲染层结构；
-- r3: 域批量 3way apply（12 引擎域成功）+ apps 域 199 冲突 union 后与 docs i18n/渲染层互相错位（AutoCorrectDialog/StringKey 键集断裂 462 错），不可缝补；
-- r4: 重复 r3 路径同败。
+**概况**：三次中止后按批准的四轮拆分重整。A=引擎 12 域（3way apply 直落，已验证），B=shell/pdf/slides/html 域 + vi 全仓接线 + i18n 键级补齐。r3 泄漏进分支的撕裂文件（shell index/tab-manager/TabBar/Home/SettingsModal/strings、pdf App/strings、slides slides-skill/App/AiPanel/Ribbon、html App/strings-ai）全部以 3-way（base=3f9d07d，ours=91db06fc，theirs=upstream/main）重做并逐冲突拷问裁定。C=docs 渲染域（挂账）、D=剩余快照尾批（挂账）。
 
-**中止原因**：本轮体量（快照含 Home 树重构+docs 对话编辑器重构+多项 types.ts 接口扩展）与本地多会话 A 区/胶囊 Tab 重构在 361 个源文件上重叠，逐 pick 与域 apply 工艺在单会话 token 预算内无法完成键级 i18n 合并+跨域类型对齐。
+| 域 | 落位 |
+|---|---|
+| 引擎 12 域（A） | docx-engine/pptx-engine/pptx-render/pptx-ops/xlsx-gateway/pdf2docx/file-parse/html2docx/pipelines/agent-core/project-store/electron-utils 3way apply+残留修复（mergeStyleXml 导入、styleUpserts 双循环、pptx-render index 孤儿导出、loop 三元链、context-menu Symbols、project-store 附件 32 帽恢复、pPrChangeInfo）。#813 对比未保存编辑器内容、#929 原子导出等落地 |
+| shell 域（B） | 上游 vi 语言包全量接入+菜单/心跳 vi 键；default-app（认领 Office 默认程序）+aiPanel openInNewDocs 设置面（ai-panel-prefs 增 openInNewDocs 全链）；detach/attach/canDetachTab/describeWebContents detached-window API 移植进本地 TabManager（trackHtmlFullScreen 保本地 (id,view) 签名）；atomicWriteFile+atomicCopyFile viaTemp 重试骨架；tab-drag-geometry/file-events 支撑模块随 TabBar tear-off 拖拽几何落地；collectLaunchPaths/writeAppSettingThen/newFileDir 新文件流导入（上游 sheets「首存落盘」注册表挂账：sheetsSuggestedPathTaken/pendingUnsavedNewRecoveries 未采，本地延迟落盘共识胜） |
+| pdf 域（B） | strings.ts 重建（每语言并集上游新键+vi 节+334 本地键 zh 拷贝）；ocr-layer/keyNav(shouldHandleDocumentUndo)/image-rewrites 式补件；ribbon-collapse 选项参=上游新 API 未采（本地单参 hook 胜）；搜索标题/渲染空态=上游新特性挂账 Round-C |
+| slides 域（B） | 四 i18n 域 vi shard 安装+键级对账（ai+107/app+6/panes+1/ribbon+133 zh 拷贝）；slides-skill cloudActive/cloudFallbackReason 云中失败回退本地管线 union 落地（本地 SVG/资产门保留）；printSlidesHtml 接线；undo-routing/slide-selection/use-visible-thumbs 支撑模块已在位（App 保本地 A 区版本） |
+| html 域（B） | 工作区 vi 全套（app/ai shard 键级对账+locale+html-main+strings-ai/strings-app/strings.ts）；image-rewrites 模块移植+保存时采纳链路；ribbonPin 键；find-target 去重 |
+| vi 语言（B） | packages/i18n Lang 增 'vi'（union/LANGS/HTML_LANGS=vi-VN）→ 全仓 defineStrings/Record<Lang,..> 补 vi：上游 vi shard 直采（docs app/ribbon/ai、slides 四域、html app/ai、sheets dialogs 高频子集+en 回退），其余字典按「本地键 zh 拷贝+上游 vi 值品牌化」配方补齐；locale 指令（越南语回复指令）+DATE_LOCALES+LANG_OPTIONS 设置项；shell main/updater、docs main/updater、sheets/sheets-main、markdown/markdown-main、html/html-main、pdf/pdf-main 进程字典补 vi |
+| sheets i18n 键级（B） | dlgFr 30+dlgZoom 5 键×20 语言、appOpeningWorkbook、KEY_NUMPAD_ADD/SUBTRACT 常量+_shortcutInternals 导出、vi 陈旧键清洗（aiGensparkAccount→aiChaOfficeAccount 等命名对齐）+app 域 358+ai 域 18 键 zh 拷贝 |
+| 测试对齐（B） | ai-field-ops/image-wrap 两测试换上游版本（PAGEREF 折叠进可编辑行内域/EMU→px 精度 — 源码已随上游，旧断言为 9-16/9-17 快照态）；numbering/pretty-ppr/raw-ppr/zotero 四文件源码侧 pPr 语义挂账（见下） |
 
-**下次建议**：拆为 ≥4 轮——①引擎域（patches 已验证可 3way 直落）②shell 域 ③docs 域（需 i18n 键级合并专用脚本）④vi 语言+特性批。起点仍为 0d90149 后的第一个增量提交（见 git log 3f9d07d..upstream/main）。
+**拷问裁定记录**：①shell index 「新表格首存落盘」上游注册表 API（sheetsSuggestedPathTaken/pendingUnsavedNewRecoveries/markSheetsUnsavedNew）不采——本地「新建延迟落盘+隐藏草稿」共识架构胜，挂账上游实现；②pdf/slides/html 的 aiPanelInitiallyOpen/rememberAiPanelOpen 双参 hook 与 RibbonCollapseLabels 选项参不采——本地单参 API+localStorage 形态胜，跨应用统一改造挂账；③slides App 保本地 A 区版（上游 currentAfterHistory/thumbBox 占位缩略图微精化挂账）；④pdf Home/ribbon 搜索标题（renderSearchHeading 系）未采——上游搜索特性跨文件织入未完成，挂账 Round-C；⑤sheets dialogs/vi 保留 en 回退模式，ai/app vi 升级全量翻译；⑥menuTable*/menuGoTo/menuZoom 等 34 键上游 vi 词条弃用（本地菜单架构无此键）。
 
-**基线**：main=72ddda0f 干净（typecheck 0），本轮无任何内容合入。
+**挂账（Round-C/D）**：①docs 渲染域同步（convert.ts 距上游 447 行/extensions.ts 847 行——normalizeZoteroFieldParts/saveBlockIndexByDocx/rawPPr 传递链未采）→ 5 红挂账：raw-ppr（格式命令合并丢 keepNext）、pretty-printed-ppr-save（模式顺序丢 keepNext/keepLines/widowControl）、zotero-rich-roundtrip（段前 rPr caps small 丢）、numbering×2（段落标记字号/tab-stop 装饰）——四文件测试已换上游版本、源码待 Round-C；②上游 shell 新文件注册表；③pdf/slides 搜索标题特性；④跨应用 aiPanel helpers 统一。
+
+**版本**：本地 shell 1.0.3 自主线（不跟随上游 0.10.x，激活/购买为本地 B 区）。
+
+**门禁**：全仓 typecheck 0（21 工作区）；全量测试 2742 绿 / 5 挂账红（docs 渲染层 skew=Round-C 范围，非回归——main 上四文件 41/41 绿佐证）；品牌 grep 零新增（豁免外）。
+
+### 更新内容汇总（第十八轮 A+B，面向产品视角）
+
+**引擎/文档内核**：docx 保存链 pPr/revision 健壮性（pPrChange 保留、样式 upsert 单引号场景）、字段语义更新（PAGEREF 折叠进可编辑行内域并携带 dirty 标记）、EMF/WMF 元文件 zip 炸弹防护贯穿、图片非破坏裁剪/亮度/不透明度/阴影补丁链与 pipelines 页面规格对齐、#813 对比未保存编辑器内容、#929 选中文件原子发布。
+**桌面壳**：Windows「设为默认 Office 文档程序」认领流（含 manualOnly 回读）、AI 面板「新文档中打开」开关、标签页 tear-off 拖拽几何+停靠指示、原子写复制（大文件零内存拷贝）、启动路径收集；vi 越南语全量界面语言。
+**表格**：查找和替换面板（dlgFr 全套词条×20 语言）、缩放对话框词条、numpad 快捷键、合并工作簿等既有功能词条补齐。
+**演示/文档/HTML**：云页面生成中途失败自动回退本地管线（cloudActive 跟踪+失败原因写回工具输出）、HTML 打印窗口链路、HTML 应用 vi+图片改写采纳。
+**AI/代理**：agent-core 工具调用错误消息三路重写（截断/解析失败/缺参）、本地模型命名 aiChaOffice 全局对齐、媒体/搜索设置层与 vi 词典补全。
 
 ### 第十七轮增量（2026-09-25，0d90149..3f9d07d：18 提交，施工于 sync/upstream-20260922b 分支；本地 shell 版本 1.0.3 自主线，上游 0.10.0 不跟随——激活 UI/购买体系为本地 B 区，版本号本地为准）
 
