@@ -108,7 +108,18 @@
 
 **⚠️ 第八轮施工中（2026-09-16 深夜，未完成未合并）**：上游 `f4d8da2..09485f8`（15 提交：MCP×4+9-16 快照 525 文件+pptx 系列×5+小修）已全部 pick 到 `sync/upstream-20260916` 分支（已推 origin，含冲突裁决+品牌映射+动画引擎超集收敛，pptx-engine 1018/docs 2541 测试绿）。合并重做于 `merge-r8-wip` 分支（已推 origin）：merge 本体冲突仅 shell index/preload 导入并集×2 已解+pdf-main map 语义修复+pdf/markdown strings 按干净配方重建（pristine+品牌+本地键，锚=节 opener 后）。**剩余**：pdf LangDicts 节键集差×1+sheets workbook-ops(13)/ExcelShell(3)/save-pipeline(1) 等~30 类型错误收敛+slides/markdown 数个测试适配→全量门禁→合 main。**main 保持 310596b0 绿基线**（并行 WIP Home/strings 两文件在工作树）。新知：strings 断裂正解=main 绿版为基底+按节织入 sync 独有键（锚=节 opener 后；捕获须剥尾）；三方 merge-file+「theirs+品牌重放+HEAD 键补回」配方已在分支验证。
 
-**上次同步终点（下次续 pick 的起点）**：`3f9d07d`（2026-09-25 第十七轮完成并入 main；下次 `git fetch upstream` 后从 `3f9d07d..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+**⚠️ 第十八轮未完成（2026-09-29，0d90149..3f9d07d 后的增量 234 提交——中止未合并）**
+
+增量=两快照（#1159 711 文件 58k 行、#1444 222 文件 7k 行、#1469 32 文件）+211 修+8 特性，合计 234 提交、1141 文件。三次尝试（r2/r3/r4 分支）均中止：
+- r2: 逐 pick+union，bulk pick 循环 bash 作用域 bug 致计数错误，后续 union 行级状态机破坏 docs 渲染层结构；
+- r3: 域批量 3way apply（12 引擎域成功）+ apps 域 199 冲突 union 后与 docs i18n/渲染层互相错位（AutoCorrectDialog/StringKey 键集断裂 462 错），不可缝补；
+- r4: 重复 r3 路径同败。
+
+**中止原因**：本轮体量（快照含 Home 树重构+docs 对话编辑器重构+多项 types.ts 接口扩展）与本地多会话 A 区/胶囊 Tab 重构在 361 个源文件上重叠，逐 pick 与域 apply 工艺在单会话 token 预算内无法完成键级 i18n 合并+跨域类型对齐。
+
+**下次建议**：拆为 ≥4 轮——①引擎域（patches 已验证可 3way 直落）②shell 域 ③docs 域（需 i18n 键级合并专用脚本）④vi 语言+特性批。起点仍为 0d90149 后的第一个增量提交（见 git log 3f9d07d..upstream/main）。
+
+**基线**：main=72ddda0f 干净（typecheck 0），本轮无任何内容合入。
 
 ### 第十七轮增量（2026-09-25，0d90149..3f9d07d：18 提交，施工于 sync/upstream-20260922b 分支；本地 shell 版本 1.0.3 自主线，上游 0.10.0 不跟随——激活 UI/购买体系为本地 B 区，版本号本地为准）
 
