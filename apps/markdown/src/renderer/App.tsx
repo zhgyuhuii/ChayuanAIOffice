@@ -16,6 +16,7 @@ import { type FindFocusRequest, type FindPanelStrings } from '@chatoffice/ui'
 import type { Editor } from '@tiptap/core'
 import { TextSelection } from '@tiptap/pm/state'
 import { exportImages } from './export/imageExport'
+import { decodeImageDataUrl, toDocxImage } from './export/exportImage'
 import type { StringKey } from './i18n/locale'
 import { useI18n } from './i18n/locale'
 import {
@@ -500,16 +501,10 @@ export default function App() {
         return result.ok && !('canceled' in result)
       }
       const loadImage = async (src: string) => {
-        const data = await window.markdownApi.readImage(src)
-        if (!data) return null
-        const dims = await measureImage(resolveImageSrc(src))
-        let width = dims?.width || 400
-        let height = dims?.height || 300
-        if (width > DOCX_MAX_IMAGE_PX) {
-          height = Math.round((height * DOCX_MAX_IMAGE_PX) / width)
-          width = DOCX_MAX_IMAGE_PX
-        }
-        return { base64: data.base64, mime: data.mime, widthPx: width, heightPx: height }
+        // data: URLs bypass the IPC round trip; everything else routes through
+        // toDocxImage which re-encodes non-native formats (SVG/WebP/…) as PNG
+        const data = decodeImageDataUrl(src) ?? (await window.markdownApi.readImage(src))
+        return data ? toDocxImage(data, DOCX_MAX_IMAGE_PX) : null
       }
       const rasterizeDiagram = async (source: string, language: DiagramLanguage) => {
         const result = await renderDiagram(language, source)
