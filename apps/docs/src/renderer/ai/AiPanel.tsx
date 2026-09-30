@@ -68,6 +68,9 @@ interface AiPanelProps {
   assistantRequest?: { id: string; nonce: number } | null
   /** kept in sync with DockShell's open state; effects use it to catch up after re-expand */
   open?: boolean
+  /** upstream parity: the panel's own header controls flip the app's showAi state */
+  onExpand?: () => void
+  onCollapse?: () => void
   /** chrome injected by the DockShell: header buttons + header drag behavior */
   dockChrome?: DockChrome
   /** Absolute path of the currently open file (used for chat-history persistence) */

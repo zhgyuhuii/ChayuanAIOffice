@@ -7,17 +7,14 @@ import '@chatoffice/ui/tokens.css'
 import '@chatoffice/ui/screentip.css'
 import '@chatoffice/ui/color-picker.css'
 import '@chatoffice/ui/dropdown.css'
-import '@chatoffice/ribbon/tab-strip.css'
 import '@chatoffice/ui/ribbon-collapse.css'
 import '@chatoffice/ui/markdown.css'
 import '@chatoffice/ui/ai-panel-prefs.css'
 import '@chatoffice/ui/ai-scope-quote.css'
-import '@chatoffice/ui/files-pane.css'
 import '@chatoffice/ui/image-viewer.css'
 import './styles.css'
 import './fonts/fonts.css'
 import { applyAiPanelPrefs, installScreenTips } from '@chatoffice/ui'
-import { installAnchorPanelFallback } from '@chatoffice/ui'
 import { setAltChunkHtmlConverter } from '@chatoffice/docx-engine'
 
 installScreenTips()
@@ -47,7 +44,11 @@ async function bootstrap(): Promise<void> {
   document.documentElement.lang = htmlLang(lang)
   applyTheme(theme)
   window.desktop?.onThemeChanged(applyTheme)
-  installAnchorPanelFallback()
+  await window.desktop
+    ?.getAiPanelPrefs?.()
+    .then(applyAiPanelPrefs)
+    .catch(() => {})
+  window.desktop?.onAiPanelPrefsChanged?.(applyAiPanelPrefs)
   createRoot(document.getElementById('root')!).render(
     <LocaleProvider initial={lang}>
       <App />

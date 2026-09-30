@@ -55,7 +55,6 @@ export function ProtectDialog({
   removePersonalInfo,
   onCancel,
   onApply,
-  hashSpinCount = 100000,
 }: {
   /** an open password is desired for the next save */
   encrypted: boolean
@@ -64,8 +63,6 @@ export function ProtectDialog({
   removePersonalInfo: boolean
   onCancel: () => void
   onApply: (result: ProtectDialogResult) => void
-  /** test seam: lower the SHA-512 iterations so submit stays fast under parallel load */
-  hashSpinCount?: number
 }) {
   const { t } = useI18n()
   const hadModifyPwd = !!writeProtection?.hash
@@ -114,7 +111,7 @@ export function ProtectDialog({
             ? writeProtection?.recommended
               ? { recommended: true }
               : null
-            : { ...recommended, ...(await hashProtectionPassword(modifyPwd, hashSpinCount)) }
+            : { ...recommended, ...(await hashProtectionPassword(modifyPwd)) }
       }
 
       if (protectionChanged) {
@@ -134,7 +131,7 @@ export function ProtectDialog({
                   algorithmSid: protection.algorithmSid,
                 }
               : protectPwd && protectPwd !== KEEP
-                ? await hashProtectionPassword(protectPwd, hashSpinCount)
+                ? await hashProtectionPassword(protectPwd)
                 : {}
           result.protection = { edit: mode, enforced: true, ...creds }
         }

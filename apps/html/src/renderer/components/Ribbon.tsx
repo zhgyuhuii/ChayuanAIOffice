@@ -130,7 +130,7 @@ const ICON = 20
 
 export function Ribbon(p: Props) {
   const { t } = useI18n()
-  const collapse = useRibbonCollapse('htmlapp.ribbonCollapsed')
+  const collapse = useRibbonCollapse('htmlapp.ribbonCollapsed', { collapse: t('ribbonCollapse'), expand: t('ribbonExpand') })
   const [themeOpen, setThemeOpen] = useState(false)
   const themeRef = useRef<HTMLDivElement>(null)
   useDismissablePopover(themeOpen, () => setThemeOpen(false), {
@@ -567,7 +567,7 @@ export function Ribbon(p: Props) {
           </div>
         </div>
       </div>
-      <RibbonCollapseButton state={collapse} labels={{ collapse: t('ribbonCollapse'), pin: t('ribbonPin') }} />
+      <RibbonCollapseButton state={collapse} label={t('ribbonCollapse')} />
     </div>
   )
 }

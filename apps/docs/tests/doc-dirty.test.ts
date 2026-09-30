@@ -10,7 +10,6 @@ import { openedFileStartsDirty } from '../src/renderer/doc-state'
 function cleanState(): DocDirtyState {
   return {
     dirtyRef: { current: false },
-      styleDeletes: [],
     sectionDirty: false,
     sectionsDirty: [],
     trailingStartType: null,

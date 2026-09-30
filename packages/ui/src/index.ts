@@ -16,7 +16,7 @@ export {
   type AiPanelPrefs,
   type AiPanelSide,
 } from './ai-panel-prefs'
-export { applyAiPanelPrefs, useAiPanelPrefs, aiPanelWidthAtPointer } from './ai-panel-prefs-store'
+export { applyAiPanelPrefs, useAiPanelPrefs, aiPanelWidthAtPointer, aiPanelInitiallyOpen, rememberAiPanelOpen } from './ai-panel-prefs-store'
 export {
   ColorPicker,
   THEME_COLORS,
@@ -47,7 +47,6 @@ export {
   useRibbonCollapse,
   RibbonCollapseButton,
   RibbonExpandButton,
-  installRibbonPeekDismiss,
   isRibbonToggleShortcut,
   readRibbonCollapsed,
   RIBBON_TOGGLE_SHORTCUT,
@@ -173,3 +172,6 @@ export {
   notchStep,
   type ZoomWheelIntent,
 } from './wheel-zoom'
+export { CROP_EDGE_LABELS } from './strings-crop-edges'
+export { trapTab, useModalKeys } from './modal-keys'
+export { ShapePreview, SHAPE_GALLERY_GROUPS } from './shape-gallery'

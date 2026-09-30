@@ -136,7 +136,7 @@ export function Ribbon({
   onToggleAiPanel,
 }: Props) {
   const { t } = useI18n()
-  const collapse = useRibbonCollapse('mdapp.ribbonCollapsed')
+  const collapse = useRibbonCollapse('mdapp.ribbonCollapsed', { collapse: t('ribbonCollapse'), expand: t('ribbonExpand') })
   const [linkOpen, setLinkOpen] = useState(false)
   const [linkUrl, setLinkUrl] = useState('')
   const linkInputRef = useRef<HTMLInputElement>(null)
@@ -445,7 +445,7 @@ export function Ribbon({
       </div>
       <RibbonCollapseButton
         state={collapse}
-        labels={{ collapse: t('ribbonCollapse'), pin: t('ribbonPin') }}
+        label={t('ribbonCollapse')}
       />
     </div>
   )
