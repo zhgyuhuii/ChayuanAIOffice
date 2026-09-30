@@ -1,4 +1,5 @@
 import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
+import type { ExportImageMime } from './export-image-mime'
 import type { Lang } from '@chatoffice/i18n'
 import type { AiModelSelection, AiSettingsV2, AiStreamChunk } from '@chatoffice/ai-provider'
 
@@ -146,7 +147,7 @@ export type ExportResult =
 
 export interface ImageData {
   base64: string
-  mime: 'image/png' | 'image/jpeg' | 'image/gif'
+  mime: ExportImageMime
 }
 
 /** API exposed by preload to the renderer (window.markdownApi) */
