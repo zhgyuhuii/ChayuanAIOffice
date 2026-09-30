@@ -159,6 +159,23 @@
 - **桌面壳**：/usr/bin/chaoffice 链接脚本防外来程序覆盖（#893 防护）、升级保留链接/卸载才删除、CLI 与应用版本一致性构建期校验、第三方声明 PDFium 条款挂账
 - **HTML 预览**：inspector 消息伪造防护（已知消息标签白名单+数值版本校验）
 
+### 第十八轮 D（2026-09-30，施工于 sync/18d-upstream 分支；用户指令「尽量与上游保持一致」——docs UI 骨架上游化 + ui 包上游化 + 消费端适配）
+
+| 域 | 落位 |
+|---|---|
+| packages/ui | ribbon-collapse 上游「选中 tab 即折叠控件」模型整采（tabClass/tabTip/onTabPress/onTabsDoubleClick/RibbonCollapseButton+RibbonExpandButton）；ai-panel-prefs-store 增 aiPanelInitiallyOpen/rememberAiPanelOpen（openInNewDocs 门控）；shape-gallery 新模块；image-dialogs/modal-keys/strings-crop-edges 上游版；index.ts=main 全量+上游独有导出并集 |
+| docs UI 骨架 | App.tsx/Ribbon/ribbon-tabs/Ruler 四件套整采上游（ribbonActions 命令服务对象、ai-dock 布局、页眉页脚 strip 编辑器、缩放对话框、字段对话框、表格/段落/纸张/样式对话框全家 45+ 组件）；wheel-zoom/review-actions/shortcuts/main.tsx/fonts.css 对齐；settings 管线升 AiSettingsV2（defaultSettingsV2 初值）；AiPanelProps 增 onExpand/onCollapse（上游折叠钮回调）；fileCtx 补 styleDeletes |
+| 消费端 | markdown/html/slides Ribbon 适配新 collapse API（labels collapse/expand，RibbonCollapseButton 单 label）；察元 ribbon strangler 架构（host-services/host-tabs/commands/ribbon-chayuan-tab 等）由上游 Ribbon 接管后移除+8 测试文件随之退役；上游 RibbonProps export 采纳（VRuler 分页同步保本地） |
+| 测试 | 12 文件取上游版（wheel-zoom/page-margins/ui-guards/style-shortcut/meiryo-alias（字体名 ChatOffice 映射）/fonts-css-contract（ChaAI Office Mincho）/context-menu/direction（A-zone 面板体 AiConversationBody 计入 dir=auto 契约）/embedded-fonts/shortcuts-dialog/ribbon-collapse/doc-dirty）+helpers/ribbon-props 上游版 |
+
+**门禁**：typecheck 0（全仓）；全量 15248 测试全绿 EXIT 0。
+
+### 第十八轮 D 更新内容汇总（产品视角）
+
+- **文档**：Ribbon 全面重构为上游折叠模型（选中 tab 即折叠、双击/⌥⌘R 切换）、页眉页脚页内 strip 编辑（双击页眉/页脚直接改）、缩放对话框+捏合缩放吸附、字段对话框（PAGE/NUMPAGES/DATE 等插入）、表格/段落/纸张/样式/列表对话框全套、图片查看器（另存/关闭）、拼写检查 kick-respell 硬化、AI 面板「新文档中打开」设置生效
+- **ui 包**：折叠 Ribbon 新交互模型、AI 面板初始态受「新文档打开 AI 面板」设置门控、形状画廊（ShapePreview/SHAPE_GALLERY_GROUPS）
+- **markdown/html/slides**：折叠 Ribbon 新模型同步适配
+
 ### 第十七轮增量（2026-09-25，0d90149..3f9d07d：18 提交，施工于 sync/upstream-20260922b 分支；本地 shell 版本 1.0.3 自主线，上游 0.10.0 不跟随——激活 UI/购买体系为本地 B 区，版本号本地为准）
 
 | 内容 | 结果 |
