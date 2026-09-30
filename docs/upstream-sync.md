@@ -195,6 +195,19 @@
 - 本轮无新功能落地——为收官裁决轮：确认 pdf「注解扫描延至 AI 首用」等上游特性已在位，四应用剩余差异均为本地功能超集
 - 产品口径：上游后续若实现多会话对话栏（会话池/会话列表），需重评四端 AiPanel 收敛（收敛条件已记录于源码注释）
 
+### 第十八轮 F·收口（2026-09-30，施工于 sync/18f-export-image 分支；上游 fetch 复核无新提交（仍 968d7d23），最后一项挂账「markdown 图片 DOCX 导出」清零）
+
+| 项 | 落位 |
+|---|---|
+| markdown 图片导出 | exportImage.ts+export-image.test 取上游（docx-engine 上游化后 NewImage 契约已兼容）；shared/ipc ImageData.mime 升 ExportImageMime（保留 A-zone onDockedState/AiPanelPrefs dock 契约成员）；App loadImage 切换上游 decodeImageDataUrl→toDocxImage 流（SVG/WebP/BMP/AVIF 画布重编码为 PNG，引擎 save 路径只收 PNG/JPEG/GIF） |
+| 收官确认 | upstream fetch 复核=无新提交；四应用残余差异（多会话面板/DockShell/动画面板）确认为本地功能超集，收敛条件已记录 |
+
+**门禁**：typecheck 0（全仓）；全量 15,248 测试全绿（一次 web watch teardown flake 复跑确认 EXIT 0）。
+
+### 第十八轮 F 更新内容汇总（产品视角）
+
+- **markdown**：插入图片导出 DOCX 时 SVG/WebP/BMP/AVIF 自动按 192 DPI 高清重编码为 PNG（超宽图按 4096px 上限等比缩放），data:URL 内联图免主进程往返；上游全链测试回归通过。至此第十八轮（A–F）234 个上游提交全部吸收完毕，无剩余挂账。
+
 ### 第十七轮增量（2026-09-25，0d90149..3f9d07d：18 提交，施工于 sync/upstream-20260922b 分支；本地 shell 版本 1.0.3 自主线，上游 0.10.0 不跟随——激活 UI/购买体系为本地 B 区，版本号本地为准）
 
 | 内容 | 结果 |
