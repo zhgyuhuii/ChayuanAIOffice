@@ -1,29 +1,24 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { CSSProperties } from 'react'
 import { getMarkRange } from '@tiptap/core'
 import type { Editor } from '@tiptap/core'
-import { ShapePreview } from '@chatoffice/ui/shape-gallery'
-import { WORDART_PRESETS, wordArtStrokePx } from '@chatoffice/ui'
+import { ShapePreview, WORDART_PRESETS, wordArtStrokePx } from '@chatoffice/ui'
 import type { ChartDisplay, HeaderFooter, NewChart } from '@chatoffice/docx-engine'
-import type { ChartDesignerInsert } from '@chatoffice/chart-kit/designer'
-// 惰性加载:设计器拖 1MB 示例库(chart-kit data/examples.json),点开才拉,不进编辑器启动图
-const ChartDesignerModal = lazy(() =>
-  import('@chatoffice/chart-kit/designer').then((m) => ({ default: m.ChartDesignerModal })),
-)
-
-/** 旧 3 种基础图表入口开关:用户 2026-09-04 指示暂时隐藏(组件保留可随时恢复) */
-const CHART_LEGACY_VISIBLE = false
 import { hfHasPageField, hfWithoutPageMarks } from '../editor/hf-dom'
 import { EquationGallery, EquationModal } from './EquationModal'
-import { COVER_PRESETS, insertCoverPage, type CoverPreset } from '../editor/cover-pages'
+import {
+  COVER_PRESETS,
+  coverPageRange,
+  insertCoverPage,
+  removeCoverPage,
+  type CoverPreset,
+} from '../editor/cover-pages'
 import { startShapeDrawMode } from '../editor/shape-draw'
 import { useI18n, type StringKey } from '../i18n/locale'
 import { useModalKeys } from './modal-keys'
 import {
   IconBook,
   IconCaret,
-  IconCheckbox,
-  IconCheckboxChecked,
   IconClose,
   IconComment,
   IconDoc,
@@ -54,6 +49,9 @@ import {
   insertShapeAt,
   insertTableAt,
   insertTextboxAt,
+  focusTextboxEditorAt,
+  TEXTBOX_WIDTH_EMU,
+  TEXTBOX_HEIGHT_EMU,
   insertTopLevelBlockAtSelection,
   insertWordArtAt,
   MAX_TABLE_COLS,
@@ -114,51 +112,6 @@ const SYMBOLS = [
   '⑨',
   '⑩',
 ]
-
-/** small dropdown editor for header/footer text */
-function HfEditor({
-  label,
-  current,
-  onApply,
-  onClose,
-}: {
-  label: string
-  current: string
-  onApply: (text: string) => void
-  onClose: () => void
-}) {
-  const { t } = useI18n()
-  const [text, setText] = useState(current)
-  return (
-    <div data-rb-panel="" className="hf-menu">
-      <div className="hf-menu-title">{label}</div>
-      <input
-        autoFocus
-        value={text}
-        placeholder={t('ribbonHfPlaceholder', { label })}
-        onChange={(e) => setText(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            onApply(text.trim())
-            onClose()
-          }
-        }}
-      />
-      <div className="hf-menu-actions">
-        <button
-          className="btn-primary"
-          onClick={() => {
-            onApply(text.trim())
-            onClose()
-          }}
-        >
-          {t('ribbonOk')}
-        </button>
-        <button onClick={onClose}>{t('ribbonCancel')}</button>
-      </div>
-    </div>
-  )
-}
 
 /** all bookmarks in document order: name + owning node position + preview text */
 function collectBookmarks(editor: Editor): Array<{ name: string; pos: number; preview: string }> {
@@ -475,7 +428,15 @@ export function ChartInsertModal({ editor, onClose }: { editor: Editor; onClose:
 }
 
 /** Word's Insert Table dialog: explicit row/column counts beyond the hover grid's reach */
-export function TableInsertModal({ editor, onClose }: { editor: Editor; onClose: () => void }) {
+export function TableInsertModal({
+  editor,
+  onClose,
+  onInserted,
+}: {
+  editor: Editor
+  onClose: () => void
+  onInserted?: () => void
+}) {
   const { t } = useI18n()
   const modalKeys = useModalKeys(onClose)
   const [cols, setCols] = useState(5)
@@ -484,6 +445,7 @@ export function TableInsertModal({ editor, onClose }: { editor: Editor; onClose:
   const insert = () => {
     if (!editor.isEditable) return
     insertTableAt(editor, rows, cols)
+    onInserted?.()
     onClose()
   }
 
@@ -724,17 +686,14 @@ export function InsertTab({
   onFooter,
   onPageNumFormat,
   onInsertField,
-  titlePg,
-  onTitlePg,
-  evenOddHf,
-  onEvenOddHf,
-  insertImageDialogOpen,
+  onHfEdit,
   canComment,
   onNewComment,
   isProtected,
   commentsAllowed,
+  onTableInserted,
 }: InsertTabProps) {
-  const { t, lang } = useI18n()
+  const { t } = useI18n()
   const [grid, setGrid] = useState<{ r: number; c: number }>({ r: 0, c: 0 })
   const [tableDialogOpen, setTableDialogOpen] = useState(false)
   const [linkOpen, setLinkOpen] = useState(false)
@@ -742,233 +701,11 @@ export function InsertTab({
   const [bookmarkOpen, setBookmarkOpen] = useState(false)
   const [crossRefOpen, setCrossRefOpen] = useState(false)
   const [chartOpen, setChartOpen] = useState(false)
-  const [chartKitOpen, setChartKitOpen] = useState(false)
-  const [chartKitEdit, setChartKitEdit] = useState<{
-    pos: number | null
-    groupId?: string
-    code?: string
-    title?: string
-  } | null>(null)
-
-  // double-click on a canvas echart reopens the shared designer for in-place edit
-  useEffect(() => {
-    const onEdit = (ev: Event) => {
-      const detail = (ev as CustomEvent).detail as {
-        pos: number | null
-        groupId?: string
-        code?: string
-        title?: string
-      }
-      setChartKitEdit(detail)
-      setChartKitOpen(true)
-    }
-    window.addEventListener('chartkit-edit-echart', onEdit)
-    return () => window.removeEventListener('chartkit-edit-echart', onEdit)
-  }, [])
-
-  // AI insert_echart:沙箱执行 optionCode/JSON → echart 块落库(与设计器同管线)
-  useEffect(() => {
-    const onAiInsert = (ev: Event) => {
-      const detail = (ev as CustomEvent).detail as {
-        groupId: string
-        title: string
-        optionJson: string
-        code: string | null
-        afterBlockIndex: number
-      }
-      void (async () => {
-        let optionJson = detail.optionJson
-        if (!optionJson && detail.code) {
-          try {
-            const { runOptionCode } = await import('@chatoffice/chart-kit/sandbox')
-            const { stringifyOption } = await import('@chatoffice/chart-kit/serialize')
-            const r = await runOptionCode(detail.code)
-            if (!r.ok) {
-              window.dispatchEvent(
-                new CustomEvent('ai-toast', {
-                  detail: { message: `insert_echart: ${r.error ?? 'sandbox failed'}` },
-                }),
-              )
-              return
-            }
-            optionJson = stringifyOption(r.option)
-          } catch (e) {
-            window.dispatchEvent(
-              new CustomEvent('ai-toast', {
-                detail: {
-                  message: `insert_echart: ${String((e as Error).message).slice(0, 120)}`,
-                },
-              }),
-            )
-            return
-          }
-        }
-        // 快照:AI 插入也必须有图(sidecar 可重放,快照供打开显示)
-        const { renderOptionSnapshot } = await import('@chatoffice/chart-kit/snapshot')
-        let opt: unknown
-        try {
-          opt = JSON.parse(optionJson)
-        } catch {
-          opt = null
-        }
-        const png = await renderOptionSnapshot(opt)
-        const inserted = insertTopLevelBlockAtSelection(editor, {
-          type: 'docProtected',
-          attrs: {
-            docxIndex: null,
-            blockType: 'echart',
-            label: detail.title || 'ECharts',
-            echartOption: optionJson,
-            echartSnapshot: png,
-            echartGroupId: detail.groupId,
-            echartTitle: detail.title || null,
-            echartCode: detail.code ?? null,
-          },
-        })
-        if (!inserted) {
-          window.dispatchEvent(
-            new CustomEvent('ai-toast', { detail: { message: 'insert_echart: insert failed' } }),
-          )
-        }
-      })()
-    }
-    window.addEventListener('chartkit-ai-insert-echart', onAiInsert)
-    return () => window.removeEventListener('chartkit-ai-insert-echart', onAiInsert)
-  }, [editor])
-
-  // double-click on a standard chart block: same designer, data preloaded
-  // from chartDisplay so edits write back into genChart (原位更新)
-  const [chartBlockEdit, setChartBlockEdit] = useState<{
-    pos: number
-    kind: string
-    title: string
-    categories: string[]
-    series: Array<{ name: string; values: (number | null)[] }>
-  } | null>(null)
-  useEffect(() => {
-    const onEditChart = (ev: Event) => {
-      const detail = (ev as CustomEvent).detail as {
-        pos: number | null
-        kind: string
-        title: string
-        categories: string[]
-        series: Array<{ name: string; values: (number | null)[] }>
-      }
-      if (typeof detail.pos !== 'number') return
-      setChartBlockEdit({ ...detail, pos: detail.pos })
-      setChartKitOpen(true)
-    }
-    window.addEventListener('chartkit-edit-chart', onEditChart)
-    return () => window.removeEventListener('chartkit-edit-chart', onEditChart)
-  }, [])
-
-  const closeChartKit = () => {
-    setChartKitOpen(false)
-    setChartKitEdit(null)
-    setChartBlockEdit(null)
-  }
-
-  const insertFromDesigner = (payload: ChartDesignerInsert) => {
-    // 双击标准图表的编辑提交:原位更新 genChart+chartDisplay(几何/位置不动)
-    const blockEdit = chartBlockEdit
-    if (blockEdit && payload.engine === 'ooxml' && payload.spec?.data) {
-      const target = editor.state.doc.nodeAt(blockEdit.pos)
-      if (target && target.attrs.blockType === 'chart') {
-        const spec: NewChart = {
-          kind: payload.spec.type as NewChart['kind'],
-          title: payload.spec.title ?? payload.spec.style?.title ?? t('ribbonChartTitlePh'),
-          categories: (payload.spec.data.categories ?? []).map((c) => String(c)),
-          series: payload.spec.data.series.map((s) => ({
-            name: s.name ?? '',
-            values: s.values.map((v) => (typeof v === 'number' ? v : null)),
-          })),
-        }
-        const display: ChartDisplay = {
-          partPath: '',
-          kind: spec.kind,
-          title: spec.title,
-          categories: spec.categories,
-          series: spec.series,
-        }
-        editor.view.dispatch(
-          editor.state.tr.setNodeMarkup(blockEdit.pos, undefined, {
-            ...target.attrs,
-            genChart: spec,
-            chartDisplay: display,
-          }),
-        )
-        setChartBlockEdit(null)
-        return
-      }
-    }
-    if (payload.engine === 'ooxml' && payload.spec?.data) {
-      const spec: NewChart = {
-        kind: payload.spec.type as NewChart['kind'],
-        title: payload.spec.title ?? payload.spec.style?.title ?? t('ribbonChartTitlePh'),
-        categories: (payload.spec.data.categories ?? []).map((c) => String(c)),
-        series: payload.spec.data.series.map((s) => ({
-          name: s.name ?? '',
-          values: s.values.map((v) => (typeof v === 'number' ? v : null)),
-        })),
-      }
-      const display: ChartDisplay = {
-        partPath: '',
-        kind: spec.kind,
-        title: spec.title,
-        categories: spec.categories,
-        series: spec.series,
-      }
-      insertTopLevelBlockAtSelection(editor, {
-        type: 'docProtected',
-        attrs: {
-          docxIndex: null,
-          blockType: 'chart',
-          label: t('ribbonChart'),
-          genChart: spec,
-          chartDisplay: display,
-        },
-      })
-    } else if (payload.snapshotPng) {
-      const editPos = chartKitEdit?.pos
-      if (typeof editPos === 'number') {
-        const target = editor.state.doc.nodeAt(editPos)
-        if (target && target.attrs.blockType === 'echart') {
-          editor.view.dispatch(
-            editor.state.tr.setNodeMarkup(editPos, undefined, {
-              ...target.attrs,
-              echartOption: payload.optionJson,
-              echartSnapshot: payload.snapshotPng,
-              echartGroupId: payload.groupId,
-              echartTitle: payload.title,
-              echartCode: payload.code ?? null,
-              echartData: payload.data ?? null,
-            }),
-          )
-          closeChartKit()
-          return
-        }
-      }
-      insertTopLevelBlockAtSelection(editor, {
-        type: 'docProtected',
-        attrs: {
-          docxIndex: null,
-          blockType: 'echart',
-          label: t('ribbonEchartLabel'),
-          echartOption: payload.optionJson,
-          echartSnapshot: payload.snapshotPng,
-          echartGroupId: payload.groupId,
-          echartTitle: payload.title,
-          echartCode: payload.code ?? null,
-          echartData: payload.data ?? null,
-        },
-      })
-    }
-    closeChartKit()
-  }
 
   const insertTable = (rows: number, cols: number) => {
     insertTableAt(editor, rows, cols)
     setDropdown(() => null)
+    onTableInserted()
   }
 
   return (
@@ -1005,6 +742,16 @@ export function InsertTab({
                     <span className="cover-card-name">{preset.name}</span>
                   </button>
                 ))}
+                <button
+                  className="cover-gallery-remove"
+                  disabled={!coverPageRange(editor.state.doc)}
+                  onClick={() => {
+                    removeCoverPage(editor)
+                    setDropdown(() => null)
+                  }}
+                >
+                  {t('ribbonRemoveCoverPage')}
+                </button>
               </div>
             )}
           </div>
@@ -1098,35 +845,18 @@ export function InsertTab({
             className="rb-big"
             disabled={!hasDoc}
             data-tip={t('ribbonPictureTip')}
-            onClick={insertImageDialogOpen ?? ((): void => void insertImageViaDialog(editor))}
+            onClick={() => void insertImageViaDialog(editor)}
           >
             <span className="rb-big-icon">
               <IconPicture size={BIG} />
             </span>
             <span>{t('ribbonPicture')}</span>
           </button>
-          {/* 旧 3 种基础图表入口:暂时隐藏,组件保留(用户 2026-09-04 指示,新图表库接管入口) */}
-          {CHART_LEGACY_VISIBLE && (
-            <button
-              className="rb-big"
-              disabled={!hasDoc}
-              data-tip={t('ribbonChartTip')}
-              onClick={() => setChartOpen(true)}
-            >
-              <span className="rb-big-icon">
-                <IconChart size={BIG} />
-              </span>
-              <span>{t('ribbonChart')}</span>
-            </button>
-          )}
           <button
             className="rb-big"
             disabled={!hasDoc}
             data-tip={t('ribbonChartTip')}
-            onClick={() => {
-              setChartKitEdit(null)
-              setChartKitOpen(true)
-            }}
+            onClick={() => setChartOpen(true)}
           >
             <span className="rb-big-icon">
               <IconChart size={BIG} />
@@ -1185,17 +915,47 @@ export function InsertTab({
       {/* Text group: text box + WordArt + drop cap */}
       <div className="ribbon-group">
         <div className="ribbon-group-items">
-          <button
-            className="rb-big"
-            disabled={!hasDoc}
-            data-tip={t('ribbonTextBoxTip')}
-            onClick={() => insertTextboxAt(editor)}
-          >
-            <span className="rb-big-icon">
-              <IconTextBox size={BIG} />
-            </span>
-            <span>{t('ribbonTextBox')}</span>
-          </button>
+          <div className="rb-split-wrap">
+            <button
+              className="rb-big"
+              disabled={!hasDoc}
+              data-tip={t('ribbonTextBoxTip')}
+              onClick={() => toggleDropdown(setDropdown, 'textBox')}
+            >
+              <span className="rb-big-icon">
+                <IconTextBox size={BIG} />
+                <IconCaret />
+              </span>
+              <span>{t('ribbonTextBox')}</span>
+            </button>
+            {dropdown === 'textBox' && (
+              <div data-rb-panel="" className="layout-menu rb-textbox-menu">
+                <button
+                  onClick={() => {
+                    setDropdown(() => null)
+                    startShapeDrawMode(editor, 'rect', (opts) => insertTextboxAt(editor, opts), {
+                      clickSize: { widthEmu: TEXTBOX_WIDTH_EMU, heightEmu: TEXTBOX_HEIGHT_EMU },
+                      ghost: { fill: 'rgba(255,255,255,0.6)', border: '#000000' },
+                      onInserted: (pos) => focusTextboxEditorAt(editor, pos),
+                    })
+                  }}
+                >
+                  {t('ribbonTextBoxDraw')}
+                </button>
+                <button
+                  onClick={() => {
+                    setDropdown(() => null)
+                    const pos = insertTextboxAt(editor)
+                    if (pos != null) {
+                      requestAnimationFrame(() => focusTextboxEditorAt(editor, pos))
+                    }
+                  }}
+                >
+                  {t('ribbonTextBoxSimple')}
+                </button>
+              </div>
+            )}
+          </div>
           <div className="rb-split-wrap">
             <button
               className="rb-big"
@@ -1404,12 +1164,24 @@ export function InsertTab({
               <span>{t('ribbonHeader')}</span>
             </button>
             {dropdown === 'header' && (
-              <HfEditor
-                label={t('ribbonHeader')}
-                current={header?.text ?? ''}
-                onApply={(text) => onHeader({ text })}
-                onClose={() => setDropdown(() => null)}
-              />
+              <div data-rb-panel="" className="layout-menu">
+                <button
+                  onClick={() => {
+                    onHfEdit('header')
+                    setDropdown(() => null)
+                  }}
+                >
+                  {t('ribbonHfEditHeader')}
+                </button>
+                <button
+                  onClick={() => {
+                    onHeader({ text: '' })
+                    setDropdown(() => null)
+                  }}
+                >
+                  {t('ribbonHfRemoveHeader')}
+                </button>
+              </div>
             )}
           </div>
           <div className="rb-split-wrap">
@@ -1426,12 +1198,24 @@ export function InsertTab({
               <span>{t('ribbonFooter')}</span>
             </button>
             {dropdown === 'footer' && (
-              <HfEditor
-                label={t('ribbonFooter')}
-                current={footer?.text ?? ''}
-                onApply={(text) => onFooter({ text, pageNumber: footer?.pageNumber ?? false })}
-                onClose={() => setDropdown(() => null)}
-              />
+              <div data-rb-panel="" className="layout-menu">
+                <button
+                  onClick={() => {
+                    onHfEdit('footer')
+                    setDropdown(() => null)
+                  }}
+                >
+                  {t('ribbonHfEditFooter')}
+                </button>
+                <button
+                  onClick={() => {
+                    onFooter({ text: '' })
+                    setDropdown(() => null)
+                  }}
+                >
+                  {t('ribbonHfRemoveFooter')}
+                </button>
+              </div>
             )}
           </div>
           <div className="rb-split-wrap">
@@ -1494,24 +1278,6 @@ export function InsertTab({
                 </button>
               </div>
             )}
-          </div>
-          <div className="rb-col">
-            <button
-              className={`rb-small ${titlePg ? 'active' : ''}`}
-              disabled={!hasDoc}
-              data-tip={t('ribbonDiffFirstPageTip')}
-              onClick={() => onTitlePg(!titlePg)}
-            >
-              {titlePg ? <IconCheckboxChecked /> : <IconCheckbox />} {t('ribbonDiffFirstPage')}
-            </button>
-            <button
-              className={`rb-small ${evenOddHf ? 'active' : ''}`}
-              disabled={!hasDoc}
-              data-tip={t('ribbonDiffOddEvenTip')}
-              onClick={() => onEvenOddHf(!evenOddHf)}
-            >
-              {evenOddHf ? <IconCheckboxChecked /> : <IconCheckbox />} {t('ribbonDiffOddEven')}
-            </button>
           </div>
         </div>
         <div className="ribbon-group-label">{t('ribbonGroupHeaderFooter')}</div>
@@ -1580,37 +1346,17 @@ export function InsertTab({
       </div>
 
       {tableDialogOpen && (
-        <TableInsertModal editor={editor} onClose={() => setTableDialogOpen(false)} />
+        <TableInsertModal
+          editor={editor}
+          onClose={() => setTableDialogOpen(false)}
+          onInserted={onTableInserted}
+        />
       )}
       {linkOpen && <LinkInsertModal editor={editor} onClose={() => setLinkOpen(false)} />}
       {equationOpen && <EquationModal editor={editor} onClose={() => setEquationOpen(false)} />}
       {bookmarkOpen && <BookmarkModal editor={editor} onClose={() => setBookmarkOpen(false)} />}
       {crossRefOpen && <CrossRefModal editor={editor} onClose={() => setCrossRefOpen(false)} />}
       {chartOpen && <ChartInsertModal editor={editor} onClose={() => setChartOpen(false)} />}
-      {chartKitOpen && (
-        <Suspense fallback={null}>
-          <ChartDesignerModal
-          lang={lang === 'en' ? 'en' : 'zh-CN'}
-          initial={
-            chartKitEdit
-              ? chartKitEdit
-              : chartBlockEdit
-                ? {
-                    groupId: chartBlockEdit.kind,
-                    specData: {
-                      type: chartBlockEdit.kind,
-                      title: chartBlockEdit.title,
-                      categories: chartBlockEdit.categories,
-                      series: chartBlockEdit.series,
-                    },
-                  }
-                : undefined
-          }
-          onClose={closeChartKit}
-          onInsert={insertFromDesigner}
-        />
-        </Suspense>
-      )}
     </>
   )
 }

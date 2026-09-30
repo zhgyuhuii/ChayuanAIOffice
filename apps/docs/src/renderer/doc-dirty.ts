@@ -54,7 +54,6 @@ export interface DocDirtyState {
   numberingDirty: boolean
   defaultFonts?: DefaultFonts
   styleUpserts: Record<string, unknown>
-  styleDeletes: readonly string[]
   titlePgDirty: boolean
   evenOddHfDirty: boolean
   mirrorMarginsDirty: boolean
@@ -87,7 +86,6 @@ export function isDocDirty(s: DocDirtyState): boolean {
     s.pgNumDirtySections.length > 0 ||
     s.numberingDirty ||
     Object.keys(s.styleUpserts).length > 0 ||
-    s.styleDeletes.length > 0 ||
     s.defaultFonts !== undefined ||
     s.titlePgDirty ||
     s.evenOddHfDirty ||

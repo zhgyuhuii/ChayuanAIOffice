@@ -9,6 +9,7 @@ import {
   alignAttrFor,
   effectiveBidi,
   firstStrongDir,
+  selectionHasBidi,
   setParagraphDirection,
   setSelectionAlign,
 } from '../src/renderer/editor/direction'
@@ -73,6 +74,19 @@ describe('firstStrongDir', () => {
     expect(firstStrongDir('123 –—… !?')).toBe(null)
     expect(firstStrongDir('\u060C\u061B\u061F')).toBe(null)
     expect(firstStrongDir('')).toBe(null)
+  })
+})
+
+describe('selectionHasBidi', () => {
+  it('is true when the cursor or the selection touches an RTL paragraph', () => {
+    const editor = createEditor([para('first'), para('\u05e9\u05dc\u05d5\u05dd', { bidi: true })])
+    select(editor, 2)
+    expect(selectionHasBidi(editor)).toBe(false)
+    select(editor, 2, editor.state.doc.content.size - 2)
+    expect(selectionHasBidi(editor)).toBe(true)
+    select(editor, editor.state.doc.content.size - 2)
+    expect(selectionHasBidi(editor)).toBe(true)
+    editor.destroy()
   })
 })
 
@@ -342,11 +356,10 @@ describe('ribbon direction buttons carry translated aria-labels', () => {
   })
 
   it('wires both buttons with data-tip and aria-label (no new keys)', () => {
-    // adapted: 本地 Home tab 已从 Ribbon.tsx 提取为 home-tab.tsx，方向按钮随迁
-    const home = readFileSync(join(__dirname, '../src/renderer/components/home-tab.tsx'), 'utf8')
+    const ribbon = readFileSync(join(__dirname, '../src/renderer/components/Ribbon.tsx'), 'utf8')
     for (const key of ['ribbonDirLtrTip', 'ribbonDirRtlTip']) {
-      expect(home).toContain(`aria-label={t('${key}')}`)
-      expect(home).toContain(`data-tip={t('${key}')}`)
+      expect(ribbon).toContain(`aria-label={t('${key}')}`)
+      expect(ribbon).toContain(`data-tip={t('${key}')}`)
     }
   })
 })
@@ -356,12 +369,11 @@ describe('ai panel messages follow their own content direction', () => {
     // Panel chrome follows the UI language; message text must follow its own
     // content, so every message body carries dir="auto" (markup contract in
     // source, no browser needed)
-    // LOCAL(2026-09-21, d8201ad0): 消息 JSX 迁入按会话实例化的 AiConversationBody
-    const sources = ['AiPanel.tsx', 'AiConversationBody.tsx'].map((f) =>
-      readFileSync(join(__dirname, '../src/renderer/ai/', f), 'utf8'),
-    )
-    const hits = sources.flatMap((src) => src.match(/dir="auto"/g) ?? [])
-    expect(hits.length).toBeGreaterThanOrEqual(3)
+    // LOCAL(multi-session): message bodies render through AiConversationBody
+    const panel = readFileSync(join(__dirname, '../src/renderer/ai/AiPanel.tsx'), 'utf8')
+    const body = readFileSync(join(__dirname, '../src/renderer/ai/AiConversationBody.tsx'), 'utf8')
+    const hits = (panel.match(/dir="auto"/g) ?? []).length + (body.match(/dir="auto"/g) ?? []).length
+    expect(hits).toBeGreaterThanOrEqual(3)
   })
 
   it('resolves dir=auto message direction from the first strong character', () => {

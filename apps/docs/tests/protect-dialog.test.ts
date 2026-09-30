@@ -14,9 +14,6 @@ const DEFAULTS: Omit<Props, 'onApply' | 'onCancel'> = {
   writeProtection: null,
   protection: null,
   removePersonalInfo: false,
-  // real 100k-iteration SHA-512 exceeds any sane poll budget under parallel
-  // worker contention; 1000 keeps the hash→verify round-trip real but fast
-  hashSpinCount: 1000,
 }
 
 async function mount(partial: Partial<Props>) {
@@ -45,12 +42,11 @@ async function mount(partial: Partial<Props>) {
     })
   }
   // submit hashes/verifies passwords asynchronously (iterated SHA-512); keep
-  // flushing until the expected outcome shows up instead of guessing a delay.
-  // The cap must be generous: hashing alone takes ~7s idle and more under load.
+  // flushing until the expected outcome shows up instead of guessing a delay
   const submit = async (done: () => boolean) => {
     await click(host.querySelector('.btn-primary')!)
     const start = Date.now()
-    while (!done() && Date.now() - start < 60_000) {
+    while (!done() && Date.now() - start < 10_000) {
       await act(async () => {
         await new Promise((r) => setTimeout(r, 10))
       })
@@ -78,33 +74,25 @@ async function mount(partial: Partial<Props>) {
 }
 
 describe('ProtectDialog', () => {
-  it(
-    'submitting untouched state yields an all-undefined diff (even when passwords exist)',
-    { timeout: 90_000 },
-    async () => {
-      const wp = await hashProtectionPassword('modify-pw', 1000)
-      const d = await mount({ encrypted: true, writeProtection: wp })
-      await d.submit(d.applied)
-      expect(d.onApply).toHaveBeenCalledWith({})
-      await d.cleanup()
-    },
-  )
+  it('submitting untouched state yields an all-undefined diff (even when passwords exist)', async () => {
+    const wp = await hashProtectionPassword('modify-pw', 1000)
+    const d = await mount({ encrypted: true, writeProtection: wp })
+    await d.submit(d.applied)
+    expect(d.onApply).toHaveBeenCalledWith({})
+    await d.cleanup()
+  })
 
-  it(
-    'clearing the open-password field of an encrypted document requests removal',
-    { timeout: 90_000 },
-    async () => {
-      const d = await mount({ encrypted: true })
-      const [open, openConfirm] = d.passwordInputs()
-      await d.setValue(open, '')
-      await d.setValue(openConfirm, '')
-      await d.submit(d.applied)
-      expect(d.onApply).toHaveBeenCalledWith({ openPassword: null })
-      await d.cleanup()
-    },
-  )
+  it('clearing the open-password field of an encrypted document requests removal', async () => {
+    const d = await mount({ encrypted: true })
+    const [open, openConfirm] = d.passwordInputs()
+    await d.setValue(open, '')
+    await d.setValue(openConfirm, '')
+    await d.submit(d.applied)
+    expect(d.onApply).toHaveBeenCalledWith({ openPassword: null })
+    await d.cleanup()
+  })
 
-  it('mismatched confirmation blocks the submit', { timeout: 90_000 }, async () => {
+  it('mismatched confirmation blocks the submit', async () => {
     const d = await mount({})
     const [open, openConfirm] = d.passwordInputs()
     await d.setValue(open, 'abc')
@@ -114,78 +102,62 @@ describe('ProtectDialog', () => {
     await d.cleanup()
   })
 
-  it(
-    'setting a modify password produces verifiable writeProtection credentials',
-    { timeout: 90_000 },
-    async () => {
-      const d = await mount({})
-      const [, , modify, modifyConfirm] = d.passwordInputs()
-      await d.setValue(modify, 'to-modify')
-      await d.setValue(modifyConfirm, 'to-modify')
-      await d.submit(d.applied)
-      const result = d.onApply.mock.calls[0][0]
-      expect(result.openPassword).toBeUndefined()
-      expect(result.writeProtection?.hash).toBeTruthy()
-      expect(await verifyProtectionPassword('to-modify', result.writeProtection!)).toBe(true)
-      await d.cleanup()
-    },
-  )
+  it('setting a modify password produces verifiable writeProtection credentials', async () => {
+    const d = await mount({})
+    const [, , modify, modifyConfirm] = d.passwordInputs()
+    await d.setValue(modify, 'to-modify')
+    await d.setValue(modifyConfirm, 'to-modify')
+    await d.submit(d.applied)
+    const result = d.onApply.mock.calls[0][0]
+    expect(result.openPassword).toBeUndefined()
+    expect(result.writeProtection?.hash).toBeTruthy()
+    expect(await verifyProtectionPassword('to-modify', result.writeProtection!)).toBe(true)
+    await d.cleanup()
+  })
 
-  it(
-    'enabling a comments restriction without password enforces mode only',
-    { timeout: 90_000 },
-    async () => {
-      const d = await mount({})
-      const [enable] = d.host.querySelectorAll('input[type="checkbox"]')
-      await d.click(enable)
-      const radios = d.host.querySelectorAll('input[type="radio"]')
-      await d.click(radios[1]) // trackedChanges, comments, readOnly, forms
-      await d.submit(d.applied)
-      expect(d.onApply).toHaveBeenCalledWith({
-        protection: { edit: 'comments', enforced: true },
-      })
-      await d.cleanup()
-    },
-  )
+  it('enabling a comments restriction without password enforces mode only', async () => {
+    const d = await mount({})
+    const [enable] = d.host.querySelectorAll('input[type="checkbox"]')
+    await d.click(enable)
+    const radios = d.host.querySelectorAll('input[type="radio"]')
+    await d.click(radios[1]) // trackedChanges, comments, readOnly, forms
+    await d.submit(d.applied)
+    expect(d.onApply).toHaveBeenCalledWith({
+      protection: { edit: 'comments', enforced: true },
+    })
+    await d.cleanup()
+  })
 
-  it(
-    'removing a password-protected restriction requires the correct password',
-    { timeout: 90_000 },
-    async () => {
-      const creds = await hashProtectionPassword('lock-pw', 1000)
-      const d = await mount({ protection: { edit: 'readOnly', enforced: true, ...creds } })
-      const [enable] = d.host.querySelectorAll('input[type="checkbox"]')
-      await d.click(enable) // uncheck → unlock-password field appears
-      const unlock = d.passwordInputs().at(-1)!
-      await d.setValue(unlock, 'wrong')
-      await d.submit(d.errorShown)
-      expect(d.onApply).not.toHaveBeenCalled()
+  it('removing a password-protected restriction requires the correct password', async () => {
+    const creds = await hashProtectionPassword('lock-pw', 1000)
+    const d = await mount({ protection: { edit: 'readOnly', enforced: true, ...creds } })
+    const [enable] = d.host.querySelectorAll('input[type="checkbox"]')
+    await d.click(enable) // uncheck → unlock-password field appears
+    const unlock = d.passwordInputs().at(-1)!
+    await d.setValue(unlock, 'wrong')
+    await d.submit(d.errorShown)
+    expect(d.onApply).not.toHaveBeenCalled()
 
-      await d.setValue(d.passwordInputs().at(-1)!, 'lock-pw')
-      await d.submit(d.applied)
-      expect(d.onApply).toHaveBeenCalledWith({ protection: null })
-      await d.cleanup()
-    },
-  )
+    await d.setValue(d.passwordInputs().at(-1)!, 'lock-pw')
+    await d.submit(d.applied)
+    expect(d.onApply).toHaveBeenCalledWith({ protection: null })
+    await d.cleanup()
+  })
 
-  it(
-    'changing only the mode of an unlocked restriction keeps the existing hash',
-    { timeout: 90_000 },
-    async () => {
-      const creds = await hashProtectionPassword('lock-pw', 1000)
-      const d = await mount({ protection: { edit: 'readOnly', enforced: true, ...creds } })
-      const radios = d.host.querySelectorAll('input[type="radio"]')
-      await d.click(radios[0]) // switch readOnly → trackedChanges
-      await d.setValue(d.passwordInputs().at(-1)!, 'lock-pw')
-      await d.submit(d.applied)
-      const result = d.onApply.mock.calls[0][0]
-      expect(result.protection).toMatchObject({ edit: 'trackedChanges', enforced: true })
-      expect(result.protection?.hash).toBe(creds.hash)
-      await d.cleanup()
-    },
-  )
+  it('changing only the mode of an unlocked restriction keeps the existing hash', async () => {
+    const creds = await hashProtectionPassword('lock-pw', 1000)
+    const d = await mount({ protection: { edit: 'readOnly', enforced: true, ...creds } })
+    const radios = d.host.querySelectorAll('input[type="radio"]')
+    await d.click(radios[0]) // switch readOnly → trackedChanges
+    await d.setValue(d.passwordInputs().at(-1)!, 'lock-pw')
+    await d.submit(d.applied)
+    const result = d.onApply.mock.calls[0][0]
+    expect(result.protection).toMatchObject({ edit: 'trackedChanges', enforced: true })
+    expect(result.protection?.hash).toBe(creds.hash)
+    await d.cleanup()
+  })
 
-  it('toggling privacy reports only the privacy change', { timeout: 90_000 }, async () => {
+  it('toggling privacy reports only the privacy change', async () => {
     const d = await mount({})
     const checkboxes = d.host.querySelectorAll('input[type="checkbox"]')
     await d.click(checkboxes[checkboxes.length - 1])

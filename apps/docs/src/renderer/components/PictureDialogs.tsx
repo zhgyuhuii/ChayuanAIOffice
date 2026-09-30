@@ -12,6 +12,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { removeBackground, sampleBackgroundColors, type PixelImage, type RGB } from '../cutout'
 import { useI18n, type StringKey } from '../i18n/locale'
+import { useModalKeys } from './modal-keys'
 
 /** Longest side of the preview canvas (px) */
 const PREVIEW_MAX = 520
@@ -132,16 +133,8 @@ export function CutoutDialog({ dataUrl, onApply, onCancel }: CutoutProps) {
     [],
   )
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault()
-        onCancel()
-      }
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onCancel])
+  // Esc/Tab/focus handled by useModalKeys on the backdrop (single handler).
+  const modalKeys = useModalKeys(onCancel)
 
   const apply = () => {
     const full = fullRef.current
@@ -164,13 +157,21 @@ export function CutoutDialog({ dataUrl, onApply, onCancel }: CutoutProps) {
   }
 
   return (
-    <div className="modal-backdrop" onClick={onCancel}>
+    <div
+      className="modal-backdrop"
+      ref={modalKeys.ref}
+      onKeyDown={modalKeys.onKeyDown}
+      onClick={onCancel}
+    >
       <div
         className="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cutout-title"
         style={{ maxWidth: PREVIEW_MAX + 48 }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2>{t('ribbonRemoveBg')}</h2>
+        <h2 id="cutout-title">{t('ribbonRemoveBg')}</h2>
         <div
           style={{
             ...CHECKERBOARD,
@@ -255,24 +256,16 @@ const MIN_CROP_PX = 16
 
 interface CropProps {
   dataUrl: string
-  /** The selection's current crop (a:srcRect trimmed fractions); seeds the frame */
-  initial?: { l: number; t: number; r: number; b: number } | null
-  /** Apply: the crop as trimmed fractions — bytes stay untouched (non-destructive a:srcRect) */
-  onApply: (crop: { l: number; t: number; r: number; b: number }) => void
+  /** Apply: the cropped dataUrl (png/jpeg follows the original format) */
+  onApply: (croppedDataUrl: string) => void
   onCancel: () => void
 }
 
-export function CropDialog({ dataUrl, initial, onApply, onCancel }: CropProps) {
+export function CropDialog({ dataUrl, onApply, onCancel }: CropProps) {
   const { t } = useI18n()
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState<StringKey | null>(null)
-  // Internal state keeps l/t offsets and r/b EDGES; a:srcRect stores the
-  // trimmed fractions, so seed and apply convert the right/bottom pair.
-  const [crop, setCrop] = useState<CropRect>(
-    initial
-      ? { l: initial.l, t: initial.t, r: 1 - initial.r, b: 1 - initial.b }
-      : { l: 0, t: 0, r: 1, b: 1 },
-  )
+  const [crop, setCrop] = useState<CropRect>({ l: 0, t: 0, r: 1, b: 1 })
   /** Preview display size (CSS px) */
   const [view, setView] = useState<{ w: number; h: number } | null>(null)
   const imgRef = useRef<HTMLImageElement | null>(null)
@@ -325,26 +318,40 @@ export function CropDialog({ dataUrl, initial, onApply, onCancel }: CropProps) {
   }, [dataUrl, updateView])
 
   const apply = useCallback(() => {
-    // Non-destructive: hand back the trimmed fractions (the frame size stays
-    // imageWidthPx/HeightPx); the original bytes never change, so 重设图片
-    // can always restore the full picture.
-    onApply({ l: crop.l, t: crop.t, r: 1 - crop.r, b: 1 - crop.b })
-  }, [crop, onApply])
+    const img = imgRef.current
+    if (!img) return
+    const w = img.naturalWidth
+    const h = img.naturalHeight
+    const sx = Math.round(crop.l * w)
+    const sy = Math.round(crop.t * h)
+    const sw = Math.max(1, Math.round((crop.r - crop.l) * w))
+    const sh = Math.max(1, Math.round((crop.b - crop.t) * h))
+    try {
+      const c = document.createElement('canvas')
+      c.width = sw
+      c.height = sh
+      c.getContext('2d')!.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh)
+      // jpeg has no alpha channel; keep jpeg to avoid size bloat. Others (png/gif) all output png to preserve transparency
+      const isJpeg = /^data:image\/jpeg/.test(dataUrl)
+      onApply(isJpeg ? c.toDataURL('image/jpeg', 0.92) : c.toDataURL('image/png'))
+    } catch {
+      setError('ribbonImageProcessFail')
+    }
+  }, [crop, dataUrl, onApply])
 
-  // Esc cancels / Enter applies
+  // Enter applies (Esc/Tab/focus come from useModalKeys on the backdrop).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault()
-        onCancel()
-      } else if (e.key === 'Enter' && loaded && !error) {
+      if (e.key === 'Enter' && loaded && !error) {
         e.preventDefault()
         apply()
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [onCancel, apply, loaded, error])
+  }, [apply, loaded, error])
+
+  const modalKeys = useModalKeys(onCancel)
 
   const startDrag = (handle: CropHandle) => (e: React.MouseEvent) => {
     e.preventDefault()
@@ -430,9 +437,17 @@ export function CropDialog({ dataUrl, initial, onApply, onCancel }: CropProps) {
   const HANDLES: CropHandle[] = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w']
 
   return (
-    <div className="modal-backdrop" onClick={onCancel}>
+    <div
+      className="modal-backdrop"
+      ref={modalKeys.ref}
+      onKeyDown={modalKeys.onKeyDown}
+      onClick={onCancel}
+    >
       <div
         className="modal crop-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="crop-title"
         style={{
           width: PREVIEW_MAX + 48 + CROP_HANDLE_GUTTER * 2,
           maxWidth: 'calc(100vw - 32px)',
@@ -442,7 +457,7 @@ export function CropDialog({ dataUrl, initial, onApply, onCancel }: CropProps) {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2>{t('ribbonCrop')}</h2>
+        <h2 id="crop-title">{t('ribbonCrop')}</h2>
         <div
           style={{
             ...CHECKERBOARD,

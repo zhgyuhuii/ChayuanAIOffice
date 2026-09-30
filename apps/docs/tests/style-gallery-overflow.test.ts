@@ -1,8 +1,6 @@
 // Regression (feedback row 53): the home-tab style gallery clipped overflowing
 // cards with no way to reach them. The gallery must show a "more styles"
 // expander whenever cards are cut off, and the expander grid must list every style.
-// WPS-parity follow-up: the expander is permanent — even when every card fits
-// the row there is always a dropdown entry to the full style list.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
@@ -63,6 +61,9 @@ function ribbonProps(editor: Editor) {
     onSection: noop,
     activeSection: null,
     onInsertSectionBreak: noop,
+    onPaperSizeAll: noop,
+    mirrorMargins: false,
+    onMirrorMargins: noop,
     pageColor: null,
     onPageColor: noop,
     watermark: null,
@@ -85,6 +86,7 @@ function ribbonProps(editor: Editor) {
     zoom: 100,
     onZoom: noop,
     onZoomFit: noop,
+    onZoomDialog: noop,
     darkPage: false,
     onDarkPage: noop,
     onAiPreset: noop,
@@ -94,10 +96,9 @@ function ribbonProps(editor: Editor) {
     onInsertField: noop,
     footer: null,
     onFooter: noop,
-    titlePg: false,
-    onTitlePg: noop,
-    evenOddHf: false,
-    onEvenOddHf: noop,
+    hfEditing: null,
+    onHfAction: noop,
+    onHfEdit: noop,
     showMarks: false,
     onShowMarks: noop,
     showRuler: false,
@@ -106,9 +107,14 @@ function ribbonProps(editor: Editor) {
     onShowNav: noop,
     commentCount: 0,
     openCommentCount: 0,
+    resolvedCommentCount: 0,
     onShowComments: noop,
     canComment: false,
     onNewComment: noop,
+    commentAtCaret: false,
+    onDeleteComment: noop,
+    onDeleteAllComments: noop,
+    onGotoComment: noop,
     trackChanges: false,
     onTrackChanges: noop,
     spellcheck: true,
@@ -178,17 +184,13 @@ describe('style gallery overflow', () => {
     vi.unstubAllGlobals()
   })
 
-  it('keeps the expander visible even while every card fits (WPS parity)', () => {
+  it('shows no expander while every card fits', () => {
     expect(container.querySelector('.style-gallery')).not.toBeNull()
-    expect(container.querySelectorAll('.style-gallery .style-card').length).toBe(9)
-    const more = container.querySelector<HTMLButtonElement>('.style-gallery-more')!
-    expect(more).not.toBeNull()
-    // and it still opens the full grid without any overflow
-    act(() => more.click())
-    expect(container.querySelectorAll('.style-gallery-menu .style-card').length).toBe(9)
+    expect(container.querySelectorAll('.style-gallery .style-card').length).toBe(4)
+    expect(container.querySelector('.style-gallery-more')).toBeNull()
   })
 
-  it('caps the gallery when cards wrap out of view and clears the cap when they fit again', () => {
+  it('shows the expander when cards wrap out of view and hides it when they fit again', () => {
     const gallery = container.querySelector('.style-gallery')!
     const wrap = gallery.parentElement!
     setRowLayout(gallery, 2)
@@ -197,9 +199,9 @@ describe('style gallery overflow', () => {
     // the gallery is capped right after the last visible card (2 × 78 - 4 gap)
     expect((gallery as HTMLElement).style.maxWidth).toBe('152px')
 
-    setRowLayout(gallery, 9)
+    setRowLayout(gallery, 4)
     act(() => FakeResizeObserver.fire(wrap))
-    expect(container.querySelector('.style-gallery-more')).not.toBeNull()
+    expect(container.querySelector('.style-gallery-more')).toBeNull()
     expect((gallery as HTMLElement).style.maxWidth).toBe('')
   })
 
@@ -214,8 +216,8 @@ describe('style gallery overflow', () => {
 
     const menu = container.querySelector('.style-gallery-menu')!
     const cards = menu.querySelectorAll<HTMLButtonElement>('.style-card')
-    // 7 paragraph styles (正文 + 标题1-6) + 2 preset character styles: nothing is dropped
-    expect(cards.length).toBe(9)
+    // the four fallback paragraph styles: nothing is dropped
+    expect(cards.length).toBe(4)
 
     editor.commands.setTextSelection(3)
     act(() => cards[1].click()) // Heading 1
