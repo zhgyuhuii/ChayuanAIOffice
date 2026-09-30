@@ -176,6 +176,25 @@
 - **ui 包**：折叠 Ribbon 新交互模型、AI 面板初始态受「新文档打开 AI 面板」设置门控、形状画廊（ShapePreview/SHAPE_GALLERY_GROUPS）
 - **markdown/html/slides**：折叠 Ribbon 新模型同步适配
 
+### 第十八轮 E·收官评估（2026-09-30，施工于 sync/18e-remaining 分支；「尽量与上游保持一致」指令的残余差异逐域裁决——结论：剩余差异全部为上游没有的本地 A 区功能，非落后）
+
+| 域 | 评估结论 | 裁定 |
+|---|---|---|
+| pdf App/AiPanel（565 行差异） | 上游 #1169 defer-annotation-scan（注解扫描延至首次 AI 使用）等上游特性**已在位**（annotation-catalog/AiContext load 装配核对）；剩余差异=本地多会话 AiPanel（c2b045ec 会话池，上游 234 提交内无多会话实现）+DockShell 布局（P1 契约）+ai tools 本地超集（hasImageModel 语义链+generate_image 失败引导 image_search） | **保持本地**；上游 AiPanel 单会话模型与本地会话池不兼容，上游原生多会话落地时按收敛条件重评 |
+| slides Ribbon（1484 行差异） | ~180 行=动画面板/切换音效/演示器等本地特性（AnimVariantPicker/TransEffectOptions/TransSoundSelect/SOUND_VOLUME_KEY）；collapse 新模型字段（rootClass/tabClass/onTabPress/onTabsDoubleClick）本地已用=API 兼容；上游侧无本地缺失特性 | **保持本地**（动画面板为产品功能） |
+| markdown App/Ribbon（427/169 行差异） | 差异=DockShell docked-boot（panel=0 P1 契约）+dockedEditor 生命周期+多会话面板体 | **保持本地**（同 pdf 理由） |
+| shell tab-manager | spare-view did-finish-load/注册表在位 | 收敛完成 |
+| docs | App/Ribbon/ribbon-tabs/Ruler+45 组件+25 editor 模块+i18n 三域+tests helpers 均上游结构（Round C/D） | 已收敛 |
+
+**区间吸收总账**：3f9d07d..upstream/main 234 提交——A 引擎 12 域+B shell/pdf/slides/html+vi+C docs 编辑器域+D docs UI 骨架/ui 包，功能级全部落位；仅存的源码差异=本地功能超集（多会话/DockShell/动画面板/ai tools 引导语），无落后项。
+
+**门禁**：typecheck 0；全量 15248 测试全绿 EXIT 0。
+
+### 第十八轮 E 更新内容汇总（产品视角）
+
+- 本轮无新功能落地——为收官裁决轮：确认 pdf「注解扫描延至 AI 首用」等上游特性已在位，四应用剩余差异均为本地功能超集
+- 产品口径：上游后续若实现多会话对话栏（会话池/会话列表），需重评四端 AiPanel 收敛（收敛条件已记录于源码注释）
+
 ### 第十七轮增量（2026-09-25，0d90149..3f9d07d：18 提交，施工于 sync/upstream-20260922b 分支；本地 shell 版本 1.0.3 自主线，上游 0.10.0 不跟随——激活 UI/购买体系为本地 B 区，版本号本地为准）
 
 | 内容 | 结果 |
