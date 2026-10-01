@@ -123,7 +123,7 @@ import {
 import { RibbonColorPalette } from './ribbon-color-palette'
 import { HeaderFooterTab, type HfAction, type HfEditingInfo } from './ribbon-hf-tab'
 import { PasteSpecialDialog } from './PasteSpecialDialog'
-import { fontFamiliesFor, isEastAsianFontName } from '../font-list'
+import { fontFamiliesFor, isEastAsianFontName, systemFamiliesBesidesCandidates } from '../font-list'
 import {
   fontSizeLabel,
   fontSizeOptions,
@@ -159,6 +159,8 @@ import {
   IconAutoFit,
   IconBorderAll,
   IconBorderBottom,
+  IconBorderDiagonalDown,
+  IconBorderDiagonalUp,
   IconBorderInner,
   IconBorderInsideH,
   IconBorderInsideV,
@@ -520,6 +522,8 @@ const TABLE_BORDER_ITEMS: Record<
   inner: { label: 'ribbonInnerBorders', Icon: IconBorderInner },
   insideH: { label: 'ribbonTableInsideHBorders', Icon: IconBorderInsideH },
   insideV: { label: 'ribbonTableInsideVBorders', Icon: IconBorderInsideV },
+  tl2br: { label: 'ribbonTableDiagonalDownBorders', Icon: IconBorderDiagonalDown },
+  tr2bl: { label: 'ribbonTableDiagonalUpBorders', Icon: IconBorderDiagonalUp },
 }
 
 /** Table Layout ▸ Select ▾ in Word for Mac order */
@@ -1296,7 +1300,10 @@ function RibbonInner({
   // computed unconditionally (not inside the dropdown render): cheap, and the
   // render-isolation test uses fontFamiliesFor calls as its render probe
   const fontFamilies = fontFamiliesFor(lang)
-  const { families: systemFontFamilies, load: loadSystemFonts } = useSystemFontFamilies()
+  const { families: allSystemFontFamilies, load: loadSystemFonts } = useSystemFontFamilies()
+  // every candidate stays listed (the machine may genuinely lack some), so the
+  // system section is the candidates-deduped remainder: no builtin is listed twice
+  const systemFontFamilies = systemFamiliesBesidesCandidates(fontFamilies, allSystemFontFamilies)
   // unset align follows the paragraph direction: start is left in LTR, right in RTL
   const activeAlign = fs.align ?? (fs.bidi ? 'right' : 'left')
   // like Word, direction buttons appear only with an RTL UI language or RTL paragraphs at hand

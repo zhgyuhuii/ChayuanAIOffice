@@ -28,6 +28,7 @@
     "@chatoffice/ai-provider": "*",
     "@chatoffice/ai-search": "*",
     "@chatoffice/docx-engine": "*",
+    "@chatoffice/zip-gate": "*",
     "@chatoffice/electron-utils": "*",
     "@chatoffice/file-parse": "*",
     "@chatoffice/i18n": "*",

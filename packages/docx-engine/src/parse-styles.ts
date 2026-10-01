@@ -123,14 +123,8 @@ export async function parseStyles(
       }
     }
     if (rPr) {
-      const onFlag = (tag: string) => {
-        const node = findChild(rPr, tag)
-        if (!node) return undefined
-        const val = attrsOf(node)['w:val']
-        return val === '0' || val === 'false' ? undefined : true
-      }
-      if (onFlag('w:b')) dd.bold = true
-      if (onFlag('w:i')) dd.italic = true
+      if (onOffOf(rPr, 'w:b')) dd.bold = true
+      if (onOffOf(rPr, 'w:i')) dd.italic = true
       const color = colorFrom(rPr, theme)
       if (color) dd.color = color
       const kern = attrsOf(findChild(rPr, 'w:kern') ?? {})['w:val']
@@ -198,12 +192,6 @@ export async function parseStyles(
     if (basedOn) basedOnIds.set(styleId, basedOn)
     const link = attrsOf(findChild(styleNode, 'w:link') ?? {})['w:val']
     if (link) linkedIds.set(styleId, link)
-    const onFlag = (tag: string): boolean | undefined => {
-      const node = findChild(styleNode, tag)
-      if (!node) return undefined
-      const val = attrsOf(node)['w:val']
-      return val === '0' || val === 'false' ? undefined : true
-    }
     const uiPriorityRaw = attrsOf(findChild(styleNode, 'w:uiPriority') ?? {})['w:val']
     const uiPriority =
       uiPriorityRaw !== undefined && /^\d+$/.test(uiPriorityRaw)
@@ -229,10 +217,10 @@ export async function parseStyles(
       headingLevel,
       headingOutlineOff: outlineOffIds.has(styleId) ? true : undefined,
       basedOn,
-      semiHidden: onFlag('w:semiHidden'),
-      qFormat: onFlag('w:qFormat'),
+      semiHidden: onOffOf(styleNode, 'w:semiHidden'),
+      qFormat: onOffOf(styleNode, 'w:qFormat'),
       uiPriority,
-      unhideWhenUsed: onFlag('w:unhideWhenUsed'),
+      unhideWhenUsed: onOffOf(styleNode, 'w:unhideWhenUsed'),
       custom:
         attrs['w:customStyle'] === '1' || attrs['w:customStyle'] === 'true' ? true : undefined,
       display: type === 'table' ? undefined : styleDisplayOf(styleNode, theme, themeFonts),

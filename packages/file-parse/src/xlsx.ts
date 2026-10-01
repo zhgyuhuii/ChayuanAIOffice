@@ -1,5 +1,5 @@
 import JSZip from 'jszip'
-import { assertZipWithinLimits } from '@chatoffice/docx-engine'
+import { assertZipInflatesWithinLimits, assertZipWithinLimits } from '@chatoffice/docx-engine'
 import { resolveTarget } from './opc'
 import { XMLParser } from 'fast-xml-parser'
 import {
@@ -191,6 +191,9 @@ export const MAX_XLSX_COLS = 16_384
 
 /** extract sheet text from an xlsx: one "# SheetName" section per sheet, cells joined with " | " */
 export async function xlsxToText(bytes: Uint8Array): Promise<string> {
+  // The declared-size pass below is advisory; this metered gate is the one that
+  // holds when a part lies about its size (GH #759).
+  await assertZipInflatesWithinLimits(bytes)
   const zip = await JSZip.loadAsync(bytes)
   assertZipWithinLimits(zip)
   const workbookXml = await zipText(zip, 'xl/workbook.xml')
@@ -255,6 +258,12 @@ export async function xlsxToText(bytes: Uint8Array): Promise<string> {
         cells[target] = text
         if (text.trim()) hasData = true
       }
+      // Trailing empty slots carry no information (the leading cells and the
+      // gaps between real cells keep their column positions): one row with a
+      // lone far-right cell used to emit ~49 KB of separators, and rows like
+      // that multiplied into gigabytes of output from a few-KB file
+      // (measured: 18 KB / 2,000 rows -> 94 MB, 5,200x).
+      while (cells.length > 0 && cells[cells.length - 1] === '') cells.pop()
       lines.push(cells.join(' | '))
     }
     if (hasData) sheetsWithData += 1

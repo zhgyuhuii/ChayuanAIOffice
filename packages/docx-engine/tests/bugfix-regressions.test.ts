@@ -520,3 +520,17 @@ describe('gradFill textbox approximates the average of all stops as a solid fill
     expect(doc.blocks[0].textboxes?.[0].fill).toBe('00B050')
   })
 })
+
+describe('sectionSettingsFromXml single-quote attributes', () => {
+  it('reads w:val/w:restart/w:type spelled with single quotes', () => {
+    const settings = sectionSettingsFromXml(
+      "<w:sectPr><w:footnotePr><w:numFmt w:val='upperRoman'/></w:footnotePr>" +
+        "<w:lnNumType w:restart='continuous' w:start='2'/>" +
+        "<w:pgBorders><w:top w:val='single' w:sz='4' w:space='1' w:color='FF0000'/></w:pgBorders></w:sectPr>",
+    )
+    expect(settings.footnotePr?.numFmt).toBe('upperRoman')
+    expect(settings.lineNumbers?.restart).toBe('continuous')
+    expect(settings.pageBorder).toBe(true)
+    expect(settings.pageBorderProps?.sides?.top?.val).toBe('single')
+  })
+})

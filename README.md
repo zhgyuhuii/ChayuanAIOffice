@@ -259,7 +259,7 @@ Bilingual keyword table with the owning product (retired product-line names are 
 
 Chayuan AI Office is licensed under the **Apache License 2.0** ([LICENSE](LICENSE)), with one exception: the `ee/` directory is reserved for future enterprise modules and is covered by the [Chayuan AI Office Enterprise License](ee/LICENSE). Apache-2.0 permits commercial use and re-development.
 
-**Upstream & acknowledgements.** This suite is a rebrand distribution that stays continuously in sync with its open-source upstream, **GenOffice** (GitHub only). It builds on Electron, Univer, PDFium, pdf.js, pdf-lib, Tiptap / ProseMirror, Konva, HarfBuzz (wasm), calamine, IronCalc, and the Liberation / Carlito / Caladea / Noto CJK font families — see the full list in [CONTRIBUTING.md](CONTRIBUTING.md) and the generated third-party notices.
+**Upstream & acknowledgements.** This suite is a rebrand distribution that stays continuously in sync with its open-source upstream, **ChaAI Office** (GitHub only). It builds on Electron, Univer, PDFium, pdf.js, pdf-lib, Tiptap / ProseMirror, Konva, HarfBuzz (wasm), calamine, IronCalc, and the Liberation / Carlito / Caladea / Noto CJK font families — see the full list in [CONTRIBUTING.md](CONTRIBUTING.md) and the generated third-party notices.
 
 **Brand.** The 察元 / Chayuan names and logos are trademarks of their owner (Beijing Zhilingbird Technology Center). Forks should use their own branding. This product is unrelated to any public open-source project of the same generic name.
 
@@ -320,4 +320,4 @@ See [SECURITY.md](SECURITY.md) for the security posture (renderer sandboxing, IP
 - **与 察元AI OS 的关系？** 同家族成员，共用智能体内核与助手库；同机已购 OS 即 Office 免激活。
 
 **开源与许可 · License**
-Apache-2.0（`ee/` 企业目录适用独立企业许可）。持续同步上游 GenOffice（仅 GitHub 仓库致谢，不对外挂其站点）。商标归察元 / 北京智灵鸟科技中心；分叉请使用自有品牌。本产品与任何同名公共开源项目无关联。
+Apache-2.0（`ee/` 企业目录适用独立企业许可）。持续同步上游 ChaAI Office（仅 GitHub 仓库致谢，不对外挂其站点）。商标归察元 / 北京智灵鸟科技中心；分叉请使用自有品牌。本产品与任何同名公共开源项目无关联。

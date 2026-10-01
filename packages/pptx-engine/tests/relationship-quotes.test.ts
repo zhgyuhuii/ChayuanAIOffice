@@ -77,6 +77,30 @@ describe('quote-agnostic relationship and content-type lookup', () => {
     expect(hasContentTypeOverride(sq, 'ppt/slides/slide2.xml')).toBe(false)
     expect(hasContentTypeOverride(dq, 'ppt/slides/slide1.xml.bak')).toBe(false)
   })
+
+  it('matches a Default extension whatever the attribute order', async () => {
+    const opened = await openPptx(await createBlankPptx())
+    const ct = opened.archive.readText('[Content_Types].xml')!
+    // ContentType before Extension, the order OPC producers are free to write
+    const existing = '<Default ContentType="video/mp4" Extension="mp4"/>'
+    opened.archive.entries.set(
+      '[Content_Types].xml',
+      Buffer.from(
+        ct.replace('</Types>', () => `${existing}</Types>`),
+        'utf8',
+      ),
+    )
+
+    expect(addMedia(opened, 0, { kind: 'video', bytes: MP4, ext: 'mp4', offset: OFF })).toBeTruthy()
+
+    const mp4Defaults = [
+      ...opened.archive.readText('[Content_Types].xml')!.matchAll(/<Default\b[^>]*\/?>/g),
+    ]
+      .map((m) => m[0])
+      .filter((tag) => /\bExtension\s*=\s*["']mp4["']/.test(tag))
+    // A second Default for mp4 is what OPC forbids
+    expect(mp4Defaults).toEqual([existing])
+  })
 })
 
 describe('writers allocate unique ids and overrides on a single-quoted package', () => {

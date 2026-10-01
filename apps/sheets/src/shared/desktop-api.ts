@@ -789,6 +789,9 @@ export const workbookFileSchema = z
     /// Shell-created untitled blank backed by a hidden temp file: the first
     /// save opens a Save As dialog (like needsSaveAs) but the 30s crash
     /// recovery copy stays enabled — the temp backing file is throwaway.
+    /// shell-created blank session: the backing temp file is throwaway — the
+    /// first save writes the backing temp file in place, no dialog).
+    unsavedNew: z.boolean().optional(),
     blankDraft: z.boolean().optional(),
     /// CSV session: the original .csv on disk. Save keeps the CSV identity —
     /// the renderer sends csvContent with the save and the main process
@@ -1105,10 +1108,12 @@ export const workbookRecalcRequestSchema = z
             sheetId: z.string().min(1),
             range: z
               .object({
-                startRow: z.number().int().nonnegative(),
-                endRow: z.number().int().nonnegative(),
-                startColumn: z.number().int().nonnegative(),
-                endColumn: z.number().int().nonnegative(),
+                // the xlsx sheet limits, 0-indexed — a larger value would reach
+                // the Rust engine as usize and truncate on the i32 cast there
+                startRow: z.number().int().nonnegative().max(1_048_575),
+                endRow: z.number().int().nonnegative().max(1_048_575),
+                startColumn: z.number().int().nonnegative().max(16_383),
+                endColumn: z.number().int().nonnegative().max(16_383),
               })
               .strict(),
           })

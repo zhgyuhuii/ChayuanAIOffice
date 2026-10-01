@@ -163,6 +163,8 @@ export const th = {
   ribbonTableInsideVBorders: 'Inside Vertical',
   ribbonTableInsideVBordersTip: 'Inside vertical borders for the whole table',
   ribbonClearBordersTip: 'ล้างเส้นขอบของเซลล์ที่เลือก',
+  ribbonTableDiagonalDownBorders: 'Diagonal Down Border',
+  ribbonTableDiagonalUpBorders: 'Diagonal Up Border',
   ribbonBorderColor: 'สีเส้นขอบ',
   ribbonBorderWidth: 'ความหนาเส้นขอบ',
   ribbonPtValue: '{n} พอยต์',

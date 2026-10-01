@@ -58,6 +58,15 @@ const columnLabelSchema = z
   .string()
   .regex(/^[A-Z]{1,3}$/)
   .refine(withinGridColumn, 'Column is past the last grid column (XFD)')
+/// 1-based first row of a row-axis span, capped at the last grid row: past it
+/// names no cell the file can hold.
+const rowStartSchema = z.number().int().min(1).max(MAX_GRID_ROWS)
+/// The field caps still admit a span overhanging the edge (row 1048576, count
+/// 5), so the span end is checked across both fields. Zod runs this only once
+/// row and count parse, so the arithmetic below never sees a bad value.
+const rowSpanFits = (span: { row: number; count: number }): boolean =>
+  span.row + span.count - 1 <= MAX_GRID_ROWS
+const ROW_SPAN_ERROR = `Rows must end at or before ${MAX_GRID_ROWS}.`
 const sheetNameSchema = z
   .string()
   .trim()
@@ -207,21 +216,25 @@ const convertToValuesSchema = z.object({
   range: cellRangeSchema,
 })
 
-const insertRowsSchema = z.object({
-  op: z.literal('insert_rows'),
-  sheetId: z.string().min(1),
-  /** 1-based; new rows are inserted before this row */
-  row: z.number().int().min(1).max(9999999),
-  count: z.number().int().min(1).max(500),
-})
+const insertRowsSchema = z
+  .object({
+    op: z.literal('insert_rows'),
+    sheetId: z.string().min(1),
+    /** 1-based; new rows are inserted before this row */
+    row: rowStartSchema,
+    count: z.number().int().min(1).max(500),
+  })
+  .refine(rowSpanFits, ROW_SPAN_ERROR)
 
-const deleteRowsSchema = z.object({
-  op: z.literal('delete_rows'),
-  sheetId: z.string().min(1),
-  /** 1-based first row to delete */
-  row: z.number().int().min(1).max(9999999),
-  count: z.number().int().min(1).max(500),
-})
+const deleteRowsSchema = z
+  .object({
+    op: z.literal('delete_rows'),
+    sheetId: z.string().min(1),
+    /** 1-based first row to delete */
+    row: rowStartSchema,
+    count: z.number().int().min(1).max(500),
+  })
+  .refine(rowSpanFits, ROW_SPAN_ERROR)
 
 const insertColsSchema = z.object({
   op: z.literal('insert_cols'),
@@ -565,14 +578,16 @@ const addPivotSchema = z.object({
     .optional(),
 })
 
-const setRowsHiddenSchema = z.object({
-  op: z.literal('set_rows_hidden'),
-  sheetId: z.string().min(1),
-  /** 1-based first row */
-  row: z.number().int().min(1).max(9999999),
-  count: z.number().int().min(1).max(10000).default(1),
-  hidden: z.boolean(),
-})
+const setRowsHiddenSchema = z
+  .object({
+    op: z.literal('set_rows_hidden'),
+    sheetId: z.string().min(1),
+    /** 1-based first row */
+    row: rowStartSchema,
+    count: z.number().int().min(1).max(10000).default(1),
+    hidden: z.boolean(),
+  })
+  .refine(rowSpanFits, ROW_SPAN_ERROR)
 
 const setColsHiddenSchema = z.object({
   op: z.literal('set_cols_hidden'),
@@ -747,6 +762,37 @@ const headerFooterPartsSchema = z.object({
   right: z.string().max(255).optional(),
 })
 
+/// Print-title spans: title rows ("1:3"), title columns ("A:B"), or both
+/// ("A:B,1:3"). A refine runs even when the pattern fails, so this must not
+/// throw on unparseable values.
+const isValidPrintTitles = (value: string): boolean => {
+  try {
+    const spans = value.split(',')
+    if (spans.length > 2) return false
+    let rows = 0
+    let cols = 0
+    for (const raw of spans) {
+      const span = raw.trim()
+      const rowSpan = /^\$?(\d{1,7}):\$?(\d{1,7})$/.exec(span)
+      if (rowSpan) {
+        if (Number(rowSpan[1]) > Number(rowSpan[2])) return false
+        rows += 1
+        continue
+      }
+      const colSpan = /^\$?([A-Za-z]{1,3}):\$?([A-Za-z]{1,3})$/.exec(span)
+      if (colSpan) {
+        if (columnIndex(colSpan[1]!) > columnIndex(colSpan[2]!)) return false
+        cols += 1
+        continue
+      }
+      return false
+    }
+    return rows <= 1 && cols <= 1 && rows + cols > 0
+  } catch {
+    return false
+  }
+}
+
 const setPageSetupSchema = z.object({
   op: z.literal('set_page_setup'),
   sheetId: z.string().min(1),
@@ -764,10 +810,13 @@ const setPageSetupSchema = z.object({
   printHeadings: z.boolean().optional(),
   /** A1 range to print; null clears the print area */
   printArea: cellRangeSchema.nullable().optional(),
-  /** rows repeated at the top of every printed page, e.g. "1:1"; null clears */
+  /** title rows ("1:1") and/or columns ("A:A") repeated on every printed page; null clears */
   printTitles: z
     .string()
-    .regex(/^\$?\d{1,7}:\$?\d{1,7}$/)
+    .regex(
+      /^\$?([A-Za-z]{1,3}|\d{1,7}):\$?([A-Za-z]{1,3}|\d{1,7})(,\$?([A-Za-z]{1,3}|\d{1,7}):\$?([A-Za-z]{1,3}|\d{1,7}))?$/,
+    )
+    .refine(isValidPrintTitles, 'Invalid print titles (rows "1:3", columns "A:B", or both)')
     .nullable()
     .optional(),
   /** printed header / footer sections; text carries Excel codes (&P page, &N pages, &D date, &F file, &A sheet); null clears */
@@ -898,15 +947,17 @@ const unmergeCellsSchema = z.object({
   range: cellRangeSchema,
 })
 
-const setRowHeightSchema = z.object({
-  op: z.literal('set_row_height'),
-  sheetId: z.string().min(1),
-  /** 1-based first row */
-  row: z.number().int().min(1).max(9999999),
-  count: z.number().int().min(1).max(500).default(1),
-  /** Excel points (2–409) */
-  heightPoints: z.number().min(2).max(409),
-})
+const setRowHeightSchema = z
+  .object({
+    op: z.literal('set_row_height'),
+    sheetId: z.string().min(1),
+    /** 1-based first row */
+    row: rowStartSchema,
+    count: z.number().int().min(1).max(500).default(1),
+    /** Excel points (2–409) */
+    heightPoints: z.number().min(2).max(409),
+  })
+  .refine(rowSpanFits, ROW_SPAN_ERROR)
 
 const setColWidthSchema = z.object({
   op: z.literal('set_col_width'),
@@ -1767,7 +1818,9 @@ export function expandToPrimitiveOps(
           sheetId: operation.sheetId,
           address: change.address,
           value: change.after,
-          expectedValue: change.before,
+          // Guards on the display text: the CAS compares the cell's `value`,
+          // so the raw `before` would fail the check on a formatted cell.
+          expectedValue: change.expectedValue,
         })
       }
     } else if (operation.op === 'add_pivot') {
@@ -2124,7 +2177,9 @@ export function layoutOpLabel(op: LayoutOperation): string {
       if (op.printArea !== undefined)
         parts.push(op.printArea === null ? 'clear print area' : `print area ${op.printArea}`)
       if (op.printTitles !== undefined)
-        parts.push(op.printTitles === null ? 'clear print titles' : `repeat rows ${op.printTitles}`)
+        parts.push(
+          op.printTitles === null ? 'clear print titles' : `repeat titles ${op.printTitles}`,
+        )
       if (op.header !== undefined) parts.push(op.header === null ? 'clear header' : 'header')
       if (op.footer !== undefined) parts.push(op.footer === null ? 'clear footer' : 'footer')
       if (op.rowBreaks !== undefined) parts.push(`${op.rowBreaks.length} row break(s)`)

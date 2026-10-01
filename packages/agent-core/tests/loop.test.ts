@@ -1026,6 +1026,25 @@ describe('AgentLoop', () => {
     expect(loop.messages.length).toBeLessThanOrEqual(2)
     expect(loop.messages[0]).toEqual({ role: 'user', text: 'q2' })
   })
+
+  it('a skill whose tools getter throws fails the run instead of staying busy forever', async () => {
+    const transport = scriptedTransport([(cb) => cb.onDone()])
+    // the composed getter throws on a duplicate tool name
+    const skill = composeSkills('merged', 'intro', [makeSkill(), makeSkill()])
+    const onError = vi.fn()
+    const onDone = vi.fn()
+    const loop = new AgentLoop({ transport, skill, events: { onError, onDone } })
+    loop.run('q')
+    await flush()
+    expect(onError).toHaveBeenCalledWith(expect.stringContaining('duplicate tool name'))
+    expect(onDone).not.toHaveBeenCalled()
+    // the failed instruction is rolled back, like any other failed run
+    expect(loop.messages).toHaveLength(0)
+    // running was cleared, so the next run is not silently dropped
+    loop.run('q again')
+    await flush()
+    expect(onError).toHaveBeenCalledTimes(2)
+  })
 })
 
 describe('AgentLoop compaction', () => {

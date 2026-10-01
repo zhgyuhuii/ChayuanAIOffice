@@ -37,7 +37,8 @@ function detectCJK(ir) {
 // lang attribute is declared intent; script counting is the fallback for
 // the common lang-less AI page.
 function eastAsiaLangOf(lang = '', ir = []) {
-  const lower = lang.toLowerCase()
+  // a default only covers undefined: a docsettings node can carry lang: null
+  const lower = String(lang ?? '').toLowerCase()
   const primary = lower.split('-')[0]
   if (primary === 'ja') return 'ja-JP'
   if (primary === 'ko') return 'ko-KR'
@@ -59,10 +60,11 @@ function eastAsiaLangOf(lang = '', ir = []) {
 }
 
 function bidiLangOf(lang = '') {
-  const primary = lang.toLowerCase().split('-')[0]
+  const value = String(lang ?? '')
+  const primary = value.toLowerCase().split('-')[0]
   return (
     { ar: 'ar-SA', he: 'he-IL', fa: 'fa-IR', ur: 'ur-PK' }[primary] ||
-    (lang.includes('-') ? lang : 'ar-SA')
+    (value.includes('-') ? value : 'ar-SA')
   )
 }
 

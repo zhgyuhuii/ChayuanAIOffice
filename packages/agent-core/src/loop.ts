@@ -409,9 +409,31 @@ export class AgentLoop<TSnapshot = unknown> {
     // Unanswered user messages (a failed or interrupted run persisted them without a
     // reply) must not re-enter the model context: trailing ones would pair with the
     // next instruction as one turn, adjacent ones read as a combined instruction
-    this.history = normalized.filter(
+    const answered = normalized.filter(
       (m, i) => m.role !== 'user' || (normalized[i + 1] && normalized[i + 1]!.role !== 'user'),
     )
+    // An assistant message whose tool calls never received results (a run interrupted
+    // between the model's tool call and its execution) would reach the provider as
+    // unpaired tool_calls and 400 the next turn. Pair each orphan call with an
+    // isError result — the same signal the cancel path synthesizes — so the
+    // transcript stays valid and the model can retry the call.
+    const paired: AgentMessage[] = []
+    for (let i = 0; i < answered.length; i++) {
+      const m = answered[i]!
+      paired.push(m)
+      if (m.role === 'assistant' && m.toolCalls?.length && answered[i + 1]?.role !== 'tool') {
+        paired.push({
+          role: 'tool',
+          results: m.toolCalls.map((call) => ({
+            id: call.id,
+            name: call.name,
+            output: TOOL_ABORTED_OUTPUT,
+            isError: true,
+          })),
+        })
+      }
+    }
+    this.history = paired
     if (this.history.length === 0) return
     if (this.compactionEnabled()) {
       const { maxBytes, keepRecentBytes } = this.compactBudget()
@@ -705,75 +727,83 @@ export class AgentLoop<TSnapshot = unknown> {
     const degradedFallback = degradedTurn ? this.options.skill.degradedFallback?.() : null
     // Some transports emit an extra onDone after cancel — this turn may finalize only once
     let settled = false
-    this.handle = this.options.transport.stream(
-      {
-        system:
-          runtimePreamble() +
-          this.options.skill.systemPrompt +
-          (this.options.systemSuffix?.() ?? '') +
-          (degradedFallback ? `\n\n${degradedFallback.systemSuffix}` : ''),
-        messages: [...this.history],
-        tools: this.finalizing || degradedTurn ? [] : this.options.skill.tools,
-      },
-      {
-        onDelta: (text) => {
-          if (generation !== this.generation || settled) return
-          this.turnText += text
-          this.options.events?.onText?.(this.turnText)
+    try {
+      this.handle = this.options.transport.stream(
+        {
+          system:
+            runtimePreamble() +
+            this.options.skill.systemPrompt +
+            (this.options.systemSuffix?.() ?? '') +
+            (degradedFallback ? `\n\n${degradedFallback.systemSuffix}` : ''),
+          messages: [...this.history],
+          tools: this.finalizing || degradedTurn ? [] : this.options.skill.tools,
         },
-        onReasoning: (text) => {
-          if (generation !== this.generation || settled) return
-          this.turnReasoning += text
+        {
+          onDelta: (text) => {
+            if (generation !== this.generation || settled) return
+            this.turnText += text
+            this.options.events?.onText?.(this.turnText)
+          },
+          onReasoning: (text) => {
+            if (generation !== this.generation || settled) return
+            this.turnReasoning += text
+          },
+          onToolCall: (call) => {
+            if (generation !== this.generation || settled) return
+            this.toolCalls.push(call)
+          },
+          onStopReason: (reason) => {
+            if (generation !== this.generation || settled) return
+            this.turnStopReason = reason
+          },
+          onDone: () => {
+            if (generation !== this.generation || settled) return
+            settled = true
+            void this.finishTurn()
+          },
+          onError: (error) => {
+            if (generation !== this.generation || settled) return
+            settled = true
+            // The no-partial-output guard keeps the empty-stream retry idempotent (an
+            // empty stream never emits deltas, but a mislabeled error must not replay
+            // a turn whose text/tool calls the UI already saw). A dropped tool-argument
+            // stream may have shown text first; that text is simply re-rendered.
+            const emptyDelay = EMPTY_STREAM_RETRY_DELAYS_MS[retriesUsed]
+            const retryEmpty =
+              emptyDelay !== undefined &&
+              error.includes('(empty stream)') &&
+              !this.turnText &&
+              this.toolCalls.length === 0
+            const retryDrop =
+              retriesUsed < TOOL_ARGS_DROP_RETRIES &&
+              error.includes(TOOL_ARGS_DROP_MARK) &&
+              this.toolCalls.length === 0
+            const delay = retryEmpty ? emptyDelay : EMPTY_STREAM_RETRY_DELAYS_MS[0]
+            if ((retryEmpty || retryDrop) && !this.cancelled) {
+              setTimeout(() => {
+                if (generation !== this.generation) return
+                // Stopped during the backoff window: finalize like a normal cancel
+                if (this.cancelled) {
+                  void this.finishTurn()
+                  return
+                }
+                this.startTurn(retriesUsed + 1)
+              }, delay)
+              return
+            }
+            this.running = false
+            this.rollbackFailedRun()
+            this.options.events?.onError?.(error)
+          },
         },
-        onToolCall: (call) => {
-          if (generation !== this.generation || settled) return
-          this.toolCalls.push(call)
-        },
-        onStopReason: (reason) => {
-          if (generation !== this.generation || settled) return
-          this.turnStopReason = reason
-        },
-        onDone: () => {
-          if (generation !== this.generation || settled) return
-          settled = true
-          void this.finishTurn()
-        },
-        onError: (error) => {
-          if (generation !== this.generation || settled) return
-          settled = true
-          // The no-partial-output guard keeps the empty-stream retry idempotent (an
-          // empty stream never emits deltas, but a mislabeled error must not replay
-          // a turn whose text/tool calls the UI already saw). A dropped tool-argument
-          // stream may have shown text first; that text is simply re-rendered.
-          const emptyDelay = EMPTY_STREAM_RETRY_DELAYS_MS[retriesUsed]
-          const retryEmpty =
-            emptyDelay !== undefined &&
-            error.includes('(empty stream)') &&
-            !this.turnText &&
-            this.toolCalls.length === 0
-          const retryDrop =
-            retriesUsed < TOOL_ARGS_DROP_RETRIES &&
-            error.includes(TOOL_ARGS_DROP_MARK) &&
-            this.toolCalls.length === 0
-          const delay = retryEmpty ? emptyDelay : EMPTY_STREAM_RETRY_DELAYS_MS[0]
-          if ((retryEmpty || retryDrop) && !this.cancelled) {
-            setTimeout(() => {
-              if (generation !== this.generation) return
-              // Stopped during the backoff window: finalize like a normal cancel
-              if (this.cancelled) {
-                void this.finishTurn()
-                return
-              }
-              this.startTurn(retriesUsed + 1)
-            }, delay)
-            return
-          }
-          this.running = false
-          this.rollbackFailedRun()
-          this.options.events?.onError?.(error)
-        },
-      },
-    )
+      )
+    } catch (err) {
+      // A skill's tools getter (a duplicate name in a composed skill) can throw
+      // before any callback runs: this keeps the run from staying busy forever.
+      this.running = false
+      this.rollbackFailedRun()
+      this.options.events?.onError?.(err instanceof Error ? err.message : String(err))
+    }
   }
 
   private silentFallbackAvailable(): boolean {

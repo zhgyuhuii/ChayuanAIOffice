@@ -162,6 +162,8 @@ export const ko = {
   ribbonTableInsideVBorders: 'Inside Vertical',
   ribbonTableInsideVBordersTip: 'Inside vertical borders for the whole table',
   ribbonClearBordersTip: '선택한 셀의 테두리 지우기',
+  ribbonTableDiagonalDownBorders: 'Diagonal Down Border',
+  ribbonTableDiagonalUpBorders: 'Diagonal Up Border',
   ribbonBorderColor: '테두리 색',
   ribbonBorderWidth: '테두리 두께',
   ribbonPtValue: '{n}pt',

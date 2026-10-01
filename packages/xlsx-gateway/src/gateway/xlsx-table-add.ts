@@ -205,16 +205,32 @@ function buildTableXml(id: number, addition: TableAddition): string {
   )
 }
 
+/// Number of <tablePart> children the sheet already declares. `<tablePart\b`
+/// does not match `<tableParts`, so the container opener is not counted.
+function countTableParts(worksheetXml: string): number {
+  return (worksheetXml.match(/<tablePart\b/g) ?? []).length
+}
+
 /// Appends (or extends) the worksheet's <tableParts> element. Schema order
 /// puts tableParts after every print/drawing element, before extLst.
 function appendTablePart(worksheetXml: string, relId: string): string {
   const xml = ensureRelationshipNamespace(worksheetXml)
   const part = `<tablePart r:id="${relId}"/>`
-  const existing = /<tableParts\b[^>]*count="(\d+)"[^>]*>/.exec(xml)
+  const existing = /<tableParts\b[^>]*?(\/?)>/.exec(xml)
   if (existing) {
-    const opener = existing[0]
-    const count = Number(existing[1] ?? 0) + 1
-    const reopened = opener.replace(/count="\d+"/, `count="${count}"`)
+    const [opener, selfClosing] = existing
+    // count is optional in CT_TableParts: when the opener omits it, count the
+    // children instead — matching the attribute alone left the element behind
+    // and a second <tableParts> was written before </worksheet>.
+    const declared = /count="(\d+)"/.exec(opener)?.[1]
+    const count = (declared === undefined ? countTableParts(xml) : Number(declared)) + 1
+    if (selfClosing === '/') {
+      return xml.replace(opener, `<tableParts count="${count}">${part}</tableParts>`)
+    }
+    const reopened =
+      declared === undefined
+        ? opener.replace(/>$/, ` count="${count}">`)
+        : opener.replace(/count="\d+"/, `count="${count}"`)
     return xml.replace(opener, reopened).replace('</tableParts>', `${part}</tableParts>`)
   }
   const element = `<tableParts count="1">${part}</tableParts>`

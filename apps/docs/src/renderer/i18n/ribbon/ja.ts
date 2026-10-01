@@ -164,6 +164,8 @@ export const ja = {
   ribbonTableInsideVBorders: 'Inside Vertical',
   ribbonTableInsideVBordersTip: 'Inside vertical borders for the whole table',
   ribbonClearBordersTip: '選択したセルの罫線をクリア',
+  ribbonTableDiagonalDownBorders: 'Diagonal Down Border',
+  ribbonTableDiagonalUpBorders: 'Diagonal Up Border',
   ribbonBorderColor: '罫線の色',
   ribbonBorderWidth: '罫線の太さ',
   ribbonPtValue: '{n} pt',

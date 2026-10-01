@@ -1333,6 +1333,10 @@ function AiConversationBody({
       // Cloud single-page generation (chatoffice slide_generate): the cloud service owns HTML writing +
       // pptx conversion; the deck-level style/outline stay local.
       generatePageCloud: async (args) => {
+        // Forward the panel's stop signal: the main process aborts the in-flight
+        // cloud request instead of letting it run (and bill) to completion
+        const cancelCloud = () => void window.slidesApi.cloudPageCancel().catch(() => {})
+        args.signal?.addEventListener('abort', cancelCloud, { once: true })
         try {
           const briefParts = [args.brief]
           if (args.layout) briefParts.push(`Layout intent: ${args.layout}`)
@@ -1357,6 +1361,8 @@ function AiConversationBody({
           return res ?? { ok: false, error: tGlobal('aiErrUnknown') }
         } catch (e) {
           return { ok: false, error: e instanceof Error ? e.message : String(e) }
+        } finally {
+          args.signal?.removeEventListener('abort', cancelCloud)
         }
       },
       // ── In-tool planning: given topic+page count, the LLM produces a structured outline (batched recursion scheduled by the skill).

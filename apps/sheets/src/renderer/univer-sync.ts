@@ -1121,6 +1121,14 @@ export function applyDefinedNames(
   }
 }
 
+/// How a comment's author and text are packed into the single note string
+/// Univer holds. An author-less comment is stored verbatim, with no marker -
+/// which is exactly why the marker has to be recognised by provenance and not
+/// by shape (see collectNoteStates).
+function encodeNoteText(author: string, text: string): string {
+  return author ? `${author}:\n${text}` : text
+}
+
 export function applyWorkbookNotes(runtime: UniverRuntime | null, file: WorkbookFile): void {
   const workbook = runtime?.univerAPI.getActiveWorkbook()
   if (!workbook) return
@@ -1149,7 +1157,7 @@ function applyWorkbookNotesInner(
           col: comment.column,
           width: 220,
           height: 90,
-          note: comment.author ? `${comment.author}:\n${comment.text}` : comment.text,
+          note: encodeNoteText(comment.author, comment.text),
         })
       } catch {
         // Notes are best-effort decoration.
@@ -5793,7 +5801,7 @@ export function collectDefinedNamesState(
 }
 
 /// Snapshots the live note set of every note-dirty sheet. Notes installed
-/// from the file carry an "Author:\n" first line (see applyWorkbookNotes);
+/// from the file carry an "Author:\n" first line (see encodeNoteText);
 /// splitting it back keeps the author column on round-trip.
 export function collectNoteStates(
   runtime: UniverRuntime | null,
@@ -5806,14 +5814,32 @@ export function collectNoteStates(
     if (isSheetRemoved(state.editJournal, sheetId)) continue
     const worksheet = workbook.getSheetBySheetId(sheetId)
     if (!worksheet) continue
+    // The marker is only ever written for a comment that HAS an author, so its
+    // shape is not evidence: an author-less note whose first line happens to
+    // end in a colon ("Status:\nOn track") was read as author="Status" and lost
+    // that line. Decide by provenance instead. A note still byte-identical to
+    // the file's encoding is that file comment, so its author and text are
+    // recovered exactly; anything else was written this session (the AI
+    // set_note op and the note editor never write a marker) and is taken whole.
+    const fileSheet = state.file.sheets.find((sheet) => sheet.id === sheetId)
+    const fromFile = new Map(
+      (fileSheet?.comments ?? []).map((comment) => [`${comment.row}:${comment.column}`, comment]),
+    )
     const notes = worksheet.getNotes().map((note) => {
-      const split = /^([^\n]{1,60}):\n([\s\S]*)$/.exec(note.note)
-      return {
-        row: note.row,
-        column: note.col,
-        author: split?.[1] ?? '',
-        text: split?.[2] ?? note.note,
+      const cell = { row: note.row, column: note.col }
+      const comment = fromFile.get(`${note.row}:${note.col}`)
+      // Untouched since the load: that IS the file comment, so take it exactly.
+      if (comment && encodeNoteText(comment.author, comment.text) === note.note) {
+        return { ...cell, author: comment.author, text: comment.text }
       }
+      // Edited in this session. The note editor rewrites the string in place, so
+      // an authored note still carries its "Author:\n" prefix and the author
+      // must not be folded into the text; split it off the known author rather
+      // than by shape, so a label like "Status:" is never mistaken for one.
+      if (comment && comment.author && note.note.startsWith(`${comment.author}:\n`)) {
+        return { ...cell, author: comment.author, text: note.note.slice(comment.author.length + 2) }
+      }
+      return { ...cell, author: '', text: note.note }
     })
     noteStates.push({ sheetId, notes })
   }

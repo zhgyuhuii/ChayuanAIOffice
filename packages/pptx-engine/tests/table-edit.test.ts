@@ -59,6 +59,18 @@ describe('patchTableStyleXml', () => {
     expect(result).not.toContain('/ rtl')
   })
 
+  it('styleId-only edit expands a self-closing tblPr and sets the style', () => {
+    const selfClosing = MINIMAL_TABLE_XML.replace(
+      /<a:tblPr[^>]*>.*?<\/a:tblPr>/,
+      '<a:tblPr firstRow="1"/>',
+    )
+    const result = patchTableStyleXml(selfClosing, { styleId: '{NEWSTYLE}' })
+    expect(result).toContain(
+      '<a:tblPr firstRow="1"><a:tableStyleId>{NEWSTYLE}</a:tableStyleId></a:tblPr>',
+    )
+    expect(result).not.toContain('{2D5ABB26-0587-4C30-8999-92F81FD0307C}')
+  })
+
   it('set shading color → solidFill inserted in every tcPr, replacing existing fills', () => {
     const result = patchTableStyleXml(MINIMAL_TABLE_XML, { shadingColor: '#AABBCC' })
     expect(result).toContain('<a:srgbClr val="AABBCC"/>')

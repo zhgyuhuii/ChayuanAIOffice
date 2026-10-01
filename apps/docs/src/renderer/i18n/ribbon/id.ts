@@ -164,6 +164,8 @@ export const id = {
   ribbonTableInsideVBorders: 'Inside Vertical',
   ribbonTableInsideVBordersTip: 'Inside vertical borders for the whole table',
   ribbonClearBordersTip: 'Hapus batas dari sel yang dipilih',
+  ribbonTableDiagonalDownBorders: 'Diagonal Down Border',
+  ribbonTableDiagonalUpBorders: 'Diagonal Up Border',
   ribbonBorderColor: 'Warna batas',
   ribbonBorderWidth: 'Ketebalan batas',
   ribbonPtValue: '{n} pt',

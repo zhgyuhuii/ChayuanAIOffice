@@ -103,8 +103,9 @@ export function resolveStroke(stroke: Stroke | undefined, vp: Viewport): RenderS
     }
     color = rf.stops[0]!.color
   } else if (rf.type === 'none') return undefined
-  const widthPx = Math.max(emuToPx(stroke.width || 12700, vp.scale), 0.5)
-  const widthPt = (stroke.width || 12700) / EMU_PER_PT
+  const widthEmu = stroke.width ?? 12700
+  const widthPx = Math.max(emuToPx(widthEmu, vp.scale), 0.5)
+  const widthPt = widthEmu / EMU_PER_PT
   const dash = dashPreset(stroke.dash, widthPx)
   const capMap = { flat: 'butt', round: 'round', square: 'square' } as const
   return {
@@ -171,23 +172,27 @@ function dashPreset(name: string | undefined, w: number): number[] | undefined {
   const u = w
   switch (name) {
     case 'dot':
+      return [u, 3 * u]
     case 'sysDot':
       return [u, u]
     case 'dash':
-    case 'sysDash':
       return [4 * u, 3 * u]
+    case 'sysDash':
+      return [3 * u, u]
     case 'lgDash':
       return [8 * u, 3 * u]
     case 'dashDot':
-    case 'sysDashDot':
       return [4 * u, 3 * u, u, 3 * u]
+    case 'sysDashDot':
+      return [3 * u, u, u, u]
     case 'lgDashDot':
       return [8 * u, 3 * u, u, 3 * u]
     case 'lgDashDotDot':
       return [8 * u, 3 * u, u, 3 * u, u, 3 * u]
     case 'dashDotDot':
-    case 'sysDashDotDot':
       return [4 * u, 3 * u, u, 3 * u, u, 3 * u]
+    case 'sysDashDotDot':
+      return [3 * u, u, u, u, u, u]
     default:
       return undefined
   }

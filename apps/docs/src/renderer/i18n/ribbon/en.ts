@@ -165,6 +165,8 @@ export const en = {
   ribbonClearBordersTip: 'Clear borders from the selected cells',
   ribbonBorderColor: 'Border color',
   ribbonBorderWidth: 'Border weight',
+  ribbonTableDiagonalDownBorders: 'Diagonal Down Border',
+  ribbonTableDiagonalUpBorders: 'Diagonal Up Border',
   ribbonPtValue: '{n} pt',
   ribbonGroupBorders: 'Borders',
   ribbonDeleteTable: 'Delete Table',

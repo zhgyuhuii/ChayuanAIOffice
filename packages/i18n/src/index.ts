@@ -146,11 +146,13 @@ export const platformShortcuts: (text: string) => string = IS_MAC
 
 export type Params = Record<string, string | number>
 
-/** fill {name} placeholders; unknown placeholders are left as-is */
+/** fill {name} placeholders; unknown or nullish ones are left as-is */
 export function format(template: string, params?: Params): string {
   if (!params) return template
   return template.replace(/\{(\w+)\}/g, (match, name: string) =>
-    Object.hasOwn(params, name) ? String(params[name]) : match,
+    // hasOwn guards inherited properties; the nullish check keeps an explicitly
+    // undefined param from rendering as the literal text "undefined"
+    Object.hasOwn(params, name) && params[name] != null ? String(params[name]) : match,
   )
 }
 
@@ -196,6 +198,13 @@ export function onUiLangChange(listener: (lang: Lang) => void): () => void {
  * runtime fallback.
  */
 export function createI18n<D extends Record<string, string>>(dicts: LangDicts<D>) {
-  return (lang: Lang, key: keyof D, params?: Params): string =>
-    platformShortcuts(format(dicts[lang][key], params))
+  return (lang: Lang, key: keyof D, params?: Params): string => {
+    // zh defines the key set, but a partial runtime dictionary (a shard that
+    // predates a new key) must degrade to the zh string or the key itself
+    // instead of throwing inside format()
+    const text = dicts[lang]?.[key] ?? dicts.zh[key] ?? String(key)
+    return format(platformShortcuts(text), params)
+  }
 }
+
+export * from './font-names'

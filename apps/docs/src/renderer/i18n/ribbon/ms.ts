@@ -165,6 +165,8 @@ export const ms = {
   ribbonTableInsideVBorders: 'Inside Vertical',
   ribbonTableInsideVBordersTip: 'Inside vertical borders for the whole table',
   ribbonClearBordersTip: 'Kosongkan sempadan daripada sel yang dipilih',
+  ribbonTableDiagonalDownBorders: 'Diagonal Down Border',
+  ribbonTableDiagonalUpBorders: 'Diagonal Up Border',
   ribbonBorderColor: 'Warna sempadan',
   ribbonBorderWidth: 'Ketebalan sempadan',
   ribbonPtValue: '{n} pt',

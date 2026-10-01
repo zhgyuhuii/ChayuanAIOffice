@@ -307,10 +307,13 @@ export function maxRelationshipId(relationshipsXml: string): number {
   return max
 }
 
+/// Relationship ids are read quote-agnostically, for the same reason as
+/// pptx-engine's maxRelationshipIdNumber: a .rels part that spells its ids
+/// with single quotes still holds them, so no id may be handed out twice.
+const RELATIONSHIP_ID = /\bId\s*=\s*(["'])rId(\d+)\1/g
+
 function relationshipIds(relationshipsXml: string): Set<string> {
-  return new Set(
-    [...relationshipsXml.matchAll(/\bId="rId([0-9]+)"/g)].map((match) => `rId${match[1]}`),
-  )
+  return new Set([...relationshipsXml.matchAll(RELATIONSHIP_ID)].map((match) => `rId${match[2]}`))
 }
 
 function firstFreeRelationshipId(used: ReadonlySet<string>): string {
@@ -610,7 +613,7 @@ function readAttribute(elementXml: string, name: string): string | undefined {
   return new RegExp(`(?:^|\\s)${escapeRegExp(name)}="([^"]*)"`).exec(elementXml)?.[1]
 }
 
-function escapeRegExp(input: string): string {
+export function escapeRegExp(input: string): string {
   return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 

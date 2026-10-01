@@ -38,7 +38,7 @@ import { detectFootnotes } from './footnotes'
 import { extractEmptyFrames } from './frames'
 import { detectFormTables } from './form'
 import { clusterCombiningMarks, groupIntoLines } from './lines'
-import { detectListBlocks } from './lists'
+import { detectListBlocks, type ListSeq } from './lists'
 import { mergeSideBySidePanels } from './panels'
 import { encodeRgbaPng } from '../extract/png'
 import { normalizeArabicForms } from './rtl'
@@ -122,7 +122,7 @@ export { detectFootnotes, type DetectedFootnotes } from './footnotes'
 export { extractEmptyFrames, type EmptyFrame } from './frames'
 export { detectFurniture, type FurniturePage, type FurnitureResult } from './furniture'
 export { applyDecorBorders, type DecorResult } from './decor'
-export { detectListBlocks, parseListMarker } from './lists'
+export { detectListBlocks, parseListMarker, type ListSeq } from './lists'
 export { detectTocBlocks, detectTocRows } from './toc'
 export { detectVectorRegions } from './vector'
 export { pageConfidence, PAGE_CONFIDENCE_MIN, type ConfidenceSignals } from './confidence'
@@ -304,7 +304,7 @@ function assembleColumn(
   column: LayoutSection['columns'][number],
   singleColumn: boolean,
   pageWidthPt: number,
-  listSeq: { next: number },
+  listSeq: ListSeq,
   landscape: boolean,
   pageBodyLeftX0?: number,
   keepUnitGaps = false,
@@ -483,6 +483,9 @@ export interface AnalyzeOptions {
    * warnings (overlapping blocks) do not lower the page confidence, and weak
    * borderless tables dissolve back into positioned text */
   absoluteLayout?: boolean
+  /** shared across a document's pages so an ordered list split by a page
+   * break keeps its numbering (default: a fresh per-page state) */
+  listSeq?: ListSeq
 }
 
 export function analyzePage(extracted: ExtractedPage, opts: AnalyzeOptions = {}): IrPage {
@@ -867,8 +870,9 @@ export function analyzePage(extracted: ExtractedPage, opts: AnalyzeOptions = {})
     tocRowBlocks.length === 0 &&
     floats.length === 0
 
-  // page-unique sequence ids for ordered-list runs (rebuild maps them to numIds)
-  const listSeq = { next: 0 }
+  // document-unique sequence ids for ordered-list runs (rebuild maps them to
+  // numIds); a run split by a page break continues on the next page
+  const listSeq: ListSeq = opts.listSeq ?? { next: 0 }
   /** vertical strokes consumed as w:cols separators (P14 C) */
   const sepStrokes = new Set<Stroke>()
   let sections: PageSection[]

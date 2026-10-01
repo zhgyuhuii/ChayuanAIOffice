@@ -44,4 +44,28 @@ describe('decodeDataUrl', () => {
   it('rejects malformed input', () => {
     expect(decodeDataUrl('data:nope')).toBeNull()
   })
+
+  it('parses every parameter run a real data URL can carry', () => {
+    // the fix narrows the parameter body to [^;,]*, so the accepted set must
+    // not shrink: mime, the ;base64 flag and extra parameters all still split
+    const b64 = decodeDataUrl('data:image/png;charset=x;base64,QUJD')
+    expect(b64?.mime).toBe('image/png')
+    expect(b64?.bytes.toString()).toBe('ABC')
+    const charset = decodeDataUrl('data:image/svg+xml;charset=utf-8,%3Csvg%2F%3E')
+    expect(charset?.mime).toBe('image/svg+xml')
+    expect(charset?.bytes.toString()).toBe('<svg/>')
+    expect(decodeDataUrl('data:,hello')?.bytes.toString()).toBe('hello')
+  })
+
+  it('is not exponential on a comma-less data URL', () => {
+    // A `;[^,]*` parameter run can cover the remaining text in one iteration
+    // or in many, so with no comma the engine tried every split: ~4x per 4
+    // extra characters, i.e. minutes from ~60 characters and unbounded past
+    // ~100. This ran on any data: image URL in a document, in the main process.
+    const url = 'data:image/png' + ';a'.repeat(40_000)
+    const started = performance.now()
+    expect(decodeDataUrl(url)).toBeNull()
+    const elapsed = performance.now() - started
+    expect(elapsed).toBeLessThan(1_000)
+  })
 })

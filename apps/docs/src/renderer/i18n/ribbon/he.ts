@@ -162,6 +162,8 @@ export const he = {
   ribbonTableInsideVBorders: 'Inside Vertical',
   ribbonTableInsideVBordersTip: 'Inside vertical borders for the whole table',
   ribbonClearBordersTip: 'נקה גבולות מהתאים הנבחרים',
+  ribbonTableDiagonalDownBorders: 'Diagonal Down Border',
+  ribbonTableDiagonalUpBorders: 'Diagonal Up Border',
   ribbonBorderColor: 'צבע גבול',
   ribbonBorderWidth: 'עובי גבול',
   ribbonPtValue: "{n} נק'",

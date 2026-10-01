@@ -60,10 +60,16 @@ function formatRef(part: RefPart): string {
   return `${part.colAbs}${columnLabel(part.col)}${part.rowAbs}${part.row + 1}`
 }
 
-function shiftRefPart(part: RefPart, spec: ShiftSpec): RefPart | null {
+/**
+ * Shifted reference. null means the ref fell inside a deleted region; undefined
+ * means the shift pushed it past the grid edge, which Excel rewrites to #REF!
+ * as surely (offsetRefPart has the mirror check for copy/fill).
+ */
+function shiftRefPart(part: RefPart, spec: ShiftSpec): RefPart | null | undefined {
   const value = spec.axis === 'row' ? part.row : part.col
   const shifted = shiftIndex(value, spec)
   if (shifted === null) return null
+  if (shifted >= (spec.axis === 'row' ? MAX_GRID_ROWS : MAX_GRID_COLUMNS)) return undefined
   return spec.axis === 'row' ? { ...part, row: shifted } : { ...part, col: shifted }
 }
 
@@ -271,6 +277,11 @@ export function shiftFormulaRefs(
         }
         let shiftedFirst = shiftRefPart(first, spec)
         let shiftedSecond = shiftRefPart(second, spec)
+        if (shiftedFirst === undefined || shiftedSecond === undefined) {
+          changed = true
+          hasRefError = true
+          return `${prefix}#REF!`
+        }
         if (!shiftedFirst && !shiftedSecond) {
           changed = true
           hasRefError = true
@@ -308,6 +319,11 @@ export function shiftFormulaRefs(
         const formatCol = (p: RefPart): string => `${p.colAbs}${columnLabel(p.col)}`
         let shiftedFirst = shiftRefPart(part(aAbs as string, aCol as string), spec)
         let shiftedSecond = shiftRefPart(part(bAbs as string, bCol as string), spec)
+        if (shiftedFirst === undefined || shiftedSecond === undefined) {
+          changed = true
+          hasRefError = true
+          return `${prefix}#REF!`
+        }
         if (!shiftedFirst && !shiftedSecond) {
           changed = true
           hasRefError = true
@@ -347,6 +363,11 @@ export function shiftFormulaRefs(
         const formatRow = (p: RefPart): string => `${p.rowAbs}${p.row + 1}`
         let shiftedFirst = shiftRefPart(part(aAbs as string, aRow as string), spec)
         let shiftedSecond = shiftRefPart(part(bAbs as string, bRow as string), spec)
+        if (shiftedFirst === undefined || shiftedSecond === undefined) {
+          changed = true
+          hasRefError = true
+          return `${prefix}#REF!`
+        }
         if (!shiftedFirst && !shiftedSecond) {
           changed = true
           hasRefError = true

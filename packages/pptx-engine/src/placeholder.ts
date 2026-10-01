@@ -24,7 +24,7 @@ import { asXmlNode, decodeNumericCharRefs, xmlArray, type XmlNode } from './xml-
 const phParser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: '@_',
-  isArray: (name) => ['p:sp'].includes(name),
+  isArray: (name) => ['p:sp', 'p:graphicFrame', 'p:pic'].includes(name),
 })
 
 /** Default run/paragraph style for one indent level (from lstStyle's lvlNpPr/defRPr). */
@@ -174,19 +174,36 @@ export function parsePlaceholderMap(
   } catch {
     return { entries }
   }
-  // Path: p:sldLayout / p:sldMaster → p:cSld → p:spTree → p:sp[]
+  // Path: p:sldLayout / p:sldMaster → p:cSld → p:spTree → p:sp[] + p:graphicFrame[] + p:pic[]
   const root = asXmlNode(doc['p:sldLayout'] ?? doc['p:sldMaster'])
   const spTreeRaw = asXmlNode(root['p:cSld'])['p:spTree']
   if (!spTreeRaw) return { entries }
   const spTree = asXmlNode(spTreeRaw)
-  for (const sp of xmlArray(spTree['p:sp'])) {
-    const phRaw = asXmlNode(asXmlNode(sp['p:nvSpPr'])['p:nvPr'])['p:ph']
+  const shapes: Array<{ node: XmlNode; nvKey: string; frame: boolean }> = [
+    ...xmlArray(spTree['p:sp']).map((node) => ({
+      node: asXmlNode(node),
+      nvKey: 'p:nvSpPr',
+      frame: false,
+    })),
+    ...xmlArray(spTree['p:graphicFrame']).map((node) => ({
+      node: asXmlNode(node),
+      nvKey: 'p:nvGraphicFramePr',
+      frame: true,
+    })),
+    ...xmlArray(spTree['p:pic']).map((node) => ({
+      node: asXmlNode(node),
+      nvKey: 'p:nvPicPr',
+      frame: false,
+    })),
+  ]
+  for (const { node: sp, nvKey, frame } of shapes) {
+    const phRaw = asXmlNode(asXmlNode(sp[nvKey])['p:nvPr'])['p:ph']
     if (!phRaw) continue
     const ph = asXmlNode(phRaw)
     const type = String(ph['@_type'] ?? 'body')
     const idx = ph['@_idx'] != null ? String(ph['@_idx']) : ''
     const spPr = asXmlNode(sp['p:spPr'])
-    const transform = parseXfrmNode(spPr['a:xfrm'])
+    const transform = frame ? parseXfrmNode(sp['p:xfrm']) : parseXfrmNode(spPr['a:xfrm'])
     const textStyle = parseLstStyleLevels(asXmlNode(sp['p:txBody'])['a:lstStyle'], theme, src)
     const bodyPrNode = asXmlNode(asXmlNode(sp['p:txBody'])['a:bodyPr'])
     const anchor = ANCHOR_MAP[String(bodyPrNode['@_anchor'] ?? '')]

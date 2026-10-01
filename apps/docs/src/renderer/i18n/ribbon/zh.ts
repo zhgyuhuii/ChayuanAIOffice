@@ -162,6 +162,8 @@ export const zh = {
   ribbonClearBordersTip: '清除选中单元格框线',
   ribbonBorderColor: '框线颜色',
   ribbonBorderWidth: '框线粗细',
+  ribbonTableDiagonalDownBorders: '下对角线边框',
+  ribbonTableDiagonalUpBorders: '上对角线边框',
   ribbonPtValue: '{n} 磅',
   ribbonGroupBorders: '边框',
   ribbonDeleteTable: '删除表格',

@@ -24,8 +24,13 @@ export const DEFAULT_SECTION: SectionSettings = {
 
 /** Vertical alignment of page content (sectPr w:vAlign); top/default returns undefined */
 function vAlignOf(xml: string): 'center' | 'both' | 'bottom' | undefined {
-  const v = /<w:vAlign w:val="(center|both|bottom)"\s*\/>/.exec(xml)?.[1]
-  return v as 'center' | 'both' | 'bottom' | undefined
+  const v = strAttr(/<w:vAlign[^>]*\/?>/.exec(xml)?.[0] ?? '', 'w:val')
+  return v === 'center' || v === 'both' || v === 'bottom' ? v : undefined
+}
+
+/** String attribute of a tag; matches either quote style. */
+function strAttr(tag: string, name: string): string | undefined {
+  return new RegExp(`${name}\\s*=\\s*["']([^"']*)["']`).exec(tag)?.[1]
 }
 
 /** Integer attribute of a tag; XML allows either quote style, so match both. */
@@ -45,7 +50,7 @@ function hasVisiblePageBorder(xml: string): boolean {
   if (!pgBorders) return false
   const sides = pgBorders.match(/<w:(?:top|left|bottom|right)\b[^>]*\/?>/g) ?? []
   return sides.some((side) => {
-    const val = /w:val="([^"]*)"/.exec(side)?.[1]
+    const val = strAttr(side, 'w:val')
     return val !== undefined && val !== 'none' && val !== 'nil'
   })
 }
@@ -83,20 +88,18 @@ const LINE_BORDER_VALS = new Set([
 function pageBorderPropsOf(xml: string): SectionSettings['pageBorderProps'] {
   const pgBorders = /<w:pgBorders[^>]*\/>|<w:pgBorders[\s\S]*?<\/w:pgBorders>/.exec(xml)?.[0]
   if (!pgBorders || !hasVisiblePageBorder(xml)) return undefined
-  const display = /w:display="(firstPage|notFirstPage)"/.exec(pgBorders)?.[1] as
-    'firstPage' | 'notFirstPage' | undefined
-  const offsetFrom = /w:offsetFrom="(page|text)"/.exec(pgBorders)?.[1] as
-    'page' | 'text' | undefined
-  const zOrder = /<w:pgBorders[^>]*\bw:zOrder="back"/.test(pgBorders) ? 'back' : undefined
+  const display = strAttr(pgBorders, 'w:display') as 'firstPage' | 'notFirstPage' | undefined
+  const offsetFrom = strAttr(pgBorders, 'w:offsetFrom') as 'page' | 'text' | undefined
+  const zOrder = /\bw:zOrder\s*=\s*["']back["']/.test(pgBorders) ? 'back' : undefined
   let spacePt = 0
   let widthPt = 0
   let color: string | undefined
   const sides: NonNullable<SectionSettings['pageBorderProps']>['sides'] = {}
   for (const side of pgBorders.match(/<w:(?:top|left|bottom|right)\b[^>]*\/?>/g) ?? []) {
-    const val = /w:val="([^"]*)"/.exec(side)?.[1]
+    const val = strAttr(side, 'w:val')
     if (!val || val === 'none' || val === 'nil') continue
     const name = /<w:(top|left|bottom|right)\b/.exec(side)![1] as keyof typeof sides
-    const sideColor = /w:color="([0-9A-Fa-f]{6})"/.exec(side)?.[1]
+    const sideColor = /w:color\s*=\s*["']([0-9A-Fa-f]{6})["']/.exec(side)?.[1]
     // art borders: w:sz is the tiled pattern height in points, not eighth-points
     const art = !LINE_BORDER_VALS.has(val)
     const sz = intAttr(side, 'w:sz', 0)
@@ -134,15 +137,14 @@ export function sectionSettingsFromXml(
   let docGrid: DocGrid | undefined
   const docGridTag = /<w:docGrid[^>]*\/?>/.exec(xml)?.[0]
   if (docGridTag) {
-    const typeMatch = /w:type="([^"]+)"/.exec(docGridTag)
-    const linePitchMatch = /w:linePitch="(\d+)"/.exec(docGridTag)
-    const charSpaceMatch = /w:charSpace="(-?\d+)"/.exec(docGridTag)
-    const gridType = (typeMatch?.[1] ?? 'default') as DocGrid['type']
+    const gridType = (strAttr(docGridTag, 'w:type') ?? 'default') as DocGrid['type']
     const validTypes: DocGrid['type'][] = ['default', 'lines', 'linesAndChars', 'snapToChars']
+    const linePitch = intAttr(docGridTag, 'w:linePitch', -1)
+    const charSpace = intAttr(docGridTag, 'w:charSpace', Number.NaN)
     docGrid = {
       type: validTypes.includes(gridType) ? gridType : 'default',
-      ...(linePitchMatch ? { linePitch: parseInt(linePitchMatch[1], 10) } : {}),
-      ...(charSpaceMatch ? { charSpace: parseInt(charSpaceMatch[1], 10) } : {}),
+      ...(linePitch >= 0 ? { linePitch } : {}),
+      ...(Number.isFinite(charSpace) ? { charSpace } : {}),
     }
   }
 
@@ -168,7 +170,7 @@ export function sectionSettingsFromXml(
   return {
     pageWidth: intAttr(pgSz, 'w:w', DEFAULT_SECTION.pageWidth),
     pageHeight: intAttr(pgSz, 'w:h', DEFAULT_SECTION.pageHeight),
-    orientation: pgSz.includes('w:orient="landscape"') ? 'landscape' : 'portrait',
+    orientation: strAttr(pgSz, 'w:orient') === 'landscape' ? 'landscape' : 'portrait',
     marginTop: Math.abs(marginTop) + (gutterAtTop ? gutter : 0),
     marginRight: intAttr(pgMar, 'w:right', DEFAULT_SECTION.marginRight),
     marginBottom: Math.abs(marginBottom),
@@ -204,7 +206,10 @@ export function notePropsFromXml(
 ): NoteProps | undefined {
   const el = new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`).exec(xml)?.[1]
   if (!el) return undefined
-  const val = (name: string) => new RegExp(`<w:${name} w:val="([^"]+)"`).exec(el)?.[1]
+  const val = (name: string) => {
+    const tag = new RegExp(`<w:${name}\\b[^>]*\\/?>`).exec(el)?.[0] ?? ''
+    return strAttr(tag, 'w:val')
+  }
   const pos = val('pos')
   const numFmt = val('numFmt')
   const numStart = val('numStart')
@@ -226,7 +231,7 @@ export function notePropsFromXml(
 export function lineNumberingOf(xml: string): LineNumbering | undefined {
   const tag = /<w:lnNumType\b[^>]*\/?>/.exec(xml)?.[0]
   if (!tag) return undefined
-  const restart = /w:restart="([^"]+)"/.exec(tag)?.[1]
+  const restart = strAttr(tag, 'w:restart')
   const distance = intAttr(tag, 'w:distance', -1)
   return {
     countBy: Math.max(1, intAttr(tag, 'w:countBy', 1)),
@@ -238,7 +243,7 @@ export function lineNumberingOf(xml: string): LineNumbering | undefined {
 }
 
 function textDirectionOf(xml: string): string | undefined {
-  const val = /<w:textDirection[^>]*w:val="([^"]+)"/.exec(xml)?.[1]
+  const val = strAttr(/<w:textDirection[^>]*\/?>/.exec(xml)?.[0] ?? '', 'w:val')
   return val && val !== 'lrTb' ? val : undefined
 }
 
@@ -254,7 +259,7 @@ const SECT_PR_RE = /<w:sectPr[^>]*\/>|<w:sectPr[\s\S]*?<\/w:sectPr>/
  *  off: matches self-closing and paired forms, w:val="0|false|off" counts as off. */
 export function xmlFlagOn(xml: string, tag: string): boolean {
   for (const m of xml.matchAll(new RegExp(`<${tag}(?=[\\s/>])[^>]*>`, 'g'))) {
-    const val = /w:val="([^"]*)"/.exec(m[0])?.[1]
+    const val = strAttr(m[0], 'w:val')
     if (val === undefined || !/^(?:0|false|off)$/.test(val)) return true
   }
   return false
@@ -305,14 +310,21 @@ export function sectionFromSectPr(
   lastBlockIndex: number,
   gutterAtTop?: boolean,
 ): SectionInfo {
-  const type = /<w:type[^>]*w:val="(nextPage|continuous|evenPage|oddPage|nextColumn)"/.exec(
-    sectPrXml,
-  )?.[1]
-  const pgNumStart = /<w:pgNumType[^>]*w:start="(\d+)"/.exec(sectPrXml)?.[1]
-  const pgNumFmt = /<w:pgNumType[^>]*w:fmt="([^"]+)"/.exec(sectPrXml)?.[1]
+  const pgNumTag = /<w:pgNumType[^>]*\/?>/.exec(sectPrXml)?.[0] ?? ''
+  const type = strAttr(/<w:type[^>]*\/?>/.exec(sectPrXml)?.[0] ?? '', 'w:val')
+  const startType =
+    type === 'continuous' ||
+    type === 'evenPage' ||
+    type === 'oddPage' ||
+    type === 'nextColumn' ||
+    type === 'nextPage'
+      ? type
+      : 'nextPage'
+  const pgNumStart = /w:start\s*=\s*["'](\d+)["']/.exec(pgNumTag)?.[1]
+  const pgNumFmt = /w:fmt\s*=\s*["']([^"']+)["']/.exec(pgNumTag)?.[1]
   return {
     settings: sectionSettingsFromXml(sectPrXml, { gutterAtTop }),
-    startType: (type as SectionInfo['startType']) ?? 'nextPage',
+    startType,
     firstBlockIndex,
     lastBlockIndex,
     sectPrXml,
@@ -348,6 +360,18 @@ export function applyPageNumType(
   if (fmt === undefined && start === undefined) return xml
   const tag = `<w:pgNumType${fmt !== undefined ? ` w:fmt="${fmt}"` : ''}${start !== undefined ? ` w:start="${start}"` : ''}/>`
   return insertBefore(xml, tag, PG_NUM_TYPE_FOLLOWERS)
+}
+
+/**
+ * Insert tag as the first child of a sectPr. A self-closing <w:sectPr/> is
+ * expanded to a pair first: the open-tag anchor matched that element whole, so
+ * the child was written after it, as a sibling inside w:body / w:pPr.
+ */
+export function injectIntoSectPr(xml: string, tag: string): string {
+  const m = /<w:sectPr(?:\s[^>]*?)?\/>|<w:sectPr(?:\s[^>]*?)?>/.exec(xml)
+  if (!m) return xml
+  const open = m[0].endsWith('/>') ? `${m[0].slice(0, -2)}>` : m[0]
+  return xml.replace(m[0], () => `${open}${tag}${m![0].endsWith('/>') ? '</w:sectPr>' : ''}`)
 }
 
 /** CT_SectPr children that follow pgNumType / titlePg, in schema order */
@@ -392,7 +416,7 @@ export function applySectionSettings(sectPrXml: string, settings: SectionSetting
   if (/<w:pgSz[^>]*\/?>/.test(xml)) {
     xml = xml.replace(/<w:pgSz[^>]*\/?>/, pgSz)
   } else {
-    xml = xml.replace(/(<w:sectPr[^>]*>)/, `$1${pgSz}`)
+    xml = injectIntoSectPr(xml, pgSz)
   }
   const replaceMarAttr = (tag: string, name: string, value: number): string => {
     if (new RegExp(`${name}="`).test(tag)) {
@@ -529,7 +553,7 @@ export function applySectionStartType(
   if (type === 'nextPage') return xml
   const tag = `<w:type w:val="${type}"/>`
   if (/<w:pgSz/.test(xml)) xml = xml.replace(/(<w:pgSz)/, `${tag}$1`)
-  else xml = xml.replace(/(<w:sectPr[^>]*>)/, `$1${tag}`)
+  else xml = injectIntoSectPr(xml, tag)
   return xml
 }
 

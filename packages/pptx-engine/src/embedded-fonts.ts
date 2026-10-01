@@ -122,6 +122,9 @@ export function editedGlyphDemand(deck: { slides: Slide[] }): GlyphDemand | null
 export function sfntCmapLookup(sfnt: Uint8Array): ((cp: number) => boolean) | null {
   try {
     const dv = new DataView(sfnt.buffer, sfnt.byteOffset, sfnt.byteLength)
+    // The lookups pushed below are invoked after this try has returned, so a
+    // crafted idRangeOffset/numRanges would throw out of the caller's frame.
+    const inBounds = (off: number, len: number) => off >= 0 && off + len <= sfnt.byteLength
     let base = 0
     if (dv.getUint32(0, false) === 0x74746366) base = dv.getUint32(12, false)
     const numTables = dv.getUint16(base + 4, false)
@@ -152,7 +155,9 @@ export function sfntCmapLookup(sfnt: Uint8Array): ((cp: number) => boolean) | nu
             const delta = dv.getUint16(deltas + k * 2, false)
             const ro = dv.getUint16(rangeOffsets + k * 2, false)
             if (ro === 0) return ((cp + delta) & 0xffff) !== 0
-            const g = dv.getUint16(rangeOffsets + k * 2 + ro + (cp - start) * 2, false)
+            const at = rangeOffsets + k * 2 + ro + (cp - start) * 2
+            if (!inBounds(at, 2)) return false
+            const g = dv.getUint16(at, false)
             return g !== 0 && ((g + delta) & 0xffff) !== 0
           }
           return false
@@ -162,6 +167,7 @@ export function sfntCmapLookup(sfnt: Uint8Array): ((cp: number) => boolean) | nu
         lookups.push((cp) => {
           for (let k = 0; k < nGroups; k++) {
             const g = sub + 16 + k * 12
+            if (!inBounds(g, 12)) return false
             const start = dv.getUint32(g, false)
             const end = dv.getUint32(g + 4, false)
             if (cp >= start && cp <= end) return dv.getUint32(g + 8, false) + (cp - start) !== 0

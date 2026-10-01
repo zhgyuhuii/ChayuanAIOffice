@@ -976,37 +976,59 @@ export default function App() {
         setActiveFormWidgetId(null)
         formControlRefs.current.clear()
       }
-      const loaded = await getDocument({
+      const task = getDocument({
         data: bytes,
         password: passwordRef.current,
         ...DOC_OPTS,
-      }).promise
-      const metadata = await loaded.getMetadata()
-      const documentInfo = metadata.info as {
-        EncryptFilterName?: string | null
-        IsXFAPresent?: boolean
-        Title?: string
-        Author?: string
-        Subject?: string
-        Keywords?: string
-      }
-      setDocInfo({
-        title: documentInfo.Title ?? '',
-        author: documentInfo.Author ?? '',
-        subject: documentInfo.Subject ?? '',
-        keywords: documentInfo.Keywords ?? '',
       })
-      const formFeatures = documentFormFeatures(documentInfo, bytes)
-      setFormHasXfa(formFeatures.hasXfa)
-      setDocumentEncrypted(formFeatures.encrypted)
+      let loaded: PDFDocumentProxy
+      try {
+        loaded = await task.promise
+      } catch (err) {
+        // a failed open (wrong password, corrupt file) leaves the rejected task
+        // holding the file bytes and its worker: retire it before surfacing
+        void task.destroy()
+        throw err
+      }
       const all: PageSize[] = []
       const rots: number[] = []
-      for (let i = 1; i <= loaded.numPages; i++) {
-        const page = await loaded.getPage(i)
-        // Unrotated size; display size is derived by geom from the total rotation
-        const vp = page.getViewport({ scale: 1, rotation: 0 })
-        all.push({ width: vp.width, height: vp.height })
-        rots.push(page.rotate ?? 0)
+      const origins: [number, number][] = []
+      const userUnits: number[] = []
+      try {
+        const metadata = await loaded.getMetadata()
+        const documentInfo = metadata.info as {
+          EncryptFilterName?: string | null
+          IsXFAPresent?: boolean
+          Title?: string
+          Author?: string
+          Subject?: string
+          Keywords?: string
+        }
+        setDocInfo({
+          title: documentInfo.Title ?? '',
+          author: documentInfo.Author ?? '',
+          subject: documentInfo.Subject ?? '',
+          keywords: documentInfo.Keywords ?? '',
+        })
+        const formFeatures = documentFormFeatures(documentInfo, bytes)
+        setFormHasXfa(formFeatures.hasXfa)
+        setDocumentEncrypted(formFeatures.encrypted)
+        for (let i = 1; i <= loaded.numPages; i++) {
+          const page = await loaded.getPage(i)
+          // Unrotated size; display size is derived by geom from the total rotation
+          const vp = page.getViewport({ scale: 1, rotation: 0 })
+          all.push({ width: vp.width, height: vp.height })
+          rots.push(page.rotate ?? 0)
+          origins.push([page.view[0]!, page.view[1]!])
+          userUnits.push(page.userUnit ?? 1)
+        }
+      } catch (err) {
+        // getMetadata/page probing failed after the document resolved but before
+        // setDoc adopted it: destroy the half-open document (pdfjs-dist 6.x
+        // removed PDFDocumentProxy.destroy(); go through the loading task) and
+        // keep the previous document on screen, then surface the error
+        void loaded.loadingTask.destroy()
+        throw err
       }
       try {
         setFormCatalog(await buildFormCatalog(loaded))
@@ -3774,8 +3796,12 @@ export default function App() {
     } else {
       const paths = sig.paths.map((p) => {
         const out: number[] = []
-        for (let i = 0; i < p.length; i += 2) {
-          out.push(...viewToPdf(geom, left + p[i]! * k, top + p[i + 1]! * k))
+        // walk whole pairs only: a trailing odd or non-finite value would emit NaN
+        for (let i = 0; i + 1 < p.length; i += 2) {
+          const x = p[i]!
+          const y = p[i + 1]!
+          if (!Number.isFinite(x) || !Number.isFinite(y)) continue
+          out.push(...viewToPdf(geom, left + x * k, top + y * k))
         }
         return out
       })

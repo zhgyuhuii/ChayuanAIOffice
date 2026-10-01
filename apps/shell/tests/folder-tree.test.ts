@@ -165,6 +165,15 @@ describe('pathsUnder', () => {
   })
 })
 
+describe('rebasePath', () => {
+  it('leaves a path that did not live under the moved folder alone', () => {
+    const outside = touch('notes.md')
+    const sibling = touch('src2/deep.md')
+    expect(rebasePath(outside, join(root, 'src'), join(root, 'dest'))).toBe(outside)
+    expect(rebasePath(sibling, join(root, 'src'), join(root, 'dest'))).toBe(sibling)
+  })
+})
+
 describe('movePathsInto', () => {
   it('moves files and folders, reporting old → new paths', () => {
     const file = touch('report.docx')

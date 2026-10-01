@@ -96,10 +96,19 @@ export function solidPng(w: number, h: number, rgb: [number, number, number]): B
 
 // ── Shared part / rels surgery ─────────────────────────────────────────
 
+const DEFAULT_TAG = /<Default\b[^>]*\/?>/g
+
+/** Any <Default> already declaring this extension, whatever its attribute order or quoting. */
+function hasDefaultFor(ct: string, ext: string): boolean {
+  const re = new RegExp(`\\bExtension\\s*=\\s*(["'])${ext}\\1`)
+  for (const tag of ct.matchAll(DEFAULT_TAG)) if (re.test(tag[0])) return true
+  return false
+}
+
 export function ensureDefaultContentType(opened: OpenedPptx, ext: string, mime: string): void {
   const ctPath = '[Content_Types].xml'
   const ct = opened.archive.readText(ctPath)
-  if (ct && !new RegExp(`<Default Extension="${ext}"`).test(ct)) {
+  if (ct && !hasDefaultFor(ct, ext)) {
     const dflt = `<Default Extension="${ext}" ContentType="${mime}"/>`
     opened.archive.entries.set(
       ctPath,

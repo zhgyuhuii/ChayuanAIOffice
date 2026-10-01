@@ -170,6 +170,29 @@ describe('shiftFormulaRefs on columns', () => {
   })
 })
 
+describe('shiftFormulaRefs at the grid edge', () => {
+  it('turns a ref the shift pushes past the last row or column into #REF!', () => {
+    const lastRow = shiftFormulaRefs('=A1048576', insertRows(2, 5), true, SHEET)
+    expect(lastRow.formula).toBe('=#REF!')
+    expect(lastRow.hasRefError).toBe(true)
+
+    const lastColumn = shiftFormulaRefs('=XFD1', insertCols('B', 1), true, SHEET)
+    expect(lastColumn.formula).toBe('=#REF!')
+
+    // Spans take the same bound, and a range that only overruns at its far end
+    // is #REF! too — never shrunk into an inverted range.
+    expect(shiftFormulaRefs('=SUM(XFD:XFD)', insertCols('B', 1), true, SHEET).formula).toBe(
+      '=SUM(#REF!)',
+    )
+    expect(shiftFormulaRefs('=SUM(2:1048576)', insertRows(2, 1), true, SHEET).formula).toBe(
+      '=SUM(#REF!)',
+    )
+    expect(shiftFormulaRefs('=SUM(A2:B1048576)', insertRows(2, 1), true, SHEET).formula).toBe(
+      '=SUM(#REF!)',
+    )
+  })
+})
+
 describe('offsetFormulaRefs', () => {
   it('shifts lowercase cell refs and whole-column spans on fill', () => {
     expect(offsetFormulaRefs('=sum(a1:b2)+sum($b:d)', 0, 1)).toBe('=sum(B1:C2)+sum($B:E)')

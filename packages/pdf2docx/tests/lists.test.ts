@@ -225,6 +225,40 @@ describe('detectListBlocks: ordered lists', () => {
     expect(items).toHaveLength(2)
     expect(blocks.map(textOf).join(' ')).toContain('7. seven')
   })
+
+  it('continues a run broken by a page break (single item on the next page)', () => {
+    // page 1 ends the run, page 2 carries only the next ordinal: a lone item
+    // is a heading unless it continues the run the shared state ended on
+    const seq = { next: 0 }
+    const first = blocksOf(
+      [
+        { text: '1. first item on the opening page', x: 72 },
+        { text: '2. second item on the opening page', x: 72 },
+      ],
+      seq,
+    )
+    expect(first.map((b) => b.list?.seqId)).toEqual([0, 0])
+
+    const second = blocksOf([{ text: '3. the only item on the next page', x: 72 }], seq)
+    expect(second[0]!.list).toMatchObject({ kind: 'ordered', level: 0, start: 1, style: 'dot' })
+    expect(second[0]!.list!.seqId).toBe(0)
+    expect(textOf(second[0]!)).toBe('the only item on the next page')
+  })
+
+  it('still rejects a lone numbered line that continues nothing', () => {
+    const seq = { next: 0 }
+    blocksOf(
+      [
+        { text: '1. one', x: 72 },
+        { text: '2. two', x: 72 },
+      ],
+      seq,
+    )
+    // a different ordinal, not the next one in the run
+    const stray = blocksOf([{ text: '9. unrelated lone paragraph', x: 72 }], seq)
+    expect(stray[0]!.list).toBeUndefined()
+    expect(textOf(stray[0]!)).toContain('9. unrelated lone paragraph')
+  })
 })
 
 describe('rebuild: list items become real docx numbering', () => {
@@ -269,5 +303,38 @@ describe('rebuild: list items become real docx numbering', () => {
     expect(result.numbering?.restartNums).toEqual([
       expect.objectContaining({ numId, startOverrides: expect.objectContaining({ 0: 3 }) }),
     ])
+  })
+})
+
+describe('detectListBlocks: RTL lists', () => {
+  /** lay out an RTL bullet item with the bullet at a fixed right-edge position */
+  function rtlBulletItem(text: string, rightEdge: number, y: number): PdfChar[] {
+    const logical = `\u2022 ${text}`
+    const reversed = [...logical].reverse().join('')
+    const { chars } = mkText(reversed, 0, { y, fontSize: 10 })
+    const width = chars[chars.length - 1]!.box.x1 - chars[0]!.box.x0
+    const offset = rightEdge - width
+    return chars.map((c) => ({
+      ...c,
+      box: { ...c.box, x0: c.box.x0 + offset, x1: c.box.x1 + offset },
+      looseBox: { ...c.looseBox, x0: c.looseBox.x0 + offset, x1: c.looseBox.x1 + offset },
+      originX: c.originX + offset,
+    }))
+  }
+
+  it('detects Hebrew bullet items as a list with markers stripped', () => {
+    const chars = [
+      ...rtlBulletItem('\u05e4\u05e8\u05d9\u05d8 \u05e8\u05d0\u05e9\u05d5\u05df', 540, 700),
+      ...rtlBulletItem('\u05e4\u05e8\u05d9\u05d8 \u05e9\u05e0\u05d9', 540, 672),
+    ]
+    const body = { bodyLeft: 72, bodyRight: 540 }
+    const blocks = detectListBlocks(groupIntoBlocks(analyzeChars(chars), body), { next: 0 })
+    expect(blocks).toHaveLength(2)
+    for (const b of blocks) {
+      expect(b.dir).toBe('rtl')
+      expect(b.list).toMatchObject({ kind: 'bullet', level: 0 })
+    }
+    expect(textOf(blocks[0]!)).toBe('\u05e4\u05e8\u05d9\u05d8 \u05e8\u05d0\u05e9\u05d5\u05df')
+    expect(textOf(blocks[1]!)).toBe('\u05e4\u05e8\u05d9\u05d8 \u05e9\u05e0\u05d9')
   })
 })

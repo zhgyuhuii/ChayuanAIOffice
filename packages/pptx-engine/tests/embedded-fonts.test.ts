@@ -145,6 +145,36 @@ function sfntCovering(chars: string): Uint8Array {
   return out
 }
 
+/** The format-4 font of sfntCovering('H') with segment 0's idRangeOffset aimed past the buffer. */
+function sfntWithHostileRangeOffset(): Uint8Array {
+  const out = sfntCovering('H')
+  const segCount = 2 // 'H' plus the 0xffff terminator
+  const ends = 40 + 14 // sub + 14, as laid out by sfntCovering
+  const rangeOffsets = ends + segCount * 2 + 2 + segCount * 2 + segCount * 2
+  new DataView(out.buffer).setUint16(rangeOffsets, 0xffff)
+  return out
+}
+
+/** A format-12 cmap declaring more groups than the file actually contains. */
+function sfntWithHostileNumGroups(): Uint8Array {
+  const out = new Uint8Array(12 + 16 + 12 + 16)
+  const dv = new DataView(out.buffer)
+  dv.setUint32(0, 0x00010000)
+  dv.setUint16(4, 1)
+  dv.setUint32(12, 0x636d6170) // 'cmap'
+  dv.setUint32(20, 28)
+  const cmap = 28
+  dv.setUint16(cmap + 2, 1)
+  dv.setUint16(cmap + 4, 3)
+  dv.setUint16(cmap + 6, 1)
+  dv.setUint32(cmap + 8, 12)
+  const sub = cmap + 12
+  dv.setUint16(sub, 12) // format 12
+  dv.setUint32(sub + 4, 16)
+  dv.setUint32(sub + 12, 0xffffffff) // nGroups: the first group already lies past the end
+  return out
+}
+
 const FONT_REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/font'
 
 describe('sfntCmapLookup', () => {
@@ -158,6 +188,13 @@ describe('sfntCmapLookup', () => {
 
   it('returns null without a readable cmap', () => {
     expect(sfntCmapLookup(fakeSfnt())).toBeNull()
+  })
+
+  it('treats a cmap offset past the font as uncovered instead of throwing', () => {
+    // The callbacks run long after sfntCmapLookup's try/catch has returned, so a
+    // hostile idRangeOffset/numGroups must read as "not in this subset", not throw.
+    expect(sfntCmapLookup(sfntWithHostileRangeOffset())!('H'.codePointAt(0)!)).toBe(false)
+    expect(sfntCmapLookup(sfntWithHostileNumGroups())!(0x48)).toBe(false)
   })
 })
 

@@ -162,6 +162,8 @@ export const ar = {
   ribbonTableInsideVBorders: 'Inside Vertical',
   ribbonTableInsideVBordersTip: 'Inside vertical borders for the whole table',
   ribbonClearBordersTip: 'مسح حدود الخلايا المحددة',
+  ribbonTableDiagonalDownBorders: 'Diagonal Down Border',
+  ribbonTableDiagonalUpBorders: 'Diagonal Up Border',
   ribbonBorderColor: 'لون الحدود',
   ribbonBorderWidth: 'سُمك الحدود',
   ribbonPtValue: '{n} نقطة',

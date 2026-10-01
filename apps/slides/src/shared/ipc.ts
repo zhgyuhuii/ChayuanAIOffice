@@ -1506,6 +1506,8 @@ export interface SlidesApi {
   >
   /** Whether cloud single-page generation (chatoffice slide_generate) is available (CHATOFFICE_CLOUD_SLIDE=1 + chatoffice login) */
   cloudGenStatus: () => Promise<{ enabled: boolean }>
+  /** Abort every in-flight cloud page generation of this window (AI panel stop) */
+  cloudPageCancel: () => Promise<void>
   /** Cloud single-page generation: brief → one-slide pptx temp file; the marker goes into a landGeneratedPages pageMarkers slot */
   cloudGeneratePage: (op: {
     brief: string

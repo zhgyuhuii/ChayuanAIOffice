@@ -166,6 +166,8 @@ export const de = {
   ribbonTableInsideVBorders: 'Inside Vertical',
   ribbonTableInsideVBordersTip: 'Inside vertical borders for the whole table',
   ribbonClearBordersTip: 'Rahmenlinien der ausgewählten Zellen entfernen',
+  ribbonTableDiagonalDownBorders: 'Diagonal Down Border',
+  ribbonTableDiagonalUpBorders: 'Diagonal Up Border',
   ribbonBorderColor: 'Rahmenfarbe',
   ribbonBorderWidth: 'Rahmenstärke',
   ribbonPtValue: '{n} Pt.',

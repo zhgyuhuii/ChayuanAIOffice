@@ -165,6 +165,8 @@ export const hi = {
   ribbonTableInsideVBorders: 'Inside Vertical',
   ribbonTableInsideVBordersTip: 'Inside vertical borders for the whole table',
   ribbonClearBordersTip: 'चयनित कक्षों से बॉर्डर साफ़ करें',
+  ribbonTableDiagonalDownBorders: 'Diagonal Down Border',
+  ribbonTableDiagonalUpBorders: 'Diagonal Up Border',
   ribbonBorderColor: 'बॉर्डर रंग',
   ribbonBorderWidth: 'बॉर्डर मोटाई',
   ribbonPtValue: '{n} पॉइंट',

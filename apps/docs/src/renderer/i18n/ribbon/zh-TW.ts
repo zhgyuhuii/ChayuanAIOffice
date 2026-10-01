@@ -161,6 +161,8 @@ export const zhTW = {
   ribbonTableInsideVBorders: '內側縱框線',
   ribbonTableInsideVBordersTip: '僅對整個表格添加內部縱向框線',
   ribbonClearBordersTip: '清除選取儲存格的框線',
+  ribbonTableDiagonalDownBorders: '下對角線框線',
+  ribbonTableDiagonalUpBorders: '上對角線框線',
   ribbonBorderColor: '框線色彩',
   ribbonBorderWidth: '框線粗細',
   ribbonPtValue: '{n} 點',

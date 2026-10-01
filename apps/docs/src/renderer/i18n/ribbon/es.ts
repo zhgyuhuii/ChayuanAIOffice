@@ -166,6 +166,8 @@ export const es = {
   ribbonTableInsideVBorders: 'Inside Vertical',
   ribbonTableInsideVBordersTip: 'Inside vertical borders for the whole table',
   ribbonClearBordersTip: 'Borrar los bordes de las celdas seleccionadas',
+  ribbonTableDiagonalDownBorders: 'Diagonal Down Border',
+  ribbonTableDiagonalUpBorders: 'Diagonal Up Border',
   ribbonBorderColor: 'Color del borde',
   ribbonBorderWidth: 'Grosor del borde',
   ribbonPtValue: '{n} pto',

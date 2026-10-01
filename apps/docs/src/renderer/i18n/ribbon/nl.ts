@@ -167,6 +167,8 @@ export const nl = {
   ribbonTableInsideVBorders: 'Inside Vertical',
   ribbonTableInsideVBordersTip: 'Inside vertical borders for the whole table',
   ribbonClearBordersTip: 'Randen van de geselecteerde cellen wissen',
+  ribbonTableDiagonalDownBorders: 'Diagonal Down Border',
+  ribbonTableDiagonalUpBorders: 'Diagonal Up Border',
   ribbonBorderColor: 'Randkleur',
   ribbonBorderWidth: 'Randdikte',
   ribbonPtValue: '{n} pt',

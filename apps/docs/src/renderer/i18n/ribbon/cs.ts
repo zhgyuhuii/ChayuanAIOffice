@@ -154,6 +154,8 @@ export const cs = {
   ribbonTableInsideVBorders: 'Vnitřní svislé',
   ribbonTableInsideVBordersTip: 'Vnitřní svislé ohraničení celé tabulky',
   ribbonClearBordersTip: 'Odebrat ohraničení vybraných buněk',
+  ribbonTableDiagonalDownBorders: 'Diagonal Down Border',
+  ribbonTableDiagonalUpBorders: 'Diagonal Up Border',
   ribbonBorderColor: 'Barva ohraničení',
   ribbonBorderWidth: 'Tloušťka ohraničení',
   ribbonPtValue: '{n} b.',

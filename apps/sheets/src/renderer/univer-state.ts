@@ -25,6 +25,31 @@ export type UniverWorksheet = NonNullable<ReturnType<ActiveWorkbook['getActiveSh
 /// Column intervals (inclusive) of one row whose cells fed a wrap measure.
 export type WrapMeasureCoverage = Array<readonly [number, number]>
 
+export interface ActiveCellEditor {
+  isCellEditing(): boolean
+  endEditingAsync(save?: boolean): Promise<boolean>
+}
+
+export function pendingEditsForClose(journalSize: number, editorDirty: boolean): number {
+  return journalSize + (editorDirty ? 1 : 0)
+}
+
+export async function commitActiveCellEditor(
+  editor: ActiveCellEditor | null | undefined,
+): Promise<boolean> {
+  if (!editor?.isCellEditing()) return true
+  return editor.endEditingAsync(true)
+}
+
+export async function runAfterCellEditorCommit(
+  editor: ActiveCellEditor | null | undefined,
+  action: () => void | Promise<unknown>,
+): Promise<boolean> {
+  if (!(await commitActiveCellEditor(editor))) return false
+  await action()
+  return true
+}
+
 export interface LazyWorkbookState {
   readonly file: WorkbookFile
   readonly generation: number

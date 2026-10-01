@@ -165,6 +165,8 @@ export const ru = {
   ribbonTableInsideVBorders: 'Inside Vertical',
   ribbonTableInsideVBordersTip: 'Inside vertical borders for the whole table',
   ribbonClearBordersTip: 'Убрать границы выделенных ячеек',
+  ribbonTableDiagonalDownBorders: 'Diagonal Down Border',
+  ribbonTableDiagonalUpBorders: 'Diagonal Up Border',
   ribbonBorderColor: 'Цвет границы',
   ribbonBorderWidth: 'Толщина границы',
   ribbonPtValue: '{n} пт',

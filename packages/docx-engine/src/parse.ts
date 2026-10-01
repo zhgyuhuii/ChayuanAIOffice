@@ -107,6 +107,7 @@ import {
   fieldLabel,
   fieldStackAfter,
   markInsideFieldCode,
+  tagAttr,
   tocLevelOf,
 } from './parse-fields'
 import {
@@ -376,7 +377,9 @@ export async function parseDocx(
   const noteNumbers = noteNumbersOf(documentXml, footnotes, endnotes, footnoteProps, endnoteProps)
 
   const rangedCommentIds = new Set(
-    [...documentXml.matchAll(/<w:commentRangeStart [^>]*w:id="([^"]+)"/g)].map((m) => m[1]),
+    [...documentXml.matchAll(/<w:commentRangeStart\b[^>]*\bw:id\s*=\s*["']([^"']+)["']/g)].map(
+      (m) => m[1],
+    ),
   )
   const referenceOnlyComments = new Set(
     comments.map((c) => c.id).filter((id) => !rangedCommentIds.has(id)),
@@ -734,7 +737,7 @@ async function expandAltChunk(
   numbering: Map<string, NumberingDef>,
   sourcePath = 'word/document.xml',
 ): Promise<Block[]> {
-  const rId = /\br:id="([^"]+)"/.exec(xml)?.[1]
+  const rId = /\br:id\s*=\s*["']([^"']+)["']/.exec(xml)?.[1]
   if (!rId) return []
   try {
     const bytes = await altChunkToDocx(
@@ -977,7 +980,7 @@ async function buildBlock(
     }
   }
   const fieldPassthrough = (): Block => {
-    const pStyle = /<w:pStyle w:val="([^"]+)"/.exec(xml)?.[1]
+    const pStyle = tagAttr(xml, 'w:pStyle', 'w:val')
     const fieldDisplay = fieldDisplayOf(xml, ctx.styles)
     if (fieldDisplay?.kind === 'text') {
       const runs = fieldResultRuns(xml, ctx, fieldDisplay.left ?? '')
@@ -1017,7 +1020,7 @@ async function buildBlock(
   // them individually would corrupt the field, so they stay protected.
   // Word writes styleIds "TOC1".."TOC9"; Pages exports "TOC 1"/"TOC 2" (with
   // space); html2docx-style exports use opaque ids with the name "toc 1".
-  const tocStyleId = /<w:pStyle w:val="([^"]+)"/.exec(xml)?.[1]
+  const tocStyleId = tagAttr(xml, 'w:pStyle', 'w:val')
   if (tocStyleId && tocLevelOf(tocStyleId, ctx.styles) !== null) {
     return {
       ...base,
@@ -4151,7 +4154,11 @@ function extractRuns(
         const rId = attrs['r:id']
         const anchor = attrs['w:anchor']
         const tooltip = attrs['w:tooltip']
-        const href = rId ? (ctx.rels.get(rId)?.target ?? '') : anchor ? `#${anchor}` : ''
+        const href = rId
+          ? `${ctx.rels.get(rId)?.target ?? ''}${anchor ? `#${anchor}` : ''}`
+          : anchor
+            ? `#${anchor}`
+            : ''
         const first = runs.length
         walk(childrenOf(node), { href, rId, ...(tooltip ? { tooltip } : {}) }, rev)
         // Word paints a bookmark link only through its character style: an

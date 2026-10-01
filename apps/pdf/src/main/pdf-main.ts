@@ -11,7 +11,7 @@ import {
   watch,
   writeFileSync,
 } from 'node:fs'
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { userInfo } from 'node:os'
 import { basename, dirname, join, resolve } from 'node:path'
 import { BrowserWindow, WebContentsView, app, dialog, ipcMain, nativeImage, shell } from 'electron'
@@ -969,6 +969,51 @@ export function requestPdfSaveAs(contents: WebContents, targetPath: string): Pro
 }
 
 /** Saved signatures live in userData, shared by all documents and windows */
+/** Filesystem seam for readMergeInputs; defaults to node:fs/promises */
+export interface MergeInputIo {
+  stat(path: string): Promise<{ size: number }>
+  readFile(path: string): Promise<Uint8Array>
+}
+
+let mergeInputIo: MergeInputIo | null = null
+
+/** test seam: swap the filesystem used by readMergeInputs */
+export function setMergeInputIo(io: MergeInputIo | null): void {
+  mergeInputIo = io
+}
+
+export const MAX_MERGE_TOTAL_BYTES = 1_073_741_824
+
+/**
+ * Stat + sum every merge input before anything is read — refusing an
+ * oversized merge must not require reading it first — then read the picked
+ * files one at a time (so at most one extra copy is live) and finally the
+ * base document, in the same order the merge appends them. Throws a readable
+ * error when the total crosses MAX_MERGE_TOTAL_BYTES.
+ */
+export async function readMergeInputs(
+  basePath: string,
+  pickedPaths: readonly string[],
+  io: MergeInputIo = mergeInputIo ?? { stat: (p) => stat(p), readFile: (p) => readFile(p) },
+): Promise<{ base: Uint8Array; others: Uint8Array[] }> {
+  const asMb = (bytes: number): number => Math.round(bytes / (1024 * 1024))
+  let totalBytes = 0
+  for (const input of [basePath, ...pickedPaths]) {
+    totalBytes += (await io.stat(input)).size
+    if (totalBytes > MAX_MERGE_TOTAL_BYTES) {
+      throw new Error(
+        `pdf: merge too large — the selected files total ${asMb(totalBytes)} MB, ` +
+          `over the ${asMb(MAX_MERGE_TOTAL_BYTES)} MB merge limit`,
+      )
+    }
+  }
+  const others: Uint8Array[] = []
+  for (const pickedPath of pickedPaths) {
+    others.push(new Uint8Array(await io.readFile(pickedPath)))
+  }
+  return { base: new Uint8Array(await io.readFile(basePath)), others }
+}
+
 const signaturesPath = () => join(app.getPath('userData'), 'pdf-signatures.json')
 
 /** Serialize signature file read-modify-writes: several pdf views share one file */
@@ -1476,13 +1521,8 @@ function registerPdfIpc(): void {
       })
       if (picked.canceled || picked.filePaths.length === 0) return { ok: true, canceled: true }
       try {
-        const others = await Promise.all(
-          picked.filePaths.map(async (p) => new Uint8Array(await readFile(p))),
-        )
-        const { merged, appended } = await mergePdfBytes(
-          new Uint8Array(await readFile(path)),
-          others,
-        )
+        const { base, others } = await readMergeInputs(path, picked.filePaths)
+        const { merged, appended } = await mergePdfBytes(base, others)
         const targetPath = uniqueGeneratedPdfPath(
           configuredDefaultSaveDir(app),
           String(suggestedName || 'merged.pdf'),

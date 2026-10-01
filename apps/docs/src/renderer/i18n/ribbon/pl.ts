@@ -165,6 +165,8 @@ export const pl = {
   ribbonTableInsideVBorders: 'Inside Vertical',
   ribbonTableInsideVBordersTip: 'Inside vertical borders for the whole table',
   ribbonClearBordersTip: 'Usuń krawędzie z zaznaczonych komórek',
+  ribbonTableDiagonalDownBorders: 'Diagonal Down Border',
+  ribbonTableDiagonalUpBorders: 'Diagonal Up Border',
   ribbonBorderColor: 'Kolor krawędzi',
   ribbonBorderWidth: 'Grubość krawędzi',
   ribbonPtValue: '{n} pkt',

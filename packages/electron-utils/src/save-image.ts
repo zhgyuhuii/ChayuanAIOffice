@@ -46,7 +46,13 @@ export function suggestImageFileName(url: string, mime: string | null | undefine
 }
 
 export function decodeDataUrl(url: string): { bytes: Buffer; mime: string | null } | null {
-  const m = /^data:([^;,]*)((?:;[^,]*)*),([\s\S]*)$/i.exec(url)
+  // The parameter run is `;`-prefixed and its body excludes `;`, so each
+  // iteration has exactly one possible length. With `;[^,]*` instead, one
+  // iteration could swallow several parameters or several could cover one, and
+  // a URL with no comma made the engine try every split - exponential, so a
+  // ~100-character data: URL in a document froze the main process when the user
+  // chose "Save image".
+  const m = /^data:([^;,]*)((?:;[^;,]*)*),([\s\S]*)$/i.exec(url)
   if (!m) return null
   const mime = m[1] || null
   const payload = m[3] ?? ''
