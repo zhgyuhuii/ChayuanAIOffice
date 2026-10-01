@@ -208,6 +208,29 @@
 
 - **markdown**：插入图片导出 DOCX 时 SVG/WebP/BMP/AVIF 自动按 192 DPI 高清重编码为 PNG（超宽图按 4096px 上限等比缩放），data:URL 内联图免主进程往返；上游全链测试回归通过。至此第十八轮（A–F）234 个上游提交全部吸收完毕，无剩余挂账。
 
+### 第十八轮 G·新增量（2026-10-01，施工于 sync/18g-remaining 分支；上游 fetch 到新提交 968d7d23..676bf4d5 共 150 提交、340 文件 +11713）
+
+| 域 | 落位 |
+|---|---|
+| 新工作区 zip-gate | zip 炸弹守卫（assertZipWithinLimits/InflatesWithinLimits）从 docx-engine 抽出独立成包，file-parse/pptx.ts+xlsx.ts 改走新断言 |
+| 引擎 | docx-engine：单元格对角框线（w:tl2br/w:tr2bl）、域字符平衡防平方扫描、rels 引号风格、settings 标志成对；pptx-engine：图表点数上限、颜色缺失 val、rels 替换模式、连接线方向/翻转旋转、媒体插入 ensureDefaultContentType 导出；xlsx-gateway：CF 阈值有限性、DV sqref 替换、超链接重编号正则、非有限单元格值；pdf2docx spread 管线；html2docx 书签载体（表格/卡片/色条）、文档 meta 语言、word-utils 间隔/制表位、有序表采纳项目符号标记、行内图 run 尺寸下限 1px |
+| cli 安全 | --host 空串拒绝（防绑全接口跳过回环守卫）、MCP 会话 100 上限 FIFO 淘汰、布尔 flag 拒绝 =value（--force=false 不再当 --force）、Host 头缺失/畸形拒绝、检查项按级编号（无 E/W/I 跳号）、data-url 上限 |
+| ai-provider | 新厂商 MiMo/Hunyuan/CheaperInference（OpenAI-compatible）、Exa/Firecrawl 搜索后端、ai-settings-guard 主进程 schema 校验（slides 同款 twins）、gskToolsEnabled 兼容别名 |
+| pdf | merge 走 readMergeInputs：先 stat 合计超 1GiB 即拒（不读文件）、逐个顺序读（峰值内存单份）、io seam 可注入测试；export-images 独立主进程模块 |
+| docs/slides/sheets | docs：流式分页不重采样未变 flow、Word 式列框线拖拽实时预览、斜线表头、表格列拖拽；slides：stop 信号接通云页生成（#1638 防中止后继续计费）、AI settings 主进程 schema 校验；sheets：save-scheduler 统一 AutoSave/崩溃恢复节拍（一次只一份在存）、close-guard 关窗前提交挂起单元格编辑器、CF x14 sqref/定义名作用域/打印标题列/重算范围边界/公式括号平衡 |
+| ui/i18n | popover teardown 幂等（refcount 不再僵死）、a[href] 纳入模态 Tab 焦点环、CJK 衬线下载字体清单（font-names.ts）、i18n 缺键回退 zh 不抛错（#1628） |
+
+**冲突裁定要点**：i18n ribbon shard 20 语言=并集（本地边框键+上游斜线键）；ai-search 保持本地 chatoffice 函数 API（上游 gsk 对象 API 需重写五端调用点，Exa/Firecrawl 挂账）；ai-provider types 本地超集+上游增量（mimo/hunyuan/cheaperinference/genspark 数据兼容 id、serply 搜索位）；cli mcp.ts 本地版保留（上游 --host 空串守卫已在本地 http.ts LOOPBACK 校验内实现，独立测试待挂账）；shell atomic-write 上游 fsync-before-rename 版本。
+
+**门禁**：typecheck 0（全仓 21 工作区）；全量 15,560 测试全绿 EXIT 0。
+
+### 第十八轮 G 更新内容汇总（产品视角）
+
+- **安全加固**：CLI MCP --host 空串/Host 头/会话上限三重防护、zip 炸弹守卫独立包化、file-parse 文本 BOM 解码+拒绝不可解码编码
+- **稳定性**：PDF 合并改 stat-先行+顺序读（防主进程 OOM）、docs 流式分页性能（不再每遍重采样）、popover 引用计数僵死修复、i18n 缺键不再白屏
+- **新功能**：文档表格斜线表头与对角框线、列框线拖拽实时预览、幻灯片中止即停云生成（不再继续计费）、MiMo/Hunyuan/CheaperInference 模型、Exa/Firecrawl 搜索后端（待接线）、CJK 衬线字体下载清单
+- **表格**：统一保存节拍（AutoSave 与崩溃恢复互斥）、关窗自动提交单元格编辑、条件格式/定义名/打印标题多场景修复
+
 ### 第十七轮增量（2026-09-25，0d90149..3f9d07d：18 提交，施工于 sync/upstream-20260922b 分支；本地 shell 版本 1.0.3 自主线，上游 0.10.0 不跟随——激活 UI/购买体系为本地 B 区，版本号本地为准）
 
 | 内容 | 结果 |
