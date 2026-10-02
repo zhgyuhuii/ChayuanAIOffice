@@ -4,7 +4,18 @@ import { defineConfig } from 'vitest/config'
 
 const here = dirname(fileURLToPath(import.meta.url))
 
+// pdf-main imports nativeImage for the app icon; jsdom/happy-dom has no electron
+const electronMock = {
+  nativeImage: { createFromPath: () => ({}) },
+}
+
 export default defineConfig({
+  server: {
+    fs: {
+      // pptx-ops 的 prompt .md 以 ?raw 引入，位于 app 根之外——放行仓库根
+      allow: [fileURLToPath(new URL('../../../', import.meta.url))],
+    },
+  },
   // Pin resolution to this repo's workspace sources (matches tsconfig paths)
   resolve: {
     alias: {
@@ -41,6 +52,10 @@ export default defineConfig({
       '@chatoffice/pipelines/slides/layout-audit': resolve(
         here,
         '../../packages/pipelines/src/slides/layout-audit.ts',
+      ),
+      '@chatoffice/pipelines/slides/cover-crop': resolve(
+        here,
+        '../../packages/pipelines/src/slides/cover-crop.ts',
       ),
       '@chatoffice/pipelines/slides': resolve(here, '../../packages/pipelines/src/slides/index.ts'),
       '@chatoffice/docx-engine/metafile': resolve(

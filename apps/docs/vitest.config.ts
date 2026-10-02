@@ -7,6 +7,12 @@ import { defineConfig } from 'vitest/config'
 const local = (rel: string) => fileURLToPath(new URL(rel, import.meta.url))
 
 export default defineConfig({
+  server: {
+    fs: {
+      // chart-kit 的 gl-frame.html 等资源位于 app 根之外——放行仓库根
+      allow: [fileURLToPath(new URL('../../../', import.meta.url))],
+    },
+  },
   resolve: {
     alias: [
       {
@@ -28,6 +34,10 @@ export default defineConfig({
       {
         find: '@chatoffice/electron-utils/atomic-write',
         replacement: local('../../packages/electron-utils/src/atomic-write.ts'),
+      },
+      {
+        find: '@chatoffice/electron-utils/safe-external-url',
+        replacement: local('../../packages/electron-utils/src/safe-external-url.ts'),
       },
       {
         find: '@chatoffice/electron-utils/headless-export',

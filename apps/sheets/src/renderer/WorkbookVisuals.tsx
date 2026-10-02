@@ -4075,7 +4075,7 @@ function CategoryGroupBand({
   )
 }
 
-function formatAxisValue(value: number, numberFormat: string | undefined): string {
+export function formatAxisValue(value: number, numberFormat: string | undefined): string {
   if (numberFormat && numberFormat !== 'General' && !numberFormat.includes('%')) {
     try {
       const text = numfmt.format(numberFormat, value, { throws: false })
