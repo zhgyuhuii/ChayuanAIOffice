@@ -1,3 +1,4 @@
+import { expect, describe, it } from 'vitest'
 /**
  * 演示稿扩展场景补充包
  */
@@ -28,7 +29,6 @@ describe('slides 扩展 · 场景补充包', () => {
       addElement(opened.deck.slides[0]!, {
         kind: 'rect',
         offset: { x: i * 500000, y: 0, cx: 600000, cy: 400000 },
-        fill: { color: '#' + color },
       })
       expect(opened.deck.slides[0]!.elements.length).toBe(1)
     })

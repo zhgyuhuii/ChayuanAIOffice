@@ -1,3 +1,4 @@
+import { expect, describe, it } from 'vitest'
 /**
  * 表格扩展场景补充包
  */
