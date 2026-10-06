@@ -280,6 +280,16 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 修复（7d18d79d） | docs/markdown Ribbon 入口→「察元AI」、GensparkMark SVG→本地星标（保留导出名防调用点churn）、小语言标题→ChaAI Office；docs 2891/markdown 657 回归全绿；重新打包真机核对（26-docx-restored.png）Genspark 残留=false、察元AI=true |
 | 纪律 | 「上游结构采纳」类提交必须同步过一遍**用户可见字符串品牌表**与**本地 A 区骨架清单（DockShell/PanelTabs/dock.css）**——结构可以跟上游，皮和骨架必须是察元的；每轮同步后跑「DockShell grep 六端 + 品牌 grep Ribbon/面板标题/aria-label」 |
 
+### 第二十轮·助手库扩容（2026-10-07，用户要求每类文档 ≥100 助手）
+
+| 项 | 处置 |
+|---|---|
+| 盘点 | docs=4576 助手(229 领域包,完好)；sheets/slides/pdf/markdown/html 仅 2-4 个快捷项(历史上限即如此,非本轮合并丢失) |
+| 新建 | packages/ui/assistant-library(跨端 types+数据+分组浏览器)：sheets 102(11 域)/slides 100(10 域)/pdf 100(10 域)/markdown 100(10 域)/html 130(13 域)——共 532 个新助手,提示词针对各端工具语义自包含 |
+| 接线 | 五端 AssistantTab 内嵌 AssistantLibraryBrowser(libraryApp+onRunPrompt props)；搜索+领域折叠分组+点击送入对话 |
+| 模式修复 | sheets conversations 模式 PanelTabs 路由修复(走 effective handler,助手 tab 可切换)；markdown/slides conversations 助手 tab 补 libraryApp 接线；html/pdf conversations 模式助手 tab 挂账(独立面板已覆盖) |
+| 门禁 | typecheck 0；六端回归全绿；真机验证 sheets 102/102(11 组)、markdown 100/100(10 组)、slides 100/100(10 组) |
+
 ### 第二十轮·界面恢复二阶段（2026-10-06，用户逐项验收反馈驱动）
 
 | 项 | 处置 |
