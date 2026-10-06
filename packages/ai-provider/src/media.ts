@@ -14,6 +14,8 @@ export const XAI_BASE_URL = 'https://api.x.ai/v1'
 /** DashScope root: images ride /api/v1/services/aigc/..., understanding rides /compatible-mode/v1 */
 export const DASHSCOPE_BASE_URL = 'https://dashscope.aliyuncs.com'
 export const MINIMAX_BASE_URL = 'https://api.minimax.io/v1'
+/** DeepSeek's OpenAI-compatible root; the Vision + Files API live at https://api.deepseek.com */
+export const DEEPSEEK_MEDIA_BASE_URL = 'https://api.deepseek.com/v1'
 
 // Model ids verified against vendor docs 2026-09; keep chat-capable analysis
 // models in step with the chat catalog in providers.ts.
@@ -169,6 +171,21 @@ export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
     videoAnalysis: false,
   },
   {
+    id: 'deepseek',
+    label: 'DeepSeek',
+    // native multimodal (V4.1 Flash = wire id deepseek-flash): reads JPEG/PNG/GIF/WebP,
+    // no image generation and no video/audio, so it only appears for image analysis
+    description: 'DeepSeek V4.1 Flash reads images (native multimodal); no image generation',
+    keyPlaceholder: 'sk-...',
+    defaultBaseUrl: DEEPSEEK_MEDIA_BASE_URL,
+    imageModels: [],
+    defaultImageModel: '',
+    analysisProtocol: 'openai-chat',
+    analysisModels: ['deepseek-flash'],
+    defaultAnalysisModel: 'deepseek-flash',
+    videoAnalysis: false,
+  },
+  {
     id: 'custom',
     label: 'Custom',
     description: 'Any OpenAI-compatible endpoint: /images/generations and /chat/completions',
@@ -298,9 +315,9 @@ export function activeMediaProvider(
 export function activeMediaConfig(
   settings: Pick<AiSettings, 'media'>,
   capability: MediaCapability,
-): { provider: Exclude<AiMediaProviderId, ''>; config: AiMediaProviderConfig } | null {
+): { provider: Exclude<AiMediaProviderId, 'chatoffice'>; config: AiMediaProviderConfig } | null {
   const provider = activeMediaProvider(settings, capability)
-  if (!provider) return null
+  if (provider === 'chatoffice') return null
   return { provider, config: settings.media!.providers[provider] }
 }
 
@@ -323,7 +340,8 @@ function capabilityAvailable(
 ): boolean {
   if (!settings) return false
   const model = byokModel(settings, capability)
-  return model !== null && model !== 'chatoffice'
+  if (model !== null) return model !== ''
+  return false
 }
 
 /** live predicate for the generate_image tool: BYOK image model configured */

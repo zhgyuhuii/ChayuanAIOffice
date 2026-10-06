@@ -174,6 +174,7 @@ export default function App() {
   const [autoSave, setAutoSave] = useAutoSavePref('mdapp.autoSave', window.markdownApi)
   const [_showFind, setShowFind] = useState(false)
   const [_findFocus, setFindFocus] = useState<FindFocusRequest>({ field: 'find', nonce: 0 })
+  const [sourceViewOpen, setSourceViewOpen] = useState(false)
   const [outlineOpen, setOutlineOpen] = useState(false)
   const [spellcheck, setSpellcheck] = useState(
     () => localStorage.getItem('mdapp.spellcheck') !== '0',
@@ -909,20 +910,24 @@ export default function App() {
             dirty={dirty}
             onSave={() => void doSave('save')}
             onSaveAs={() => void doSave('saveAs')}
+            onFind={() => openFind(false)}
             autoSave={autoSave}
             onToggleAutoSave={setAutoSave}
             imageEnabled={Boolean(filePath)}
             onInsertImage={insertImage}
             frontmatterOpen={fmOpen}
             onToggleFrontmatter={() => setFmOpen((v) => !v)}
+            sourceViewOpen={sourceViewOpen}
+            onToggleSource={() => setSourceViewOpen((v) => !v)}
             outlineOpen={outlineOpen}
             onToggleOutline={() => setOutlineOpen((v) => !v)}
             hasOutline={outlineItems.length > 0}
             spellcheck={spellcheck}
             onToggleSpellcheck={() => setSpellcheck((v) => !v)}
-            aiPanelAvailable={!dockedEditor && status === 'ready'}
-            aiPanelOpen={aiOpen}
-            onToggleAiPanel={() => setAiOpen((v) => !v)}
+            aiOpen={aiOpen}
+            onToggleAi={() => setAiOpen((v) => !v)}
+            onAiPreset={askSendNow}
+            sourceMode={Boolean(filePath && /\.(txt|json)$/i.test(filePath))}
           />
           {status === 'loading' && (
             <div className="center-note">

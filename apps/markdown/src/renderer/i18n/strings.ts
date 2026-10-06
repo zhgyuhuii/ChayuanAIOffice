@@ -227,7 +227,9 @@ const upstreamStrings = {
     zoomOut: '缩小',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+renameNeedsSave: '先保存或放弃改动，再改文件后缀',
+imageTooLarge: '图片超过 {mb} MB，无法插入',},
   en: {
     aiNetworkError: "Network problem: could not reach the AI service. Check your connection and try again",
     aiTidySelectionPrompt: "Tidy up the formatting of the selected content without changing its meaning",
@@ -452,7 +454,9 @@ const upstreamStrings = {
     zoomOut: 'Zoom out',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+renameNeedsSave: 'Save or discard your changes before changing the extension',
+imageTooLarge: 'Image is larger than {mb} MB and cannot be inserted',},
   ja: {
     aiNetworkError: "ネットワークに問題があり、AI サービスに接続できません。接続を確認して再試行してください",
     aiDockFloat: "フローティング表示",
@@ -677,7 +681,9 @@ const upstreamStrings = {
     zoomOut: '縮小',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+renameNeedsSave: '拡張子を変更する前に変更を保存または破棄してください',
+imageTooLarge: '画像が {mb} MB を超えているため挿入できません',},
   ko: {
     aiNetworkError: "네트워크에 문제가 있어 AI 서비스에 연결할 수 없습니다. 연결을 확인한 후 다시 시도해 주세요",
     aiDockFloat: "플로팅 창",
@@ -902,7 +908,9 @@ const upstreamStrings = {
     zoomOut: '축소',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+renameNeedsSave: '확장자를 바꾸기 전에 변경 사항을 저장하거나 버리세요',
+imageTooLarge: '이미지가 {mb} MB를 초과하여 삽입할 수 없습니다',},
   fr: {
     aiTruncatedNote: "(La réponse a été tronquée par la limite de longueur et peut être incomplète.)",
     aiNetworkError: "Problème réseau : impossible de joindre le service IA. Vérifiez votre connexion et réessayez",
@@ -1127,7 +1135,9 @@ const upstreamStrings = {
     zoomOut: 'Zoom arrière',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+renameNeedsSave: "Enregistrez ou annulez vos modifications avant de changer l'extension",
+imageTooLarge: "L'image dépasse {mb} Mo et ne peut pas être insérée",},
   de: {
     aiTruncatedNote: "(Die Antwort wurde durch das Längenlimit abgeschnitten und ist möglicherweise unvollständig.)",
     aiNetworkError: "Netzwerkproblem: Der KI-Dienst ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut",
@@ -1352,7 +1362,10 @@ const upstreamStrings = {
     zoomOut: 'Verkleinern',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+imageTooLarge: 'Das Bild ist größer als {mb} MB und kann nicht eingefügt werden',
+    renameNeedsSave:
+      'Speichern oder verwerfen Sie Ihre Änderungen, bevor Sie die Erweiterung ändern',},
   es: {
     aiTruncatedNote: "(La respuesta fue cortada por el límite de longitud y puede estar incompleta.)",
     aiNetworkError: "Problema de red: no se pudo conectar con el servicio de IA. Comprueba tu conexión e inténtalo de nuevo",
@@ -1577,7 +1590,9 @@ const upstreamStrings = {
     zoomOut: 'Alejar',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+renameNeedsSave: 'Guarda o descarta los cambios antes de cambiar la extensión',
+imageTooLarge: 'La imagen supera los {mb} MB y no se puede insertar',},
   th: {
     aiNetworkError: "เครือข่ายมีปัญหา ไม่สามารถเชื่อมต่อบริการ AI ได้ โปรดตรวจสอบการเชื่อมต่อแล้วลองใหม่",
     aiDockFloat: "หน้าต่างลอย",
@@ -1802,7 +1817,9 @@ const upstreamStrings = {
     zoomOut: 'ย่อ',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+renameNeedsSave: 'บันทึกหรือยกเลิกการเปลี่ยนแปลงก่อนเปลี่ยนนามสกุลไฟล์',
+imageTooLarge: 'รูปภาพมีขนาดเกิน {mb} MB จึงแทรกไม่ได้',},
   id: {
     aiNetworkError: "Masalah jaringan: tidak dapat terhubung ke layanan AI. Periksa koneksi Anda lalu coba lagi",
     aiDockFloat: "Jendela mengambang",
@@ -2027,7 +2044,9 @@ const upstreamStrings = {
     zoomOut: 'Perkecil',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+renameNeedsSave: 'Simpan atau batalkan perubahan Anda sebelum mengubah ekstensi',
+imageTooLarge: 'Gambar melebihi {mb} MB dan tidak dapat disisipkan',},
   ru: {
     aiNetworkError: "Проблема с сетью: не удалось подключиться к сервису ИИ. Проверьте подключение и повторите попытку",
     aiTidySelectionPrompt: "Приведи в порядок форматирование выделенного фрагмента, не меняя его смысла",
@@ -2252,7 +2271,9 @@ const upstreamStrings = {
     zoomOut: 'Уменьшить',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+renameNeedsSave: 'Сохраните или отмените изменения перед сменой расширения',
+imageTooLarge: 'Изображение больше {mb} МБ и не может быть вставлено',},
   ar: {
     aiNetworkError: "مشكلة في الشبكة: تعذّر الوصول إلى خدمة الذكاء الاصطناعي. تحقق من الاتصال وحاول مجددًا",
     aiDockFloat: "نافذة عائمة",
@@ -2477,7 +2498,9 @@ const upstreamStrings = {
     zoomOut: 'تصغير',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+renameNeedsSave: 'احفظ تغييراتك أو تجاهلها قبل تغيير الامتداد',
+imageTooLarge: 'حجم الصورة يتجاوز {mb} ميغابايت ولا يمكن إدراجها',},
   pt: {
     aiNetworkError: "Problema de rede: não foi possível conectar ao serviço de IA. Verifique sua conexão e tente novamente",
     aiTidySelectionPrompt: "Organize a formatação do conteúdo selecionado sem alterar o significado",
@@ -2702,7 +2725,9 @@ const upstreamStrings = {
     zoomOut: 'Reduzir',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+renameNeedsSave: 'Salve ou descarte as alterações antes de mudar a extensão',
+imageTooLarge: 'A imagem excede {mb} MB e não pode ser inserida',},
   it: {
     aiTruncatedNote: "(La risposta è stata troncata dal limite di lunghezza e potrebbe essere incompleta.)",
     aiNetworkError: "Problema di rete: impossibile raggiungere il servizio IA. Controlla la connessione e riprova",
@@ -2927,7 +2952,9 @@ const upstreamStrings = {
     zoomOut: 'Riduci',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+renameNeedsSave: "Salva o annulla le modifiche prima di cambiare l'estensione",
+imageTooLarge: "L'immagine supera {mb} MB e non può essere inserita",},
   pl: {
     aiNetworkError: "Problem z siecią: nie można połączyć się z usługą AI. Sprawdź połączenie i spróbuj ponownie",
     aiTidySelectionPrompt: "Uporządkuj formatowanie zaznaczonej treści, nie zmieniając jej znaczenia",
@@ -3152,7 +3179,9 @@ const upstreamStrings = {
     zoomOut: 'Pomniejsz',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+renameNeedsSave: 'Zapisz lub odrzuć zmiany przed zmianą rozszerzenia',
+imageTooLarge: 'Obraz przekracza {mb} MB i nie można go wstawić',},
   cs: {
     aiNetworkError: "Problém se sítí: službu AI se nepodařilo kontaktovat. Zkontrolujte připojení a zkuste to znovu",
     aiDockFloat: "浮動視窗",
@@ -3377,7 +3406,9 @@ const upstreamStrings = {
     mermaidError: 'Chyba syntaxe diagramu',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+renameNeedsSave: 'Před změnou přípony uložte nebo zrušte změny',
+imageTooLarge: 'Obrázek je větší než {mb} MB a nelze ho vložit',},
   nl: {
     aiNetworkError: "Netwerkprobleem: kan de AI-service niet bereiken. Controleer je verbinding en probeer het opnieuw",
     aiTidySelectionPrompt: "Ruim de opmaak van de geselecteerde inhoud op zonder de betekenis te veranderen",
@@ -3602,7 +3633,9 @@ const upstreamStrings = {
     zoomOut: 'Uitzoomen',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+renameNeedsSave: 'Sla uw wijzigingen op of verwerp ze voordat u de extensie wijzigt',
+imageTooLarge: 'De afbeelding is groter dan {mb} MB en kan niet worden ingevoegd',},
   ms: {
     aiNetworkError: "Masalah rangkaian: tidak dapat menghubungi perkhidmatan AI. Semak sambungan anda dan cuba lagi",
     aiDockFloat: "Tetingkap terapung",
@@ -3827,7 +3860,9 @@ const upstreamStrings = {
     zoomOut: 'Zum keluar',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+renameNeedsSave: 'Simpan atau buang perubahan anda sebelum menukar sambungan',
+imageTooLarge: 'Imej melebihi {mb} MB dan tidak boleh disisipkan',},
   he: {
     aiDockFloat: "חלון צף",
     aiQuickPolishPrompt: "שפרו את כל המסמך: תקנו דקדוק, אחדו ניסוחים ושפרו קריאות; שמרו על המשמעות והמבנה.",
@@ -4052,7 +4087,9 @@ const upstreamStrings = {
     zoomOut: 'הקטנה',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+renameNeedsSave: 'שמור או בטל את השינויים לפני שינוי הסיומת',
+imageTooLarge: 'התמונה גדולה מ-{mb} MB ולא ניתן להוסיף אותה',},
   hi: {
     aiNetworkError: "नेटवर्क समस्या: AI सेवा से कनेक्ट नहीं हो सका। कनेक्शन जांचें और फिर से प्रयास करें",
     aiDockFloat: "फ़्लोटिंग विंडो",
@@ -4277,7 +4314,9 @@ const upstreamStrings = {
     zoomOut: 'ज़ूम आउट',
     sourceView: 'Source',
     sourceViewHint: 'Edit the raw Markdown source',
-  },
+  
+renameNeedsSave: 'एक्सटेंशन बदलने से पहले अपने बदलाव सहेजें या छोड़ें',
+imageTooLarge: 'चित्र {mb} MB से बड़ा है और इसे नहीं जोड़ा जा सकता',},
   'zh-TW': {
     aiDockFloat: "浮動視窗",
     aiDockBottom: "停駐到底部",
@@ -4502,7 +4541,9 @@ const upstreamStrings = {
     zoomOut: '縮小',
     sourceView: '原始碼',
     sourceViewHint: '直接編輯 Markdown 原始文字',
-  },
+  
+renameNeedsSave: '先儲存或捨棄變更，再更改副檔名',
+imageTooLarge: '圖片超過 {mb} MB，無法插入',},
 }
 
 // LOCAL(2026-09-21, d8201ad0): 多会话词条 spread 合并(C 区,模板照 shell strings.ts)

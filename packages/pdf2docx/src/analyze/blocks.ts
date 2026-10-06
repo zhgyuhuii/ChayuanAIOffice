@@ -362,6 +362,13 @@ export interface BlockOptions {
 // lowercase Latin letter was wrapped mid-word — join it seamlessly. A soft
 // hyphen (U+00AD) exists ONLY to mark a wrap point and always joins. An
 // uppercase/digit continuation stays as-is (likely a compound or a list).
+//
+// A visible hyphen is also how an AUTHORED compound is written, and that break
+// is not a wrap: "self-" / "contained" must not fuse into "selfcontained". The
+// two are separable by the same greedy-wrap evidence markHardBreaks uses — a
+// real hyphenation break fills the line, so the next line's first unit cannot
+// fit in what is left. A hyphen-ended line that still had room for that unit
+// was broken by the author, so its hyphen is part of the word and stays.
 const lineText = (line: Line): string => line.spans.map((s) => s.text).join('')
 const LATIN_THEN_HYPHEN = /\p{Script=Latin}[-‐]$/u
 const SOFT_HYPHEN_END = /­$/
@@ -375,10 +382,15 @@ function isTextHyphenation(prev: Line, next: Line): boolean {
   return first !== undefined && LOWER_LATIN.test(first) && /\p{Script=Latin}/u.test(first)
 }
 
-function markTextHyphenation(lines: readonly Line[]): Line[] {
+function markTextHyphenation(lines: readonly Line[], wrapRight: number): Line[] {
   return lines.map((line, i) => {
     const next = lines[i + 1]
     if (line.endsWithHyphen || !next || !isTextHyphenation(line, next)) return line
+    // authored compound: the next line's first unit would have fitted in the
+    // leftover, so nothing about space forced this break — the hyphen is real
+    const leftover = wrapRight - line.box.x1
+    const need = firstWordWidthPt(next) + HARD_BREAK_WORD_SLACK_EMS * lineFontSize(line)
+    if (leftover >= need) return line
     return { ...line, endsWithHyphen: true }
   })
 }
@@ -500,9 +512,18 @@ export function groupIntoBlocks(
   options: BlockOptions = {},
 ): TextBlock[] {
   if (rawLines.length === 0) return []
-  const lines = markVerseRuns(markTextHyphenation(rawLines))
   const pinOpenLeaded = options.pinOpenLeadedBreaks ?? false
-  const ctx = body ?? bodyContextOf(lines)
+  const ctx = body ?? bodyContextOf(rawLines)
+
+  // wrap edges for the hyphenation, short-item and hard-break judgments: the
+  // body edge tightened to the real text extent — the page-level mirrored
+  // bodyRight must not read every line of a narrow layout as "short". The
+  // hyphenation pass needs its edge first (an authored compound breaks short
+  // of the margin, a greedy hyphenation break does not).
+  const wrapRight = Math.min(ctx.bodyRight, maxOf(rawLines.map((l) => l.box.x1)))
+  const wrapLeft = Math.max(ctx.bodyLeft, minOf(rawLines.map((l) => l.box.x0)))
+  const lines = markVerseRuns(markTextHyphenation(rawLines, wrapRight))
+  const wrap = { left: wrapLeft, right: wrapRight }
 
   const gaps: number[] = []
   for (let i = 1; i < lines.length; i++) {
@@ -511,13 +532,6 @@ export function groupIntoBlocks(
   }
   const medianGap = median(gaps)
   const medianLineH = median(lines.map((l) => l.box.y1 - l.box.y0)) || 12
-
-  // wrap edges for the short-item and hard-break judgments: the body edge
-  // tightened to the real text extent — the page-level mirrored bodyRight
-  // must not read every line of a narrow layout as "short"
-  const wrapRight = Math.min(ctx.bodyRight, maxOf(lines.map((l) => l.box.x1)))
-  const wrapLeft = Math.max(ctx.bodyLeft, minOf(lines.map((l) => l.box.x0)))
-  const wrap = { left: wrapLeft, right: wrapRight }
 
   const grouped: Line[][] = []
   let current: Line[] = [lines[0]!]

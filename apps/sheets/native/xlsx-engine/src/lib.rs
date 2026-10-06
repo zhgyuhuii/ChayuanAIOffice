@@ -158,7 +158,7 @@ fn create_cache_directory(
     session_id: &str,
     cancelled: &AtomicBool,
 ) -> Result<CacheDirectory, SidecarError> {
-    let path = std::env::temp_dir().join(format!("genspark-ai-excel-{session_id}"));
+    let path = std::env::temp_dir().join(format!("chatoffice-ai-excel-{session_id}"));
     let directory = CacheDirectory::create(path)?;
     if cancelled.load(Ordering::Acquire) {
         return Err(SidecarError::cancelled());
@@ -393,12 +393,8 @@ impl WorkbookSessions {
 
         // Last boundary before the open touches the filesystem; past here the
         // only way to stop it is create_cache_directory's own poll.
-        if cancelled.load(Ordering::Acquire) {
-            return Err(SidecarError::cancelled());
-        }
         let session_id = Uuid::new_v4().to_string();
-        let cache_directory = std::env::temp_dir().join(format!("chatoffice-ai-excel-{session_id}"));
-        fs::create_dir(&cache_directory)?;
+        let mut cache_directory = create_cache_directory(&session_id, cancelled)?;
         let name = canonical_path
             .file_name()
             .and_then(|value| value.to_str())

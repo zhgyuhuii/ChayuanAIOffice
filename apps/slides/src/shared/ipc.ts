@@ -668,6 +668,8 @@ export interface AnimationItem {
   variant?: string
   /** 播完动画后快退 (WPS 动画属性)：效果结束后对象回到隐藏态 */
   rewind?: boolean
+  /** flyIn/flyOut/wipe/wipeOut only; unset = the effect's PowerPoint default side (bottom) */
+  direction?: 'top' | 'bottom' | 'left' | 'right'
 }
 
 /** Element pairing key for Morph transitions: cNvPr id / name are stable across pages; sourceId is per-page temporary. */

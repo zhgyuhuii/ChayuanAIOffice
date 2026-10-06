@@ -35,6 +35,8 @@ export const MARKDOWN_CHANNELS = {
   languageChanged: 'app:language-changed',
   getTheme: 'app:get-theme',
   themeChanged: 'app:theme-changed',
+  getDocumentTheme: 'app:get-document-theme',
+  documentThemeChanged: 'app:document-theme-changed',
   getAutoSaveDefault: 'app:get-auto-save-default',
   autoSaveDefaultChanged: 'app:auto-save-default-changed',
   getAiPanelPrefs: 'app:get-ai-panel-prefs',
@@ -43,7 +45,10 @@ export const MARKDOWN_CHANNELS = {
 
 export type UiTheme = 'light' | 'dark' | 'system'
 
-/** shell-wide AutoSave default; updatedAt is 0 until the user has ever set it */
+/**
+ * Document page theme preference (#1811): what the editors' canvas/paper does
+ * relative to the UI theme. 'follow' keeps the previous single-theme behavior.
+ */
 export type DocTheme = 'follow' | 'light' | 'dark'
 
 export interface AutoSaveDefault {

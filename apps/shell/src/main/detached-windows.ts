@@ -519,6 +519,7 @@ export function createDetachedEditorWindow(options: {
       // guard must prompt again on later closes instead of silently proceeding
       if (await confirmDetachedClose(rec)) tearDown()
       else resetSheetsShuttingDown()
+      promptInFlight = false
     })()
   })
   win.on('closed', () => {

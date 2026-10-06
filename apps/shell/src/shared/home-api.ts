@@ -314,6 +314,11 @@ export interface HomeApi {
   feedbackUpload(name: string, mime: string, data: Uint8Array): Promise<FeedbackUploadResult>
   /** submit the feedback form; main holds the signing secret and app identity */
   feedbackSubmit(payload: FeedbackSubmitPayload): Promise<FeedbackSubmitResult>
+  /** live updater state (null until an update was first seen); Settings → About */
+  getUpdateState(): Promise<UpdateUiState | null>
+  /** re-open the (minimized) update dialog; a not-yet-started download also starts */
+  openUpdateDialog(): Promise<boolean>
+  onUpdateStateChanged(handler: (state: UpdateUiState) => void): () => void
   /** whether the first-run onboarding has been completed or skipped (persisted in userData/app-settings.json) */
   onboardingSeen(): Promise<boolean>
   /** mark onboarding done; analytics remains enabled unless separately opted out */

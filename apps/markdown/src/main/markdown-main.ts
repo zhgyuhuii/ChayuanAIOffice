@@ -76,7 +76,7 @@ import type {
 const tDlg = createI18n({
   zh: {
     dlgSaveTitle: '保存 Markdown 文档',
-    filterMarkdown: 'Markdown 文档',
+    filterMarkdown: '文本文件 (Markdown, TXT, JSON)',
     dlgPickImage: '选择图片',
     dlgSaveImage: '保存图片',
     filterImages: '图片',
@@ -89,7 +89,7 @@ const tDlg = createI18n({
   },
   en: {
     dlgSaveTitle: 'Save Markdown Document',
-    filterMarkdown: 'Markdown Documents',
+    filterMarkdown: 'Text Files (Markdown, TXT, JSON)',
     dlgPickImage: 'Choose an Image',
     dlgSaveImage: 'Save Image',
     filterImages: 'Images',
@@ -100,9 +100,22 @@ const tDlg = createI18n({
     btnDontSave: "Don't Save",
     btnCancel: 'Cancel',
   },
+  vi: {
+    dlgSaveTitle: 'Lưu tài liệu Markdown',
+    filterMarkdown: 'Tệp văn bản (Markdown, TXT, JSON)',
+    dlgPickImage: 'Chọn một hình ảnh',
+    dlgSaveImage: 'Lưu hình ảnh',
+    filterImages: 'Hình ảnh',
+    untitledFile: 'Không có tiêu đề',
+    closeUnsavedMsg: 'Tài liệu này có những thay đổi chưa được lưu.',
+    closeUnsavedDetail: 'Bạn có muốn lưu các thay đổi trước khi đóng không?',
+    btnSave: 'Lưu',
+    btnDontSave: 'Không lưu',
+    btnCancel: 'Hủy',
+  },
   ja: {
     dlgSaveTitle: 'Markdown ドキュメントを保存',
-    filterMarkdown: 'Markdown ドキュメント',
+    filterMarkdown: 'テキストファイル (Markdown, TXT, JSON)',
     dlgPickImage: '画像を選択',
     dlgSaveImage: '画像を保存',
     filterImages: '画像',
@@ -115,7 +128,7 @@ const tDlg = createI18n({
   },
   ko: {
     dlgSaveTitle: 'Markdown 문서 저장',
-    filterMarkdown: 'Markdown 문서',
+    filterMarkdown: '텍스트 파일 (Markdown, TXT, JSON)',
     dlgPickImage: '이미지 선택',
     dlgSaveImage: '이미지 저장',
     filterImages: '이미지',
@@ -128,7 +141,7 @@ const tDlg = createI18n({
   },
   fr: {
     dlgSaveTitle: 'Enregistrer le document Markdown',
-    filterMarkdown: 'Documents Markdown',
+    filterMarkdown: 'Fichiers texte (Markdown, TXT, JSON)',
     dlgPickImage: 'Choisir une image',
     dlgSaveImage: "Enregistrer l'image",
     filterImages: 'Images',
@@ -141,7 +154,7 @@ const tDlg = createI18n({
   },
   de: {
     dlgSaveTitle: 'Markdown-Dokument speichern',
-    filterMarkdown: 'Markdown-Dokumente',
+    filterMarkdown: 'Textdateien (Markdown, TXT, JSON)',
     dlgPickImage: 'Bild auswählen',
     dlgSaveImage: 'Bild speichern',
     filterImages: 'Bilder',
@@ -154,7 +167,7 @@ const tDlg = createI18n({
   },
   es: {
     dlgSaveTitle: 'Guardar documento Markdown',
-    filterMarkdown: 'Documentos Markdown',
+    filterMarkdown: 'Archivos de texto (Markdown, TXT, JSON)',
     dlgPickImage: 'Elegir imagen',
     dlgSaveImage: 'Guardar imagen',
     filterImages: 'Imágenes',
@@ -167,7 +180,7 @@ const tDlg = createI18n({
   },
   th: {
     dlgSaveTitle: 'บันทึกเอกสาร Markdown',
-    filterMarkdown: 'เอกสาร Markdown',
+    filterMarkdown: 'ไฟล์ข้อความ (Markdown, TXT, JSON)',
     dlgPickImage: 'เลือกรูปภาพ',
     dlgSaveImage: 'บันทึกรูปภาพ',
     filterImages: 'รูปภาพ',
@@ -180,7 +193,7 @@ const tDlg = createI18n({
   },
   id: {
     dlgSaveTitle: 'Simpan dokumen Markdown',
-    filterMarkdown: 'Dokumen Markdown',
+    filterMarkdown: 'File teks (Markdown, TXT, JSON)',
     dlgPickImage: 'Pilih gambar',
     dlgSaveImage: 'Simpan Gambar',
     filterImages: 'Gambar',
@@ -193,7 +206,7 @@ const tDlg = createI18n({
   },
   ru: {
     dlgSaveTitle: 'Сохранить документ Markdown',
-    filterMarkdown: 'Документы Markdown',
+    filterMarkdown: 'Текстовые файлы (Markdown, TXT, JSON)',
     dlgPickImage: 'Выберите изображение',
     dlgSaveImage: 'Сохранить изображение',
     filterImages: 'Изображения',
@@ -206,7 +219,7 @@ const tDlg = createI18n({
   },
   ar: {
     dlgSaveTitle: 'حفظ مستند Markdown',
-    filterMarkdown: 'مستندات Markdown',
+    filterMarkdown: 'ملفات نصية (Markdown, TXT, JSON)',
     dlgPickImage: 'اختر صورة',
     dlgSaveImage: 'حفظ الصورة',
     filterImages: 'صور',
@@ -219,7 +232,7 @@ const tDlg = createI18n({
   },
   pt: {
     dlgSaveTitle: 'Salvar documento Markdown',
-    filterMarkdown: 'Documentos Markdown',
+    filterMarkdown: 'Arquivos de texto (Markdown, TXT, JSON)',
     dlgPickImage: 'Escolher imagem',
     dlgSaveImage: 'Salvar imagem',
     filterImages: 'Imagens',
@@ -232,7 +245,7 @@ const tDlg = createI18n({
   },
   it: {
     dlgSaveTitle: 'Salva documento Markdown',
-    filterMarkdown: 'Documenti Markdown',
+    filterMarkdown: 'File di testo (Markdown, TXT, JSON)',
     dlgPickImage: 'Scegli immagine',
     dlgSaveImage: 'Salva immagine',
     filterImages: 'Immagini',
@@ -245,7 +258,7 @@ const tDlg = createI18n({
   },
   pl: {
     dlgSaveTitle: 'Zapisz dokument Markdown',
-    filterMarkdown: 'Dokumenty Markdown',
+    filterMarkdown: 'Pliki tekstowe (Markdown, TXT, JSON)',
     dlgPickImage: 'Wybierz obraz',
     dlgSaveImage: 'Zapisz obraz',
     filterImages: 'Obrazy',
@@ -258,7 +271,7 @@ const tDlg = createI18n({
   },
   cs: {
     dlgSaveTitle: 'Uložit dokument Markdown',
-    filterMarkdown: 'Dokumenty Markdown',
+    filterMarkdown: 'Textové soubory (Markdown, TXT, JSON)',
     dlgPickImage: 'Vyberte obrázek',
     dlgSaveImage: 'Uložit obrázek',
     filterImages: 'Obrázky',
@@ -271,7 +284,7 @@ const tDlg = createI18n({
   },
   nl: {
     dlgSaveTitle: 'Markdown-document opslaan',
-    filterMarkdown: 'Markdown-documenten',
+    filterMarkdown: 'Tekstbestanden (Markdown, TXT, JSON)',
     dlgPickImage: 'Kies een afbeelding',
     dlgSaveImage: 'Afbeelding opslaan',
     filterImages: 'Afbeeldingen',
@@ -284,7 +297,7 @@ const tDlg = createI18n({
   },
   ms: {
     dlgSaveTitle: 'Simpan dokumen Markdown',
-    filterMarkdown: 'Dokumen Markdown',
+    filterMarkdown: 'Fail teks (Markdown, TXT, JSON)',
     dlgPickImage: 'Pilih imej',
     dlgSaveImage: 'Simpan Imej',
     filterImages: 'Imej',
@@ -297,7 +310,7 @@ const tDlg = createI18n({
   },
   he: {
     dlgSaveTitle: 'שמירת מסמך Markdown',
-    filterMarkdown: 'מסמכי Markdown',
+    filterMarkdown: 'קובצי טקסט (Markdown, TXT, JSON)',
     dlgPickImage: 'בחרו תמונה',
     dlgSaveImage: 'שמור תמונה',
     filterImages: 'תמונות',
@@ -310,7 +323,7 @@ const tDlg = createI18n({
   },
   hi: {
     dlgSaveTitle: 'Markdown दस्तावेज़ सहेजें',
-    filterMarkdown: 'Markdown दस्तावेज़',
+    filterMarkdown: 'पाठ फ़ाइलें (Markdown, TXT, JSON)',
     dlgPickImage: 'छवि चुनें',
     dlgSaveImage: 'छवि सहेजें',
     filterImages: 'छवियाँ',
@@ -321,22 +334,9 @@ const tDlg = createI18n({
     btnDontSave: 'न सहेजें',
     btnCancel: 'रद्द करें',
   },
-  vi: {
-    dlgSaveTitle: 'Lưu tài liệu Markdown',
-    filterMarkdown: 'Tài liệu Markdown',
-    dlgPickImage: 'Chọn một hình ảnh',
-    dlgSaveImage: 'Lưu hình ảnh',
-    filterImages: 'Hình ảnh',
-    untitledFile: 'Không có tiêu đề',
-    closeUnsavedMsg: 'Tài liệu này có những thay đổi chưa được lưu.',
-    closeUnsavedDetail: 'Bạn có muốn lưu các thay đổi trước khi đóng không?',
-    btnSave: 'Lưu',
-    btnDontSave: 'Không lưu',
-    btnCancel: 'Hủy',
-  },
   'zh-TW': {
     dlgSaveTitle: '儲存 Markdown 文件',
-    filterMarkdown: 'Markdown 文件',
+    filterMarkdown: '文字檔 (Markdown, TXT, JSON)',
     dlgPickImage: '選擇圖片',
     dlgSaveImage: '儲存圖片',
     filterImages: '圖片',
@@ -679,7 +679,7 @@ async function resolveSaveTarget(
   const picked = await showSaveDialogWithMemory(dialog, win, {
     title: tm('dlgSaveTitle'),
     defaultPath,
-    filters: [{ name: tm('filterMarkdown'), extensions: ['md', 'markdown'] }],
+    filters: [{ name: tm('filterMarkdown'), extensions: ['md', 'markdown', 'txt', 'json'] }],
   })
   if (picked.canceled || !picked.filePath) return 'canceled'
   return picked.filePath

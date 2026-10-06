@@ -373,7 +373,13 @@ const upstreamStrings = {
     onbBody3: '无授权费用，无广告，无水印。',
     onbNote3: 'AI 功能可能消耗 Genspark 积分。',
     onbBack: '上一步',
-  },
+  
+    setUpdateAvailableLabel: '可用更新',
+    setUpdateDownloading: '正在下载更新（{percent}%）',
+    setUpdateRestart: '重启并安装',
+    setUpdateTo: '更新到 {version}',
+    documentTheme: '文档页面主题',
+    docThemeFollowApp: '跟随应用主题',},
   en: {
     addFolderRoot: 'Add folder…',
     removeFolderRoot: 'Remove from list',
@@ -759,7 +765,13 @@ const upstreamStrings = {
     onbBody3: 'No license fees. No ads. No watermarks.',
     onbNote3: 'AI features may consume Genspark credits.',
     onbBack: 'Back',
-  },
+  
+    setUpdateAvailableLabel: 'Update available',
+    setUpdateDownloading: 'Downloading update ({percent}%)',
+    setUpdateRestart: 'Restart & install',
+    setUpdateTo: 'Update to {version}',
+    documentTheme: 'Document page theme',
+    docThemeFollowApp: 'Follow app theme',},
   ja: {
     addFolderRoot: 'フォルダーを追加…',
     removeFolderRoot: 'リストから削除',
@@ -1149,7 +1161,13 @@ const upstreamStrings = {
     setAiOpenInNewDocs: '新文档中打开 AI 面板',
     setAiOpenInNewDocsDesc: '关闭后，新打开的文档默认收起 AI 面板；需要时点一下即可展开。',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
-  },
+  
+    setUpdateAvailableLabel: '更新があります',
+    setUpdateDownloading: '更新をダウンロード中（{percent}%）',
+    setUpdateRestart: '再起動してインストール',
+    setUpdateTo: '{version} に更新する',
+    documentTheme: 'ドキュメントページのテーマ',
+    docThemeFollowApp: 'アプリのテーマに従う',},
   ko: {
     addFolderRoot: '폴더 추가…',
     removeFolderRoot: '목록에서 제거',
@@ -1531,7 +1549,13 @@ const upstreamStrings = {
     onbNote3: 'AI 기능은 Genspark 크레딧을 소모할 수 있습니다.',
     onbBack: '이전',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
-  },
+  
+    setUpdateAvailableLabel: '업데이트 가능',
+    setUpdateDownloading: '업데이트 다운로드 중({percent}%)',
+    setUpdateRestart: '재시작 후 설치',
+    setUpdateTo: '{version}(으)로 업데이트',
+    documentTheme: '문서 페이지 테마',
+    docThemeFollowApp: '앱 테마 따르기',},
   fr: {
     addFolderRoot: 'Ajouter un dossier…',
     removeFolderRoot: 'Retirer de la liste',
@@ -1927,7 +1951,13 @@ const upstreamStrings = {
     onbNote3: 'Les fonctions IA peuvent consommer des crédits Genspark.',
     onbBack: 'Retour',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
-  },
+  
+    setUpdateAvailableLabel: 'Mise à jour disponible',
+    setUpdateDownloading: 'Téléchargement ({percent} %)',
+    setUpdateRestart: 'Redémarrer et installer',
+    setUpdateTo: 'Mettre à jour vers {version}',
+    documentTheme: 'Thème de la page de document',
+    docThemeFollowApp: 'Suivre le thème de l’application',},
   de: {
     addFolderRoot: 'Ordner hinzufügen…',
     removeFolderRoot: 'Aus der Liste entfernen',
@@ -2327,7 +2357,13 @@ const upstreamStrings = {
     onbNote3: 'KI-Funktionen können Genspark-Credits verbrauchen.',
     onbBack: 'Zurück',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
-  },
+  
+    setUpdateAvailableLabel: 'Update verfügbar',
+    setUpdateDownloading: 'Update wird geladen ({percent} %)',
+    setUpdateRestart: 'Neustarten & installieren',
+    setUpdateTo: 'Auf {version} aktualisieren',
+    documentTheme: 'Dokumentseitenthema',
+    docThemeFollowApp: 'App-Thema übernehmen',},
   es: {
     addFolderRoot: 'Añadir carpeta…',
     removeFolderRoot: 'Quitar de la lista',
@@ -2722,7 +2758,13 @@ const upstreamStrings = {
     onbNote3: 'Las funciones de IA pueden consumir créditos de Genspark.',
     onbBack: 'Atrás',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
-  },
+  
+    setUpdateAvailableLabel: 'Actualización disponible',
+    setUpdateDownloading: 'Descargando actualización ({percent} %)',
+    setUpdateRestart: 'Reiniciar e instalar',
+    setUpdateTo: 'Actualizar a {version}',
+    documentTheme: 'Tema de la página del documento',
+    docThemeFollowApp: 'Seguir el tema de la aplicación',},
   th: {
     addFolderRoot: 'เพิ่มโฟลเดอร์…',
     removeFolderRoot: 'นำออกจากรายการ',
@@ -3102,7 +3144,13 @@ const upstreamStrings = {
     onbNote3: 'ฟีเจอร์ AI อาจใช้เครดิต Genspark',
     onbBack: 'ย้อนกลับ',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
-  },
+  
+    setUpdateAvailableLabel: 'มีอัปเดต',
+    setUpdateDownloading: 'กำลังดาวน์โหลด ({percent}%)',
+    setUpdateRestart: 'รีสตาร์ตและติดตั้ง',
+    setUpdateTo: 'อัปเดตเป็น {version}',
+    documentTheme: 'ธีมหน้าเอกสาร',
+    docThemeFollowApp: 'ตามธีมของแอป',},
   id: {
     addFolderRoot: 'Tambah folder…',
     removeFolderRoot: 'Hapus dari daftar',
@@ -3491,7 +3539,13 @@ const upstreamStrings = {
     onbNote3: 'Fitur AI dapat menggunakan kredit Genspark.',
     onbBack: 'Kembali',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
-  },
+  
+    setUpdateAvailableLabel: 'Pembaruan tersedia',
+    setUpdateDownloading: 'Mengunduh pembaruan ({percent}%)',
+    setUpdateRestart: 'Mulai ulang & instal',
+    setUpdateTo: 'Perbarui ke {version}',
+    documentTheme: 'Tema halaman dokumen',
+    docThemeFollowApp: 'Ikuti tema aplikasi',},
   ru: {
     addFolderRoot: 'Добавить папку…',
     removeFolderRoot: 'Убрать из списка',
@@ -3878,7 +3932,13 @@ const upstreamStrings = {
     onbNote3: 'Функции ИИ могут расходовать кредиты Genspark.',
     onbBack: 'Назад',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
-  },
+  
+    setUpdateAvailableLabel: 'Доступно обновление',
+    setUpdateDownloading: 'Загрузка обновления ({percent}%)',
+    setUpdateRestart: 'Перезапустить и установить',
+    setUpdateTo: 'Обновить до {version}',
+    documentTheme: 'Тема страницы документа',
+    docThemeFollowApp: 'Как в теме приложения',},
   ar: {
     addFolderRoot: 'إضافة مجلد…',
     removeFolderRoot: 'إزالة من القائمة',
@@ -4258,7 +4318,13 @@ const upstreamStrings = {
     onbNote3: 'قد تستهلك ميزات الذكاء الاصطناعي أرصدة Genspark.',
     onbBack: 'رجوع',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
-  },
+  
+    setUpdateAvailableLabel: 'يتوفر تحديث',
+    setUpdateDownloading: 'جارٍ تنزيل التحديث ({percent}%)',
+    setUpdateRestart: 'إعادة التشغيل والتثبيت',
+    setUpdateTo: 'تحديث إلى {version}',
+    documentTheme: 'سمة صفحة المستند',
+    docThemeFollowApp: 'اتباع سمة التطبيق',},
   pt: {
     addFolderRoot: 'Adicionar pasta…',
     removeFolderRoot: 'Remover da lista',
@@ -4650,7 +4716,13 @@ const upstreamStrings = {
     onbNote3: 'Os recursos de IA podem consumir créditos Genspark.',
     onbBack: 'Voltar',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
-  },
+  
+    setUpdateAvailableLabel: 'Atualização disponível',
+    setUpdateDownloading: 'Baixando atualização ({percent}%)',
+    setUpdateRestart: 'Reiniciar e instalar',
+    setUpdateTo: 'Atualizar para {version}',
+    documentTheme: 'Tema da página do documento',
+    docThemeFollowApp: 'Seguir o tema do aplicativo',},
   it: {
     addFolderRoot: 'Aggiungi cartella…',
     removeFolderRoot: "Rimuovi dall'elenco",
@@ -5041,7 +5113,13 @@ const upstreamStrings = {
     onbNote3: 'Le funzioni IA possono consumare crediti Genspark.',
     onbBack: 'Indietro',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
-  },
+  
+    setUpdateAvailableLabel: 'Aggiornamento disponibile',
+    setUpdateDownloading: 'Download aggiornamento ({percent}%)',
+    setUpdateRestart: 'Riavvia e installa',
+    setUpdateTo: 'Aggiorna alla versione {version}',
+    documentTheme: 'Tema della pagina del documento',
+    docThemeFollowApp: 'Segui il tema dell’applicazione',},
   pl: {
     addFolderRoot: 'Dodaj folder…',
     removeFolderRoot: 'Usuń z listy',
@@ -5427,7 +5505,13 @@ const upstreamStrings = {
     onbNote3: 'Funkcje AI mogą zużywać kredyty Genspark.',
     onbBack: 'Wstecz',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
-  },
+  
+    setUpdateAvailableLabel: 'Dostępna aktualizacja',
+    setUpdateDownloading: 'Pobieranie aktualizacji ({percent}%)',
+    setUpdateRestart: 'Uruchom ponownie i zainstaluj',
+    setUpdateTo: 'Zaktualizuj do {version}',
+    documentTheme: 'Motyw strony dokumentu',
+    docThemeFollowApp: 'Zgodnie z motywem aplikacji',},
   cs: {
     addFolderRoot: 'Přidat složku…',
     removeFolderRoot: 'Odebrat ze seznamu',
@@ -5814,7 +5898,13 @@ const upstreamStrings = {
     setAiSpellcheck: 'Kontrola pravopisu v chatu AI',
     setAiSpellcheckDesc: 'Podtrhávat překlepy při psaní do vstupního pole chatu AI.',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
-  },
+  
+    setUpdateAvailableLabel: 'K dispozici je aktualizace',
+    setUpdateDownloading: 'Stahování aktualizace ({percent} %)',
+    setUpdateRestart: 'Restartovat a nainstalovat',
+    setUpdateTo: 'Aktualizovat na {version}',
+    documentTheme: 'Motiv stránky dokumentu',
+    docThemeFollowApp: 'Podle motivu aplikace',},
   nl: {
     addFolderRoot: 'Map toevoegen…',
     removeFolderRoot: 'Uit lijst verwijderen',
@@ -6203,7 +6293,13 @@ const upstreamStrings = {
     setAiOpenInNewDocs: '新文档中打开 AI 面板',
     setAiOpenInNewDocsDesc: '关闭后，新打开的文档默认收起 AI 面板；需要时点一下即可展开。',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
-  },
+  
+    setUpdateAvailableLabel: 'Update beschikbaar',
+    setUpdateDownloading: 'Update downloaden ({percent}%)',
+    setUpdateRestart: 'Herstarten en installeren',
+    setUpdateTo: 'Bijwerken naar {version}',
+    documentTheme: 'Documentpaginathema',
+    docThemeFollowApp: 'App-thema volgen',},
   ms: {
     addFolderRoot: 'Tambah folder…',
     removeFolderRoot: 'Buang daripada senarai',
@@ -6595,7 +6691,13 @@ const upstreamStrings = {
     onbNote3: 'Ciri AI mungkin menggunakan kredit Genspark.',
     onbBack: 'Kembali',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
-  },
+  
+    setUpdateAvailableLabel: 'Kemas kini tersedia',
+    setUpdateDownloading: 'Memuat turun kemas kini ({percent}%)',
+    setUpdateRestart: 'Mulakan semula dan pasang',
+    setUpdateTo: 'Kemas kini ke {version}',
+    documentTheme: 'Tema halaman dokumen',
+    docThemeFollowApp: 'Ikut tema aplikasi',},
   he: {
     addFolderRoot: 'הוספת תיקייה…',
     removeFolderRoot: 'הסרה מהרשימה',
@@ -6970,7 +7072,13 @@ const upstreamStrings = {
     onbNote3: 'תכונות AI עשויות לצרוך קרדיטים של Genspark.',
     onbBack: 'חזרה',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
-  },
+  
+    setUpdateAvailableLabel: 'עדכון זמין',
+    setUpdateDownloading: 'מוריד עדכון ({percent}%)',
+    setUpdateRestart: 'הפעל מחדש והתקן',
+    setUpdateTo: 'עדכן ל-{version}',
+    documentTheme: 'ערכת נושא של דף המסמך',
+    docThemeFollowApp: 'לפי ערכת הנושא של האפליקציה',},
   hi: {
     addFolderRoot: 'फ़ोल्डर जोड़ें…',
     removeFolderRoot: 'सूची से हटाएँ',
@@ -7357,7 +7465,13 @@ const upstreamStrings = {
     onbNote3: 'AI सुविधाएँ Genspark क्रेडिट खर्च कर सकती हैं।',
     onbBack: 'वापस',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
-  },
+  
+    setUpdateAvailableLabel: 'अपडेट उपलब्ध',
+    setUpdateDownloading: 'अपडेट डाउनलोड हो रहा है ({percent}%)',
+    setUpdateRestart: 'रीस्टार्ट कर इंस्टॉल करें',
+    setUpdateTo: '{version} पर अपडेट करें',
+    documentTheme: 'दस्तावेज़ पृष्ठ थीम',
+    docThemeFollowApp: 'ऐप थीम के अनुसार',},
   'zh-TW': {
     addFolderRoot: '加入資料夾…',
     removeFolderRoot: '從清單移除',
@@ -7727,7 +7841,13 @@ const upstreamStrings = {
     onbNote3: 'AI 功能可能消耗 Genspark 點數。',
     onbBack: '上一步',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
-  },
+  
+    setUpdateAvailableLabel: '可用更新',
+    setUpdateDownloading: '正在下載更新（{percent}%）',
+    setUpdateRestart: '重新啟動並安裝',
+    setUpdateTo: '更新到 {version}',
+    documentTheme: '文件頁面主題',
+    docThemeFollowApp: '跟隨應用程式主題',},
   vi: {
     addFolderRoot: 'Thêm thư mục…',
     removeFolderRoot: 'Xóa khỏi danh sách',
@@ -8119,7 +8239,13 @@ const upstreamStrings = {
     onbNote3: 'Các tính năng AI có thể tiêu tốn credit ChaAI Office.',
     onbBack: 'Quay lại',
 
-  },
+  
+    setUpdateAvailableLabel: 'Có bản cập nhật',
+    setUpdateDownloading: 'Đang tải bản cập nhật ({percent}%)',
+    setUpdateRestart: 'Khởi động lại và cài đặt',
+    setUpdateTo: 'Cập nhật lên {version}',
+    documentTheme: 'Chủ đề trang tài liệu',
+    docThemeFollowApp: 'Theo chủ đề ứng dụng',},
 } as const
 
 // ── LOCAL i18n 合并（B 区）──────────────────────────────

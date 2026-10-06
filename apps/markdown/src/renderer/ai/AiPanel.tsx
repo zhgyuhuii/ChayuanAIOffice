@@ -1661,3 +1661,17 @@ export function AiPanel(props: {
     </aside>
   )
 }
+
+/** Local brand mark in the slot upstream reserves for its assistant logo
+ * (LOCAL brand: the Ribbon AI toggle renders this; brand exemption applies). */
+export function GensparkMark({ size = 18 }: { size?: number }): React.JSX.Element {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="1" y="1" width="22" height="22" rx="6" fill="currentColor" opacity="0.14" />
+      <path
+        d="M12 4.5l1.9 5.1 5.1 1.9-5.1 1.9L12 18.5l-1.9-5.1L5 11.5l5.1-1.9L12 4.5z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}

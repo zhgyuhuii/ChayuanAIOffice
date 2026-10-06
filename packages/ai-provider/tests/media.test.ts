@@ -40,9 +40,9 @@ function openaiSettings(apiKey = 'sk-test', imageModel = 'gpt-image-2'): AiSetti
 describe('media settings', () => {
   it('defaults every provider to its default models and chatoffice as the active one', () => {
     const media = defaultAiMediaSettings()
-    expect(media.imageProvider).toBe('')
-    expect(media.analysisProvider).toBe('')
-    expect(media.videoAnalysisProvider).toBe('')
+    expect(media.imageProvider).toBe('chatoffice')
+    expect(media.analysisProvider).toBe('chatoffice')
+    expect(media.videoAnalysisProvider).toBe('chatoffice')
     for (const meta of AI_MEDIA_PROVIDERS) {
       expect(media.providers[meta.id].imageModel).toBe(meta.defaultImageModel)
       expect(media.providers[meta.id].apiKey).toBe('')
@@ -53,7 +53,7 @@ describe('media settings', () => {
 
   it('is carried by defaultAiSettings and healed in from a pre-media settings file', () => {
     const defaults = defaultAiSettings()
-    expect(defaults.media?.imageProvider).toBe('')
+    expect(defaults.media?.imageProvider).toBe('chatoffice')
     const resolved = resolveAiSettings(
       { provider: 'chatoffice', providers: defaults.providers },
       defaultAiSettings(),
@@ -106,31 +106,40 @@ describe('media settings', () => {
   it('activates a BYOK media provider per capability, only when usable and capable', () => {
     expect(activeMediaProvider(openaiSettings(), 'image')).toBe('openai')
     expect(activeMediaProvider(openaiSettings(), 'analysis')).toBe('openai')
-    expect(activeMediaProvider(openaiSettings(''), 'image')).toBe('')
-    expect(activeMediaProvider(openaiSettings('   '), 'image')).toBe('')
+    expect(activeMediaProvider(openaiSettings(''), 'image')).toBe('chatoffice')
+    expect(activeMediaProvider(openaiSettings('   '), 'image')).toBe('chatoffice')
     const custom = defaultAiMediaSettings()
     custom.imageProvider = 'custom'
-    expect(activeMediaProvider(withMedia(custom), 'image')).toBe('')
+    expect(activeMediaProvider(withMedia(custom), 'image')).toBe('chatoffice')
     custom.providers.custom.baseUrl = 'http://localhost:1234/v1'
     expect(activeMediaProvider(withMedia(custom), 'image')).toBe('custom')
-    expect(activeMediaProvider(withMedia(custom), 'analysis')).toBe('')
+    expect(activeMediaProvider(withMedia(custom), 'analysis')).toBe('chatoffice')
     expect(activeMediaConfig(withMedia(custom), 'image')?.provider).toBe('custom')
-    // MiniMax has no analysis endpoint: picking it for analysis falls back
+    // MiniMax-M3 supports both image and video analysis
     const mm = defaultAiMediaSettings()
     mm.analysisProvider = 'minimax'
     mm.providers.minimax.apiKey = 'k'
-    expect(activeMediaProvider(withMedia(mm), 'analysis')).toBe('')
+    expect(activeMediaProvider(withMedia(mm), 'analysis')).toBe('minimax')
+    mm.videoAnalysisProvider = 'minimax'
+    expect(activeMediaProvider(withMedia(mm), 'video')).toBe('minimax')
+    // DeepSeek reads images (V4.1 Flash vision) but takes no video
+    const ds = defaultAiMediaSettings()
+    ds.analysisProvider = 'deepseek'
+    ds.providers.deepseek.apiKey = 'sk-ds'
+    expect(activeMediaProvider(withMedia(ds), 'analysis')).toBe('deepseek')
+    ds.videoAnalysisProvider = 'deepseek'
+    expect(activeMediaProvider(withMedia(ds), 'video')).toBe('chatoffice')
     // OpenAI reads images but not video: as the video provider it falls back
     const oa = openaiSettings()
     oa.media!.videoAnalysisProvider = 'openai'
-    expect(activeMediaProvider(oa, 'video')).toBe('')
+    expect(activeMediaProvider(oa, 'video')).toBe('chatoffice')
     oa.media!.videoAnalysisProvider = 'gemini'
     oa.media!.providers.gemini.apiKey = 'AIza'
     expect(activeMediaProvider(oa, 'video')).toBe('gemini')
-    expect(activeMediaProvider({ media: undefined }, 'image')).toBe('')
+    expect(activeMediaProvider({ media: undefined }, 'image')).toBe('chatoffice')
     expect(
       activeMediaProvider({ media: { imageProvider: 'nope', providers: {} } as never }, 'image'),
-    ).toBe('')
+    ).toBe('chatoffice')
   })
 
   it('gates the tools on BYOK model presence (no ChaOffice backend)', () => {

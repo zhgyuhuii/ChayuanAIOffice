@@ -1123,4 +1123,18 @@
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+/* Settings → About: the one-click update entry next to the version row */
+.set-update-btn {
+  height: 26px;
+  padding: 0 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.set-update-btn:hover {
+  background: var(--hover);
 }

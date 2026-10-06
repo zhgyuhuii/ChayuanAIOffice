@@ -460,7 +460,7 @@ textarea:disabled {
  * ShapeGallerySelect / EditableMenuSelect -> .menu-select-drop; the ribbon
  * color tools -> .sheets-color-pop inline — the .sheets-color-pop-portal
  * variant is a child of body and is never trapped). Keying on the host also
- * keeps the header under a dialog's dim backdrop: html.genoffice-popover-open
+ * keeps the header under a dialog's dim backdrop: html.chatoffice-popover-open
  * also fires for the Dropdown/ColorDropdown inside Format Cells, Name
  * Manager, Pivot, Consolidate, Subtotal, Advanced Filter and Insert Function,
  * all under .dialog-backdrop (z-index: 40) — and "dialogs always dismiss the

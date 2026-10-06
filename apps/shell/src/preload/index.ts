@@ -4,6 +4,7 @@ import type { AiModelEntry, AiSettingsV2, ChaOfficeAccountStatus } from '@chatof
 import { normalizeAiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
 import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
 import { createRemoteFilesClient } from '@chatoffice/storage-adapter/remote-ipc'
+import type { UpdateUiState } from '../shared/update-api'
 import type {
   AccountLoginEvent,
   AccountStatus,
@@ -314,6 +315,19 @@ const homeApi: HomeApi = {
   async feedbackSubmit(payload) {
     const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.feedbackSubmit, payload)
     return result as FeedbackSubmitResult
+  },
+  async getUpdateState() {
+    const result: unknown = await ipcRenderer.invoke('update:get-state')
+    return (result as UpdateUiState | null) ?? null
+  },
+  async openUpdateDialog() {
+    const result: unknown = await ipcRenderer.invoke('update:open-for-update')
+    return result === true
+  },
+  onUpdateStateChanged(handler: (state: UpdateUiState) => void) {
+    const listener = (_e: IpcRendererEvent, state: UpdateUiState) => handler(state)
+    ipcRenderer.on('update:state-changed', listener)
+    return () => ipcRenderer.removeListener('update:state-changed', listener)
   },
   async onboardingSeen() {
     const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.onboardingSeen)

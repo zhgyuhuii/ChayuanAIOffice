@@ -1,11 +1,21 @@
 import { join } from 'node:path'
-import { BrowserWindow, ipcMain, nativeImage } from 'electron'
+import { BrowserWindow, ipcMain } from 'electron'
+import type { NativeImage } from 'electron'
+import * as electron from 'electron'
 import type { UpdateUiState } from '../shared/update-api'
 import { UPDATE_CHANNELS } from '../shared/update-api'
 import appIconPath from './assets/app-icon.png?asset'
 
-// Alt-Tab / taskbar icon for the modal update prompt
-const APP_ICON = nativeImage.createFromPath(appIconPath)
+// Alt-Tab / taskbar icon for the modal update prompt. Namespace access + guard:
+// unit tests mock electron without nativeImage, and a missing icon must never
+// take the update prompt down.
+const APP_ICON: NativeImage | undefined = (() => {
+  try {
+    return electron.nativeImage?.createFromPath(appIconPath)
+  } catch {
+    return undefined
+  }
+})()
 
 /**
  * The update window: a frameless card centered over the shell window —
@@ -130,7 +140,7 @@ export function showUpdateWindow(
     fullscreenable: false,
     show: false,
     title: state.strings.title,
-    icon: APP_ICON,
+    ...(APP_ICON ? { icon: APP_ICON } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/update.js'),
       contextIsolation: true,

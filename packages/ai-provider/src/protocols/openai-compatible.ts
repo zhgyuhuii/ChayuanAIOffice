@@ -7,6 +7,7 @@ import { inferModelType } from '../model-type'
 import type { AiChatResponse, AiProviderConfig } from '../types'
 import { AI_CONNECT_TIMEOUT_MS, createStreamWatchdog, type StreamWatchdog } from '../watchdog'
 import {
+  endpointUrl,
   jsonBodyInsteadOfSse,
   parseToolInput,
   sseErrorText,
@@ -209,7 +210,7 @@ async function openAiCompatibleTurn(
     .reverse()
     .find((m): m is Extract<AgentMessage, { role: 'user' }> => m.role === 'user' && !!m.text)
   const lastUserText = lastUser?.text ?? system
-  const response = await aiFetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
+  const response = await aiFetch(endpointUrl(baseUrl, 'chat/completions'), {
     method: 'POST',
     signal: wd.signal,
     headers: {
@@ -384,7 +385,7 @@ export async function chatOpenAiCompatible(
   user: string,
   options: OpenAiRequestOptions = {},
 ): Promise<AiChatResponse> {
-  const response = await aiFetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
+  const response = await aiFetch(endpointUrl(baseUrl, 'chat/completions'), {
     method: 'POST',
     signal: wd.signal,
     headers: {

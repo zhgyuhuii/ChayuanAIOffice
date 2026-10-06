@@ -637,16 +637,28 @@ export class AgentLoop<TSnapshot = unknown> {
     this.executedCalls = []
     this.verifyRetryUsed = false
     this.abortController = new AbortController()
-    const context = this.options.skill.buildContext?.() ?? ''
-    const format =
-      this.options.formatUserMessage ??
-      ((instr: string, ctx: string) => (ctx ? `${instr}\n\n${ctx}` : instr))
-    const userMsg: AgentMessage = {
-      role: 'user',
-      text: format(instruction, context),
-      ...(images?.length ? { images } : {}),
-      ...(media?.audio?.length ? { audio: media.audio } : {}),
-      ...(media?.video?.length ? { video: media.video } : {}),
+    // buildContext and formatUserMessage are consumer-supplied and run before any
+    // turn exists, so a throw here would escape run() with `running` still true:
+    // the guard at the top then drops every later message silently, cancel()
+    // no-ops, and only reset() frees the loop. composeSkills fans buildContext out
+    // to every sub-skill, each of which reads the live document, so a document
+    // mid-transition is enough to wedge the panel. The user message was never
+    // pushed, so the rollback in failRun() is a no-op and only the report matters.
+    try {
+      const context = this.options.skill.buildContext?.() ?? ''
+      const format =
+        this.options.formatUserMessage ??
+        ((instr: string, ctx: string) => (ctx ? `${instr}\n\n${ctx}` : instr))
+      const userMsg: AgentMessage = {
+        role: 'user',
+        text: format(instruction, context),
+        ...(images?.length ? { images } : {}),
+        ...(media?.audio?.length ? { audio: media.audio } : {}),
+        ...(media?.video?.length ? { video: media.video } : {}),
+      }
+      void this.beginRun(userMsg)
+    } catch (err) {
+      this.failRun(err instanceof Error ? err.message : String(err))
     }
   }
 
@@ -927,7 +939,15 @@ export class AgentLoop<TSnapshot = unknown> {
           onDelta: (text) => {
             if (generation !== this.generation || settled) return
             this.turnText += text
-            this.options.events?.onText?.(this.turnText)
+            try {
+              this.options.events?.onText?.(this.turnText)
+            } catch (err) {
+              // A transport drives onDelta from its own async event handler
+              // (see the Electron IPC transport), so this throw never reaches
+              // the try/catch around stream() below.
+              settled = true
+              this.failRun(err instanceof Error ? err.message : String(err))
+            }
           },
           onReasoning: (text) => {
             if (generation !== this.generation || settled) return
@@ -944,7 +964,7 @@ export class AgentLoop<TSnapshot = unknown> {
           onDone: () => {
             if (generation !== this.generation || settled) return
             settled = true
-            void this.finishTurn()
+            this.settleTurn()
           },
           onError: (error) => {
             if (generation !== this.generation || settled) return
@@ -969,7 +989,7 @@ export class AgentLoop<TSnapshot = unknown> {
                 if (generation !== this.generation) return
                 // Stopped during the backoff window: finalize like a normal cancel
                 if (this.cancelled) {
-                  void this.finishTurn()
+                  this.settleTurn()
                   return
                 }
                 this.startTurn(retriesUsed + 1)

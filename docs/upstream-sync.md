@@ -208,6 +208,84 @@
 
 - **markdown**：插入图片导出 DOCX 时 SVG/WebP/BMP/AVIF 自动按 192 DPI 高清重编码为 PNG（超宽图按 4096px 上限等比缩放），data:URL 内联图免主进程往返；上游全链测试回归通过。至此第十八轮（A–F）234 个上游提交全部吸收完毕，无剩余挂账。
 
+### 第二十轮（2026-10-06，上游 968d7d23..db347087 19 提交 + db347087..5e0fd69f 65 提交，共 84 提交 327 文件；施工分支 sync/19-upstream 已并 main，收口修复直接落 main）
+
+| 域 | 落位 |
+|---|---|
+| agent-core | settleTurn（回调抛错防运行卡死）、invalidArgumentFields/schemaViolation schema 校验、TYPE_CHECKS/MAX_SCHEMA_DEPTH 深度守卫（#1790/#1798/#1818）；未知 IPC chunk 类型忽略不炸 run（#1831）；非有限 seq 跳过（project-store #1830） |
+| 场景套件 | 六格式全生命周期 197 用例（docs 56/sheets 54/slides 20/markdown 26/pdf 23/html 18）全部通过 |
+| DocTheme 文档页主题 | docs/sheets/markdown 三端 renderer+preload+shared ipc（#1865，文档纸张主题独立于 UI 主题）；收口补齐 shell 主进程后端（currentDocTheme 缓存+HOME_CHANNELS/`app:get-document-theme`/`app:document-theme-changed` 全 webContents 广播）与 markdown preload 桥（merge 中 shell index.ts 走 ours 时被削掉，typecheck 兜出） |
+| markdown | 源码视图（@codemirror/lang-json）、DocTheme 接线、图片导出保持 18F 版 |
+| html | 资产 GC（extractHtmlAssetReferences）、File>Print 接线（#1807）、Insert 骨架命令（#1825） |
+| slides | LayoutSkeleton 样式模板布局骨架（#1849）、AnimationItem.direction 方向保留（#1707 wipe entr:22:4 读回 top；收口补 ipc 字段+slides-main 映射）、相关图片搜索去小图（#1850） |
+| 安全加固 | zip-gate 独立工作区、SSRF 守卫（slide 下载/本地媒体读取/恢复扫描/登录轮询 #1796）、file-parse 魔数嗅探拒扩展伪装（#1711）、pdf /XFA 分隔符（#1731）、xlsx sparkline sqref 转义（#1843）、decodeDataUrl base64 精确匹配（#1739）、pdf rect 非有限坐标拒绝（#1828） |
+| 引擎修复 | docx-engine rels 单遍查找（#1855）、页面颜色保存残留 w:background（#1852）、documentProtection 成对清除（#1841）、SDT 单引号 alias/tag（#1836）、页眉页脚引用单引号 w:type（#1835）；xlsx-gateway 负值轴从数据最小值起（#1854）、结构化引用不进 A1 重写（#1648）、整列/小写图表引用（#1853）、DV 双引号字面量（#1703）、打开可取消不漏临时目录（#1793）；html2docx runText 非字符串强制转换、CJK meta 检测；pdf2docx footnotes V8 参数上限（#1802） |
+| 新厂商 | Ling/Spark/LongCat 模型（#1780）、MiniMax-M3 视觉（#1814）、MiMo/Hunyuan 真标（#1856）、DeepSeek reasoning 往返（#1761）、SSE 跨 data: 行拼接（#1328）、429/503/529 过载文案（#1625） |
+| sheets | 网格增长超前视口（#1824）、sidecar 崩溃恢复+图表 undo 注册表封顶（#1797）、右键单菜单（#1840）、headless 静默导出（#1837）、ribbon dropdown 浮层（#1839） |
+| docs | 形状 Arrange 组+wrap/stacking 持久化（#1822）、导航窗格子视图记忆（#1770）、暗页选择记忆（#1590）、pending byte-handoff 封顶（#1847）、脚注乱序/chart spread RangeError/标尺焦点（#1788）、新文档尊重 AI 面板默认（#1871） |
+| shell/打包 | 更新对话框最小化+设置更新入口（#1779）、.part 断点续传（#1777）、关窗防抖（#1643）、txt/json 路由修复（#1848）、Docker headless PDF 镜像+Flatpak/NixOS 路线（#1868/#1866）、翻译菜单 7→21 语言对齐（#1860）、ru 补译（#1620） |
+| 冲突裁定 | A 区（多会话 AiPanel/DockShell/动画面板）保持本地；上游单会话面板不引入；shell index.ts 大文件以函数粒度抽取织入；pagebg-restore 需 Playwright Chrome（环境限制，main 同样跳过） |
+
+**门禁**：typecheck 0（全仓 21 工作区，收口后复核）；全量测试绿（后台跑批确认中）；品牌零新增违例；本地 shell 版本 1.0.3 自主线不跟随上游。
+
+### 第二十轮·收口复核（2026-10-06，上游差异全量对账 + 3-way 补漏）
+
+首轮合并（6af69ea5）后有 5 处 typecheck 残留 + 全量对账发现多处「本地相对 676bf4d5 基点的删除/落后被 3-way 语义保留」的漏点。处理：
+
+| 类别 | 明细 |
+|---|---|
+| typecheck 残留 | slides AnimationItem.direction 字段+主进程映射（#1707 收尾）；shell 主进程 DocTheme 后端整体回植（cachedDocTheme+get/setDocumentTheme 双通道广播，merge 走 ours 时被削）；markdown preload DocTheme 桥+通道常量 |
+| html2docx | convert.ts 取上游（#1805 spacer px 校验+stamped-children 恢复）——pagebg-restore 由挂账「需 Chrome」转为真通过（此前 Chrome 已装但断言失败） |
+| pdf2docx | analyze/blocks+index+table、rebuild/index、8 个测试文件取上游+品牌注释修复（#1747 连字符复合词/#1804 弹点列+双行合并/#1802 越界块/#1746 跨页编号）；上游测试此前也在旧版（断言旧行为）——两侧同步 |
+| 引擎 | docx-engine generate/parse/section/parse-drawing-geometry/patch、pptx-engine chart/table-edit/animation、xlsx-gateway pivot-grouping、pipelines layout-audit、file-parse、electron-utils、i18n font-names、ui 全组件（AiComposer/dropdown/color-picker/screentip/image-viewer/Markdown 等）——以 676bf4d5 为 base 全量 3-way 补漏（291 文件 clean merge，10 冲突手工裁定） |
+| ai-provider | media.ts deepseek 媒体条目+DEEPSEEK_MEDIA_BASE_URL 回植；activeMediaConfig 对内置回退返回 null（对齐 #1744 语义）；capabilityAvailable 空模型判 false；registry normalizeBaseUrl 凭据拒绝+fragment 剥离；openai-compatible/custom-models 走 endpointUrl；media-protocols 取上游+pollinations 协议本地实现（免费生图从死代码变可用）；codex-app-server 取上游（bounded stdout #1416）+品牌字面量；ai-settings-guard 取上游去 gskToolsEnabled 适配 |
+| ai-search | index.ts filterUsableImages 小图过滤（#1850 等价移植，含 tier 落穿语义）+上游 usable-images 测试；media-tools SSRF/扩展名白名单确认为本地等价（#1796），保持本地架构 |
+| cli | image-source data-url 上限取上游（#1439）+data-url-cap 测试过；15 个测上游独有模块（mcp-launch/op-schemas/app-install-dir 等）的测试不适用删除，台账挂账 |
+| 测试回植 | 35 个上游独有测试文件品牌适配后加入（ai-provider 9/docx-engine 3/ui 7/pptx-render 1/cli 1+15 删/ui dropdown 等测试随源码取上游） |
+| 冲突裁定 | ai-search index/media-tools 保持本地 chatoffice 函数 API（既有裁定）；ui dropdown 保留本地 icon 行+onDisabledClick 特性叠加在 upstream a11y 之上；popover-dismiss/chatoffice-popover-open 类名本地保留 |
+
+**门禁**：typecheck 0（全仓）；全量测试套件见跑批结果；upstream-only 残留=仅品牌注释与已裁定架构差。
+
+### 第二十轮·合并事故排查与修复（2026-10-06，外部智能体检出 run() 断链后全面核查）
+
+| 事故 | 根因 | 修复 |
+|---|---|---|
+| **agent-core run() 断链（严重）** | 已提交 main（f42e0b31）的 loop.ts run() 构造完 userMsg 后函数直接结束——`beginRun(userMsg)` 调用缺失，整个对话循环空操作（首轮 6af69ea5 合并时 run() 区域结构损伤） | 工作区重织 run()：上游 #1798 try/catch 结构（buildContext 抛错走 failRun 不再卡死）+ `void this.beginRun(userMsg)` + 本地 media audio/video 字段保留；孤儿 tool_calls 配对（#1727）与降级模式 tool_calls 剥离（#1742 语义）核实均在位；agent-core 138/138 绿（含上游 loop.test.ts）。并行会话独立以 144b1340 为基底+降级补丁重放（87cfae3，在另一克隆）——两线修同一事故，合流时取其一即可 |
+| **sheets Rust sidecar 编译失败** | 216b31a1 给 xlsx-engine 加了 CacheDirectory 守卫结构（Drop 回收/commit 转正），但 open 调用点仍是旧内联 PathBuf 写法——`cache_directory.path()/.commit()` 对 PathBuf 不存在，native:test 挂 | 调用点改回 `create_cache_directory(&session_id, cancelled)?`（对齐上游 402 行），前缀统一 chatoffice-ai-excel；cargo check+test 过 |
+
+**教训（写入合并纪律）**：大文件函数粒度织入后必须跑「编译 + 该包全测试」再提交；本轮两处事故均属「新结构进场、旧调用点未跟上」——后续每轮同步对新增 struct/fn 与其 call site 做成对检查。
+
+### 第二十轮·apps 层补漏（2026-10-06，同因排查延伸到 apps/shell）
+
+packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游（此前 3-way 只扫了 packages/*）：
+
+| 文件 | 处置 |
+|---|---|
+| detached-windows / file-targets / integrations-ipc / recent-files | 3-way clean merge（#1643 关窗防抖/#1848 文件路由/#1796 技能目录版本门/侧栏过滤族） |
+| src/main/index.ts | 3-way 杂合体被弃（六 app 模块 import 块被上游侧重写吞掉）——改从 HEAD 重建 + 定向回植：DocTheme 后端（get/set 双通道+缓存）+ #1848 filterMarkdown 21 语言文案 + menuNewMarkdown 统一 'AI Markdown'（21 处）；上游 #1848 的 fileTargetSources/rename 接线挂账下轮手工织入（A 区大文件） |
+| updater.ts | vi 语言块补入（#1779 更新对话框 21 语言文案） |
+| update-window.ts | 本地窗口图标特性改 namespace 安全访问（测试 mock 无 nativeImage 不再炸） |
+| preload / home-api / SettingsModal / settings.css | #1779 接线：update:get-state / openUpdateDialog / onUpdateStateChanged 桥（aiOffice→chaOffice 改名重放）+ About 行更新入口 + DocTheme 下拉（applyDocumentTheme） |
+| strings.ts | 重建：6 个新键（documentTheme/docThemeFollowApp/setUpdate×4）× 21 语言从上游成套移植（含引号块 'zh-TW'） |
+| launch-paths.test | 品牌差异保留本地 |
+
+### 第二十轮·apps/markdown 补漏（2026-10-06，全量跑批暴露后同法处置）
+
+| 文件 | 处置 |
+|---|---|
+| src/main/markdown-main.ts | 对话框 locale 表整体取上游（#1848 文字档过滤文案，21 语言）；vi 块重复合并事故修复；本地媒体桥保留 |
+| src/renderer/components/Ribbon.tsx | 取上游（#1785 源码视图门控 + #1848 .txt/.json 隐藏块控件）；@genoffice/ui→@chatoffice/ui；GensparkMark 本地品牌星标实现（AiPanel 新增导出） |
+| src/renderer/App.tsx | Ribbon 调用点按上游 Props 重接：onFind=openFind、aiOpen/onToggleAi/onAiPreset(askSendNow)、sourceViewOpen 状态+sourceMode=\.txt/.json$ |
+| i18n/strings.ts | 从 HEAD 重建 + 上游 237 键按 20 语言块移植（renameNeedsSave/sourceView 系）+ de 多行值补裁；zh-TW 导出行恢复 |
+| shared/ipc.ts | DocTheme 重复声明去重 |
+
+### 第二十轮更新内容汇总（产品视角）
+
+- **新功能**：文档页主题（纸张深浅色独立于界面主题，文档/表格/Markdown 三端生效）、Markdown 源码视图、幻灯片样式模板布局骨架（页式一致）、HTML 插入骨架、形状 Arrange 排列组、导航窗格记忆、21 语言翻译菜单、Ling/Spark/LongCat 新模型、DeepSeek 思维链往返
+- **安全加固**：文件魔数嗅探（防扩展名伪装）、SSRF 多点守卫、zip 炸弹守卫独立包、PDF/XLSX/数据边界校验十余项
+- **稳定性**：agent-core 卡死自救（settleTurn）、PDF 合并内存封顶、表格崩溃恢复、断点续传下载、关窗防抖
+- **工程**：Docker 无头 PDF 转换镜像、Flatpak/NixOS 打包路线、197 个六格式场景用例套件
+
 ### 第十八轮 G·新增量（2026-10-01，施工于 sync/18g-remaining 分支；上游 fetch 到新提交 968d7d23..676bf4d5 共 150 提交、340 文件 +11713）
 
 | 域 | 落位 |

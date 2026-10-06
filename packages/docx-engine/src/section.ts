@@ -6,6 +6,7 @@ import type {
   NoteProps,
   LineNumbering,
 } from './types'
+import { onOffTagIn } from './parse-xml-text'
 
 /** US Letter, portrait, 1-inch margins */
 export const DEFAULT_SECTION: SectionSettings = {
@@ -188,7 +189,7 @@ export function sectionSettingsFromXml(
     colSpace: intAttr(/<w:cols[^>]*\/?>/.exec(xml)?.[0] ?? '', 'w:space', 720),
     ...(colWidths.length >= 2 ? { colWidths } : {}),
     ...(lineNumbers ? { lineNumbers } : {}),
-    ...(/<w:bidi\s*\/>/.test(xml) ? { bidi: true } : {}),
+    ...(onOffTagIn(xml, 'w:bidi') ? { bidi: true } : {}),
     ...(docGrid ? { docGrid } : {}),
     ...(textDirectionOf(xml) ? { textDirection: textDirectionOf(xml) } : {}),
     ...(footnotePr ? { footnotePr } : {}),
@@ -528,13 +529,17 @@ export function applySectionSettings(sectPrXml: string, settings: SectionSetting
 
   // section direction (w:bidi, after cols in CT_SectPr): undefined = keep the
   // document's tag untouched; true/false = ensure present/absent
+  // w:bidi as Word may write it: self-closing, paired, or carrying an explicit w:val.
+  // The reader sees all three spellings, so the writer has to match and remove all
+  // three or a round-trip over a paired element leaves a second w:bidi behind.
+  const BIDI_ELEMENT = /<w:bidi(?=[\s/>])[^>]*(?:\/>|>[\s\S]*?<\/w:bidi>)/i
   if (settings.bidi !== undefined) {
-    const hasBidi = /<w:bidi\s*\/>/.test(xml)
+    const hasBidi = BIDI_ELEMENT.test(xml)
     if (settings.bidi && !hasBidi) {
       if (/<w:docGrid/.test(xml)) xml = xml.replace(/(<w:docGrid)/, '<w:bidi/>$1')
       else xml = xml.replace(/<\/w:sectPr>/, '<w:bidi/></w:sectPr>')
     } else if (!settings.bidi && hasBidi) {
-      xml = xml.replace(/<w:bidi\s*\/>/, '')
+      xml = xml.replace(BIDI_ELEMENT, '')
     }
   }
   return xml

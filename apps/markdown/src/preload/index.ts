@@ -6,7 +6,7 @@ import type { ProjectApi } from '@chatoffice/project-store'
 import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
 import { installFilesPaneBridge } from '@chatoffice/electron-utils/files-pane-bridge'
 import { AI_CHANNELS, MARKDOWN_CHANNELS } from '../shared/ipc'
-import type { AutoSaveDefault, ExportFormat, MarkdownApi, SaveMode, UiTheme } from '../shared/ipc'
+import type { AutoSaveDefault, DocTheme, ExportFormat, MarkdownApi, SaveMode, UiTheme } from '../shared/ipc'
 import { KB_CHANNELS } from '@chatoffice/ai-host/kb-channels'
 
 const api: MarkdownApi = {
@@ -79,6 +79,15 @@ const api: MarkdownApi = {
     const listener = (_e: Electron.IpcRendererEvent, theme: UiTheme) => handler(theme)
     ipcRenderer.on(MARKDOWN_CHANNELS.themeChanged, listener)
     return () => ipcRenderer.removeListener(MARKDOWN_CHANNELS.themeChanged, listener)
+  },
+  getDocumentTheme: async () => {
+    const result: unknown = await ipcRenderer.invoke(MARKDOWN_CHANNELS.getDocumentTheme)
+    return result === 'dark' || result === 'light' ? result : 'follow'
+  },
+  onDocumentThemeChanged: (handler) => {
+    const listener = (_e: Electron.IpcRendererEvent, theme: DocTheme) => handler(theme)
+    ipcRenderer.on(MARKDOWN_CHANNELS.documentThemeChanged, listener)
+    return () => ipcRenderer.removeListener(MARKDOWN_CHANNELS.documentThemeChanged, listener)
   },
   getAutoSaveDefault: () => ipcRenderer.invoke(MARKDOWN_CHANNELS.getAutoSaveDefault),
   onAutoSaveDefaultChanged: (handler) => {

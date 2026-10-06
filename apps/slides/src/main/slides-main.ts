@@ -4415,6 +4415,7 @@ export function registerSlidesIpc(): void {
         ...(a.motionPath != null ? { motionPath: a.motionPath } : {}),
         ...(a.paragraph != null ? { paragraph: a.paragraph } : {}),
         ...(a.rewind ? { rewind: true } : {}),
+        ...(a.direction ? { direction: a.direction } : {}),
       })
     }
     return out

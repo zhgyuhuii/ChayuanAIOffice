@@ -281,6 +281,21 @@ export async function webSearch(
 
 // ── Image search ────────────────────────────────────────────────────
 
+/** Icons, buttons and avatars render as junk when a slide crops them into a
+ * content frame — anything a backend reports smaller than this is dropped
+ * (matches upstream #1850). Results with unknown dimensions stay. */
+export const MIN_USABLE_IMAGE_PX = 200
+
+export function filterUsableImages(images: ImageSearchResult[]): ImageSearchResult[] {
+  return images.filter((im) => {
+    if (typeof im.width !== 'number' && typeof im.height !== 'number') return true
+    return (
+      (im.width ?? Number.POSITIVE_INFINITY) >= MIN_USABLE_IMAGE_PX &&
+      (im.height ?? Number.POSITIVE_INFINITY) >= MIN_USABLE_IMAGE_PX
+    )
+  })
+}
+
 /**
  * Image search fallback chain: Serper (key) → Bing scrape (keyless, China-reachable)
  * → Openverse (CC, keyless). Every tier records a SearchAttempt so the caller can
@@ -342,10 +357,16 @@ export async function imageSearch(
             if (images.length >= maxResults) break
           }
           if (images.length) {
-            attempts.push({ backend: 'serper', status: 'ok', count: images.length })
-            return { images, method: 'serper' }
+            const usable = filterUsableImages(images)
+            if (usable.length) {
+              attempts.push({ backend: 'serper', status: 'ok', count: usable.length })
+              return { images: usable, method: 'serper' }
+            }
+            // a backend that only offered tiny images falls through to the next tier
+            attempts.push({ backend: 'serper', status: 'error', detail: 'only tiny results' })
+          } else {
+            attempts.push({ backend: 'serper', status: 'error', detail: '0 results' })
           }
-          attempts.push({ backend: 'serper', status: 'error', detail: '0 results' })
         } else {
           attempts.push({ backend: 'serper', status: 'error', detail: `http ${resp.status}` })
         }
@@ -361,8 +382,13 @@ export async function imageSearch(
   const bingTier = async (): Promise<{ images: ImageSearchResult[]; method: string } | null> => {
     try {
       const images = await bingImageSearch(query, maxResults, page)
-      attempts.push({ backend: 'bing', status: 'ok', count: images.length })
-      return { images, method: 'bing' }
+      const usable = filterUsableImages(images)
+      if (images.length && !usable.length) {
+        attempts.push({ backend: 'bing', status: 'error', detail: 'only tiny results' })
+        return null
+      }
+      attempts.push({ backend: 'bing', status: 'ok', count: usable.length })
+      return { images: usable, method: 'bing' }
     } catch (err) {
       attempts.push({ backend: 'bing', status: 'error', detail: String(err) })
     }
@@ -375,8 +401,13 @@ export async function imageSearch(
   } | null> => {
     try {
       const images = await openverseImageSearch(query, maxResults, page)
-      attempts.push({ backend: 'openverse', status: 'ok', count: images.length })
-      return { images, method: 'openverse' }
+      const usable = filterUsableImages(images)
+      if (images.length && !usable.length) {
+        attempts.push({ backend: 'openverse', status: 'error', detail: 'only tiny results' })
+        return null
+      }
+      attempts.push({ backend: 'openverse', status: 'ok', count: usable.length })
+      return { images: usable, method: 'openverse' }
     } catch (err) {
       attempts.push({ backend: 'openverse', status: 'error', detail: String(err) })
     }
