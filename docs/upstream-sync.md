@@ -269,6 +269,15 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | strings.ts | 重建：6 个新键（documentTheme/docThemeFollowApp/setUpdate×4）× 21 语言从上游成套移植（含引号块 'zh-TW'） |
 | launch-paths.test | 品牌差异保留本地 |
 
+### 第二十轮·界面还原排查（2026-10-06，用户反馈「文档编辑界面对话栏改造被还原」）
+
+| 项 | 核查结论 |
+|---|---|
+| D13 多会话对话栏 | **未受损**——docs AiPanel.tsx 自 c2b045ec（D10/D11/D13 改造）后零结构漂移（18D/19/20 三轮仅 +6 行），真机截图确认 新对话/助手 tab、🕘 历史、修订跟踪 chip 全在 |
+| 实际被还原项 | **上游品牌侵入**：18D「docs App/Ribbon 上游结构采纳」+ Round 20 把 Ribbon 第一入口写成上游品牌——docs Ribbon 按钮+组标签 'Genspark AI'、markdown Ribbon 同、GensparkMark 上游 logo、3 个小语言 aiPanelTitle='Genspark'（1.0.2 时代本地 Ribbon 无任何 Genspark 字样） |
+| 修复（7d18d79d） | docs/markdown Ribbon 入口→「察元AI」、GensparkMark SVG→本地星标（保留导出名防调用点churn）、小语言标题→ChaAI Office；docs 2891/markdown 657 回归全绿；重新打包真机核对（26-docx-restored.png）Genspark 残留=false、察元AI=true |
+| 纪律 | 「上游结构采纳」类提交必须同步过一遍**用户可见字符串品牌表**——结构可以跟上游，皮必须是察元的；后续每轮同步对 Ribbon/面板标题/aria-label 三处做品牌 grep |
+
 ### 第二十轮·apps/markdown 补漏（2026-10-06，全量跑批暴露后同法处置）
 
 | 文件 | 处置 |
