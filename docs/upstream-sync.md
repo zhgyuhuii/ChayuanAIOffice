@@ -274,9 +274,11 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 项 | 核查结论 |
 |---|---|
 | D13 多会话对话栏 | **未受损**——docs AiPanel.tsx 自 c2b045ec（D10/D11/D13 改造）后零结构漂移（18D/19/20 三轮仅 +6 行），真机截图确认 新对话/助手 tab、🕘 历史、修订跟踪 chip 全在 |
-| 实际被还原项 | **上游品牌侵入**：18D「docs App/Ribbon 上游结构采纳」+ Round 20 把 Ribbon 第一入口写成上游品牌——docs Ribbon 按钮+组标签 'Genspark AI'、markdown Ribbon 同、GensparkMark 上游 logo、3 个小语言 aiPanelTitle='Genspark'（1.0.2 时代本地 Ribbon 无任何 Genspark 字样） |
+| **docs AI 面板 DockShell 被删（实锤还原）** | 十八轮 D「上游结构采纳」把共享 DockShell 包裹（任意停靠左/右/底/悬浮+最大化/收起+头部 chrome，与 sheets 一致的整体要求）替换成上游 `ai-dock` div 固定骨架。**修复（2f7e2d78）**：App.tsx 恢复 `<DockShell storageKey="aidocs.dock">`（aiDock* 词条在位、dockChrome 接线），真机验证停靠菜单四项+chrome 五钮（s11/s12）；markdown DockShell 完好未动 |
+| **模型选择器裸按钮（实锤还原）** | ui 上游化轮把 `.ai-model-picker-*`/`msp-*` 基础样式块从源码删掉（仅剩 scoped 残段）。**修复（8acd90e4）**：从 1.0.2 构建产物提取完整规则回植 dock.css + docs/shell main 补 import，真机验证胶囊/星标/弹层分组恢复（s8/s9/s10） |
+| 实际被还原项（品牌） | **上游品牌侵入**：18D「docs App/Ribbon 上游结构采纳」+ Round 20 把 Ribbon 第一入口写成上游品牌——docs Ribbon 按钮+组标签 'Genspark AI'、markdown Ribbon 同、GensparkMark 上游 logo、3 个小语言 aiPanelTitle='Genspark'（1.0.2 时代本地 Ribbon 无任何 Genspark 字样） |
 | 修复（7d18d79d） | docs/markdown Ribbon 入口→「察元AI」、GensparkMark SVG→本地星标（保留导出名防调用点churn）、小语言标题→ChaAI Office；docs 2891/markdown 657 回归全绿；重新打包真机核对（26-docx-restored.png）Genspark 残留=false、察元AI=true |
-| 纪律 | 「上游结构采纳」类提交必须同步过一遍**用户可见字符串品牌表**——结构可以跟上游，皮必须是察元的；后续每轮同步对 Ribbon/面板标题/aria-label 三处做品牌 grep |
+| 纪律 | 「上游结构采纳」类提交必须同步过一遍**用户可见字符串品牌表**与**本地 A 区骨架清单（DockShell/PanelTabs/dock.css）**——结构可以跟上游，皮和骨架必须是察元的；每轮同步后跑「DockShell grep 六端 + 品牌 grep Ribbon/面板标题/aria-label」 |
 
 ### 第二十轮·apps/markdown 补漏（2026-10-06，全量跑批暴露后同法处置）
 
