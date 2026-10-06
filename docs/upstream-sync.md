@@ -280,6 +280,17 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 修复（7d18d79d） | docs/markdown Ribbon 入口→「察元AI」、GensparkMark SVG→本地星标（保留导出名防调用点churn）、小语言标题→ChaAI Office；docs 2891/markdown 657 回归全绿；重新打包真机核对（26-docx-restored.png）Genspark 残留=false、察元AI=true |
 | 纪律 | 「上游结构采纳」类提交必须同步过一遍**用户可见字符串品牌表**与**本地 A 区骨架清单（DockShell/PanelTabs/dock.css）**——结构可以跟上游，皮和骨架必须是察元的；每轮同步后跑「DockShell grep 六端 + 品牌 grep Ribbon/面板标题/aria-label」 |
 
+### 第二十轮·界面恢复二阶段（2026-10-06，用户逐项验收反馈驱动）
+
+| 项 | 处置 |
+|---|---|
+| **docs 对话框布局** | 用户验收指出:对话框应在**整个编辑器左侧、与顶部菜单同级**(全窗高)，且**上下左右**停靠。修复:①Ribbon 移入 DockShell body 的 editor-col（markdown 同构，面板全窗高、Ribbon 在面板右侧顶部对齐）②DockShell 新增 **top 停靠**（DockPosition/topHeight 状态+夹紧+边缘吸附+菜单项+图标+pos-top CSS），菜单五项=左/右/上/下/悬浮 |
+| **顶部菜单去 AI 按钮** | 用户验收指出:顶部菜单不应有察元AI/助手相关按钮（功能都在对话框内）。修复:docs Ribbon AI 组整体删除（察元AI 入口+AI 总结/润色/排版 8 钮）、markdown Ribbon 同（4 钮）；面板开关走 DockShell 头部 💬 |
+| **模型选择弹层** | 触发器胶囊修复后弹层仍裸——`.ai-picker-*` 弹层样式块同样被删，从 1.0.2 产物原样回植 27 规则；真机验证弹层（模型设置…胶囊/全部对话分组 Tab/察元本地模型组/选中行蓝字+对话 badge） |
+| **aiDockTop 词条** | 21 语言×6 端（docs/sheets/slides/html 每语言一文件 84 + markdown/pdf 合并文件 42 块）；RTL/双引号/组合行三类插入事故修复；pdf zh-TW 走 strings-local 补键 |
+| **html 残留** | printHtml 通道 'html:print-html'+主进程 handler+print-window import+Insert 骨架 props(onInsertSkeleton/canInsertSkeleton) 补接（上游测试为契约） |
+| 门禁 | typecheck 0；docs 2891/markdown 657/html 251/sheets 3110/slides 1355/pdf 872 回归全绿；真机 f1-docs-final.png：Ribbon 零 AI 钮+全高面板+停靠五钮+弹层完整 |
+
 ### 第二十轮·apps/markdown 补漏（2026-10-06，全量跑批暴露后同法处置）
 
 | 文件 | 处置 |
