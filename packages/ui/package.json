@@ -29,7 +29,8 @@
     "./image-dialogs": "./src/image-dialogs.tsx",
     "./ModelSettingsPage": "./src/ModelSettingsPage.tsx",
     "./ModelDefaultsPage": "./src/ModelDefaultsPage.tsx",
-    "./CapabilitySettingsPage": "./src/CapabilitySettingsPage.tsx"
+    "./CapabilitySettingsPage": "./src/CapabilitySettingsPage.tsx",
+    "./assistant-library": "./src/assistant-library/index.tsx"
   },
   "scripts": {
     "test": "vitest run",

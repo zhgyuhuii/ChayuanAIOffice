@@ -106,6 +106,7 @@ import {
   IconAiFactCheck,
   IconAiImage,
 } from './AssistantTab'
+import { AssistantLibraryBrowser } from '@chatoffice/ui/assistant-library'
 import type { DockChrome } from '@chatoffice/ui'
 
 // 惰性加载:模型设置页(含厂商 logo 组)只在打开时拉取,不进启动图
@@ -2777,7 +2778,7 @@ function AiConversationBody({
         )}
       </div>
 
-      {!convMode && <AssistantTab items={assistItems} hidden={tab !== 'assistant'} />}
+      {!convMode && <AssistantTab items={assistItems} hidden={tab !== 'assistant'} libraryApp="slides" onRunPrompt={(p) => { runWith(p); selectTab('chat') }} />}
 
       {tab === 'chat' && activeClarify ? (
         /* Docked in the composer slot with the composer's own outer spacing */
@@ -3881,7 +3882,12 @@ export function AiPanel(props: AiPanelProps) {
 
       {/* 助手 tab:保持面板级(§4.5),不实例化 */}
       {conv.activeTab === 'assistant' && (
-        <AssistantTab items={assistItems} hidden={conv.activeTab !== 'assistant'} />
+        <AssistantTab
+          items={assistItems}
+          hidden={conv.activeTab !== 'assistant'}
+          libraryApp="slides"
+          onRunPrompt={(p) => runWithRef.current(p)}
+        />
       )}
 
       {modelSettingsOpen && (

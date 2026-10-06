@@ -5,6 +5,7 @@
  * the chat tab to follow the run (handled by the caller).
  */
 import React from 'react'
+import { AssistantLibraryBrowser } from '@chatoffice/ui/assistant-library'
 import { IconAiAskSelection, IconAiBeautify, IconAiFactCheck, IconAiImage } from '../components/icons'
 
 export interface AssistantAction {
@@ -19,9 +20,15 @@ export interface AssistantAction {
 export function AssistantTab({
   items,
   hidden,
+  libraryApp,
+  onRunPrompt,
 }: {
   items: AssistantAction[]
   hidden?: boolean
+  /** 助手库所在端(整体要求: 每类 ≥100 助手) */
+  libraryApp?: 'sheets' | 'slides' | 'pdf' | 'markdown' | 'html'
+  /** 库内助手点击 → 送入对话 */
+  onRunPrompt?: (prompt: string) => void
 }): React.JSX.Element {
   return (
     <div className="ai-assistant" style={hidden ? { display: 'none' } : undefined}>
@@ -42,6 +49,11 @@ export function AssistantTab({
           </span>
         </button>
       ))}
+      {libraryApp && onRunPrompt && (
+        <div className="ai-assist-library-slot">
+          <AssistantLibraryBrowser app={libraryApp} onRun={onRunPrompt} />
+        </div>
+      )}
     </div>
   )
 }

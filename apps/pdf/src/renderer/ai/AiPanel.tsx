@@ -23,6 +23,7 @@ import {
 } from '@chatoffice/ui'
 import type { DockChrome } from '@chatoffice/ui'
 import { AssistantTab, IconAiKeyPoints, IconAiSummarize } from './AssistantTab'
+import { AssistantLibraryBrowser } from '@chatoffice/ui/assistant-library'
 import { defaultSettingsV2, pickImageModel } from '@chatoffice/ai-provider/browser'
 import { pdfModelBridge } from './model-bridge'
 import { aiLangDirective, t as tGlobal, useI18n } from '../i18n/locale'
@@ -869,7 +870,8 @@ function AiConversationBody({
         {busy && <AiTypingIndicator label={typingLabel} />}
       </div>
 
-      {!convMode && <AssistantTab items={assistantItems} hidden={tab !== 'assistant'} />}
+      {!convMode && <AssistantTab items={assistantItems} hidden={tab !== 'assistant'} libraryApp="pdf" onRunPrompt={(p) => send(p)} />}
+      {tab === 'assistant' && <AssistantLibraryBrowser app="pdf" onRun={(p) => send(p)} />}
 
       <div className="ai-composer" style={tab === 'chat' ? undefined : { display: 'none' }}>
         <AiComposer

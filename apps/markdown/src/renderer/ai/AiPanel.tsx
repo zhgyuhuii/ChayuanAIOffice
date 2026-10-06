@@ -51,6 +51,7 @@ import {
 } from './edit-queue'
 import { DOC_NAV_SCHEME, navigateToBlock, parseDocNavHref } from './doc-nav'
 import { AiFeatureIcon, AssistantTab } from './AssistantTab'
+import { AssistantLibraryBrowser } from '@chatoffice/ui/assistant-library'
 
 // 惰性加载:模型设置页(含厂商 logo 组)只在打开时拉取,不进启动图
 const ModelSettingsPage = lazy(() =>
@@ -1128,7 +1129,8 @@ function AiConversationBody({
         </div>
       )}
 
-      {!convMode && <AssistantTab items={assistItems} hidden={tab !== 'assistant'} />}
+      {!convMode && <AssistantTab items={assistItems} hidden={tab !== 'assistant'} libraryApp="markdown" onRunPrompt={(p) => send(p)} />}
+      {tab === 'assistant' && <AssistantLibraryBrowser app="markdown" onRun={(p) => send(p)} />}
 
       <div className="ai-composer" style={tab === 'chat' ? undefined : { display: 'none' }}>
         {activePartial && (
@@ -1623,6 +1625,8 @@ export function AiPanel(props: {
       )}
       {conv.activeTab === 'assistant' && (
         <AssistantTab
+          libraryApp="markdown"
+          onRunPrompt={(p) => routeText(p, true)}
           items={[
             {
               id: 'summarize',

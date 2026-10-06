@@ -31,6 +31,7 @@ import {
 import { aiLangDirective, t as tGlobal, useI18n, type StringKey } from '../i18n/locale'
 import { htmlModelBridge } from './model-bridge'
 import { AssistantTab } from './AssistantTab'
+import { AssistantLibraryBrowser } from '@chatoffice/ui/assistant-library'
 import { IconPalette, IconSummarize, IconWand } from '../components/icons'
 import attachIcon from '../assets/attach-icon.png'
 import fileDocumentIcon from '../assets/file-document.png'
@@ -1529,7 +1530,8 @@ function AiConversationBody({
         </div>
       )}
 
-      {!convMode && <AssistantTab items={assistantItems} hidden={tab !== 'assistant'} />}
+      {!convMode && <AssistantTab items={assistantItems} hidden={tab !== 'assistant'} libraryApp="html" onRunPrompt={(p) => send(p)} />}
+      {tab === 'assistant' && <AssistantLibraryBrowser app="html" onRun={(p) => send(p)} />}
 
       {chat[chat.length - 1]?.interrupted && !busy && (
         <div className="ai-composer">

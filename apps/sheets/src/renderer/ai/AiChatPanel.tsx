@@ -27,6 +27,7 @@ import {
 } from '@chatoffice/ai-provider/browser'
 import { sheetsModelBridge } from './model-bridge'
 import { AssistantTab, IconAiAnalyze, IconAiCheck } from './AssistantTab'
+import { AssistantLibraryBrowser } from '@chatoffice/ui/assistant-library'
 import type { ChangePlan } from '@chatoffice/xlsx-gateway/domain/workbook.types'
 import { ATTACHMENT_IMAGE_EXTS, type AttachmentMeta } from '../../shared/desktop-api'
 import { useI18n, type TFunc } from '../i18n/locale'
@@ -514,8 +515,8 @@ export function AiChatPanel({
     >
       <PanelTabs
         tabs={aiTabs}
-        activeId={tab}
-        onTabChange={selectTab}
+        activeId={conversations ? conversations.activeId : tab}
+        onTabChange={conversations ? conversations.onTabChange : selectTab}
         actions={
           conversations ? (
             // LOCAL(2026-09-22, d8201ad0): D13——常驻两图标 [+][🕘](面板布局按钮左侧):
@@ -752,7 +753,7 @@ export function AiChatPanel({
         )}
       </div>
 
-      <AssistantTab items={assistItems} hidden={tab !== 'assistant'} />
+      <AssistantTab items={assistItems} hidden={(conversations ? conversations.activeId : tab) !== 'assistant'} libraryApp="sheets" onRunPrompt={(p) => { stickToBottomRef.current = true; onSend(p); selectTab('chat') }} />
 
       <div
         className="ai-composer"
