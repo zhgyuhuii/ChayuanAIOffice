@@ -17,9 +17,11 @@ import { handleDocsControl, type ControlRequest } from './control'
 import { DOMParser as PmDOMParser, type Mark as PmMark, Slice as PmSlice } from '@tiptap/pm/model'
 import { NodeSelection, TextSelection, type Command, type Transaction } from '@tiptap/pm/state'
 import {
+  DockShell,
   Dropdown,
   ImageViewer,
   aiPanelInitiallyOpen,
+  isMacStandaloneWindow,
   rememberAiPanelOpen,
   createZoomWheelClassifier,
   useAutoSavePref,
@@ -6922,10 +6924,28 @@ export function App() {
         {...ribbonActions}
       />
 
-      <div className="app-main">
-        {doc && (
-          <div className={`ai-dock${showAi ? '' : ' collapsed'}`}>
-            {/* always mounted: collapse must not drop state or in-flight runs */}
+      {/* LOCAL(整体要求): AI 面板走共享 DockShell——任意停靠(左/右/底/悬浮)+最大化/收起,
+          与 sheets 布局一致;十八轮 D 曾采纳上游 ai-dock div 骨架,现按整体要求恢复 DockShell */}
+      <DockShell
+        className={`app-main${isMacStandaloneWindow() ? ' mac-standalone' : ''}`}
+        storageKey="aidocs.dock"
+        legacyWidthKey="docs-ai-panel-width"
+        open={showAi}
+        onOpenChange={setShowAi}
+        panelAvailable={!!doc}
+        labels={{
+          panelTitle: t('aiPanelTitle'),
+          layoutMenu: t('aiDockLayoutTitle'),
+          dockLeft: t('aiDockLeft'),
+          dockRight: t('aiDockRight'),
+          dockBottom: t('aiDockBottom'),
+          float: t('aiDockFloat'),
+          maximize: t('aiDockMaximize'),
+          restore: t('aiDockRestore'),
+          collapse: t('aiCollapseTitle'),
+        }}
+        renderPanel={(dockChrome) =>
+          doc ? (
             <AiPanel
               key={aiPanelKey}
               editor={editor}
@@ -6937,8 +6957,6 @@ export function App() {
               }
               preset={aiPreset}
               open={showAi}
-              onExpand={() => setShowAi(true)}
-              onCollapse={() => setShowAi(false)}
               filePath={doc?.filePath ?? null}
               editQueue={editQueue}
               onQueueEditInstruction={queueUpdate}
@@ -6951,9 +6969,11 @@ export function App() {
               pageSetupAccess={aiPageSetupAccess}
               docExtras={aiDocExtras}
               notesAccess={aiNotesAccess}
+              dockChrome={dockChrome}
             />
-          </div>
-        )}
+          ) : null
+        }
+      >
         <div className="app-content">
           <div className={workspaceClass}>
             {doc && showFind && (
@@ -7365,8 +7385,8 @@ export function App() {
               </button>
             </div>
           </footer>
-        </div>
       </div>
+      </DockShell>
 
       {showShortcuts && <ShortcutsDialog onClose={() => setShowShortcuts(false)} />}
       {showLinkModal && <LinkInsertModal editor={editor} onClose={() => setShowLinkModal(false)} />}
