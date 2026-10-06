@@ -264,7 +264,7 @@ function assertModuleTreesPresent() {
 const CLI_BUNDLE_REL = '../../packages/cli/dist/chaoffice.cjs'
 const CLI_BUILD_REL = '../../packages/cli/build.mjs'
 const CLI_VERSION_ENV = 'GENOFFICE_APP_VERSION'
-const CLI_VERSION_BANNER = /__GENOFFICE_VERSION__\s*=\s*("(?:[^"\\]|\\.)*")/
+const CLI_VERSION_BANNER = /^const __cliAppVersion = ("(?:[^"\\]|\\.)*");$/m
 
 /**
  * The version the packaged app reports: CI's -c.extraMetadata.version deep-merges
