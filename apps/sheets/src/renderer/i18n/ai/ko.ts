@@ -112,6 +112,7 @@ export const ko = {
   aiDockLeft: '왼쪽에 고정',
   aiDockRight: '오른쪽에 고정',
   aiDockBottom: '아래쪽에 고정',
+  aiDockTop: '상단에 도크',
   aiDockFloat: '플로팅 창',
   aiDockMaximize: '패널 최대화',
   aiDockRestore: '패널 복원',

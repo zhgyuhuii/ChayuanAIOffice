@@ -197,6 +197,7 @@ export const ja = {
   aiDockMaximize: 'パネルを最大化',
   aiOpenModelSettings: 'モデル設定を開く',
   aiDockBottom: '下部にドッキング',
+  aiDockTop: '上にドッキング',
   aiTabAssistant: 'アシスタント',
   aiAssistantSearch: 'アシスタントを検索…',
   aiDockLayoutTitle: 'パネルレイアウト',

@@ -17,6 +17,7 @@ export const HTML_CHANNELS = {
   consumeAiContent: 'html:consume-ai-content',
   previewUpdate: 'html:preview-update',
   previewInfo: 'html:preview-info',
+  printHtml: 'html:print-html',
   presentFullScreen: 'html:present-fullscreen',
   presentNewTab: 'html:present-new-tab',
   readFile: 'html:read-file',

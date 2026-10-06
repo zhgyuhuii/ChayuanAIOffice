@@ -201,6 +201,7 @@ export const de = {
   aiDockMaximize: 'Bereich maximieren',
   aiOpenModelSettings: 'Modelleinstellungen öffnen',
   aiDockBottom: 'Unten andocken',
+  aiDockTop: 'Oben andocken',
   aiTabAssistant: 'Assistent',
   aiAssistantSearch: 'Assistenten suchen…',
   aiDockLayoutTitle: 'Bereichslayout',

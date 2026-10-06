@@ -120,6 +120,7 @@ export const cs = {
   aiDockLeft: "停靠到左侧",
   aiDockRight: "停靠到右侧",
   aiDockBottom: "停靠到底部",
+  aiDockTop: 'Ukotvit nahoře',
   aiDockFloat: "悬浮窗口",
   aiDockMaximize: "最大化面板",
   aiDockRestore: "还原面板",

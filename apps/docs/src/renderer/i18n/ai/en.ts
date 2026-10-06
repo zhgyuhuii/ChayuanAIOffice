@@ -196,6 +196,7 @@ export const en = {
   aiDockMaximize: 'Maximize panel',
   aiOpenModelSettings: 'Open Model Settings',
   aiDockBottom: 'Dock bottom',
+  aiDockTop: 'Dock top',
   aiTabAssistant: 'Assistant',
   aiAssistantSearch: 'Search assistants…',
   aiDockLayoutTitle: 'Panel layout',

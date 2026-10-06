@@ -291,6 +291,7 @@ export const id = {
   aiDockLeft: "Sematkan ke kiri",
   aiDockRight: "Sematkan ke kanan",
   aiDockBottom: "Sematkan ke bawah",
+  aiDockTop: 'Dock atas',
   aiDockFloat: "Jendela mengambang",
   aiDockMaximize: "Maksimalkan panel",
   aiDockRestore: "Pulihkan panel",

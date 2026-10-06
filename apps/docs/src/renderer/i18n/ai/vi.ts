@@ -196,6 +196,7 @@ export const vi = {
   aiDockMaximize: '最大化面板',
   aiOpenModelSettings: '打开模型设置',
   aiDockBottom: '停靠到底部',
+  aiDockTop: 'Neo lên trên',
   aiTabAssistant: '助手',
   aiAssistantSearch: '搜索助手…',
   aiDockLayoutTitle: '面板布局',

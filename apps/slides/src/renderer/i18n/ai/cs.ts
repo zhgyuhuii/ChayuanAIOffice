@@ -291,6 +291,7 @@ export const cs = {
   aiDockLeft: "Dock left",
   aiDockRight: "Dock right",
   aiDockBottom: "Dock bottom",
+  aiDockTop: 'Ukotvit nahoře',
   aiDockFloat: "Floating window",
   aiDockMaximize: "Maximize panel",
   aiDockRestore: "Restore panel",

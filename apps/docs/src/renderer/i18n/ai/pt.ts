@@ -200,6 +200,7 @@ export const pt = {
   aiDockMaximize: 'Maximizar painel',
   aiOpenModelSettings: 'Abrir configurações de modelos',
   aiDockBottom: 'Fixar na parte inferior',
+  aiDockTop: 'Encaixar no topo',
   aiTabAssistant: 'Assistente',
   aiAssistantSearch: 'Pesquisar assistentes…',
   aiDockLayoutTitle: 'Layout do painel',

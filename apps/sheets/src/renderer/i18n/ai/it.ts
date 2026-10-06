@@ -112,6 +112,7 @@ export const it = {
   aiDockLeft: 'Ancora a sinistra',
   aiDockRight: 'Ancora a destra',
   aiDockBottom: 'Ancora in basso',
+  aiDockTop: 'Ancora in alto',
   aiDockFloat: 'Finestra mobile',
   aiDockMaximize: 'Massimizza pannello',
   aiDockRestore: 'Ripristina pannello',

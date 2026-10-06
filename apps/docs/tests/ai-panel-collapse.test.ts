@@ -19,6 +19,7 @@ const LABELS = {
   dockLeft: 'Dock left',
   dockRight: 'Dock right',
   dockBottom: 'Dock bottom',
+  dockTop: 'Dock top',
   float: 'Floating',
   maximize: 'Maximize',
   restore: 'Restore',

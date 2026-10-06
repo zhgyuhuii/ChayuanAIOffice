@@ -12,6 +12,7 @@ const LABELS = {
   dockLeft: 'Dock left',
   dockRight: 'Dock right',
   dockBottom: 'Dock bottom',
+  dockTop: 'Dock top',
   float: 'Floating',
   maximize: 'Maximize',
   restore: 'Restore',
@@ -130,7 +131,7 @@ describe('DockShell', () => {
 
     act(() => container.querySelector<HTMLButtonElement>('.dockshell-btn')!.click())
     const items = container.querySelectorAll<HTMLButtonElement>('.dockshell-menu-item')
-    expect(items.length).toBe(4)
+    expect(items.length).toBe(5)
 
     act(() => items[1].click()) // dock right
     expect(container.querySelector('.dockshell')!.classList.contains('pos-right')).toBe(true)
@@ -138,6 +139,10 @@ describe('DockShell', () => {
 
     act(() => container.querySelector<HTMLButtonElement>('.dockshell-btn')!.click())
     act(() => container.querySelectorAll<HTMLButtonElement>('.dockshell-menu-item')[2].click())
+    expect(container.querySelector('.dockshell')!.classList.contains('pos-top')).toBe(true)
+
+    act(() => container.querySelector<HTMLButtonElement>('.dockshell-btn')!.click())
+    act(() => container.querySelectorAll<HTMLButtonElement>('.dockshell-menu-item')[3].click())
     expect(container.querySelector('.dockshell')!.classList.contains('pos-bottom')).toBe(true)
     cleanup()
   })

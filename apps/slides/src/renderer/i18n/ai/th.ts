@@ -288,6 +288,7 @@ export const th = {
   aiDockLeft: "ยึดด้านซ้าย",
   aiDockRight: "ยึดด้านขวา",
   aiDockBottom: "ยึดด้านล่าง",
+  aiDockTop: 'ตรึงด้านบน',
   aiDockFloat: "หน้าต่างลอย",
   aiDockMaximize: "ขยายแผงสูงสุด",
   aiDockRestore: "คืนค่าแผง",

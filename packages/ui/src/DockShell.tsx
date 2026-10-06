@@ -27,7 +27,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDismissablePopover } from './popover-dismiss'
 
-export type DockPosition = 'left' | 'right' | 'bottom' | 'float'
+export type DockPosition = 'left' | 'right' | 'top' | 'bottom' | 'float'
 
 export interface DockRect {
   x: number
@@ -48,6 +48,8 @@ export interface DockLayoutState {
   sideWidthAuto?: boolean
   /** height when docked bottom */
   bottomHeight: number
+  /** height when docked top (整体要求: 上下左右停靠) */
+  topHeight: number
   /** floating geometry; null until first floated (then defaults right-center) */
   floatRect: DockRect | null
   /** panel covers the whole content area; the content stays mounted beneath */
@@ -61,6 +63,7 @@ export interface DockLabels {
   dockLeft: string
   dockRight: string
   dockBottom: string
+  dockTop: string
   float: string
   maximize: string
   restore: string
@@ -106,6 +109,10 @@ const SIDE_MAX = 1200
 const BOTTOM_DEFAULT = 320
 const BOTTOM_MIN = 200
 const BOTTOM_MAX = 800
+// top docking (整体要求: 上下左右停靠) mirrors the bottom band
+const TOP_DEFAULT = 320
+const TOP_MIN = 200
+const TOP_MAX = 800
 const FLOAT_DEFAULT_WIDTH = 480
 const FLOAT_DEFAULT_HEIGHT = 560
 const FLOAT_MIN_W = 320
@@ -119,7 +126,7 @@ const SNAP_ZONE = 56
 /** header press must travel this far before the panel tears off */
 const DRAG_THRESHOLD = 4
 
-const POSITIONS: DockPosition[] = ['left', 'right', 'bottom', 'float']
+const POSITIONS: DockPosition[] = ['left', 'right', 'top', 'bottom', 'float']
 
 function clampStaticSide(w: number): number {
   return Math.round(Math.min(Math.max(w, SIDE_MIN), SIDE_MAX))
@@ -127,6 +134,10 @@ function clampStaticSide(w: number): number {
 
 function clampStaticBottom(h: number): number {
   return Math.round(Math.min(Math.max(h, BOTTOM_MIN), BOTTOM_MAX))
+}
+
+function clampStaticTop(h: number): number {
+  return Math.round(Math.min(Math.max(h, TOP_MIN), TOP_MAX))
 }
 
 /** shellW <= 0 means unmeasured (a WebContentsView starts 0×0) — static bounds only */
@@ -140,6 +151,12 @@ export function clampBottom(h: number, shellH: number): number {
   if (shellH <= 0) return clampStaticBottom(h)
   const max = Math.max(120, Math.min(BOTTOM_MAX, shellH - CONTENT_MIN))
   return Math.round(Math.min(Math.max(h, Math.min(BOTTOM_MIN, max)), max))
+}
+
+export function clampTop(h: number, shellH: number): number {
+  if (shellH <= 0) return clampStaticTop(h)
+  const max = Math.max(120, Math.min(TOP_MAX, shellH - CONTENT_MIN))
+  return Math.round(Math.min(Math.max(h, Math.min(TOP_MIN, max)), max))
 }
 
 export function clampFloatRect(r: DockRect, shellW: number, shellH: number): DockRect {
@@ -208,6 +225,9 @@ export function loadState(storageKey: string, legacyWidthKey?: string): DockLayo
     bottomHeight: Number.isFinite(raw.bottomHeight)
       ? clampStaticBottom(raw.bottomHeight as number)
       : BOTTOM_DEFAULT,
+    topHeight: Number.isFinite(raw.topHeight)
+      ? clampStaticTop(raw.topHeight as number)
+      : TOP_DEFAULT,
     floatRect,
     maximized: raw.maximized === true,
   }
@@ -248,6 +268,25 @@ function IconDockSide({ side }: { side: 'left' | 'right' }): React.JSX.Element {
     >
       <rect x="3" y="4" width="18" height="16" rx="2" />
       {bar}
+    </svg>
+  )
+}
+
+function IconDockTop(): React.JSX.Element {
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M3 10h18" />
     </svg>
   )
 }
@@ -539,7 +578,9 @@ export function DockShell({
         setState((prev) =>
           pos === 'bottom'
             ? { ...prev, bottomHeight: clampBottom(shell.bottom - ev.clientY, shell.height) }
-            : {
+            : pos === 'top'
+              ? { ...prev, topHeight: clampTop(ev.clientY - shell.top, shell.height) }
+              : {
                 ...prev,
                 // a drag is a width choice — it retires the auto half-split
                 sideWidthAuto: false,
@@ -552,7 +593,8 @@ export function DockShell({
       },
       () => setResizing(false),
     )
-    document.body.style.cursor = pos === 'bottom' ? 'row-resize' : 'col-resize'
+    document.body.style.cursor =
+      pos === 'bottom' || pos === 'top' ? 'row-resize' : 'col-resize'
     document.body.style.userSelect = 'none'
   }
 
@@ -685,6 +727,7 @@ export function DockShell({
         const candidates: Array<[DockPosition, number]> = [
           ['left', px],
           ['right', shell.width - px],
+          ['top', py],
           ['bottom', shell.height - py],
         ]
         const armed = candidates
@@ -703,7 +746,9 @@ export function DockShell({
   const dockedSize =
     position === 'bottom'
       ? clampBottom(state.bottomHeight, shellSize.h)
-      : clampSide(state.sideWidth, shellSize.w)
+      : position === 'top'
+        ? clampTop(state.topHeight, shellSize.h)
+        : clampSide(state.sideWidth, shellSize.w)
   const floatRect =
     state.floatRect ??
     defaultFloatRect(shellSize.w || FLOAT_DEFAULT_WIDTH, shellSize.h || FLOAT_DEFAULT_HEIGHT)
@@ -726,7 +771,7 @@ export function DockShell({
   const rootStyle = {
     '--dock-size': `${dockedSize}px`,
     // the snap preview shows the size the panel WILL take in the armed slot
-    '--snap-size': `${tear?.snap === 'bottom' ? clampBottom(state.bottomHeight, shellSize.h) : clampSide(state.sideWidth, shellSize.w)}px`,
+    '--snap-size': `${tear && (tear.snap === 'bottom' || tear.snap === 'top') ? (tear.snap === 'bottom' ? clampBottom(state.bottomHeight, shellSize.h) : clampTop(state.topHeight, shellSize.h)) : clampSide(state.sideWidth, shellSize.w)}px`,
     '--dock-x': `${liveRect.x}px`,
     '--dock-y': `${liveRect.y}px`,
     '--dock-w': `${liveRect.width}px`,
@@ -737,6 +782,7 @@ export function DockShell({
   const menuItems: Array<{ value: DockPosition; label: string; icon: React.ReactNode }> = [
     { value: 'left', label: labels.dockLeft, icon: <IconDockSide side="left" /> },
     { value: 'right', label: labels.dockRight, icon: <IconDockSide side="right" /> },
+    { value: 'top', label: labels.dockTop, icon: <IconDockTop /> },
     { value: 'bottom', label: labels.dockBottom, icon: <IconDockBottom /> },
     { value: 'float', label: labels.float, icon: <IconFloat /> },
   ]
@@ -813,7 +859,9 @@ export function DockShell({
         <div
           className="dockshell-slot"
           style={
-            position === 'bottom' ? { height: `${dockedSize}px` } : { width: `${dockedSize}px` }
+            position === 'bottom' || position === 'top'
+              ? { height: `${dockedSize}px` }
+              : { width: `${dockedSize}px` }
           }
           aria-hidden
         />
@@ -824,7 +872,7 @@ export function DockShell({
           <div
             className="dockshell-resizer"
             role="separator"
-            aria-orientation={position === 'bottom' ? 'horizontal' : 'vertical'}
+            aria-orientation={position === 'bottom' || position === 'top' ? 'horizontal' : 'vertical'}
             aria-label={labels.panelTitle}
             onPointerDown={startDockResize}
             onDoubleClick={() => onOpenChange(false)}

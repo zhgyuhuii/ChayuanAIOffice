@@ -180,6 +180,7 @@ export const ar = {
   aiDockLeft: 'إرساء إلى اليسار',
   aiDockRight: 'إرساء إلى اليمين',
   aiDockBottom: 'إرساء إلى الأسفل',
+  aiDockTop: 'تثبيت أعلى',
   aiDockFloat: 'نافذة عائمة',
   aiDockMaximize: 'تكبير اللوحة',
   aiDockRestore: 'استعادة اللوحة',

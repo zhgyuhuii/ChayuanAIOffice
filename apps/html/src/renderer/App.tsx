@@ -1520,6 +1520,7 @@ export default function App() {
           dockLeft: t('aiDockLeft'),
           dockRight: t('aiDockRight'),
           dockBottom: t('aiDockBottom'),
+          dockTop: t('aiDockTop'),
           float: t('aiDockFloat'),
           maximize: t('aiDockMaximize'),
           restore: t('aiDockRestore'),
@@ -1546,6 +1547,8 @@ export default function App() {
           <Ribbon
             disabled={status !== 'ready'}
             dirty={dirty}
+            onInsertSkeleton={insertSkeleton}
+            canInsertSkeleton={canvasMode === 'edit' && isDocEmpty(textRef.current)}
             onSave={() => void doSave('save')}
         onSaveAs={() => void doSave('saveAs')}
             onFind={() => openFind(false)}

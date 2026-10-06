@@ -112,6 +112,7 @@ export const de = {
   aiDockLeft: 'Links andocken',
   aiDockRight: 'Rechts andocken',
   aiDockBottom: 'Unten andocken',
+  aiDockTop: 'Oben andocken',
   aiDockFloat: 'Schwebendes Fenster',
   aiDockMaximize: 'Bereich maximieren',
   aiDockRestore: 'Bereich wiederherstellen',

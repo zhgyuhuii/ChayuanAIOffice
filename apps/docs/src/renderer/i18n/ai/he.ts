@@ -190,6 +190,7 @@ export const he = {
   aiDockMaximize: 'הגדל חלונית',
   aiOpenModelSettings: 'פתח את הגדרות המודלים',
   aiDockBottom: 'עגן לתחתית',
+  aiDockTop: 'עגן למעלה',
   aiTabAssistant: 'עוזר',
   aiAssistantSearch: 'חיפוש עוזרים…',
   aiDockLayoutTitle: 'פריסת חלונית',

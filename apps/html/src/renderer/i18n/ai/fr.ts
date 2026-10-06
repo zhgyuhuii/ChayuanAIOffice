@@ -183,6 +183,7 @@ export const fr = {
   aiDockLeft: 'Ancrer à gauche',
   aiDockRight: 'Ancrer à droite',
   aiDockBottom: 'Ancrer en bas',
+  aiDockTop: 'Ancrer en haut',
   aiDockFloat: 'Fenêtre flottante',
   aiDockMaximize: 'Agrandir le panneau',
   aiDockRestore: 'Restaurer le panneau',

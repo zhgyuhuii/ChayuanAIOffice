@@ -195,6 +195,7 @@ export const hi = {
   aiDockMaximize: 'पैनल बड़ा करें',
   aiOpenModelSettings: 'मॉडल सेटिंग्स खोलें',
   aiDockBottom: 'नीचे डॉक करें',
+  aiDockTop: 'ऊपर डॉक करें',
   aiTabAssistant: 'सहायक',
   aiAssistantSearch: 'सहायक खोजें…',
   aiDockLayoutTitle: 'पैनल लेआउट',

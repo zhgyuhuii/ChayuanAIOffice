@@ -112,6 +112,7 @@ export const es = {
   aiDockLeft: 'Acoplar a la izquierda',
   aiDockRight: 'Acoplar a la derecha',
   aiDockBottom: 'Acoplar abajo',
+  aiDockTop: 'Acoplar arriba',
   aiDockFloat: 'Ventana flotante',
   aiDockMaximize: 'Maximizar panel',
   aiDockRestore: 'Restaurar panel',

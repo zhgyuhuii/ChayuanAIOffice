@@ -193,6 +193,7 @@ export const th = {
   aiDockMaximize: 'ขยายแผงสูงสุด',
   aiOpenModelSettings: 'เปิดการตั้งค่าโมเดล',
   aiDockBottom: 'ยึดด้านล่าง',
+  aiDockTop: 'ตรึงด้านบน',
   aiTabAssistant: 'ผู้ช่วย',
   aiAssistantSearch: 'ค้นหาผู้ช่วย…',
   aiDockLayoutTitle: 'เค้าโครงแผง',

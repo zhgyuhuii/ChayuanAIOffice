@@ -120,6 +120,7 @@ describe('loadState', () => {
       sideWidth: 360,
       sideWidthAuto: true,
       bottomHeight: 320,
+      topHeight: 320,
       floatRect: null,
       maximized: false,
     })
@@ -147,6 +148,7 @@ describe('loadState', () => {
         position: 'bottom',
         sideWidth: 420,
         bottomHeight: 260,
+        topHeight: 260,
         floatRect: { x: 10, y: 20, width: 500, height: 400 },
         maximized: true,
       }),
@@ -156,6 +158,7 @@ describe('loadState', () => {
       sideWidth: 420,
       sideWidthAuto: false,
       bottomHeight: 260,
+      topHeight: 260,
       floatRect: { x: 10, y: 20, width: 500, height: 400 },
       maximized: true,
     })
@@ -180,7 +183,10 @@ describe('loadState', () => {
   it('rejects unknown positions and garbage rects', () => {
     store.set(
       'k',
-      JSON.stringify({ position: 'top', floatRect: { x: Number.NaN, y: 0, width: -5, height: 0 } }),
+      JSON.stringify({
+        position: 'diagonal',
+        floatRect: { x: Number.NaN, y: 0, width: -5, height: 0 },
+      }),
     )
     const s = loadState('k')
     expect(s.position).toBe('left')

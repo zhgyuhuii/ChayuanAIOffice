@@ -197,6 +197,7 @@ export const ru = {
   aiDockMaximize: 'Развернуть панель',
   aiOpenModelSettings: 'Открыть настройки моделей',
   aiDockBottom: 'Закрепить снизу',
+  aiDockTop: 'Прикрепить сверху',
   aiTabAssistant: 'Помощник',
   aiAssistantSearch: 'Поиск ассистентов…',
   aiDockLayoutTitle: 'Расположение панели',

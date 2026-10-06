@@ -112,6 +112,7 @@ export const ms = {
   aiDockLeft: 'Lekap ke kiri',
   aiDockRight: 'Lekap ke kanan',
   aiDockBottom: 'Lekap ke bawah',
+  aiDockTop: 'Dock atas',
   aiDockFloat: 'Tetingkap terapung',
   aiDockMaximize: 'Maksimumkan panel',
   aiDockRestore: 'Pulihkan panel',

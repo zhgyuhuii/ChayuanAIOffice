@@ -285,6 +285,7 @@ export const he = {
   aiDockLeft: "עגן לשמאל",
   aiDockRight: "עגן לימין",
   aiDockBottom: "עגן לתחתית",
+  aiDockTop: 'עגן למעלה',
   aiDockFloat: "חלון צף",
   aiDockMaximize: "הגדל חלונית",
   aiDockRestore: "שחזר חלונית",

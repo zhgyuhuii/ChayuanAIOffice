@@ -186,6 +186,7 @@ export const zh = {
   aiDockMaximize: '最大化面板',
   aiOpenModelSettings: '打开模型设置',
   aiDockBottom: '停靠到底部',
+  aiDockTop: '停靠到顶部',
   aiTabAssistant: '助手',
   aiAssistantSearch: '搜索助手…',
   aiDockLayoutTitle: '面板布局',

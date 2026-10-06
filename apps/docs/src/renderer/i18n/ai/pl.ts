@@ -198,6 +198,7 @@ export const pl = {
   aiDockMaximize: 'Maksymalizuj panel',
   aiOpenModelSettings: 'Otwórz ustawienia modeli',
   aiDockBottom: 'Dokuj na dole',
+  aiDockTop: 'Zadokuj u góry',
   aiTabAssistant: 'Asystent',
   aiAssistantSearch: 'Szukaj asystentów…',
   aiDockLayoutTitle: 'Układ panelu',

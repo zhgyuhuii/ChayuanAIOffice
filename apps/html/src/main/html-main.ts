@@ -49,6 +49,7 @@ import { parseFileToText } from '@chatoffice/file-parse'
 import { generateImageTool } from '@chatoffice/ai-search'
 import { convertHtmlToDocx } from '../../../../packages/html2docx/src'
 import { atomicWriteFile } from './atomic-write'
+import { printHtmlDocument, type PrintDialogOutcome } from './print-window'
 import { ElectronBrowserDriver } from '../../../../packages/html2docx/src/drivers/electron'
 import {
   copyImageIntoOwnedAssets,
@@ -91,6 +92,8 @@ import type {
   ExportResult,
   HtmlAiContent,
   ImageData,
+  PrintHtmlRequest,
+  PrintResult,
   SaveHtmlRequest,
   SaveHtmlResult,
   SaveMode,
@@ -986,6 +989,19 @@ export function sendHtmlPrintRequest(contents: WebContents): void {
   contents.send(HTML_CHANNELS.printRequest)
 }
 
+
+/** File > Print: render the current document and open the system print dialog
+ * (upstream #1807; the outcome maps onto PrintResult — cancel stays silent). */
+function printHtml(html: string, docPath: string | undefined): Promise<PrintDialogOutcome> {
+  const base = docPath ? assetBaseHref(dirname(docPath)) : null
+  return printHtmlDocument({
+    html: buildPreviewDocument(html, base),
+    window: new BrowserWindow({ show: false, webPreferences: { sandbox: true } }),
+    fileName: 'print.html',
+    dirPrefix: 'chatoffice-html-print-',
+  })
+}
+
 export function htmlIsDirty(webContentsId: number): boolean {
   return dirtyByWc.has(webContentsId)
 }
@@ -1730,6 +1746,16 @@ function registerHtmlIpc(): void {
       } finally {
         await rm(workDir, { recursive: true, force: true }).catch(() => {})
       }
+    },
+  )
+
+  ipcMain.handle(
+    HTML_CHANNELS.printHtml,
+    async (e, request: PrintHtmlRequest): Promise<PrintResult> => {
+      if (typeof request?.html !== 'string') {
+        return { ok: false, error: 'html: bad print request' }
+      }
+      return printHtml(request.html, savePathByWc.get(e.sender.id))
     },
   )
 

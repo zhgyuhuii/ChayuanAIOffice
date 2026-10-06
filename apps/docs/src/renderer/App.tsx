@@ -6854,6 +6854,59 @@ export function App() {
         <style>{`.editor-scroll .doc-page { column-count: ${colFlow.cols}; column-gap: ${colFlow.gapPx}px; column-fill: balance; }
 .editor-scroll .doc-page.measuring-columns { column-count: auto; width: ${colFlow.colWidthPx + twipsToPx(canvasSection?.marginLeft ?? section?.marginLeft ?? 0) + twipsToPx(canvasSection?.marginRight ?? section?.marginRight ?? 0)}px; }`}</style>
       )}
+
+      {/* LOCAL(整体要求): AI 面板走共享 DockShell——任意停靠(左/右/底/悬浮)+最大化/收起,
+          与 sheets 布局一致;十八轮 D 曾采纳上游 ai-dock div 骨架,现按整体要求恢复 DockShell */}
+      <DockShell
+        className={`app-main${isMacStandaloneWindow() ? ' mac-standalone' : ''}`}
+        storageKey="aidocs.dock"
+        legacyWidthKey="docs-ai-panel-width"
+        open={showAi}
+        onOpenChange={setShowAi}
+        panelAvailable={!!doc}
+        labels={{
+          panelTitle: t('aiPanelTitle'),
+          layoutMenu: t('aiDockLayoutTitle'),
+          dockLeft: t('aiDockLeft'),
+          dockRight: t('aiDockRight'),
+          dockBottom: t('aiDockBottom'),
+          dockTop: t('aiDockTop'),
+          float: t('aiDockFloat'),
+          maximize: t('aiDockMaximize'),
+          restore: t('aiDockRestore'),
+          collapse: t('aiCollapseTitle'),
+        }}
+        renderPanel={(dockChrome) =>
+          doc ? (
+            <AiPanel
+              key={aiPanelKey}
+              editor={editor}
+              blocks={doc.parsed.blocks}
+              settings={settings}
+              docEmpty={wordCount === 0}
+              numIdFallback={
+                doc.isBlank ? { bullet: BLANK_BULLET_NUM_ID, ordered: BLANK_ORDERED_NUM_ID } : null
+              }
+              preset={aiPreset}
+              open={showAi}
+              filePath={doc?.filePath ?? null}
+              editQueue={editQueue}
+              onQueueEditInstruction={queueUpdate}
+              onQueueRemove={queueRemove}
+              onQueueClear={queueClear}
+              onQueueFocus={queueFocus}
+              onQueueConsume={queueConsume}
+              commentsAccess={aiCommentsAccess}
+              hfAccess={aiHfAccess}
+              pageSetupAccess={aiPageSetupAccess}
+              docExtras={aiDocExtras}
+              notesAccess={aiNotesAccess}
+              dockChrome={dockChrome}
+            />
+          ) : null
+        }
+      >
+        <div className="editor-col">
       <Ribbon
         actionsRef={ribbonActionsRef}
         quickActions={quickActions}
@@ -6923,57 +6976,6 @@ export function App() {
         splitView={splitView}
         {...ribbonActions}
       />
-
-      {/* LOCAL(整体要求): AI 面板走共享 DockShell——任意停靠(左/右/底/悬浮)+最大化/收起,
-          与 sheets 布局一致;十八轮 D 曾采纳上游 ai-dock div 骨架,现按整体要求恢复 DockShell */}
-      <DockShell
-        className={`app-main${isMacStandaloneWindow() ? ' mac-standalone' : ''}`}
-        storageKey="aidocs.dock"
-        legacyWidthKey="docs-ai-panel-width"
-        open={showAi}
-        onOpenChange={setShowAi}
-        panelAvailable={!!doc}
-        labels={{
-          panelTitle: t('aiPanelTitle'),
-          layoutMenu: t('aiDockLayoutTitle'),
-          dockLeft: t('aiDockLeft'),
-          dockRight: t('aiDockRight'),
-          dockBottom: t('aiDockBottom'),
-          float: t('aiDockFloat'),
-          maximize: t('aiDockMaximize'),
-          restore: t('aiDockRestore'),
-          collapse: t('aiCollapseTitle'),
-        }}
-        renderPanel={(dockChrome) =>
-          doc ? (
-            <AiPanel
-              key={aiPanelKey}
-              editor={editor}
-              blocks={doc.parsed.blocks}
-              settings={settings}
-              docEmpty={wordCount === 0}
-              numIdFallback={
-                doc.isBlank ? { bullet: BLANK_BULLET_NUM_ID, ordered: BLANK_ORDERED_NUM_ID } : null
-              }
-              preset={aiPreset}
-              open={showAi}
-              filePath={doc?.filePath ?? null}
-              editQueue={editQueue}
-              onQueueEditInstruction={queueUpdate}
-              onQueueRemove={queueRemove}
-              onQueueClear={queueClear}
-              onQueueFocus={queueFocus}
-              onQueueConsume={queueConsume}
-              commentsAccess={aiCommentsAccess}
-              hfAccess={aiHfAccess}
-              pageSetupAccess={aiPageSetupAccess}
-              docExtras={aiDocExtras}
-              notesAccess={aiNotesAccess}
-              dockChrome={dockChrome}
-            />
-          ) : null
-        }
-      >
         <div className="app-content">
           <div className={workspaceClass}>
             {doc && showFind && (
@@ -7385,7 +7387,8 @@ export function App() {
               </button>
             </div>
           </footer>
-      </div>
+        </div>
+        </div>
       </DockShell>
 
       {showShortcuts && <ShortcutsDialog onClose={() => setShowShortcuts(false)} />}

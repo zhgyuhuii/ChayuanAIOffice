@@ -196,6 +196,7 @@ export const ms = {
   aiDockMaximize: 'Maksimumkan panel',
   aiOpenModelSettings: 'Buka Tetapan Model',
   aiDockBottom: 'Lekap ke bawah',
+  aiDockTop: 'Dock atas',
   aiTabAssistant: 'Pembantu',
   aiAssistantSearch: 'Cari pembantu…',
   aiDockLayoutTitle: 'Tataletak panel',

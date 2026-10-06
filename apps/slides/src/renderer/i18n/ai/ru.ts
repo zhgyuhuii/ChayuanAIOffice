@@ -291,6 +291,7 @@ export const ru = {
   aiDockLeft: "Закрепить слева",
   aiDockRight: "Закрепить справа",
   aiDockBottom: "Закрепить снизу",
+  aiDockTop: 'Прикрепить сверху',
   aiDockFloat: "Плавающее окно",
   aiDockMaximize: "Развернуть панель",
   aiDockRestore: "Восстановить панель",

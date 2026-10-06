@@ -199,6 +199,7 @@ export const nl = {
   aiDockMaximize: 'Paneel maximaliseren',
   aiOpenModelSettings: 'Modelinstellingen openen',
   aiDockBottom: 'Onderaan verankeren',
+  aiDockTop: 'Boven vastmaken',
   aiTabAssistant: 'Assistent',
   aiAssistantSearch: 'Assistenten zoeken…',
   aiDockLayoutTitle: 'Paneelindeling',

@@ -201,6 +201,7 @@ export const it = {
   aiDockMaximize: 'Massimizza pannello',
   aiOpenModelSettings: 'Apri impostazioni modelli',
   aiDockBottom: 'Ancora in basso',
+  aiDockTop: 'Ancora in alto',
   aiTabAssistant: 'Assistente',
   aiAssistantSearch: 'Cerca assistenti…',
   aiDockLayoutTitle: 'Layout del pannello',

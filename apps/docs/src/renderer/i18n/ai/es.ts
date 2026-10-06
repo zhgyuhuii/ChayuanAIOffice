@@ -200,6 +200,7 @@ export const es = {
   aiDockMaximize: 'Maximizar panel',
   aiOpenModelSettings: 'Abrir Ajustes de modelos',
   aiDockBottom: 'Acoplar abajo',
+  aiDockTop: 'Acoplar arriba',
   aiTabAssistant: 'Asistente',
   aiAssistantSearch: 'Buscar asistentes…',
   aiDockLayoutTitle: 'Diseño del panel',

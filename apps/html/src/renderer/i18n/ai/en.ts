@@ -181,6 +181,7 @@ export const en = {
   aiDockLeft: 'Dock left',
   aiDockRight: 'Dock right',
   aiDockBottom: 'Dock bottom',
+  aiDockTop: 'Dock top',
   aiDockFloat: 'Floating window',
   aiDockMaximize: 'Maximize panel',
   aiDockRestore: 'Restore panel',

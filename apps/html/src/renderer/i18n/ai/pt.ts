@@ -186,6 +186,7 @@ export const pt = {
   aiDockLeft: 'Fixar à esquerda',
   aiDockRight: 'Fixar à direita',
   aiDockBottom: 'Fixar na parte inferior',
+  aiDockTop: 'Encaixar no topo',
   aiDockFloat: 'Janela flutuante',
   aiDockMaximize: 'Maximizar painel',
   aiDockRestore: 'Restaurar painel',

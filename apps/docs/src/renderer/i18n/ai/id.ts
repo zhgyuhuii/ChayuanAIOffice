@@ -195,6 +195,7 @@ export const id = {
   aiDockMaximize: 'Maksimalkan panel',
   aiOpenModelSettings: 'Buka Pengaturan Model',
   aiDockBottom: 'Sematkan ke bawah',
+  aiDockTop: 'Dock atas',
   aiTabAssistant: 'Asisten',
   aiAssistantSearch: 'Cari asisten…',
   aiDockLayoutTitle: 'Tata letak panel',

@@ -3691,6 +3691,7 @@ export function App() {
           dockLeft: t('aiDockLeft'),
           dockRight: t('aiDockRight'),
           dockBottom: t('aiDockBottom'),
+          dockTop: t('aiDockTop'),
           float: t('aiDockFloat'),
           maximize: t('aiDockMaximize'),
           restore: t('aiDockRestore'),

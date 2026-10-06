@@ -112,6 +112,7 @@ export const hi = {
   aiDockLeft: 'बाईं ओर डॉक करें',
   aiDockRight: 'दाईं ओर डॉक करें',
   aiDockBottom: 'नीचे डॉक करें',
+  aiDockTop: 'ऊपर डॉक करें',
   aiDockFloat: 'फ़्लोटिंग विंडो',
   aiDockMaximize: 'पैनल बड़ा करें',
   aiDockRestore: 'पैनल पुनर्स्थापित करें',

@@ -193,6 +193,7 @@ export const ko = {
   aiDockMaximize: '패널 최대화',
   aiOpenModelSettings: '모델 설정 열기',
   aiDockBottom: '아래쪽에 고정',
+  aiDockTop: '상단에 도크',
   aiTabAssistant: '어시스턴트',
   aiAssistantSearch: '어시스턴트 검색…',
   aiDockLayoutTitle: '패널 레이아웃',

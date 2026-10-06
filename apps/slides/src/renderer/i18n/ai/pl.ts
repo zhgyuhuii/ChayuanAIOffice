@@ -290,6 +290,7 @@ export const pl = {
   aiDockLeft: "Dokuj po lewej",
   aiDockRight: "Dokuj po prawej",
   aiDockBottom: "Dokuj na dole",
+  aiDockTop: 'Zadokuj u góry',
   aiDockFloat: "Okno pływające",
   aiDockMaximize: "Maksymalizuj panel",
   aiDockRestore: "Przywróć panel",

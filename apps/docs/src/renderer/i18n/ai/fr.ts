@@ -199,6 +199,7 @@ export const fr = {
   aiDockMaximize: 'Agrandir le panneau',
   aiOpenModelSettings: 'Ouvrir les paramètres des modèles',
   aiDockBottom: 'Ancrer en bas',
+  aiDockTop: 'Ancrer en haut',
   aiTabAssistant: 'Assistant',
   aiAssistantSearch: 'Rechercher des assistants…',
   aiDockLayoutTitle: 'Disposition du panneau',

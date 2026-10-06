@@ -183,6 +183,7 @@ export const ja = {
   aiDockLeft: '左にドッキング',
   aiDockRight: '右にドッキング',
   aiDockBottom: '下部にドッキング',
+  aiDockTop: '上にドッキング',
   aiDockFloat: 'フローティング表示',
   aiDockMaximize: 'パネルを最大化',
   aiDockRestore: 'パネルを元に戻す',

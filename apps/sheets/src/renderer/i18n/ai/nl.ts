@@ -112,6 +112,7 @@ export const nl = {
   aiDockLeft: 'Links verankeren',
   aiDockRight: 'Rechts verankeren',
   aiDockBottom: 'Onderaan verankeren',
+  aiDockTop: 'Boven vastmaken',
   aiDockFloat: 'Zwevend venster',
   aiDockMaximize: 'Paneel maximaliseren',
   aiDockRestore: 'Paneel herstellen',

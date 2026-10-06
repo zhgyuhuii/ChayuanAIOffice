@@ -193,6 +193,7 @@ export const ar = {
   aiDockMaximize: 'تكبير اللوحة',
   aiOpenModelSettings: 'فتح إعدادات النماذج',
   aiDockBottom: 'إرساء إلى الأسفل',
+  aiDockTop: 'تثبيت أعلى',
   aiTabAssistant: 'المساعد',
   aiAssistantSearch: 'البحث عن المساعدين…',
   aiDockLayoutTitle: 'تخطيط اللوحة',

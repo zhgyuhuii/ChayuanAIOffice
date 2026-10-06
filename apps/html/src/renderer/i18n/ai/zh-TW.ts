@@ -173,6 +173,7 @@ export const zhTW = {
   aiDockLeft: '停駐到左側',
   aiDockRight: '停駐到右側',
   aiDockBottom: '停駐到底部',
+  aiDockTop: '停靠到頂部',
   aiDockFloat: '浮動視窗',
   aiDockMaximize: '最大化面板',
   aiDockRestore: '還原面板',

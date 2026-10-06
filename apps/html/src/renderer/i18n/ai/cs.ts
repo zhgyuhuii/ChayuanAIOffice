@@ -182,6 +182,7 @@ export const cs = {
   aiDockLeft: '停駐到左側',
   aiDockRight: '停駐到右側',
   aiDockBottom: '停駐到底部',
+  aiDockTop: 'Ukotvit nahoře',
   aiDockFloat: '浮動視窗',
   aiDockMaximize: '最大化面板',
   aiDockRestore: '還原面板',

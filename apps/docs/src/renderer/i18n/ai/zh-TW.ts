@@ -188,6 +188,7 @@ export const zhTW = {
   aiDockMaximize: '最大化面板',
   aiOpenModelSettings: '開啟模型設定',
   aiDockBottom: '停駐到底部',
+  aiDockTop: '停靠到頂部',
   aiTabAssistant: 'सहायक',
   aiAssistantSearch: '搜尋助手…',
   aiDockLayoutTitle: '面板版面配置',

@@ -425,5 +425,6 @@ export const localStrings = {
     aiConvOpenHistory: '去歷史對話還原',
     aiContinue: '繼續',
     aiTurnInterrupted: '已中斷',
-  },
+  
+  aiDockTop: '停靠到頂部',},
 } as const
