@@ -70,7 +70,9 @@ import {
   applyAiConditionalFormat,
   applyRangeInLoadedChunks,
   applyFilterCriteria,
+  noteSidecarCrash,
 } from './univer-sync'
+import { installGridGrowth } from './grid-growth'
 import {
   pollUntilReady,
   runHeadlessRendererExport,
@@ -611,24 +613,30 @@ export function App(): React.JSX.Element {
   // Ref mirror for callbacks captured when an AI run starts
   const autoSaveRef = useRef(autoSave)
   autoSaveRef.current = autoSave
+  // One save at a time, shared by BOTH timers below: AutoSave ('save') and the
+  // crash-recovery copy ('recovery') used to carry independent in-flight flags,
+  // so with AutoSave on a dirty workbook could start both saves concurrently;
+  // the first finisher tears the workbook session down while the second is
+  // still reading, and the survivor reports "Unknown workbook session."
+  // (save failed) although the file was written.
+  const saveInFlightRef = useRef(false)
   // AutoSave tick (docs/slides parity): every 30 s and on window blur, flush
   // pending edits of the open workbook. The journal is read at tick time so
   // the interval stays stable; demo mode has no backing file and is skipped.
   useEffect(() => {
     if (!autoSave) return
-    let saving = false
     const tick = () => {
       const state = lazyWorkbookRef.current
-      if (saving || !state || journalSize(state.editJournal) === 0) return
+      if (!state) return
       // Never while the in-cell editor is open (saving reloads the workbook
       // and would wipe the edit), never for converted .xls imports whose
       // first save opens a Save As dialog, and never for CSV sessions —
       // AutoSave would silently flatten the user's file.
       if (editingCellRef.current || state.file.needsSaveAs || state.file.csvPath !== undefined)
         return
-      saving = true
+      saveInFlightRef.current = true
       void handleSaveRef.current('save', true).finally(() => {
-        saving = false
+        saveInFlightRef.current = false
       })
     }
     const id = window.setInterval(tick, 30_000)
@@ -644,10 +652,9 @@ export function App(): React.JSX.Element {
   // renderer crash no longer costs everything since the last manual save. A normal
   // save removes the copy; reopening a file whose copy is newer offers Restore.
   useEffect(() => {
-    let writing = false
     const tick = () => {
       const state = lazyWorkbookRef.current
-      if (writing || !state || journalSize(state.editJournal) === 0) return
+      if (!state) return
       // The in-cell editor's pending text is not in the journal yet, a
       // converted import has no original file to recover into, and a restored
       // recovery session is backed by the recovery copy itself. A shell-created
@@ -661,9 +668,9 @@ export function App(): React.JSX.Element {
         state.file.automaticRecoveryDisabled
       )
         return
-      writing = true
+      saveInFlightRef.current = true
       void handleSaveRef.current('recovery').finally(() => {
-        writing = false
+        saveInFlightRef.current = false
       })
     }
     const id = window.setInterval(tick, 30_000)
@@ -1153,6 +1160,19 @@ export function App(): React.JSX.Element {
     [],
   )
 
+  // The sidecar process died, so every session id this tab holds is unknown
+  // to the replacement. Record the crash: the next range read re-opens the
+  // workbook through the normal open path and adopts a live session. Only an
+  // actual process death reaches here — a session the app closed or swapped
+  // on purpose is not a crash and must not re-open anything.
+  useEffect(
+    () =>
+      window.desktopApi?.onSidecarCrashed?.(() => {
+        noteSidecarCrash()
+      }) ?? (() => undefined),
+    [],
+  )
+
   useEffect(() => {
     setVisualSelectionListener({
       select: (visual) =>
@@ -1401,11 +1421,19 @@ export function App(): React.JSX.Element {
 
   useEffect(() => {
     // Univer paints the grid on canvas, so it can't follow the CSS tokens —
-    // mirror the <html data-theme> state into its official darkMode flag
+    // mirror the canvas state into its official darkMode flag: an explicit
+    // <html data-doc-theme> pin (#1811) wins, otherwise the <html data-theme>
+    // state as before
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)')
-    const isDarkTheme = () =>
-      document.documentElement.getAttribute('data-theme') === 'dark' ||
-      (!document.documentElement.hasAttribute('data-theme') && prefersDark.matches)
+    const isDarkTheme = () => {
+      const docAttr = document.documentElement.getAttribute('data-doc-theme')
+      if (docAttr === 'dark') return true
+      if (docAttr === 'light') return false
+      return (
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        (!document.documentElement.hasAttribute('data-theme') && prefersDark.matches)
+      )
+    }
     const runtime = createUniver({
       // green selection/highlight instead of Univer's default blue
       theme: greenTheme,
@@ -1470,6 +1498,9 @@ export function App(): React.JSX.Element {
     installInjectorResolutionGuard(runtime)
     // find-bar reveals share scrollToCell's broken freeze offset (r135)
     const findRevealDispose = installFindRevealFix(runtime)
+    // the grid is sized to the data, so a blank sheet stops scrolling a few
+    // columns past its last cell; this extends it ahead of the viewport
+    const gridGrowthDispose = installGridGrowth(runtime)
     // Load-time wrap-row measures queue until Univer's auto-height
     // interceptor exists (lifecycle Rendered).
     const wrapMeasureDisposable = installWrapMeasureLifecycle(runtime)
@@ -1482,6 +1513,7 @@ export function App(): React.JSX.Element {
       crossHighlightRef.current?.refresh()
     }
     const offThemeChanged = window.desktopApi?.onThemeChanged?.(applyUniverDark)
+    const offDocThemeChanged = window.desktopApi?.onDocumentThemeChanged?.(applyUniverDark)
     prefersDark.addEventListener('change', applyUniverDark)
     // Undo/redo stack occupancy: the QAT buttons grey out when there is nothing to apply
     const undoRedoService = runtime.univer.__getInjector().get(IUndoRedoService)
@@ -2769,8 +2801,10 @@ export function App(): React.JSX.Element {
       unsubscribeMenu()
       unsubscribeCloseSave()
       offThemeChanged?.()
+      offDocThemeChanged?.()
       undoRedoSub.unsubscribe()
       findRevealDispose()
+      gridGrowthDispose()
       wrapMeasureDisposable.dispose()
       prefersDark.removeEventListener('change', applyUniverDark)
       dateTextDisposable.dispose()

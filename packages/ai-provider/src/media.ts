@@ -116,15 +116,16 @@ export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
     id: 'minimax',
     label: 'MiniMax',
     description:
-      'image-01 image generation (api.minimax.io; use api.minimaxi.com/v1 for the CN region)',
+      'Image generation; MiniMax-M3 reads images and video (use api.minimaxi.com/v1 for CN)',
     keyPlaceholder: 'eyJ...',
     defaultBaseUrl: MINIMAX_BASE_URL,
     imageProtocol: 'minimax',
     imageModels: ['image-01'],
     defaultImageModel: 'image-01',
-    analysisModels: [],
-    defaultAnalysisModel: '',
-    videoAnalysis: false,
+    analysisProtocol: 'openai-chat',
+    analysisModels: ['MiniMax-M3'],
+    defaultAnalysisModel: 'MiniMax-M3',
+    videoAnalysis: true,
   },
   {
     id: 'pollinations',
@@ -210,9 +211,9 @@ export function defaultAiMediaSettings(): AiMediaSettings {
     }
   }
   return {
-    imageProvider: '',
-    analysisProvider: '',
-    videoAnalysisProvider: '',
+    imageProvider: 'chatoffice',
+    analysisProvider: 'chatoffice',
+    videoAnalysisProvider: 'chatoffice',
     providers,
   }
 }
@@ -279,17 +280,17 @@ export function activeMediaProvider(
   capability: MediaCapability,
 ): AiMediaProviderId {
   const media = settings.media
-  if (!media) return ''
+  if (!media) return 'chatoffice'
   const id =
     capability === 'image'
       ? media.imageProvider
       : capability === 'video'
         ? media.videoAnalysisProvider
         : media.analysisProvider
-  if (!id) return ''
+  if (!id) return 'chatoffice'
   const meta = getMediaProviderMeta(id)
-  if (!meta || !providerHasCapability(meta, capability)) return ''
-  if (!mediaConfigUsable(meta, media.providers?.[id])) return ''
+  if (!meta || !providerHasCapability(meta, capability)) return 'chatoffice'
+  if (!mediaConfigUsable(meta, media.providers?.[id])) return 'chatoffice'
   return id
 }
 
@@ -322,7 +323,7 @@ function capabilityAvailable(
 ): boolean {
   if (!settings) return false
   const model = byokModel(settings, capability)
-  return model !== null && model !== ''
+  return model !== null && model !== 'chatoffice'
 }
 
 /** live predicate for the generate_image tool: BYOK image model configured */

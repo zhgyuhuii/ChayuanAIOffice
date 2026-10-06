@@ -406,6 +406,8 @@ export const localStrings = {
     aiConvOpenHistory: '去历史对话还原',
     aiContinue: '继续',
     aiTurnInterrupted: '已中断',
+  sourceView: '源码',
+  sourceViewHint: '直接编辑 Markdown 源文本',
   },
   'zh-TW': {
     aiHistoryTooltip: '歷史對話',

@@ -44,6 +44,8 @@ export const MARKDOWN_CHANNELS = {
 export type UiTheme = 'light' | 'dark' | 'system'
 
 /** shell-wide AutoSave default; updatedAt is 0 until the user has ever set it */
+export type DocTheme = 'follow' | 'light' | 'dark'
+
 export interface AutoSaveDefault {
   on: boolean
   updatedAt: number
@@ -222,6 +224,8 @@ export interface MarkdownApi {
   onLanguageChanged(handler: (lang: Lang) => void): () => void
   getTheme(): Promise<UiTheme>
   onThemeChanged(handler: (theme: UiTheme) => void): () => void
+  getDocumentTheme(): Promise<DocTheme>
+  onDocumentThemeChanged(handler: (theme: DocTheme) => void): () => void
   getAutoSaveDefault(): Promise<AutoSaveDefault>
   onAutoSaveDefaultChanged(handler: (value: AutoSaveDefault) => void): () => void
   /** AI panel text size + chat-input spellcheck (Settings → General in the shell) */

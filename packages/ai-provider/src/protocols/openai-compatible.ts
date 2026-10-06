@@ -10,7 +10,7 @@ import {
   jsonBodyInsteadOfSse,
   parseToolInput,
   sseErrorText,
-  sseLines,
+  sseDataEvents,
   throwIfCreditsNotice,
   throwIfToolCountOverBudget,
   throwIfToolJsonOverBudget,
@@ -86,7 +86,13 @@ function openAiMessages(
       })
     } else {
       for (const r of m.results) {
-        out.push({ role: 'tool', tool_call_id: r.id, content: r.output })
+        // OpenAI has no structured is_error flag (Anthropic sends one); prefix the
+        // content so the model can tell a failed call from a successful one and retry.
+        out.push({
+          role: 'tool',
+          tool_call_id: r.id,
+          content: r.isError ? `Error: ${r.output}` : r.output,
+        })
       }
     }
   }
@@ -273,10 +279,7 @@ async function openAiCompatibleTurn(
     }
     pendingTools.clear()
   }
-  for await (const line of sseLines(response.body, onBytes)) {
-    if (!line.startsWith('data:')) continue
-    const payload = line.slice(5).trim()
-    if (!payload) continue
+  for await (const payload of sseDataEvents(response.body, onBytes)) {
     if (payload === '[DONE]') {
       sawDone = true
       break

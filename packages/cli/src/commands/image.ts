@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto'
-import { extname } from 'node:path'
+import { dirname, extname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { generateImageTool } from '@chatoffice/ai-search'
 import {
