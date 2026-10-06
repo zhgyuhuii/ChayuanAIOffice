@@ -8,7 +8,7 @@ import { toGeminiSchema } from './gemini-schema'
 import {
   jsonBodyInsteadOfSse,
   sseErrorText,
-  sseLines,
+  sseDataEvents,
   throwIfCreditsNotice,
   type StreamCallbacks,
 } from './shared'
@@ -207,10 +207,8 @@ async function geminiTurn(
   let abnormalFinish: string | undefined
   let sawFinish = false
   let emitted = false
-  for await (const line of sseLines(response.body, onBytes)) {
-    if (!line.startsWith('data:')) continue
-    const payload = line.slice(5).trim()
-    if (!payload) continue
+  let toolCallCount = 0
+  for await (const payload of sseDataEvents(response.body, onBytes)) {
     // A truncated frame or a non-JSON keep-alive from a proxy should skip
     // that event, not kill the entire AI turn with a parser error.
     let event

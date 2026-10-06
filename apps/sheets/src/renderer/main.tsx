@@ -18,7 +18,7 @@ import '@univerjs/preset-sheets-core/lib/index.css'
 import { App } from './App'
 import { installCanvasFontFallback, registerCellFontAliases } from './cell-font-fallback'
 import { LocaleProvider, setModuleLang } from './i18n/locale'
-import type { UiTheme } from '../shared/desktop-api'
+import type { DocTheme, UiTheme } from '../shared/desktop-api'
 import './styles.css'
 import { installAnchorPanelFallback } from '@chatoffice/ui'
 
@@ -40,6 +40,12 @@ installCanvasFontFallback()
 function applyTheme(theme: UiTheme): void {
   if (theme === 'system') document.documentElement.removeAttribute('data-theme')
   else document.documentElement.setAttribute('data-theme', theme)
+}
+
+function applyDocumentTheme(theme: DocTheme): void {
+  // data-doc-theme drives the canvas/paper (#1811); absent means 'follow' the UI theme
+  if (theme === 'follow') document.documentElement.removeAttribute('data-doc-theme')
+  else document.documentElement.setAttribute('data-doc-theme', theme)
 }
 
 // Canvas fillText never triggers @font-face downloads, so the bundled Carlito
@@ -77,12 +83,14 @@ if (!window.desktopApi) {
 async function bootstrap(): Promise<void> {
   let lang: Lang = 'zh'
   let theme: UiTheme = 'system'
+  let docTheme: DocTheme = 'follow'
   try {
     // per-promise catch: standalone runs have no app:get-theme handler, and
     // that rejection must not drop a resolved language
-    ;[lang, theme] = await Promise.all([
+    ;[lang, theme, docTheme] = await Promise.all([
       window.desktopApi.getLanguage().catch(() => 'zh' as const),
       window.desktopApi.getTheme().catch(() => 'system' as const),
+      window.desktopApi.getDocumentTheme?.().catch(() => 'follow' as const),
     ])
   } catch {
     /* dev renderer without the preload bridge */
@@ -90,6 +98,7 @@ async function bootstrap(): Promise<void> {
   setModuleLang(lang)
   document.documentElement.lang = htmlLang(lang)
   applyTheme(theme)
+  applyDocumentTheme(docTheme ?? 'follow')
   await loadCellFonts()
   window.desktopApi?.onThemeChanged(applyTheme)
   void window.desktopApi

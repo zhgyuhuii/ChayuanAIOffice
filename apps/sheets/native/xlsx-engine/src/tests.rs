@@ -3243,7 +3243,7 @@ fn resolves_locale_reserved_builtin_number_formats() {
     // zh-CN month/day pattern that previously leaked into every workbook.
     let mut portuguese_sessions = WorkbookSessions::new();
     let portuguese = portuguese_sessions
-        .open_with_locale(&path, "pt", None)
+        .open_with_locale(&path, "pt", None, &AtomicBool::new(false))
         .unwrap();
     let portuguese_format = |index: usize| portuguese.styles[index].number_format.as_deref();
     assert_eq!(portuguese_format(1), Some("d/m/yyyy"));
@@ -3287,7 +3287,7 @@ fn applies_system_short_date_to_builtin_date_formats() {
 
     let mut sessions = WorkbookSessions::new();
     let metadata = sessions
-        .open_with_locale(&path, "en", Some("yyyy/m/d"))
+        .open_with_locale(&path, "en", Some("yyyy/m/d"), &AtomicBool::new(false))
         .unwrap();
     let format = |index: usize| metadata.styles[index].number_format.as_deref();
     assert_eq!(format(1), Some("yyyy/m/d"));

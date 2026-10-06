@@ -225,6 +225,8 @@ const upstreamStrings = {
     zoom: '缩放',
     zoomIn: '放大',
     zoomOut: '缩小',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   en: {
     aiNetworkError: "Network problem: could not reach the AI service. Check your connection and try again",
@@ -448,6 +450,8 @@ const upstreamStrings = {
     zoom: 'Zoom',
     zoomIn: 'Zoom in',
     zoomOut: 'Zoom out',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   ja: {
     aiNetworkError: "ネットワークに問題があり、AI サービスに接続できません。接続を確認して再試行してください",
@@ -671,6 +675,8 @@ const upstreamStrings = {
     zoom: 'ズーム',
     zoomIn: '拡大',
     zoomOut: '縮小',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   ko: {
     aiNetworkError: "네트워크에 문제가 있어 AI 서비스에 연결할 수 없습니다. 연결을 확인한 후 다시 시도해 주세요",
@@ -894,6 +900,8 @@ const upstreamStrings = {
     zoom: '줌',
     zoomIn: '확대',
     zoomOut: '축소',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   fr: {
     aiTruncatedNote: "(La réponse a été tronquée par la limite de longueur et peut être incomplète.)",
@@ -1117,6 +1125,8 @@ const upstreamStrings = {
     zoom: 'Zoom',
     zoomIn: 'Zoom avant',
     zoomOut: 'Zoom arrière',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   de: {
     aiTruncatedNote: "(Die Antwort wurde durch das Längenlimit abgeschnitten und ist möglicherweise unvollständig.)",
@@ -1340,6 +1350,8 @@ const upstreamStrings = {
     zoom: 'Zoom',
     zoomIn: 'Vergrößern',
     zoomOut: 'Verkleinern',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   es: {
     aiTruncatedNote: "(La respuesta fue cortada por el límite de longitud y puede estar incompleta.)",
@@ -1563,6 +1575,8 @@ const upstreamStrings = {
     zoom: 'Zoom',
     zoomIn: 'Acercar',
     zoomOut: 'Alejar',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   th: {
     aiNetworkError: "เครือข่ายมีปัญหา ไม่สามารถเชื่อมต่อบริการ AI ได้ โปรดตรวจสอบการเชื่อมต่อแล้วลองใหม่",
@@ -1786,6 +1800,8 @@ const upstreamStrings = {
     zoom: 'ซูม',
     zoomIn: 'ขยาย',
     zoomOut: 'ย่อ',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   id: {
     aiNetworkError: "Masalah jaringan: tidak dapat terhubung ke layanan AI. Periksa koneksi Anda lalu coba lagi",
@@ -2009,6 +2025,8 @@ const upstreamStrings = {
     zoom: 'Zum',
     zoomIn: 'Perbesar',
     zoomOut: 'Perkecil',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   ru: {
     aiNetworkError: "Проблема с сетью: не удалось подключиться к сервису ИИ. Проверьте подключение и повторите попытку",
@@ -2232,6 +2250,8 @@ const upstreamStrings = {
     zoom: 'Масштаб',
     zoomIn: 'Увеличить',
     zoomOut: 'Уменьшить',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   ar: {
     aiNetworkError: "مشكلة في الشبكة: تعذّر الوصول إلى خدمة الذكاء الاصطناعي. تحقق من الاتصال وحاول مجددًا",
@@ -2455,6 +2475,8 @@ const upstreamStrings = {
     zoom: 'التكبير',
     zoomIn: 'تكبير',
     zoomOut: 'تصغير',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   pt: {
     aiNetworkError: "Problema de rede: não foi possível conectar ao serviço de IA. Verifique sua conexão e tente novamente",
@@ -2678,6 +2700,8 @@ const upstreamStrings = {
     zoom: 'Zoom',
     zoomIn: 'Ampliar',
     zoomOut: 'Reduzir',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   it: {
     aiTruncatedNote: "(La risposta è stata troncata dal limite di lunghezza e potrebbe essere incompleta.)",
@@ -2901,6 +2925,8 @@ const upstreamStrings = {
     zoom: 'Zoom',
     zoomIn: 'Ingrandisci',
     zoomOut: 'Riduci',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   pl: {
     aiNetworkError: "Problem z siecią: nie można połączyć się z usługą AI. Sprawdź połączenie i spróbuj ponownie",
@@ -3124,6 +3150,8 @@ const upstreamStrings = {
     zoom: 'Zoom',
     zoomIn: 'Powiększ',
     zoomOut: 'Pomniejsz',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   cs: {
     aiNetworkError: "Problém se sítí: službu AI se nepodařilo kontaktovat. Zkontrolujte připojení a zkuste to znovu",
@@ -3347,6 +3375,8 @@ const upstreamStrings = {
     insertDiagram: 'Diagram',
     insertWaveform: 'Časový diagram',
     mermaidError: 'Chyba syntaxe diagramu',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   nl: {
     aiNetworkError: "Netwerkprobleem: kan de AI-service niet bereiken. Controleer je verbinding en probeer het opnieuw",
@@ -3570,6 +3600,8 @@ const upstreamStrings = {
     zoom: 'Zoom',
     zoomIn: 'Inzoomen',
     zoomOut: 'Uitzoomen',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   ms: {
     aiNetworkError: "Masalah rangkaian: tidak dapat menghubungi perkhidmatan AI. Semak sambungan anda dan cuba lagi",
@@ -3793,6 +3825,8 @@ const upstreamStrings = {
     zoom: 'Zum',
     zoomIn: 'Zum masuk',
     zoomOut: 'Zum keluar',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   he: {
     aiDockFloat: "חלון צף",
@@ -4016,6 +4050,8 @@ const upstreamStrings = {
     zoom: 'זום',
     zoomIn: 'הגדלה',
     zoomOut: 'הקטנה',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   hi: {
     aiNetworkError: "नेटवर्क समस्या: AI सेवा से कनेक्ट नहीं हो सका। कनेक्शन जांचें और फिर से प्रयास करें",
@@ -4239,6 +4275,8 @@ const upstreamStrings = {
     zoom: 'ज़ूम',
     zoomIn: 'ज़ूम इन',
     zoomOut: 'ज़ूम आउट',
+    sourceView: 'Source',
+    sourceViewHint: 'Edit the raw Markdown source',
   },
   'zh-TW': {
     aiDockFloat: "浮動視窗",
@@ -4462,6 +4500,8 @@ const upstreamStrings = {
     zoom: '縮放',
     zoomIn: '放大',
     zoomOut: '縮小',
+    sourceView: '原始碼',
+    sourceViewHint: '直接編輯 Markdown 原始文字',
   },
 }
 
