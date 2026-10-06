@@ -280,6 +280,17 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 修复（7d18d79d） | docs/markdown Ribbon 入口→「察元AI」、GensparkMark SVG→本地星标（保留导出名防调用点churn）、小语言标题→ChaAI Office；docs 2891/markdown 657 回归全绿；重新打包真机核对（26-docx-restored.png）Genspark 残留=false、察元AI=true |
 | 纪律 | 「上游结构采纳」类提交必须同步过一遍**用户可见字符串品牌表**与**本地 A 区骨架清单（DockShell/PanelTabs/dock.css）**——结构可以跟上游，皮和骨架必须是察元的；每轮同步后跑「DockShell grep 六端 + 品牌 grep Ribbon/面板标题/aria-label」 |
 
+### 第二十轮·降级模式 tool_calls 剥离补丁（2026-10-07，外部智能体差异报告核实）
+
+| 项 | 结论 |
+|---|---|
+| 问题核实 | **属实**——loop.ts 结算路径 `history.push({role:'assistant', toolCalls:...})` 无条件写入,而降级分支的结果折叠为 user 文本消息(1251 行,无 role:'tool' 跟随);降级第二轮起 `messages:[...history]` 原样上报,assistant.tool_calls 无配对 tool 结果 → 无 FC 模型 API 直接拒绝。源码注释已写明该设计意图("Degraded mode keeps tool calls OUT")但实现缺失 |
+| 依赖核查(先查依赖) | turnSig/verifyResponse/executedCalls 均用回合局部变量不受影响;messageSize 仅估算尺寸;restore 孤儿配对(无 toolCalls 即无孤儿)不受影响;机械摘要跳过带 toolCalls 消息的逻辑不反向依赖 |
+| 修复(73ba42bc) | history 写入按 degraded/degradedProbe 分支:降级回合不附 toolCalls(JSON 调用文本保留为 assistant text,执行记录留 executedCalls);FC 回合维持 tool_calls+role:'tool' 配对原样 |
+| 回归 | degraded-mode.test 新增多轮降级用例(断言全历史 assistant 无 toolCalls+全程无 role:'tool'),agent-core 139/139 绿;typecheck 0 |
+| 同步策略说明 | 采用「fork 版整体为基底+仅重放此补丁」——fork loop.ts 经本会话恢复(beginRun 链+降级补丁+孤儿配对),与并行会话 87cfae3(144b1340 基底)为同一目标的两种实现;fork 版已有真机验证链,故以 fork 为准 |
+| 纪律 | 降级模式相关改动必须同时检查:①assistant 历史消息的 wire 形状 ②结果折叠路径 ③restore 配对——三处一体,任何一处只改注释不改代码即事故(本次即为「注释已写、代码未做」) |
+
 ### 第二十轮·助手库扩容（2026-10-07，用户要求每类文档 ≥100 助手）
 
 | 项 | 处置 |
