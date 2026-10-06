@@ -1123,6 +1123,7 @@
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
 /* Settings → About: the one-click update entry next to the version row */
 .set-update-btn {
   height: 26px;
