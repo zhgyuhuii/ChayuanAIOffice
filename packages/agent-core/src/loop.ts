@@ -1140,18 +1140,24 @@ export class AgentLoop<TSnapshot = unknown> {
     // paths attach `inputError: undefined` on every parsed call, so without
     // this the second turn of any custom-provider agent run fails validation.
     // Degraded mode keeps tool calls OUT of the assistant message: no-FC
-    // model APIs reject assistant.tool_calls and role:'tool' messages. The
-    // JSON call text stays as the assistant text, and results are folded
-    // into a user message below.
+    // model APIs reject assistant.tool_calls, and degraded results are folded
+    // into a user message below — so no role:'tool' message follows to pair
+    // with, and the next request would be rejected outright. The executed
+    // call stays available via this.executedCalls for verify/claim checks.
     this.history.push({
       role: 'assistant',
       text: this.turnText || COMPLETED_VIA_TOOLS_TEXT,
-      toolCalls: toolCalls.map(({ id, name, input, signature }) => ({
-        id,
-        name,
-        input,
-        ...(signature ? { signature } : {}),
-      })),
+      // FC mode: keep tool_calls paired with the role:'tool' results pushed below
+      ...(this.degraded || this.degradedProbe
+        ? {}
+        : {
+            toolCalls: toolCalls.map(({ id, name, input, signature }) => ({
+              id,
+              name,
+              input,
+              ...(signature ? { signature } : {}),
+            })),
+          }),
       // interleaved-thinking models degrade in tool loops unless their reasoning is echoed back
       ...(this.turnReasoning ? { reasoning: this.turnReasoning } : {}),
     })

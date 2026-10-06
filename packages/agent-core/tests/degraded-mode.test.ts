@@ -125,6 +125,60 @@ describe('degraded mode', () => {
     expect(msgs.at(-2)?.text).toContain('done-ok')
   })
 
+  it('degraded turns keep tool_calls out of history (no-FC APIs reject unpaired assistant.tool_calls)', async () => {
+    const transport = scriptedTransport([
+      // run 1: two silent turns → probe
+      (cb) => {
+        cb.onDelta("I'll get right on that")
+        cb.onDone()
+      },
+      (cb) => {
+        cb.onDelta('consider it scheduled')
+        cb.onDone()
+      },
+      // probe turn: JSON tool call lands → degraded promoted
+      (cb) => {
+        cb.onDelta('{"tool":"do_thing","input":{"n":1}}')
+        cb.onDone()
+      },
+      // post-result turn: plain answer
+      (cb) => {
+        cb.onDelta('All done!')
+        cb.onDone()
+      },
+      // next degraded run (multi-turn): model calls another tool
+      (cb) => {
+        cb.onDelta('{"tool":"do_thing","input":{"n":2}}')
+        cb.onDone()
+      },
+      // final answer
+      (cb) => {
+        cb.onDelta('Second action done too.')
+        cb.onDone()
+      },
+    ])
+    let lastResult: { degraded?: boolean } | undefined
+    const loop = new AgentLoop({
+      transport,
+      skill: makeSkill(() => ({ output: 'done-ok', summary: 'done', mutated: true })),
+      events: { onDone: (res) => (lastResult = res) },
+    })
+    loop.run('make a deck')
+    await flushAll()
+    loop.run('and one more thing')
+    await flushAll()
+    expect(loop.isDegraded).toBe(true)
+    // EVERY assistant message in history must be free of tool_calls: degraded
+    // results fold into user text, so a tool_calls-bearing assistant message
+    // would arrive unpaired and be rejected by no-FC model APIs.
+    const msgs = loop.messages as unknown as Array<{ role: string; toolCalls?: unknown }>
+    for (const m of msgs) {
+      if (m.role === 'assistant') expect(m.toolCalls).toBeUndefined()
+    }
+    // and the wire never sees a role:'tool' message either
+    expect(msgs.some((m) => m.role === 'tool')).toBe(false)
+  })
+
   it('a probe that just talks is never retried (chatty FC model keeps native tools)', async () => {
     const transport = scriptedTransport([
       (cb) => {
