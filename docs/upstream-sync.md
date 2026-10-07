@@ -291,6 +291,16 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 同步策略说明 | 采用「fork 版整体为基底+仅重放此补丁」——fork loop.ts 经本会话恢复(beginRun 链+降级补丁+孤儿配对),与并行会话 87cfae3(144b1340 基底)为同一目标的两种实现;fork 版已有真机验证链,故以 fork 为准 |
 | 纪律 | 降级模式相关改动必须同时检查:①assistant 历史消息的 wire 形状 ②结果折叠路径 ③restore 配对——三处一体,任何一处只改注释不改代码即事故(本次即为「注释已写、代码未做」) |
 
+### 第二十轮·助手库手风琴展开失效根治（2026-10-08，用户 npm run dev 实测反馈「助手无法展开+面板布局不正确」）
+
+| 项 | 结论 |
+|---|---|
+| 深度分析过程 | ①定位用户 dev 实例(dev-shell→vite 5173-5178+shell 5199),vite 直供当前源码(排除旧包)②headless Chrome 复现:点组头 items=0——**展开失效实锤**③对比合并前三次(ba1904be):面板结构/classes/CSS 零漂移(排除面板布局丢失),真正坏点是**我上一轮引入的展开 bug** |
+| 根因(双 bug) | ①`expand` 折进 useMemo 却漏 `openDomains` 依赖:点组头 setState 正常但 memo 不重算,渲染读的永远是旧快照→永不展开;②toggle 初值语义反转:`openDomains[key] === false` 对 undefined(未点过)求值为 false,首次点击仍收起 |
+| 修复(af43edaa) | expand 移出 memo、open 直接读 live state(`q!=='' \|\| openDomains[key]===true`);toggle 改 `!(prev[key]===true)`。顺带:sheets onRunPrompt conversations 判空、slides 会话助手实例改外层 routeRun(runWithRef 是内层作用域,TS 报错即暴露) |
+| 验证(dev 实测) | vite 直连:sheets 点组头展开 12 条/搜索自动展开;dev electron 应用(REMOTE_DEBUG_PORT=9331):docs 手风琴 230 组展开 257 条+面板 0,0 全高 564×860、sheets 11 组/12 条、slides 10/10、md 10/10、html 13/10(截图 devapp-*) |
+| 纪律 | 新增交互状态必须过「点击→DOM 变化」最小闭环测试,不能只看渲染存在;useMemo 里引用 state 必查依赖数组(ESLint exhaustive-deps 会抓,CI 应开启) |
+
 ### 第二十轮·助手 Tab 统一交互（2026-10-07，用户验收反馈：点击无反应/树展开不合理/布局不一致）
 
 | 项 | 根因与修复 |
