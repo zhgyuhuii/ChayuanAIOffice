@@ -757,8 +757,9 @@ export function AiChatPanel({
                   stickToBottomRef.current = true
                   onSend(p)
                   // 点击助手后自动切回对话:送入目标是第一个打开的会话(open[0])
-                  const chatTab = conversations.tabs.find((t) => t.id !== 'assistant')
-                  if (chatTab) conversations.onTabChange(chatTab.id)
+                  const conv = conversations
+                  const chatTab = conv?.tabs.find((t) => t.id !== 'assistant')
+                  if (conv && chatTab) conv.onTabChange(chatTab.id)
                   else selectTab('chat')
                 }} />
 

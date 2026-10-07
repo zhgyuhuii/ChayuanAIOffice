@@ -56,7 +56,6 @@ export function AssistantLibraryBrowser({
       domains
         .map((d) => ({
           ...d,
-          expand: q !== '' || openDomains[d.key] === true,
           items: q
             ? d.items.filter(
                 (it) =>
@@ -86,13 +85,14 @@ export function AssistantLibraryBrowser({
       </div>
       <div className="assistant-library-list">
         {filtered.map((d) => {
-          const open = d.expand !== undefined ? d.expand : openDomains[d.key] === true
+          // 手风琴展开:搜索时全展开,否则按点击状态(依赖 live state 而非 memo 快照)
+          const open = q !== '' || openDomains[d.key] === true
           return (
             <div key={d.key} className="assistant-library-domain">
               <button
                 type="button"
                 className="assistant-library-domain-head"
-                onClick={() => setOpenDomains((prev) => ({ ...prev, [d.key]: openDomains[d.key] === false }))}
+                onClick={() => setOpenDomains((prev) => ({ ...prev, [d.key]: !(prev[d.key] === true) }))}
               >
                 <span className="assistant-library-domain-icon">{d.icon}</span>
                 <span className="assistant-library-domain-label">{d.label}</span>

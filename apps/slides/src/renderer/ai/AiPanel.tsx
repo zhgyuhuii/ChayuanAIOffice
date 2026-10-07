@@ -3886,7 +3886,7 @@ export function AiPanel(props: AiPanelProps) {
           items={assistItems}
           hidden={conv.activeTab !== 'assistant'}
           libraryApp="slides"
-          onRunPrompt={(p) => { runWithRef.current(p); conv.setActiveTab(conv.open[0]?.chatId ?? 'assistant') }}
+          onRunPrompt={(p) => { routeRun(p); conv.setActiveTab(targetChatId() ?? 'assistant') }}
         />
       )}
 
