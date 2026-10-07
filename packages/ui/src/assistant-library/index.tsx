@@ -56,6 +56,7 @@ export function AssistantLibraryBrowser({
       domains
         .map((d) => ({
           ...d,
+          expand: q !== '' || openDomains[d.key] === true,
           items: q
             ? d.items.filter(
                 (it) =>
@@ -85,7 +86,7 @@ export function AssistantLibraryBrowser({
       </div>
       <div className="assistant-library-list">
         {filtered.map((d) => {
-          const open = q !== '' || openDomains[d.key] !== false
+          const open = d.expand !== undefined ? d.expand : openDomains[d.key] === true
           return (
             <div key={d.key} className="assistant-library-domain">
               <button

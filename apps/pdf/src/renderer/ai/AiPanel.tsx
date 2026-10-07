@@ -871,7 +871,7 @@ function AiConversationBody({
       </div>
 
       {!convMode && <AssistantTab items={assistantItems} hidden={tab !== 'assistant'} libraryApp="pdf" onRunPrompt={(p) => send(p)} />}
-      {tab === 'assistant' && <AssistantLibraryBrowser app="pdf" onRun={(p) => send(p)} />}
+      {tab === 'assistant' && <AssistantLibraryBrowser app="pdf" onRun={(p) => { send(p); selectTab('chat') }} />}
 
       <div className="ai-composer" style={tab === 'chat' ? undefined : { display: 'none' }}>
         <AiComposer
@@ -1343,6 +1343,16 @@ export function AiPanel(props: Parameters<typeof AiConversationBody>[0]) {
           }}
           onCreate={() => conv.create()}
           onOpenHistory={() => setHistoryOpen(true)}
+        />
+      )}
+      {/* 助手 tab(整体要求: 每类 ≥100 助手)——会话模式下同样可浏览助手库 */}
+      {conv.activeTab === 'assistant' && (
+        <AssistantLibraryBrowser
+          app="pdf"
+          onRun={(p) => {
+            routeText(p)
+            conv.setActiveTab(targetChatId() ?? 'assistant')
+          }}
         />
       )}
     </aside>

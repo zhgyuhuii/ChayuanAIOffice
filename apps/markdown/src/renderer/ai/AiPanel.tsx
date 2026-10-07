@@ -1626,7 +1626,7 @@ export function AiPanel(props: {
       {conv.activeTab === 'assistant' && (
         <AssistantTab
           libraryApp="markdown"
-          onRunPrompt={(p) => routeText(p, true)}
+          onRunPrompt={(p) => { routeText(p, true); conv.setActiveTab(conv.open[0]?.chatId ?? 'assistant') }}
           items={[
             {
               id: 'summarize',

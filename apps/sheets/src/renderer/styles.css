@@ -2030,15 +2030,16 @@ button.check-item:hover {
   gap: 6px;
 }
 
+/* 助手 Tab 统一样式: 快捷项与助手库行同为紧凑行(去卡片边框,与 dock.css 一致) */
 .ai-assist-item {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 7px;
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--color-border-default);
-  border-radius: var(--radius-8);
-  background: var(--color-bg-page);
+  padding: 5px 6px;
+  border: none;
+  border-radius: 6px;
+  background: none;
   text-align: left;
   cursor: pointer;
   font-family: var(--gs-font-sans);

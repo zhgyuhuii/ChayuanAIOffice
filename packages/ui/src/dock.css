@@ -1333,3 +1333,13 @@
 .assistant-library-item-label { font-size: 12px; color: var(--text, #242424); }
 .assistant-library-item-desc { font-size: 10px; color: var(--text-tertiary, #909499); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .assistant-library-empty { padding: 16px; text-align: center; font-size: 11px; color: var(--text-tertiary, #909499); }
+
+/* ── 助手 Tab 快捷项统一紧凑行样式（六端 .ai-assist-item 同一视觉语言） ── */
+.ai-assistant .ai-assist-item { display: flex; align-items: flex-start; gap: 7px; width: 100%; padding: 5px 6px; border: none; background: none; cursor: pointer; font: inherit; text-align: left; border-radius: 6px; }
+.ai-assistant .ai-assist-item:hover { background: var(--hover, #f5f5f5); }
+.ai-assistant .ai-assist-item:disabled { opacity: 0.5; cursor: default; }
+.ai-assistant .ai-assist-icon { flex-shrink: 0; font-size: 14px; }
+.ai-assistant .ai-assist-text { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.ai-assistant .ai-assist-name { font-size: 12px; color: var(--text, #242424); }
+.ai-assistant .ai-assist-desc { font-size: 10px; color: var(--text-tertiary, #909499); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ai-assistant .ai-assist-section { padding: 6px 6px 2px; font-size: 10px; font-weight: 600; color: var(--text-tertiary, #909499); }

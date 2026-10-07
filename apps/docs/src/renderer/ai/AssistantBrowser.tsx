@@ -8,7 +8,7 @@
  * Running an assistant goes through buildAssistantInstruction (the unified
  * run rules) and hands the instruction to the panel's agent loop.
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState, Fragment } from 'react'
 import {
   ALL_ASSISTANT_DOMAINS,
   ALL_ASSISTANTS_TOTAL,
@@ -61,6 +61,64 @@ function SectionHeader({ label }: { label: string }): React.JSX.Element {
   return <div className="ai-assist-section">{label}</div>
 }
 
+
+/** 手风琴展开段: 原位懒加载某领域的助手条目(树结构统一——不再跳转钻取) */
+function DomainExpandSection({
+  domainKey,
+  label,
+  onRunDoc,
+  docEmpty,
+}: {
+  domainKey: string
+  label: string
+  onRunDoc: (doc: DocAssistant) => void
+  docEmpty: boolean
+}) {
+  const [items, setItems] = useState<DocAssistant[] | null>(null)
+  useEffect(() => {
+    let alive = true
+    getDomainAssistants(domainKey).then((list) => {
+      if (alive) setItems(list)
+    })
+    return () => {
+      alive = false
+    }
+  }, [domainKey])
+  if (items === null) {
+    return (
+      <div className="ai-assist-list">
+        <div className="ai-assist-empty">{label} · loading…</div>
+      </div>
+    )
+  }
+  return (
+    <div className="ai-assist-list">
+      {items.map((doc) => assistantRowStatic(doc, onRunDoc, docEmpty))}
+    </div>
+  )
+}
+
+function assistantRowStatic(doc: DocAssistant, onRun: (doc: DocAssistant) => void, docEmpty: boolean) {
+  return (
+    <button
+      key={doc.id}
+      type="button"
+      className="ai-assist-item"
+      disabled={docEmpty}
+      title={doc.description}
+      onClick={() => onRun(doc)}
+    >
+      <span className="ai-assist-icon" aria-hidden>
+        {doc.icon}
+      </span>
+      <span className="ai-assist-text">
+        <span className="ai-assist-name">{doc.label}</span>
+        <span className="ai-assist-desc">{doc.description}</span>
+      </span>
+    </button>
+  )
+}
+
 export function AssistantBrowser({
   quickItems,
   getSelectionText,
@@ -71,6 +129,8 @@ export function AssistantBrowser({
   const { t } = useI18n()
   const [query, setQuery] = useState('')
   const [domainKey, setDomainKey] = useState<string | null>(null)
+  // 树结构统一为手风琴: 默认收起,点组头原位展开(懒加载),可多组同开;搜索时自动展开全部匹配
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({})
   const [all, setAll] = useState<Map<string, DocAssistant[]> | null>(null)
   const [singleDomain, setSingleDomain] = useState<DocAssistant[] | null>(null)
   const [recents, setRecents] = useState<string[]>(readRecents)
@@ -257,20 +317,29 @@ export function AssistantBrowser({
           <div className="ai-assist-list">
             <SectionHeader label={`${t('aiAssistantAll')} · ${ALL_ASSISTANTS_TOTAL}`} />
             {ALL_ASSISTANT_DOMAINS.map((d) => (
-              <button
-                key={d.key}
-                type="button"
-                className="ai-assist-item ai-assist-group"
-                onClick={() => {
-                  setQuery('')
-                  setDomainKey(d.key)
-                }}
-              >
-                <span className="ai-assist-text">
-                  <span className="ai-assist-name">{d.label}</span>
-                </span>
-                <span className="ai-assist-count">{t('aiAssistantCount', { count: d.count })}</span>
-              </button>
+              <Fragment key={d.key}>
+                <button
+                  type="button"
+                  className="ai-assist-item ai-assist-group"
+                  onClick={() => {
+                    setQuery('')
+                    setExpanded((prev) => ({ ...prev, [d.key]: !prev[d.key] }))
+                  }}
+                >
+                  <span className="ai-assist-text">
+                    <span className="ai-assist-name">{d.label}</span>
+                  </span>
+                  <span className="ai-assist-count">{t('aiAssistantCount', { count: d.count })}</span>
+                </button>
+                {expanded[d.key] && (
+                  <DomainExpandSection
+                    domainKey={d.key}
+                    label={d.label}
+                    onRunDoc={(doc) => runAssistant(doc)}
+                    docEmpty={docEmpty}
+                  />
+                )}
+              </Fragment>
             ))}
           </div>
         </>

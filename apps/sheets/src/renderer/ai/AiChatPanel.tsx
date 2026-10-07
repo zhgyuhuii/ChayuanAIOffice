@@ -753,7 +753,14 @@ export function AiChatPanel({
         )}
       </div>
 
-      <AssistantTab items={assistItems} hidden={(conversations ? conversations.activeId : tab) !== 'assistant'} libraryApp="sheets" onRunPrompt={(p) => { stickToBottomRef.current = true; onSend(p); selectTab('chat') }} />
+      <AssistantTab items={assistItems} hidden={(conversations ? conversations.activeId : tab) !== 'assistant'} libraryApp="sheets" onRunPrompt={(p) => {
+                  stickToBottomRef.current = true
+                  onSend(p)
+                  // 点击助手后自动切回对话:送入目标是第一个打开的会话(open[0])
+                  const chatTab = conversations.tabs.find((t) => t.id !== 'assistant')
+                  if (chatTab) conversations.onTabChange(chatTab.id)
+                  else selectTab('chat')
+                }} />
 
       <div
         className="ai-composer"
