@@ -291,6 +291,17 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 同步策略说明 | 采用「fork 版整体为基底+仅重放此补丁」——fork loop.ts 经本会话恢复(beginRun 链+降级补丁+孤儿配对),与并行会话 87cfae3(144b1340 基底)为同一目标的两种实现;fork 版已有真机验证链,故以 fork 为准 |
 | 纪律 | 降级模式相关改动必须同时检查:①assistant 历史消息的 wire 形状 ②结果折叠路径 ③restore 配对——三处一体,任何一处只改注释不改代码即事故(本次即为「注释已写、代码未做」) |
 
+### 第二十轮·助手 Tab 统一交互（2026-10-07，用户验收反馈：点击无反应/树展开不合理/布局不一致）
+
+| 项 | 根因与修复 |
+|---|---|
+| 点击助手无反应(全端) | 点击库内助手条目后提示词送入了后台会话,但视图停在助手列表——缺「切回对话」步骤。修复:五端 onRunPrompt 补切回(sheets=conversations.onTabChange(第一个会话)、markdown/slides 会话实例=conv.setActiveTab(open[0])、pdf/html 独立面板=selectTab('chat')) |
+| html/pdf 会话模式助手 Tab 点击无内容 | 会话模式本就无助手实例(仅 Tab 占位)。补 `<AssistantLibraryBrowser>` 会话级实例(html/pdf) |
+| docs 树展开不合理 | 钻取式(进域→返回→再进)体验割裂。改手风琴:域行原位展开懒加载条目(getDomainAssistants),可多组同开,Fragment 修复 |
+| 助手库默认全展开 | 共享库改默认收起+点组头展开+搜索自动展开匹配 |
+| sheets 上下布局不一致 | 快捷项卡片样式(边框+大内边距)与库紧凑行不一致——去卡片化,统一 dock.css 紧凑行样式(六端同一视觉语言) |
+| 门禁 | typecheck 0;docs 2891/sheets 3110 回归全绿;真机:docs 手风琴 230 域可展开(257 条可见)、sheets 点条目自动切回新对话 Tab(截图 u1/u2) |
+
 ### 第二十轮·助手库扩容（2026-10-07，用户要求每类文档 ≥100 助手）
 
 | 项 | 处置 |
