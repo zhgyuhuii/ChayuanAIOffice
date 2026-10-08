@@ -499,6 +499,7 @@ export function AiChatPanel({
 
   return (
     <aside
+      data-assistant-open={conversations ? conversations.activeId === 'assistant' : tab === 'assistant'}
       className={`copilot${dragOver ? ' ai-panel-dragover' : ''}`}
       dir={lang === 'ar' || lang === 'he' ? 'rtl' : undefined}
       onDragOver={(e) => {
@@ -571,11 +572,7 @@ export function AiChatPanel({
       <div
         className="ai-chat"
         ref={chatRef}
-        style={
-          showChatBody && (conversations ? conversations.activeId !== 'assistant' : tab === 'chat')
-            ? undefined
-            : { display: 'none' }
-        }
+        style={showChatBody && tab === 'chat' ? undefined : { display: 'none' }}
         onScroll={onChatScroll}
       >
         {/* Past conversation (read-only transcript), shown continuously with the current turn */}

@@ -1343,3 +1343,6 @@
 .ai-assistant .ai-assist-name { font-size: 12px; color: var(--text, #242424); }
 .ai-assistant .ai-assist-desc { font-size: 10px; color: var(--text-tertiary, #909499); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ai-assistant .ai-assist-section { padding: 6px 6px 2px; font-size: 10px; font-weight: 600; color: var(--text-tertiary, #909499); }
+/* sheets 助手 tab：输入框让位给全高手风琴(整体要求) */
+.ai-conversation[data-assistant-open='true'] .ai-composer,
+.copilot[data-assistant-open='true'] .ai-composer { display: none !important; }
