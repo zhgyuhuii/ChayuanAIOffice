@@ -6162,3 +6162,154 @@ html[dir='rtl'] .quick-title-row {
   direction: ltr;
   unicode-bidi: isolate;
 }
+
+/* ═══ home-files 新增窄栏样式（共识 2026-09-23；全部语义 token） ═══ */
+
+  .file-tree-pane {
+    padding: 4px 0 12px;
+  }
+
+  /* 2×3 新建直钮网格（左栏顶部，共识 Q2） */
+  .side-new-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    padding: 2px 8px 4px;
+  }
+
+  .side-new-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 7px 2px 5px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+  }
+
+  .side-new-tile:hover {
+    background: var(--hover);
+    color: var(--color-text-primary);
+  }
+
+  .side-new-ext {
+    font-size: 10px;
+    line-height: 1;
+    color: var(--color-text-tertiary);
+  }
+
+  .side-new-browse {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: calc(100% - 16px);
+    margin: 0 8px 2px;
+    padding: 5px 8px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .side-new-browse:hover {
+    background: var(--hover);
+    color: var(--color-text-primary);
+  }
+
+  /* 树内联文件行（窄栏形态） */
+  .tree-row.tree-file-row {
+    padding-right: 6px;
+  }
+
+  .tree-row.tree-file-row.missing .tree-name {
+    color: var(--color-text-tertiary);
+    text-decoration: line-through;
+  }
+
+  .tree-file-actions {
+    position: relative;
+    margin-left: auto;
+    display: none;
+    flex-shrink: 0;
+  }
+
+  .tree-row:hover .tree-file-actions,
+  .tree-file-actions:has(.folder-menu) {
+    display: inline-flex;
+  }
+
+  .tree-file-menu {
+    min-width: 140px;
+  }
+
+  .search-empty {
+    padding: 12px 10px;
+    font-size: 12px;
+    color: var(--color-text-tertiary);
+  }
+
+  .search-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+  }
+
+  .file-tree-pane .search-row {
+    display: flex;
+    gap: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+
+  .file-tree-pane .search-row:hover {
+    background: var(--hover);
+  }
+
+  .file-tree-pane .search-main {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .file-tree-pane .search-head {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .file-tree-pane .search-name {
+    font-size: 12.5px;
+    color: var(--color-text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .file-tree-pane .search-path {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .file-tree-pane .search-snippet {
+    margin: 3px 0 0;
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--color-text-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .file-tree-pane .search-time {
+    flex-shrink: 0;
+    font-size: 10.5px;
+    color: var(--color-text-tertiary);
+  }
