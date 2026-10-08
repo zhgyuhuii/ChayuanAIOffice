@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client'
-import { htmlLang, type Lang } from '@chatoffice/i18n'
+import { htmlDir, htmlLang, type Lang } from '@chatoffice/i18n'
 import App from './App'
 import { LocaleProvider } from './i18n/locale'
 import type { UiTheme } from '../shared/ipc'
@@ -30,6 +30,7 @@ void (async () => {
     window.pdfApi.getTheme().catch(() => 'system' as const),
   ])
   document.documentElement.lang = htmlLang(lang as Lang)
+  document.documentElement.dir = htmlDir(lang)
   applyTheme(theme)
   window.pdfApi.onThemeChanged(applyTheme)
   await window.pdfApi

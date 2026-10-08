@@ -1,4 +1,6 @@
 import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
+// the font catalog's shape is the store's to declare, not a copy kept in step by hand
+import type { CatalogEntry as FontCatalogEntry } from '@chatoffice/electron-utils/font-store'
 /**
  * slides main-process <-> renderer IPC contract (Phase 3: open/save/edit, AI not included yet).
  *
@@ -1460,15 +1462,13 @@ export interface SlidesApi {
   >
   /** Single-face sfnt bytes for one private face (null = gone/unreadable) */
   privateFontData: (id: string) => Promise<ArrayBuffer | null>
-  /** Curated downloadable (OFL) font catalog with per-family install state */
-  fontCatalog: () => Promise<
-    Array<{
-      family: string
-      script: 'latin' | 'ja' | 'ko' | 'sc' | 'tc'
-      installed: boolean
-      downloading: boolean
-    }>
-  >
+  /**
+   * Curated downloadable (OFL) font catalog with per-family install state and
+   * what each family would cost. Typed from the store that produces it rather
+   * than restated here: `ipcMain.handle` is untyped, so a drifted copy of this
+   * shape passes typecheck and fails at the point of use.
+   */
+  fontCatalog: () => Promise<FontCatalogEntry[]>
   /** Download a catalog family into the user font store; layouts refresh via deck-changed */
   fontDownload: (family: string) => Promise<{ ok: boolean; error?: string }>
   /** File picker → install local font files into the user font store */

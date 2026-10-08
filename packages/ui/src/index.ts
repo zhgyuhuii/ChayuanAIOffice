@@ -47,11 +47,15 @@ export {
   useRibbonCollapse,
   RibbonCollapseButton,
   RibbonExpandButton,
+  isRibbonCompactShortcut,
   isRibbonToggleShortcut,
   readRibbonCollapsed,
+  readRibbonDensity,
+  RIBBON_COMPACT_SHORTCUT,
   RIBBON_TOGGLE_SHORTCUT,
   type RibbonCollapse,
   type RibbonCollapseLabels,
+  type RibbonDensity,
 } from './ribbon-collapse'
 export { AiTypingIndicator } from './AiTypingIndicator'
 export {

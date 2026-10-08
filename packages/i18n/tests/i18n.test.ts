@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest'
 import {
   createI18n,
   format,
+  htmlDir,
   htmlLang,
   isLang,
+  isRtlLang,
   LANGS,
   macShortcutsToWin,
   normalizeLang,
@@ -226,5 +228,40 @@ describe('createI18n', () => {
     expect(t('he', 'plain')).toBe('קבצים')
     expect(t('cs', 'plain')).toBe('Soubory')
     expect(t('zh-TW', 'plain')).toBe('檔案')
+  })
+})
+
+describe('isRtlLang', () => {
+  it('flags the right-to-left UI languages', () => {
+    expect(isRtlLang('ar')).toBe(true)
+    expect(isRtlLang('he')).toBe(true)
+  })
+
+  it('leaves left-to-right languages and junk alone', () => {
+    expect(isRtlLang('zh')).toBe(false)
+    expect(isRtlLang('en')).toBe(false)
+    expect(isRtlLang('zh-TW')).toBe(false)
+    expect(isRtlLang('fa')).toBe(false) // not in LANGS today
+    expect(isRtlLang(undefined)).toBe(false)
+    expect(isRtlLang('')).toBe(false)
+  })
+})
+
+describe('htmlDir', () => {
+  it('agrees with isRtlLang on every shipped language', () => {
+    // the two functions exist so bootstraps write `dir` in one place; if they
+    // ever disagree, a language silently lays out the wrong way in one app
+    for (const lang of LANGS) expect(htmlDir(lang)).toBe(isRtlLang(lang) ? 'rtl' : 'ltr')
+  })
+
+  it('maps the right-to-left languages and nothing else', () => {
+    expect(htmlDir('ar')).toBe('rtl')
+    expect(htmlDir('he')).toBe('rtl')
+    for (const lang of ['en', 'zh', 'zh-TW', 'ja', 'th', 'he'.toUpperCase()]) {
+      expect(htmlDir(lang)).toBe('ltr')
+    }
+    expect(htmlDir(undefined)).toBe('ltr')
+    expect(htmlDir(null)).toBe('ltr')
+    expect(htmlDir('')).toBe('ltr')
   })
 })

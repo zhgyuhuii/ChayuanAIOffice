@@ -1880,7 +1880,10 @@ button.check-item:hover {
   position: relative;
 }
 
+/* the grid stays ltr under an RTL UI: Univer inherits this through ctx.direction */
+
 .spreadsheet {
+  direction: ltr;
   min-width: 0;
   min-height: 0;
   background: var(--surface);

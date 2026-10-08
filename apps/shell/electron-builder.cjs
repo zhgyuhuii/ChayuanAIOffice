@@ -295,12 +295,14 @@ function bundledCliVersion(bundlePath) {
 function ensureCliBundleCarriesAppVersion() {
   const bundlePath = join(__dirname, CLI_BUNDLE_REL)
   const appVersion = packagedAppVersion()
+  if (process.env.CLI_DEBUG) console.error('DBG first', JSON.stringify(bundledCliVersion(bundlePath)), 'app', appVersion)
   if (bundledCliVersion(bundlePath) === appVersion) return
   execFileSync(process.execPath, [join(__dirname, CLI_BUILD_REL)], {
     stdio: 'inherit',
     env: { ...process.env, [CLI_VERSION_ENV]: appVersion },
   })
   const baked = bundledCliVersion(bundlePath)
+  if (process.env.CLI_DEBUG) console.error('DBG recheck', JSON.stringify(baked))
   if (baked !== appVersion) {
     throw new Error(
       `packaged chaoffice CLI reports ${baked ?? 'no version'} but the app ships ${appVersion} ` +
@@ -693,9 +695,10 @@ const config = {
     artifactName: 'ChaAIOffice-Setup-${version}.${ext}',
   },
   beforePack: async (context) => {
-    ensureCliBundleCarriesAppVersion()
+    // 上游顺序：平台辅助/资源断言 → 通告 → 模块树 → CLI 版本门(测试契约按此断言)
     ensureThirdPartyNotices()
     assertModuleTreesPresent()
+    ensureCliBundleCarriesAppVersion()
     // 交叉打包（mac 宿主出三平台包）：按目标架构把 zigbuild/mingw 产物就位到
     // extraResources 读取的 target/release 路径；原生架构（宿主=目标）则直接
     // 校验 cargo 产物在位。任一缺席即抛错——绝不让宿主平台的二进制静默混进

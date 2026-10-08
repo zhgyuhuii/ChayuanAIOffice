@@ -53,7 +53,7 @@ function loadConfig(opts: {
           existsSync: () => true,
           readFileSync: (path: string, encoding: string) => {
             if (String(path).endsWith('chaoffice.cjs')) {
-              return `var __GENOFFICE_VERSION__ = ${JSON.stringify(baked)};\n`
+              return `const __cliAppVersion = ${JSON.stringify(baked)};\n`
             }
             // Packaging also gates on a generated third-party notice. Serve a
             // valid one so the CLI version check is what these tests exercise.

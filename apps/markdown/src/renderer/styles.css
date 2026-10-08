@@ -180,7 +180,10 @@ button {
   font-size: 14px;
 }
 
+/* the preview stays ltr under an RTL UI — the chrome mirrors, the content does not */
+
 .editor-scroll {
+  direction: ltr;
   flex: 1;
   overflow-y: auto;
   /* same canvas backdrop as the slides workspace; .doc-page follows the theme surface */

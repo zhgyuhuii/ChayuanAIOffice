@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom/client'
-import { htmlLang, type Lang } from '@chatoffice/i18n'
-import { applyAiPanelPrefs, installScreenTips } from '@chatoffice/ui'
+import { htmlDir, htmlLang, type Lang } from '@chatoffice/i18n'
 import type { DesktopApi } from '../shared/desktop-api'
+import { applyAiPanelPrefs, installScreenTips } from '@chatoffice/ui'
 
 import '@chatoffice/ui/tokens.css'
 import '@chatoffice/ui/screentip.css'
@@ -97,6 +97,7 @@ async function bootstrap(): Promise<void> {
   }
   setModuleLang(lang)
   document.documentElement.lang = htmlLang(lang)
+  document.documentElement.dir = htmlDir(lang)
   applyTheme(theme)
   applyDocumentTheme(docTheme ?? 'follow')
   await loadCellFonts()

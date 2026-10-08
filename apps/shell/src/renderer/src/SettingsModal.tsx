@@ -21,7 +21,7 @@ import type {
   DefaultAppStatus,
   DocTheme,
   FileSearchSettings,
-  JevEndpoint,
+  DecisionEndpoint,
   UiTheme,
 } from '../../shared/home-api'
 import type { UpdateUiState } from '../../shared/update-api'
@@ -306,9 +306,14 @@ function SectionIcon({ id }: { id: SectionId }) {
 /** 本机文件搜索（Jev 重排）设置——上游 #757 的设置 UI 按本地 V2 结构重建
  *  （LOCAL 2026-09-23 挂账 #1 落地）：开关/端点/密钥即时持久化，测试按钮
  *  走 testFileSearchRerank 做一次双文档判定并回显结果。 */
-const JEV_ENDPOINTS: { value: JevEndpoint; label: string }[] = [
+const JEV_ENDPOINTS: { value: DecisionEndpoint; label: string }[] = [
   { value: 'openrouter', label: 'OpenRouter' },
   { value: 'direct', label: 'TypeSafe' },
+  { value: 'perplexity', label: 'Perplexity' },
+  { value: 'cloudflare', label: 'Cloudflare' },
+  { value: 'kev', label: 'Kev (local)' },
+  { value: 'rizzo', label: 'Rizzo Flow (local)' },
+  { value: 'custom', label: 'Custom' },
 ]
 
 function FileSearchPane() {
@@ -339,8 +344,8 @@ function FileSearchPane() {
     setTestResult(null)
     try {
       const result = await window.chaOffice.testFileSearchRerank?.({
-        endpoint: settings.jevEndpoint,
-        apiKey: settings.jevKeys[settings.jevEndpoint] ?? '',
+        endpoint: settings.endpoint,
+        apiKey: settings.keys[settings.endpoint] ?? '',
       })
       setTestResult(result)
     } catch (err) {
@@ -378,10 +383,10 @@ function FileSearchPane() {
                 </div>
                 <Dropdown
                   className="set-dd"
-                  value={settings.jevEndpoint}
+                  value={settings.endpoint}
                   ariaLabel={t('setSearchRerankEndpoint')}
                   options={JEV_ENDPOINTS}
-                  onPick={(v) => patch({ jevEndpoint: v === 'direct' ? 'direct' : 'openrouter' })}
+                  onPick={(v) => patch({ endpoint: v })}
                 />
               </div>
               <div className="set-field">
@@ -394,13 +399,13 @@ function FileSearchPane() {
                   id="set-search-jev-key"
                   className="set-input"
                   type="password"
-                  value={settings.jevKeys[settings.jevEndpoint] ?? ''}
-                  placeholder={settings.jevEndpoint === 'openrouter' ? 'sk-or-…' : 'API Key'}
+                  value={settings.keys[settings.endpoint] ?? ''}
+                  placeholder={settings.endpoint === 'openrouter' ? 'sk-or-…' : 'API Key'}
                   spellCheck={false}
                   autoComplete="off"
                   onChange={(e) =>
                     patch({
-                      jevKeys: { ...settings.jevKeys, [settings.jevEndpoint]: e.target.value },
+                      keys: { ...settings.keys, [settings.endpoint]: e.target.value },
                     })
                   }
                 />

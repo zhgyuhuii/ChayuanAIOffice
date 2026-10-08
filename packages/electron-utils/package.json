@@ -16,7 +16,9 @@
     "./renderer-protocol": "./src/renderer-protocol.ts",
     "./renderer-scheme": "./src/renderer-scheme.ts",
     "./safe-external-url": "./src/safe-external-url.ts",
-    "./safe-remote-url": "./src/safe-remote-url.ts"
+    "./safe-remote-url": "./src/safe-remote-url.ts",
+    "./font-store": "./src/font-store.ts",
+    "./font-catalog": "./src/font-catalog.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

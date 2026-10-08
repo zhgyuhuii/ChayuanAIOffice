@@ -571,7 +571,11 @@ export function AiChatPanel({
       <div
         className="ai-chat"
         ref={chatRef}
-        style={showChatBody && (tab === 'chat' || !!conversations) ? undefined : { display: 'none' }}
+        style={
+          showChatBody && (conversations ? conversations.activeId !== 'assistant' : tab === 'chat')
+            ? undefined
+            : { display: 'none' }
+        }
         onScroll={onChatScroll}
       >
         {/* Past conversation (read-only transcript), shown continuously with the current turn */}
@@ -753,7 +757,7 @@ export function AiChatPanel({
         )}
       </div>
 
-      <AssistantTab items={assistItems} hidden={(conversations ? conversations.activeId : tab) !== 'assistant'} libraryApp="sheets" onRunPrompt={(p) => {
+      <AssistantTab items={[]} hidden={(conversations ? conversations.activeId : tab) !== 'assistant'} libraryApp="sheets" onRunPrompt={(p) => {
                   stickToBottomRef.current = true
                   onSend(p)
                   // 点击助手后自动切回对话:送入目标是第一个打开的会话(open[0])
