@@ -664,6 +664,20 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 4. adapted/裁定清单完整、可抽查。
 5. 本文件写入终点 sha，下次同步可增量续作。
 
+## 第二十一轮（2026-10-08，上游 5e0fd69f..2490e20d 8 提交全吸收，0a8c98d6）
+
+| 域 | 内容 |
+|---|---|
+| file-parse | XLSX formats 分号字面量 (#1888) |
+| shell | folder-tree 文件系统根 containment (#1881)；Jev→decision-model 重排七端点 (#1874)：jev.ts→decider.ts、SettingsModal 七端点(openrouter/direct/perplexity/cloudflare/kev/rizzo/custom)+custom/cloudflare 字段、63 词条×21 语言；home-api 本地基座嫁接 decision 改造(本地 feedback/update/DocTheme 通道全保留) |
+| pdf2docx | EA 全角 advance 证明的负 tracking 剥离+CJK 系统字体名 verbatim (#1897) |
+| electron-utils | atomic-write rename-over 拒绝挂载 in-place 回落 (#1878)；fonts catalog+store 统一迁入(slide 旧 font-catalog 删,#1869) |
+| RTL | ar/he htmlDir 全端 dir 接线+chrome 样式 (#1861)——15 文件冲突 take-theirs+品牌重放 |
+| ribbon | ⌥⌘K 紧凑图标密度 (#1891)——21 语言词条并集后按文件平面去重(ribbonExpand 双写事故修复) |
+| 测试契约 | packaged-cli-version 取上游版(fake 包名 chaoffice 修正——我此前全局改名误伤 fake 文件名匹配致 3 败)；beforePack 顺序对齐上游 |
+| 用户需求 | sheets 助手 tab 仅手风琴(快捷项清空+composer 助手态隐藏) |
+| 门禁 | typecheck 0；docs 2904/sheets 3110/slides 1361/pdf 872/md 657/html 251/shell 909/electron-utils 243/agent-core 139 全绿 |
+
 ## 9. 品牌改名映射表（施工中维护，后续同步机械重放）
 
 | 上游 | 本地 | 说明 |
