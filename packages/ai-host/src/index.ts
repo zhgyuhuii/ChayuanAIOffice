@@ -1,3 +1,4 @@
+import { join } from 'node:path'
 import {
   createAiRuntime,
   createFileSource,
@@ -18,6 +19,7 @@ import {
   type StockSource,
 } from '@chatoffice/ai-search'
 import { fetchRemoteImage } from '@chatoffice/electron-utils/remote-image'
+import { CHATOP_LOCAL_AGENT_ID, parseChatopProxyKey } from '@chatoffice/ai-provider'
 import {
   createVideoTaskRegistry,
   type VideoTaskRegistry,
@@ -141,6 +143,10 @@ export interface SharedAiIpcDeps {
   translate: (key: string, params?: Record<string, unknown>) => string
   /** video task registry wiring (absent = ai:video-* channels stay unregistered) */
   videoTasks?: VideoTaskRegistryDeps
+  /** LOCAL(8b6e6e88 桌面补齐): 察元 dsh home——chatop-local 的虚拟 key 从其
+   *  storages/chatop-models/proxy-keys.json 读取;缺席经回环管理面签发(同 agentId
+   *  重发即吊销旧 key,故仅在文件无活 key 时签)。absent = 维持旧的空 secret 行为 */
+  dshHome?: string | undefined
 }
 
 export interface AiStreamWireRequest {
@@ -162,10 +168,44 @@ export interface AiStreamWireRequest {
 export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   const { ipcMain, chatoffice, translate } = deps
 
+  // LOCAL(8b6e6e88 桌面补齐): chatop-local 走模型代理虚拟 key(与 server 形态同款,
+  // 见 apps/server/src/ai-proxy.ts chatopLocalKey)。桌面端此前缺这环——key 被外部
+  // 重新签发吊销后,设置里存的旧 key 直接 401 invalid_api_key 且无法自愈。
+  let cachedLocalKey = ''
+  let cachedLocalKeyAt = 0
+  const chatopLocalSecret = async (): Promise<string> => {
+    if (!deps.dshHome) return ''
+    const keysPath = join(deps.dshHome, 'storages', 'chatop-models', 'proxy-keys.json')
+    const live = await (deps.fs.readFile(keysPath))
+      .then(parseChatopProxyKey)
+      .catch(() => null)
+    if (live) return live
+    if (cachedLocalKey && Date.now() - cachedLocalKeyAt < 10_000) return cachedLocalKey
+    const state = await deps.fs
+      .readFile(join(deps.dshHome, 'storages', 'chatop-models', 'state.json'))
+      .then((t) => JSON.parse(t) as { managementPort?: number })
+      .catch(() => null)
+    const origin = state?.managementPort ? `http://127.0.0.1:${state.managementPort}` : 'http://127.0.0.1:52601'
+    const response = await fetch(`${origin}/api/chatop-models/proxy/keys/issue`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ agentId: CHATOP_LOCAL_AGENT_ID }),
+    })
+    if (!response.ok) throw new Error(`chatop-models key issue failed: HTTP ${response.status}`)
+    const doc = (await response.json()) as { key?: string }
+    if (!doc?.key) throw new Error('chatop-models key issue returned no key')
+    cachedLocalKey = doc.key
+    cachedLocalKeyAt = Date.now()
+    return cachedLocalKey
+  }
+
   const runtime = createAiRuntime({
     source: createFileSource(deps.settingsPath, deps.fs),
     chatoffice,
     translate,
+    ...(deps.dshHome
+      ? { resolveSecret: () => chatopLocalSecret() }
+      : {}),
   })
 
   const activeStreams = new Map<string, AbortController>()

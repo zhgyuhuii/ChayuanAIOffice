@@ -12,6 +12,7 @@ import {
 } from 'node:fs'
 import { copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
+import { homedir } from 'node:os'
 import { basename, dirname, isAbsolute, join } from 'node:path'
 
 import {
@@ -164,6 +165,13 @@ import { XlsxSidecarClient } from './xlsx-sidecar-client'
  * owns the app lifecycle. AI IPC is registered separately so the shell can
  * substitute its single unified handler set (same channel names as docs).
  */
+
+function resolveDshHome(): string | undefined {
+  // LOCAL(8b6e6e88 桌面补齐): 察元 dsh home 约定位置(与 chatop-local 的读取一致);
+  // 缺席时 undefined → ai-host 维持旧的空 secret 行为
+  const home = process.env.CHATOP_DSH_HOME ?? join(homedir(), '.chatop')
+  return existsSync(home) ? home : undefined
+}
 
 const tMain = createI18n({
   zh: {
@@ -3600,7 +3608,9 @@ export function registerSheetsAiIpc(): void {
     settingsPath: () => SETTINGS_PATH(),
     mediaDir: () => join(app.getPath('userData'), 'media', 'files'),
   })
+
   aiRuntime = registerSharedAiIpc({
+    dshHome: resolveDshHome(),
     ipcMain,
     settingsPath: SETTINGS_PATH(),
     fs: {
