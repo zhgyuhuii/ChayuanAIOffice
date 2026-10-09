@@ -74,7 +74,6 @@ function shellProps(editor: Editor, overrides: Record<string, unknown> = {}) {
         editor,
         blocks: [],
         settings,
-        open,
         dockChrome: chrome,
       }),
     children: createElement('div', { className: 'editor-stub' }),

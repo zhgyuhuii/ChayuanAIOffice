@@ -93,7 +93,6 @@ import {
   type WatermarkSpec,
 } from '@chatoffice/docx-engine'
 import type { AiDocContent, AiSettingsV2, MenuCommand, OpenDocxResult } from '../shared/ipc'
-import { AI_PROVIDERS } from '../shared/ipc'
 import { ZoteroDocumentController } from './zotero/controller'
 import { AiPanel, AI_REVISION_AUTHOR } from './ai/AiPanel'
 import type { AiCommentsAccess, AiDocExtras, AiHeaderFooterAccess } from './ai/tools'
@@ -6888,7 +6887,6 @@ export function App() {
                 doc.isBlank ? { bullet: BLANK_BULLET_NUM_ID, ordered: BLANK_ORDERED_NUM_ID } : null
               }
               preset={aiPreset}
-              open={showAi}
               filePath={doc?.filePath ?? null}
               editQueue={editQueue}
               onQueueEditInstruction={queueUpdate}

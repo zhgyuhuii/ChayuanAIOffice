@@ -63,7 +63,6 @@ afterEach(() => {
 })
 
 function mountBrowser(opts: {
-  docEmpty?: boolean
   selection?: string
   onRun: (run: { instruction: string; display: string }) => void
 }): { host: HTMLElement } {
@@ -82,7 +81,6 @@ function mountBrowser(opts: {
           { id: 'summarize', label: '总结全文', desc: '总结要点', icon: null, run: () => {} },
         ],
         getSelectionText: () => opts.selection ?? '',
-        docEmpty: opts.docEmpty ?? false,
         onRun: opts.onRun,
       }),
     )
@@ -162,14 +160,21 @@ describe('AssistantBrowser', () => {
     expect(textOf(host)).toContain('茶叶')
   })
 
-  it('assistant rows are disabled for a blank document', async () => {
-    const { host } = mountBrowser({ onRun: () => {}, docEmpty: true })
+  it('library rows stay runnable on a blank document (unified with the other editors)', async () => {
+    // 空文档不再禁用助手行:与五端 AssistantLibraryBrowser 统一——非选区型助手
+    // 以全文 scope 运行,选区型走「请先选中」提示
+    const runs: Array<{ instruction: string; display: string }> = []
+    const { host } = mountBrowser({ onRun: (r) => runs.push(r), selection: '' })
     await flush()
     clickButton(host, '茶叶')
     await flush()
     const row = [...host.querySelectorAll('button')].find((b) =>
       (b.textContent ?? '').includes('茶叶品鉴描述'),
     )
-    expect(row?.disabled).toBe(true)
+    expect(row?.disabled).toBe(false)
+    clickButton(host, '茶叶品鉴描述')
+    expect(runs.length).toBe(1)
+    expect(runs[0].instruction).toContain('当前文档全文')
+    expect(runs[0].display).toBe('👃 茶叶品鉴描述 · 全文')
   })
 })

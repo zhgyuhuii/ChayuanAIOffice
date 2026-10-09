@@ -43,7 +43,6 @@ export interface AssistantRun {
 interface Props {
   quickItems: QuickItem[]
   getSelectionText: () => string
-  docEmpty?: boolean
   onRun: (run: AssistantRun) => void
   hidden?: boolean
 }
@@ -67,12 +66,10 @@ function DomainExpandSection({
   domainKey,
   label,
   onRunDoc,
-  docEmpty,
 }: {
   domainKey: string
   label: string
   onRunDoc: (doc: DocAssistant) => void
-  docEmpty: boolean
 }) {
   const [items, setItems] = useState<DocAssistant[] | null>(null)
   useEffect(() => {
@@ -93,18 +90,17 @@ function DomainExpandSection({
   }
   return (
     <div className="ai-assist-list">
-      {items.map((doc) => assistantRowStatic(doc, onRunDoc, docEmpty))}
+      {items.map((doc) => assistantRowStatic(doc, onRunDoc))}
     </div>
   )
 }
 
-function assistantRowStatic(doc: DocAssistant, onRun: (doc: DocAssistant) => void, docEmpty: boolean) {
+function assistantRowStatic(doc: DocAssistant, onRun: (doc: DocAssistant) => void) {
   return (
     <button
       key={doc.id}
       type="button"
       className="ai-assist-item"
-      disabled={docEmpty}
       title={doc.description}
       onClick={() => onRun(doc)}
     >
@@ -122,7 +118,6 @@ function assistantRowStatic(doc: DocAssistant, onRun: (doc: DocAssistant) => voi
 export function AssistantBrowser({
   quickItems,
   getSelectionText,
-  docEmpty = false,
   onRun,
   hidden,
 }: Props): React.JSX.Element {
@@ -178,7 +173,7 @@ export function AssistantBrowser({
   }
 
   const runAssistant = (doc: DocAssistant) => {
-    const selection = docEmpty ? '' : getSelectionText()
+    const selection = getSelectionText()
     const plan = buildAssistantInstruction(doc, selection)
     if (!plan.ok) {
       showNotice('aiAssistantNeedSelection')
@@ -222,7 +217,6 @@ export function AssistantBrowser({
       key={doc.id}
       type="button"
       className="ai-assist-item"
-      disabled={docEmpty}
       title={doc.description}
       onClick={() => runAssistant(doc)}
     >
@@ -336,7 +330,6 @@ export function AssistantBrowser({
                     domainKey={d.key}
                     label={d.label}
                     onRunDoc={(doc) => runAssistant(doc)}
-                    docEmpty={docEmpty}
                   />
                 )}
               </Fragment>

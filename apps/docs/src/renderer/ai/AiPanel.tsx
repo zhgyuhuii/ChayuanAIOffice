@@ -66,8 +66,6 @@ interface AiPanelProps {
   preset?: { text: string; nonce: number; autoRun?: boolean } | null
   /** run a core-pack assistant (context menu / ribbon entry): resolved against the live selection */
   assistantRequest?: { id: string; nonce: number } | null
-  /** kept in sync with DockShell's open state; effects use it to catch up after re-expand */
-  open?: boolean
   /** upstream parity: the panel's own header controls flip the app's showAi state */
   onExpand?: () => void
   onCollapse?: () => void
@@ -119,7 +117,6 @@ export function AiPanel({
   numIdFallback,
   preset,
   assistantRequest,
-  open = true,
   dockChrome,
   filePath,
   editQueue = [],
@@ -561,7 +558,6 @@ export function AiPanel({
       <AssistantBrowser
         quickItems={assistItems}
         getSelectionText={getSelectionText}
-        docEmpty={docEmpty}
         onRun={runAssistant}
         hidden={conv.activeTab !== 'assistant'}
       />
