@@ -666,4 +666,5 @@ export const cs = {
   appGoToNotFound: 'Nenalezeno',
   appGoToPrevious: 'Předchozí',
   appGoToNext: 'Další',
+appParaUnitChars: 'znaky',
 } satisfies Record<keyof typeof zh, string>

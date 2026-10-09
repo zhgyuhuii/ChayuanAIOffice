@@ -10,6 +10,12 @@ import tabIconMd from './assets/file-md.png'
 import tabIconPdf from './assets/file-pdf.png'
 import tabIconHtml from './assets/file-html.png'
 
+// help tabs ship no binary asset; a small inline question-mark book glyph keeps the Record total
+const HELP_ICON_SRC =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5" fill="none" stroke="%235b6472" stroke-width="1.8"/><path d="M9.2 9.6c.2-1.2 1.3-2 2.7-2 1.5 0 2.7 1 2.7 2.3 0 1.9-2.6 2-2.6 3.7" fill="none" stroke="%235b6472" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="16.6" r="1.1" fill="%235b6472"/></svg>',
+  )
 const KIND_ICONS: Record<DockTabSummary['kind'], string> = {
   docs: tabIconDocx,
   sheets: tabIconXlsx,
@@ -17,6 +23,7 @@ const KIND_ICONS: Record<DockTabSummary['kind'], string> = {
   pdf: tabIconPdf,
   markdown: tabIconMd,
   html: tabIconHtml,
+  help: HELP_ICON_SRC,
 }
 
 /**

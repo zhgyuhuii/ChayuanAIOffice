@@ -1,6 +1,16 @@
 import type { zh } from './zh'
 
 export const vi = {
+  redactMenuLabel: 'Ẩn phần đã chọn khỏi AI',
+  redactDialogDesc:
+    'Nội dung đã chọn vẫn còn trong tài liệu và tệp; mô hình chỉ thấy placeholder bên dưới. Đặt tên để mô hình biết nó đại diện cho điều gì.',
+  redactDialogScope:
+    'Điều này chỉ áp dụng cho AI trong ứng dụng này. CLI, các công cụ MCP và bản xuất không có cửa sổ đều đọc thẳng tệp, nên chúng vẫn thấy những từ này.',
+  redactDialogPlaceholder: 'Tên placeholder, ví dụ: số điện thoại khách hàng',
+  redactCancel: 'Hủy',
+  redactInsert: 'Ẩn',
+  redactEnable: 'Nhấp chuột phải vào phần đã chọn để ẩn khỏi mô hình.',
+
   appPhPromptTitle: 'Bấm để thêm tiêu đề',
   appPhPromptSubtitle: 'Bấm để thêm phụ đề',
   appPhPromptBody: 'Bấm để thêm văn bản',
@@ -237,13 +247,13 @@ export const vi = {
   appRehearseDiscard: 'Không lưu',
   appRehearseSave: 'Lưu',
   appSettingsTitle: 'Cài đặt AI',
-  appSettingsAccount: 'Tài khoản Genspark',
+  appSettingsAccount: 'Tài khoản ChaAI Office',
   appSettingsChecking: 'Đang kiểm tra…',
   appSettingsLoggedIn: 'Đã đăng nhập',
   appSettingsLoggedInEmail: 'Đã đăng nhập: {email}',
-  appSettingsLoggedOut: 'Chưa đăng nhập (các tính năng AI yêu cầu tài khoản Genspark)',
+  appSettingsLoggedOut: 'Chưa đăng nhập (các tính năng AI yêu cầu tài khoản ChaAI Office)',
   appSettingsLoginPending: 'Đang chờ đăng nhập trên trình duyệt…',
-  appSettingsLogin: 'Đăng nhập vào Genspark',
+  appSettingsLogin: 'Đăng nhập vào ChaAI Office',
   appSettingsModel: 'Mô hình',
   appSettingsCancel: 'Hủy',
   appSettingsSave: 'Lưu',

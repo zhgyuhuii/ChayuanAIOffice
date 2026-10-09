@@ -106,6 +106,12 @@ export async function saveWorkbookPlan(
         level: op.level,
         ...(op.collapsed === undefined ? {} : { collapsed: op.collapsed }),
       })
+    } else if ('summaryBelow' in op) {
+      sheetOps.push({
+        kind: op.kind,
+        summaryBelow: op.summaryBelow,
+        summaryRight: op.summaryRight,
+      })
     } else if ('hidden' in op) {
       sheetOps.push({ kind: op.kind, start: op.start, end: op.end, hidden: op.hidden })
     } else if ('style' in op) {

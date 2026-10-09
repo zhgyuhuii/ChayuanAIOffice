@@ -12,7 +12,7 @@ import {
 } from 'node:fs'
 import { copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
-import { homedir } from 'node:os'
+import { homedir, userInfo } from 'node:os'
 import { basename, dirname, isAbsolute, join } from 'node:path'
 
 import {
@@ -28,6 +28,7 @@ import {
   session as electronSession,
   shell,
   systemPreferences,
+  webContents,
   WebContentsView,
 } from 'electron'
 import type {
@@ -52,6 +53,7 @@ import {
   fetchRemoteImage,
   installContextMenu,
   installNavigationGuard,
+  isHeadlessMode,
   printHtmlToPdf,
   safeExternalUrl,
   showOpenDialogWithMemory,
@@ -115,7 +117,10 @@ import {
   aiChatRequestSchema,
   workbookFileSchema,
   workbookFormulaCellsRequestSchema,
+  workbookRowOutlineResultSchema,
   workbookFormulaCellsResultSchema,
+  workbookFindCellsRequestSchema,
+  workbookFindCellsResultSchema,
   workbookRecalcRequestSchema,
   workbookRecalcResultSchema,
   workbookMediaRequestSchema,
@@ -130,6 +135,7 @@ import {
   workbookCreateDocumentRequestSchema,
   workbookExportCsvRequestSchema,
   workbookExportPdfRequestSchema,
+  printerInfoSchema,
   workbookRangeRequestSchema,
   workbookRangeResultSchema,
   workbookSaveEditsAbortSchema,
@@ -1105,7 +1111,7 @@ const tMain = createI18n({
       'Obrázkové přílohy neobsahují text; obrázek se odesílá spolu se zprávou uživatele',
     errNotImage: 'nepodporovaný typ obrázku',
     errChaOfficeNotLoggedIn:
-      'Nejste přihlášeni ke Genspark: klikněte níže na „Přihlásit se ke Genspark“, přihlaste se a zkuste to znovu',
+      'Nejste přihlášeni ke ChaAI Office: klikněte níže na „Přihlásit se ke ChaAI Office“, přihlaste se a zkuste to znovu',
     errNoApiKey: 'Pro {provider} není nakonfigurován žádný klíč API',
     errAiBusy: 'Služba AI je momentálně zaneprázdněna — zkuste to prosím za chvíli znovu',
     errNoModel: 'Není nakonfigurován název modelu',
@@ -1431,7 +1437,7 @@ const tMain = createI18n({
       'Tệp đính kèm hình ảnh không có văn bản; hình ảnh được gửi cùng với tin nhắn của người dùng',
     errNotImage: 'loại hình ảnh không được hỗ trợ',
     errChaOfficeNotLoggedIn:
-      'Chưa đăng nhập vào Genspark: nhấp vào “Đăng nhập vào Genspark” bên dưới, đăng nhập, sau đó thử lại',
+      'Chưa đăng nhập vào ChaAI Office: nhấp vào “Đăng nhập vào ChaAI Office” bên dưới, đăng nhập, sau đó thử lại',
     errNoApiKey: 'Chưa cấu hình khóa API cho {provider}',
     errAiBusy: 'Dịch vụ AI hiện đang bận — vui lòng thử lại sau giây lát',
     errNoModel: 'Chưa cấu hình tên mô hình',
@@ -1621,6 +1627,9 @@ export function configureSheetsRuntime(config: SheetsRuntimeConfig): void {
  * (shell) or reveal it in the folder (standalone). Tab-opening failure must
  * not report the write itself as failed — the file is already persisted. */
 function openGeneratedFile(path: string): void {
+  // Headless export must stay silent: no tab, no file-manager window
+  // (same guard as markdown-main's openExportedPdf, chatoffice#1815).
+  if (isHeadlessMode()) return
   try {
     if (runtime.openGeneratedPath?.(path)) return
   } catch (err) {
@@ -2588,6 +2597,15 @@ export function registerSheetsIpc(): void {
   if (coreIpcRegistered) return
   coreIpcRegistered = true
 
+  ipcMain.handle(IPC_CHANNELS.userDisplayName, (event): string => {
+    sessionFor(event)
+    try {
+      return userInfo().username
+    } catch {
+      return ''
+    }
+  })
+
   // Registered here (not in registerSheetsAiIpc, skipped in shell mode):
   // slides' ai:generate-image only exists once a slides view opens, so sheets
   // owns its channel the way pdf does. BYOK image model first (no login
@@ -2892,6 +2910,22 @@ export function registerSheetsIpc(): void {
     return workbookFormulaCellsResultSchema.parse(result)
   })
 
+  ipcMain.handle(IPC_CHANNELS.findWorkbookCells, async (event, input: unknown) => {
+    const entry = sessionFor(event)
+    const request = workbookFindCellsRequestSchema.parse(input)
+    if (!entry.sessions.has(request.sessionId)) throw new Error('Unknown workbook session.')
+    const result = await entry.client.findCells(request)
+    return workbookFindCellsResultSchema.parse(result)
+  })
+
+  ipcMain.handle(IPC_CHANNELS.readWorkbookRowOutline, async (event, input: unknown) => {
+    const entry = sessionFor(event)
+    const request = workbookFormulaCellsRequestSchema.parse(input)
+    if (!entry.sessions.has(request.sessionId)) throw new Error('Unknown workbook session.')
+    const result = await entry.client.readRowOutline(request)
+    return workbookRowOutlineResultSchema.parse(result)
+  })
+
   // IronCalc recalculation: sheet ids resolve through the session's file
   // sheet names, so the renderer never sees paths and sheets added this
   // session (no file part) fail closed before reaching the engine.
@@ -3102,6 +3136,17 @@ export function registerSheetsIpc(): void {
   ipcMain.handle(IPC_CHANNELS.printWorkbook, async (event, input: unknown) => {
     sessionFor(event)
     return printWorkbook(event, workbookExportPdfRequestSchema.parse(input))
+  })
+
+  ipcMain.handle(IPC_CHANNELS.listPrinters, async (event) => {
+    sessionFor(event)
+    const printers = await event.sender.getPrintersAsync()
+    return printers.map((printer) =>
+      printerInfoSchema.parse({
+        name: printer.name,
+        displayName: printer.displayName || printer.name,
+      }),
+    )
   })
 
   ipcMain.handle(IPC_CHANNELS.exportCsv, async (event, input: unknown) => {
@@ -3620,7 +3665,14 @@ export function registerSheetsAiIpc(): void {
       },
       watch: (p, cb) => {
         try {
-          const w = watch(p, () => cb())
+          const w = watch(p, () => {
+            cb()
+            // ai-settings.json was rewritten (any renderer or externally):
+            // tell every renderer to re-read, mirroring upstream's
+            // ai:set-settings → ai:settings-changed broadcast
+            for (const wc of webContents.getAllWebContents())
+              if (!wc.isDestroyed()) wc.send(IPC_CHANNELS.aiSettingsChanged)
+          })
           return () => w.close()
         } catch {
           return () => {}
@@ -3903,6 +3955,7 @@ async function writeWorkbookTo(
   const renames: { sheetName: string; newName: string }[] = []
   const removals: string[] = []
   const hiddenChanges: { sheetName: string; hidden: boolean }[] = []
+  const tabColorStates: { sheetName: string; color: string | null }[] = []
   let orderChanged = false
   for (const op of request.sheetOps) {
     if (op.kind === 'add-sheet') {
@@ -3927,6 +3980,8 @@ async function writeWorkbookTo(
     if (op.kind === 'rename-sheet') renames.push({ sheetName, newName: op.newName })
     else if (op.kind === 'set-sheet-hidden') {
       hiddenChanges.push({ sheetName, hidden: op.hidden })
+    } else if (op.kind === 'set-sheet-tab-color') {
+      tabColorStates.push({ sheetName, color: op.color })
     } else removals.push(sheetName)
   }
   const renameByOriginal = new Map(renames.map((rename) => [rename.sheetName, rename.newName]))
@@ -3936,7 +3991,7 @@ async function writeWorkbookTo(
     return sheetName
   }
   let sheetPlan: SheetEditPlan | undefined
-  if (request.sheetOps.length > 0) {
+  if (request.sheetOps.some((op) => op.kind !== 'set-sheet-tab-color')) {
     sheetPlan = {
       renames,
       additions: [...addedSheetNames].map(([sheetId, name]) => ({
@@ -3985,6 +4040,12 @@ async function writeWorkbookTo(
         level: op.level,
         ...(op.collapsed === undefined ? {} : { collapsed: op.collapsed }),
       })
+    } else if ('summaryBelow' in op) {
+      sheetOps.push({
+        kind: op.kind,
+        summaryBelow: op.summaryBelow,
+        summaryRight: op.summaryRight,
+      })
     } else if ('hidden' in op) {
       sheetOps.push({ kind: op.kind, start: op.start, end: op.end, hidden: op.hidden })
     } else if ('style' in op) {
@@ -4025,9 +4086,9 @@ async function writeWorkbookTo(
     sheetName: resolveSheetName(state.sheetId),
     rules: state.rules,
   }))
-  const sheetProtections = request.sheetProtections.map((state) => ({
-    sheetName: resolveSheetName(state.sheetId),
-    protected: state.protected,
+  const sheetProtections = request.sheetProtections.map(({ sheetId, ...state }) => ({
+    sheetName: resolveSheetName(sheetId),
+    ...state,
   }))
   const protectedRangeStates = request.protectedRangeStates.map((state) => ({
     sheetName: resolveSheetName(state.sheetId),
@@ -4055,6 +4116,18 @@ async function writeWorkbookTo(
     columnNames: table.columnNames,
     style: table.style,
     bandedRows: table.bandedRows,
+    options: {
+      headerRow: table.headerRow,
+      totalsRow: table.totalsRow,
+      firstColumn: table.firstColumn,
+      lastColumn: table.lastColumn,
+      bandedColumns: table.bandedColumns,
+      filterButton: table.filterButton,
+    },
+  }))
+  const tableEdits = (request.tableEdits ?? []).map(({ sheetId, ...edit }) => ({
+    ...edit,
+    sheetName: resolveSheetName(sheetId),
   }))
   const pivotAdditions = request.pivotAdditions.map((pivot) => ({
     sheetName: resolveSheetName(pivot.sheetId),
@@ -4066,6 +4139,8 @@ async function writeWorkbookTo(
     rowFieldIndices: pivot.rowFieldIndices,
     columnFieldIndex: pivot.columnFieldIndex,
     pageFieldIndices: pivot.pageFieldIndices,
+    pageLevelItems: pivot.pageLevelItems,
+    pageItems: pivot.pageItems,
     rowItems: pivot.rowItems,
     rowLevelItems: pivot.rowLevelItems,
     rowLines: pivot.rowLines,
@@ -4118,6 +4193,7 @@ async function writeWorkbookTo(
     cfStates,
     dvStates,
     sheetProtections,
+    tabColorStates,
     definedNamesState: request.definedNamesState,
     themeState: request.themeState,
     workbookProtectionState: request.workbookProtectionState,
@@ -4126,6 +4202,7 @@ async function writeWorkbookTo(
     pageSetupStates,
     noteStates,
     tableAdditions,
+    tableEdits,
     pivotAdditions,
     sparklineAdditions,
     formulaValues,

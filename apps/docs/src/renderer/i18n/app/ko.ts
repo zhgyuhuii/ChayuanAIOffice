@@ -665,4 +665,5 @@ export const ko = {
   appGoToNotFound: '찾을 수 없음',
   appGoToPrevious: '이전',
   appGoToNext: '다음',
+appParaUnitChars: '문자',
 } satisfies Record<keyof typeof zh, string>

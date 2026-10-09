@@ -22,6 +22,7 @@ import {
   type StockSource,
 } from '@chatoffice/ai-search'
 import { fetchRemoteImage } from '@chatoffice/electron-utils/remote-image'
+import { abortOnDestroyed } from '@chatoffice/electron-utils'
 import { CHATOP_LOCAL_AGENT_ID, CHATOP_LOCAL_PROFILE_ID, parseChatopProxyKey } from '@chatoffice/ai-provider'
 import {
   createVideoTaskRegistry,
@@ -112,7 +113,13 @@ export interface IpcMainLike {
 
 /** the sender half of an invoke event, as far as the stream loop cares */
 export interface StreamEventLike {
-  sender: { isDestroyed(): boolean; send(channel: string, ...data: unknown[]): void }
+  sender: {
+    isDestroyed(): boolean
+    send(channel: string, ...data: unknown[]): void
+    // real WebContents has both; unit-test mocks may omit them
+    once?(event: 'destroyed', listener: () => void): unknown
+    removeListener?(event: 'destroyed', listener: () => void): unknown
+  }
 }
 
 /** download an https/data URL → base64 + mime (SSRF-guarded, retried); null when unreachable */
@@ -392,6 +399,12 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
     const { requestId, settings: selection } = wireRequest
     const controller = new AbortController()
     activeStreams.set(requestId, controller)
+    // the panel (or whole window) dying must stop the provider stream, not just mute its chunks
+    const sender = streamEvent.sender
+    const unwatchSender =
+      typeof sender.once === 'function' && typeof sender.removeListener === 'function'
+        ? abortOnDestroyed(sender as Parameters<typeof abortOnDestroyed>[0], controller)
+        : () => {}
     const send = (chunk: AiStreamChunk) => {
       if (!streamEvent.sender.isDestroyed()) {
         streamEvent.sender.send('ai:stream-chunk', chunk)
@@ -411,6 +424,7 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
         send,
       )
     } finally {
+      unwatchSender()
       activeStreams.delete(requestId)
     }
   })

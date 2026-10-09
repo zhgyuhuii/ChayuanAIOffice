@@ -16,7 +16,6 @@ export const de = {
   ribbonPin: 'Menüband anheften',
   ribbonExpand: 'Menüband erweitern',
   ribbonCompact: 'Kompaktes Menüband (nur Symbole)',
-  ribbonExpandFull: 'Menüband erweitern',
   ribbonTabView: 'Ansicht',
   ribbonTabTableDesign: 'Tabellenentwurf',
   ribbonTabTableLayout: 'Tabellenlayout',

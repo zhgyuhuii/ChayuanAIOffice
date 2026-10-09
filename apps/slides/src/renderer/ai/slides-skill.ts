@@ -26,6 +26,9 @@ import { allocateImagery, resolveDeckImageSource } from './image-source'
 import { rasterizeSvg } from './svg-raster'
 import { t } from '../i18n/locale'
 import _systemPrompt from './prompts/system.md?raw'
+import { placeholderInstruction } from './redact'
+import { textForModel, redactLabelsOf } from './redact-view'
+import { redactGuardFor } from './redact-guard'
 
 const PARAGRAPHS_DEF = {
   paragraphs: {
@@ -1320,27 +1323,16 @@ function targetError(
 /** Element info shared by outline/read_slide/edit scripts (includes absolute geometry; locked = layout decoration, read-only). */
 type NodeInfo = LayoutScriptElement
 
-function nodeText(n: RenderNode): string {
-  if (n.type === 'shape' || n.type === 'text') {
-    return ((n as ShapeRenderNode).text?.lines ?? [])
-      .map((line) => line.runs.map((r) => r.text).join(''))
-      .join('\n')
-  }
-  if (n.type === 'table') {
-    // Tables join cell text row by row (tab-separated) so the AI can read table content
-    const byRow = new Map<number, string[]>()
-    for (const c of n.cells) {
-      const t = (c.text?.lines ?? []).map((l) => l.runs.map((r) => r.text).join('')).join(' ')
-      const row = byRow.get(c.y) ?? []
-      row.push(t)
-      byRow.set(c.y, row)
-    }
-    return [...byRow.entries()]
-      .sort((a, b) => a[0] - b[0])
-      .map(([, r]) => r.join('\t'))
-      .join('\n')
-  }
-  return ''
+/**
+ * The element's text as the model reads it.
+ *
+ * Delegates to `textForModel`, which substitutes a withheld span for its marker.
+ * `forDisplay` defaults to false, so this whole file gets the redacted view
+ * without having to know withholding exists; the reader's own find-and-replace
+ * asks for the raw words explicitly.
+ */
+function nodeText(n: RenderNode, forDisplay = false): string {
+  return textForModel(n, forDisplay)
 }
 
 /** Max font size of the text (pt, converted back from px); returns undefined when there is no text. */
@@ -1568,6 +1560,20 @@ The system executes it and sends back a "[Tool result: ...]" message. Then eithe
 
 export function createSlidesSkill(access: DeckAccess): AgentSkill {
   // The HTML pipeline was already used in this conversation → later calls without an explicit mode default to append.
+  /**
+   * Every label withheld anywhere in the deck, in first-seen order.
+   *
+   * Read from the render tree the tools already use, so the instruction and the
+   * text the model is shown cannot disagree about what is withheld.
+   */
+  function deckRedactLabels(access: DeckAccess): string[] {
+    const seen = new Set<string>()
+    for (const slide of access.getSlides()) {
+      for (const label of redactLabelsOf(slide)) seen.add(label)
+    }
+    return [...seen]
+  }
+
   // Safety net for when the AI ignores the "pass all pages at once" constraint: separate calls no longer overwrite each other (P0-1).
   const state: SkillState = { htmlGenerated: false }
   // Live view, same gate as the `tools` getter below: generate_image is
@@ -1580,9 +1586,18 @@ export function createSlidesSkill(access: DeckAccess): AgentSkill {
     id: 'slides',
     // live like tools: the off-note overrides the prose that still mentions the hidden tool
     get systemPrompt() {
-      return access.imageModelAvailable?.() === false
-        ? AGENT_SYSTEM_PROMPT + NO_IMAGE_MODEL_NOTE
-        : AGENT_SYSTEM_PROMPT
+      // LOCAL: 无生图模型时追加 off-note（上游 mediaToolsOffNote 的本地对应物，
+      // 本地工具面无 analyze_media，off-note 只覆盖 generate_image）
+      const base =
+        access.imageModelAvailable?.() === false
+          ? AGENT_SYSTEM_PROMPT + NO_IMAGE_MODEL_NOTE
+          : AGENT_SYSTEM_PROMPT
+      // spans the reader withheld are named here, from the live deck, so the
+      // model can see the marker exists and write around it. A deck with none
+      // pays nothing and is not told to look for markers that are not there.
+      const labels = deckRedactLabels(access)
+      const redact = labels.length > 0 ? `\n\n${placeholderInstruction(labels)}` : ''
+      return base + redact
     },
     // live view: imageModelAvailable is re-read before every model request
     get tools() {
@@ -1841,6 +1856,14 @@ function preflightOps(
     }
     const op = { ...(raw as Record<string, unknown>) }
     const name = op.op as string
+    // A span withheld from the model is a mark over real words, so an edit that
+    // rewrites or drops those words costs the reader data they chose to keep.
+    // Checked here, before anything is dispatched — apply_ops is atomic, so a
+    // refusal leaves the deck exactly as it was.
+    const guard = redactGuardFor(op, slides)
+    if (guard) {
+      return fail(t('aiFailApplyOps'), `ops[${i}] ${name}: ${guard.reason}`)
+    }
     if (SCRATCH_GUARDED_OPS.has(name)) {
       const blocked = blockScratchBuild(
         name === 'addSmartArt' ? 'smartart' : 'element',

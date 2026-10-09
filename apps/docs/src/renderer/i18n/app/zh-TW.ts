@@ -653,4 +653,5 @@ export const zhTW = {
   appGoToNotFound: '找不到',
   appGoToPrevious: '上一個',
   appGoToNext: '下一個',
+appParaUnitChars: '字元',
 } satisfies Record<keyof typeof zh, string>

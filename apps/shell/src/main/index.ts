@@ -144,12 +144,15 @@ import {
   requestDocsClose,
   readRecentFiles,
   readStarredFiles,
+  readStarredGroupMap,
+  readStarredGroups,
   recordRecentFile,
   removeRecentFiles,
   removeStarredFiles,
   replaceRecentFile,
   registerAiIpc,
   registerProjectIpc,
+  setStarredGroup,
   toggleStarredFile,
   forwardRelayCommand,
   queueDocsSaveDir,
@@ -814,6 +817,7 @@ const tMain = createI18n({
     menuActivateFree: '免费体验中 · 剩 {n} 天',
     menuActivateExpired: '体验期已结束 · 购买后提醒消失',
     menuPurchaseActivate: '购买 / 激活…',
+    menuUserGuide: '使用手册',
     thirdPartyNotices: '第三方软件声明',
     menuExportDocx: '导出为 Word…',
     menuExportDocxLocal: '导出为 Word（本地）…',
@@ -926,6 +930,7 @@ const tMain = createI18n({
     menuActivateFree: 'Free trial · {n} days left',
     menuActivateExpired: 'Trial ended · buy to stop reminders',
     menuPurchaseActivate: 'Purchase / Activate…',
+    menuUserGuide: 'User Guide',
     thirdPartyNotices: 'Third-Party Notices',
     menuExportDocx: 'Export as Word…',
     menuExportDocxLocal: 'Export as Word（本地）…',
@@ -1043,6 +1048,7 @@ const tMain = createI18n({
     errUnsupportedExt: 'Tệp .{ext} không được hỗ trợ',
     copySuffix: 'bản sao',
     menuHelp: 'Trợ giúp',
+    menuUserGuide: 'Hướng dẫn sử dụng',
     thirdPartyNotices: 'Thông báo của bên thứ ba',
     menuExportDocx: 'Xuất dưới dạng Word…',
     btnCancel: 'Hủy',
@@ -1169,6 +1175,7 @@ const tMain = createI18n({
     menuActivateFree: '無料体験中 · 残り {n} 日',
     menuActivateExpired: '体験期間終了 · 購入で通知が消えます',
     menuPurchaseActivate: '購入 / アクティベート…',
+    menuUserGuide: 'ユーザーガイド',
     thirdPartyNotices: 'サードパーティソフトウェアに関する通知',
     menuExportDocx: 'Word として書き出す…',
     menuExportDocxLocal: 'Word として書き出す（本地）…',
@@ -1292,6 +1299,7 @@ const tMain = createI18n({
     menuActivateFree: '무료 체험 중 · {n}일 남음',
     menuActivateExpired: '체험 기간 종료 · 구매 시 알림이 사라집니다',
     menuPurchaseActivate: '구매 / 활성화…',
+    menuUserGuide: '사용자 가이드',
     thirdPartyNotices: '타사 소프트웨어 고지',
     menuExportDocx: 'Word로 내보내기…',
     menuExportDocxLocal: 'Word로 내보내기（本地）…',
@@ -1414,6 +1422,7 @@ const tMain = createI18n({
     menuActivateFree: 'Essai gratuit · {n} jours restants',
     menuActivateExpired: 'Essai terminé · achetez pour arrêter les rappels',
     menuPurchaseActivate: 'Acheter / Activer…',
+    menuUserGuide: "Guide de l'utilisateur",
     thirdPartyNotices: 'Mentions relatives aux logiciels tiers',
     menuExportDocx: 'Exporter en Word…',
     menuExportDocxLocal: 'Exporter en Word（本地）…',
@@ -1538,6 +1547,7 @@ const tMain = createI18n({
     menuActivateFree: 'Kostenlose Testphase · {n} Tage übrig',
     menuActivateExpired: 'Testphase beendet · Kauf stoppt die Erinnerungen',
     menuPurchaseActivate: 'Kaufen / Aktivieren…',
+    menuUserGuide: 'Benutzerhandbuch',
     thirdPartyNotices: 'Hinweise zu Drittanbietersoftware',
     menuExportDocx: 'Als Word exportieren…',
     menuExportDocxLocal: 'Als Word exportieren（本地）…',
@@ -1662,6 +1672,7 @@ const tMain = createI18n({
     menuActivateFree: 'Prueba gratis · quedan {n} días',
     menuActivateExpired: 'Prueba terminada · compra para quitar recordatorios',
     menuPurchaseActivate: 'Comprar / Activar…',
+    menuUserGuide: 'Guía del usuario',
     thirdPartyNotices: 'Avisos de software de terceros',
     menuExportDocx: 'Exportar como Word…',
     menuExportDocxLocal: 'Exportar como Word（本地）…',
@@ -1786,6 +1797,7 @@ const tMain = createI18n({
     menuActivateFree: 'Free trial · {n} days left',
     menuActivateExpired: 'Trial ended · buy to stop reminders',
     menuPurchaseActivate: 'Purchase / Activate…',
+    menuUserGuide: 'คู่มือผู้ใช้',
     thirdPartyNotices: 'ประกาศเกี่ยวกับซอฟต์แวร์ของบุคคลที่สาม',
     menuExportDocx: 'ส่งออกเป็น Word…',
     menuExportDocxLocal: 'ส่งออกเป็น Word（本地）…',
@@ -1905,6 +1917,7 @@ const tMain = createI18n({
     menuActivateFree: 'Free trial · {n} days left',
     menuActivateExpired: 'Trial ended · buy to stop reminders',
     menuPurchaseActivate: 'Purchase / Activate…',
+    menuUserGuide: 'Panduan Pengguna',
     thirdPartyNotices: 'Pemberitahuan Perangkat Lunak Pihak Ketiga',
     menuExportDocx: 'Ekspor sebagai Word…',
     menuExportDocxLocal: 'Ekspor sebagai Word（本地）…',
@@ -2029,6 +2042,7 @@ const tMain = createI18n({
     menuActivateFree: 'Бесплатный период · осталось {n} дн.',
     menuActivateExpired: 'Период закончился · покупка уберёт напоминания',
     menuPurchaseActivate: 'Купить / Активировать…',
+    menuUserGuide: 'Руководство пользователя',
     thirdPartyNotices: 'Уведомления о стороннем ПО',
     menuExportDocx: 'Экспортировать в Word…',
     menuExportDocxLocal: 'Экспортировать в Word（本地）…',
@@ -2153,6 +2167,7 @@ const tMain = createI18n({
     menuActivateFree: 'Free trial · {n} days left',
     menuActivateExpired: 'Trial ended · buy to stop reminders',
     menuPurchaseActivate: 'Purchase / Activate…',
+    menuUserGuide: 'دليل المستخدم',
     thirdPartyNotices: 'إشعارات برامج الجهات الخارجية',
     menuExportDocx: 'تصدير كملف Word…',
     menuExportDocxLocal: 'تصدير كملف Word（本地）…',
@@ -2272,6 +2287,7 @@ const tMain = createI18n({
     menuActivateFree: 'Teste grátis · {n} dias restantes',
     menuActivateExpired: 'Teste encerrado · compre para parar os lembretes',
     menuPurchaseActivate: 'Comprar / Ativar…',
+    menuUserGuide: 'Guia do Usuário',
     thirdPartyNotices: 'Avisos de software de terceiros',
     menuExportDocx: 'Exportar como Word…',
     menuExportDocxLocal: 'Exportar como Word（本地）…',
@@ -2396,6 +2412,7 @@ const tMain = createI18n({
     menuActivateFree: 'Prova gratuita · {n} giorni rimasti',
     menuActivateExpired: 'Prova terminata · acquista per fermare i promemoria',
     menuPurchaseActivate: 'Acquista / Attiva…',
+    menuUserGuide: "Guida dell'utente",
     thirdPartyNotices: 'Note sul software di terze parti',
     menuExportDocx: 'Esporta come Word…',
     menuExportDocxLocal: 'Esporta come Word（本地）…',
@@ -2520,6 +2537,7 @@ const tMain = createI18n({
     menuActivateFree: 'Darmowy okres · pozostało {n} dni',
     menuActivateExpired: 'Okres próbny zakończony · zakup wyłącza przypomnienia',
     menuPurchaseActivate: 'Kup / Aktywuj…',
+    menuUserGuide: 'Podręcznik użytkownika',
     thirdPartyNotices: 'Informacje o oprogramowaniu innych firm',
     menuExportDocx: 'Eksportuj jako Word…',
     menuExportDocxLocal: 'Eksportuj jako Word（本地）…',
@@ -2644,6 +2662,7 @@ const tMain = createI18n({
     menuActivateFree: 'Free trial · {n} days left',
     menuActivateExpired: 'Trial ended · buy to stop reminders',
     menuPurchaseActivate: 'Purchase / Activate…',
+    menuUserGuide: 'Uživatelská příručka',
     thirdPartyNotices: 'Informace o softwaru třetích stran',
     menuExportDocx: 'Exportovat jako Word…',
     btnCancel: 'Zrušit',
@@ -2763,6 +2782,7 @@ const tMain = createI18n({
     menuActivateFree: 'Free trial · {n} days left',
     menuActivateExpired: 'Trial ended · buy to stop reminders',
     menuPurchaseActivate: 'Purchase / Activate…',
+    menuUserGuide: 'Gebruikershandleiding',
     thirdPartyNotices: 'Kennisgevingen over software van derden',
     menuExportDocx: 'Exporteren als Word…',
     menuExportDocxLocal: 'Exporteren als Word（本地）…',
@@ -2887,6 +2907,7 @@ const tMain = createI18n({
     menuActivateFree: 'Free trial · {n} days left',
     menuActivateExpired: 'Trial ended · buy to stop reminders',
     menuPurchaseActivate: 'Purchase / Activate…',
+    menuUserGuide: 'Panduan Pengguna',
     thirdPartyNotices: 'Notis Perisian Pihak Ketiga',
     menuExportDocx: 'Eksport sebagai Word…',
     menuExportDocxLocal: 'Eksport sebagai Word（本地）…',
@@ -3010,6 +3031,7 @@ const tMain = createI18n({
     menuActivateFree: 'Free trial · {n} days left',
     menuActivateExpired: 'Trial ended · buy to stop reminders',
     menuPurchaseActivate: 'Purchase / Activate…',
+    menuUserGuide: 'מדריך למשתמש',
     thirdPartyNotices: 'הודעות על תוכנות צד שלישי',
     menuExportDocx: 'ייצוא כ-Word…',
     menuExportDocxLocal: 'ייצוא כ-Word（本地）…',
@@ -3129,6 +3151,7 @@ const tMain = createI18n({
     menuActivateFree: 'Free trial · {n} days left',
     menuActivateExpired: 'Trial ended · buy to stop reminders',
     menuPurchaseActivate: 'Purchase / Activate…',
+    menuUserGuide: 'उपयोगकर्ता गाइड',
     thirdPartyNotices: 'तृतीय-पक्ष सॉफ़्टवेयर सूचनाएँ',
     menuExportDocx: 'Word के रूप में निर्यात करें…',
     menuExportDocxLocal: 'Word के रूप में निर्यात करें（本地）…',
@@ -3253,6 +3276,7 @@ const tMain = createI18n({
     menuActivateFree: '免費體驗中 · 剩 {n} 天',
     menuActivateExpired: '體驗期已結束 · 購買後提醒消失',
     menuPurchaseActivate: '購買 / 啟用…',
+    menuUserGuide: '使用手冊',
     thirdPartyNotices: '第三方軟體聲明',
     menuExportDocx: '匯出為 Word…',
     menuExportDocxLocal: '匯出為 Word（本地）…',
@@ -3557,6 +3581,55 @@ function pendingProjectSaveDir(kind: 'doc' | 'sheet' | 'slide' | 'markdown' | 'p
   return defaultSaveDir()
 }
 
+/**
+ * Put the manual in whatever menu is currently installed. (上游 939116f8)
+ *
+ * Every tab kind builds its own application menu, which is how File and Edit
+ * stay tab-shaped — and which is also why an item added to one builder is
+ * missing from the other six. F1 worked from Home and nowhere else, and the
+ * manual's own shortcut table was wrong for six of the seven tab kinds.
+ *
+ * Injecting after the builder has run is the one place that cannot be
+ * forgotten: a new tab kind gets the manual for free, and a builder that
+ * already has it is left alone rather than getting a second copy.
+ */
+function withUserGuide(): void {
+  const menu = Menu.getApplicationMenu()
+  if (!menu) return
+  const userGuide = {
+    label: tm('menuUserGuide'),
+    accelerator: 'F1',
+    click: () => tabManager?.openHelpTab(),
+  }
+  const help = menu.items.find((item) => item.role === 'help')
+  // Slides and Sheets build a File/Edit/View template with no Help menu at
+  // all, so there is nothing to insert into — one is created instead. Without
+  // this the manual would be reachable from four of the seven tab kinds.
+  if (!help) {
+    menu.append(
+      Menu.buildFromTemplate([{ role: 'help', label: tm('menuHelp'), submenu: [userGuide] }])
+        .items[0]!,
+    )
+    return
+  }
+  const submenu = help.submenu
+  if (!submenu || submenu.items.some((i) => i.accelerator === 'F1')) return
+  // A separator survives a template only *between* two real items — Electron
+  // drops one at either end, so `[userGuide, separator]` builds a single item
+  // and the destructure below used to hand `undefined` to `insert`, which threw
+  // "Invalid item" and took the main process down on the next tab switch. The
+  // third entry is filler, discarded; the type check is what stops this from
+  // silently regressing if Electron's rule ever changes again.
+  const [item, separator] = Menu.buildFromTemplate([
+    userGuide,
+    { type: 'separator' },
+    { role: 'undo' },
+  ]).items
+  if (!item) return
+  submenu.insert(0, item)
+  if (separator?.type === 'separator') submenu.insert(1, separator)
+}
+
 function refreshTitleBarOverlay(): void {
   // adapted（上游 e42da7c7）:本地窗口方案=全平台 titleBarStyle hidden+TabBar 自绘三键
   // （WINDOW_CHANNELS），不启用 titleBarOverlay;在未启用 overlay 的窗口上调用
@@ -3617,15 +3690,17 @@ function createShellWindow(): void {
     // no extension: these tabs have no file on disk yet; the title becomes the
     // real filename (the localized untitled default + .docx etc.) once the first save lands
     (kind) =>
-      kind === 'docs'
-        ? tm('untitledDoc')
-        : kind === 'slides'
-          ? tm('untitledDeck')
-          : kind === 'markdown'
-            ? tm('untitledMarkdown')
-            : kind === 'html'
-              ? tm('untitledHtml')
-              : tm('untitledSheet'),
+      kind === 'help'
+        ? tm('menuUserGuide')
+        : kind === 'docs'
+          ? tm('untitledDoc')
+          : kind === 'slides'
+            ? tm('untitledDeck')
+            : kind === 'markdown'
+              ? tm('untitledMarkdown')
+              : kind === 'html'
+                ? tm('untitledHtml')
+                : tm('untitledSheet'),
   )
   tabManager = manager
 
@@ -3974,6 +4049,8 @@ function applyMenuFor(kind: TabKind): void {
     default:
       buildHomeMenu()
   }
+  // 上游 939116f8：每个菜单构建完成后注入「使用手册」(F1) 项，新 tab 种类免费获得入口
+  withUserGuide()
 }
 
 // ---- routing: one dispatch function for every open path ----
@@ -4720,13 +4797,31 @@ function registerHomeIpc(): void {
   // Starred files sort by mtime, which requires stat-ing them all first; they are hand-picked and few, so this is fine
   ipcMain.handle(HOME_CHANNELS.starred, (_event, query: unknown): RecentPage => {
     const { offset, limit, ext } = normalizeRecentQuery(query)
-    const all = statEntries(readStarredFiles()).sort((a, b) => b.mtimeMs - a.mtimeMs)
+    // the Starred view's group pills scope the whole query (totals included)
+    const raw = (query && typeof query === 'object' ? query : {}) as { group?: unknown }
+    const group = typeof raw.group === 'string' && raw.group ? raw.group : undefined
+    const groupOf = readStarredGroupMap()
+    const scoped = group
+      ? readStarredFiles().filter((p) => groupOf.get(p) === group)
+      : readStarredFiles()
+    const all = statEntries(scoped)
+      .sort((a, b) => b.mtimeMs - a.mtimeMs)
+      .map((entry) => {
+        const g = groupOf.get(entry.path)
+        return g ? { ...entry, group: g } : entry
+      })
     const filtered = ext ? all.filter((entry) => matchesExtFamily(entry.ext, ext)) : all
     return {
       entries: limit === 0 ? [] : filtered.slice(offset, offset + limit),
       total: filtered.length,
       totalAll: all.length,
     }
+  })
+
+  ipcMain.handle(HOME_CHANNELS.starredGroups, (): string[] => readStarredGroups())
+
+  ipcMain.handle(HOME_CHANNELS.setStarredGroup, (_event, paths: unknown, group: unknown) => {
+    setStarredGroup(stringPaths(paths), typeof group === 'string' && group ? group : null)
   })
 
   ipcMain.handle(HOME_CHANNELS.statPaths, (_event, paths: unknown): RecentEntry[] =>
@@ -4898,6 +4993,14 @@ function registerHomeIpc(): void {
     removeStarredFiles(list.filter((p) => !existsSync(p)))
   })
 
+  // Bulk unstar from the Starred view: every row there is a favorite, so the
+  // selection action is "unstar", not "remove from recents" — removeRecent
+  // keeps existing files' stars on purpose, which made the Starred view's
+  // bulk removal a no-op for anything still on disk
+  ipcMain.handle(HOME_CHANNELS.unstarPaths, (_event, paths: unknown) => {
+    removeStarredFiles(stringPaths(paths))
+  })
+
   ipcMain.handle(HOME_CHANNELS.revealPath, (_event, path: unknown) => {
     if (typeof path === 'string' && existsSync(path)) shell.showItemInFolder(path)
   })
@@ -5002,6 +5105,9 @@ function registerHomeIpc(): void {
     }
   })
 
+  ipcMain.handle(HOME_CHANNELS.openHelp, () => {
+    tabManager?.openHelpTab()
+  })
   ipcMain.handle(HOME_CHANNELS.getLanguage, (): Lang => currentLang())
 
   ipcMain.handle(HOME_CHANNELS.setLanguage, (_event, lang: unknown) => {
@@ -5582,6 +5688,7 @@ const TAB_MENU_ICON: Record<TabKind, keyof MenuIconSet> = {
   pdf: 'pdf',
   markdown: 'md',
   html: 'html',
+  help: 'home',
 }
 
 // tab views see neither DOM events nor a focus change when the user clicks the
@@ -6248,6 +6355,8 @@ function buildHomeMenu(): void {
       role: 'help',
       label: tm('menuHelp'),
       submenu: [
+        { label: tm('menuUserGuide'), accelerator: 'F1', click: () => tabManager?.openHelpTab() },
+        { type: 'separator' },
         { label: tm('thirdPartyNotices'), click: () => void openThirdPartyNotices() },
         { type: 'separator' },
         checkUpdatesMenuItem(appMenuLabels(currentLang())),
@@ -7184,6 +7293,16 @@ app.on('second-instance', (_event, argv, _cwd, additionalData) => {
 installNavigationGuard(app)
 installContextMenu(app, () => contextMenuLabels(currentLang()))
 registerAiIpc()
+ipcMain.handle('ai:open-model-settings', () => {
+  const win = shellWindow
+  if (!win || win.isDestroyed()) return
+  // the request may come from a detached window or while the shell is minimized
+  if (win.isMinimized()) win.restore()
+  win.show()
+  win.focus()
+  tabManager?.openHomeTab()
+  win.webContents.send(HOME_CHANNELS.openSettings, { section: 'aiModel' })
+})
 registerProjectIpc()
 registerDocsIpc()
 // External MCP client (Settings → MCP 管理): the app dials OUT to user-registered
@@ -7280,6 +7399,8 @@ app.whenReady().then(async () => {
     pdf: join(PDF_OUT, 'renderer'),
     markdown: join(MARKDOWN_OUT, 'renderer'),
     html: join(HTML_OUT, 'renderer'),
+    // the manual shares the shell's own renderer bundle (help mode)
+    help: join(__dirname, '../renderer'),
   })
   if (headlessArgv.kind !== 'none') {
     await runHeadlessExportEntry(headlessArgv)

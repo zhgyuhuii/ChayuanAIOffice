@@ -652,4 +652,5 @@ export const zh = {
   appGoToNotFound: '未找到',
   appGoToPrevious: '上一个',
   appGoToNext: '下一个',
+appParaUnitChars: '字符',
 }

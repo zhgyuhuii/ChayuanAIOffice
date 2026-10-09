@@ -693,6 +693,20 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 门禁 | typecheck 0（ai-provider/ai-host/docs/sheets/slides/server）；ai-provider 483/ai-host 51/server 25 全绿；真机连跑 key 稳定（修复初版 /models 探针 404 误判导致的 60s 重签互踢） |
 | 收敛条件 | 上游若原生引入 harness 融合/本地模型自动发现，本地发现层退役；dsh home 候选表随察元OS 数据根迁移追加 |
 
+## 第二十三轮·中断续作（2026-10-10，上游 2490e20d..a08c842f 14 提交 1279 文件；shell chatofficeUpstreamVersion→0.11.0）
+
+> 本轮为「输出超限中断续作」：前会话逐提交手贴只完成约 1/6 即因模型输出超限终止；本会话改用**全量 3-way**（base=2490e20d / ours=HEAD / theirs=upstream/main）确定性重建——无重叠文件直接落位、i18n shard 用 TS AST 三方合并工具（本地键保全+上游新键并入+值品牌化）、117 个真冲突文件按 Q3 三档并行裁定。施工前置：22 个并行 WIP 文件（dsh-home/vendor-discovery 等）先行落库保护（155bd6fa），SECURITY.md 按 Q5-② 还原本地版（前会话曾误覆盖）。
+
+| 域 | 内容 |
+|---|---|
+| 上游 14 提交 | 73789848 e2e 单 evaluate / d719c9aa sheets 加载抢焦点 / 665e1912 markdown 图床 / b08e2ebf 10-08 快照巨件（668 文件）/ 20e5fdfc 编号 pPr 顺序 / 36747fca Atlas Cloud / c0e7b66d docs 首行缩进字符单位 / 7f80cf80 快捷键 chord 真绑定 / c91066db shell 收藏组 / 8feee6ae agent-core redact 共享件 / 2e70cbdd slides 隐藏 span / ab53f5bd html 隐藏选区 / 939116f8 shell 图文手册（442 文件）/ a08c842f cli Homebrew 询问 |
+| 特性落位 | markdown：S3/SM.MS/GitHub 图床（image-host.ts+Dialog+粘贴链先传后插）；html：选区涂黑不进模型（redact 全链+QC 门）；slides：隐藏 span+QC 截图过滤+云页可停止+partPath 重锚；shell：收藏组（GroupPicker/批量取消收藏真生效）+图文手册（F1/help tab/21 语言 topics 378 篇+check:help-langs 入 CI）；sheets：焦点回收（focusSheetGrid+inert）、save-scheduler 串行化、晚到编辑跨重开、pivot 网关引擎 buildPivotLayout、两步插入函数、Table Design/Shape Format 情境页、保护表；docs：首行缩进 2 字符、行盒字形位移体系（cssLeadTop/fontBoxCss）、DM Sans/SimSun Latin 字体链、收藏组主进程件；ai-provider：Atlas Cloud；agent-core/ui：redact 共享件；引擎：zip 炸弹 copy_entry_bounded 贯穿、编号 pPr schema 序、mcp http MAX_SESSIONS/host 加固、原子写 fsync |
+| A 区裁定 | 六端 AiPanel 保多会话 PanelTabs（AiModelPicker 不上面板，ui 包留模块+测试）；DockShell/会话池/动画面板/延迟落盘共识全保；ai-search 保 chatoffice 函数 API；cli mcp-launch 维持删除；shell file-targets 接线维持拆除 |
+| 意外收获 | ai-host ai:stream 补 abortOnDestroyed（slides 裁定 flag，上游快照意图）；markdown strings.ts 整块换新洗掉 24 个 A 区 fork 键×20 语言→AST 提取回补进 strings-local（480 行）；source_formats.rs 系 Round 20 漏网旧版（base 即有计数器）→整取上游+cfg(test) 门 |
+| 五轮对比审核 | ①文件级覆盖对账：1279 文件分类，19 可疑项逐一排除，零真实遗漏；②特性符号级：14 提交新增符号 2 个 ❌（e2e 命名空间已修、ci help-langs 步骤已补）；③ours 丢失审计：117 冲突文件本地独有标识符存活核查，全部定性（等价承接/测试网验证）；④删除反向审计：8/9 ✅；⑤语义回归：全部门禁（见下）。审核追加修复：xlsx-gateway refine 补 lineColor、edit-schemas 补锚点级 rotation/flipH/flipV |
+| 挂账 | sheets i18n dialogs vi.ts 少 9 个 fork 本地键（HEAD 继承欠账，en 回退兜底，补译即销）；ai-host 若原生支持 settings-changed 推送可移除 sheets-main 的 fs.watch 包装广播 |
+| 门禁 | typecheck 全仓 0；vitest 全绿：docs 3152/sheets 3437/ai-provider 494/agent-core 176/xlsx-gateway 248/pptx-engine 1294/shell 931/slides 1475/md 1047/pdf 868/html 319/ui 250/docx-engine 1717/pdf2docx 822/cli 313/electron-utils 257…；cargo test 228 全绿；lint 0；品牌 grep 豁免外零残留；check:help-langs 21 语言全齐 |
+
 ## 9. 品牌改名映射表（施工中维护，后续同步机械重放）
 
 | 上游 | 本地 | 说明 |

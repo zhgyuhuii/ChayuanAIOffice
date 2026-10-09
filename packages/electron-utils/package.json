@@ -12,6 +12,7 @@
     "./files-pane-bridge": "./src/files-pane-bridge.ts",
     "./generated-images": "./src/generated-images.ts",
     "./headless-export": "./src/headless-export.ts",
+    "./print-window": "./src/print-window.ts",
     "./remote-image": "./src/remote-image.ts",
     "./renderer-protocol": "./src/renderer-protocol.ts",
     "./renderer-scheme": "./src/renderer-scheme.ts",

@@ -68,7 +68,7 @@ const THEME_OPTIONS = [
   { value: 'dark', labelKey: 'themeDark' },
 ] as const satisfies readonly { value: UiTheme; labelKey: StringKey }[]
 
-// Document page theme (#1811): the canvas/paper preference the editors follow;
+// Document page theme (genoffice#1811): the canvas/paper preference the editors follow;
 // 'follow' keeps the pre-existing behavior of riding the UI theme
 const DOC_THEME_OPTIONS = [
   { value: 'follow', labelKey: 'docThemeFollowApp' },

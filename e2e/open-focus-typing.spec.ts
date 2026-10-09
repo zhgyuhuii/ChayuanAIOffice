@@ -19,11 +19,24 @@ const XLSX = resolve(__dirname, '../apps/sheets/fixtures/generated/compatibility
 
 /** the Home-list click that precedes an open leaves keyboard focus on chrome */
 async function openFromHome(app: ElectronApplication, home: Page, file: string): Promise<void> {
-  await app.evaluate(({ BrowserWindow }) => {
-    const win = BrowserWindow.getAllWindows()[0]
-    win.focus()
-    win.webContents.focus()
-  })
+  // adapted: 上游 d719c9aa——原生窗口激活是异步的，轮询直到窗口与 webContents 双双持焦
+  await expect
+    .poll(
+      async () => {
+        await app.evaluate(({ app: electronApp, BrowserWindow }) => {
+          electronApp.focus({ steal: true })
+          const win = BrowserWindow.getAllWindows()[0]
+          win.focus()
+          win.webContents.focus()
+        })
+        return app.evaluate(({ BrowserWindow }) => {
+          const win = BrowserWindow.getAllWindows()[0]
+          return win.isFocused() && win.webContents.isFocused()
+        })
+      },
+      { timeout: 30_000 },
+    )
+    .toBe(true)
   await home.evaluate(
     (p) =>
       (window as unknown as { aiOffice: { openPath(p: string): Promise<void> } }).aiOffice.openPath(
@@ -34,6 +47,81 @@ async function openFromHome(app: ElectronApplication, home: Page, file: string):
 }
 
 /** the fix's observable end state: the document's editable surface holds focus */
+/** A1 of the active sheet via the debug hooks (chatoffice branding of the upstream helper). */
+async function cellA1Value(page: Page): Promise<unknown> {
+  return page.evaluate(() => {
+    const api = (
+      window as unknown as {
+        __chatofficeDebug: {
+          univerAPI: {
+            getActiveWorkbook(): {
+              getActiveSheet(): { getRange(a: string): { getValue(): unknown } }
+            }
+          }
+        }
+      }
+    ).__chatofficeDebug.univerAPI
+    return api.getActiveWorkbook()?.getActiveSheet()?.getRange('A1')?.getValue() ?? null
+  })
+}
+
+/**
+ * Every layer a typed character has to cross, captured as a snapshot.
+ * Diagnostics only: it changes no assertion, so a failure still fails for the
+ * same reason — it just says which layer dropped the text.
+ */
+type TypingState = {
+  editorPresent: boolean
+  editorText: string | null
+  activeIsEditor: boolean
+  activeIsConnected: boolean | null
+  activeTag: string | null
+  activeId: string | null
+  activeClass: string | null
+  ariaBusy: string | null
+  canvasPresent: boolean
+}
+
+/** The cell Univer considers active, or null when the sheet has no selection. */
+async function activeRangeNotation(page: Page): Promise<string | null> {
+  return page.evaluate(() => {
+    const api = (
+      window as unknown as {
+        __chatofficeDebug?: {
+          univerAPI?: {
+            getActiveWorkbook?: () => {
+              getActiveSheet?: () => {
+                getActiveRange?: () => { getA1Notation?: () => string } | null
+              } | null
+            } | null
+          }
+        }
+      }
+    ).__chatofficeDebug?.univerAPI
+    return (
+      api?.getActiveWorkbook?.()?.getActiveSheet?.()?.getActiveRange?.()?.getA1Notation?.() ?? null
+    )
+  })
+}
+
+async function domState(page: Page): Promise<TypingState> {
+  return page.evaluate(() => {
+    const editor = document.querySelector('#univer-container [contenteditable="true"]')
+    const active = document.activeElement
+    return {
+      editorPresent: editor !== null,
+      editorText: editor?.textContent ?? null,
+      activeIsEditor: editor !== null && active === editor,
+      activeIsConnected: active instanceof HTMLElement ? active.isConnected : null,
+      activeTag: active?.tagName ?? null,
+      activeId: active instanceof HTMLElement ? active.id || null : null,
+      activeClass: active instanceof HTMLElement ? active.getAttribute('class') : null,
+      ariaBusy: document.querySelector('main.app-shell')?.getAttribute('aria-busy') ?? null,
+      canvasPresent: document.querySelector('#univer-container canvas') !== null,
+    }
+  })
+}
+
 async function waitForEditableFocus(page: Page): Promise<void> {
   await page.waitForFunction(() => document.activeElement?.isContentEditable === true, null, {
     timeout: 30_000,
@@ -107,27 +195,98 @@ test('sheets: typing into the active cell works immediately after opening from H
     )
     await expectViewFocused(launched.app, '://sheets/')
     await waitForEditableFocus(sheets)
-
-    await sheets.keyboard.type('4242')
-    await sheets.keyboard.press('Enter')
-    await expect
-      .poll(() =>
-        sheets.evaluate(() => {
-          const api = (
-            window as unknown as {
-              __chatofficeDebug: {
-                univerAPI: {
-                  getActiveWorkbook(): {
-                    getActiveSheet(): { getRange(a: string): { getValue(): unknown } }
-                  }
-                }
-              }
-            }
-          ).__chatofficeDebug.univerAPI
-          return api.getActiveWorkbook()?.getActiveSheet()?.getRange('A1')?.getValue() ?? null
-        }),
+    // adapted: 上游 d719c9aa 断言门 + 3 次重试输入循环收进本地流程（本地无 spare 页柄，
+    // Electron 焦点已由上方 expectViewFocused 把关）
+    // The debug API is published before the file's first range streams in.
+    // Wait for the fixture data and the opening guard before sending keys.
+    await expect.poll(() => cellA1Value(sheets)).toBe('Old')
+    await expect(sheets.locator('main.app-shell')).toHaveAttribute('aria-busy', 'false')
+    await waitForEditableFocus(sheets)
+    // The selection is a readiness signal, not a delay: if this view never
+    // settles on A1 the poll fails and names what it settled on instead.
+    await expect.poll(() => activeRangeNotation(sheets), { timeout: 30_000 }).toBe('A1')
+    // A burst of text can still be dropped after every gate passes: the
+    // editor element is focused and connected, but the adopted view's input
+    // pipeline is not wired to Univer yet, so the editor stays empty and the
+    // Enter that follows only moves the cursor down (CI-only, chatoffice#1150).
+    // Retry exactly that, up to three attempts, keeping every attempt's layer
+    // snapshot in the failure message.
+    const attempts: string[] = []
+    for (let attempt = 1; attempt <= 3; attempt += 1) {
+      // A previous attempt's commit can land after its short poll gave up;
+      // before typing over A1 again, give the value one more moment to show
+      // up — typing over a committed 4242 would append, not overwrite.
+      if (attempt > 1) {
+        try {
+          await expect.poll(() => cellA1Value(sheets), { timeout: 1_000 }).toBe(4242)
+          break
+        } catch {
+          // A1 still holds the old value — walk the cursor back and retype.
+        }
+        for (let up = 0; up < 5; up += 1) {
+          if ((await activeRangeNotation(sheets)) === 'A1') break
+          await sheets.keyboard.press('ArrowUp')
+        }
+        await expect.poll(() => activeRangeNotation(sheets), { timeout: 30_000 }).toBe('A1')
+      }
+      await waitForEditableFocus(sheets)
+      // Two input channels reach a cell, and the CI failures show them failing
+      // independently in an adopted view: the CI-only signature is keydowns
+      // arriving (Enter moves the cursor) while the IME-style text-input
+      // channel (insertText) drops everything — and character-key simulation
+      // can omit input events in the same view (chatoffice#1151's original reason for
+      // insertText). So every attempt alternates the channel instead of
+      // repeating the one that just failed: odd attempts open the editor with
+      // a real keydown and commit the rest via insertText; even attempts type
+      // real characters all the way.
+      const channel = attempt % 2 === 1 ? 'hybrid' : 'typed'
+      if (channel === 'hybrid') {
+        await sheets.keyboard.press('4') // a real keydown: opens the cell editor
+        await sheets.keyboard.insertText('242') // text-input channel for the rest
+      } else {
+        await sheets.keyboard.type('4242') // real keydowns for every character
+      }
+      const afterInsert = await domState(sheets)
+      const focusCtx = await sheets.evaluate(() => {
+        const api = (
+          window as unknown as {
+            __chatofficeDebug?: { focusContext?: () => Record<string, unknown> }
+          }
+        ).__chatofficeDebug
+        return api?.focusContext?.() ?? null
+      })
+      await sheets.keyboard.press('Enter')
+      const afterEnter = await domState(sheets)
+      // A bare Expected/Received says nothing about which layer dropped the
+      // text, and this case only fails on CI, so every layer goes into the
+      // failure message.
+      attempts.push(
+        `attempt ${attempt} (${channel}): editor text before insert: ${JSON.stringify(before.editorText)}, ` +
+          `after insert: ${JSON.stringify(afterInsert.editorText)}, ` +
+          `after enter: ${JSON.stringify(afterEnter.editorText)}; ` +
+          `active element is the editor: ${JSON.stringify(afterInsert.activeIsEditor)} ` +
+          `(${JSON.stringify(afterInsert.activeTag)} ${JSON.stringify(afterInsert.activeId)} ` +
+          `${JSON.stringify(afterInsert.activeClass)}, ` +
+          `connected: ${JSON.stringify(afterInsert.activeIsConnected)}); ` +
+          `active range: ${JSON.stringify(await activeRangeNotation(sheets))}; ` +
+          `aria-busy: ${JSON.stringify(afterEnter.ariaBusy)}; ` +
+          `focus context: ${JSON.stringify(focusCtx)}`,
       )
-      .toBe(4242)
+      try {
+        await expect.poll(() => cellA1Value(sheets), { timeout: 4_000 }).toBe(4242)
+        break
+      } catch (error) {
+        if (attempt === 3)
+          throw new Error(
+            `typing into the adopted spare never reached A1\n${attempts.join('\n')}`,
+            {
+              cause: error,
+            },
+          )
+        // Leave any half-open editor state before retrying from A1.
+        await sheets.keyboard.press('Escape')
+      }
+    }
   } finally {
     await closeAndSaveVideo(launched, 'open-focus-sheets')
   }

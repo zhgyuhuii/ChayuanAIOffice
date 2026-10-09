@@ -36,12 +36,12 @@
     "@chatoffice/storage-adapter": "*",
     "@chatoffice/ui": "*",
     "@chatoffice/xlsx-gateway": "*",
-    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@modelcontextprotocol/sdk": "^1.32.1",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.0.4",
-    "electron": "^43.3.0",
+    "electron": "^43.7.6",
     "electron-builder": "^26.0.12",
     "electron-updater": "^6.8.9",
     "electron-vite": "^5.0.0",
@@ -56,5 +56,5 @@
   "dependencies": {
     "qrcode": "^1.5.4"
   },
-  "chatofficeUpstreamVersion": "0.10.1038"
+  "chatofficeUpstreamVersion": "0.11.0"
 }

@@ -661,4 +661,5 @@ export const ar = {
   appGoToNotFound: 'غير موجود',
   appGoToPrevious: 'السابق',
   appGoToNext: 'التالي',
+appParaUnitChars: 'أحرف',
 } satisfies Record<keyof typeof zh, string>

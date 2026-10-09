@@ -16,7 +16,6 @@ export const it = {
   ribbonPin: 'Aggiungi la barra multifunzione',
   ribbonExpand: 'Espandi la barra multifunzione',
   ribbonCompact: 'Barra multifunzione compatta (solo icone)',
-  ribbonExpandFull: 'Espandi la barra multifunzione',
   ribbonTabView: 'Visualizza',
   ribbonTabTableDesign: 'Progettazione tabella',
   ribbonTabTableLayout: 'Layout tabella',

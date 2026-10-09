@@ -43,13 +43,14 @@ import {
   rendererUrl,
   MAX_REMOTE_IMAGE_BYTES,
   readBodyCapped,
+  printHtmlDocument,
+  type PrintDialogOutcome,
 } from '@chatoffice/electron-utils'
 import { createI18n, getUiLang } from '@chatoffice/i18n'
 import { parseFileToText } from '@chatoffice/file-parse'
 import { generateImageTool } from '@chatoffice/ai-search'
 import { convertHtmlToDocx } from '../../../../packages/html2docx/src'
 import { atomicWriteFile } from './atomic-write'
-import { printHtmlDocument, type PrintDialogOutcome } from './print-window'
 import { ElectronBrowserDriver } from '../../../../packages/html2docx/src/drivers/electron'
 import {
   copyImageIntoOwnedAssets,
@@ -989,9 +990,11 @@ export function sendHtmlPrintRequest(contents: WebContents): void {
   contents.send(HTML_CHANNELS.printRequest)
 }
 
-
 /** File > Print: render the current document and open the system print dialog
- * (upstream #1807; the outcome maps onto PrintResult — cancel stays silent). */
+ * (upstream #1807; the outcome maps onto PrintResult — cancel stays silent).
+ * Scripting stays on here, unlike the PDF export window: Chromium rejects
+ * executeJavaScript under `javascript: false`, and the fonts/images readiness
+ * probe needs it. Print and Export-PDF therefore differ for <script>-built content. */
 function printHtml(html: string, docPath: string | undefined): Promise<PrintDialogOutcome> {
   const base = docPath ? assetBaseHref(dirname(docPath)) : null
   return printHtmlDocument({

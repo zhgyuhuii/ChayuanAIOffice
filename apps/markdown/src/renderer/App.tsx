@@ -34,6 +34,7 @@ import { buildSlashItems } from './editor/slashCommand'
 import type { SlashController, SlashMenuState } from './editor/slashCommand'
 import { dirOf, setImageBaseDir, VIEW_IMAGE_EVENT } from './editor/localImage'
 import { Ribbon } from './components/Ribbon'
+import { ImageHostDialog } from './components/ImageHostDialog'
 import { OutlinePane } from './components/OutlinePane'
 import { SlashMenu, type SlashMenuHandle } from './components/SlashMenu'
 import { ToastHost } from './components/toast'
@@ -227,6 +228,8 @@ export default function App() {
     setSaveState('idle')
     window.markdownApi.setDirty(true)
   }, [])
+
+  const [imageHostOpen, setImageHostOpen] = useState(false)
 
   const insertImage = useCallback(() => {
     void (async () => {
@@ -676,7 +679,8 @@ export default function App() {
         event.preventDefault()
         openFind(false)
       } else if (key === 'h' && !event.shiftKey) {
-        // Word's replace shortcut; macOS Cmd+H is the system hide role and never reaches here
+        // Word's replace shortcut: Ctrl+H on Windows/Linux, Control+H on macOS —
+        // its ⌘H belongs to the system Hide role, so the menu keeps that key
         event.preventDefault()
         openFind(true)
       } else if (key === '=' || key === '+') {
@@ -916,6 +920,7 @@ export default function App() {
             onToggleAutoSave={setAutoSave}
             imageEnabled={Boolean(filePath)}
             onInsertImage={insertImage}
+            onImageHost={() => setImageHostOpen(true)}
             frontmatterOpen={fmOpen}
             onToggleFrontmatter={() => setFmOpen((v) => !v)}
             sourceViewOpen={sourceViewOpen}
@@ -1001,6 +1006,9 @@ export default function App() {
       </DockShell>
       <SlashMenu ref={slashMenuRef} state={slashState} onDismiss={() => setSlashState(null)} />
       <ToastHost />
+      {imageHostOpen && (
+        <ImageHostDialog onClose={() => setImageHostOpen(false)} onSaved={() => {}} />
+      )}
       {viewImage && (
         <ImageViewer
           src={viewImage}

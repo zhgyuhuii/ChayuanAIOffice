@@ -52,13 +52,24 @@ export const mcpCommand: CommandDef = {
         { reason: 'invalid_argument' },
       )
     }
+    // adapted: 上游 --host "" 失败关闭（空串会绕过 loopback 默认值绑全部网卡），织入本地结构
+    const hostFlag = flagString(args, 'host')
+    // an empty host skips the loopback default and binds every interface
+    if (hostFlag !== undefined && hostFlag.trim() === '') {
+      throw new CliError(
+        EXIT.usage,
+        '--host needs a non-empty value (omit the flag to bind 127.0.0.1)',
+        undefined,
+        { reason: 'invalid_argument' },
+      )
+    }
     const { serveHttp } = await import('../mcp/http')
     await serveHttp({
       cwd: ctx.cwd,
       env: ctx.env,
       log: ctx.log,
       port,
-      host: flagString(args, 'host'),
+      host: hostFlag,
       token: tokenFlag ?? (ctx.env.GENOFFICE_MCP_TOKEN?.trim() || undefined),
     })
     return { summary: 'mcp server stopped' }

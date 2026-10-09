@@ -184,3 +184,15 @@ export {
 export { CROP_EDGE_LABELS } from './strings-crop-edges'
 export { trapTab, useModalKeys } from './modal-keys'
 export { ShapePreview, SHAPE_GALLERY_GROUPS } from './shape-gallery'
+// adapted: 上游 36747fca/8feee6ae 新公共件（AiModelPicker/ProviderLogo/redact-label）并集收入
+export { AiModelPicker, type AiModelPickerBridge } from './AiModelPicker'
+export {
+  aiModelPickerGroups,
+  aiModelPickerSelection,
+  withAiModelSelection,
+  type AiModelPickerGroup,
+  type AiModelPickerSelection,
+} from './ai-model-picker-options'
+export { ProviderLogo } from './provider-logos'
+export { useRedactLabelField } from './use-redact-label'
+export type { RedactLabelField } from './use-redact-label'

@@ -342,6 +342,12 @@ const FONTS = [
     'Copyright 2020 The Poppins Project Authors (https://github.com/itfoundry/Poppins).\nLatin subset with unmodified metrics and advances; renamed.',
   ],
   [
+    // adapted: 上游 b08e2ebf 新增 DM Sans 字体第三方声明（品牌映射 ChatOffice）
+    'ChatOffice DM Sans (DM Sans derivative)',
+    'SIL OFL 1.1',
+    'Copyright 2014-2017 Indian Type Foundry (info@indiantypefoundry.com). Copyright 2019 Google LLC.\nLatin subset with unmodified metrics and advances; renamed.',
+  ],
+  [
     'ChaOffice Tamil (Noto Sans Tamil derivative)',
     'SIL OFL 1.1',
     '© The Noto Project Authors, original Reserved Font Name "Noto". Modified advance widths;\nrenamed per OFL 1.1.',

@@ -306,6 +306,7 @@ describe('expandAutofitColWidths', () => {
       rows: [[cell('No.'), cell('Type'), cell('Count'), cell('Area'), cell('Point'), cell('')]],
       colWidthsTwips: [603, 1807, 1276, 1418, 1842, 3686],
       indentTwips: -714,
+      dxaWidth: true,
     }
     expect(expandAutofitColWidths(model, 10466, 9026)).toBe(model)
     // the same grid under tblW auto compresses to the column plus the
@@ -325,10 +326,14 @@ describe('expandAutofitColWidths', () => {
       true,
     )
     expect(Math.abs(sum(legacyAuto.colWidthsTwips!) - 9956)).toBeLessThanOrEqual(2)
-    // past the paper edge the dxa width is only a preference again
+    // past the paper edge a left-aligned table still holds its widths (Word draws a
+    // 531 pt grid on a 451 pt column 8 pt past the paper edge and clips it); a
+    // centred one still compresses to the column
     const wide: TableModel = { ...model, colWidthsTwips: [603, 1807, 1276, 1418, 1842, 4600] }
-    const wideTotal = expandAutofitColWidths(wide, 10466, 9026).colWidthsTwips!
-    expect(Math.abs(sum(wideTotal) - 9740)).toBeLessThanOrEqual(2)
+    expect(expandAutofitColWidths(wide, 10466, 9026)).toBe(wide)
+    const centred: TableModel = { ...wide, indentTwips: undefined, align: 'center' }
+    const centredTotal = expandAutofitColWidths(centred, 10466, 9026).colWidthsTwips!
+    expect(Math.abs(sum(centredTotal) - 9026)).toBeLessThanOrEqual(2)
   })
 
   it('leaves a full-width pct table alone even when its indent pushes it past the column', () => {
@@ -556,6 +561,7 @@ describe('autofit expansion wiring', () => {
     )
     const [first, second] = parsed.blocks.filter((b) => b.table)
     expect(first.table!.autoLayout).toBeUndefined()
+    expect(first.table!.dxaWidth).toBe(true)
     expect(second.table!.colWidthsTwips).toEqual(grid)
     const pm = blocksToPmDoc(parsed.blocks, readSections(parsed))
     const tables = pm.content!.filter((n) => n.type === 'docTable')
@@ -588,6 +594,10 @@ describe('renderTableSpec width budget', () => {
       colWidthsTwips: [2340, 7020],
       indentTwips: 1450,
     }
+    // an explicit dxa tblW holds its width past the paper edge like a fixed layout
+    const dxa = renderTableSpec({ ...model, autoLayout: undefined, dxaWidth: true }) as Spec
+    expect(dxa[1].style).toContain('width:624px;max-width:none')
+    expect(dxa[1].style).toContain('margin-left:96.7px')
     const spec = renderTableSpec(model) as Spec
     expect(spec[1].style).toContain(
       'width:min(624px,calc(var(--doc-content-w,100%) + var(--doc-margin-right,0px) - 96.7px))',
@@ -799,5 +809,125 @@ describe('legacyIndentTable', () => {
         number | null
     expect(indentOf(block(false))).toBe(0)
     expect(indentOf(block(true))).toBe(108)
+  })
+})
+// adapted: 收录上游 min-content 按字符槽字体测量 / 单元格间距列宽 / 文档默认字号用例
+
+describe('min-content measures with the face the text renders in', () => {
+  it('uses the ascii-slot font for Latin words, not the East Asian primary face', () => {
+    // a part number in Aptos Narrow with an eastAsia Times New Roman rFonts slot:
+    // measuring it in the wider face grew its column and starved the text column
+    const measured: string[] = []
+    const stub = {
+      metrics: () => ({ ascent: 0.9, descent: 0.2, lineGap: 0 }),
+      measure: (text: string, style: { fontFamily: string }) => {
+        measured.push(style.fontFamily)
+        return style.fontFamily === 'Aptos Narrow' ? text.length * 4 : text.length * 12
+      },
+    } as unknown as NonNullable<Parameters<typeof expandAutofitColWidths>[3]>
+    const model: TableModel = {
+      rows: [
+        [
+          {
+            paras: ['C93180YC-FX3'],
+            richParas: [
+              {
+                runs: [
+                  { text: 'C93180YC-FX3', font: 'Times New Roman', fontAscii: 'Aptos Narrow' },
+                ],
+              },
+            ],
+          },
+          cell('spec'),
+        ],
+      ],
+      colWidthsTwips: [1000, 8000],
+    }
+    const out = expandAutofitColWidths(model, 10800, 9360, stub)
+    expect(measured).toContain('Aptos Narrow')
+    expect(measured).not.toContain('Times New Roman')
+    expect(out.colWidthsTwips).toEqual([1000, 8000])
+  })
+})
+
+describe('cell-spacing column boxes', () => {
+  it('takes 2s out of every column and s more out of the two outer ones', () => {
+    // Word: the table spans its w:tblGrid; with 2 columns each gives up 2 x 15 + 15 = 45 twips
+    const model: TableModel = {
+      rows: [[cell('a'), cell('b')]],
+      colWidthsTwips: [1639, 4642],
+      cellSpacingTwips: 15,
+    }
+    const spec = renderTableSpec(model) as Spec
+    const cols = (spec[2] as [string, unknown, ...Array<[string, { style: string }]>]).slice(2)
+    expect(cols.map((c) => (c as [string, { style: string }])[1].style)).toEqual([
+      `width:${Math.round((1639 - 45) / 15)}px`,
+      `width:${Math.round((4642 - 45) / 15)}px`,
+    ])
+    // the table itself still spans the grid
+    expect(spec[1].style).toContain('width:min(418px')
+    // four columns: the inner ones lose only their own 2s
+    const four = renderTableSpec({
+      rows: [[cell('a'), cell('b'), cell('c'), cell('d')]],
+      colWidthsTwips: [429, 2475, 3023, 1582],
+      cellSpacingTwips: 15,
+    }) as Spec
+    const fourCols = (four[2] as [string, unknown, ...Array<[string, { style: string }]>]).slice(2)
+    expect(fourCols.map((c) => (c as [string, { style: string }])[1].style)).toEqual([
+      `width:${Math.round((429 - 45) / 15)}px`,
+      `width:${Math.round((2475 - 30) / 15)}px`,
+      `width:${Math.round((3023 - 30) / 15)}px`,
+      `width:${Math.round((1582 - 45) / 15)}px`,
+    ])
+  })
+
+  it('grows each bordered column box by its drawn borders, which Word draws outside the box', () => {
+    // 335-twip number column, sz 4 borders, 15-twip margins: Word keeps "10" (12 pt in
+    // TNR 12) on one line in a 14.5 pt box; borders inside the box left 11.25 pt
+    const line = { style: 'single', szEighths: 4 }
+    const spec = renderTableSpec({
+      rows: [[cell('10'), cell('b'), cell('c'), cell('d')]],
+      colWidthsTwips: [335, 3440, 3190, 2051],
+      cellSpacingTwips: 15,
+      cellMarTwips: { top: 15, left: 15, bottom: 15, right: 15 },
+      borders: { left: line, right: line, insideV: line, top: line, bottom: line, insideH: line },
+    }) as Spec
+    const cols = (spec[2] as [string, unknown, ...Array<[string, { style: string }]>]).slice(2)
+    expect(cols.map((c) => (c as [string, { style: string }])[1].style)).toEqual([
+      `width:${Math.round((335 - 45) / 15) + 2}px`,
+      `width:${Math.round((3440 - 30) / 15) + 2}px`,
+      `width:${Math.round((3190 - 30) / 15) + 2}px`,
+      `width:${Math.round((2051 - 45) / 15) + 2}px`,
+    ])
+    expect(spec[1].style).toContain(`width:min(${19 + 227 + 211 + 134 + 8 + 10}px`)
+  })
+})
+
+describe('min-content follows the document default run', () => {
+  it('measures runs without their own size at rPrDefault size, not a fixed 12pt', () => {
+    // an 11pt document: every inherited-size word was measured 9% too wide and grew
+    // Word's saved grid, starving the text column next to it
+    const stub = {
+      metrics: () => ({ ascent: 0.9, descent: 0.2, lineGap: 0 }),
+      measure: (text: string, style: { fontSizePx: number }) =>
+        text.length * style.fontSizePx * 0.5,
+    } as unknown as NonNullable<Parameters<typeof expandAutofitColWidths>[3]>
+    const model: TableModel = {
+      rows: [
+        [
+          { paras: ['insfrastrukturu'], richParas: [{ runs: [{ text: 'insfrastrukturu' }] }] },
+          cell('x'),
+        ],
+      ],
+      colWidthsTwips: [1500, 8000],
+      layoutGrid: true,
+    }
+    const at11 = expandAutofitColWidths(model, 10800, 9360, stub, false, false, {
+      sizeHalfPoints: 22,
+    })
+    const at12 = expandAutofitColWidths(model, 10800, 9360, stub)
+    // 15 chars x 0.5 x 14.67px = 110px -> 1650 + 216 twips; at 16px -> 1800 + 216
+    expect(at11.colWidthsTwips![0]).toBe(Math.ceil(15 * 0.5 * (22 / 2) * (96 / 72) * 15) + 216)
+    expect(at12.colWidthsTwips![0]).toBe(15 * 0.5 * 16 * 15 + 216)
   })
 })

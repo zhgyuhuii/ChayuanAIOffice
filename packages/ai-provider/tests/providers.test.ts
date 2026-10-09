@@ -95,6 +95,24 @@ describe('provider model catalog', () => {
       expect(model).not.toContain('/')
     }
   })
+  // adapted: 上游 36747fca 新增 Atlas Cloud / Cheaper Inference 供应商种子断言，直接收
+  it('seeds Atlas Cloud with lab-namespaced model ids', () => {
+    const atlas = AI_PROVIDERS.find((provider) => provider.id === 'atlascloud')!
+    expect(atlas.models).toContain(atlas.defaultModel)
+    expect(atlas.needsBaseUrl).toBeUndefined()
+    for (const model of atlas.models) {
+      expect(model).toMatch(/^[a-z0-9-]+\/[A-Za-z0-9._-]+$/)
+    }
+  })
+
+  it('seeds Cheaper Inference with bare model ids (no vendor prefix)', () => {
+    const ci = AI_PROVIDERS.find((provider) => provider.id === 'cheaperinference')!
+    expect(ci.models).toContain(ci.defaultModel)
+    expect(ci.needsBaseUrl).toBeUndefined()
+    for (const model of ci.models) {
+      expect(model).not.toContain('/')
+    }
+  })
 })
 
 describe('resolveAiSettings', () => {
@@ -187,7 +205,14 @@ describe('resolveAiSettings', () => {
       },
       defaultAiSettings(),
     )
+    // adapted: 上游 genspark 供应商本地改名 chatoffice，断言跟随；glm 退役模型重映射用例收
     expect(gpt.providers.chatoffice.model).toBe('gpt-5.6-terra')
+
+    const glm = resolveAiSettings(
+      { providers: { glm: { apiKey: '', model: 'glm-5-turbo' } } as never },
+      defaultAiSettings(),
+    )
+    expect(glm.providers.glm.model).toBe('glm-5.3-flash')
   })
 
   it('leaves a still-supported model id alone', () => {

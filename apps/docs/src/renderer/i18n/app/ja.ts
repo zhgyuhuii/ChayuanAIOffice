@@ -665,4 +665,5 @@ export const ja = {
   appGoToNotFound: '見つかりません',
   appGoToPrevious: '前へ',
   appGoToNext: '次へ',
+appParaUnitChars: '文字',
 } satisfies Record<keyof typeof zh, string>

@@ -1,16 +1,13 @@
 import { FunctionType, type IFunctionInfo } from '@univerjs/engine-formula'
 import { IDescriptionService } from '@univerjs/sheets-formula'
 
+import { parseSyntaxParams, type ParamInfo } from './function-arguments'
 import type { UniverRuntime } from './univer-state'
 
-/// One Insert Function argument row, from the engine's parameter metadata
-/// (or parsed out of a fallback syntax line).
-export interface FunctionParamSpec {
-  readonly name: string
-  readonly detail: string
-  readonly require: boolean
-  readonly repeat: boolean
-}
+// adapted: local callers (InsertFunctionDialog, tests) historically imported
+// parseSyntaxParams from here; upstream moved the implementation to
+// function-arguments, so re-export to keep the local import path working.
+export { parseSyntaxParams } from './function-arguments'
 
 /// One Insert Function row. `category` is a stable English id, displayed
 /// through the dialog's label table; `abstract` is the one-line list text,
@@ -21,7 +18,7 @@ export interface FunctionSpec {
   readonly syntax: string
   readonly abstract: string
   readonly description: string
-  readonly params: readonly FunctionParamSpec[]
+  readonly params: readonly ParamInfo[]
 }
 
 /// Excel's Insert Function category order.
@@ -75,30 +72,6 @@ export function functionSyntax(
   return `${info.functionName}(${parts.join(', ')})`
 }
 
-/// The same metadata for fallback entries, parsed back out of the syntax
-/// line they ship: `SUM(number1, [number2], …)`.
-export function parseSyntaxParams(syntax: string): FunctionParamSpec[] {
-  const open = syntax.indexOf('(')
-  if (open === -1) return []
-  const close = syntax.lastIndexOf(')')
-  const inner = syntax.slice(open + 1, close === -1 ? undefined : close)
-  const params: FunctionParamSpec[] = []
-  for (const segment of inner.split(',')) {
-    const token = segment.trim()
-    if (token === '…' || token === '...') {
-      if (params.length > 0) {
-        params[params.length - 1] = { ...params[params.length - 1]!, repeat: true }
-      }
-      continue
-    }
-    const optional = token.startsWith('[') && token.endsWith(']')
-    const name = (optional ? token.slice(1, -1) : token).trim()
-    if (name === '') continue
-    params.push({ name, detail: '', require: !optional, repeat: false })
-  }
-  return params
-}
-
 /// The wizard's live formula line: values are raw fragments (numbers, refs,
 /// quoted text), trailing empties drop off, a blank middle box stays blank
 /// the way Excel's argument editor leaves a hole between commas.
@@ -122,7 +95,7 @@ export function readLiveFunctionInfos(runtime: UniverRuntime): IFunctionInfo[] {
  */
 export function buildFunctionCatalog(
   live: readonly IFunctionInfo[],
-  fallback: readonly FunctionSpec[] = [],
+  fallback: readonly Omit<FunctionSpec, 'params'>[] = [],
 ): FunctionSpec[] {
   const byName = new Map<string, FunctionSpec>()
   for (const info of live) {
@@ -137,14 +110,16 @@ export function buildFunctionCatalog(
       description: info.description,
       params: info.functionParameter.map((param) => ({
         name: param.name,
-        detail: param.detail ?? '',
+        detail: param.detail,
         require: param.require === 1,
         repeat: param.repeat === 1,
       })),
     })
   }
   for (const spec of fallback) {
-    if (!byName.has(spec.name)) byName.set(spec.name, spec)
+    if (!byName.has(spec.name)) {
+      byName.set(spec.name, { ...spec, params: parseSyntaxParams(spec.syntax) })
+    }
   }
   return [...byName.values()].sort((a, b) => a.name.localeCompare(b.name))
 }

@@ -677,4 +677,5 @@ export const nl = {
   appGoToNotFound: 'Niet gevonden',
   appGoToPrevious: 'Vorige',
   appGoToNext: 'Volgende',
+appParaUnitChars: 'tekens',
 } satisfies Record<keyof typeof zh, string>

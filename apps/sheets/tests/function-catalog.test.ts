@@ -142,6 +142,9 @@ describe('buildFunctionCatalog params', () => {
     ])
   })
 
+  // adapted: buildFunctionCatalog no longer accepts a `params` key on
+  // fallback entries — it derives params from `syntax` itself (upstream
+  // contract), so the entry passes only the fields the signature allows.
   it('carries params on fallback entries when provided', () => {
     const catalog = buildFunctionCatalog(
       [],
@@ -152,7 +155,6 @@ describe('buildFunctionCatalog params', () => {
           syntax: 'CELL(info_type, [reference])',
           abstract: 'c',
           description: 'c',
-          params: parseSyntaxParams('CELL(info_type, [reference])'),
         },
       ],
     )

@@ -30,13 +30,14 @@ export {
   maxOutputTokensOf,
   resolveAiSettings,
 } from './providers'
-export { AI_PROVIDER_ADAPTERS, getProviderAdapter, modelLacksVision } from './registry'
+export { AI_PROVIDER_ADAPTERS, getProviderAdapter, modelLacksVision, normalizeBaseUrl } from './registry'
 export type {
   AiProtocol,
   ProviderAdapter,
   ProviderCapabilities,
   ResolvedEndpoint,
 } from './registry'
+export { sanitizeAiSettings, sanitizeCliPath, validCliPath } from './ai-settings-guard'
 export {
   activeMediaConfig,
   activeMediaProvider,

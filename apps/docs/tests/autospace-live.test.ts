@@ -5,11 +5,17 @@
  * must follow live edits.
  */
 import { Editor } from '@tiptap/core'
-import { describe, expect, it } from 'vitest'
+// adapted: 上游新增 hangul-space 用例(7f80cf80/c91066db 同期 docs 渲染增量),按本地
+// runSpanSpecs(支持 neighbours)原样收录;品牌映射 @genoffice→@chatoffice
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import type { Run } from '@chatoffice/docx-engine'
 import { editorExtensions } from '../src/renderer/editor/extensions'
 import { runSpanSpecs } from '../src/renderer/editor/protected-render'
-import { codePointLengthAt } from '../src/renderer/line-metrics'
+import {
+  codePointLengthAt,
+  hangulSpaceWideningFor,
+  setHangulSpaceWidening,
+} from '../src/renderer/line-metrics'
 
 const pads = (editor: Editor): string[] =>
   Array.from(editor.view.dom.querySelectorAll('.doc-autospace-pad'), (el) => el.textContent ?? '')
@@ -96,6 +102,77 @@ describe('autospace pad decorations', () => {
   })
 })
 
+describe('hangul-space decorations', () => {
+  const H = '\ud55c\uae00'
+  const spaces = (editor: Editor) =>
+    Array.from(editor.view.dom.querySelectorAll('.doc-hangul-space'), (el) => el.textContent)
+  beforeAll(() => setHangulSpaceWidening(true))
+  afterAll(() => setHangulSpaceWidening(false))
+
+  it('wraps nothing without balanceSingleByteDoubleByteWidth', () => {
+    setHangulSpaceWidening(false)
+    const editor = makeEditor(paragraphDoc(`${H} ${H} A B, ${H}`))
+    expect(spaces(editor)).toEqual([])
+    editor.destroy()
+    setHangulSpaceWidening(true)
+  })
+
+  it('wraps nothing when only one of balanceSingleByteDoubleByteWidth / useFELayout is set', () => {
+    for (const settings of [{ balanceDbcsSpacing: true }, { useFELayout: true }]) {
+      setHangulSpaceWidening(hangulSpaceWideningFor(settings))
+      const editor = makeEditor(paragraphDoc(`${H} abc ${H}`))
+      expect(spaces(editor)).toEqual([])
+      editor.destroy()
+    }
+    setHangulSpaceWidening(hangulSpaceWideningFor({ balanceDbcsSpacing: true, useFELayout: true }))
+    const editor = makeEditor(paragraphDoc(`${H} abc ${H}`))
+    expect(spaces(editor)).toEqual([' ', ' '])
+    editor.destroy()
+  })
+
+  it('wraps only spaces with a hangul neighbour', () => {
+    const editor = makeEditor(paragraphDoc(`${H} ${H} A B, ${H}`))
+    expect(spaces(editor)).toEqual([' ', ' ', ' '])
+    expect(editor.view.dom.textContent).toBe(`${H} ${H} A B, ${H}`)
+    editor.destroy()
+  })
+
+  it('adds none in Latin, Japanese or Han text', () => {
+    for (const text of ['A B', '\u3042 \u3044', '\u6f22 \u5b57', `${H}, A`]) {
+      const editor = makeEditor(paragraphDoc(text))
+      expect(spaces(editor)).toEqual([])
+      editor.destroy()
+    }
+  })
+
+  it('reads the neighbour across styled-run boundaries', () => {
+    const editor = makeEditor({
+      type: 'doc',
+      content: [
+        {
+          type: 'docParagraph',
+          content: [
+            { type: 'text', text: `${H} ` },
+            {
+              type: 'text',
+              text: 'A',
+              marks: [{ type: 'docTextStyle', attrs: { sizeHalfPoints: 24 } }],
+            },
+          ],
+        },
+      ],
+    } as never)
+    expect(spaces(editor)).toEqual([' '])
+    editor.destroy()
+  })
+
+  it('stays on while the paragraph turns autoSpace off', () => {
+    const editor = makeEditor(paragraphDoc(`${H} A`, { autoSpace: false }))
+    expect(spaces(editor)).toEqual([' '])
+    editor.destroy()
+  })
+})
+
 describe('static-render autospace pads', () => {
   const run = (text: string): Run => ({ text }) as Run
 
@@ -125,6 +202,27 @@ describe('static-render autospace pads', () => {
     expect(runSpanSpecs(run('286名'), false, true)).toEqual([
       ['span', { style: 'text-autospace:no-autospace' }, '286名'],
     ])
+  })
+
+  it('wraps hangul-context spaces, reading neighbours from the adjacent runs', () => {
+    setHangulSpaceWidening(true)
+    const H = '\ud55c\uae00'
+    expect(runSpanSpecs(run(`${H} A B`))).toEqual([
+      ['span', {}, H, ['span', { class: 'doc-hangul-space' }, ' '], 'A B'],
+    ])
+    expect(runSpanSpecs(run('A '), undefined, false, { next: H })).toEqual([
+      ['span', {}, 'A', ['span', { class: 'doc-hangul-space' }, ' ']],
+    ])
+    expect(runSpanSpecs(run(' A'), false, false, { prev: H })).toEqual([
+      [
+        'span',
+        { style: 'text-autospace:no-autospace' },
+        ['span', { class: 'doc-hangul-space' }, ' '],
+        'A',
+      ],
+    ])
+    expect(runSpanSpecs(run('A '), undefined, false, { next: 'B' })).toEqual([['span', {}, 'A ']])
+    setHangulSpaceWidening(false)
   })
 
   it('measures astral code points as two UTF-16 units', () => {

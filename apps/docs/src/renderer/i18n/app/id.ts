@@ -669,4 +669,5 @@ export const id = {
   appGoToNotFound: 'Tidak ditemukan',
   appGoToPrevious: 'Sebelumnya',
   appGoToNext: 'Berikutnya',
+appParaUnitChars: 'karakter',
 } satisfies Record<keyof typeof zh, string>

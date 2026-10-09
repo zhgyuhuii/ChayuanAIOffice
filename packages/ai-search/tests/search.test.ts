@@ -51,6 +51,23 @@ describe('webSearch (Serper)', () => {
     expect(r.results[0]).toEqual({ title: 'A', url: 'https://a.com', snippet: 'sa' })
   })
 
+  // adapted: 上游「未知 prefer 回落默认后端不抛错」用例按本地 webSearch(query,max,_useChaOffice,keys,prefer) 签名改编
+  it('treats an unknown prefer as the default instead of throwing', async () => {
+    process.env.SERPER_API_KEY = 'serper-key'
+    mockFetch((url) => {
+      if (url === 'https://google.serper.dev/search') {
+        return {
+          ok: true,
+          json: { organic: [{ title: 'ok', link: 'https://ok.com/t', snippet: 'c' }] },
+        }
+      }
+      return { ok: false, status: 500, json: {} }
+    })
+
+    const r = await webSearch('q', 5, undefined, undefined, 'bogus' as never)
+    expect(r.method).toBe('serper')
+  })
+
   it('falls back to DuckDuckGo when no key', async () => {
     mockFetch((url) => {
       expect(url).toContain('duckduckgo.com')

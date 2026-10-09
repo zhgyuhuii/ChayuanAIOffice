@@ -11,7 +11,7 @@ import type {
   TransitionKind,
 } from '../shared/ipc'
 import type { ActionCtx } from './action-context'
-import { animClassOf } from './animation-play'
+import { animClassOf, animGalleryItem } from './animation-play'
 import { t } from './i18n/locale'
 
 /** Per-field extras applied on top of the effect kind (速度/效果选项/声音 without re-picking the effect). */
@@ -70,7 +70,7 @@ export function hoverPreviewAnimation(
   const items: AnimationItem[] = ctx.selectedIds.map((id) => ({
     sourceId: id,
     targetName: '',
-    effect,
+    ...animGalleryItem(effect),
     trigger: 'onClick' as AnimTrigger,
     durationMs: animDefaultDur(effect),
     delayMs: 0,
@@ -118,7 +118,7 @@ export function applyAnimation(
           const base = {
             sourceId: id,
             targetName: '',
-            effect,
+            ...animGalleryItem(effect),
             trigger: 'onClick' as AnimTrigger,
             durationMs: animDefaultDur(effect),
             delayMs: 0,
@@ -139,7 +139,7 @@ export function addAnimation(ctx: ActionCtx, effect: AnimEffectKind): void {
     const base = {
       sourceId: id,
       targetName: '',
-      effect,
+      ...animGalleryItem(effect),
       trigger: 'onClick' as AnimTrigger,
       durationMs: animDefaultDur(effect),
       delayMs: 0,

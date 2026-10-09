@@ -25,6 +25,7 @@ export type AiProviderId =
   | 'agnes'
   | 'opper'
   | 'cheaperinference'
+  | 'atlascloud'
   | 'opencode-zen'
   | 'opencode-go'
   | 'custom'

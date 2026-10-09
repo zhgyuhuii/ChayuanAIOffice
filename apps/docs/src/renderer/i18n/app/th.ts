@@ -664,4 +664,5 @@ export const th = {
   appGoToNotFound: 'ไม่พบ',
   appGoToPrevious: 'ก่อนหน้า',
   appGoToNext: 'ถัดไป',
+appParaUnitChars: 'ตัวอักษร',
 } satisfies Record<keyof typeof zh, string>

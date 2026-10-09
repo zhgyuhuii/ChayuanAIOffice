@@ -30,7 +30,9 @@
     "./ModelSettingsPage": "./src/ModelSettingsPage.tsx",
     "./ModelDefaultsPage": "./src/ModelDefaultsPage.tsx",
     "./CapabilitySettingsPage": "./src/CapabilitySettingsPage.tsx",
-    "./assistant-library": "./src/assistant-library/index.tsx"
+    "./assistant-library": "./src/assistant-library/index.tsx",
+    "./ai-model-picker.css": "./src/ai-model-picker.css",
+    "./use-redact-label": "./src/use-redact-label.ts"
   },
   "scripts": {
     "test": "vitest run",
@@ -45,6 +47,8 @@
     "vitest": "^4.1.11"
   },
   "dependencies": {
+    "@chatoffice/agent-core": "*",
+    "@chatoffice/ai-provider": "*",
     "@chatoffice/i18n": "*",
     "@chatoffice/pptx-render": "*"
   }

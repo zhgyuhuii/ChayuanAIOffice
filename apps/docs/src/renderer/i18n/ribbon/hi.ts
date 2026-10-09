@@ -16,7 +16,6 @@ export const hi = {
   ribbonPin: 'रिबन पिन करें',
   ribbonExpand: 'रिबन विस्तृत करें',
   ribbonCompact: 'कॉम्पैक्ट रिबन (केवल आइकन)',
-  ribbonExpandFull: 'रिबन विस्तृत करें',
   ribbonTabView: 'दृश्य',
   ribbonTabTableDesign: 'तालिका डिज़ाइन',
   ribbonTabTableLayout: 'तालिका लेआउट',

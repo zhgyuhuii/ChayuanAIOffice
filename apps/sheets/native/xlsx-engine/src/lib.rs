@@ -15,6 +15,7 @@ use zip::ZipArchive;
 
 pub mod archive;
 pub mod convert;
+pub mod find;
 pub mod recalc;
 mod richdata;
 mod shared_formulas;
@@ -236,6 +237,7 @@ impl WorkbookSessions {
         let mut runtimes = Vec::with_capacity(declarations.len());
         let mut visual_sources = Vec::with_capacity(declarations.len());
         let mut sheet_names = Vec::with_capacity(declarations.len());
+        let mut stored_cell_budget = STORED_CELL_COUNT_BUDGET;
 
         for declaration in declarations {
             // One poll per worksheet rather than between reads: a
@@ -254,7 +256,12 @@ impl WorkbookSessions {
                 })?;
             let worksheet_path = normalize_worksheet_path(target)?;
             let source_xml_bytes = zip_entry(&mut archive, &worksheet_path)?.size();
-            let dimensions = read_sheet_dimensions(&mut archive, &worksheet_path, &color_context)?;
+            let dimensions = read_sheet_dimensions(
+                &mut archive,
+                &worksheet_path,
+                &color_context,
+                &mut stored_cell_budget,
+            )?;
             let tables = read_sheet_tables(
                 &mut archive,
                 &worksheet_path,
@@ -263,7 +270,7 @@ impl WorkbookSessions {
             )?;
             let comments = visuals::read_comments(&mut archive, &worksheet_path)?
                 .into_iter()
-                .filter_map(|(reference, author, text)| {
+                .filter_map(|(reference, author, text, thread)| {
                     let anchor = reference.split(':').next().unwrap_or(&reference);
                     let (row, column) = parse_address(&anchor.replace('$', "")).ok()?;
                     Some(CommentInfo {
@@ -271,6 +278,7 @@ impl WorkbookSessions {
                         column,
                         author,
                         text,
+                        thread,
                     })
                 })
                 .collect();
@@ -331,6 +339,7 @@ impl WorkbookSessions {
                 row_count,
                 column_count,
                 source_xml_bytes,
+                stored_cell_count: dimensions.stored_cell_count,
                 column_widths: dimensions.column_widths,
                 default_row_height: dimensions.default_row_height,
                 default_row_height_fixed: dimensions.default_row_height_fixed,
@@ -338,12 +347,17 @@ impl WorkbookSessions {
                 base_column_width: dimensions.base_column_width,
                 freeze: dimensions.freeze,
                 hidden: declaration.hidden,
+                very_hidden: declaration.very_hidden,
                 tab_color: dimensions.tab_color,
                 show_grid_lines: dimensions.show_grid_lines,
                 show_formulas: dimensions.show_formulas,
                 show_row_col_headers: dimensions.show_row_col_headers,
                 right_to_left: dimensions.right_to_left,
                 zoom_scale: dimensions.zoom_scale,
+                outline_level_row: dimensions.outline_level_row,
+                outline_level_col: dimensions.outline_level_col,
+                outline_summary_below: dimensions.outline_summary_below,
+                outline_summary_right: dimensions.outline_summary_right,
                 tables,
                 comments,
                 pivot_ranges,
@@ -473,6 +487,24 @@ impl WorkbookSessions {
             .ok_or_else(|| SidecarError::InvalidRequest("Unknown worksheet.".into()))?;
         session.ensure_parser(sheet_index)?;
         session.read_formula_cells(sheet_index)
+    }
+
+    pub fn read_row_outline(
+        &mut self,
+        session_id: &str,
+        sheet_id: &str,
+    ) -> Result<RowOutlineResult, SidecarError> {
+        let session = self
+            .sessions
+            .get_mut(session_id)
+            .ok_or_else(|| SidecarError::InvalidRequest("Unknown workbook session.".into()))?;
+        let sheet_index = session
+            .sheets
+            .iter()
+            .position(|sheet| sheet.id == sheet_id)
+            .ok_or_else(|| SidecarError::InvalidRequest("Unknown worksheet.".into()))?;
+        session.ensure_parser(sheet_index)?;
+        session.read_row_outline(sheet_index)
     }
 
     pub fn close(&mut self, session_id: &str) -> Result<(), SidecarError> {
@@ -698,7 +730,7 @@ impl WorkbookSession {
             Vec::new()
         };
         let sheet_protection = if indexing_complete {
-            index.sheet_protection
+            index.sheet_protection.clone()
         } else {
             None
         };
@@ -786,8 +818,30 @@ impl WorkbookSession {
         }
         Ok(FormulaCellsResult {
             cells: index.formula_cells.clone(),
+            // A truncated list is unusable anyway; the groups alone could
+            // exceed the response cap.
+            shared_groups: if index.formula_truncated {
+                Vec::new()
+            } else {
+                index.shared_formula_groups.clone()
+            },
             indexing_complete: index.complete,
             truncated: index.formula_truncated,
+        })
+    }
+
+    fn read_row_outline(&self, sheet_index: usize) -> Result<RowOutlineResult, SidecarError> {
+        let runtime = &self.runtimes[sheet_index];
+        let (lock, _) = &*runtime.state;
+        let index = lock
+            .lock()
+            .map_err(|_| SidecarError::Io("Worksheet index lock was poisoned.".into()))?;
+        if let Some(error) = &index.error {
+            return Err(SidecarError::Workbook(error.clone()));
+        }
+        Ok(RowOutlineResult {
+            rows: index.outline_rows.clone(),
+            indexing_complete: index.complete,
         })
     }
 
@@ -843,8 +897,12 @@ struct SheetIndex {
     protected_ranges: Vec<ProtectedRangeInfo>,
     page_setup: Option<PagePrintInfo>,
     /// Formula cells collected while indexing, capped at MAX_FORMULA_CELLS.
+    /// Shared-formula followers are not counted: they live in
+    /// `shared_formula_groups`, published once indexing completes.
     formula_cells: Vec<CellRecord>,
     formula_truncated: bool,
+    shared_formula_groups: Vec<SharedFormulaGroup>,
+    outline_rows: Vec<RowOutlineEntry>,
 }
 
 #[derive(Debug)]
@@ -853,4 +911,5 @@ struct SheetDeclaration {
     sheet_id: String,
     relationship_id: String,
     hidden: bool,
+    very_hidden: bool,
 }

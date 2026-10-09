@@ -1,13 +1,13 @@
 # ChaAI Office headless batch conversion image (the batch-conversion slice of
-# the Docker ask, genoffice#1808; sibling of packaging/flatpak and
+# the Docker ask, chatoffice#1808; sibling of packaging/flatpak and
 # packaging/nix): wraps the official release deb and drives the app's own
 # --headless-export entry point per file under Xvfb. No ChaAI Office source is
 # rebuilt here, so the conversion behavior is bit-for-bit the release's.
 #
 # Build:
-#   docker build -t genoffice-batch packaging/docker
+#   docker build -t chatoffice-batch packaging/docker
 # Convert every convertible document under ./docs into ./pdf:
-#   docker run --rm -v "$PWD/docs:/data:ro" -v "$PWD/pdf:/output" genoffice-batch
+#   docker run --rm -v "$PWD/docs:/data:ro" -v "$PWD/pdf:/output" chatoffice-batch
 # See packaging/docker/README.md for the knobs.
 #
 # On a new release bump GENOFFICE_VERSION and GENOFFICE_DEB_SHA256.
@@ -23,11 +23,11 @@ ARG GENOFFICE_DEB_SHA256=a59241bd30dcee12314990f7d438ec2bc4a5e93c5c1c242b2033615
 # fonts into /usr/local/share/fonts for anything exotic.
 RUN apt-get update \
   && apt-get install -y --no-install-recommends curl ca-certificates \
-  && curl -fsSL -o /tmp/genoffice.deb \
-       "https://github.com/genspark-ai/genoffice/releases/download/v${GENOFFICE_VERSION}/genoffice_${GENOFFICE_VERSION}_amd64.deb" \
-  && echo "${GENOFFICE_DEB_SHA256}  /tmp/genoffice.deb" | sha256sum -c - \
-  && apt-get install -y --no-install-recommends /tmp/genoffice.deb \
-  && rm -f /tmp/genoffice.deb \
+  && curl -fsSL -o /tmp/chatoffice.deb \
+       "https://github.com/genspark-ai/chatoffice/releases/download/v${GENOFFICE_VERSION}/genoffice_${GENOFFICE_VERSION}_amd64.deb" \
+  && echo "${GENOFFICE_DEB_SHA256}  /tmp/chatoffice.deb" | sha256sum -c - \
+  && apt-get install -y --no-install-recommends /tmp/chatoffice.deb \
+  && rm -f /tmp/chatoffice.deb \
   && apt-get purge -y curl \
   && apt-get autoremove -y \
   && rm -rf /var/lib/apt/lists/*
@@ -59,10 +59,10 @@ RUN rm -f /opt/ChaAI Office/resources/app-update.yml
 # so the entrypoint passes --no-sandbox; running as a non-root user keeps the
 # blast radius of that small. uid 1000 matches the first host user, which is
 # who usually owns the mounted volumes.
-RUN useradd -u 1000 -m genoffice \
+RUN useradd -u 1000 -m chatoffice \
   && mkdir -p /data /output \
-  && chown genoffice:genoffice /data /output
-USER genoffice
+  && chown chatoffice:chatoffice /data /output
+USER chatoffice
 
 COPY --chmod=755 batch-convert /usr/local/bin/batch-convert
 

@@ -128,6 +128,10 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # Help manual topics must exist in every UI language (939116f8 upstream gate, adapted).
+      - name: Check manual language coverage
+        run: npm run check:help-langs
+
       - name: Typecheck
         run: npm run typecheck
 

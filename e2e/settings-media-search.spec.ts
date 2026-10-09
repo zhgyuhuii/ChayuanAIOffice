@@ -43,6 +43,7 @@ test('Jev reranking lives in its own settings section, saves instantly, and repo
 
     // 测试按钮报告自己的判定：无密钥时不通过且错误就地显示（不离开本机）
     await page.getByRole('button', { name: 'Test connection', exact: true }).click()
+// adapted: 本地设置页错误就地显示在 [role=status]；上游 .set-ai-status/.set-pane-actions 结构不采纳
     await expect(page.locator('[role="status"]')).not.toBeEmpty()
     await page.screenshot({ path: screenshotPath('settings-media-search-test') })
 

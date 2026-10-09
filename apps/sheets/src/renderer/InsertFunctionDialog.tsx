@@ -1,10 +1,9 @@
 import type { IFunctionInfo } from '@univerjs/engine-formula'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { Dropdown } from '@chatoffice/ui'
 
 import {
-  assembleFormula,
   buildFunctionCatalog,
   FUNCTION_CATEGORIES,
   parseSyntaxParams,
@@ -12,12 +11,9 @@ import {
   type FunctionSpec,
 } from './function-catalog'
 import { useI18n, type StringKey } from './i18n/locale'
-import { RangePickButton, useRangePickSession, type RangePickHandler } from './range-pick'
 
-/// Excel's Insert Function: browse/search the engine's function catalog,
-/// then fill each argument in its own row — typed, or picked by collapsing
-/// onto the grid (cells / rows / columns) WPS-style — with the assembled
-/// formula and its live result preview shown before it lands in the cell.
+/// Excel's Insert Function (step one): browse/search the engine's function
+/// catalog, read the syntax, hand the pick to Function Arguments.
 
 interface FallbackSpec {
   readonly name: string
@@ -297,7 +293,8 @@ const FALLBACK_CATALOG: readonly FallbackSpec[] = [
   { name: 'IRR', category: 'Financial', syntax: 'IRR(values, [guess])', descKey: 'dlgFnDescIrr' },
 ]
 
-const CATEGORY_LABELS: Record<'All' | FunctionCategory, StringKey> = {
+const CATEGORY_LABELS: Record<'Recent' | 'All' | FunctionCategory, StringKey> = {
+  Recent: 'dlgFnCatRecent',
   All: 'dlgFnCatAll',
   Financial: 'dlgFnCatFinancial',
   'Date & Time': 'dlgFnCatDateTime',
@@ -316,37 +313,13 @@ const CATEGORY_LABELS: Record<'All' | FunctionCategory, StringKey> = {
   Other: 'dlgFnCatOther',
 }
 
-export function InsertFunctionDialog({
-  targetLabel,
-  functions,
-  onApply,
-  onClose,
-  initialCategory,
-  onPickRange,
-  onPreviewFormula,
-}: {
-  /// A1 label of the destination cell, for the dialog header.
-  readonly targetLabel: string
-  /// Descriptions from the running formula engine (already localized).
-  readonly functions: readonly IFunctionInfo[]
-  /// Returns an error message, or null on success. The target A1 pins the
-  /// destination cell against the pick's selection moves.
-  readonly onApply: (formula: string, targetA1: string) => string | null
-  readonly onClose: () => void
-  /// Category to open on (the Formulas tab's category buttons pass their own).
-  readonly initialCategory?: string
-  /// Collapsed grid picking for argument rows (cells / rows / columns).
-  readonly onPickRange?: RangePickHandler | undefined
-  /// One-shot evaluation of the assembled formula, for the result line.
-  readonly onPreviewFormula?: ((formula: string) => Promise<string | null>) | undefined
-}): React.JSX.Element {
+type CategoryId = keyof typeof CATEGORY_LABELS
+
+/// Live engine descriptions plus the app's own executors, rebuilt when the
+/// UI language changes (the fallback texts are ours to translate).
+export function useFunctionCatalog(functions: readonly IFunctionInfo[]): FunctionSpec[] {
   const { t, lang } = useI18n()
-  const { picking, begin } = useRangePickSession(onPickRange)
-  // Destination pinned at mount: picking ranges on the grid moves the active
-  // selection, but the formula still belongs in the cell the dialog opened on
-  // (the one its header advertises).
-  const destinationRef = useRef(targetLabel)
-  const catalog = useMemo(
+  return useMemo(
     () =>
       buildFunctionCatalog(
         functions,
@@ -362,90 +335,54 @@ export function InsertFunctionDialog({
       ),
     [functions, lang],
   )
-  const categories = useMemo(() => {
+}
+
+export function InsertFunctionDialog({
+  targetLabel,
+  catalog,
+  recent,
+  onPick,
+  onClose,
+  initialCategory,
+}: {
+  /// A1 label of the destination cell, for the dialog header.
+  readonly targetLabel: string
+  readonly catalog: readonly FunctionSpec[]
+  /// Most Recently Used names, newest first.
+  readonly recent: readonly string[]
+  readonly onPick: (spec: FunctionSpec) => void
+  readonly onClose: () => void
+  /// Category to open on (the Formulas tab's category buttons pass their own).
+  readonly initialCategory?: string
+}): React.JSX.Element {
+  const { t } = useI18n()
+  const categories = useMemo<CategoryId[]>(() => {
     const present = new Set(catalog.map((spec) => spec.category))
-    return ['All', ...FUNCTION_CATEGORIES.filter((name) => present.has(name))]
+    return ['Recent', 'All', ...FUNCTION_CATEGORIES.filter((name) => present.has(name))]
   }, [catalog])
   const [query, setQuery] = useState('')
-  const [category, setCategory] = useState(
-    initialCategory && categories.includes(initialCategory) ? initialCategory : 'All',
+  const [category, setCategory] = useState<CategoryId>(
+    initialCategory && (categories as string[]).includes(initialCategory)
+      ? (initialCategory as CategoryId)
+      : 'Recent',
   )
   const [picked, setPicked] = useState<FunctionSpec | null>(null)
-  const [paramValues, setParamValues] = useState<string[]>([])
-  const [preview, setPreview] = useState<string | null>(null)
-  const [previewPending, setPreviewPending] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   const matches = useMemo(() => {
     const needle = query.trim().toUpperCase()
-    return catalog.filter(
+    const inCategory = (spec: FunctionSpec): boolean =>
+      category === 'All' ||
+      (category === 'Recent' ? recent.includes(spec.name) : spec.category === category)
+    const list = catalog.filter(
       (spec) =>
-        (category === 'All' || spec.category === category) &&
+        (needle !== '' || inCategory(spec)) &&
         (needle === '' ||
           spec.name.includes(needle) ||
           spec.abstract.toUpperCase().includes(needle)),
     )
-  }, [catalog, query, category])
-
-  const formula = useMemo(
-    () => (picked ? assembleFormula(picked.name, paramValues) : ''),
-    [picked, paramValues],
-  )
-
-  // Live result line: debounced so typing a long literal doesn't spam the
-  // engine; a stale answer must never outlive its formula.
-  useEffect(() => {
-    if (!picked || !onPreviewFormula || formula === '') {
-      setPreview(null)
-      setPreviewPending(false)
-      return
-    }
-    let alive = true
-    setPreviewPending(true)
-    const timer = window.setTimeout(() => {
-      void onPreviewFormula(formula).then((value) => {
-        if (!alive) return
-        setPreview(value)
-        setPreviewPending(false)
-      })
-    }, 250)
-    return () => {
-      alive = false
-      window.clearTimeout(timer)
-    }
-  }, [picked, formula, onPreviewFormula])
-
-  const pick = (spec: FunctionSpec): void => {
-    setPicked(spec)
-    setParamValues(spec.params.map(() => ''))
-    setError(null)
-  }
-
-  const setParam = (index: number, value: string): void => {
-    setParamValues((values) => values.map((entry, i) => (i === index ? value : entry)))
-  }
-
-  /// Rows beyond the declared params repeat the last declared one (its
-  /// metadata carries the repeat flag; extra rows are removable).
-  const lastParam = picked?.params[picked.params.length - 1] ?? null
-  const canAddParam = lastParam !== null && lastParam.repeat
-
-  const confirm = (): void => {
-    if (!picked) return
-    const missing = picked.params.findIndex(
-      (param, index) => param.require && index < paramValues.length && paramValues[index] === '',
-    )
-    if (missing !== -1) {
-      setError(t('dlgFnNeedRequired', { name: picked.params[missing]!.name }))
-      return
-    }
-    const failure = onApply(formula, destinationRef.current)
-    setError(failure)
-    if (failure === null) onClose()
-  }
-
-  // The dialog folds away while an argument is being picked on the grid.
-  if (picking) return <></>
+    if (category !== 'Recent' || needle !== '') return list
+    return [...list].sort((a, b) => recent.indexOf(a.name) - recent.indexOf(b.name))
+  }, [catalog, query, category, recent])
 
   return (
     <div className="dialog-backdrop" onClick={onClose}>
@@ -455,7 +392,7 @@ export function InsertFunctionDialog({
         aria-label={t('appInsertFunction')}
         onClick={(event) => event.stopPropagation()}
       >
-        <header>{t('dlgFnTitle', { target: destinationRef.current })}</header>
+        <header>{t('dlgFnTitle', { target: targetLabel })}</header>
         <div className="fn-filter-row">
           <input
             autoFocus
@@ -465,10 +402,7 @@ export function InsertFunctionDialog({
           />
           <Dropdown
             value={category}
-            options={categories.map((name) => ({
-              value: name,
-              label: t(CATEGORY_LABELS[name as 'All' | FunctionCategory]),
-            }))}
+            options={categories.map((name) => ({ value: name, label: t(CATEGORY_LABELS[name]) }))}
             onPick={setCategory}
           />
         </div>
@@ -479,9 +413,10 @@ export function InsertFunctionDialog({
               className={`fn-row${picked?.name === spec.name ? ' active' : ''}`}
               role="option"
               aria-selected={picked?.name === spec.name}
-              onClick={() => pick(spec)}
+              onClick={() => setPicked(spec)}
+              onDoubleClick={() => onPick(spec)}
             >
-              <strong>{spec.name}</strong>
+              <strong>{spec.syntax}</strong>
               <span>{spec.abstract}</span>
             </button>
           ))}
@@ -493,82 +428,18 @@ export function InsertFunctionDialog({
               <code>{picked.syntax}</code>
               {picked.description !== picked.abstract && <span>{picked.description}</span>}
             </p>
-            <div className="fn-params" aria-label={t('dlgFnParams')}>
-              {paramValues.map((value, index) => {
-                const isExtra = index >= picked.params.length
-                const meta = isExtra ? lastParam! : picked.params[index]!
-                return (
-                  <div className="fn-param-row" key={index}>
-                    <label className="fn-param-name" title={meta.detail || undefined}>
-                      {meta.name}
-                      {meta.require && !isExtra ? ' *' : ''}
-                    </label>
-                    <input
-                      value={value}
-                      title={meta.detail || undefined}
-                      onChange={(event) => setParam(index, event.target.value)}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Enter') {
-                          event.preventDefault()
-                          confirm()
-                        }
-                      }}
-                    />
-                    {onPickRange && (
-                      <RangePickButton
-                        title={t('dlgFnPickRange')}
-                        onPick={() =>
-                          begin(meta.name, { formula: true }, (pickedValue) =>
-                            setParam(index, pickedValue),
-                          )
-                        }
-                      />
-                    )}
-                    {isExtra && (
-                      <button
-                        type="button"
-                        className="fn-param-remove"
-                        aria-label={t('dlgFnRemoveParam')}
-                        onClick={() =>
-                          setParamValues((values) => values.filter((_, i) => i !== index))
-                        }
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
-                )
-              })}
-              {canAddParam && (
-                <button
-                  type="button"
-                  className="fn-param-add"
-                  onClick={() => setParamValues((values) => [...values, ''])}
-                >
-                  + {t('dlgFnAddParam')}
-                </button>
-              )}
-            </div>
-            <p className="fn-assembled" aria-label={t('dlgFnFormula')}>
-              <code>{formula}</code>
-            </p>
-            <p className="dialog-note fn-result">
-              {t('dlgFnResult')}
-              <code>{previewPending ? '…' : (preview ?? '—')}</code>
-            </p>
           </>
-        )}
-        {error && (
-          <p className="dialog-note" role="alert">
-            {error}
-          </p>
         )}
         <div className="dialog-actions">
           <button className="secondary" onClick={onClose}>
             {t('dlgCancel')}
           </button>
-          <button className="primary-action" disabled={!picked} onClick={confirm}>
-            {t('dlgFnInsert')}
+          <button
+            className="primary-action"
+            disabled={picked === null}
+            onClick={() => picked && onPick(picked)}
+          >
+            {t('dlgOk')}
           </button>
         </div>
       </div>

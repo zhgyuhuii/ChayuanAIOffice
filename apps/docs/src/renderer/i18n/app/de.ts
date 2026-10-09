@@ -680,4 +680,5 @@ export const de = {
   appGoToNotFound: 'Nicht gefunden',
   appGoToPrevious: 'Zurück',
   appGoToNext: 'Weiter',
+appParaUnitChars: 'Zeichen',
 } satisfies Record<keyof typeof zh, string>

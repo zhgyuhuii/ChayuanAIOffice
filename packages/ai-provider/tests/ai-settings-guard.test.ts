@@ -10,7 +10,8 @@ import { homedir, tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { sanitizeAiSettings, validCliPath } from '../src/ai-settings-guard'
+import { sanitizeAiSettings, sanitizeCliPath, validCliPath } from '../src/ai-settings-guard'
+import { normalizeBaseUrl } from '../src/registry'
 
 const tempDirs: string[] = []
 
@@ -20,7 +21,7 @@ afterEach(() => {
 })
 
 function existingFilePath(): string {
-  const dir = mkdtempSync(join(tmpdir(), 'genoffice-ai-guard-'))
+  const dir = mkdtempSync(join(tmpdir(), 'chatoffice-ai-guard-'))
   tempDirs.push(dir)
   const path = join(dir, 'codex')
   writeFileSync(path, '#!/bin/sh\n')
@@ -123,10 +124,10 @@ describe('sanitizeAiSettings', () => {
     expect(sanitized!.providers.doubao.cliPath).toBe('codex')
   })
 
-  it('keeps non-ASCII home paths (reviewer case: /Users/王/bin/codex)', () => {
+  it('keeps non-ASCII home paths (reviewer case: /Users/\u738b/bin/codex)', () => {
     // the old ASCII-only [\w./:\\ -] class dropped these, silently losing the
     // saved Codex CLI path on the next settings save
-    const dir = mkdtempSync(join(tmpdir(), '王-genoffice-ai-guard-'))
+    const dir = mkdtempSync(join(tmpdir(), '\u738b-chatoffice-ai-guard-'))
     tempDirs.push(dir)
     const cliPath = join(dir, 'bin', 'codex')
     mkdirSync(join(dir, 'bin'), { recursive: true })
@@ -146,7 +147,7 @@ describe('sanitizeAiSettings', () => {
     // on POSIX the reviewer's string cannot name a real file, so exercise the
     // same shape (backslashes, dot, space, í) as a literal file name; on
     // Windows the exact reviewer string is stat'd directly and behaves the same
-    const dir = mkdtempSync(join(tmpdir(), 'genoffice-ai-guard-'))
+    const dir = mkdtempSync(join(tmpdir(), 'chatoffice-ai-guard-'))
     tempDirs.push(dir)
     const cliPath = join(dir, 'C:\\Users\\Ana María\\codex.exe')
     writeFileSync(cliPath, 'bin\n')
@@ -154,7 +155,7 @@ describe('sanitizeAiSettings', () => {
   })
 
   it('expands ~/bin/codex for the existence check and stores it expanded', () => {
-    const home = mkdtempSync(join(tmpdir(), 'genoffice-ai-guard-home-'))
+    const home = mkdtempSync(join(tmpdir(), 'chatoffice-ai-guard-home-'))
     tempDirs.push(home)
     mkdirSync(join(home, 'bin'), { recursive: true })
     writeFileSync(join(home, 'bin', 'codex'), '#!/bin/sh\n')
@@ -172,6 +173,10 @@ describe('sanitizeAiSettings', () => {
     // stored expanded: spawn() does not expand tilde and resolveCodexCliPath()
     // would treat the raw `~/…` value as a relative command name
     expect(sanitized!.providers.codex.cliPath).toBe(join(home, 'bin', 'codex'))
+    // the codex-models probe spawns this value directly, so it needs the same form
+    expect(sanitizeCliPath(' ~/bin/codex ')).toBe(join(home, 'bin', 'codex'))
+    expect(sanitizeCliPath('~/bin/missing')).toBeUndefined()
+    expect(sanitizeCliPath('codex')).toBe('codex')
   })
 
   it('coerces scalar fields and drops non-conforming optional ones', () => {
@@ -189,6 +194,34 @@ describe('sanitizeAiSettings', () => {
     expect(sanitized!.media).toEqual({ provider: 'chatoffice' })
     expect(sanitized!.search).toBeUndefined()
   })
+
+  it('drops a media provider baseUrl that fails the chat-provider URL gate', () => {
+    const sanitized = sanitizeAiSettings({
+      ...baseSettings(),
+      media: {
+        imageProvider: 'openai',
+        providers: {
+          openai: {
+            apiKey: 'k',
+            imageModel: '',
+            analysisModel: '',
+            baseUrl: 'https://u:p@evil.test/v1',
+          },
+          custom: {
+            apiKey: 'k',
+            imageModel: '',
+            analysisModel: '',
+            baseUrl: 'https://mirror.test/v1/',
+          },
+          gemini: { apiKey: 'k', imageModel: '', analysisModel: '', baseUrl: 'file:///etc/passwd' },
+        },
+      },
+    })
+    const providers = sanitized!.media!.providers as Record<string, { baseUrl?: string }>
+    expect(providers.openai.baseUrl).toBeUndefined()
+    expect(providers.custom.baseUrl).toBe(normalizeBaseUrl('https://mirror.test/v1/', ''))
+    expect(providers.gemini.baseUrl).toBeUndefined()
+  })
 })
 
 describe('validCliPath', () => {
@@ -200,10 +233,10 @@ describe('validCliPath', () => {
   })
 
   it('accepts any characters in existing paths, including Unicode and spaces', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'genoffice-ai-guard-'))
+    const dir = mkdtempSync(join(tmpdir(), 'chatoffice-ai-guard-'))
     tempDirs.push(dir)
-    const unicode = join(dir, '工具', 'codex')
-    mkdirSync(join(dir, '工具'), { recursive: true })
+    const unicode = join(dir, '\u5de5\u5177', 'codex')
+    mkdirSync(join(dir, '\u5de5\u5177'), { recursive: true })
     writeFileSync(unicode, '#!/bin/sh\n')
     const spaces = join(dir, 'App Support', 'codex.exe')
     mkdirSync(join(dir, 'App Support'), { recursive: true })
@@ -223,7 +256,7 @@ describe('validCliPath', () => {
   })
 
   it('rejects missing paths, directories, and non-strings', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'genoffice-ai-guard-'))
+    const dir = mkdtempSync(join(tmpdir(), 'chatoffice-ai-guard-'))
     tempDirs.push(dir)
     // path-like values must exist as a file
     expect(validCliPath('/bin/sh; rm -rf ~')).toBe(false)

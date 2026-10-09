@@ -64,16 +64,35 @@ export interface ChartAdd {
     | undefined
   readonly gapWidthPct?: number | undefined
   readonly holeSizePct?: number | undefined
+  readonly altText?: string | undefined
+  readonly editAs?: 'twoCell' | 'oneCell' | 'absolute' | undefined
 }
 
-export interface ShapeAdd {
+/// Anchor-level properties a session visual carries into the file:
+/// rotation/flip on a:xfrm, descr/hlinkClick on cNvPr, editAs on the anchor.
+export interface VisualAddProperties {
+  readonly rotation?: number | undefined
+  readonly flipH?: boolean | undefined
+  readonly flipV?: boolean | undefined
+  /// a:xfrm ext in EMU; written when the shape is rotated so the reload can
+  /// restore the true frame from the rotated anchor bounds.
+  readonly frameSize?: { readonly width: number; readonly height: number } | undefined
+  readonly altText?: string | undefined
+  readonly hyperlink?: string | undefined
+  readonly editAs?: 'twoCell' | 'oneCell' | 'absolute' | undefined
+}
+
+export interface ShapeAdd extends VisualAddProperties {
   readonly shapeType: string
   readonly fillColor?: string | undefined
+  /// `#rrggbb` outline, "none" for an explicit no-line; absent keeps the
+  /// default (gray hairline on text boxes, no outline on other shapes).
+  readonly lineColor?: string | undefined
   readonly text?: string | undefined
   readonly isTextBox?: boolean | undefined
 }
 
-export interface ImageAdd {
+export interface ImageAdd extends VisualAddProperties {
   readonly mediaType: 'image/png' | 'image/jpeg' | 'image/gif'
   readonly base64: string
   readonly srcRect?: PictureSrcRect | undefined
@@ -83,6 +102,7 @@ export interface ImageAdd {
   readonly flipV?: boolean | undefined
   readonly lineColor?: string | undefined
   readonly lineWidth?: number | undefined
+  /// a:alphaModFix amt as 0..1; absent or 1 writes none.
   readonly opacity?: number | undefined
   /// True (unrotated) frame in EMU — written into a:xfrm ext for rotated pics.
   readonly frameWidth?: number | undefined
@@ -104,7 +124,19 @@ export interface ImageAdd {
     | undefined
   /// Crop-to-shape preset (a:prstGeom prst).
   readonly geom?: string | undefined
+  /// adapted: 上游 a:srcRect 0..1 fraction crop；与本地 srcRect(1/100000) 并存，写入时归一
+  readonly crop?:
+    | {
+        readonly left: number
+        readonly top: number
+        readonly right: number
+        readonly bottom: number
+      }
+    | undefined
 }
+
+const HYPERLINK_REL_TYPE =
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink'
 
 export interface VisualAddition {
   readonly worksheetPath: string
@@ -158,12 +190,24 @@ export async function applyVisualAdditions(
         relativeTarget(drawing.path, chartPath),
       )
       touchedEntries.add(relsPathFor(drawing.path))
-      await appendAnchor(pkg, drawing.path, addition.anchor, (shapeId) =>
-        chartFrameXml(shapeId, chartRelId),
+      const chart = addition.chart
+      await appendAnchor(
+        pkg,
+        drawing.path,
+        addition.anchor,
+        (shapeId) => chartFrameXml(shapeId, chartRelId, chart),
+        chart.editAs,
       )
     } else if (addition.shape) {
       const shape = addition.shape
-      await appendAnchor(pkg, drawing.path, addition.anchor, (shapeId) => shapeXml(shapeId, shape))
+      const linkRelId = await hyperlinkRelationship(pkg, drawing.path, shape, touchedEntries)
+      await appendAnchor(
+        pkg,
+        drawing.path,
+        addition.anchor,
+        (shapeId) => shapeXml(shapeId, shape, linkRelId),
+        shape.editAs,
+      )
     } else if (addition.image) {
       const image = addition.image
       const extension = IMAGE_EXTENSIONS[image.mediaType]
@@ -178,6 +222,8 @@ export async function applyVisualAdditions(
         relativeTarget(drawing.path, mediaPath),
       )
       touchedEntries.add(relsPathFor(drawing.path))
+      // adapted: 上游 hyperlink rel/editAs 收入；ECharts sidecar:xl/echarts/echartN.json + descr 指针(本地)保留
+      const linkRelId = await hyperlinkRelationship(pkg, drawing.path, image, touchedEntries)
       // ECharts sidecar:xl/echarts/echartN.json + descr 指针(docx/slides 同款)
       let echartDescr: string | undefined
       if (image.echart) {
@@ -196,8 +242,12 @@ export async function applyVisualAdditions(
         await registerContentTypeDefault(pkg, 'json', 'application/json', touchedEntries)
         echartDescr = `chatoffice-echart:${sidecarPath}`
       }
-      await appendAnchor(pkg, drawing.path, addition.anchor, (shapeId) =>
-        pictureXml(shapeId, imageRelId, image, echartDescr),
+      await appendAnchor(
+        pkg,
+        drawing.path,
+        addition.anchor,
+        (shapeId) => pictureXml(shapeId, imageRelId, image, linkRelId, echartDescr),
+        image.editAs,
       )
     } else {
       throw new VisualAddError('A visual addition carries exactly one of chart, shape, or image.')
@@ -275,11 +325,61 @@ async function insertWorksheetDrawingElement(
   touchedEntries.add(worksheetPath)
 }
 
+async function hyperlinkRelationship(
+  pkg: MutablePackage,
+  drawingPath: string,
+  properties: VisualAddProperties,
+  touchedEntries: Set<string>,
+): Promise<string | undefined> {
+  if (!properties.hyperlink) return undefined
+  const relsPath = relsPathFor(drawingPath)
+  const id = await appendRelationship(
+    pkg,
+    relsPath,
+    HYPERLINK_REL_TYPE,
+    properties.hyperlink,
+    'External',
+  )
+  touchedEntries.add(relsPath)
+  return id
+}
+
+function cNvPrXml(
+  shapeId: number,
+  name: string,
+  properties: VisualAddProperties,
+  linkRelId: string | undefined,
+): string {
+  const descr = properties.altText ? ` descr="${escapeXmlAttribute(properties.altText)}"` : ''
+  const open = `<xdr:cNvPr id="${shapeId}" name="${escapeXmlAttribute(name)}"${descr}`
+  if (linkRelId === undefined) return `${open}/>`
+  return (
+    `${open}>` +
+    '<a:hlinkClick xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"' +
+    ` r:id="${escapeXmlAttribute(linkRelId)}"/>` +
+    '</xdr:cNvPr>'
+  )
+}
+
+function xfrmXml(properties: VisualAddProperties): string {
+  const rot = Math.round((properties.rotation ?? 0) * 60_000)
+  const normalized = ((rot % 21_600_000) + 21_600_000) % 21_600_000
+  const attributes =
+    (normalized === 0 ? '' : ` rot="${normalized}"`) +
+    (properties.flipH ? ' flipH="1"' : '') +
+    (properties.flipV ? ' flipV="1"' : '')
+  const ext = properties.frameSize
+    ? `<a:ext cx="${Math.round(properties.frameSize.width)}" cy="${Math.round(properties.frameSize.height)}"/>`
+    : '<a:ext cx="0" cy="0"/>'
+  return `<a:xfrm${attributes}><a:off x="0" y="0"/>${ext}</a:xfrm>`
+}
+
 async function appendAnchor(
   pkg: MutablePackage,
   drawingPath: string,
   anchor: DrawingAnchor,
   buildInner: (shapeId: number) => string,
+  editAs?: 'twoCell' | 'oneCell' | 'absolute',
 ): Promise<void> {
   let xml = await pkg.readText(drawingPath)
   // Other producers write the wsDr root with any prefix and self-close it
@@ -304,8 +404,9 @@ async function appendAnchor(
   const marker = (row: number, column: number, rowOffset: number, columnOffset: number) =>
     `<xdr:col>${column}</xdr:col><xdr:colOff>${columnOffset}</xdr:colOff>` +
     `<xdr:row>${row}</xdr:row><xdr:rowOff>${rowOffset}</xdr:rowOff>`
+  const editAsAttribute = editAs && editAs !== 'twoCell' ? ` editAs="${editAs}"` : ''
   const element =
-    `<xdr:twoCellAnchor${namespaceFix}>` +
+    `<xdr:twoCellAnchor${editAsAttribute}${namespaceFix}>` +
     `<xdr:from>${marker(anchor.fromRow, anchor.fromColumn, anchor.fromRowOffset, anchor.fromColumnOffset)}</xdr:from>` +
     `<xdr:to>${marker(anchor.toRow, anchor.toColumn, anchor.toRowOffset, anchor.toColumnOffset)}</xdr:to>` +
     buildInner(nextShapeId(xml)) +
@@ -314,11 +415,11 @@ async function appendAnchor(
   pkg.write(drawingPath, xml.slice(0, closeAt) + element + xml.slice(closeAt))
 }
 
-function chartFrameXml(shapeId: number, chartRelId: string): string {
+function chartFrameXml(shapeId: number, chartRelId: string, chart: ChartAdd): string {
   return (
     '<xdr:graphicFrame macro="">' +
     '<xdr:nvGraphicFramePr>' +
-    `<xdr:cNvPr id="${shapeId}" name="Chart ${shapeId}"/>` +
+    cNvPrXml(shapeId, `Chart ${shapeId}`, { altText: chart.altText }, undefined) +
     '<xdr:cNvGraphicFramePr/>' +
     '</xdr:nvGraphicFramePr>' +
     '<xdr:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/></xdr:xfrm>' +
@@ -337,16 +438,29 @@ function pictureXml(
   shapeId: number,
   imageRelId: string,
   image: ImageAdd | undefined,
-  echartDescr?: string,
+  linkRelId?: string | undefined,
+  echartDescr?: string | undefined,
 ): string {
+  // adapted: 并集——上游 linkRelId(hlinkClick)/altText descr 收入；本地 echart descr、
+  // 未旋转 frame ext、applyPictureFormat(geom/srcRect|crop/lum/rotation/flip/line/opacity)
+  // 保留，不走上游内联 alphaModFix/xfrmXml/srcRectXml 以免与 applyPictureFormat 双写。
   const frame =
     image?.frameWidth !== undefined && image?.frameHeight !== undefined
       ? `<a:ext cx="${image.frameWidth}" cy="${image.frameHeight}"/>`
       : '<a:ext cx="0" cy="0"/>'
+  const descr = echartDescr ?? image?.altText
+  const open = `<xdr:cNvPr id="${shapeId}" name="Picture ${shapeId}"${descr ? ` descr="${escapeXmlAttribute(descr)}"` : ''}`
+  const cNvPr =
+    linkRelId === undefined
+      ? `${open}/>`
+      : `${open}>` +
+        '<a:hlinkClick xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"' +
+        ` r:id="${escapeXmlAttribute(linkRelId)}"/>` +
+        '</xdr:cNvPr>'
   const base =
     '<xdr:pic>' +
     '<xdr:nvPicPr>' +
-    `<xdr:cNvPr id="${shapeId}" name="Picture ${shapeId}"${echartDescr ? ` descr="${escapeXmlAttribute(echartDescr)}"` : ''}/>` +
+    cNvPr +
     '<xdr:cNvPicPr><a:picLocks noChangeAspect="1"/></xdr:cNvPicPr>' +
     '</xdr:nvPicPr>' +
     '<xdr:blipFill>' +
@@ -360,9 +474,17 @@ function pictureXml(
     '</xdr:spPr>' +
     '</xdr:pic>'
   if (!image) return base
+  const cropRect = image.crop
+    ? {
+        l: Math.round(image.crop.left * 100_000),
+        t: Math.round(image.crop.top * 100_000),
+        r: Math.round(image.crop.right * 100_000),
+        b: Math.round(image.crop.bottom * 100_000),
+      }
+    : undefined
   return applyPictureFormat(base, {
     geom: image.geom ?? undefined,
-    srcRect: image.srcRect ?? undefined,
+    srcRect: image.srcRect ?? cropRect,
     lum: image.lum ?? undefined,
     rotation: image.rotation ?? undefined,
     flipH: image.flipH ?? undefined,
@@ -373,14 +495,15 @@ function pictureXml(
   })
 }
 
-function shapeXml(shapeId: number, shape: ShapeAdd): string {
+function shapeXml(shapeId: number, shape: ShapeAdd, linkRelId: string | undefined): string {
   const name = shape.isTextBox ? `TextBox ${shapeId}` : `Shape ${shapeId}`
-  const fill = shape.fillColor
-    ? `<a:solidFill><a:srgbClr val="${shape.fillColor.slice(1).toUpperCase()}"/></a:solidFill>`
-    : '<a:noFill/>'
-  const outline = shape.isTextBox
-    ? '<a:ln w="9525"><a:solidFill><a:srgbClr val="808080"/></a:solidFill></a:ln>'
-    : ''
+  const fill = solidFillXml(shape.fillColor ?? 'none')
+  const outline =
+    shape.lineColor !== undefined
+      ? outlineXml(shape.lineColor)
+      : shape.isTextBox
+        ? outlineXml('#808080')
+        : ''
   const body =
     shape.text !== undefined || shape.isTextBox
       ? '<xdr:txBody><a:bodyPr wrap="square" rtlCol="0"/><a:lstStyle/>' +
@@ -389,11 +512,11 @@ function shapeXml(shapeId: number, shape: ShapeAdd): string {
   return (
     '<xdr:sp macro="" textlink="">' +
     '<xdr:nvSpPr>' +
-    `<xdr:cNvPr id="${shapeId}" name="${escapeXmlAttribute(name)}"/>` +
+    cNvPrXml(shapeId, name, shape, linkRelId) +
     `<xdr:cNvSpPr${shape.isTextBox ? ' txBox="1"' : ''}/>` +
     '</xdr:nvSpPr>' +
     '<xdr:spPr>' +
-    '<a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/></a:xfrm>' +
+    xfrmXml(shape) +
     `<a:prstGeom prst="${escapeXmlAttribute(shape.shapeType)}"><a:avLst/></a:prstGeom>` +
     fill +
     outline +
@@ -401,6 +524,16 @@ function shapeXml(shapeId: number, shape: ShapeAdd): string {
     body +
     '</xdr:sp>'
   )
+}
+
+export function solidFillXml(color: string): string {
+  return color === 'none'
+    ? '<a:noFill/>'
+    : `<a:solidFill><a:srgbClr val="${color.slice(1).toUpperCase()}"/></a:solidFill>`
+}
+
+export function outlineXml(color: string): string {
+  return `<a:ln w="9525">${solidFillXml(color)}</a:ln>`
 }
 
 function nextShapeId(drawingXml: string): number {
@@ -816,8 +949,8 @@ function matchRelationship(relsXml: string, type: string): { id: string; target:
   for (const match of relsXml.matchAll(/<Relationship\b[^>]*\/?>(?:<\/Relationship>)?/g)) {
     const tag = match[0]
     if (!tag.includes(`Type="${type}"`)) continue
-    const id = /\bId="([^"]+)"/.exec(tag)?.[1]
-    const target = /\bTarget="([^"]+)"/.exec(tag)?.[1]
+    const id = /\bId=(["'])([^"']+)\1/.exec(tag)?.[2]
+    const target = /\bTarget=(["'])([^"']+)\1/.exec(tag)?.[2]
     if (id && target) return { id, target }
   }
   return null
@@ -868,6 +1001,7 @@ export async function appendRelationship(
   relsPath: string,
   type: string,
   target: string,
+  targetMode?: 'External',
 ): Promise<string> {
   const exists = await pkg.has(relsPath)
   const xml = exists
@@ -878,7 +1012,7 @@ export async function appendRelationship(
   const id = nextFreeRelationshipId(xml)
   const element =
     `<Relationship Id="${id}" Type="${escapeXmlAttribute(type)}" ` +
-    `Target="${escapeXmlAttribute(target)}"/>`
+    `Target="${escapeXmlAttribute(target)}"${targetMode ? ` TargetMode="${targetMode}"` : ''}/>`
   const closeAt = xml.lastIndexOf('</Relationships>')
   if (closeAt < 0) throw new VisualAddError(`${relsPath} is not a relationships part.`)
   const patched = xml.slice(0, closeAt) + element + xml.slice(closeAt)

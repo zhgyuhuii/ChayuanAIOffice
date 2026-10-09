@@ -249,15 +249,16 @@ function runChaOffice(args: string[], timeoutMs: number, signal?: AbortSignal): 
 /** Max search results kept; longest snippet/title chars (prevents MB fields blowing context). */
 export const MAX_CHATOFFICE_RESULTS = 20
 export const MAX_CHATOFFICE_SNIPPET_CHARS = 2_000
+const MAX_CHATOFFICE_URL_CHARS = 8_192
 
 function normalizeMaxResults(n: number): number {
   if (!Number.isFinite(n)) return 6
   return Math.min(20, Math.max(1, Math.floor(n)))
 }
 
-function clipField(v: unknown): string {
+function clipField(v: unknown, max = MAX_CHATOFFICE_SNIPPET_CHARS): string {
   const s = String(v ?? '')
-  return s.length > MAX_CHATOFFICE_SNIPPET_CHARS ? s.slice(0, MAX_CHATOFFICE_SNIPPET_CHARS) : s
+  return s.length > max ? s.slice(0, max) : s
 }
 
 /** Parses the `chatoffice search` response shape data.organic_results[{title,link,snippet}] (exported for tests) */
@@ -272,7 +273,7 @@ export function parseChaOfficeWebSearch(
     const o = asRecord(item)
     return {
       title: clipField(o.title),
-      url: clipField(o.link),
+      url: clipField(o.link, MAX_CHATOFFICE_URL_CHARS),
       snippet: clipField(o.snippet),
     }
   })

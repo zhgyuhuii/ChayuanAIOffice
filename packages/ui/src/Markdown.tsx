@@ -28,6 +28,11 @@ export interface MarkdownNav {
   onNavigate: (href: string) => void
 }
 
+export interface MarkdownImage {
+  /** Resolve an image href from `![alt](href)`; return undefined to skip the image */
+  resolve?: (href: string) => string | undefined
+}
+
 // Hrefs may carry one level of balanced parens (sheet names like `Data (2)`
 // arrive as sheetnav://Data%20(2)!B2), so the href cannot simply stop at ')'.
 const HREF = /(?:[^\s()]|\([^\s()]*\))+/.source
@@ -37,10 +42,12 @@ const INLINE_RE = new RegExp(
 )
 const LINK_RE = new RegExp(`^\\[([^\\]]+)\\]\\((${HREF})\\)$`)
 const IMAGE_RE = new RegExp(`^!\\[([^\\]]*)\\]\\((${HREF})\\)$`)
+/** a whole line that is nothing but an image, the manual's figure syntax */
+const IMG_LINE_RE = new RegExp(`^\\s*!\\[([^\\]]*)\\]\\((${HREF})\\)$`)
 /** images render as <img> only for safe sources: editor CSPs allow data:
  * images everywhere, and generated images ride in as data: URLs; remote
  * https: is allowed, everything else stays literal text */
-const IMAGE_SRC_RE = /^(data:image\/[a-z0-9+.-]+;base64,[A-Za-z0-9+/=]+|https:\/\/\S+)$/i
+const IMAGE_SRC_RE = /^(data:image\/[a-z0-9+.-]+;base64,[A-Za-z0-9+\/=]+|https:\/\/\S+)$/i
 const CITE_TEXT_RE = /\[(\d{1,2})\]/g
 
 interface CiteContext {
@@ -48,12 +55,14 @@ interface CiteContext {
   onCitationClick: (citation: KbCitation) => void
 }
 
+// adapted: 上游 665e1912 图床 images resolver 作为第 6 参织入本地 renderInline
 function renderInline(
   text: string,
   nav?: MarkdownNav,
   cite?: CiteContext,
   onZoomOpen?: (src: string) => void,
   insert?: { run: (src: string) => void; label: string },
+  images?: MarkdownImage,
 ): ReactNode[] {
   const out: ReactNode[] = []
   let last = 0
@@ -92,9 +101,13 @@ function renderInline(
     if (tok.startsWith('`')) out.push(<code key={key++}>{tok.slice(1, -1)}</code>)
     else if (tok.startsWith('**')) out.push(<strong key={key++}>{tok.slice(2, -2)}</strong>)
     else if (tok.startsWith('!')) {
+      // adapted: 上游 resolver 优先（图床/manual 资产），未提供 resolver 时按本地 IMAGE_SRC_RE 白名单直渲染
       const img = IMAGE_RE.exec(tok)
-      const src = img?.[2] ?? ''
-      if (img && IMAGE_SRC_RE.test(src)) {
+      const raw = img?.[2] ?? ''
+      const src = img
+        ? (images?.resolve?.(raw) ?? (IMAGE_SRC_RE.test(raw) ? raw : undefined))
+        : undefined
+      if (img && src) {
         const node = (
           <img
             key={key++}
@@ -102,6 +115,7 @@ function renderInline(
             src={src}
             alt={img[1] ?? ''}
             title={img[1] ?? ''}
+            loading="lazy"
             onClick={() => onZoomOpen?.(src)}
           />
         )
@@ -123,7 +137,7 @@ function renderInline(
           out.push(node)
         }
       } else {
-        pushText(tok) // unsafe source stays literal
+        pushText(tok) // unresolvable or unsafe source stays literal
       }
     } else if (tok.startsWith('[')) {
       const link = LINK_RE.exec(tok)
@@ -158,9 +172,10 @@ type MdBlock =
   | { kind: 'p'; lines: string[] }
   | { kind: 'ul'; items: string[] }
   | { kind: 'ol'; items: string[] }
-  | { kind: 'h'; text: string }
+  | { kind: 'h'; text: string; level: number }
   | { kind: 'table'; align: CellAlign[]; head: string[]; rows: string[][] }
   | { kind: 'code'; lang: string; lines: string[] }
+  | { kind: 'img'; alt: string; href: string }
 
 const FENCE_RE = /^\s*(`{3,}|~{3,})/
 const DELIM_CELL_RE = /^\s*:?-+:?\s*$/
@@ -225,6 +240,16 @@ function parseBlocks(text: string): MdBlock[] {
       flush()
       continue
     }
+    // Standalone image line: ![alt](href) — the manual's figure syntax, and a
+    // thing an AI reply can contain on its own. It is a *block* only when the
+    // host can resolve it; see the render side, which falls back to the literal
+    // text rather than dropping the line.
+    const img = IMG_LINE_RE.exec(line)
+    if (img) {
+      flush()
+      blocks.push({ kind: 'img', alt: img[1] ?? '', href: img[2] ?? '' })
+      continue
+    }
     if (FENCE_RE.test(line)) {
       flush()
       cur = { kind: 'code', lang: /^\s*(`{3,}|~{3})\s*(\S*)/.exec(line)?.[2] ?? '', lines: [] }
@@ -252,10 +277,10 @@ function parseBlocks(text: string): MdBlock[] {
         }
       }
     }
-    const h = /^#{1,6}\s+(.*)$/.exec(line)
+    const h = /^(#{1,6})\s+(.*)$/.exec(line)
     if (h) {
       flush()
-      blocks.push({ kind: 'h', text: h[1] ?? '' })
+      blocks.push({ kind: 'h', text: h[2] ?? '', level: (h[1] ?? '#').length })
       continue
     }
     const ul = /^\s*[-*•]\s+(.*)$/.exec(line)
@@ -289,6 +314,7 @@ function parseBlocks(text: string): MdBlock[] {
 export function Markdown({
   text,
   nav,
+  images,
   citations,
   onCitationClick,
   onInsertImage,
@@ -296,6 +322,8 @@ export function Markdown({
 }: {
   text: string
   nav?: MarkdownNav
+  /** adapted: 上游图床 resolve 钩子；未提供时本地安全源白名单仍生效 */
+  images?: MarkdownImage
   citations?: readonly KbCitation[] | undefined
   onCitationClick?: ((citation: KbCitation) => void) | undefined
   /** host hook: rendered as an action chip under each generated image so the
@@ -326,15 +354,48 @@ export function Markdown({
     <div className="ai-md">
       {parseBlocks(text).map((b, i) => {
         if (b.kind === 'h') {
+          // level class lets hosts scale heading sizes (chat keeps them equal;
+          // the manual styles h2/h3 distinctly)
           return (
-            <p key={i} className="ai-md-h">
-              {renderInline(b.text, nav, cite, openZoom, insert)}
+            <p key={i} className={`ai-md-h ai-md-h${b.level}`}>
+              {renderInline(b.text, nav, cite, openZoom, insert, images)}
             </p>
+          )
+        }
+        if (b.kind === 'img') {
+          // adapted: resolver 优先；本地 chat 面板无 resolver 时按 IMAGE_SRC_RE 白名单回退（不丢缩略图），都不中才落字面量
+          const src = images?.resolve?.(b.href) ?? (IMAGE_SRC_RE.test(b.href) ? b.href : undefined)
+          if (!src) return <p key={i}>{`![${b.alt}](${b.href})`}</p>
+          const img = (
+            <img
+              key={i}
+              className="ai-md-img"
+              src={src}
+              alt={b.alt}
+              loading="lazy"
+              onClick={() => openZoom(src)}
+            />
+          )
+          // insert chip rides on whole-line images too (local chat panels push
+          // the generated picture into the hosting document)
+          if (!insert) return img
+          return (
+            <span key={i} className="ai-md-img-wrap">
+              {img}
+              <button
+                type="button"
+                className="ai-md-img-insert"
+                title={insert.label}
+                onClick={() => insert.run(src)}
+              >
+                {insert.label}
+              </button>
+            </span>
           )
         }
         if (b.kind === 'ul' || b.kind === 'ol') {
           const items = b.items.map((it, j) => (
-            <li key={j}>{renderInline(it, nav, cite, openZoom, insert)}</li>
+            <li key={j}>{renderInline(it, nav, cite, openZoom, insert, images)}</li>
           ))
           return b.kind === 'ul' ? <ul key={i}>{items}</ul> : <ol key={i}>{items}</ol>
         }
@@ -363,7 +424,7 @@ export function Markdown({
                   <tr>
                     {b.head.map((c, j) => (
                       <th key={j} style={cellStyle(j)}>
-                        {renderInline(c, nav, cite, openZoom, insert)}
+                        {renderInline(c, nav, cite, openZoom, insert, images)}
                       </th>
                     ))}
                   </tr>
@@ -373,7 +434,7 @@ export function Markdown({
                     <tr key={r}>
                       {row.map((c, j) => (
                         <td key={j} style={cellStyle(j)}>
-                          {renderInline(c, nav, cite, openZoom, insert)}
+                          {renderInline(c, nav, cite, openZoom, insert, images)}
                         </td>
                       ))}
                     </tr>
@@ -388,7 +449,7 @@ export function Markdown({
             {b.lines.map((ln, j) => (
               <Fragment key={j}>
                 {j > 0 && <br />}
-                {renderInline(ln, nav, cite, openZoom, insert)}
+                {renderInline(ln, nav, cite, openZoom, insert, images)}
               </Fragment>
             ))}
           </p>

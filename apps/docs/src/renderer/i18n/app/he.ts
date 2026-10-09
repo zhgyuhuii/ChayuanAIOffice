@@ -659,4 +659,5 @@ export const he = {
   appGoToNotFound: 'לא נמצא',
   appGoToPrevious: 'הקודם',
   appGoToNext: 'הבא',
+appParaUnitChars: 'תווים',
 } satisfies Record<keyof typeof zh, string>

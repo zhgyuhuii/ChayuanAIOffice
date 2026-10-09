@@ -213,6 +213,12 @@ const api: DesktopApi = {
   aiChat: (request: { selection: AiModelSelection; system: string; user: string }) =>
     ipcRenderer.invoke('ai:chat', request),
   aiStream: (request: AiStreamWireRequest) => ipcRenderer.invoke('ai:stream', request),
+  onAiSettingsChanged: (handler) => {
+    const listener = () => handler()
+    ipcRenderer.on('ai:settings-changed', listener)
+    return () => ipcRenderer.removeListener('ai:settings-changed', listener)
+  },
+  openAiModelSettings: () => ipcRenderer.invoke('ai:open-model-settings'),
   aiStreamCancel: (requestId: string) => ipcRenderer.invoke('ai:stream-cancel', requestId),
   aiChaOfficeStatus: (withEmail?: boolean) =>
     ipcRenderer.invoke('ai:chatoffice-status', withEmail),

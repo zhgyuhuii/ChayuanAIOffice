@@ -672,4 +672,5 @@ export const ru = {
   appGoToNotFound: 'Не найдено',
   appGoToPrevious: 'Назад',
   appGoToNext: 'Далее',
+appParaUnitChars: 'символов',
 } satisfies Record<keyof typeof zh, string>

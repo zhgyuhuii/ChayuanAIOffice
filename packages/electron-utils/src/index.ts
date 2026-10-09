@@ -103,3 +103,11 @@ export {
 } from './renderer-scheme'
 export { installRendererProtocol, registerRendererScheme } from './renderer-protocol'
 export { atomicWriteFile, writeJsonAtomic } from './atomic-write'
+export {
+  PRINT_READY_SCRIPT,
+  printHtmlDocument,
+  type PrintDialogOutcome,
+  type PrintDialogWindow,
+  type PrintDocumentOptions,
+} from './print-window'
+export { abortOnDestroyed, type DestroyableSender } from './abort-on-destroyed'

@@ -16,7 +16,6 @@ export const es = {
   ribbonPin: 'Anclar la cinta de opciones',
   ribbonExpand: 'Expandir la cinta de opciones',
   ribbonCompact: 'Cinta compacta (solo iconos)',
-  ribbonExpandFull: 'Expandir la cinta de opciones',
   ribbonTabView: 'Vista',
   ribbonTabTableDesign: 'Diseño de tabla',
   ribbonTabTableLayout: 'Disposición de tabla',

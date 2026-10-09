@@ -673,4 +673,5 @@ export const es = {
   appGoToNotFound: 'No encontrado',
   appGoToPrevious: 'Anterior',
   appGoToNext: 'Siguiente',
+appParaUnitChars: 'Caracteres',
 } satisfies Record<keyof typeof zh, string>

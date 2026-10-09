@@ -47,6 +47,7 @@ import appIconPath from '../../../shell/src/main/assets/app-icon.png?asset'
 // tools/gen-app-icon.mjs
 const APP_ICON = nativeImage.createFromPath(appIconPath)
 import {
+  abortOnDestroyed,
   appMenuLabels,
   buildPrintableHtml,
   configuredDefaultSaveDir,
@@ -171,6 +172,18 @@ import {
 } from './docx-encryption'
 import { isExternallyModified, type DiskFileState } from './external-change'
 import { printScaleOption, validPrintDim, validPrintScale } from './print-args'
+// 上游 c91066db:收藏存储迁入 starred-files.ts(纯函数、带命名收藏组与批量取消生效);
+// docs-main 以 wrapper 导出消费,shell home IPC 亦经由这些导出
+import {
+  assignStarredGroup,
+  dropStarredItems,
+  readStarredItems,
+  renameStarredItem,
+  starredGroupMap,
+  starredGroupNames,
+  toggleStarredItem,
+  writeStarredItems,
+} from './starred-files'
 import { initDocsAutoUpdater } from './updater'
 import { registerZoteroIpc, teardownZoteroIpc } from './zotero-ipc'
 
@@ -2638,6 +2651,7 @@ export function docsFileRenamed(wc: WebContents, oldPath: string, newPath: strin
   // keep the save allowlist in sync so docs:save accepts the renamed path
   docWritablePaths.get(wc.id)?.delete(oldPath)
   allowDocWrite(wc.id, newPath)
+  rememberOpenDoc(wc.id, newPath)
   const states = docDiskStates.get(wc.id)
   const recorded = states?.get(oldPath)
   if (states && recorded) {
@@ -2658,17 +2672,14 @@ export function replaceRecentFile(oldPath: string, newPath: string): void {
     RECENT_PATH(),
     recent.map((p) => (p === oldPath ? newPath : p)),
   )
-  const starred = readJson<string[]>(STARRED_PATH(), [])
-  if (starred.includes(oldPath)) {
-    writeJson(
-      STARRED_PATH(),
-      starred.map((p) => (p === oldPath ? newPath : p)),
-    )
-  }
+  const renamed = renameStarredItem(readStarredItems(STARRED_PATH()), oldPath, newPath)
+  if (renamed) writeStarredItems(STARRED_PATH(), renamed)
   buildDocsMenu()
 }
 
 // ---- starred files (home screen favorites) ----
+// the store lives in starred-files.ts (pure, unit-tested); legacy flat
+// string[] files migrate to the versioned shape on the first write
 
 const STARRED_PATH = () => userDataPath('starred.json')
 
@@ -2676,25 +2687,37 @@ const STARRED_PATH = () => userDataPath('starred.json')
  *  unavailable starred file must keep its star and its Starred-view row —
  *  filtering here also desynced the star state shown on recents rows (r158) */
 export function readStarredFiles(): string[] {
-  return readJson<string[]>(STARRED_PATH(), [])
+  return readStarredItems(STARRED_PATH()).map((item) => item.path)
 }
 
 export function toggleStarredFile(filePath: string): void {
-  const starred = readJson<string[]>(STARRED_PATH(), [])
-  const next = starred.includes(filePath)
-    ? starred.filter((p) => p !== filePath)
-    : [...starred, filePath]
-  writeJson(STARRED_PATH(), next)
+  writeStarredItems(STARRED_PATH(), toggleStarredItem(readStarredItems(STARRED_PATH()), filePath))
 }
 
-/** Bulk unstar (in-app delete, or removing an unavailable entry from the
- *  recents list): the star must not outlive the row it pointed at (r158) */
+/** Bulk unstar (in-app delete, bulk unfollow from the Starred view, or
+ *  removing an unavailable entry from the recents list): the star must not
+ *  outlive the row it pointed at (r158) */
 export function removeStarredFiles(filePaths: string[]): void {
-  const drop = new Set(filePaths)
-  if (drop.size === 0) return
-  const starred = readJson<string[]>(STARRED_PATH(), [])
-  const next = starred.filter((p) => !drop.has(p))
-  if (next.length !== starred.length) writeJson(STARRED_PATH(), next)
+  const next = dropStarredItems(readStarredItems(STARRED_PATH()), filePaths)
+  if (next) writeStarredItems(STARRED_PATH(), next)
+}
+
+/** put each starred path into `group` (null = back to ungrouped). Groups have
+ *  no separate list: a group exists while an entry carries its name, so
+ *  creating one is assigning its first file and emptying one is implicit. */
+export function setStarredGroup(filePaths: string[], group: string | null): void {
+  const next = assignStarredGroup(readStarredItems(STARRED_PATH()), filePaths, group)
+  if (next) writeStarredItems(STARRED_PATH(), next)
+}
+
+/** group names that currently have at least one starred file, first-seen order */
+export function readStarredGroups(): string[] {
+  return starredGroupNames(readStarredItems(STARRED_PATH()))
+}
+
+/** starred path → its group (ungrouped paths absent); feeds the home IPC entries */
+export function readStarredGroupMap(): Map<string, string> {
+  return starredGroupMap(readStarredItems(STARRED_PATH()))
 }
 
 // ---- original archive (pass-through base: original file archived by content hash) ----
@@ -2749,6 +2772,14 @@ const docWritablePaths = new Map<number, Set<string>>()
 /** per-renderer PDF export targets authorized via the export save dialog */
 const pdfWritablePaths = new Map<number, Set<string>>()
 const tornDownWcIds = new Set<number>()
+
+// per renderer, kept current on open/save/save-as/rename; the local unified media
+// channel(ai-host registerMediaIpc)目前不消费 mediaRoots,仅维护映射供后续接线
+const openDocByWc = new Map<number, string>()
+
+function rememberOpenDoc(wcId: number, filePath: string): void {
+  openDocByWc.set(wcId, filePath)
+}
 
 function allowDocWrite(wcId: number, filePath: string): void {
   const set = docWritablePaths.get(wcId) ?? new Set<string>()
@@ -3186,6 +3217,13 @@ let aiRuntime: AiRuntime | null = null
 function getAiRuntime(): AiRuntime {
   if (!aiRuntime) throw new Error('AI runtime used before registerAiIpc()')
   return aiRuntime
+}
+
+/** every renderer (tabs, home) re-reads ai-settings.json — the composer chip and
+ *  the settings page edit the same file from different windows */
+function broadcastAiSettingsChanged(): void {
+  for (const wc of electronWebContents.getAllWebContents())
+    if (!wc.isDestroyed()) wc.send('ai:settings-changed')
 }
 
 /**
@@ -4474,6 +4512,7 @@ export function registerDocsIpc(): void {
         await atomicWriteFile(result.filePath, bytes)
         if (tornDownWcIds.has(event.sender.id)) return { ok: false }
         allowDocWrite(event.sender.id, result.filePath)
+        rememberOpenDoc(event.sender.id, result.filePath)
         await rememberDiskState(event.sender.id, result.filePath, sha256Hex(bytes))
         pointLazyMediaAt(
           hashes,
@@ -4547,6 +4586,7 @@ export function registerDocsIpc(): void {
         return { ok: false }
       }
       allowDocWrite(event.sender.id, filePath)
+      rememberOpenDoc(event.sender.id, filePath)
       await rememberDiskState(event.sender.id, filePath, sha256Hex(bytes))
       pointLazyMediaAt(
         hashes,
@@ -5474,8 +5514,6 @@ export function buildDocsMenu(): void {
           accelerator: 'CmdOrCtrl+/',
           click: () => sendCommand('shortcuts'),
         },
-        { type: 'separator' },
-        { label: tm('menuDocsHelp'), enabled: false },
         { type: 'separator' },
         checkUpdatesMenuItem(appMenuLabels(getUiLang())),
         aboutMenuItem(appMenuLabels(getUiLang())),

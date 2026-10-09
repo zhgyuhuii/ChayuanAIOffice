@@ -1834,10 +1834,22 @@ export function registerSlidesIpc(): void {
 
   ipcMain.handle('slides:cloud-gen-status', () => ({ enabled: cloudSlideEnabled() }))
 
+  // In-flight cloud generations keyed by the requesting window: stop in one
+  // panel aborts all of that window's pages (a deck batch shares one stop
+  // signal) and none of another window's
+  const cloudPageAborts = new Map<number, Set<AbortController>>()
+
+  ipcMain.handle('slides:cloud-page-cancel', (e) => {
+    const aborts = cloudPageAborts.get(e.sender.id)
+    if (!aborts) return
+    for (const c of aborts) c.abort()
+    cloudPageAborts.delete(e.sender.id)
+  })
+
   ipcMain.handle(
     'slides:cloud-page-generate',
     async (
-      _e,
+      e,
       op: {
         brief: string
         title?: string
@@ -1855,16 +1867,30 @@ export function registerSlidesIpc(): void {
         // comparisons and emergency rollback.
         const tier = process.env.CHATOFFICE_CLOUD_SLIDE_TIER === 'standard' ? 'standard' : 'ultra'
         const started = Date.now()
-        const { bytes, model } = await chatofficeSlideGenerate({
-          tier,
-          brief: String(op.brief ?? ''),
-          title: op.title ? String(op.title) : undefined,
-          styleSkill: op.styleSkill ? String(op.styleSkill) : undefined,
-          deckContext: op.deckContext,
-          images: Array.isArray(op.images) ? op.images : undefined,
-          width: op.width,
-          height: op.height,
-        })
+        // Stop must reach the cloud request: without this the generation keeps
+        // running (and billing) after the user pressed stop
+        const abort = new AbortController()
+        const windowAborts = cloudPageAborts.get(e.sender.id) ?? new Set<AbortController>()
+        windowAborts.add(abort)
+        cloudPageAborts.set(e.sender.id, windowAborts)
+        let bytes: Uint8Array
+        let model: string
+        try {
+          ;({ bytes, model } = await chatofficeSlideGenerate({
+            tier,
+            brief: String(op.brief ?? ''),
+            title: op.title ? String(op.title) : undefined,
+            styleSkill: op.styleSkill ? String(op.styleSkill) : undefined,
+            deckContext: op.deckContext,
+            images: Array.isArray(op.images) ? op.images : undefined,
+            width: op.width,
+            height: op.height,
+            signal: abort.signal,
+          }))
+        } finally {
+          windowAborts.delete(abort)
+          if (windowAborts.size === 0) cloudPageAborts.delete(e.sender.id)
+        }
         console.log(
           `[cloud-slide] page generated: tier=${tier} model=${model} bytes=${bytes.length} ms=${Date.now() - started}`,
         )

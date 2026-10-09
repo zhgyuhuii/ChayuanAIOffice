@@ -32,7 +32,7 @@ import {
 import { persistGeneratedImage } from '@chatoffice/ai-host'
 import { registerMediaIpc, registerSharedAiIpc, registerSharedKbIpc } from '@chatoffice/ai-host'
 import { MAX_REMOTE_IMAGE_BYTES, fetchRemoteImage, readBodyCapped, writeJsonAtomic } from '@chatoffice/electron-utils'
-import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server' 
+import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
 import {
   webSearch,
   imageSearch,

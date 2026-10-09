@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Unpack the extra-data ChaAI Office deb into /app/extra/app (genoffice#1858).
+"""Unpack the extra-data ChaAI Office deb into /app/extra/app (chatoffice#1858).
 
 The deb is fetched by flatpak at install time (see the extra-data source in
-com.genoffice.app.json) and lands at /app/extra/genoffice.deb. The freedesktop
+com.chatoffice.app.json) and lands at /app/extra/chatoffice.deb. The freedesktop
 runtime ships no ar/dpkg, so the 60-byte ar headers are walked by hand and the
 payload member data.tar.* is extracted with the standard library's tarfile.
-The first launch runs this (see genoffice.sh); /app/extra is the only
+The first launch runs this (see chatoffice.sh); /app/extra is the only
 writable location under /app once the app is installed.
 """
 
@@ -16,7 +16,7 @@ import sys
 import tarfile
 
 EXTRA = "/app/extra"
-DEB = os.path.join(EXTRA, "genoffice.deb")
+DEB = os.path.join(EXTRA, "chatoffice.deb")
 OUT = os.path.join(EXTRA, "app")
 
 
@@ -64,7 +64,7 @@ def main():
         tar.extractall(OUT, filter="data")
     os.remove(tar_path)
     os.remove(DEB)
-    binary = os.path.join(OUT, "opt/ChaAI Office/genoffice")
+    binary = os.path.join(OUT, "opt/ChaAI Office/chatoffice")
     if not os.path.isfile(binary):
         die(f"deb payload lacks {binary}")
     os.chmod(binary, os.stat(binary).st_mode | stat.S_IXUSR)

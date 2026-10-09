@@ -38,7 +38,8 @@ export function installCliLinkBestEffort(settingsPath: string): void {
     const launcher = join(dir, process.platform === 'win32' ? 'chaoffice.cmd' : 'chaoffice')
     const outcome = installCliLink({ launcher })
     console.log(
-      `[chaoffice] cli link: ${outcome.status}${outcome.location ? ` (${outcome.location})` : ''}`,
+      `[chaoffice] cli link: ${outcome.status}${outcome.location ? ` (${outcome.location})` : ''}` +
+        (outcome.pathHint ? `; not on PATH, add it with: ${outcome.pathHint}` : ''),
     )
     const record: CliLinkRecord = { version, status: outcome.status }
     if (outcome.location) record.location = outcome.location

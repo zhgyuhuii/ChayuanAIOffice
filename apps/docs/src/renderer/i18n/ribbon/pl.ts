@@ -16,7 +16,6 @@ export const pl = {
   ribbonPin: 'Przypnij Wstążkę',
   ribbonExpand: 'Rozwiń Wstążkę',
   ribbonCompact: 'Zwinięta Wstążka (tylko ikony)',
-  ribbonExpandFull: 'Rozwiń Wstążkę',
   ribbonTabView: 'Widok',
   ribbonTabTableDesign: 'Projekt tabeli',
   ribbonTabTableLayout: 'Układ tabeli',

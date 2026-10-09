@@ -346,7 +346,10 @@ const MODELLED_ELEMENTS: Readonly<Record<string, { attrs: string; children: stri
       'location pivotFields rowFields rowItems pageFields colFields colItems dataFields ' +
       'pivotTableStyleInfo filters extLst',
   },
-  location: { attrs: 'ref firstHeaderRow firstDataRow firstDataCol', children: '' },
+  location: {
+    attrs: 'ref firstHeaderRow firstDataRow firstDataCol rowPageCount colPageCount',
+    children: '',
+  },
   pivotFields: { attrs: 'count', children: 'pivotField' },
   pivotField: { attrs: 'axis showAll compact outline dataField', children: 'items' },
   items: { attrs: 'count', children: 'item' },
@@ -359,7 +362,7 @@ const MODELLED_ELEMENTS: Readonly<Record<string, { attrs: string; children: stri
   i: { attrs: 'r t i', children: 'x' },
   x: { attrs: 'v', children: '' },
   pageFields: { attrs: 'count', children: 'pageField' },
-  pageField: { attrs: 'fld hier', children: '' },
+  pageField: { attrs: 'fld item hier', children: '' },
   dataFields: { attrs: 'count', children: 'dataField' },
   dataField: { attrs: 'name fld subtotal showDataAs baseField baseItem numFmtId', children: '' },
   pivotTableStyleInfo: {
@@ -377,7 +380,7 @@ const MODELLED_ELEMENTS: Readonly<Record<string, { attrs: string; children: stri
   ext: { attrs: 'uri', children: 'aio:aioPivotGroupings' },
   'aio:aioPivotGroupings': { attrs: 'v', children: '' },
   // refreshOnLoad: set by setPivotRefreshOnLoad on every recompute/relayout
-  // save, so a pivot GenOffice itself relaid out carries it on reopen.
+  // save, so a pivot ChatOffice itself relaid out carries it on reopen.
   pivotCacheDefinition: {
     attrs:
       'r:id refreshedBy createdVersion refreshedVersion minRefreshableVersion recordCount ' +

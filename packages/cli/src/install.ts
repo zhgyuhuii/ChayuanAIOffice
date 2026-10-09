@@ -1,6 +1,15 @@
 import { spawnSync } from 'node:child_process'
-import { accessSync, constants, lstatSync, readlinkSync, symlinkSync, unlinkSync } from 'node:fs'
-import { join, win32 } from 'node:path'
+import {
+  accessSync,
+  constants,
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  readlinkSync,
+  symlinkSync,
+  unlinkSync,
+} from 'node:fs'
+import { dirname, isAbsolute, join, win32 } from 'node:path'
 
 /**
  * Making `chaoffice` reachable from a terminal. The launcher ships inside the
@@ -32,26 +41,62 @@ export interface InstallOutcome {
   location?: string
   /** what a person can run to finish the job when the app could not */
   manual?: string
+  /** the link landed in a directory the current shell does not search; this line adds it */
+  pathHint?: string
 }
 
 /**
  * `/usr/local/bin` is on every login shell's PATH and on the PATH GUI apps
  * inherit, so it is the target even when it does not exist yet: a missing
  * directory is reported as unwritable (creating it needs root), not skipped.
- * `/opt/homebrew/bin` is only a fallback because shells see it solely through
- * `brew shellenv`.
+ * When it is not writable the user's own bin dir takes the link, so a
+ * non-admin install still gets a `chaoffice` command.
+ *
+ * `/opt/homebrew/bin` is NOT a candidate (#1914). It is the Homebrew prefix on
+ * Apple Silicon and the classic prefix on Intel, a directory Homebrew manages
+ * and tracks itself. A third-party app writing there uninvited leaves a link
+ * brew does not know about — dangling after the app is removed, and recreated
+ * on every launch. Homebrew declined three cask PRs over exactly this.
+ *
+ * A user who wants it there anyway still can: the shell command is
+ * `ln -sf "$(dirname "$(which chaoffice)")/chaoffice" /opt/homebrew/bin/chaoffice`,
+ * and `chaoffice install-cli` re-runs the same walk. What is removed is the
+ * uninvited write, not the possibility.
  */
-export function defaultCandidateDirs(platform: NodeJS.Platform): string[] {
-  if (platform === 'darwin') return ['/usr/local/bin', '/opt/homebrew/bin']
-  if (platform === 'linux') return ['/usr/local/bin']
+export function defaultCandidateDirs(
+  platform: NodeJS.Platform,
+  env: NodeJS.ProcessEnv = process.env,
+): string[] {
+  if (platform === 'darwin' || platform === 'linux') {
+    return ['/usr/local/bin', ...userBinDirs(env)]
+  }
   return []
+}
+
+/** `$XDG_BIN_HOME`, then `~/.local/bin`: created on demand because a fresh account rarely has them. */
+export function userBinDirs(env: NodeJS.ProcessEnv): string[] {
+  const dirs: string[] = []
+  if (env.XDG_BIN_HOME && isAbsolute(env.XDG_BIN_HOME)) dirs.push(env.XDG_BIN_HOME)
+  if (env.HOME) dirs.push(join(env.HOME, '.local', 'bin'))
+  return [...new Set(dirs)]
+}
+
+/** Shell line that puts `dir` on PATH, or undefined when the current environment already searches it. */
+export function pathHint(dir: string, env: NodeJS.ProcessEnv): string | undefined {
+  const entries = (env.PATH ?? '').split(':').map((p) => p.replace(/\/+$/, ''))
+  if (entries.includes(dir.replace(/\/+$/, ''))) return undefined
+  const home = env.HOME?.replace(/\/+$/, '')
+  const shown = home && dir.startsWith(home + '/') ? '$HOME' + dir.slice(home.length) : dir
+  return `export PATH="${shown}:$PATH"`
 }
 
 export function installCliLink(opts: InstallOptions): InstallOutcome {
   const platform = opts.platform ?? process.platform
   if (platform === 'win32') return installWindowsPath(opts)
   if (platform !== 'darwin' && platform !== 'linux') return { status: 'unsupported' }
-  const dirs = opts.candidateDirs ?? defaultCandidateDirs(platform)
+  const env = opts.env ?? process.env
+  const dirs = opts.candidateDirs ?? defaultCandidateDirs(platform, env)
+  const userDirs = new Set(userBinDirs(env))
   const manual = manualCommand(opts.launcher)
   let occupied: string | undefined
   for (const dir of dirs) {
@@ -59,19 +104,26 @@ export function installCliLink(opts: InstallOptions): InstallOutcome {
     const state = linkState(link, opts.launcher)
     if (state === 'ours' && readlinkSync(link) === opts.launcher) {
       linkLegacyName(join(dir, 'chatoffice'), opts.launcher)
-      return { status: 'present', location: link }
+      return withPathHint({ status: 'present', location: link }, dir, userDirs, env)
     }
     if (state === 'file' || state === 'foreign') {
       // somebody else's chaoffice (a file, or npm's symlink): never clobber it
       occupied = link
       continue
     }
+    if (userDirs.has(dir) && !existsSync(dir)) {
+      try {
+        mkdirSync(dir, { recursive: true })
+      } catch {
+        continue
+      }
+    }
     if (!writable(dir)) continue
     try {
       if (state !== 'missing') unlinkSync(link)
       symlinkSync(opts.launcher, link)
       linkLegacyName(join(dir, 'chatoffice'), opts.launcher)
-      return { status: 'linked', location: link }
+      return withPathHint({ status: 'linked', location: link }, dir, userDirs, env)
     } catch {
       continue
     }
@@ -96,7 +148,9 @@ export function inspectCliLink(opts: InstallOptions): InstallOutcome {
   const platform = opts.platform ?? process.platform
   if (platform === 'win32') return inspectWindowsPath(opts)
   if (platform !== 'darwin' && platform !== 'linux') return { status: 'unsupported' }
-  const dirs = opts.candidateDirs ?? defaultCandidateDirs(platform)
+  const env = opts.env ?? process.env
+  const dirs = opts.candidateDirs ?? defaultCandidateDirs(platform, env)
+  const userDirs = new Set(userBinDirs(env))
   const manual = manualCommand(opts.launcher)
   let occupied: string | undefined
   // same walk installCliLink does: an occupied name is skipped, the first free writable dir wins
@@ -104,13 +158,15 @@ export function inspectCliLink(opts: InstallOptions): InstallOutcome {
     const link = join(dir, 'chaoffice')
     const state = linkState(link, opts.launcher)
     if (state === 'ours' && readlinkSync(link) === opts.launcher) {
-      return { status: 'present', location: link }
+      return withPathHint({ status: 'present', location: link }, dir, userDirs, env)
     }
     if (state === 'file' || state === 'foreign') {
       occupied ??= link
       continue
     }
-    if (writable(dir)) return { status: 'missing', location: link, manual }
+    if (writable(dir) || (userDirs.has(dir) && creatable(dir))) {
+      return withPathHint({ status: 'missing', location: link, manual }, dir, userDirs, env)
+    }
   }
   if (occupied) return { status: 'occupied', location: occupied, manual }
   return { status: 'unwritable', location: join(dirs[0] ?? '/usr/local/bin', 'chaoffice'), manual }
@@ -143,6 +199,28 @@ function writable(dir: string): boolean {
   } catch {
     return false
   }
+}
+
+/** A missing dir that `mkdir -p` could create: its nearest existing ancestor is writable. */
+function creatable(dir: string): boolean {
+  let probe = dir
+  while (!existsSync(probe)) {
+    const parent = dirname(probe)
+    if (parent === probe) return false
+    probe = parent
+  }
+  return writable(probe)
+}
+
+/** System dirs are on PATH by construction; only a per-user dir may need the shell told about it. */
+function withPathHint(
+  outcome: InstallOutcome,
+  dir: string,
+  userDirs: Set<string>,
+  env: NodeJS.ProcessEnv,
+): InstallOutcome {
+  const hint = userDirs.has(dir) ? pathHint(dir, env) : undefined
+  return hint ? { ...outcome, pathHint: hint } : outcome
 }
 
 /**

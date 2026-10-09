@@ -5,6 +5,7 @@ import { applyAiPanelPrefs, installScreenTips } from '@chatoffice/ui'
 
 import '@chatoffice/ui/tokens.css'
 import '@chatoffice/ui/screentip.css'
+import '@chatoffice/ui/ai-model-picker.css'
 import '@chatoffice/ui/color-picker.css'
 import '@chatoffice/ui/dropdown.css'
 import '@chatoffice/ui/dock.css'
@@ -43,7 +44,7 @@ function applyTheme(theme: UiTheme): void {
 }
 
 function applyDocumentTheme(theme: DocTheme): void {
-  // data-doc-theme drives the canvas/paper (#1811); absent means 'follow' the UI theme
+  // data-doc-theme drives the canvas/paper (chatoffice#1811); absent means 'follow' the UI theme
   if (theme === 'follow') document.documentElement.removeAttribute('data-doc-theme')
   else document.documentElement.setAttribute('data-doc-theme', theme)
 }

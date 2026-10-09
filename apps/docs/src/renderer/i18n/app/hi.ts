@@ -666,4 +666,5 @@ export const hi = {
   appGoToNotFound: 'नहीं मिला',
   appGoToPrevious: 'पिछला',
   appGoToNext: 'अगला',
+appParaUnitChars: 'वर्ण',
 } satisfies Record<keyof typeof zh, string>

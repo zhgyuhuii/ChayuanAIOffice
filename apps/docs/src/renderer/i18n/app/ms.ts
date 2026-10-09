@@ -670,4 +670,5 @@ export const ms = {
   appGoToNotFound: 'Tidak ditemui',
   appGoToPrevious: 'Sebelumnya',
   appGoToNext: 'Seterusnya',
+appParaUnitChars: 'aksara',
 } satisfies Record<keyof typeof zh, string>

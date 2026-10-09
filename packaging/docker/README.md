@@ -6,13 +6,13 @@ documents to PDF with ChaAI Office's own headless export pipeline
 the official release deb — no ChaAI Office source is rebuilt — so every output is
 what the desktop app's File ▸ Export would produce.
 
-This is the batch-conversion slice of the Docker ask (genoffice#1808); it is
+This is the batch-conversion slice of the Docker ask (chatoffice#1808); it is
 a CLI utility image, not the server-side/collaborative form discussed there.
 
 ## Build
 
 ```sh
-docker build -t genoffice-batch packaging/docker
+docker build -t chatoffice-batch packaging/docker
 ```
 
 On Apple silicon / other non-amd64 hosts the build runs the amd64 deb under
@@ -26,7 +26,7 @@ Mount the documents at `/data` (read-only is fine) and an empty directory at
 `/output`. The output tree mirrors the input tree with `.pdf` extensions:
 
 ```sh
-docker run --rm -v "$PWD/docs:/data:ro" -v "$PWD/pdf:/output" genoffice-batch
+docker run --rm -v "$PWD/docs:/data:ro" -v "$PWD/pdf:/output" chatoffice-batch
 ```
 
 ```
@@ -42,15 +42,15 @@ upstream error envelopes).
 
 ## Knobs (environment variables)
 
-| variable                                  | default   | meaning                                                                                                                                          |
-| ----------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `GENOFFICE_INPUT_DIR`                     | `/data`   | input volume                                                                                                                                     |
-| `GENOFFICE_OUTPUT_DIR`                    | `/output` | output volume                                                                                                                                    |
-| `GENOFFICE_TO`                            | `pdf`     | export target — `pdf` is the only one upstream's headless export ships today; anything else is rejected with exit 1 rather than silently ignored |
-| `GENOFFICE_PARALLEL`                      | `1`       | concurrent conversions (each is its own Electron process; 2-4 helps on large hosts)                                                              |
-| `GENOFFICE_INCLUDE` / `GENOFFICE_EXCLUDE` | —         | optional `grep -E` filters on `/data`-relative paths                                                                                             |
-| `GENOFFICE_FLAGS`                         | —         | extra flags passed through to `--headless-export`                                                                                                |
-| `GENOFFICE_XVFB`                          | `1`       | set `0` when you provide the display yourself (e.g. wrap with `xvfb-run`)                                                                        |
+| variable                                  | default   | meaning                                                                                                                                                                |
+| ----------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GENOFFICE_INPUT_DIR`                     | `/data`   | input volume                                                                                                                                                           |
+| `GENOFFICE_OUTPUT_DIR`                    | `/output` | output volume                                                                                                                                                          |
+| `GENOFFICE_TO`                            | `pdf`     | export target — the image only wires up `pdf` (the app also exports docs to html and html to docx); anything else is rejected with exit 1 rather than silently ignored |
+| `GENOFFICE_PARALLEL`                      | `1`       | concurrent conversions (each is its own Electron process; 2-4 helps on large hosts)                                                                                    |
+| `GENOFFICE_INCLUDE` / `GENOFFICE_EXCLUDE` | —         | optional `grep -E` filters on `/data`-relative paths                                                                                                                   |
+| `GENOFFICE_FLAGS`                         | —         | extra flags passed through to `--headless-export`                                                                                                                      |
+| `GENOFFICE_XVFB`                          | `1`       | set `0` when you provide the display yourself (e.g. wrap with `xvfb-run`)                                                                                              |
 
 Examples:
 
@@ -58,11 +58,11 @@ Examples:
 # only the reports folder, four conversions at a time
 docker run --rm -v "$PWD/docs:/data:ro" -v "$PWD/pdf:/output" \
   -e GENOFFICE_INCLUDE='^reports/' -e GENOFFICE_PARALLEL=4 \
-  genoffice-batch
+  chatoffice-batch
 
 # skip draft documents
 docker run --rm -v "$PWD/docs:/data:ro" -v "$PWD/pdf:/output" \
-  -e GENOFFICE_EXCLUDE='draft' genoffice-batch
+  -e GENOFFICE_EXCLUDE='draft' chatoffice-batch
 ```
 
 ## Behaviour worth knowing

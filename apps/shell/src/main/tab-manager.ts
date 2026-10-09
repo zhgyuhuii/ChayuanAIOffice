@@ -1,7 +1,7 @@
 import { realpathSync } from 'node:fs'
-import { basename } from 'node:path'
-import { BrowserWindow } from 'electron'
-import type { Rectangle, WebContents, WebContentsView } from 'electron'
+import { basename, join } from 'node:path'
+import { BrowserWindow, shell, WebContentsView } from 'electron'
+import type { Rectangle, WebContents } from 'electron'
 
 import {
   createDocsView,
@@ -48,6 +48,7 @@ import {
   slidesIsDirty,
 } from '../../../slides/src/main/slides-main'
 import type { DockEditorOptions, DockKind, DockRect, DockTabSummary } from '../shared/dock-api'
+import { rendererUrl, safeExternalUrl } from '@chatoffice/electron-utils'
 import type { DocumentTabKind, OpenDocumentTab, TabKind, TabSummary } from '../shared/tabs-api'
 /** a tab lifted out of the strip with its live view: what "Open in New Window",
  *  tear-off and dock hand back and forth between the shell and a detached window */
@@ -586,6 +587,28 @@ export class TabManager {
     if (this.activeId !== HOME_ID) this.activateTab(HOME_ID)
     else this.layout()
     this.onChanged()
+    return id
+  }
+
+  /** The in-app user manual (chatoffice#1520): a closable tab showing the shell
+      renderer's help mode — the same bundle, branched on ?mode=help, so no
+      second renderer build is needed. */
+  openHelpTab(): string {
+    // F1 again, or the Help menu while the manual is already open, focuses it
+    // instead of stacking a second copy: the tab is closable (only Home is
+    // not), so "press F1 again" is an ordinary thing to do
+    const existing = this.tabs.find((t) => t.kind === 'help')
+    if (existing) {
+      this.activateTab(existing.id)
+      return existing.id
+    }
+    const view = createHelpView()
+    const id = `t${this.nextId++}`
+    this.shellWindow.contentView.addChildView(view)
+    view.setVisible(false)
+    this.watchViewLifetime(id, view)
+    this.tabs.push({ id, kind: 'help', view, title: this.untitled('help', 'ChaAI Office Help') })
+    this.activateTab(id)
     return id
   }
 
@@ -1181,4 +1204,28 @@ export function canonicalPath(path: string | undefined): string | undefined {
   } catch {
     return path
   }
+}
+
+/** The manual shares the shell's renderer bundle and preload: the view is just
+    the shell renderer at ?mode=help. Dev serves it from the dev server, the
+    packaged app from the `help` scheme root registered in shell main. */
+function createHelpView(): WebContentsView {
+  const view = new WebContentsView({
+    webPreferences: {
+      preload: join(__dirname, '../preload/index.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+      backgroundThrottling: false,
+    },
+  })
+  view.webContents.setWindowOpenHandler(({ url }) => {
+    const target = safeExternalUrl(url)
+    if (target) void shell.openExternal(target)
+    return { action: 'deny' }
+  })
+  void view.webContents.loadURL(
+    rendererUrl(process.env.ELECTRON_RENDERER_URL, 'help', { mode: 'help' }),
+  )
+  return view
 }

@@ -9,10 +9,12 @@ import {
   IMAGE_REL_TYPE,
   allocatePartPath,
   appendRelationship,
+  outlineXml,
   registerContentTypeDefault,
-  relsPathFor,
   relativeTarget,
+  relsPathFor,
   resolveRelTarget,
+  solidFillXml,
   type MutablePackage,
 } from './xlsx-drawing-add'
 import { applyPictureFormat } from './xlsx-picture-xml'
@@ -47,6 +49,9 @@ type OwnedPartRoot = {
   readonly recursive: boolean
 }
 
+const HYPERLINK_REL_TYPE =
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink'
+
 export async function applyVisualEdits(
   pkg: MutablePackage,
   edits: readonly WorkbookVisualEdit[],
@@ -62,12 +67,26 @@ export async function applyVisualEdits(
     if (!(await pkg.has(drawingPath))) {
       throw new VisualEditError(`Workbook is missing ${drawingPath}.`)
     }
-    // 更改图片: allocate the new media part + relationship up front so the
-    // XML rewrite can repoint r:embed to it.
+    // adapted: 本地「更改图片」媒体预分配 + echart sidecar 原位重写，织入上游 byIndex/zIndex 重排循环
     const replacedRelIds = new Map<number, string>()
     const echartDescrByIndex = new Map<number, string>()
     const replacedOldRelIds = new Set<string>()
-    const originalXml = await pkg.readText(drawingPath)
+    const xml = await pkg.readText(drawingPath)
+    const anchors = [...xml.matchAll(ANCHOR_PATTERN)]
+    const byIndex = new Map<number, WorkbookVisualEdit>()
+    for (const edit of group) {
+      if (byIndex.has(edit.drawingIndex)) {
+        throw new VisualEditError('Duplicate edits target the same drawing anchor.')
+      }
+      if (!anchors[edit.drawingIndex]) {
+        throw new VisualEditError(
+          `Drawing anchor #${edit.drawingIndex} was not found — the file may have changed.`,
+        )
+      }
+      byIndex.set(edit.drawingIndex, edit)
+    }
+    // 更改图片: allocate the new media part + relationship up front so the
+    // XML rewrite can repoint r:embed to it.
     for (const edit of group) {
       if (!edit.mediaReplace) continue
       const extension = IMAGE_EXTENSIONS[edit.mediaReplace.mediaType]
@@ -85,7 +104,6 @@ export async function applyVisualEdits(
       replacedRelIds.set(edit.drawingIndex, newRelId)
       // echart 编辑:原位重写 sidecar(锚点 descr 指针决定路径;无指针则分配)
       if (edit.mediaReplace.echart) {
-        const anchors = [...originalXml.matchAll(ANCHOR_PATTERN)]
         const anchorXml = anchors[edit.drawingIndex]?.[0]
         const existing = anchorXml && /\bdescr="chatoffice-echart:([^"]+)"/.exec(anchorXml)?.[1]
         const sidecarPath = existing ?? (await allocatePartPath(pkg, 'xl/echarts/echart', '.json'))
@@ -102,68 +120,98 @@ export async function applyVisualEdits(
         touchedEntries.add(sidecarPath)
         await registerContentTypeDefault(pkg, 'json', 'application/json', touchedEntries)
         echartDescrByIndex.set(edit.drawingIndex, `chatoffice-echart:${sidecarPath}`)
+        // 换图时旧的 echart sidecar 若不再被引用由 reload 端容忍；此处保留原文件避免悬空 descr
       }
     }
-    let xml = await pkg.readText(drawingPath)
     // Old media relationships are harvested before the rewrite so the
     // post-edit reference check sees the final drawing.
     if (replacedRelIds.size > 0) {
-      const anchors = [...xml.matchAll(ANCHOR_PATTERN)]
       for (const [indexString] of replacedRelIds) {
-        const anchorXml = anchors[indexString]?.[0]
+        const anchorXml = anchors[Number(indexString)]?.[0]
         if (!anchorXml) continue
-        for (const match of anchorXml.matchAll(/\s[\w.-]+:(?:embed|link)="([^"]+)"/g)) {
-          const id = match[1]
+        for (const relMatch of anchorXml.matchAll(/\s[\w.-]+:(?:embed|link)="([^"]+)"/g)) {
+          const id = relMatch[1]
           if (id !== undefined && id !== replacedRelIds.get(Number(indexString))) {
             replacedOldRelIds.add(id)
           }
         }
       }
     }
-    // Removals splice text out, so process high indexes first — lower
-    // indexes keep their document positions.
-    const ordered = [...group].sort((left, right) => right.drawingIndex - left.drawingIndex)
-    const seen = new Set<number>()
-    const removedRelationships: RemovedAnchorRelationship[] = []
-    for (const edit of ordered) {
-      if (seen.has(edit.drawingIndex)) {
-        throw new VisualEditError('Duplicate edits target the same drawing anchor.')
-      }
-      seen.add(edit.drawingIndex)
-      xml = applyOneEdit(
-        xml,
-        edit,
-        removedRelationships,
-        replacedRelIds.get(edit.drawingIndex),
-        echartDescrByIndex.get(edit.drawingIndex),
+    const relsPath = relsPathFor(drawingPath)
+    const hyperlinkRelIds = new Map<number, string>()
+    for (const edit of group) {
+      if (!edit.hyperlink || edit.remove) continue
+      hyperlinkRelIds.set(
+        edit.drawingIndex,
+        await appendRelationship(pkg, relsPath, HYPERLINK_REL_TYPE, edit.hyperlink, 'External'),
       )
-    }
-    // A replaced picture's old relationship rows drop when nothing in the
-    // final drawing references them (the media part itself stays — other
-    // drawings may share it through their own rels).
-    if (replacedOldRelIds.size > 0) {
-      const relsPath = relsPathFor(drawingPath)
-      let relsXml = await pkg.readText(relsPath)
-      for (const oldId of replacedOldRelIds) {
-        if (xmlHasAttributeValue(xml, oldId)) continue
-        const without = removeRelationshipById(relsXml, oldId)
-        if (without !== relsXml) relsXml = without
-      }
-      pkg.write(relsPath, relsXml)
       touchedEntries.add(relsPath)
+    }
+    const removedRelationships: RemovedAnchorRelationship[] = []
+    const droppedHyperlinkRelIds: string[] = []
+    const patched = anchors.map((match, index) => {
+      const edit = byIndex.get(index)
+      return edit
+        ? applyOneEdit(
+            match,
+            edit,
+            removedRelationships,
+            hyperlinkRelIds.get(index),
+            droppedHyperlinkRelIds,
+            replacedRelIds.get(index),
+            echartDescrByIndex.get(index),
+          )
+        : match[0]
+    })
+    // Document order is z-order. Anchors carrying a zIndex permute among
+    // their own slots (sorted by zIndex); every other anchor — and all the
+    // markup between anchors, e.g. mc:AlternateContent wrappers — stays put.
+    const movable = anchors
+      .map((match, index) => ({ match, index }))
+      .filter(
+        ({ match, index }) =>
+          byIndex.get(index)?.zIndex !== undefined &&
+          patched[index] !== null &&
+          !insideAlternateContent(xml, match.index),
+      )
+    const sorted = [...movable].sort(
+      (left, right) =>
+        byIndex.get(left.index)!.zIndex! - byIndex.get(right.index)!.zIndex! ||
+        left.index - right.index,
+    )
+    const placed = [...patched]
+    movable.forEach(({ index }, slot) => {
+      placed[index] = patched[sorted[slot]!.index]!
+    })
+    let next = xml
+    for (let index = anchors.length - 1; index >= 0; index -= 1) {
+      const match = anchors[index]!
+      const text = placed[index]
+      if (text === match[0]) continue
+      next = next.slice(0, match.index) + (text ?? '') + next.slice(match.index + match[0].length)
     }
     if (removedRelationships.length > 0) {
       await cleanupRemovedAnchorRelationships(
         pkg,
         drawingPath,
-        xml,
+        next,
         removedRelationships,
         touchedEntries,
       )
     }
-    pkg.write(drawingPath, xml)
+    // adapted: 本地换图旧 relationship 一并按「最终 drawing 不再引用」清理
+    const orphaned = [...droppedHyperlinkRelIds, ...replacedOldRelIds].filter(
+      (id) => !xmlHasAttributeValue(next, id),
+    )
+    if (orphaned.length > 0 && (await pkg.has(relsPath))) {
+      let relsXml = await pkg.readText(relsPath)
+      for (const id of orphaned) relsXml = removeRelationshipById(relsXml, id)
+      pkg.write(relsPath, relsXml)
+      touchedEntries.add(relsPath)
+    }
+    pkg.write(drawingPath, next)
     touchedEntries.add(drawingPath)
-    await cleanupEmptyDrawingHookup(pkg, drawingPath, xml, touchedEntries)
+    await cleanupEmptyDrawingHookup(pkg, drawingPath, next, touchedEntries)
   }
 }
 
@@ -393,6 +441,15 @@ async function cleanupEmptyDrawingHookup(
   }
 }
 
+/// True when the position sits inside an open mc:AlternateContent (slicer
+/// and timeline anchors live in its Choice/Fallback branches).
+function insideAlternateContent(xml: string, position: number): boolean {
+  const prefix = xml.slice(0, position)
+  const opens = prefix.match(/<mc:AlternateContent\b/g)?.length ?? 0
+  const closes = prefix.match(/<\/mc:AlternateContent>/g)?.length ?? 0
+  return opens > closes
+}
+
 function xmlHasAttributeValue(xml: string, value: string): boolean {
   for (const match of xml.matchAll(ATTRIBUTE_PATTERN)) {
     if (match[1] === value) return true
@@ -402,20 +459,39 @@ function xmlHasAttributeValue(xml: string, value: string): boolean {
 
 const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
+const escapeXmlAttribute = (value: string): string =>
+  value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+
+/// Sets (or with null removes) one attribute on an opening tag string.
+export function setTagAttribute(tag: string, name: string, value: string | null): string {
+  const pattern = new RegExp(`\\s${escapeRegExp(name)}="[^"]*"`)
+  const stripped = tag.replace(pattern, '')
+  if (value === null) return stripped
+  const insertAt = stripped.endsWith('/>') ? stripped.length - 2 : stripped.length - 1
+  return `${stripped.slice(0, insertAt)} ${name}="${escapeXmlAttribute(value)}"${stripped.slice(insertAt)}`
+}
+
+/// Degrees clockwise → a:xfrm/@rot (60000ths of a degree in [0, 360°)).
+export function rotationAttribute(degrees: number): string | null {
+  const normalized = ((Math.round(degrees * 60_000) % 21_600_000) + 21_600_000) % 21_600_000
+  return normalized === 0 ? null : String(normalized)
+}
+
+const XFRM_OPEN = /<a:xfrm\b[^>]*>/
+const CNVPR_PATTERN = /<([A-Za-z_][\w.-]*:)?cNvPr\b[^>]*?(\/>|>[\s\S]*?<\/\1cNvPr>)/
+
+/// One anchor's edits applied to its XML text; null when the anchor is
+/// removed. Hyperlink relationships are allocated by the caller.
 function applyOneEdit(
-  xml: string,
+  match: RegExpMatchArray,
   edit: WorkbookVisualEdit,
   removedRelationships: RemovedAnchorRelationship[],
+  hyperlinkRelId: string | undefined,
+  droppedHyperlinkRelIds: string[],
+  // adapted: 本地换图 r:embed 重指 + echart descr 指针，追加为可选参
   replacedRelId?: string,
   echartDescr?: string,
-): string {
-  const anchors = [...xml.matchAll(ANCHOR_PATTERN)]
-  const match = anchors[edit.drawingIndex]
-  if (!match) {
-    throw new VisualEditError(
-      `Drawing anchor #${edit.drawingIndex} was not found — the file may have changed.`,
-    )
-  }
+): string | null {
   const anchorXml = match[0]
   const p = match[1] ?? ''
   const kind = match[2]
@@ -436,16 +512,16 @@ function applyOneEdit(
         if (id !== undefined) removedRelationships.push({ id, kind: 'image' })
       }
     }
-    return xml.slice(0, match.index) + xml.slice(match.index + anchorXml.length)
+    return null
+  }
+  let patched = anchorXml
+  const pre = escapeRegExp(p)
+  // Re-applying the current paint rebuilds identical XML; that is a no-op,
+  // not a failure.
+  if (edit.fillColor !== undefined || edit.lineColor !== undefined) {
+    patched = repaintShape(patched, p, edit.fillColor, edit.lineColor)
   }
   const anchor = edit.anchor
-  if (!anchor) {
-    if (!edit.picture && !edit.mediaReplace && edit.editAs === undefined) {
-      throw new VisualEditError('A visual edit needs a removal or a new anchor.')
-    }
-  }
-  const pre = escapeRegExp(p)
-  let patched = anchorXml
   if (anchor) {
     if (kind === 'absoluteAnchor') {
       throw new VisualEditError('This visual uses an absolute anchor — moving it is not supported.')
@@ -455,10 +531,11 @@ function applyOneEdit(
       `<${p}colOff>${anchor.fromColumnOffset}</${p}colOff>` +
       `<${p}row>${anchor.fromRow}</${p}row>` +
       `<${p}rowOff>${anchor.fromRowOffset}</${p}rowOff></${p}from>`
-    patched = anchorXml.replace(new RegExp(`<${pre}from>[\\s\\S]*?</${pre}from>`), () => from)
-    if (patched === anchorXml && !anchorXml.includes(`<${p}from>`)) {
+    const moved = patched.replace(new RegExp(`<${pre}from>[\\s\\S]*?</${pre}from>`), () => from)
+    if (moved === patched && !patched.includes(`<${p}from>`)) {
       throw new VisualEditError('Drawing anchor has no from marker — moving it is not supported.')
     }
+    patched = moved
     if (kind === 'twoCellAnchor') {
       const to =
         `<${p}to><${p}col>${anchor.toColumn}</${p}col>` +
@@ -473,39 +550,24 @@ function applyOneEdit(
       }
       patched = withTo
     }
-    if (edit.frameSize) {
-      // A rotated shape resized through its AABB: the anchor holds the rotated
-      // bounds, so the true frame (first a:ext of the shape's xfrm) must be
-      // rewritten alongside or the reload re-derives the old size.
-      const ext = `<a:ext cx="${edit.frameSize.width}" cy="${edit.frameSize.height}"/>`
-      const withExt = patched.replace(
-        /(<a:xfrm\b[^>]*>[\s\S]*?)<a:ext\b[^>]*\/>/,
-        (_, head: string) => `${head}${ext}`,
+  }
+  if (edit.frameSize) {
+    // A rotated shape resized through its AABB: the anchor holds the rotated
+    // bounds, so the true frame (first a:ext of the shape's xfrm) must be
+    // rewritten alongside or the reload re-derives the old size.
+    const ext = `<a:ext cx="${edit.frameSize.width}" cy="${edit.frameSize.height}"/>`
+    const withExt = patched.replace(
+      /(<a:xfrm\b[^>]*>[\s\S]*?)<a:ext\b[^>]*\/>/,
+      (_, head: string) => `${head}${ext}`,
+    )
+    if (withExt === patched && !/<a:xfrm\b[^>]*>[\s\S]*?<a:ext\b/.test(patched)) {
+      throw new VisualEditError(
+        'Drawing anchor has no frame extent — resizing it is not supported.',
       )
-      // An unchanged ext replaces to an identical string, so presence must be
-      // checked directly (same caveat as the from/to markers above).
-      if (withExt === patched && !/<a:xfrm\b[^>]*>[\s\S]*?<a:ext\b/.test(patched)) {
-        throw new VisualEditError(
-          'Drawing anchor has no frame extent — resizing it is not supported.',
-        )
-      }
-      patched = withExt
     }
+    patched = withExt
   }
-  // Anchoring behavior (twoCellAnchor/@editAs)
-  if (edit.editAs !== undefined) {
-    if (kind !== 'twoCellAnchor') {
-      throw new VisualEditError('Anchoring (editAs) applies only to twoCellAnchor visuals.')
-    }
-    const openTag = /<(?:[A-Za-z_][\w.-]*:)?twoCellAnchor\b[^>]*>/.exec(patched)
-    if (!openTag) throw new VisualEditError('The drawing anchor tag could not be rewritten.')
-    const stripped = openTag[0].replace(/\seditAs="[^"]*"/, '')
-    const rewritten =
-      edit.editAs === 'twoCell' ? stripped : stripped.replace(/>$/, ` editAs="${edit.editAs}">`)
-    patched =
-      patched.slice(0, openTag.index) + rewritten + patched.slice(openTag.index + openTag[0].length)
-  }
-  // Picture-format patch / media replacement: rewrite the <xdr:pic> body.
+  // adapted: 本地 picture 格式补丁 / 换图 r:embed 重指 / echart descr 指针（上游 schema 无 picture 字段）
   if (edit.picture || replacedRelId !== undefined) {
     const picPattern = new RegExp(`<${pre}pic>[\\s\\S]*?</${pre}pic>`)
     const picMatch = picPattern.exec(patched)
@@ -533,5 +595,103 @@ function applyOneEdit(
     patched =
       patched.slice(0, picMatch.index) + picXml + patched.slice(picMatch.index + picMatch[0].length)
   }
-  return xml.slice(0, match.index) + patched + xml.slice(match.index + anchorXml.length)
+  if (edit.rotation !== undefined || edit.flipH !== undefined || edit.flipV !== undefined) {
+    const open = XFRM_OPEN.exec(patched)
+    if (!open) {
+      throw new VisualEditError(
+        'Drawing anchor has no frame transform — rotating it is not supported.',
+      )
+    }
+    let tag = open[0]
+    if (edit.rotation !== undefined)
+      tag = setTagAttribute(tag, 'rot', rotationAttribute(edit.rotation))
+    if (edit.flipH !== undefined) tag = setTagAttribute(tag, 'flipH', edit.flipH ? '1' : null)
+    if (edit.flipV !== undefined) tag = setTagAttribute(tag, 'flipV', edit.flipV ? '1' : null)
+    patched = patched.slice(0, open.index) + tag + patched.slice(open.index + open[0].length)
+  }
+  if (edit.altText !== undefined || edit.hyperlink !== undefined) {
+    const element = CNVPR_PATTERN.exec(patched)
+    if (!element) {
+      throw new VisualEditError('Drawing anchor has no non-visual properties element.')
+    }
+    const prefix = element[1] ?? ''
+    const selfClosing = element[2] === '/>'
+    const openEnd = selfClosing ? element[0].length - 2 : element[0].indexOf('>') + 1
+    let open = selfClosing ? `${element[0].slice(0, openEnd)}>` : element[0].slice(0, openEnd)
+    let inner = selfClosing ? '' : element[0].slice(openEnd, element[0].lastIndexOf('</'))
+    if (edit.altText !== undefined) {
+      open = setTagAttribute(open, 'descr', edit.altText === '' ? null : edit.altText)
+    }
+    if (edit.hyperlink !== undefined) {
+      for (const link of inner.matchAll(/<a:hlinkClick\b[^>]*?\br:id="([^"]+)"/g)) {
+        if (link[1] !== undefined) droppedHyperlinkRelIds.push(link[1])
+      }
+      inner = inner.replace(/<a:hlinkClick\b[^>]*?(?:\/>|>[\s\S]*?<\/a:hlinkClick>)/g, '')
+      if (hyperlinkRelId !== undefined) {
+        inner =
+          '<a:hlinkClick xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"' +
+          ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"' +
+          ` r:id="${escapeXmlAttribute(hyperlinkRelId)}"/>` +
+          inner
+      }
+    }
+    const rebuilt = inner === '' ? `${open.slice(0, -1)}/>` : `${open}${inner}</${prefix}cNvPr>`
+    patched =
+      patched.slice(0, element.index) + rebuilt + patched.slice(element.index + element[0].length)
+  }
+  if (edit.editAs !== undefined) {
+    if (kind !== 'twoCellAnchor') {
+      throw new VisualEditError('Only two-cell anchors carry a placement mode.')
+    }
+    const open = /^<[^>]*>/.exec(patched)!
+    const tag = setTagAttribute(open[0], 'editAs', edit.editAs === 'twoCell' ? null : edit.editAs)
+    patched = tag + patched.slice(open[0].length)
+  }
+  return patched
+}
+
+const SP_PR_FILL =
+  /<a:(noFill|solidFill|gradFill|blipFill|pattFill|grpFill)\b(?:[^>]*\/>|[^>]*>[\s\S]*?<\/a:\1>)/g
+const SP_PR_LINE = /<a:ln\b(?:[^>]*\/>|[^>]*>[\s\S]*?<\/a:ln>)/
+const GEOMETRY_END = /<a:prstGeom\b[^>]*\/>|<\/a:prstGeom>|<\/a:custGeom>/
+const XFRM_END = /<\/a:xfrm>/
+
+/// Rewrites the shape's own spPr paint. An explicit solidFill/noFill beats
+/// any xdr:style fillRef, so the style block is left alone. The outline keeps
+/// its width/dash/arrowheads and only swaps the fill inside `a:ln`.
+function repaintShape(
+  anchorXml: string,
+  p: string,
+  fillColor: string | undefined,
+  lineColor: string | undefined,
+): string {
+  const pre = escapeRegExp(p)
+  // Group anchors flatten to several visuals sharing one index; the first
+  // spPr would be an arbitrary child's.
+  if (
+    !new RegExp(`<${pre}sp[\\s>]`).test(anchorXml) ||
+    new RegExp(`<${pre}grpSp[\\s>]`).test(anchorXml)
+  ) {
+    throw new VisualEditError('Only standalone shapes can be repainted.')
+  }
+  const spPr = new RegExp(`(<${pre}spPr\\b[^>]*>)([\\s\\S]*?)(</${pre}spPr>)`).exec(anchorXml)
+  if (!spPr)
+    throw new VisualEditError('Drawing shape has no spPr — repainting it is not supported.')
+  const [whole, open, inner, close] = spPr as unknown as [string, string, string, string]
+  const existingLine = SP_PR_LINE.exec(inner)?.[0] ?? ''
+  const existingFill = inner.replace(SP_PR_LINE, '').match(SP_PR_FILL)?.join('') ?? ''
+  const body = inner.replace(SP_PR_LINE, '').replace(SP_PR_FILL, '')
+  const fill = fillColor === undefined ? existingFill : solidFillXml(fillColor)
+  let line = existingLine
+  if (lineColor !== undefined) {
+    const parts = /^<a:ln\b([^>]*?)\/?>([\s\S]*?)(?:<\/a:ln>)?$/.exec(existingLine)
+    line = parts
+      ? `<a:ln${parts[1]}>${solidFillXml(lineColor)}${(parts[2] ?? '').replace(SP_PR_FILL, '')}</a:ln>`
+      : outlineXml(lineColor)
+  }
+  // Paint follows the geometry in the spPr sequence (xfrm, geom, fill, ln).
+  const geometry = GEOMETRY_END.exec(body) ?? XFRM_END.exec(body)
+  const at = geometry ? geometry.index + geometry[0].length : 0
+  const rebuilt = `${open}${body.slice(0, at)}${fill}${line}${body.slice(at)}${close}`
+  return anchorXml.slice(0, spPr.index) + rebuilt + anchorXml.slice(spPr.index + whole.length)
 }

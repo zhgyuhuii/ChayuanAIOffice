@@ -1,5 +1,6 @@
 /** Insert tab of the slides ribbon. Extracted from Ribbon.tsx. */
 import type { InsertKind } from '../../shared/ipc'
+import { platformShortcuts } from '@chatoffice/i18n'
 import { ICON_COLORS, ICON_GALLERY, SHAPE_GALLERY, SMARTART_GALLERY } from '../insert-presets'
 import { WORDART_PRESETS, wordArtStrokePx } from '@chatoffice/ui'
 import type { StringKey } from '../i18n/locale'
@@ -37,6 +38,9 @@ import {
   closeSiblingPanels,
   type RibbonTabCtx,
 } from './ribbon-shared'
+
+/** The New Slide screentip shows the platform's real chord: ⇧⌘N on mac, Ctrl+M elsewhere. */
+const IS_MAC = navigator.platform.toLowerCase().includes('mac')
 
 const ZOOM_LABEL = {
   summary: 'ribbonZoomSummary',
@@ -94,7 +98,8 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
             className="rb-big rb-split"
             disabled={!hasDoc}
             onClick={onAddSlide}
-            data-tip={t('ribbonNewSlideTip')}
+            data-tip={platformShortcuts(t('ribbonNewSlideTip'))}
+            data-tip-kbd={IS_MAC ? '⇧⌘N' : 'Ctrl+M'}
           >
             <span className="rb-big-icon">
               <span className="rb-split-main">

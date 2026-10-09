@@ -98,6 +98,9 @@ interface AiPanelProps {
   notesAccess?: AiNotesAccess
 }
 
+// (上游本轮 AiPanel 改动为其单会话 AiModelPicker bridge(MODEL_BRIDGE),依赖其单会话
+//  resize/header 结构,本地不采纳;本地模型桥为 docsModelBridge(@chatoffice/ui
+//  ModelSettingsPage 契约,chatoffice 命名),见 ./model-bridge.ts)
 const isChatTab = (tab: AiActiveTab): tab is string =>
   typeof tab === 'string' && tab !== 'assistant' && tab !== 'empty'
 
