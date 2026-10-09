@@ -21,6 +21,8 @@ export interface VideoGenRequest {
   size?: string
   /** force a specific engine mode (skips the candidate walk) */
   mode?: string
+  /** walk these instead of MODE_CANDIDATES — e.g. a discovered vendor profile */
+  modeCandidates?: string[]
   signal?: AbortSignal
   /** liveness hook — the chat loop pings so the renderer's watchdog stays fed */
   onPing?: () => void
@@ -35,9 +37,17 @@ export interface VideoGenResult {
 
 const POLL_INTERVAL_MS = 3_000
 const POLL_BUDGET_MS = 10 * 60_000
+/** how long a 404 "task not found" stays retryable before the job is declared lost */
+const NOT_FOUND_GRACE_MS = 60_000
 
-/** engine modes accepted by relaying gateways, best first */
-const MODE_CANDIDATES = ['quality', 'pro', 't2v']
+/**
+ * Engine modes accepted by relaying gateways, best first. Agnes documents
+ * `text` / `keyframe` / `reference` (wiki.agnes-ai.cn); only `text` runs bare —
+ * the other two require media params, so they are not walkable candidates.
+ * quality/pro/t2v stay for other new-api-style hosts. A discovered vendor
+ * profile overrides this list via VideoGenRequest.modeCandidates.
+ */
+export const MODE_CANDIDATES = ['text', 'quality', 'pro', 't2v']
 
 function pickString(obj: Record<string, unknown>, keys: string[]): string | undefined {
   for (const k of keys) {
@@ -101,22 +111,35 @@ async function pollJob(
   call: ResolvedModelCall,
   id: string,
   signal?: AbortSignal,
-): Promise<{ status: string; url?: string; error?: string }> {
+): Promise<{ status: string; url?: string; error?: string; transient?: boolean }> {
   const base = call.baseUrl.replace(/\/$/, '')
   const resp = await aiFetch(`${base}/videos/${encodeURIComponent(id)}`, {
     headers: { Authorization: `Bearer ${call.apiKey}` },
     ...(signal ? { signal } : {}),
   })
   const text = await resp.text()
-  if (!resp.ok) return { status: 'error', error: `HTTP ${resp.status}: ${httpBodyDetail(text)}` }
-  let json: Record<string, unknown> = {}
+  if (!resp.ok) {
+    // agnes 404s "任务不存在" while the task registry catches up after create
+    return {
+      status: 'error',
+      error: `HTTP ${resp.status}: ${httpBodyDetail(text)}`,
+      ...(resp.status === 404 ? { transient: true } : {}),
+    }
+  }
+  let json: Record<string, unknown>
   try {
     json = JSON.parse(text) as Record<string, unknown>
   } catch {
     return { status: 'error', error: 'the video API returned a non-JSON status' }
   }
   const status = (pickString(json, ['status', 'task_status', 'state']) ?? 'unknown').toLowerCase()
-  const url = pickString(json, ['url', 'video_url', 'download_url'])
+  // agnes nests the finished url in metadata.url instead of a top-level field
+  const meta = json.metadata
+  const metaUrl =
+    typeof meta === 'object' && meta !== null
+      ? pickString(meta as Record<string, unknown>, ['url'])
+      : undefined
+  const url = pickString(json, ['url', 'video_url', 'download_url']) ?? metaUrl
   const rawError: unknown = json.error
   const err =
     typeof rawError === 'object' && rawError !== null
@@ -158,8 +181,9 @@ export async function generateVideoWithModel(
 ): Promise<VideoGenResult> {
   if (!req.prompt.trim()) throw new Error('prompt must not be empty')
 
-  // create: walk mode candidates (or the forced one) past param validation
-  const modes = req.mode ? [req.mode] : MODE_CANDIDATES
+  // create: walk mode candidates (the forced one, a discovered profile's list,
+  // or the built-in defaults) past param validation
+  const modes = req.modeCandidates ?? (req.mode ? [req.mode] : MODE_CANDIDATES)
   let id: string | undefined
   let lastFatal: Error | undefined
   for (const mode of modes) {
@@ -181,12 +205,21 @@ export async function generateVideoWithModel(
   const deadline = Date.now() + POLL_BUDGET_MS
   let lastUrl: string | undefined
   let completed = false
+  let notFoundSince: number | undefined
   while (Date.now() < deadline) {
     if (req.signal?.aborted) throw new Error('aborted')
     req.onPing?.()
     await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS))
     const r = await pollJob(call, id, req.signal)
-    if (r.status === 'error') throw new Error(r.error ?? 'video job status fetch failed')
+    if (r.status === 'error') {
+      // a just-created task may 404 while the registry catches up: keep polling
+      // inside the grace window so a permanently lost task still fails (slower)
+      if (r.transient) {
+        notFoundSince ??= Date.now()
+        if (Date.now() - notFoundSince < NOT_FOUND_GRACE_MS) continue
+      }
+      throw new Error(r.error ?? 'video job status fetch failed')
+    }
     if (r.url) lastUrl = r.url
     if (['completed', 'succeeded', 'success', 'finished'].includes(r.status)) {
       lastUrl = r.url ?? lastUrl

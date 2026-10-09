@@ -2,6 +2,22 @@
 
 > 2026-09-15。现象：本项目设置页配置 `https://api.agnes-ai.cn/v1` + Key 后无法获取模型列表/调用模型，而隔壁 chayuan-harness 一切正常。本文记录根因、修复与可复用的排查方法。
 
+## 续记（2026-10-09）：视频模型「服务不可用」误判——videojob.ts 三处契约错配
+
+现象：用户侧实测生图/视频模型都能用，但走本仓库 `generateVideoWithModel` 的视频生成必然失败，曾被误判为「视频生成模型服务不可用」。根因是 `packages/ai-provider/src/videojob.ts` 与 Agnes 网关的三处契约错配：
+
+1. **`mode` 候选全错**：Agnes 的 `POST /v1/videos` 强制要求 `mode`，合法值 `text` / `keyframe` / `reference`（官方 wiki [agnes-video-25-flash](https://wiki.agnes-ai.cn/zh-Hans/docs/agnes-video-25-flash.md) 明文）。原 `MODE_CANDIDATES = ['quality','pro','t2v']` 三个全被 400「mode 无效」拒绝，走查穷尽后抛「rejected every engine mode」。`keyframe`/`reference` 需媒体参数（首尾帧/参考图）不能裸跑，只有 `text` 可走查——已改为 `['text', ...]`（quality/pro/t2v 保留给其他 new-api 型网关）。另：Flash 模型 `size` 必须是字符串 `"720P"`（传 `1280x720` 直接 400），但本仓库调用方不传 size 走网关默认，未受影响。
+2. **完成 URL 藏在 `metadata.url`**：官方文档说顶层 `url`，实测完成响应里视频地址嵌在 `metadata.url`（顶层无 url 字段），`pollJob` 的 pickString 会拿空 → 走 `/content` 兜底。已补嵌套提取。
+3. **任务注册表传播延迟**：创建成功（`queued`）后立即轮询可能 404「任务不存在」，个别任务甚至永久丢失。原逻辑一次 404 即抛错中止整个多分钟任务。已加 60s 限时宽限：宽限内 404 继续轮询，超时仍 404 才判失败。
+
+排障方法补充：
+
+- **网关参数契约以官方 wiki 为准，别猜**：`https://wiki.agnes-ai.cn/llms.txt` 是全量文档索引（Mintlify 托管，可直接 curl .md 源文），视频/图像模型的请求参数表都在各自模型专页。
+- **免费档限频极紧会放大误判**：连续 ~3 次请求即 429「请求过于频繁」，冷却约 60s。边试参数边撞 429 很容易得出「服务不可用」的错误结论——排障脚本要节流（≥5s 间隔）。
+- 回归测试在 `tests/runtime-model-kind.test.ts`：主用例按真实 Agnes 契约 mock（只认 `mode:text`、首次轮询 404、完成 URL 在 `metadata.url`），另一用例锁住「text 被拒不弃疗、走查到 quality」的候选走查行为。注意视频轮询真实 sleep（POLL_INTERVAL_MS=3s），双轮询用例需 `it(..., 15_000)` 超时。
+- **上述人肉排查已自动化**：`packages/ai-provider/src/vendor-discovery.ts` 实现了「指纹识别（/models + 目录匹配）→ llms.txt 文档发现（catalog docsUrl 域名 → wiki/docs/root 猜测）→ 错误驱动参数探测（校验报错分类：mode/size/media/seconds/429 退避）→ 厂商档案 JSON」全流程，`VideoGenRequest.modeCandidates` 可消费档案产出。CLI：`DISCOVERY_API_KEY=... npx tsx packages/ai-provider/scripts/discover-vendor.ts https://api.agnes-ai.cn/v1 profile.json --full`。2026-10-09 对真实 Agnes 实跑收敛：`videoModes=[text,keyframe,reference]`（wiki 表格解析）、`sizeHints=[720P]`、`resultFieldPaths=[metadata.url]`（真实完成任务验证），全程 5s 节流零 429。
+
+
 ## 结论（TL;DR）
 
 1. **API 本身没有任何问题**。`GET /v1/models`、`POST /v1/chat/completions`（流式/非流式）、CORS（`access-control-allow-origin: *`）、UA/TLS 指纹全部正常。先实测端点再读代码，能砍掉一半排查面。

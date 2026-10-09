@@ -4,8 +4,6 @@ import {
   mkdirSync,
   mkdtempSync,
   readFileSync,
-=======
-  readdirSync,
   realpathSync,
   rmSync,
   writeFileSync,

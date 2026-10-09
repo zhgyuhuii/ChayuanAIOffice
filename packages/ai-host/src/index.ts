@@ -2,9 +2,12 @@ import { join } from 'node:path'
 import {
   createAiRuntime,
   createFileSource,
+  createHarnessSource,
+  resolveHarnessSecret,
   type AiModelSelection,
   type AiRuntime,
   type AiRuntimeChaOffice,
+  type AiSettingsSource,
   type AiSettingsV2,
   type AiStreamChunk,
   type DiscoveryTarget,
@@ -19,7 +22,7 @@ import {
   type StockSource,
 } from '@chatoffice/ai-search'
 import { fetchRemoteImage } from '@chatoffice/electron-utils/remote-image'
-import { CHATOP_LOCAL_AGENT_ID, parseChatopProxyKey } from '@chatoffice/ai-provider'
+import { CHATOP_LOCAL_AGENT_ID, CHATOP_LOCAL_PROFILE_ID, parseChatopProxyKey } from '@chatoffice/ai-provider'
 import {
   createVideoTaskRegistry,
   type VideoTaskRegistry,
@@ -27,6 +30,7 @@ import {
 } from './video-tasks'
 import { localToolInstall, localToolStart, localToolStatus } from './local-tools'
 import { persistGeneratedImage } from './media-ipc'
+import { discoverDshHome, type DiscoveredDshHome } from './dsh-home'
 
 export type { VideoTaskView, VideoSubmitRequest, VideoFileSink } from './video-tasks'
 export { registerSharedKbIpc, type KbSourceState, type SharedKbIpcDeps } from './kb-ipc'
@@ -143,9 +147,14 @@ export interface SharedAiIpcDeps {
   translate: (key: string, params?: Record<string, unknown>) => string
   /** video task registry wiring (absent = ai:video-* channels stay unregistered) */
   videoTasks?: VideoTaskRegistryDeps
-  /** LOCAL(8b6e6e88 桌面补齐): 察元 dsh home——chatop-local 的虚拟 key 从其
-   *  storages/chatop-models/proxy-keys.json 读取;缺席经回环管理面签发(同 agentId
-   *  重发即吊销旧 key,故仅在文件无活 key 时签)。absent = 维持旧的空 secret 行为 */
+  /** LOCAL(8b6e6e88/自动识别): explicit pin of the 察元 dsh home. Absent (the
+   *  normal desktop case) = auto-discovery across the known install shapes
+   *  (env pins, ~/.chatop, ~/.dsh, per-user chatop-data roots; a live model
+   *  proxy outranks stale siblings) — see ./dsh-home.ts. When a home is found
+   *  the office fuses the harness's models read-only: the chatop-local group
+   *  (model proxy, managed virtual key) and any llm-pi-ai vendor routes
+   *  (credentials resolved from .credentials.yaml at call time) appear with
+   *  zero key entry on this side; no home = legacy pure-BYOK behavior */
   dshHome?: string | undefined
 }
 
@@ -165,24 +174,111 @@ export interface AiStreamWireRequest {
  * ai:chatoffice-login. (ai:chat and per-app channels stay in the apps.) Returns the
  * runtime so per-app handlers can reuse the same resolution.
  */
+export type { AiModelSelection, AiRuntime } from '@chatoffice/ai-provider'
+
 export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   const { ipcMain, chatoffice, translate } = deps
 
-  // LOCAL(8b6e6e88 桌面补齐): chatop-local 走模型代理虚拟 key(与 server 形态同款,
-  // 见 apps/server/src/ai-proxy.ts chatopLocalKey)。桌面端此前缺这环——key 被外部
-  // 重新签发吊销后,设置里存的旧 key 直接 401 invalid_api_key 且无法自愈。
+  const fileSource = createFileSource(deps.settingsPath, deps.fs)
+
+  // ── 察元 harness 自动识别（自动发现 dsh home → 只读融合 + 托管代理 key）────
+  // 桌面端与 harness 共居一机:发现 home 后 (1) 模型列表融合 harness 的本地
+  // 模型组(chatop-local,经模型代理)与 llm-pi-ai 厂商路由(密钥调用时从
+  // .credentials.yaml 解析),用户零配置即可用 harness 配置的模型;(2) 任何指向
+  // 模型代理的 profile(含用户手建、粘过已吊销虚拟 key 的)统一改用托管虚拟 key
+  // ——从 proxy-keys.json 取活 key,缺席经回环管理面签发,401 自愈。
+  let dshHomeInfo: DiscoveredDshHome | null | undefined
+  let dshHomePromise: Promise<DiscoveredDshHome | null> | undefined
+  /** a settings source that starts as the office file and upgrades to harness
+   *  fusion once discovery settles (reads racing the swap see the raw file) */
+  let activeSource: AiSettingsSource = fileSource
+  const source: AiSettingsSource = {
+    read: () => activeSource.read(),
+    write: (next) => activeSource.write(next),
+  }
+  const ensureDshHome = (): Promise<DiscoveredDshHome | null> => {
+    if (dshHomeInfo !== undefined) return Promise.resolve(dshHomeInfo)
+    dshHomePromise ??= (async () => {
+      let info: DiscoveredDshHome | null
+      if (deps.dshHome) {
+        const proxyPort = await deps.fs
+          .readFile(join(deps.dshHome, 'storages', 'chatop-models', 'state.json'))
+          .then((t) => {
+            const port = (JSON.parse(t) as { proxyPort?: unknown }).proxyPort
+            return typeof port === 'number' && port > 0 ? port : null
+          })
+          .catch(() => null)
+        info = { home: deps.dshHome, proxyPort, proxyLive: false }
+      } else {
+        info = (await discoverDshHome()) ?? null
+      }
+      dshHomeInfo = info
+      if (info) {
+        // upgrade the settings source to read-only harness fusion; the office
+        // file stays the sidecar (selections, chatoffice profiles, custom BYOK)
+        const home = info.home
+        activeSource = createHarnessSource({
+          readDshFile: (rel) => deps.fs.readFile(join(home, rel)),
+          officeStateSource: fileSource,
+        })
+      }
+      return info
+    })()
+    return dshHomePromise
+  }
+  // warm the discovery at registration so the first settings read usually
+  // already carries the fused harness groups
+  void ensureDshHome()
+
+  // LOCAL(8b6e6e88 桌面补齐 + 自动识别自愈): chatop-local 走模型代理虚拟 key(与
+  // server 形态同款,见 apps/server/src/ai-proxy.ts chatopLocalKey)。桌面端此前缺
+  // 这环——key 被外部重新签发吊销后,设置里存的旧 key 直接 401 invalid_api_key
+  // 且无法自愈。现在:proxy-keys.json 的活 key 先经 /v1/models 验证再用(60s 正向
+  // 缓存);被代理拒收(服务重启丢内存态/同 agentId 他处重签)则记毒 60s 并转回环
+  // 管理面签发新 key——用户全程无感,无需任何手工签发。
   let cachedLocalKey = ''
   let cachedLocalKeyAt = 0
-  const chatopLocalSecret = async (): Promise<string> => {
-    if (!deps.dshHome) return ''
-    const keysPath = join(deps.dshHome, 'storages', 'chatop-models', 'proxy-keys.json')
+  let cachedLocalKeyOkAt = 0
+  const poisonedFileKeys = new Map<string, number>()
+  const keyAccepted = async (origin: string, key: string): Promise<boolean> => {
+    try {
+      const resp = await fetch(`${origin}/v1/models`, {
+        headers: { authorization: `Bearer ${key}` },
+        signal: AbortSignal.timeout(2_000),
+      })
+      if (resp.ok) return true
+      // the proxy authenticates before routing: only an auth verdict rejects
+      // the key — a 404 (route missing) or 5xx means the key itself passed
+      return resp.status !== 401 && resp.status !== 403
+    } catch {
+      // probe unreachable: keep the candidate (the call itself will surface
+      // any real failure with the proxy's own error text)
+      return true
+    }
+  }
+  const chatopLocalSecret = async (home: string, proxyOrigin: string): Promise<string> => {
+    const keysPath = join(home, 'storages', 'chatop-models', 'proxy-keys.json')
     const live = await (deps.fs.readFile(keysPath))
       .then(parseChatopProxyKey)
       .catch(() => null)
-    if (live) return live
+    if (live) {
+      const poisonedUntil = poisonedFileKeys.get(live) ?? 0
+      if (Date.now() < poisonedUntil) {
+        // known-rejected by the live service — go straight to reissue
+      } else if (cachedLocalKey === live && Date.now() - cachedLocalKeyOkAt < 60_000) {
+        return live
+      } else if (await keyAccepted(proxyOrigin, live)) {
+        cachedLocalKey = live
+        cachedLocalKeyAt = Date.now()
+        cachedLocalKeyOkAt = Date.now()
+        return live
+      } else {
+        poisonedFileKeys.set(live, Date.now() + 60_000)
+      }
+    }
     if (cachedLocalKey && Date.now() - cachedLocalKeyAt < 10_000) return cachedLocalKey
     const state = await deps.fs
-      .readFile(join(deps.dshHome, 'storages', 'chatop-models', 'state.json'))
+      .readFile(join(home, 'storages', 'chatop-models', 'state.json'))
       .then((t) => JSON.parse(t) as { managementPort?: number })
       .catch(() => null)
     const origin = state?.managementPort ? `http://127.0.0.1:${state.managementPort}` : 'http://127.0.0.1:52601'
@@ -196,16 +292,49 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
     if (!doc?.key) throw new Error('chatop-models key issue returned no key')
     cachedLocalKey = doc.key
     cachedLocalKeyAt = Date.now()
+    cachedLocalKeyOkAt = Date.now()
     return cachedLocalKey
   }
 
+  /** does a profile's baseUrl point at the local model proxy on this port? */
+  const proxyOriginOf = (baseUrl: string | undefined, port: number | null): string | null => {
+    if (!baseUrl || port === null) return null
+    try {
+      const url = new URL(baseUrl)
+      if (
+        (url.hostname === '127.0.0.1' || url.hostname === 'localhost') &&
+        Number(url.port || (url.protocol === 'https:' ? 443 : 80)) === port
+      ) {
+        return `${url.protocol}//${url.host}`
+      }
+      return null
+    } catch {
+      return null
+    }
+  }
+
   const runtime = createAiRuntime({
-    source: createFileSource(deps.settingsPath, deps.fs),
+    source,
     chatoffice,
     translate,
-    ...(deps.dshHome
-      ? { resolveSecret: () => chatopLocalSecret() }
-      : {}),
+    resolveSecret: async (profile) => {
+      const info = await ensureDshHome()
+      if (!info) return ''
+      // profiles targeting the model proxy (the synthetic chatop-local group
+      // AND user-built ones at the same endpoint) run on the managed virtual
+      // key — a pasted key that the proxy has since revoked is overridden,
+      // which is what heals the desktop 401 invalid_api_key incidents
+      const proxyOrigin = proxyOriginOf(profile.baseUrl, info.proxyPort)
+      if (proxyOrigin) return chatopLocalSecret(info.home, proxyOrigin)
+      // harness vendor routes keep their credential-ref resolution
+      if (profile.apiKeyRef && profile.id !== CHATOP_LOCAL_PROFILE_ID) {
+        return resolveHarnessSecret(
+          profile,
+          (rel) => deps.fs.readFile(join(info.home, rel)),
+        )
+      }
+      return ''
+    },
   })
 
   const activeStreams = new Map<string, AbortController>()

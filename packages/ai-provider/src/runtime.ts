@@ -60,7 +60,10 @@ export interface AiRuntimeDeps {
    * server-side secret resolution for profiles that only carry a key reference
    * (harness source: the key lives in dsh's credentials store). Called at run
    * time so credential rotations take effect on the next request; the resolved
-   * secret never enters settings views.
+   * secret never enters settings views. Runs BEFORE the inline key so hosts
+   * can override stale pasted keys (e.g. managed proxy virtual keys for
+   * profiles pointing at the harness model proxy); an empty result falls
+   * through to the inline key / keyless-local path.
    */
   resolveSecret?: (profile: AiProviderProfile) => Promise<string>
 }
@@ -132,11 +135,15 @@ function mergeKeys(view: AiSettingsV2, stored: AiSettingsV2): AiSettingsV2 {
 export function createAiRuntime(deps: AiRuntimeDeps) {
   const { source, chatoffice, translate, resolveSecret } = deps
 
-  /** inline key, keyless-local sentinel, or the referenced harness credential */
+  /** resolver first (may override a stale inline key), then inline key,
+   *  keyless-local sentinel, else nothing */
   const profileKey = async (profile: AiProviderProfile): Promise<string> => {
+    if (resolveSecret) {
+      const resolved = await resolveSecret(profile)
+      if (resolved) return resolved
+    }
     if (profile.apiKey) return profile.apiKey
     if (profile.ollamaLike) return 'local'
-    if (resolveSecret) return resolveSecret(profile)
     return ''
   }
 
@@ -464,10 +471,13 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     const settings = await readRaw()
     const profile = findProfile(settings, profileId)
     if (!profile) return null
-    // keep the legacy shape for inline/local profiles; only referenced secrets
-    // go through the resolver
-    if (profile.apiKey || profile.ollamaLike || !resolveSecret) return profile.apiKey ?? null
-    return (await resolveSecret(profile)) || null
+    // the resolver may override a stale inline key (managed proxy virtual
+    // keys); otherwise the legacy shape: inline key, keyless locals → null
+    if (resolveSecret) {
+      const resolved = await resolveSecret(profile)
+      if (resolved) return resolved
+    }
+    return profile.apiKey ?? null
   }
 
   /** BYOK image model only — the chatoffice cloud fallback is gone (the cloud

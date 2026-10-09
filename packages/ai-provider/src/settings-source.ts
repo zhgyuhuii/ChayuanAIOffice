@@ -229,17 +229,31 @@ export function profileToHarnessMutation(
 }
 
 export interface HarnessSourceDeps {
-  rpc: HarnessRpc
+  /**
+   * harness's settings.mutate / credentials.set loopback RPC. Absent =
+   * read-only fusion (the desktop form): harness routes surface with their
+   * credentials resolved at call time, but writes never leave the office
+   * sidecar — the harness's own settings UI stays the only editor of routes.
+   */
+  rpc?: HarnessRpc
   /** read a file relative to the dsh home (settings.yaml, .credentials.yaml) */
   readDshFile: DshFileReader
   /** local sidecar file holding office-side state (currentModel/imageModel/chatoffice/chatoffice) */
   officeStateSource: AiSettingsSource
 }
 
+/** profile ids the harness source synthesizes on read (never office-persisted
+ *  as user content — anchors cover their selection validation) */
+const isSyntheticLocalProfile = (p: AiProviderProfile): boolean =>
+  p.id === CHATOP_LOCAL_PROFILE_ID
+
 /**
  * Composite harness source: provider profiles live in dsh's llm-pi-ai (shared
  * with chatop), office selections live in the local sidecar. write() diffs the
- * profile set into settings.mutate ops + credentials.set calls.
+ * profile set into settings.mutate ops + credentials.set calls (rpc present),
+ * and always persists the office sidecar: chatoffice-login profiles,
+ * office-local profiles (custom BYOK entries the harness does not back), and
+ * selection anchors.
  */
 export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
   const { rpc, readDshFile, officeStateSource } = deps
@@ -311,6 +325,28 @@ export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
     return first ? { profileId: first.id, modelId: first.models[0]!.id } : undefined
   }
 
+  /** office-file profiles the harness does not back (custom BYOK entries the
+   *  user added in the office UI): they survive the harness merge and ride
+   *  along every read/write so the picker never loses them */
+  const isOfficeLocal = (
+    p: AiProviderProfile,
+    harnessVendorIds: Set<string>,
+  ): boolean =>
+    !harnessVendorIds.has(p.vendorId ?? p.id) &&
+    !harnessVendorIds.has(p.id) &&
+    !isSyntheticLocalProfile(p)
+
+  const officeLocalProfiles = (
+    office: AiSettingsV2,
+    vendorProfiles: AiProviderProfile[],
+  ): AiProviderProfile[] => {
+    const harnessVendorIds = new Set([
+      ...vendorProfiles.map((p) => p.vendorId ?? p.id),
+      CHATOP_LOCAL_PROFILE_ID,
+    ])
+    return office.profiles.filter((p) => isOfficeLocal(p, harnessVendorIds))
+  }
+
   return {
     async read() {
       const [office, vendorProfiles, local, defaultPick] = await Promise.all([
@@ -321,8 +357,14 @@ export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
           .then((yaml) => parseHarnessDefaultModel(yaml))
           .catch(() => null),
       ])
-      // local group first so the picker lists it above the vendor groups
-      const profiles = local ? [local.profile, ...vendorProfiles] : vendorProfiles
+      // local group first so the picker lists it above the vendor groups, then
+      // the harness vendor routes, then office-local custom profiles
+      const locals = officeLocalProfiles(office, vendorProfiles)
+      const profiles = [
+        ...(local ? [local.profile] : []),
+        ...vendorProfiles,
+        ...locals,
+      ]
       const currentModel = defaultSelection(office, local, vendorProfiles, defaultPick, profiles)
       return { ...office, profiles, ...(currentModel ? { currentModel } : {}) }
     },
@@ -352,16 +394,32 @@ export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
         )
         if (backing && !anchors.has(backing.id)) anchors.set(backing.id, { ...backing, apiKey: '' })
       }
+      // office-local custom profiles persist verbatim (the harness does not
+      // back them); harness-backed entries surface again on the next read
+      const current = await readProfiles().catch(() => [] as AiProviderProfile[])
+      const harnessVendorIds = new Set(current.map((p) => p.vendorId ?? p.id))
+      const localKeep = next.profiles.filter(
+        (p) => p.auth === 'api-key' && isOfficeLocal(p, harnessVendorIds),
+      )
+      // root fields (stock/search keys, search providers, maxOutputTokens,
+      // modelDefaults…) ride along verbatim — the desktop sidecar owns them
       const office: AiSettingsV2 = {
+        ...next,
         version: 2,
         profiles: [
           ...next.profiles.filter((p) => p.auth === 'chatoffice-login'),
+          ...localKeep,
           ...anchors.values(),
         ],
         ...(next.currentModel ? { currentModel: next.currentModel } : {}),
         ...(next.imageModel ? { imageModel: next.imageModel } : {}),
       }
-      const current = await readProfiles().catch(() => [] as AiProviderProfile[])
+      if (!rpc) {
+        // read-only fusion (desktop): the harness routes are not ours to edit;
+        // persist office state only
+        await officeStateSource.write(office)
+        return
+      }
       const currentByVendor = new Map(current.map((p) => [p.vendorId ?? p.id, p]))
       // only vendor-backed profiles map to chatop-* routes; anything else in the
       // view is not office-manageable in harness mode and must be ignored here

@@ -678,6 +678,21 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 用户需求 | sheets 助手 tab 仅手风琴(快捷项清空+composer 助手态隐藏) |
 | 门禁 | typecheck 0；docs 2904/sheets 3110/slides 1361/pdf 872/md 657/html 251/shell 909/electron-utils 243/agent-core 139 全绿 |
 
+## 第二十二轮·harness 模型自动识别（2026-10-08，用户事故驱动：401 invalid_api_key「无效虚拟 key」根治 + 免 key 调用 harness 配置模型）
+
+事故链：桌面端用户手建 custom profile 直指模型代理 `127.0.0.1:52581/v1` 并粘贴虚拟 key（agentId chatoffice 的重签即吊销该 key）→ 永久 401；且桌面形态自 8b6e6e88 起只有 key 解析、没有 harness 融合（chatop-local 合成组只在 server 形态注入），dsh home 发现只认 `~/.chatop`，而真机 harness home 实为 `chatop-(dev-)data/users/<id>/profile/dsh-home`（本机 dev/prod 两 home 并存且 state.json 同记 52581，活性归属靠新鲜度甄别）。
+
+| 域 | 内容 |
+|---|---|
+| ai-host（新文件 dsh-home.ts） | dsh home 自动发现：env 钉定（CHATOP_DSH_HOME>CHATOFFICE_DSH_HOME>DSH_HOME）> `~/.chatop`/`~/.dsh` > 各 chatop-data 用户根（~/Documents/chatop-data、appData 下 chatop-data/chatop/chatop-dev-data）；候选须有 state.json(proxyPort) 或 settings.yaml；并行 /health 活性探测 + state.json updatedAt 新鲜度择主（同端口多 home 时活服务的属主胜） |
+| ai-host index.ts | 桌面接 harness 只读融合（createHarnessSource rpc 缺席=只读：chatop-local 合成组 + llm-pi-ai 厂商路由浮现，office 文件仍为 sidecar）；代理目标 profile（含用户手建）统一改托管虚拟 key：proxy-keys.json 活 key 先经 /v1/models 验证（60s 正向缓存，401/403 才拒；404=鉴权过路由缺不算拒）再用，被拒记毒 60s 并转管理面签发自愈；resolveSecret 增厂商 apiKeyRef→.credentials.yaml 解析 |
+| ai-provider settings-source | createHarnessSource 支持 rpc 可选（桌面只读融合）；read() 透出 office-local 自定义 profile（此前 server 形态写后即蒸发=隐性丢数据）；write() 持久化 office-local profile + 锚，不再只存 chatoffice-login |
+| ai-provider runtime | profileKey/resolveProfileApiKey 改 resolveSecret 优先、空值回退内联 key/ollamaLike——这是「代理目标的死 key 被托管 key 顶掉」的机制基础；server 形态语义不变（resolveHarnessSecret 本就内联优先） |
+| 三端 main（docs/sheets/slides） | 下掉各自 resolveDshHome（~/.chatop 单点），交 ai-host 自动发现 |
+| 真机验证 | 发现→融合→托管 key（毒化 `chatop-INVALIDATED…` 被顶掉）→ 52581 真实 /chat/completions 200「成功」；连跑两轮 key 稳定不互踢；server/桌面双形态回归 |
+| 门禁 | typecheck 0（ai-provider/ai-host/docs/sheets/slides/server）；ai-provider 483/ai-host 51/server 25 全绿；真机连跑 key 稳定（修复初版 /models 探针 404 误判导致的 60s 重签互踢） |
+| 收敛条件 | 上游若原生引入 harness 融合/本地模型自动发现，本地发现层退役；dsh home 候选表随察元OS 数据根迁移追加 |
+
 ## 9. 品牌改名映射表（施工中维护，后续同步机械重放）
 
 | 上游 | 本地 | 说明 |

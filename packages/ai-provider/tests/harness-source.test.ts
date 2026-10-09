@@ -134,7 +134,8 @@ describe('createHarnessSource write', () => {
         },
         // the untouched harness profiles ride along (the settings view round-trips all)
         ...current.profiles.slice(1),
-        // vendor-less entry (must never become a chatop-dsh-* route)
+        // vendor-less entry (must never become a chatop-dsh-* route; it is
+        // office-local custom content and persists verbatim)
         {
           id: 'something-else',
           displayName: 'x',
@@ -162,11 +163,13 @@ describe('createHarnessSource write', () => {
     expect(rpcCalls.some((c) => c.method === 'credentials.set')).toBe(false)
     // office-local state: chatoffice-login profiles + the selection anchor
     // (verbatim copy of the backing harness profile, key stripped) so the
-    // file's normalize pass cannot drop the selection
+    // file's normalize pass cannot drop the selection — plus the office-local
+    // custom profile riding along verbatim
     const office = officeStateGetter()
-    expect(office.profiles.map((p) => p.id)).toEqual(['zhipu'])
-    expect(office.profiles[0]!.apiKey ?? '').toBe('')
-    expect(office.profiles[0]!.models.map((m) => m.id)).toContain('glm-5.2')
+    expect(office.profiles.map((p) => p.id).sort()).toEqual(['something-else', 'zhipu'])
+    const anchor = office.profiles.find((p) => p.id === 'zhipu')!
+    expect(anchor.apiKey ?? '').toBe('')
+    expect(anchor.models.map((m) => m.id)).toContain('glm-5.2')
     expect(office.currentModel).toMatchObject({ profileId: 'zhipu', modelId: 'glm-5.2' })
   })
 
@@ -290,6 +293,42 @@ describe('runtime secret resolution', () => {
     const call = await runtime.resolveForRun({ profileId: 'zhipu', modelId: 'glm-5.2' })
     expect(call.apiKey).toBe('sk-resolved')
     expect(call.baseUrl).toBe('https://open.bigmodel.cn/api/paas/v4')
+  })
+
+  it('an empty resolved secret falls back to the inline key; a resolved key overrides it', async () => {
+    const settings: AiSettingsV2 = {
+      version: 2,
+      profiles: [
+        {
+          id: 'custom-proxy',
+          displayName: '自定义代理',
+          protocol: 'openai-completions',
+          baseUrl: 'http://127.0.0.1:52581/v1',
+          apiKey: 'chatop-POISONED',
+          auth: 'api-key',
+          enabled: true,
+          models: [{ id: 'local/qwen3-4b' }],
+        },
+      ],
+    }
+    const make = (resolved: string) =>
+      createAiRuntime({
+        source: { read: async () => settings, write: async () => {} },
+        chatoffice: {
+          apiKey: () => '',
+          hasAuth: () => false,
+          status: async () => ({ loggedIn: false }),
+        },
+        translate: (key) => key,
+        resolveSecret: async () => resolved,
+      })
+    const fallback = await make('').resolveForRun({ profileId: 'custom-proxy', modelId: 'local/qwen3-4b' })
+    expect(fallback.apiKey).toBe('chatop-POISONED')
+    const override = await make('chatop-agent-chatoffice-LIVE').resolveForRun({
+      profileId: 'custom-proxy',
+      modelId: 'local/qwen3-4b',
+    })
+    expect(override.apiKey).toBe('chatop-agent-chatoffice-LIVE')
   })
 })
 
@@ -434,5 +473,116 @@ describe('createHarnessSource × chatop-local', () => {
     const s = await source.read()
     expect(s.profiles.map((p) => p.id)).toEqual(['zhipu', 'ollama', 'custom-relay'])
     expect(s.currentModel).toEqual({ profileId: 'zhipu', modelId: 'glm-5.2' })
+  })
+})
+
+// ── read-only fusion（桌面形态:rpc 缺席,只读融合 + office-local 保留）────────
+
+describe('createHarnessSource read-only (desktop) mode', () => {
+  /** office sidecar carrying the user's hand-built custom profile at the
+   *  harness model proxy with a poisoned pasted virtual key (the 401 incident) */
+  const OFFICE_WITH_CUSTOM = {
+    version: 2,
+    profiles: [
+      {
+        id: 'custom-muwpb51k',
+        vendorId: 'custom-muwpb51k',
+        displayName: '察元本地模型',
+        protocol: 'openai-completions' as const,
+        baseUrl: 'http://127.0.0.1:52581/v1',
+        apiKey: 'chatop-INVALIDATED',
+        auth: 'api-key' as const,
+        enabled: true,
+        models: [{ id: 'local/qwen3-4b', type: 'chat' as const }],
+      },
+    ],
+    currentModel: { profileId: 'custom-muwpb51k', modelId: 'local/qwen3-4b' },
+  }
+
+  function makeReadOnly(
+    files: Record<string, string>,
+    office: { currentModel?: AiSettingsV2['currentModel']; profiles?: AiSettingsV2['profiles'] } = {},
+  ) {
+    let officeState: AiSettingsV2 = {
+      version: 2,
+      ...(office.profiles ? { profiles: office.profiles } : { profiles: [] }),
+      ...(office.currentModel ? { currentModel: office.currentModel } : {}),
+    }
+    const source = createHarnessSource({
+      readDshFile: async (path) => {
+        if (path in files) return files[path] as string
+        throw new Error('missing')
+      },
+      officeStateSource: {
+        read: async () => officeState,
+        write: async (next) => {
+          officeState = next
+        },
+      },
+    })
+    return { source, officeStateGetter: () => officeState }
+  }
+
+  it('surfaces harness groups next to the office-local custom profile; the pick survives', async () => {
+    const { source } = makeReadOnly(
+      {
+        'settings.yaml': HARNESS_YAML,
+        'storages/chatop-models/state.json': LOCAL_STATE_RUNNING,
+        'storages/chatop-models/registry.json': LOCAL_REGISTRY,
+      },
+      { profiles: OFFICE_WITH_CUSTOM.profiles, currentModel: OFFICE_WITH_CUSTOM.currentModel },
+    )
+    const s = await source.read()
+    expect(s.profiles.map((p) => p.id)).toEqual([
+      'chatop-local',
+      'zhipu',
+      'ollama',
+      'custom-relay',
+      'custom-muwpb51k',
+    ])
+    expect(s.currentModel).toEqual({ profileId: 'custom-muwpb51k', modelId: 'local/qwen3-4b' })
+  })
+
+  it('write persists office state (custom profile + anchors) and never mutates harness routes', async () => {
+    const files: Record<string, string> = {
+      'settings.yaml': HARNESS_YAML,
+      'storages/chatop-models/state.json': LOCAL_STATE_RUNNING,
+      'storages/chatop-models/registry.json': LOCAL_REGISTRY,
+    }
+    const { source, officeStateGetter } = makeReadOnly(files, {
+      profiles: OFFICE_WITH_CUSTOM.profiles,
+      currentModel: OFFICE_WITH_CUSTOM.currentModel,
+    })
+    const current = await source.read()
+    await source.write(current)
+    const office = officeStateGetter()
+    // the custom profile persists verbatim (inline key included — it is
+    // office-owned content, the managed-key override happens at call time)
+    const custom = office.profiles.find((p) => p.id === 'custom-muwpb51k')
+    expect(custom?.apiKey).toBe('chatop-INVALIDATED')
+    // the selection validates through its anchor
+    const normalized = migrateSettingsV2(office)
+    expect(normalized.currentModel).toEqual({ profileId: 'custom-muwpb51k', modelId: 'local/qwen3-4b' })
+    // readDshFile never received a settings.yaml write path — nothing to
+    // assert directly; the harness files are untouched because no rpc exists
+  })
+
+  it('root fields (stock/search keys, maxOutputTokens) survive the write round-trip', async () => {
+    const { source, officeStateGetter } = makeReadOnly(
+      { 'settings.yaml': HARNESS_YAML },
+      {},
+    )
+    const current = await source.read()
+    await source.write({
+      ...current,
+      stockApiKeys: { pexels: 'px-key', pixabay: 'pb-key' },
+      searchApiKeys: { serper: 'sp-key' },
+      maxOutputTokens: 4096,
+      currentModel: { profileId: 'zhipu', modelId: 'glm-5.2' },
+    })
+    const office = officeStateGetter()
+    expect(office.stockApiKeys).toEqual({ pexels: 'px-key', pixabay: 'pb-key' })
+    expect(office.searchApiKeys).toEqual({ serper: 'sp-key' })
+    expect(office.maxOutputTokens).toBe(4096)
   })
 })

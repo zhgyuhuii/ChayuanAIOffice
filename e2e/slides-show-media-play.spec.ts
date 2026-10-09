@@ -9,7 +9,7 @@ import {
   openPptx,
   savePptx,
   setSlideAnimations,
-} from '@genoffice/pptx-engine'
+} from '@chatoffice/pptx-engine'
 import { launchShell, closeAndSaveVideo, waitForPageWithUrl } from './helpers'
 
 /**

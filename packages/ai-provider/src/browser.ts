@@ -41,6 +41,7 @@ export {
   resolveDefaultModel,
 } from './settings-v2'
 export { inferModelType } from './model-type'
+export { activeProvider } from './providers'
 export type { AiModelType } from './model-type'
 export { modelAcceptsImages } from './settings-v2'
 export { functionCallingVerdict, resolveModelCapabilities } from './capabilities'

@@ -269,24 +269,38 @@ describe('runtime model-kind dispatch', () => {
   it('a video-generation current model runs the /v1/videos job and streams a video fence', async () => {
     const calls: Array<{ url: string; body?: string }> = []
     const mp4 = new Uint8Array([0x66, 0x74, 0x79, 0x70, 0x6d, 0x70, 0x34, 0x32])
+    let polls = 0
     vi.stubGlobal(
       'fetch',
       vi.fn(async (url: string, init?: RequestInit) => {
         const body = init?.body ? String(init.body) : undefined
         calls.push({ url, body })
         if (url.endsWith('/videos')) {
-          // first mode candidate rejected at param validation, second accepted
-          if (body?.includes('"mode":"quality"')) {
-            return new Response(JSON.stringify({ message: 'mode 无效' }), { status: 400 })
+          // real agnes contract: only mode text/keyframe/reference pass validation
+          // and keyframe/reference need media params, so text is the sole walker
+          if (!body?.includes('"mode":"text"')) {
+            return new Response(
+              JSON.stringify({ code: 'invalid_request', message: 'mode 无效' }),
+              { status: 400 },
+            )
           }
           return new Response(JSON.stringify({ id: 'job1', status: 'queued' }), {
             headers: { 'content-type': 'application/json' },
           })
         }
         if (url.endsWith('/videos/job1')) {
-          return new Response(JSON.stringify({ status: 'completed', url: 'https://cdn/x.mp4' }), {
-            headers: { 'content-type': 'application/json' },
-          })
+          // agnes task-registry propagation lag: one transient 404, then the
+          // finished url arrives nested in metadata (not a top-level field)
+          if (polls++ === 0) {
+            return new Response(
+              JSON.stringify({ code: 'task_not_exist', message: '任务不存在' }),
+              { status: 404 },
+            )
+          }
+          return new Response(
+            JSON.stringify({ status: 'completed', metadata: { url: 'https://cdn/x.mp4' } }),
+            { headers: { 'content-type': 'application/json' } },
+          )
         }
         // content / url download
         return new Response(mp4, { headers: { 'content-type': 'video/mp4' } })
@@ -310,9 +324,10 @@ describe('runtime model-kind dispatch', () => {
       },
       (c) => chunks.push(c),
     )
-    // mode walk: quality rejected, pro accepted
-    expect(calls[0]!.body).toContain('"mode":"quality"')
-    expect(calls[1]!.body).toContain('"mode":"pro"')
+    // mode text is the first candidate and passes, so exactly one create call
+    expect(calls[0]!.body).toContain('"mode":"text"')
+    expect(calls.filter((c) => c.url.endsWith('/videos'))).toHaveLength(1)
+    // the download rode the nested metadata.url
     expect(calls.at(-1)!.url).toBe('https://cdn/x.mp4')
     const text = chunks
       .filter((c) => c.type === 'delta')
@@ -320,6 +335,57 @@ describe('runtime model-kind dispatch', () => {
       .join('')
     expect(text).toContain('```video')
     expect(text).toContain('data:video/mp4;base64,')
+    expect(chunks.at(-1)).toMatchObject({ type: 'done' })
+  }, 15_000)
+
+  it('the video mode walk keeps iterating when a gateway rejects mode=text', async () => {
+    const triedModes: string[] = []
+    const mp4 = new Uint8Array([0x66, 0x74, 0x79, 0x70, 0x6d, 0x70, 0x34, 0x32])
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init?: RequestInit) => {
+        const body = init?.body ? String(init.body) : ''
+        if (url.endsWith('/videos')) {
+          // a new-api-style host that wants quality instead
+          const mode = /"mode":"([^"]+)"/.exec(body)?.[1] ?? ''
+          triedModes.push(mode)
+          if (mode !== 'quality') {
+            return new Response(
+              JSON.stringify({ code: 'invalid_request', message: 'mode 无效' }),
+              { status: 400 },
+            )
+          }
+          return new Response(JSON.stringify({ id: 'job1', status: 'queued' }), {
+            headers: { 'content-type': 'application/json' },
+          })
+        }
+        if (url.endsWith('/videos/job1')) {
+          return new Response(JSON.stringify({ status: 'completed', url: 'https://cdn/x.mp4' }), {
+            headers: { 'content-type': 'application/json' },
+          })
+        }
+        return new Response(mp4, { headers: { 'content-type': 'video/mp4' } })
+      }),
+    )
+    const runtime = createAiRuntime({
+      source: makeSource([agnesProfile('agnes-video-2.5-flash')], {
+        profileId: 'openai-compatible',
+        modelId: 'agnes-video-2.5-flash',
+      }),
+      chatoffice,
+      translate,
+    })
+    const chunks: AiStreamChunk[] = []
+    await runtime.runStream(
+      {
+        requestId: 'r1',
+        selection: { profileId: 'openai-compatible', modelId: 'agnes-video-2.5-flash' },
+        system: '',
+        messages: [{ role: 'user', text: '一只猫跳上桌子' }],
+      },
+      (c) => chunks.push(c),
+    )
+    expect(triedModes).toEqual(['text', 'quality'])
     expect(chunks.at(-1)).toMatchObject({ type: 'done' })
   })
 
