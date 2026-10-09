@@ -26,8 +26,7 @@ import {
   type AiSettingsV2,
 } from '@chatoffice/ai-provider/browser'
 import { sheetsModelBridge } from './model-bridge'
-import { AssistantTab, IconAiAnalyze, IconAiCheck } from './AssistantTab'
-import { AssistantLibraryBrowser } from '@chatoffice/ui/assistant-library'
+import { AssistantTab } from './AssistantTab'
 import type { ChangePlan } from '@chatoffice/xlsx-gateway/domain/workbook.types'
 import { ATTACHMENT_IMAGE_EXTS, type AttachmentMeta } from '../../shared/desktop-api'
 import { useI18n, type TFunc } from '../i18n/locale'
@@ -335,7 +334,6 @@ export function AiChatPanel({
       ]
   const [legacyTab, selectTab] = usePanelTab('aisheets.aiTab', [...aiTabs] as { id: string; label: string }[])  
   const tab = conversations ? conversations.activeId : legacyTab
-  const selectTabEffective = conversations ? conversations.onTabChange : selectTab
   // D13: 历史不再是 tab——对话体显隐不再需要 history 分支(会话 tab 常显转录)
   const showChatBody = true
   const [panelSettings, setPanelSettings] = useState<AiSettingsV2>(
@@ -469,34 +467,6 @@ export function AiChatPanel({
     if (paths.length > 0) onAddAttachmentPaths(paths)
   }
 
-  /** 助手 tab: the one-click actions from the old ribbon group, list style */
-  const assistItems = [
-    {
-      id: 'check',
-      label: t('aiCheckBtn'),
-      desc: t('aiCheckDesc'),
-      icon: <IconAiCheck />,
-      disabled: !hasContent,
-      run: () => {
-        stickToBottomRef.current = true
-        onSend(t('aiCheckPrompt'))
-        selectTab('chat')
-      },
-    },
-    {
-      id: 'analyze',
-      label: t('aiAnalyzeBtn'),
-      desc: t('aiAnalyzeDesc'),
-      icon: <IconAiAnalyze />,
-      disabled: !hasContent,
-      run: () => {
-        stickToBottomRef.current = true
-        onSend(t('aiAnalyzePrompt'))
-        selectTab('chat')
-      },
-    },
-  ]
-
   return (
     <aside
       data-assistant-open={conversations ? conversations.activeId === 'assistant' : tab === 'assistant'}
@@ -572,7 +542,13 @@ export function AiChatPanel({
       <div
         className="ai-chat"
         ref={chatRef}
-        style={showChatBody && tab === 'chat' ? undefined : { display: 'none' }}
+        // 会话模式下 tab 是各会话 chatId(≠字面 'chat')——转录区按「非助手即显」
+        // 判定,与五端 AiPanel 的 convMode 行为一致;助手 tab 时让位给全高库列表
+        style={
+          showChatBody && (conversations ? conversations.activeId !== 'assistant' : tab === 'chat')
+            ? undefined
+            : { display: 'none' }
+        }
         onScroll={onChatScroll}
       >
         {/* Past conversation (read-only transcript), shown continuously with the current turn */}
