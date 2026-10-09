@@ -57,25 +57,48 @@ export function installDocsShim(client: BridgeClient): void {
       if (!m) throw new Error(`web shim 只能打开通过宿主选择的文件：${path}`)
       return openByFileId(m[1], m[2])
     },
-    async saveDocx(path: string, data: ArrayBuffer): Promise<string> {
+    // ── 保存契约:渲染层(file-actions saveOnce)期待 {ok, path?, error?} 信封
+    //    (apps/docs/src/shared/ipc.ts)。此前这里返回裸字符串——result.ok 恒为
+    //    undefined,每次保存都走失败分支:路径永不落定、dirty 永不清 → 下一次
+    //    保存再次落到 saveDocxNew → 再弹一次保存对话框(dsh 形态「不停弹出保存」
+    //    的根因)。cancel(选择器被关掉)按桌面契约静默返回 {ok:false}。
+    async saveDocx(
+      path: string,
+      data: ArrayBuffer,
+    ): Promise<{ ok: boolean; path?: string; error?: string }> {
       const m = /^webfs:([^:]+):(.*)$/.exec(path)
-      if (!m) throw new Error('无法原位保存：文件不是从本地打开的')
-      await client.call('file', 'fs.write', m[1], bytesToB64(new Uint8Array(data)))
-      return path
+      if (!m) return { ok: false, error: '无法原位保存：文件不是从本地打开的' }
+      try {
+        await client.call('file', 'fs.write', m[1], bytesToB64(new Uint8Array(data)))
+      } catch (err) {
+        return { ok: false, error: err instanceof Error ? err.message : String(err) }
+      }
+      return { ok: true, path }
     },
-    async saveDocxAs(defaultName: string, data: ArrayBuffer): Promise<string | null> {
-      const created = (await client.call(
-        'file',
-        'fs.saveAs',
-        bytesToB64(new Uint8Array(data)),
-        defaultName.endsWith('.docx') ? defaultName : `${defaultName}.docx`,
-      )) as { id: string; name: string } | null
-      if (!created) return null
+    async saveDocxAs(
+      defaultName: string,
+      data: ArrayBuffer,
+    ): Promise<{ ok: boolean; path?: string; error?: string }> {
+      let created: { id: string; name: string } | null
+      try {
+        created = (await client.call(
+          'file',
+          'fs.saveAs',
+          bytesToB64(new Uint8Array(data)),
+          defaultName.endsWith('.docx') ? defaultName : `${defaultName}.docx`,
+        )) as { id: string; name: string } | null
+      } catch (err) {
+        return { ok: false, error: err instanceof Error ? err.message : String(err) }
+      }
+      if (!created) return { ok: false }
       await client.call('local', 'recent.record', created.id, created.name, 'docs')
       await client.call('local', 'tab.setTitle', created.id, created.name)
-      return `webfs:${created.id}:${created.name}`
+      return { ok: true, path: `webfs:${created.id}:${created.name}` }
     },
-    async saveDocxNew(defaultName: string, data: ArrayBuffer): Promise<string | null> {
+    async saveDocxNew(
+      defaultName: string,
+      data: ArrayBuffer,
+    ): Promise<{ ok: boolean; path?: string; error?: string }> {
       return impl.saveDocxAs(defaultName, data)
     },
 
