@@ -268,6 +268,16 @@ export function installShellShims(): void {
         .filter((e) => e !== null)
         .map((e) => toShellEntry(e as RecentEntry)),
     toggleStar: async (path: string) => toggleStar(path),
+    // ── starred groups (upstream R23 收藏组): no per-entry group storage on
+    // the web — the group strip renders empty and the mutating calls degrade
+    starredGroups: async (): Promise<string[]> => [],
+    unstarPaths: async (paths: string[]) => {
+      for (const p of paths) {
+        const e = entryFor(p)
+        if (e?.starred) toggleStar(p)
+      }
+    },
+    setStarredGroup: async (_paths: string[], _group: string) => {},
     removeRecent: async (paths: string[]) => removeRecents(paths),
     openPath: async (path: string) => {
       const entry = entryFor(path)
