@@ -774,6 +774,19 @@ function replacesDocument(result: NonNullable<OpenDocxResult>): boolean {
   return !('needsPassword' in result)
 }
 
+// RC-PROBE: 右键图片卡死取证——localStorage 环形缓冲（冻结后可读）
+function rcProbeLog(entry: string): void {
+  try {
+    const stamp = Date.now() % 100000
+    const raw = localStorage.getItem('rcProbeLog') ?? '[]'
+    const ring = JSON.parse(raw) as string[]
+    ring.push(`${stamp} ${entry}`)
+    localStorage.setItem('rcProbeLog', JSON.stringify(ring.slice(-200)))
+  } catch {
+    /* 探针绝不影响主流程 */
+  }
+}
+
 export function App() {
   // subscribe to language switches for re-render; strings all go through module-level t, so memoized callbacks never capture stale closures
   const { lang } = useI18n()
@@ -1414,7 +1427,17 @@ export function App() {
         return false
       },
     },
-    onSelectionUpdate: () => forceRender(),
+    onSelectionUpdate: ({ transaction }) => {
+      rcProbeLog('selectionUpdate meta=' + JSON.stringify(transaction?.meta ?? {}).slice(0, 160))
+      forceRender()
+    },
+    onTransaction: ({ transaction }) => {
+      rcProbeLog(
+        'transaction docChanged=' + transaction.docChanged +
+          ' selSet=' + transaction.selectionSet +
+          ' meta=' + JSON.stringify(transaction.meta).slice(0, 160),
+      )
+    },
     // typing in the main document takes ribbon routing back from any textbox
     onFocus: () => setActiveSubEditor(null),
     onUpdate: () => {
