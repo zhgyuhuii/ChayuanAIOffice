@@ -740,6 +740,7 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 2026-09-22 | d8201ad0 | 六端 AiPanel（docs AiPanel/AiConversationBody 同款 hunk：slides/markdown/html/pdf AiPanel + sheets App/AiChatPanel） | D13 增量：tab 行移除 `history` 项（= [会话…][助手]）；actions 槽常驻 `[+] [🕘]`；🕘 接 `AiHistoryPopover` 下拉浮层（单删/全删确认移入浮层，sheets 的 App 级 historyConfirm 状态删除）；六端 hunk 处 LOCAL 标记已追加增量段 |
 | 2026-09-22 | d8201ad0 | 六端 local i18n 文件（docs/sheets/slides/html `i18n/local/ai-local.ts`、pdf/markdown `strings-local.ts`） | 键改名 `aiTabHistory` → `aiHistoryTooltip`（20 语言×6 文件，B 区文件内改名，上游 shard 不涉及） |
 | — | — | 说明 | D13/D12 实现位于 B 区：packages/ui 新文件 AiHistoryPopover.tsx + useAiConversations（`AiActiveTab` 收窄为 chatId｜'assistant'｜'empty'，仲裁 ② 残留 'history' 视为无效；close() 空会话分流——从未发言的会话关闭直接丢弃元数据、不进历史，closed 列表只含非空会话）+ dock.css 追加段 + 单测 ai-history-popover.test.tsx；上游移动=增行，收敛条件：上游若原生实现历史下拉/历史列表则本地浮层退役 |
+| 2026-10-10 | f9162fc9 | apps/shell/src/main/index.ts + apps/shell/src/renderer/src/strings.ts + apps/shell/tests/{main-locale-tables,strings}.test.ts | ①去 AI 品牌残留改名：zh `menuNewMarkdown`→「MD文档」（tab"+"新建菜单）、zh `newMarkdown`→「新建MD文档」（Home 新建磁贴/快速创建卡），其余语言统一中性「Markdown」；②R23 回归修复：R23 全量重建把渲染层 20 语言整组 `newDoc/newSheet/newSlide/newHtml/newPdf` 洗成上游「AI Docs/AI Sheets/AI Slides/AI HTML/AI PDF」品牌串（zh 原为「新建文档/新建表格/新建演示稿/新建HTML/新建PDF文档」），已按 176f9fe1 验收基线整组恢复（各语言原译名，非 zh 的 `AI HTML/AI PDF` 为基线即有的历史残留、维持不动待裁定）。两处 zh 键行 LOCAL 标记；两个钉名测试由钉「AI Markdown」改钉新名。事故记录：同名改动曾于 2026-10-09 完成但未落库，R23 重建按上游原文洗回——落库后同步以本行为准（上游若完成官方改名则取上游） |
 
 ## 12. 拒绝清单（同步时对上游 newChat 相关改动逐个裁决；制度 §5.2/§5.3）
 

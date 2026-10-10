@@ -41,15 +41,17 @@ describe('the text-file dialog filter', () => {
 })
 
 /**
- * The app is still called AI Markdown. A rename of the app's name was started in
- * this branch and then dropped — the name is the maintainers' call, and README
- * and the docs still say Markdown — so no locale of the File > New menu may say
- * otherwise.
+ * The app's File > New label. The dropped upstream rename left the branding
+ * residue "AI Markdown" in every locale; the maintainers' call (2026-10) is
+ * 「MD文档」 in zh and the neutral format name elsewhere — no locale may
+ * reintroduce the stale "AI " prefix.
  */
 describe('the File > New menu label', () => {
-  it('reads AI Markdown in every locale', () => {
+  it('reads MD文档 in zh and Markdown in every other locale', () => {
     const labels = [...source.matchAll(/menuNewMarkdown: '([^']*)'/g)].map((match) => match[1])
     expect(labels.length).toBeGreaterThanOrEqual(19)
-    expect(new Set(labels)).toEqual(new Set(['AI Markdown']))
+    expect(new Set(labels)).toEqual(new Set(['MD文档', 'Markdown']))
+    // zh is the first block of the table
+    expect(labels[0]).toBe('MD文档')
   })
 })
