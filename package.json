@@ -1,6 +1,6 @@
 {
   "name": "chatoffice",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "description": "AI-native office suite (docs, sheets, slides, pdf)",
   "license": "Apache-2.0",
