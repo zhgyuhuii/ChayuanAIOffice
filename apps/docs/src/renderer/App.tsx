@@ -2,6 +2,8 @@ import { scriptFontHtml } from './editor/script-fonts'
 import { DOC_CSS_COMMITTED_EVENT } from './editor/cjk-punct-shrink'
 import { justifyShrinkPluginKey } from './editor/justify-shrink'
 import {
+  lazy,
+  Suspense,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -67,9 +69,11 @@ import {
   applyTitlePg,
   verifyProtectionPassword,
   type Block,
+  type ChartDisplay,
   type CommentInfo,
   type CustomNumberingLevel,
   type NumberingDef,
+  type NewChart,
   type DocProtection,
   type WriteProtection,
   nextNoteId,
@@ -285,6 +289,7 @@ import {
   clearParagraphFormatting,
   insertImageFromDataUrl,
   insertImageViaDialog,
+  insertTopLevelBlockAtSelection,
   insertPageBreakAt,
   setParaAttrs,
   type InkPenSettings,
@@ -328,6 +333,32 @@ import { stepHangingIndent, stepParagraphIndent } from './editor/indent'
 import { PasswordDialog } from './components/PasswordDialog'
 import { ProtectDialog, type ProtectDialogResult } from './components/ProtectDialog'
 import { t, useI18n } from './i18n/locale'
+import { DocOpsDialogHost, type DocOpsDialogKind } from './docops/dialogs'
+import { makeCompleter } from './docops/model-complete'
+import {
+  autoFitByContent,
+  autoFitByWindow,
+  addFirstColumnNumbers,
+  deleteAllTables,
+  deleteTableCaptions,
+  refreshStylesFromFirstTable,
+  collectTableMatrices,
+} from './docops/table-ops'
+import {
+  deleteAllImages,
+  clearImageFormat,
+  collectImageFiles,
+  deleteImageCaptions,
+} from './docops/image-ops'
+import { deleteBlankParagraphs } from './docops/text-ops'
+import { isFormModeActive, setFormMode } from './docops/form-mode'
+import { tablesToXlsxBase64, dataUrlToBase64File } from './docops/table-export'
+import type { ChartDesignerInsert } from '@chatoffice/chart-kit/designer'
+
+// 惰性加载:设计器拖 1MB 示例库(chart-kit data/examples.json),点开才拉,不进编辑器启动图
+const ChartDesignerModal = lazy(() =>
+  import('@chatoffice/chart-kit/designer').then((m) => ({ default: m.ChartDesignerModal })),
+)
 import {
   getActiveSubEditor,
   setActiveSubEditor,
@@ -1390,6 +1421,375 @@ export function App() {
       forceRender()
     },
   })
+
+  // ---- 察元 AI docops:Ribbon「察元AI」tab 的服务桥 + 对话框宿主 ----
+  const [aiAssistantReq, setAiAssistantReq] = useState<{ id: string; nonce: number } | null>(null)
+  const [docOpsDialog, setDocOpsDialog] = useState<DocOpsDialogKind | null>(null)
+  const [docopsToast, setDocopsToast] = useState<string | null>(null)
+
+  const showDocopsToast = useCallback((text: string) => {
+    setDocopsToast(text)
+    window.setTimeout(() => setDocopsToast((cur) => (cur === text ? null : cur)), 4000)
+  }, [])
+  const chayuanCompleter = useMemo(
+    () => makeCompleter(() => settings.currentModel ?? null),
+    [settings],
+  )
+  const runChayuanOp = useCallback(
+    (op: string) => {
+      if (!editor) return
+      switch (op) {
+        case 'tables.deleteAll': {
+          const r = deleteAllTables(editor)
+          showDocopsToast(t('docopsTablesDone', { count: r.count }))
+          break
+        }
+        case 'tables.autoFitContent': {
+          const r = autoFitByContent(editor)
+          showDocopsToast(t('docopsTablesDone', { count: r.count }))
+          break
+        }
+        case 'tables.autoFitWindow': {
+          const r = autoFitByWindow(editor)
+          showDocopsToast(t('docopsTablesDone', { count: r.count }))
+          break
+        }
+        case 'tables.refreshStyle': {
+          const r = refreshStylesFromFirstTable(editor)
+          showDocopsToast(t('docopsTablesDone', { count: r.count }))
+          break
+        }
+        case 'tables.firstColNumbers': {
+          const r = addFirstColumnNumbers(editor)
+          showDocopsToast(t('docopsTableRowsDone', { count: r.count }))
+          break
+        }
+        case 'tables.deleteCaptions': {
+          const r = deleteTableCaptions(editor)
+          showDocopsToast(t('docopsCaptionsDeleted', { count: r.count }))
+          break
+        }
+        case 'images.deleteAll': {
+          const r = deleteAllImages(editor)
+          showDocopsToast(t('docopsImagesDeleted', { count: r.count }))
+          break
+        }
+        case 'images.clearFormat': {
+          const r = clearImageFormat(editor)
+          showDocopsToast(t('docopsImagesDone', { count: r.count }))
+          break
+        }
+        case 'images.deleteCaptions': {
+          const r = deleteImageCaptions(editor)
+          showDocopsToast(t('docopsCaptionsDeleted', { count: r.count }))
+          break
+        }
+        case 'text.deleteBlankRows': {
+          const r = deleteBlankParagraphs(editor)
+          showDocopsToast(t('docopsBlankRowsDeleted', { count: r.count }))
+          break
+        }
+        case 'form.toggle': {
+          const on = setFormMode(editor, !isFormModeActive())
+          showDocopsToast(t(on ? 'docopsFormModeOn' : 'docopsFormModeOff'))
+          break
+        }
+        default:
+          break
+      }
+    },
+    [editor, showDocopsToast],
+  )
+  const runChayuanExport = useCallback(
+    (what: 'tables' | 'images') => {
+      if (!editor) return
+      void (async () => {
+        if (what === 'tables') {
+          const matrices = collectTableMatrices(editor.state.doc)
+          if (matrices.length === 0) {
+            showDocopsToast(t('docopsNoTables'))
+            return
+          }
+          const baseName = doc?.filePath
+            ? doc.filePath.split(/[\\/]/).pop()!.replace(/\.docx?$/i, '')
+            : '文档'
+          const base64 = await tablesToXlsxBase64(matrices)
+          const result = await window.desktop.exportFiles(`${baseName}_表格导出.xlsx`, [
+            { fileName: `${baseName}_表格导出.xlsx`, base64 },
+          ])
+          showDocopsToast(
+            result.ok
+              ? t('docopsExportDone', { count: matrices.length })
+              : t('docopsExportCanceled'),
+          )
+        } else {
+          const imageFiles = collectImageFiles(editor)
+            .map((f) => dataUrlToBase64File(f.fileName, f.dataUrl))
+            .filter((f): f is { fileName: string; base64: string } => f !== null)
+          if (imageFiles.length === 0) {
+            showDocopsToast(t('docopsNoImages'))
+            return
+          }
+          const result = await window.desktop.exportFiles('图片', imageFiles)
+          showDocopsToast(
+            result.ok
+              ? t('docopsExportDone', { count: imageFiles.length })
+              : t('docopsExportCanceled'),
+          )
+        }
+      })()
+    },
+    [editor, doc, showDocopsToast],
+  )
+  const chayuanServices = useStableCallbacks({
+    runAssistant: (id: string) => {
+      setShowAi(true)
+      setAiAssistantReq({ id, nonce: Date.now() })
+    },
+    openDialog: (kind: DocOpsDialogKind) => setDocOpsDialog(kind),
+    runOp: runChayuanOp,
+    exportAll: runChayuanExport,
+    formModeActive: () => isFormModeActive(),
+  })
+
+  // ---- chart-kit 设计器接线(App 常驻:双击回显/AI 插图不得依赖 ribbon 停在 insert 页;
+  // 挂在 InsertTab 会在切走标签页时随组件卸载丢掉监听,双击图表就再无反应) ----
+  const [chartKitOpen, setChartKitOpen] = useState(false)
+  const [chartKitEdit, setChartKitEdit] = useState<{
+    pos: number | null
+    groupId?: string
+    code?: string
+    title?: string
+  } | null>(null)
+  const [chartBlockEdit, setChartBlockEdit] = useState<{
+    pos: number
+    kind: string
+    title: string
+    categories: string[]
+    series: Array<{ name: string; values: (number | null)[] }>
+  } | null>(null)
+
+  // InsertTab 的「图表」按钮:打开设计器(事件解耦,不经 props 长链)
+  useEffect(() => {
+    const onOpen = () => {
+      setChartKitEdit(null)
+      setChartBlockEdit(null)
+      setChartKitOpen(true)
+    }
+    window.addEventListener('chartkit-open-designer', onOpen)
+    return () => window.removeEventListener('chartkit-open-designer', onOpen)
+  }, [])
+
+  // double-click on a canvas echart reopens the shared designer for in-place edit
+  useEffect(() => {
+    const onEdit = (ev: Event) => {
+      const detail = (ev as CustomEvent).detail as {
+        pos: number | null
+        groupId?: string
+        code?: string
+        title?: string
+      }
+      setChartKitEdit(detail)
+      setChartKitOpen(true)
+    }
+    window.addEventListener('chartkit-edit-echart', onEdit)
+    return () => window.removeEventListener('chartkit-edit-echart', onEdit)
+  }, [])
+
+  // AI insert_echart:沙箱执行 optionCode/JSON → echart 块落库(与设计器同管线)
+  useEffect(() => {
+    if (!editor) return
+    const onAiInsert = (ev: Event) => {
+      const detail = (ev as CustomEvent).detail as {
+        groupId: string
+        title: string
+        optionJson: string
+        code: string | null
+        afterBlockIndex: number
+      }
+      void (async () => {
+        let optionJson = detail.optionJson
+        if (!optionJson && detail.code) {
+          try {
+            const { runOptionCode } = await import('@chatoffice/chart-kit/sandbox')
+            const { stringifyOption } = await import('@chatoffice/chart-kit/serialize')
+            const r = await runOptionCode(detail.code)
+            if (!r.ok) {
+              window.dispatchEvent(
+                new CustomEvent('ai-toast', {
+                  detail: { message: `insert_echart: ${r.error ?? 'sandbox failed'}` },
+                }),
+              )
+              return
+            }
+            optionJson = stringifyOption(r.option)
+          } catch (e) {
+            window.dispatchEvent(
+              new CustomEvent('ai-toast', {
+                detail: {
+                  message: `insert_echart: ${String((e as Error).message).slice(0, 120)}`,
+                },
+              }),
+            )
+            return
+          }
+        }
+        // 快照:AI 插入也必须有图(sidecar 可重放,快照供打开显示)
+        const { renderOptionSnapshot } = await import('@chatoffice/chart-kit/snapshot')
+        let opt: unknown
+        try {
+          opt = JSON.parse(optionJson)
+        } catch {
+          opt = null
+        }
+        const png = await renderOptionSnapshot(opt)
+        const inserted = insertTopLevelBlockAtSelection(editor, {
+          type: 'docProtected',
+          attrs: {
+            docxIndex: null,
+            blockType: 'echart',
+            label: detail.title || 'ECharts',
+            echartOption: optionJson,
+            echartSnapshot: png,
+            echartGroupId: detail.groupId,
+            echartTitle: detail.title || null,
+            echartCode: detail.code ?? null,
+          },
+        })
+        if (!inserted) {
+          window.dispatchEvent(
+            new CustomEvent('ai-toast', { detail: { message: 'insert_echart: insert failed' } }),
+          )
+        }
+      })()
+    }
+    window.addEventListener('chartkit-ai-insert-echart', onAiInsert)
+    return () => window.removeEventListener('chartkit-ai-insert-echart', onAiInsert)
+  }, [editor])
+
+  // double-click on a standard chart block: same designer, data preloaded
+  // from chartDisplay so edits write back into genChart (原位更新)
+  useEffect(() => {
+    const onEditChart = (ev: Event) => {
+      const detail = (ev as CustomEvent).detail as {
+        pos: number | null
+        kind: string
+        title: string
+        categories: string[]
+        series: Array<{ name: string; values: (number | null)[] }>
+      }
+      if (typeof detail.pos !== 'number') return
+      setChartBlockEdit({ ...detail, pos: detail.pos })
+      setChartKitOpen(true)
+    }
+    window.addEventListener('chartkit-edit-chart', onEditChart)
+    return () => window.removeEventListener('chartkit-edit-chart', onEditChart)
+  }, [])
+
+  const closeChartKit = () => {
+    setChartKitOpen(false)
+    setChartKitEdit(null)
+    setChartBlockEdit(null)
+  }
+
+  const insertFromDesigner = (payload: ChartDesignerInsert) => {
+    if (!editor) return
+    // 双击标准图表的编辑提交:原位更新 genChart+chartDisplay(几何/位置不动)
+    const blockEdit = chartBlockEdit
+    if (blockEdit && payload.engine === 'ooxml' && payload.spec?.data) {
+      const target = editor.state.doc.nodeAt(blockEdit.pos)
+      if (target && target.attrs.blockType === 'chart') {
+        const spec: NewChart = {
+          kind: payload.spec.type as NewChart['kind'],
+          title: payload.spec.title ?? payload.spec.style?.title ?? t('ribbonChartTitlePh'),
+          categories: (payload.spec.data.categories ?? []).map((c) => String(c)),
+          series: payload.spec.data.series.map((s) => ({
+            name: s.name ?? '',
+            values: s.values.map((v) => (typeof v === 'number' ? v : null)),
+          })),
+        }
+        const display: ChartDisplay = {
+          partPath: '',
+          kind: spec.kind,
+          title: spec.title,
+          categories: spec.categories,
+          series: spec.series,
+        }
+        editor.view.dispatch(
+          editor.state.tr.setNodeMarkup(blockEdit.pos, undefined, {
+            ...target.attrs,
+            genChart: spec,
+            chartDisplay: display,
+          }),
+        )
+        setChartBlockEdit(null)
+        return
+      }
+    }
+    if (payload.engine === 'ooxml' && payload.spec?.data) {
+      const spec: NewChart = {
+        kind: payload.spec.type as NewChart['kind'],
+        title: payload.spec.title ?? payload.spec.style?.title ?? t('ribbonChartTitlePh'),
+        categories: (payload.spec.data.categories ?? []).map((c) => String(c)),
+        series: payload.spec.data.series.map((s) => ({
+          name: s.name ?? '',
+          values: s.values.map((v) => (typeof v === 'number' ? v : null)),
+        })),
+      }
+      const display: ChartDisplay = {
+        partPath: '',
+        kind: spec.kind,
+        title: spec.title,
+        categories: spec.categories,
+        series: spec.series,
+      }
+      insertTopLevelBlockAtSelection(editor, {
+        type: 'docProtected',
+        attrs: {
+          docxIndex: null,
+          blockType: 'chart',
+          label: t('ribbonChart'),
+          genChart: spec,
+          chartDisplay: display,
+        },
+      })
+    } else if (payload.snapshotPng) {
+      const editPos = chartKitEdit?.pos
+      if (typeof editPos === 'number') {
+        const target = editor.state.doc.nodeAt(editPos)
+        if (target && target.attrs.blockType === 'echart') {
+          editor.view.dispatch(
+            editor.state.tr.setNodeMarkup(editPos, undefined, {
+              ...target.attrs,
+              echartOption: payload.optionJson,
+              echartSnapshot: payload.snapshotPng,
+              echartGroupId: payload.groupId,
+              echartTitle: payload.title,
+              echartCode: payload.code ?? null,
+              echartData: payload.data ?? null,
+            }),
+          )
+          closeChartKit()
+          return
+        }
+      }
+      insertTopLevelBlockAtSelection(editor, {
+        type: 'docProtected',
+        attrs: {
+          docxIndex: null,
+          blockType: 'echart',
+          label: t('ribbonEchartLabel'),
+          echartOption: payload.optionJson,
+          echartSnapshot: payload.snapshotPng,
+          echartGroupId: payload.groupId,
+          echartTitle: payload.title,
+          echartCode: payload.code ?? null,
+          echartData: payload.data ?? null,
+        },
+      })
+    }
+    closeChartKit()
+  }
 
   // every header/footer consumer (strips, gaps, heights, preview, AI, save) reads
   // through one resolver, so pending edits, Link to Previous and inheritance agree
@@ -6926,6 +7326,7 @@ export function App() {
                 doc.isBlank ? { bullet: BLANK_BULLET_NUM_ID, ordered: BLANK_ORDERED_NUM_ID } : null
               }
               preset={aiPreset}
+              assistantRequest={aiAssistantReq}
               filePath={doc?.filePath ?? null}
               editQueue={editQueue}
               onQueueEditInstruction={queueUpdate}
@@ -6963,6 +7364,7 @@ export function App() {
         docDefaults={doc?.parsed.docDefaults}
         documentListPresets={documentLists}
         recentListPresets={recentLists}
+        chayuan={chayuanServices}
         showAi={showAi}
         section={sections[activeSection]?.settings ?? section}
         tableGridlines={tableGridlines}
@@ -7430,6 +7832,44 @@ export function App() {
 
       {showShortcuts && <ShortcutsDialog onClose={() => setShowShortcuts(false)} />}
       {showLinkModal && <LinkInsertModal editor={editor} onClose={() => setShowLinkModal(false)} />}
+      {doc && editor && (
+        <DocOpsDialogHost
+          kind={docOpsDialog}
+          editor={editor}
+          styles={ribbonStyles ?? new Map()}
+          docPath={doc?.filePath ?? null}
+          complete={chayuanCompleter}
+          onStyleRemove={(ids) => setStyleDeletes((prev) => [...new Set([...prev, ...ids])])}
+          onDeclassified={() => undefined}
+          onDeclassifyRestored={() => undefined}
+          onClearKind={() => setDocOpsDialog(null)}
+        />
+      )}
+      {docopsToast && <div className="docops-toast">{docopsToast}</div>}
+      {chartKitOpen && (
+        <Suspense fallback={null}>
+          <ChartDesignerModal
+            lang={lang === 'en' ? 'en' : 'zh-CN'}
+            initial={
+              chartKitEdit
+                ? chartKitEdit
+                : chartBlockEdit
+                  ? {
+                      groupId: chartBlockEdit.kind,
+                      specData: {
+                        type: chartBlockEdit.kind,
+                        title: chartBlockEdit.title,
+                        categories: chartBlockEdit.categories,
+                        series: chartBlockEdit.series,
+                      },
+                    }
+                  : undefined
+            }
+            onClose={closeChartKit}
+            onInsert={insertFromDesigner}
+          />
+        </Suspense>
+      )}
       {fieldEdit && (
         <FieldDialog
           instr={fieldEdit.instr}

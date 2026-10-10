@@ -374,6 +374,62 @@ export function insertTableAt(editor: Editor, rows: number, cols: number): void 
       .run()
 }
 
+/** webp posters (vendor cover frames) re-encode to PNG — the docx image
+ * pipeline embeds png/jpeg/gif only */
+async function toInsertableImageDataUrl(dataUrl: string): Promise<string> {
+  const mime = /^data:([^;]+);/.exec(dataUrl)?.[1] ?? ''
+  if (/^image\/(png|jpeg|gif)$/.test(mime)) return dataUrl
+  const img = new Image()
+  await new Promise<void>((resolve, reject) => {
+    img.onload = () => resolve()
+    img.onerror = () => reject(new Error('Failed to read poster'))
+    img.src = dataUrl
+  })
+  const canvas = document.createElement('canvas')
+  canvas.width = img.naturalWidth
+  canvas.height = img.naturalHeight
+  canvas.getContext('2d')?.drawImage(img, 0, 0)
+  return canvas.toDataURL('image/png')
+}
+
+/** Insert a generated video for the docs host — docx cannot embed video, so
+ * per the consensus plan this lands a cover-frame image plus a hyperlink run
+ * to the video target (vendor URL preferred; file copy as fallback). Link
+ * text stays bilingual inline (same in-module zh/en policy as the dialog). */
+export async function insertVideoForDocs(
+  editor: Editor,
+  video: { filePath?: string; url?: string; posterDataUrl?: string },
+): Promise<boolean> {
+  const isZh = (document.documentElement.lang || 'zh').toLowerCase().startsWith('zh')
+  const label = isZh ? '\u25b6 播放视频' : '\u25b6 Play video'
+  const coverLabel = isZh ? '视频封面' : 'Video cover'
+  const href = video.url ?? (video.filePath ? `file://${video.filePath}` : '')
+  if (video.posterDataUrl) {
+    try {
+      const poster = await toInsertableImageDataUrl(video.posterDataUrl)
+      await insertImageFromDataUrl(editor, poster, coverLabel)
+    } catch {
+      /* a broken cover must not block the link below */
+    }
+  }
+  if (!href) return !!video.posterDataUrl
+  editor
+    .chain()
+    .focus()
+    .insertContent({
+      type: 'docParagraph',
+      content: [
+        {
+          type: 'text',
+          text: label,
+          marks: [{ type: 'link', attrs: { href, rId: null } }],
+        },
+      ],
+    })
+    .run()
+  return true
+}
+
 /** Insert an inline image from a dataURL at the cursor (shared by paste/dialog; size scaled to content width) */
 export async function insertImageFromDataUrl(
   editor: Editor,
@@ -756,6 +812,8 @@ export interface InsertTabProps extends TabProps {
   commentsAllowed: boolean
   /** a new table activates Table Design (Word); an existing one only shows the tabs */
   onTableInserted: () => void
+  /** open the shared Insert Image dialog (local / web library / AI generate); falls back to the OS file picker */
+  insertImageDialogOpen?: () => void
 }
 
 /** One-time "AI rewrites the whole document" acknowledgement */

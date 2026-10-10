@@ -60,6 +60,10 @@ import {
   toggleDropdown,
 } from './ribbon-tabs'
 
+/** 旧 3 种基础图表入口开关:用户 2026-09-04 指示暂时隐藏(组件保留可随时恢复);
+ * 设计器本体与双击回显接线在 App.tsx 常驻(挂这里会随 insert 页切走而卸载丢监听) */
+const CHART_LEGACY_VISIBLE = false
+
 const SYMBOLS = [
   '—',
   '…',
@@ -692,6 +696,7 @@ export function InsertTab({
   isProtected,
   commentsAllowed,
   onTableInserted,
+  insertImageDialogOpen,
 }: InsertTabProps) {
   const { t } = useI18n()
   const [grid, setGrid] = useState<{ r: number; c: number }>({ r: 0, c: 0 })
@@ -845,18 +850,32 @@ export function InsertTab({
             className="rb-big"
             disabled={!hasDoc}
             data-tip={t('ribbonPictureTip')}
-            onClick={() => void insertImageViaDialog(editor)}
+            onClick={insertImageDialogOpen ?? ((): void => void insertImageViaDialog(editor))}
           >
             <span className="rb-big-icon">
               <IconPicture size={BIG} />
             </span>
             <span>{t('ribbonPicture')}</span>
           </button>
+          {/* 旧 3 种基础图表入口:暂时隐藏,组件保留(用户 2026-09-04 指示,新图表库接管入口) */}
+          {CHART_LEGACY_VISIBLE && (
+            <button
+              className="rb-big"
+              disabled={!hasDoc}
+              data-tip={t('ribbonChartTip')}
+              onClick={() => setChartOpen(true)}
+            >
+              <span className="rb-big-icon">
+                <IconChart size={BIG} />
+              </span>
+              <span>{t('ribbonChart')}</span>
+            </button>
+          )}
           <button
             className="rb-big"
             disabled={!hasDoc}
             data-tip={t('ribbonChartTip')}
-            onClick={() => setChartOpen(true)}
+            onClick={() => window.dispatchEvent(new CustomEvent('chartkit-open-designer'))}
           >
             <span className="rb-big-icon">
               <IconChart size={BIG} />

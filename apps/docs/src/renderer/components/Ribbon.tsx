@@ -143,6 +143,8 @@ import {
   DesignTab,
   DrawTab,
   imageSizeOf,
+  insertImageFromDataUrl,
+  insertVideoForDocs,
   InsertTab,
   LayoutTab,
   ReferencesTab,
@@ -155,10 +157,13 @@ import {
   setParaAttrs,
   toggleParaSpace as toggleParaSpaceImpl,
 } from './ribbon-tabs'
+import { InsertImageDialog } from '@chatoffice/ui/InsertImageDialog'
+import type { InsertImageBridge } from '@chatoffice/ui/InsertImageDialog'
+import type { WebImageItem } from '@chatoffice/ui/InsertImageDialog'
+import { ChayuanTab, type ChayuanServices } from './ribbon-chayuan-tab'
 import { WRAP_OPTIONS } from './ContextMenu'
 import { CropDialog, CutoutDialog } from './PictureDialogs'
 import {
-  GensparkMark,
   IconAlignCenter,
   IconAlignJustify,
   IconAlignLeft,
@@ -205,6 +210,7 @@ import {
   IconFlipV,
   IconRemoveBg,
   IconReplacePicture,
+  IconSparkle,
   IconRotateLeft,
   IconRotateRight,
   IconRowDelete,
@@ -273,6 +279,8 @@ export interface RibbonProps {
   onOpen: () => void
   onSave: () => void
   onSaveAs: () => void
+  /** 察元 AI docops 服务组（察元 tab 的助手/对话框/批量操作/导出） */
+  chayuan?: ChayuanServices
   showAi: boolean
   onToggleAi: () => void
   section: SectionSettings | null
@@ -501,8 +509,19 @@ const IN_TAB = new URLSearchParams(window.location.search).get('mode') === 'tab'
 
 const TABS = (
   IS_MAC
-    ? ['home', 'insert', 'draw', 'design', 'layout', 'references', 'review', 'view']
-    : ['file', 'home', 'insert', 'draw', 'design', 'layout', 'references', 'review', 'view']
+    ? ['home', 'insert', 'draw', 'design', 'layout', 'references', 'review', 'chayuan', 'view']
+    : [
+        'file',
+        'home',
+        'insert',
+        'draw',
+        'design',
+        'layout',
+        'references',
+        'review',
+        'chayuan',
+        'view',
+      ]
 ) as readonly string[]
 const TABLE_TABS = ['tableDesign', 'tableLayout'] as const
 
@@ -635,6 +654,7 @@ const TAB_LABEL_KEYS: Record<string, StringKey> = {
   layout: 'ribbonTabLayout',
   references: 'ribbonTabReferences',
   review: 'ribbonTabReview',
+  chayuan: 'ribbonTabChayuanAI',
   view: 'ribbonTabView',
   tableDesign: 'ribbonTabTableDesign',
   tableLayout: 'ribbonTabTableLayout',
@@ -723,6 +743,7 @@ function RibbonInner({
   onOpen,
   onSave,
   onSaveAs,
+  chayuan,
   showAi,
   onToggleAi,
   section,
@@ -822,8 +843,6 @@ function RibbonInner({
     compact: t('ribbonCompact'),
     expandFull: t('ribbonExpand'),
   })
-  // The one-click AI actions need text to work on; grey them out on an empty document
-  const docEmpty = !hasDoc || fs.docEmpty
   const [tab, setTab] = useState<RibbonTab>('home')
   const [dropdown, setDropdown] = useState<string | null>(null)
   // null = Automatic: the pen button clears the run colour instead of writing one
@@ -857,6 +876,54 @@ function RibbonInner({
   const wasInHf = useRef(false)
   /** Picture Format → remove background / crop dialogs */
   const [pictureDialog, setPictureDialog] = useState<'cutout' | 'crop' | null>(null)
+  /** 统一插入媒体对话框(本地/网络图库/AI 生成) */
+  const [insertImageOpen, setInsertImageOpen] = useState(false)
+  const [aiReplaceOpen, setAiReplaceOpen] = useState(false)
+  const [aiReplacePrompt, setAiReplacePrompt] = useState('')
+  const [aiReplaceBusy, setAiReplaceBusy] = useState(false)
+
+  /** 统一插入媒体对话框的传输桥：共享 ai:* 通道 + docs 生图 */
+  const insertImageBridge: InsertImageBridge = {
+    getAiSettings: () => window.desktop?.getAiSettings?.() ?? Promise.resolve(null),
+    searchWeb: async (query, page, source) => {
+      const r = await window.desktop?.webImageSearch(query, undefined, page, source)
+      return {
+        images: (r?.images as WebImageItem[]) ?? [],
+        ...(r?.error ? { error: r.error } : {}),
+        ...(r?.attempts ? { attempts: r.attempts } : {}),
+      }
+    },
+    searchStock: async (source, query, page) => {
+      const r = await window.desktop?.stockImageSearch(source, query, undefined, page)
+      return {
+        images: (r?.images as WebImageItem[]) ?? [],
+        error: r?.error,
+        code: r?.code,
+      }
+    },
+    fetchImage: async (url) => {
+      const r = await window.desktop?.remoteImage(url)
+      return r ? { mediaType: r.mime, base64: r.base64 } : null
+    },
+    getStockKeys: async () => (await window.desktop?.stockKeysGet()) ?? { pexels: '', pixabay: '' },
+    setStockKeys: (keys) => window.desktop?.stockKeysSet(keys) ?? Promise.resolve(),
+    listMediaModels: async () => (await window.desktop?.mediaModels()) ?? { models: [] },
+    generateSvg: (req) =>
+      window.desktop?.generateSvg(req) ?? Promise.resolve({ error: 'svg generation unavailable' }),
+    generate: async (req) => {
+      const r = await window.desktop?.mediaGenerate(req)
+      return r ?? { error: 'no image' }
+    },
+    videoSubmit: async (req) =>
+      (await window.desktop?.videoSubmit(req)) ?? { error: 'video tasks unavailable' },
+    videoTasks: async () => (await window.desktop?.videoTasks()) ?? { tasks: [] },
+    videoCancel: async (id) => {
+      await window.desktop?.videoCancel(id)
+    },
+    videoRetry: async (id) => (await window.desktop?.videoRetry(id)) ?? {},
+    videoPreview: async (id) => (await window.desktop?.videoPreview(id)) ?? {},
+    onVideoTasksChanged: (cb) => window.desktop?.onVideoTasksChanged(cb) ?? (() => {}),
+  }
   // Word's Lock aspect ratio is per picture: a newly selected picture starts locked
   const [lockAspect, setLockAspect] = useState(true)
   useEffect(() => setLockAspect(true), [fs.imageKey])
@@ -1113,6 +1180,28 @@ function RibbonInner({
     const picked = await window.desktop.pickImage()
     if (!picked) return
     await applyPictureBytes(`data:${picked.mime};base64,${picked.base64}`)
+  }
+
+  /** AI 重绘替换选中图片：提示词→生成→字节替换（保留显示尺寸与裁剪参数） */
+  const runAiReplace = async (): Promise<void> => {
+    const prompt = aiReplacePrompt.trim()
+    if (!prompt || aiReplaceBusy || !canEdit) return
+    const attrs = editor.getAttributes('docProtected')
+    if (attrs?.blockType !== 'image') return
+    setAiReplaceBusy(true)
+    try {
+      const r = await window.desktop?.aiGenerateImage({ prompt })
+      if (r?.url) {
+        const media = await window.desktop?.remoteImage(r.url)
+        if (media) {
+          await applyPictureBytes(`data:${media.mime};base64,${media.base64}`)
+          setAiReplaceOpen(false)
+          setAiReplacePrompt('')
+        }
+      }
+    } finally {
+      setAiReplaceBusy(false)
+    }
   }
 
   const rotatePicture = (deltaDeg: number) => {
@@ -2327,6 +2416,35 @@ function RibbonInner({
                   </span>
                   <span>{t('ribbonReplacePicture')}</span>
                 </button>
+                <div className="rb-geom-dd" data-tip={t('ribbonAiReplace')}>
+                  <button
+                    className={`rb-big${aiReplaceOpen ? ' active' : ''}`}
+                    disabled={!canEdit}
+                    data-tip={t('ribbonAiReplaceTip')}
+                    onClick={() => setAiReplaceOpen((v) => !v)}
+                  >
+                    <span className="rb-big-icon">
+                      <IconSparkle size={28} />
+                    </span>
+                    <span>{t('ribbonAiReplace')}</span>
+                  </button>
+                  {aiReplaceOpen && (
+                    <div className="rb-ai-replace">
+                      <textarea
+                        rows={2}
+                        placeholder={t('ribbonAiReplacePrompt')}
+                        value={aiReplacePrompt}
+                        onChange={(e) => setAiReplacePrompt(e.target.value)}
+                      />
+                      <button
+                        disabled={aiReplaceBusy || !aiReplacePrompt.trim()}
+                        onClick={() => void runAiReplace()}
+                      >
+                        {aiReplaceBusy ? '…' : t('ribbonAiReplaceRun')}
+                      </button>
+                    </div>
+                  )}
+                </div>
                 <div className="rb-col">
                   <button
                     className="rb-small"
@@ -3968,6 +4086,7 @@ function RibbonInner({
             isProtected={isProtected}
             commentsAllowed={commentsAllowed}
             onTableInserted={() => setTab('tableDesign')}
+            insertImageDialogOpen={() => setInsertImageOpen(true)}
           />
         ) : tab === 'design' ? (
           <DesignTab
@@ -4046,6 +4165,13 @@ function RibbonInner({
             onProtectDoc={onProtectDoc}
             onCompare={onCompare}
           />
+        ) : tab === 'chayuan' && chayuan ? (
+          <ChayuanTab
+            hasDoc={hasDoc}
+            dropdown={dropdown}
+            setDropdown={setDropdown}
+            chayuan={chayuan}
+          />
         ) : (
           <ViewTab
             hasDoc={hasDoc}
@@ -4075,6 +4201,21 @@ function RibbonInner({
         )}
       </div>
 
+      {insertImageOpen && (
+        <InsertImageDialog
+          bridge={insertImageBridge}
+          hostKind="docs"
+          onInsert={(dataUrl, meta) => {
+            setInsertImageOpen(false)
+            if (meta?.kind === 'video' && meta.video) {
+              void insertVideoForDocs(editor, meta.video)
+              return
+            }
+            void insertImageFromDataUrl(editor, dataUrl)
+          }}
+          onClose={() => setInsertImageOpen(false)}
+        />
+      )}
       {pictureDialog === 'cutout' && imageDataUrl && (
         <CutoutDialog
           dataUrl={imageDataUrl}
