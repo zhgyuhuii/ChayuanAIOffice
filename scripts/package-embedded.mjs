@@ -43,6 +43,10 @@ const PACKAGES = [
   'agent-core', 'ai-host', 'ai-provider', 'ai-search', 'chart-kit', 'docx-engine',
   'electron-utils', 'file-parse', 'i18n', 'pptx-engine', 'pptx-render',
   'project-store', 'service-core', 'storage-adapter', 'ui', 'xlsx-gateway',
+  // 第十九轮上游新增：docx/pptx 引擎的 zip 炸弹计量门（zip-load/zip.ts/metafile
+  // 运行时 import），缺席 npm 落公网 404（R23 重建曾洗掉本条目，同批未提交
+  // 改动事故——2026-10-10 重打 dsh 产物时实测复现并回植）
+  'zip-gate',
 ]
 
 function copyIfExists(from, to) {
