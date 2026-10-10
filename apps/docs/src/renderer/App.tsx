@@ -19,6 +19,7 @@ import { handleDocsControl, type ControlRequest } from './control'
 import { DOMParser as PmDOMParser, type Mark as PmMark, Slice as PmSlice } from '@tiptap/pm/model'
 import { NodeSelection, TextSelection, type Command, type Transaction } from '@tiptap/pm/state'
 import {
+  AiPanelToggle,
   DockShell,
   Dropdown,
   ImageViewer,
@@ -7348,6 +7349,13 @@ export function App() {
       <Ribbon
         actionsRef={ribbonActionsRef}
         quickActions={quickActions}
+        trailingActions={
+          <AiPanelToggle
+            open={showAi}
+            onToggle={() => setShowAi((v) => !v)}
+            label={t('aiOpenAssistant')}
+          />
+        }
         editor={editor}
         formatState={formatState}
         hasDoc={!!doc}
