@@ -64,6 +64,7 @@ import {
   installContextMenu,
   installNavigationGuard,
   isUsableSaveDir,
+  safeExternalUrl,
   HEADLESS_EXIT,
   formatHeadlessEnvelope,
   headlessExitCode,
@@ -3664,6 +3665,16 @@ function createShellWindow(): void {
     },
   })
   shellWindow = win
+  // The app-wide navigation guard denies window.open on every webContents; the
+  // home renderer (settings modal 获取密钥/申请 Key, footer links) uses plain
+  // target="_blank" anchors, so it needs the same browser-handoff the editor
+  // views get in tab-manager: http(s) URLs go to the system browser, the rest
+  // stay denied.
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    const target = safeExternalUrl(url)
+    if (target) void shell.openExternal(target)
+    return { action: 'deny' }
+  })
   nativeTheme.on('updated', refreshTitleBarOverlay)
   win.once('closed', () => nativeTheme.off('updated', refreshTitleBarOverlay))
   // dragging the window by the tab strip's blank (draggable) area produces no
@@ -4677,6 +4688,13 @@ function registerHomeIpc(): void {
       autoHideMenuBar: true,
       backgroundColor: '#f7f8fa',
       webPreferences: { contextIsolation: true, sandbox: true, nodeIntegration: false },
+    })
+    // 同款 window-open 交接：客服页里的外链（协议白名单内）交给系统浏览器打开，
+    // 否则会被 navigation guard 的默认 deny 静默吞掉
+    chatWin.webContents.setWindowOpenHandler(({ url }) => {
+      const target = safeExternalUrl(url)
+      if (target) void shell.openExternal(target)
+      return { action: 'deny' }
     })
     void chatWin.loadURL('https://aidooo.com/bot/chat?embed=1&channel=office')
     return true
@@ -7293,15 +7311,17 @@ app.on('second-instance', (_event, argv, _cwd, additionalData) => {
 installNavigationGuard(app)
 installContextMenu(app, () => contextMenuLabels(currentLang()))
 registerAiIpc()
-ipcMain.handle('ai:open-model-settings', () => {
+ipcMain.handle('ai:open-model-settings', (_event, section?: string) => {
   const win = shellWindow
   if (!win || win.isDestroyed()) return
   // the request may come from a detached window or while the shell is minimized
   if (win.isMinimized()) win.restore()
   win.show()
   win.focus()
-  tabManager?.openHomeTab()
-  win.webContents.send(HOME_CHANNELS.openSettings, { section: 'aiModel' })
+  // 不切 Home tab：设置模态由 Home renderer 盖全窗（setShellModalOpen 临时
+  // 藏住编辑器 view），关闭后用户回到原编辑 tab。section 由调用方指定——
+  // 插入图片对话框的「⚙ 设置」传 'aiMedia'（生图、媒体与搜索分组）。
+  win.webContents.send(HOME_CHANNELS.openSettings, { section: section ?? 'modelSettings' })
 })
 registerProjectIpc()
 registerDocsIpc()

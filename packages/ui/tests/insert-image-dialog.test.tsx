@@ -4,7 +4,9 @@
  * cell, 下一批 appends the next page (URL-dedup) while keeping the selection,
  * a fully-duplicate batch flips the gallery to 已到底, and insert falls back
  * to the hotlinkable thumbnail when the full-size download is refused.
- * Guards the WebImageItem wire-shape contract (full/thumbnail must exist).
+ * Guards the WebImageItem wire-shape contract (full/thumbnail must exist) and
+ * the thumbnail rescue: a refused direct load is retried once through the
+ * main-process download and swapped to a data: URL (no-referrer on top).
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, createElement } from 'react'
@@ -158,6 +160,120 @@ describe('InsertImageDialog web gallery', () => {
     expect(cells()).toHaveLength(3)
     expect(host.querySelector('.insimg-nomore')?.textContent).toBe('已经到底了')
     expect(buttonByText('下一批')).toBeUndefined()
+  })
+
+  it('rescues a refused thumbnail once via fetchImage and swaps in the data: URL', async () => {
+    const fetchImage = vi.fn(async (url: string) =>
+      url.endsWith('/thumb') ? { mediaType: 'image/jpeg', base64: 'QQ==' } : null,
+    )
+    const noThumb: WebImageItem = { ...item('b'), thumbnail: '' }
+    const bridge: InsertImageBridge = {
+      searchWeb: vi.fn(async () => ({ images: [item('a'), noThumb] })),
+      searchStock: vi.fn(async () => ({ images: [] })),
+      fetchImage,
+      getStockKeys: async () => ({ pexels: '', pixabay: '' }),
+      setStockKeys: async () => {},
+    }
+    await setup(bridge)
+
+    const imgs = [...host.querySelectorAll('.insimg-cell img')] as HTMLImageElement[]
+    // direct loads send no referer: referer-keyed hotlink walls let them pass
+    expect(imgs[0]!.getAttribute('referrerpolicy')).toBe('no-referrer')
+    await act(async () => {
+      imgs[0]!.dispatchEvent(new Event('error')) // direct load refused (hotlink/CSP)
+      imgs[0]!.dispatchEvent(new Event('error')) // rescued already: no second fetch
+      imgs[1]!.dispatchEvent(new Event('error')) // no thumbnail field: nothing to rescue
+    })
+    // exactly one rescue, for the thumbnail URL only (never the full-size)
+    expect(fetchImage).toHaveBeenCalledTimes(1)
+    expect(fetchImage).toHaveBeenCalledWith('https://img/a/thumb')
+    expect(imgs[0]!.getAttribute('src')).toBe('data:image/jpeg;base64,QQ==')
+    // the thumbnail-less cell keeps pointing at its full URL
+    expect(imgs[1]!.getAttribute('src')).toBe('https://img/b/full')
+  })
+
+  it('web tab shows the ⚙ settings icon in the search row only with a transport, and only usable source chips render', async () => {
+    const openModelSettings = vi.fn()
+    const bridge: InsertImageBridge = {
+      searchWeb: vi.fn(async () => ({ images: [item('a')] })),
+      searchStock: vi.fn(async () => ({ images: [] })),
+      fetchImage: vi.fn(async () => null),
+      getStockKeys: async () => ({ pexels: '', pixabay: '' }),
+      setStockKeys: async () => {},
+      openModelSettings,
+    }
+    await setup(bridge)
+
+    // settings entry: an icon at the right end of the SEARCH row (not a chip
+    // in the source row, which would wrap the source names)
+    const settingsBtn = host.querySelector<HTMLButtonElement>('[data-media-settings]')
+    expect(settingsBtn).toBeTruthy()
+    expect(settingsBtn!.textContent).toBe('⚙')
+    expect(settingsBtn!.closest('.insimg-searchrow')).toBeTruthy()
+    expect(settingsBtn!.getAttribute('aria-label')).toContain('设置')
+    await act(async () => {
+      settingsBtn!.click()
+    })
+    expect(openModelSettings).toHaveBeenCalledTimes(1)
+
+    // source chips: keyless platforms (Pexels/Pixabay in the degraded list)
+    // and text-only platforms never render — only usable sources do
+    const chipIds = [...host.querySelectorAll('[data-source-chip]')].map(
+      (el) => el.getAttribute('data-source-chip'),
+    )
+    expect(chipIds).toEqual(['web'])
+
+    // degraded (no settings transport): the settings entry must not render
+    const bare: InsertImageBridge = {
+      searchWeb: vi.fn(async () => ({ images: [] })),
+      searchStock: vi.fn(async () => ({ images: [] })),
+      fetchImage: vi.fn(async () => null),
+      getStockKeys: async () => ({ pexels: '', pixabay: '' }),
+      setStockKeys: async () => {},
+    }
+    document.body.innerHTML = ''
+    const host2 = document.createElement('div')
+    document.body.appendChild(host2)
+    const root2 = createRoot(host2)
+    await act(async () => {
+      root2.render(
+        createElement(InsertImageDialog, {
+          bridge: bare,
+          lang: 'zh',
+          onInsert: vi.fn(),
+          onClose: vi.fn(),
+        }),
+      )
+    })
+    await act(async () => {
+      ;[...host2.querySelectorAll('button')].find((b) => b.textContent === '网络图片')!.click()
+    })
+    expect(host2.querySelector('[data-media-settings]')).toBeNull()
+  })
+
+  it('settings-driven chips list only platforms with keys plus the keyless tiers', async () => {
+    const settings = {
+      profiles: [],
+      search: { providers: { serper: { apiKey: 'k' } } },
+      stockApiKeys: { pixabay: 'k' },
+    }
+    const bridge: InsertImageBridge = {
+      searchWeb: vi.fn(async () => ({ images: [] })),
+      searchStock: vi.fn(async () => ({ images: [] })),
+      fetchImage: vi.fn(async () => null),
+      getStockKeys: async () => ({ pexels: '', pixabay: '' }),
+      setStockKeys: async () => {},
+      getAiSettings: async () => settings as never,
+    }
+    await setup(bridge)
+
+    const chipIds = [...host.querySelectorAll('[data-source-chip]')].map((el) =>
+      el.getAttribute('data-source-chip'),
+    )
+    // keyless image tiers (web, bing) + keyed platforms (serper, pixabay);
+    // keyless Serper-likes (tavily/linkup/searxng), keyless stock (pexels,
+    // unsplash) and text-only duckduckgo are all hidden
+    expect(chipIds).toEqual(['web', 'serper', 'bing', 'pixabay'])
   })
 
   it('AI tab model picker: vendor groups replace the optgroup select, picking a video model flips the hint', async () => {

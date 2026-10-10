@@ -403,6 +403,8 @@ export const cs = {
   appSaveCanceled: 'Ukládání zrušeno.',
   appSaved: 'Uloženo.',
   appSaveFailed: 'Sešit nelze uložit.',
+  appBackgroundFlushFailing: 'Automatické ukládání a snímky obnovy opakovaně selhávají — změny existují jen v paměti. Uložte nyní ručně (⌘S).',
+  appAiPendingEditsExceeded: 'Neuložené úpravy překračují {count} buněk — uložte sešit (nové listy přes Uložit jako), aby se změny zapsaly na disk, než budete pokračovat.',
   appSaveErrX14Cf: 'Tato oblast má rozšířené (x14) podmíněné formátování a zatím ji nelze měnit.',
   appFromTextCsvTitle: 'Importovat soubor CSV/text do aktuálního výběru',
   appCsvImported: 'Importováno {rows} řádků × {columns} sloupců ze souboru do {cell}.',

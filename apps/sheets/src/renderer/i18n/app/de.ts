@@ -591,6 +591,8 @@ export const de = {
   appSaveCanceled: 'Speichern abgebrochen.',
   appSaved: 'Gespeichert.',
   appSaveFailed: 'Die Arbeitsmappe kann nicht gespeichert werden.',
+  appBackgroundFlushFailing: 'AutoSpeichern und Wiederherstellungs-Snapshots schlagen wiederholt fehl – Änderungen liegen nur im Arbeitsspeicher. Jetzt manuell speichern (⌘S).',
+  appAiPendingEditsExceeded: 'Ungespeicherte Änderungen übersteigen {count} Zellen – speichern Sie die Arbeitsmappe (neue Blätter über „Speichern unter“), um sie auf die Platte zu schreiben, bevor Sie weiterarbeiten.',
   appCfRuleUnsaveable:
     'Diese Regel für bedingte Formatierung kann nicht in xlsx gespeichert werden — verwenden Sie einen anderen Regeltyp.',
   appSaveErrX14Dv:

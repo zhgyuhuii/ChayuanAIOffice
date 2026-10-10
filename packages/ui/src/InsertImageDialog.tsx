@@ -300,6 +300,39 @@ function stockKeyLabels(t: ReturnType<typeof insertImageStrings>): {
 let lastMediaSelection: { profileId: string; modelId: string } | null = null
 
 /**
+ * One gallery thumbnail. The remote URL loads directly first (no-referrer
+ * slips past most referer-keyed hotlink protection); when that still fails
+ * (dead origin, bot-gated CDN, or an editor CSP without https:) the tile is
+ * rescued once through the app's main-process download — no CSP, browser-like
+ * headers, retries — and swapped to the returned data: URL, which every
+ * editor CSP allows. Only the thumbnail URL is rescued: previews must stay
+ * small; the full-size download belongs to the insert path.
+ */
+function WebThumb({ item, bridge }: {
+  readonly item: WebImageItem
+  readonly bridge: InsertImageBridge
+}): React.JSX.Element {
+  const remote = item.thumbnail || item.full
+  const [src, setSrc] = useState(remote)
+  const rescued = useRef('')
+  useEffect(() => {
+    setSrc(remote)
+    rescued.current = ''
+  }, [remote])
+  const onError = (): void => {
+    if (!item.thumbnail || rescued.current === remote || !bridge.fetchImage) return
+    rescued.current = remote
+    void bridge
+      .fetchImage(item.thumbnail)
+      .then((media) => {
+        if (media) setSrc(`data:${media.mediaType};base64,${media.base64}`)
+      })
+      .catch(() => {})
+  }
+  return <img src={src} alt="" loading="lazy" referrerPolicy="no-referrer" onError={onError} />
+}
+
+/**
  * 统一插入媒体对话框（三 tab：本地 / 网络图片 / AI 生成）。字节以 data: URL
  * 交给 onInsert，由各编辑器走自己的插入管线（docx Protected 块 / xlsx
  * journal 图片 / pptx addImageBytes）。图库密钥各家独立模态设置；AI 生成
@@ -847,39 +880,43 @@ export function InsertImageDialog({
           <section className="insimg-body">
             <div className="insimg-toolbar">
               <div className="insimg-chips">
-                {sourceOptions.map((opt) => {
-                  const disabled = !opt.imageSearch || (opt.needsKey && !opt.hasKey)
-                  const title = !opt.imageSearch
-                    ? t.sourceNoImageSearch
-                    : opt.needsKey && !opt.hasKey
-                      ? t.sourceKeyMissing
-                      : opt.label
-                  return (
-                    <button
-                      key={opt.id}
-                      className={`insimg-chip ${source === opt.id ? 'active' : ''}`}
-                      disabled={disabled}
-                      title={title}
-                      data-source-chip={opt.id}
-                      onClick={() => {
-                        setSource(opt.id)
-                        ++seqRef.current // invalidate in-flight search/next-batch, full reset
-                        setResults(null)
-                        setWebError('')
-                        setAttempts(null)
-                        setPage(1)
-                        setExhausted(false)
-                        setLoadingMore(false)
-                        setSearching(false)
-                        setSearched('')
-                        // stock source: guide into its own key modal when unconfigured
-                        if (opt.kind === 'stock') guideKeyModal(opt.id as StockVendor)
-                      }}
-                    >
-                      {opt.label}
-                    </button>
-                  )
-                })}
+                {/* 只显示可用来源：不支持图片搜索的（如 DuckDuckGo）与未配置
+                    Key 的平台一律隐藏——Key 统一在右上角 ⚙ 打开的设置页配置 */}
+                {sourceOptions
+                  .filter((opt) => opt.imageSearch && (!opt.needsKey || opt.hasKey))
+                  .map((opt) => {
+                    const disabled = !opt.imageSearch || (opt.needsKey && !opt.hasKey)
+                    const title = !opt.imageSearch
+                      ? t.sourceNoImageSearch
+                      : opt.needsKey && !opt.hasKey
+                        ? t.sourceKeyMissing
+                        : opt.label
+                    return (
+                      <button
+                        key={opt.id}
+                        className={`insimg-chip ${source === opt.id ? 'active' : ''}`}
+                        disabled={disabled}
+                        title={title}
+                        data-source-chip={opt.id}
+                        onClick={() => {
+                          setSource(opt.id)
+                          ++seqRef.current // invalidate in-flight search/next-batch, full reset
+                          setResults(null)
+                          setWebError('')
+                          setAttempts(null)
+                          setPage(1)
+                          setExhausted(false)
+                          setLoadingMore(false)
+                          setSearching(false)
+                          setSearched('')
+                          // stock source: guide into its own key modal when unconfigured
+                          if (opt.kind === 'stock') guideKeyModal(opt.id as StockVendor)
+                        }}
+                      >
+                        {opt.label}
+                      </button>
+                    )
+                  })}
                 {currentSource?.kind === 'stock' && (
                   <button
                     className="insimg-gear"
@@ -913,6 +950,19 @@ export function InsertImageDialog({
                 >
                   {t.search}
                 </button>
+                {/* 常驻设置入口（右上角图标）：搜索平台 Key / 图库 Key / 生图模型
+                    都在那一页配置；图标不占 chips 行，避免把来源名称挤换行 */}
+                {bridge.openModelSettings && (
+                  <button
+                    className="insimg-gear insimg-settings"
+                    title={t.openMediaSettings}
+                    aria-label={t.openMediaSettings}
+                    data-media-settings
+                    onClick={bridge.openModelSettings}
+                  >
+                    ⚙
+                  </button>
+                )}
               </div>
             </div>
             <div className="insimg-grid-wrap" onScroll={onGridScroll}>
@@ -940,7 +990,7 @@ export function InsertImageDialog({
                         }}
                         title={item.attribution ?? ''}
                       >
-                        <img src={item.thumbnail || item.full} alt="" loading="lazy" />
+                        <WebThumb item={item} bridge={bridge} />
                       </button>
                     ))}
                   </div>
@@ -974,47 +1024,49 @@ export function InsertImageDialog({
         )}
 
         {tab === 'ai' && (
-          <section className="insimg-body">
-            {/* AI 生图 / AI 生视频 / SVG 生成 —— 三条生成线，各带默认模型预选 */}
-            <div className="insimg-aikinds">
-              {(
-                [
-                  ['image', t.aiKindImage],
-                  ['video', t.aiKindVideo],
-                  ['svg', t.aiKindSvg],
-                ] as const
-              ).map(([id, label]) => (
-                <button
-                  key={id}
-                  className={`insimg-chip ${aiKind === id ? 'active' : ''}`}
-                  data-ai-kind={id}
-                  onClick={() => setAiKind(id)}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-            {(aiKind !== 'svg' || svgModels.length > 0 || !bridge.listMediaModels) && (
-              <div className="insimg-modelrow">
-                <span>{t.aiModelLabel}</span>
-                <MediaModelPicker
-                  models={kindModels}
-                  selected={modelSel}
-                  emptyText={
-                    aiKind === 'svg'
-                      ? t.aiSvgNoModels
-                      : aiKind === 'video'
-                        ? t.aiNoVideoModels
-                        : kindModels.length === 0
-                          ? modelsError || t.aiNoModels
-                          : undefined
-                  }
-                  onOpenSettings={bridge.openModelSettings}
-                  onPick={pickMediaModel}
-                  lang={lang}
-                />
+          <section className="insimg-body insimg-ai">
+            {/* 紧凑头行：三条生成线 chips + 模型选择同排，避免各占一行 */}
+            <div className="insimg-aihead">
+              <div className="insimg-aikinds">
+                {(
+                  [
+                    ['image', t.aiKindImage],
+                    ['video', t.aiKindVideo],
+                    ['svg', t.aiKindSvg],
+                  ] as const
+                ).map(([id, label]) => (
+                  <button
+                    key={id}
+                    className={`insimg-chip ${aiKind === id ? 'active' : ''}`}
+                    data-ai-kind={id}
+                    onClick={() => setAiKind(id)}
+                  >
+                    {label}
+                  </button>
+                ))}
               </div>
-            )}
+              {(aiKind !== 'svg' || svgModels.length > 0 || !bridge.listMediaModels) && (
+                <div className="insimg-modelrow">
+                  <span>{t.aiModelLabel}</span>
+                  <MediaModelPicker
+                    models={kindModels}
+                    selected={modelSel}
+                    emptyText={
+                      aiKind === 'svg'
+                        ? t.aiSvgNoModels
+                        : aiKind === 'video'
+                          ? t.aiNoVideoModels
+                          : kindModels.length === 0
+                            ? modelsError || t.aiNoModels
+                            : undefined
+                    }
+                    onOpenSettings={bridge.openModelSettings}
+                    onPick={pickMediaModel}
+                    lang={lang}
+                  />
+                </div>
+              )}
+            </div>
             {aiKind === 'svg' && svgModels.length === 0 && bridge.listMediaModels && (
               <p className="insimg-hint">{t.aiSvgNoModels}</p>
             )}
@@ -1065,31 +1117,30 @@ export function InsertImageDialog({
                 ))}
               </div>
             )}
-            <textarea
-              className="insimg-prompt"
-              placeholder={aiKind === 'svg' ? t.aiSvgPrompt : t.aiPrompt}
-              rows={3}
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-            />
-            <div className="insimg-toolbar">
-              <div className="insimg-chips">
-                <button
-                  className="insimg-primary"
-                  disabled={generating || videoBusy || !prompt.trim()}
-                  onClick={() => void runGenerate()}
-                >
-                  {generating
-                    ? t.aiGenerating
-                    : videoBusy
-                      ? t.videoSubmitting
-                      : selectedIsVideo
-                        ? t.videoSubmit
-                        : aiKind === 'svg'
-                          ? t.aiSvgGen
-                          : t.aiGenerate}
-                </button>
-              </div>
+            {/* 提示词 + 生成按钮叠放一角，省掉独占一行的按钮条 */}
+            <div className="insimg-promptrow">
+              <textarea
+                className="insimg-prompt"
+                placeholder={aiKind === 'svg' ? t.aiSvgPrompt : t.aiPrompt}
+                rows={3}
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+              />
+              <button
+                className="insimg-primary insimg-genbtn"
+                disabled={generating || videoBusy || !prompt.trim()}
+                onClick={() => void runGenerate()}
+              >
+                {generating
+                  ? t.aiGenerating
+                  : videoBusy
+                    ? t.videoSubmitting
+                    : selectedIsVideo
+                      ? t.videoSubmit
+                      : aiKind === 'svg'
+                        ? t.aiSvgGen
+                        : t.aiGenerate}
+              </button>
             </div>
             {aiError && (
               <div className="insimg-aierror">

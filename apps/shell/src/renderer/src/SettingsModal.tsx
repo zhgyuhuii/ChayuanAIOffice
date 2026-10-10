@@ -96,7 +96,8 @@ function formatStars(n: number): string {
   return `${k >= 100 ? Math.round(k) : (Math.round(k * 10) / 10).toString().replace(/\.0$/, '')}k`
 }
 
-type SectionId =
+/** settings-modal section ids — exported for the open-settings deep link (Home) */
+export type SectionId =
   | 'modelSettings'
   | 'defaultModels'
   | 'fileSearch'
@@ -170,6 +171,11 @@ const SECTIONS: readonly { id: SectionId; labelKey: StringKey }[] = [
   { id: 'mcpManage', labelKey: 'setSecMcpManage' },
   { id: 'about', labelKey: 'setSecAbout' },
 ]
+
+/** open-settings deep-link section narrowing — invalid ids fall back to the default */
+export function coerceSectionId(raw: string): SectionId | undefined {
+  return SECTIONS.some((s) => s.id === raw) ? (raw as SectionId) : undefined
+}
 
 function SectionIcon({ id }: { id: SectionId }) {
   if (id === 'remoteStorage') {
@@ -554,15 +560,19 @@ export interface SettingsModalProps {
   /** an installed skill is older than the bundled one: dot on the Integrations entry */
   skillUpdateDue?: boolean
   onSkillUpdateDue?: (due: boolean) => void
+  /** landing section for this open (e.g. 'aiMedia' from the insert-image dialog's
+   *  ⚙ entry); the modal remounts per open, so a plain initial state suffices */
+  initialSection?: SectionId
 }
 
 export function SettingsModal({
   onClose,
   skillUpdateDue: updateDue = false,
   onSkillUpdateDue,
+  initialSection,
 }: SettingsModalProps) {
   const { lang, setLang, t } = useI18n()
-  const [section, setSection] = useState<SectionId>('modelSettings')
+  const [section, setSection] = useState<SectionId>(initialSection ?? 'modelSettings')
   // 生图、媒体与搜索 → 去模型设置启用：deep link onto that vendor's form
   const [aiModelVendor, setAiModelVendor] = useState<string | undefined>(undefined)
   const [theme, setTheme] = useState<UiTheme>('system')

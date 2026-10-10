@@ -4,7 +4,12 @@ import { generateImageWithModel, type ImageGenRequest } from './imagegen'
 import { generateVideoWithModel } from './videojob'
 import { isAiNetworkError } from './network-error'
 import { isAiOverloadedError } from './overload-error'
-import { runMediaJob, type MediaJobResult } from './media-jobs'
+import {
+  runMediaJob,
+  resolveVideoAdapterVendor,
+  videoAdapterViaProtocol,
+  type MediaJobResult,
+} from './media-jobs'
 import {
   enabledChatModels,
   findProfile,
@@ -21,7 +26,7 @@ import { resolveCapabilityDefault } from './capability-tree'
 import type { AiSettingsSource } from './settings-source'
 import { streamResolved, AiCreditsError, type StreamCallbacks } from './stream'
 import { AiTimeoutError } from './watchdog'
-import { IMAGE_GEN_VENDOR_IDS, VIDEO_GEN_VENDOR_IDS, maxOutputTokensFor } from './capabilities'
+import { VIDEO_GEN_VENDOR_IDS, maxOutputTokensFor } from './capabilities'
 import { clampMaxOutputTokens } from './providers'
 import { inferModelType } from './model-type'
 import { imageParamSpec, videoParamSpec, type MediaParamSpec } from './media-params'
@@ -618,13 +623,21 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     for (const profile of settings.profiles) {
       if (!profile.enabled) continue
       const vendorId = profile.vendorId ?? profile.id
-      if (IMAGE_GEN_VENDOR_IDS.has(vendorId)) {
-        for (const m of profile.models) {
-          if (!isImageGenModel(m)) continue
-          push('image', profile, vendorId, m.id, m.name, imageParamSpec(vendorId, m.id))
-        }
+      // image 清单与设置页（capabilityVendorRows 的 model-driven 裁定）和
+      // 执行侧（generateImageWithModel 按 protocol 分发：OpenAI images /
+      // Gemini 原生 / DashScope 特判，从不看 vendor）保持一致：只要模型类型
+      // 是 image-generation 就列出。这里曾卡 IMAGE_GEN_VENDOR_IDS 白名单，
+      // 把设置页里能设默认生图的自定义/中转站 profile 滤成空下拉。
+      for (const m of profile.models) {
+        if (!isImageGenModel(m)) continue
+        push('image', profile, vendorId, m.id, m.name, imageParamSpec(vendorId, m.id))
       }
-      if (VIDEO_GEN_VENDOR_IDS.has(vendorId)) {
+      // video 不同：提交走 vendor 接线的 MediaJobClient 适配器。资格与
+      // 执行对齐——具名适配器厂商，或协议可服务的厂商（目录/自定义站如
+      // agnes：OpenAI 系 wire 走 {base}/videos 协议、gemini-native 走
+      // gemini 适配器，都用 profile 自己的 baseUrl；anthropic 无视频 API
+      // 不列出）。协议服务不了又提交了的，报错保持可见。
+      if (VIDEO_GEN_VENDOR_IDS.has(vendorId) || videoAdapterViaProtocol(profile.protocol)) {
         for (const m of profile.models) {
           if (!isVideoGenModel(m)) continue
           push('video', profile, vendorId, m.id, m.name, videoParamSpec(vendorId, m.id))
@@ -697,7 +710,13 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
           : undefined
     return runMediaJob({
       kind: 'video',
-      vendorId: call.vendorId ?? profile.vendorId ?? profile.id,
+      // catalog/custom vendors without a dedicated adapter (agnes, relays…)
+      // resolve through the profile's wire protocol — both protocol adapters
+      // serve the profile's own baseUrl
+      vendorId: resolveVideoAdapterVendor(
+        call.vendorId ?? profile.vendorId ?? profile.id,
+        profile.protocol,
+      ),
       model: call.model,
       apiKey: call.apiKey,
       ...(call.baseUrl ? { baseUrl: call.baseUrl } : {}),

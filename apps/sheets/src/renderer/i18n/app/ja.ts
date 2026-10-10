@@ -580,6 +580,8 @@ export const ja = {
   appSaveCanceled: '保存をキャンセルしました。',
   appSaved: '保存しました。',
   appSaveFailed: 'ブックを保存できません。',
+  appBackgroundFlushFailing: '自動保存・復元スナップショットが連続で失敗しています——変更はメモリ内にのみあります。今すぐ手動で保存（⌘S）してください。',
+  appAiPendingEditsExceeded: '未保存の編集が {count}セルを超えました——さらに書き込む前に、ワークブックを保存（新規シートは「名前を付けて保存」）してディスクに書き出してください。',
   appCfRuleUnsaveable:
     'この条件付き書式ルールは xlsx に保存できません — 別のルールの種類をお使いください。',
   appSaveErrX14Dv:

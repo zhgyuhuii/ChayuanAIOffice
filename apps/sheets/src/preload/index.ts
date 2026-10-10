@@ -519,8 +519,8 @@ const desktopApi: DesktopApi = {
     ipcRenderer.on(IPC_CHANNELS.aiSettingsChanged, listener)
     return () => ipcRenderer.removeListener(IPC_CHANNELS.aiSettingsChanged, listener)
   },
-  async openAiModelSettings() {
-    await ipcRenderer.invoke(IPC_CHANNELS.aiOpenModelSettings)
+  async openAiModelSettings(section?: string) {
+    await ipcRenderer.invoke(IPC_CHANNELS.aiOpenModelSettings, section)
   },
   async aiChat(request) {
     const result: unknown = await ipcRenderer.invoke(IPC_CHANNELS.aiChat, request)

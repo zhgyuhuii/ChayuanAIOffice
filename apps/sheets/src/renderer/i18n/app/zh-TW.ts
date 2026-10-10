@@ -483,6 +483,8 @@ export const zhTW = {
   appSaveCanceled: '儲存已取消。',
   appSaved: '已儲存。',
   appSaveFailed: '無法儲存活頁簿。',
+  appBackgroundFlushFailing: '自動儲存/復原快照連續失敗——變更目前只在記憶體裡，請盡快手動儲存（⌘S）。',
+  appAiPendingEditsExceeded: '待儲存的編輯已超過 {count} 格——請先儲存工作簿（新工作表會走「另存為」）落盤並清空佇列，再繼續寫入。',
   appCfRuleUnsaveable: '這種設定格式化的條件規則無法儲存到 xlsx——請改用其他規則類型。',
   appSaveErrX14Dv: '這個工作表帶有擴充(x14)資料驗證，暫不支援編輯它的驗證規則。',
   appSaveErrMultiSelectList: '多選清單驗證無法儲存到 xlsx——請先刪除該規則再儲存。',

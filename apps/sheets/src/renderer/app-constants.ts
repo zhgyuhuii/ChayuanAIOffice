@@ -69,6 +69,16 @@ export const FULL_LOAD_MAX_CELLS = 1_000_000
 /// 55 B of heap per cell (249k stored cells in a 20M box: 11 s, 1.1 GB JS
 /// heap; a 280M box ran out of memory).
 export const FULL_LOAD_MAX_GRID_CELLS = 10_000_000
+/// Cumulative ceiling on pending (unsaved) edits, in cells: every applied
+/// plan lives twice in the renderer (Univer model + edit journal) until a
+/// save flushes it, and a new sheet's hidden draft never AutoSaves (the
+/// 延迟落盘 consensus), so a long AI generation loop could grow the renderer
+/// to gigabytes with nothing on disk. applyChangePlan refuses AI/MCP plans
+/// once journal + plan weight cross this; user-facing ribbon ops only count
+/// the already-pending journal (their own op size keeps today's behavior).
+/// Saving (Save As for drafts) clears the journal and unblocks the next
+/// batch.
+export const MAX_PENDING_AI_EDIT_CELLS = 200_000
 /// Largest range a sort / move snapshot journals cell by cell; the gate
 /// refuses bigger ones up front instead of letting the save drop them.
 export const REORDER_JOURNAL_MAX_CELLS = 200_000

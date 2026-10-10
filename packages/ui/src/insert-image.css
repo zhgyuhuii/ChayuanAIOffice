@@ -122,6 +122,12 @@
   cursor: pointer;
   font-size: 14px;
 }
+/* 右上角「⚙」设置图标（搜索行右端）：打开宿主的搜索与生图设置页——图标
+   不占 chips 行，避免把来源名称挤换行 */
+.insimg-settings {
+  font-size: 15px;
+  padding: 6px 4px 6px 8px;
+}
 .insimg-searchrow {
   display: flex;
   gap: 8px;
@@ -346,6 +352,69 @@
   border-radius: 6px;
   background: var(--bg, #fff);
   color: inherit;
+}
+
+/* ── AI tab 紧凑布局：头部并排 / 参数横排 / 生成按钮叠进提示词一角 ── */
+.insimg-ai {
+  gap: 8px;
+}
+.insimg-aikinds {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+/* 种类 chips 与模型选择同排一行；窄窗换行仍可用 */
+.insimg-aihead {
+  display: flex;
+  align-items: center;
+  gap: 6px 10px;
+  flex-wrap: wrap;
+}
+.insimg-aihead .insimg-modelrow {
+  flex: 1;
+  min-width: 220px;
+  justify-content: flex-end;
+  margin-left: auto;
+}
+.insimg-aihead .insimg-modelrow > span:first-child {
+  min-width: 34px;
+}
+/* 参数横排铺开，单个参数弹性占位，多个时自动换行 */
+.insimg-ai .insimg-params {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  padding: 8px 10px;
+}
+.insimg-ai .insimg-paramrow {
+  flex: 1 1 150px;
+}
+.insimg-ai .insimg-paramrow > span {
+  min-width: 48px;
+}
+.insimg-ai .insimg-select,
+.insimg-ai .insimg-paraminput {
+  padding: 4px 8px;
+}
+/* 视频宿主提示：从块级提示条压成一行小字 */
+.insimg-ai .insimg-videohint {
+  margin: 0;
+  padding: 3px 10px;
+  font-size: 11px;
+}
+/* 提示词右下角叠放生成按钮，textarea 给按钮留出右下空间 */
+.insimg-promptrow {
+  position: relative;
+}
+.insimg-ai .insimg-prompt {
+  min-height: 54px;
+  padding-right: 118px;
+}
+.insimg-genbtn {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 6px 16px;
 }
 .insimg-diag {
   margin-top: 4px;

@@ -3705,7 +3705,11 @@ export function registerSheetsAiIpc(): void {
       },
       mediaDir: join(app.getPath('userData'), 'media', 'videos'),
       notify: (channel, payload) => {
-        for (const w of BrowserWindow.getAllWindows()) w.webContents.send(channel, payload)
+        // 视频任务后台存活：任务完成时窗口可能已销毁，send 会抛并沿
+        // drive 的 finally 变成 unhandledRejection（主进程 fatal）
+        for (const w of BrowserWindow.getAllWindows()) {
+          if (!w.isDestroyed() && !w.webContents.isDestroyed()) w.webContents.send(channel, payload)
+        }
       },
     },
   })

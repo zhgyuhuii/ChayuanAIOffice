@@ -517,8 +517,9 @@ export interface DesktopApi {
   aiDiscoverModels(target: DiscoveryTarget): Promise<{ models: AiModelEntry[]; error?: string }>
   /** ai-settings.json was rewritten by any renderer; re-read it */
   onAiSettingsChanged(handler: () => void): () => void
-  /** shell only: switch to Home and open Settings › AI Model (rejects in standalone) */
-  openAiModelSettings(): Promise<void>
+  /** shell only: open the shell's settings modal, landing on `section` (e.g.
+   *  'aiMedia' from the insert-image dialog's ⚙; rejects in standalone) */
+  openAiModelSettings(section?: string): Promise<void>
   /** system print dialog for the current window; ok=false without error = canceled.
    *  scale: print scale inverting the preview's print zoom (print-zoom.ts) */
   print(scale?: number): Promise<{ ok: boolean; error?: string }>

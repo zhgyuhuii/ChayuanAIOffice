@@ -119,6 +119,8 @@ import type { ChartPresetDef, IconDef, SmartArtDef } from './insert-presets'
 import { InsertImageDialog } from '@chatoffice/ui/InsertImageDialog'
 import type { InsertImageBridge } from '@chatoffice/ui/InsertImageDialog'
 import type { WebImageItem } from '@chatoffice/ui/InsertImageDialog'
+import { ModelSettingsPageLazy } from '@chatoffice/ui/ModelSettingsPageLazy'
+import { slidesModelBridge } from './ai/model-bridge'
 import { compressImageForDisplay } from '@chatoffice/ui'
 import { ToastHost } from './components/toast'
 import { showToast } from './components/toast-bus'
@@ -1592,6 +1594,8 @@ export function App() {
     else if (kind) void insertActions.insertShapeAt(ctxRef.current, kind, rect)
   }, [])
   const [insertImageOpen, setInsertImageOpen] = useState(false)
+  /// 对话框「⚙ 设置」打开的整页搜索与生图设置（独立覆盖层，盖在对话框上）
+  const [mediaSettingsOpen, setMediaSettingsOpen] = useState(false)
   const insertImageBridge: InsertImageBridge = {
     getAiSettings: () => window.slidesApi.getAiSettings(),
     searchWeb: async (query, page, source) => {
@@ -1631,6 +1635,13 @@ export function App() {
     videoRetry: async (id) => (await window.slidesApi.videoRetry(id)) ?? {},
     videoPreview: async (id) => (await window.slidesApi.videoPreview(id)) ?? {},
     onVideoTasksChanged: (cb) => window.slidesApi.onVideoTasksChanged(cb) ?? (() => {}),
+    // 察元桌面单进程：直达 shell 左下角设置弹窗（生图、媒体与搜索分组）；
+    // 独立/浏览器形态通道缺席或拒绝：退回本地模型设置覆盖层
+    openModelSettings: () => {
+      const viaShell = window.slidesApi?.openAiModelSettings?.bind(window.slidesApi)
+      if (viaShell) void viaShell('aiMedia').catch(() => setMediaSettingsOpen(true))
+      else setMediaSettingsOpen(true)
+    },
   }
 
   const onBackground = useCallback((op: BgPaneOp, allSlides?: boolean) => {
@@ -3714,6 +3725,15 @@ export function App() {
           }}
           onClose={() => setInsertImageOpen(false)}
         />
+      )}
+      {mediaSettingsOpen && (
+        <React.Suspense fallback={null}>
+          <ModelSettingsPageLazy
+            bridge={slidesModelBridge}
+            lang={lang}
+            onClose={() => setMediaSettingsOpen(false)}
+          />
+        </React.Suspense>
       )}
       <ToastHost />
       {chartDesignerOpen && (

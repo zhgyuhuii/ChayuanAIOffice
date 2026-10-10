@@ -572,6 +572,8 @@ export const pl = {
   appSaveCanceled: 'Anulowano zapisywanie.',
   appSaved: 'Zapisano.',
   appSaveFailed: 'Nie można zapisać skoroszytu.',
+  appBackgroundFlushFailing: 'Autozapis i migawki odzyskiwania wciąż zawodzą — zmiany istnieją tylko w pamięci. Zapisz ręcznie (⌘S) teraz.',
+  appAiPendingEditsExceeded: 'Niezapisane edycje przekraczają {count} komórek — zapisz skoroszyt (nowe arkusze przez Zapisz jako), aby trafiły na dysk przed dalszą pracą.',
   appCfRuleUnsaveable:
     'Tej reguły formatowania warunkowego nie można zapisać w xlsx — użyj innego typu reguły.',
   appSaveErrX14Dv:

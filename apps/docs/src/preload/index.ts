@@ -218,7 +218,8 @@ const api: DesktopApi = {
     ipcRenderer.on('ai:settings-changed', listener)
     return () => ipcRenderer.removeListener('ai:settings-changed', listener)
   },
-  openAiModelSettings: () => ipcRenderer.invoke('ai:open-model-settings'),
+  openAiModelSettings: (section?: string) =>
+    ipcRenderer.invoke('ai:open-model-settings', section),
   aiStreamCancel: (requestId: string) => ipcRenderer.invoke('ai:stream-cancel', requestId),
   aiChaOfficeStatus: (withEmail?: boolean) =>
     ipcRenderer.invoke('ai:chatoffice-status', withEmail),

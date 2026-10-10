@@ -1,4 +1,4 @@
-import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Lang } from '@chatoffice/i18n'
 import type {
@@ -160,6 +160,10 @@ import {
 import { InsertImageDialog } from '@chatoffice/ui/InsertImageDialog'
 import type { InsertImageBridge } from '@chatoffice/ui/InsertImageDialog'
 import type { WebImageItem } from '@chatoffice/ui/InsertImageDialog'
+import { ensurePipelineImage } from '@chatoffice/ui/image-transcode'
+import { showToast } from './toast-bus'
+import { ModelSettingsPageLazy } from '@chatoffice/ui/ModelSettingsPageLazy'
+import { docsModelBridge } from '../ai/model-bridge'
 import { ChayuanTab, type ChayuanServices } from './ribbon-chayuan-tab'
 import { WRAP_OPTIONS } from './ContextMenu'
 import { CropDialog, CutoutDialog } from './PictureDialogs'
@@ -878,6 +882,8 @@ function RibbonInner({
   const [pictureDialog, setPictureDialog] = useState<'cutout' | 'crop' | null>(null)
   /** 统一插入媒体对话框(本地/网络图库/AI 生成) */
   const [insertImageOpen, setInsertImageOpen] = useState(false)
+  /// 插入图片对话框「⚙ 设置」打开的整页搜索与生图设置（独立覆盖层，盖在对话框上）
+  const [mediaSettingsOpen, setMediaSettingsOpen] = useState(false)
   const [aiReplaceOpen, setAiReplaceOpen] = useState(false)
   const [aiReplacePrompt, setAiReplacePrompt] = useState('')
   const [aiReplaceBusy, setAiReplaceBusy] = useState(false)
@@ -923,6 +929,13 @@ function RibbonInner({
     videoRetry: async (id) => (await window.desktop?.videoRetry(id)) ?? {},
     videoPreview: async (id) => (await window.desktop?.videoPreview(id)) ?? {},
     onVideoTasksChanged: (cb) => window.desktop?.onVideoTasksChanged(cb) ?? (() => {}),
+    // 察元桌面单进程：直达 shell 左下角设置弹窗（生图、媒体与搜索分组）；
+    // 独立/浏览器形态通道缺席或拒绝：退回本地模型设置覆盖层
+    openModelSettings: () => {
+      const viaShell = window.desktop?.openAiModelSettings?.bind(window.desktop)
+      if (viaShell) void viaShell('aiMedia').catch(() => setMediaSettingsOpen(true))
+      else setMediaSettingsOpen(true)
+    },
   }
   // Word's Lock aspect ratio is per picture: a newly selected picture starts locked
   const [lockAspect, setLockAspect] = useState(true)
@@ -4206,15 +4219,33 @@ function RibbonInner({
           bridge={insertImageBridge}
           hostKind="docs"
           onInsert={(dataUrl, meta) => {
-            setInsertImageOpen(false)
             if (meta?.kind === 'video' && meta.video) {
+              setInsertImageOpen(false)
               void insertVideoForDocs(editor, meta.video)
               return
             }
-            void insertImageFromDataUrl(editor, dataUrl)
+            void (async () => {
+              // docx 落盘只认 png/jpeg/gif：webp/bmp/avif（Gemini 生图、CDN
+              // 缩略图、本地文件）先经 canvas 转 png。先转码再关窗，且任何
+              // 失败都出 toast——此前先关窗再静默拒绝，表现为「窗口一闪、
+              // 没插入」
+              const url = (await ensurePipelineImage(dataUrl)) ?? dataUrl
+              setInsertImageOpen(false)
+              const ok = await insertImageFromDataUrl(editor, url)
+              if (!ok) showToast('图片插入失败：格式不受支持或图片损坏', 'error')
+            })()
           }}
           onClose={() => setInsertImageOpen(false)}
         />
+      )}
+      {mediaSettingsOpen && (
+        <Suspense fallback={null}>
+          <ModelSettingsPageLazy
+            bridge={docsModelBridge}
+            lang={lang}
+            onClose={() => setMediaSettingsOpen(false)}
+          />
+        </Suspense>
       )}
       {pictureDialog === 'cutout' && imageDataUrl && (
         <CutoutDialog

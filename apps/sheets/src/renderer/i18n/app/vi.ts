@@ -403,6 +403,8 @@ export const vi = {
   appSaveCanceled: 'Đã hủy lưu.',
   appSaved: 'Đã lưu.',
   appSaveFailed: 'Không thể lưu sổ làm việc.',
+  appBackgroundFlushFailing: 'Tự động lưu và ảnh chụp khôi phục liên tục thất bại — các thay đổi hiện chỉ có trong bộ nhớ. Hãy lưu thủ công (⌘S) ngay.',
+  appAiPendingEditsExceeded: 'Các chỉnh sửa chưa lưu vượt quá {count} ô — hãy lưu sổ làm việc (bảng tính mới dùng Save As) để ghi xuống đĩa trước khi tiếp tục.',
   appSaveErrX14Cf: 'Vùng này có định dạng có điều kiện mở rộng (x14) và chưa thể sửa đổi.',
   appFromTextCsvTitle: 'Nhập tệp CSV/văn bản vào vùng chọn hiện tại',
   appCsvImported: 'Đã nhập {rows} hàng × {columns} cột từ tệp vào {cell}.',

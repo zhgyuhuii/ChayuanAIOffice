@@ -42,7 +42,7 @@ import {
 import type { IntegrationsApi } from '../../shared/integrations-api'
 import type { McpClientApi } from '../../shared/mcp-client-api'
 
-import { SettingsModal } from './SettingsModal'
+import { SettingsModal, coerceSectionId, type SectionId } from './SettingsModal'
 import { FeedbackModal, FeedbackQrCard } from './FeedbackModal'
 import { onFilesChanged } from './file-events'
 
@@ -452,11 +452,14 @@ function AccountEntry({
   onStatusChange,
   settingsOpen,
   onSettingsOpenChange,
+  settingsSection,
 }: {
   onStatusChange?: (status: AccountStatus | null) => void
   /** controlled: the home chat's setup card opens the same modal */
   settingsOpen: boolean
   onSettingsOpenChange: (open: boolean) => void
+  /** deep-link landing section for THIS open (undefined = default 模型设置) */
+  settingsSection?: SectionId
 }) {
   const { t } = useI18n()
   const [status, setStatus] = useState<AccountStatus | null>(null)
@@ -622,6 +625,7 @@ function AccountEntry({
           onLogout={doLogout}
           skillUpdateDue={skillUpdate}
           onSkillUpdateDue={setSkillUpdate}
+          initialSection={settingsSection}
         />
       )}
       {feedbackOpen && <FeedbackModal onClose={() => setFeedbackOpen(false)} />}
@@ -1229,6 +1233,9 @@ export function Home() {
   // AI model, so refresh the chat bridge's cached selection
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [settingsNonce, setSettingsNonce] = useState(0)
+  /** landing section pushed by the main process (ai:open-model-settings relay:
+   *  the insert-image dialog's ⚙ etc.) — consumed by the modal's remount */
+  const [settingsSection, setSettingsSection] = useState<SectionId | undefined>(undefined)
   const handleSettingsOpenChange = useCallback((open: boolean) => {
     setSettingsOpen(open)
     // a shell modal must escape the tree strip beside a document tab: unclip
@@ -1242,6 +1249,16 @@ export function Home() {
       setSettingsNonce((n) => n + 1)
     }
   }, [])
+
+  // 主进程转发的「打开设置」：编辑器窗口（插入图片对话框的 ⚙ 设置）等入口。
+  // preload 暴露的 onOpenSettings 此前无人订阅——事件广播一直是断链。
+  useEffect(() => {
+    const off = window.chaOffice.onOpenSettings?.(({ section }) => {
+      setSettingsSection(section ? coerceSectionId(section) : undefined)
+      handleSettingsOpenChange(true)
+    })
+    return () => off?.()
+  }, [handleSettingsOpenChange])
 
   // 删除确认弹窗与设置弹窗同机制：shell DOM 永远画在编辑器 WebContentsView
   // 之下，弹窗打开期间必须隐藏编辑器视图，否则对话框被盖住不可见（只剩树带
@@ -3459,6 +3476,7 @@ export function Home() {
           onStatusChange={handleAccountStatus}
           settingsOpen={settingsOpen}
           onSettingsOpenChange={handleSettingsOpenChange}
+          settingsSection={settingsSection}
         />
       </aside>
 

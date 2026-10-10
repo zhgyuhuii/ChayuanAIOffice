@@ -116,7 +116,9 @@ export const IMAGE_GEN_VENDOR_IDS = new Set([
 ])
 /** Must stay in sync with the adapters registered in media-jobs.ts — a
  * vendor listed here without a wired adapter would promise what runMediaJob
- * then refuses ("No media-generation adapter"). */
+ * then refuses ("No media-generation adapter"). The generic OpenAI-compatible
+ * vendors ride openAiVideosAdapter on the profile's own baseUrl (mirrors how
+ * generateViaOpenAiImages serves them for images). */
 export const VIDEO_GEN_VENDOR_IDS = new Set([
   'aliyun-bailian',
   'zhipu',
@@ -131,6 +133,11 @@ export const VIDEO_GEN_VENDOR_IDS = new Set([
   'vidu',
   'pixverse',
   'chatoffice',
+  'openai-compatible',
+  'oneapi',
+  'new-api',
+  'gpustack',
+  'lm-studio',
 ])
 
 function fcVerdict(q: ModelCapabilityQuery): CapabilityVerdict {

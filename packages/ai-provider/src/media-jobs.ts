@@ -81,6 +81,29 @@ export function getMediaJobAdapter(vendorId: string): MediaJobAdapter | undefine
   return adapters.get(vendorId)
 }
 
+/** protocol-level adapter key for vendors without a dedicated registration:
+ *  OpenAI-wire gateways ride the {base}/videos protocol on their own baseUrl,
+ *  native gemini profiles ride the gemini adapter. Anthropic has no video API. */
+export function videoAdapterViaProtocol(
+  protocol: 'openai-completions' | 'openai-responses' | 'gemini-native' | 'anthropic-messages' | undefined,
+): 'openai' | 'gemini' | undefined {
+  if (protocol === 'gemini-native') return 'gemini'
+  if (protocol === 'openai-completions' || protocol === 'openai-responses') return 'openai'
+  return undefined
+}
+
+/** final adapter vendor for a video run: a dedicated registration wins; other
+ *  catalog/custom vendors (agnes, relays, …) resolve through their profile's
+ *  wire protocol, and a vendor with no servable protocol is returned unchanged
+ *  so runMediaJob's "no adapter" error stays visible. */
+export function resolveVideoAdapterVendor(
+  vendorId: string,
+  protocol: 'openai-completions' | 'openai-responses' | 'gemini-native' | 'anthropic-messages' | undefined,
+): string {
+  if (adapters.has(vendorId)) return vendorId
+  return videoAdapterViaProtocol(protocol) ?? vendorId
+}
+
 const sleep = (ms: number, signal?: AbortSignal) =>
   new Promise<void>((resolve, reject) => {
     const t = setTimeout(resolve, ms)
@@ -875,3 +898,11 @@ registerMediaJobAdapter(openAiVideosAdapter('openai', 'https://api.openai.com/v1
 // chatoffice proxy: only surfaces video models when the upstream model list
 // really returns video-generation entries (data-driven; see listMediaModels)
 registerMediaJobAdapter(openAiVideosAdapter('chatoffice', '', 'sora-2'))
+// Generic OpenAI-compatible gateways (agnes/new-api style): the videos
+// protocol ({base}/videos) is protocol-level exactly like images/generations —
+// the profile's own baseUrl supplies the base. A host that doesn't proxy the
+// endpoint fails at submit with a visible HTTP error instead of the model
+// being silently unselectable in the insert-media dialog.
+for (const vendor of ['openai-compatible', 'oneapi', 'new-api', 'gpustack', 'lm-studio']) {
+  registerMediaJobAdapter(openAiVideosAdapter(vendor, '', 'sora-2'))
+}

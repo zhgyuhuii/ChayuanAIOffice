@@ -2511,6 +2511,25 @@ export function journalSize(journal: EditJournal): number {
   return total
 }
 
+/// What the pending journal costs renderer memory, in cells: stored cell
+/// entries plus the area each bulk constant fill covers. journalSize counts
+/// one per fill record, but a single fill can span a whole column — the
+/// 1-per-fill count would miss the dominant term entirely, and this is the
+/// number the AI pending-edit budget (MAX_PENDING_AI_EDIT_CELLS) gates on.
+export function pendingEditCellCount(journal: EditJournal): number {
+  let total = 0
+  for (const [sheetId, entries] of journal.cells) {
+    if (!isSheetRemoved(journal, sheetId)) total += entries.size
+  }
+  for (const [sheetId, fills] of journal.bulkConstantFills) {
+    if (isSheetRemoved(journal, sheetId)) continue
+    for (const fill of fills) {
+      total += (fill.endRow - fill.startRow + 1) * (fill.endColumn - fill.startColumn + 1)
+    }
+  }
+  return total
+}
+
 /// User input for the recalc engine: formulas verbatim, booleans
 /// as TRUE/FALSE, and text guarded against reinterpretation as a formula.
 export function toRecalcUserInput(entry: JournalEntry): string {

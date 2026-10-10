@@ -1923,6 +1923,9 @@ export interface SlidesApi {
   onRenamed: (handler: (newPath: string) => void) => () => void
   /** v2 settings view: BYOK keys redacted to the KEEP_KEY sentinel */
   getAiSettings: () => Promise<AiSettingsV2>
+  /** shell only: open the shell's settings modal, landing on `section` (e.g.
+   *  'aiMedia' from the insert-image dialog's ⚙; rejects in standalone) */
+  openAiModelSettings: (section?: string) => Promise<void>
   /** persist the view; KEEP_KEY entries keep their stored key */
   setAiSettings: (view: AiSettingsV2) => Promise<void>
   /** quick-switch: persist the global current model */

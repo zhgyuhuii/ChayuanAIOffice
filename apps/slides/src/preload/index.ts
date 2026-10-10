@@ -436,6 +436,8 @@ const api: SlidesApi = {
     return () => ipcRenderer.removeListener('slides:renamed', listener)
   },
   getAiSettings: () => ipcRenderer.invoke('ai:get-settings'),
+  openAiModelSettings: (section?: string) =>
+    ipcRenderer.invoke('ai:open-model-settings', section),
   setAiSettings: (view: AiSettingsV2) => ipcRenderer.invoke('ai:set-settings', view),
   setAiCurrentModel: (selection: AiModelSelection) =>
     ipcRenderer.invoke('ai:set-current-model', selection),

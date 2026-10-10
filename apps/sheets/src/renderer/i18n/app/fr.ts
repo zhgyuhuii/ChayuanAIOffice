@@ -603,6 +603,8 @@ export const fr = {
   appSaveCanceled: 'Enregistrement annulé.',
   appSaved: 'Enregistré.',
   appSaveFailed: "Impossible d'enregistrer le classeur.",
+  appBackgroundFlushFailing: "L'enregistrement automatique et les instantanés de récupération échouent en boucle — les modifications ne sont qu'en mémoire. Enregistrez manuellement (⌘S) maintenant.",
+  appAiPendingEditsExceeded: "Les modifications non enregistrées dépassent {count} cellules — enregistrez le classeur (les nouvelles feuilles passent par Enregistrer sous) pour les écrire sur le disque avant de continuer.",
   appCfRuleUnsaveable:
     'Cette règle de mise en forme conditionnelle ne peut pas être enregistrée en xlsx — utilisez un autre type de règle.',
   appSaveErrX14Dv:

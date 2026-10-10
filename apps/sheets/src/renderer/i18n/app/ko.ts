@@ -556,6 +556,8 @@ export const ko = {
   appSaveCanceled: '저장을 취소했습니다.',
   appSaved: '저장했습니다.',
   appSaveFailed: '통합 문서를 저장할 수 없습니다.',
+  appBackgroundFlushFailing: '자동 저장·복구 스냅샷이 연속으로 실패하고 있습니다 — 변경 사항이 메모리에만 있습니다. 지금 수동으로 저장(⌘S)하세요.',
+  appAiPendingEditsExceeded: '저장되지 않은 편집이 {count}셀을 초과했습니다 — 더 쓰기 전에 통합 문서를 저장(새 시트는 다른 이름으로 저장)하여 디스크에 기록하세요.',
   appCfRuleUnsaveable:
     '이 조건부 서식 규칙은 xlsx로 저장할 수 없습니다 — 다른 규칙 유형을 사용하십시오.',
   appSaveErrX14Dv:

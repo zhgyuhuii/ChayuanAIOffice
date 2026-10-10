@@ -585,6 +585,8 @@ export const pt = {
   appSaveCanceled: 'Salvamento cancelado.',
   appSaved: 'Salvo.',
   appSaveFailed: 'Não foi possível salvar a pasta de trabalho.',
+  appBackgroundFlushFailing: 'O salvamento automático e os instantâneos de recuperação estão falhando repetidamente — as alterações estão apenas na memória. Salve manualmente (⌘S) agora.',
+  appAiPendingEditsExceeded: 'As edições não salvas excedem {count} células — salve a pasta de trabalho (novas planilhas usam Salvar como) para gravá-las no disco antes de continuar.',
   appCfRuleUnsaveable:
     'Esta regra de formatação condicional não pode ser salva em xlsx — use outro tipo de regra.',
   appSaveErrX14Dv:

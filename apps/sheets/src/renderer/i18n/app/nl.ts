@@ -579,6 +579,8 @@ export const nl = {
   appSaveCanceled: 'Opslaan geannuleerd.',
   appSaved: 'Opgeslagen.',
   appSaveFailed: 'Kan de werkmap niet opslaan.',
+  appBackgroundFlushFailing: 'Automatisch opslaan en herstelmomentopnamen blijven mislukken — wijzigingen bestaan alleen in het geheugen. Sla nu handmatig op (⌘S).',
+  appAiPendingEditsExceeded: 'Niet-opgeslagen bewerkingen overschrijden {count} cellen — sla de werkmap op (nieuwe werkbladen via Opslaan als) om ze naar schijf te schrijven voordat u verdergaat.',
   appCfRuleUnsaveable:
     'Deze regel voor voorwaardelijke opmaak kan niet in xlsx worden opgeslagen — gebruik een ander regeltype.',
   appSaveErrX14Dv:

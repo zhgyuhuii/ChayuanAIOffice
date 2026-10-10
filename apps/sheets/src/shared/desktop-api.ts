@@ -3072,8 +3072,9 @@ export interface DesktopApi {
   aiDiscoverModels(target: DiscoveryTarget): Promise<{ models: AiModelEntry[]; error?: string }>
   /// ai-settings.json was rewritten by any renderer; re-read it
   onAiSettingsChanged(handler: () => void): () => void
-  /// shell only: switch to Home and open Settings › AI Model (rejects in standalone)
-  openAiModelSettings(): Promise<void>
+  /// shell only: open the shell's settings modal, landing on `section` (e.g.
+  /// 'aiMedia' from the insert-image dialog's ⚙; rejects in standalone)
+  openAiModelSettings(section?: string): Promise<void>
   aiChat(request: {
     selection: AiModelSelection
     system: string

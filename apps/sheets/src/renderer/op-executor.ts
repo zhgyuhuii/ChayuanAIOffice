@@ -12,6 +12,7 @@ import {
   formatAddress,
   parseAddress,
   parseRange,
+  rangeCellCount,
 } from '@chatoffice/xlsx-gateway/domain/cell-address'
 import { offsetFormulaRefs } from '@chatoffice/xlsx-gateway/domain/formula-shift'
 import { MAX_GRID_COLUMNS, MAX_GRID_ROWS } from '@chatoffice/xlsx-gateway/shared/grid-bounds'
@@ -29,8 +30,10 @@ import type {
   StructuralChange,
 } from '@chatoffice/xlsx-gateway/domain/workbook.types'
 import { pushBulkFillUndo } from './bulk-fill-undo'
+import { MAX_PENDING_AI_EDIT_CELLS } from './app-constants'
 import {
   journalCellContentAt,
+  pendingEditCellCount,
   plainCellValue,
   journalSize,
   recordBulkConstantFill,
@@ -375,6 +378,32 @@ export function applyChangePlan(
   return run
 }
 
+/// Cell weight of one planned batch: per-cell changes plus the target area of
+/// every range-level bulk op (fill/copy target, clear/find/replace/sort
+/// range). Ops without a range (sheet adds, renames) weigh nothing here.
+function planCellWeight(plan: ChangePlan): number {
+  let total = plan.cellChanges.length
+  for (const { op } of plan.structuralChanges) {
+    const rangeText = (op as { target?: string }).target ?? (op as { range?: string }).range
+    if (rangeText === undefined) continue
+    try {
+      total += rangeCellCount(parseRange(rangeText))
+    } catch {
+      // a malformed range fails planning elsewhere; the budget precheck must
+      // never be the thing that throws
+    }
+  }
+  return total
+}
+
+/// The refusal message once pending + incoming edits cross
+/// MAX_PENDING_AI_EDIT_CELLS, or null while under budget. Exported for the
+/// budget regression tests.
+export function pendingEditBudgetError(pendingCells: number, incomingCells: number): string | null {
+  if (pendingCells + incomingCells <= MAX_PENDING_AI_EDIT_CELLS) return null
+  return t('appAiPendingEditsExceeded', { count: MAX_PENDING_AI_EDIT_CELLS })
+}
+
 async function applyChangePlanNow(
   plan: ChangePlan,
   ctx: OpExecutorContext,
@@ -385,6 +414,22 @@ async function applyChangePlanNow(
   const notices: string[] = []
   let imageData: Map<string, LoadedImage>
   try {
+    // Pending-edit budget first — the cheapest precheck, and the one that
+    // keeps a runaway generation loop from growing the renderer to gigabytes
+    // while a hidden draft's journal has no AutoSave to drain it. AI/MCP
+    // plans count their own bulk weight too, so the plan that would cross
+    // the line is refused before it applies. A user-facing op only counts
+    // what is already pending: its own size is today's behavior (a 500k-cell
+    // ribbon fill on a clean journal predates this gate), and once the
+    // journal is over budget, "save first" is the actionable fix for them.
+    const budgetError = pendingEditBudgetError(
+      pendingEditCellCount(state.editJournal),
+      options.userFacing === true ? 0 : planCellWeight(plan),
+    )
+    if (budgetError) {
+      setMessage(budgetError)
+      return { ok: false, reason: budgetError }
+    }
     imageData = await prefetchOpImages(plannedOps)
     const spanError = await precheckStructuralDeletes(state, workbook, plannedOps)
     if (spanError) throw new Error(options.userFacing ? t('appDeleteSpanFormulas') : spanError)

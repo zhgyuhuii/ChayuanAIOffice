@@ -585,6 +585,8 @@ export const es = {
   appSaveCanceled: 'Guardado cancelado.',
   appSaved: 'Guardado.',
   appSaveFailed: 'No se puede guardar el libro.',
+  appBackgroundFlushFailing: 'El autoguardado y las instantáneas de recuperación fallan una y otra vez: los cambios solo están en memoria. Guarda manualmente (⌘S) ahora.',
+  appAiPendingEditsExceeded: 'Las ediciones sin guardar superan {count} celdas: guarda el libro (las hojas nuevas usan Guardar como) para escribirlas en el disco antes de continuar.',
   appCfRuleUnsaveable:
     'Esta regla de formato condicional no se puede guardar en xlsx — use otro tipo de regla.',
   appSaveErrX14Dv:

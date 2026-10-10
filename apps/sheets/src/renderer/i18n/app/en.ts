@@ -532,6 +532,8 @@ export const en = {
   appSaveCanceled: 'Save canceled.',
   appSaved: 'Saved.',
   appSaveFailed: 'Unable to save the workbook.',
+  appBackgroundFlushFailing: 'Auto-save and recovery snapshots keep failing — changes exist only in memory. Save manually (⌘S) now.',
+  appAiPendingEditsExceeded: 'Pending unsaved edits exceed {count} cells — save the workbook (new sheets go through Save As) to flush them to disk before writing more.',
   appCfRuleUnsaveable:
     'This conditional formatting rule cannot be saved to xlsx — switch to another rule type.',
   appSaveErrX14Dv:

@@ -493,6 +493,8 @@ export const zh = {
   appSaveCanceled: '保存已取消。',
   appSaved: '已保存。',
   appSaveFailed: '无法保存工作簿。',
+  appBackgroundFlushFailing: '自动保存/恢复快照连续失败——改动目前只在内存里，请尽快手动保存（⌘S）。',
+  appAiPendingEditsExceeded: '待保存的编辑已超过 {count} 格——请先保存工作簿（新工作表会走「另存为」）落盘并清空队列，再继续写入。',
   appCfRuleUnsaveable: '这种条件格式规则无法保存到 xlsx——请换用其他规则类型。',
   appSaveErrX14Dv: '这个工作表带有扩展(x14)数据验证，暂不支持编辑它的验证规则。',
   appSaveErrMultiSelectList: '多选列表验证无法保存到 xlsx——请先删除该规则再保存。',

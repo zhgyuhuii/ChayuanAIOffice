@@ -100,8 +100,16 @@ export function createVideoTaskRegistry(deps: VideoTaskRegistryDeps) {
   const downloadPoster = deps.downloadPoster ?? (async () => null)
   const CHANGED = 'ai:video-tasks-changed'
 
+  // 任务后台存活设计下，宿主窗口可能在任务运行中销毁——notify 若向已销毁
+  // 的 webContents send 会抛 "Object has been destroyed"。drive 的 finally
+  // 里抛出的异常不被同块 catch 捕获，成为 unhandledRejection（Electron 主
+  // 进程 Node ≥15 默认 fatal）→ 整个应用退出。通知失败绝不允许杀进程。
   const notify = (id: string, status: VideoTaskStatus): void => {
-    deps.notify(CHANGED, { id, status })
+    try {
+      deps.notify(CHANGED, { id, status })
+    } catch (err) {
+      console.warn(`[video-tasks] notify failed (${id} → ${status}):`, String(err))
+    }
   }
 
   const activeCount = (): number =>
@@ -150,6 +158,7 @@ export function createVideoTaskRegistry(deps: VideoTaskRegistryDeps) {
     notify(id, view.status)
     void (async () => {
       try {
+        // … the submit→poll→download pipeline; every failure lands in the catch
         const result = await deps.runtime().runVideoJob({
           profileId: view.profileId,
           modelId: view.modelId,
@@ -194,7 +203,10 @@ export function createVideoTaskRegistry(deps: VideoTaskRegistryDeps) {
         controllers.delete(id)
         notify(id, view.status)
       }
-    })()
+    })().catch((err) => {
+      // last-resort belt: nothing above may kill the process via unhandledRejection
+      console.warn('[video-tasks] task loop escaped its guard:', String(err))
+    })
   }
 
   return {

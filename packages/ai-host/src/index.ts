@@ -122,21 +122,42 @@ export interface StreamEventLike {
   }
 }
 
+/** content-type → the four mimes the insert pipelines label correctly */
+export function mimeFromContentType(ct: string): string {
+  return ct.includes('png')
+    ? 'image/png'
+    : ct.includes('gif')
+      ? 'image/gif'
+      : ct.includes('webp')
+        ? 'image/webp'
+        : 'image/jpeg'
+}
+
+/**
+ * Decode an inline `data:<mime>;base64,<bytes>` image URL — generation results
+ * arrive this way (Gemini inlineData / OpenAI b64_json are already inlined
+ * main-side by imagegen), so there is no request to guard and the SSRF gate
+ * (http/https only) must never see it. null when it is not a base64 image URL.
+ */
+export function parseDataUrlImage(url: string): { base64: string; mime: string } | null {
+  const m = /^data:([^;,]*);base64,([A-Za-z0-9+/=\s]+)$/.exec(url.trim())
+  if (!m || !m[1]) return null
+  return { base64: m[2]!.replace(/\s+/g, ''), mime: mimeFromContentType(m[1]!) }
+}
+
 /** download an https/data URL → base64 + mime (SSRF-guarded, retried); null when unreachable */
 async function downloadAsDataUrl(url: string): Promise<{ base64: string; mime: string } | null> {
   try {
+    // data: first: imagegen already inlined the bytes — handing it to the SSRF
+    // guard (http/https only) rejected every generated image as unreachable
+    // and the insert dialog fell through to "image download failed"
+    const inline = parseDataUrlImage(String(url))
+    if (inline) return inline
     const resp = await fetchRemoteImage(String(url))
     if (!resp || !resp.ok) return null
     const buf = Buffer.from(await resp.arrayBuffer())
     const ct = resp.headers.get('content-type') ?? ''
-    const mime = ct.includes('png')
-      ? 'image/png'
-      : ct.includes('gif')
-        ? 'image/gif'
-        : ct.includes('webp')
-          ? 'image/webp'
-          : 'image/jpeg'
-    return { base64: buf.toString('base64'), mime }
+    return { base64: buf.toString('base64'), mime: mimeFromContentType(ct) }
   } catch {
     return null
   }

@@ -580,6 +580,8 @@ export const it = {
   appSaveCanceled: 'Salvataggio annullato.',
   appSaved: 'Salvato.',
   appSaveFailed: 'Impossibile salvare la cartella di lavoro.',
+  appBackgroundFlushFailing: 'Salvataggio automatico e snapshot di ripristino continuano a fallire: le modifiche sono solo in memoria. Salva manualmente (⌘S) ora.',
+  appAiPendingEditsExceeded: 'Le modifiche non salvate superano {count} celle: salva la cartella di lavoro (i nuovi fogli passano da Salva come) per scriverle su disco prima di continuare.',
   appCfRuleUnsaveable:
     'Questa regola di formattazione condizionale non può essere salvata in xlsx — usa un altro tipo di regola.',
   appSaveErrX14Dv:

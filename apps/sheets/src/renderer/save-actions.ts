@@ -30,6 +30,7 @@ import { activeCsvSheet, handleExportCsv, serializeActiveSheetCsv } from './csv-
 import type { CellState } from '@chatoffice/xlsx-gateway/domain/workbook.types'
 import { verifiedFormulaValues } from './formula-values'
 import { t } from './i18n/locale'
+import { noteBackgroundFlushOutcome } from './flush-health'
 import { abortStagedEditsTransfer, stageEditsForSave, type StagedEdits } from './save-edits-staging'
 import { showToast } from './toast-bus'
 import { captureUndoCarry, hasPendingUndoCarry, stashUndoCarry } from './undo-carry'
@@ -103,6 +104,10 @@ export async function handleSave(
   explicitTarget?: { path: string; overwrite: boolean },
 ): Promise<SaveOutcome> {
   const state = ctx.lazyWorkbookRef.current
+  // Flashes that must stay invisible: recovery snapshots never toast, and a
+  // quiet AutoSave only touches the status bar. Their failures feed
+  // flush-health instead, which escalates after a streak (see flush-health).
+  const backgroundFlush = mode === 'recovery' || (mode === 'save' && quiet)
   // Captured at save start (the Ctrl+S moment): the post-save session swap
   // reinstalls the workbook and would otherwise bounce the view to A1.
   const viewAtSave = (() => {
@@ -157,6 +162,7 @@ export async function handleSave(
   } catch (error: unknown) {
     const failed = error instanceof Error ? error.message : t('appFilterSnapshotFailed')
     ctx.setMessage(failed)
+    if (backgroundFlush) noteBackgroundFlushOutcome(false, failed)
     if (mode !== 'recovery' && !quiet) showToast(failed, 'error')
     return { ok: false }
   }
@@ -263,6 +269,8 @@ export async function handleSave(
       if (mode !== 'recovery') {
         ctx.setMessage(t('appSaveHeldStranded'))
         if (!quiet) showToast(t('appSaveHeldStranded'), 'error')
+      } else {
+        noteBackgroundFlushOutcome(false, 'stranded held additions')
       }
       return { ok: false }
     }
@@ -350,6 +358,8 @@ export async function handleSave(
     if (mode !== 'recovery') {
       ctx.setMessage(t('appSheetOrderReadFailed'))
       if (!quiet) showToast(t('appSheetOrderReadFailed'), 'error')
+    } else {
+      noteBackgroundFlushOutcome(false, 'sheet order unreadable')
     }
     return { ok: false }
   }
@@ -359,8 +369,9 @@ export async function handleSave(
   try {
     staged = await stageEditsForSave(window.desktopApi, state.file.sessionId, edits)
   } catch (error: unknown) {
-    if (mode === 'recovery') return { ok: false }
     const message = stripIpcErrorWrapper(error instanceof Error ? error.message : '')
+    if (backgroundFlush) noteBackgroundFlushOutcome(false, message)
+    if (mode === 'recovery') return { ok: false }
     const failed = message || t('appSaveFailed')
     ctx.setMessage(failed)
     if (!quiet) showToast(failed, 'error')
@@ -413,6 +424,7 @@ export async function handleSave(
       )
       return { ok: false }
     })
+    noteBackgroundFlushOutcome(written.ok === true)
     return { ok: written.ok === true }
   }
   try {
@@ -492,6 +504,7 @@ export async function handleSave(
       }
       const saved = t('appSaved')
       ctx.setMessage(saved)
+      if (backgroundFlush) noteBackgroundFlushOutcome(true)
       if (!quiet) showToast(saved)
       return { ok: true, ...(result.file.path !== undefined ? { path: result.file.path } : {}) }
     }
@@ -545,6 +558,7 @@ export async function handleSave(
       }
       const saved = t('appSavedTwoPhase')
       ctx.setMessage(saved)
+      if (backgroundFlush) noteBackgroundFlushOutcome(true)
       if (!quiet) showToast(saved)
       return { ok: true, ...(second.file.path !== undefined ? { path: second.file.path } : {}) }
     } catch (error: unknown) {
@@ -553,9 +567,9 @@ export async function handleSave(
       if (!(await reopenCarryingLateEdits(ctx, state, cellsAtSave, result.file))) {
         return { ok: false }
       }
-      const failed = t('appSaveSecondFailed', {
-        reason: error instanceof Error ? error.message : String(error),
-      })
+      const reason = error instanceof Error ? error.message : String(error)
+      if (backgroundFlush) noteBackgroundFlushOutcome(false, reason)
+      const failed = t('appSaveSecondFailed', { reason })
       ctx.setMessage(failed)
       if (!quiet) showToast(failed, 'error')
       return { ok: false }
@@ -565,6 +579,7 @@ export async function handleSave(
     // request validation); freeing it is a no-op when it was consumed.
     await abortStagedEditsTransfer(window.desktopApi, state.file.sessionId, staged.editsTransferId)
     const message = stripIpcErrorWrapper(error instanceof Error ? error.message : '')
+    if (backgroundFlush) noteBackgroundFlushOutcome(false, message)
     const failed = localizeSaveError(message) ?? (message || t('appSaveFailed'))
     ctx.setMessage(failed)
     if (!quiet) showToast(failed, 'error')

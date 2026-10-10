@@ -547,6 +547,8 @@ export const id = {
   appSaveCanceled: 'Penyimpanan dibatalkan.',
   appSaved: 'Disimpan.',
   appSaveFailed: 'Tidak dapat menyimpan buku kerja.',
+  appBackgroundFlushFailing: 'Simpan otomatis dan snapshot pemulihan terus gagal — perubahan hanya ada di memori. Simpan secara manual (⌘S) sekarang.',
+  appAiPendingEditsExceeded: 'Editan yang belum disimpan melebihi {count} sel — simpan buku kerja (lembar baru memakai Simpan Sebagai) untuk menulisnya ke disk sebelum melanjutkan.',
   appCfRuleUnsaveable:
     'Aturan pemformatan bersyarat ini tidak dapat disimpan ke xlsx — gunakan jenis aturan lain.',
   appSaveErrX14Dv:

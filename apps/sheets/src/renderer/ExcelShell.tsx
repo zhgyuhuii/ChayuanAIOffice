@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from 'react'
+import { Suspense, useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from 'react'
 import type { IFunctionInfo } from '@univerjs/engine-formula'
 import { platformShortcuts } from '@chatoffice/i18n'
 import { TabStripArrows, useTabStripOverflow } from '@chatoffice/ribbon'
@@ -35,6 +35,9 @@ import { ConvertMenuSelect } from './ConvertMenuSelect'
 import { InsertImageDialog } from '@chatoffice/ui/InsertImageDialog'
 import type { InsertImageBridge } from '@chatoffice/ui/InsertImageDialog'
 import type { WebImageItem } from '@chatoffice/ui/InsertImageDialog'
+import { ensurePipelineImage } from '@chatoffice/ui/image-transcode'
+import { ModelSettingsPageLazy } from '@chatoffice/ui/ModelSettingsPageLazy'
+import { sheetsModelBridge } from './ai/model-bridge'
 import { compressImageForDisplay } from '@chatoffice/ui'
 import { ColorDropdown } from './ColorDropdown'
 import { FormatCellsDialog } from './FormatCellsDialog'
@@ -650,7 +653,7 @@ export function ExcelShell({
   onFillSeries,
   onGetFillSeriesContext,
 }: ExcelShellProps): React.JSX.Element {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   // tab row clips instead of wrapping when narrow; wheel + edge arrows page it
   const tabStrip = useTabStripOverflow()
   const [activeTab, setActiveTab] = useState<RibbonTab>('Home')
@@ -821,6 +824,8 @@ export function ExcelShell({
   const [showPictureCrop, setShowPictureCrop] = useState(false)
   /// 统一插入图片对话框（插入 tab 的图片按钮）
   const [insertImageOpen, setInsertImageOpen] = useState(false)
+  /// 对话框「⚙ 设置」打开的整页搜索与生图设置（独立覆盖层，盖在对话框上）
+  const [mediaSettingsOpen, setMediaSettingsOpen] = useState(false)
 
   const insertImageBridge: InsertImageBridge = {
     getAiSettings: () => window.desktopApi.getAiSettings(),
@@ -861,6 +866,13 @@ export function ExcelShell({
     videoRetry: async (id) => (await window.desktopApi.videoRetry(id)) ?? {},
     videoPreview: async (id) => (await window.desktopApi.videoPreview(id)) ?? {},
     onVideoTasksChanged: (cb) => window.desktopApi.onVideoTasksChanged(cb) ?? (() => {}),
+    // 察元桌面单进程：直达 shell 左下角设置弹窗（生图、媒体与搜索分组）；
+    // 独立/浏览器形态通道缺席或拒绝：退回本地模型设置覆盖层
+    openModelSettings: () => {
+      const viaShell = window.desktopApi?.openAiModelSettings?.bind(window.desktopApi)
+      if (viaShell) void viaShell('aiMedia').catch(() => setMediaSettingsOpen(true))
+      else setMediaSettingsOpen(true)
+    },
   }
   const onCommandRef = useRef(onCommand)
   const onIsCellEditingRef = useRef(onIsCellEditing)
@@ -1654,13 +1666,30 @@ export function ExcelShell({
           bridge={insertImageBridge}
           hostKind="sheets"
           onInsert={(dataUrl, meta) => {
-            setInsertImageOpen(false)
             // sheets cannot embed video — the dialog blocks it; ignore defensively
-            if (meta?.kind === 'video') return
-            onInsertPictureData(dataUrl)
+            if (meta?.kind === 'video') {
+              setInsertImageOpen(false)
+              return
+            }
+            void (async () => {
+              // xlsx 落盘同样只认 png/jpeg/gif：webp/bmp/avif 先转 png，残余
+              // 失败由 insertPictureFromData 的 appPictureBadType 状态栏提示
+              const url = (await ensurePipelineImage(dataUrl)) ?? dataUrl
+              setInsertImageOpen(false)
+              onInsertPictureData(url)
+            })()
           }}
           onClose={() => setInsertImageOpen(false)}
         />
+      )}
+      {mediaSettingsOpen && (
+        <Suspense fallback={null}>
+          <ModelSettingsPageLazy
+            bridge={sheetsModelBridge}
+            lang={lang}
+            onClose={() => setMediaSettingsOpen(false)}
+          />
+        </Suspense>
       )}
       {standardWidthOpen && (
         <StandardColWidthDialog onCommand={onCommand} onClose={() => setStandardWidthOpen(false)} />
