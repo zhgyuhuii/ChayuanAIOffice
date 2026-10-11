@@ -73,6 +73,7 @@ import {
   rendererUrl,
   MAX_REMOTE_IMAGE_BYTES,
   readBodyCapped,
+  setContextMenuInterceptor,
 } from '@chatoffice/electron-utils'
 import { configureMetricsCache, familyVerticalMetrics } from '@chatoffice/font-metrics'
 import { createI18n, getUiLang, normalizeLang, setUiLang } from '@chatoffice/i18n'
@@ -138,7 +139,8 @@ import type {
   MenuCommand,
   OpenDocxResult,
 } from '../shared/ipc'
-import { ATTACHMENT_IMAGE_EXTS } from '../shared/ipc'
+import { ATTACHMENT_IMAGE_EXTS, type ContextMenuRequest } from '../shared/ipc'
+import { ClickClaims } from '../shared/context-menu-claims'
 import { findDocxPath } from '../shared/open-file'
 import { atomicWriteFile, looksLikeZip } from './atomic-write'
 import {
@@ -4405,6 +4407,46 @@ export function registerDocsIpc(): void {
     } catch {
       // diagnostics must never break the app
     }
+  })
+
+  // ── right-click context-menu relay (upstream dfe2a6d9, lost in a merge) ──
+  // The renderer claims each body right-click synchronously (before Blink
+  // requests a context menu); the armed interceptor pairs claims with the
+  // native `context-menu` events FIFO and forwards spell data to the React
+  // menu. Without the claim listener the renderer's sendSync never gets its
+  // immediate reply and the right-click path degenerates into a renderer↔main
+  // sync feedback loop that freezes the tab (2026-10-11 docx image right-click
+  // freeze: 3800 sendSync/s against a missing listener).
+  const ctxMenuClaims = new Map<number, ClickClaims>()
+  ipcMain.on('docs:context-menu-claim', (event, seq: unknown) => {
+    event.returnValue = true
+    if (typeof seq !== 'number') return
+    let claims = ctxMenuClaims.get(event.sender.id)
+    if (!claims) {
+      claims = new ClickClaims()
+      ctxMenuClaims.set(event.sender.id, claims)
+    }
+    claims.claim(seq, Date.now())
+  })
+  ipcMain.on('docs:context-menu-arm', (event) => {
+    const wc = event.sender
+    setContextMenuInterceptor(app, wc, (contents, params) => {
+      if (contents.isDestroyed() || tornDownWcIds.has(contents.id)) return Promise.resolve(false)
+      const seq = ctxMenuClaims.get(contents.id)?.take(Date.now()) ?? null
+      if (seq !== null) {
+        const request: ContextMenuRequest = {
+          seq,
+          misspelledWord: params.misspelledWord,
+          suggestions: params.dictionarySuggestions,
+        }
+        contents.send('docs:context-menu', request)
+      }
+      return Promise.resolve(seq !== null)
+    })
+    wc.once('destroyed', () => {
+      setContextMenuInterceptor(app, wc, null)
+      ctxMenuClaims.delete(wc.id)
+    })
   })
 
   ipcMain.handle('docs:respell-kick', async (event) => {
