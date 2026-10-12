@@ -320,6 +320,7 @@ export const ms = {
   aiNotePoolEmpty: "Kolam imej tempatan kosong; rantaian automatik digunakan",
   aiNoteSvgMode: "Imej: grafik vektor (dilukis oleh model, boleh disunting)",
   aiNoteImgFail: "Halaman {page}: tiada imej untuk \"{kw}\"; dilukis sebagai vektor",
+  aiNoteImgWebFallback: "Penjanaan imej AI untuk \"{kw}\" gagal; imej web digunakan sebagai gantinya",
 
   aiToolRunDeck: 'Menjana pembentangan…',
   aiToolRunRegenSlide: 'Menjana semula slaid…',

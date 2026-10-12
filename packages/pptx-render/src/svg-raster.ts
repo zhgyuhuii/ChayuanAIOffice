@@ -5,8 +5,12 @@
  * deterministic diagnostics back to the model, and produces the PNG fallback
  * bytes the double-part OOXML insert requires (old PowerPoint/WPS never show
  * the asvg:svgBlip part). Scripts never execute in an <img> context; external
- * references simply fail the decode and surface as diagnostics.
+ * references simply fail the decode and surface as diagnostics. Entity-level
+ * markup mistakes (bare `&`, HTML-only entities) are repaired before the
+ * decode — an otherwise-valid SVG must not fail on them.
  */
+
+import { repairSvgEntities } from './svg-sanitize'
 
 export interface SvgRasterResult {
   ok: boolean
@@ -22,12 +26,37 @@ export interface SvgRasterResult {
 
 const MAX_RASTER_PX = 4096
 
+/** `<img>` onerror cannot say WHAT it refused; the XML parser can. A
+    well-formed document that still fails the decode is an external reference
+    or an unsupported construct — name that case so the model's retry is
+    targeted instead of a guess between two failure families. */
+function describeDecodeFailure(svgText: string): string {
+  try {
+    const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml')
+    const perr = doc.querySelector('parsererror')
+    if (perr) {
+      const detail = (perr.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 200)
+      return (
+        `SVG is not well-formed XML — the parser says: ${detail || 'parse error'}. ` +
+        'Fix the markup: every & must be &amp; (or an entity), every tag closed, attributes quoted.'
+      )
+    }
+  } catch {
+    /* DOMParser unavailable — fall through to the generic message */
+  }
+  return (
+    'SVG failed to decode (markup error, or an unsupported/external reference): ' +
+    'the XML is well-formed, so the <img> pipeline refused a construct — usually an ' +
+    'external reference (http image/font/css, url(https://…)) or an unsupported element. ' +
+    'Keep the drawing self-contained: shapes, gradients and filters only.'
+  )
+}
+
 async function decodeSvg(svgText: string): Promise<HTMLImageElement> {
   const img = new Image()
   await new Promise<void>((resolve, reject) => {
     img.onload = () => resolve()
-    img.onerror = () =>
-      reject(new Error('SVG failed to decode (markup error, or an unsupported/external reference)'))
+    img.onerror = () => reject(new Error(describeDecodeFailure(svgText)))
     img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgText)
   })
   return img
@@ -64,7 +93,7 @@ export async function rasterizeSvg(
   svgText: string,
   target?: { wPx?: number; hPx?: number },
 ): Promise<SvgRasterResult> {
-  const img = await decodeSvg(svgText)
+  const img = await decodeSvg(repairSvgEntities(svgText))
   const width = img.naturalWidth
   const height = img.naturalHeight
   if (!width || !height) {

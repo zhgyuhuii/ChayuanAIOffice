@@ -321,6 +321,7 @@ export const id = {
   aiNotePoolEmpty: "Kumpulan gambar lokal kosong; rantai otomatis digunakan",
   aiNoteSvgMode: "Gambar: grafik vektor (digambar model, dapat disunting)",
   aiNoteImgFail: "Halaman {page}: tidak ada gambar untuk \"{kw}\"; digambar sebagai vektor",
+  aiNoteImgWebFallback: "Pembuatan gambar AI untuk \"{kw}\" gagal; gambar web digunakan sebagai gantinya",
 
   aiToolRunDeck: 'Membuat presentasi…',
   aiToolRunRegenSlide: 'Membuat ulang slide…',

@@ -322,6 +322,7 @@ export const nl = {
   aiNotePoolEmpty: "Lokale voorraad leeg; automatische keten toegepast",
   aiNoteSvgMode: "Beelden: vectorafbeeldingen (door het model getekend, bewerkbaar)",
   aiNoteImgFail: "Pagina {page}: geen afbeelding voor \"{kw}\"; als vector getekend",
+  aiNoteImgWebFallback: "AI-beeldgeneratie voor \"{kw}\" mislukt; in plaats daarvan is een webafbeelding gebruikt",
 
   aiToolRunDeck: 'Presentatie wordt gegenereerd…',
   aiToolRunRegenSlide: 'Dia wordt opnieuw gemaakt…',

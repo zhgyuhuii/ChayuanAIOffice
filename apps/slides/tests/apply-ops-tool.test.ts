@@ -248,6 +248,54 @@ describe('apply_ops', () => {
     expect(spy).not.toHaveBeenCalled()
   })
 
+  it('every element-creating insert op is scratch-guarded on a blank deck', async () => {
+    for (const op of [
+      {
+        op: 'addPicture',
+        target: { slide: 0 },
+        bytes: 'aGVsbG8=',
+        ext: 'png',
+        offset: { x: 0, y: 0, cx: 1, cy: 1 },
+      },
+      {
+        op: 'addWordArt',
+        target: { slide: 0 },
+        text: 'Hi',
+        offset: { x: 0, y: 0, cx: 1, cy: 1 },
+      },
+      {
+        op: 'addMedia',
+        target: { slide: 0 },
+        kind: 'audio',
+        bytes: 'aGVsbG8=',
+        ext: 'mp3',
+        offset: { x: 0, y: 0, cx: 1, cy: 1 },
+      },
+    ]) {
+      const spy = vi.fn()
+      ;(globalThis as any).window.slidesApi.applyTxn = spy
+      const r = await createSlidesSkill(access([slide])).executeTool!(call({ ops: [op] }))
+      expect((r as any).isError).toBe(true)
+      expect(r.output).toContain('generate_deck')
+      expect(spy).not.toHaveBeenCalled()
+    }
+  })
+
+  it('a lone setBackground on a blank deck is not scratch-guarded (legitimate restyle)', async () => {
+    ;(globalThis as any).window.slidesApi.applyTxn = vi.fn(async () => ({
+      applied: true,
+      records: [{ op: 'setBackground', target: '0', after: { kind: 'solid' } }],
+      slides: [slide],
+    }))
+    const r = await createSlidesSkill(access([slide])).executeTool!(
+      call({
+        ops: [{ op: 'setBackground', target: { slide: 0 }, kind: 'solid', color: '#8C1F28' }],
+      }),
+    )
+    expect((r as any).isError).toBeFalsy()
+    expect(r.mutated).toBe(true)
+  })
+
   it('appends a layout audit for touched pages when they have issues', async () => {
     const broken = {
       ...richSlide,

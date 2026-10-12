@@ -320,6 +320,7 @@ export const en = {
   aiNotePoolEmpty: "Local image pool empty (no folder picked); the auto chain applies",
   aiNoteSvgMode: "Imagery: vector graphics (drawn inline by the model, editable elements)",
   aiNoteImgFail: "Page {page}: no image sourced for \"{kw}\"; drawn as vector graphics instead",
+  aiNoteImgWebFallback: "AI image generation failed for \"{kw}\"; a web image was used instead",
 
   aiToolRunDeck: 'Generating presentation…',
   aiToolRunRegenSlide: 'Redoing the slide…',

@@ -5,13 +5,15 @@
  *
  * Sources:
  *   web   — keyword → web image search (existing channel)
- *   model — keyword → AI image generation (BYOK image model, URL result)
+ *   model — keyword → AI image generation (BYOK image model, URL result); a
+ *           failed keyword is rescued by the web tier (downgrade-only chain,
+ *           disclosed in the imagery notes — never a switch UP to a paid source)
  *   local — data-URI pool from the user's folder, allocated in order
  *   svg   — keywords stay briefs; the page writer draws them inline
  * 'auto' resolves model→web before allocation; an explicit 'local' pref with
  * an empty pool falls back to the auto chain (nothing was picked, nothing to
  * fail). Any source's per-slot failure/zero-results degrades THAT slot to a
- * brief — never a silent switch to another possibly-paid source.
+ * brief after its chain is exhausted.
  */
 import type { AiImageSource } from '@chatoffice/ai-provider'
 
@@ -42,6 +44,51 @@ export interface ImagerySlot {
 }
 
 const isResolvedUrl = (s: string) => /^(https?:\/\/|data:image\/)/i.test(s)
+
+export interface KeywordSourceDeps {
+  /** AI image generation tier (BYOK image model); a null result means that tier has nothing */
+  generateModelImage?: (prompt: string) => Promise<string | null>
+  /** web image search tier — rescue when a model tier is wired, primary otherwise */
+  searchImages?: (query: string, maxResults: number) => Promise<string[]>
+}
+
+export interface KeywordSourceResult {
+  urls: string[]
+  /** the web tier landed the image after the model tier failed — disclosed in the imagery notes */
+  viaWeb: boolean
+}
+
+/**
+ * Source one keyword through the tiered chain. With a model tier wired:
+ * AI generation first, then a web-search rescue — the same three-tier chain
+ * the generate_image tool uses, and strictly downgrade-only (model → web →
+ * brief; a search failure never switches UP to the paid generation tier).
+ * Without a model tier the web search IS the primary. Empty urls = the slot
+ * degrades to an inline-SVG brief.
+ */
+export async function sourceKeyword(
+  keyword: string,
+  deps: KeywordSourceDeps,
+): Promise<KeywordSourceResult> {
+  const modelTierWired = deps.generateModelImage != null
+  if (modelTierWired) {
+    try {
+      const url = await deps.generateModelImage!(keyword)
+      if (url) return { urls: [url], viaWeb: false }
+    } catch {
+      /* fall through to the web tier */
+    }
+  }
+  if (deps.searchImages) {
+    try {
+      const urls = await deps.searchImages(keyword, 5)
+      if (urls.length > 0) return { urls, viaWeb: modelTierWired }
+    } catch {
+      /* the slot degrades to a brief */
+    }
+  }
+  return { urls: [], viaWeb: false }
+}
 
 /**
  * Allocate imagery for every page. `candidates` maps a normalized keyword to

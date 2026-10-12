@@ -572,10 +572,9 @@ const config = {
         from: '../sheets/native/xlsx-engine/target/release/xlsx-sidecar',
         to: 'native/xlsx-sidecar',
       },
-      {
-        from: '../packages/cli/dist/chaoffice.cjs',
-        to: 'cli/chaoffice.cjs',
-      },
+      // cli/chaoffice.cjs 由顶层共享 extraResources 条目打入（同样的 to 目标）；
+      // 此处曾有一条 '../packages/...'（少一层）的错误路径副本，electron-builder
+      // 静默跳过并每次构建报 doesn't exist——冗余且路径错，删除
     ],
   },
   win: {

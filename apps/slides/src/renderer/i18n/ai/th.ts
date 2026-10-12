@@ -318,6 +318,7 @@ export const th = {
   aiNotePoolEmpty: "คลังรูปในเครื่องว่าง ใช้ห่วงโซ่อัตโนมัติ",
   aiNoteSvgMode: "รูปภาพ: เวกเตอร์ (โมเดลวาดแบบอินไลน์ แก้ไขได้)",
   aiNoteImgFail: "หน้า {page}: ไม่มีรูปสำหรับ \"{kw}\" วาดเป็นเวกเตอร์แทน",
+  aiNoteImgWebFallback: "การสร้างภาพด้วย AI สำหรับ \"{kw}\" ล้มเหลว จึงใช้ภาพจากเว็บแทน",
 
   aiToolRunDeck: 'กำลังสร้างงานนำเสนอ…',
   aiToolRunRegenSlide: 'กำลังทำสไลด์ใหม่…',

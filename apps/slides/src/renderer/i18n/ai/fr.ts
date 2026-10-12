@@ -322,6 +322,7 @@ export const fr = {
   aiNotePoolEmpty: "Réserve locale vide : chaîne automatique appliquée",
   aiNoteSvgMode: "Imagerie : graphiques vectoriels (dessinés par le modèle, modifiables)",
   aiNoteImgFail: "Page {page} : aucune image trouvée pour « {kw} » ; dessinée en vectoriel",
+  aiNoteImgWebFallback: "La génération d'image IA a échoué pour « {kw} » ; une image web a été utilisée à la place",
 
   aiToolRunDeck: 'Génération de la présentation…',
   aiToolRunRegenSlide: 'Refonte de la diapositive…',

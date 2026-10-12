@@ -319,6 +319,7 @@ export const ja = {
   aiNotePoolEmpty: "ローカル画像プールが空のため自動チェーンを使用",
   aiNoteSvgMode: "画像：ベクターグラフィック（モデルがインライン描画、編集可）",
   aiNoteImgFail: "{page}ページ：「{kw}」の画像を取得できず、ベクターグラフィックで描画しました",
+  aiNoteImgWebFallback: "「{kw}」のAI画像生成に失敗したため、Web画像を使用しました",
 
   aiToolRunDeck: 'プレゼンテーションを生成中…',
   aiToolRunRegenSlide: 'スライドを再生成中…',

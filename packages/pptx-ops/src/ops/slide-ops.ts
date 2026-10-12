@@ -383,10 +383,50 @@ function repaintFullBleedBackdrops(
 // One slide per op; multi-slide "apply to all" fans out to N ops in one
 // transaction. Image backgrounds report the landed media part in
 // after.mediaPath so later ops in the same batch reuse it (one part, N rels).
+
+const BG_KINDS: readonly string[] = ['solid', 'gradient', 'reset', 'graphics', 'image']
+
+/**
+ * Models keep dropping the required `kind` — or writing it as `type`, wrong
+ * case, with stray whitespace. The rest of the payload identifies the intended
+ * kind unambiguously, so coerce in place instead of rejecting the batch (same
+ * spirit as normalizeLengthUnits: tolerate at the boundary, stay strict
+ * underneath). A stated kind that matches none of the five after
+ * normalization is left alone so the guided error keeps teaching the real
+ * vocabulary; with nothing inferrable the original error fires unchanged.
+ */
+function coerceBackgroundKind(op: Op): void {
+  if (typeof op.kind === 'string') {
+    const kind = op.kind.trim().toLowerCase()
+    if (BG_KINDS.includes(kind)) {
+      op.kind = kind
+      return
+    }
+    if (op.kind.trim() !== '') return
+  }
+  const alias = typeof op.type === 'string' ? op.type.trim().toLowerCase() : ''
+  const kind = BG_KINDS.includes(alias)
+    ? alias
+    : op.from != null || op.to != null
+      ? 'gradient'
+      : op.color != null
+        ? 'solid'
+        : op.source != null
+          ? 'image'
+          : op.hidden != null
+            ? 'graphics'
+            : undefined
+  if (kind !== undefined) {
+    op.kind = kind
+    delete op.type
+  }
+}
+
 register({
   name: 'setBackground',
   validate(op, ctx) {
     resolveSlide(ctx, op)
+    coerceBackgroundKind(op)
     const kind = op.kind
     if (kind === 'solid') {
       requireHexColor(op.color, 'setBackground', 'color')

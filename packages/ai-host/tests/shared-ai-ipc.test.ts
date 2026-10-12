@@ -2,7 +2,7 @@ import { mkdtempSync, rmSync, writeFileSync, mkdirSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest'
-import { registerSharedAiIpc } from '../src/index'
+import { getSharedAiRuntime, registerSharedAiIpc } from '../src/index'
 import type { FileSourceFs } from '@chatoffice/ai-provider'
 
 /**
@@ -212,5 +212,27 @@ describe('registerSharedAiIpc × harness 自动识别', () => {
       modelId: 'local/qwen3-4b-instruct-2507-q3ks',
     })
     expect(call.apiKey).toBe('chatop-INVALIDATED0000000000000000000000')
+  })
+})
+
+/**
+ * The runtime mirror behind slides' getAiRuntime() fallback: in the shell's
+ * aggregate process only docs-main registers the shared ai:* channels, so
+ * slides' slides-only channels (generate-image / generate-video /
+ * analyze-media) must reach the registering module's runtime through this
+ * getter — ai-host is one module instance per bundle, so the mirror is shared.
+ */
+describe('getSharedAiRuntime (aggregate fallback mirror)', () => {
+  it('mirrors the exact runtime instance the registrar created', () => {
+    const root = tempRoot()
+    const { runtime } = makeRegistrar(root, makeHarnessHome(root), OFFICE_SETTINGS)
+    expect(getSharedAiRuntime()).toBe(runtime)
+  })
+
+  it('the mirror tracks the most recent registration', () => {
+    const first = makeRegistrar(tempRoot(), makeHarnessHome(tempRoot()), OFFICE_SETTINGS)
+    const second = makeRegistrar(tempRoot(), makeHarnessHome(tempRoot()), OFFICE_SETTINGS)
+    expect(getSharedAiRuntime()).toBe(second.runtime)
+    expect(getSharedAiRuntime()).not.toBe(first.runtime)
   })
 })

@@ -204,6 +204,21 @@ export interface AiStreamWireRequest {
  */
 export type { AiModelSelection, AiRuntime } from '@chatoffice/ai-provider'
 
+/**
+ * The runtime the most recent registerSharedAiIpc call created. Every editor
+ * module keeps its own reference; this mirror exists for the aggregated shell
+ * process, where a second editor module (slides' slides-only ai:* channels —
+ * generate-image / generate-video / analyze-media) runs without ever calling
+ * its own registerAiIpc and reads the runtime the registering module
+ * (docs-main) created instead. ai-host is a single module instance per
+ * bundle, so the mirror is visible across the app modules in one process.
+ */
+let sharedAiRuntime: AiRuntime | null = null
+
+export function getSharedAiRuntime(): AiRuntime | null {
+  return sharedAiRuntime
+}
+
 export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   const { ipcMain, chatoffice, translate } = deps
 
@@ -364,6 +379,9 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
       return ''
     },
   })
+
+  // Mirror for getSharedAiRuntime — see the getter's doc above.
+  sharedAiRuntime = runtime
 
   const activeStreams = new Map<string, AbortController>()
 

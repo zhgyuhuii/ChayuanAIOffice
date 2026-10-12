@@ -313,6 +313,7 @@ export const zhTW = {
   aiNotePoolEmpty: "本機圖片池為空（未選資料夾），已按自動鏈處理",
   aiNoteSvgMode: "配圖來源：向量圖形（模型內聯繪製，元素可編輯）",
   aiNoteImgFail: "第 {page} 頁：「{kw}」未能配圖，已用向量圖形繪製",
+  aiNoteImgWebFallback: "「{kw}」AI 生圖失敗，已改用網路圖片",
 
   aiToolRunDeck: '正在產生簡報…',
   aiToolRunRegenSlide: '正在重做頁面…',

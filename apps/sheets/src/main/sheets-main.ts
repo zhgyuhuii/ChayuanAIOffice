@@ -76,6 +76,7 @@ import {
   type AiRuntime,
 } from '@chatoffice/ai-provider'
 import {
+  getSharedAiRuntime,
   persistGeneratedImage,
   registerMediaIpc,
   registerSharedAiIpc,
@@ -2051,8 +2052,14 @@ function chatofficeCloudToolsOn(): boolean {
 /** v2 AI runtime, created by registerSheetsAiIpc and reused by per-app channels */
 let aiRuntime: AiRuntime | null = null
 function getAiRuntime(): AiRuntime {
-  if (!aiRuntime) throw new Error('AI runtime used before registerSheetsAiIpc()')
-  return aiRuntime
+  // Shell aggregate mode skips registerSheetsAiIpc (includeAiHandlers:false;
+  // the generic ai:* channels belong to docs-main there), but per-app channels
+  // registered in registerSheetsIpc still need a runtime — fall back to the
+  // one the registering module created in the same process.
+  if (aiRuntime) return aiRuntime
+  const shared = getSharedAiRuntime()
+  if (shared) return shared
+  throw new Error('AI runtime used before registerSheetsAiIpc()')
 }
 
 // Dev-only automation hooks: a fixed CDP port for driving the app from test

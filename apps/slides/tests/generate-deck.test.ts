@@ -18,6 +18,7 @@ function makeAccess(opts?: {
   landFailOnce?: number[]
   searchImagesFail?: boolean
   searchImagesMulti?: number
+  genImageFail?: boolean
   planImageQueries?: string[]
   styleTemplates?: Record<string, { topic: string; styleSkill: string; createdAt: string }>
   deckAssets?: number
@@ -31,6 +32,7 @@ function makeAccess(opts?: {
   const stylesSeen: string[] = [] // records the style each page received (verifies styleSkill reached single pages)
   const landOrder: string[] = [] // records the landing order
   const imageSearchCalls: string[] = [] // records the queries searchImages was called with
+  const genImageCalls: string[] = [] // records the prompts generateModelImage was called with
   const imagesSeen: string[][] = [] // records the images each generatePageCloud call received
   const briefsSeen: string[][] = [] // records the imagery briefs each generatePageLocal call received
   const assetsSeen: Array<Array<{ id: string; name: string }>> = [] // records the brand assets each generatePageLocal call received
@@ -144,6 +146,11 @@ function makeAccess(opts?: {
       }
       return [`https://mock.img/${encodeURIComponent(query)}.jpg`]
     },
+    generateModelImage: async (prompt: string) => {
+      genImageCalls.push(prompt)
+      if (opts?.genImageFail) return null
+      return `https://gen.mock/${encodeURIComponent(prompt)}.png`
+    },
     deckImageAssets: () =>
       Array.from({ length: opts?.deckAssets ?? 0 }, (_, i) => ({
         id: `deck:${i + 1}`,
@@ -178,6 +185,7 @@ function makeAccess(opts?: {
     stylesSeen,
     landOrder,
     imageSearchCalls,
+    genImageCalls,
     imagesSeen,
     briefsSeen,
     assetsSeen,
@@ -296,6 +304,51 @@ describe('generate_deck local page generation (cloud/chatoffice unavailable)', (
     expect(res.output).toContain('Missing images')
     expect(res.output).toContain('page 2')
     expect(res.output).toContain('https://img.example/broken.jpg')
+  })
+
+  it('model imagery failing → the web tier rescues the keyword and the output discloses the substitution', async () => {
+    const { access, genImageCalls, imageSearchCalls, imagesSeen } = makeAccess({
+      genImageFail: true,
+    })
+    const skill = createSlidesSkill(access)
+    const call: AgentToolCall = {
+      id: 'c-deck',
+      name: 'generate_deck',
+      input: {
+        core_hook: 'Doubled in a decade',
+        style: 'Deep navy + gold',
+        image_source: 'model',
+        pages: [
+          { title: 'Cover', brief: 'b1', layout: 'data', image_queries: ['bull statue'] },
+        ],
+      },
+    }
+    const res = (await skill.executeTool(call)) as { output: string }
+    expect(genImageCalls).toEqual(['bull statue']) // the model tier was attempted
+    expect(imageSearchCalls).toContain('bull statue') // …and rescued by the web tier
+    expect(imagesSeen[0]).toContain('https://mock.img/bull%20statue.jpg') // the page got the web image
+    expect(res.output).toContain('已改用网络图片')
+  })
+
+  it('model imagery succeeding skips the web tier entirely (no search, no substitution note)', async () => {
+    const { access, genImageCalls, imageSearchCalls, imagesSeen } = makeAccess({})
+    const skill = createSlidesSkill(access)
+    const call: AgentToolCall = {
+      id: 'c-deck',
+      name: 'generate_deck',
+      input: {
+        core_hook: 'Doubled in a decade',
+        style: 'Deep navy + gold',
+        image_source: 'model',
+        pages: [
+          { title: 'Cover', brief: 'b1', layout: 'data', image_queries: ['bull statue'] },
+        ],
+      },
+    }
+    await skill.executeTool(call)
+    expect(genImageCalls).toEqual(['bull statue'])
+    expect(imageSearchCalls).not.toContain('bull statue') // web tier never ran
+    expect(imagesSeen[0]).toContain('https://gen.mock/bull%20statue.png') // the generated image landed
   })
 
   it('cloud fails (e.g. Genspark free plan) → falls back to the local pipeline and still produces the deck', async () => {
@@ -639,9 +692,23 @@ describe('generate_deck imagery source stage (image-source-plan M-A/M-C)', () =>
     },
   })
 
-  it('model source: generation fails (Arrearage-style) → slots degrade to briefs for the local writer, the report names them, and web is never silently tried', async () => {
-    const m = makeAccess({ cloudEnabled: false })
-    m.access.generateModelImage = async () => null
+  it('model source: generation fails (Arrearage-style) → the web tier rescues the keyword, the substitution is disclosed', async () => {
+    const m = makeAccess({ cloudEnabled: false, genImageFail: true })
+    const skill = createSlidesSkill(m.access)
+    const res = (await skill.executeTool(kwCall('model', ['growth chart']))) as {
+      output: string
+    }
+    expect(m.getPages()).toBe(1)
+    expect(m.briefsSeen[0]).toEqual([]) // rescued — nothing left to draw inline
+    expect(m.imagesSeen[0]).toEqual(['https://mock.img/growth%20chart.jpg'])
+    // the substitution is disclosed (zh is the default test locale), not silent
+    expect(res.output).toContain('已改用网络图片')
+    expect(res.output).toContain('growth chart')
+    expect(res.output).not.toContain('未能配图')
+  })
+
+  it('model source: generation AND web search both fail → slots degrade to briefs for the local writer, the report names them', async () => {
+    const m = makeAccess({ cloudEnabled: false, genImageFail: true, searchImagesFail: true })
     const skill = createSlidesSkill(m.access)
     const res = (await skill.executeTool(kwCall('model', ['growth chart']))) as {
       output: string
@@ -652,7 +719,6 @@ describe('generate_deck imagery source stage (image-source-plan M-A/M-C)', () =>
     expect(res.output).toContain('未能配图')
     expect(res.output).toContain('growth chart')
     expect(res.output).toContain('矢量图形')
-    expect(m.imageSearchCalls).toEqual([]) // never switched to another possibly-paid source
   })
 
   it('model source: generation succeeds → the URL reaches the page writer, no degradation note', async () => {

@@ -321,6 +321,7 @@ export const cs = {
   aiNotePoolEmpty: "Local image pool empty (no folder picked); the auto chain applies",
   aiNoteSvgMode: "Imagery: vector graphics (drawn inline by the model, editable elements)",
   aiNoteImgFail: "Page {page}: no image sourced for \"{kw}\"; drawn as vector graphics instead",
+  aiNoteImgWebFallback: "Generování obrázku AI pro „{kw}“ selhalo; místo toho byl použit obrázek z webu",
   aiToolRunDeck: 'Generuji prezentaci…',
   aiToolRunRegenSlide: 'Znovu vytvářím snímek…',
   aiToolRunPlanDeck: 'Plánuji osnovu…',

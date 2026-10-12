@@ -29,7 +29,7 @@ import {
   setRescueFetch,
   type AiRuntime,
 } from '@chatoffice/ai-provider'
-import { persistGeneratedImage } from '@chatoffice/ai-host'
+import { persistGeneratedImage, getSharedAiRuntime } from '@chatoffice/ai-host'
 import { registerMediaIpc, registerSharedAiIpc, registerSharedKbIpc } from '@chatoffice/ai-host'
 import { MAX_REMOTE_IMAGE_BYTES, fetchRemoteImage, readBodyCapped, writeJsonAtomic } from '@chatoffice/electron-utils'
 import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
@@ -63,8 +63,14 @@ function chatofficeCloudToolsOn(): boolean {
 /** v2 AI runtime, created by registerAiIpc and reused by the slides-only channels */
 let aiRuntime: AiRuntime | null = null
 export function getAiRuntime(): AiRuntime {
-  if (!aiRuntime) throw new Error('AI runtime used before registerAiIpc()')
-  return aiRuntime
+  // Shell aggregate mode never calls this module's registerAiIpc (the generic
+  // ai:* channels belong to docs-main there, and a second registration would
+  // crash) — but the slides-only channels still need a runtime, so fall back
+  // to the one the registering module created in the same process.
+  if (aiRuntime) return aiRuntime
+  const shared = getSharedAiRuntime()
+  if (shared) return shared
+  throw new Error('AI runtime used before registerAiIpc()')
 }
 
 function readJson<T>(path: string, fallback: T): T {

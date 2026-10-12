@@ -323,6 +323,7 @@ export const es = {
   aiNotePoolEmpty: "Reserva local vacía; se aplica la cadena automática",
   aiNoteSvgMode: "Imágenes: gráficos vectoriales (dibujados por el modelo, editables)",
   aiNoteImgFail: "Página {page}: sin imagen para «{kw}»; dibujada como gráfico vectorial",
+  aiNoteImgWebFallback: "La generación de imágenes con IA falló para «{kw}»; se usó una imagen web en su lugar",
 
   aiToolRunDeck: 'Generando la presentación…',
   aiToolRunRegenSlide: 'Rehaciendo la diapositiva…',

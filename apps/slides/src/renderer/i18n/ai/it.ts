@@ -322,6 +322,7 @@ export const it = {
   aiNotePoolEmpty: "Riserva locale vuota; applicata la catena automatica",
   aiNoteSvgMode: "Immagini: grafica vettoriale (disegnata dal modello, modificabile)",
   aiNoteImgFail: "Pagina {page}: nessuna immagine per «{kw}»; disegnata come grafica vettoriale",
+  aiNoteImgWebFallback: "Generazione immagini IA non riuscita per «{kw}»; è stata usata un'immagine web in alternativa",
 
   aiToolRunDeck: 'Generazione della presentazione…',
   aiToolRunRegenSlide: 'Rifacimento della diapositiva…',

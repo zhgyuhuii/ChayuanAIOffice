@@ -324,6 +324,7 @@ export const de = {
   aiNotePoolEmpty: "Lokaler Bildbestand leer; automatische Kette aktiv",
   aiNoteSvgMode: "Bildmaterial: Vektorgrafiken (vom Modell gezeichnet, editierbar)",
   aiNoteImgFail: "Seite {page}: kein Bild für „{kw}“ gefunden; als Vektorgrafik gezeichnet",
+  aiNoteImgWebFallback: "KI-Bildgenerierung für „{kw}“ fehlgeschlagen; stattdessen wurde ein Webbild verwendet",
 
   aiToolRunDeck: 'Präsentation wird erstellt…',
   aiToolRunRegenSlide: 'Folie wird neu erstellt…',

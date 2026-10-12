@@ -4,7 +4,7 @@
  * internal anchors and data:image hrefs kept.
  */
 import { describe, expect, it } from 'vitest'
-import { sanitizeSvg } from '../src/svg-sanitize'
+import { repairSvgEntities, sanitizeSvg } from '../src/svg-sanitize'
 
 describe('sanitizeSvg', () => {
   it('keeps a clean SVG untouched', () => {
@@ -61,5 +61,31 @@ describe('sanitizeSvg', () => {
   it('reports ok:false when the markup stops being an SVG', () => {
     expect(sanitizeSvg('<div>not svg</div>').ok).toBe(false)
     expect(sanitizeSvg('<svg><rect/></svg>').ok).toBe(true)
+  })
+})
+
+describe('repairSvgEntities', () => {
+  it('escapes bare ampersands (the most common model markup error)', () => {
+    expect(repairSvgEntities('<text>R&D</text>')).toBe('<text>R&amp;D</text>')
+    expect(repairSvgEntities('<text>M&A Q&A</text>')).toBe('<text>M&amp;A Q&amp;A</text>')
+    expect(
+      repairSvgEntities('<path d="M0 0 L10 10 &amp;& 20 20"/>'),
+    ).toBe('<path d="M0 0 L10 10 &amp;&amp; 20 20"/>')
+  })
+
+  it('maps HTML-only named entities to numeric character references', () => {
+    expect(repairSvgEntities('<text>A&nbsp;B</text>')).toBe('<text>A&#160;B</text>')
+    expect(repairSvgEntities('<text>©&copy;™&trade;—&mdash;</text>')).toBe(
+      '<text>©&#169;™&#8482;—&#8212;</text>',
+    )
+  })
+
+  it('leaves the five predefined XML entities and numeric refs untouched', () => {
+    const svg = '<text a="&quot;x&quot;">a&lt;b&amp;c&gt;&#169;&#xA9;</text>'
+    expect(repairSvgEntities(svg)).toBe(svg)
+  })
+
+  it('leaves unknown named entities alone (the precise decoder diagnostic handles them)', () => {
+    expect(repairSvgEntities('<text>&nosuchentity;</text>')).toBe('<text>&nosuchentity;</text>')
   })
 })

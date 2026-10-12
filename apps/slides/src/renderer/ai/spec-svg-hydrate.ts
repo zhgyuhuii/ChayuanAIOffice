@@ -8,7 +8,7 @@
  * without its raster fallback anyway), matching the per-element no-page-harm
  * rule for generated imagery.
  */
-import { sanitizeSvg } from '@chatoffice/pptx-render'
+import { repairSvgEntities, sanitizeSvg } from '@chatoffice/pptx-render'
 import { rasterizeSvg } from './svg-raster'
 
 export interface SvgHydrateResult {
@@ -58,7 +58,14 @@ export async function hydrateSpecSvg(specJson: string): Promise<SvgHydrateResult
         svgFailed++
         continue
       }
-      kept.push({ ...el, svg: clean.svg, pngDataUri: `data:image/png;base64,${r.base64}` })
+      // Store the entity-repaired text: rasterizeSvg repairs before decoding,
+      // so an unchecked bare `&` would render in the check yet break the
+      // stored vector part at real render time.
+      kept.push({
+        ...el,
+        svg: repairSvgEntities(clean.svg),
+        pngDataUri: `data:image/png;base64,${r.base64}`,
+      })
       svgOk++
     } catch {
       svgFailed++

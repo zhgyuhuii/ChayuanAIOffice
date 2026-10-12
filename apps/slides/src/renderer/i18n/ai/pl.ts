@@ -320,6 +320,7 @@ export const pl = {
   aiNotePoolEmpty: "Lokalna pula pusta; zastosowano łańcuch automatyczny",
   aiNoteSvgMode: "Obrazy: grafika wektorowa (rysowana przez model, edytowalna)",
   aiNoteImgFail: "Strona {page}: brak obrazu dla „{kw}”; narysowano jako grafika wektorowa",
+  aiNoteImgWebFallback: "Generowanie obrazu AI dla „{kw}” nie powiodło się; użyto zamiast tego obrazu z sieci",
 
   aiToolRunDeck: 'Generowanie prezentacji…',
   aiToolRunRegenSlide: 'Ponowne tworzenie slajdu…',

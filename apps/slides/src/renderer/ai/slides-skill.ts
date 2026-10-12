@@ -7,7 +7,7 @@ import type {
   RenderSlide,
   ShapeRenderNode,
 } from '@chatoffice/pptx-render'
-import { EMU_PER_PX_96 } from '@chatoffice/pptx-render'
+import { EMU_PER_PX_96, repairSvgEntities, sanitizeSvg } from '@chatoffice/pptx-render'
 import type {
   AddSmartArtOp,
   AgentToolCall,
@@ -22,7 +22,7 @@ import {
   formatAudit,
 } from '@chatoffice/pipelines/slides/layout-audit'
 import { runLayoutScript, type LayoutScriptElement } from './layout-script'
-import { allocateImagery, resolveDeckImageSource } from './image-source'
+import { allocateImagery, resolveDeckImageSource, sourceKeyword } from './image-source'
 import { rasterizeSvg } from './svg-raster'
 import { t } from '../i18n/locale'
 import _systemPrompt from './prompts/system.md?raw'
@@ -1650,7 +1650,8 @@ interface SkillState {
 
 /**
  * [Hard constraint against "hand-building from scratch"] Sometimes the AI skips the HTML
- * pipeline and assembles a whole deck element by element with addElement/addSmartArt ops —
+ * pipeline and assembles a whole deck element by element with insert ops (addElement,
+ * addPicture, addSmartArt, … — the SCRATCH_GUARDED_OPS list) —
  * such hand-built pages look crude and the layout falls apart (root cause of screenshot issues).
  * "From-scratch" detection: this session hasn't used the HTML pipeline (!htmlGenerated) AND the
  * deck has almost no real content (≤ 2 non-decoration elements with text, i.e. blank/initial
@@ -1673,7 +1674,7 @@ function blockScratchBuild(
   const label = kind === 'smartart' ? t('aiLabelInsertSmartart') : t('aiFailNewElement')
   return {
     output:
-      "For blank/from-scratch scenarios don't hand-assemble pages element by element with addElement/addSmartArt/addTable/addChart ops (crude layout). " +
+      "For blank/from-scratch scenarios don't hand-assemble pages element by element with insert ops (addElement, addPicture, addTable, addChart, addSmartArt, addMedia, addWordArt) — crude layout. " +
       'Use the generation pipeline instead: new whole deck → generate_deck; new pages for an existing deck → generate_deck(pages, insert_mode:"append"). ' +
       'Write it beautifully in HTML/CSS and the system converts it into editable elements. Use insert ops only when the deck already has polished content and one element needs refining.',
     isError: true,
@@ -1820,8 +1821,23 @@ function applyOpsSummary(ops: unknown[], count: number): string {
   return t('aiSumApplyOps', { count })
 }
 
-/** Insert ops subject to the anti-scratch-build guard when the deck is still blank. */
-const SCRATCH_GUARDED_OPS = new Set(['addElement', 'addSmartArt', 'addTable', 'addChart'])
+/**
+ * Element-creating ops subject to the anti-scratch-build guard when the deck
+ * is still blank — every apply_ops op that mints content is listed, so the
+ * blank-deck hand-assembly path has no side door. setBackground deliberately
+ * stays outside: restyling a blank page ("把这个空白页背景改成红色") is a
+ * legitimate lone edit, and a batch that MIXES it with content ops is already
+ * blocked wholesale by the content op in the batch.
+ */
+const SCRATCH_GUARDED_OPS = new Set([
+  'addElement',
+  'addSmartArt',
+  'addTable',
+  'addChart',
+  'addPicture',
+  'addMedia',
+  'addWordArt',
+])
 
 interface OpPreflight {
   /** ops to send over the IPC (AI-layer fields stripped) */
@@ -2169,11 +2185,27 @@ ${r.text}`,
         Number.isFinite(Number(call.input.y)) && call.input.y !== undefined
           ? Math.round(Number(call.input.y))
           : Math.max(0, Math.round((pageH - h) / 2))
+      // The deck pipeline sanitizes before rasterizing (spec-svg-hydrate); the
+      // generate_svg loop must too: external refs would fail the <img> decode
+      // outright instead of degrading to their absence, and the stored vector
+      // part must not carry them (or entity-level markup mistakes) either.
+      const clean = sanitizeSvg(svg)
+      if (!clean.ok) {
+        return fail(
+          t('aiFailGenerateSvg'),
+          `The markup carries nothing renderable after sanitizing (${clean.removed.join(', ') || 'unclosed or invalid structure'}). ` +
+            'Send complete self-contained <svg>…</svg> markup: no scripts, no external images/fonts/URLs.',
+        )
+      }
+      const svgChecked = repairSvgEntities(clean.svg)
+      const svgNote = clean.removed.length
+        ? `Sanitizer removed: ${clean.removed.join(', ')} — keep imagery self-contained. `
+        : ''
       // Q4 closed loop: render-check the markup, feed diagnostics back, ≤2 attempts
       let raster: Awaited<ReturnType<typeof rasterizeSvg>> | null = null
       let diag = ''
       try {
-        raster = await rasterizeSvg(svg, { wPx: w, hPx: h })
+        raster = await rasterizeSvg(svgChecked, { wPx: w, hPx: h })
         if (raster.ok && (raster.paintRatio ?? 1) < 0.005) {
           diag = 'the render is blank (nothing painted inside the viewBox)'
         }
@@ -2198,7 +2230,7 @@ ${r.text}`,
             op: 'addPicture',
             bytes: raster.base64!,
             ext: 'png',
-            svgText: svg,
+            svgText: svgChecked,
             target: { slide: slideIndex },
             offset: { x: emu(x), y: emu(y), cx: emu(w), cy: emu(h) },
           },
@@ -2213,6 +2245,7 @@ ${r.text}`,
         output:
           `Vector graphic inserted on slide ${slideIndex + 1}${createdId ? ` (element id=${createdId})` : ''} at ${w}×${h}px — standard double part: crisp SVG vector + PNG fallback for old viewers. ` +
           `Render check passed (${((raster.paintRatio ?? 0) * 100).toFixed(1)}% painted). ` +
+          svgNote +
           'Restyle by regenerating and replacing the element; move/resize with setTransform ops.',
         mutated: true,
         summary: t('aiSumGenerateSvg'),
@@ -2785,45 +2818,44 @@ ${r.text}`,
             status: total > 0 && done >= total ? 'done' : 'running',
             summary,
           })
-        if (source === 'web' && access.searchImages && totalSlots > 0) {
-          progress(0, totalSlots, t('aiStageImagesRunning', { done: 0, total: totalSlots }))
+        if ((source === 'web' || source === 'model') && totalSlots > 0) {
+          const withModelTier = source === 'model'
+          const stageLabel = (done: number, total: number) =>
+            withModelTier
+              ? t('aiStageImagesModel', { done, total })
+              : t('aiStageImagesRunning', { done, total })
+          progress(0, totalSlots, stageLabel(0, totalSlots))
           let imagesDone = 0
+          const webFallbackKws = new Set<string>()
           await Promise.all(
             uniqueKeywords.map(async (kw) => {
               if (cancelled()) return
-              try {
-                candidatesByKw.set(normKw(kw), await access.searchImages!(kw, 5))
-              } catch {
-                /* fail-open: the slot degrades to a brief */
-              }
+              // tiered chain: model generation first (when wired), then a
+              // web-search rescue — downgrade-only, mirroring generate_image
+              const sourced = await sourceKeyword(kw, {
+                ...(withModelTier
+                  ? {
+                      generateModelImage: async (prompt: string) =>
+                        (await access.generateModelImage?.(prompt)) ?? null,
+                    }
+                  : {}),
+                ...(access.searchImages
+                  ? {
+                      searchImages: (query: string, maxResults: number) =>
+                        access.searchImages!(query, maxResults),
+                    }
+                  : {}),
+              })
+              if (sourced.urls.length > 0) candidatesByKw.set(normKw(kw), sourced.urls)
+              if (sourced.viaWeb) webFallbackKws.add(kw)
               imagesDone++
-              progress(
-                imagesDone,
-                totalSlots,
-                t('aiStageImagesRunning', { done: imagesDone, total: totalSlots }),
-              )
+              progress(imagesDone, totalSlots, stageLabel(imagesDone, totalSlots))
             }),
           )
-        } else if (source === 'model' && totalSlots > 0) {
-          progress(0, totalSlots, t('aiStageImagesModel', { done: 0, total: totalSlots }))
-          let imagesDone = 0
-          await Promise.all(
-            uniqueKeywords.map(async (kw) => {
-              if (cancelled()) return
-              try {
-                const url = await access.generateModelImage?.(kw)
-                if (url) candidatesByKw.set(normKw(kw), [url])
-              } catch {
-                /* the slot degrades to a brief */
-              }
-              imagesDone++
-              progress(
-                imagesDone,
-                totalSlots,
-                t('aiStageImagesModel', { done: imagesDone, total: totalSlots }),
-              )
-            }),
-          )
+          // notes follow keyword order, not completion order
+          for (const kw of uniqueKeywords) {
+            if (webFallbackKws.has(kw)) imageNotes.push(t('aiNoteImgWebFallback', { kw }))
+          }
         } else if (source === 'local') {
           // pool items are handed to keywords in order; unclaimed keywords degrade
           uniqueKeywords.forEach((kw, i) => {

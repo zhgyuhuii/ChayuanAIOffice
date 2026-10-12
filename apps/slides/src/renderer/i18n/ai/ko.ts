@@ -320,6 +320,7 @@ export const ko = {
   aiNotePoolEmpty: "로컬 이미지 풀이 비어 자동 체인을 사용합니다",
   aiNoteSvgMode: "이미지: 벡터 그래픽(모델이 인라인으로 그림, 편집 가능)",
   aiNoteImgFail: "{page}페이지: \"{kw}\" 이미지를 가져오지 못해 벡터 그래픽으로 그렸습니다",
+  aiNoteImgWebFallback: "「{kw}」 AI 이미지 생성에 실패하여 웹 이미지를 사용했습니다",
 
   aiToolRunDeck: '프레젠테이션 생성 중…',
   aiToolRunRegenSlide: '슬라이드 다시 생성 중…',

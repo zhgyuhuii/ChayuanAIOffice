@@ -321,6 +321,7 @@ export const vi = {
   aiNotePoolEmpty: "本地图片池为空（未选文件夹），已按自动链处理",
   aiNoteSvgMode: "配图来源：矢量图形（模型内联绘制，元素可编辑）",
   aiNoteImgFail: "第 {page} 页：「{kw}」未能配图，已用矢量图形绘制",
+  aiNoteImgWebFallback: "Tạo ảnh AI cho \"{kw}\" thất bại; đã dùng ảnh web thay thế",
   aiToolRunDeck: '正在生成演示文稿…',
   aiToolRunRegenSlide: '正在重做页面…',
   aiToolRunPlanDeck: '正在规划大纲…',

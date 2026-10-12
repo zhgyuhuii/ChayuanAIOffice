@@ -4,7 +4,7 @@
  * degrade-to-brief semantics, cross-page dedup, explicit URL passthrough.
  */
 import { describe, expect, it } from 'vitest'
-import { allocateImagery, resolveDeckImageSource } from '../src/renderer/ai/image-source'
+import { allocateImagery, resolveDeckImageSource, sourceKeyword } from '../src/renderer/ai/image-source'
 
 describe('resolveDeckImageSource', () => {
   it('auto: picks the model when an image model is configured', () => {
@@ -82,5 +82,67 @@ describe('allocateImagery', () => {
     const pages = [{ image_queries: ['data:image/png;base64,AAA'] }]
     const slots = allocateImagery(pages, 'local', new Map())
     expect(slots[0]!.urls).toEqual(['data:image/png;base64,AAA'])
+  })
+})
+
+describe('sourceKeyword (tiered chain: model → web rescue → brief)', () => {
+  it('model tier success returns its URL with no web fallback', async () => {
+    const r = await sourceKeyword('ox', {
+      generateModelImage: async () => 'https://gen.example/ox.png',
+      searchImages: async () => ['https://web.example/ox.jpg'],
+    })
+    expect(r).toEqual({ urls: ['https://gen.example/ox.png'], viaWeb: false })
+  })
+
+  it('model tier throwing is rescued by the web tier and disclosed via viaWeb', async () => {
+    const r = await sourceKeyword('ox', {
+      generateModelImage: async () => {
+        throw new Error('quota exhausted')
+      },
+      searchImages: async () => ['https://web.example/ox.jpg'],
+    })
+    expect(r).toEqual({ urls: ['https://web.example/ox.jpg'], viaWeb: true })
+  })
+
+  it('model tier returning null (nothing generated) is rescued the same way', async () => {
+    const r = await sourceKeyword('ox', {
+      generateModelImage: async () => null,
+      searchImages: async () => ['https://web.example/ox.jpg'],
+    })
+    expect(r).toEqual({ urls: ['https://web.example/ox.jpg'], viaWeb: true })
+  })
+
+  it('without a model tier the web search is the primary (never disclosed as a fallback)', async () => {
+    const r = await sourceKeyword('ox', {
+      searchImages: async () => ['https://web.example/ox.jpg'],
+    })
+    expect(r).toEqual({ urls: ['https://web.example/ox.jpg'], viaWeb: false })
+  })
+
+  it('both tiers failing degrades to a brief', async () => {
+    const r = await sourceKeyword('ox', {
+      generateModelImage: async () => {
+        throw new Error('down')
+      },
+      searchImages: async () => {
+        throw new Error('offline')
+      },
+    })
+    expect(r).toEqual({ urls: [], viaWeb: false })
+  })
+
+  it('model tier failing with no search tier wired degrades to a brief too', async () => {
+    const r = await sourceKeyword('ox', {
+      generateModelImage: async () => null,
+    })
+    expect(r).toEqual({ urls: [], viaWeb: false })
+  })
+
+  it('zero web results count as no rescue', async () => {
+    const r = await sourceKeyword('ox', {
+      generateModelImage: async () => null,
+      searchImages: async () => [],
+    })
+    expect(r).toEqual({ urls: [], viaWeb: false })
   })
 })

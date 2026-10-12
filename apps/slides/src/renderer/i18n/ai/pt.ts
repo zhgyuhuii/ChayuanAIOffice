@@ -321,6 +321,7 @@ export const pt = {
   aiNotePoolEmpty: "Conjunto local vazio; cadeia automática aplicada",
   aiNoteSvgMode: "Imagens: gráficos vetoriais (desenhados pelo modelo, editáveis)",
   aiNoteImgFail: "Página {page}: sem imagem para \"{kw}\"; desenhada como gráfico vetorial",
+  aiNoteImgWebFallback: "A geração de imagem por IA falhou para \"{kw}\"; foi usada uma imagem da web em vez dela",
 
   aiToolRunDeck: 'Gerando a apresentação…',
   aiToolRunRegenSlide: 'Refazendo o slide…',

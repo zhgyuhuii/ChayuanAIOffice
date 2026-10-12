@@ -115,6 +115,11 @@ slide in the same transaction.
 | `"graphics"` | `hidden`                             | `true` hides the master's background graphics on this page                            |
 | `"image"`    | `source`                             | Bytes or media-part payload; not usable from `apply_ops`                              |
 
+A missing or mis-cased `kind` is inferred from the payload when unambiguous
+(`color` → `solid`, `from`/`to` → `gradient`, `source` → `image`, `hidden` →
+`graphics`); `type` is accepted as an alias. Always send the explicit `kind`
+anyway — the inference is a safety net, not an invitation.
+
 ```json
 { "op": "setBackground", "target": { "slide": 0 }, "kind": "solid", "color": "#0B1F3A" }
 ```

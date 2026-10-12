@@ -161,6 +161,40 @@ describe('generate_svg tool', () => {
     expect(r!.output).toContain('starting with <svg')
     expect(rasterizeSvg).not.toHaveBeenCalled()
   })
+
+  it('external references are sanitized away (not a decode failure) and the substitution is disclosed', async () => {
+    vi.mocked(rasterizeSvg).mockResolvedValue({
+      ok: true,
+      base64: PNG_1PX_BASE64,
+      width: 100,
+      height: 100,
+      paintRatio: 0.42,
+    })
+    const r = await skill().executeTool!(
+      call({
+        svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">' +
+          '<image href="https://cdn.example/bull.png" width="100" height="100"/>' +
+          '<circle cx="50" cy="50" r="40" fill="#1565C0"/></svg>',
+      }),
+    )
+    expect(r!.mutated).toBe(true)
+    // the rasterizer saw the sanitized markup, and the stored vector part too
+    const checked = vi.mocked(rasterizeSvg).mock.calls[0]![0] as string
+    expect(checked).not.toContain('cdn.example')
+    const op = applyTxn.mock.calls[0]![0].ops[0]
+    expect(op.svgText).toBe(checked)
+    expect(r!.output).toContain('Sanitizer removed')
+    expect(r!.output).toContain('external href')
+  })
+
+  it('markup that sanitizes to nothing (unclosed) fails with the structural message', async () => {
+    const r = await skill().executeTool!(
+      call({ svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><rect width="10"/>' }),
+    )
+    expect(r!.mutated).toBe(false)
+    expect(r!.output).toContain('nothing renderable after sanitizing')
+    expect(rasterizeSvg).not.toHaveBeenCalled()
+  })
 })
 
 describe('generate_video tool', () => {
