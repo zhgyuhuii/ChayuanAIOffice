@@ -5852,6 +5852,9 @@ body.sidebar-resizing {
   position: fixed;
   z-index: 30;
   min-width: 160px;
+  /* 兜底：上翻后仍超高（极矮窗口）时菜单自身滚动，绝不伸出窗口底 */
+  max-height: calc(100vh - 16px);
+  overflow-y: auto;
   padding: 5px;
   background: var(--surface);
   border: 1px solid var(--border);

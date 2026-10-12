@@ -597,6 +597,41 @@ function ConflictPrompt({ names, onChoose }: ConflictPromptProps) {
   )
 }
 
+/** 行菜单的 fixed 视口锚点：below=按钮下方常规落点；above=上翻时的按钮顶缘 */
+interface RowMenuAnchor {
+  path: string
+  below: number
+  above: number
+  right: number
+}
+
+/** 菜单从按钮右缘向左展开、向下弹出——永不越过树条右界（文档标签页
+ *  clip-path 会把越界的 fixed 菜单硬裁掉），底部放不下时再上翻 */
+const anchorRowMenu = (path: string, btn: HTMLElement): RowMenuAnchor => {
+  const rect = btn.getBoundingClientRect()
+  return {
+    path,
+    below: rect.bottom + 4,
+    above: rect.top,
+    right: window.innerWidth - rect.right,
+  }
+}
+
+/** 菜单挂载后按实测尺寸落位：下方放不下整高 → 上翻到按钮上方（长树
+ *  底部行）；右键锚在行中部时菜单可能越出左窗缘 → 钳回窗内 */
+const settleRowMenu = (el: HTMLDivElement | null) => {
+  if (!el) return
+  const below = Number(el.dataset.below)
+  const above = Number(el.dataset.above)
+  if (below + el.offsetHeight > window.innerHeight - 8) {
+    el.style.top = `${Math.max(8, above - el.offsetHeight - 4)}px`
+  }
+  const right = Number(el.dataset.right)
+  if (Number.isFinite(right) && window.innerWidth - right - el.offsetWidth < 0) {
+    el.style.right = `${Math.max(0, window.innerWidth - el.offsetWidth)}px`
+  }
+}
+
 // ── 主组件 ───────────────────────────────────────────────
 
 export interface FileTreePaneProps {
@@ -627,11 +662,7 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
   } = useFolderListings()
   // open folder menu: path + fixed-position anchor (viewport coords), so the
   // popup can escape the scrollable tree without the tree losing overflow-y
-  const [folderMenu, setFolderMenu] = useState<{
-    path: string
-    top: number
-    right: number
-  } | null>(null)
+  const [folderMenu, setFolderMenu] = useState<RowMenuAnchor | null>(null)
   const menuOpenAt = (path: string) => folderMenu?.path === path
   const folderMenuWrapRef = useRef<HTMLDivElement>(null)
   const [folderRenaming, setFolderRenaming] = useState<{ path: string; value: string } | null>(null)
@@ -645,8 +676,11 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
   // folder row currently hovered by a drag
   const [dropTarget, setDropTarget] = useState<string | null>(null)
   const dragExpandTimer = useRef<number | null>(null)
-  // file row whose … menu is open + inline file rename state
-  const [fileMenu, setFileMenu] = useState<string | null>(null)
+  // file row whose … menu is open (same fixed-anchor scheme as folderMenu —
+  // the static-position version extended right past the tree strip and got
+  // clipped by the doc-tab clip-path) + inline file rename state
+  const [fileMenu, setFileMenu] = useState<RowMenuAnchor | null>(null)
+  const fileMenuOpenAt = (path: string) => fileMenu?.path === path
   const [renaming, setRenaming] = useState<{ path: string; value: string } | null>(null)
   useDismissablePopover(folderMenu !== null, () => setFolderMenu(null), {
     inside: () => (folderMenuWrapRef.current ? [folderMenuWrapRef.current] : []),
@@ -1051,12 +1085,7 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
             setFolderMenu(null)
             return
           }
-          const rect = e.currentTarget.getBoundingClientRect()
-          setFolderMenu({
-            path: entry.path,
-            top: rect.bottom + 4,
-            right: window.innerWidth - rect.right,
-          })
+          setFolderMenu(anchorRowMenu(entry.path, e.currentTarget))
         }}
       >
         <MoreDots />
@@ -1065,7 +1094,11 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
         <div
           className="folder-menu"
           role="menu"
-          style={{ top: folderMenu.top, right: folderMenu.right }}
+          ref={settleRowMenu}
+          data-below={folderMenu.below}
+          data-above={folderMenu.above}
+          data-right={folderMenu.right}
+          style={{ top: folderMenu.below, right: folderMenu.right }}
         >
           {editableAt(entry.path) && (
             <button role="menuitem" onClick={() => startCreateFolder(entry.path)}>
@@ -1198,21 +1231,33 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
           <span
             className="tree-file-actions"
             onClick={(e) => e.stopPropagation()}
-            ref={fileMenu === entry.path ? folderMenuWrapRef : undefined}
+            ref={fileMenuOpenAt(entry.path) ? folderMenuWrapRef : undefined}
           >
             <button
               className="folder-more-btn"
               aria-label={t('moreActions')}
-              aria-expanded={fileMenu === entry.path}
-              onClick={() => {
-              setFolderMenu(null)
-              setFileMenu(fileMenu === entry.path ? null : entry.path)
-            }}
+              aria-expanded={fileMenuOpenAt(entry.path)}
+              onClick={(e) => {
+                setFolderMenu(null)
+                if (fileMenuOpenAt(entry.path)) {
+                  setFileMenu(null)
+                  return
+                }
+                setFileMenu(anchorRowMenu(entry.path, e.currentTarget))
+              }}
             >
               <MoreDots />
             </button>
-            {fileMenu === entry.path && (
-              <div className="folder-menu tree-file-menu" role="menu">
+            {fileMenu && fileMenuOpenAt(entry.path) && (
+              <div
+                className="folder-menu tree-file-menu"
+                role="menu"
+                ref={settleRowMenu}
+                data-below={fileMenu.below}
+                data-above={fileMenu.above}
+                data-right={fileMenu.right}
+                style={{ top: fileMenu.below, right: fileMenu.right }}
+              >
                 {!entry.missing && (
                   <button
                     role="menuitem"
@@ -1324,7 +1369,12 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
           onContextMenu={(e) => {
             e.preventDefault()
             setFileMenu(null)
-            setFolderMenu({ path: entry.path, top: e.clientY + 2, right: window.innerWidth - e.clientX })
+            setFolderMenu({
+              path: entry.path,
+              below: e.clientY + 2,
+              above: e.clientY,
+              right: window.innerWidth - e.clientX,
+            })
           }}
           draggable={!isRoot && !isRenaming}
           onDragStart={(e) => onRowDragStart(e, [entry.path])}
