@@ -1,5 +1,6 @@
 import type { Editor } from '@tiptap/core'
-import type { Node as PmDocNode, Schema } from '@tiptap/pm/model'
+import { Fragment as PmFragment } from '@tiptap/pm/model'
+import type { Mark as ProseMirrorMark, Node as PmDocNode, Schema } from '@tiptap/pm/model'
 import type { Transaction } from '@tiptap/pm/state'
 import { generateTocFieldXml, type TocEntry } from '@chatoffice/docx-engine'
 import { isEastAsianFontName } from '../font-list'
@@ -1084,8 +1085,75 @@ function runInsertToc(op: Op, env: RunEnv): OpResult {
   return { op: 'insertToc', matched: entries.length, changed: nodes.length, skippedProtected: 0 }
 }
 
-// ---- op definitions ----
+const COVER_TITLE_HALF_POINTS = 72 // 36pt
+const COVER_SUBTITLE_HALF_POINTS = 32 // 16pt
+const COVER_BYLINE_HALF_POINTS = 28 // 14pt
 
+function coverParagraph(
+  schema: Schema,
+  text: string,
+  halfPoints: number,
+  bold: boolean,
+  spaceBeforeTwips: number | null,
+): PmDocNode {
+  const marks: ProseMirrorMark[] = []
+  if (bold) marks.push(schema.marks.bold.create())
+  if (halfPoints !== 0) marks.push(schema.marks.docTextStyle.create({ sizeHalfPoints: halfPoints }))
+  const para = schema.nodes.docParagraph.create(
+    spaceBeforeTwips ? { align: 'center', spaceBefore: spaceBeforeTwips } : { align: 'center' },
+  )
+  return para.copy(PmFragment.fromArray([schema.text(text, marks)]))
+}
+
+function runInsertCover(op: Op, env: RunEnv): OpResult {
+  const { tr, schema } = env
+  const title = String(op.title)
+  const blocks = topLevelBlocks(tr.doc)
+  // a document that already opens with a centered 36pt+ run is considered to
+  // have a cover — inserting another would stack two cover pages
+  const first = blocks[0]?.node
+  if (first && (first.type.name === 'docParagraph' || first.type.name === 'docHeading')) {
+    let bigCentered = false
+    first.forEach((child) => {
+      const sz = child.marks.find((m) => m.type.name === 'docTextStyle')?.attrs.sizeHalfPoints
+      if (Number(sz) >= COVER_TITLE_HALF_POINTS && first.attrs.align === 'center') bigCentered = true
+    })
+    if (bigCentered)
+      throw new Error(
+        'insertCover: the document already starts with a large centered title (an existing cover); remove it first or skip this op',
+      )
+  }
+
+  const nodes: PmDocNode[] = [
+    coverParagraph(schema, title, COVER_TITLE_HALF_POINTS, true, 4800),
+  ]
+  for (const [key, halfPoints] of [
+    ['subtitle', COVER_SUBTITLE_HALF_POINTS],
+    ['author', COVER_BYLINE_HALF_POINTS],
+    ['date', COVER_BYLINE_HALF_POINTS],
+  ] as const) {
+    const value = op[key]
+    if (typeof value === 'string' && value.trim()) {
+      nodes.push(coverParagraph(schema, value, halfPoints, false, 480))
+    }
+  }
+  // cover ends with its own page: a paragraph holding only a page-break hard break
+  nodes.push(
+    schema.nodes.docParagraph.create(null, schema.nodes.hardBreak.create({ pageBreak: true })),
+  )
+  tr.insert(0, nodes)
+
+  let tocChanged = 0
+  if (op.toc === true) {
+    // TOC right after the cover (entries come from the existing headings —
+    // write the body first). Same transaction, so the whole cover+toc batch is atomic.
+    const r = runInsertToc({ ...op, op: 'insertToc', afterBlockIndex: nodes.length - 1 } as Op, env)
+    tocChanged = r.changed
+  }
+  return { op: 'insertCover', matched: 1, changed: nodes.length + tocChanged, skippedProtected: 0 }
+}
+
+// ---- op definitions ----
 const FONT_SIGNATURE_FIELDS =
   'bold?, italic?, underline?, strike?, color?: "#RRGGBB"|null, highlight?, fontSize?: pt|null, fontFamily?: string|null, baseline?: "superscript"|"subscript"|"none"|null, link?: {url}|null'
 
@@ -1265,6 +1333,28 @@ register({
     return validateShape(op, this, where) ?? validateAfterBlockIndex(op, where)
   },
   apply: runInsertToc,
+})
+
+register({
+  name: 'insertCover',
+  signature:
+    '{ op: "insertCover", title, subtitle?, author?, date?, toc? }  // insert a cover page at the very start: centered 36pt bold title + optional 16pt subtitle / 14pt author & date lines + a page break; toc:true also inserts a TOC field right after the cover (needs headings — write the body first). Fails when the document already opens with a large centered title',
+  keys: ['title', 'subtitle', 'author', 'date', 'toc'],
+  target: 'none',
+  validate(op, where) {
+    const shape = validateShape(op, this, where)
+    if (shape) return shape
+    if (typeof op.title !== 'string' || !op.title.trim())
+      return `${where} insertCover: title must be a non-empty string`
+    for (const k of ['subtitle', 'author', 'date'] as const) {
+      if (op[k] !== undefined && typeof op[k] !== 'string')
+        return `${where} insertCover: ${k} must be a string (or omitted)`
+    }
+    if (op.toc !== undefined && typeof op.toc !== 'boolean')
+      return `${where} insertCover: toc must be a boolean (or omitted)`
+    return null
+  },
+  apply: runInsertCover,
 })
 
 for (const def of fieldOpDefs({ validateShape, matchTarget, markChanged })) {

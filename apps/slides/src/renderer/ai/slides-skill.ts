@@ -459,7 +459,7 @@ const TOOLS: AgentToolDef[] = [
       properties: {
         slideIndex: { type: 'integer', description: 'Page number (0-based)' },
       },
-      required: ['slideIndex'],
+      
     },
   },
   {
@@ -502,7 +502,7 @@ const TOOLS: AgentToolDef[] = [
             'One sentence describing what this script does (≤60 chars, shown to the user)',
         },
       },
-      required: ['slideIndex', 'code'],
+      required: ['code'],
     },
   },
   {
@@ -642,7 +642,7 @@ const TOOLS: AgentToolDef[] = [
         w: { type: 'number' },
         h: { type: 'number' },
       },
-      required: ['slideIndex', 'url', 'x', 'y', 'w', 'h'],
+      required: ['url', 'x', 'y', 'w', 'h'],
     },
   },
   {
@@ -657,7 +657,7 @@ const TOOLS: AgentToolDef[] = [
         url: { type: 'string', description: 'Direct image link' },
         keepCrop: { type: 'boolean', description: 'Keep the existing crop window (default false)' },
       },
-      required: ['slideIndex', 'sourceId', 'url'],
+      required: ['sourceId', 'url'],
     },
   },
   {
@@ -772,7 +772,7 @@ const TOOLS: AgentToolDef[] = [
             "Required when the brief carries specific figures (%, money, magnitudes): where they came from — 'user'/'document'/'search' (run web_search first)/'sample' (disclose to the user)",
         },
       },
-      required: ['slideIndex', 'brief'],
+      required: ['brief'],
     },
   },
   {
@@ -915,7 +915,7 @@ const TOOLS: AgentToolDef[] = [
         h: { type: 'number' },
         paragraphs: { $ref: '#/definitions/paragraphs' },
       },
-      required: ['slideIndex', 'x', 'y', 'w', 'h', 'paragraphs'],
+      required: ['x', 'y', 'w', 'h', 'paragraphs'],
       definitions: PARAGRAPHS_DEF,
     },
   },
@@ -939,7 +939,7 @@ const TOOLS: AgentToolDef[] = [
         fillColor: { type: 'string', description: '#RRGGBB' },
         paragraphs: { $ref: '#/definitions/paragraphs' },
       },
-      required: ['slideIndex', 'kind', 'x', 'y', 'w', 'h'],
+      required: ['kind', 'x', 'y', 'w', 'h'],
       definitions: PARAGRAPHS_DEF,
     },
   },
@@ -976,7 +976,7 @@ const TOOLS: AgentToolDef[] = [
         w: { type: 'number' },
         h: { type: 'number' },
       },
-      required: ['slideIndex', 'kind', 'categories', 'series', 'dataSource'],
+      required: ['kind', 'categories', 'series', 'dataSource'],
     },
   },
   {
@@ -1006,7 +1006,7 @@ const TOOLS: AgentToolDef[] = [
         w: { type: 'number' },
         h: { type: 'number' },
       },
-      required: ['slideIndex', 'groupId', 'option', 'dataSource'],
+      required: ['groupId', 'option', 'dataSource'],
     },
   },
   {
@@ -1031,7 +1031,7 @@ const TOOLS: AgentToolDef[] = [
         w: { type: 'number' },
         h: { type: 'number' },
       },
-      required: ['slideIndex', 'layout', 'items'],
+      required: ['layout', 'items'],
     },
   },
   {
@@ -1055,7 +1055,7 @@ const TOOLS: AgentToolDef[] = [
         w: { type: 'number' },
         h: { type: 'number' },
       },
-      required: ['slideIndex', 'rows', 'cols'],
+      required: ['rows', 'cols'],
     },
   },
   {
@@ -1071,7 +1071,7 @@ const TOOLS: AgentToolDef[] = [
         col: { type: 'integer', description: 'Column number (0-based)' },
         paragraphs: { $ref: '#/definitions/paragraphs' },
       },
-      required: ['slideIndex', 'sourceId', 'row', 'col', 'paragraphs'],
+      required: ['sourceId', 'row', 'col', 'paragraphs'],
       definitions: PARAGRAPHS_DEF,
     },
   },
@@ -1088,7 +1088,7 @@ const TOOLS: AgentToolDef[] = [
         index: { type: 'integer', description: 'Row/column number (0-based)' },
         before: { type: 'boolean', description: 'For insert, set true to insert before index' },
       },
-      required: ['slideIndex', 'sourceId', 'kind', 'index'],
+      required: ['sourceId', 'kind', 'index'],
     },
   },
   {
@@ -1118,7 +1118,7 @@ const TOOLS: AgentToolDef[] = [
           description: '"all" = full borders, "none" = clear borders',
         },
       },
-      required: ['slideIndex', 'sourceId'],
+      required: ['sourceId'],
     },
   },
   {
@@ -1175,7 +1175,7 @@ const TOOLS: AgentToolDef[] = [
           description: 'Switch rows/columns: categories ↔ series (optional)',
         },
       },
-      required: ['slideIndex', 'sourceId'],
+      required: ['sourceId'],
     },
   },
   {
@@ -1234,7 +1234,7 @@ const TOOLS: AgentToolDef[] = [
       properties: {
         slideIndex: { type: 'integer', description: 'Page number (0-based)' },
       },
-      required: ['slideIndex'],
+      
     },
   },
   {
@@ -1247,7 +1247,7 @@ const TOOLS: AgentToolDef[] = [
         slideIndex: { type: 'integer', description: 'Page number (0-based)' },
         text: { type: 'string', description: 'Comment text' },
       },
-      required: ['slideIndex', 'text'],
+      required: ['text'],
     },
   },
 ]
@@ -1453,7 +1453,9 @@ function preview(text: string, max = 50): string {
 function buildDeckOutline(slides: RenderSlide[], current: number, selectedIds: string[]): string {
   const canvas = slides[0] ? `Canvas ${slides[0].widthPx}×${slides[0].heightPx}px.` : ''
   const lines: string[] = [
-    `The presentation has ${slides.length} pages; page ${current + 1} is currently shown. ${canvas}`,
+    `The presentation has ${slides.length} pages; page ${current + 1} is currently shown. ${canvas}`
+        +
+        ' Tools taking slideIndex use the currently shown page when slideIndex is omitted.',
     `(Page order is the current actual order and may differ from generation time or earlier conversation; the user's "page N" refers to this outline)`,
   ]
   if (selectedIds.length > 0) {
@@ -1936,9 +1938,13 @@ async function executeTool(
   signal?: AbortSignal,
 ) {
   const slides = access.getSlides()
+  // slideIndex 缺省 = 当前活动页（agent 循环不再把 slideIndex 设为必填；
+  // generate_svg 早已用同款回落。显式传入时行为不变）
+  const slideIndexOf = (input: Record<string, unknown>): number =>
+    input.slideIndex !== undefined ? Number(input.slideIndex) : access.getCurrent()
   switch (call.name) {
     case 'read_slide': {
-      const idx = Number(call.input.slideIndex)
+      const idx = slideIndexOf(call.input)
       const slide = slides[idx]
       if (!slide)
         return fail(t('aiFailReadSlide'), `slideIndex out of range (0-${slides.length - 1})`)
@@ -1951,7 +1957,7 @@ async function executeTool(
 
     case 'execute_layout_script':
     case 'execute_slide_script': {
-      const idx = Number(call.input.slideIndex)
+      const idx = slideIndexOf(call.input)
       const slide = slides[idx]
       if (!slide) return fail(t('aiFailScript'), `slideIndex out of range (0-${slides.length - 1})`)
       const code = String(call.input.code ?? '').trim()
@@ -2153,7 +2159,7 @@ ${r.text}`,
         )
       }
       const slidesNow = access.getSlides()
-      const requested = Number(call.input.slideIndex)
+      const requested = slideIndexOf(call.input)
       const slideIndex =
         Number.isFinite(requested) && requested >= 0 && requested < slidesNow.length
           ? Math.round(requested)
@@ -2301,7 +2307,7 @@ ${r.text}`,
     }
 
     case 'insert_web_image': {
-      const idx = Number(call.input.slideIndex)
+      const idx = slideIndexOf(call.input)
       if (!slides[idx])
         return fail(t('aiFailInsertImage'), `slideIndex out of range (0-${slides.length - 1})`)
       const url = String(call.input.url ?? '')
@@ -2341,7 +2347,7 @@ ${r.text}`,
     }
 
     case 'replace_image': {
-      const idx = Number(call.input.slideIndex)
+      const idx = slideIndexOf(call.input)
       const sourceId = String(call.input.sourceId ?? '')
       const failKey = 'aiFailReplaceImage' as const
       const slide = slides[idx]
@@ -2459,7 +2465,7 @@ ${r.text}`,
     }
 
     case 'regenerate_slide': {
-      const idx = Number(call.input.slideIndex)
+      const idx = slideIndexOf(call.input)
       if (!slides[idx])
         return fail(t('aiFailRegen'), `slideIndex out of range (0-${slides.length - 1})`)
       const regenAssets = access.deckImageAssets?.() ?? []
@@ -3291,7 +3297,7 @@ ${r.text}`,
 
     case 'add_text_box':
     case 'add_shape': {
-      const idx = Number(call.input.slideIndex)
+      const idx = slideIndexOf(call.input)
       if (!slides[idx])
         return fail(t('aiFailNewElement'), `slideIndex out of range (0-${slides.length - 1})`)
       const scratchBlock = blockScratchBuild(call.name, slides, state)
@@ -3327,7 +3333,7 @@ ${r.text}`,
     }
 
     case 'add_chart': {
-      const idx = Number(call.input.slideIndex)
+      const idx = slideIndexOf(call.input)
       const slide = slides[idx]
       if (!slide) return fail(t('aiFailChart'), `slideIndex out of range (0-${slides.length - 1})`)
       const categories = Array.isArray(call.input.categories)
@@ -3381,7 +3387,7 @@ ${r.text}`,
     }
 
     case 'add_echart': {
-      const idx = Number(call.input.slideIndex)
+      const idx = slideIndexOf(call.input)
       const slide = slides[idx]
       if (!slide) return fail(t('aiFailChart'), `slideIndex out of range (0-${slides.length - 1})`)
       const gateErr = dataSourceGateError(call, state)
@@ -3437,7 +3443,7 @@ ${r.text}`,
     case 'add_smartart': {
       const scratchBlockSA = blockScratchBuild(call.name, slides, state)
       if (scratchBlockSA) return scratchBlockSA
-      const idx = Number(call.input.slideIndex)
+      const idx = slideIndexOf(call.input)
       const slide = slides[idx]
       if (!slide)
         return fail(t('aiFailSmartart'), `slideIndex out of range (0-${slides.length - 1})`)
@@ -3475,7 +3481,7 @@ ${r.text}`,
     }
 
     case 'add_table': {
-      const idx = Number(call.input.slideIndex)
+      const idx = slideIndexOf(call.input)
       const slide = slides[idx]
       if (!slide) return fail(t('aiFailTable'), `slideIndex out of range (0-${slides.length - 1})`)
       const rows = Number(call.input.rows)
@@ -3542,7 +3548,7 @@ ${r.text}`,
     }
 
     case 'edit_table_cell': {
-      const idx = Number(call.input.slideIndex)
+      const idx = slideIndexOf(call.input)
       const sourceId = String(call.input.sourceId ?? '')
       if (!slides[idx])
         return fail(t('aiFailEditTable'), `slideIndex out of range (0-${slides.length - 1})`)
@@ -3571,7 +3577,7 @@ ${r.text}`,
     }
 
     case 'edit_table_structure': {
-      const idx = Number(call.input.slideIndex)
+      const idx = slideIndexOf(call.input)
       const sourceId = String(call.input.sourceId ?? '')
       if (!slides[idx])
         return fail(t('aiFailTableStructure'), `slideIndex out of range (0-${slides.length - 1})`)
@@ -3612,7 +3618,7 @@ ${r.text}`,
     }
 
     case 'edit_table_style': {
-      const idx = Number(call.input.slideIndex)
+      const idx = slideIndexOf(call.input)
       const sourceId = String(call.input.sourceId ?? '')
       if (!slides[idx])
         return fail(t('aiFailTableStyle'), `slideIndex out of range (0-${slides.length - 1})`)
@@ -3640,7 +3646,7 @@ ${r.text}`,
     }
 
     case 'edit_chart': {
-      const idx = Number(call.input.slideIndex)
+      const idx = slideIndexOf(call.input)
       const sourceId = String(call.input.sourceId ?? '')
       if (!slides[idx])
         return fail(t('aiFailChartEdit'), `slideIndex out of range (0-${slides.length - 1})`)
@@ -3803,7 +3809,7 @@ ${r.text}`,
     }
 
     case 'read_comments': {
-      const idx = Number(call.input.slideIndex)
+      const idx = slideIndexOf(call.input)
       if (idx < 0 || idx >= slides.length)
         return fail(t('aiFailReadComments'), `slideIndex out of range (0-${slides.length - 1})`)
       if (!access.getComments)
@@ -3827,7 +3833,7 @@ ${r.text}`,
     }
 
     case 'add_comment': {
-      const idx = Number(call.input.slideIndex)
+      const idx = slideIndexOf(call.input)
       if (idx < 0 || idx >= slides.length)
         return fail(t('aiFailAddComment'), `slideIndex out of range (0-${slides.length - 1})`)
       const text = String(call.input.text ?? '').trim()

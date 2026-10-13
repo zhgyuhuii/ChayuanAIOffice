@@ -217,3 +217,41 @@ describe('generate_svg (offline vector tier)', () => {
     expect(exec.output).toContain('SVG failed to decode')
   })
 })
+
+
+describe('generate_image insert:false', () => {
+  it('returns the stored url without inserting (cover-background reuse flow)', async () => {
+    const { exec, editor } = await runWithDesktop(
+      {
+        aiGenerateImage: () =>
+          Promise.resolve({ url: 'file:///gen-store/abc123.png' }),
+      },
+      { prompt: 'majestic mountains ink painting', insert: false },
+    )
+    expect(exec.isError).toBeUndefined()
+    expect(exec.mutated).toBe(false)
+    expect(editor.state.doc.childCount).toBe(1) // nothing inserted
+    expect(exec.output).toContain('file:///gen-store/abc123.png')
+    expect(exec.output).toContain('insert_picture')
+    expect(exec.output).toContain('insertCover')
+    expect(exec.output).toContain('wrap:"behind"')
+  })
+
+  it('does not fall back to web search when generation fails with insert:false', async () => {
+    let searched = false
+    const { exec, editor } = await runWithDesktop(
+      {
+        aiGenerateImage: () => Promise.resolve({ error: 'no image model' }),
+        imageSearch: () => {
+          searched = true
+          return Promise.resolve({ method: 'web', images: [] })
+        },
+      },
+      { prompt: 'a watercolor fox', insert: false },
+    )
+    expect(exec.isError).toBe(true)
+    expect(searched).toBe(false)
+    expect(editor.state.doc.childCount).toBe(1)
+    expect(exec.output).toContain('Nothing was inserted')
+  })
+})

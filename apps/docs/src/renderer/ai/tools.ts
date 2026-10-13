@@ -674,7 +674,7 @@ export const AGENT_TOOLS: AgentToolDef[] = [
   {
     name: 'generate_image',
     description:
-      'Generate an illustration with the image model configured in Settings (生图、媒体与搜索) and insert it into the document (at the cursor / end of document). For illustration/diagram-style art that image_search cannot find, or when the user asks to generate/draw a picture. Without a configured image model the call fails and web image search is used as the fallback.',
+      'Generate an illustration with the image model configured in Settings (生图、媒体与搜索) and insert it into the document (at the cursor / end of document). For illustration/diagram-style art that image_search cannot find, or when the user asks to generate/draw a picture. Without a configured image model the call fails and web image search is used as the fallback. Pass insert:false to generate WITHOUT inserting — the output carries the stored image url to reuse elsewhere (e.g. a full-page cover background via insert_picture with float {anchor:"page", wrap:"behind"}).',
     inputSchema: {
       type: 'object',
       properties: {
@@ -687,6 +687,11 @@ export const AGENT_TOOLS: AgentToolDef[] = [
           description: 'e.g. "1:1", "16:9", "4:3"; omit for the default',
         },
         maxWidthPx: { type: 'integer', description: 'maximum width (px), default 480' },
+        insert: {
+          type: 'boolean',
+          description:
+            'default true. false = generate only and return the stored image url without inserting it — for reusing the picture (cover background, repeated placement)',
+        },
       },
       required: ['prompt'],
     },
@@ -846,7 +851,7 @@ export const AGENT_TOOLS: AgentToolDef[] = [
   {
     name: 'create_document',
     description:
-      'Create a NEW standalone file in the default save folder and open it in a new tab; the current document is not modified. Use when the user asks to put content into a new/separate document instead of this one. ' +
+      'Create a NEW standalone file in the default save folder and open it in a new tab; the current document is not modified. ONLY when the user explicitly asked for a new/separate file — never as a way to produce a report/article/cover when a document is already open (write into the open document with write_document + insertCover/insertToc instead, even when it is blank; a blank document triggers a redirect unless you pass separateFile:true). ' +
       "type 'docx' (default) and 'pdf' take the same restricted HTML as insert_content in content; type 'md' takes Markdown source; type 'html' takes a complete standalone HTML page (opens in the HTML editor). Images and charts are not supported in the new file's initial content.",
     inputSchema: {
       type: 'object',
@@ -861,6 +866,11 @@ export const AGENT_TOOLS: AgentToolDef[] = [
           type: 'string',
           description:
             'full document content: restricted HTML for docx/pdf, Markdown for md, a complete HTML page for html',
+        },
+        separateFile: {
+          type: 'boolean',
+          description:
+            'assert true only when the user explicitly asked for a separate/new file while the current document is blank; required to create a file then',
         },
       },
       required: ['title', 'content'],
@@ -1202,6 +1212,7 @@ async function executeAsyncTool(
     case 'generate_image': {
       const prompt = String(call.input.prompt ?? '').trim()
       if (!prompt) return fail(t('aiSumGenerateImage'), 'prompt must not be empty')
+      const insert = call.input.insert !== false
       const aspectRatio = String(call.input.aspectRatio ?? '').trim()
       const generated = await window.desktop.aiGenerateImage({
         prompt,
@@ -1215,6 +1226,11 @@ async function executeAsyncTool(
         // failed search hands the slot to generate_svg (the model draws it).
         // An explicit 'svg' default skips the web tier — never silently switch
         // to a source the user turned off.
+        if (!insert)
+          return fail(
+            t('aiSumGenerateImage'),
+            `${generated.error ?? 'image generation failed'}. Nothing was inserted (insert:false).`,
+          )
         const svgOnly = getImageSource?.() === 'svg'
         let searched: Awaited<ReturnType<typeof window.desktop.imageSearch>> | null = null
         if (!svgOnly) {
@@ -1252,6 +1268,16 @@ async function executeAsyncTool(
           `${generated.error ?? 'image generation failed'}${svgOnly ? '' : ' — no web image matched either'}. Draw the illustration yourself with generate_svg (write SVG markup), or retry generate_image.`,
         )
       }
+      if (!insert)
+        return {
+          output:
+            `Image generated (not inserted). Reuse it by passing this url to insert_picture: ${generated.url}\n` +
+            'Full-page cover background recipe: ① apply_ops [{op:"insertCover", title:"…", toc:true}] (body with headings first), ' +
+            '② insert_picture {url, afterBlockIndex:0, float:{anchor:"page", x:"0pt", y:"0pt", wrap:"behind"}, width:<page width pt>, height:<page height pt>} — ' +
+            'page size comes from the Page setup context line (twips ÷ 20 = pt); the picture pins to the cover page behind the title text.',
+          mutated: false,
+          summary: t('aiSumGenerateImage'),
+        }
       return insertImageFromUrl(
         editor,
         generated.url,
@@ -1309,6 +1335,18 @@ async function executeAsyncTool(
       )
     }
     case 'create_document': {
+      // blank-document redirect: when a document is open and blank, the user is
+      // looking at exactly the doc they want written — routing long content to a
+      // separate file is the classic misroute (their document stays empty). Fail
+      // with the in-place recipe unless the model asserts an explicit separate-file
+      // request via separateFile (deterministic, catches weak tool-choice).
+      const blankRedirect =
+        editor.state.doc.textContent.trim() === '' && call.input.separateFile !== true
+      if (blankRedirect)
+        return fail(
+          t('aiSumCreateDocument'),
+          'The current document is open but blank — write into it instead: write_document streams the full text right here, then apply_ops insertCover (cover page, optional toc:true) and insertToc (table of contents) finish the layout. Call create_document again with separateFile:true only when the user explicitly asked for a separate/new file.',
+        )
       const typeRaw = call.input.type === undefined ? 'docx' : String(call.input.type)
       if (typeRaw !== 'docx' && typeRaw !== 'pdf' && typeRaw !== 'md' && typeRaw !== 'html')
         return fail(t('aiSumCreateDocument'), 'type must be one of docx/pdf/md/html')
