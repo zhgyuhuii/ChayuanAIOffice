@@ -17,7 +17,7 @@ import iconMd from '../assets/file-md.png'
 import iconHtml from '../assets/file-html.png'
 import iconDwg from '../assets/file-dwg.png'
 import iconMind from '../assets/file-mind.png'
-import { useDismissablePopover } from '@chatoffice/ui'
+import { useDismissablePopover } from '@chaoffice/ui'
 import { markText } from '../../../shared/text-marks'
 import { useI18n } from '../locale'
 import type { I18n } from '../locale'
@@ -35,7 +35,7 @@ import type {
 const TREE_STATE_KEY = 'home.folderTree'
 
 /** 行拖拽的载荷 MIME（树行 → 文件夹行移动；渲染层自产自销，两端一致即可） */
-const DRAG_PATHS_MIME = 'application/x-chatoffice-paths'
+const DRAG_PATHS_MIME = 'application/x-chaoffice-paths'
 const DRAG_EXPAND_DELAY_MS = 600
 
 const FILE_ICONS: Record<string, string> = {

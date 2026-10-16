@@ -4,7 +4,7 @@
  * (Serper / Tavily / Linkup / SearxNG / DuckDuckGo / Bing / Openverse).
  */
 
-import { type AiSettings } from '@chatoffice/ai-provider'
+import { type AiSettings } from '@chaoffice/ai-provider'
 import { imageSearch, webSearch } from './index'
 import { readAiSettingsFile } from './media-tools'
 

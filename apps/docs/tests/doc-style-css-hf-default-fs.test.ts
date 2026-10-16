@@ -5,7 +5,7 @@
  * where Word does).
  */
 import { describe, expect, it } from 'vitest'
-import type { ParsedDocFull, StyleDisplay, StyleInfo } from '@chatoffice/docx-engine'
+import type { ParsedDocFull, StyleDisplay, StyleInfo } from '@chaoffice/docx-engine'
 import { docStyleCss } from '../src/renderer/doc-style-css'
 
 ;(globalThis as { CSS?: unknown }).CSS ??= { escape: (s: string) => s }

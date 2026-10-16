@@ -10,7 +10,7 @@ import {
   type HfTextBox,
   type Run,
   type SectionSettings,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import {
   cssLineHeight,
   cssRunFontFamily,

@@ -1,5 +1,5 @@
 /*
- * @chatoffice/ribbon — default styles for the schema-driven controls that the
+ * @chaoffice/ribbon — default styles for the schema-driven controls that the
  * per-app stylesheets don't define yet (spinbox, combobox, palette, gallery).
  * Toggle reuses the button chrome (rb-big/rb-small/rb-icon + active), color
  * triggers reuse rb-color-btn/rb-color-bar; nothing for those is needed here.

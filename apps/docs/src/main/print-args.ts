@@ -35,5 +35,5 @@ export function printScaleOption(scale: unknown): { scale: number } | Record<str
     : {}
 }
 
-export { printJobOptions } from '@chatoffice/electron-utils/print-job'
-export type { PrintDuplex, PrintJobOptions } from '@chatoffice/electron-utils/print-job'
+export { printJobOptions } from '@chaoffice/electron-utils/print-job'
+export type { PrintDuplex, PrintJobOptions } from '@chaoffice/electron-utils/print-job'

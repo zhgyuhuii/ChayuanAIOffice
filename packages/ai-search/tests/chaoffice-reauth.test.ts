@@ -3,7 +3,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-// the shared chatoffice CLI login (~/.chatoffice-tool-cli) is a key fallback: point
+// the shared chaoffice CLI login (~/.chaoffice-tool-cli) is a key fallback: point
 // homedir at an empty dir so the developer's real login cannot leak in
 const home = vi.hoisted(() => ({ dir: '' }))
 vi.mock('node:os', async (importOriginal) => {
@@ -12,36 +12,36 @@ vi.mock('node:os', async (importOriginal) => {
 })
 
 import {
-  chatofficeApiKey,
+  chaofficeApiKey,
   FRESH_AUTH_REQUIRED,
-  resetChatofficeAuthCache,
+  resetChaofficeAuthCache,
   setChaOfficeLoginOpener,
-} from '../src/chatoffice-auth'
+} from '../src/chaoffice-auth'
 import {
   ChaOfficeAuthError,
-  chatofficeCliApiKey,
-  chatofficeSlideGenerate,
-  chatofficeWebSearch,
+  chaofficeCliApiKey,
+  chaofficeSlideGenerate,
+  chaofficeWebSearch,
   hasChaOfficeAuth,
-  isChatofficeUnauthorizedText,
-  noteChatofficeCallFailure,
-  noteChatofficeKeyRejected,
-  resetChatofficeRejectedKeys,
-} from '../src/chatoffice'
+  isChaofficeUnauthorizedText,
+  noteChaofficeCallFailure,
+  noteChaofficeKeyRejected,
+  resetChaofficeRejectedKeys,
+} from '../src/chaoffice'
 
 const AUTH_URL = `https://www.genspark.ai/api/office_addin_auth/verify?code=${'a'.repeat(64)}`
 
 let dir: string
 
 beforeEach(() => {
-  dir = mkdtempSync(join(tmpdir(), 'chatoffice-reauth-'))
+  dir = mkdtempSync(join(tmpdir(), 'chaoffice-reauth-'))
   home.dir = dir
-  process.env.CHATOFFICE_AUTH_DIR = dir
-  process.env.GSK_CLI_PATH = '/fake/chatoffice.js'
-  delete process.env.CHATOFFICE_API_KEY
+  process.env.CHAOFFICE_AUTH_DIR = dir
+  process.env.GSK_CLI_PATH = '/fake/chaoffice.js'
+  delete process.env.CHAOFFICE_API_KEY
   delete process.env.AI_SEARCH_DISABLE_GSK
-  resetChatofficeAuthCache()
-  resetChatofficeRejectedKeys()
+  resetChaofficeAuthCache()
+  resetChaofficeRejectedKeys()
   writeFileSync(
     join(dir, 'auth.json'),
     JSON.stringify({ api_key: 'gsk-expired', key_id: 'kid-1', access_token: 'bearer-old' }),
@@ -51,11 +51,11 @@ beforeEach(() => {
 afterEach(() => {
   vi.unstubAllGlobals()
   setChaOfficeLoginOpener(null)
-  resetChatofficeAuthCache()
-  resetChatofficeRejectedKeys()
+  resetChaofficeAuthCache()
+  resetChaofficeRejectedKeys()
   rmSync(dir, { recursive: true, force: true })
   home.dir = ''
-  delete process.env.CHATOFFICE_AUTH_DIR
+  delete process.env.CHAOFFICE_AUTH_DIR
   delete process.env.GSK_CLI_PATH
 })
 
@@ -99,13 +99,13 @@ function stubServer(create: () => Response) {
   return { fetchMock, toolKeys }
 }
 
-describe('isChatofficeUnauthorizedText', () => {
-  it('matches the 401 shapes of chatoffice CLI, tool_cli and the LLM proxy', () => {
-    expect(isChatofficeUnauthorizedText('HTTP 401: Unauthorized')).toBe(true)
-    expect(isChatofficeUnauthorizedText('tool_cli /x HTTP 401: {}')).toBe(true)
-    expect(isChatofficeUnauthorizedText('Claude HTTP 401: {"error":"invalid key"}')).toBe(true)
-    expect(isChatofficeUnauthorizedText('HTTP 4011')).toBe(false)
-    expect(isChatofficeUnauthorizedText('HTTP 403: forbidden')).toBe(false)
+describe('isChaofficeUnauthorizedText', () => {
+  it('matches the 401 shapes of chaoffice CLI, tool_cli and the LLM proxy', () => {
+    expect(isChaofficeUnauthorizedText('HTTP 401: Unauthorized')).toBe(true)
+    expect(isChaofficeUnauthorizedText('tool_cli /x HTTP 401: {}')).toBe(true)
+    expect(isChaofficeUnauthorizedText('Claude HTTP 401: {"error":"invalid key"}')).toBe(true)
+    expect(isChaofficeUnauthorizedText('HTTP 4011')).toBe(false)
+    expect(isChaofficeUnauthorizedText('HTTP 403: forbidden')).toBe(false)
   })
 })
 
@@ -116,11 +116,11 @@ describe('tool_cli 401 recovery', () => {
     )
     const opener = vi.fn()
     setChaOfficeLoginOpener(opener)
-    await expect(chatofficeSlideGenerate({ brief: 'x' })).resolves.toMatchObject({
+    await expect(chaofficeSlideGenerate({ brief: 'x' })).resolves.toMatchObject({
       bytes: expect.any(Uint8Array),
     })
     expect(toolKeys).toEqual(['gsk-expired', 'gsk-new', 'gsk-new'])
-    expect(chatofficeApiKey()).toBe('gsk-new')
+    expect(chaofficeApiKey()).toBe('gsk-new')
     expect(opener).not.toHaveBeenCalled()
   })
 
@@ -128,14 +128,14 @@ describe('tool_cli 401 recovery', () => {
     const { toolKeys } = stubServer(() => response({ detail: FRESH_AUTH_REQUIRED }, 403))
     const opener = vi.fn()
     setChaOfficeLoginOpener(opener)
-    await expect(chatofficeSlideGenerate({ brief: 'x' })).rejects.toBeInstanceOf(ChaOfficeAuthError)
-    // the expired key is not retried and ai:chatoffice-status now reports signed-out
+    await expect(chaofficeSlideGenerate({ brief: 'x' })).rejects.toBeInstanceOf(ChaOfficeAuthError)
+    // the expired key is not retried and ai:chaoffice-status now reports signed-out
     expect(toolKeys).toEqual(['gsk-expired'])
-    expect(chatofficeCliApiKey()).toBe('')
+    expect(chaofficeCliApiKey()).toBe('')
     expect(hasChaOfficeAuth()).toBe(false)
     await vi.waitFor(() => expect(opener).toHaveBeenCalledWith(AUTH_URL))
     // with no key left, the next action fails fast instead of looping
-    await expect(chatofficeSlideGenerate({ brief: 'x' })).rejects.toThrow(/Not logged in/)
+    await expect(chaofficeSlideGenerate({ brief: 'x' })).rejects.toThrow(/Not logged in/)
     expect(opener).toHaveBeenCalledTimes(1)
   })
 
@@ -144,22 +144,22 @@ describe('tool_cli 401 recovery', () => {
       'fetch',
       vi.fn(async () => response('boom', 500)),
     )
-    await expect(chatofficeSlideGenerate({ brief: 'x' })).rejects.toThrow(/HTTP 500/)
-    expect(chatofficeApiKey()).toBe('gsk-expired')
+    await expect(chaofficeSlideGenerate({ brief: 'x' })).rejects.toThrow(/HTTP 500/)
+    expect(chaofficeApiKey()).toBe('gsk-expired')
   })
 })
 
-describe('chatoffice CLI 401 recovery', () => {
+describe('chaoffice CLI 401 recovery', () => {
   /** fake CLI: a 401 for the expired key (printed on stdout like the real CLI), results otherwise */
   function fakeCli(): string {
     const log = join(dir, 'cli-keys.log')
-    const script = join(dir, 'fake-chatoffice.mjs')
+    const script = join(dir, 'fake-chaoffice.mjs')
     writeFileSync(
       script,
       [
         "import { appendFileSync } from 'node:fs'",
-        `appendFileSync(${JSON.stringify(log)}, process.env.CHATOFFICE_API_KEY + '\\n')`,
-        "if (process.env.CHATOFFICE_API_KEY === 'gsk-expired') {",
+        `appendFileSync(${JSON.stringify(log)}, process.env.CHAOFFICE_API_KEY + '\\n')`,
+        "if (process.env.CHAOFFICE_API_KEY === 'gsk-expired') {",
         "  console.log(JSON.stringify({ status: 'error', message: 'HTTP 401: Unauthorized', data: null }))",
         '  process.exit(1)',
         '}',
@@ -173,7 +173,7 @@ describe('chatoffice CLI 401 recovery', () => {
   it('re-mints after a CLI 401 and reruns the command with the new key', async () => {
     const log = fakeCli()
     stubServer(() => response({ status: 0, data: { key_id: 'kid-2', token: 'gsk-new' } }))
-    const out = await chatofficeWebSearch('q')
+    const out = await chaofficeWebSearch('q')
     expect(out.results).toHaveLength(1)
     expect(readFileSync(log, 'utf-8').trim().split('\n')).toEqual(['gsk-expired', 'gsk-new'])
   })
@@ -181,36 +181,36 @@ describe('chatoffice CLI 401 recovery', () => {
   it('reports the auth failure and signs out when a fresh login is required', async () => {
     fakeCli()
     stubServer(() => response({ detail: FRESH_AUTH_REQUIRED }, 403))
-    await expect(chatofficeWebSearch('q')).rejects.toBeInstanceOf(ChaOfficeAuthError)
+    await expect(chaofficeWebSearch('q')).rejects.toBeInstanceOf(ChaOfficeAuthError)
     expect(hasChaOfficeAuth()).toBe(false)
   })
 })
 
-describe('noteChatofficeCallFailure (LLM proxy chat/stream)', () => {
+describe('noteChaofficeCallFailure (LLM proxy chat/stream)', () => {
   it('marks the injected key invalid on a 401 so the sign-in button appears', () => {
     stubServer(() => response({ detail: FRESH_AUTH_REQUIRED }, 403))
-    expect(noteChatofficeCallFailure('gsk-expired', new Error('Claude HTTP 401: invalid'))).toBe(
+    expect(noteChaofficeCallFailure('gsk-expired', new Error('Claude HTTP 401: invalid'))).toBe(
       true,
     )
     expect(hasChaOfficeAuth()).toBe(false)
   })
 
-  it('ignores non-auth failures and calls made without the chatoffice key', () => {
-    expect(noteChatofficeCallFailure('gsk-expired', new Error('HTTP 500: busy'))).toBe(false)
-    expect(noteChatofficeCallFailure('', new Error('HTTP 401: bad byok key'))).toBe(false)
+  it('ignores non-auth failures and calls made without the chaoffice key', () => {
+    expect(noteChaofficeCallFailure('gsk-expired', new Error('HTTP 500: busy'))).toBe(false)
+    expect(noteChaofficeCallFailure('', new Error('HTTP 401: bad byok key'))).toBe(false)
     expect(hasChaOfficeAuth()).toBe(true)
   })
 
   it('stops offering a rejected env key without touching anyone else’s file', () => {
-    process.env.CHATOFFICE_API_KEY = 'gsk-env'
+    process.env.CHAOFFICE_API_KEY = 'gsk-env'
     try {
       stubServer(() => response({ detail: FRESH_AUTH_REQUIRED }, 403))
-      expect(chatofficeCliApiKey()).toBe('gsk-env')
-      noteChatofficeCallFailure('gsk-env', 'HTTP 401: Unauthorized')
+      expect(chaofficeCliApiKey()).toBe('gsk-env')
+      noteChaofficeCallFailure('gsk-env', 'HTTP 401: Unauthorized')
       // falls through to ChaOffice's own (still valid) key
-      expect(chatofficeCliApiKey()).toBe('gsk-expired')
+      expect(chaofficeCliApiKey()).toBe('gsk-expired')
     } finally {
-      delete process.env.CHATOFFICE_API_KEY
+      delete process.env.CHAOFFICE_API_KEY
     }
   })
 })
@@ -220,7 +220,7 @@ describe('passive calls', () => {
     stubServer(() => response({ detail: FRESH_AUTH_REQUIRED }, 403))
     const opener = vi.fn()
     setChaOfficeLoginOpener(opener)
-    await expect(noteChatofficeKeyRejected('gsk-expired', { allowLogin: false })).resolves.toBe(
+    await expect(noteChaofficeKeyRejected('gsk-expired', { allowLogin: false })).resolves.toBe(
       'login_required',
     )
     expect(hasChaOfficeAuth()).toBe(false)

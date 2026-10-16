@@ -3,21 +3,21 @@
  * refresh, slicer panels). Extracted from App.tsx; the App component passes a
  * PivotActionContext built fresh per call so refs and state never go stale.
  */
-import { columnLabel, parseRange } from '@chatoffice/xlsx-gateway/domain/cell-address'
+import { columnLabel, parseRange } from '@chaoffice/xlsx-gateway/domain/cell-address'
 import {
   applyPivotSlicer,
   growPivotDefinition,
   recomputePivotData,
-} from '@chatoffice/xlsx-gateway/domain/pivot-engine'
+} from '@chaoffice/xlsx-gateway/domain/pivot-engine'
 import {
   timelineDomainOf,
   timelineSelection,
   type MonthKey,
-} from '@chatoffice/xlsx-gateway/domain/pivot-timeline'
+} from '@chaoffice/xlsx-gateway/domain/pivot-timeline'
 import {
   defaultDataFieldCaption,
   isPivotAggregation,
-} from '@chatoffice/xlsx-gateway/domain/pivot-value-modes'
+} from '@chaoffice/xlsx-gateway/domain/pivot-value-modes'
 import type { WorkbookFile, WorkbookPivotAdd, WorkbookPivotDefinition } from '../shared/desktop-api'
 import { journalSize, recordPivotCacheRefresh, recordPivotRefreshUpdate } from './edit-journal'
 import { t } from './i18n/locale'

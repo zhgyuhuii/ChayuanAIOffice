@@ -20,45 +20,45 @@ export default defineConfig({
   resolve: {
     alias: {
       // Subpath before the bare name: string aliases are prefix replacements
-      '@chatoffice/pptx-engine/table-grid': resolve(
+      '@chaoffice/pptx-engine/table-grid': resolve(
         here,
         '../../packages/pptx-engine/src/table-grid.ts',
       ),
-      '@chatoffice/pptx-engine/identity': resolve(
+      '@chaoffice/pptx-engine/identity': resolve(
         here,
         '../../packages/pptx-engine/src/identity.ts',
       ),
-'@chatoffice/pptx-engine/named-action': resolve(
+'@chaoffice/pptx-engine/named-action': resolve(
         here,
         '../../packages/pptx-engine/src/named-action.ts',
       ),
-      '@chatoffice/pptx-engine/background-promote': resolve(
+      '@chaoffice/pptx-engine/background-promote': resolve(
         here,
         '../../packages/pptx-engine/src/background-promote.ts',
       ),
-      '@chatoffice/pptx-engine/custgeom': resolve(
+      '@chaoffice/pptx-engine/custgeom': resolve(
         here,
         '../../packages/pptx-engine/src/custgeom.ts',
       ),
-      '@chatoffice/pptx-engine': resolve(here, '../../packages/pptx-engine/src/index.ts'),
-      '@chatoffice/pptx-ops/op-docs': resolve(here, '../../packages/pptx-ops/src/op-docs.ts'),
-      '@chatoffice/pptx-ops/font-size': resolve(here, '../../packages/pptx-ops/src/font-size.ts'),
-      '@chatoffice/pptx-ops': resolve(here, '../../packages/pptx-ops/src/index.ts'),
-      '@chatoffice/pptx-render/preset-geometry': resolve(
+      '@chaoffice/pptx-engine': resolve(here, '../../packages/pptx-engine/src/index.ts'),
+      '@chaoffice/pptx-ops/op-docs': resolve(here, '../../packages/pptx-ops/src/op-docs.ts'),
+      '@chaoffice/pptx-ops/font-size': resolve(here, '../../packages/pptx-ops/src/font-size.ts'),
+      '@chaoffice/pptx-ops': resolve(here, '../../packages/pptx-ops/src/index.ts'),
+      '@chaoffice/pptx-render/preset-geometry': resolve(
         here,
         '../../packages/pptx-render/src/preset-geometry.ts',
       ),
-      '@chatoffice/pptx-render': resolve(here, '../../packages/pptx-render/src/index.ts'),
-      '@chatoffice/pipelines/slides/layout-audit': resolve(
+      '@chaoffice/pptx-render': resolve(here, '../../packages/pptx-render/src/index.ts'),
+      '@chaoffice/pipelines/slides/layout-audit': resolve(
         here,
         '../../packages/pipelines/src/slides/layout-audit.ts',
       ),
-      '@chatoffice/pipelines/slides/cover-crop': resolve(
+      '@chaoffice/pipelines/slides/cover-crop': resolve(
         here,
         '../../packages/pipelines/src/slides/cover-crop.ts',
       ),
-      '@chatoffice/pipelines/slides': resolve(here, '../../packages/pipelines/src/slides/index.ts'),
-      '@chatoffice/docx-engine/metafile': resolve(
+      '@chaoffice/pipelines/slides': resolve(here, '../../packages/pipelines/src/slides/index.ts'),
+      '@chaoffice/docx-engine/metafile': resolve(
         here,
         '../../packages/docx-engine/src/metafile.ts',
       ),

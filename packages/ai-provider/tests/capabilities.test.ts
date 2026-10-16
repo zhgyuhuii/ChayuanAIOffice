@@ -21,8 +21,8 @@ describe('functionCallingVerdict', () => {
     expect(functionCallingVerdict(q('moonshot', 'openai-compatible', 'kimi-k3')).supported).toBe(true)
   })
 
-  it('always trusts the chatoffice proxy presets', () => {
-    expect(functionCallingVerdict(q('chatoffice', 'anthropic', 'claude-opus-4-7')).supported).toBe(true)
+  it('always trusts the chaoffice proxy presets', () => {
+    expect(functionCallingVerdict(q('chaoffice', 'anthropic', 'claude-opus-4-7')).supported).toBe(true)
   })
 })
 

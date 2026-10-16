@@ -2,7 +2,7 @@ import type { Node as PmNode } from '@tiptap/pm/model'
 import {} from '@tiptap/pm/state'
 import type { EditorView } from '@tiptap/pm/view'
 import {} from '@tiptap/pm/tables'
-import { WORDART_PRESETS, wordArtStrokePx } from '@chatoffice/ui'
+import { WORDART_PRESETS, wordArtStrokePx } from '@chaoffice/ui'
 import {
   autospaceBoundaries,
   autospaceMode,
@@ -35,9 +35,9 @@ import {
   SPACE_ONLY_RE,
 } from '../line-metrics'
 import { custGeomBackgroundCss, shapeBackgroundCss, shapeTextInsetsPx } from './shape-svg'
-import { mountEchart } from '@chatoffice/chart-kit/mount'
-import { parseOptionSmart } from '@chatoffice/chart-kit/revive'
-import { renderOptionSnapshot } from '@chatoffice/chart-kit/snapshot'
+import { mountEchart } from '@chaoffice/chart-kit/mount'
+import { parseOptionSmart } from '@chaoffice/chart-kit/revive'
+import { renderOptionSnapshot } from '@chaoffice/chart-kit/snapshot'
 import { pictureTransformFns, quarterTurnInsetPx, quarterTurnMarginCss } from './image-rotation'
 import {
   DK_SIDE,
@@ -71,7 +71,7 @@ import {
   type TextboxDisplay,
   type TextboxParaDisplay,
   type AutoSpace,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 
 /**
  * Custom schema mirroring the docx-engine Block model 1:1.

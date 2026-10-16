@@ -1,4 +1,4 @@
-import type { Lang } from '@chatoffice/i18n'
+import type { Lang } from '@chaoffice/i18n'
 
 // Accessible name for the full-window picture viewer, so the modal is announced
 // by name in the editor's own language. Same pattern as the AI panel side labels.

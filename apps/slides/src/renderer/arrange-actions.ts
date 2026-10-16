@@ -3,7 +3,7 @@
  * ungrouping, align/distribute, z-order, and freehand ink. Functions read the
  * latest App state through ActionCtx.
  */
-import type { GroupRenderNode, RenderNode, RenderSlide } from '@chatoffice/pptx-render'
+import type { GroupRenderNode, RenderNode, RenderSlide } from '@chaoffice/pptx-render'
 import type { ReorderDirection } from '../shared/ipc'
 import type { ActionCtx, UngroupedSet } from './action-context'
 import { FIT_WIDTH } from './app-constants'

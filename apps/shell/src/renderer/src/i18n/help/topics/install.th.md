@@ -1,4 +1,4 @@
-# การติดตั้ง ChatOffice
+# การติดตั้ง ChaOffice
 
 ทุกเวอร์ชันถูกเผยแพร่ไว้ที่ [หน้าเผยแพร่](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) ทุกเวอร์ชันมาจาก `main` ตัวติดตั้งสำหรับ macOS และ Windows มีลายเซ็นกำกับ
 
@@ -18,32 +18,32 @@
 
 ## บน macOS
 
-เปิดไฟล์ `.dmg` แล้วลาก **ChatOffice** ไปไว้ใน Applications ถ้าเป็นเวอร์ชัน Intel การเปิดครั้งแรกจะถามให้คุณยืนยันการเปิด คลิกขวาที่แอปใน Applications แล้วเลือก เปิด นี่คือ Gatekeeper ที่กำลังเจออิมเมจดิสก์ที่ดูเหมือนไม่ได้ลงลายเซ็น ไม่ใช่ไฟล์ที่ดาวน์โหลดเสีย
+เปิดไฟล์ `.dmg` แล้วลาก **ChaOffice** ไปไว้ใน Applications ถ้าเป็นเวอร์ชัน Intel การเปิดครั้งแรกจะถามให้คุณยืนยันการเปิด คลิกขวาที่แอปใน Applications แล้วเลือก เปิด นี่คือ Gatekeeper ที่กำลังเจออิมเมจดิสก์ที่ดูเหมือนไม่ได้ลงลายเซ็น ไม่ใช่ไฟล์ที่ดาวน์โหลดเสีย
 
 ## บน Windows
 
-รันตัวติดตั้ง `.exe` ตัวนี้จะวาง ChatOffice ไว้ในเมนู Start และลงทะเบียน `.docx`, `.xlsx`, `.pptx`, `.pdf` และไฟล์อื่น ๆ ให้เป็นค่าเริ่มต้น ดังนั้นดับเบิลคลิกที่ไฟล์ก็จะเปิดขึ้นมา
+รันตัวติดตั้ง `.exe` ตัวนี้จะวาง ChaOffice ไว้ในเมนู Start และลงทะเบียน `.docx`, `.xlsx`, `.pptx`, `.pdf` และไฟล์อื่น ๆ ให้เป็นค่าเริ่มต้น ดังนั้นดับเบิลคลิกที่ไฟล์ก็จะเปิดขึ้นมา
 
 ## บน Linux
 
 **Debian / Ubuntu**
 
 ```sh
-sudo apt install ./chatoffice_<version>_amd64.deb
+sudo apt install ./chaoffice_<version>_amd64.deb
 ```
 
 **Fedora / RHEL / openSUSE**
 
 ```sh
-sudo dnf install ./chatoffice-<version>.x86_64.rpm     # Fedora / RHEL family
-sudo zypper install ./chatoffice-<version>.x86_64.rpm  # openSUSE
+sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
+sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
 
 **AppImage** — รันจากที่วางไว้ได้เลย ไม่ต้องมีขั้นตอนติดตั้ง
 
 ```sh
-chmod +x ChatOffice-<version>.AppImage
-./ChatOffice-<version>.AppImage
+chmod +x ChaOffice-<version>.AppImage
+./ChaOffice-<version>.AppImage
 ```
 
 ตัวนี้ต้องมีรันไทม์ FUSE 2 ถ้าไม่อยากติดตั้ง ให้รันด้วย `--appimage-extract-and-run` แซนด์บ็อกซ์จะทำงานได้จากโฟลเดอร์ที่แตกออกมา
@@ -64,4 +64,4 @@ chmod +x ChatOffice-<version>.AppImage
 
 ## บรรทัดคำสั่งมาให้ด้วย
 
-ทุกการติดตั้งมีคำสั่ง `chatoffice` ที่คุยกับเอนจินตัวเดียวกับที่หน้าต่างใช้ ทั้งสองฝ่ายจึงไม่มีวันขัดแย้งกันเรื่องไฟล์ บน macOS และ Windows คำสั่งนี้อยู่ในแพ็กเกจของแอป ถ้าต้องการเรียกด้วยชื่อ ให้รัน `chatoffice install-cli` ครั้งเดียว คำสั่งจะไปอยู่ใน `PATH` ของคุณ ดู **บรรทัดคำสั่งและเอเจนต์** ว่ามันทำอะไรได้บ้าง
+ทุกการติดตั้งมีคำสั่ง `chaoffice` ที่คุยกับเอนจินตัวเดียวกับที่หน้าต่างใช้ ทั้งสองฝ่ายจึงไม่มีวันขัดแย้งกันเรื่องไฟล์ บน macOS และ Windows คำสั่งนี้อยู่ในแพ็กเกจของแอป ถ้าต้องการเรียกด้วยชื่อ ให้รัน `chaoffice install-cli` ครั้งเดียว คำสั่งจะไปอยู่ใน `PATH` ของคุณ ดู **บรรทัดคำสั่งและเอเจนต์** ว่ามันทำอะไรได้บ้าง

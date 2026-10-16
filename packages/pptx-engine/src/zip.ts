@@ -7,7 +7,7 @@
  * This module only handles reading and metadata.
  */
 import JSZip from 'jszip'
-import { assertZipInflatesWithinLimits } from '@chatoffice/zip-gate'
+import { assertZipInflatesWithinLimits } from '@chaoffice/zip-gate'
 import { createHash } from 'node:crypto'
 import { XMLParser } from 'fast-xml-parser'
 import type { SlideSize } from './types'

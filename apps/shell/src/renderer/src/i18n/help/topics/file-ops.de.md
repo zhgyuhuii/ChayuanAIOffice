@@ -17,7 +17,7 @@ Regeln: Die Dateiendung bleibt automatisch erhalten; unzulässige Zeichen, Punkt
 
 ## Löschen
 
-- **⋯ ▸ Löschen** auf der Startseite: fragt ab, welche Dateien, und verschiebt sie in den **Papierkorb des Systems**, von dort über das Betriebssystem wiederherstellbar. ChatOffice führt dafür kein eigenes Rückgängig — die Wiederherstellung ist Sache des Papierkorbs, nicht einer Meldung.
+- **⋯ ▸ Löschen** auf der Startseite: fragt ab, welche Dateien, und verschiebt sie in den **Papierkorb des Systems**, von dort über das Betriebssystem wiederherstellbar. ChaOffice führt dafür kein eigenes Rückgängig — die Wiederherstellung ist Sache des Papierkorbs, nicht einer Meldung.
 
 ## Duplizieren
 

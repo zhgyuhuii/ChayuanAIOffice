@@ -5,8 +5,8 @@
  * removed op) fails here, not in production.
  */
 import { describe, it, expect } from 'vitest'
-import { addElement, createBlankPptx, openPptx } from '@chatoffice/pptx-engine'
-import { runTxn, opNames } from '@chatoffice/pptx-ops'
+import { addElement, createBlankPptx, openPptx } from '@chaoffice/pptx-engine'
+import { runTxn, opNames } from '@chaoffice/pptx-ops'
 import {
   OP_DOCS,
   OP_GROUPS,
@@ -17,7 +17,7 @@ import {
   opUsage,
   opVocabulary,
   LOCAL_OP_DOCS,
-} from '@chatoffice/pptx-ops'
+} from '@chaoffice/pptx-ops'
 
 // pending: true entries document ops of an in-flight branch ahead of its
 // merge so the PRs stay independent; they are hidden from vocabulary and

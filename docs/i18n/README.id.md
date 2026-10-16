@@ -1,13 +1,13 @@
 <p align="center">
-  <a href="https://chatoffice.ai/">
+  <a href="https://chaoffice.ai/">
     <picture>
       <source srcset="../assets/readme/hero-dark.webp" media="(prefers-color-scheme: dark)">
-      <img src="../assets/readme/hero.webp" alt="ChatOffice — suite Office AI open-source: Docs, Sheets, Slides, PDF, Markdown, dan HTML dengan panel AI bawaan" width="100%">
+      <img src="../assets/readme/hero.webp" alt="ChaOffice — suite Office AI open-source: Docs, Sheets, Slides, PDF, Markdown, dan HTML dengan panel AI bawaan" width="100%">
     </picture>
   </a>
 </p>
 
-<h1 align="center">ChatOffice</h1>
+<h1 align="center">ChaOffice</h1>
 
 <p align="center"><b>Suite Office AI open-source pertama di dunia yang paling lengkap.</b><br>
 File Word, Excel, PowerPoint, dan PDF, diedit oleh Anda dan AI Anda, disimpan kembali dalam format aslinya.</p>
@@ -24,12 +24,12 @@ File Word, Excel, PowerPoint, dan PDF, diedit oleh Anda dan AI Anda, disimpan ke
 <p align="center">
   <a href="#download"><b>Unduh</b></a> ·
   <a href="#command-line-and-agent-skill"><b>CLI</b></a> ·
-  <a href="https://chatoffice.ai/"><b>Situs Web</b></a> ·
-  <a href="https://chatoffice.ai/join"><b>Komunitas</b></a> ·
+  <a href="https://chaoffice.ai/"><b>Situs Web</b></a> ·
+  <a href="https://chaoffice.ai/join"><b>Komunitas</b></a> ·
   <a href="../../PRIVACY.md"><b>Privasi</b></a>
 </p>
 
-ChatOffice adalah alternatif Microsoft Office yang gratis dan open-source
+ChaOffice adalah alternatif Microsoft Office yang gratis dan open-source
 untuk macOS, Windows, dan Linux. Aplikasi ini membuka dan menyimpan file
 `.docx`, `.xlsx`, dan `.pptx` asli, mengedit PDF, Markdown, dan HTML, serta
 menghadirkan agen AI di samping setiap dokumen — bukan sekadar kotak obrolan
@@ -53,7 +53,7 @@ perubahan, dan menunjukkan dengan tepat bagian mana yang diubah.
   Mistral, OpenRouter, Requesty, atau endpoint apa pun yang kompatibel dengan OpenAI,
   termasuk server lokal.
 - **Dapat dijalankan lewat skrip dan siap untuk agen.** Aplikasi ini
-  menyertakan baris perintah `chatoffice` dan sebuah skill untuk Claude Code,
+  menyertakan baris perintah `chaoffice` dan sebuah skill untuk Claude Code,
   Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode, dan Windsurf, sehingga
   coding agent bisa membuat, mengonversi, membaca, dan mengedit file Office
   asli di mesin Anda tanpa membuka satu jendela pun.
@@ -73,8 +73,8 @@ dari prompt yang bisa Anda baca di panel.
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/docs-report.webp" alt="ChatOffice Docs menampilkan halaman laporan tahunan dua kolom dengan gambar sampul selebar halaman, tabel KPI berlatar warna, header dan footer, pada zoom 80% dengan panel AI yang diciutkan"></td>
-<td width="50%"><img src="../assets/readme/docs-ai.webp" alt="ChatOffice Docs: ringkasan perusahaan dengan gambar banner; AI mempersingkat bagian Overview dan menyisipkan bagian berpoin baru, dan panel menawarkan rollback satu klik"></td>
+<td width="50%"><img src="../assets/readme/docs-report.webp" alt="ChaOffice Docs menampilkan halaman laporan tahunan dua kolom dengan gambar sampul selebar halaman, tabel KPI berlatar warna, header dan footer, pada zoom 80% dengan panel AI yang diciutkan"></td>
+<td width="50%"><img src="../assets/readme/docs-ai.webp" alt="ChaOffice Docs: ringkasan perusahaan dengan gambar banner; AI mempersingkat bagian Overview dan menyisipkan bagian berpoin baru, dan panel menawarkan rollback satu klik"></td>
 </tr>
 <tr>
 <td><b>Membuka file sesuai tata letak Word</b> — bagian dua kolom, gambar full-bleed, tabel berlatar warna, header dan footer, penomoran halaman berdasarkan metrik baris Word. Gaya, komentar, tracked changes, rumus, dan tulisan tangan (ink) tetap utuh saat dibuka lagi.</td>
@@ -86,8 +86,8 @@ dari prompt yang bisa Anda baca di panel.
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/sheets-ai.webp" alt="ChatOffice Sheets: AI menambahkan sheet Summary berisi pendapatan per wilayah dan kategori menggunakan rumus SUMIF, ditambah grafik kolom, dan melaporkan 43 perubahan yang diterapkan dengan tombol Undo"></td>
-<td width="50%"><img src="../assets/readme/sheets-qa.webp" alt="ChatOffice Sheets: ditanya wilayah mana yang memimpin pendapatan Q2, AI menjawab Eropa lengkap dengan rincian kategori dan mengutip sel yang digunakan sebagai tautan, di samping sheet Orders"></td>
+<td width="50%"><img src="../assets/readme/sheets-ai.webp" alt="ChaOffice Sheets: AI menambahkan sheet Summary berisi pendapatan per wilayah dan kategori menggunakan rumus SUMIF, ditambah grafik kolom, dan melaporkan 43 perubahan yang diterapkan dengan tombol Undo"></td>
+<td width="50%"><img src="../assets/readme/sheets-qa.webp" alt="ChaOffice Sheets: ditanya wilayah mana yang memimpin pendapatan Q2, AI menjawab Eropa lengkap dengan rincian kategori dan mengutip sel yang digunakan sebagai tautan, di samping sheet Orders"></td>
 </tr>
 <tr>
 <td><b>Bangun sheet-nya</b> — dari satu kalimat, agen menambahkan sheet Summary dengan rumus <code>SUMIF</code> yang sebenarnya per wilayah dan kategori, menyisipkan grafik kolom, dan menerapkan 43 perubahan sebagai satu batch yang bisa dibatalkan sekaligus.</td>
@@ -97,15 +97,15 @@ dari prompt yang bisa Anda baca di panel.
 
 ### 3 · Slides — dari sebuah prompt menjadi deck `.pptx`
 
-<img src="../assets/readme/slides-generate.webp" alt="Time-lapse ChatOffice Slides membuat deck investor Aurora Home: AI menyusun alur cerita di panel, slide muncul satu demi satu di kanvas, dan deck yang selesai diakhiri dengan closing ask" width="100%">
+<img src="../assets/readme/slides-generate.webp" alt="Time-lapse ChaOffice Slides membuat deck investor Aurora Home: AI menyusun alur cerita di panel, slide muncul satu demi satu di kanvas, dan deck yang selesai diakhiri dengan closing ask" width="100%">
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/slides-cover.webp" alt="ChatOffice Slides: slide sampul deck investor Aurora Home yang dibuat AI di kanvas, dengan prompt satu baris aslinya dan ringkasan AI tentang apa yang dibuatnya di panel"></td>
-<td width="50%"><img src="../assets/readme/slides-ai.webp" alt="ChatOffice Slides: slide penutup yang telah didesain dari deck 11-slide yang sama, dengan strip thumbnail di kiri dan panel AI yang meringkas alur ceritanya"></td>
+<td width="50%"><img src="../assets/readme/slides-cover.webp" alt="ChaOffice Slides: slide sampul deck investor Aurora Home yang dibuat AI di kanvas, dengan prompt satu baris aslinya dan ringkasan AI tentang apa yang dibuatnya di panel"></td>
+<td width="50%"><img src="../assets/readme/slides-ai.webp" alt="ChaOffice Slides: slide penutup yang telah didesain dari deck 11-slide yang sama, dengan strip thumbnail di kiri dan panel AI yang meringkas alur ceritanya"></td>
 </tr>
 <tr>
-<td><b>Satu baris prompt masuk</b> — "Buat deck presentasi investor 10-slide untuk Aurora Home…". ChatOffice merancang alur cerita, meriset angka-angkanya, dan menyusun setiap slide langsung ke kanvas sebagai `.pptx` yang sebenarnya.</td>
+<td><b>Satu baris prompt masuk</b> — "Buat deck presentasi investor 10-slide untuk Aurora Home…". ChaOffice merancang alur cerita, meriset angka-angkanya, dan menyusun setiap slide langsung ke kanvas sebagai `.pptx` yang sebenarnya.</td>
 <td><b>Deck jadi keluar</b> — sebelas slide terdesain dengan tipografi, citra visual yang konsisten, dan call to action penutup; lanjutkan mengedit dengan master, layout, smart guide, dan pemotongan gambar non-destruktif, atau minta panel untuk mengubah gaya, menulis ulang, dan menyusun ulang urutan.</td>
 </tr>
 </table>
@@ -114,8 +114,8 @@ dari prompt yang bisa Anda baca di panel.
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/pdf-edit.webp" alt="ChatOffice PDF: mode Edit text menandai setiap blok teks di halaman untuk diedit langsung di tempat, sementara panel AI menjawab pertanyaan tentang laporan dengan kutipan halaman"></td>
-<td width="50%"><img src="../assets/readme/pdf-convert.webp" alt="ChatOffice Docs menampilkan dokumen Word yang dikonversi secara lokal dari PDF Helios quarterly review, dibuka di tab kedua di samping PDF aslinya"></td>
+<td width="50%"><img src="../assets/readme/pdf-edit.webp" alt="ChaOffice PDF: mode Edit text menandai setiap blok teks di halaman untuk diedit langsung di tempat, sementara panel AI menjawab pertanyaan tentang laporan dengan kutipan halaman"></td>
+<td width="50%"><img src="../assets/readme/pdf-convert.webp" alt="ChaOffice Docs menampilkan dokumen Word yang dikonversi secara lokal dari PDF Helios quarterly review, dibuka di tab kedua di samping PDF aslinya"></td>
 </tr>
 <tr>
 <td><b>Edit langsung di dalam halaman</b> — mode Edit text menandai setiap blok teks untuk diketik ulang langsung di tempat; content stream ditulis ulang melalui PDFium dengan font asli, bukan anotasi penutup. Tanyakan sesuatu ke AI tentang laporan panjang dan dapatkan jawaban dengan kutipan halaman.</td>
@@ -129,11 +129,11 @@ Sampaikan halaman itu untuk apa dan untuk siapa. AI akan mengusulkan **design
 brief** terlebih dahulu — hook, palet warna, tipografi, dan arah gaya visual —
 lalu membangun satu file `.html` mandiri berdasarkan token-token tersebut.
 
-<img src="../assets/readme/html-restyle-motion.webp" alt="Time-lapse ChatOffice HTML mengubah gaya halaman landing Lumen: satu permintaan Restyle di panel mengubah halaman Midnight Studio yang gelap menjadi versi Solar Daybreak yang hangat, sementara setiap bagian dan semua konten tetap di tempatnya" width="100%">
+<img src="../assets/readme/html-restyle-motion.webp" alt="Time-lapse ChaOffice HTML mengubah gaya halaman landing Lumen: satu permintaan Restyle di panel mengubah halaman Midnight Studio yang gelap menjadi versi Solar Daybreak yang hangat, sementara setiap bagian dan semua konten tetap di tempatnya" width="100%">
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/html-ai.webp" alt="ChatOffice HTML: landing page yang dihasilkan untuk lampu meja tenaga surya dalam arah gaya gelap Midnight Studio, ditampilkan di live preview dengan panel AI meringkas halaman yang baru dibuatnya"></td>
+<td width="50%"><img src="../assets/readme/html-ai.webp" alt="ChaOffice HTML: landing page yang dihasilkan untuk lampu meja tenaga surya dalam arah gaya gelap Midnight Studio, ditampilkan di live preview dengan panel AI meringkas halaman yang baru dibuatnya"></td>
 <td width="50%"><img src="../assets/readme/html-restyle.webp" alt="Landing page Lumen yang sama, diubah gayanya oleh AI menjadi arah hangat Solar Daybreak: latar seperti kertas, judul serif, dan aksen oranye, dengan setiap bagian dan seluruh teks tetap dipertahankan"></td>
 </tr>
 <tr>
@@ -143,8 +143,8 @@ lalu membangun satu file `.html` mandiri berdasarkan token-token tersebut.
 </table>
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/html-dashboard.webp" alt="ChatOffice HTML: UI dashboard pribadi yang dihasilkan untuk desainer lepas dalam gaya linen hangat, dengan rail kiri, sapaan bergaya serif, dan empat kartu metrik"></td>
-<td width="50%"><img src="../assets/readme/html-report.webp" alt="ChatOffice HTML: laporan data pasar kendaraan listrik yang dihasilkan dalam gaya broadsheet, dengan masthead serif, angka utama 17,3 juta, dan baris statistik"></td>
+<td width="50%"><img src="../assets/readme/html-dashboard.webp" alt="ChaOffice HTML: UI dashboard pribadi yang dihasilkan untuk desainer lepas dalam gaya linen hangat, dengan rail kiri, sapaan bergaya serif, dan empat kartu metrik"></td>
+<td width="50%"><img src="../assets/readme/html-report.webp" alt="ChaOffice HTML: laporan data pasar kendaraan listrik yang dihasilkan dalam gaya broadsheet, dengan masthead serif, angka utama 17,3 juta, dan baris statistik"></td>
 </tr>
 <tr>
 <td><b>Mockup UI</b> — starter "personal dashboard" mengubah sebuah persona menjadi tata letak yang benar-benar berfungsi: rail kiri, sapaan, sparkline jam tertagih, kartu invoice dan utilisasi, semuanya HTML asli yang bisa Anda serahkan ke developer.</td>
@@ -156,8 +156,8 @@ lalu membangun satu file `.html` mandiri berdasarkan token-token tersebut.
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/markdown-ai.webp" alt="ChatOffice Markdown: paragraf yang dipilih menampilkan popover Ask AI dengan instruksi yang diketik dan chip saran seperti Polish, Make more concise, Expand, dan Fix grammar, plus tombol Send now dan Add to queue"></td>
-<td width="50%"><img src="../assets/readme/markdown-render.webp" alt="ChatOffice Markdown merender dokumen catatan peluncuran dengan tabel, flowchart Mermaid, dan daftar tugas, dengan prompt starter panel AI di sebelah kiri"></td>
+<td width="50%"><img src="../assets/readme/markdown-ai.webp" alt="ChaOffice Markdown: paragraf yang dipilih menampilkan popover Ask AI dengan instruksi yang diketik dan chip saran seperti Polish, Make more concise, Expand, dan Fix grammar, plus tombol Send now dan Add to queue"></td>
+<td width="50%"><img src="../assets/readme/markdown-render.webp" alt="ChaOffice Markdown merender dokumen catatan peluncuran dengan tabel, flowchart Mermaid, dan daftar tugas, dengan prompt starter panel AI di sebelah kiri"></td>
 </tr>
 <tr>
 <td><b>Ask AI pada bagian yang dipilih</b> — pilih teks apa pun dan chip <b>Ask AI</b> akan muncul: ketik instruksi atau pilih saran, kirim sekarang, atau kumpulkan beberapa edit berjangkar dan jalankan sekaligus dalam satu proses. Entri yang sama tersedia di setiap aplikasi.</td>
@@ -165,27 +165,27 @@ lalu membangun satu file `.html` mandiri berdasarkan token-token tersebut.
 </tr>
 </table>
 
-### 7 · CLI — coding agent Anda menjalankan ChatOffice, di mesin Anda
+### 7 · CLI — coding agent Anda menjalankan ChaOffice, di mesin Anda
 
-ChatOffice menyertakan baris perintah `chatoffice` dan sebuah skill agen. Pasang
+ChaOffice menyertakan baris perintah `chaoffice` dan sebuah skill agen. Pasang
 skill itu, dan Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode,
 atau Windsurf bisa membuat, mengonversi, membaca, dan mengedit file Office asli
 lewat engine yang sama dengan aplikasinya, tanpa membuka satu jendela pun.
 
-<img src="../assets/readme/cli-deck-in-app.webp" alt="ChatOffice Slides menampilkan deck Tata Surya delapan slide yang dibuat coding agent lewat baris perintah chatoffice: slide sampul di kanvas, delapan thumbnail di kiri, dan panel AI terbuka" width="100%">
+<img src="../assets/readme/cli-deck-in-app.webp" alt="ChaOffice Slides menampilkan deck Tata Surya delapan slide yang dibuat coding agent lewat baris perintah chaoffice: slide sampul di kanvas, delapan thumbnail di kiri, dan panel AI terbuka" width="100%">
 
 <table>
 <tr>
 <td width="50%"><img src="../assets/readme/cli-slides-grid.webp" alt="Delapan slide hasil render dari deck Tata Surya berdampingan: sampul, linimasa eksplorasi, empat angka kunci, grafik batang diameter planet, planet berbatu versus planet raksasa, angka utama 99,8% milik Matahari, grid empat planet raksasa, dan kesimpulan"></td>
-<td width="50%"><img src="../assets/readme/cli-integrations.webp" alt="ChatOffice Settings, halaman Integrations: skill chatoffice terpasang di Claude Code, dengan tombol Install di samping Codex dan Cursor"></td>
+<td width="50%"><img src="../assets/readme/cli-integrations.webp" alt="ChaOffice Settings, halaman Integrations: skill chaoffice terpasang di Claude Code, dengan tombol Install di samping Codex dan Cursor"></td>
 </tr>
 <tr>
-<td><b>Satu prompt ke agen Anda</b> — "Buat deck delapan slide tentang Tata Surya." Agen membaca skill, menulis style sheet, outline, dan satu spesifikasi halaman per slide, menghasilkan dua foto dengan <code>chatoffice image</code>, dan membiarkan <code>chatoffice slides check</code> menolak apa pun yang meluap atau tumpang tindih sebelum <code>chatoffice create</code> merakit <code>.pptx</code> dan <code>slides render</code> mengembalikan satu PNG per slide untuk dilihat.</td>
-<td><b>Pasang sekali, dari Pengaturan → Integrasi</b> — ChatOffice menampilkan coding agent yang ditemukannya di komputer ini dan menulis skill ke setiap agen yang Anda pilih. Atau unduh skill sebagai zip, atau jalankan <code>npx skills add zhgyuhuii/ChayuanAIOffice</code>. Perintah dan alur kerja lengkapnya ada di <a href="#command-line-and-agent-skill">Baris perintah dan skill agen</a>.</td>
+<td><b>Satu prompt ke agen Anda</b> — "Buat deck delapan slide tentang Tata Surya." Agen membaca skill, menulis style sheet, outline, dan satu spesifikasi halaman per slide, menghasilkan dua foto dengan <code>chaoffice image</code>, dan membiarkan <code>chaoffice slides check</code> menolak apa pun yang meluap atau tumpang tindih sebelum <code>chaoffice create</code> merakit <code>.pptx</code> dan <code>slides render</code> mengembalikan satu PNG per slide untuk dilihat.</td>
+<td><b>Pasang sekali, dari Pengaturan → Integrasi</b> — ChaOffice menampilkan coding agent yang ditemukannya di komputer ini dan menulis skill ke setiap agen yang Anda pilih. Atau unduh skill sebagai zip, atau jalankan <code>npx skills add zhgyuhuii/ChayuanAIOffice</code>. Perintah dan alur kerja lengkapnya ada di <a href="#command-line-and-agent-skill">Baris perintah dan skill agen</a>.</td>
 </tr>
 </table>
 
-## Mengapa ChatOffice
+## Mengapa ChaOffice
 
 - **Open source**, Apache-2.0, dikembangkan secara terbuka di GitHub.
 - **Milik Anda untuk dijalankan.** Aplikasi native untuk macOS, Windows, dan
@@ -204,7 +204,7 @@ lewat engine yang sama dengan aplikasinya, tanpa membuka satu jendela pun.
   sistem untuk hasil pindaian.
 - **Markdown dan HTML juga**, dengan panel AI yang sama dan ekspor lokal ke
   Word.
-- **Dapat dijalankan lewat skrip.** Baris perintah `chatoffice` dan skill agen
+- **Dapat dijalankan lewat skrip.** Baris perintah `chaoffice` dan skill agen
   menempatkan setiap engine untuk melayani Claude Code, Codex, Cursor, dan
   coding agent lainnya, tetap on-device.
 - **Gratis**, untuk individu maupun tim.
@@ -234,9 +234,9 @@ mempertahankan warna asli dokumen.
 ## Baris perintah dan skill agen
 
 Semua yang bisa dilakukan aplikasi terhadap sebuah file, bisa dilakukan baris
-perintah `chatoffice` dari terminal: memeriksa, mengonversi, membuat, membaca,
+perintah `chaoffice` dari terminal: memeriksa, mengonversi, membuat, membaca,
 dan mengedit Word, Excel, PowerPoint, PDF, Markdown, dan HTML dengan engine
-yang sama, secara headless. Ia terpasang bersama ChatOffice, tidak memerlukan
+yang sama, secara headless. Ia terpasang bersama ChaOffice, tidak memerlukan
 runtime sendiri, dan tidak pernah mengirim dokumen ke mana pun. Dipadukan
 dengan **skill agen** yang disertakan, ia mengubah coding agent menjadi
 pekerja dokumen yang menghasilkan file Office asli, bukan tiruan dalam
@@ -250,30 +250,30 @@ yang membaca skill.
 
 | Cara                                       | Yang terjadi                                                                                                                                                                          |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Pengaturan → Integrasi** di aplikasi     | Menampilkan agen yang ditemukan di komputer ini; satu klik menulis skill ke setiap agen yang Anda pilih. Tombol **Update** muncul saat rilis ChatOffice membawa skill yang lebih baru. |
+| **Pengaturan → Integrasi** di aplikasi     | Menampilkan agen yang ditemukan di komputer ini; satu klik menulis skill ke setiap agen yang Anda pilih. Tombol **Update** muncul saat rilis ChaOffice membawa skill yang lebih baru. |
 | **Unduh sebagai zip** di halaman yang sama | Tata letak yang diterima claude.ai, aplikasi desktop Claude, dan asisten lain sebagai skill yang diunggah.                                                                            |
 | `npx skills add zhgyuhuii/ChayuanAIOffice`     | Memasang dari repositori ini ke agen mana pun yang kompatibel dengan skill.                                                                                                           |
 
 Lalu mulai chat baru dan minta sebuah dokumen. Skill ini mengajari agen kapan
-harus menggunakan `chatoffice`, bagaimana membaca file sebelum mengeditnya,
+harus menggunakan `chaoffice`, bagaimana membaca file sebelum mengeditnya,
 dan bagaimana memeriksa hasil kerjanya sendiri.
 
 ### Mulai cepat dari terminal
 
 ```bash
-chatoffice --version
-chatoffice info report.docx --json                  # headings and blocks; or sheets, slides, pages
-chatoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx, …
-chatoffice create --type docx --from notes.md --out notes.docx
-chatoffice create --type xlsx --from table.json --out sales.xlsx   # "=SUM(B2:B9)" cells stay live formulas
-chatoffice docs read report.docx --range 0-9 --json # then `docs apply --ops edits.json` edits in place
-chatoffice render report.docx --out shots/          # one PNG per page, to look at what you made
-chatoffice open sales.xlsx                          # hand the result to the editor
+chaoffice --version
+chaoffice info report.docx --json                  # headings and blocks; or sheets, slides, pages
+chaoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx, …
+chaoffice create --type docx --from notes.md --out notes.docx
+chaoffice create --type xlsx --from table.json --out sales.xlsx   # "=SUM(B2:B9)" cells stay live formulas
+chaoffice docs read report.docx --range 0-9 --json # then `docs apply --ops edits.json` edits in place
+chaoffice render report.docx --out shots/          # one PNG per page, to look at what you made
+chaoffice open sales.xlsx                          # hand the result to the editor
 ```
 
 Setiap perintah mencetak ringkasan satu baris, atau satu objek JSON dengan
 `--json`. Pengeditan bersifat atomik: op yang ditolak membiarkan file tak
-tersentuh dan mengembalikan pesan kesalahan berpanduan. `chatoffice help`
+tersentuh dan mengembalikan pesan kesalahan berpanduan. `chaoffice help`
 mencantumkan daftar perintah saat ini; referensi lengkapnya ada di
 [packages/cli/README.md](../../packages/cli/README.md).
 
@@ -284,21 +284,21 @@ baliknya, agen mengikuti alur kerja bertahap dari skill dan CLI memeriksa
 setiap tahap sebelum tahap berikutnya dimulai:
 
 ```bash
-chatoffice capabilities --json                        # which cloud tools ChatOffice has configured
-chatoffice guide slides design                        # the deck workflow and layout library
-chatoffice image "the eight planets in a row …" --aspect 16:9 --out deck/assets/cover.jpg
-chatoffice slides check deck/outline.json --json      # 8 pages, no findings
-chatoffice slides check deck/pages/01.json --json     # builds one slide, audits overflow and overlap
+chaoffice capabilities --json                        # which cloud tools ChaOffice has configured
+chaoffice guide slides design                        # the deck workflow and layout library
+chaoffice image "the eight planets in a row …" --aspect 16:9 --out deck/assets/cover.jpg
+chaoffice slides check deck/outline.json --json      # 8 pages, no findings
+chaoffice slides check deck/pages/01.json --json     # builds one slide, audits overflow and overlap
 …                                                    # one page file per slide, fixed until each check is clean
-chatoffice create --type pptx --spec deck/pages --outline deck/outline.json --out deck/solar-system.pptx --json
-chatoffice slides render deck/solar-system.pptx --out deck/shots --json
-chatoffice slides audit deck/solar-system.pptx --json    # 8 slides, no layout issues
-chatoffice slides replace deck/solar-system.pptx --slide 4 --spec deck/pages/05.json --json
-chatoffice open deck/solar-system.pptx
+chaoffice create --type pptx --spec deck/pages --outline deck/outline.json --out deck/solar-system.pptx --json
+chaoffice slides render deck/solar-system.pptx --out deck/shots --json
+chaoffice slides audit deck/solar-system.pptx --json    # 8 slides, no layout issues
+chaoffice slides replace deck/solar-system.pptx --slide 4 --spec deck/pages/05.json --json
+chaoffice open deck/solar-system.pptx
 ```
 
-Tidak ada panggilan model yang terjadi di dalam `chatoffice`: agen yang
-berpikir, CLI yang membangun dan memeriksa, dan hasilnya terbuka di ChatOffice
+Tidak ada panggilan model yang terjadi di dalam `chaoffice`: agen yang
+berpikir, CLI yang membangun dan memeriksa, dan hasilnya terbuka di ChaOffice
 atau PowerPoint sebagai `.pptx` biasa.
 
 <a id="download"></a>
@@ -323,17 +323,17 @@ ditandatangani (signed). Versi lama ada di halaman
 <summary><b>Instalasi di Linux</b></summary>
 
 File deb dipasang dengan apt — perintah ini menarik semua dependensi dan
-menambahkan ChatOffice ke menu aplikasi:
+menambahkan ChaOffice ke menu aplikasi:
 
 ```bash
-sudo apt install ./chatoffice_<version>_amd64.deb
+sudo apt install ./chaoffice_<version>_amd64.deb
 ```
 
 Di Fedora / keluarga RHEL / openSUSE, pasang rpm sebagai gantinya:
 
 ```bash
-sudo dnf install ./chatoffice-<version>.x86_64.rpm     # Fedora / RHEL family
-sudo zypper install ./chatoffice-<version>.x86_64.rpm  # openSUSE
+sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
+sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
 
 AppImage berjalan langsung di tempat: pasang runtime FUSE 2
@@ -341,8 +341,8 @@ AppImage berjalan langsung di tempat: pasang runtime FUSE 2
 `libfuse2t64`), jadikan file tersebut executable, lalu jalankan:
 
 ```bash
-chmod +x ChatOffice-<version>.AppImage
-./ChatOffice-<version>.AppImage
+chmod +x ChaOffice-<version>.AppImage
+./ChaOffice-<version>.AppImage
 ```
 
 </details>
@@ -383,37 +383,37 @@ npm run dist:linux   # package Linux AppImage + deb + rpm
 ```
 
 Aplikasi sheets juga membutuhkan toolchain Rust untuk sidecar xlsx-nya
-(`cargo` di PATH); `npm run build -w @chatoffice/sheets` mengompilasinya
+(`cargo` di PATH); `npm run build -w @chaoffice/sheets` mengompilasinya
 secara otomatis. Lihat [CONTRIBUTING.md](../../CONTRIBUTING.md) untuk
 pemeriksaan yang harus dilalui setiap perubahan dan cara pull request
 diterima.
 
 ## Komunitas
 
-ChatOffice terus dikembangkan secara aktif dan masukan Anda membentuk arahnya.
+ChaOffice terus dikembangkan secara aktif dan masukan Anda membentuk arahnya.
 
 - **Laporkan bug atau ajukan permintaan fitur** di
   [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues).
-- **Gabung ke grup chat ChatOffice** di
-  [GenTeam](https://chatoffice.ai/join) untuk mengobrol dengan tim dan
+- **Gabung ke grup chat ChaOffice** di
+  [GenTeam](https://chaoffice.ai/join) untuk mengobrol dengan tim dan
   pengguna lain.
-- **Beri bintang (star) pada repo ini** jika ChatOffice bermanfaat bagi Anda —
+- **Beri bintang (star) pada repo ini** jika ChaOffice bermanfaat bagi Anda —
   ini cara terbaik untuk mendukung proyek ini.
 
 ## FAQ
 
 <details>
-<summary><b>Apakah ChatOffice gratis?</b></summary>
+<summary><b>Apakah ChaOffice gratis?</b></summary>
 
-Ya. ChatOffice gratis dan open-source di bawah lisensi Apache-2.0 — tidak ada
+Ya. ChaOffice gratis dan open-source di bawah lisensi Apache-2.0 — tidak ada
 masa coba, tidak ada tingkatan berbayar untuk aplikasinya sendiri.
 
 </details>
 
 <details>
-<summary><b>Apakah ChatOffice bisa membuka file Microsoft Word, Excel, dan PowerPoint?</b></summary>
+<summary><b>Apakah ChaOffice bisa membuka file Microsoft Word, Excel, dan PowerPoint?</b></summary>
 
-Ya. ChatOffice membuka dan menyimpan file `.docx`, `.xlsx`, dan `.pptx` asli.
+Ya. ChaOffice membuka dan menyimpan file `.docx`, `.xlsx`, dan `.pptx` asli.
 Penyimpanan bersifat byte-preserving: bagian file yang tidak Anda sentuh
 ditulis kembali byte demi byte, sehingga dokumen tetap berfungsi normal di
 Microsoft Office.
@@ -421,7 +421,7 @@ Microsoft Office.
 </details>
 
 <details>
-<summary><b>Apakah ChatOffice bisa digunakan secara offline?</b></summary>
+<summary><b>Apakah ChaOffice bisa digunakan secara offline?</b></summary>
 
 Pengeditan dokumen sepenuhnya lokal — file tidak pernah meninggalkan
 perangkat Anda untuk dibuka, diedit, disimpan, atau dikonversi. Fitur AI
@@ -431,7 +431,7 @@ masuk lewat Genspark atau dengan kunci API model Anda sendiri.
 </details>
 
 <details>
-<summary><b>Apakah ChatOffice bisa mengedit file PDF?</b></summary>
+<summary><b>Apakah ChaOffice bisa mengedit file PDF?</b></summary>
 
 Ya — pengeditan teks dan gambar PDF yang sesungguhnya, yang menulis ulang
 content stream halaman dengan font aslinya tetap dipertahankan, bukan
@@ -440,7 +440,7 @@ anotasi penutup.
 </details>
 
 <details>
-<summary><b>Apakah ChatOffice bisa mengonversi PDF ke Word, Excel, atau PowerPoint?</b></summary>
+<summary><b>Apakah ChaOffice bisa mengonversi PDF ke Word, Excel, atau PowerPoint?</b></summary>
 
 Ya — seluruhnya di perangkat Anda sendiri: ekstraksi karakter level PDFium
 ditambah analisis layout berbasis geometri, tanpa layanan cloud, tanpa
@@ -453,7 +453,7 @@ gambar halaman.
 <details>
 <summary><b>Bisakah saya menggunakan model AI atau kunci API saya sendiri?</b></summary>
 
-Ya. Selain masuk lewat Genspark tanpa kunci API, ChatOffice mendukung
+Ya. Selain masuk lewat Genspark tanpa kunci API, ChaOffice mendukung
 penggunaan kunci Anda sendiri untuk Claude, OpenAI, Gemini, DeepSeek, Kimi,
 GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty, dan OpenCode Zen/Go,
 plus endpoint apa pun yang kompatibel dengan OpenAI — termasuk server model
@@ -463,7 +463,7 @@ kunci tersendiri di Settings → AI Media & Search.
 </details>
 
 <details>
-<summary><b>Apakah ChatOffice bisa mengonversi HTML ke Word?</b></summary>
+<summary><b>Apakah ChaOffice bisa mengonversi HTML ke Word?</b></summary>
 
 Ya — Export as Word di aplikasi HTML menghasilkan `.docx` asli yang bisa
 diedit, seluruhnya di perangkat Anda sendiri. Halaman dirender di Chromium
@@ -475,9 +475,9 @@ bergaya dekoratif) yang disematkan sebagai gambar.
 </details>
 
 <details>
-<summary><b>Bisakah saya menjalankan ChatOffice dari Claude Code, Codex, Cursor, atau skrip?</b></summary>
+<summary><b>Bisakah saya menjalankan ChaOffice dari Claude Code, Codex, Cursor, atau skrip?</b></summary>
 
-Ya. ChatOffice memasang baris perintah `chatoffice` yang menjalankan engine yang
+Ya. ChaOffice memasang baris perintah `chaoffice` yang menjalankan engine yang
 sama secara headless: memeriksa, mengonversi, membuat, membaca, dan mengedit
 dokumen dari terminal atau skrip, dengan output `--json` untuk program. Skill
 agen yang disertakan mengajari Claude Code, Codex, Cursor, Gemini CLI, GitHub
@@ -488,13 +488,13 @@ Copilot, OpenCode, dan Windsurf untuk menggunakannya; pasang dari
 </details>
 
 <details>
-<summary><b>Apakah ChatOffice mengumpulkan data?</b></summary>
+<summary><b>Apakah ChaOffice mengumpulkan data?</b></summary>
 
 Build resmi yang dipaketkan mengirim data analitik penggunaan terbatas
 secara default, dan Anda bisa menonaktifkan pelaporan ini kapan saja lewat
 Settings → General. Analitik ini tidak pernah mengirim isi dokumen, nama
 file, path file, identitas akun, atau alamat email. Lihat
-[ChatOffice Privacy](../../PRIVACY.md) untuk daftar lengkap event dan
+[ChaOffice Privacy](../../PRIVACY.md) untuk daftar lengkap event dan
 pengungkapan data.
 
 </details>
@@ -507,7 +507,7 @@ ancaman untuk konten yang dihasilkan AI.
 
 ## Ucapan terima kasih
 
-ChatOffice tidak akan mungkin ada tanpa proyek-proyek open-source berikut:
+ChaOffice tidak akan mungkin ada tanpa proyek-proyek open-source berikut:
 
 - [Electron](https://www.electronjs.org/) — runtime desktop untuk setiap
   aplikasi.
@@ -554,10 +554,10 @@ MIT/Apache-2.0/BSD-3-Clause/OFL.
 
 ## Lisensi
 
-ChatOffice dilisensikan di bawah [Apache License 2.0](../../LICENSE), dengan
+ChaOffice dilisensikan di bawah [Apache License 2.0](../../LICENSE), dengan
 satu pengecualian: direktori `ee/` dicadangkan untuk modul enterprise di masa
-depan dan tercakup oleh [ChatOffice Enterprise License](../../ee/LICENSE).
+depan dan tercakup oleh [ChaOffice Enterprise License](../../ee/LICENSE).
 
-Nama dan logo ChatOffice serta Genspark adalah merek dagang milik Mainfunc,
+Nama dan logo ChaOffice serta Genspark adalah merek dagang milik Mainfunc,
 Inc. Lisensi Apache-2.0 tidak memberikan izin untuk menggunakannya (lihat
 bagian 6); fork sebaiknya menggunakan branding sendiri.

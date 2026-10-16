@@ -5,7 +5,7 @@ import { realizedPath } from './fs'
 import { CliError, EXIT } from './result'
 
 /** The shell's Electron userData directory, located without Electron (GENOFFICE_USER_DATA overrides). */
-export function chatofficeUserDataDir(env: NodeJS.ProcessEnv): string {
+export function chaofficeUserDataDir(env: NodeJS.ProcessEnv): string {
   if (env.GENOFFICE_USER_DATA) return env.GENOFFICE_USER_DATA
   const base =
     process.platform === 'darwin'
@@ -30,7 +30,7 @@ export function guiOpenDocuments(env: NodeJS.ProcessEnv): GuiOpenDocuments | nul
   // a checkout's shell keeps its userData in "<name> Dev" beside the packaged one
   const dirs = env.GENOFFICE_USER_DATA
     ? [env.GENOFFICE_USER_DATA]
-    : [chatofficeUserDataDir(env), `${chatofficeUserDataDir(env)} Dev`]
+    : [chaofficeUserDataDir(env), `${chaofficeUserDataDir(env)} Dev`]
   for (const dir of dirs) {
     const path = join(dir, 'open-documents.json')
     if (!existsSync(path)) continue

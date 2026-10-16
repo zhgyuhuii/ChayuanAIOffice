@@ -2,13 +2,13 @@ import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { openLocalArea } from '@chatoffice/storage-adapter'
+import { openLocalArea } from '@chaoffice/storage-adapter'
 import { chatHistoryService, createCore, ServiceEmitter } from '../src/index.js'
 
 const dirs: string[] = []
 
 function tempArea() {
-  const dir = mkdtempSync(join(tmpdir(), 'chatoffice-core-'))
+  const dir = mkdtempSync(join(tmpdir(), 'chaoffice-core-'))
   dirs.push(dir)
   return openLocalArea({ rootDir: dir })
 }

@@ -6,7 +6,7 @@
 // SaveOptions.styleDeletes.
 import type { Editor } from '@tiptap/core'
 import type { Node as PmNode } from '@tiptap/pm/model'
-import type { StyleInfo } from '@chatoffice/docx-engine'
+import type { StyleInfo } from '@chaoffice/docx-engine'
 import { applyTr, type DocOpOutcome } from './docops-core'
 
 /** a paragraph is blank when it has no text AND no non-text inline content (images/rules) */

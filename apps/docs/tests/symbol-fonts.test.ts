@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { isSymbolFontFamily } from '@chatoffice/ui'
+import { isSymbolFontFamily } from '@chaoffice/ui'
 
 describe('isSymbolFontFamily (font pickers show symbol-font names in the UI font)', () => {
   it('flags the classic symbol-encoded families', () => {

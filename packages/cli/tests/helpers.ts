@@ -26,13 +26,13 @@ export async function run(argv: string[], opts: Omit<RunOptions, 'io'> = {}): Pr
 }
 
 export function tempDir(): string {
-  return mkdtempSync(join(tmpdir(), 'chatoffice-test-'))
+  return mkdtempSync(join(tmpdir(), 'chaoffice-test-'))
 }
 
 /** A valid PDF with real Helvetica text, one page per entry; enough for page counting, text reading and conversion. */
 export function writeMinimalPdf(
   path: string,
-  text: string | string[] = 'Hello chatoffice',
+  text: string | string[] = 'Hello chaoffice',
   info: { title?: string; author?: string } = {},
 ): string {
   const texts = Array.isArray(text) ? text : [text]

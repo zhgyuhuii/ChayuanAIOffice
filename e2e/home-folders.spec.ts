@@ -23,7 +23,7 @@ test.describe('home folders panel', () => {
   let root: string
 
   test.beforeEach(() => {
-    root = realpathSync(mkdtempSync(join(tmpdir(), 'chatoffice-e2e-root-')))
+    root = realpathSync(mkdtempSync(join(tmpdir(), 'chaoffice-e2e-root-')))
     mkdirSync(join(root, 'Clients', 'A Corp'), { recursive: true })
     mkdirSync(join(root, 'Clients', 'Contracts'), { recursive: true })
     mkdirSync(join(root, 'Personal'))
@@ -134,7 +134,7 @@ test.describe('home folders panel', () => {
   })
 
   test('an added folder joins the tree in place and leaves the list without touching disk', async () => {
-    const extra = realpathSync(mkdtempSync(join(tmpdir(), 'chatoffice-e2e-extra-')))
+    const extra = realpathSync(mkdtempSync(join(tmpdir(), 'chaoffice-e2e-extra-')))
     mkdirSync(join(extra, 'Projects', 'Alpha'), { recursive: true })
     writeFileSync(join(extra, 'Projects', 'plan.md'), '# plan')
     const launched = await launchShell({

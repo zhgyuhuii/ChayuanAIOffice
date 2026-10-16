@@ -8,7 +8,7 @@
  * Everything stops when the page turns (the layer remounts per slide).
  */
 import React, { useEffect, useRef, useState } from 'react'
-import type { PictureRenderNode, RenderSlide } from '@chatoffice/pptx-render'
+import type { PictureRenderNode, RenderSlide } from '@chaoffice/pptx-render'
 import type { MediaCommand } from '../animation-play'
 
 export function ShowMediaLayer({

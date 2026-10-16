@@ -1,5 +1,5 @@
 import type { Editor } from '@tiptap/core'
-import type { TabStop } from '@chatoffice/docx-engine'
+import type { TabStop } from '@chaoffice/docx-engine'
 import { act, createElement } from 'react'
 import { createRoot } from 'react-dom/client'
 import { beforeAll, describe, expect, it } from 'vitest'

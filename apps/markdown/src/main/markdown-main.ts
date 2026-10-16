@@ -33,15 +33,15 @@ import {
   installRendererProtocol,
   registerRendererScheme,
   rendererUrl,
-} from '@chatoffice/electron-utils'
-import { createI18n, getUiLang } from '@chatoffice/i18n'
-import { hasChaOfficeAuth } from '@chatoffice/ai-search'
+} from '@chaoffice/electron-utils'
+import { createI18n, getUiLang } from '@chaoffice/i18n'
+import { hasChaOfficeAuth } from '@chaoffice/ai-search'
 import {
   registerFetchImageIpc,
   registerMediaIpc,
   createByokImageHandler,
   registerSharedKbIpc,
-} from '@chatoffice/ai-host'
+} from '@chaoffice/ai-host'
 import { ImageExportSessions } from './image-export'
 import { printMarkdownPdf } from './print-pdf'
 import { atomicWriteFile } from './atomic-write'
@@ -989,7 +989,7 @@ function registerMarkdownIpc(): void {
           }
         },
       },
-      chatoffice: {
+      chaoffice: {
         apiKey: () => '',
         hasAuth: () => hasChaOfficeAuth(),
         status: async (withEmail) => {
@@ -1024,7 +1024,7 @@ function registerMarkdownIpc(): void {
     '.gif': 'image/gif',
   }
 
-  // ---- image host (chatoffice#388): bring-your-own storage for pasted images,
+  // ---- image host (chaoffice#388): bring-your-own storage for pasted images,
   // with the local assets/ copy kept as the renderer's fallback ----
   const imageHostConfigPath = (): string => join(app.getPath('userData'), 'markdown-settings.json')
 
@@ -1414,7 +1414,7 @@ export function createMarkdownView(
   return view
 }
 
-/** Standalone window mode: `npm run dev -w @chatoffice/markdown`, md path passed via argv */
+/** Standalone window mode: `npm run dev -w @chaoffice/markdown`, md path passed via argv */
 export function startMarkdownStandalone(): void {
   registerRendererScheme()
   installNavigationGuard(app)

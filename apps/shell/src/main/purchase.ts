@@ -242,7 +242,7 @@ export async function machineFingerprint(): Promise<string> {
  * machine-independent).
  */
 function devLicenseKeyFile(): string {
-  return process.env.CHATOP_LICENSE_DEV_KEY_FILE ?? join(homedir(), '.chatoffice', 'license-hmac-key.txt')
+  return process.env.CHATOP_LICENSE_DEV_KEY_FILE ?? join(homedir(), '.chaoffice', 'license-hmac-key.txt')
 }
 
 function readHexKeyFile(file: string): string | null {

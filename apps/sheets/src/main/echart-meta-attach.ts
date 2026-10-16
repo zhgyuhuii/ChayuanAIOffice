@@ -1,6 +1,6 @@
 /**
  * 重开恢复 echart 元数据:sheets 的 visuals 由 Rust sidecar 解析,它不认识
- * 我们写在 drawing descr 里的 `chatoffice-echart:` 指针与 xl/echarts sidecar。
+ * 我们写在 drawing descr 里的 `chaoffice-echart:` 指针与 xl/echarts sidecar。
  * 打开后在 JS 侧补一道:抽取 drawing/rels/sidecar 部件,按媒体路径
  * (锚点 r:embed→rels target ↔ visual.mediaPath)匹配,把 option/code/数据表
  * 挂回 visual.echartMeta——图表在表格端即可双击回显编辑。
@@ -95,7 +95,7 @@ export async function attachEchartMetadata(
     const metaByMediaPath = new Map<string, EchartSidecar>()
     for (const drawingPath of drawings) {
       const xml = await readPart(drawingPath)
-      if (!xml || !xml.includes('chatoffice-echart:')) continue
+      if (!xml || !xml.includes('chaoffice-echart:')) continue
       const relsPath = `xl/drawings/_rels/${drawingPath.split('/').pop()}.rels`
       const relsXml = await readPart(relsPath)
       const relTarget = new Map<string, string>()
@@ -110,7 +110,7 @@ export async function attachEchartMetadata(
       const baseDir = drawingPath.split('/').slice(0, -1).join('/')
       for (const anchor of xml.matchAll(ANCHOR_PATTERN)) {
         const anchorXml = anchor[0]
-        const pointer = /\bdescr="chatoffice-echart:([^"]+)"/.exec(anchorXml)?.[1]
+        const pointer = /\bdescr="chaoffice-echart:([^"]+)"/.exec(anchorXml)?.[1]
         if (!pointer) continue
         const sidecar = sidecarByPath.get(pointer)
         if (!sidecar) continue

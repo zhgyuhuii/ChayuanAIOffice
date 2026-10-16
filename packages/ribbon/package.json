@@ -1,5 +1,5 @@
 {
-  "name": "@chatoffice/ribbon",
+  "name": "@chaoffice/ribbon",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -19,7 +19,7 @@
     "react": "^19.0.0"
   },
   "dependencies": {
-    "@chatoffice/ui": "*"
+    "@chaoffice/ui": "*"
   },
   "devDependencies": {
     "@types/react": "^19.2.14",

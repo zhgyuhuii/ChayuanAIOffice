@@ -1,12 +1,12 @@
-import type { AiPanelPrefs } from '@chatoffice/ui'
+import type { AiPanelPrefs } from '@chaoffice/ui'
 import { contextBridge, ipcRenderer } from 'electron'
-import type { Lang } from '@chatoffice/i18n'
-import type { AiStreamChunk } from '@chatoffice/ai-provider'
-import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
-import { installFilesPaneBridge } from '@chatoffice/electron-utils/files-pane-bridge'
+import type { Lang } from '@chaoffice/i18n'
+import type { AiStreamChunk } from '@chaoffice/ai-provider'
+import { installDropOpenBridge } from '@chaoffice/electron-utils/drop-open'
+import { installFilesPaneBridge } from '@chaoffice/electron-utils/files-pane-bridge'
 import { AI_CHANNELS, PDF_CHANNELS } from '../shared/ipc'
 import type { PdfApi, UiTheme } from '../shared/ipc'
-import { KB_CHANNELS } from '@chatoffice/ai-host/kb-channels'
+import { KB_CHANNELS } from '@chaoffice/ai-host/kb-channels'
 
 const api: PdfApi = {
   consumePending: () => ipcRenderer.invoke(PDF_CHANNELS.consumePending),
@@ -113,7 +113,7 @@ const api: PdfApi = {
   setAiSettings: (view) => ipcRenderer.invoke(AI_CHANNELS.setSettings, view),
   setAiCurrentModel: (selection) => ipcRenderer.invoke(AI_CHANNELS.setCurrentModel, selection),
   aiDiscoverModels: (target) => ipcRenderer.invoke(AI_CHANNELS.discoverModels, target),
-  aiChaOfficeLogin: () => ipcRenderer.invoke(AI_CHANNELS.chatofficeLogin),
+  aiChaOfficeLogin: () => ipcRenderer.invoke(AI_CHANNELS.chaofficeLogin),
   aiLocalToolStatus: (vendorId: string) => ipcRenderer.invoke('ai:local-tool-status', vendorId),
   aiLocalToolInstall: (vendorId: string, onLine?: (line: string) => void) => {
     if (!onLine) return ipcRenderer.invoke('ai:local-tool-install', vendorId)
@@ -126,7 +126,7 @@ const api: PdfApi = {
       .finally(() => ipcRenderer.removeListener('ai:local-tool-progress', ch))
   },
   aiLocalToolStart: (vendorId: string) => ipcRenderer.invoke('ai:local-tool-start', vendorId),
-  chatofficeStatus: (withEmail) => ipcRenderer.invoke(AI_CHANNELS.chatofficeStatus, withEmail),
+  chaofficeStatus: (withEmail) => ipcRenderer.invoke(AI_CHANNELS.chaofficeStatus, withEmail),
   aiStream: (request) => ipcRenderer.invoke(AI_CHANNELS.stream, request),
   aiStreamCancel: (requestId) => ipcRenderer.invoke(AI_CHANNELS.streamCancel, requestId),
   onAiStream: (handler) => {

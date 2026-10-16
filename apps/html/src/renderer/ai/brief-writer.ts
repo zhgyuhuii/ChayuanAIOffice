@@ -1,4 +1,4 @@
-import { streamText, type AgentMessage, type AgentTransport } from '@chatoffice/agent-core'
+import { streamText, type AgentMessage, type AgentTransport } from '@chaoffice/agent-core'
 import type { PlanMode } from './tools'
 
 /**

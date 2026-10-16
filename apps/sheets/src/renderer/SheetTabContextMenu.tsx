@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ColorPicker } from '@chatoffice/ui'
+import { ColorPicker } from '@chaoffice/ui'
 
 import { useI18n } from './i18n/locale'
 import { useModalDialog } from './modal-dialog'

@@ -1,4 +1,4 @@
-import type { AgentSkill } from '@chatoffice/agent-core'
+import type { AgentSkill } from '@chaoffice/agent-core'
 import { AGENT_TOOLS, executePdfTool } from './tools'
 import type { PdfAiDeps } from './tools'
 
@@ -51,7 +51,7 @@ const NO_IMAGE_MODEL_NOTE =
 
 export function createPdfSkill(deps: PdfAiDeps): AgentSkill {
   // the image tool stays while a default image model resolves from settings
-  // (BYOK-only handler; the old chatoffice cloud tier is gone)
+  // (BYOK-only handler; the old chaoffice cloud tier is gone)
   const imageGenLive = () => !!deps.hasImageModel?.()
   return {
     id: 'pdf',

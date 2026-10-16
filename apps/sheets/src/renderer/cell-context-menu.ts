@@ -16,7 +16,7 @@ import {
   getDisplayValueFromCell,
 } from '@univerjs/core'
 import type { IAccessor, ICommand, IDisposable, ILocales } from '@univerjs/core'
-import type { Lang } from '@chatoffice/i18n'
+import type { Lang } from '@chaoffice/i18n'
 import { SheetsSelectionsService, getSheetCommandTarget } from '@univerjs/sheets'
 import {
   ClearSheetsFilterCriteriaCommand,
@@ -42,13 +42,13 @@ import type { UniverRuntime } from './univer-state'
 import { visualPasteDisabled$ } from './visual-arrange-actions'
 import type { Observable } from 'rxjs'
 
-export const SHELL_COMMAND_ID = 'chatoffice.ctx.shell-command'
+export const SHELL_COMMAND_ID = 'chaoffice.ctx.shell-command'
 export const PASTE_SPECIAL_OPEN_COMMAND_ID = 'sheets.paste-special.open'
-export const FILTER_BY_COMMAND_ID = 'chatoffice.ctx.filter-by'
-export const PICK_FROM_LIST_COMMAND_ID = 'chatoffice.ctx.pick-from-list'
-export const FILTER_MENU_ID = 'chatoffice.ctx.filter'
-export const NUMBER_FORMAT_MENU_ID = 'chatoffice.ctx.number-format'
-export const CLEAR_FILTER_MENU_ID = 'chatoffice.ctx.clear-filter'
+export const FILTER_BY_COMMAND_ID = 'chaoffice.ctx.filter-by'
+export const PICK_FROM_LIST_COMMAND_ID = 'chaoffice.ctx.pick-from-list'
+export const FILTER_MENU_ID = 'chaoffice.ctx.filter'
+export const NUMBER_FORMAT_MENU_ID = 'chaoffice.ctx.number-format'
+export const CLEAR_FILTER_MENU_ID = 'chaoffice.ctx.clear-filter'
 
 export type FilterBy = 'value' | 'fill' | 'font'
 
@@ -108,7 +108,7 @@ export function cellContextMenuLayout(): readonly ContextMenuNode[] {
     },
     {
       ...shell(
-        'chatoffice.ctx.paste-visual',
+        'chaoffice.ctx.paste-visual',
         'appCtxPasteVisual',
         'visual:paste',
         ContextMenuGroup.FORMAT,
@@ -136,28 +136,28 @@ export function cellContextMenuLayout(): readonly ContextMenuNode[] {
     },
     // Threaded comments sit beside Univer's note entries (OTHERS, order 0).
     shell(
-      'chatoffice.ctx.new-comment',
+      'chaoffice.ctx.new-comment',
       'appCtxNewComment',
       'comment-new',
       ContextMenuGroup.OTHERS,
       0.1,
     ),
     shell(
-      'chatoffice.ctx.reply-comment',
+      'chaoffice.ctx.reply-comment',
       'appCtxReplyComment',
       'comment-reply',
       ContextMenuGroup.OTHERS,
       0.2,
     ),
     shell(
-      'chatoffice.ctx.delete-comment',
+      'chaoffice.ctx.delete-comment',
       'appCtxDeleteComment',
       'comment-delete',
       ContextMenuGroup.OTHERS,
       0.3,
     ),
     shell(
-      'chatoffice.ctx.resolve-comment',
+      'chaoffice.ctx.resolve-comment',
       'appCtxResolveComment',
       'comment-resolve',
       ContextMenuGroup.OTHERS,
@@ -190,7 +190,7 @@ export function cellContextMenuLayout(): readonly ContextMenuNode[] {
       ],
     },
     shell(
-      'chatoffice.ctx.format-cells',
+      'chaoffice.ctx.format-cells',
       'appCtxFormatCells',
       'format-cells',
       ContextMenuGroup.OTHERS,
@@ -205,15 +205,15 @@ export function cellContextMenuLayout(): readonly ContextMenuNode[] {
       commandId: PICK_FROM_LIST_COMMAND_ID,
     },
     shell(
-      'chatoffice.ctx.define-name',
+      'chaoffice.ctx.define-name',
       'appCtxDefineName',
       'name-manager-open',
       ContextMenuGroup.OTHERS,
       4,
     ),
-    shell('chatoffice.ctx.link', 'appCtxLink', 'link-open', ContextMenuGroup.OTHERS, 5),
+    shell('chaoffice.ctx.link', 'appCtxLink', 'link-open', ContextMenuGroup.OTHERS, 5),
     shell(
-      'chatoffice.ctx.insert-function',
+      'chaoffice.ctx.insert-function',
       'appCtxInsertFunction',
       'insert-function-open',
       ContextMenuGroup.OTHERS,
@@ -226,7 +226,7 @@ export function cellContextMenuLayout(): readonly ContextMenuNode[] {
 export function headerContextMenuLayout(): readonly ContextMenuNode[] {
   return [
     shell(
-      'chatoffice.ctx.format-cells',
+      'chaoffice.ctx.format-cells',
       'appCtxFormatCells',
       'format-cells',
       ContextMenuGroup.LAYOUT,
@@ -348,7 +348,7 @@ function pickFromList(accessor: IAccessor, runtime: UniverRuntime): boolean {
   return true
 }
 
-const LOCALE_NAMESPACE = 'chatofficeCtx'
+const LOCALE_NAMESPACE = 'chaofficeCtx'
 const localeKey = (key: StringKey): string => `${LOCALE_NAMESPACE}.${key}`
 
 /**

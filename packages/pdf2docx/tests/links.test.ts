@@ -1,5 +1,5 @@
 /**
- * PDF link annotations → docx hyperlinks (chatoffice#1096): URI actions become
+ * PDF link annotations → docx hyperlinks (chaoffice#1096): URI actions become
  * external relationships, in-document GoTo destinations become anchors on a
  * per-page bookmark.
  */

@@ -11,13 +11,13 @@ import {
   aiPanelInitiallyOpen,
   useAutoSavePref,
   useAiSidebarEnabled,
-} from '@chatoffice/ui'
+} from '@chaoffice/ui'
 import {
   pollUntilReady,
   runHeadlessRendererExport,
-} from '@chatoffice/electron-utils/headless-export'
+} from '@chaoffice/electron-utils/headless-export'
 import { EditorContent, useEditor } from '@tiptap/react'
-import { type FindFocusRequest, type FindPanelStrings } from '@chatoffice/ui'
+import { type FindFocusRequest, type FindPanelStrings } from '@chaoffice/ui'
 import type { Editor } from '@tiptap/core'
 import { TextSelection } from '@tiptap/pm/state'
 import { exportImages } from './export/imageExport'
@@ -53,7 +53,7 @@ import { TableMenu } from './components/TableMenu'
 import { FrontmatterPanel } from './components/FrontmatterPanel'
 import { AiAskPopover } from './components/AiAskPopover'
 import { AiPanel, type AiPreset, type MarkdownAiDeps } from './ai/AiPanel'
-import { DockShell, isMacStandaloneWindow } from '@chatoffice/ui'
+import { DockShell, isMacStandaloneWindow } from '@chaoffice/ui'
 import { EDIT_QUEUE_MAX, selectionForAnchor, type EditQueueItem } from './ai/edit-queue'
 import { addQueueAnchor, clearQueueAnchors, removeQueueAnchors } from './editor/aiQueueAnchors'
 import { DOCX_MAX_IMAGE_PX, exportDocxBytes } from './export/docxExport'

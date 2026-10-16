@@ -1,8 +1,8 @@
 /** Rendering of legacy text effects, glow, w:w compression, distribute and the Hyperlink style. */
 import { Editor } from '@tiptap/core'
 import { DOMSerializer } from '@tiptap/pm/model'
-import { parseDocx } from '@chatoffice/docx-engine'
-import type { ParsedDocFull, StyleDisplay, StyleInfo } from '@chatoffice/docx-engine'
+import { parseDocx } from '@chaoffice/docx-engine'
+import type { ParsedDocFull, StyleDisplay, StyleInfo } from '@chaoffice/docx-engine'
 import { describe, expect, it } from 'vitest'
 import { buildDocx } from '../../../packages/docx-engine/tests/helpers/build-docx'
 import { docStyleCss } from '../src/renderer/doc-style-css'

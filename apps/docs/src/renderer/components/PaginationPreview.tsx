@@ -6,8 +6,8 @@ import type {
   HfPartInfo,
   SectionInfo,
   SectionSettings,
-} from '@chatoffice/docx-engine'
-import { decodeEntities } from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
+import { decodeEntities } from '@chaoffice/docx-engine'
 import {
   appendEndnotesBlock,
   appendFloatSpillBlock,

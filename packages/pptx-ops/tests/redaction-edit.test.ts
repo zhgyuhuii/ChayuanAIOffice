@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { parseSlide, patchTextElementXml } from '@chatoffice/pptx-engine'
+import { parseSlide, patchTextElementXml } from '@chaoffice/pptx-engine'
 import { applyEditParagraphs } from '../src/edit-text'
-import type { Slide, TextElement } from '@chatoffice/pptx-engine'
+import type { Slide, TextElement } from '@chaoffice/pptx-engine'
 
 /**
  * Withholding text rides the existing edit pipeline as one more run attribute:

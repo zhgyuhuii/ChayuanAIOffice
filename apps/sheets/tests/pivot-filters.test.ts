@@ -3,12 +3,12 @@ import { describe, expect, it } from 'vitest'
 import {
   allowedByValueFilter,
   matchesLabelFilter,
-} from '@chatoffice/xlsx-gateway/domain/pivot-filters'
+} from '@chaoffice/xlsx-gateway/domain/pivot-filters'
 import {
   growPivotDefinition,
   recomputePivotData,
-} from '@chatoffice/xlsx-gateway/domain/pivot-engine'
-import { parsePivotDefinition } from '@chatoffice/xlsx-gateway/gateway/xlsx-pivot'
+} from '@chaoffice/xlsx-gateway/domain/pivot-engine'
+import { parsePivotDefinition } from '@chaoffice/xlsx-gateway/gateway/xlsx-pivot'
 
 describe('pivot filter primitives', () => {
   it('matches labels case-insensitively', () => {

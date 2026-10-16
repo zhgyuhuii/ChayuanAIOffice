@@ -1,4 +1,4 @@
-import { ColorPicker } from '@chatoffice/ui'
+import { ColorPicker } from '@chaoffice/ui'
 import { useI18n, type StringKey } from '../i18n/locale'
 
 const THEME_COLORS: Array<{ nameKey: StringKey; hex: string }> = [

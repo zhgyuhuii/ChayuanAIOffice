@@ -1,4 +1,4 @@
-import type { Block, FieldDisplay } from '@chatoffice/docx-engine'
+import type { Block, FieldDisplay } from '@chaoffice/docx-engine'
 import { excerpt, PLACEHOLDER, type IssueDraft } from '../check'
 import { headerFooterState, listComments, listRevisions, type OpenDocument } from './docx'
 
@@ -85,7 +85,7 @@ export function checkDocument(doc: OpenDocument): IssueDraft[] {
       level: 'info',
       path: `block[${revisions[0]!.blockIndex}]`,
       blockIndex: revisions[0]!.blockIndex,
-      message: `${revisions.length} tracked change(s) pending (${[...kinds].map(([k, n]) => `${k} ${n}`).join(', ')}); \`chatoffice docs read --revisions\` lists them`,
+      message: `${revisions.length} tracked change(s) pending (${[...kinds].map(([k, n]) => `${k} ${n}`).join(', ')}); \`chaoffice docs read --revisions\` lists them`,
     })
   }
   const open = listComments(doc).filter((c) => !c.done)
@@ -96,7 +96,7 @@ export function checkDocument(doc: OpenDocument): IssueDraft[] {
       level: 'info',
       path: first?.blockIndex !== undefined ? `block[${first.blockIndex}]` : 'comments',
       ...(first?.blockIndex !== undefined ? { blockIndex: first.blockIndex } : {}),
-      message: `${open.length} comment thread(s) unresolved; \`chatoffice docs read --comments\` lists them`,
+      message: `${open.length} comment thread(s) unresolved; \`chaoffice docs read --comments\` lists them`,
     })
   }
   return issues

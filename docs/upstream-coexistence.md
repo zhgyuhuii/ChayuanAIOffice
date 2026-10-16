@@ -66,7 +66,7 @@
    export function brandName(lang: string): string { ... }
    ```
 2. **上游新文件带来的品牌串**：同步时照常机械映射（一次性），但**本地新写的用户可见文案一律用 `brandName(lang)`**，不再手写品牌串。
-3. 豁免清单不变：`@chatoffice/*`、`window.chatOffice`、字体族名、`GENOFFICE_*`、`genspark.ai`、CLI bin 名（台账 §9）。
+3. 豁免清单不变：`@chaoffice/*`、`window.chaOffice`、字体族名、`GENOFFICE_*`、`genspark.ai`、CLI bin 名（台账 §9）。
 
 ### 3.3 壳层挂载点：功能实现进组件，壳层只留一行挂钩
 
@@ -91,7 +91,7 @@
 
 ### 3.5 依赖与构建文件
 
-1. `package.json`/`package-lock.json`：维持 Q5 例外（永不字面 pick；本地依赖集中在 dependencies 尾部"LOCAL deps"注释段，同步时手工并）。workspace 包名 `@chatoffice/*` 永不回退。
+1. `package.json`/`package-lock.json`：维持 Q5 例外（永不字面 pick；本地依赖集中在 dependencies 尾部"LOCAL deps"注释段，同步时手工并）。workspace 包名 `@chaoffice/*` 永不回退。
 2. `tsconfig`/`vite.config`/`vitest.config` 的 paths/alias：本地新增 alias 集中追加在文件尾部 `// LOCAL aliases` 注释段，同步时只看这一段。
 
 ---

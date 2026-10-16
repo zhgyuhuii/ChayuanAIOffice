@@ -1,13 +1,13 @@
 <p align="center">
-  <a href="https://chatoffice.ai/">
+  <a href="https://chaoffice.ai/">
     <picture>
       <source srcset="../assets/readme/hero-dark.webp" media="(prefers-color-scheme: dark)">
-      <img src="../assets/readme/hero.webp" alt="ChatOffice — 開源 AI 辦公套件：Docs、Sheets、Slides、PDF、Markdown 與 HTML，內建 AI 面板" width="100%">
+      <img src="../assets/readme/hero.webp" alt="ChaOffice — 開源 AI 辦公套件：Docs、Sheets、Slides、PDF、Markdown 與 HTML，內建 AI 面板" width="100%">
     </picture>
   </a>
 </p>
 
-<h1 align="center">ChatOffice</h1>
+<h1 align="center">ChaOffice</h1>
 
 <p align="center"><b>全球首款功能完整的開源 AI 辦公套件。</b><br>
 Word、Excel、PowerPoint 與 PDF 檔案，由你與你的 AI 共同編輯，並以原生格式存回。</p>
@@ -24,12 +24,12 @@ Word、Excel、PowerPoint 與 PDF 檔案，由你與你的 AI 共同編輯，並
 <p align="center">
   <a href="#download"><b>下載</b></a> ·
   <a href="#command-line-and-agent-skill"><b>CLI</b></a> ·
-  <a href="https://chatoffice.ai/"><b>官網</b></a> ·
-  <a href="https://chatoffice.ai/join"><b>社群</b></a> ·
+  <a href="https://chaoffice.ai/"><b>官網</b></a> ·
+  <a href="https://chaoffice.ai/join"><b>社群</b></a> ·
   <a href="../../PRIVACY.md"><b>隱私權</b></a>
 </p>
 
-ChatOffice 是一套免費、開源的 Microsoft Office 替代方案，支援 macOS、
+ChaOffice 是一套免費、開源的 Microsoft Office 替代方案，支援 macOS、
 Windows 與 Linux。它能開啟並儲存原生的 `.docx`、`.xlsx` 與 `.pptx`
 檔案，也能編輯 PDF、Markdown 與 HTML，並在每份文件旁放上一個 AI
 代理——不是硬塞在旁邊的聊天視窗，而是真正讀懂檔案、動手修改，
@@ -47,7 +47,7 @@ Windows 與 Linux。它能開啟並儲存原生的 `.docx`、`.xlsx` 與 `.pptx`
   或自行帶入 Claude、OpenAI、Gemini、DeepSeek、Kimi、GLM、Qwen、
   Doubao、MiniMax、Grok、Mistral、OpenRouter、Requesty，或任何相容 OpenAI 介面
   的服務端點，也支援本機伺服器。
-- **可寫成腳本，也隨時能交給代理。** 應用程式內建 `chatoffice` 命令列，
+- **可寫成腳本，也隨時能交給代理。** 應用程式內建 `chaoffice` 命令列，
   並附上一份給 Claude Code、Codex、Cursor、Gemini CLI、GitHub Copilot、
   OpenCode 與 Windsurf 使用的 agent skill，讓程式開發代理不必開啟任何
   視窗，就能在你的裝置上建立、轉換、讀取與編輯真正的 Office 檔案。
@@ -67,8 +67,8 @@ Windows 與 Linux。它能開啟並儲存原生的 `.docx`、`.xlsx` 與 `.pptx`
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/docs-report.webp" alt="ChatOffice Docs 呈現一份雙欄年度報告頁面，含滿版封面圖片、灰底 KPI 表格、頁首與頁尾，縮放 80%，AI 面板收合"></td>
-<td width="50%"><img src="../assets/readme/docs-ai.webp" alt="ChatOffice Docs：一份含橫幅圖片的公司概覽；AI 精簡了概覽段落並插入新的條列區塊，面板提供一鍵回復"></td>
+<td width="50%"><img src="../assets/readme/docs-report.webp" alt="ChaOffice Docs 呈現一份雙欄年度報告頁面，含滿版封面圖片、灰底 KPI 表格、頁首與頁尾，縮放 80%，AI 面板收合"></td>
+<td width="50%"><img src="../assets/readme/docs-ai.webp" alt="ChaOffice Docs：一份含橫幅圖片的公司概覽；AI 精簡了概覽段落並插入新的條列區塊，面板提供一鍵回復"></td>
 </tr>
 <tr>
 <td><b>依 Word 排版方式開啟檔案</b>——雙欄版面、滿版出血圖片、灰底表格、
@@ -84,8 +84,8 @@ Windows 與 Linux。它能開啟並儲存原生的 `.docx`、`.xlsx` 與 `.pptx`
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/sheets-ai.webp" alt="ChatOffice Sheets：AI 新增了一張摘要工作表，用 SUMIF 公式按地區與類別統計營收，並加上直條圖，回報套用了 43 項變更並提供復原按鈕"></td>
-<td width="50%"><img src="../assets/readme/sheets-qa.webp" alt="ChatOffice Sheets：詢問哪個地區在第二季營收領先，AI 回答歐洲並附上分類明細，同時將使用到的儲存格以連結形式引用，旁邊是訂單工作表"></td>
+<td width="50%"><img src="../assets/readme/sheets-ai.webp" alt="ChaOffice Sheets：AI 新增了一張摘要工作表，用 SUMIF 公式按地區與類別統計營收，並加上直條圖，回報套用了 43 項變更並提供復原按鈕"></td>
+<td width="50%"><img src="../assets/readme/sheets-qa.webp" alt="ChaOffice Sheets：詢問哪個地區在第二季營收領先，AI 回答歐洲並附上分類明細，同時將使用到的儲存格以連結形式引用，旁邊是訂單工作表"></td>
 </tr>
 <tr>
 <td><b>直接建好</b>——只憑一句話，代理就能新增一張摘要工作表，用真正的
@@ -99,16 +99,16 @@ Windows 與 Linux。它能開啟並儲存原生的 `.docx`、`.xlsx` 與 `.pptx`
 
 ### 3 · Slides — 從一句提示詞到一份 `.pptx` 投影片
 
-<img src="../assets/readme/slides-generate.webp" alt="ChatOffice Slides 產生 Aurora Home 投資人簡報的縮時過程：AI 在面板中規劃故事線，投影片依序出現在畫布上，最終簡報以收尾的訴求結束" width="100%">
+<img src="../assets/readme/slides-generate.webp" alt="ChaOffice Slides 產生 Aurora Home 投資人簡報的縮時過程：AI 在面板中規劃故事線，投影片依序出現在畫布上，最終簡報以收尾的訴求結束" width="100%">
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/slides-cover.webp" alt="ChatOffice Slides：畫面上是 AI 生成的 Aurora Home 投資人簡報封面投影片，附原始的一行提示詞與 AI 在面板中對已完成內容的摘要"></td>
-<td width="50%"><img src="../assets/readme/slides-ai.webp" alt="ChatOffice Slides：同一份 11 頁投影片的收尾頁設計完成，左側是縮圖列，AI 面板總結了整份簡報的敘事脈絡"></td>
+<td width="50%"><img src="../assets/readme/slides-cover.webp" alt="ChaOffice Slides：畫面上是 AI 生成的 Aurora Home 投資人簡報封面投影片，附原始的一行提示詞與 AI 在面板中對已完成內容的摘要"></td>
+<td width="50%"><img src="../assets/readme/slides-ai.webp" alt="ChaOffice Slides：同一份 11 頁投影片的收尾頁設計完成，左側是縮圖列，AI 面板總結了整份簡報的敘事脈絡"></td>
 </tr>
 <tr>
 <td><b>只需一句話</b>——「為 Aurora Home 製作一份 10 頁的投資人簡報……」。
-ChatOffice 會規劃敘事脈絡、研究相關數據，並把每一頁直接生成在畫面上，
+ChaOffice 會規劃敘事脈絡、研究相關數據，並把每一頁直接生成在畫面上，
 成為一份真正的 `.pptx`。</td>
 <td><b>拿到的是完整成品</b>——十一頁設計完整的投影片，字體排版、圖像
 風格一致，並以行動呼籲收尾；可繼續用母片、版面配置、智慧輔助線與
@@ -120,8 +120,8 @@ ChatOffice 會規劃敘事脈絡、研究相關數據，並把每一頁直接生
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/pdf-edit.webp" alt="ChatOffice PDF：編輯文字模式為頁面上每個文字區塊畫出框線以供就地編輯，同時 AI 面板正在回答一則關於報告的問題並附上頁碼引用"></td>
-<td width="50%"><img src="../assets/readme/pdf-convert.webp" alt="ChatOffice Docs 顯示由 Helios 季度報告 PDF 在本機轉換而成的 Word 文件，於第二個分頁開啟，旁邊是原始 PDF"></td>
+<td width="50%"><img src="../assets/readme/pdf-edit.webp" alt="ChaOffice PDF：編輯文字模式為頁面上每個文字區塊畫出框線以供就地編輯，同時 AI 面板正在回答一則關於報告的問題並附上頁碼引用"></td>
+<td width="50%"><img src="../assets/readme/pdf-convert.webp" alt="ChaOffice Docs 顯示由 Helios 季度報告 PDF 在本機轉換而成的 Word 文件，於第二個分頁開啟，旁邊是原始 PDF"></td>
 </tr>
 <tr>
 <td><b>直接在頁面內編輯</b>——編輯文字模式為每個文字區塊畫出框線以供
@@ -139,11 +139,11 @@ ChatOffice 會規劃敘事脈絡、研究相關數據，並把每一頁直接生
 主打亮點、色盤、字體與風格方向——再依這些設計標記建出一個完整
 獨立的 `.html` 檔案。
 
-<img src="../assets/readme/html-restyle-motion.webp" alt="ChatOffice HTML 重新設計 Lumen 到達頁面的縮時過程：面板中一次 Restyle 請求就把深色的 Midnight Studio 頁面變成暖色的 Solar Daybreak 版本，而每個區塊與所有文案都維持不變" width="100%">
+<img src="../assets/readme/html-restyle-motion.webp" alt="ChaOffice HTML 重新設計 Lumen 到達頁面的縮時過程：面板中一次 Restyle 請求就把深色的 Midnight Studio 頁面變成暖色的 Solar Daybreak 版本，而每個區塊與所有文案都維持不變" width="100%">
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/html-ai.webp" alt="ChatOffice HTML：以深色 Midnight Studio 風格方向生成的太陽能桌燈登陸頁，畫面顯示即時預覽，AI 面板總結了剛完成的頁面"></td>
+<td width="50%"><img src="../assets/readme/html-ai.webp" alt="ChaOffice HTML：以深色 Midnight Studio 風格方向生成的太陽能桌燈登陸頁，畫面顯示即時預覽，AI 面板總結了剛完成的頁面"></td>
 <td width="50%"><img src="../assets/readme/html-restyle.webp" alt="同一份 Lumen 登陸頁由 AI 重新設計成溫暖的 Solar Daybreak 風格方向：紙質背景、襯線標題與橘色重點色，所有版塊與文案皆保留"></td>
 </tr>
 <tr>
@@ -158,8 +158,8 @@ ChatOffice 會規劃敘事脈絡、研究相關數據，並把每一頁直接生
 </table>
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/html-dashboard.webp" alt="ChatOffice HTML：為自由接案設計師生成的個人儀表板介面，採溫暖亞麻風格，含左側導覽列、襯線問候語與四張指標卡片"></td>
-<td width="50%"><img src="../assets/readme/html-report.webp" alt="ChatOffice HTML：以報紙版式生成的電動車市場數據報告，含襯線報頭、一項 1730 萬的頭條數字與一列統計數據"></td>
+<td width="50%"><img src="../assets/readme/html-dashboard.webp" alt="ChaOffice HTML：為自由接案設計師生成的個人儀表板介面，採溫暖亞麻風格，含左側導覽列、襯線問候語與四張指標卡片"></td>
+<td width="50%"><img src="../assets/readme/html-report.webp" alt="ChaOffice HTML：以報紙版式生成的電動車市場數據報告，含襯線報頭、一項 1730 萬的頭條數字與一列統計數據"></td>
 </tr>
 <tr>
 <td><b>介面原型</b>——「個人儀表板」範本能把一個人物設定變成可用的
@@ -175,8 +175,8 @@ ChatOffice 會規劃敘事脈絡、研究相關數據，並把每一頁直接生
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/markdown-ai.webp" alt="ChatOffice Markdown：選取一段文字後出現 Ask AI 彈出視窗，內含輸入的指令與建議選項，如「潤飾」「更精簡」「擴寫」「修正語法」，並附「立即送出」與「加入佇列」按鈕"></td>
-<td width="50%"><img src="../assets/readme/markdown-render.webp" alt="ChatOffice Markdown 呈現一份上線公告文件，內含表格、Mermaid 流程圖與待辦清單，左側是 AI 面板的起手提示詞"></td>
+<td width="50%"><img src="../assets/readme/markdown-ai.webp" alt="ChaOffice Markdown：選取一段文字後出現 Ask AI 彈出視窗，內含輸入的指令與建議選項，如「潤飾」「更精簡」「擴寫」「修正語法」，並附「立即送出」與「加入佇列」按鈕"></td>
+<td width="50%"><img src="../assets/readme/markdown-render.webp" alt="ChaOffice Markdown 呈現一份上線公告文件，內含表格、Mermaid 流程圖與待辦清單，左側是 AI 面板的起手提示詞"></td>
 </tr>
 <tr>
 <td><b>針對選取內容詢問 AI</b>——選取任意段落即會出現<b>Ask AI</b>選項：
@@ -188,35 +188,35 @@ ChatOffice 會規劃敘事脈絡、研究相關數據，並把每一頁直接生
 </tr>
 </table>
 
-### 7 · CLI — 讓你的程式開發代理在本機驅動 ChatOffice
+### 7 · CLI — 讓你的程式開發代理在本機驅動 ChaOffice
 
-ChatOffice 內建 `chatoffice` 命令列與一份 agent skill。安裝這份 skill 之後，
+ChaOffice 內建 `chaoffice` 命令列與一份 agent skill。安裝這份 skill 之後，
 Claude Code、Codex、Cursor、Gemini CLI、GitHub Copilot、OpenCode 或 Windsurf
 就能透過與應用程式相同的引擎，建立、轉換、讀取與編輯真正的 Office 檔案，
 完全不必開啟視窗。
 
-<img src="../assets/readme/cli-deck-in-app.webp" alt="ChatOffice Slides 顯示一份由程式開發代理透過 chatoffice 命令列建立的八頁太陽系簡報：畫布上是封面投影片，左側有八張縮圖，AI 面板處於開啟狀態" width="100%">
+<img src="../assets/readme/cli-deck-in-app.webp" alt="ChaOffice Slides 顯示一份由程式開發代理透過 chaoffice 命令列建立的八頁太陽系簡報：畫布上是封面投影片，左側有八張縮圖，AI 面板處於開啟狀態" width="100%">
 
 <table>
 <tr>
 <td width="50%"><img src="../assets/readme/cli-slides-grid.webp" alt="太陽系簡報渲染出的八張投影片並排呈現：封面、探索時間線、四個關鍵數字、行星直徑長條圖、岩質行星與巨行星的對比、太陽佔 99.8% 的主視覺數字、四大巨行星的格狀排列與重點整理"></td>
-<td width="50%"><img src="../assets/readme/cli-integrations.webp" alt="ChatOffice 設定的「整合」頁面：chatoffice skill 已安裝到 Claude Code，Codex 與 Cursor 旁邊顯示著「安裝」按鈕"></td>
+<td width="50%"><img src="../assets/readme/cli-integrations.webp" alt="ChaOffice 設定的「整合」頁面：chaoffice skill 已安裝到 Claude Code，Codex 與 Cursor 旁邊顯示著「安裝」按鈕"></td>
 </tr>
 <tr>
 <td><b>對代理下一句提示詞</b>——「做一份關於太陽系的八頁簡報。」代理讀取 skill，
 寫出一份樣式表、一份大綱與每張投影片各一份的頁面規格，用
-<code>chatoffice image</code> 生成兩張照片，再讓 <code>chatoffice slides check</code>
-擋下所有溢出或重疊的內容，最後由 <code>chatoffice create</code> 組裝出
+<code>chaoffice image</code> 生成兩張照片，再讓 <code>chaoffice slides check</code>
+擋下所有溢出或重疊的內容，最後由 <code>chaoffice create</code> 組裝出
 <code>.pptx</code>，並以 <code>slides render</code> 交回每張投影片各一張 PNG
 供你檢視。</td>
-<td><b>在設定 → 整合中一次安裝</b>——ChatOffice 會列出在這台電腦上找到的
+<td><b>在設定 → 整合中一次安裝</b>——ChaOffice 會列出在這台電腦上找到的
 程式開發代理，並把 skill 寫入你勾選的每一個。也可以把 skill 下載成 zip
 壓縮檔，或執行 <code>npx skills add zhgyuhuii/ChayuanAIOffice</code>。命令與完整
 工作流程請見<a href="#command-line-and-agent-skill">命令列與 agent skill</a>。</td>
 </tr>
 </table>
 
-## 為什麼選 ChatOffice
+## 為什麼選 ChaOffice
 
 - **開源**，採用 Apache-2.0 授權，在 GitHub 上公開開發。
 - **由你掌控。** macOS、Windows 與 Linux 原生應用程式；檔案留在本機硬碟，每一次
@@ -230,7 +230,7 @@ Claude Code、Codex、Cursor、Gemini CLI、GitHub Copilot、OpenCode 或 Windsu
 - **認真做好 PDF。** 直接在頁面內編輯文字，並在本機將 PDF 轉換為 Word、Excel 或
   PowerPoint，掃描檔案支援系統 OCR。
 - **同樣支援 Markdown 與 HTML**，共用同一套 AI 面板，並可在本機匯出為 Word。
-- **可寫成腳本。** `chatoffice` 命令列與 agent skill 讓每一個引擎都能供 Claude Code、
+- **可寫成腳本。** `chaoffice` 命令列與 agent skill 讓每一個引擎都能供 Claude Code、
   Codex、Cursor 及其他程式開發代理使用，而且依然在本機執行。
 - **免費**，個人與團隊皆可使用。
 
@@ -255,9 +255,9 @@ Grok、Qwen、MiniMax，或任何相容 OpenAI 的圖片服務端點。
 
 ## 命令列與 agent skill
 
-應用程式能對檔案做的每一件事，`chatoffice` 命令列都能在終端機裡完成：
+應用程式能對檔案做的每一件事，`chaoffice` 命令列都能在終端機裡完成：
 檢視、轉換、建立、讀取與編輯 Word、Excel、PowerPoint、PDF、Markdown 與
-HTML，用的是同一套引擎，且無需介面。它隨 ChatOffice 一起安裝，不需要
+HTML，用的是同一套引擎，且無需介面。它隨 ChaOffice 一起安裝，不需要
 自己的執行環境，也絕不會把文件送到任何地方。搭配內建的 **agent skill**，
 它能把程式開發代理變成一位文件工作者，產出真正的 Office 檔案，而不是
 用 Markdown 勉強充數。
@@ -269,29 +269,29 @@ HTML，用的是同一套引擎，且無需介面。它隨 ChatOffice 一起安�
 
 | 方式                                   | 效果                                                                                                                          |
 | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| 應用程式內的 **設定 → 整合**           | 列出在這台電腦上找到的代理；按一下就把 skill 寫入你選擇的每一個。當 ChatOffice 新版本附帶更新的 skill 時，會出現**更新**按鈕。 |
+| 應用程式內的 **設定 → 整合**           | 列出在這台電腦上找到的代理；按一下就把 skill 寫入你選擇的每一個。當 ChaOffice 新版本附帶更新的 skill 時，會出現**更新**按鈕。 |
 | 同一頁面上的 **下載為 zip**            | claude.ai、Claude 桌面版應用程式與其他助理可作為上傳 skill 接受的目錄結構。                                                   |
 | `npx skills add zhgyuhuii/ChayuanAIOffice` | 從本儲存庫安裝到任何相容 skills 的代理。                                                                                      |
 
 接著開一個新的對話，請它幫你做一份文件。這份 skill 會教代理何時該使用
-`chatoffice`、編輯前如何先讀取檔案，以及如何檢查自己的成果。
+`chaoffice`、編輯前如何先讀取檔案，以及如何檢查自己的成果。
 
 ### 從終端機快速上手
 
 ```bash
-chatoffice --version
-chatoffice info report.docx --json                  # headings and blocks; or sheets, slides, pages
-chatoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx, …
-chatoffice create --type docx --from notes.md --out notes.docx
-chatoffice create --type xlsx --from table.json --out sales.xlsx   # "=SUM(B2:B9)" cells stay live formulas
-chatoffice docs read report.docx --range 0-9 --json # then `docs apply --ops edits.json` edits in place
-chatoffice render report.docx --out shots/          # one PNG per page, to look at what you made
-chatoffice open sales.xlsx                          # hand the result to the editor
+chaoffice --version
+chaoffice info report.docx --json                  # headings and blocks; or sheets, slides, pages
+chaoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx, …
+chaoffice create --type docx --from notes.md --out notes.docx
+chaoffice create --type xlsx --from table.json --out sales.xlsx   # "=SUM(B2:B9)" cells stay live formulas
+chaoffice docs read report.docx --range 0-9 --json # then `docs apply --ops edits.json` edits in place
+chaoffice render report.docx --out shots/          # one PNG per page, to look at what you made
+chaoffice open sales.xlsx                          # hand the result to the editor
 ```
 
 每個命令都會印出一行摘要，加上 `--json` 則輸出單一 JSON 物件。編輯是
 原子性的：被拒絕的操作不會動到檔案，並會回傳附有指引的錯誤訊息。
-`chatoffice help` 列出目前的命令集合；完整參考請見
+`chaoffice help` 列出目前的命令集合；完整參考請見
 [packages/cli/README.md](../../packages/cli/README.md)。
 
 ### 代理實際執行了什麼
@@ -301,21 +301,21 @@ chatoffice open sales.xlsx                          # hand the result to the edi
 之前先做檢查：
 
 ```bash
-chatoffice capabilities --json                        # which cloud tools ChatOffice has configured
-chatoffice guide slides design                        # the deck workflow and layout library
-chatoffice image "the eight planets in a row …" --aspect 16:9 --out deck/assets/cover.jpg
-chatoffice slides check deck/outline.json --json      # 8 pages, no findings
-chatoffice slides check deck/pages/01.json --json     # builds one slide, audits overflow and overlap
+chaoffice capabilities --json                        # which cloud tools ChaOffice has configured
+chaoffice guide slides design                        # the deck workflow and layout library
+chaoffice image "the eight planets in a row …" --aspect 16:9 --out deck/assets/cover.jpg
+chaoffice slides check deck/outline.json --json      # 8 pages, no findings
+chaoffice slides check deck/pages/01.json --json     # builds one slide, audits overflow and overlap
 …                                                    # one page file per slide, fixed until each check is clean
-chatoffice create --type pptx --spec deck/pages --outline deck/outline.json --out deck/solar-system.pptx --json
-chatoffice slides render deck/solar-system.pptx --out deck/shots --json
-chatoffice slides audit deck/solar-system.pptx --json    # 8 slides, no layout issues
-chatoffice slides replace deck/solar-system.pptx --slide 4 --spec deck/pages/05.json --json
-chatoffice open deck/solar-system.pptx
+chaoffice create --type pptx --spec deck/pages --outline deck/outline.json --out deck/solar-system.pptx --json
+chaoffice slides render deck/solar-system.pptx --out deck/shots --json
+chaoffice slides audit deck/solar-system.pptx --json    # 8 slides, no layout issues
+chaoffice slides replace deck/solar-system.pptx --slide 4 --spec deck/pages/05.json --json
+chaoffice open deck/solar-system.pptx
 ```
 
-`chatoffice` 內部不會發出任何模型呼叫：思考由代理負責，建置與檢查由 CLI
-負責，成品則以一份普通的 `.pptx` 在 ChatOffice 或 PowerPoint 中開啟。
+`chaoffice` 內部不會發出任何模型呼叫：思考由代理負責，建置與檢查由 CLI
+負責，成品則以一份普通的 `.pptx` 在 ChaOffice 或 PowerPoint 中開啟。
 
 <a id="download"></a>
 
@@ -337,18 +337,18 @@ chatoffice open deck/solar-system.pptx
 <details>
 <summary><b>在 Linux 上安裝</b></summary>
 
-deb 套件可用 apt 安裝——會自動處理相依套件，並將 ChatOffice 加入
+deb 套件可用 apt 安裝——會自動處理相依套件，並將 ChaOffice 加入
 應用程式選單：
 
 ```bash
-sudo apt install ./chatoffice_<version>_amd64.deb
+sudo apt install ./chaoffice_<version>_amd64.deb
 ```
 
 在 Fedora / RHEL 家族 / openSUSE 上，改安裝 rpm 套件：
 
 ```bash
-sudo dnf install ./chatoffice-<version>.x86_64.rpm     # Fedora / RHEL 家族
-sudo zypper install ./chatoffice-<version>.x86_64.rpm  # openSUSE
+sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL 家族
+sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
 
 AppImage 可直接就地執行：先安裝 FUSE 2 執行環境
@@ -356,8 +356,8 @@ AppImage 可直接就地執行：先安裝 FUSE 2 執行環境
 `libfuse2t64`），再將檔案設為可執行，然後執行它：
 
 ```bash
-chmod +x ChatOffice-<version>.AppImage
-./ChatOffice-<version>.AppImage
+chmod +x ChaOffice-<version>.AppImage
+./ChaOffice-<version>.AppImage
 ```
 
 </details>
@@ -396,42 +396,42 @@ npm run dist:linux   # 打包 Linux AppImage + deb + rpm
 ```
 
 sheets 應用程式還需要 Rust 工具鏈來編譯其 xlsx sidecar
-（`cargo` 需在 PATH 中）；執行 `npm run build -w @chatoffice/sheets`
+（`cargo` 需在 PATH 中）；執行 `npm run build -w @chaoffice/sheets`
 會自動完成編譯。每次變更需要通過哪些檢查、PR 如何合併，詳見
 [CONTRIBUTING.md](../../CONTRIBUTING.md)。
 
 ## 社群
 
-ChatOffice 正在積極開發中，你的意見回饋會影響它的方向。
+ChaOffice 正在積極開發中，你的意見回饋會影響它的方向。
 
 - 在 [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues)
   **回報問題或提出功能需求**。
-- 到 [GenTeam](https://chatoffice.ai/join) **加入 ChatOffice 群組聊天**，
+- 到 [GenTeam](https://chaoffice.ai/join) **加入 ChaOffice 群組聊天**，
   和團隊及其他使用者交流。
-- 如果 ChatOffice 對你有幫助，**幫這個專案按個星星**——這是支持這個
+- 如果 ChaOffice 對你有幫助，**幫這個專案按個星星**——這是支持這個
   專案最簡單的方式。
 
 ## 常見問題
 
 <details>
-<summary><b>ChatOffice 是免費的嗎？</b></summary>
+<summary><b>ChaOffice 是免費的嗎？</b></summary>
 
-是的。ChatOffice 以 Apache-2.0 授權免費開源——應用程式本身沒有試用期，
+是的。ChaOffice 以 Apache-2.0 授權免費開源——應用程式本身沒有試用期，
 也沒有付費方案。
 
 </details>
 
 <details>
-<summary><b>ChatOffice 能開啟 Microsoft Word、Excel 與 PowerPoint 檔案嗎？</b></summary>
+<summary><b>ChaOffice 能開啟 Microsoft Word、Excel 與 PowerPoint 檔案嗎？</b></summary>
 
-可以。ChatOffice 能開啟並儲存原生的 `.docx`、`.xlsx` 與 `.pptx` 檔案。
+可以。ChaOffice 能開啟並儲存原生的 `.docx`、`.xlsx` 與 `.pptx` 檔案。
 儲存時採位元級保留：你沒動過的部分會原樣寫回，文件在 Microsoft
 Office 中依然能正常使用。
 
 </details>
 
 <details>
-<summary><b>ChatOffice 能離線使用嗎？</b></summary>
+<summary><b>ChaOffice 能離線使用嗎？</b></summary>
 
 文件編輯完全在本機執行——檔案在開啟、編輯、儲存或轉換的過程中
 都不會離開你的裝置。AI 功能（代理、搜尋、圖片工具）需要網路連線，
@@ -440,7 +440,7 @@ Office 中依然能正常使用。
 </details>
 
 <details>
-<summary><b>ChatOffice 能編輯 PDF 檔案嗎？</b></summary>
+<summary><b>ChaOffice 能編輯 PDF 檔案嗎？</b></summary>
 
 可以——這是真正的 PDF 文字與圖片編輯，會重寫頁面內容串流並保留
 原始字體，而不是用覆蓋式的注解來遮蓋。
@@ -448,7 +448,7 @@ Office 中依然能正常使用。
 </details>
 
 <details>
-<summary><b>ChatOffice 能把 PDF 轉換成 Word、Excel 或 PowerPoint 嗎？</b></summary>
+<summary><b>ChaOffice 能把 PDF 轉換成 Word、Excel 或 PowerPoint 嗎？</b></summary>
 
 可以——完全在本機完成：透過 PDFium 進行字元層級擷取，再搭配以幾何
 資訊為基礎的版面分析，不經雲端服務，也不需要上傳檔案。掃描頁面
@@ -460,7 +460,7 @@ Office 中依然能正常使用。
 <details>
 <summary><b>我可以使用自己的 AI 模型或 API 金鑰嗎？</b></summary>
 
-可以。除了免金鑰的 Genspark 登入之外，ChatOffice 也支援自帶金鑰，
+可以。除了免金鑰的 Genspark 登入之外，ChaOffice 也支援自帶金鑰，
 涵蓋 Claude、OpenAI、Gemini、DeepSeek、Kimi、GLM、Qwen、Doubao、
 MiniMax、Grok、Mistral、OpenRouter、Requesty 與 OpenCode Zen/Go，以及任何相容
 OpenAI 的服務端點——包括本機模型伺服器。搜尋、圖片生成與圖片／影片
@@ -469,7 +469,7 @@ OpenAI 的服務端點——包括本機模型伺服器。搜尋、圖片生成�
 </details>
 
 <details>
-<summary><b>ChatOffice 能把 HTML 轉換成 Word 嗎？</b></summary>
+<summary><b>ChaOffice 能把 HTML 轉換成 Word 嗎？</b></summary>
 
 可以——HTML 應用程式中的「匯出為 Word」會完全在本機產生原生、
 可編輯的 `.docx`。頁面會在內建的 Chromium 中渲染，再轉換成真正的
@@ -480,9 +480,9 @@ Word 結構：標題、段落、清單、表格、卡片、KPI 列、表單欄�
 </details>
 
 <details>
-<summary><b>我可以從 Claude Code、Codex、Cursor 或指令碼驅動 ChatOffice 嗎？</b></summary>
+<summary><b>我可以從 Claude Code、Codex、Cursor 或指令碼驅動 ChaOffice 嗎？</b></summary>
 
-可以。ChatOffice 會安裝一個 `chatoffice` 命令列，以無介面的方式執行同一套
+可以。ChaOffice 會安裝一個 `chaoffice` 命令列，以無介面的方式執行同一套
 引擎：在終端機或指令碼中檢視、轉換、建立、讀取與編輯文件，並提供
 `--json` 輸出供程式使用。內建的 agent skill 會教 Claude Code、Codex、Cursor、
 Gemini CLI、GitHub Copilot、OpenCode 與 Windsurf 使用它；請在 **設定 → 整合**
@@ -491,12 +491,12 @@ Gemini CLI、GitHub Copilot、OpenCode 與 Windsurf 使用它；請在 **設定 
 </details>
 
 <details>
-<summary><b>ChatOffice 會收集任何資料嗎？</b></summary>
+<summary><b>ChaOffice 會收集任何資料嗎？</b></summary>
 
 官方打包版本預設會傳送有限的使用分析資料，你隨時可以在「設定 → 一般」
 中關閉這項回報。分析資料絕不會包含文件內容、檔案名稱、檔案路徑、
 帳號身分或電子郵件地址。完整的事件與資料揭露內容請見
-[ChatOffice 隱私權政策](../../PRIVACY.md)。
+[ChaOffice 隱私權政策](../../PRIVACY.md)。
 
 </details>
 
@@ -507,7 +507,7 @@ Gemini CLI、GitHub Copilot、OpenCode 與 Windsurf 使用它；請在 **設定 
 
 ## 致謝
 
-沒有以下這些開源專案，就不會有 ChatOffice：
+沒有以下這些開源專案，就不會有 ChaOffice：
 
 - [Electron](https://www.electronjs.org/) — 每個應用程式所使用的桌面
   執行環境。
@@ -552,10 +552,10 @@ MIT/Apache-2.0/BSD-3-Clause/OFL 授權。
 
 ## 授權
 
-ChatOffice 採用 [Apache License 2.0](../../LICENSE) 授權，唯一例外是
+ChaOffice 採用 [Apache License 2.0](../../LICENSE) 授權，唯一例外是
 `ee/` 目錄，該目錄保留給未來的企業模組，適用
-[ChatOffice 企業授權](../../ee/LICENSE)。
+[ChaOffice 企業授權](../../ee/LICENSE)。
 
-ChatOffice 與 Genspark 的名稱與標誌皆為 Mainfunc, Inc. 的商標。
+ChaOffice 與 Genspark 的名稱與標誌皆為 Mainfunc, Inc. 的商標。
 Apache-2.0 授權並未授予使用這些商標的權利（詳見第 6 節）；
 基於本專案的分支請使用自己的品牌識別。

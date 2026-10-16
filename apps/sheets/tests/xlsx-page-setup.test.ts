@@ -5,7 +5,7 @@ import {
   applyPrintAreas,
   buildHeaderFooterXml,
   PageSetupError,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-page-setup'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-page-setup'
 
 const BARE = '<worksheet><sheetData/></worksheet>'
 const WITH_VIEW =

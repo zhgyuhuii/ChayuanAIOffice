@@ -1,5 +1,5 @@
 {
-  "name": "@chatoffice/ai-provider",
+  "name": "@chaoffice/ai-provider",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -18,7 +18,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@chatoffice/agent-core": "*"
+    "@chaoffice/agent-core": "*"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

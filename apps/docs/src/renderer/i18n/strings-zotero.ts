@@ -1,4 +1,4 @@
-import { defineStrings } from '@chatoffice/i18n'
+import { defineStrings } from '@chaoffice/i18n'
 
 /** Strings for the Zotero integration in the References tab. */
 export const zoteroStrings = defineStrings({

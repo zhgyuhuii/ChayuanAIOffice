@@ -7,7 +7,7 @@
 import type {
   PivotAggregation,
   PivotShowDataAs,
-} from '@chatoffice/xlsx-gateway/domain/pivot-value-modes'
+} from '@chaoffice/xlsx-gateway/domain/pivot-value-modes'
 
 export interface PivotField {
   readonly label: string

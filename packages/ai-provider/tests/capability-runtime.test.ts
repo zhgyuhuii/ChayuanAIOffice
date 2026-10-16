@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { AiSettingsV2 } from '@chatoffice/ai-provider'
+import type { AiSettingsV2 } from '@chaoffice/ai-provider'
 import {
   hasMediaCapability,
   resolveMediaCapability,

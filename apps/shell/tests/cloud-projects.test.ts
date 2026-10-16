@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { chatofficeListPastProjects, type ChaOfficePastProjectsPage } from '@chatoffice/ai-search'
+import { chaofficeListPastProjects, type ChaOfficePastProjectsPage } from '@chaoffice/ai-search'
 import {
   cloudStoreOwner,
   clearCloudProjectsStore,
@@ -10,14 +10,14 @@ import {
   syncCloudProjects,
 } from '../src/main/cloud-projects'
 
-vi.mock('@chatoffice/ai-search', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@chatoffice/ai-search')>()
+vi.mock('@chaoffice/ai-search', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@chaoffice/ai-search')>()
   // the CLI binary is not installed in the test environment; auth presence is
   // what the store logic keys on, so force it on (the packaged app has the CLI)
-  return { ...actual, chatofficeListPastProjects: vi.fn(), hasChaOfficeAuth: vi.fn(() => true) }
+  return { ...actual, chaofficeListPastProjects: vi.fn(), hasChaOfficeAuth: vi.fn(() => true) }
 })
 
-const listMock = vi.mocked(chatofficeListPastProjects)
+const listMock = vi.mocked(chaofficeListPastProjects)
 
 const PROJECTS = [
   {
@@ -33,7 +33,7 @@ describe('cloud projects store account binding', () => {
   let dir: string
   let storePath: string
   const envBefore = {
-    key: process.env.CHATOFFICE_API_KEY,
+    key: process.env.CHAOFFICE_API_KEY,
     disable: process.env.AI_SEARCH_DISABLE_GSK,
   }
 
@@ -41,13 +41,13 @@ describe('cloud projects store account binding', () => {
     dir = mkdtempSync(join(tmpdir(), 'cloud-store-'))
     storePath = join(dir, 'cloud-projects.json')
     delete process.env.AI_SEARCH_DISABLE_GSK
-    process.env.CHATOFFICE_API_KEY = 'test-key-account-a'
+    process.env.CHAOFFICE_API_KEY = 'test-key-account-a'
   })
 
   afterEach(() => {
     rmSync(dir, { recursive: true, force: true })
-    if (envBefore.key === undefined) delete process.env.CHATOFFICE_API_KEY
-    else process.env.CHATOFFICE_API_KEY = envBefore.key
+    if (envBefore.key === undefined) delete process.env.CHAOFFICE_API_KEY
+    else process.env.CHAOFFICE_API_KEY = envBefore.key
     if (envBefore.disable === undefined) delete process.env.AI_SEARCH_DISABLE_GSK
     else process.env.AI_SEARCH_DISABLE_GSK = envBefore.disable
   })
@@ -63,7 +63,7 @@ describe('cloud projects store account binding', () => {
     const tag = cloudStoreOwner()
     expect(tag).toMatch(/^[0-9a-f]{16}$/)
     expect(tag).not.toContain('test-key')
-    process.env.CHATOFFICE_API_KEY = 'test-key-account-b'
+    process.env.CHAOFFICE_API_KEY = 'test-key-account-b'
     expect(cloudStoreOwner()).not.toBe(tag)
   })
 
@@ -76,7 +76,7 @@ describe('cloud projects store account binding', () => {
 
   it("rejects and deletes another account's store", () => {
     writeStore(cloudStoreOwner())
-    process.env.CHATOFFICE_API_KEY = 'test-key-account-b'
+    process.env.CHAOFFICE_API_KEY = 'test-key-account-b'
     expect(readCloudProjectsStore(storePath)).toBeNull()
     expect(existsSync(storePath)).toBe(false)
   })
@@ -98,7 +98,7 @@ describe('cloud projects sync account isolation', () => {
   let dir: string
   let storePath: string
   const envBefore = {
-    key: process.env.CHATOFFICE_API_KEY,
+    key: process.env.CHAOFFICE_API_KEY,
     disable: process.env.AI_SEARCH_DISABLE_GSK,
   }
 
@@ -120,14 +120,14 @@ describe('cloud projects sync account isolation', () => {
     dir = mkdtempSync(join(tmpdir(), 'cloud-sync-'))
     storePath = join(dir, 'cloud-projects.json')
     delete process.env.AI_SEARCH_DISABLE_GSK
-    process.env.CHATOFFICE_API_KEY = 'test-key-account-a'
+    process.env.CHAOFFICE_API_KEY = 'test-key-account-a'
     listMock.mockReset()
   })
 
   afterEach(() => {
     rmSync(dir, { recursive: true, force: true })
-    if (envBefore.key === undefined) delete process.env.CHATOFFICE_API_KEY
-    else process.env.CHATOFFICE_API_KEY = envBefore.key
+    if (envBefore.key === undefined) delete process.env.CHAOFFICE_API_KEY
+    else process.env.CHAOFFICE_API_KEY = envBefore.key
     if (envBefore.disable === undefined) delete process.env.AI_SEARCH_DISABLE_GSK
     else process.env.AI_SEARCH_DISABLE_GSK = envBefore.disable
   })
@@ -142,7 +142,7 @@ describe('cloud projects sync account isolation', () => {
   it('aborts without touching the store when the account switches mid-sync', async () => {
     listMock.mockImplementation(async () => {
       // the page comes back after the user has switched accounts
-      process.env.CHATOFFICE_API_KEY = 'test-key-account-b'
+      process.env.CHAOFFICE_API_KEY = 'test-key-account-b'
       return pageFor('Deck B')
     })
     await expect(syncCloudProjects(storePath)).rejects.toThrow(/account changed/)
@@ -158,7 +158,7 @@ describe('cloud projects sync account isolation', () => {
     const first = syncCloudProjects(storePath)
     expect(syncCloudProjects(storePath)).toBe(first) // same account shares the run
 
-    process.env.CHATOFFICE_API_KEY = 'test-key-account-b'
+    process.env.CHAOFFICE_API_KEY = 'test-key-account-b'
     const second = syncCloudProjects(storePath)
     expect(second).not.toBe(first)
     expect(listMock).toHaveBeenCalledTimes(2)

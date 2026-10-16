@@ -10,7 +10,7 @@ import { basename, dirname, join } from 'node:path'
 /// a refused flush (EPERM/EINVAL/ENOSYS) on cloud-sync and AV-locked folders.
 /// The copy itself stays in the kernel there, so a multi-hundred-MB file is
 /// still never read into RAM.
-export { atomicCopyFile } from '@chatoffice/electron-utils/atomic-write'
+export { atomicCopyFile } from '@chaoffice/electron-utils/atomic-write'
 
 const RETRYABLE_RENAME_CODES = new Set(['EPERM', 'EACCES', 'EBUSY'])
 // cloud-sync folders, AV locks and fsync-less filesystems refuse the flush after a

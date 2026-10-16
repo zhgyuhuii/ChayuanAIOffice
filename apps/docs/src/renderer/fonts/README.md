@@ -21,7 +21,7 @@ freely redistributable with the app. Licenses: Carlito and Liberation are
 (circumflex/breve) was dropped (Ậ/Ệ/Ộ in Regular/Bold); advance widths are unchanged.
 Renamed per OFL 1.1 §2 — "Carlito" is a Reserved Font Name. The files live in
 `packages/ui/src/fonts/` (shared with sheets and slides, which alias Calibri/Aptos
-to the same faces) and are referenced here as `@chatoffice/ui/fonts/Carlito-*.ttf`.
+to the same faces) and are referenced here as `@chaoffice/ui/fonts/Carlito-*.ttf`.
 
 Purpose: when a Word font declared by the document is missing on this machine, the
 browser's silent fallback (Helvetica etc.) changes glyph widths, so line-break points
@@ -161,7 +161,7 @@ order. Italic synthesizes oblique from these faces.
 
 | Font                             | Role                                 |
 | -------------------------------- | ------------------------------------ |
-| ChatOffice DM Sans (subset woff2) | real face for DM Sans-declaring docs |
+| ChaOffice DM Sans (subset woff2) | real face for DM Sans-declaring docs |
 
 Source: DM Sans 1.200 Regular/Bold statics from [google/fonts](https://github.com/google/fonts/tree/af0704e25dfad3e8999a2955cbbdfa2b28099617/ofl/dmsans)
 (SIL OFL 1.1; the current upstream is a variable font whose instances no
@@ -172,7 +172,7 @@ whose hmtx equals the 1.200 statics glyph for glyph (hhea = typo = win =
 fallback runs ~7% narrower per line and 1.15-spaced. Subset to Latin + Latin
 Extended + punctuation/currency, advances and vertical metrics **unmodified**
 (`tools/build-dm-sans-font.py`), checked in as
-`ChatOfficeDMSans-{Regular,Bold}-subset.woff2`. Renamed (no Reserved Font Name
+`ChaOfficeDMSans-{Regular,Bold}-subset.woff2`. Renamed (no Reserved Font Name
 of its own upstream) so a locally installed DM Sans wins by chain order.
 Italic synthesizes oblique from these faces.
 

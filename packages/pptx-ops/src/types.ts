@@ -1,4 +1,4 @@
-import type { NamedAction } from '@chatoffice/pptx-engine'
+import type { NamedAction } from '@chaoffice/pptx-engine'
 
 // Edit payload types shared by the op layer and the slides app IPC surface.
 

@@ -21,9 +21,9 @@ import {
   replaceSlideFromSpec,
   stageContext,
 } from '../formats/slide-spec'
-import { parseOutline } from '@chatoffice/pipelines/slides'
+import { parseOutline } from '@chaoffice/pipelines/slides'
 import { readOpsInput } from '../ops-input'
-import type { TxnResult } from '@chatoffice/pptx-ops'
+import type { TxnResult } from '@chaoffice/pptx-ops'
 import type { CommandContext, CommandDef } from '../registry'
 import { CliError, EXIT, type CommandResult } from '../result'
 import { txnDetail, txnFailure } from './txn'
@@ -112,7 +112,7 @@ export const slidesCommand: CommandDef = {
           undefined,
           {
             reason: verb === undefined ? 'missing_argument' : 'invalid_argument',
-            suggestion: 'run `chatoffice help slides`',
+            suggestion: 'run `chaoffice help slides`',
           },
         )
     }
@@ -311,7 +311,7 @@ async function check(
       notes: style
         ? []
         : ['no style.md beside the outline: write the style sheet before the pages'],
-      next: 'write pages/01.json … one file per outline page, running `chatoffice slides check <page.json>` on each',
+      next: 'write pages/01.json … one file per outline page, running `chaoffice slides check <page.json>` on each',
     }
     if (errors.length) {
       throw new CliError(
@@ -444,7 +444,7 @@ async function replace(
         : null,
       offPalette: r.stage?.offPalette ?? [],
       notes: stage.notes,
-      next: 'element ids on the rebuilt slide are new: run `chatoffice slides read` before targeting them',
+      next: 'element ids on the rebuilt slide are new: run `chaoffice slides read` before targeting them',
     },
   }
 }

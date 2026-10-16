@@ -3,8 +3,8 @@
  * multilevel libraries, the number-style catalogue with samples, the recently
  * used presets (localStorage) and the "lists in this document" scan.
  */
-import { formatNumber, type CustomNumberingLevel, type NumberingDef } from '@chatoffice/docx-engine'
-import { customLevelFromNumberingLevel } from '@chatoffice/docx-engine'
+import { formatNumber, type CustomNumberingLevel, type NumberingDef } from '@chaoffice/docx-engine'
+import { customLevelFromNumberingLevel } from '@chaoffice/docx-engine'
 
 export const TWIPS_PER_CM = 567
 

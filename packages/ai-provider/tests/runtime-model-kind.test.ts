@@ -30,7 +30,7 @@ function makeSource(
   } as AiSettingsSource & { writes: AiSettingsV2[] }
 }
 
-const chatoffice = {
+const chaoffice = {
   apiKey: () => '',
   hasAuth: () => false,
   status: async () => ({ loggedIn: false }),
@@ -79,7 +79,7 @@ describe('runtime model-kind dispatch', () => {
         profileId: 'openai-compatible',
         modelId: 'agnes-image-2.5-flash',
       }),
-      chatoffice,
+      chaoffice,
       translate,
     })
     const chunks: AiStreamChunk[] = []
@@ -117,7 +117,7 @@ describe('runtime model-kind dispatch', () => {
         profileId: 'openai-compatible',
         modelId: 'agnes-image-2.5-flash',
       }),
-      chatoffice,
+      chaoffice,
       translate,
     })
     const chunks: AiStreamChunk[] = []
@@ -151,7 +151,7 @@ describe('runtime model-kind dispatch', () => {
         profileId: 'openai-compatible',
         modelId: 'agnes-2.5-pro',
       }),
-      chatoffice,
+      chaoffice,
       translate,
     })
     await runtime.runStream(
@@ -190,7 +190,7 @@ describe('runtime model-kind dispatch', () => {
         profileId: 'openai-compatible',
         modelId: 'agnes-image-2.5-flash',
       }),
-      chatoffice,
+      chaoffice,
       translate,
     })
     const chunks: AiStreamChunk[] = []
@@ -220,7 +220,7 @@ describe('runtime model-kind dispatch', () => {
         profileId: 'openai-compatible',
         modelId: 'agnes-image-2.5-flash',
       }),
-      chatoffice,
+      chaoffice,
       translate,
     })
     const res = await runtime.runChat(
@@ -235,7 +235,7 @@ describe('runtime model-kind dispatch', () => {
 
   it('a non-chat current model survives the settings view and save (picker stays put)', async () => {
     const source = makeSource([agnesProfile('agnes-image-2.5-flash')], undefined)
-    const runtime = createAiRuntime({ source, chatoffice, translate })
+    const runtime = createAiRuntime({ source, chaoffice, translate })
     // the editors' pick flow: setCurrentModel then re-read the view — the old
     // chat-only resolver bounced the pick back to the first chat model
     await runtime.setCurrentModel({
@@ -261,7 +261,7 @@ describe('runtime model-kind dispatch', () => {
       [agnesProfile('agnes-image-2.5-flash'), agnesProfile2('agnes-2.5-pro')],
       { profileId: 'removed-profile', modelId: 'm1' },
     )
-    const runtime = createAiRuntime({ source, chatoffice, translate })
+    const runtime = createAiRuntime({ source, chaoffice, translate })
     const view = await runtime.getSettingsView()
     expect(view.currentModel).toEqual({ profileId: 'agnes-ai', modelId: 'agnes-2.5-pro' })
   })
@@ -311,7 +311,7 @@ describe('runtime model-kind dispatch', () => {
         profileId: 'openai-compatible',
         modelId: 'agnes-video-2.5-flash',
       }),
-      chatoffice,
+      chaoffice,
       translate,
     })
     const chunks: AiStreamChunk[] = []
@@ -372,7 +372,7 @@ describe('runtime model-kind dispatch', () => {
         profileId: 'openai-compatible',
         modelId: 'agnes-video-2.5-flash',
       }),
-      chatoffice,
+      chaoffice,
       translate,
     })
     const chunks: AiStreamChunk[] = []
@@ -407,7 +407,7 @@ describe('runtime model-kind dispatch', () => {
         profileId: 'openai-compatible',
         modelId: 'agnes-video-2.5-flash',
       }),
-      chatoffice,
+      chaoffice,
       translate,
     })
     const chunks: AiStreamChunk[] = []

@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
-import { normalizeCustomProfile } from '@chatoffice/ai-provider/browser'
+import type { AiPanelPrefs } from '@chaoffice/ui/ai-panel-prefs'
+import { normalizeCustomProfile } from '@chaoffice/ai-provider/browser'
 
 import {
   HEADER_FOOTER_PICTURE_POSITION,
@@ -13,11 +13,11 @@ import {
   SAVE_EDITS_CHUNK_JSON_MAX,
   SAVE_EDITS_CHUNK_MAX,
 } from './ipc-channels'
-import { ADDABLE_SHAPE_TYPES } from '@chatoffice/xlsx-gateway/shared/shape-types'
+import { ADDABLE_SHAPE_TYPES } from '@chaoffice/xlsx-gateway/shared/shape-types'
 import {
   PIVOT_AGGREGATIONS,
   PIVOT_SHOW_DATA_AS,
-} from '@chatoffice/xlsx-gateway/domain/pivot-value-modes'
+} from '@chaoffice/xlsx-gateway/domain/pivot-value-modes'
 import {
   CHART_CATEGORY_WIRE_MAX,
   CHART_TEXT_WIRE_MAX,
@@ -28,7 +28,7 @@ import {
   workbookChartEditSchema,
   workbookStyleEditSchema,
   workbookVisualEditSchema,
-} from '@chatoffice/xlsx-gateway/shared/edit-schemas'
+} from '@chaoffice/xlsx-gateway/shared/edit-schemas'
 import type {
   AiChatResponse,
   AiModelEntry,
@@ -39,7 +39,7 @@ import type {
   ChaOfficeAccountStatus,
   LocalToolOpResult,
   LocalToolStatus,
-} from '@chatoffice/ai-provider'
+} from '@chaoffice/ai-provider'
 
 // edit schemas shared with the xlsx gateway package; re-exported so IPC consumers keep one import site
 export {
@@ -50,13 +50,13 @@ export {
   workbookChartEditSchema,
   workbookStyleEditSchema,
   workbookVisualEditSchema,
-} from '@chatoffice/xlsx-gateway/shared/edit-schemas'
+} from '@chaoffice/xlsx-gateway/shared/edit-schemas'
 export type {
   WorkbookChartEdit,
   WorkbookRichRun,
   WorkbookStyleEdit,
   WorkbookVisualEdit,
-} from '@chatoffice/xlsx-gateway/shared/edit-schemas'
+} from '@chaoffice/xlsx-gateway/shared/edit-schemas'
 
 const MAX_RANGE_CELLS = 100_000
 const cellScalarSchema = z.union([z.string(), z.number().finite(), z.boolean(), z.null()])
@@ -2571,7 +2571,7 @@ export type WorkbookPivotAdd = z.infer<typeof workbookPivotAddSchema>
 export type WorkbookCellStyle = z.infer<typeof cellStyleSchema>
 export type WorkbookConditionalRule = z.infer<typeof conditionalRuleSchema>
 
-// ---- AI settings + chat/stream: canonical types live in @chatoffice/ai-provider,
+// ---- AI settings + chat/stream: canonical types live in @chaoffice/ai-provider,
 // shared with apps/docs. Validated here like every other renderer→main request in
 // this file; the validated shape is cast to AiSettings at the main-process call
 // site, which has every known provider key once merged through
@@ -2972,7 +2972,7 @@ export interface AttachmentImageResult {
 export type UiTheme = 'light' | 'dark' | 'system'
 
 /**
- * Document page theme preference (chatoffice#1811): what the editors' canvas/paper does
+ * Document page theme preference (chaoffice#1811): what the editors' canvas/paper does
  * relative to the UI theme. 'follow' keeps the previous single-theme behavior.
  */
 export type DocTheme = 'follow' | 'light' | 'dark'
@@ -3045,7 +3045,7 @@ export interface DesktopApi {
   getTheme(): Promise<UiTheme>
   /** theme switched from the shell home page */
   onThemeChanged(handler: (theme: UiTheme) => void): () => void
-  /** current document page theme preference (chatoffice#1811, persisted by the shell in app-settings.json) */
+  /** current document page theme preference (chaoffice#1811, persisted by the shell in app-settings.json) */
   getDocumentTheme(): Promise<DocTheme>
   /** document page theme switched from the shell home page */
   onDocumentThemeChanged(handler: (theme: DocTheme) => void): () => void
@@ -3173,7 +3173,7 @@ export interface DesktopApi {
   /// start a streaming AI call; the settings slot carries the model selection
   aiStream(request: AiStreamRequestInput): Promise<void>
   aiStreamCancel(requestId: string): Promise<void>
-  /// ChaOffice account status (chatoffice login state); withEmail also returns the email
+  /// ChaOffice account status (chaoffice login state); withEmail also returns the email
   /// (needs a network request, slower)
   aiChaOfficeStatus(withEmail?: boolean): Promise<ChaOfficeAccountStatus>
   /// Opens the browser to sign in to ChaOffice (fire-and-forget; aiChaOfficeStatus

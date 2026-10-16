@@ -7,7 +7,7 @@
  */
 
 import { join } from 'node:path'
-import { createRemoteFileService, type RemoteFileService } from '@chatoffice/storage-adapter'
+import { createRemoteFileService, type RemoteFileService } from '@chaoffice/storage-adapter'
 import type { ServiceContext } from '../runtime.js'
 import { defineService } from '../runtime.js'
 

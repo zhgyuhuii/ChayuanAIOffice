@@ -1,4 +1,4 @@
-import { streamText, type AgentTransport } from '@chatoffice/agent-core'
+import { streamText, type AgentTransport } from '@chaoffice/agent-core'
 import type { Brief } from '../document/brief'
 
 /**

@@ -29,7 +29,7 @@ import { MOVE_SELECTION_COMMAND } from './selection-wrap-fix'
 import type { UniverRuntime } from './univer-state'
 
 /** ChaOffice's Ctrl+Arrow data-edge jump (excel-jump-nav.ts) — same rule */
-const JUMP_MOVE_COMMAND = 'chatoffice.command.move-selection-excel-jump'
+const JUMP_MOVE_COMMAND = 'chaoffice.command.move-selection-excel-jump'
 
 export interface PrimaryBlock {
   startRow: number

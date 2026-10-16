@@ -1,11 +1,11 @@
 /**
  * generate_image / analyze_media for the five editors' main processes: one
  * place that reads ai-settings.json live. Image generation is BYOK-only — the
- * chatoffice cloud fallback was removed (that backend belongs to the upstream
+ * chaoffice cloud fallback was removed (that backend belongs to the upstream
  * upstream, not this build). BYOK providers answer with bytes; those land in
  * the local generated-image store and come back as a file:// URL that the
  * insert pipelines' fetchRemoteImage accepts. Media analysis still carries a
- * chatoffice tier behind the login gate.
+ * chaoffice tier behind the login gate.
  */
 
 import { existsSync, readFileSync, statSync } from 'node:fs'
@@ -19,25 +19,25 @@ import {
   type AiSettings,
   type LegacyAiSettings,
   type MediaBlob,
-} from '@chatoffice/ai-provider'
-// deep imports: the package root re-exports Electron-bound modules, and this file also runs in the chatoffice CLI
+} from '@chaoffice/ai-provider'
+// deep imports: the package root re-exports Electron-bound modules, and this file also runs in the chaoffice CLI
 import {
   readGeneratedImage,
   storeGeneratedImage,
-} from '@chatoffice/electron-utils/generated-images'
+} from '@chaoffice/electron-utils/generated-images'
 import {
   ResponseTooLargeError,
   fetchRemoteImage,
   readBodyCapped,
-} from '@chatoffice/electron-utils/remote-image'
-import { fetchWithSsrfGuard } from '@chatoffice/electron-utils/safe-remote-url'
+} from '@chaoffice/electron-utils/remote-image'
+import { fetchWithSsrfGuard } from '@chaoffice/electron-utils/safe-remote-url'
 import {
-  chatofficeAnalyzeMedia,
+  chaofficeAnalyzeMedia,
   hasChaOfficeAuth,
   type ChaOfficeGenerateImageOptions,
-} from './chatoffice'
+} from './chaoffice'
 
-export const CHATOFFICE_NOT_LOGGED_IN_ERROR =
+export const CHAOFFICE_NOT_LOGGED_IN_ERROR =
   'ChaOffice account is not logged in on this machine; ask the user to log in first'
 
 /** 200 MB: enough for a long clip through the Gemini Files API, small enough to hold in memory */
@@ -167,7 +167,7 @@ export async function generateImageTool(
   const settings = readAiSettingsFile(settingsPath)
   const byok = activeMediaConfig(settings, 'image')
   if (!byok) {
-    // the chatoffice cloud fallback was removed (the cloud backend belongs to
+    // the chaoffice cloud fallback was removed (the cloud backend belongs to
     // upstream project, not this build) — BYOK media config only
     return { error: 'no image model configured (Settings → 生图、媒体与搜索)' }
   }
@@ -200,9 +200,9 @@ export async function analyzeMediaTool(
   const videoByok = activeMediaConfig(settings, 'video')
   try {
     const viaGsk = async () => {
-      const gate = gskGate(settings, options.notLoggedInError ?? CHATOFFICE_NOT_LOGGED_IN_ERROR)
+      const gate = gskGate(settings, options.notLoggedInError ?? CHAOFFICE_NOT_LOGGED_IN_ERROR)
       if (gate) return gate
-      return { text: await chatofficeAnalyzeMedia({ mediaUrls, requirements }) }
+      return { text: await chaofficeAnalyzeMedia({ mediaUrls, requirements }) }
     }
     if (!imageByok && !videoByok) return await viaGsk()
     // route on the loaded bytes' real MIME, not the URL spelling: images go to the

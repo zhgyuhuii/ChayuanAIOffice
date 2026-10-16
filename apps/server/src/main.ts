@@ -5,8 +5,8 @@
  *
  *   PORT                listen port (default 8787)
  *   HOST                bind host (default 127.0.0.1; containers override)
- *   CHATOFFICE_DATA_DIR  storage root (default ./data)
- *   CHATOFFICE_AUTH      'jwt' to enforce Logto tokens, 'off' otherwise
+ *   CHAOFFICE_DATA_DIR  storage root (default ./data)
+ *   CHAOFFICE_AUTH      'jwt' to enforce Logto tokens, 'off' otherwise
  */
 
 import { resolve } from 'node:path'
@@ -16,16 +16,16 @@ const port = Number(process.env.PORT ?? 52587)
 const host = process.env.HOST ?? '127.0.0.1'
 
 const { app } = buildServer({
-  dataDir: process.env.CHATOFFICE_DATA_DIR,
-  staticDir: process.env.CHATOFFICE_STATIC_DIR
-    ? resolve(process.env.CHATOFFICE_STATIC_DIR)
+  dataDir: process.env.CHAOFFICE_DATA_DIR,
+  staticDir: process.env.CHAOFFICE_STATIC_DIR
+    ? resolve(process.env.CHAOFFICE_STATIC_DIR)
     : undefined,
 })
 
 app
   .listen({ port, host })
-  .then((address) => console.log(`[chatoffice-server] listening on ${address}`))
+  .then((address) => console.log(`[chaoffice-server] listening on ${address}`))
   .catch((err) => {
-    console.error('[chatoffice-server] failed to start:', err)
+    console.error('[chaoffice-server] failed to start:', err)
     process.exit(1)
   })

@@ -8,7 +8,7 @@ import type {
   RenderTextLayout,
   ShapeRenderNode,
   TableRenderNode,
-} from '@chatoffice/pptx-render'
+} from '@chaoffice/pptx-render'
 
 import { arcPath, polylinePath, renderSlideToSvg, rotatedBounds } from '../src/renderer/export-svg'
 

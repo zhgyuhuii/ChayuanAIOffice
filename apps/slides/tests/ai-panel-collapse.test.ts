@@ -26,10 +26,10 @@ vi.mock('react-konva', () => {
   }
 })
 
-import { DockShell, type DockChrome } from '@chatoffice/ui'
+import { DockShell, type DockChrome } from '@chaoffice/ui'
 import { AiPanel } from '../src/renderer/ai/AiPanel'
-import { defaultSettingsV2, type AiSettingsV2 } from '@chatoffice/ai-provider'
-import { applyAiPanelPrefs } from '@chatoffice/ui'
+import { defaultSettingsV2, type AiSettingsV2 } from '@chaoffice/ai-provider'
+import { applyAiPanelPrefs } from '@chaoffice/ui'
 
 const settings: AiSettingsV2 = defaultSettingsV2()
 

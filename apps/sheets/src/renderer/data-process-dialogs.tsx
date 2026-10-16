@@ -1,12 +1,12 @@
 import { useState } from 'react'
 
-import { Dropdown } from '@chatoffice/ui'
+import { Dropdown } from '@chaoffice/ui'
 
-import { ColorPicker } from '@chatoffice/ui'
+import { ColorPicker } from '@chaoffice/ui'
 
 import { useI18n, type StringKey } from './i18n/locale'
 import { formatFillDate } from './fill-tools'
-import type { CellFormatPatch } from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
+import type { CellFormatPatch } from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
 import { saveCustomCellStyle, saveCustomTableStyle } from './custom-styles'
 import { RangePickButton, useRangePickSession, type RangePickHandler } from './range-pick'
 import type { SheetVisualRef } from './ribbon-actions'

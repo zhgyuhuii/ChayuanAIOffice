@@ -32,7 +32,7 @@ function minioConfig(overrides: Partial<RemoteStorageConfig> = {}): RemoteStorag
     bucket: 'docs',
     accessKeyId: 'AK',
     secretAccessKey: 'SK',
-    prefix: 'chatoffice/',
+    prefix: 'chaoffice/',
     pathStyle: true,
     enabled: true,
     ...overrides,
@@ -46,12 +46,12 @@ describe('createRemoteStorageClient', () => {
     )
     const client = createRemoteStorageClient(minioConfig(), { fetchImpl, now: FIXED_NOW })
     const bytes = Buffer.from('hello')
-    const result = await client.putObject('chatoffice/a b.txt', bytes, 'text/plain')
+    const result = await client.putObject('chaoffice/a b.txt', bytes, 'text/plain')
 
     expect(result.etag).toBe('abc123')
     expect(calls).toHaveLength(1)
     const { url, init } = calls[0]
-    expect(url).toBe('http://127.0.0.1:9000/docs/chatoffice/a%20b.txt')
+    expect(url).toBe('http://127.0.0.1:9000/docs/chaoffice/a%20b.txt')
     expect(init.method).toBe('PUT')
     const headers = init.headers as Record<string, string>
     expect(headers['content-type']).toBe('text/plain')
@@ -80,11 +80,11 @@ describe('createRemoteStorageClient', () => {
       }),
       { fetchImpl, now: FIXED_NOW },
     )
-    const object = await client.getObject('chatoffice/x.docx')
+    const object = await client.getObject('chaoffice/x.docx')
 
     expect(Buffer.from(object.bytes).toString('utf8')).toBe('doc-bytes')
     expect(object.etag).toBe('etag-9')
-    expect(calls[0].url).toBe('https://mydocs.oss-cn-hangzhou.aliyuncs.com/chatoffice/x.docx')
+    expect(calls[0].url).toBe('https://mydocs.oss-cn-hangzhou.aliyuncs.com/chaoffice/x.docx')
   })
 
   it('supports endpoint base paths in path-style mode', async () => {
@@ -96,8 +96,8 @@ describe('createRemoteStorageClient', () => {
         now: FIXED_NOW,
       },
     )
-    await client.deleteObject('chatoffice/old.docx')
-    expect(calls[0].url).toBe('http://127.0.0.1:9000/office/docs/chatoffice/old.docx')
+    await client.deleteObject('chaoffice/old.docx')
+    expect(calls[0].url).toBe('http://127.0.0.1:9000/office/docs/chaoffice/old.docx')
     expect(calls[0].init.method).toBe('DELETE')
   })
 
@@ -147,8 +147,8 @@ describe('createRemoteStorageClient', () => {
       fetchImpl: found.fetchImpl,
       now: FIXED_NOW,
     })
-    expect(await client.headObject('chatoffice/a.docx')).toEqual({
-      key: 'chatoffice/a.docx',
+    expect(await client.headObject('chaoffice/a.docx')).toEqual({
+      key: 'chaoffice/a.docx',
       size: 42,
       lastModifiedMs: Date.parse('Fri, 24 May 2013 00:00:00 GMT'),
       etag: 'm1',
@@ -163,24 +163,24 @@ describe('createRemoteStorageClient', () => {
         }),
     )
     const client = createRemoteStorageClient(minioConfig(), { fetchImpl, now: FIXED_NOW })
-    const result = await client.copyObject('chatoffice/src a.txt', 'chatoffice/dst.txt')
+    const result = await client.copyObject('chaoffice/src a.txt', 'chaoffice/dst.txt')
 
     expect(result.etag).toBe('copy-1')
     expect((calls[0].init.headers as Record<string, string>)['x-amz-copy-source']).toBe(
-      '/docs/chatoffice/src%20a.txt',
+      '/docs/chaoffice/src%20a.txt',
     )
-    expect(calls[0].url).toBe('http://127.0.0.1:9000/docs/chatoffice/dst.txt')
+    expect(calls[0].url).toBe('http://127.0.0.1:9000/docs/chaoffice/dst.txt')
   })
 
   it('lists with sorted canonical query params and pages through results', async () => {
     const pageOne =
       '<ListBucketResult><IsTruncated>true</IsTruncated><NextContinuationToken>tok/en+1==</NextContinuationToken>' +
-      '<Contents><Key>chatoffice/a.docx</Key><Size>3</Size><LastModified>2013-05-24T00:00:00.000Z</LastModified><ETag>&quot;e1&quot;</ETag></Contents>' +
-      '<Contents><Key>chatoffice/会&amp;议.txt</Key><Size>4</Size><LastModified>2013-05-24T00:00:00.000Z</LastModified><ETag>&quot;e2&quot;</ETag></Contents>' +
+      '<Contents><Key>chaoffice/a.docx</Key><Size>3</Size><LastModified>2013-05-24T00:00:00.000Z</LastModified><ETag>&quot;e1&quot;</ETag></Contents>' +
+      '<Contents><Key>chaoffice/会&amp;议.txt</Key><Size>4</Size><LastModified>2013-05-24T00:00:00.000Z</LastModified><ETag>&quot;e2&quot;</ETag></Contents>' +
       '</ListBucketResult>'
     const pageTwo =
       '<ListBucketResult><IsTruncated>false</IsTruncated>' +
-      '<Contents><Key>chatoffice/z.docx</Key><Size>5</Size><LastModified>2013-05-24T00:00:00.000Z</LastModified><ETag>&quot;e3&quot;</ETag></Contents>' +
+      '<Contents><Key>chaoffice/z.docx</Key><Size>5</Size><LastModified>2013-05-24T00:00:00.000Z</LastModified><ETag>&quot;e3&quot;</ETag></Contents>' +
       '</ListBucketResult>'
     const { calls, fetchImpl } = mockFetch(
       (url) =>
@@ -188,19 +188,19 @@ describe('createRemoteStorageClient', () => {
     )
     const client = createRemoteStorageClient(minioConfig(), { fetchImpl, now: FIXED_NOW })
     const files = []
-    for await (const file of client.listObjects('chatoffice/')) files.push(file)
+    for await (const file of client.listObjects('chaoffice/')) files.push(file)
 
     expect(files.map((file) => file.key)).toEqual([
-      'chatoffice/a.docx',
-      'chatoffice/会&议.txt',
-      'chatoffice/z.docx',
+      'chaoffice/a.docx',
+      'chaoffice/会&议.txt',
+      'chaoffice/z.docx',
     ])
     expect(files[0].etag).toBe('e1')
     expect(calls[0].url).toBe(
-      'http://127.0.0.1:9000/docs?list-type=2&max-keys=1000&prefix=chatoffice%2F',
+      'http://127.0.0.1:9000/docs?list-type=2&max-keys=1000&prefix=chaoffice%2F',
     )
     expect(calls[1].url).toBe(
-      'http://127.0.0.1:9000/docs?continuation-token=tok%2Fen%2B1%3D%3D&list-type=2&max-keys=1000&prefix=chatoffice%2F',
+      'http://127.0.0.1:9000/docs?continuation-token=tok%2Fen%2B1%3D%3D&list-type=2&max-keys=1000&prefix=chaoffice%2F',
     )
   })
 

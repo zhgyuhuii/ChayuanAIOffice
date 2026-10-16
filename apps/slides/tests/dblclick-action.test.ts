@@ -1,4 +1,4 @@
-import type { RenderNode } from '@chatoffice/pptx-render'
+import type { RenderNode } from '@chaoffice/pptx-render'
 import { describe, expect, it } from 'vitest'
 import { dblClickActionFor, type DblClickContext } from '../src/renderer/dblclick-action'
 

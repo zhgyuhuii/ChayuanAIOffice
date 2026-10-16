@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createVideoTaskRegistry, type VideoFileSink } from '../src/video-tasks'
-import type { AiRuntime } from '@chatoffice/ai-provider'
+import type { AiRuntime } from '@chaoffice/ai-provider'
 
 afterEach(() => {
   vi.unstubAllGlobals()

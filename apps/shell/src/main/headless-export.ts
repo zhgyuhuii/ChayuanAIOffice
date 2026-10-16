@@ -20,7 +20,7 @@ import {
   type HeadlessExportModule,
   type HeadlessExportOutcome,
   type HeadlessExportRequest,
-} from '@chatoffice/electron-utils'
+} from '@chaoffice/electron-utils'
 
 type HeadlessFailure = Extract<HeadlessExportOutcome, { ok: false }>
 

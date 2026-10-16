@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { parseRange } from '@chatoffice/xlsx-gateway/domain/cell-address'
+import { parseRange } from '@chaoffice/xlsx-gateway/domain/cell-address'
 import {
   getSourceRange,
   handleCreatePivot,

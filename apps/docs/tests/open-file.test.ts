@@ -11,21 +11,21 @@ import {
 describe('findOpenableDocPath', () => {
   it('finds Finder and Explorer document arguments case-insensitively', () => {
     expect(
-      findOpenableDocPath(['/Applications/ChatOffice Docs.app', '/tmp/Quarterly Plan.docx']),
+      findOpenableDocPath(['/Applications/ChaOffice Docs.app', '/tmp/Quarterly Plan.docx']),
     ).toBe('/tmp/Quarterly Plan.docx')
-    expect(findOpenableDocPath(['ChatOffice Docs.exe', 'C:\\Users\\Me\\REPORT.DOCX'])).toBe(
+    expect(findOpenableDocPath(['ChaOffice Docs.exe', 'C:\\Users\\Me\\REPORT.DOCX'])).toBe(
       'C:\\Users\\Me\\REPORT.DOCX',
     )
     // an .odt argument routes through the import filter like the shell open
-    expect(findOpenableDocPath(['ChatOffice Docs', '/tmp/notes.odt'])).toBe('/tmp/notes.odt')
+    expect(findOpenableDocPath(['ChaOffice Docs', '/tmp/notes.odt'])).toBe('/tmp/notes.odt')
     // and so does the .ott template, in either case
-    expect(findOpenableDocPath(['ChatOffice Docs', '/tmp/letter.ott'])).toBe('/tmp/letter.ott')
-    expect(findOpenableDocPath(['ChatOffice Docs', '/tmp/LETTER.OTT'])).toBe('/tmp/LETTER.OTT')
+    expect(findOpenableDocPath(['ChaOffice Docs', '/tmp/letter.ott'])).toBe('/tmp/letter.ott')
+    expect(findOpenableDocPath(['ChaOffice Docs', '/tmp/LETTER.OTT'])).toBe('/tmp/LETTER.OTT')
   })
 
   it('ignores Electron switches and unrelated files', () => {
     expect(
-      findOpenableDocPath(['ChatOffice Docs', '--inspect=document.docx', '/tmp/notes.txt']),
+      findOpenableDocPath(['ChaOffice Docs', '--inspect=document.docx', '/tmp/notes.txt']),
     ).toBeNull()
   })
 })

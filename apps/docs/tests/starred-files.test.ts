@@ -57,7 +57,7 @@ describe('parseStarredItems (the migration boundary)', () => {
 
 describe('file round-trip', () => {
   it('writes the versioned shape and reads it back', () => {
-    const file = join(mkdtempSync(join(tmpdir(), 'chatoffice-starred-')), 'starred.json')
+    const file = join(mkdtempSync(join(tmpdir(), 'chaoffice-starred-')), 'starred.json')
     writeStarredItems(file, [{ path: LEGACY[0], group: '合同' }, { path: LEGACY[1] }])
     const onDisk = JSON.parse(readFileSync(file, 'utf-8')) as { version: number; items: unknown[] }
     expect(onDisk.version).toBe(1)
@@ -69,7 +69,7 @@ describe('file round-trip', () => {
   })
 
   it('migrates a legacy file on read; the next write persists the new shape', () => {
-    const file = join(mkdtempSync(join(tmpdir(), 'chatoffice-starred-')), 'starred.json')
+    const file = join(mkdtempSync(join(tmpdir(), 'chaoffice-starred-')), 'starred.json')
     writeFileSync(file, JSON.stringify(LEGACY), 'utf-8')
     expect(readStarredItems(file)).toEqual([{ path: LEGACY[0] }, { path: LEGACY[1] }])
     const next = toggleStarredItem(readStarredItems(file), '/c/new.md')

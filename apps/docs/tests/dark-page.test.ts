@@ -14,7 +14,7 @@ import type {
   StyleDisplay,
   StyleInfo,
   TableStyleDisplay,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import {
   DARK_PAPER_HEX,
   darkPageBorderCss,

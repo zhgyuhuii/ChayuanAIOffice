@@ -1,6 +1,6 @@
 /* Per-app accent (word-blue family) + docs-only tokens.
  * Chrome tokens (surface/text/border/…, AI panel --color-*) come from
- * @chatoffice/ui/tokens.css; nothing here may shadow those names. */
+ * @chaoffice/ui/tokens.css; nothing here may shadow those names. */
 :root {
   --word-blue: #185abd;
   --word-blue-dark: #124a9e;
@@ -432,7 +432,7 @@ button {
 
 /* While a popover is open the row must deliver presses (drag regions swallow
    them), so outside-press dismissal can see presses on the blank band */
-html.chatoffice-popover-open .ribbon-tabs {
+html.chaoffice-popover-open .ribbon-tabs {
   -webkit-app-region: no-drag;
 }
 
@@ -626,7 +626,7 @@ html.chatoffice-popover-open .ribbon-tabs {
 }
 
 /* Slim visible scrollbar so mouse users can reach overflowed groups
-   (chatoffice-ai/chatoffice#55 precedent from the sheets ribbon). */
+   (chaoffice-ai/chaoffice#55 precedent from the sheets ribbon). */
 .ribbon-body::-webkit-scrollbar {
   height: 5px;
 }
@@ -1388,7 +1388,7 @@ html.chatoffice-popover-open .ribbon-tabs {
   background: var(--hover);
 }
 
-/* Anchor positioning for the shared Word-style color panel (@chatoffice/ui
+/* Anchor positioning for the shared Word-style color panel (@chaoffice/ui
    .gcp-palette draws the chrome; this only places it under its trigger). */
 .docs-color-pop {
   position: fixed;
@@ -4625,7 +4625,7 @@ th.cell-rev-del {
    on this span made the table-row cut measuring split a two-line row across
    pages. */
 .doc-hangul-space {
-  font-family: 'ChatOffice Hangul Space';
+  font-family: 'ChaOffice Hangul Space';
 }
 
 /* dark page in the light theme: Word's gray band around the dark paper — one
@@ -8031,9 +8031,9 @@ body.docs-crop-active
 }
 
 /* drag handle / divider between panel and editor is owned by the DockShell
-   (.dockshell-resizer in @chatoffice/ui dock.css) */
+   (.dockshell-resizer in @chaoffice/ui dock.css) */
 
-/* header strip = tab bar (PanelTabs, .ai-tab-* in @chatoffice/ui dock.css) */
+/* header strip = tab bar (PanelTabs, .ai-tab-* in @chaoffice/ui dock.css) */
 
 .ai-header-btn {
   display: flex;
@@ -9718,7 +9718,7 @@ body.docs-crop-active
 .ai-attachments {
   display: flex;
   gap: 8px;
-  /* single row inside the prompt box, above the textarea (ChatOffice composer style):
+  /* single row inside the prompt box, above the textarea (ChaOffice composer style):
      extra images run past the box edge and scroll horizontally.
      scroll (not auto) + zero bottom padding: the always-present 4px scrollbar lane
      doubles as the bottom padding, so overflowing never grows the strip and
@@ -9826,7 +9826,7 @@ body.docs-crop-active
   background: var(--bg-content);
 }
 
-/* the type icon sits in its own bordered white tile, like the ChatOffice card */
+/* the type icon sits in its own bordered white tile, like the ChaOffice card */
 .ai-attachment-card-icon {
   display: flex;
   flex-shrink: 0;
@@ -10323,7 +10323,7 @@ body.docs-crop-active
   background: var(--surface);
 }
 
-/* ChatOffice DS modal footer buttons: secondary = bg-subtle, primary = black (#232425) */
+/* ChaOffice DS modal footer buttons: secondary = bg-subtle, primary = black (#232425) */
 .modal-actions button {
   display: inline-flex;
   align-items: center;
@@ -10457,7 +10457,7 @@ body.docs-crop-active
   margin-top: 18px;
 }
 
-/* ---- ChatOffice DS form dialogs (password prompts + Protect Document) ---- */
+/* ---- ChaOffice DS form dialogs (password prompts + Protect Document) ---- */
 
 .modal.gs-form {
   padding: 24px;
@@ -10593,7 +10593,7 @@ body.docs-crop-active
   border-color: var(--word-blue);
 }
 
-/* Shared dropdown (@chatoffice/ui gs-dd) app sizing: modal dialogs keep the old
+/* Shared dropdown (@chaoffice/ui gs-dd) app sizing: modal dialogs keep the old
    `.modal select` footprint; ribbon/table/page-number rows scope their own
    width/height below */
 .modal .gs-dd {
@@ -10667,7 +10667,7 @@ body.docs-crop-active
 }
 
 /* checkbox / radio rows: the native input is visually replaced by the .ctl
-   box (18px, black checked state per the ChatOffice DS palette) */
+   box (18px, black checked state per the ChaOffice DS palette) */
 .protect-dialog label.protect-check {
   position: relative;
   display: flex;
@@ -13540,7 +13540,7 @@ tr > .page-gap-cut {
   box-sizing: border-box;
 }
 
-/* The AI dock is the shared DockShell (@chatoffice/ui dock.css): it owns the
+/* The AI dock is the shared DockShell (@chaoffice/ui dock.css): it owns the
    panel slot's geometry/animation, the collapsed rail and the divider. */
 
 .ai-login-btn {

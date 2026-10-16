@@ -17,7 +17,7 @@ Zasady: rozszerzenie jest zachowywane automatycznie; niedozwolone znaki, kropki 
 
 ## Usuwanie
 
-- **⋯ ▸ Usuń** na stronie głównej: pyta, które pliki, a następnie przenosi je do **kosza systemowego**, skąd system operacyjny może je przywrócić. ChatOffice nie trzyma własnego cofnięcia — przywracanie to zadanie kosza, nie komunikatu.
+- **⋯ ▸ Usuń** na stronie głównej: pyta, które pliki, a następnie przenosi je do **kosza systemowego**, skąd system operacyjny może je przywrócić. ChaOffice nie trzyma własnego cofnięcia — przywracanie to zadanie kosza, nie komunikatu.
 
 ## Duplikowanie
 

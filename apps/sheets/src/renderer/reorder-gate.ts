@@ -1,6 +1,6 @@
 import type { IRange } from '@univerjs/core'
 
-import { rangeCellCount } from '@chatoffice/xlsx-gateway/domain/cell-address'
+import { rangeCellCount } from '@chaoffice/xlsx-gateway/domain/cell-address'
 
 import { REORDER_JOURNAL_MAX_CELLS } from './app-constants'
 import { fitsFullLoad, type WorkbookCellCounts } from './load-budget'

@@ -161,7 +161,7 @@ describe('createHarnessSource write', () => {
     expect(value.apiKeyEnv).toBe('CHATOP_ZHIPU_API_KEY')
     // no credentials.set fired: the view carried no fresh key
     expect(rpcCalls.some((c) => c.method === 'credentials.set')).toBe(false)
-    // office-local state: chatoffice-login profiles + the selection anchor
+    // office-local state: chaoffice-login profiles + the selection anchor
     // (verbatim copy of the backing harness profile, key stripped) so the
     // file's normalize pass cannot drop the selection — plus the office-local
     // custom profile riding along verbatim
@@ -282,7 +282,7 @@ describe('runtime secret resolution', () => {
         read: async () => settings,
         write: async () => {},
       },
-      chatoffice: {
+      chaoffice: {
         apiKey: () => '',
         hasAuth: () => false,
         status: async () => ({ loggedIn: false }),
@@ -314,7 +314,7 @@ describe('runtime secret resolution', () => {
     const make = (resolved: string) =>
       createAiRuntime({
         source: { read: async () => settings, write: async () => {} },
-        chatoffice: {
+        chaoffice: {
           apiKey: () => '',
           hasAuth: () => false,
           status: async () => ({ loggedIn: false }),
@@ -324,11 +324,11 @@ describe('runtime secret resolution', () => {
       })
     const fallback = await make('').resolveForRun({ profileId: 'custom-proxy', modelId: 'local/qwen3-4b' })
     expect(fallback.apiKey).toBe('chatop-POISONED')
-    const override = await make('chatop-agent-chatoffice-LIVE').resolveForRun({
+    const override = await make('chatop-agent-chaoffice-LIVE').resolveForRun({
       profileId: 'custom-proxy',
       modelId: 'local/qwen3-4b',
     })
-    expect(override.apiKey).toBe('chatop-agent-chatoffice-LIVE')
+    expect(override.apiKey).toBe('chatop-agent-chaoffice-LIVE')
   })
 })
 

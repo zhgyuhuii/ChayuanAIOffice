@@ -103,7 +103,7 @@ async function main(): Promise<void> {
         ...hostEnv,
         HOME: home,
         GENOFFICE_USER_DATA: userData,
-        GENOFFICE_AUTH_DIR: join(home, '.chatoffice'),
+        GENOFFICE_AUTH_DIR: join(home, '.chaoffice'),
         GENOFFICE_NO_SPARE_VIEW: '1',
         GENOFFICE_LANG: lang,
       },

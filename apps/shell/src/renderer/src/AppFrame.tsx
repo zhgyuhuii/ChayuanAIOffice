@@ -59,7 +59,7 @@ export function AppFrame({ initialOnboardingSeen }: AppFrameProps) {
        * While a document tab is active the home tree stays painted in the strip the
        * view leaves open: .doc-active (tabbar.css) clips painting to that left column
        * so home can't ghost through the editor views' translucent (vibrancy) regions
-       * and the covered layout never reflows. A shell modal (chatoffice-shell-modal
+       * and the covered layout never reflows. A shell modal (chaoffice-shell-modal
        * class, set by Home's settings funnel) drops the clip — the main process hides
        * the covering editor view for the dialog's lifetime. */}
       <div className={`app-frame-content${homeActive ? '' : ' doc-active'}`}>

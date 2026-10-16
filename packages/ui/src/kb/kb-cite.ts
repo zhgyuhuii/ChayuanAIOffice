@@ -5,7 +5,7 @@
  * stream fragments — streaming tokens can split a `[n]` across chunks.
  * Code spans/blocks are left untouched.
  */
-import type { KbCitation } from '@chatoffice/ai-provider/browser'
+import type { KbCitation } from '@chaoffice/ai-provider/browser'
 
 const CITE_RE = /\[(\d{1,2})\]/g
 const CODE_RE = /<(code|pre)[\s\S]*?<\/\1>/g

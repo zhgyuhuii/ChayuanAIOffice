@@ -16,9 +16,9 @@
  * Example mcp.json entry:
  *   {
  *     "mcpServers": {
- *       "chatoffice": {
+ *       "chaoffice": {
  *         "command": "node",
- *         "args": ["/path/to/chatoffice/scripts/mcp-stdio-bridge.js"]
+ *         "args": ["/path/to/chaoffice/scripts/mcp-stdio-bridge.js"]
  *       }
  *     }
  *   }
@@ -61,7 +61,7 @@ const suppressedResponseIds = new Set()
 
 /** stderr only: stdout is the JSON-RPC channel */
 function log(message) {
-  process.stderr.write(`[chatoffice-mcp-bridge] ${message}\n`)
+  process.stderr.write(`[chaoffice-mcp-bridge] ${message}\n`)
 }
 
 function sendResponse(response) {

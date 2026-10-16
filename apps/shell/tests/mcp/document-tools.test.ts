@@ -18,7 +18,7 @@ import { fakeCli } from './fake-cli'
 /**
  * The docx tool surface over a real MCP session. Files are written to a temp dir
  * that stands in for the app default save folder. The headless tools delegate to
- * the bundled chatoffice CLI (a fake here), so these assert the argv/stdin the
+ * the bundled chaoffice CLI (a fake here), so these assert the argv/stdin the
  * tools build — document fidelity is the CLI's own test surface.
  */
 
@@ -42,7 +42,7 @@ async function freePort(): Promise<number> {
 }
 
 beforeEach(async () => {
-  dir = await mkdtemp(join(tmpdir(), 'chatoffice-mcp-'))
+  dir = await mkdtemp(join(tmpdir(), 'chaoffice-mcp-'))
   opened = []
   cli = fakeCli()
   const port = await freePort()
@@ -281,7 +281,7 @@ describe('M6 visible-editing tools (docs control wired)', () => {
   let fake: ReturnType<typeof fakeDocsControl>
 
   beforeEach(async () => {
-    dir2 = await mkdtemp(join(tmpdir(), 'chatoffice-mcp-visible-'))
+    dir2 = await mkdtemp(join(tmpdir(), 'chaoffice-mcp-visible-'))
     fake = fakeDocsControl()
     const port = await (async () => {
       const { createServer } = await import('node:http')

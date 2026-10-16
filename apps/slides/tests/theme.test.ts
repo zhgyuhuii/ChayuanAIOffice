@@ -19,8 +19,8 @@ import {
   savePptx,
   setSlideBackground,
   type TextElement,
-} from '@chatoffice/pptx-engine'
-import { buildRenderSlide } from '@chatoffice/pptx-render'
+} from '@chaoffice/pptx-engine'
+import { buildRenderSlide } from '@chaoffice/pptx-render'
 import { THEME_PRESETS } from '../src/renderer/themes'
 
 const FIT = 1280

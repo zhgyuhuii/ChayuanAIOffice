@@ -23,7 +23,7 @@ export interface KbDiscoveryOptions {
   explicitOrigin?: string
   /** last known-good origin (persisted by the caller); verified before use */
   cachedOrigin?: string
-  /** hint file written by the chatoffice dsh plugin host (default under ~/.dsh) */
+  /** hint file written by the chaoffice dsh plugin host (default under ~/.dsh) */
   hintFile?: string
   /** probe ports; default = 注册表 52584 + 会话段 52601.. +10，旧段 3080..3090 兜底 */
   probePorts?: number[]
@@ -50,7 +50,7 @@ const DEFAULT_PORTS = [
 ]
 
 function defaultHintFile(): string {
-  return join(homedir(), '.dsh', 'storages', 'chatoffice', 'dsh-rpc-origin')
+  return join(homedir(), '.dsh', 'storages', 'chaoffice', 'dsh-rpc-origin')
 }
 
 async function verify(

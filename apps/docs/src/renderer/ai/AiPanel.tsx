@@ -3,8 +3,8 @@ import type { Editor } from '@tiptap/core'
 // LOCAL(2026-09-22, f5247d3..476e5023): 上游 #544(analyze_media)的 import hunk 基于其单体
 // AiPanel,本地为「外壳+AiConversationBody」架构——保本地 import;mediaAnalysisAvailable
 // 接线重放至 AiConversationBody(该提交的 docs-skill/tools/main 侧已并集落地)
-import type { Block } from '@chatoffice/docx-engine'
-import { streamText } from '@chatoffice/agent-core'
+import type { Block } from '@chaoffice/docx-engine'
+import { streamText } from '@chaoffice/agent-core'
 import type { AiSettingsV2 } from '../../shared/ipc'
 
 import { buildAssistantInstruction, findCoreAssistant } from './assistants'
@@ -36,14 +36,14 @@ import {
   useAiConversations,
   type AiActiveTab,
   useKbAugment,
-} from '@chatoffice/ui'
-import type { DockChrome } from '@chatoffice/ui'
+} from '@chaoffice/ui'
+import type { DockChrome } from '@chaoffice/ui'
 import { IconNewChat } from '../components/icons'
 import { redactTextBetween, type RedactableNode } from './redact-view'
 
 // 惰性加载:模型设置页(含厂商 logo 组)只在打开时拉取,不进启动图
 const ModelSettingsPage = lazy(() =>
-  import('@chatoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
+  import('@chaoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
 )
 
 /** author name on AI-generated tracked revisions (accept/reject via Review) */
@@ -100,8 +100,8 @@ interface AiPanelProps {
 }
 
 // (上游本轮 AiPanel 改动为其单会话 AiModelPicker bridge(MODEL_BRIDGE),依赖其单会话
-//  resize/header 结构,本地不采纳;本地模型桥为 docsModelBridge(@chatoffice/ui
-//  ModelSettingsPage 契约,chatoffice 命名),见 ./model-bridge.ts)
+//  resize/header 结构,本地不采纳;本地模型桥为 docsModelBridge(@chaoffice/ui
+//  ModelSettingsPage 契约,chaoffice 命名),见 ./model-bridge.ts)
 const isChatTab = (tab: AiActiveTab): tab is string =>
   typeof tab === 'string' && tab !== 'assistant' && tab !== 'empty'
 

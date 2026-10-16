@@ -17,7 +17,7 @@ Aturannya: ekstensi dipertahankan otomatis; karakter terlarang, titik di akhir, 
 
 ## Menghapus
 
-- **⋯ ▸ Hapus** di Beranda: menanyakan file mana, lalu memindahkannya ke **tempat sampah sistem**, tempat sistem operasi dapat memulihkannya. ChatOffice tidak menyimpan undo sendiri untuk ini — pemulihan adalah urusan tempat sampah, bukan notifikasi.
+- **⋯ ▸ Hapus** di Beranda: menanyakan file mana, lalu memindahkannya ke **tempat sampah sistem**, tempat sistem operasi dapat memulihkannya. ChaOffice tidak menyimpan undo sendiri untuk ini — pemulihan adalah urusan tempat sampah, bukan notifikasi.
 
 ## Duplikat
 

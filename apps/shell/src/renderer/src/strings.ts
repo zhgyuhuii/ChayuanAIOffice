@@ -290,16 +290,16 @@ const upstreamStrings = {
     intgExample1: '把 ~/Downloads/report.md 转成 Word 文档',
     intgExample2: '做一份 6 页的幻灯片，介绍我们第三季度的业绩',
     intgExample3: '把 budget.xlsx 转成 PDF，并在 察元AIOffice 里打开',
-    intgStep2Note: '助手会自己调用 chatoffice 命令行，你不需要输入任何命令。',
+    intgStep2Note: '助手会自己调用 chaoffice 命令行，你不需要输入任何命令。',
     intgCliPartTitle: 'CLI · 命令行 + skill',
     intgCliPartDesc:
-      '适合能运行终端命令的助手（Claude Code、Codex、Cursor 等）。安装 skill 后，助手会自己调用 chatoffice 命令行创建、转换、读取和编辑文件，你不需要输入任何命令。',
+      '适合能运行终端命令的助手（Claude Code、Codex、Cursor 等）。安装 skill 后，助手会自己调用 chaoffice 命令行创建、转换、读取和编辑文件，你不需要输入任何命令。',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP 是 AI 助手调用外部工具的通用协议。助手不能运行命令（如 Claude Desktop），或你想让它直接操作 察元AIOffice 窗口时用这条路。下面两种接法任选一种。',
     intgMcpStdioTitle: '由助手启动（推荐）',
     intgMcpStdioDesc:
-      '助手自己拉起 chatoffice mcp，不需要在这里开任何开关，察元AIOffice 也不用开着。功能与 CLI 完全相同。',
+      '助手自己拉起 chaoffice mcp，不需要在这里开任何开关，察元AIOffice 也不用开着。功能与 CLI 完全相同。',
     intgMcpHttpTitle: '本地 HTTP 服务',
     intgMcpHttpDesc:
       '在 察元AIOffice 内运行，助手通过网址连接，可以看着它在 Word 编辑器里逐步生成。需要 察元AIOffice 保持打开；目前只支持 Word。',
@@ -311,10 +311,10 @@ const upstreamStrings = {
     intgMcpOtherDesc:
       '把这段加进它的 MCP 服务器配置（一个 JSON 文件，或设置里的「添加 MCP 服务器」）：',
     intgMcpNote: 'skill 和 MCP 可以同时存在，助手会自己选用；两者做的事完全一样。',
-    intgCliTitle: '高级：命令行 chatoffice',
-    intgCliReady: 'chatoffice {v} · 已可在终端直接使用（{path}）',
+    intgCliTitle: '高级：命令行 chaoffice',
+    intgCliReady: 'chaoffice {v} · 已可在终端直接使用（{path}）',
     intgCliNotOnPath:
-      'chatoffice {v} · 尚未加入终端 PATH。助手仍能通过 ~/.chatoffice/launcher 找到它，skill 不受影响。若想自己在终端输入 chatoffice，运行一次：',
+      'chaoffice {v} · 尚未加入终端 PATH。助手仍能通过 ~/.chaoffice/launcher 找到它，skill 不受影响。若想自己在终端输入 chaoffice，运行一次：',
     intgCliLauncher: '启动器目录',
     intgStateOutdated: '已安装 {v}，可更新到 {next}',
     intgStateModified: '已安装 {v}（已被修改）',
@@ -766,16 +766,16 @@ const upstreamStrings = {
     intgExample2: 'Make a 6-slide deck about our Q3 results',
     intgExample3: 'Convert budget.xlsx to PDF and open it in ChaAI Office',
     intgStep2Note:
-      'The assistant runs the chatoffice command line itself; you never have to type it.',
+      'The assistant runs the chaoffice command line itself; you never have to type it.',
     intgCliPartTitle: 'CLI · command line + skill',
     intgCliPartDesc:
-      'For assistants that can run terminal commands (Claude Code, Codex, Cursor and others). Once the skill is installed, the assistant calls the chatoffice command line itself to create, convert, read and edit files; you never type a command.',
+      'For assistants that can run terminal commands (Claude Code, Codex, Cursor and others). Once the skill is installed, the assistant calls the chaoffice command line itself to create, convert, read and edit files; you never type a command.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP is the common protocol AI assistants use to call external tools. Use it when your assistant cannot run commands (Claude Desktop, for example) or when you want it to drive the ChaAI Office window directly. Pick either of the two ways below.',
     intgMcpStdioTitle: 'Started by the assistant (recommended)',
     intgMcpStdioDesc:
-      'The assistant launches chatoffice mcp itself: nothing to switch on here, and ChaAI Office does not need to be open. Same features as the CLI.',
+      'The assistant launches chaoffice mcp itself: nothing to switch on here, and ChaAI Office does not need to be open. Same features as the CLI.',
     intgMcpHttpTitle: 'Local HTTP server',
     intgMcpHttpDesc:
       'Runs inside ChaAI Office; the assistant connects to a URL and you can watch it build the document step by step in the Word editor. ChaAI Office must stay open; Word documents only for now.',
@@ -788,10 +788,10 @@ const upstreamStrings = {
       'Add this to its MCP server settings (a JSON file, or "Add MCP server" in its settings):',
     intgMcpNote:
       'The skill and MCP can be set up side by side; the assistant picks one. They do exactly the same things.',
-    intgCliTitle: 'Advanced: chatoffice command line',
-    intgCliReady: 'chatoffice {v} · ready in your terminal ({path})',
+    intgCliTitle: 'Advanced: chaoffice command line',
+    intgCliReady: 'chaoffice {v} · ready in your terminal ({path})',
     intgCliNotOnPath:
-      "chatoffice {v} · not on your terminal's PATH. Assistants still find it through ~/.chatoffice/launcher, so the skill works. To type chatoffice yourself, run this once:",
+      "chaoffice {v} · not on your terminal's PATH. Assistants still find it through ~/.chaoffice/launcher, so the skill works. To type chaoffice yourself, run this once:",
     intgCliLauncher: 'Launcher folder',
     intgStateOutdated: 'Installed {v}, update to {next} available',
     intgStateModified: 'Installed {v} (modified)',
@@ -1251,16 +1251,16 @@ const upstreamStrings = {
     intgExample1: 'Chuyển đổi ~/Downloads/report.md thành tài liệu Word',
     intgExample2: 'Tạo bài thuyết trình 6 trang trình bày về kết quả quý 3 của chúng tôi',
     intgExample3: 'Chuyển đổi budget.xlsx sang PDF và mở trong ChaAI Office',
-    intgStep2Note: 'Trợ lý tự chạy dòng lệnh chatoffice; bạn không bao giờ phải nhập lệnh.',
+    intgStep2Note: 'Trợ lý tự chạy dòng lệnh chaoffice; bạn không bao giờ phải nhập lệnh.',
     intgCliPartTitle: 'CLI · dòng lệnh + kỹ năng',
     intgCliPartDesc:
-      'Dành cho các trợ lý có thể chạy lệnh terminal (Claude Code, Codex, Cursor và các trợ lý khác). Khi kỹ năng đã được cài đặt, trợ lý sẽ tự gọi dòng lệnh chatoffice để tạo, chuyển đổi, đọc và chỉnh sửa tệp; bạn không cần nhập lệnh.',
+      'Dành cho các trợ lý có thể chạy lệnh terminal (Claude Code, Codex, Cursor và các trợ lý khác). Khi kỹ năng đã được cài đặt, trợ lý sẽ tự gọi dòng lệnh chaoffice để tạo, chuyển đổi, đọc và chỉnh sửa tệp; bạn không cần nhập lệnh.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP là giao thức tiêu chuẩn mà các trợ lý AI dùng để gọi công cụ bên ngoài. Sử dụng khi trợ lý của bạn không thể chạy lệnh (ví dụ Claude Desktop) hoặc khi bạn muốn trợ lý điều khiển trực tiếp cửa sổ ChaAI Office. Chọn một trong hai cách bên dưới.',
     intgMcpStdioTitle: 'Được khởi động bởi trợ lý (khuyến nghị)',
     intgMcpStdioDesc:
-      'Trợ lý sẽ tự khởi chạy chatoffice mcp: không cần bật gì ở đây và ChaAI Office không cần phải mở. Có đầy đủ tính năng tương tự CLI.',
+      'Trợ lý sẽ tự khởi chạy chaoffice mcp: không cần bật gì ở đây và ChaAI Office không cần phải mở. Có đầy đủ tính năng tương tự CLI.',
     intgMcpHttpTitle: 'Máy chủ HTTP cục bộ',
     intgMcpHttpDesc:
       'Chạy bên trong ChaAI Office; trợ lý kết nối với một URL và bạn có thể theo dõi nó tạo tài liệu từng bước trong trình chỉnh sửa Word. ChaAI Office phải luôn mở; hiện tại chỉ hỗ trợ tài liệu Word.',
@@ -1273,10 +1273,10 @@ const upstreamStrings = {
       'Thêm nội dung này vào cài đặt máy chủ MCP của trợ lý (tệp JSON hoặc "Add MCP server" trong phần cài đặt):',
     intgMcpNote:
       'Kỹ năng và MCP có thể được thiết lập song song; trợ lý sẽ chọn một trong hai. Chúng thực hiện chức năng hoàn toàn giống nhau.',
-    intgCliTitle: 'Nâng cao: dòng lệnh chatoffice',
-    intgCliReady: 'chatoffice {v} · đã sẵn sàng trong terminal của bạn ({path})',
+    intgCliTitle: 'Nâng cao: dòng lệnh chaoffice',
+    intgCliReady: 'chaoffice {v} · đã sẵn sàng trong terminal của bạn ({path})',
     intgCliNotOnPath:
-      'chatoffice {v} · không có trong PATH của terminal. Trợ lý vẫn tìm thấy qua ~/.chatoffice/launcher, vì vậy kỹ năng vẫn hoạt động. Để tự chạy lệnh chatoffice, hãy thực hiện lệnh này một lần:',
+      'chaoffice {v} · không có trong PATH của terminal. Trợ lý vẫn tìm thấy qua ~/.chaoffice/launcher, vì vậy kỹ năng vẫn hoạt động. Để tự chạy lệnh chaoffice, hãy thực hiện lệnh này một lần:',
     intgCliLauncher: 'Thư mục trình khởi chạy',
     intgStateOutdated: 'Đã cài đặt {v}, có bản cập nhật lên {next}',
     intgStateModified: 'Đã cài đặt {v} (đã sửa đổi)',
@@ -1744,16 +1744,16 @@ const upstreamStrings = {
     intgExample2: '第 3 四半期の業績について 6 枚のスライドを作って',
     intgExample3: 'budget.xlsx を PDF に変換して ChaAI Office で開いて',
     intgStep2Note:
-      'chatoffice コマンドラインはアシスタントが自分で実行します。あなたが入力する必要はありません。',
+      'chaoffice コマンドラインはアシスタントが自分で実行します。あなたが入力する必要はありません。',
     intgCliPartTitle: 'CLI · コマンドライン + skill',
     intgCliPartDesc:
-      'ターミナルコマンドを実行できるアシスタント（Claude Code、Codex、Cursor など）向け。skill をインストールすると、アシスタントが自分で chatoffice コマンドラインを呼び出してファイルを作成・変換・読み取り・編集します。コマンドを入力する必要はありません。',
+      'ターミナルコマンドを実行できるアシスタント（Claude Code、Codex、Cursor など）向け。skill をインストールすると、アシスタントが自分で chaoffice コマンドラインを呼び出してファイルを作成・変換・読み取り・編集します。コマンドを入力する必要はありません。',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP は AI アシスタントが外部ツールを呼び出すための共通プロトコルです。アシスタントがコマンドを実行できない場合（Claude Desktop など）や、ChaAI Office のウィンドウを直接操作させたい場合に使います。下の 2 つの方法からどちらか 1 つを選んでください。',
     intgMcpStdioTitle: 'アシスタントが起動する（推奨）',
     intgMcpStdioDesc:
-      'アシスタントが chatoffice mcp を自分で起動します。ここで何かをオンにする必要はなく、ChaAI Office を開いておく必要もありません。機能は CLI と同じです。',
+      'アシスタントが chaoffice mcp を自分で起動します。ここで何かをオンにする必要はなく、ChaAI Office を開いておく必要もありません。機能は CLI と同じです。',
     intgMcpHttpTitle: 'ローカル HTTP サーバー',
     intgMcpHttpDesc:
       'ChaAI Office 内で動作し、アシスタントは URL で接続します。Word エディター上で文書が段階的に生成される様子を見られます。ChaAI Office を開いたままにする必要があり、現時点では Word のみ対応です。',
@@ -1767,10 +1767,10 @@ const upstreamStrings = {
       'これを MCP サーバー設定（JSON ファイル、または設定の「MCP サーバーを追加」）に追加します：',
     intgMcpNote:
       'スキルと MCP は併用できます。アシスタントがどちらかを選びます。両者の機能はまったく同じです。',
-    intgCliTitle: '上級：コマンドライン chatoffice',
-    intgCliReady: 'chatoffice {v} · ターミナルで使えます（{path}）',
+    intgCliTitle: '上級：コマンドライン chaoffice',
+    intgCliReady: 'chaoffice {v} · ターミナルで使えます（{path}）',
     intgCliNotOnPath:
-      'chatoffice {v} · ターミナルの PATH にありません。アシスタントは ~/.chatoffice/launcher 経由で見つけられるため、スキルは動作します。自分で chatoffice を入力したい場合は一度だけ次を実行：',
+      'chaoffice {v} · ターミナルの PATH にありません。アシスタントは ~/.chaoffice/launcher 経由で見つけられるため、スキルは動作します。自分で chaoffice を入力したい場合は一度だけ次を実行：',
     intgCliLauncher: 'ランチャーフォルダー',
     intgStateOutdated: 'インストール済み {v}、{next} に更新できます',
     intgStateModified: 'インストール済み {v}（変更されています）',
@@ -2227,16 +2227,16 @@ const upstreamStrings = {
     intgExample2: '3분기 실적을 소개하는 6장짜리 슬라이드를 만들어 줘',
     intgExample3: 'budget.xlsx를 PDF로 변환해서 ChaAI Office에서 열어 줘',
     intgStep2Note:
-      'chatoffice 명령줄은 어시스턴트가 직접 실행하므로 여러분이 입력할 필요가 없습니다.',
+      'chaoffice 명령줄은 어시스턴트가 직접 실행하므로 여러분이 입력할 필요가 없습니다.',
     intgCliPartTitle: 'CLI · 명령줄 + skill',
     intgCliPartDesc:
-      '터미널 명령을 실행할 수 있는 어시스턴트(Claude Code, Codex, Cursor 등)용입니다. skill을 설치하면 어시스턴트가 스스로 chatoffice 명령줄을 호출해 파일을 만들고 변환하고 읽고 편집합니다. 명령을 직접 입력할 필요가 없습니다.',
+      '터미널 명령을 실행할 수 있는 어시스턴트(Claude Code, Codex, Cursor 등)용입니다. skill을 설치하면 어시스턴트가 스스로 chaoffice 명령줄을 호출해 파일을 만들고 변환하고 읽고 편집합니다. 명령을 직접 입력할 필요가 없습니다.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP는 AI 어시스턴트가 외부 도구를 호출하는 공통 프로토콜입니다. 어시스턴트가 명령을 실행할 수 없거나(예: Claude Desktop) ChaAI Office 창을 직접 조작하게 하려면 이 방식을 사용하세요. 아래 두 방법 중 하나를 선택하면 됩니다.',
     intgMcpStdioTitle: '어시스턴트가 실행(권장)',
     intgMcpStdioDesc:
-      '어시스턴트가 chatoffice mcp를 직접 실행합니다. 여기서 켤 것이 없고 ChaAI Office가 열려 있을 필요도 없습니다. 기능은 CLI와 같습니다.',
+      '어시스턴트가 chaoffice mcp를 직접 실행합니다. 여기서 켤 것이 없고 ChaAI Office가 열려 있을 필요도 없습니다. 기능은 CLI와 같습니다.',
     intgMcpHttpTitle: '로컬 HTTP 서버',
     intgMcpHttpDesc:
       'ChaAI Office 안에서 실행되며 어시스턴트가 URL로 연결합니다. Word 편집기에서 문서가 단계별로 만들어지는 과정을 볼 수 있습니다. ChaAI Office를 열어 두어야 하며 현재는 Word만 지원합니다.',
@@ -2250,10 +2250,10 @@ const upstreamStrings = {
       '이 내용을 해당 어시스턴트의 MCP 서버 설정(JSON 파일 또는 설정의 "MCP 서버 추가")에 추가하세요:',
     intgMcpNote:
       '스킬과 MCP는 함께 설정할 수 있으며 어시스턴트가 하나를 선택합니다. 두 방식이 하는 일은 완전히 같습니다.',
-    intgCliTitle: '고급: 명령줄 chatoffice',
-    intgCliReady: 'chatoffice {v} · 터미널에서 바로 사용 가능({path})',
+    intgCliTitle: '고급: 명령줄 chaoffice',
+    intgCliReady: 'chaoffice {v} · 터미널에서 바로 사용 가능({path})',
     intgCliNotOnPath:
-      'chatoffice {v} · 터미널 PATH에 없습니다. 어시스턴트는 ~/.chatoffice/launcher로 찾을 수 있어 스킬은 정상 작동합니다. 직접 genoffice를 입력하려면 한 번만 실행:',
+      'chaoffice {v} · 터미널 PATH에 없습니다. 어시스턴트는 ~/.chaoffice/launcher로 찾을 수 있어 스킬은 정상 작동합니다. 직접 genoffice를 입력하려면 한 번만 실행:',
     intgCliLauncher: '런처 폴더',
     intgStateOutdated: '설치됨 {v}, {next}(으)로 업데이트 가능',
     intgStateModified: '설치됨 {v} (수정됨)',
@@ -2720,16 +2720,16 @@ const upstreamStrings = {
     intgExample2: 'Prépare une présentation de 6 diapositives sur nos résultats du T3',
     intgExample3: 'Convertis budget.xlsx en PDF et ouvre-le dans ChaAI Office',
     intgStep2Note:
-      "L'assistant lance lui-même la ligne de commande chatoffice ; vous n'avez jamais à la saisir.",
+      "L'assistant lance lui-même la ligne de commande chaoffice ; vous n'avez jamais à la saisir.",
     intgCliPartTitle: 'CLI · ligne de commande + skill',
     intgCliPartDesc:
-      'Pour les assistants capables de lancer des commandes dans le terminal (Claude Code, Codex, Cursor, etc.). Une fois le skill installé, l’assistant appelle lui-même la ligne de commande chatoffice pour créer, convertir, lire et modifier les fichiers ; vous ne tapez jamais de commande.',
+      'Pour les assistants capables de lancer des commandes dans le terminal (Claude Code, Codex, Cursor, etc.). Une fois le skill installé, l’assistant appelle lui-même la ligne de commande chaoffice pour créer, convertir, lire et modifier les fichiers ; vous ne tapez jamais de commande.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP est le protocole commun que les assistants IA utilisent pour appeler des outils externes. Utilisez-le si votre assistant ne peut pas lancer de commandes (Claude Desktop, par exemple) ou si vous voulez qu’il pilote directement la fenêtre ChaAI Office. Choisissez l’une des deux méthodes ci-dessous.',
     intgMcpStdioTitle: 'Lancé par l’assistant (recommandé)',
     intgMcpStdioDesc:
-      'L’assistant lance lui-même chatoffice mcp : rien à activer ici, et ChaAI Office n’a pas besoin d’être ouvert. Mêmes fonctions que la CLI.',
+      'L’assistant lance lui-même chaoffice mcp : rien à activer ici, et ChaAI Office n’a pas besoin d’être ouvert. Mêmes fonctions que la CLI.',
     intgMcpHttpTitle: 'Serveur HTTP local',
     intgMcpHttpDesc:
       'Tourne dans ChaAI Office ; l’assistant se connecte à une URL et vous voyez le document se construire pas à pas dans l’éditeur Word. ChaAI Office doit rester ouvert ; documents Word uniquement pour l’instant.',
@@ -2742,10 +2742,10 @@ const upstreamStrings = {
       'Ajoutez ceci à sa configuration de serveurs MCP (un fichier JSON, ou « Ajouter un serveur MCP » dans ses réglages) :',
     intgMcpNote:
       "Le skill et MCP peuvent coexister ; l'assistant choisit l'un des deux. Ils font exactement la même chose.",
-    intgCliTitle: 'Avancé : ligne de commande chatoffice',
-    intgCliReady: 'chatoffice {v} · prêt dans votre terminal ({path})',
+    intgCliTitle: 'Avancé : ligne de commande chaoffice',
+    intgCliReady: 'chaoffice {v} · prêt dans votre terminal ({path})',
     intgCliNotOnPath:
-      'chatoffice {v} · absent du PATH de votre terminal. Les assistants le trouvent quand même via ~/.chatoffice/launcher, le skill fonctionne donc. Pour taper chatoffice vous-même, exécutez ceci une fois :',
+      'chaoffice {v} · absent du PATH de votre terminal. Les assistants le trouvent quand même via ~/.chaoffice/launcher, le skill fonctionne donc. Pour taper chaoffice vous-même, exécutez ceci une fois :',
     intgCliLauncher: 'Dossier du lanceur',
     intgStateOutdated: 'Installé {v}, mise à jour {next} disponible',
     intgStateModified: 'Installé {v} (modifié)',
@@ -3224,16 +3224,16 @@ const upstreamStrings = {
     intgExample2: 'Erstelle eine Präsentation mit 6 Folien zu unseren Q3-Ergebnissen',
     intgExample3: 'Wandle budget.xlsx in PDF um und öffne es in ChaAI Office',
     intgStep2Note:
-      'Der Assistent ruft die chatoffice-Befehlszeile selbst auf; Sie müssen sie nie eintippen.',
+      'Der Assistent ruft die chaoffice-Befehlszeile selbst auf; Sie müssen sie nie eintippen.',
     intgCliPartTitle: 'CLI · Kommandozeile + Skill',
     intgCliPartDesc:
-      'Für Assistenten, die Terminalbefehle ausführen können (Claude Code, Codex, Cursor u. a.). Nach der Installation des Skills ruft der Assistent die chatoffice-Kommandozeile selbst auf, um Dateien zu erstellen, zu konvertieren, zu lesen und zu bearbeiten; Sie tippen nie einen Befehl.',
+      'Für Assistenten, die Terminalbefehle ausführen können (Claude Code, Codex, Cursor u. a.). Nach der Installation des Skills ruft der Assistent die chaoffice-Kommandozeile selbst auf, um Dateien zu erstellen, zu konvertieren, zu lesen und zu bearbeiten; Sie tippen nie einen Befehl.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP ist das gemeinsame Protokoll, über das KI-Assistenten externe Werkzeuge aufrufen. Nutzen Sie es, wenn der Assistent keine Befehle ausführen kann (z. B. Claude Desktop) oder wenn er das ChaAI Office-Fenster direkt steuern soll. Wählen Sie einen der beiden Wege unten.',
     intgMcpStdioTitle: 'Vom Assistenten gestartet (empfohlen)',
     intgMcpStdioDesc:
-      'Der Assistent startet chatoffice mcp selbst: hier ist nichts einzuschalten, und ChaAI Office muss nicht geöffnet sein. Gleicher Funktionsumfang wie die CLI.',
+      'Der Assistent startet chaoffice mcp selbst: hier ist nichts einzuschalten, und ChaAI Office muss nicht geöffnet sein. Gleicher Funktionsumfang wie die CLI.',
     intgMcpHttpTitle: 'Lokaler HTTP-Server',
     intgMcpHttpDesc:
       'Läuft in ChaAI Office; der Assistent verbindet sich über eine URL, und Sie sehen im Word-Editor zu, wie das Dokument Schritt für Schritt entsteht. ChaAI Office muss geöffnet bleiben; derzeit nur Word-Dokumente.',
@@ -3246,10 +3246,10 @@ const upstreamStrings = {
       'Fügen Sie dies in seine MCP-Server-Konfiguration ein (eine JSON-Datei oder „MCP-Server hinzufügen“ in den Einstellungen):',
     intgMcpNote:
       'Skill und MCP können nebeneinander eingerichtet sein; der Assistent wählt eines. Beide tun genau dasselbe.',
-    intgCliTitle: 'Erweitert: Befehlszeile chatoffice',
-    intgCliReady: 'chatoffice {v} · im Terminal verfügbar ({path})',
+    intgCliTitle: 'Erweitert: Befehlszeile chaoffice',
+    intgCliReady: 'chaoffice {v} · im Terminal verfügbar ({path})',
     intgCliNotOnPath:
-      'chatoffice {v} · nicht im PATH Ihres Terminals. Assistenten finden es trotzdem über ~/.chatoffice/launcher, der Skill funktioniert also. Um chatoffice selbst einzugeben, führen Sie dies einmal aus:',
+      'chaoffice {v} · nicht im PATH Ihres Terminals. Assistenten finden es trotzdem über ~/.chaoffice/launcher, der Skill funktioniert also. Um chaoffice selbst einzugeben, führen Sie dies einmal aus:',
     intgCliLauncher: 'Launcher-Ordner',
     intgStateOutdated: 'Installiert {v}, Update auf {next} verfügbar',
     intgStateModified: 'Installiert {v} (geändert)',
@@ -3722,16 +3722,16 @@ const upstreamStrings = {
     intgExample2: 'Haz una presentación de 6 diapositivas sobre nuestros resultados del T3',
     intgExample3: 'Convierte budget.xlsx a PDF y ábrelo en ChaAI Office',
     intgStep2Note:
-      'El asistente ejecuta la línea de comandos chatoffice por sí mismo; nunca tienes que escribirla.',
+      'El asistente ejecuta la línea de comandos chaoffice por sí mismo; nunca tienes que escribirla.',
     intgCliPartTitle: 'CLI · línea de comandos + skill',
     intgCliPartDesc:
-      'Para asistentes que pueden ejecutar comandos de terminal (Claude Code, Codex, Cursor y otros). Con el skill instalado, el asistente llama por sí mismo a la línea de comandos chatoffice para crear, convertir, leer y editar archivos; nunca escribes un comando.',
+      'Para asistentes que pueden ejecutar comandos de terminal (Claude Code, Codex, Cursor y otros). Con el skill instalado, el asistente llama por sí mismo a la línea de comandos chaoffice para crear, convertir, leer y editar archivos; nunca escribes un comando.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP es el protocolo común con el que los asistentes de IA llaman a herramientas externas. Úsalo cuando tu asistente no pueda ejecutar comandos (Claude Desktop, por ejemplo) o cuando quieras que controle directamente la ventana de ChaAI Office. Elige una de las dos formas de abajo.',
     intgMcpStdioTitle: 'Iniciado por el asistente (recomendado)',
     intgMcpStdioDesc:
-      'El asistente lanza chatoffice mcp por sí mismo: nada que activar aquí, y ChaAI Office no necesita estar abierto. Mismas funciones que la CLI.',
+      'El asistente lanza chaoffice mcp por sí mismo: nada que activar aquí, y ChaAI Office no necesita estar abierto. Mismas funciones que la CLI.',
     intgMcpHttpTitle: 'Servidor HTTP local',
     intgMcpHttpDesc:
       'Se ejecuta dentro de ChaAI Office; el asistente se conecta a una URL y puedes ver cómo construye el documento paso a paso en el editor de Word. ChaAI Office debe permanecer abierto; por ahora solo documentos Word.',
@@ -3744,10 +3744,10 @@ const upstreamStrings = {
       'Añade esto a su configuración de servidores MCP (un archivo JSON, o «Añadir servidor MCP» en sus ajustes):',
     intgMcpNote:
       'El skill y MCP pueden convivir; el asistente elige uno. Ambos hacen exactamente lo mismo.',
-    intgCliTitle: 'Avanzado: línea de comandos chatoffice',
-    intgCliReady: 'chatoffice {v} · listo en tu terminal ({path})',
+    intgCliTitle: 'Avanzado: línea de comandos chaoffice',
+    intgCliReady: 'chaoffice {v} · listo en tu terminal ({path})',
     intgCliNotOnPath:
-      'chatoffice {v} · no está en el PATH de tu terminal. Los asistentes lo encuentran igualmente mediante ~/.chatoffice/launcher, así que el skill funciona. Para escribir chatoffice tú mismo, ejecuta esto una vez:',
+      'chaoffice {v} · no está en el PATH de tu terminal. Los asistentes lo encuentran igualmente mediante ~/.chaoffice/launcher, así que el skill funciona. Para escribir chaoffice tú mismo, ejecuta esto una vez:',
     intgCliLauncher: 'Carpeta del lanzador',
     intgStateOutdated: 'Instalado {v}, actualización a {next} disponible',
     intgStateModified: 'Instalado {v} (modificado)',
@@ -4205,16 +4205,16 @@ const upstreamStrings = {
     intgExample1: 'แปลง ~/Downloads/report.md เป็นเอกสาร Word',
     intgExample2: 'ทำสไลด์ 6 หน้าเกี่ยวกับผลประกอบการไตรมาส 3 ของเรา',
     intgExample3: 'แปลง budget.xlsx เป็น PDF แล้วเปิดใน ChaAI Office',
-    intgStep2Note: 'ผู้ช่วยจะเรียกใช้บรรทัดคำสั่ง chatoffice เอง คุณไม่ต้องพิมพ์คำสั่งใด ๆ',
+    intgStep2Note: 'ผู้ช่วยจะเรียกใช้บรรทัดคำสั่ง chaoffice เอง คุณไม่ต้องพิมพ์คำสั่งใด ๆ',
     intgCliPartTitle: 'CLI · บรรทัดคำสั่ง + skill',
     intgCliPartDesc:
-      'สำหรับผู้ช่วยที่รันคำสั่งเทอร์มินัลได้ (Claude Code, Codex, Cursor และอื่น ๆ) เมื่อติดตั้ง skill แล้ว ผู้ช่วยจะเรียกบรรทัดคำสั่ง chatoffice เองเพื่อสร้าง แปลง อ่าน และแก้ไขไฟล์ คุณไม่ต้องพิมพ์คำสั่งใด ๆ',
+      'สำหรับผู้ช่วยที่รันคำสั่งเทอร์มินัลได้ (Claude Code, Codex, Cursor และอื่น ๆ) เมื่อติดตั้ง skill แล้ว ผู้ช่วยจะเรียกบรรทัดคำสั่ง chaoffice เองเพื่อสร้าง แปลง อ่าน และแก้ไขไฟล์ คุณไม่ต้องพิมพ์คำสั่งใด ๆ',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP คือโปรโตคอลกลางที่ผู้ช่วย AI ใช้เรียกเครื่องมือภายนอก ใช้เมื่อผู้ช่วยรันคำสั่งไม่ได้ (เช่น Claude Desktop) หรือเมื่อต้องการให้มันควบคุมหน้าต่าง ChaAI Office โดยตรง เลือกวิธีใดวิธีหนึ่งจากสองวิธีด้านล่าง',
     intgMcpStdioTitle: 'ให้ผู้ช่วยเป็นผู้เริ่ม (แนะนำ)',
     intgMcpStdioDesc:
-      'ผู้ช่วยจะเรียก chatoffice mcp ขึ้นมาเอง ไม่ต้องเปิดสวิตช์ใดที่นี่ และไม่ต้องเปิด ChaAI Office ไว้ ความสามารถเหมือน CLI ทุกประการ',
+      'ผู้ช่วยจะเรียก chaoffice mcp ขึ้นมาเอง ไม่ต้องเปิดสวิตช์ใดที่นี่ และไม่ต้องเปิด ChaAI Office ไว้ ความสามารถเหมือน CLI ทุกประการ',
     intgMcpHttpTitle: 'เซิร์ฟเวอร์ HTTP ในเครื่อง',
     intgMcpHttpDesc:
       'ทำงานอยู่ใน ChaAI Office ผู้ช่วยเชื่อมต่อผ่าน URL และคุณจะเห็นเอกสารค่อย ๆ ถูกสร้างขึ้นในตัวแก้ไข Word ต้องเปิด ChaAI Office ไว้ตลอด ปัจจุบันรองรับเฉพาะ Word',
@@ -4227,10 +4227,10 @@ const upstreamStrings = {
       'เพิ่มส่วนนี้ลงในการตั้งค่าเซิร์ฟเวอร์ MCP ของผู้ช่วย (ไฟล์ JSON หรือ "เพิ่มเซิร์ฟเวอร์ MCP" ในการตั้งค่า):',
     intgMcpNote:
       'สกิลและ MCP ตั้งค่าไว้พร้อมกันได้ ผู้ช่วยจะเลือกใช้เอง ทั้งสองทำงานเหมือนกันทุกอย่าง',
-    intgCliTitle: 'ขั้นสูง: บรรทัดคำสั่ง chatoffice',
-    intgCliReady: 'chatoffice {v} · พร้อมใช้ในเทอร์มินัล ({path})',
+    intgCliTitle: 'ขั้นสูง: บรรทัดคำสั่ง chaoffice',
+    intgCliReady: 'chaoffice {v} · พร้อมใช้ในเทอร์มินัล ({path})',
     intgCliNotOnPath:
-      'chatoffice {v} · ยังไม่อยู่ใน PATH ของเทอร์มินัล ผู้ช่วยยังหาเจอผ่าน ~/.chatoffice/launcher สกิลจึงใช้งานได้ตามปกติ หากต้องการพิมพ์ chatoffice เอง ให้รันคำสั่งนี้ครั้งเดียว:',
+      'chaoffice {v} · ยังไม่อยู่ใน PATH ของเทอร์มินัล ผู้ช่วยยังหาเจอผ่าน ~/.chaoffice/launcher สกิลจึงใช้งานได้ตามปกติ หากต้องการพิมพ์ chaoffice เอง ให้รันคำสั่งนี้ครั้งเดียว:',
     intgCliLauncher: 'โฟลเดอร์ตัวเรียกใช้',
     intgStateOutdated: 'ติดตั้งแล้ว {v} อัปเดตเป็น {next} ได้',
     intgStateModified: 'ติดตั้งแล้ว {v} (ถูกแก้ไข)',
@@ -4692,16 +4692,16 @@ const upstreamStrings = {
     intgExample2: 'Buat presentasi 6 slide tentang hasil Q3 kami',
     intgExample3: 'Konversi budget.xlsx ke PDF dan buka di ChaAI Office',
     intgStep2Note:
-      'Asisten menjalankan baris perintah chatoffice sendiri; Anda tidak perlu mengetiknya.',
+      'Asisten menjalankan baris perintah chaoffice sendiri; Anda tidak perlu mengetiknya.',
     intgCliPartTitle: 'CLI · baris perintah + skill',
     intgCliPartDesc:
-      'Untuk asisten yang bisa menjalankan perintah terminal (Claude Code, Codex, Cursor, dan lainnya). Setelah skill terpasang, asisten memanggil baris perintah chatoffice sendiri untuk membuat, mengonversi, membaca, dan mengedit file; Anda tidak pernah mengetik perintah.',
+      'Untuk asisten yang bisa menjalankan perintah terminal (Claude Code, Codex, Cursor, dan lainnya). Setelah skill terpasang, asisten memanggil baris perintah chaoffice sendiri untuk membuat, mengonversi, membaca, dan mengedit file; Anda tidak pernah mengetik perintah.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP adalah protokol umum yang dipakai asisten AI untuk memanggil alat eksternal. Gunakan saat asisten Anda tidak bisa menjalankan perintah (misalnya Claude Desktop) atau saat Anda ingin ia mengendalikan jendela ChaAI Office secara langsung. Pilih salah satu dari dua cara di bawah.',
     intgMcpStdioTitle: 'Dijalankan oleh asisten (disarankan)',
     intgMcpStdioDesc:
-      'Asisten menjalankan chatoffice mcp sendiri: tidak ada yang perlu dinyalakan di sini, dan ChaAI Office tidak perlu terbuka. Fitur sama dengan CLI.',
+      'Asisten menjalankan chaoffice mcp sendiri: tidak ada yang perlu dinyalakan di sini, dan ChaAI Office tidak perlu terbuka. Fitur sama dengan CLI.',
     intgMcpHttpTitle: 'Server HTTP lokal',
     intgMcpHttpDesc:
       'Berjalan di dalam ChaAI Office; asisten terhubung lewat URL dan Anda bisa melihat dokumen dibangun langkah demi langkah di editor Word. ChaAI Office harus tetap terbuka; untuk saat ini hanya dokumen Word.',
@@ -4714,10 +4714,10 @@ const upstreamStrings = {
       'Tambahkan ini ke pengaturan server MCP miliknya (berkas JSON, atau "Tambah server MCP" di pengaturannya):',
     intgMcpNote:
       'Skill dan MCP bisa dipasang bersamaan; asisten akan memilih salah satu. Keduanya melakukan hal yang sama persis.',
-    intgCliTitle: 'Lanjutan: baris perintah chatoffice',
-    intgCliReady: 'chatoffice {v} · siap di terminal Anda ({path})',
+    intgCliTitle: 'Lanjutan: baris perintah chaoffice',
+    intgCliReady: 'chaoffice {v} · siap di terminal Anda ({path})',
     intgCliNotOnPath:
-      'chatoffice {v} · belum ada di PATH terminal Anda. Asisten tetap menemukannya lewat ~/.chatoffice/launcher, jadi skill tetap berfungsi. Untuk mengetik chatoffice sendiri, jalankan ini sekali:',
+      'chaoffice {v} · belum ada di PATH terminal Anda. Asisten tetap menemukannya lewat ~/.chaoffice/launcher, jadi skill tetap berfungsi. Untuk mengetik chaoffice sendiri, jalankan ini sekali:',
     intgCliLauncher: 'Folder peluncur',
     intgStateOutdated: 'Terpasang {v}, pembaruan ke {next} tersedia',
     intgStateModified: 'Terpasang {v} (dimodifikasi)',
@@ -5180,16 +5180,16 @@ const upstreamStrings = {
     intgExample2: 'Сделай презентацию из 6 слайдов о наших результатах за 3-й квартал',
     intgExample3: 'Конвертируй budget.xlsx в PDF и открой в ChaAI Office',
     intgStep2Note:
-      'Ассистент сам запускает командную строку chatoffice; вводить её вам не придётся.',
+      'Ассистент сам запускает командную строку chaoffice; вводить её вам не придётся.',
     intgCliPartTitle: 'CLI · командная строка + skill',
     intgCliPartDesc:
-      'Для ассистентов, умеющих выполнять команды терминала (Claude Code, Codex, Cursor и другие). После установки skill ассистент сам вызывает командную строку chatoffice, чтобы создавать, конвертировать, читать и редактировать файлы; вам не нужно вводить команды.',
+      'Для ассистентов, умеющих выполнять команды терминала (Claude Code, Codex, Cursor и другие). После установки skill ассистент сам вызывает командную строку chaoffice, чтобы создавать, конвертировать, читать и редактировать файлы; вам не нужно вводить команды.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP — общий протокол, через который ИИ-ассистенты вызывают внешние инструменты. Используйте его, если ассистент не умеет выполнять команды (например, Claude Desktop) или если хотите, чтобы он напрямую управлял окном ChaAI Office. Выберите один из двух способов ниже.',
     intgMcpStdioTitle: 'Запускает ассистент (рекомендуется)',
     intgMcpStdioDesc:
-      'Ассистент сам запускает chatoffice mcp: здесь ничего включать не нужно, и ChaAI Office не обязан быть открыт. Те же возможности, что у CLI.',
+      'Ассистент сам запускает chaoffice mcp: здесь ничего включать не нужно, и ChaAI Office не обязан быть открыт. Те же возможности, что у CLI.',
     intgMcpHttpTitle: 'Локальный HTTP-сервер',
     intgMcpHttpDesc:
       'Работает внутри ChaAI Office; ассистент подключается по URL, и вы видите, как документ шаг за шагом собирается в редакторе Word. ChaAI Office должен оставаться открытым; пока только документы Word.',
@@ -5202,10 +5202,10 @@ const upstreamStrings = {
       'Добавьте это в его настройки MCP-серверов (JSON-файл или «Добавить MCP-сервер» в настройках):',
     intgMcpNote:
       'Скилл и MCP могут быть настроены одновременно; ассистент выберет один из них. Они делают одно и то же.',
-    intgCliTitle: 'Дополнительно: командная строка chatoffice',
-    intgCliReady: 'chatoffice {v} · доступен в терминале ({path})',
+    intgCliTitle: 'Дополнительно: командная строка chaoffice',
+    intgCliReady: 'chaoffice {v} · доступен в терминале ({path})',
     intgCliNotOnPath:
-      'chatoffice {v} · отсутствует в PATH терминала. Ассистенты всё равно находят его через ~/.chatoffice/launcher, так что скилл работает. Чтобы вводить chatoffice самостоятельно, выполните один раз:',
+      'chaoffice {v} · отсутствует в PATH терминала. Ассистенты всё равно находят его через ~/.chaoffice/launcher, так что скилл работает. Чтобы вводить chaoffice самостоятельно, выполните один раз:',
     intgCliLauncher: 'Папка лаунчера',
     intgStateOutdated: 'Установлен {v}, доступно обновление до {next}',
     intgStateModified: 'Установлен {v} (изменён)',
@@ -5665,16 +5665,16 @@ const upstreamStrings = {
     intgExample1: 'حوّل ~/Downloads/report.md إلى مستند Word',
     intgExample2: 'أنشئ عرضاً من 6 شرائح عن نتائج الربع الثالث',
     intgExample3: 'حوّل budget.xlsx إلى PDF وافتحه في ChaAI Office',
-    intgStep2Note: 'المساعد يشغّل سطر أوامر chatoffice بنفسه؛ لن تحتاج إلى كتابته أبداً.',
+    intgStep2Note: 'المساعد يشغّل سطر أوامر chaoffice بنفسه؛ لن تحتاج إلى كتابته أبداً.',
     intgCliPartTitle: 'CLI · سطر الأوامر + skill',
     intgCliPartDesc:
-      'للمساعدين الذين يستطيعون تنفيذ أوامر الطرفية (Claude Code وCodex وCursor وغيرها). بعد تثبيت skill، يستدعي المساعد سطر أوامر chatoffice بنفسه لإنشاء الملفات وتحويلها وقراءتها وتحريرها؛ لن تكتب أي أمر.',
+      'للمساعدين الذين يستطيعون تنفيذ أوامر الطرفية (Claude Code وCodex وCursor وغيرها). بعد تثبيت skill، يستدعي المساعد سطر أوامر chaoffice بنفسه لإنشاء الملفات وتحويلها وقراءتها وتحريرها؛ لن تكتب أي أمر.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP هو البروتوكول المشترك الذي يستخدمه مساعدو الذكاء الاصطناعي لاستدعاء أدوات خارجية. استخدمه إذا كان مساعدك لا يستطيع تنفيذ الأوامر (مثل Claude Desktop) أو إذا أردت أن يتحكم في نافذة ChaAI Office مباشرة. اختر إحدى الطريقتين أدناه.',
     intgMcpStdioTitle: 'يشغّله المساعد (موصى به)',
     intgMcpStdioDesc:
-      'يشغّل المساعد chatoffice mcp بنفسه: لا شيء لتفعيله هنا، ولا يلزم أن يكون ChaAI Office مفتوحًا. نفس إمكانات CLI.',
+      'يشغّل المساعد chaoffice mcp بنفسه: لا شيء لتفعيله هنا، ولا يلزم أن يكون ChaAI Office مفتوحًا. نفس إمكانات CLI.',
     intgMcpHttpTitle: 'خادم HTTP محلي',
     intgMcpHttpDesc:
       'يعمل داخل ChaAI Office؛ يتصل المساعد عبر عنوان URL ويمكنك مشاهدة المستند يُبنى خطوة بخطوة في محرر Word. يجب أن يبقى ChaAI Office مفتوحًا؛ مستندات Word فقط حاليًا.',
@@ -5687,10 +5687,10 @@ const upstreamStrings = {
       'أضف هذا إلى إعدادات خوادم MCP لديه (ملف JSON، أو «إضافة خادم MCP» في إعداداته):',
     intgMcpNote:
       'يمكن إعداد المهارة و MCP معاً؛ يختار المساعد أحدهما. كلاهما يقوم بالأشياء نفسها تماماً.',
-    intgCliTitle: 'متقدم: سطر أوامر chatoffice',
-    intgCliReady: 'chatoffice {v} · جاهز في الطرفية ({path})',
+    intgCliTitle: 'متقدم: سطر أوامر chaoffice',
+    intgCliReady: 'chaoffice {v} · جاهز في الطرفية ({path})',
     intgCliNotOnPath:
-      'chatoffice {v} · غير موجود في PATH الطرفية. ما زال المساعدون يجدونه عبر ~/.chatoffice/launcher، فالمهارة تعمل. لكتابة chatoffice بنفسك، شغّل هذا مرة واحدة:',
+      'chaoffice {v} · غير موجود في PATH الطرفية. ما زال المساعدون يجدونه عبر ~/.chaoffice/launcher، فالمهارة تعمل. لكتابة chaoffice بنفسك، شغّل هذا مرة واحدة:',
     intgCliLauncher: 'مجلد المشغّل',
     intgStateOutdated: 'مثبّت {v}، يتوفر تحديث إلى {next}',
     intgStateModified: 'مثبّت {v} (تم تعديله)',
@@ -6155,16 +6155,16 @@ const upstreamStrings = {
     intgExample2: 'Monte uma apresentação de 6 slides sobre nossos resultados do 3º trimestre',
     intgExample3: 'Converta budget.xlsx para PDF e abra no ChaAI Office',
     intgStep2Note:
-      'O assistente executa a linha de comando chatoffice sozinho; você nunca precisa digitá-la.',
+      'O assistente executa a linha de comando chaoffice sozinho; você nunca precisa digitá-la.',
     intgCliPartTitle: 'CLI · linha de comando + skill',
     intgCliPartDesc:
-      'Para assistentes que executam comandos de terminal (Claude Code, Codex, Cursor e outros). Com o skill instalado, o assistente chama a linha de comando chatoffice sozinho para criar, converter, ler e editar arquivos; você nunca digita um comando.',
+      'Para assistentes que executam comandos de terminal (Claude Code, Codex, Cursor e outros). Com o skill instalado, o assistente chama a linha de comando chaoffice sozinho para criar, converter, ler e editar arquivos; você nunca digita um comando.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP é o protocolo comum que assistentes de IA usam para chamar ferramentas externas. Use-o quando o assistente não puder executar comandos (Claude Desktop, por exemplo) ou quando quiser que ele controle a janela do ChaAI Office diretamente. Escolha uma das duas formas abaixo.',
     intgMcpStdioTitle: 'Iniciado pelo assistente (recomendado)',
     intgMcpStdioDesc:
-      'O assistente inicia o chatoffice mcp sozinho: nada para ligar aqui, e o ChaAI Office não precisa estar aberto. Mesmos recursos da CLI.',
+      'O assistente inicia o chaoffice mcp sozinho: nada para ligar aqui, e o ChaAI Office não precisa estar aberto. Mesmos recursos da CLI.',
     intgMcpHttpTitle: 'Servidor HTTP local',
     intgMcpHttpDesc:
       'Roda dentro do ChaAI Office; o assistente conecta por URL e você acompanha o documento sendo montado passo a passo no editor Word. O ChaAI Office precisa ficar aberto; por enquanto só documentos Word.',
@@ -6177,10 +6177,10 @@ const upstreamStrings = {
       'Adicione isto à configuração de servidores MCP dele (um arquivo JSON, ou "Adicionar servidor MCP" nas configurações):',
     intgMcpNote:
       'O skill e o MCP podem coexistir; o assistente escolhe um deles. Ambos fazem exatamente as mesmas coisas.',
-    intgCliTitle: 'Avançado: linha de comando chatoffice',
-    intgCliReady: 'chatoffice {v} · pronto no seu terminal ({path})',
+    intgCliTitle: 'Avançado: linha de comando chaoffice',
+    intgCliReady: 'chaoffice {v} · pronto no seu terminal ({path})',
     intgCliNotOnPath:
-      'chatoffice {v} · não está no PATH do seu terminal. Os assistentes ainda o encontram por ~/.chatoffice/launcher, então o skill funciona. Para digitar chatoffice você mesmo, execute isto uma vez:',
+      'chaoffice {v} · não está no PATH do seu terminal. Os assistentes ainda o encontram por ~/.chaoffice/launcher, então o skill funciona. Para digitar chaoffice você mesmo, execute isto uma vez:',
     intgCliLauncher: 'Pasta do inicializador',
     intgStateOutdated: 'Instalado {v}, atualização para {next} disponível',
     intgStateModified: 'Instalado {v} (modificado)',
@@ -6650,16 +6650,16 @@ const upstreamStrings = {
     intgExample2: 'Prepara una presentazione di 6 slide sui nostri risultati del terzo trimestre',
     intgExample3: 'Converti budget.xlsx in PDF e aprilo in ChaAI Office',
     intgStep2Note:
-      "L'assistente esegue da solo la riga di comando chatoffice; non dovrai mai digitarla.",
+      "L'assistente esegue da solo la riga di comando chaoffice; non dovrai mai digitarla.",
     intgCliPartTitle: 'CLI · riga di comando + skill',
     intgCliPartDesc:
-      'Per assistenti che possono eseguire comandi da terminale (Claude Code, Codex, Cursor e altri). Installato lo skill, l’assistente richiama da sé la riga di comando chatoffice per creare, convertire, leggere e modificare file; non digiti mai un comando.',
+      'Per assistenti che possono eseguire comandi da terminale (Claude Code, Codex, Cursor e altri). Installato lo skill, l’assistente richiama da sé la riga di comando chaoffice per creare, convertire, leggere e modificare file; non digiti mai un comando.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP è il protocollo comune con cui gli assistenti IA richiamano strumenti esterni. Usalo quando l’assistente non può eseguire comandi (Claude Desktop, ad esempio) o quando vuoi che controlli direttamente la finestra di ChaAI Office. Scegli uno dei due modi qui sotto.',
     intgMcpStdioTitle: 'Avviato dall’assistente (consigliato)',
     intgMcpStdioDesc:
-      'L’assistente avvia chatoffice mcp da sé: niente da attivare qui, e ChaAI Office non deve essere aperto. Stesse funzioni della CLI.',
+      'L’assistente avvia chaoffice mcp da sé: niente da attivare qui, e ChaAI Office non deve essere aperto. Stesse funzioni della CLI.',
     intgMcpHttpTitle: 'Server HTTP locale',
     intgMcpHttpDesc:
       'Gira dentro ChaAI Office; l’assistente si collega a un URL e puoi vedere il documento prendere forma passo dopo passo nell’editor Word. ChaAI Office deve restare aperto; per ora solo documenti Word.',
@@ -6672,10 +6672,10 @@ const upstreamStrings = {
       'Aggiungi questo alla sua configurazione dei server MCP (un file JSON, oppure «Aggiungi server MCP» nelle impostazioni):',
     intgMcpNote:
       "Skill e MCP possono convivere; l'assistente ne sceglie uno. Fanno esattamente le stesse cose.",
-    intgCliTitle: 'Avanzato: riga di comando chatoffice',
-    intgCliReady: 'chatoffice {v} · pronto nel terminale ({path})',
+    intgCliTitle: 'Avanzato: riga di comando chaoffice',
+    intgCliReady: 'chaoffice {v} · pronto nel terminale ({path})',
     intgCliNotOnPath:
-      'chatoffice {v} · non è nel PATH del terminale. Gli assistenti lo trovano comunque tramite ~/.chatoffice/launcher, quindi lo skill funziona. Per digitare chatoffice tu stesso, esegui questo una volta:',
+      'chaoffice {v} · non è nel PATH del terminale. Gli assistenti lo trovano comunque tramite ~/.chaoffice/launcher, quindi lo skill funziona. Per digitare chaoffice tu stesso, esegui questo una volta:',
     intgCliLauncher: 'Cartella del launcher',
     intgStateOutdated: 'Installato {v}, aggiornamento a {next} disponibile',
     intgStateModified: 'Installato {v} (modificato)',
@@ -7140,16 +7140,16 @@ const upstreamStrings = {
     intgExample1: 'Zamień ~/Downloads/report.md na dokument Word',
     intgExample2: 'Zrób prezentację z 6 slajdów o naszych wynikach za III kwartał',
     intgExample3: 'Przekonwertuj budget.xlsx do PDF i otwórz w ChaAI Office',
-    intgStep2Note: 'Asystent sam uruchamia wiersz poleceń chatoffice; nigdy nie musisz go wpisywać.',
+    intgStep2Note: 'Asystent sam uruchamia wiersz poleceń chaoffice; nigdy nie musisz go wpisywać.',
     intgCliPartTitle: 'CLI · wiersz poleceń + skill',
     intgCliPartDesc:
-      'Dla asystentów, które potrafią uruchamiać polecenia terminala (Claude Code, Codex, Cursor i inne). Po zainstalowaniu skilla asystent sam wywołuje wiersz poleceń chatoffice, aby tworzyć, konwertować, czytać i edytować pliki; nigdy nie wpisujesz polecenia.',
+      'Dla asystentów, które potrafią uruchamiać polecenia terminala (Claude Code, Codex, Cursor i inne). Po zainstalowaniu skilla asystent sam wywołuje wiersz poleceń chaoffice, aby tworzyć, konwertować, czytać i edytować pliki; nigdy nie wpisujesz polecenia.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP to wspólny protokół, którym asystenci AI wywołują zewnętrzne narzędzia. Użyj go, gdy asystent nie potrafi uruchamiać poleceń (np. Claude Desktop) lub gdy chcesz, aby bezpośrednio sterował oknem ChaAI Office. Wybierz jeden z dwóch sposobów poniżej.',
     intgMcpStdioTitle: 'Uruchamiany przez asystenta (zalecane)',
     intgMcpStdioDesc:
-      'Asystent sam uruchamia chatoffice mcp: nic tu nie trzeba włączać, a ChaAI Office nie musi być otwarty. Te same funkcje co CLI.',
+      'Asystent sam uruchamia chaoffice mcp: nic tu nie trzeba włączać, a ChaAI Office nie musi być otwarty. Te same funkcje co CLI.',
     intgMcpHttpTitle: 'Lokalny serwer HTTP',
     intgMcpHttpDesc:
       'Działa wewnątrz ChaAI Office; asystent łączy się przez URL, a Ty widzisz, jak dokument powstaje krok po kroku w edytorze Word. ChaAI Office musi pozostać otwarty; na razie tylko dokumenty Word.',
@@ -7162,10 +7162,10 @@ const upstreamStrings = {
       'Dodaj to do jego konfiguracji serwerów MCP (plik JSON lub „Dodaj serwer MCP” w ustawieniach):',
     intgMcpNote:
       'Skill i MCP mogą działać obok siebie; asystent wybiera jedno z nich. Oba robią dokładnie to samo.',
-    intgCliTitle: 'Zaawansowane: wiersz poleceń chatoffice',
-    intgCliReady: 'chatoffice {v} · gotowy w terminalu ({path})',
+    intgCliTitle: 'Zaawansowane: wiersz poleceń chaoffice',
+    intgCliReady: 'chaoffice {v} · gotowy w terminalu ({path})',
     intgCliNotOnPath:
-      'chatoffice {v} · nie ma go w PATH terminala. Asystenty i tak znajdą go przez ~/.chatoffice/launcher, więc skill działa. Aby samodzielnie wpisywać chatoffice, uruchom to raz:',
+      'chaoffice {v} · nie ma go w PATH terminala. Asystenty i tak znajdą go przez ~/.chaoffice/launcher, więc skill działa. Aby samodzielnie wpisywać chaoffice, uruchom to raz:',
     intgCliLauncher: 'Folder programu uruchamiającego',
     intgStateOutdated: 'Zainstalowano {v}, dostępna aktualizacja do {next}',
     intgStateModified: 'Zainstalowano {v} (zmodyfikowano)',
@@ -7589,16 +7589,16 @@ const upstreamStrings = {
     intgExample1: 'Převeď ~/Downloads/report.md na dokument Word',
     intgExample2: 'Udělej prezentaci o 6 snímcích o našich výsledcích za 3. čtvrtletí',
     intgExample3: 'Převeď budget.xlsx do PDF a otevři ho v ChaAI Office',
-    intgStep2Note: 'Asistent spouští příkazový řádek chatoffice sám; nikdy ho nemusíte psát.',
+    intgStep2Note: 'Asistent spouští příkazový řádek chaoffice sám; nikdy ho nemusíte psát.',
     intgCliPartTitle: 'CLI · příkazový řádek + skill',
     intgCliPartDesc:
-      'Pro asistenty, kteří umí spouštět příkazy terminálu (Claude Code, Codex, Cursor a další). Po instalaci skillu asistent sám volá příkazový řádek chatoffice k vytváření, převodu, čtení a úpravám souborů; žádný příkaz nepíšete.',
+      'Pro asistenty, kteří umí spouštět příkazy terminálu (Claude Code, Codex, Cursor a další). Po instalaci skillu asistent sám volá příkazový řádek chaoffice k vytváření, převodu, čtení a úpravám souborů; žádný příkaz nepíšete.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP je společný protokol, kterým AI asistenti volají externí nástroje. Použijte ho, když asistent neumí spouštět příkazy (např. Claude Desktop) nebo když chcete, aby přímo ovládal okno ChaAI Office. Vyberte jeden ze dvou způsobů níže.',
     intgMcpStdioTitle: 'Spouští asistent (doporučeno)',
     intgMcpStdioDesc:
-      'Asistent spustí chatoffice mcp sám: tady není co zapínat a ChaAI Office nemusí být otevřený. Stejné funkce jako CLI.',
+      'Asistent spustí chaoffice mcp sám: tady není co zapínat a ChaAI Office nemusí být otevřený. Stejné funkce jako CLI.',
     intgMcpHttpTitle: 'Místní HTTP server',
     intgMcpHttpDesc:
       'Běží uvnitř ChaAI Office; asistent se připojí přes URL a v editoru Word sledujete, jak dokument krok za krokem vzniká. ChaAI Office musí zůstat otevřený; zatím jen dokumenty Word.',
@@ -7611,10 +7611,10 @@ const upstreamStrings = {
       'Přidejte toto do jeho nastavení MCP serverů (soubor JSON nebo „Přidat MCP server“ v nastavení):',
     intgMcpNote:
       'Skill a MCP mohou být nastaveny současně; asistent si jeden vybere. Oba dělají přesně to samé.',
-    intgCliTitle: 'Pokročilé: příkazový řádek chatoffice',
-    intgCliReady: 'chatoffice {v} · připraven v terminálu ({path})',
+    intgCliTitle: 'Pokročilé: příkazový řádek chaoffice',
+    intgCliReady: 'chaoffice {v} · připraven v terminálu ({path})',
     intgCliNotOnPath:
-      'chatoffice {v} · není v PATH terminálu. Asistenti ho i tak najdou přes ~/.chatoffice/launcher, skill tedy funguje. Chcete-li chatoffice psát sami, spusťte jednou:',
+      'chaoffice {v} · není v PATH terminálu. Asistenti ho i tak najdou přes ~/.chaoffice/launcher, skill tedy funguje. Chcete-li chaoffice psát sami, spusťte jednou:',
     intgCliLauncher: 'Složka spouštěče',
     intgStateOutdated: 'Nainstalováno {v}, k dispozici aktualizace na {next}',
     intgStateModified: 'Nainstalováno {v} (upraveno)',
@@ -8118,16 +8118,16 @@ const upstreamStrings = {
     intgExample2: 'Maak een presentatie van 6 dia’s over onze Q3-resultaten',
     intgExample3: 'Zet budget.xlsx om naar PDF en open het in ChaAI Office',
     intgStep2Note:
-      'De assistent voert de chatoffice-opdrachtregel zelf uit; u hoeft die nooit te typen.',
+      'De assistent voert de chaoffice-opdrachtregel zelf uit; u hoeft die nooit te typen.',
     intgCliPartTitle: 'CLI · opdrachtregel + skill',
     intgCliPartDesc:
-      'Voor assistenten die terminalopdrachten kunnen uitvoeren (Claude Code, Codex, Cursor en andere). Na installatie van de skill roept de assistent zelf de chatoffice-opdrachtregel aan om bestanden te maken, converteren, lezen en bewerken; je typt nooit een opdracht.',
+      'Voor assistenten die terminalopdrachten kunnen uitvoeren (Claude Code, Codex, Cursor en andere). Na installatie van de skill roept de assistent zelf de chaoffice-opdrachtregel aan om bestanden te maken, converteren, lezen en bewerken; je typt nooit een opdracht.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP is het gemeenschappelijke protocol waarmee AI-assistenten externe tools aanroepen. Gebruik het als je assistent geen opdrachten kan uitvoeren (bijvoorbeeld Claude Desktop) of als je wilt dat hij het ChaAI Office-venster rechtstreeks bestuurt. Kies een van de twee manieren hieronder.',
     intgMcpStdioTitle: 'Gestart door de assistent (aanbevolen)',
     intgMcpStdioDesc:
-      'De assistent start chatoffice mcp zelf: hier hoeft niets aan, en ChaAI Office hoeft niet open te staan. Dezelfde functies als de CLI.',
+      'De assistent start chaoffice mcp zelf: hier hoeft niets aan, en ChaAI Office hoeft niet open te staan. Dezelfde functies als de CLI.',
     intgMcpHttpTitle: 'Lokale HTTP-server',
     intgMcpHttpDesc:
       'Draait in ChaAI Office; de assistent verbindt via een URL en je ziet het document stap voor stap ontstaan in de Word-editor. ChaAI Office moet open blijven; voorlopig alleen Word-documenten.',
@@ -8140,10 +8140,10 @@ const upstreamStrings = {
       'Voeg dit toe aan de MCP-serverinstellingen (een JSON-bestand, of "MCP-server toevoegen" in de instellingen):',
     intgMcpNote:
       'De skill en MCP kunnen naast elkaar bestaan; de assistent kiest er een. Ze doen precies hetzelfde.',
-    intgCliTitle: 'Geavanceerd: chatoffice-opdrachtregel',
-    intgCliReady: 'chatoffice {v} · klaar in uw terminal ({path})',
+    intgCliTitle: 'Geavanceerd: chaoffice-opdrachtregel',
+    intgCliReady: 'chaoffice {v} · klaar in uw terminal ({path})',
     intgCliNotOnPath:
-      'chatoffice {v} · staat niet in het PATH van uw terminal. Assistenten vinden het toch via ~/.chatoffice/launcher, dus de skill werkt. Om zelf chatoffice te typen, voert u dit één keer uit:',
+      'chaoffice {v} · staat niet in het PATH van uw terminal. Assistenten vinden het toch via ~/.chaoffice/launcher, dus de skill werkt. Om zelf chaoffice te typen, voert u dit één keer uit:',
     intgCliLauncher: 'Launcher-map',
     intgStateOutdated: 'Geïnstalleerd {v}, update naar {next} beschikbaar',
     intgStateModified: 'Geïnstalleerd {v} (gewijzigd)',
@@ -8609,16 +8609,16 @@ const upstreamStrings = {
     intgExample2: 'Buat pembentangan 6 slaid tentang hasil S3 kami',
     intgExample3: 'Tukar budget.xlsx kepada PDF dan buka dalam ChaAI Office',
     intgStep2Note:
-      'Pembantu menjalankan baris arahan chatoffice sendiri; anda tidak perlu menaipnya.',
+      'Pembantu menjalankan baris arahan chaoffice sendiri; anda tidak perlu menaipnya.',
     intgCliPartTitle: 'CLI · baris arahan + skill',
     intgCliPartDesc:
-      'Untuk pembantu yang boleh menjalankan arahan terminal (Claude Code, Codex, Cursor dan lain-lain). Setelah skill dipasang, pembantu memanggil baris arahan chatoffice sendiri untuk mencipta, menukar, membaca dan mengedit fail; anda tidak perlu menaip sebarang arahan.',
+      'Untuk pembantu yang boleh menjalankan arahan terminal (Claude Code, Codex, Cursor dan lain-lain). Setelah skill dipasang, pembantu memanggil baris arahan chaoffice sendiri untuk mencipta, menukar, membaca dan mengedit fail; anda tidak perlu menaip sebarang arahan.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP ialah protokol umum yang digunakan pembantu AI untuk memanggil alat luaran. Gunakannya apabila pembantu anda tidak boleh menjalankan arahan (contohnya Claude Desktop) atau apabila anda mahu ia mengawal tetingkap ChaAI Office secara langsung. Pilih salah satu daripada dua cara di bawah.',
     intgMcpStdioTitle: 'Dimulakan oleh pembantu (disyorkan)',
     intgMcpStdioDesc:
-      'Pembantu melancarkan chatoffice mcp sendiri: tiada apa yang perlu dihidupkan di sini, dan ChaAI Office tidak perlu dibuka. Ciri sama seperti CLI.',
+      'Pembantu melancarkan chaoffice mcp sendiri: tiada apa yang perlu dihidupkan di sini, dan ChaAI Office tidak perlu dibuka. Ciri sama seperti CLI.',
     intgMcpHttpTitle: 'Pelayan HTTP tempatan',
     intgMcpHttpDesc:
       'Berjalan di dalam ChaAI Office; pembantu menyambung melalui URL dan anda boleh melihat dokumen dibina langkah demi langkah dalam editor Word. ChaAI Office mesti kekal dibuka; buat masa ini dokumen Word sahaja.',
@@ -8632,10 +8632,10 @@ const upstreamStrings = {
       'Tambahkan ini pada tetapan pelayan MCP pembantu tersebut (fail JSON, atau "Tambah pelayan MCP" dalam tetapannya):',
     intgMcpNote:
       'Skill dan MCP boleh dipasang serentak; pembantu akan memilih satu. Kedua-duanya melakukan perkara yang sama.',
-    intgCliTitle: 'Lanjutan: baris arahan chatoffice',
-    intgCliReady: 'chatoffice {v} · sedia dalam terminal anda ({path})',
+    intgCliTitle: 'Lanjutan: baris arahan chaoffice',
+    intgCliReady: 'chaoffice {v} · sedia dalam terminal anda ({path})',
     intgCliNotOnPath:
-      'chatoffice {v} · tiada dalam PATH terminal anda. Pembantu masih menemuinya melalui ~/.chatoffice/launcher, jadi skill berfungsi. Untuk menaip chatoffice sendiri, jalankan ini sekali:',
+      'chaoffice {v} · tiada dalam PATH terminal anda. Pembantu masih menemuinya melalui ~/.chaoffice/launcher, jadi skill berfungsi. Untuk menaip chaoffice sendiri, jalankan ini sekali:',
     intgCliLauncher: 'Folder pelancar',
     intgStateOutdated: 'Dipasang {v}, kemas kini ke {next} tersedia',
     intgStateModified: 'Dipasang {v} (diubah suai)',
@@ -9093,16 +9093,16 @@ const upstreamStrings = {
     intgExample1: 'הפוך את ~/Downloads/report.md למסמך Word',
     intgExample2: 'הכן מצגת של 6 שקופיות על תוצאות הרבעון השלישי שלנו',
     intgExample3: 'המר את budget.xlsx ל-PDF ופתח אותו ב-ChaAI Office',
-    intgStep2Note: 'העוזר מריץ בעצמו את שורת הפקודה chatoffice; לעולם לא תצטרכו להקליד אותה.',
+    intgStep2Note: 'העוזר מריץ בעצמו את שורת הפקודה chaoffice; לעולם לא תצטרכו להקליד אותה.',
     intgCliPartTitle: 'CLI · שורת פקודה + skill',
     intgCliPartDesc:
-      'לעוזרים שיכולים להריץ פקודות טרמינל (Claude Code‏, Codex‏, Cursor ואחרים). לאחר התקנת ה‑skill העוזר קורא בעצמו לשורת הפקודה chatoffice כדי ליצור, להמיר, לקרוא ולערוך קבצים; אתם לא מקלידים שום פקודה.',
+      'לעוזרים שיכולים להריץ פקודות טרמינל (Claude Code‏, Codex‏, Cursor ואחרים). לאחר התקנת ה‑skill העוזר קורא בעצמו לשורת הפקודה chaoffice כדי ליצור, להמיר, לקרוא ולערוך קבצים; אתם לא מקלידים שום פקודה.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP הוא הפרוטוקול המשותף שבו עוזרי AI קוראים לכלים חיצוניים. השתמשו בו כשהעוזר אינו יכול להריץ פקודות (למשל Claude Desktop) או כשאתם רוצים שהוא ישלוט ישירות בחלון ChaAI Office. בחרו אחת משתי הדרכים למטה.',
     intgMcpStdioTitle: 'מופעל על ידי העוזר (מומלץ)',
     intgMcpStdioDesc:
-      'העוזר מפעיל את chatoffice mcp בעצמו: אין מה להפעיל כאן, ו‑ChaAI Office לא חייב להיות פתוח. אותן יכולות כמו ב‑CLI.',
+      'העוזר מפעיל את chaoffice mcp בעצמו: אין מה להפעיל כאן, ו‑ChaAI Office לא חייב להיות פתוח. אותן יכולות כמו ב‑CLI.',
     intgMcpHttpTitle: 'שרת HTTP מקומי',
     intgMcpHttpDesc:
       'פועל בתוך ChaAI Office; העוזר מתחבר דרך כתובת URL ואפשר לראות את המסמך נבנה צעד אחר צעד בעורך Word. ChaAI Office חייב להישאר פתוח; בשלב זה מסמכי Word בלבד.',
@@ -9114,10 +9114,10 @@ const upstreamStrings = {
     intgMcpOtherDesc: 'הוסיפו זאת להגדרות שרתי ה-MCP שלו (קובץ JSON, או "הוספת שרת MCP" בהגדרות):',
     intgMcpNote:
       'הסקיל ו-MCP יכולים להיות מוגדרים יחד; העוזר יבחר אחד מהם. שניהם עושים בדיוק את אותם הדברים.',
-    intgCliTitle: 'מתקדם: שורת הפקודה chatoffice',
-    intgCliReady: 'chatoffice {v} · מוכן בטרמינל ({path})',
+    intgCliTitle: 'מתקדם: שורת הפקודה chaoffice',
+    intgCliReady: 'chaoffice {v} · מוכן בטרמינל ({path})',
     intgCliNotOnPath:
-      'chatoffice {v} · לא נמצא ב-PATH של הטרמינל. העוזרים עדיין מוצאים אותו דרך ~/.chatoffice/launcher, ולכן ה-skill עובד. כדי להקליד chatoffice בעצמכם, הריצו זאת פעם אחת:',
+      'chaoffice {v} · לא נמצא ב-PATH של הטרמינל. העוזרים עדיין מוצאים אותו דרך ~/.chaoffice/launcher, ולכן ה-skill עובד. כדי להקליד chaoffice בעצמכם, הריצו זאת פעם אחת:',
     intgCliLauncher: 'תיקיית המשגר',
     intgStateOutdated: 'מותקן {v}, זמין עדכון ל-{next}',
     intgStateModified: 'מותקן {v} (שונה)',
@@ -9574,16 +9574,16 @@ const upstreamStrings = {
     intgExample1: '~/Downloads/report.md को Word दस्तावेज़ बना दो',
     intgExample2: 'हमारे Q3 नतीजों पर 6 स्लाइड का प्रेज़ेंटेशन बनाओ',
     intgExample3: 'budget.xlsx को PDF में बदलो और ChaAI Office में खोलो',
-    intgStep2Note: 'chatoffice कमांड लाइन असिस्टेंट खुद चलाता है; आपको कभी टाइप नहीं करना पड़ता।',
+    intgStep2Note: 'chaoffice कमांड लाइन असिस्टेंट खुद चलाता है; आपको कभी टाइप नहीं करना पड़ता।',
     intgCliPartTitle: 'CLI · कमांड लाइन + skill',
     intgCliPartDesc:
-      'उन सहायकों के लिए जो टर्मिनल कमांड चला सकते हैं (Claude Code, Codex, Cursor आदि)। skill इंस्टॉल होने के बाद सहायक फ़ाइलें बनाने, बदलने, पढ़ने और संपादित करने के लिए खुद chatoffice कमांड लाइन चलाता है; आपको कोई कमांड टाइप नहीं करना पड़ता।',
+      'उन सहायकों के लिए जो टर्मिनल कमांड चला सकते हैं (Claude Code, Codex, Cursor आदि)। skill इंस्टॉल होने के बाद सहायक फ़ाइलें बनाने, बदलने, पढ़ने और संपादित करने के लिए खुद chaoffice कमांड लाइन चलाता है; आपको कोई कमांड टाइप नहीं करना पड़ता।',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP वह साझा प्रोटोकॉल है जिससे AI सहायक बाहरी टूल बुलाते हैं। इसे तब चुनें जब सहायक कमांड न चला सके (जैसे Claude Desktop) या आप चाहें कि वह ChaAI Office की विंडो को सीधे चलाए। नीचे दिए दो तरीकों में से कोई एक चुनें।',
     intgMcpStdioTitle: 'सहायक द्वारा शुरू (अनुशंसित)',
     intgMcpStdioDesc:
-      'सहायक खुद chatoffice mcp चलाता है: यहाँ कुछ चालू करने की ज़रूरत नहीं, और ChaAI Office खुला होना भी ज़रूरी नहीं। सुविधाएँ CLI जैसी ही।',
+      'सहायक खुद chaoffice mcp चलाता है: यहाँ कुछ चालू करने की ज़रूरत नहीं, और ChaAI Office खुला होना भी ज़रूरी नहीं। सुविधाएँ CLI जैसी ही।',
     intgMcpHttpTitle: 'स्थानीय HTTP सर्वर',
     intgMcpHttpDesc:
       'ChaAI Office के अंदर चलता है; सहायक URL से जुड़ता है और आप Word संपादक में दस्तावेज़ को चरण-दर-चरण बनते देख सकते हैं। ChaAI Office खुला रहना चाहिए; अभी केवल Word दस्तावेज़।',
@@ -9597,10 +9597,10 @@ const upstreamStrings = {
       'इसे उसकी MCP सर्वर सेटिंग्स में जोड़ें (एक JSON फ़ाइल, या सेटिंग्स में "MCP सर्वर जोड़ें"):',
     intgMcpNote:
       'स्किल और MCP एक साथ सेट किए जा सकते हैं; असिस्टेंट एक को चुन लेता है। दोनों बिल्कुल एक जैसे काम करते हैं।',
-    intgCliTitle: 'उन्नत: chatoffice कमांड लाइन',
-    intgCliReady: 'chatoffice {v} · टर्मिनल में तैयार ({path})',
+    intgCliTitle: 'उन्नत: chaoffice कमांड लाइन',
+    intgCliReady: 'chaoffice {v} · टर्मिनल में तैयार ({path})',
     intgCliNotOnPath:
-      'chatoffice {v} · टर्मिनल के PATH में नहीं है। असिस्टेंट इसे ~/.chatoffice/launcher से फिर भी ढूँढ लेते हैं, इसलिए skill काम करता है। खुद chatoffice टाइप करने के लिए यह एक बार चलाएँ:',
+      'chaoffice {v} · टर्मिनल के PATH में नहीं है। असिस्टेंट इसे ~/.chaoffice/launcher से फिर भी ढूँढ लेते हैं, इसलिए skill काम करता है। खुद chaoffice टाइप करने के लिए यह एक बार चलाएँ:',
     intgCliLauncher: 'लॉन्चर फ़ोल्डर',
     intgStateOutdated: 'इंस्टॉल {v}, {next} पर अपडेट उपलब्ध',
     intgStateModified: 'इंस्टॉल {v} (बदला गया)',
@@ -10048,16 +10048,16 @@ const upstreamStrings = {
     intgExample1: '把 ~/Downloads/report.md 轉成 Word 文件',
     intgExample2: '做一份 6 頁的簡報，介紹我們第三季的業績',
     intgExample3: '把 budget.xlsx 轉成 PDF，並在 察元AIOffice 中開啟',
-    intgStep2Note: '助理會自行呼叫 chatoffice 命令列，你不需要輸入任何指令。',
+    intgStep2Note: '助理會自行呼叫 chaoffice 命令列，你不需要輸入任何指令。',
     intgCliPartTitle: 'CLI · 命令列 + skill',
     intgCliPartDesc:
-      '適合能執行終端機指令的助理（Claude Code、Codex、Cursor 等）。安裝 skill 後，助理會自己呼叫 chatoffice 命令列建立、轉換、讀取和編輯檔案，你不需要輸入任何指令。',
+      '適合能執行終端機指令的助理（Claude Code、Codex、Cursor 等）。安裝 skill 後，助理會自己呼叫 chaoffice 命令列建立、轉換、讀取和編輯檔案，你不需要輸入任何指令。',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
       'MCP 是 AI 助理呼叫外部工具的通用協定。助理不能執行指令（如 Claude Desktop），或你想讓它直接操作 察元AIOffice 視窗時用這條路。下面兩種接法任選一種。',
     intgMcpStdioTitle: '由助理啟動（建議）',
     intgMcpStdioDesc:
-      '助理自己啟動 chatoffice mcp，不需要在這裡開任何開關，察元AIOffice 也不用開著。功能與 CLI 完全相同。',
+      '助理自己啟動 chaoffice mcp，不需要在這裡開任何開關，察元AIOffice 也不用開著。功能與 CLI 完全相同。',
     intgMcpHttpTitle: '本機 HTTP 服務',
     intgMcpHttpDesc:
       '在 察元AIOffice 內執行，助理透過網址連線，可以看著它在 Word 編輯器裡逐步產生。需要 察元AIOffice 保持開啟；目前只支援 Word。',
@@ -10069,10 +10069,10 @@ const upstreamStrings = {
     intgMcpOtherDesc:
       '把這段加進它的 MCP 伺服器設定（一個 JSON 檔，或設定裡的「新增 MCP 伺服器」）：',
     intgMcpNote: 'skill 和 MCP 可以同時存在，助理會自行選用；兩者做的事完全相同。',
-    intgCliTitle: '進階：命令列 chatoffice',
-    intgCliReady: 'chatoffice {v} · 已可在終端機直接使用（{path}）',
+    intgCliTitle: '進階：命令列 chaoffice',
+    intgCliReady: 'chaoffice {v} · 已可在終端機直接使用（{path}）',
     intgCliNotOnPath:
-      'chatoffice {v} · 尚未加入終端機 PATH。助理仍能透過 ~/.chatoffice/launcher 找到它，skill 不受影響。若想自己在終端機輸入 chatoffice，執行一次：',
+      'chaoffice {v} · 尚未加入終端機 PATH。助理仍能透過 ~/.chaoffice/launcher 找到它，skill 不受影響。若想自己在終端機輸入 chaoffice，執行一次：',
     intgCliLauncher: '啟動器資料夾',
     intgStateOutdated: '已安裝 {v}，可更新至 {next}',
     intgStateModified: '已安裝 {v}（已被修改）',

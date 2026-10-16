@@ -9,8 +9,8 @@ import {
   parseAddress,
   rangeCellCount,
   type RangeBounds,
-} from '@chatoffice/xlsx-gateway/domain/cell-address'
-import type { CellScalar } from '@chatoffice/xlsx-gateway/domain/workbook.types'
+} from '@chaoffice/xlsx-gateway/domain/cell-address'
+import type { CellScalar } from '@chaoffice/xlsx-gateway/domain/workbook.types'
 import { isSheetRemoved, journalEntriesInRange } from '../edit-journal'
 import { createRangeAggregator, type RangeAggregate } from './aggregate'
 import type { WorkbookReadContext } from './workbook-readers'

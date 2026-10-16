@@ -12,7 +12,7 @@ let logPath: string
 let logger: McpLogger
 
 beforeEach(async () => {
-  dir = await mkdtemp(join(tmpdir(), 'chatoffice-mcp-log-'))
+  dir = await mkdtemp(join(tmpdir(), 'chaoffice-mcp-log-'))
   logPath = join(dir, 'mcp-log.txt')
   logger = new McpLogger(logPath)
 })

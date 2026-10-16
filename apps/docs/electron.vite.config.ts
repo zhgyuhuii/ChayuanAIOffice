@@ -6,30 +6,30 @@ import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 // node_modules is a symlink into the main checkout, so bare specifiers would
 // silently bundle the other checkout's (possibly stale) code.
 const localAlias = {
-  '@chatoffice/docx-engine/lazy-media': resolve(
+  '@chaoffice/docx-engine/lazy-media': resolve(
     __dirname,
     '../../packages/docx-engine/src/lazy-media.ts',
   ),
-  '@chatoffice/docx-engine/zip-splice': resolve(
+  '@chaoffice/docx-engine/zip-splice': resolve(
     __dirname,
     '../../packages/docx-engine/src/zip-splice.ts',
   ),
-  '@chatoffice/docx-engine': resolve(__dirname, '../../packages/docx-engine/src/index.ts'),
+  '@chaoffice/docx-engine': resolve(__dirname, '../../packages/docx-engine/src/index.ts'),
 }
 
-// @chatoffice/* packages ship as raw TS source with extensionless imports, so
+// @chaoffice/* packages ship as raw TS source with extensionless imports, so
 // every one reachable from main/preload must be bundled — externalizing any of
 // them yields ERR_MODULE_NOT_FOUND under Node (same setup as apps/slides).
 const BUNDLED_WORKSPACE_DEPS = [
-  '@chatoffice/ai-host',
-  '@chatoffice/ai-provider',
-  '@chatoffice/ai-search',
-  '@chatoffice/electron-utils',
-  '@chatoffice/file-parse',
-  '@chatoffice/font-metrics',
-  '@chatoffice/i18n',
-  '@chatoffice/project-store',
-  '@chatoffice/storage-adapter',
+  '@chaoffice/ai-host',
+  '@chaoffice/ai-provider',
+  '@chaoffice/ai-search',
+  '@chaoffice/electron-utils',
+  '@chaoffice/file-parse',
+  '@chaoffice/font-metrics',
+  '@chaoffice/i18n',
+  '@chaoffice/project-store',
+  '@chaoffice/storage-adapter',
 ]
 
 export default defineConfig({
@@ -38,7 +38,7 @@ export default defineConfig({
   main: {
     plugins: [
       externalizeDepsPlugin({
-        exclude: ['@chatoffice/docx-engine', '@chatoffice/electron-utils', '@chatoffice/font-metrics'],
+        exclude: ['@chaoffice/docx-engine', '@chaoffice/electron-utils', '@chaoffice/font-metrics'],
       }),
     ],
     resolve: { alias: localAlias },
@@ -52,7 +52,7 @@ export default defineConfig({
     plugins: [react()],
     resolve: { alias: localAlias },
     server: {
-      // Overridable so multiple chatoffice dev instances can coexist (default 5173).
+      // Overridable so multiple chaoffice dev instances can coexist (default 5173).
       port: Number(process.env.DOCS_DEV_PORT) || 5173,
       strictPort: Boolean(process.env.DOCS_DEV_PORT),
     },

@@ -1,5 +1,5 @@
 /**
- * Interface scale (issue chatoffice#1913) — the user's "make the UI bigger" preference.
+ * Interface scale (issue chaoffice#1913) — the user's "make the UI bigger" preference.
  *
  * ## Why a CSS variable and not `webContents.setZoomFactor()`
  *

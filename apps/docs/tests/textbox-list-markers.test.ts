@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { Editor } from '@tiptap/core'
-import { parseDocx } from '@chatoffice/docx-engine'
+import { parseDocx } from '@chaoffice/docx-engine'
 import { buildDocx, TINY_PNG_BASE64 } from '../../../packages/docx-engine/tests/helpers/build-docx'
 import { blocksToPmDoc } from '../src/renderer/editor/convert'
 import { editorExtensions } from '../src/renderer/editor/extensions'

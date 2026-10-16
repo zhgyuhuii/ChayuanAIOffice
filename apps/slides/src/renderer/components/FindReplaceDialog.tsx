@@ -13,7 +13,7 @@ import type {
   RenderTextLayout,
   ShapeRenderNode,
   TableRenderNode,
-} from '@chatoffice/pptx-render'
+} from '@chaoffice/pptx-render'
 
 export interface FindMatch {
   slideIndex: number

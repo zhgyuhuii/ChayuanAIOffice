@@ -5,7 +5,7 @@
  */
 import JSZip from 'jszip'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { applyCellEditsToXlsx } from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
+import { applyCellEditsToXlsx } from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
 import { handleSave, type SaveContext } from '../src/renderer/save-actions'
 import { createEditJournal, recordSetRangeValues } from '../src/renderer/edit-journal'
 import { buildEditFixture } from './fixture-builder'

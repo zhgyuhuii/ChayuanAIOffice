@@ -1,4 +1,4 @@
-import type { AiPanelPrefs, AiPanelSide } from '@chatoffice/ui/ai-panel-prefs'
+import type { AiPanelPrefs, AiPanelSide } from '@chaoffice/ui/ai-panel-prefs'
 import {
   aiPanelFontPx,
   AiFontSize,
@@ -6,15 +6,15 @@ import {
   clampAiCustomFontSize,
   AI_CUSTOM_FONT_MIN_PX,
   AI_CUSTOM_FONT_MAX_PX,
-} from '@chatoffice/ui/ai-panel-prefs'
+} from '@chaoffice/ui/ai-panel-prefs'
 import { AUTHOR_NAME_MAX } from '../../shared/home-api'
 import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { ModelSettingsPage } from '@chatoffice/ui/ModelSettingsPage'
-import { CapabilitySettingsPage } from '@chatoffice/ui/CapabilitySettingsPage'
-import type { ModelSettingsBridge } from '@chatoffice/ui/ModelSettingsPage'
-import { ModelDefaultsPage } from '@chatoffice/ui/ModelDefaultsPage'
-import { Dropdown } from '@chatoffice/ui'
+import { ModelSettingsPage } from '@chaoffice/ui/ModelSettingsPage'
+import { CapabilitySettingsPage } from '@chaoffice/ui/CapabilitySettingsPage'
+import type { ModelSettingsBridge } from '@chaoffice/ui/ModelSettingsPage'
+import { ModelDefaultsPage } from '@chaoffice/ui/ModelDefaultsPage'
+import { Dropdown } from '@chaoffice/ui'
 import { useI18n } from './locale'
 import type { StringKey } from './locale'
 import type {
@@ -70,7 +70,7 @@ const THEME_OPTIONS = [
   { value: 'dark', labelKey: 'themeDark' },
 ] as const satisfies readonly { value: UiTheme; labelKey: StringKey }[]
 
-// Document page theme (chatoffice#1811): the canvas/paper preference the editors follow;
+// Document page theme (chaoffice#1811): the canvas/paper preference the editors follow;
 // 'follow' keeps the pre-existing behavior of riding the UI theme
 const DOC_THEME_OPTIONS = [
   { value: 'follow', labelKey: 'docThemeFollowApp' },
@@ -513,8 +513,8 @@ function windowChaOfficeBridge(): ModelSettingsBridge {
       // it. Codex needs main regardless (Node child_process for the CLI).
       return window.chaOffice.aiDiscoverModels(target)
     },
-    chatofficeStatus: (withEmail) => window.chaOffice.chatofficeStatus(withEmail),
-    chatofficeLogin: () => void window.chaOffice.chatofficeLogin(),
+    chaofficeStatus: (withEmail) => window.chaOffice.chaofficeStatus(withEmail),
+    chaofficeLogin: () => void window.chaOffice.chaofficeLogin(),
     localToolStatus: (vendorId) => window.chaOffice.aiLocalToolStatus(vendorId),
     localToolInstall: (vendorId, onLine) => window.chaOffice.aiLocalToolInstall(vendorId, onLine),
     localToolStart: (vendorId) => window.chaOffice.aiLocalToolStart(vendorId),

@@ -16,8 +16,8 @@ import type {
   ShapeRenderNode,
   PictureRenderNode,
   GlyphRun,
-} from '@chatoffice/pptx-render'
-import { patternGrid } from '@chatoffice/pptx-render'
+} from '@chaoffice/pptx-render'
+import { patternGrid } from '@chaoffice/pptx-render'
 import { classifyCjkScript } from '../shared/cjk-script'
 
 /**

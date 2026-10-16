@@ -28,36 +28,36 @@ import {
   setAiUserAgent,
   setRescueFetch,
   type AiRuntime,
-} from '@chatoffice/ai-provider'
-import { persistGeneratedImage, getSharedAiRuntime } from '@chatoffice/ai-host'
-import { registerMediaIpc, registerSharedAiIpc, registerSharedKbIpc } from '@chatoffice/ai-host'
-import { MAX_REMOTE_IMAGE_BYTES, fetchRemoteImage, readBodyCapped, writeJsonAtomic } from '@chatoffice/electron-utils'
-import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
+} from '@chaoffice/ai-provider'
+import { persistGeneratedImage, getSharedAiRuntime } from '@chaoffice/ai-host'
+import { registerMediaIpc, registerSharedAiIpc, registerSharedKbIpc } from '@chaoffice/ai-host'
+import { MAX_REMOTE_IMAGE_BYTES, fetchRemoteImage, readBodyCapped, writeJsonAtomic } from '@chaoffice/electron-utils'
+import { shutdownCodexAppServers } from '@chaoffice/ai-provider/codex-app-server'
 import {
   webSearch,
   imageSearch,
   readUrlContent,
-  ensureChatofficeLogin,
-  chatofficeApiKey,
-  chatofficeAnalyzeMedia,
-  chatofficeLoginInfo,
+  ensureChaofficeLogin,
+  chaofficeApiKey,
+  chaofficeAnalyzeMedia,
+  chaofficeLoginInfo,
   hasChaOfficeAuth,
-} from '@chatoffice/ai-search'
-import { addPicture, editPictureSrcRect, replacePictureBytes } from '@chatoffice/pptx-engine'
-import { matchesElementRef } from '@chatoffice/pptx-engine/identity'
+} from '@chaoffice/ai-search'
+import { addPicture, editPictureSrcRect, replacePictureBytes } from '@chaoffice/pptx-engine'
+import { matchesElementRef } from '@chaoffice/pptx-engine/identity'
 import { rasterImageExt } from './media-mime'
-import { coverCropFractions } from '@chatoffice/pipelines/slides/cover-crop'
+import { coverCropFractions } from '@chaoffice/pipelines/slides/cover-crop'
 import type { AiRunFailure } from '../shared/ipc'
-import { EMU_PER_PX_96 } from '@chatoffice/pptx-render'
+import { EMU_PER_PX_96 } from '@chaoffice/pptx-render'
 import { tm } from './i18n-main'
 import { pushHistory, rebuildSlide, scheduleHistoryNotify, sessions } from './session-state'
 
-// ---- AI settings + streaming proxy (the main process does the networking to avoid renderer CORS; implementation shared via @chatoffice/ai-provider) ----
+// ---- AI settings + streaming proxy (the main process does the networking to avoid renderer CORS; implementation shared via @chaoffice/ai-provider) ----
 
 const AI_SETTINGS_PATH = () => join(app.getPath('userData'), 'ai-settings.json')
 
 /** ChaOffice cloud backend removed — always false */
-function chatofficeCloudToolsOn(): boolean {
+function chaofficeCloudToolsOn(): boolean {
   return false
 }
 
@@ -155,17 +155,17 @@ function resolveDshHome(): string | undefined {
         }
       },
     },
-    chatoffice: {
-      apiKey: () => chatofficeApiKey(),
+    chaoffice: {
+      apiKey: () => chaofficeApiKey(),
       hasAuth: () => hasChaOfficeAuth(),
       status: async (withEmail) => {
         if (!hasChaOfficeAuth()) return { loggedIn: false }
         if (!withEmail) return { loggedIn: true }
-        const info = await chatofficeLoginInfo()
+        const info = await chaofficeLoginInfo()
         return info?.email ? { loggedIn: true, email: info.email } : { loggedIn: true }
       },
     },
-    chatofficeLogin: () => ensureChatofficeLogin((url) => void shell.openExternal(url)),
+    chaofficeLogin: () => ensureChaofficeLogin((url) => void shell.openExternal(url)),
     translate: (key, params) =>
       tm(key as Parameters<typeof tm>[0], params as Parameters<typeof tm>[1]),
     videoTasks: {
@@ -197,7 +197,7 @@ function resolveDshHome(): string | undefined {
       return await webSearch(
         String(query),
         typeof maxResults === 'number' ? maxResults : 6,
-        chatofficeCloudToolsOn(),
+        chaofficeCloudToolsOn(),
       )
     } catch (err) {
       return { results: [], method: 'error', error: String(err) }
@@ -209,7 +209,7 @@ function resolveDshHome(): string | undefined {
       return await imageSearch(
         String(query),
         typeof maxResults === 'number' ? maxResults : 8,
-        chatofficeCloudToolsOn(),
+        chaofficeCloudToolsOn(),
       )
     } catch (err) {
       return { images: [], method: 'error', error: String(err) }
@@ -336,7 +336,7 @@ export function registerSlidesOnlyAiIpc(): void {
     },
   )
 
-  // BYOK image generation only — the chatoffice cloud fallback was removed
+  // BYOK image generation only — the chaoffice cloud fallback was removed
   // (the cloud backend belongs to the upstream project, not this build).
   ipcMain.handle(
     'ai:generate-image',
@@ -414,13 +414,13 @@ export function registerSlidesOnlyAiIpc(): void {
           )
           if (text.trim()) return { text }
         } catch {
-          // fall through to the chatoffice backend below
+          // fall through to the chaoffice backend below
         }
       }
       if (!hasChaOfficeAuth()) return { error: tm('errChaOfficeCli') }
-      if (!chatofficeCloudToolsOn()) return { error: tm('errChaOfficeToolsOff') }
+      if (!chaofficeCloudToolsOn()) return { error: tm('errChaOfficeToolsOff') }
       try {
-        const text = await chatofficeAnalyzeMedia({ mediaUrls, requirements })
+        const text = await chaofficeAnalyzeMedia({ mediaUrls, requirements })
         return { text }
       } catch (err) {
         return { error: err instanceof Error ? err.message : String(err) }

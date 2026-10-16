@@ -1,5 +1,5 @@
 {
-  "name": "@chatoffice/odf2ooxml",
+  "name": "@chaoffice/odf2ooxml",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -14,8 +14,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@chatoffice/docx-engine": "*",
-    "@chatoffice/pptx-engine": "*",
+    "@chaoffice/docx-engine": "*",
+    "@chaoffice/pptx-engine": "*",
     "fast-xml-parser": "^5.3.4",
     "jszip": "^3.10.1"
   },

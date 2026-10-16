@@ -35,7 +35,7 @@ export interface McpRuntimeDeps {
   slidesControl?: SlidesControl
   /** drive a visible sheets grid (renderer workbook session); absent in headless runs */
   sheetsControl?: SheetsControl
-  /** the bundled chatoffice CLI, backing the headless create/read tools; absent when unavailable */
+  /** the bundled chaoffice CLI, backing the headless create/read tools; absent when unavailable */
   cliRunner?: CliRunner
   /**
    * documents the user has open (list/read/close); absent in headless runs,

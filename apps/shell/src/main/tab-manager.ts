@@ -48,7 +48,7 @@ import {
   slidesIsDirty,
 } from '../../../slides/src/main/slides-main'
 import type { DockEditorOptions, DockKind, DockRect, DockTabSummary } from '../shared/dock-api'
-import { rendererUrl, safeExternalUrl } from '@chatoffice/electron-utils'
+import { rendererUrl, safeExternalUrl } from '@chaoffice/electron-utils'
 import type { DocumentTabKind, OpenDocumentTab, TabKind, TabSummary } from '../shared/tabs-api'
 import { isSettledRect, tabStripHeight } from '../shared/tab-drag-geometry'
 /** a tab lifted out of the strip with its live view: what "Open in New Window",
@@ -132,7 +132,7 @@ export class TabManager {
     /** localized placeholder title for a tab that has no file yet */
     private readonly untitledTitleFor?: (kind: TabKind) => string,
     /**
-     * The live interface scale (chatoffice#1913). A getter rather than a value so a change
+     * The live interface scale (chaoffice#1913). A getter rather than a value so a change
      * made from the View menu reaches the next layout without rebuilding this.
      */
     private readonly uiScale: () => number = () => 1,
@@ -141,9 +141,9 @@ export class TabManager {
     // then once more on the next tick. On Linux/X11, `resize` fires before the
     // window manager applies the new size, so getContentBounds() is still the
     // pre-maximize size inside the handler and a follow-up layout is required.
-    // See https://github.com/genspark-ai/chatoffice/issues/15
+    // See https://github.com/genspark-ai/chaoffice/issues/15
     shellWindow.on('resize', () => {
-      if (process.env.CHATOFFICE_MENU_DEBUG) console.log('[layout-debug] resize event')
+      if (process.env.CHAOFFICE_MENU_DEBUG) console.log('[layout-debug] resize event')
       this.layout()
       setImmediate(() => this.layout())
     })
@@ -329,7 +329,7 @@ export class TabManager {
     // mounted-view sweep below still runs.
     if (!this.tabs.some((t) => t.id === this.activeId)) this.activeId = HOME_ID
     const active = this.tabs.find((t) => t.id === this.activeId)
-    if (process.env.CHATOFFICE_MENU_DEBUG) {
+    if (process.env.CHAOFFICE_MENU_DEBUG) {
       console.log(
         '[layout-debug] layout active=',
         active?.title ?? '(none)',
@@ -633,7 +633,7 @@ export class TabManager {
     return id
   }
 
-  /** The in-app user manual (chatoffice#1520): a closable tab showing the shell
+  /** The in-app user manual (chaoffice#1520): a closable tab showing the shell
       renderer's help mode — the same bundle, branched on ?mode=help, so no
       second renderer build is needed. */
   openHelpTab(): string {

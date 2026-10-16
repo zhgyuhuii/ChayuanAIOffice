@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState, lazy, Suspense } from 'react'
 import { createHtmlMediaSkill } from './media-skill'
 import type { ReactElement, ReactNode } from 'react'
-import { AgentLoop, composeSkills } from '@chatoffice/agent-core'
-import type { AgentImage } from '@chatoffice/agent-core'
-import type { AiSettingsV2 } from '@chatoffice/ai-provider'
-import { defaultSettingsV2 } from '@chatoffice/ai-provider/browser'
+import { AgentLoop, composeSkills } from '@chaoffice/agent-core'
+import type { AgentImage } from '@chaoffice/agent-core'
+import type { AiSettingsV2 } from '@chaoffice/ai-provider'
+import { defaultSettingsV2 } from '@chaoffice/ai-provider/browser'
 import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
 import type { AttachmentAddResult, AttachmentMeta } from '../../shared/ipc'
 import {
@@ -34,11 +34,11 @@ import {
   type AiTokenUsageView,
   type DockChrome,
   type KbCitation,
-} from '@chatoffice/ui'
+} from '@chaoffice/ui'
 import { aiLangDirective, t as tGlobal, useI18n, type StringKey } from '../i18n/locale'
 import { htmlModelBridge } from './model-bridge'
 import { AssistantTab } from './AssistantTab'
-import { AssistantLibraryBrowser } from '@chatoffice/ui/assistant-library'
+import { AssistantLibraryBrowser } from '@chaoffice/ui/assistant-library'
 import { IconPalette, IconSummarize, IconWand } from '../components/icons'
 import attachIcon from '../assets/attach-icon.png'
 import fileDocumentIcon from '../assets/file-document.png'
@@ -84,7 +84,7 @@ import { buildProjection } from './redact'
 
 // 惰性加载:模型设置页(含厂商 logo 组)只在打开时拉取,不进启动图
 const ModelSettingsPage = lazy(() =>
-  import('@chatoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
+  import('@chaoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
 )
 
 /** [chip label, composer prefill]: blank page → design something new; page with content → rework it */

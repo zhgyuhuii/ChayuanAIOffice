@@ -20,8 +20,8 @@
  */
 import { useEffect, useRef, useState } from 'react'
 import type { Editor } from '@tiptap/core'
-import type { Block } from '@chatoffice/docx-engine'
-import { AgentLoop, composeSkills, streamText, type AgentImage, type AgentTransport } from '@chatoffice/agent-core'
+import type { Block } from '@chaoffice/docx-engine'
+import { AgentLoop, composeSkills, streamText, type AgentImage, type AgentTransport } from '@chaoffice/agent-core'
 import type { AiSettingsV2, AttachmentAddResult, AttachmentMeta } from '../../shared/ipc'
 import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
 import type { PmNode } from '../editor/convert'
@@ -52,10 +52,10 @@ import {
   AI_CONTINUE_INSTRUCTION,
   type AiScopeQuoteData,
   type KbCitation,
-} from '@chatoffice/ui'
+} from '@chaoffice/ui'
 import { redactTextBetween, type RedactableNode } from './redact-view'
 import { MindMapCard } from './MindMapCard'
-import { enabledChatModels } from '@chatoffice/ai-provider/browser'
+import { enabledChatModels } from '@chaoffice/ai-provider/browser'
 import { AI_REVISION_AUTHOR } from './AiPanel'
 import { markDocSeen, type AiCommentsAccess, type AiDocExtras, type AiHeaderFooterAccess } from './tools'
 import type { AiPageSetupAccess } from './page-setup'
@@ -350,9 +350,9 @@ export function AiConversationBody({
     Array<{ name: string; summary: string; isError?: boolean; input?: string; output?: string }>
   >([])
   /** R24 上游 #1944 织入: tokens billed so far in the in-flight run (summed across turns) */
-  const runUsageRef = useRef<import('@chatoffice/ui').AiTokenUsageView | undefined>(undefined)
+  const runUsageRef = useRef<import('@chaoffice/ui').AiTokenUsageView | undefined>(undefined)
   /** tokens billed across this conversation's session (the composer chip) */
-  const [sessionUsage, setSessionUsage] = useState<import('@chatoffice/ui').AiTokenUsageView | undefined>(undefined)
+  const [sessionUsage, setSessionUsage] = useState<import('@chaoffice/ui').AiTokenUsageView | undefined>(undefined)
   /** the loop's streamed text so far — the interrupted persist keeps this half turn (D10) */
   const halfTextRef = useRef('')
 

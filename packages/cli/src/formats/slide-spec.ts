@@ -14,16 +14,16 @@ import {
   type DeckPageIssue,
   type OutlineIssue,
   type PageSpec,
-} from '@chatoffice/pipelines/slides'
+} from '@chaoffice/pipelines/slides'
 import {
   deleteSlide,
   mergeSlideFromPptx,
   moveSlide,
   promoteSlideBackground,
   type OpenedPptx,
-} from '@chatoffice/pptx-engine'
-import { HeuristicMetrics } from '@chatoffice/pptx-render'
-import { extract } from '@chatoffice/pdf2docx'
+} from '@chaoffice/pptx-engine'
+import { HeuristicMetrics } from '@chaoffice/pptx-render'
+import { extract } from '@chaoffice/pdf2docx'
 import { assertAllowed, type PathContext } from '../fs'
 import { CliError, EXIT, type ErrorHints } from '../result'
 
@@ -164,7 +164,7 @@ export function stageContext(
   if (outlineFile) out.outline = { file: outlineFile, outline: readOutline(outlineFile) }
   else {
     out.notes.push(
-      'no outline.json beside the page files or one folder up: the staged flow writes deck/outline.json first and checks every page against it (chatoffice guide slides design)',
+      'no outline.json beside the page files or one folder up: the staged flow writes deck/outline.json first and checks every page against it (chaoffice guide slides design)',
     )
   }
   if (found.style) {

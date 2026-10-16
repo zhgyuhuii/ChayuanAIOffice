@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { Editor } from '@tiptap/core'
-import type { Run } from '@chatoffice/docx-engine'
+import type { Run } from '@chaoffice/docx-engine'
 import type { Node as ProseNode } from '@tiptap/pm/model'
 import JSZip from 'jszip'
-import { parseDocx, saveDocx } from '@chatoffice/docx-engine'
+import { parseDocx, saveDocx } from '@chaoffice/docx-engine'
 import { buildDocx } from '../../../packages/docx-engine/tests/helpers/build-docx'
 import { editorExtensions } from '../src/renderer/editor/extensions'
 import {

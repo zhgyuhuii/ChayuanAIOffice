@@ -21,8 +21,8 @@ import type {
   GroupRenderNode,
   ArrowEndRender,
   RenderReflection,
-} from '@chatoffice/pptx-render'
-import { extrusionFrontFace } from '@chatoffice/pptx-render'
+} from '@chaoffice/pptx-render'
+import { extrusionFrontFace } from '@chaoffice/pptx-render'
 import {
   featheredImage,
   featheredShapeCanvas,

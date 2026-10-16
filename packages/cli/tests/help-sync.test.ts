@@ -5,10 +5,10 @@ import { defaultRegistry, runCli } from '../src/cli'
 import { commandHelp } from '../src/registry'
 
 // Help/registry/README/skill sync: every command and option in the registry must
-// surface in `chatoffice help`, in the CLI README examples and in the chaoffice
+// surface in `chaoffice help`, in the CLI README examples and in the chaoffice
 // agent skill, so adding a flag without documenting it fails loudly instead of
 // drifting. Fast and deterministic: in-process runCli plus file reads only.
-// adapted: 0c9656c9 local CLI bin name is chatoffice and the agent skill lives at
+// adapted: 0c9656c9 local CLI bin name is chaoffice and the agent skill lives at
 // skills/chaoffice/SKILL.md (upstream expects genoffice paths).
 
 const REPO = resolve(__dirname, '../../..')
@@ -59,7 +59,7 @@ async function helpFor(argv: string[]): Promise<string> {
 /**
  * Host-only commands the agent skill legitimately omits: `install-cli` puts the
  * launcher on the PATH and `mcp` serves MCP clients; neither is a document
- * workflow an agent reads the skill for. Both must stay in `chatoffice help` and
+ * workflow an agent reads the skill for. Both must stay in `chaoffice help` and
  * the CLI README. Enforced in both directions below, so extending the skill (or
  * dropping a command) fails loudly instead of silently changing coverage.
  */
@@ -70,7 +70,7 @@ const SKILL_COMMAND_OMISSIONS = new Map([
 
 /**
  * Flags the README example fences legitimately omit: the fences show one common
- * invocation per command while `chatoffice help <command>` is the complete
+ * invocation per command while `chaoffice help <command>` is the complete
  * reference. Enforced exactly like the skill omissions: a new flag must gain a
  * fence example or be added here deliberately, and removing a flag without
  * updating this set fails.
@@ -124,15 +124,15 @@ describe('cli help/registry/readme/skill sync', () => {
     }
   })
 
-  it('lists every registry command and global flag in chatoffice help', async () => {
+  it('lists every registry command and global flag in chaoffice help', async () => {
     const global = norm(await helpFor(['help']))
     const names = defaultRegistry()
       .list()
       .map((d) => d.name)
     const missing = names.filter((n) => !global.includes(n))
-    expect(missing, `chatoffice help is missing commands: ${missing.join(', ')}`).toEqual([])
+    expect(missing, `chaoffice help is missing commands: ${missing.join(', ')}`).toEqual([])
     for (const flag of ['--json', '--help', '--version']) {
-      expect(global.includes(flag), `chatoffice help is missing global flag ${flag}`).toBe(true)
+      expect(global.includes(flag), `chaoffice help is missing global flag ${flag}`).toBe(true)
     }
   })
 
@@ -141,7 +141,7 @@ describe('cli help/registry/readme/skill sync', () => {
     for (const def of defaultRegistry().list()) {
       const built = norm(commandHelp(def))
       const shown = norm(await helpFor(['help', def.name]))
-      if (!shown.includes(norm(`usage: chatoffice ${def.usage}`))) {
+      if (!shown.includes(norm(`usage: chaoffice ${def.usage}`))) {
         gaps.push(`${def.name}: 'help ${def.name}' omits its usage line`)
       }
       for (const opt of def.options ?? []) {
@@ -159,8 +159,8 @@ describe('cli help/registry/readme/skill sync', () => {
     const names = defaultRegistry()
       .list()
       .map((d) => d.name)
-    const missingFile = names.filter((n) => !body.includes(norm(`chatoffice ${n}`)))
-    const missingFence = names.filter((n) => !fence.includes(norm(`chatoffice ${n}`)))
+    const missingFile = names.filter((n) => !body.includes(norm(`chaoffice ${n}`)))
+    const missingFence = names.filter((n) => !fence.includes(norm(`chaoffice ${n}`)))
     expect(missingFile, `packages/cli/README.md never mentions: ${missingFile.join(', ')}`).toEqual(
       [],
     )

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   applyHyperlinkEdits,
   ensureRelationshipNamespace,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-hyperlinks'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-hyperlinks'
 
 const WORKSHEET =
   '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"' +

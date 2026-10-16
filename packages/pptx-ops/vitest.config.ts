@@ -9,14 +9,14 @@ export default defineConfig({
     alias: {
       // Resolve sibling sources by path (not via node_modules) so a worktree
       // whose node_modules is linked to another checkout still tests local edits.
-      '@chatoffice/pptx-engine/table-grid': resolve(here, '../pptx-engine/src/table-grid.ts'),
-      '@chatoffice/pptx-engine/identity': resolve(here, '../pptx-engine/src/identity.ts'),
-      '@chatoffice/pptx-engine/background-promote': resolve(
+      '@chaoffice/pptx-engine/table-grid': resolve(here, '../pptx-engine/src/table-grid.ts'),
+      '@chaoffice/pptx-engine/identity': resolve(here, '../pptx-engine/src/identity.ts'),
+      '@chaoffice/pptx-engine/background-promote': resolve(
         here,
         '../pptx-engine/src/background-promote.ts',
       ),
-      '@chatoffice/pptx-engine': resolve(here, '../pptx-engine/src/index.ts'),
-      '@chatoffice/docx-engine/math': resolve(here, '../docx-engine/src/math.ts'),
+      '@chaoffice/pptx-engine': resolve(here, '../pptx-engine/src/index.ts'),
+      '@chaoffice/docx-engine/math': resolve(here, '../docx-engine/src/math.ts'),
     },
   },
   test: {

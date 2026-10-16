@@ -60,7 +60,7 @@ if (stale.length) {
   console.log(`Rebuilding stale preloads: ${stale.join(', ')}`)
   const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm'
   for (const app of stale) {
-    const r = spawnSync(npm, ['run', 'build', '-w', `@chatoffice/${app}`], {
+    const r = spawnSync(npm, ['run', 'build', '-w', `@chaoffice/${app}`], {
       stdio: 'inherit',
       shell: process.platform === 'win32', // .cmd shims need a shell on Windows
     })

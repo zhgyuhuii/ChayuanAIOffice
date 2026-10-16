@@ -7,8 +7,8 @@
  * the UI can grey them with an explanation instead of breaking.
  */
 
-import { degradeInfo } from '@chatoffice/web-bridge'
-import { installKbFetchBridge } from '@chatoffice/web-bridge'
+import { degradeInfo } from '@chaoffice/web-bridge'
+import { installKbFetchBridge } from '@chaoffice/web-bridge'
 import { tabManager, type TabKind } from './tab-manager.js'
 import { dockHost } from './dock.js'
 import {
@@ -83,17 +83,17 @@ function page(
 // ── language / theme / onboarding (localStorage) ────────────────────────────
 
 const LS = {
-  lang: 'chatoffice.lang',
-  theme: 'chatoffice.theme',
-  onboard: 'chatoffice.onboarding-seen',
+  lang: 'chaoffice.lang',
+  theme: 'chaoffice.theme',
+  onboard: 'chaoffice.onboarding-seen',
 }
 const themeListeners = new Set<(t: string) => void>()
 const langListeners = new Set<(l: string) => void>()
 
 // home chat stream fan-out (see aiStream in installShellShims)
-const CHAT_SESSIONS_KEY = 'chatoffice.home-chat-sessions'
+const CHAT_SESSIONS_KEY = 'chaoffice.home-chat-sessions'
 // AI endpoints are root-relative in the plain web form, but the dsh plugin
-// form serves this host under /chatoffice-app/ — derive the prefix from the
+// form serves this host under /chaoffice-app/ — derive the prefix from the
 // document URL so both forms hit the BFF through the same origin.
 const aiUrl = (path: string): string => `${new URL('./', document.baseURI).pathname}${path}`
 
@@ -339,7 +339,7 @@ export function installShellShims(): void {
       return true // finishOnboarding only closes the dialog on a truthy return
     },
     getAppVersion: async () =>
-      (window as unknown as { CHATOFFICE_VERSION?: string }).CHATOFFICE_VERSION ?? '0.1.0',
+      (window as unknown as { CHAOFFICE_VERSION?: string }).CHAOFFICE_VERSION ?? '0.1.0',
 
     // ── file management: batch 2 ──
     renameFile: async () => degraded('chaOffice.renameFile'),
@@ -477,8 +477,8 @@ export function installShellShims(): void {
     chatSessionsSave: async (sessions: unknown) => {
       localStorage.setItem(CHAT_SESSIONS_KEY, JSON.stringify(sessions))
     },
-    chatofficeStatus: async () => ({ loggedIn: false }),
-    chatofficeLogin: async () => undefined,
+    chaofficeStatus: async () => ({ loggedIn: false }),
+    chaofficeLogin: async () => undefined,
     getDefaultSaveDir: async () => null,
     pickDefaultSaveDir: async () => degraded('chaOffice.pickDefaultSaveDir'),
     getAnalyticsEnabled: async () => false,

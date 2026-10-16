@@ -21,12 +21,12 @@ import {
   type TableMergeOp,
   type TableStructureOp,
   type TableStyleEdit,
-} from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
 import {
   BUILTIN_TABLE_STYLES,
   editTableStyle,
   resolveBuiltinTableStyleId,
-} from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
 import type { EditParagraph } from '../types'
 import { applyEditParagraphs, collectParagraphFormatPatches } from '../edit-text'
 import { GuidedError, register, resolveElement, type Op, type OpRecord } from './registry'

@@ -14,7 +14,7 @@ import {
   type HeaderFooter,
   type HfParagraph,
   type Run,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { dropActiveSubEditor, notifySubEditorState, setActiveSubEditor } from './active-editor'
 import { inlineToRuns, runsToInline, type PmNode } from './convert'
 import { TextboxParagraph, textboxSubExtensions } from './extensions'

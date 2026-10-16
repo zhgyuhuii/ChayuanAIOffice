@@ -10,7 +10,7 @@ import {
   updateSlideEchart,
   slideEchartPartOf,
   type EchartSidecar,
-} from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
 import {
   GuidedError,
   register,

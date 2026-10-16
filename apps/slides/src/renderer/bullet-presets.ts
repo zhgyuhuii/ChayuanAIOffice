@@ -1,4 +1,4 @@
-import { formatAutoNum } from '@chatoffice/pptx-render'
+import { formatAutoNum } from '@chaoffice/pptx-render'
 
 /**
  * PowerPoint's Bullets gallery (WPS ships the same seven). Each preset is the font + code

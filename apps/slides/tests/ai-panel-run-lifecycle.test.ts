@@ -18,9 +18,9 @@ const agentHarness = vi.hoisted(() => ({
   restore: vi.fn(),
 }))
 
-vi.mock('@chatoffice/agent-core', async () => {
+vi.mock('@chaoffice/agent-core', async () => {
   const actual =
-    await vi.importActual<typeof import('@chatoffice/agent-core')>('@chatoffice/agent-core')
+    await vi.importActual<typeof import('@chaoffice/agent-core')>('@chaoffice/agent-core')
   return {
     ...actual,
     AgentLoop: class MockAgentLoop {
@@ -72,7 +72,7 @@ vi.mock('react-konva', () => {
 import { AiPanel } from '../src/renderer/ai/AiPanel'
 import { type AttachmentMeta } from '../src/shared/ipc'
 // adapted: 360ce06 — the panel takes the local AiSettingsV2 shape
-import { defaultSettingsV2, type AiSettingsV2 } from '@chatoffice/ai-provider'
+import { defaultSettingsV2, type AiSettingsV2 } from '@chaoffice/ai-provider'
 
 const settings: AiSettingsV2 = defaultSettingsV2()
 
@@ -289,7 +289,7 @@ describe('AiPanel agent run lifecycle (slides)', () => {
     )
   })
 
-  it('offers the sign-in CTA only for chatoffice auth errors, never for generic run failures', async () => {
+  it('offers the sign-in CTA only for chaoffice auth errors, never for generic run failures', async () => {
     // signed out: the old code stamped the login button onto ANY error
     Object.defineProperty(window, 'slidesApi', {
       configurable: true,
@@ -317,7 +317,7 @@ describe('AiPanel agent run lifecycle (slides)', () => {
     await flushEffects()
     expect(container.querySelector('.ai-login-btn')).toBeNull()
 
-    // a chatoffice sign-in failure would be the CTA's home — but the login
+    // a chaoffice sign-in failure would be the CTA's home — but the login
     // feature is not built yet (USER_LOGIN_READY=false), so the button is
     // suppressed everywhere until it ships
     act(() => {

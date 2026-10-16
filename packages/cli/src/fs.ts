@@ -34,7 +34,7 @@ export interface PathContext {
 }
 
 /**
- * GENOFFICE_ALLOWED_ROOTS: PATH-style list of directories chatoffice may read from and
+ * GENOFFICE_ALLOWED_ROOTS: PATH-style list of directories chaoffice may read from and
  * write to. Unset means unrestricted. Roots are compared after resolving
  * symlinks so a link inside a root cannot point out of it.
  */

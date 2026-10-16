@@ -1,5 +1,5 @@
 /**
- * 内嵌图表工作簿(P3 标准引擎收割):与 @chatoffice/docx-engine 的
+ * 内嵌图表工作簿(P3 标准引擎收割):与 @chaoffice/docx-engine 的
  * buildChartWorkbookXlsxBase64 同源复刻——PowerPoint/WPS 打开图表
  * "编辑数据"时解包此 xlsx。数据引用形状(Sheet1!$B$1 等)与 chart XML 的
  * strCache/numCache cx:f 保持一致。

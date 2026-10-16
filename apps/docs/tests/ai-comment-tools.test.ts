@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { Editor } from '@tiptap/core'
-import type { CommentInfo } from '@chatoffice/docx-engine'
+import type { CommentInfo } from '@chaoffice/docx-engine'
 import { editorExtensions } from '../src/renderer/editor/extensions'
 import {
   addCommentToSelection,

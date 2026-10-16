@@ -1,4 +1,4 @@
-import { createMediaSkill, type AgentSkill, type MediaSkillBridge } from '@chatoffice/agent-core'
+import { createMediaSkill, type AgentSkill, type MediaSkillBridge } from '@chaoffice/agent-core'
 
 /**
  * This app's media-model skill: generate_video / analyze_media /

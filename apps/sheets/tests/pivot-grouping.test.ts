@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
-import { groupValue } from '@chatoffice/xlsx-gateway/domain/pivot-grouping'
+import { groupValue } from '@chaoffice/xlsx-gateway/domain/pivot-grouping'
 import {
   growPivotDefinition,
   recomputePivotData,
-} from '@chatoffice/xlsx-gateway/domain/pivot-engine'
-import { parsePivotDefinition } from '@chatoffice/xlsx-gateway/gateway/xlsx-pivot'
+} from '@chaoffice/xlsx-gateway/domain/pivot-engine'
+import { parsePivotDefinition } from '@chaoffice/xlsx-gateway/gateway/xlsx-pivot'
 
 describe('groupValue', () => {
   it('groups dates by year / quarter / month from ISO strings', () => {
@@ -69,7 +69,7 @@ const GROUPED_PIVOT_XML =
   '<rowItems count="3"><i><x/></i><i><x v="1"/></i><i t="grand"><x/></i></rowItems>' +
   '<colItems count="1"><i/></colItems>' +
   '<dataFields count="1"><dataField name="Sum of Amount" fld="1"/></dataFields>' +
-  '<extLst><ext uri="{AIO-PIVOT-GROUPINGS}" xmlns:aio="urn:chatoffice:pivot">' +
+  '<extLst><ext uri="{AIO-PIVOT-GROUPINGS}" xmlns:aio="urn:chaoffice:pivot">' +
   '<aio:aioPivotGroupings v="[{&quot;fieldIndex&quot;:0,&quot;kind&quot;:&quot;date&quot;,&quot;dateUnit&quot;:&quot;month&quot;}]"/>' +
   '</ext></extLst>' +
   '</pivotTableDefinition>'

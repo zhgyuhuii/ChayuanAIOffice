@@ -1,5 +1,5 @@
 /**
- * @chatoffice/ribbon — editor-agnostic command registry + declarative ribbon
+ * @chaoffice/ribbon — editor-agnostic command registry + declarative ribbon
  * schema with desktop/mobile renderers. Host apps define their state snapshot
  * and services, register CommandDefinitions, describe menus as a RibbonSchema,
  * and let the renderers output platform-appropriate UI from the same data.

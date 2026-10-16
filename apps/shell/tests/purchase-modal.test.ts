@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 /**
  * Purchase dialog (renderer side of the scan-to-buy flow): opens on the
- * chatoffice-purchase-open event (what the scheduler and the toast funnel
+ * chaoffice-purchase-open event (what the scheduler and the toast funnel
  * into), renders a locally generated QR of the buy/share URL (qrcode lib is
  * mocked — jsdom has no canvas), offers open-in-browser + copy-link, shows
  * the machine fingerprint, runs the activate round trip through the preload

@@ -1,4 +1,4 @@
-import { latexToOmml, mathParagraphXml, mathTokensOf, ommlToMathML } from '@chatoffice/docx-engine'
+import { latexToOmml, mathParagraphXml, mathTokensOf, ommlToMathML } from '@chaoffice/docx-engine'
 import { t } from '../i18n/locale'
 import type { PmNode } from './convert'
 

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Dropdown } from '@chatoffice/ui'
+import { Dropdown } from '@chaoffice/ui'
 import { useI18n } from './i18n/locale'
 
 /// The Name Manager dialog, minimal: list, add, edit (name / refers-to), and

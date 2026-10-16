@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { formatAutoNum } from '@chatoffice/pptx-render/auto-num'
+import { formatAutoNum } from '@chaoffice/pptx-render/auto-num'
 import type { WorkbookVisualObject } from '../shared/desktop-api'
 import { shapePtLength } from './shape-text-scale'
 

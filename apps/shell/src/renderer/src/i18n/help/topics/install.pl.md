@@ -1,4 +1,4 @@
-# Instalacja ChatOffice
+# Instalacja ChaOffice
 
 Każda kompilacja jest publikowana na [stronie Releases](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest). Wszystkie pochodzą z `main`; instalatory dla macOS i Windows są podpisane.
 
@@ -18,32 +18,32 @@ Starsze wersje pozostają na stronie Releases.
 
 ## W systemie macOS
 
-Otwórz plik `.dmg` i przeciągnij **ChatOffice** do katalogu Aplikacje. W kompilacji Intel przy pierwszym uruchomieniu trzeba potwierdzić otwarcie: kliknij prawym przyciskiem aplikację w Aplikacjach ▸ Otwórz. To Gatekeeper reaguje na obraz dysku wyglądający na niepodpisany, a nie uszkodzone pobranie.
+Otwórz plik `.dmg` i przeciągnij **ChaOffice** do katalogu Aplikacje. W kompilacji Intel przy pierwszym uruchomieniu trzeba potwierdzić otwarcie: kliknij prawym przyciskiem aplikację w Aplikacjach ▸ Otwórz. To Gatekeeper reaguje na obraz dysku wyglądający na niepodpisany, a nie uszkodzone pobranie.
 
 ## W systemie Windows
 
-Uruchom instalator `.exe`. Umieszcza ChatOffice w menu Start i rejestruje `.docx`, `.xlsx`, `.pptx`, `.pdf` i podobne, więc dwuklik na plik go otwiera.
+Uruchom instalator `.exe`. Umieszcza ChaOffice w menu Start i rejestruje `.docx`, `.xlsx`, `.pptx`, `.pdf` i podobne, więc dwuklik na plik go otwiera.
 
 ## W systemie Linux
 
 **Debian / Ubuntu**
 
 ```sh
-sudo apt install ./chatoffice_<version>_amd64.deb
+sudo apt install ./chaoffice_<version>_amd64.deb
 ```
 
 **Fedora / RHEL / openSUSE**
 
 ```sh
-sudo dnf install ./chatoffice-<version>.x86_64.rpm     # Fedora / RHEL family
-sudo zypper install ./chatoffice-<version>.x86_64.rpm  # openSUSE
+sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
+sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
 
 **AppImage** — działa tam, gdzie leży, bez żadnego etapu instalacji:
 
 ```sh
-chmod +x ChatOffice-<version>.AppImage
-./ChatOffice-<version>.AppImage
+chmod +x ChaOffice-<version>.AppImage
+./ChaOffice-<version>.AppImage
 ```
 
 Wymaga środowiska uruchomieniowego FUSE 2. Jeśli wolisz go nie instalować, uruchom go z `--appimage-extract-and-run`, a sandbox zadziała z katalogu wypakowanego.
@@ -64,4 +64,4 @@ Wszystkie trzy opakowują opublikowane artefakty zamiast przebudowywać aplikacj
 
 ## Wiersz poleceń jest w zestawie
 
-Każda instalacja zawiera polecenie `chatoffice`, które komunikuje się z tymi samymi silnikami co okno, więc nigdy nie rozbieżą się w ocenie pliku. W systemach macOS i Windows znajduje się w pakiecie aplikacji; `chatoffice install-cli` umieszcza je w `PATH`. Co potrafi, dowiesz się w rozdziale **Wiersz poleceń i agenci**.
+Każda instalacja zawiera polecenie `chaoffice`, które komunikuje się z tymi samymi silnikami co okno, więc nigdy nie rozbieżą się w ocenie pliku. W systemach macOS i Windows znajduje się w pakiecie aplikacji; `chaoffice install-cli` umieszcza je w `PATH`. Co potrafi, dowiesz się w rozdziale **Wiersz poleceń i agenci**.

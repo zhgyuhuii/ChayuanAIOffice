@@ -1,4 +1,4 @@
-import { columnLabel } from '@chatoffice/xlsx-gateway/domain/cell-address'
+import { columnLabel } from '@chaoffice/xlsx-gateway/domain/cell-address'
 
 import type { WorkbookFile, WorkbookTableAdd, WorkbookTableEdit } from '../shared/desktop-api'
 import { expandContiguousRegion, type TableRegion } from './table-actions'

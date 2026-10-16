@@ -53,7 +53,7 @@ test.describe('docs table ribbon (Word layout)', () => {
   let docPath: string
 
   test.beforeEach(async () => {
-    dir = realpathSync(mkdtempSync(join(tmpdir(), 'chatoffice-e2e-table-ribbon-')))
+    dir = realpathSync(mkdtempSync(join(tmpdir(), 'chaoffice-e2e-table-ribbon-')))
     docPath = join(dir, 'grid.docx')
     writeFileSync(docPath, await minimalDocx())
   })

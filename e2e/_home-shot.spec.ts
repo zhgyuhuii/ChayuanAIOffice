@@ -25,7 +25,7 @@ async function minimalDocx(text: string): Promise<Buffer> {
 }
 
 test('capture new home screenshots', async () => {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'chatoffice-home-shot-')))
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'chaoffice-home-shot-')))
   mkdirSync(join(root, '项目资料', '2026 报告'), { recursive: true })
   mkdirSync(join(root, 'Clients', 'Contracts'), { recursive: true })
   writeFileSync(join(root, '项目资料', '读书笔记.md'), '# 读书笔记\n\n第一章。')

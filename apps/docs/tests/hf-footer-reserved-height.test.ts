@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { HfParagraph } from '@chatoffice/docx-engine'
+import type { HfParagraph } from '@chaoffice/docx-engine'
 import { hfReservedHeightPx, makeGapHfEl, hfStackedSpacingPx } from '../src/renderer/editor/hf-dom'
 import { estimateHfHeight } from '../src/renderer/line-metrics'
 

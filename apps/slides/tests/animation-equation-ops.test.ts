@@ -7,8 +7,8 @@ import {
   savePptx,
   type OpenedPptx,
   type TextElement,
-} from '@chatoffice/pptx-engine'
-import { listSlideAnimations, runTxn } from '@chatoffice/pptx-ops'
+} from '@chaoffice/pptx-engine'
+import { listSlideAnimations, runTxn } from '@chaoffice/pptx-ops'
 
 let opened: OpenedPptx
 let titleId: string

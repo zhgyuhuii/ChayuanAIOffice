@@ -1,13 +1,13 @@
 /**
- * Form ④ packaging: the chatoffice dsh plugin.
+ * Form ④ packaging: the chaoffice dsh plugin.
  *
  *   dsh-plugin/
  *     package.json / cordis.patch.yml   dsh 插件清单（client+host 两半）
- *     dist/host.js                      spawn/守护 BFF sidecar + /api/chatoffice/*
+ *     dist/host.js                      spawn/守护 BFF sidecar + /api/chaoffice/*
  *     dist/client.js                    registerDesktopApp（Dock 图标 + 窗口）
- *     vendor/chatoffice-sidecar          全离线 BFF（Node + SQLite/本地存储 + Web 包）
+ *     vendor/chaoffice-sidecar          全离线 BFF（Node + SQLite/本地存储 + Web 包）
  *
- * Archive: dist/chatoffice-<version>.tgz (不含 node_modules；sidecar 已含自身依赖)
+ * Archive: dist/chaoffice-<version>.tgz (不含 node_modules；sidecar 已含自身依赖)
  * Install: dsh plugin --profile web add -w <repo>/dsh-plugin
  */
 
@@ -29,9 +29,9 @@ function run(cmd, cwd = root, env = {}) {
 console.log('step 1: web bundle (host + editors)')
 run('npm run build:web')
 
-console.log('step 2: embedded sidecar -> dsh-plugin/vendor/chatoffice-sidecar')
+console.log('step 2: embedded sidecar -> dsh-plugin/vendor/chaoffice-sidecar')
 run('node scripts/package-embedded.mjs', root, {
-  EMBEDDED_OUT: join(pluginDir, 'vendor', 'chatoffice-sidecar'),
+  EMBEDDED_OUT: join(pluginDir, 'vendor', 'chaoffice-sidecar'),
 })
 
 console.log('step 3: plugin dist (esbuild host + client)')
@@ -40,8 +40,8 @@ run('npm run build', pluginDir)
 
 console.log('step 4: archive')
 // relative archive path: Windows bsdtar chokes on absolute drive paths here
-run(`tar -czf ../dist/chatoffice-${version}.tgz --exclude node_modules .`, pluginDir)
+run(`tar -czf ../dist/chaoffice-${version}.tgz --exclude node_modules .`, pluginDir)
 
 console.log(`\nplugin ready: ${pluginDir}`)
-console.log(`archive:      ${join(dist, `chatoffice-${version}.tgz`)}`)
+console.log(`archive:      ${join(dist, `chaoffice-${version}.tgz`)}`)
 console.log(`install:      dsh plugin --profile web add -w ${pluginDir}`)

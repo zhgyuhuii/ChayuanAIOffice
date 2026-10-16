@@ -128,7 +128,7 @@ export interface CjkPunctShrinkStorage {
 }
 
 /** dispatched on document after the doc-scoped <style> commits (App) */
-export const DOC_CSS_COMMITTED_EVENT = 'chatoffice:doc-css'
+export const DOC_CSS_COMMITTED_EVENT = 'chaoffice:doc-css'
 
 export function measuresAlignment(textAlign: string, legacyLayout: boolean): boolean {
   return textAlign === 'justify' || legacyLayout

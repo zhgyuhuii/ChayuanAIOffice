@@ -2,7 +2,7 @@ import { Extension } from '@tiptap/core'
 import type { Editor } from '@tiptap/core'
 import { NodeSelection, Plugin, PluginKey, TextSelection } from '@tiptap/pm/state'
 import type { EditorView } from '@tiptap/pm/view'
-import { installPopoverDismiss } from '@chatoffice/ui'
+import { installPopoverDismiss } from '@chaoffice/ui'
 import { t } from '../i18n/locale'
 import { moveSelectedBlocks, uiOp } from './ops'
 

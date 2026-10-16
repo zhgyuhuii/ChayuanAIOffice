@@ -1,6 +1,6 @@
-import { AgentLoop, composeSkills, type AgentMessage } from '@chatoffice/agent-core'
+import { AgentLoop, composeSkills, type AgentMessage } from '@chaoffice/agent-core'
 import type { Editor } from '@tiptap/core'
-import type { AiImageSource, AiSettingsV2 } from '@chatoffice/ai-provider'
+import type { AiImageSource, AiSettingsV2 } from '@chaoffice/ai-provider'
 import type { PmNode } from '../editor/convert'
 import type { NumIds } from './protocol'
 import type { AiCommentsAccess, AiHeaderFooterAccess } from './tools'

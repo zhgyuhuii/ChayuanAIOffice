@@ -1,4 +1,4 @@
-import { htmlLang, type Lang } from '@chatoffice/i18n'
+import { htmlLang, type Lang } from '@chaoffice/i18n'
 
 /**
  * A minimal, standards-mode document, for a blank one to start from.

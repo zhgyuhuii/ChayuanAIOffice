@@ -15,8 +15,8 @@ import {
   parseDocx,
   saveDocx,
   type TextboxDisplay,
-} from '@chatoffice/docx-engine'
-import { WORDART_PRESETS, wordArtSolidColor, type WordArtPreset } from '@chatoffice/ui'
+} from '@chaoffice/docx-engine'
+import { WORDART_PRESETS, wordArtSolidColor, type WordArtPreset } from '@chaoffice/ui'
 import { buildDocx } from '../../../packages/docx-engine/tests/helpers/build-docx'
 import { blocksToPmDoc, pmDocToSavePlan, type PmNode } from '../src/renderer/editor/convert'
 import { editorExtensions } from '../src/renderer/editor/extensions'

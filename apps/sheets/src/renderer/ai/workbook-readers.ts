@@ -5,10 +5,10 @@
  * WorkbookReadContext closing over its refs.
  */
 import type { IRange } from '@univerjs/core'
-import { columnLabel, parseAddress } from '@chatoffice/xlsx-gateway/domain/cell-address'
+import { columnLabel, parseAddress } from '@chaoffice/xlsx-gateway/domain/cell-address'
 import { MAX_PATCH_ENTRY_BYTES } from '../../shared/desktop-api'
-import type { InMemoryWorkbookAdapter } from '@chatoffice/xlsx-gateway/domain/in-memory-workbook'
-import type { CellFormatState, CellScalar } from '@chatoffice/xlsx-gateway/domain/workbook.types'
+import type { InMemoryWorkbookAdapter } from '@chaoffice/xlsx-gateway/domain/in-memory-workbook'
+import type { CellFormatState, CellScalar } from '@chaoffice/xlsx-gateway/domain/workbook.types'
 import { planFileTableRegistrations } from '../file-tables'
 import { toSelectionFormat } from '../selection-format'
 import { lazyCellReader } from '../univer-sync'

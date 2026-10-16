@@ -12,7 +12,7 @@ import {
  * - file: desktop ai-settings.json and the Docker BFF's server-side config
  * - harness: dsh's llm-pi-ai namespace via loopback RPC (true fusion with
  *   chatop — both apps read/write the same providers), with office-side
- *   selection state (currentModel/imageModel/chatoffice toggle) kept in a local
+ *   selection state (currentModel/imageModel/chaoffice toggle) kept in a local
  *   sidecar file so we never touch chatop's own model picker.
  *
  * Node I/O is injected so this package stays importable from renderers.
@@ -178,7 +178,7 @@ function profileFromHarness(route: string, hp: HarnessProviderProfile): AiProvid
   if (!route.startsWith('chatop-')) return null
   // legacy yaml written before the rebrand carried the vendor's old id
   const vendorId =
-    route.slice('chatop-'.length) === 'genspark' ? 'chatoffice' : route.slice('chatop-'.length)
+    route.slice('chatop-'.length) === 'genspark' ? 'chaoffice' : route.slice('chatop-'.length)
   const vendor = VENDOR_BY_ID.get(vendorId)
   const protocol = (hp.api ?? vendor?.api ?? 'openai-completions') as AiWireProtocol
   const baseUrl = hp.baseURL ?? ''
@@ -238,7 +238,7 @@ export interface HarnessSourceDeps {
   rpc?: HarnessRpc
   /** read a file relative to the dsh home (settings.yaml, .credentials.yaml) */
   readDshFile: DshFileReader
-  /** local sidecar file holding office-side state (currentModel/imageModel/chatoffice/chatoffice) */
+  /** local sidecar file holding office-side state (currentModel/imageModel/chaoffice/chaoffice) */
   officeStateSource: AiSettingsSource
 }
 
@@ -251,7 +251,7 @@ const isSyntheticLocalProfile = (p: AiProviderProfile): boolean =>
  * Composite harness source: provider profiles live in dsh's llm-pi-ai (shared
  * with chatop), office selections live in the local sidecar. write() diffs the
  * profile set into settings.mutate ops + credentials.set calls (rpc present),
- * and always persists the office sidecar: chatoffice-login profiles,
+ * and always persists the office sidecar: chaoffice-login profiles,
  * office-local profiles (custom BYOK entries the harness does not back), and
  * selection anchors.
  */
@@ -407,7 +407,7 @@ export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
         ...next,
         version: 2,
         profiles: [
-          ...next.profiles.filter((p) => p.auth === 'chatoffice-login'),
+          ...next.profiles.filter((p) => p.auth === 'chaoffice-login'),
           ...localKeep,
           ...anchors.values(),
         ],

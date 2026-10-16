@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { InMemoryWorkbookAdapter } from '@chatoffice/xlsx-gateway/domain/in-memory-workbook'
+import { InMemoryWorkbookAdapter } from '@chaoffice/xlsx-gateway/domain/in-memory-workbook'
 import { proposeOperations, type PlanContext } from '../src/renderer/plan-operations'
 
 /// Demo-branch coverage of the AI-path quadratic-formula guard (the lazy

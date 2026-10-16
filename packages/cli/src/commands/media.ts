@@ -1,6 +1,6 @@
 import { dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { analyzeMediaTool } from '@chatoffice/ai-search'
+import { analyzeMediaTool } from '@chaoffice/ai-search'
 import { flagString } from '../args'
 import { aiSettingsPath, prepareCloud } from '../cloud'
 import { resolveInput } from '../fs'

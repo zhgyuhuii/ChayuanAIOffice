@@ -3,7 +3,7 @@ import type { McpCommandMessage } from '../shared/desktop-api'
 import {
   workbookOperationSchema,
   type WorkbookOperation,
-} from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
+} from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
 import { normalizeSheetRefs, primaryCellOf, primarySheetId, type SheetRef } from './mcp-sheet-refs'
 
 /**

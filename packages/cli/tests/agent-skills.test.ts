@@ -22,7 +22,7 @@ const skillText = (version: string, body = 'Run `chaoffice --version` first.') =
 const bundled = (version = '1.2.0') => bundledSkillFrom(Buffer.from(skillText(version)))
 
 function home(): string {
-  return mkdtempSync(join(tmpdir(), 'chatoffice-skills-'))
+  return mkdtempSync(join(tmpdir(), 'chaoffice-skills-'))
 }
 
 describe('detectAgents', () => {
@@ -141,7 +141,7 @@ describe('uninstallSkill', () => {
     const dir2 = join(home(), 'skills')
     const p2 = installSkill(dir2, b, ledger)
     expect(uninstallSkill(dir2, ledger)).toBe(true)
-    expect(existsSync(join(dir2, 'chatoffice'))).toBe(false)
+    expect(existsSync(join(dir2, 'chaoffice'))).toBe(false)
     expect(existsSync(p2)).toBe(false)
   })
 })

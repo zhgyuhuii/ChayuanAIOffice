@@ -4,7 +4,7 @@
 import { describe, expect, it, onTestFinished, vi } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
-import { hashProtectionPassword, verifyProtectionPassword } from '@chatoffice/docx-engine'
+import { hashProtectionPassword, verifyProtectionPassword } from '@chaoffice/docx-engine'
 import { ProtectDialog, type ProtectDialogResult } from '../src/renderer/components/ProtectDialog'
 
 type Props = Parameters<typeof ProtectDialog>[0]

@@ -6,30 +6,30 @@ import type { AiProviderId, AiProviderMeta, AiSettings, LegacyAiSettings } from 
 
 /**
  * ChaOffice server-side LLM proxy endpoints. All three protocols share the
- * api_key from the chatoffice login; model ids follow the proxy's own naming scheme,
+ * api_key from the chaoffice login; model ids follow the proxy's own naming scheme,
  * which differs from the official vendor ids.
  */
-export const CHATOFFICE_LLM_BASE_URLS = {
+export const CHAOFFICE_LLM_BASE_URLS = {
   anthropic: 'https://www.genspark.ai/api/anthropic',
   openai: 'https://www.genspark.ai/api/llm_proxy/v1',
 } as const
 
 /**
  * Splits ChaOffice usage out of the proxy's default "Claw" billing bucket
- * (the backend attributes chatoffice-key traffic by X-Agent-Type). Only sent to the
+ * (the backend attributes chaoffice-key traffic by X-Agent-Type). Only sent to the
  * ChaOffice proxy — never to direct vendor APIs.
  */
-export const CHATOFFICE_AGENT_TYPE = 'chatoffice'
+export const CHAOFFICE_AGENT_TYPE = 'chaoffice'
 
-export function chatofficeAttributionHeaders(baseUrl?: string): Record<string, string> {
+export function chaofficeAttributionHeaders(baseUrl?: string): Record<string, string> {
   return baseUrl?.startsWith('https://www.genspark.ai')
-    ? { 'X-Agent-Type': CHATOFFICE_AGENT_TYPE }
+    ? { 'X-Agent-Type': CHAOFFICE_AGENT_TYPE }
     : {}
 }
 
 /**
  * OpenCode Zen / Go route and cache per conversation and answer 400
- * MissingSessionID without this header (chatoffice#331). The renderer's
+ * MissingSessionID without this header (chaoffice#331). The renderer's
  * transport id is stable for a chat; a one-shot call is its own conversation.
  */
 export function opencodeSessionHeaders(
@@ -46,7 +46,7 @@ export const DEEPSEEK_V41_FLASH = 'deep-seek-v4.1-flash'
 
 export const AI_PROVIDERS: AiProviderMeta[] = [
   {
-    id: 'chatoffice',
+    id: 'chaoffice',
     label: 'ChaAI Office',
     // must stay within the proxy's served set (GET /api/llm_proxy/v1/models);
     // bare gpt-5.6 and the gemini family dropped off it (verified 2026-08-31).
@@ -447,7 +447,7 @@ export function defaultAiSettings(
     }
   }
   return {
-    provider: 'chatoffice',
+    provider: 'chaoffice',
     providers,
     media: defaultAiMediaSettings(),
     search: defaultAiSearchSettings(),
@@ -460,26 +460,26 @@ export function defaultAiSettings(
  * (api-key providers need a key and a model id; custom also needs a base URL).
  * Codex can auto-discover its executable. Anything else — including unknown
  * ids from a hand-edited
- * settings file — falls back to chatoffice, so a half-filled setup degrades
+ * settings file — falls back to chaoffice, so a half-filled setup degrades
  * to the signed-in default instead of silently disabling AI.
  */
 export function activeProvider(settings: AiSettings): AiProviderId {
   const provider = settings.provider
-  if (provider === 'chatoffice') return 'chatoffice'
+  if (provider === 'chaoffice') return 'chaoffice'
   const meta = AI_PROVIDERS.find((m) => m.id === provider)
   const config = settings.providers?.[provider]
-  if (!meta || !config) return 'chatoffice'
+  if (!meta || !config) return 'chaoffice'
   if (meta.needsCliPath) return provider
   // Trim-aware: in-memory settings bypass the trimConfigs applied to
   // persisted files, and a whitespace-only key/URL/model is a 401, not a config.
-  if (!config.model?.trim()) return 'chatoffice'
+  if (!config.model?.trim()) return 'chaoffice'
   if (meta.needsBaseUrl) {
     // Custom OpenAI-compatible endpoints (Ollama, LM Studio, vLLM) accept
     // anonymous requests: base URL + model suffice, the key stays optional.
-    if (!config.baseUrl?.trim()) return 'chatoffice'
+    if (!config.baseUrl?.trim()) return 'chaoffice'
     return provider
   }
-  if (!config.apiKey?.trim()) return 'chatoffice'
+  if (!config.apiKey?.trim()) return 'chaoffice'
   return provider
 }
 
@@ -503,7 +503,7 @@ const RETIRED_MODELS: Partial<Record<AiProviderId, Record<string, string>>> = {
   // proxy stopped serving bare gpt-5.6 (400) and removed the gemini route
   // entirely (405), verified 2026-08-31; gemini selections fall back to the
   // provider default since no gemini id is served at all
-  chatoffice: {
+  chaoffice: {
     'gpt-5.6': 'gpt-5.6-terra',
     'gemini-3.1-pro-preview': 'claude-opus-5-5',
     'gemini-3-flash-preview': 'claude-opus-5-5',

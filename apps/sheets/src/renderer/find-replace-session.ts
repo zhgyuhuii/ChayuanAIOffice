@@ -14,7 +14,7 @@
  */
 import type { IFindMatch, IFindReplaceService, IFindReplaceState } from '@univerjs/find-replace'
 import type { IRange, Nullable, Workbook } from '@univerjs/core'
-import { formatAddress, type RangeBounds } from '@chatoffice/xlsx-gateway/domain/cell-address'
+import { formatAddress, type RangeBounds } from '@chaoffice/xlsx-gateway/domain/cell-address'
 import { scalarToText } from './lazy-find'
 
 interface FindReplaceServiceInternals {

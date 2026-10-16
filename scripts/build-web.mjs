@@ -8,7 +8,7 @@
  *   dist/web/bridge-shim.js        preload-shaped shims injected into editors
  *   dist/web/config.js             same-origin editor map (fallback)
  *
- * Served by the sidecar (CHATOFFICE_STATIC_DIR) or `npm run preview:web`.
+ * Served by the sidecar (CHAOFFICE_STATIC_DIR) or `npm run preview:web`.
  */
 
 import { cpSync, mkdirSync, rmSync, writeFileSync, existsSync, readFileSync } from 'node:fs'
@@ -36,7 +36,7 @@ mkdirSync(dist, { recursive: true })
 // build the renderer directly with the same config the dev servers use).
 for (const key of EDITORS) {
   run(
-    `${npm} exec -w @chatoffice/${key} -- vite build --config vite.renderer.config.ts --base ./ --outDir ../../out/renderer --emptyOutDir`,
+    `${npm} exec -w @chaoffice/${key} -- vite build --config vite.renderer.config.ts --base ./ --outDir ../../out/renderer --emptyOutDir`,
   )
   const from = join(root, 'apps', key, 'out', 'renderer')
   if (!existsSync(from)) throw new Error(`missing renderer build: ${from}`)
@@ -44,7 +44,7 @@ for (const key of EDITORS) {
 }
 
 // 2. Web host build = the harvested shell renderer (zero source changes)
-run(`${npm} run build -w @chatoffice/web`)
+run(`${npm} run build -w @chaoffice/web`)
 cpSync(join(root, 'apps', 'web', 'dist'), dist, { recursive: true })
 
 // 3. Editor bridge shim: preload-shaped shims served same-origin and injected
@@ -71,13 +71,13 @@ for (const key of EDITORS) {
 }
 
 // 3.5 Home page carries the product version (shell-shims getAppVersion reads
-//     window.CHATOFFICE_VERSION; the desktop form gets it from Electron).
+//     window.CHAOFFICE_VERSION; the desktop form gets it from Electron).
 const version = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version
 const homeHtml = join(dist, 'index.html')
 if (existsSync(homeHtml)) {
   let html = readFileSync(homeHtml, 'utf8')
-  if (!html.includes('CHATOFFICE_VERSION')) {
-    html = html.replace('<head>', '<head>' + String.fromCharCode(10) + '    <script>window.CHATOFFICE_VERSION = ' + JSON.stringify(version) + '</script>')
+  if (!html.includes('CHAOFFICE_VERSION')) {
+    html = html.replace('<head>', '<head>' + String.fromCharCode(10) + '    <script>window.CHAOFFICE_VERSION = ' + JSON.stringify(version) + '</script>')
     writeFileSync(homeHtml, html)
   }
 }
@@ -86,7 +86,7 @@ if (existsSync(homeHtml)) {
 //    defaults; config.js remains for tooling/debugging).
 writeFileSync(
   join(dist, 'config.js'),
-  `window.CHATOFFICE_EDITORS = {\n${EDITORS.map((k) => `  ${k}: 'editors/${k}/',`).join('\n')}\n}\n`,
+  `window.CHAOFFICE_EDITORS = {\n${EDITORS.map((k) => `  ${k}: 'editors/${k}/',`).join('\n')}\n}\n`,
 )
 
 console.log(`\nweb bundle ready: ${dist}`)

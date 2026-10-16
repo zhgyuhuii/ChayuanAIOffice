@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { Editor } from '@tiptap/core'
 import { NodeSelection, TextSelection } from '@tiptap/pm/state'
-import { parseDocx, saveDocx } from '@chatoffice/docx-engine'
+import { parseDocx, saveDocx } from '@chaoffice/docx-engine'
 import { buildDocx } from '../../../packages/docx-engine/tests/helpers/build-docx'
 import { executeOps } from '../src/renderer/ai/ops'
 import { blocksToPmDoc, pmDocToSavePlan, type PmNode } from '../src/renderer/editor/convert'

@@ -129,8 +129,8 @@ const SPEC_RULES: Array<{
       N_FIELD,
     ],
   },
-  // ── chatoffice proxy (OpenAI-shaped, normalized) ───────────────────
-  { vendorId: 'chatoffice', test: /./, fields: [N_FIELD] },
+  // ── chaoffice proxy (OpenAI-shaped, normalized) ───────────────────
+  { vendorId: 'chaoffice', test: /./, fields: [N_FIELD] },
 ]
 
 /** param spec for an image-generation model; unknown models get just the count */
@@ -277,7 +277,7 @@ const VIDEO_SPEC_RULES: Array<{
     // minimax T2V pins 1280x720 — aspect ratio is not a parameter here
     fields: [vDuration(undefined, 6)],
   },
-  // aliyun-bailian (wan t2v) + chatoffice + unknown vendors: the generic shape
+  // aliyun-bailian (wan t2v) + chaoffice + unknown vendors: the generic shape
 ]
 
 /**

@@ -258,7 +258,7 @@ function formulaText(type: string | undefined, raw: unknown): string | undefined
 /// pre-1900 year throws DvEditError, because it has no serial to write.
 /// Serials 1–59 sit one day before that linear rule, because the 1900 system
 /// counts a 29-Feb-1900 that never existed; 1900-03-01 (61) onward is already
-/// correct. The read side (formatSerial in @chatoffice/file-parse) shifts back
+/// correct. The read side (formatSerial in @chaoffice/file-parse) shifts back
 /// the same way in reverse, so both ends have to agree.
 function dateToSerial(text: string): number | undefined {
   const match =

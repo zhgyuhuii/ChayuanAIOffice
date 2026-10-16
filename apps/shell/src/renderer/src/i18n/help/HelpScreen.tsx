@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
-import { Markdown } from '@chatoffice/ui'
+import { Markdown } from '@chaoffice/ui'
 import { HELP_GROUPS, HELP_TOPICS, helpBody, helpImage, searchTopics } from './help-registry'
 import { useI18n } from '../../locale'
 import { groupTitle, topicTitle } from './help-titles'

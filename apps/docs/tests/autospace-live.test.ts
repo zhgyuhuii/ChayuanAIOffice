@@ -6,9 +6,9 @@
  */
 import { Editor } from '@tiptap/core'
 // adapted: 上游新增 hangul-space 用例(7f80cf80/c91066db 同期 docs 渲染增量),按本地
-// runSpanSpecs(支持 neighbours)原样收录;品牌映射 @genoffice→@chatoffice
+// runSpanSpecs(支持 neighbours)原样收录;品牌映射 @genoffice→@chaoffice
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import type { Run } from '@chatoffice/docx-engine'
+import type { Run } from '@chaoffice/docx-engine'
 import { editorExtensions } from '../src/renderer/editor/extensions'
 import { runSpanSpecs } from '../src/renderer/editor/protected-render'
 import {

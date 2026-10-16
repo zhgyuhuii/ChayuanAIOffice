@@ -17,10 +17,10 @@ import { exportViaApp } from '../formats/app-export'
 import { blankDocument, closeDocument, fillFromHtml, saveDocument } from '../formats/docx'
 import { markdownToDocx } from '../formats/markdown'
 import { runWorkbookDsl } from '../formats/xlsx-dsl'
-import { columnLabel } from '@chatoffice/xlsx-gateway/domain/cell-address'
+import { columnLabel } from '@chaoffice/xlsx-gateway/domain/cell-address'
 import { readOpsInput } from '../ops-input'
 import type { CommandContext, CommandDef } from '../registry'
-import type { TxnResult } from '@chatoffice/pptx-ops'
+import type { TxnResult } from '@chaoffice/pptx-ops'
 import { CliError, EXIT, type CommandResult } from '../result'
 import { txnFailure, txnDetail } from './txn'
 
@@ -38,13 +38,13 @@ export const createCommand: CommandDef = {
       name: 'ops',
       value: 'file',
       description:
-        'pptx: JSON array of ops (or {"ops":[...]}) applied one by one to a blank one-slide deck (later ops can target slides added earlier); "-" reads stdin. See `chatoffice guide slides`.',
+        'pptx: JSON array of ops (or {"ops":[...]}) applied one by one to a blank one-slide deck (later ops can target slides added earlier); "-" reads stdin. See `chaoffice guide slides`.',
     },
     {
       name: 'spec',
       value: 'file',
       description:
-        'pptx: a deck spec (pages of px-positioned text, shapes and images on a 1280x720 canvas) built into one slide per page, or a directory of one-page spec files taken in name order; "-" reads stdin. See `chatoffice guide slides spec` and `chatoffice guide slides design`.',
+        'pptx: a deck spec (pages of px-positioned text, shapes and images on a 1280x720 canvas) built into one slide per page, or a directory of one-page spec files taken in name order; "-" reads stdin. See `chaoffice guide slides spec` and `chaoffice guide slides design`.',
     },
     {
       name: 'outline',
@@ -56,7 +56,7 @@ export const createCommand: CommandDef = {
       name: 'from',
       value: 'file',
       description:
-        'xlsx: a .csv, or a .json holding a 2-D array of cell values or { "sheets": [{ "name", "rows" }] }; strings starting with "=" are formulas. docx: a .md file, or a .html file holding a restricted-HTML fragment (see `chatoffice guide docs`). pdf: any .md/.html/.docx/.xlsx/.pptx file, printed by the ChaAI Office renderer',
+        'xlsx: a .csv, or a .json holding a 2-D array of cell values or { "sheets": [{ "name", "rows" }] }; strings starting with "=" are formulas. docx: a .md file, or a .html file holding a restricted-HTML fragment (see `chaoffice guide docs`). pdf: any .md/.html/.docx/.xlsx/.pptx file, printed by the ChaAI Office renderer',
     },
     {
       name: 'header',
@@ -101,7 +101,7 @@ export const createCommand: CommandDef = {
       return {
         summary: `created ${basename(output)}`,
         outputPath: output,
-        detail: { via: 'chatoffice --headless-export', summary: r.summary },
+        detail: { via: 'chaoffice --headless-export', summary: r.summary },
       }
     }
     if (type === 'docx') {
@@ -159,7 +159,7 @@ async function createPptxFromSpec(
 ): Promise<{ bytes: Uint8Array; slides: number; detail: CommandResult['detail'] }> {
   const spec = flagString(args, 'spec')!
   const next =
-    'chatoffice slides audit <file> for the geometry audit; chatoffice slides render <file> --out <dir> for PNGs; chatoffice slides replace <file> --slide n --spec <page.json> to rebuild one page'
+    'chaoffice slides audit <file> for the geometry audit; chaoffice slides render <file> --out <dir> for PNGs; chaoffice slides replace <file> --slide n --spec <page.json> to rebuild one page'
   const outlinePath = flagString(args, 'outline')
   const dir = spec === '-' ? null : specDirectory(spec, ctx)
   if (dir) {

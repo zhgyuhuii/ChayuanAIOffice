@@ -8,11 +8,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createImageSkill } from '../src/renderer/ai/image-skill'
 import { isSvgRef, registerSvgDataUrl, resolveSvgDataUrl } from '../src/renderer/ai/svg-bank'
 
-vi.mock('@chatoffice/pptx-render/svg-raster', () => ({
+vi.mock('@chaoffice/pptx-render/svg-raster', () => ({
   rasterizeSvg: vi.fn(),
 }))
 
-import { rasterizeSvg } from '@chatoffice/pptx-render/svg-raster'
+import { rasterizeSvg } from '@chaoffice/pptx-render/svg-raster'
 
 const mockedRaster = vi.mocked(rasterizeSvg)
 

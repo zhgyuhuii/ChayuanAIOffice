@@ -6,7 +6,7 @@ import './purchase.css'
 /**
  * Purchase / license dialog (LOCAL feature, B-zone), mirroring the
  * chayuan-desktop-own LicenseDialog flow. Opened by the
- * `chatoffice-purchase-open` window event, which the main-process scheduler
+ * `chaoffice-purchase-open` window event, which the main-process scheduler
  * (via PurchaseToast) and the toast click funnel into — the shell has no
  * other purchase entry on purpose.
  *
@@ -20,7 +20,7 @@ import './purchase.css'
  * what they bought (office bit = this app, OS bit = one-way coverage).
  */
 
-export const PURCHASE_OPEN_EVENT = 'chatoffice-purchase-open'
+export const PURCHASE_OPEN_EVENT = 'chaoffice-purchase-open'
 
 declare global {
   interface Window {
@@ -150,14 +150,14 @@ export function PurchaseModal() {
     // Same editor-view yielding contract as the settings funnel (Home's
     // useShellModalSurface): without this the dialog paints UNDER the
     // covering editor WebContentsView.
-    document.documentElement.classList.add('chatoffice-shell-modal')
+    document.documentElement.classList.add('chaoffice-shell-modal')
     if ('chaOfficeTabs' in window) void window.chaOfficeTabs.setShellModalOpen(true)
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(false)
     }
     window.addEventListener('keydown', onKey)
     return () => {
-      document.documentElement.classList.remove('chatoffice-shell-modal')
+      document.documentElement.classList.remove('chaoffice-shell-modal')
       if ('chaOfficeTabs' in window) void window.chaOfficeTabs.setShellModalOpen(false)
       window.removeEventListener('keydown', onKey)
     }

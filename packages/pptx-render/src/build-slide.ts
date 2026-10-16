@@ -13,12 +13,12 @@ import type {
   ChartElement,
   PassthroughElement,
   ArrowEnd,
-} from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
 // Subpath import: the renderer bundles this package, so pulling the engine's index
 // (Node-only imports like node:crypto) would break the browser build
-import { tableRowGridCols } from '@chatoffice/pptx-engine/table-grid'
-import { elementDurableId, groupChildDurableId } from '@chatoffice/pptx-engine/identity'
-import { isBackgroundLikeElement } from '@chatoffice/pptx-engine/background-promote'
+import { tableRowGridCols } from '@chaoffice/pptx-engine/table-grid'
+import { elementDurableId, groupChildDurableId } from '@chaoffice/pptx-engine/identity'
+import { isBackgroundLikeElement } from '@chaoffice/pptx-engine/background-promote'
 import { buildChartNode } from './build-chart'
 import type {
   RenderSlide,

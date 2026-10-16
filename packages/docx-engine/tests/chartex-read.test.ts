@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { parseChartExDetail } from '../src/chart'
-import { optionFromChartEx, chartExGroupOf } from '@chatoffice/chart-kit/data-table'
+import { optionFromChartEx, chartExGroupOf } from '@chaoffice/chart-kit/data-table'
 
 /** 与 /tmp/chartex-evidence 手造样本同构的 chartEx part(层级旭日) */
 const CHARTEX_SUNBURST = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>

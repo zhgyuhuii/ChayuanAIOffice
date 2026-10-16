@@ -7,7 +7,7 @@ export default defineConfig({
       // resolve the sibling source packages by exact path (not via node_modules), so
       // a git worktree whose node_modules is linked to another checkout still
       // tests against the local engine edits. Exact regexes: a string find would
-      // also swallow the engine's own '@chatoffice/pptx-engine/custgeom' subpath.
+      // also swallow the engine's own '@chaoffice/pptx-engine/custgeom' subpath.
       {
         find: /^@genoffice\/docx-engine$/,
         replacement: fileURLToPath(new URL('../docx-engine/src/index.ts', import.meta.url)),

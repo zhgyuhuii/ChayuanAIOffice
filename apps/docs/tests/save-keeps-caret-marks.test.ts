@@ -11,7 +11,7 @@ import { serializeMarks } from '../src/renderer/editor/caret-marks'
  * storedMarks — the marks Tiptap applies to text typed *next*. A font the
  * user picked from the ribbon therefore survives only until the next autosave
  * tick (30s, or on window blur), after which new typing falls back to the
- * paragraph default. chatoffice#2004.
+ * paragraph default. chaoffice#2004.
  */
 
 const para = (t: string) => ({

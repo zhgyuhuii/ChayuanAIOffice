@@ -29,14 +29,14 @@ async function findShellPage(app: ElectronApplication, timeoutMs = 15_000): Prom
 
 function setTheme(page: Page, theme: 'light' | 'dark' | 'system'): Promise<void> {
   return page.evaluate((t) => {
-    const api = (window as unknown as { chatOffice: { setTheme(v: string): Promise<void> } }).chatOffice
+    const api = (window as unknown as { chaOffice: { setTheme(v: string): Promise<void> } }).chaOffice
     return api.setTheme(t)
   }, theme)
 }
 
 test.describe('theme pipeline', () => {
   test('setTheme reaches home and editor tabs, persists across relaunch', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'chatoffice-theme-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chaoffice-theme-'))
     const mdPath = join(dir, 'doc.md')
     await writeFile(mdPath, '# Doc\n\nBody.\n')
 

@@ -10,7 +10,7 @@ import {
   type IFindReplaceState,
   type IReplaceAllResult,
 } from '@univerjs/find-replace'
-import type { RangeBounds } from '@chatoffice/xlsx-gateway/domain/cell-address'
+import type { RangeBounds } from '@chaoffice/xlsx-gateway/domain/cell-address'
 
 import { useI18n } from './i18n/locale'
 import {

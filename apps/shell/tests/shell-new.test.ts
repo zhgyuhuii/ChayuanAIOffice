@@ -4,8 +4,8 @@ import { resolve } from 'node:path'
 import { runInNewContext } from 'node:vm'
 import JSZip from 'jszip'
 import { describe, expect, it } from 'vitest'
-import { parseDocx } from '@chatoffice/docx-engine'
-import { openPptx } from '@chatoffice/pptx-engine'
+import { parseDocx } from '@chaoffice/docx-engine'
+import { openPptx } from '@chaoffice/pptx-engine'
 
 const require = createRequire(import.meta.url)
 // Inspect packaging metadata without downloading Electron or compiling OCR helpers.

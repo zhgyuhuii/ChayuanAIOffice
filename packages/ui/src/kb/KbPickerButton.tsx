@@ -5,7 +5,7 @@
  * store so home chat and every editor panel share the same libraries.
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { KbCitation, KbInfo } from '@chatoffice/ai-provider/browser'
+import type { KbCitation, KbInfo } from '@chaoffice/ai-provider/browser'
 import { useDismissablePopover } from '../popover-dismiss'
 import './kb.css'
 import { fmt, kbStrings } from './kb-strings'

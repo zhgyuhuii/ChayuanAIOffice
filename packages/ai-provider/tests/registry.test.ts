@@ -7,7 +7,7 @@ import {
   modelLacksVision,
 } from '../src/registry'
 import { endpointUrl } from '../src/protocols/shared'
-import { AI_PROVIDERS, CHATOFFICE_LLM_BASE_URLS } from '../src/providers'
+import { AI_PROVIDERS, CHAOFFICE_LLM_BASE_URLS } from '../src/providers'
 import type { AiProviderConfig, AiProviderId } from '../src/types'
 
 function config(model: string, baseUrl?: string): AiProviderConfig {
@@ -22,19 +22,19 @@ describe('provider registry', () => {
     expect(Object.keys(AI_PROVIDER_ADAPTERS).sort()).toEqual(AI_PROVIDERS.map((m) => m.id).sort())
   })
 
-  // adapted: 9f971ed — provider rebranded chatoffice locally; gemini endpoint
+  // adapted: 9f971ed — provider rebranded chaoffice locally; gemini endpoint
   // removed server-side (405), so only two proxy endpoints remain
-  it('routes chatoffice by model id prefix onto the two proxy endpoints', () => {
+  it('routes chaoffice by model id prefix onto the two proxy endpoints', () => {
     const resolve = (model: string) =>
-      AI_PROVIDER_ADAPTERS.chatoffice.resolveEndpoint(config(model))
+      AI_PROVIDER_ADAPTERS.chaoffice.resolveEndpoint(config(model))
     expect(resolve('claude-opus-4-7')).toEqual({
       protocol: 'anthropic',
-      baseUrl: CHATOFFICE_LLM_BASE_URLS.anthropic,
+      baseUrl: CHAOFFICE_LLM_BASE_URLS.anthropic,
     })
     // gpt-5.x fixes sampling, so the proxy's OpenAI route also drops temperature
     expect(resolve('gpt-5.2')).toEqual({
       protocol: 'openai-compatible',
-      baseUrl: CHATOFFICE_LLM_BASE_URLS.openai,
+      baseUrl: CHAOFFICE_LLM_BASE_URLS.openai,
       omitTemperature: true,
     })
   })
@@ -302,10 +302,10 @@ describe('provider registry', () => {
     ).toBe('https://mirror/v1')
   })
 
-  it('only chatoffice authenticates through the chatoffice login', () => {
+  it('only chaoffice authenticates through the chaoffice login', () => {
     for (const [id, adapter] of Object.entries(AI_PROVIDER_ADAPTERS)) {
       expect(adapter.capabilities.auth).toBe(
-        id === 'chatoffice' ? 'chatoffice-login' : id === 'codex' ? 'codex-chatgpt' : 'api-key',
+        id === 'chaoffice' ? 'chaoffice-login' : id === 'codex' ? 'codex-chatgpt' : 'api-key',
       )
     }
   })

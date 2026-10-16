@@ -27,7 +27,7 @@ export interface HomeLayoutState {
   dockWidth: number | null
 }
 
-const STORAGE_KEY = 'chatoffice.home-layout'
+const STORAGE_KEY = 'chaoffice.home-layout'
 
 /** hard floor keeps the tree's labels readable; cap leaves the chat pane usable */
 export const SIDEBAR_MIN = 180

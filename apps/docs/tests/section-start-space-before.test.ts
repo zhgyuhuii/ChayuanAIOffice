@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { SectionInfo } from '@chatoffice/docx-engine'
+import type { SectionInfo } from '@chaoffice/docx-engine'
 import { assignSections } from '../src/renderer/pagination-sections'
 import type { BlockBox } from '../src/renderer/pagination-types'
 

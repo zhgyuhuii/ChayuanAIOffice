@@ -1,4 +1,4 @@
-/** Search result types and shared constants (used by both the index and chatoffice backends) */
+/** Search result types and shared constants (used by both the index and chaoffice backends) */
 
 export interface WebSearchResult {
   title: string
@@ -120,13 +120,13 @@ let explicitProxyUrl = ''
 
 /**
  * Proxy resolved by the apps' proxy bootstraps (env vars, else the system
- * proxy via session.resolveProxy); consumed by chatofficeChildEnv() and the login
+ * proxy via session.resolveProxy); consumed by chaofficeChildEnv() and the login
  * flow's proxy fallback.
  */
 export function setChaOfficeProxyUrl(url: string): void {
   explicitProxyUrl = url
 }
 
-export function chatofficeProxyUrl(): string {
+export function chaofficeProxyUrl(): string {
   return explicitProxyUrl
 }

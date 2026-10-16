@@ -10,7 +10,7 @@ import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createVideoTaskRegistry, type VideoFileSink } from '../src/video-tasks'
-import { createAiRuntime, createFileSource } from '@chatoffice/ai-provider'
+import { createAiRuntime, createFileSource } from '@chaoffice/ai-provider'
 import * as nodeFs from 'node:fs'
 
 type Mode = '404' | 'accepted-failed'
@@ -76,7 +76,7 @@ function makeRuntime(baseUrl: string): ReturnType<typeof createAiRuntime> {
       readFile: (p) => nodeFs.promises.readFile(p, 'utf8'),
       writeFile: (p, c) => nodeFs.promises.writeFile(p, c),
     }),
-    chatoffice: { apiKey: () => '', hasAuth: () => false, status: async () => ({ loggedIn: false }) },
+    chaoffice: { apiKey: () => '', hasAuth: () => false, status: async () => ({ loggedIn: false }) },
     translate: (k) => k,
   })
 }

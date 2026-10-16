@@ -5,7 +5,7 @@ import {
   type HfImage,
   type HfParagraph,
   type Run,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { useI18n } from '../i18n/locale'
 import { spellcheckEnabled } from '../spellcheck-pref'
 import {

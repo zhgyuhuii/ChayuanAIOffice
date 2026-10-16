@@ -67,50 +67,50 @@ import {
   writeJsonAtomic,
   recoveryCopyDiskNewer,
   configuredAuthorName,
-} from '@chatoffice/electron-utils'
-import { createI18n, getUiLang, type Lang, normalizeLang, setUiLang } from '@chatoffice/i18n'
-import { ProjectStore } from '@chatoffice/project-store'
+} from '@chaoffice/electron-utils'
+import { createI18n, getUiLang, type Lang, normalizeLang, setUiLang } from '@chaoffice/i18n'
+import { ProjectStore } from '@chaoffice/project-store'
 // LOCAL(2026-09-21, d8201ad0): 多会话对话索引(B 区新模块)
-import { ConversationStore, bindConversationsIpc } from '@chatoffice/project-store'
+import { ConversationStore, bindConversationsIpc } from '@chaoffice/project-store'
 
 import {
   isAiOverloadedError,
   setAiUserAgent,
   setRescueFetch,
   type AiRuntime,
-} from '@chatoffice/ai-provider'
+} from '@chaoffice/ai-provider'
 import {
   getSharedAiRuntime,
   persistGeneratedImage,
   registerMediaIpc,
   registerSharedAiIpc,
   registerSharedKbIpc,
-} from '@chatoffice/ai-host'
-import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
+} from '@chaoffice/ai-host'
+import { shutdownCodexAppServers } from '@chaoffice/ai-provider/codex-app-server'
 import {
   blankXlsxBuffer,
   csvToXlsxBuffer,
   csvToXlsxBufferForOpen,
   decodeCsvBuffer,
   sheetCsvToXlsxBuffer,
-} from '@chatoffice/xlsx-gateway/gateway/csv-import'
+} from '@chaoffice/xlsx-gateway/gateway/csv-import'
 import {
-  ensureChatofficeLogin,
-  chatofficeApiKey,
-  chatofficeLoginInfo,
+  ensureChaofficeLogin,
+  chaofficeApiKey,
+  chaofficeLoginInfo,
   hasChaOfficeAuth,
   setChaOfficeProxyUrl,
   webSearch,
   imageSearch,
-} from '@chatoffice/ai-search'
-import { parseFileToText } from '@chatoffice/file-parse'
-import type { CellEdit, SheetStructuralOps } from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
+} from '@chaoffice/ai-search'
+import { parseFileToText } from '@chaoffice/file-parse'
+import type { CellEdit, SheetStructuralOps } from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
 import {
   readArchiveEntryText,
   saveWorkbookViaSidecar,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-package-io'
-import { parsePivotDefinition } from '@chatoffice/xlsx-gateway/gateway/xlsx-pivot'
-import type { SheetEditPlan } from '@chatoffice/xlsx-gateway/gateway/xlsx-sheets'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-package-io'
+import { parsePivotDefinition } from '@chaoffice/xlsx-gateway/gateway/xlsx-pivot'
+import type { SheetEditPlan } from '@chaoffice/xlsx-gateway/gateway/xlsx-sheets'
 import type {
   AttachmentAddResult,
   AttachmentImageResult,
@@ -161,7 +161,7 @@ import { allowsAutomaticWorkbookRecovery } from './recovery-policy'
 import {
   setSystemShortDate,
   shortDatePatternForSystemLocale,
-} from '@chatoffice/xlsx-gateway/shared/short-date'
+} from '@chaoffice/xlsx-gateway/shared/short-date'
 import {
   cleanupExpiredPastedFiles,
   cleanupImportTempDirectory,
@@ -1758,7 +1758,7 @@ export function configureSheetsRuntime(config: SheetsRuntimeConfig): void {
  * not report the write itself as failed — the file is already persisted. */
 function openGeneratedFile(path: string): void {
   // Headless export must stay silent: no tab, no file-manager window
-  // (same guard as markdown-main's openExportedPdf, chatoffice#1815).
+  // (same guard as markdown-main's openExportedPdf, chaoffice#1815).
   if (isHeadlessMode()) return
   try {
     if (runtime.openGeneratedPath?.(path)) return
@@ -2180,7 +2180,7 @@ function pendingRecoveryFor(filePath: string): string | null {
 const SETTINGS_PATH = () => userDataPath('ai-settings.json')
 
 /** ChaOffice cloud backend removed — always false */
-function chatofficeCloudToolsOn(): boolean {
+function chaofficeCloudToolsOn(): boolean {
   return false
 }
 
@@ -2286,7 +2286,7 @@ const BLANK_WORKBOOK_SENTINEL = '::blank-workbook::'
 /** Hidden dir for untitled blank workbooks; entries are deleted when their session
  * retargets (first save) or closes — nothing here is user-visible. */
 function blankDraftsDir(): string {
-  return join(app.getPath('temp'), 'chatoffice-blank-workbooks')
+  return join(app.getPath('temp'), 'chaoffice-blank-workbooks')
 }
 
 async function materializeBlankWorkbook(): Promise<string> {
@@ -2556,7 +2556,7 @@ const ATTACHMENT_TEXT_EXTS = new Set([
   'sql',
   'css',
 ])
-/** office/pdf formats extract text via @chatoffice/file-parse; images skip text
+/** office/pdf formats extract text via @chaoffice/file-parse; images skip text
  * extraction and go multimodal (sheets:files-read-image) */
 const ATTACHMENT_EXTS = new Set([
   ...ATTACHMENT_TEXT_EXTS,
@@ -2629,7 +2629,7 @@ function savePastedImage(data: unknown, ext: unknown): string | null {
         ? Buffer.from(data.buffer, data.byteOffset, data.byteLength)
         : null
   if (!bytes || bytes.byteLength === 0) return null
-  const dir = join(app.getPath('temp'), 'chatoffice-pasted')
+  const dir = join(app.getPath('temp'), 'chaoffice-pasted')
   mkdirSync(dir, { recursive: true })
   const stamp = new Date().toISOString().slice(0, 19).replace(/[-:]/g, '').replace('T', '-')
   const filePath = join(dir, `pasted-${stamp}-${++pastedImageSeq}.${cleanExt}`)
@@ -2637,7 +2637,7 @@ function savePastedImage(data: unknown, ext: unknown): string | null {
   return filePath
 }
 
-/** Attachment text extraction via @chatoffice/file-parse (docx/pdf/pptx/xlsx/plain text) */
+/** Attachment text extraction via @chaoffice/file-parse (docx/pdf/pptx/xlsx/plain text) */
 async function extractAttachmentText(filePath: string): Promise<string> {
   const stat = statSync(filePath)
   const stamp = `${stat.mtimeMs}:${stat.size}`
@@ -2760,7 +2760,7 @@ export function registerSheetsIpc(): void {
   // Registered here (not in registerSheetsAiIpc, skipped in shell mode):
   // slides' ai:generate-image only exists once a slides view opens, so sheets
   // owns its channel the way pdf does. BYOK image model first (no login
-  // needed); chatoffice is the fallback backend.
+  // needed); chaoffice is the fallback backend.
   ipcMain.handle(
     IPC_CHANNELS.aiGenerateImage,
     async (_event, op: { prompt?: unknown; aspectRatio?: unknown }) => {
@@ -3830,17 +3830,17 @@ export function registerSheetsAiIpc(): void {
         }
       },
     },
-    chatoffice: {
-      apiKey: () => chatofficeApiKey(),
+    chaoffice: {
+      apiKey: () => chaofficeApiKey(),
       hasAuth: () => hasChaOfficeAuth(),
       status: async (withEmail) => {
         if (!hasChaOfficeAuth()) return { loggedIn: false }
         if (!withEmail) return { loggedIn: true }
-        const info = await chatofficeLoginInfo()
+        const info = await chaofficeLoginInfo()
         return info?.email ? { loggedIn: true, email: info.email } : { loggedIn: true }
       },
     },
-    chatofficeLogin: () => ensureChatofficeLogin((url) => void shell.openExternal(url)),
+    chaofficeLogin: () => ensureChaofficeLogin((url) => void shell.openExternal(url)),
     translate: (key, params) =>
       tm(key as Parameters<typeof tm>[0], params as Parameters<typeof tm>[1]),
     videoTasks: {
@@ -3884,7 +3884,7 @@ export function registerSheetsAiIpc(): void {
       return await webSearch(
         z.string().parse(query),
         typeof maxResults === 'number' ? maxResults : 6,
-        chatofficeCloudToolsOn(),
+        chaofficeCloudToolsOn(),
       )
     } catch (err) {
       return { results: [], method: 'error', error: String(err) }
@@ -3895,7 +3895,7 @@ export function registerSheetsAiIpc(): void {
       return await imageSearch(
         z.string().parse(query),
         typeof maxResults === 'number' ? maxResults : 8,
-        chatofficeCloudToolsOn(),
+        chaofficeCloudToolsOn(),
       )
     } catch (err) {
       return { images: [], method: 'error', error: String(err) }
@@ -3957,7 +3957,7 @@ function getSheetsProjectStore(): ProjectStore {
   return sheetsProjectStore
 }
 
-// LOCAL(2026-09-21, d8201ad0): 多会话对话索引存储(单例;B 区逻辑在 @chatoffice/project-store/conversations)
+// LOCAL(2026-09-21, d8201ad0): 多会话对话索引存储(单例;B 区逻辑在 @chaoffice/project-store/conversations)
 let sheetsConversationsStore: ConversationStore | null = null
 function getSheetsConversationsStore(): ConversationStore {
   if (!sheetsConversationsStore) {
@@ -4384,7 +4384,7 @@ async function writeWorkbookTo(
 /** Copies the workbook into the temp snapshot dir; the copy is the session's
  * save base (see SessionInfo.snapshotPath). */
 async function snapshotWorkbook(path: string): Promise<string> {
-  const dir = join(app.getPath('temp'), 'chatoffice-sheets-sessions')
+  const dir = join(app.getPath('temp'), 'chaoffice-sheets-sessions')
   await mkdir(dir, { recursive: true })
   const snapshotPath = join(dir, `${randomUUID()}.xlsx`)
   await copyFile(path, snapshotPath)
@@ -4489,7 +4489,7 @@ async function openEmptyXlsx(path: string): Promise<{
   importTempDir: string
   restoreTarget: string
 }> {
-  const directory = join(app.getPath('temp'), 'chatoffice-imports', randomUUID())
+  const directory = join(app.getPath('temp'), 'chaoffice-imports', randomUUID())
   await mkdir(directory, { recursive: true })
   const openPath = join(directory, basename(path))
   try {
@@ -4584,7 +4584,7 @@ async function prepareWorkbookForOpen(
     return { openPath: path }
   }
   const stem = basename(path).replace(/\.[^.]+$/, '')
-  const directory = join(app.getPath('temp'), 'chatoffice-imports', randomUUID())
+  const directory = join(app.getPath('temp'), 'chaoffice-imports', randomUUID())
   await mkdir(directory, { recursive: true })
   const openPath = join(directory, `${stem}.xlsx`)
   let emptyCsv = false
@@ -4747,7 +4747,7 @@ export {
  */
 async function applyMainProcessProxy(): Promise<void> {
   const setDispatcher = async (proxyUrl: string) => {
-    // spawned chatoffice CLI children do their own fetch and never see the
+    // spawned chaoffice CLI children do their own fetch and never see the
     // dispatcher below — forward the proxy to them via env
     setChaOfficeProxyUrl(proxyUrl)
     try {
@@ -4773,7 +4773,7 @@ async function applyMainProcessProxy(): Promise<void> {
   try {
     await app.whenReady()
     // PAC/rule proxies answer per-host: probe the host the login flow, the
-    // ChaOffice LLM proxy and the chatoffice CLI actually target
+    // ChaOffice LLM proxy and the chaoffice CLI actually target
     const resolved = await electronSession.defaultSession.resolveProxy('https://www.genspark.ai/')
     const m = /PROXY\s+([^;]+)/i.exec(resolved || '')
     if (m?.[1]) {
@@ -4790,17 +4790,17 @@ export function startSheetsStandalone(): void {
   registerRendererScheme()
   installNavigationGuard(app)
   installContextMenu(app, () => contextMenuLabels(getUiLang()))
-  // CHATOFFICE_USER_DATA: test drivers point this at a scratch dir so automated
+  // CHAOFFICE_USER_DATA: test drivers point this at a scratch dir so automated
   // instances get their own userData AND single-instance lock (the lock is scoped
   // to userData), allowing parallel instances alongside a normal dev run.
   // Same dev-only hook as apps/slides/src/main/slides-main.ts.
-  if (!app.isPackaged && process.env.CHATOFFICE_USER_DATA) {
-    app.setPath('userData', process.env.CHATOFFICE_USER_DATA)
+  if (!app.isPackaged && process.env.CHAOFFICE_USER_DATA) {
+    app.setPath('userData', process.env.CHAOFFICE_USER_DATA)
   }
   void applyMainProcessProxy()
   app.whenReady().then(() => {
     installRendererProtocol({ sheets: join(__dirname, '../renderer') })
-    setUiLang(normalizeLang(process.env.CHATOFFICE_LANG ?? app.getLocale()))
+    setUiLang(normalizeLang(process.env.CHAOFFICE_LANG ?? app.getLocale()))
     // Dev runs from the stock Electron.app; packaged mac takes the icon from icon.icns
     if (!app.isPackaged && process.platform === 'darwin') app.dock?.setIcon(APP_ICON)
     app.setAccessibilitySupportEnabled(true)

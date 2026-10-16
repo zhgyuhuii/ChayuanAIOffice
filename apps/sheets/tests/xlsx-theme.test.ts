@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { applyThemeState, ThemeStateError } from '@chatoffice/xlsx-gateway/gateway/xlsx-theme'
+import { applyThemeState, ThemeStateError } from '@chaoffice/xlsx-gateway/gateway/xlsx-theme'
 
 const THEME =
   '<a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="Office">' +

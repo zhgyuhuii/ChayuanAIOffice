@@ -6,7 +6,7 @@ import type { AiWireProtocol } from './types'
  * - `gemini` defaults to the native generateContent protocol (chatop routed it
  *   through the OpenAI-compat endpoint; we speak native directly).
  * - `anthropic` base URL omits the /v1 suffix (our adapter appends /v1/messages).
- * - `chatoffice` is this suite's special login-backed profile (not in chatop).
+ * - `chaoffice` is this suite's special login-backed profile (not in chatop).
  *
  * Vendor ids double as profile ids and (in the harness settings source) as the
  * `chatop-<id>` route key, so office and chatop enable the same provider row.
@@ -52,7 +52,7 @@ export const VENDOR_GROUPS: Array<{
 ]
 
 /** This suite's login-backed default profile; protocol is model-dependent (claude→anthropic, gemini→gemini, rest→openai). */
-export const CHATOFFICE_PRESET_MODELS = [
+export const CHAOFFICE_PRESET_MODELS = [
   'claude-opus-4-7',
   'claude-opus-4-8',
   'claude-sonnet-4-6',
@@ -66,12 +66,12 @@ export const CHATOFFICE_PRESET_MODELS = [
 
 export const VENDORS: VendorCatalogEntry[] = [
   {
-    id: 'chatoffice',
+    id: 'chaoffice',
     name: 'ChaAI Office',
     group: 'agg',
     defaultUrl: '',
     api: 'openai-completions',
-    presets: CHATOFFICE_PRESET_MODELS.map((id) => ({ id })),
+    presets: CHAOFFICE_PRESET_MODELS.map((id) => ({ id })),
   },
   {
     id: 'deepseek',
@@ -905,7 +905,7 @@ export const VENDORS: VendorCatalogEntry[] = [
 export const VENDOR_BY_ID = new Map(VENDORS.map((v) => [v.id, v]))
 
 /** Vendors without a usable /models endpoint; their presets are offered instead. */
-export const NO_MODELS_API = new Set(['longcat', 'chatoffice'])
+export const NO_MODELS_API = new Set(['longcat', 'chaoffice'])
 
 /** llm-pi-ai route key (harness settings source): the chatop-<id> prefix avoids collisions with hand-written profiles. */
 export const harnessRouteFor = (vendorId: string): string => `chatop-${vendorId}`

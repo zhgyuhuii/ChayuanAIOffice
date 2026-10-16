@@ -1,4 +1,4 @@
-import type { TxnResult } from '@chatoffice/pptx-ops'
+import type { TxnResult } from '@chaoffice/pptx-ops'
 import { classifyOpError, opSuggestion } from '../op-errors'
 import { CliError, EXIT } from '../result'
 

@@ -1,4 +1,4 @@
-import type { EmbeddedFont, EmbeddedFontLineMetrics } from '@chatoffice/docx-engine'
+import type { EmbeddedFont, EmbeddedFontLineMetrics } from '@chaoffice/docx-engine'
 import { noteEmbeddedFontsChanged, setEmbeddedLineMetrics } from './line-metrics'
 
 let active: FontFace[] = []

@@ -5,7 +5,7 @@ import { run, tempDir, writeMinimalPdf } from './helpers'
 
 /** A stand-in for the ChaOffice binary: copies a prepared PDF to --out and prints the envelope. */
 function fakeApp(dir: string, pdf: string): string {
-  const fake = join(dir, 'fake-chatoffice.sh')
+  const fake = join(dir, 'fake-chaoffice.sh')
   writeFileSync(
     fake,
     `#!/bin/sh\nwhile [ $# -gt 0 ]; do if [ "$1" = "--out" ]; then out="$2"; fi; if [ "$1" = "--to" ]; then to="$2"; fi; shift; done\n[ "$to" = "pdf" ] || exit 9\ncp "${pdf}" "$out"\necho '{"status":"ok","summary":"exported"}'\n`,
@@ -14,7 +14,7 @@ function fakeApp(dir: string, pdf: string): string {
   return fake
 }
 
-describe('chatoffice render', () => {
+describe('chaoffice render', () => {
   it('rasterizes a PDF directly, one PNG per page, 1-based names and --page', async () => {
     const dir = tempDir()
     const pdf = writeMinimalPdf(join(dir, 'report.pdf'))

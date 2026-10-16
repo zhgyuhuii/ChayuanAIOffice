@@ -1,7 +1,7 @@
 /** slideIndex 缺省契约：元素/表格/批注等工具不再要求必传，缺省落到当前活动页。 */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { createSlidesSkill, type DeckAccess } from '../src/renderer/ai/slides-skill'
-import type { RenderSlide } from '@chatoffice/pptx-render'
+import type { RenderSlide } from '@chaoffice/pptx-render'
 import type { AgentToolCall } from '../src/shared/ipc'
 
 // 带已有元素的页——空页会触发 blockScratchBuild 的 generate_deck 引导拦截（设计内）

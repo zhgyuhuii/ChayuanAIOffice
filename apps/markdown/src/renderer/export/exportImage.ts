@@ -1,4 +1,4 @@
-import type { NewImage } from '@chatoffice/docx-engine'
+import type { NewImage } from '@chaoffice/docx-engine'
 import type { ImageData } from '../../shared/ipc'
 import { exportImageMime } from '../../shared/export-image-mime'
 import { parseSvgViewBox, pinSvgIntrinsicSize } from '../editor/diagrams'

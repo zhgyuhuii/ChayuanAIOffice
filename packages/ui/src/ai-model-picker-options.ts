@@ -6,7 +6,7 @@ import {
   upsertCustomEndpoint,
   type AiProviderId,
   type AiSettings,
-} from '@chatoffice/ai-provider/browser'
+} from '@chaoffice/ai-provider/browser'
 
 export interface AiModelPickerGroup {
   readonly id: AiProviderId
@@ -30,7 +30,7 @@ export interface AiModelPickerSelection {
  */
 export function aiModelPickerGroups(
   input: AiSettings,
-  chatofficeLoggedIn: boolean,
+  chaofficeLoggedIn: boolean,
 ): AiModelPickerGroup[] {
   const settings = resolveCustomEndpoints(input)
   const groups: AiModelPickerGroup[] = []
@@ -63,8 +63,8 @@ export function aiModelPickerGroups(
     // CLI vendors pass activeProvider unconfigured (the binary auto-discovers);
     // list them only once the settings page holds a model or a path
     const usable =
-      meta.id === 'chatoffice'
-        ? chatofficeLoggedIn
+      meta.id === 'chaoffice'
+        ? chaofficeLoggedIn
         : meta.needsCliPath
           ? Boolean(stored || config?.cliPath?.trim())
           : activeProvider({ ...settings, provider: meta.id }) === meta.id

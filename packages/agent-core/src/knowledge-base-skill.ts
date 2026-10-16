@@ -12,7 +12,7 @@ import type { AgentSkill } from './skill'
  *
  * Citation contract: when an answer draws on corpus content it must cite the
  * source as [file name](filenav:///abs/path) — the same primitive the editors'
- * in-document citations use (see @chatoffice/ui file-nav). verifyResponse
+ * in-document citations use (see @chaoffice/ui file-nav). verifyResponse
  * rejects answers citing paths outside the corpus, the way fabricated
  * block numbers are rejected elsewhere.
  */
@@ -56,8 +56,8 @@ export interface KnowledgeBaseDeps {
   alsoCitable?(): readonly string[]
 }
 
-/** keep in sync with FILE_NAV_SCHEME in @chatoffice/ui (this package must not
- *  depend on @chatoffice/ui: the ui barrel reaches react) */
+/** keep in sync with FILE_NAV_SCHEME in @chaoffice/ui (this package must not
+ *  depend on @chaoffice/ui: the ui barrel reaches react) */
 const FILE_NAV_SCHEME = 'filenav://'
 
 export function formatKbSize(bytes: number): string {
@@ -86,7 +86,7 @@ lists them (index | folder | file | type | size, with the absolute path).
 - Say so plainly when the knowledge base does not contain the answer.`
 
 /**
- * Same encoding as @chatoffice/ui file-nav (agent-core must not depend on the
+ * Same encoding as @chaoffice/ui file-nav (agent-core must not depend on the
  * renderer package): everything the inline-link grammar rejects — spaces, %,
  * CJK, parens, Windows backslashes — is percent-encoded, slashes stay.
  */

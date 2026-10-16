@@ -1,4 +1,4 @@
-import { defineStrings } from '@chatoffice/i18n'
+import { defineStrings } from '@chaoffice/i18n'
 
 const en = {
   ribbonTableStyleOptions: 'Table Style Options',

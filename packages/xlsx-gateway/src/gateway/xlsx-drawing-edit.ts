@@ -105,7 +105,7 @@ export async function applyVisualEdits(
       // echart 编辑:原位重写 sidecar(锚点 descr 指针决定路径;无指针则分配)
       if (edit.mediaReplace.echart) {
         const anchorXml = anchors[edit.drawingIndex]?.[0]
-        const existing = anchorXml && /\bdescr="chatoffice-echart:([^"]+)"/.exec(anchorXml)?.[1]
+        const existing = anchorXml && /\bdescr="chaoffice-echart:([^"]+)"/.exec(anchorXml)?.[1]
         const sidecarPath = existing ?? (await allocatePartPath(pkg, 'xl/echarts/echart', '.json'))
         const meta = edit.mediaReplace.echart
         const payload = JSON.stringify({
@@ -119,7 +119,7 @@ export async function applyVisualEdits(
         else pkg.add(sidecarPath, payload)
         touchedEntries.add(sidecarPath)
         await registerContentTypeDefault(pkg, 'json', 'application/json', touchedEntries)
-        echartDescrByIndex.set(edit.drawingIndex, `chatoffice-echart:${sidecarPath}`)
+        echartDescrByIndex.set(edit.drawingIndex, `chaoffice-echart:${sidecarPath}`)
         // 换图时旧的 echart sidecar 若不再被引用由 reload 端容忍；此处保留原文件避免悬空 descr
       }
     }

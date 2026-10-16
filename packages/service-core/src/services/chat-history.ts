@@ -8,10 +8,10 @@
  * this service.
  */
 
-import { ConversationStore, ProjectStore } from '@chatoffice/project-store'
-import type { ProjectApi } from '@chatoffice/project-store'
-import type { StorageArea } from '@chatoffice/storage-adapter'
-import { openLocalArea } from '@chatoffice/storage-adapter'
+import { ConversationStore, ProjectStore } from '@chaoffice/project-store'
+import type { ProjectApi } from '@chaoffice/project-store'
+import type { StorageArea } from '@chaoffice/storage-adapter'
+import { openLocalArea } from '@chaoffice/storage-adapter'
 import type { ServiceContext } from '../runtime.js'
 import { defineService, ServiceEmitter } from '../runtime.js'
 

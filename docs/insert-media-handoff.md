@@ -3,7 +3,7 @@
 > **【2026-09-06 更新】P2/P3 已全部实施完毕**（同日提交），本文转为实施记录。
 > 实施要点与本文施工图的差异：
 > 1. P2.1 档案 3 家照建；P2.2 的 6 家适配器端点全部按官方文档核实后实装
->    （runway/vidu/pixverse/sora/veo/chatoffice），并给 `MediaJobResult` 增加
+>    （runway/vidu/pixverse/sora/veo/chaoffice），并给 `MediaJobResult` 增加
 >    `downloadHeaders`（sora content / veo files 的鉴权下载仅主进程可见）。
 > 2. P2.4 任务注册表落地为 `packages/ai-host/src/video-tasks.ts`，新增
 >    `ai:video-retry/-preview` 两个通道（共 5 个）；并发 3/后台存活/落盘/
@@ -12,7 +12,7 @@
 > 3. P2.5 预览采用「≤48MB 读盘转 dataURL」方案（未走 custom protocol），
 >    插入时 slides 复用该 dataUrl 直接走 `slides:add-media-bytes`
 >    （op 扩展可选 posterBase64/posterExt），未新增插入通道。
-> 4. P2.3 的 chatoffice 视频保持数据驱动；`runtime.runVideoJob` 为
+> 4. P2.3 的 chaoffice 视频保持数据驱动；`runtime.runVideoJob` 为
 >    video-tasks 的解析入口。
 > 5. P2.6 以 vendor-catalog `keyFields` 声明 + ModelSettingsPage 折叠实现。
 > 6. 遗留：veo/vidu 图生视频（imageUrl 已在 MediaJobRequest 预留）；
@@ -34,7 +34,7 @@
 ## 当前状态快照（截至本提交）
 
 ### 已完成（P1，勿重做）
-- 搜索兜底链 `chatoffice→Serper→Bing→Openverse` + 逐层 `attempts` 诊断
+- 搜索兜底链 `chaoffice→Serper→Bing→Openverse` + 逐层 `attempts` 诊断
   （`packages/ai-search/src/index.ts` 的 `imageSearch`；`bing.ts`/`openverse.ts` 新文件）。
 - 图库密钥每家独立模态+测试连接+未配置才引导（`packages/ui/src/InsertImageDialog.tsx`
   的 `keyModal`/`guideKeyModal`/`testKey`）。
@@ -58,7 +58,7 @@
   aliyun-bailian(137) / zhipu(178) / minimax(220) / volcengine(261) / kling(326，
   JWT 双字段 key 格式 `"accessKey:secretKey"`) / luma(374) / fal(418)。
 - `capabilities.ts` 的 `VIDEO_GEN_VENDOR_IDS` 有 13 家 → **缺 6 家适配器**：
-  runway / vidu / pixverse / gemini(veo) / openai(sora) / chatoffice。
+  runway / vidu / pixverse / gemini(veo) / openai(sora) / chaoffice。
 - `vendor-catalog.ts` 已补 kling(82)/luma(92)/fal(102) 档案 → **缺 3 家**：
   runway / vidu / pixverse。
 - `videoParamSpec` 已有基础版（aspectRatio+durationSeconds，kling/luma 多 1:1）。
@@ -76,7 +76,7 @@ API 文档核实 URL，不要凭记忆写死。
 - runway / vidu / pixverse：查官方文档的 submit/poll 端点与鉴权头。
 - gemini(veo)：`predictLongRunning` + operation 轮询。
 - openai(sora)：videos API（POST /v1/videos → GET /v1/videos/{id} → 下载 content）。
-- chatoffice：**共识决定——实装时验证**。代理若在模型列表真返回视频型模型才展示
+- chaoffice：**共识决定——实装时验证**。代理若在模型列表真返回视频型模型才展示
   （discovery 数据驱动），否则该 vendor 视频模型不出现在选择器。
 每家顺带在 `media-params.ts` 的 `videoParamSpec` 细化该 vendor 特有参数
 （时长/分辨率/with_audio/quality…），spec 字段 id 必须与适配器从 `params` 取值的
@@ -170,7 +170,7 @@ cd packages/ui && npx tsc --noEmit
 
 手动 smoke（任一 app → 插入图片窗口）：
 1. 网络图片 tab 搜中文词 → Bing/Openverse 命中；断网/无 key 时空结果下方出现
-   逐层诊断（chatoffice 未登录 · Serper 未配置 · Bing 失败 · Openverse 失败）。
+   逐层诊断（chaoffice 未登录 · Serper 未配置 · Bing 失败 · Openverse 失败）。
 2. Pexels chip（未配置时）自动弹独立小窗 → 填错 key 点测试连接 → 红「连接失败」；
    填对 → 绿「连接成功」→ 保存。
 3. AI tab 模型下拉（选了 qwen-image 的账号）→ 参数区出现「尺寸」select

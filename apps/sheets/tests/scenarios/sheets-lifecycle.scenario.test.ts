@@ -19,14 +19,14 @@ describe('sheets 场景 · 新建与打开', () => {
     const file = join(dir, 'blank.xlsx')
     // real xlsx container: local file header + central dir stub via zip-gate asserts
     writeFileSync(file, Buffer.from([0x50, 0x4b, 0x03, 0x04]))
-    const zipGate = await import('@chatoffice/zip-gate')
+    const zipGate = await import('@chaoffice/zip-gate')
     expect(Object.keys(zipGate).length).toBeGreaterThan(0)
   })
 })
 
 describe('sheets 场景 · 数据与公式（网关管线）', () => {
   it('S-XLS-02 set_range 矩形数据写入', async () => {
-    const { expandToPrimitiveOps } = await import('@chatoffice/xlsx-gateway/domain/workbook-dsl')
+    const { expandToPrimitiveOps } = await import('@chaoffice/xlsx-gateway/domain/workbook-dsl')
     const ops = expandToPrimitiveOps([
       {
         op: 'set_range',
@@ -43,7 +43,7 @@ describe('sheets 场景 · 数据与公式（网关管线）', () => {
   })
 
   it('S-XLS-03 公式生成：=SUM 求和写为公式而非静态值', async () => {
-    const { expandToPrimitiveOps } = await import('@chatoffice/xlsx-gateway/domain/workbook-dsl')
+    const { expandToPrimitiveOps } = await import('@chaoffice/xlsx-gateway/domain/workbook-dsl')
     const ops = expandToPrimitiveOps([
       { op: 'set_cell', sheetId: 'sheet-1', cell: 'C5', value: '=SUM(C2:C4)' },
     ] as never)
@@ -51,7 +51,7 @@ describe('sheets 场景 · 数据与公式（网关管线）', () => {
   })
 
   it('S-XLS-04 拒绝锯齿 set_range（生成防护）', async () => {
-    const { expandToPrimitiveOps } = await import('@chatoffice/xlsx-gateway/domain/workbook-dsl')
+    const { expandToPrimitiveOps } = await import('@chaoffice/xlsx-gateway/domain/workbook-dsl')
     expect(() =>
       expandToPrimitiveOps([
         {
@@ -70,7 +70,7 @@ describe('sheets 场景 · 数据与公式（网关管线）', () => {
 
 describe('sheets 场景 · 图表数据', () => {
   it('S-XLS-05 图表数据源单元格引用生成', async () => {
-    const { expandToPrimitiveOps } = await import('@chatoffice/xlsx-gateway/domain/workbook-dsl')
+    const { expandToPrimitiveOps } = await import('@chaoffice/xlsx-gateway/domain/workbook-dsl')
     const ops = expandToPrimitiveOps([
       { op: 'set_cell', sheetId: 'sheet-1', cell: 'A1', value: '月份' },
       { op: 'set_cell', sheetId: 'sheet-1', cell: 'B1', value: '销售额' },
@@ -81,7 +81,7 @@ describe('sheets 场景 · 图表数据', () => {
 
 describe('sheets 场景 · 条件格式', () => {
   it('S-XLS-06 高于平均值的 CF 规则可构建', async () => {
-    const { expandToPrimitiveOps } = await import('@chatoffice/xlsx-gateway/domain/workbook-dsl')
+    const { expandToPrimitiveOps } = await import('@chaoffice/xlsx-gateway/domain/workbook-dsl')
     const ops = expandToPrimitiveOps([
       { op: 'set_cell', sheetId: 'sheet-1', cell: 'D1', value: 1 },
     ] as never)
@@ -111,7 +111,7 @@ describe('sheets 场景 · 保存与恢复', () => {
 
 describe('sheets 场景 · 校对（数字/文本检查）', () => {
   it('S-XLS-09 非有限值拒收（NaN/Infinity 防护）', async () => {
-    const { expandToPrimitiveOps } = await import('@chatoffice/xlsx-gateway/domain/workbook-dsl')
+    const { expandToPrimitiveOps } = await import('@chaoffice/xlsx-gateway/domain/workbook-dsl')
     // 上游契约：NaN 映射为清空单元格（null），不抛错
     const ops = expandToPrimitiveOps([
       { op: 'set_cell', sheetId: 'sheet-1', cell: 'A1', value: Number.NaN },

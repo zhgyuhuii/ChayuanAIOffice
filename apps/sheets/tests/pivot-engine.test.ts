@@ -3,12 +3,12 @@ import { describe, expect, it } from 'vitest'
 import {
   parsePivotDefinition,
   setPivotRefreshOnLoad,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-pivot'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-pivot'
 import {
   PivotRefreshError,
   growPivotDefinition,
   recomputePivotData,
-} from '@chatoffice/xlsx-gateway/domain/pivot-engine'
+} from '@chaoffice/xlsx-gateway/domain/pivot-engine'
 
 const PIVOT_XML =
   '<pivotTableDefinition name="PivotTable1" cacheId="1">' +

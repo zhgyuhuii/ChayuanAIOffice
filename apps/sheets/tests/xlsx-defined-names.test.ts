@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   applyDefinedNamesState,
   DefinedNameError,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-defined-names'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-defined-names'
 
 const WORKBOOK =
   '<workbook><sheets><sheet name="Data" sheetId="1" r:id="rId1"/></sheets>' +

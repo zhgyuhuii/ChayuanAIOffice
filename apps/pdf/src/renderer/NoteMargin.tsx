@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
-import type { Lang } from '@chatoffice/i18n'
+import type { Lang } from '@chaoffice/i18n'
 import type { TFunc } from './i18n/locale'
 import { NOTE_FALLBACK_COLOR, cssRgb } from './DrawLayer'
 import { flattenThread } from './note-threads'

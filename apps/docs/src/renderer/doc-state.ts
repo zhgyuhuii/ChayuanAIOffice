@@ -2,7 +2,7 @@
  * Shared document-state types and header/footer helpers used by App.tsx and
  * the extracted action modules (file-actions, review-actions, …).
  */
-import type { HeaderFooter, HfPartInfo, ParsedDocFull } from '@chatoffice/docx-engine'
+import type { HeaderFooter, HfPartInfo, ParsedDocFull } from '@chaoffice/docx-engine'
 
 /** first-page / even-page header & footer variants */
 export type HfVariantKey = 'headerFirst' | 'footerFirst' | 'headerEven' | 'footerEven'
@@ -38,7 +38,7 @@ export interface PendingNumbering {
   newDefs: Array<{
     numId: string
     kind: 'bullet' | 'ordered'
-    levels?: import('@chatoffice/docx-engine').CustomNumberingLevel[]
+    levels?: import('@chaoffice/docx-engine').CustomNumberingLevel[]
   }>
   restartNums: Array<{
     numId: string
@@ -49,7 +49,7 @@ export interface PendingNumbering {
   levelEdits: Array<{
     abstractNumId: string
     ilvl: number
-    level: import('@chatoffice/docx-engine').CustomNumberingLevel
+    level: import('@chaoffice/docx-engine').CustomNumberingLevel
   }>
   /** picture bullets (w:numPicBullet) referenced by pending levels */
   picBullets: Array<{ id: number; base64: string; mime: 'image/png' | 'image/jpeg' | 'image/gif' }>

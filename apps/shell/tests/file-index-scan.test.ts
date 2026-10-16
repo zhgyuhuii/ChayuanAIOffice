@@ -6,7 +6,7 @@ import { scanFiles } from '../src/main/file-index/scan'
 
 let dir: string
 beforeEach(() => {
-  dir = mkdtempSync(join(tmpdir(), 'chatoffice-scan-'))
+  dir = mkdtempSync(join(tmpdir(), 'chaoffice-scan-'))
 })
 afterEach(() => rmSync(dir, { recursive: true, force: true }))
 

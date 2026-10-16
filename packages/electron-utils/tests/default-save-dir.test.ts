@@ -13,7 +13,7 @@ import {
 let root: string
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'chatoffice-save-dir-'))
+  root = mkdtempSync(join(tmpdir(), 'chaoffice-save-dir-'))
 })
 
 afterEach(() => {

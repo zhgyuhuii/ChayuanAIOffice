@@ -19,7 +19,7 @@
  *   - bodyPr anchor (t/ctr/b) → the overall vertical offset is added to each line's
  *     top/baselineY.
  */
-import type { TextBody, Paragraph, TextRun } from '@chatoffice/pptx-engine'
+import type { TextBody, Paragraph, TextRun } from '@chaoffice/pptx-engine'
 import type { RenderTextLayout, TextLine, GlyphRun } from './render-tree'
 import bidiFactory from 'bidi-js'
 import { graphemes, isWideChar, type FontMetricsProvider, type RunStyle } from './metrics'

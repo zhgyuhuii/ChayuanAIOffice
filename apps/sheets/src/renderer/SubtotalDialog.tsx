@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Dropdown } from '@chatoffice/ui'
+import { Dropdown } from '@chaoffice/ui'
 import type { PivotField } from './PivotDialog'
 import { useI18n } from './i18n/locale'
 import { useModalDialog } from './modal-dialog'

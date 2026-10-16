@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { applyPrintAreas, PageSetupError } from '@chatoffice/xlsx-gateway/gateway/xlsx-page-setup'
+import { applyPrintAreas, PageSetupError } from '@chaoffice/xlsx-gateway/gateway/xlsx-page-setup'
 
 const WORKBOOK =
   '<workbook><sheets><sheet name="Sheet1" sheetId="1" r:id="rId1"/></sheets></workbook>'

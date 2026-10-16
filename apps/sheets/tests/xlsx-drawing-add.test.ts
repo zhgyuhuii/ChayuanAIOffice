@@ -6,9 +6,9 @@ import {
   assertOnlyTouchedEntriesChanged,
   createBufferEntrySource,
   planCellEditsToXlsx,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
-import type { CellEdit, SheetVisualAddition } from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
-import type { SheetEditPlan } from '@chatoffice/xlsx-gateway/gateway/xlsx-sheets'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
+import type { CellEdit, SheetVisualAddition } from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
+import type { SheetEditPlan } from '@chaoffice/xlsx-gateway/gateway/xlsx-sheets'
 import { buildEditFixture, buildSheetsFixture } from './fixture-builder'
 
 const ANCHOR = {

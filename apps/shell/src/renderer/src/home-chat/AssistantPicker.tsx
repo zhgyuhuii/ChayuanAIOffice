@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
-import { useDismissablePopover } from '@chatoffice/ui'
+import { useDismissablePopover } from '@chaoffice/ui'
 import {
   DOC_ASSISTANT_DOMAINS,
   DOC_ASSISTANT_TOTAL,
@@ -20,7 +20,7 @@ import { useI18n } from '../locale'
  * 但为首页 composer 定制：分组优先浏览 + 全库搜索 + 最近使用，选中即把
  * 助手人设挂到当前会话（persona 经 controller 的 systemSuffix 生效）。
  */
-const RECENTS_KEY = 'chatoffice.assistantRecents'
+const RECENTS_KEY = 'chaoffice.assistantRecents'
 const RECENTS_MAX = 8
 /** search result cap — 4.6k rows would jank the popover */
 const SEARCH_RESULTS_MAX = 60

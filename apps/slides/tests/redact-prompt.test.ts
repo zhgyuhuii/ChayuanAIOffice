@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createSlidesSkill, type DeckAccess } from '../src/renderer/ai/slides-skill'
-import type { PictureRenderNode, RenderSlide, ShapeRenderNode } from '@chatoffice/pptx-render'
+import type { PictureRenderNode, RenderSlide, ShapeRenderNode } from '@chaoffice/pptx-render'
 
 /**
  * The first line of defence. The write guard stops a model from *damaging* a

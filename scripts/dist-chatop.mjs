@@ -1,7 +1,7 @@
 /**
  * Form ③ packaging: the bundle the chatop desktop (chayuan-harness) embeds.
  *
- * Produces dist/chatop-chatoffice-<version>/ containing the same embedded
+ * Produces dist/chatop-chaoffice-<version>/ containing the same embedded
  * sidecar as the dsh plugin plus an integration README describing the two
  * hookup points in chayuan-harness:
  *
@@ -22,7 +22,7 @@ import { fileURLToPath } from 'node:url'
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const version = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version
 const dist = join(root, 'dist')
-const out = join(dist, `chatop-chatoffice-${version}`)
+const out = join(dist, `chatop-chaoffice-${version}`)
 
 console.log('step 1: embedded sidecar')
 execSync('node scripts/package-embedded.mjs', {
@@ -45,8 +45,8 @@ ChaOffice suite (plan v2.1, form 3).
 
 \`\`\`
 embedded/     self-contained BFF sidecar (run: node --import tsx
-              embedded/apps/server/src/main.ts, env HOST/PORT/CHATOFFICE_DATA_DIR,
-              CHATOFFICE_AUTH=off)
+              embedded/apps/server/src/main.ts, env HOST/PORT/CHAOFFICE_DATA_DIR,
+              CHAOFFICE_AUTH=off)
 host-side.cjs lifecycle adapter: start(ctx) -> { origin, port, stop() }
 \`\`\`
 

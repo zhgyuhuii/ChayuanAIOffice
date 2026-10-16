@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import { mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { defaultAiSettings, resolveCustomEndpoints } from '@chatoffice/ai-provider'
+import { defaultAiSettings, resolveCustomEndpoints } from '@chaoffice/ai-provider'
 import { closeAndSaveVideo, launchShell, screenshotPath } from './helpers'
 
 const locales = [
@@ -13,7 +13,7 @@ const locales = [
 
 for (const locale of locales) {
   test(`custom endpoint fields fit both regular and minimum windows in ${locale.lang}`, async () => {
-    const userDataDir = await mkdtemp(join(tmpdir(), 'chatoffice-endpoint-layout-'))
+    const userDataDir = await mkdtemp(join(tmpdir(), 'chaoffice-endpoint-layout-'))
     const settings = defaultAiSettings()
     settings.provider = 'custom'
     settings.providers.custom = {

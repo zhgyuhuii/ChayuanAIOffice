@@ -26,8 +26,8 @@ export {
   type StockSource,
   type StockImageResult,
 } from './stock'
-export * from './chatoffice'
-export * from './chatoffice-auth'
+export * from './chaoffice'
+export * from './chaoffice-auth'
 
 const SERPER_KEY = () => process.env.SERPER_API_KEY ?? ''
 const TAVILY_KEY = () => process.env.TAVILY_API_KEY ?? ''

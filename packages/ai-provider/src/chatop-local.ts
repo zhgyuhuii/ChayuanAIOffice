@@ -16,11 +16,11 @@ import type { AiModelEntry, AiProviderProfile } from './types'
 export const CHATOP_LOCAL_PROFILE_ID = 'chatop-local'
 
 /** pseudo credential ref on the synthetic profile; the server resolves it to a
- * proxy virtual key (agentId 'chatoffice') instead of the credentials file */
+ * proxy virtual key (agentId 'chaoffice') instead of the credentials file */
 export const CHATOP_LOCAL_KEY_REF = '__chatop_proxy_key__'
 
 /** the agentId the office sidecar identifies as when issuing a proxy key */
-export const CHATOP_LOCAL_AGENT_ID = 'chatoffice'
+export const CHATOP_LOCAL_AGENT_ID = 'chaoffice'
 
 export interface ChatopLocalModelInfo {
   /** bare harness model id (without the local/ namespace) */

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { Dropdown } from '@chatoffice/ui'
+import { Dropdown } from '@chaoffice/ui'
 
 import {
   isValidConsolidateReference,

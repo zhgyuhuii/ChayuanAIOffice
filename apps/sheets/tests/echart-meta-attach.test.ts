@@ -22,7 +22,7 @@ const SIDE_CAR = {
 const DRAWING_XML =
   '<?xml version="1.0"?><xdr:wsDr xmlns:xdr="x">' +
   '<xdr:twoCellAnchor><xdr:pic><xdr:nvPicPr><xdr:cNvPr id="2" name="P" ' +
-  'descr="chatoffice-echart:xl/echarts/echart1.json"/></xdr:nvPicPr>' +
+  'descr="chaoffice-echart:xl/echarts/echart1.json"/></xdr:nvPicPr>' +
   '<xdr:blipFill><a:blip xmlns:r="r" r:embed="rId1"/></xdr:blipFill></xdr:pic>' +
   '</xdr:twoCellAnchor></xdr:wsDr>'
 

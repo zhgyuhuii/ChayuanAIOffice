@@ -3,9 +3,9 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createHash } from 'node:crypto'
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createBlankPptx, openPptx } from '@chatoffice/pptx-engine'
+import { createBlankPptx, openPptx } from '@chaoffice/pptx-engine'
 
-// The adapter, not the store: download discipline lives in @chatoffice/electron-utils and is tested there, while the mirror URL's origin and the deck's font asks are only knowable here.
+// The adapter, not the store: download discipline lives in @chaoffice/electron-utils and is tested there, while the mirror URL's origin and the deck's font asks are only knowable here.
 
 const storeDir = mkdtempSync(join(tmpdir(), 'slides-font-store-'))
 const fontCdnBaseUrl = 'https://fonts.example.test/v1'

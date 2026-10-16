@@ -8,7 +8,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { Editor } from '@tiptap/core'
-import { parseDocx } from '@chatoffice/docx-engine'
+import { parseDocx } from '@chaoffice/docx-engine'
 import { describe, expect, it } from 'vitest'
 import {
   buildDocx,

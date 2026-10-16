@@ -12,7 +12,7 @@
  * - Right-click opens PowerPoint's show menu (next/previous/last viewed/see all slides/screen/end)
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { RenderNode, RenderSlide, ShapeRenderNode } from '@chatoffice/pptx-render'
+import type { RenderNode, RenderSlide, ShapeRenderNode } from '@chaoffice/pptx-render'
 import type {
   AnimationItem,
   LinkTargetOp,

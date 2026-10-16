@@ -12,15 +12,15 @@ import {
   type LocalToolStatus,
   type ModelSettingsBridge,
 } from '../src/ModelSettingsPage'
-import { defaultSettingsV2, type AiSettingsV2 } from '@chatoffice/ai-provider'
+import { defaultSettingsV2, type AiSettingsV2 } from '@chaoffice/ai-provider'
 
 const bridge: ModelSettingsBridge = {
   getSettings: async () => defaultSettingsV2(),
   saveSettings: vi.fn(async () => {}),
   setCurrentModel: vi.fn(async () => {}),
   discoverModels: vi.fn(async () => ({ models: [] })),
-  chatofficeStatus: vi.fn(async () => ({ loggedIn: false })),
-  chatofficeLogin: vi.fn(async () => {}),
+  chaofficeStatus: vi.fn(async () => ({ loggedIn: false })),
+  chaofficeLogin: vi.fn(async () => {}),
 }
 
 let host: HTMLDivElement
@@ -58,9 +58,9 @@ describe('ModelSettingsPage', () => {
     // nothing enabled yet → no 已启用 group at all, just the four catalog groups
     expect(groups.length).toBeGreaterThanOrEqual(4)
     expect(groups.some((g) => /已启用|Enabled/.test(g ?? ''))).toBe(false)
-    // landing = guide page, not the chatoffice sign-in card
+    // landing = guide page, not the chaoffice sign-in card
     expect(document.body.querySelector('[data-model-guide-page]')).toBeTruthy()
-    expect(document.body.querySelector('.msp-chatoffice-row')).toBeNull()
+    expect(document.body.querySelector('.msp-chaoffice-row')).toBeNull()
     // 国内在前、国外在后
     const sections = [...document.body.querySelectorAll('[data-guide-section]')].map((el) =>
       el.getAttribute('data-guide-section'),
@@ -78,11 +78,11 @@ describe('ModelSettingsPage', () => {
 
   it('hides the ChaOffice login entry entirely while USER_LOGIN_READY is false', async () => {
     await render()
-    // no chatoffice row in the enabled group or any catalog group
-    expect(document.body.querySelector('[data-vendor-row="chatoffice"]')).toBeNull()
-    expect(document.body.querySelector('.msp-chatoffice-row')).toBeNull()
-    // and none of the guide cards is chatoffice
-    expect(document.body.querySelector('[data-guide-card="chatoffice"]')).toBeNull()
+    // no chaoffice row in the enabled group or any catalog group
+    expect(document.body.querySelector('[data-vendor-row="chaoffice"]')).toBeNull()
+    expect(document.body.querySelector('.msp-chaoffice-row')).toBeNull()
+    // and none of the guide cards is chaoffice
+    expect(document.body.querySelector('[data-guide-card="chaoffice"]')).toBeNull()
   })
 
   it('switches to a catalog vendor form with protocol select and key row', async () => {
@@ -123,12 +123,12 @@ describe('ModelSettingsPage', () => {
     expect(modelSettingsStrings('en-US').title).toBe('Model Settings')
   })
 
-  it('hides the chatoffice card when capabilities report chatoffice unavailable (web form)', async () => {
-    await render({ capabilities: async () => ({ chatofficeAvailable: false }) })
-    expect(document.body.querySelector('[data-vendor-row="chatoffice"]')).toBeNull()
-    // landing stays the guide page — no chatoffice fallback pane anymore
+  it('hides the chaoffice card when capabilities report chaoffice unavailable (web form)', async () => {
+    await render({ capabilities: async () => ({ chaofficeAvailable: false }) })
+    expect(document.body.querySelector('[data-vendor-row="chaoffice"]')).toBeNull()
+    // landing stays the guide page — no chaoffice fallback pane anymore
     expect(document.body.querySelector('[data-model-guide-page]')).toBeTruthy()
-    expect(document.body.querySelector('.msp-chatoffice-row')).toBeNull()
+    expect(document.body.querySelector('.msp-chaoffice-row')).toBeNull()
   })
 })
 
@@ -236,8 +236,8 @@ describe('ModelSettingsPage model checklist + save validation', () => {
       saveSettings,
       setCurrentModel: vi.fn(async () => {}),
       discoverModels: discover,
-      chatofficeStatus: vi.fn(async () => ({ loggedIn: false })),
-      chatofficeLogin: vi.fn(async () => {}),
+      chaofficeStatus: vi.fn(async () => ({ loggedIn: false })),
+      chaofficeLogin: vi.fn(async () => {}),
     }
     await act(async () => {
       root!.render(createElement(ModelSettingsPage, { bridge: b, onClose: () => {} }))
@@ -412,8 +412,8 @@ describe('no-default model settings (guidance, badges, free filter)', () => {
       saveSettings: vi.fn(async () => {}),
       setCurrentModel: vi.fn(async () => {}),
       discoverModels: vi.fn(async () => ({ models: [] })),
-      chatofficeStatus: vi.fn(async () => ({ loggedIn: false })),
-      chatofficeLogin: vi.fn(async () => {}),
+      chaofficeStatus: vi.fn(async () => ({ loggedIn: false })),
+      chaofficeLogin: vi.fn(async () => {}),
     }
     await act(async () => {
       root!.render(createElement(ModelSettingsPage, { bridge: b, onClose: () => {} }))
@@ -466,8 +466,8 @@ describe('no-default model settings (guidance, badges, free filter)', () => {
     expect(tagsOf('zhipu')).toContain('Free tier')
     expect(tagsOf('openai')).toContain('Key needed')
     expect(tagsOf('openai')).not.toContain('Free tier')
-    // chatoffice is hidden entirely while the login feature is off
-    expect(document.body.querySelector('[data-vendor-row="chatoffice"]')).toBeNull()
+    // chaoffice is hidden entirely while the login feature is off
+    expect(document.body.querySelector('[data-vendor-row="chaoffice"]')).toBeNull()
     expect(tagsOf('ollama')).toContain('No key')
     expect(tagsOf('ollama')).toContain('Free')
   })
@@ -494,8 +494,8 @@ describe('no-default model settings (guidance, badges, free filter)', () => {
     await pick('free')
     expect(document.body.querySelector('[data-vendor-row="openai"]')).toBeNull()
     expect(document.body.querySelector('[data-vendor-row="zhipu"]')).toBeTruthy()
-    // chatoffice carries no free flag — filtered out with the rest
-    expect(document.body.querySelector('[data-vendor-row="chatoffice"]')).toBeNull()
+    // chaoffice carries no free flag — filtered out with the rest
+    expect(document.body.querySelector('[data-vendor-row="chaoffice"]')).toBeNull()
     // hint dismissed by interacting with the filter
     expect(document.body.querySelector('[data-model-filter-hint]')).toBeNull()
 

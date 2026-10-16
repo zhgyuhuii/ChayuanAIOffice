@@ -1,4 +1,4 @@
-import type { PictureRenderNode, RenderNode, RenderSlide } from '@chatoffice/pptx-render'
+import type { PictureRenderNode, RenderNode, RenderSlide } from '@chaoffice/pptx-render'
 
 /**
  * Freehand ink (Draw tab) — editor-side model. Same mechanism as apps/docs ink, but a

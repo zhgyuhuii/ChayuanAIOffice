@@ -1,4 +1,4 @@
-import type { InkInfo, NewInkImage } from '@chatoffice/docx-engine'
+import type { InkInfo, NewInkImage } from '@chaoffice/docx-engine'
 
 /**
  * Ink annotations (freehand drawing strokes) — editor-side model.

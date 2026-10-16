@@ -21,7 +21,7 @@ const css = read('src/renderer/styles.css')
 describe('pdf ribbon compact density', () => {
   it('opts in: the collapse hook gets the compact labels', () => {
     expect(appSrc).toMatch(
-      /useRibbonCollapse\('chatoffice-pdf-ribbon-collapsed', \{[^}]*compact: t\('ribbonCompact'\),[^}]*expandFull: t\('ribbonExpand'\),[^}]*\}\)/s,
+      /useRibbonCollapse\('chaoffice-pdf-ribbon-collapsed', \{[^}]*compact: t\('ribbonCompact'\),[^}]*expandFull: t\('ribbonExpand'\),[^}]*\}\)/s,
     )
   })
 

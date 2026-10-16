@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { RenderNode, RenderSlide } from '@chatoffice/pptx-render'
+import type { RenderNode, RenderSlide } from '@chaoffice/pptx-render'
 import {
   firstPlaceholderId,
   nextPlaceholder,

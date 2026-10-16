@@ -55,7 +55,7 @@ import {
   type SlideAnimation,
   type SlideTransitionKind,
   type TextElement,
-} from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
 import {
   coerceBytes,
   dataUrlExt,

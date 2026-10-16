@@ -1,19 +1,19 @@
 # Perintah baris perintah dan agen
 
-Setiap pemasangan membawa perintah `chatoffice` yang menjalankan mesin yang sama dengan jendela — parser yang sama, penulis yang sama, perender yang sama. Berkas yang disimpan aplikasi dan berkas yang ditulis perintah itu adalah berkas yang sama, dan pemeriksaan yang lolos di panel AI aplikasi juga lolos di perintah.
+Setiap pemasangan membawa perintah `chaoffice` yang menjalankan mesin yang sama dengan jendela — parser yang sama, penulis yang sama, perender yang sama. Berkas yang disimpan aplikasi dan berkas yang ditulis perintah itu adalah berkas yang sama, dan pemeriksaan yang lolos di panel AI aplikasi juga lolos di perintah.
 
 ```sh
-chatoffice --help          # every command
-chatoffice guide slides    # the op reference, for writing your own
+chaoffice --help          # every command
+chaoffice guide slides    # the op reference, for writing your own
 ```
 
 Itulah seluruh permukaannya dalam satu layar — setiap perintah dengan satu baris yang menjelaskan apa yang dilalukannya, lalu opsi global dan kode keluar:
 
-![Keluaran nyata dari chatoffice --help: spanduk versi, setiap perintah dengan deskripsi satu baris, serta opsi global dan kode keluar](img/cli.png)
+![Keluaran nyata dari chaoffice --help: spanduk versi, setiap perintah dengan deskripsi satu baris, serta opsi global dan kode keluar](img/cli.png)
 
 ## Mendapatkan perintahnya
 
-macOS dan Windows menyertakannya di dalam bundel aplikasi. Untuk memanggilnya dengan nama, jalankan sekali `chatoffice install-cli`: ia menautkan biner bundel ke direktori di PATH Anda — di macOS `/usr/local/bin` selama itu bukan prefiks Homebrew (direktori milik Homebrew tak pernah disentuh), kalau tidak ke bin pengguna Anda — atau di Windows ke `PATH` pengguna Anda.
+macOS dan Windows menyertakannya di dalam bundel aplikasi. Untuk memanggilnya dengan nama, jalankan sekali `chaoffice install-cli`: ia menautkan biner bundel ke direktori di PATH Anda — di macOS `/usr/local/bin` selama itu bukan prefiks Homebrew (direktori milik Homebrew tak pernah disentuh), kalau tidak ke bin pengguna Anda — atau di Windows ke `PATH` pengguna Anda.
 
 ## Perintah yang perlu diketahui
 
@@ -31,26 +31,26 @@ macOS dan Windows menyertakannya di dalam bundel aplikasi. Untuk memanggilnya de
 | `merge`           | Mengisi placeholder `{{key}}` pada templat `.docx`, `.pptx`, atau `.xlsx`.                                                                                                                                                                               |
 | `capabilities`    | Melaporkan fitur awan mana yang sudah dikonfigurasi di komputer ini.                                                                                                                                                                                     |
 | `guide`           | Referensi op dan panduan desain, dibangkitkan dari definisi yang sama dengan yang dipakai eksekutor untuk memvalidasi — jadi tidak mungkin melenceng dari apa yang diterima `apply`. `--json` mengembalikannya beserta skema tiap op.                    |
-| `install-cli`     | Menaruh `chatoffice` di `PATH`.                                                                                                                                                                                                                           |
+| `install-cli`     | Menaruh `chaoffice` di `PATH`.                                                                                                                                                                                                                           |
 | `skill`           | Mendaftarkan agen pemrograman yang ditemukan di komputer ini, lalu memasang atau memperbarui skill ChaAI Office di dalamnya.                                                                                                                                |
 | `mcp`             | Menyajikan semua perintah sebagai alat Model Context Protocol. Lihat **Menghubungkan agen pemrograman**.                                                                                                                                                 |
 
 ## Menyunting: dokumen, lembar, presentasi
 
-`chatoffice docs`, `chatoffice sheet`, dan `chatoffice slides` membaca dan menulis lewat jalur tulis yang sama dengan yang dipakai aplikasi, dan mereka berbagi satu kosakata: sebuah **op** adalah satu suntingan, dan sebuah **spec** adalah daftar op yang diterapkan berurutan.
+`chaoffice docs`, `chaoffice sheet`, dan `chaoffice slides` membaca dan menulis lewat jalur tulis yang sama dengan yang dipakai aplikasi, dan mereka berbagi satu kosakata: sebuah **op** adalah satu suntingan, dan sebuah **spec** adalah daftar op yang diterapkan berurutan.
 
 ```sh
-chatoffice sheet read report.xlsx
-chatoffice slides apply deck.pptx --ops ops.json --dry-run
-chatoffice docs apply brief.docx --ops ops.json
+chaoffice sheet read report.xlsx
+chaoffice slides apply deck.pptx --ops ops.json --dry-run
+chaoffice docs apply brief.docx --ops ops.json
 ```
 
 `--dry-run` melaporkan apa yang akan dilakukan sebuah batch tanpa menulis apa pun, dan itulah cara murah untuk memeriksa sebuah spec sebelum dijalankan. Panel AI di aplikasi berjalan persis pada op-op ini, jadi apa pun yang bisa Anda minta kepadanya bisa Anda skripkan.
 
 ## Model Context Protocol
 
-`chatoffice mcp` menyajikan setiap perintah sebagai alat MCP, dan `chatoffice mcp install <agent|all>` mendaftarkannya di konfigurasi milik agen pemrograman itu sendiri. Lihat **Menghubungkan agen pemrograman** untuk sisi tersebut.
+`chaoffice mcp` menyajikan setiap perintah sebagai alat MCP, dan `chaoffice mcp install <agent|all>` mendaftarkannya di konfigurasi milik agen pemrograman itu sendiri. Lihat **Menghubungkan agen pemrograman** untuk sisi tersebut.
 
 ## Yang tidak dilakukan perintah
 
-Perintah itu membaca dan menulis berkas. Ia bukan aplikasinya: tidak ada jendela, dan dialog pembaruan di dalam aplikasi tidak berlaku. Apa pun yang membutuhkan jendela — panel AI, pemeriksaan mutu atas satu slide hasil render — harus menunggu Anda membuka berkasnya. `chatoffice render` memberi Anda pikselnya tanpa jendela, dan `chatoffice slides` menata letak sebuah deck secara mandiri.
+Perintah itu membaca dan menulis berkas. Ia bukan aplikasinya: tidak ada jendela, dan dialog pembaruan di dalam aplikasi tidak berlaku. Apa pun yang membutuhkan jendela — panel AI, pemeriksaan mutu atas satu slide hasil render — harus menunggu Anda membuka berkasnya. `chaoffice render` memberi Anda pikselnya tanpa jendela, dan `chaoffice slides` menata letak sebuah deck secara mandiri.

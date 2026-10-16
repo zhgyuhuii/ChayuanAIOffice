@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { app, clipboard, dialog, ipcMain, type BrowserWindow } from 'electron'
-import { inspectCliLink } from '@chatoffice/cli/install'
+import { inspectCliLink } from '@chaoffice/cli/install'
 import {
   agentTarget,
   bundledSkillFrom,
@@ -14,7 +14,7 @@ import {
   uninstallSkill,
   type BundledSkill,
   type SkillLedger,
-} from '@chatoffice/cli/agent-skills'
+} from '@chaoffice/cli/agent-skills'
 import { readAppSettings, writeAppSetting } from './app-settings'
 import { isEphemeralInstall } from './cli-link'
 import { isInstallableSkillDir } from './skill-target'

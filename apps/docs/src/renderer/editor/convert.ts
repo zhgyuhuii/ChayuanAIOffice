@@ -49,7 +49,7 @@ import {
   type TextboxParaPatch,
   type TextboxParasPatchSet,
   type AutoSpace,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { t } from '../i18n/locale'
 import { symbolFontCovers } from '../font-check'
 import {

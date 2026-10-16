@@ -5,7 +5,7 @@
  * the merge is applied as decoration classes; the borders attrs (which the
  * save path serializes back to w:pBdr) are never touched.
  */
-import type { ParaBorderLine, ParaBorderSides } from '@chatoffice/docx-engine'
+import type { ParaBorderLine, ParaBorderSides } from '@chaoffice/docx-engine'
 
 /** the paragraph attrs Word's border-group merging compares */
 export interface ParaBorderAttrs {

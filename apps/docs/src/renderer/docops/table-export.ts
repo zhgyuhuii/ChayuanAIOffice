@@ -3,7 +3,7 @@
 // Worksheet XML comes from the shared xlsx-gateway builder; the multi-sheet
 // package assembly is local (JSZip), so nothing here touches gateway internals.
 import JSZip from 'jszip'
-import { buildWorksheetXml } from '@chatoffice/xlsx-gateway/gateway/csv-import'
+import { buildWorksheetXml } from '@chaoffice/xlsx-gateway/gateway/csv-import'
 
 /** xlsx sheet names cap at 31 chars and forbid : \ / ? * [ ] */
 function sheetName(label: string): string {

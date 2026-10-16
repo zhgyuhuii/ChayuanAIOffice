@@ -22,8 +22,8 @@ import {
   type GroupElement,
   type OpenedPptx,
   type SlideElement,
-} from '@chatoffice/pptx-engine'
-import { runTxn, OP_DOCS, LOCAL_OP_DOCS } from '@chatoffice/pptx-ops'
+} from '@chaoffice/pptx-engine'
+import { runTxn, OP_DOCS, LOCAL_OP_DOCS } from '@chaoffice/pptx-ops'
 
 const PNG_B64 =
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='

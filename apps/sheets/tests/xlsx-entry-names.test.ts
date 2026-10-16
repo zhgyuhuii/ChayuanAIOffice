@@ -1,4 +1,4 @@
-/// chatoffice#196: a producer wrote every package entry with a leading '/'.
+/// chaoffice#196: a producer wrote every package entry with a leading '/'.
 /// Excel and Numbers open such files; the gateway must fold the quirk
 /// instead of rejecting the workbook as unsafe.
 import JSZip from 'jszip'
@@ -8,7 +8,7 @@ import {
   applyCellEditsToXlsx,
   inventoryXlsx,
   readBasicWorkbook,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
 
 const PARTS: Record<string, string> = {
   '[Content_Types].xml':
@@ -41,7 +41,7 @@ async function buildXlsx(rename: (name: string) => string): Promise<Buffer> {
   return zip.generateAsync({ type: 'nodebuffer' })
 }
 
-describe('non-conformant ZIP entry names (chatoffice#196)', () => {
+describe('non-conformant ZIP entry names (chaoffice#196)', () => {
   it('reads a package whose entries carry a leading slash', async () => {
     const imported = await readBasicWorkbook(await buildXlsx((name) => `/${name}`))
     expect(Object.values(imported.sheetNamesById)).toEqual(['Codes'])

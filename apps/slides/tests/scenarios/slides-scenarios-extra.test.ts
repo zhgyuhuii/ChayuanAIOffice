@@ -2,7 +2,7 @@ import { expect, describe, it } from 'vitest'
 /**
  * 演示稿扩展场景补充包
  */
-import { addElement, createBlankPptx, openPptx, savePptx } from '@chatoffice/pptx-engine'
+import { addElement, createBlankPptx, openPptx, savePptx } from '@chaoffice/pptx-engine'
 
 describe('slides 扩展 · 场景补充包', () => {
   const layouts: Array<[string, number, number]> = [

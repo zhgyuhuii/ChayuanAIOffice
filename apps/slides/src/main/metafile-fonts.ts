@@ -4,7 +4,7 @@
  * before the pictures rasterize — the deck's own runs never mention these families.
  */
 import { gunzipSync } from 'node:zlib'
-import type { PackageArchive } from '@chatoffice/pptx-engine'
+import type { PackageArchive } from '@chaoffice/pptx-engine'
 
 export interface MetafileFontRequest {
   family: string

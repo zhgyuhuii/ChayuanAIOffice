@@ -1,6 +1,6 @@
 import { Editor } from '@tiptap/core'
 import { TextSelection } from '@tiptap/pm/state'
-import { parseDocx, saveDocx } from '@chatoffice/docx-engine'
+import { parseDocx, saveDocx } from '@chaoffice/docx-engine'
 import JSZip from 'jszip'
 import { describe, expect, it } from 'vitest'
 import { buildDocx } from '../../../packages/docx-engine/tests/helpers/build-docx'

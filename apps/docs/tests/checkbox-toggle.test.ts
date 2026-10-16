@@ -1,5 +1,5 @@
 /**
- * Clicking a checkbox glyph flips it (chatoffice#248): legacy FORMCHECKBOX
+ * Clicking a checkbox glyph flips it (chaoffice#248): legacy FORMCHECKBOX
  * fields and w14:checkbox content controls toggle, plain box characters do not.
  */
 import { Editor } from '@tiptap/core'

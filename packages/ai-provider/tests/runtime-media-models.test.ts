@@ -39,7 +39,7 @@ const relaySettings = (vendorId: string): AiSettingsV2 =>
 const runtimeWith = (settings: AiSettingsV2): ReturnType<typeof createAiRuntime> =>
   createAiRuntime({
     source: { read: async () => settings, write: async () => {} } satisfies AiSettingsSource,
-    chatoffice: {
+    chaoffice: {
       apiKey: () => '',
       hasAuth: () => false,
       status: async () => ({ loggedIn: false }),

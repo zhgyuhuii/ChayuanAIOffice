@@ -26,8 +26,8 @@ import type {
   ShapeRenderNode,
   TableCellRender,
   TableRenderNode,
-} from '@chatoffice/pptx-render'
-import { extrusionFrontFace } from '@chatoffice/pptx-render'
+} from '@chaoffice/pptx-render'
+import { extrusionFrontFace } from '@chaoffice/pptx-render'
 import {
   anchoredTileCanvas,
   averageColor,

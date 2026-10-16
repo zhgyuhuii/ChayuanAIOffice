@@ -4,7 +4,7 @@ import * as fs from 'node:fs'
 import * as os from 'node:os'
 import * as path from 'node:path'
 import { createVideoTaskRegistry, type VideoFileSink } from '../src/video-tasks'
-import { createAiRuntime, createFileSource } from '@chatoffice/ai-provider'
+import { createAiRuntime, createFileSource } from '@chaoffice/ai-provider'
 
 /**
  * End-to-end video task chain over a local fake vendor — no external
@@ -116,7 +116,7 @@ async function makeRuntime(): Promise<ReturnType<typeof createAiRuntime>> {
       readFile: (p) => fs.promises.readFile(p, 'utf8'),
       writeFile: (p, c) => fs.promises.writeFile(p, c),
     }),
-    chatoffice: {
+    chaoffice: {
       apiKey: () => '',
       hasAuth: () => false,
       status: async () => ({ loggedIn: false }),

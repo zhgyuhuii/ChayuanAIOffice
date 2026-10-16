@@ -8,12 +8,12 @@ import {
   type AgentImage,
   type AgentVideo,
   type ToolDisplay,
-} from '@chatoffice/agent-core'
-import type { RenderSlide } from '@chatoffice/pptx-render'
+} from '@chaoffice/agent-core'
+import type { RenderSlide } from '@chaoffice/pptx-render'
 import {
   imageGenerationAvailable,
   mediaAnalysisAvailable,
-} from '@chatoffice/ai-provider/browser'
+} from '@chaoffice/ai-provider/browser'
 import type {
   AiModelSelection,
   AiSettingsV2,
@@ -84,7 +84,7 @@ import {
   addTokenUsage,
   useChatRunQueue,
   type AiTokenUsageView,
-} from '@chatoffice/ui'
+} from '@chaoffice/ui'
 import {
   defaultSettingsV2,
   enabledChatModels,
@@ -93,7 +93,7 @@ import {
   resolveDefaultModel,
   resolveModelCapabilities,
   type AiProtocol,
-} from '@chatoffice/ai-provider/browser'
+} from '@chaoffice/ai-provider/browser'
 import { slidesModelBridge } from './model-bridge'
 import { hydrateSpecSvg } from './spec-svg-hydrate'
 import attachIcon from '../assets/attach-icon.png'
@@ -114,12 +114,12 @@ import {
   IconAiFactCheck,
   IconAiImage,
 } from './AssistantTab'
-import { AssistantLibraryBrowser } from '@chatoffice/ui/assistant-library'
-import type { DockChrome } from '@chatoffice/ui'
+import { AssistantLibraryBrowser } from '@chaoffice/ui/assistant-library'
+import type { DockChrome } from '@chaoffice/ui'
 
 // 惰性加载:模型设置页(含厂商 logo 组)只在打开时拉取,不进启动图
 const ModelSettingsPage = lazy(() =>
-  import('@chatoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
+  import('@chaoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
 )
 
 interface ToolActivity {
@@ -669,15 +669,15 @@ function AiConversationBody({
   }
   const [modelSettingsOpen, setModelSettingsOpen] = useState(false)
 
-  /** chatoffice login state for the cloud-tools gate (refreshed on mount and window focus) */
-  const chatofficeLoggedInRef = useRef(false)
+  /** chaoffice login state for the cloud-tools gate (refreshed on mount and window focus) */
+  const chaofficeLoggedInRef = useRef(false)
   useEffect(() => {
     let alive = true
     const refresh = () => {
       void window.slidesApi
         ?.aiChaOfficeStatus()
         .then((s) => {
-          if (alive) chatofficeLoggedInRef.current = !!s?.loggedIn
+          if (alive) chaofficeLoggedInRef.current = !!s?.loggedIn
         })
         .catch(() => {})
     }
@@ -1252,7 +1252,7 @@ function AiConversationBody({
           return false
         }
       },
-      // Local single-page generation (no chatoffice needed, e.g. BYOK): one LLM request through the
+      // Local single-page generation (no chaoffice needed, e.g. BYOK): one LLM request through the
       // app's own AI transport writes a structured JSON slide spec, and the main process builds
       // it directly into a one-slide pptx with pptx-engine primitives — no HTML intermediate.
       generatePageLocal: async (args) => {
@@ -1360,7 +1360,7 @@ function AiConversationBody({
         }
         return { ok: false, error: lastErr || tGlobal('aiErrUnknown') }
       },
-      // Cloud single-page generation (chatoffice slide_generate): the cloud service owns HTML writing +
+      // Cloud single-page generation (chaoffice slide_generate): the cloud service owns HTML writing +
       // pptx conversion; the deck-level style/outline stay local.
       generatePageCloud: async (args) => {
         // a stop that already fired must not start (and bill) another page
@@ -1781,14 +1781,14 @@ function AiConversationBody({
             return next
           })
           // Signed-out failures get an inline sign-in button — but only when the
-          // error is itself a chatoffice auth error (both locales name ChaOffice
+          // error is itself a chaoffice auth error (both locales name ChaOffice
           // next to a sign-in word). Gating on status alone stamped the CTA onto
           // generic failures (tool-error stops, BYOK key problems) where signing
           // in fixes nothing and the button reads as required.
           void window.slidesApi
             .aiChaOfficeStatus()
             .then((status) => {
-              if (status.loggedIn || !isChatofficeAuthError(error)) return
+              if (status.loggedIn || !isChaofficeAuthError(error)) return
               setChat((prev) => {
                 const next = [...prev]
                 const last = next.at(-1)
@@ -3065,11 +3065,11 @@ function AiConversationBody({
 /** Image URL regex: starts with http(s), extension is a common image format */
 const IMAGE_URL_RE = /https?:\/\/[^\s"'<>]+\.(?:jpg|jpeg|png|webp|gif|bmp|svg)(?:\?[^\s"'<>]*)?/gi
 
-/** The error is a chatoffice sign-in failure (the sign-in CTA's only trigger):
+/** The error is a chaoffice sign-in failure (the sign-in CTA's only trigger):
  * every locale's auth message names ChaOffice next to a sign-in word
  * (zh「未登录 ChaOffice…登录」, en "Not signed in to ChaOffice… Sign in"). */
-function isChatofficeAuthError(msg: string): boolean {
-  return /chatoffice/i.test(msg) && /sign\s?in|log\s?in|登录/i.test(msg)
+function isChaofficeAuthError(msg: string): boolean {
+  return /chaoffice/i.test(msg) && /sign\s?in|log\s?in|登录/i.test(msg)
 }
 
 /** URL regex (inline link detection) */

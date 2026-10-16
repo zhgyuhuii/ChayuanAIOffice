@@ -178,7 +178,7 @@ export async function printHtmlToPdf(
   html: PrintableHtml,
   createWindow: () => PrintWindow,
 ): Promise<Buffer> {
-  const workDir = await mkdtemp(join(tmpdir(), 'chatoffice-ai-doc-'))
+  const workDir = await mkdtemp(join(tmpdir(), 'chaoffice-ai-doc-'))
   let printWin: PrintWindow | undefined
   try {
     printWin = createWindow()

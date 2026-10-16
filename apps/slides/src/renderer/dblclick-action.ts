@@ -1,4 +1,4 @@
-import type { RenderNode } from '@chatoffice/pptx-render'
+import type { RenderNode } from '@chaoffice/pptx-render'
 import { contextualTabFor, type ContextTab } from './components/context-tabs'
 
 export type DblClickAction =

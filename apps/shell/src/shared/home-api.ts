@@ -1,4 +1,4 @@
-import type { KbCitation } from '@chatoffice/ai-provider'
+import type { KbCitation } from '@chaoffice/ai-provider'
 import type {
   AiModelEntry,
   AiModelSelection,
@@ -7,7 +7,7 @@ import type {
   ChaOfficeAccountStatus,
   LocalToolOpResult,
   LocalToolStatus,
-} from '@chatoffice/ai-provider'
+} from '@chaoffice/ai-provider'
 import type {
   AiStreamChunk,
   AiStreamWireRequest,
@@ -18,9 +18,9 @@ import type {
   CreateDocumentRequest,
   CreateDocumentResult,
 } from '../../../docs/src/shared/ipc'
-import type { KbFileInfo, KbReadPage, KbSearchHit } from '@chatoffice/agent-core'
+import type { KbFileInfo, KbReadPage, KbSearchHit } from '@chaoffice/agent-core'
 import type { UpdateChannel, UpdateUiState } from './update-api'
-import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
+import type { AiPanelPrefs } from '@chaoffice/ui/ai-panel-prefs'
 
 /** folder the new file's first save should land in (upstream 7036122; Home "Folders" panel) */
 export interface NewFileOpts {
@@ -30,7 +30,7 @@ export interface NewFileOpts {
 }
 import type { DockKind } from './dock-api'
 
-/** UI language; kept self-contained here (mirrors Lang in @chatoffice/i18n) */
+/** UI language; kept self-contained here (mirrors Lang in @chaoffice/i18n) */
 export type UiLanguage =
   | 'zh'
   | 'en'
@@ -58,14 +58,14 @@ export type UiLanguage =
 export type UiTheme = 'light' | 'dark' | 'system'
 
 /**
- * Document page theme preference (chatoffice#1811): what the editors' canvas/paper does
+ * Document page theme preference (chaoffice#1811): what the editors' canvas/paper does
  * relative to the UI theme. 'follow' reproduces the previous single-theme
  * behavior; 'light'/'dark' pin the paper regardless of the UI theme.
  */
 export type DocTheme = 'follow' | 'light' | 'dark'
 
 /** shell-wide AutoSave default for every editor; updatedAt is 0 until first set */
-/** mirrors AUTHOR_NAME_MAX in @chatoffice/electron-utils (the renderer cannot import it) */
+/** mirrors AUTHOR_NAME_MAX in @chaoffice/electron-utils (the renderer cannot import it) */
 export const AUTHOR_NAME_MAX = 120
 
 export interface AuthorNameSetting {
@@ -347,7 +347,7 @@ export interface HomeApi {
   getUpdateChannel(): Promise<UpdateChannel>
   /** switch + persist the update channel; triggers an immediate update check */
   setUpdateChannel(channel: UpdateChannel): Promise<void>
-  /** ChaOffice account status (chatoffice login state; to be upgraded to a signup/account system later) */
+  /** ChaOffice account status (chaoffice login state; to be upgraded to a signup/account system later) */
   accountStatus(): Promise<AccountStatus>
   /** start ChaOffice login (opens the browser; accountStatus flips to logged-in on completion); returns whether the launch succeeded */
   accountLogin(): Promise<boolean>
@@ -361,7 +361,7 @@ export interface HomeApi {
    *  main validates the scheme, non-https is dropped. Optional: web shim omits it */
   openExternal?(url: string): Promise<void>
   openChat?(): Promise<boolean>
-  /** log out (clears the saved API key; the login state is shared globally with the chatoffice CLI) */
+  /** log out (clears the saved API key; the login state is shared globally with the chaoffice CLI) */
   accountLogout(): Promise<void>
   /** app version (from package.json / electron app.getVersion) */
   getAppVersion(): Promise<string>
@@ -384,7 +384,7 @@ export interface HomeApi {
   getTheme(): Promise<UiTheme>
   /** switch + persist the UI theme; broadcasts 'app:theme-changed' to all web contents */
   setTheme(theme: UiTheme): Promise<void>
-  /** current document page theme preference (chatoffice#1811, persisted in userData/app-settings.json) */
+  /** current document page theme preference (chaoffice#1811, persisted in userData/app-settings.json) */
   getDocumentTheme(): Promise<DocTheme>
   /** switch + persist the document page theme; broadcasts 'app:document-theme-changed' to all web contents */
   setDocumentTheme(theme: DocTheme): Promise<void>
@@ -446,7 +446,7 @@ export interface HomeApi {
   cloudProjectsSync(): Promise<CloudProjectsSnapshot | null>
   /** open a cloud project (relative '/agents?id=...' URL) in the default browser */
   openCloudProject(projectUrl: string): Promise<void>
-  /** AI settings (userData/ai-settings.json, shared by every editor); the chatoffice key never appears here */
+  /** AI settings (userData/ai-settings.json, shared by every editor); the chaoffice key never appears here */
   getAiSettings(): Promise<AiSettingsV2>
   /** persist AI settings; open editors pick the change up on their next settings read */
   setAiSettings(view: AiSettingsV2): Promise<void>
@@ -454,10 +454,10 @@ export interface HomeApi {
   setAiCurrentModel(selection: AiModelSelection): Promise<void>
   /** model list discovery; doubles as the settings page connection test */
   aiDiscoverModels(target: DiscoveryTarget): Promise<{ models: AiModelEntry[]; error?: string }>
-  /** chatoffice login state */
-  chatofficeStatus(withEmail?: boolean): Promise<ChaOfficeAccountStatus>
+  /** chaoffice login state */
+  chaofficeStatus(withEmail?: boolean): Promise<ChaOfficeAccountStatus>
   /** open the browser to log in to ChaOffice */
-  chatofficeLogin(): Promise<void>
+  chaofficeLogin(): Promise<void>
   /** 本地与自建：探测 / 一键安装 / 启动（模型设置页状态卡） */
   aiLocalToolStatus(vendorId: string): Promise<LocalToolStatus>
   aiLocalToolInstall(vendorId: string, onLine?: (line: string) => void): Promise<LocalToolOpResult>
@@ -675,7 +675,7 @@ export interface CloudProjectEntry {
 
 /** full local copy of the cloud project list; filtering/paging are client-side */
 export interface CloudProjectsSnapshot {
-  /** false when chatoffice is unavailable (CLI missing or not logged in) */
+  /** false when chaoffice is unavailable (CLI missing or not logged in) */
   available: boolean
   /** all projects, newest first */
   projects: CloudProjectEntry[]
@@ -684,14 +684,14 @@ export interface CloudProjectsSnapshot {
 }
 
 export interface AccountStatus {
-  /** chatoffice is installed and logged in */
+  /** chaoffice is installed and logged in */
   loggedIn: boolean
   email?: string
   /** remaining ChaOffice credits (absent when the balance query failed) */
   creditBalance?: number
 }
 
-/** login flow progress pushed from main (chatoffice login CLI output) */
+/** login flow progress pushed from main (chaoffice login CLI output) */
 export interface AccountLoginEvent {
   phase: 'launched' | 'url' | 'success' | 'error'
   url?: string

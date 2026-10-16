@@ -10,8 +10,8 @@ import {
   DEFAULT_SHEET_PROTECTION_ALLOW,
   type SheetProtectionAllow,
   type SheetProtectionPermission,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-protection'
-import type { SheetPasswordHash } from '@chatoffice/xlsx-gateway/gateway/xlsx-protection-hash'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-protection'
+import type { SheetPasswordHash } from '@chaoffice/xlsx-gateway/gateway/xlsx-protection-hash'
 
 import { t } from './i18n/locale'
 import { journalSuppression, type LazyWorkbookState, type UniverRuntime } from './univer-state'

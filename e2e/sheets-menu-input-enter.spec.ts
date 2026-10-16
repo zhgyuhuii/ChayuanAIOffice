@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import type { Page } from '@playwright/test'
 import { launchShell, closeAndSaveVideo, waitForPageWithUrl, type LaunchedApp } from './helpers'
 
-// the preload exposes window.__chatofficeDebug only under this env var
+// the preload exposes window.__chaofficeDebug only under this env var
 process.env.GENOFFICE_DEBUG_HOOKS = '1'
 
 interface DebugRange {
@@ -15,7 +15,7 @@ interface DebugRange {
 }
 
 type DebugWindow = Window & {
-  __chatofficeDebug: {
+  __chaofficeDebug: {
     univerAPI: {
       getActiveWorkbook(): {
         getActiveSheet(): {
@@ -67,7 +67,7 @@ async function openBlankSheet(
 function setValues(sheets: Page, row: number, column: number, values: unknown[][]): Promise<void> {
   return sheets.evaluate(
     async ({ row, column, values }) => {
-      await (window as unknown as DebugWindow).__chatofficeDebug.univerAPI
+      await (window as unknown as DebugWindow).__chaofficeDebug.univerAPI
         .getActiveWorkbook()
         .getActiveSheet()
         .getRange(row, column, values.length, values[0]?.length ?? 1)
@@ -85,7 +85,7 @@ async function cellCenter(
 ): Promise<{ x: number; y: number }> {
   const rect = await sheets.evaluate(
     ({ row, column }) =>
-      (window as unknown as DebugWindow).__chatofficeDebug.univerAPI
+      (window as unknown as DebugWindow).__chaofficeDebug.univerAPI
         .getActiveWorkbook()
         .getActiveSheet()
         .getRange(row, column, 1, 1)
@@ -104,7 +104,7 @@ function getValues(
 ): Promise<unknown[][]> {
   return sheets.evaluate(
     ({ row, column, rows, columns }) =>
-      (window as unknown as DebugWindow).__chatofficeDebug.univerAPI
+      (window as unknown as DebugWindow).__chaofficeDebug.univerAPI
         .getActiveWorkbook()
         .getActiveSheet()
         .getRange(row, column, rows, columns)
@@ -121,7 +121,7 @@ function getValues(
  */
 test.describe('sheets: Enter runs the context-menu insert-N action', () => {
   test('insert 3 columns left of B via the count box and Enter', async () => {
-    const scratch = await mkdtemp(join(tmpdir(), 'chatoffice-menu-enter-'))
+    const scratch = await mkdtemp(join(tmpdir(), 'chaoffice-menu-enter-'))
     const launched = await launchShell({
       onboardingSeen: true,
       videoDir: 'sheets-menu-input-enter',
@@ -147,7 +147,7 @@ test.describe('sheets: Enter runs the context-menu insert-N action', () => {
 
       // the insert ran: the marker moved from B1 to E1 and the menu closed
       await expect(async () => {
-        // adapted: 断言改走上游 getValues 助手（内部仍读本地 __chatofficeDebug）
+        // adapted: 断言改走上游 getValues 助手（内部仍读本地 __chaofficeDebug）
         const values = (await getValues(sheets, 0, 0, 1, 6))[0] ?? []
         expect(values[4]).toBe('marker')
         expect(values[1]).toBeNull()
@@ -161,7 +161,7 @@ test.describe('sheets: Enter runs the context-menu insert-N action', () => {
 
 test.describe('sheets: cell context menu Excel entries', () => {
   test('Pick From Drop-down List writes the pick and Filter by value hides the rest', async () => {
-    const scratch = await mkdtemp(join(tmpdir(), 'chatoffice-menu-pick-'))
+    const scratch = await mkdtemp(join(tmpdir(), 'chaoffice-menu-pick-'))
     const launched = await launchShell({
       onboardingSeen: true,
       videoDir: 'sheets-menu-pick-from-list',
@@ -194,7 +194,7 @@ test.describe('sheets: cell context menu Excel entries', () => {
       await sheets.getByText("Filter by Selected Cell's Value", { exact: true }).click()
       await expect(async () => {
         const filter = await sheets.evaluate(() => {
-          const sheet = (window as unknown as DebugWindow).__chatofficeDebug.univerAPI
+          const sheet = (window as unknown as DebugWindow).__chaofficeDebug.univerAPI
             .getActiveWorkbook()
             .getActiveSheet()
           const active = sheet.getFilter()

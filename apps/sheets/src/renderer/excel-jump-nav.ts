@@ -41,8 +41,8 @@ import type { ISelectionWithStyle } from '@univerjs/sheets'
 import { whenSheetEditorFocused } from '@univerjs/sheets-ui'
 import type { UniverRuntime } from './univer-state'
 
-const MOVE_JUMP_COMMAND_ID = 'chatoffice.command.move-selection-excel-jump'
-const EXPAND_JUMP_COMMAND_ID = 'chatoffice.command.expand-selection-excel-jump'
+const MOVE_JUMP_COMMAND_ID = 'chaoffice.command.move-selection-excel-jump'
+const EXPAND_JUMP_COMMAND_ID = 'chaoffice.command.expand-selection-excel-jump'
 
 interface IJumpParams {
   direction: Direction

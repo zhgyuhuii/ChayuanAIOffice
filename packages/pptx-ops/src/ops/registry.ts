@@ -19,7 +19,7 @@
  * parts back once per transaction (the flush also re-materializes every deck
  * slide, because slides resolve inherited styles against the chrome).
  */
-import { NAMED_ACTIONS } from '@chatoffice/pptx-engine'
+import { NAMED_ACTIONS } from '@chaoffice/pptx-engine'
 import {
   elementDurableId,
   groupChildDurableId,
@@ -27,9 +27,9 @@ import {
   matchesElementRef,
   parseMasterPart,
   slideDurableId,
-} from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
 export { elementDurableId, matchesElementRef, slideDurableId }
-import type { OpenedPptx, Slide, SlideElement } from '@chatoffice/pptx-engine'
+import type { OpenedPptx, Slide, SlideElement } from '@chaoffice/pptx-engine'
 
 export class GuidedError extends Error {}
 

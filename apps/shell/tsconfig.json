@@ -8,19 +8,19 @@
     // node_modules would otherwise typecheck against another checkout) —
     // same mapping as packages/pdf2docx/tsconfig.json
     "paths": {
-      "@chatoffice/docx-engine": ["../../packages/docx-engine/src/index.ts"],
-      "@chatoffice/font-metrics": ["../../packages/font-metrics/src/index.ts"],
-      "@chatoffice/electron-utils/headless-export": [
+      "@chaoffice/docx-engine": ["../../packages/docx-engine/src/index.ts"],
+      "@chaoffice/font-metrics": ["../../packages/font-metrics/src/index.ts"],
+      "@chaoffice/electron-utils/headless-export": [
         "../../packages/electron-utils/src/headless-export.ts"
       ],
-      "@chatoffice/electron-utils": ["../../packages/electron-utils/src/index.ts"],
-      "@chatoffice/ai-provider": ["../../packages/ai-provider/src/index.ts"],
-      "@chatoffice/i18n": ["../../packages/i18n/src/index.ts"],
-      "@chatoffice/ui": ["../../packages/ui/src/index.ts"],
-      "@chatoffice/pptx-engine": ["../../packages/pptx-engine/src/index.ts"],
-      "@chatoffice/cli/install": ["../../packages/cli/src/install.ts"],
-      "@chatoffice/cli/agent-skills": ["../../packages/cli/src/agent-skills.ts"],
-      "@chatoffice/cli/control-protocol": ["../../packages/cli/src/control-protocol.ts"]
+      "@chaoffice/electron-utils": ["../../packages/electron-utils/src/index.ts"],
+      "@chaoffice/ai-provider": ["../../packages/ai-provider/src/index.ts"],
+      "@chaoffice/i18n": ["../../packages/i18n/src/index.ts"],
+      "@chaoffice/ui": ["../../packages/ui/src/index.ts"],
+      "@chaoffice/pptx-engine": ["../../packages/pptx-engine/src/index.ts"],
+      "@chaoffice/cli/install": ["../../packages/cli/src/install.ts"],
+      "@chaoffice/cli/agent-skills": ["../../packages/cli/src/agent-skills.ts"],
+      "@chaoffice/cli/control-protocol": ["../../packages/cli/src/control-protocol.ts"]
     }
   },
   "include": [

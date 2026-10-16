@@ -15,7 +15,7 @@ import {
   type Paragraph,
   type Slide,
   type SlideElement,
-} from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
 import {
   elementDurableId,
   listSlideAnimations,
@@ -24,7 +24,7 @@ import {
   type AnimationEntry,
   type Op,
   type TxnResult,
-} from '@chatoffice/pptx-ops'
+} from '@chaoffice/pptx-ops'
 import { CliError, EXIT } from '../result'
 import { clipText } from '../preview'
 

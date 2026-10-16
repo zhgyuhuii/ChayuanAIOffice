@@ -1,4 +1,4 @@
-import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
+import type { AiPanelPrefs } from '@chaoffice/ui/ai-panel-prefs'
 export interface OpenFileResult {
   path: string
   name: string
@@ -54,7 +54,7 @@ export interface VideoTaskInfo {
   }
 }
 
-// ---- AI provider settings/config/streaming: canonical types live in @chatoffice/ai-provider ----
+// ---- AI provider settings/config/streaming: canonical types live in @chaoffice/ai-provider ----
 
 import type {
   AiChatResponse,
@@ -67,9 +67,9 @@ import type {
   ChaOfficeAccountStatus,
   LocalToolOpResult,
   LocalToolStatus,
-} from '@chatoffice/ai-provider'
-import type { HeadlessExportTarget } from '@chatoffice/electron-utils/headless-export'
-import type { FaceVerticalMetrics } from '@chatoffice/font-metrics'
+} from '@chaoffice/ai-provider'
+import type { HeadlessExportTarget } from '@chaoffice/electron-utils/headless-export'
+import type { FaceVerticalMetrics } from '@chaoffice/font-metrics'
 
 export type { FaceVerticalMetrics }
 
@@ -90,25 +90,25 @@ export type {
   AiWireProtocol,
   DiscoveryTarget,
   ChaOfficeAccountStatus,
-} from '@chatoffice/ai-provider'
-export { AI_PROVIDERS, KEEP_KEY } from '@chatoffice/ai-provider/browser'
+} from '@chaoffice/ai-provider'
+export { AI_PROVIDERS, KEEP_KEY } from '@chaoffice/ai-provider/browser'
 
-// ---- agent protocol: canonical types live in @chatoffice/agent-core ----
+// ---- agent protocol: canonical types live in @chaoffice/agent-core ----
 
 export type {
   AgentMessage,
   AgentToolCall,
   AgentToolDef,
   AgentToolResult,
-} from '@chatoffice/agent-core'
+} from '@chaoffice/agent-core'
 
 /** wire shape of an ai:stream request: the settings slot carries the selection */
 export interface AiStreamWireRequest {
   requestId: string
   settings: AiModelSelection
   system: string
-  messages: import('@chatoffice/agent-core').AgentMessage[]
-  tools?: import('@chatoffice/agent-core').AgentToolDef[]
+  messages: import('@chaoffice/agent-core').AgentMessage[]
+  tools?: import('@chaoffice/agent-core').AgentToolDef[]
   maxTokens?: number
 }
 
@@ -143,7 +143,7 @@ export interface MarkdownImage {
  * for the real `<file>_files` folder once the save path is known. User text
  * can never spell it: `_` is escaped on the way out.
  */
-export const MARKDOWN_MEDIA_DIR_TOKEN = '__chatoffice_media__'
+export const MARKDOWN_MEDIA_DIR_TOKEN = '__chaoffice_media__'
 
 // ---- chat attachments (local files fed to the agent via tools) ----
 
@@ -267,7 +267,7 @@ export type MenuCommand =
 export type UiTheme = 'light' | 'dark' | 'system'
 
 /**
- * Document page theme preference (chatoffice#1811): what the canvas/paper does relative
+ * Document page theme preference (chaoffice#1811): what the canvas/paper does relative
  * to the UI theme. 'follow' keeps the previous single-theme behavior.
  */
 export type DocTheme = 'follow' | 'light' | 'dark'
@@ -414,7 +414,7 @@ export interface DesktopApi {
   getTheme(): Promise<UiTheme>
   /** theme switched from the shell home page */
   onThemeChanged(handler: (theme: UiTheme) => void): () => void
-  /** current document page theme preference (chatoffice#1811, persisted by the shell in app-settings.json) */
+  /** current document page theme preference (chaoffice#1811, persisted by the shell in app-settings.json) */
   getDocumentTheme(): Promise<DocTheme>
   /** document page theme switched from the shell home page */
   onDocumentThemeChanged(handler: (theme: DocTheme) => void): () => void
@@ -635,7 +635,7 @@ export interface DesktopApi {
   saveImageAs(src: string): Promise<{ ok: boolean; path?: string; error?: string }>
   onViewImage(handler: (src: string) => void): () => void
   aiStreamCancel(requestId: string): Promise<void>
-  /** ChaOffice account status (chatoffice login state); withEmail also returns the email (needs a network request, slower) */
+  /** ChaOffice account status (chaoffice login state); withEmail also returns the email (needs a network request, slower) */
   aiChaOfficeStatus(withEmail?: boolean): Promise<ChaOfficeAccountStatus>
   /** Open the browser to log in to ChaOffice (fire-and-forget; aiChaOfficeStatus flips to logged-in when done) */
   aiChaOfficeLogin(): Promise<void>
@@ -827,5 +827,5 @@ export interface DesktopApi {
   }): void
 }
 
-/** mirrors VIEW_IMAGE_CHANNEL in @chatoffice/electron-utils (kept literal so the preload stays free of main-only deps) */
-export const VIEW_IMAGE_CHANNEL = 'chatoffice:view-image'
+/** mirrors VIEW_IMAGE_CHANNEL in @chaoffice/electron-utils (kept literal so the preload stays free of main-only deps) */
+export const VIEW_IMAGE_CHANNEL = 'chaoffice:view-image'

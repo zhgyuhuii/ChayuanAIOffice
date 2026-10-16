@@ -20,7 +20,7 @@ import type {
   ProjectSummaryEntry,
   RecentEntry,
 } from '../../shared/home-api'
-import { useDismissablePopover, USER_LOGIN_READY } from '@chatoffice/ui'
+import { useDismissablePopover, USER_LOGIN_READY } from '@chaoffice/ui'
 import { fileCountKey, fileCountLabel, visiblePageCount, chatCountKey } from './counts'
 import { MonoFileIcon } from './file-icons'
 import { markText } from '../../shared/text-marks'
@@ -57,14 +57,14 @@ declare global {
 }
 
 /** 弹窗期让编辑器视图让位：shell DOM 永远画在 WebContentsView 之下，全窗弹窗
- *  （设置/删除确认）必须同步 chatoffice-shell-modal 类 + setShellModalOpen IPC
+ *  （设置/删除确认）必须同步 chaoffice-shell-modal 类 + setShellModalOpen IPC
  *  隐藏激活编辑器视图，否则弹窗会被视图盖住只剩树带里一条。 */
 function useShellModalSurface(open: boolean): void {
   useEffect(() => {
-    document.documentElement.classList.toggle('chatoffice-shell-modal', open)
+    document.documentElement.classList.toggle('chaoffice-shell-modal', open)
     if ('chaOfficeTabs' in window) window.chaOfficeTabs.setShellModalOpen(open)
     return () => {
-      document.documentElement.classList.remove('chatoffice-shell-modal')
+      document.documentElement.classList.remove('chaoffice-shell-modal')
       if ('chaOfficeTabs' in window) window.chaOfficeTabs.setShellModalOpen(false)
     }
   }, [open])
@@ -457,7 +457,7 @@ function GroupPicker({ groups, count, onCancel, onPick, onCreate, onRemove }: Gr
 }
 
 // ── Account entry (bottom-left) ──────────────────────────
-// Currently the ChaOffice (chatoffice) login entry; to be upgraded to a signup/account system later.
+// Currently the ChaOffice (chaoffice) login entry; to be upgraded to a signup/account system later.
 // Clicking it opens the settings modal directly (SettingsModal.tsx), which hosts
 // login/logout plus preferences (language, theme, save location, update channel).
 
@@ -514,7 +514,7 @@ function AccountEntry({
     }
   }, [])
 
-  // login progress pushed from main (chatoffice login CLI output)
+  // login progress pushed from main (chaoffice login CLI output)
   // the skill state is a few file reads; re-probe after the modal closes so an
   // update done inside it clears the dot
   useEffect(() => {
@@ -528,7 +528,7 @@ function AccountEntry({
     }
   }, [settingsOpen])
 
-  // login progress pushed from main (chatoffice login CLI output)
+  // login progress pushed from main (chaoffice login CLI output)
   useEffect(() => {
     const off = window.chaOffice.onAccountLogin?.((ev) => {
       if (ev.phase === 'url') {
@@ -1260,7 +1260,7 @@ export function Home() {
     // a shell modal must escape the tree strip beside a document tab: unclip
     // the frame and have the main process hide the covering editor view for
     // the dialog's lifetime
-    document.documentElement.classList.toggle('chatoffice-shell-modal', open)
+    document.documentElement.classList.toggle('chaoffice-shell-modal', open)
     if ('chaOfficeTabs' in window) window.chaOfficeTabs.setShellModalOpen(open)
     if (!open) {
       void refreshHomeModelCache()
@@ -1285,10 +1285,10 @@ export function Home() {
   const shellModalBusy = confirmDelete !== null
   useEffect(() => {
     if (!shellModalBusy) return
-    document.documentElement.classList.add('chatoffice-shell-modal')
+    document.documentElement.classList.add('chaoffice-shell-modal')
     if ('chaOfficeTabs' in window) window.chaOfficeTabs.setShellModalOpen(true)
     return () => {
-      document.documentElement.classList.toggle('chatoffice-shell-modal', settingsOpen)
+      document.documentElement.classList.toggle('chaoffice-shell-modal', settingsOpen)
       if ('chaOfficeTabs' in window) window.chaOfficeTabs.setShellModalOpen(settingsOpen)
     }
   }, [shellModalBusy, settingsOpen])

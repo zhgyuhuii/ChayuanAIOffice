@@ -1,7 +1,13 @@
 {
+<<<<<<< HEAD
   "name": "chatoffice",
   "version": "1.0.6",
   "description": "ChatOffice 办公套件 — 全离线 BFF sidecar（文档/表格/幻灯/PDF/Markdown 五编辑器）以桌面应用形式运行在察元桌面：harness 形态与 Electron 形态点击 Dock 图标即用。",
+=======
+  "name": "chaoffice",
+  "version": "1.0.5",
+  "description": "ChaOffice 办公套件 — 全离线 BFF sidecar（文档/表格/幻灯/PDF/Markdown 五编辑器）以桌面应用形式运行在察元桌面：harness 形态与 Electron 形态点击 Dock 图标即用。",
+>>>>>>> refactor/chaoffice-rename
   "type": "module",
   "main": "./dist/host.js",
   "exports": {
@@ -11,7 +17,7 @@
   },
   "files": [
     "dist",
-    "vendor/chatoffice-sidecar",
+    "vendor/chaoffice-sidecar",
     "cordis.patch.yml",
     "README.md"
   ],

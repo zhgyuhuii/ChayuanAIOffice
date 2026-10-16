@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import type { Editor } from '@tiptap/core'
-import { latexToOmml, ommlToMathML } from '@chatoffice/docx-engine'
+import { latexToOmml, ommlToMathML } from '@chaoffice/docx-engine'
 import { t, useI18n, type StringKey } from '../i18n/locale'
 import { equationBlockJson, inlineEquationNodeJson } from '../editor/equation'
 import { useModalKeys } from './modal-keys'

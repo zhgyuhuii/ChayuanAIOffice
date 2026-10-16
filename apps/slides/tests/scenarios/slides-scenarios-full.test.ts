@@ -7,7 +7,7 @@ import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { expect, describe, it } from 'vitest'
-import { addElement, createBlankPptx, openPptx, savePptx } from '@chatoffice/pptx-engine'
+import { addElement, createBlankPptx, openPptx, savePptx } from '@chaoffice/pptx-engine'
 
 const DIR = mkdtempSync(join(tmpdir(), 'slides-scen2-'))
 

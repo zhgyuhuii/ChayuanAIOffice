@@ -16,7 +16,7 @@ import {
 const dirs: string[] = []
 
 function tempDir(): string {
-  const dir = mkdtempSync(join(tmpdir(), 'chatoffice-remote-service-'))
+  const dir = mkdtempSync(join(tmpdir(), 'chaoffice-remote-service-'))
   dirs.push(dir)
   return dir
 }
@@ -90,7 +90,7 @@ const CONFIG: RemoteStorageConfig = {
   bucket: 'docs',
   accessKeyId: 'AK',
   secretAccessKey: 'SK',
-  prefix: 'chatoffice/',
+  prefix: 'chaoffice/',
   pathStyle: true,
   enabled: true,
 }
@@ -133,11 +133,11 @@ describe('createRemoteFileService', () => {
     const { service } = buildService()
     const put = await service.writeObject(
       'cfg-1',
-      'chatoffice/a.docx',
+      'chaoffice/a.docx',
       Buffer.from('PK\u0003\u0004doc').toString('base64'),
     )
     expect(put.etag).toBe('etag-1')
-    const read = await service.readObject('cfg-1', 'chatoffice/a.docx')
+    const read = await service.readObject('cfg-1', 'chaoffice/a.docx')
     expect(Buffer.from(read.base64, 'base64').toString('utf8')).toBe('PK\u0003\u0004doc')
     expect(read.etag).toBe('etag-1')
   })
@@ -147,12 +147,12 @@ describe('createRemoteFileService', () => {
     const { service } = buildService(bucket)
     const first = await service.writeObject(
       'cfg-1',
-      'chatoffice/a.docx',
+      'chaoffice/a.docx',
       Buffer.from('v1').toString('base64'),
     )
 
     // a racing writer lands between load and save
-    bucket.set('chatoffice/a.docx', {
+    bucket.set('chaoffice/a.docx', {
       bytes: Buffer.from('v2'),
       etag: 'etag-other',
       lastModifiedMs: 2,
@@ -160,14 +160,14 @@ describe('createRemoteFileService', () => {
     await expect(
       service.writeObject(
         'cfg-1',
-        'chatoffice/a.docx',
+        'chaoffice/a.docx',
         Buffer.from('v3').toString('base64'),
         first.etag,
       ),
     ).rejects.toBeInstanceOf(RemoteConflictError)
 
     // matching ETag passes, absent guard stays a blind put
-    bucket.set('chatoffice/a.docx', {
+    bucket.set('chaoffice/a.docx', {
       bytes: Buffer.from('v2'),
       etag: first.etag,
       lastModifiedMs: 2,
@@ -175,22 +175,22 @@ describe('createRemoteFileService', () => {
     await expect(
       service.writeObject(
         'cfg-1',
-        'chatoffice/a.docx',
+        'chaoffice/a.docx',
         Buffer.from('v3').toString('base64'),
         first.etag,
       ),
     ).resolves.toEqual({ etag: expect.any(String) })
     await expect(
-      service.writeObject('cfg-1', 'chatoffice/new.docx', Buffer.from('v1').toString('base64')),
+      service.writeObject('cfg-1', 'chaoffice/new.docx', Buffer.from('v1').toString('base64')),
     ).resolves.toEqual({ etag: expect.any(String) })
   })
 
   it('renames via copy+delete and refuses unknown or disabled configs', async () => {
     const bucket = new Map<string, { bytes: Uint8Array; etag: string; lastModifiedMs: number }>()
     const { service } = buildService(bucket)
-    await service.writeObject('cfg-1', 'chatoffice/old.docx', Buffer.from('x').toString('base64'))
-    await service.renameObject('cfg-1', 'chatoffice/old.docx', 'chatoffice/new.docx')
-    expect([...bucket.keys()]).toEqual(['chatoffice/new.docx'])
+    await service.writeObject('cfg-1', 'chaoffice/old.docx', Buffer.from('x').toString('base64'))
+    await service.renameObject('cfg-1', 'chaoffice/old.docx', 'chaoffice/new.docx')
+    expect([...bucket.keys()]).toEqual(['chaoffice/new.docx'])
 
     await expect(service.writeObject('missing', 'k', '')).rejects.toBeInstanceOf(RemoteStorageError)
     const disabled = settingsWith([{ ...CONFIG, enabled: false }])
@@ -200,19 +200,19 @@ describe('createRemoteFileService', () => {
 
   it('refreshes the index, caches it, and lists from cache afterwards', async () => {
     const bucket = new Map<string, { bytes: Uint8Array; etag: string; lastModifiedMs: number }>()
-    bucket.set('chatoffice/a.docx', { bytes: Buffer.from('a'), etag: 'e1', lastModifiedMs: 1 })
-    bucket.set('chatoffice/b.docx', { bytes: Buffer.from('b'), etag: 'e2', lastModifiedMs: 2 })
+    bucket.set('chaoffice/a.docx', { bytes: Buffer.from('a'), etag: 'e1', lastModifiedMs: 1 })
+    bucket.set('chaoffice/b.docx', { bytes: Buffer.from('b'), etag: 'e2', lastModifiedMs: 2 })
     bucket.set('other/c.txt', { bytes: Buffer.from('c'), etag: 'e3', lastModifiedMs: 3 })
     const { service } = buildService(bucket)
 
     const refreshed = await service.refreshIndex('cfg-1')
     expect(refreshed.files.map((file) => file.key)).toEqual([
-      'chatoffice/a.docx',
-      'chatoffice/b.docx',
+      'chaoffice/a.docx',
+      'chaoffice/b.docx',
     ])
 
     // cache hit: even after the bucket changes, listing stays until refresh
-    bucket.set('chatoffice/c.docx', { bytes: Buffer.from('c'), etag: 'e4', lastModifiedMs: 4 })
+    bucket.set('chaoffice/c.docx', { bytes: Buffer.from('c'), etag: 'e4', lastModifiedMs: 4 })
     const cached = await service.listFiles('cfg-1')
     expect(cached.files).toHaveLength(2)
     expect(cached.refreshedAtMs).toBe(refreshed.refreshedAtMs)
@@ -223,19 +223,19 @@ describe('createRemoteFileService', () => {
 
   it('auto-scans once when listing with no cached index', async () => {
     const bucket = new Map<string, { bytes: Uint8Array; etag: string; lastModifiedMs: number }>()
-    bucket.set('chatoffice/solo.docx', { bytes: Buffer.from('s'), etag: 'e1', lastModifiedMs: 1 })
+    bucket.set('chaoffice/solo.docx', { bytes: Buffer.from('s'), etag: 'e1', lastModifiedMs: 1 })
     const { service } = buildService(bucket)
     const list = await service.listFiles('cfg-1')
-    expect(list.files.map((file) => file.key)).toEqual(['chatoffice/solo.docx'])
+    expect(list.files.map((file) => file.key)).toEqual(['chaoffice/solo.docx'])
     expect(list.refreshedAtMs).toBeGreaterThan(0)
   })
 
   it('deletes objects and reports testConnection verbatim', async () => {
     const bucket = new Map<string, { bytes: Uint8Array; etag: string; lastModifiedMs: number }>()
     const { service } = buildService(bucket)
-    await service.writeObject('cfg-1', 'chatoffice/temp.docx', Buffer.from('x').toString('base64'))
-    await service.deleteObject('cfg-1', 'chatoffice/temp.docx')
-    await expect(service.readObject('cfg-1', 'chatoffice/temp.docx')).rejects.toBeInstanceOf(
+    await service.writeObject('cfg-1', 'chaoffice/temp.docx', Buffer.from('x').toString('base64'))
+    await service.deleteObject('cfg-1', 'chaoffice/temp.docx')
+    await expect(service.readObject('cfg-1', 'chaoffice/temp.docx')).rejects.toBeInstanceOf(
       RemoteNotFoundError,
     )
     expect(await service.testConnection(CONFIG)).toEqual({ ok: true, versioningEnabled: false })

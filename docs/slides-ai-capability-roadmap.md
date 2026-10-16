@@ -17,8 +17,8 @@
 
 - 自研 PPT 编辑器（apps/slides，Konva 画布）+ 自研 OOXML 引擎（pptx-engine 读写 .pptx zip，pptx-render 渲染树）。
 - AI 编辑闭环已存在：`agent-core` 通用 function-calling 循环（anthropic / gemini / openai-compatible / openai-responses **四种**协议，50+ vendor，BYOK）→ 39 个 slides 工具 → `apply_ops`（约 50 个 JSON op 原子事务）+ `execute_slide_script`（沙箱 JS DSL）→ 主进程快照回滚 + 写后几何审计（layout-audit）+ 视觉 QC（slide-qc）。
-- 生成双轨：云端（chatoffice HTML→pptx）+ 本地（BYOK LLM 写 JSON page-spec → pptx-engine 直建）。本地页生成走 `runLlmOnce` 单发，**不依赖 function calling**。
-- 图像能力已有：网图/图库搜索（ai-search：chatoffice→Serper→DDG）+ 生图三通道（gemini-native / dashscope 异步轮询 / openai images，`packages/ai-provider/src/imagegen.ts`）+ chatoffice 云兜底。
+- 生成双轨：云端（chaoffice HTML→pptx）+ 本地（BYOK LLM 写 JSON page-spec → pptx-engine 直建）。本地页生成走 `runLlmOnce` 单发，**不依赖 function calling**。
+- 图像能力已有：网图/图库搜索（ai-search：chaoffice→Serper→DDG）+ 生图三通道（gemini-native / dashscope 异步轮询 / openai images，`packages/ai-provider/src/imagegen.ts`）+ chaoffice 云兜底。
 
 ### 1.2 三大缺口（分析时点）
 
@@ -43,7 +43,7 @@
 1. **根因①（决定性）**：deepseek-reasoner 不支持 function calling（官方文档），发不起 `generate_deck` → AgentLoop 纯文本轮结束 → "光说话不干活"。且 `inferModelType('deepseek-reasoner')` 返回普通 `'chat'`——**现有类型推断认不出无 FC**，UI 无过滤无警告。
 2. **根因②（高发）**：AgentLoop 不传 maxTokens（loop.ts），runtime 兜底 8192，恰为 deepseek-chat 输出上限 → `generate_deck` 长参数（12 页 briefs JSON）极易截断（finish_reason=length）→ 重试 2~3 次后放弃。
 3. **根因③（窄道脆弱）**：registry 已靠 `thinking:{type:'disabled'}` 定点补丁规避 DeepSeek V4"思考模式+工具轮 400 死锁"；`modelEchoesReasoning` 正则只认 `deep-seek-v4` 前缀，其他模型 id 形态漏网。
-4. **链路认知**：即使 chatoffice 云生成可用，`generate_deck` 的发起者仍是操盘模型本身——云通道救不了发不起工具调用的模型。
+4. **链路认知**：即使 chaoffice 云生成可用，`generate_deck` 的发起者仍是操盘模型本身——云通道救不了发不起工具调用的模型。
 
 ---
 

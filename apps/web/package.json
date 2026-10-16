@@ -1,5 +1,5 @@
 {
-  "name": "@chatoffice/web",
+  "name": "@chaoffice/web",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -21,9 +21,9 @@
     "vitest": "^4.1.0"
   },
   "dependencies": {
-    "@chatoffice/i18n": "*",
-    "@chatoffice/ui": "*",
-    "@chatoffice/web-bridge": "*",
+    "@chaoffice/i18n": "*",
+    "@chaoffice/ui": "*",
+    "@chaoffice/web-bridge": "*",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   }

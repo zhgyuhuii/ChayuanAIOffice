@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { ModelPickerButton } from '../src/ModelPickerButton'
-import type { AiSettingsV2 } from '@chatoffice/ai-provider'
+import type { AiSettingsV2 } from '@chaoffice/ai-provider'
 
 const settings: AiSettingsV2 = {
   version: 2,

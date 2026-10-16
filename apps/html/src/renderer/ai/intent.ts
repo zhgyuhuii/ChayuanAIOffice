@@ -1,4 +1,4 @@
-import type { AgentSkill } from '@chatoffice/agent-core'
+import type { AgentSkill } from '@chaoffice/agent-core'
 
 /** what the user picked on the blank-document card: a designed page or written content */
 export type PageIntent = 'design' | 'write'

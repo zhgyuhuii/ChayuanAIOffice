@@ -1,4 +1,4 @@
-import type { NoteProps } from '@chatoffice/docx-engine'
+import type { NoteProps } from '@chaoffice/docx-engine'
 
 export type NoteKind = 'footnote' | 'endnote'
 

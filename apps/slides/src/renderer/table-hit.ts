@@ -1,4 +1,4 @@
-import type { TableRenderNode } from '@chatoffice/pptx-render'
+import type { TableRenderNode } from '@chaoffice/pptx-render'
 
 export function tableLocalPointFromStage(
   stagePoint: { x: number; y: number },

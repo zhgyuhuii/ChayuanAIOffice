@@ -16,7 +16,7 @@ import {
   type AiModelSelection,
   type AiModelType,
   type AiSettingsV2,
-} from '@chatoffice/ai-provider/browser'
+} from '@chaoffice/ai-provider/browser'
 import { useDismissablePopover } from './popover-dismiss'
 import { VendorLogo } from './VendorLogo'
 import './dropdown.css'

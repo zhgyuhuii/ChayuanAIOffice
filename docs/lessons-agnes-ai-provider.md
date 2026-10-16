@@ -28,7 +28,7 @@
 
 ## 本项目的双供应商体系（重要背景）
 
-chatoffice 有**两套**供应商定义，新接供应商时极易加错位置：
+chaoffice 有**两套**供应商定义，新接供应商时极易加错位置：
 
 | 体系 | 文件 | 消费方 | 现状 |
 |---|---|---|---|
@@ -49,7 +49,7 @@ chatoffice 有**两套**供应商定义，新接供应商时极易加错位置�
 ## 排查方法复盘（可复用）
 
 1. **先分层实测**：curl 打 `/models` 和 `/chat/completions`（带与不带 Origin/自定义 UA）→ 再用 `npx tsx` 直跑本项目 `discoverModels()` 源码 → 都绿则问题在 UI/装配层，别在协议代码里空转。
-2. **复现用真 UI**：仓库 e2e 基建（`_electron.launch(apps/shell)` + `CHATOFFICE_USER_DATA` 指向临时目录）起真应用，按 `data-vendor-row` / `data-model-base` / `data-model-fetch` 等 data 属性驱动设置页。注意：**首次打开有 Star 推广弹窗会拦截点击**，先关掉；等消息要等「内容变化」而不是「元素出现」，否则会竞态误判。
+2. **复现用真 UI**：仓库 e2e 基建（`_electron.launch(apps/shell)` + `CHAOFFICE_USER_DATA` 指向临时目录）起真应用，按 `data-vendor-row` / `data-model-base` / `data-model-fetch` 等 data 属性驱动设置页。注意：**首次打开有 Star 推广弹窗会拦截点击**，先关掉；等消息要等「内容变化」而不是「元素出现」，否则会竞态误判。
 3. **抓真实请求体**：`app.evaluate` 里包一层 `globalThis.fetch` 记录目标域名请求体，一行定位「发的和以为的不一样」（本次就是靠它看到 `content: []`）。
 4. **对比「能用的那个项目」的 catalog 条目字段**（defaultUrl/presets/NO_MODELS_API/keyUrl/free），差异就是答案的候选集。
 5. **注意 git 查询的工作目录**：在 e2e/ 子目录里跑 `git log -- <path>` 会把 pathspec 当相对路径，查不出历史还误导结论。
@@ -65,12 +65,12 @@ chatoffice 有**两套**供应商定义，新接供应商时极易加错位置�
 修复 Agnes 后按形态验证，又排掉五个跨仓库问题，全部记录在此：
 
 1. **打包版全新首启必崩**（安装包形态）：`apps/shell/src/main/index.ts` 的改名迁移列表含当前名
-   `ChatOffice`，全新机器上 userData 目录为空时 `cpSync(同目录, 同目录)` 抛「src and dest
+   `ChaOffice`，全新机器上 userData 目录为空时 `cpSync(同目录, 同目录)` 抛「src and dest
    cannot be the same」未捕获 → 主进程崩；第二次启动目录非空才恢复。修复：同目录跳过 +
    逐项拷贝（`cpSync` 对已存在目录会把 src 整个嵌进 dest，不能整目录拷）。
 2. **Node `cpSync` 的软链陷阱**（dsh/harness 形态）：`dereference: true` 会把目录软链改写成
    **指向源树真实路径的绝对链接**；默认（不 dereference）**同样会**！必须 `verbatimSymlinks: true`
-   才逐字保留。sidecar 的 `node_modules/@chatoffice/*` 是 npm workspace 相对软链，被改写成
+   才逐字保留。sidecar 的 `node_modules/@chaoffice/*` 是 npm workspace 相对软链，被改写成
    绝对链接后只在构建机有效。harness 的 `BundledPluginSpec` 因此加了 `preserveSymlinks`。
    注意 pnpm store 型 vendor（kb/models）仍需 dereference 扁平化——两种需求并存。
 3. **BFF/sidecar 纯 Node 崩**：`ai-search` 包根 → media-tools → `electron-utils` 包根 →
@@ -78,7 +78,7 @@ chatoffice 有**两套**供应商定义，新接供应商时极易加错位置�
    绑定惰性化（`electron-binding.ts` 的 createRequire 缝，测试可 `vi.mock`）。教训：**包根
    index 不要顶层 import 'electron'**，或纯 Node 消费方一律走子路径导入。
 4. **sidecar 依赖缺口**：`package-embedded.mjs` 的合成 workspace 不装 slides 应用依赖，
-   pptx 渲染链 `render-build → tiff-decode → pngjs` 与 `fonts → @chatoffice/ui/fonts/*.ttf`
+   pptx 渲染链 `render-build → tiff-decode → pngjs` 与 `fonts → @chaoffice/ui/fonts/*.ttf`
    都缺。修复：slides-src 合成清单声明 pngjs/utif2/harfbuzzjs + PACKAGES 增加 `ui`。
    教训：sidecar 每次改动后**必须从 staged 目录裸起一次**（`node --import tsx ... main.ts`）验证。
 5. **package-lock.json 缺 linux 平台原生包**：lock 在 mac/win 机器上增量生成，不含
@@ -101,4 +101,4 @@ chatoffice 有**两套**供应商定义，新接供应商时极易加错位置�
    全部副本，再对每个宿主包查它的平台 optional 是否在位。
 7. **同一机器双实例**：chatop 桌面的受管 dsh 硬绑 3080 端口，dev 实例与打包实例并存时
    互相抢端口 → 双方 dsh web 各自 ~24s 崩溃重启循环。排障时表现为 sidecar 反复 ready 换
-   端口；先 `pgrep -af dsh` 查共存实例再看 chatoffice 本身。
+   端口；先 `pgrep -af dsh` 查共存实例再看 chaoffice 本身。

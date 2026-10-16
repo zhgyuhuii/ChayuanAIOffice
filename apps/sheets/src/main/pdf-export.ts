@@ -8,7 +8,7 @@ import { join } from 'node:path'
 
 import { BrowserWindow, dialog } from 'electron'
 
-import { isHeadlessMode, showSaveDialogWithMemory } from '@chatoffice/electron-utils'
+import { isHeadlessMode, showSaveDialogWithMemory } from '@chaoffice/electron-utils'
 
 import { evenPageRanges, stitchPlan, type PageVariant } from './pdf-page-variants'
 import { printOptionsFor } from './print-options'

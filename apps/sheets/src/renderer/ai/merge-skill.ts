@@ -1,12 +1,12 @@
 /**
- * AI-driven workbook merging (alpha: Olivia/Merrick, #chatoffice-7): the user
+ * AI-driven workbook merging (alpha: Olivia/Merrick, #chaoffice-7): the user
  * attaches spreadsheet files in the chat and asks the assistant to combine
  * them. The heavy lifting stays engine-side — the tool imports every sheet of
  * the chosen attachments into the current workbook through the same pipeline
  * as Data ▸ Merge Workbooks, and the model then works on the merged data with
  * the normal workbook tools (and create_document for new output files).
  */
-import type { AgentSkill } from '@chatoffice/agent-core'
+import type { AgentSkill } from '@chaoffice/agent-core'
 import type { AttachmentMeta } from '../../shared/desktop-api'
 import type { MergeSourcesResult } from '../merge-workbooks'
 

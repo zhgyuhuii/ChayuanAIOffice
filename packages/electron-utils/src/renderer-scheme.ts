@@ -1,8 +1,8 @@
 import type { CustomScheme } from 'electron'
 import { resolve, sep } from 'node:path'
 
-/** Origin the built renderers are served from (`chatoffice-app://<module>/index.html`). */
-export const RENDERER_SCHEME = 'chatoffice-app'
+/** Origin the built renderers are served from (`chaoffice-app://<module>/index.html`). */
+export const RENDERER_SCHEME = 'chaoffice-app'
 
 /** Chromium persists V8 code caches only for http(s) and for privileged custom
  * schemes; a file:// renderer recompiled its whole bundle on every open. */
@@ -21,7 +21,7 @@ export const RENDERER_SCHEME_PRIVILEGE: CustomScheme = {
 /** docs' lazily served pictures (packages/docx-engine/src/lazy-media.ts); a
  * secure page may only load pictures from another secure scheme */
 export const DOCX_MEDIA_SCHEME_PRIVILEGE: CustomScheme = {
-  scheme: 'chatoffice-docx-media',
+  scheme: 'chaoffice-docx-media',
   privileges: {
     standard: true,
     secure: true,

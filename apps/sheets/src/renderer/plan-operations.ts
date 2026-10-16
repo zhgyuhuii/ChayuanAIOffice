@@ -14,9 +14,9 @@ import {
   parseRange,
   rangeCellCount,
   type RangeBounds,
-} from '@chatoffice/xlsx-gateway/domain/cell-address'
-import { CHART_EDIT_TYPES, chartDataFromValues } from '@chatoffice/xlsx-gateway/domain/chart-visual'
-import type { InMemoryWorkbookAdapter } from '@chatoffice/xlsx-gateway/domain/in-memory-workbook'
+} from '@chaoffice/xlsx-gateway/domain/cell-address'
+import { CHART_EDIT_TYPES, chartDataFromValues } from '@chaoffice/xlsx-gateway/domain/chart-visual'
+import type { InMemoryWorkbookAdapter } from '@chaoffice/xlsx-gateway/domain/in-memory-workbook'
 import {
   convertToValuesBatchError,
   copyTargetBounds,
@@ -27,15 +27,15 @@ import {
   workbookCommandBatchSchema,
   type PrimitiveOperation,
   type WorkbookOperation,
-} from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
-import type { ApplyOutcome, ChangePlan } from '@chatoffice/xlsx-gateway/domain/workbook.types'
-import { offsetFormulaRefs } from '@chatoffice/xlsx-gateway/domain/formula-shift'
+} from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
+import type { ApplyOutcome, ChangePlan } from '@chaoffice/xlsx-gateway/domain/workbook.types'
+import { offsetFormulaRefs } from '@chaoffice/xlsx-gateway/domain/formula-shift'
 import {
   qualifierMatches,
   shiftCellArea,
   shiftFormulaText,
   StructuralShiftError,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-structure'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-structure'
 import { MAX_PATCH_ENTRY_BYTES } from '../shared/desktop-api'
 import { isSheetRemoved } from './edit-journal'
 import { cellKey, parseFormulaReferences } from './formula-closure'

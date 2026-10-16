@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest'
 import {
   InMemoryWorkbookAdapter,
   WorkbookConflictError,
-} from '@chatoffice/xlsx-gateway/domain/in-memory-workbook'
-import type { WorkbookSnapshot } from '@chatoffice/xlsx-gateway/domain/workbook.types'
+} from '@chaoffice/xlsx-gateway/domain/in-memory-workbook'
+import type { WorkbookSnapshot } from '@chaoffice/xlsx-gateway/domain/workbook.types'
 
 function createAdapter(): InMemoryWorkbookAdapter {
   const snapshot: WorkbookSnapshot = {

@@ -125,7 +125,7 @@ const logo = readFileSync(logoPath)
 const dataUrl = `data:image/png;base64,${logo.toString('base64')}`
 const browser = await chromium.launch({ channel: 'chrome', headless: true })
 const page = await browser.newPage({ deviceScaleFactor: 1 })
-const tmp = mkdtempSync(join(tmpdir(), 'chatoffice-app-icon-'))
+const tmp = mkdtempSync(join(tmpdir(), 'chaoffice-app-icon-'))
 /** 1024px canvas with the mac grid margin, rendered once in try{} below */
 let macMaster
 

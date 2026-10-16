@@ -1,4 +1,4 @@
-# Instalace ChatOffice
+# Instalace ChaOffice
 
 Každá sestavení je zveřejněno na [stránce Releases](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest). Všechna pocházejí z `main`; instalátory pro macOS a Windows jsou podepsané.
 
@@ -18,32 +18,32 @@ Starší verze zůstávají na stránce Releases.
 
 ## V systému macOS
 
-Otevřete soubor `.dmg` a přetáhněte **ChatOffice** do složky Aplikace. U sestavení Intel vás při prvním spuštění požádá o potvrzení otevření: klikněte na aplikaci v Aplikacích pravým tlačítkem ▸ Otevřít. To je Gatekeeper, který narazí na obraz disku, který vypadá jako nepodepsaný, a ne poškozené stažení.
+Otevřete soubor `.dmg` a přetáhněte **ChaOffice** do složky Aplikace. U sestavení Intel vás při prvním spuštění požádá o potvrzení otevření: klikněte na aplikaci v Aplikacích pravým tlačítkem ▸ Otevřít. To je Gatekeeper, který narazí na obraz disku, který vypadá jako nepodepsaný, a ne poškozené stažení.
 
 ## V systému Windows
 
-Spusťte instalátor `.exe`. Umístí ChatOffice do nabídky Start a zaregistruje `.docx`, `.xlsx`, `.pptx`, `.pdf` a podobné, takže dvojklik na soubor jej otevře.
+Spusťte instalátor `.exe`. Umístí ChaOffice do nabídky Start a zaregistruje `.docx`, `.xlsx`, `.pptx`, `.pdf` a podobné, takže dvojklik na soubor jej otevře.
 
 ## V systému Linux
 
 **Debian / Ubuntu**
 
 ```sh
-sudo apt install ./chatoffice_<version>_amd64.deb
+sudo apt install ./chaoffice_<version>_amd64.deb
 ```
 
 **Fedora / RHEL / openSUSE**
 
 ```sh
-sudo dnf install ./chatoffice-<version>.x86_64.rpm     # Fedora / RHEL family
-sudo zypper install ./chatoffice-<version>.x86_64.rpm  # openSUSE
+sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
+sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
 
 **AppImage** — běží tam, kde je, bez žádného instalačního kroku:
 
 ```sh
-chmod +x ChatOffice-<version>.AppImage
-./ChatOffice-<version>.AppImage
+chmod +x ChaOffice-<version>.AppImage
+./ChaOffice-<version>.AppImage
 ```
 
 Potřebuje běhové prostředí FUSE 2. Pokud jej nechcete instalovat, spusťte jej s `--appimage-extract-and-run` a izolovaný proces poběží z rozbalené složky.
@@ -64,4 +64,4 @@ Všechny tři obalí zveřejněné artefakty místo toho, aby aplikaci znovu ses
 
 ## Příkazová řádka je součástí
 
-Každá instalace obsahuje příkaz `chatoffice`, který mluví se stejnými enginy jako okno, takže se nikdy neshodnou v tom, jaký soubor je. V systémech macOS a Windows je uvnitř balíčku aplikace; `chatoffice install-cli` jej umístí do vaší `PATH`. Co umí, se dozvíte v kapitole **Příkazová řádka a agenti**.
+Každá instalace obsahuje příkaz `chaoffice`, který mluví se stejnými enginy jako okno, takže se nikdy neshodnou v tom, jaký soubor je. V systémech macOS a Windows je uvnitř balíčku aplikace; `chaoffice install-cli` jej umístí do vaší `PATH`. Co umí, se dozvíte v kapitole **Příkazová řádka a agenti**.

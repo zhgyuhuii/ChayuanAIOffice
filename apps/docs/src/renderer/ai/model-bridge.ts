@@ -1,4 +1,4 @@
-import type { ModelSettingsBridge } from '@chatoffice/ui/ModelSettingsPage'
+import type { ModelSettingsBridge } from '@chaoffice/ui/ModelSettingsPage'
 
 /** the docs preload bridge over the app-wide ai:* channels */
 export const docsModelBridge: ModelSettingsBridge = {
@@ -6,8 +6,8 @@ export const docsModelBridge: ModelSettingsBridge = {
   saveSettings: (view) => window.desktop.setAiSettings(view),
   setCurrentModel: (selection) => window.desktop.setAiCurrentModel(selection),
   discoverModels: (target) => window.desktop.aiDiscoverModels(target),
-  chatofficeStatus: (withEmail) => window.desktop.aiChaOfficeStatus(withEmail),
-  chatofficeLogin: () => window.desktop.aiChaOfficeLogin(),
+  chaofficeStatus: (withEmail) => window.desktop.aiChaOfficeStatus(withEmail),
+  chaofficeLogin: () => window.desktop.aiChaOfficeLogin(),
   localToolStatus: (vendorId) => window.desktop.aiLocalToolStatus(vendorId),
   localToolInstall: (vendorId, onLine) => window.desktop.aiLocalToolInstall(vendorId, onLine),
   localToolStart: (vendorId) => window.desktop.aiLocalToolStart(vendorId),

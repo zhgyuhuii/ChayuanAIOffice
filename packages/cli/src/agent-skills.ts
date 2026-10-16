@@ -16,7 +16,7 @@ import JSZip from 'jszip'
 
 /**
  * Installing the bundled `chaoffice` skill into the coding agents found on this
- * machine, shared by Settings → Integrations and `chatoffice skill`. Every write
+ * machine, shared by Settings → Integrations and `chaoffice skill`. Every write
  * is a click in that pane or an explicit command; nothing installs on its own.
  * Pure functions over an injected home / env so the state table is
  * unit-testable without touching the real dotfolders.
@@ -24,7 +24,7 @@ import JSZip from 'jszip'
 
 export const SKILL_NAME = 'chaoffice'
 
-export const LEGACY_SKILL_NAME = 'chatoffice'
+export const LEGACY_SKILL_NAME = 'chaoffice'
 
 /** app-settings.json key under which every install this machine's ChaAI Office wrote is remembered */
 export const LEDGER_KEY = 'agentSkillInstalls'
@@ -41,7 +41,7 @@ export interface AgentTarget {
 }
 
 export type SkillInstallStatus =
-  /** no chatoffice/ folder in the skills directory */
+  /** no chaoffice/ folder in the skills directory */
   | 'missing'
   /** written by this app, same version and bytes as the bundled skill */
   | 'installed'
@@ -53,7 +53,7 @@ export type SkillInstallStatus =
   | 'foreign'
   /** a newer skill version than the one bundled, whoever wrote it */
   | 'newer'
-  /** chatoffice/ exists but does not hold our skill */
+  /** chaoffice/ exists but does not hold our skill */
   | 'occupied'
 
 export interface SkillInstallState {
@@ -267,7 +267,7 @@ export function installSkill(
 }
 
 /**
- * Pre-rename installs live at `<skillsDir>/chatoffice`; once the chaoffice
+ * Pre-rename installs live at `<skillsDir>/chaoffice`; once the chaoffice
  * skill is in place they are stale duplicates in the agents' skill lists.
  * Removed only when the ledger proves we wrote them.
  */

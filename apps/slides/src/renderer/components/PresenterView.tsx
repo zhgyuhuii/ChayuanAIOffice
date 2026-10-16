@@ -15,7 +15,7 @@
  * screen, W/, white screen; digits + Enter go to that slide number; Esc exit.
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { RenderSlide } from '@chatoffice/pptx-render'
+import type { RenderSlide } from '@chaoffice/pptx-render'
 import type { AnimationItem, ShowSyncState } from '../../shared/ipc'
 import { AnimatedSlideStage, useAnimPlayer } from './AnimatedSlide'
 import { ShowMediaLayer } from './ShowMediaLayer'

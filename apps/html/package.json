@@ -1,5 +1,5 @@
 {
-  "name": "@chatoffice/html",
+  "name": "@chaoffice/html",
   "productName": "ChaOffice HTML",
   "version": "0.1.0",
   "license": "Apache-2.0",
@@ -21,14 +21,14 @@
     "@codemirror/search": "^6.7.2",
     "@codemirror/state": "^6.7.4",
     "@codemirror/view": "^6.43.11",
-    "@chatoffice/agent-core": "*",
-    "@chatoffice/ai-provider": "*",
-    "@chatoffice/ai-search": "*",
-    "@chatoffice/electron-utils": "*",
-    "@chatoffice/file-parse": "*",
-    "@chatoffice/i18n": "*",
-    "@chatoffice/project-store": "*",
-    "@chatoffice/ui": "*",
+    "@chaoffice/agent-core": "*",
+    "@chaoffice/ai-provider": "*",
+    "@chaoffice/ai-search": "*",
+    "@chaoffice/electron-utils": "*",
+    "@chaoffice/file-parse": "*",
+    "@chaoffice/i18n": "*",
+    "@chaoffice/project-store": "*",
+    "@chaoffice/ui": "*",
     "@lezer/highlight": "^1.2.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -45,6 +45,6 @@
   },
   "author": "ChaOffice",
   "dependencies": {
-    "@chatoffice/ai-host": "*"
+    "@chaoffice/ai-host": "*"
   }
 }

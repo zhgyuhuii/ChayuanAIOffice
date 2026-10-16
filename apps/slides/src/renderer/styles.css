@@ -1,61 +1,61 @@
 /* Bundled metric substitutes for fonts most decks assume but macOS/Linux lack:
  * Carlito ↔ Calibri (document content rendering — the canvas font chains in
  * konva-adapter.ts list Carlito right after Calibri). The files are the suite's
- * shared copy (@chatoffice/ui/fonts); their internal family name is "Carlito GO"
+ * shared copy (@chaoffice/ui/fonts); their internal family name is "Carlito GO"
  * (docs' Vietnamese-diacritics rebuild), which is what the main-process metrics
  * report as the draw family — declare both names. */
 @font-face {
   font-family: 'Carlito';
-  src: url('@chatoffice/ui/fonts/Carlito-Regular.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Regular.ttf');
   font-weight: normal;
   font-style: normal;
   font-display: block;
 }
 @font-face {
   font-family: 'Carlito';
-  src: url('@chatoffice/ui/fonts/Carlito-Bold.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Bold.ttf');
   font-weight: bold;
   font-style: normal;
   font-display: block;
 }
 @font-face {
   font-family: 'Carlito';
-  src: url('@chatoffice/ui/fonts/Carlito-Italic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Italic.ttf');
   font-weight: normal;
   font-style: italic;
   font-display: block;
 }
 @font-face {
   font-family: 'Carlito';
-  src: url('@chatoffice/ui/fonts/Carlito-BoldItalic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-BoldItalic.ttf');
   font-weight: bold;
   font-style: italic;
   font-display: block;
 }
 @font-face {
   font-family: 'Carlito GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Regular.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Regular.ttf');
   font-weight: normal;
   font-style: normal;
   font-display: block;
 }
 @font-face {
   font-family: 'Carlito GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Bold.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Bold.ttf');
   font-weight: bold;
   font-style: normal;
   font-display: block;
 }
 @font-face {
   font-family: 'Carlito GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Italic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Italic.ttf');
   font-weight: normal;
   font-style: italic;
   font-display: block;
 }
 @font-face {
   font-family: 'Carlito GO';
-  src: url('@chatoffice/ui/fonts/Carlito-BoldItalic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-BoldItalic.ttf');
   font-weight: bold;
   font-style: italic;
   font-display: block;
@@ -63,7 +63,7 @@
 
 /* Per-app accent (powerpoint-orange family) + slides-only tokens.
  * Chrome tokens (surface/text/border/…, AI panel --color-*) come from
- * @chatoffice/ui/tokens.css; nothing here may shadow those names. */
+ * @chaoffice/ui/tokens.css; nothing here may shadow those names. */
 :root {
   --accent: #c43e1c;
   --accent-dark: #a33517;
@@ -649,7 +649,7 @@ button {
   overflow-x: scroll;
   overflow-y: hidden;
   /* Slim visible scrollbar so mouse users can reach overflowed groups
-     (chatoffice-ai/chatoffice#55). Its 5px lane is carved out of the bottom
+     (chaoffice-ai/chaoffice#55). Its 5px lane is carved out of the bottom
      padding, keeping the 80px band and the content area unchanged; Chromium
      paints a thumb only while the row actually overflows. */
   padding-bottom: 1px;
@@ -4123,7 +4123,7 @@ body.vib .slide-list {
   box-shadow: var(--slides-thumb-shadow);
 }
 
-/* Shared dropdown (@chatoffice/ui gs-dd) app sizing: format-pane rows, the
+/* Shared dropdown (@chaoffice/ui gs-dd) app sizing: format-pane rows, the
  * ribbon animation-timing group, and modal dialogs */
 .fp-prow .gs-dd {
   width: 120px;
@@ -4940,7 +4940,7 @@ body.vib .slide-list {
   border-radius: 1px;
 }
 
-/* Anchor positioning for the shared Word-style color panel (@chatoffice/ui
+/* Anchor positioning for the shared Word-style color panel (@chaoffice/ui
    .gcp-palette draws the chrome; this wrapper only places it under the trigger). */
 .rb-color-pop {
   position: fixed;

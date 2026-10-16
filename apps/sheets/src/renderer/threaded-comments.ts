@@ -5,7 +5,7 @@
  * sheet's threads; edits mark the sheet note-dirty and the save snapshots
  * the store next to the live notes (collectNoteStates).
  */
-import { personIdFor } from '@chatoffice/xlsx-gateway/gateway/xlsx-threaded-comments'
+import { personIdFor } from '@chaoffice/xlsx-gateway/gateway/xlsx-threaded-comments'
 
 import type { WorkbookFile } from '../shared/desktop-api'
 import type { StructuralJournalOp } from './edit-journal'
@@ -30,7 +30,7 @@ export interface CellThread {
   readonly replies: readonly ThreadReply[]
 }
 
-export const FALLBACK_AUTHOR = 'ChatOffice User'
+export const FALLBACK_AUTHOR = 'ChaOffice User'
 
 export interface CellRange {
   readonly startRow: number

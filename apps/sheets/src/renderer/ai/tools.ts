@@ -1,23 +1,23 @@
 import { z } from 'zod'
-import type { AgentToolCall, AgentToolDef } from '@chatoffice/agent-core'
+import type { AgentToolCall, AgentToolDef } from '@chaoffice/agent-core'
 import {
   copyTargetBounds,
   workbookOperationSchema,
   type WorkbookOperation,
-} from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
+} from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
 import {
   columnLabel,
   parseRange,
   rangeCellCount,
   formatAddress,
   type RangeBounds,
-} from '@chatoffice/xlsx-gateway/domain/cell-address'
+} from '@chaoffice/xlsx-gateway/domain/cell-address'
 import type {
   ApplyOutcome,
   CellFormatState,
   CellScalar,
   ChangePlan,
-} from '@chatoffice/xlsx-gateway/domain/workbook.types'
+} from '@chaoffice/xlsx-gateway/domain/workbook.types'
 import { t } from '../i18n/locale'
 import { formatRangeAggregate, type RangeAggregate } from './aggregate'
 import { guideCatalogSummary, loadGuides } from './guides'

@@ -61,12 +61,12 @@ describe('media settings', () => {
     }
   })
 
-  // adapted: 上游 genspark 供应商本地改名 chatoffice
-  it('defaults every provider to its default models and chatoffice as the active one', () => {
+  // adapted: 上游 genspark 供应商本地改名 chaoffice
+  it('defaults every provider to its default models and chaoffice as the active one', () => {
     const media = defaultAiMediaSettings()
-    expect(media.imageProvider).toBe('chatoffice')
-    expect(media.analysisProvider).toBe('chatoffice')
-    expect(media.videoAnalysisProvider).toBe('chatoffice')
+    expect(media.imageProvider).toBe('chaoffice')
+    expect(media.analysisProvider).toBe('chaoffice')
+    expect(media.videoAnalysisProvider).toBe('chaoffice')
     for (const meta of AI_MEDIA_PROVIDERS) {
       expect(media.providers[meta.id].imageModel).toBe(meta.defaultImageModel)
       expect(media.providers[meta.id].apiKey).toBe('')
@@ -77,9 +77,9 @@ describe('media settings', () => {
 
   it('is carried by defaultAiSettings and healed in from a pre-media settings file', () => {
     const defaults = defaultAiSettings()
-    expect(defaults.media?.imageProvider).toBe('chatoffice')
+    expect(defaults.media?.imageProvider).toBe('chaoffice')
     const resolved = resolveAiSettings(
-      { provider: 'chatoffice', providers: defaults.providers },
+      { provider: 'chaoffice', providers: defaults.providers },
       defaultAiSettings(),
     )
     expect(resolved.media).toEqual(defaultAiMediaSettings())
@@ -130,14 +130,14 @@ describe('media settings', () => {
   it('activates a BYOK media provider per capability, only when usable and capable', () => {
     expect(activeMediaProvider(openaiSettings(), 'image')).toBe('openai')
     expect(activeMediaProvider(openaiSettings(), 'analysis')).toBe('openai')
-    expect(activeMediaProvider(openaiSettings(''), 'image')).toBe('chatoffice')
-    expect(activeMediaProvider(openaiSettings('   '), 'image')).toBe('chatoffice')
+    expect(activeMediaProvider(openaiSettings(''), 'image')).toBe('chaoffice')
+    expect(activeMediaProvider(openaiSettings('   '), 'image')).toBe('chaoffice')
     const custom = defaultAiMediaSettings()
     custom.imageProvider = 'custom'
-    expect(activeMediaProvider(withMedia(custom), 'image')).toBe('chatoffice')
+    expect(activeMediaProvider(withMedia(custom), 'image')).toBe('chaoffice')
     custom.providers.custom.baseUrl = 'http://localhost:1234/v1'
     expect(activeMediaProvider(withMedia(custom), 'image')).toBe('custom')
-    expect(activeMediaProvider(withMedia(custom), 'analysis')).toBe('chatoffice')
+    expect(activeMediaProvider(withMedia(custom), 'analysis')).toBe('chaoffice')
     expect(activeMediaConfig(withMedia(custom), 'image')?.provider).toBe('custom')
     // MiniMax-M3 supports both image and video analysis
     const mm = defaultAiMediaSettings()
@@ -152,24 +152,24 @@ describe('media settings', () => {
     ds.providers.deepseek.apiKey = 'sk-ds'
     expect(activeMediaProvider(withMedia(ds), 'analysis')).toBe('deepseek')
     ds.videoAnalysisProvider = 'deepseek'
-    expect(activeMediaProvider(withMedia(ds), 'video')).toBe('chatoffice')
+    expect(activeMediaProvider(withMedia(ds), 'video')).toBe('chaoffice')
     // OpenAI reads images but not video: as the video provider it falls back
     const oa = openaiSettings()
     oa.media!.videoAnalysisProvider = 'openai'
-    expect(activeMediaProvider(oa, 'video')).toBe('chatoffice')
+    expect(activeMediaProvider(oa, 'video')).toBe('chaoffice')
     oa.media!.videoAnalysisProvider = 'gemini'
     oa.media!.providers.gemini.apiKey = 'AIza'
     expect(activeMediaProvider(oa, 'video')).toBe('gemini')
-    expect(activeMediaProvider({ media: undefined }, 'image')).toBe('chatoffice')
+    expect(activeMediaProvider({ media: undefined }, 'image')).toBe('chaoffice')
     expect(
       activeMediaProvider({ media: { imageProvider: 'nope', providers: {} } as never }, 'image'),
-    ).toBe('chatoffice')
+    ).toBe('chaoffice')
   })
 
   it('gates the tools on BYOK model presence (no ChaOffice backend)', () => {
-    const chatoffice = defaultAiSettings()
-    expect(imageGenerationAvailable(chatoffice, true)).toBe(false)
-    expect(imageGenerationAvailable(chatoffice, false)).toBe(false)
+    const chaoffice = defaultAiSettings()
+    expect(imageGenerationAvailable(chaoffice, true)).toBe(false)
+    expect(imageGenerationAvailable(chaoffice, false)).toBe(false)
 
     const byok = openaiSettings()
     expect(imageGenerationAvailable(byok, false)).toBe(true)

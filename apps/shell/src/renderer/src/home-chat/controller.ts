@@ -1,5 +1,5 @@
-import type { AgentMessage } from '@chatoffice/agent-core'
-import type { AiModelSelection, KbCitation } from '@chatoffice/ai-provider'
+import type { AgentMessage } from '@chaoffice/agent-core'
+import type { AiModelSelection, KbCitation } from '@chaoffice/ai-provider'
 import type {
   HomeChatAttachment,
   HomeChatCard,

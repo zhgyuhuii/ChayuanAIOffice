@@ -1,6 +1,6 @@
-import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
-import type { HeadlessExportTarget } from '@chatoffice/electron-utils/headless-export'
-import type { Lang } from '@chatoffice/i18n'
+import type { AiPanelPrefs } from '@chaoffice/ui/ai-panel-prefs'
+import type { HeadlessExportTarget } from '@chaoffice/electron-utils/headless-export'
+import type { Lang } from '@chaoffice/i18n'
 import type {
   AiModelSelection,
   AiSettingsV2,
@@ -10,7 +10,7 @@ import type {
   AiModelEntry,
   LocalToolStatus,
   LocalToolOpResult,
-} from '@chatoffice/ai-provider'
+} from '@chaoffice/ai-provider'
 
 export const HTML_CHANNELS = {
   consumePending: 'html:consume-pending',
@@ -141,8 +141,8 @@ export const AI_CHANNELS = {
   setSettings: 'ai:set-settings',
   setCurrentModel: 'ai:set-current-model',
   discoverModels: 'ai:discover-models',
-  chatofficeStatus: 'ai:chatoffice-status',
-  chatofficeLogin: 'ai:chatoffice-login',
+  chaofficeStatus: 'ai:chaoffice-status',
+  chaofficeLogin: 'ai:chaoffice-login',
   localToolStatus: 'ai:local-tool-status',
   localToolInstall: 'ai:local-tool-install',
   localToolStart: 'ai:local-tool-start',

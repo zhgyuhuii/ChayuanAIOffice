@@ -4,7 +4,7 @@
  * until the last one settled). Loaded/in-flight urls are tracked across calls
  * so re-collecting urls after an edit never reloads or discards progress.
  */
-import { metafileToDataUrl } from '@chatoffice/docx-engine/metafile'
+import { metafileToDataUrl } from '@chaoffice/docx-engine/metafile'
 
 export type ApplyImages = (entries: ReadonlyArray<readonly [string, HTMLImageElement]>) => void
 
@@ -27,12 +27,12 @@ export const MAX_METAFILE_BASE64_CHARS = 56 * 1024 * 1024
  * Meiryo UI came out in the browser's default sans). `false` = a sync is in flight.
  */
 function waitForDocFonts(timeoutMs = 4000): Promise<void> {
-  if (typeof window === 'undefined' || window.__chatofficeDocFontsSynced !== false)
+  if (typeof window === 'undefined' || window.__chaofficeDocFontsSynced !== false)
     return Promise.resolve()
   return new Promise((resolve) => {
     const started = Date.now()
     const tick = () => {
-      if (window.__chatofficeDocFontsSynced !== false || Date.now() - started >= timeoutMs) resolve()
+      if (window.__chaofficeDocFontsSynced !== false || Date.now() - started >= timeoutMs) resolve()
       else setTimeout(tick, 50)
     }
     setTimeout(tick, 50)

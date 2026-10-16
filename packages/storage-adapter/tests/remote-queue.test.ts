@@ -8,7 +8,7 @@ import type { RemoteStorageClient } from '../src/index.js'
 const dirs: string[] = []
 
 function tempDir(): string {
-  const dir = mkdtempSync(join(tmpdir(), 'chatoffice-remote-queue-'))
+  const dir = mkdtempSync(join(tmpdir(), 'chaoffice-remote-queue-'))
   dirs.push(dir)
   return dir
 }
@@ -65,29 +65,29 @@ describe('createPendingSyncQueue', () => {
     const dir = tempDir()
     const bucket = new Map<string, FakeObject>()
     const queue = createPendingSyncQueue({ dir, resolveClient: () => fakeClient(bucket) })
-    queue.enqueue('cfg-1', 'chatoffice/a.docx', Buffer.from('pending-bytes'), 'e-load')
+    queue.enqueue('cfg-1', 'chaoffice/a.docx', Buffer.from('pending-bytes'), 'e-load')
     expect(queue.status()).toHaveLength(1)
 
-    bucket.set('chatoffice/a.docx', { bytes: Buffer.from('old'), etag: 'e-load' })
+    bucket.set('chaoffice/a.docx', { bytes: Buffer.from('old'), etag: 'e-load' })
     const outcomes = await queue.flush()
     expect(outcomes).toEqual([
       {
-        slot: expect.objectContaining({ key: 'chatoffice/a.docx' }),
+        slot: expect.objectContaining({ key: 'chaoffice/a.docx' }),
         outcome: 'synced',
         etag: expect.any(String),
       },
     ])
-    expect(Buffer.from(bucket.get('chatoffice/a.docx')!.bytes).toString()).toBe('pending-bytes')
+    expect(Buffer.from(bucket.get('chaoffice/a.docx')!.bytes).toString()).toBe('pending-bytes')
     expect(queue.status()).toHaveLength(0)
   })
 
   it('keeps conflicting slots queued and reports them (consensus Q6)', async () => {
     const dir = tempDir()
     const bucket = new Map<string, FakeObject>([
-      ['chatoffice/a.docx', { bytes: Buffer.from('theirs'), etag: 'e-theirs' }],
+      ['chaoffice/a.docx', { bytes: Buffer.from('theirs'), etag: 'e-theirs' }],
     ])
     const queue = createPendingSyncQueue({ dir, resolveClient: () => fakeClient(bucket) })
-    queue.enqueue('cfg-1', 'chatoffice/a.docx', Buffer.from('mine'), 'e-mine')
+    queue.enqueue('cfg-1', 'chaoffice/a.docx', Buffer.from('mine'), 'e-mine')
 
     const outcomes = await queue.flush()
     expect(outcomes).toEqual([
@@ -98,7 +98,7 @@ describe('createPendingSyncQueue', () => {
     // adjudication: overwrite pushes the local bytes anyway
     const forced = await queue.flush({ force: true })
     expect(forced[0].outcome).toBe('synced')
-    expect(Buffer.from(bucket.get('chatoffice/a.docx')!.bytes).toString()).toBe('mine')
+    expect(Buffer.from(bucket.get('chaoffice/a.docx')!.bytes).toString()).toBe('mine')
     expect(queue.status()).toHaveLength(0)
   })
 
@@ -107,18 +107,18 @@ describe('createPendingSyncQueue', () => {
     const bucket = new Map<string, FakeObject>()
     const queue = createPendingSyncQueue({ dir, resolveClient: () => fakeClient(bucket) })
 
-    queue.enqueue('cfg-1', 'chatoffice/gone.docx', Buffer.from('x'), 'e-was-there')
+    queue.enqueue('cfg-1', 'chaoffice/gone.docx', Buffer.from('x'), 'e-was-there')
     expect((await queue.flush())[0]).toMatchObject({ outcome: 'conflict', currentEtag: null })
 
-    queue.enqueue('cfg-1', 'chatoffice/brand-new.docx', Buffer.from('x'), null)
+    queue.enqueue('cfg-1', 'chaoffice/brand-new.docx', Buffer.from('x'), null)
     // The conflicted gone.docx slot stays queued and is retried on every
     // flush, so the outcome array also carries it — key the assertion on the
     // brand-new slot instead of array position (order is not contractual).
     const second = await queue.flush()
     expect(
-      second.find((outcome) => outcome.slot.key === 'chatoffice/brand-new.docx'),
+      second.find((outcome) => outcome.slot.key === 'chaoffice/brand-new.docx'),
     ).toMatchObject({ outcome: 'synced' })
-    expect(bucket.has('chatoffice/brand-new.docx')).toBe(true)
+    expect(bucket.has('chaoffice/brand-new.docx')).toBe(true)
   })
 
   it('reports network errors without dropping the slot', async () => {
@@ -128,7 +128,7 @@ describe('createPendingSyncQueue', () => {
       dir,
       resolveClient: () => fakeClient(bucket, { failPut: true }),
     })
-    queue.enqueue('cfg-1', 'chatoffice/a.docx', Buffer.from('x'), null)
+    queue.enqueue('cfg-1', 'chaoffice/a.docx', Buffer.from('x'), null)
 
     const outcomes = await queue.flush()
     expect(outcomes).toEqual([
@@ -141,11 +141,11 @@ describe('createPendingSyncQueue', () => {
     const dir = tempDir()
     const bucket = new Map<string, FakeObject>()
     const first = createPendingSyncQueue({ dir, resolveClient: () => fakeClient(bucket) })
-    first.enqueue('cfg-1', 'chatoffice/a.docx', Buffer.from('one'), null)
-    first.enqueue('cfg-2', 'chatoffice/b.docx', Buffer.from('two'), null)
+    first.enqueue('cfg-1', 'chaoffice/a.docx', Buffer.from('one'), null)
+    first.enqueue('cfg-2', 'chaoffice/b.docx', Buffer.from('two'), null)
 
     const second = createPendingSyncQueue({ dir, resolveClient: () => fakeClient(bucket) })
-    expect(second.status('cfg-1').map((slot) => slot.key)).toEqual(['chatoffice/a.docx'])
+    expect(second.status('cfg-1').map((slot) => slot.key)).toEqual(['chaoffice/a.docx'])
     expect(second.status()).toHaveLength(2)
 
     const outcomes = await second.flush({ configId: 'cfg-2' })
@@ -158,11 +158,11 @@ describe('createPendingSyncQueue', () => {
     const dir = tempDir()
     const bucket = new Map<string, FakeObject>()
     const queue = createPendingSyncQueue({ dir, resolveClient: () => fakeClient(bucket) })
-    queue.enqueue('cfg-1', 'chatoffice/a.docx', Buffer.from('draft-1'), null)
-    queue.enqueue('cfg-1', 'chatoffice/a.docx', Buffer.from('draft-2-latest'), null)
+    queue.enqueue('cfg-1', 'chaoffice/a.docx', Buffer.from('draft-1'), null)
+    queue.enqueue('cfg-1', 'chaoffice/a.docx', Buffer.from('draft-2-latest'), null)
     expect(queue.status()[0].sizeBytes).toBe(Buffer.from('draft-2-latest').length)
 
-    queue.discard('cfg-1', 'chatoffice/a.docx')
+    queue.discard('cfg-1', 'chaoffice/a.docx')
     expect(queue.status()).toHaveLength(0)
     expect(await queue.flush()).toEqual([])
   })
@@ -173,7 +173,7 @@ describe('createPendingSyncQueue', () => {
     writeFileSync(join(dir, 'half.json.tmp-123'), 'partial')
     const bucket = new Map<string, FakeObject>()
     const queue = createPendingSyncQueue({ dir, resolveClient: () => fakeClient(bucket) })
-    queue.enqueue('cfg-1', 'chatoffice/a.docx', Buffer.from('x'), null)
+    queue.enqueue('cfg-1', 'chaoffice/a.docx', Buffer.from('x'), null)
     expect(queue.status()).toHaveLength(1)
     expect(
       readFileSync(
@@ -183,7 +183,7 @@ describe('createPendingSyncQueue', () => {
         ),
         'utf8',
       ),
-    ).toContain('chatoffice/a.docx')
+    ).toContain('chaoffice/a.docx')
     expect(readdirSync(dir).filter((name) => name.includes('.tmp-'))).toEqual(['half.json.tmp-123'])
   })
 })

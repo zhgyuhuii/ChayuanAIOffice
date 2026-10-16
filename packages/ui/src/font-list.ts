@@ -1,11 +1,11 @@
-import type { Lang } from '@chatoffice/i18n'
+import type { Lang } from '@chaoffice/i18n'
 import {
   CJK_FAMILY_ALIASES,
   JAPANESE_FAMILIES,
   KOREAN_FAMILIES,
   SIMPLIFIED_CJK_FAMILIES,
   TRADITIONAL_CJK_FAMILIES,
-} from '@chatoffice/i18n'
+} from '@chaoffice/i18n'
 
 /**
  * Font dropdown candidates grouped by script, ordered per UI language so the

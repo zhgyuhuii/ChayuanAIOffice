@@ -8,14 +8,14 @@ vi.mock('electron', () => ({ app: { isPackaged: false, getVersion: () => '0.0.0'
 
 import { isEphemeralInstall, launcherFilePath, writeLauncherFile } from '../src/main/cli-link'
 
-describe('chatoffice launcher file', () => {
-  it('lives in the chatoffice auth directory, overridable like auth.json', () => {
-    expect(launcherFilePath({})).toBe(join(process.env.HOME ?? '', '.chatoffice', 'launcher'))
+describe('chaoffice launcher file', () => {
+  it('lives in the chaoffice auth directory, overridable like auth.json', () => {
+    expect(launcherFilePath({})).toBe(join(process.env.HOME ?? '', '.chaoffice', 'launcher'))
     expect(launcherFilePath({ GENOFFICE_AUTH_DIR: '/tmp/x' })).toBe(join('/tmp/x', 'launcher'))
   })
 
   it('writes one line, creates the directory, and only rewrites on change', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'chatoffice-launcher-'))
+    const dir = mkdtempSync(join(tmpdir(), 'chaoffice-launcher-'))
     const file = join(dir, 'nested', 'launcher')
     expect(writeLauncherFile(file, '/Applications/ChaOffice.app/Contents/Resources/cli')).toBe(true)
     expect(readFileSync(file, 'utf-8')).toBe('/Applications/ChaOffice.app/Contents/Resources/cli\n')
@@ -24,8 +24,8 @@ describe('chatoffice launcher file', () => {
       false,
     )
     expect(statSync(file).mtimeMs).toBe(before)
-    expect(writeLauncherFile(file, 'C:\\Programs\\ChaOffice\\resources\\chatoffice')).toBe(true)
-    expect(readFileSync(file, 'utf-8')).toBe('C:\\Programs\\ChaOffice\\resources\\chatoffice\n')
+    expect(writeLauncherFile(file, 'C:\\Programs\\ChaOffice\\resources\\chaoffice')).toBe(true)
+    expect(readFileSync(file, 'utf-8')).toBe('C:\\Programs\\ChaOffice\\resources\\chaoffice\n')
   })
 
   it('treats dmg and AppImage mounts as temporary', () => {

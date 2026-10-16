@@ -1,4 +1,4 @@
-import type { Lang } from '@chatoffice/i18n'
+import type { Lang } from '@chaoffice/i18n'
 
 export interface AiModelPickerStrings {
   /** chip tooltip / list heading */

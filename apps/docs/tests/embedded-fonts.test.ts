@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { EmbeddedFont } from '@chatoffice/docx-engine'
+import type { EmbeddedFont } from '@chaoffice/docx-engine'
 import { adoptEmbeddedFonts } from '../src/renderer/embedded-fonts'
 
 const setEmbeddedLineMetrics = vi.fn()

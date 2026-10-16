@@ -2,7 +2,7 @@
  * Transition and animation actions extracted from App.tsx.
  * Functions take the ActionCtx built fresh per call.
  */
-import type { ShapeRenderNode } from '@chatoffice/pptx-render'
+import type { ShapeRenderNode } from '@chaoffice/pptx-render'
 import type {
   AnimEffectKind,
   AnimTrigger,

@@ -12,7 +12,7 @@ export function uiThemeIsDark(): boolean {
 }
 
 /**
- * Effective darkness of the document page (chatoffice#1811): the `<html data-doc-theme>`
+ * Effective darkness of the document page (chaoffice#1811): the `<html data-doc-theme>`
  * pin from the shell's document-page-theme setting when explicit, otherwise it
  * follows the UI theme exactly as before the setting existed.
  */

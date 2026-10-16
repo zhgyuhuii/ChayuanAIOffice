@@ -5,7 +5,7 @@ import {
   validateHeadlessPaths,
   type HeadlessExporters,
 } from '../src/main/headless-export'
-import type { HeadlessExportRequest } from '@chatoffice/electron-utils'
+import type { HeadlessExportRequest } from '@chaoffice/electron-utils'
 
 /**
  * The `--headless-export` host (src/main/headless-export.ts): input checks,

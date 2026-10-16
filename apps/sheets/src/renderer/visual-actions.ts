@@ -3,23 +3,23 @@
  * the App component passes a VisualActionContext built fresh per call so
  * refs and state never go stale.
  */
-import { columnLabel, parseAddress, parseRange } from '@chatoffice/xlsx-gateway/domain/cell-address'
+import { columnLabel, parseAddress, parseRange } from '@chaoffice/xlsx-gateway/domain/cell-address'
 import {
   hasNumericYearAxis,
   recommendCharts,
   type ChartRecommendations,
-} from '@chatoffice/xlsx-gateway/domain/chart-recommend'
-import { buildChartVisual, chartDataFromValues } from '@chatoffice/xlsx-gateway/domain/chart-visual'
-import type { InMemoryWorkbookAdapter } from '@chatoffice/xlsx-gateway/domain/in-memory-workbook'
-import { buildPivotChartData } from '@chatoffice/xlsx-gateway/domain/pivot-chart'
+} from '@chaoffice/xlsx-gateway/domain/chart-recommend'
+import { buildChartVisual, chartDataFromValues } from '@chaoffice/xlsx-gateway/domain/chart-visual'
+import type { InMemoryWorkbookAdapter } from '@chaoffice/xlsx-gateway/domain/in-memory-workbook'
+import { buildPivotChartData } from '@chaoffice/xlsx-gateway/domain/pivot-chart'
 import type {
   AddChartOperation,
   AddImageOperation,
   AddShapeOperation,
   EditChartOperation,
   EditShapeOperation,
-} from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
-import type { ChangePlan } from '@chatoffice/xlsx-gateway/domain/workbook.types'
+} from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
+import type { ChangePlan } from '@chaoffice/xlsx-gateway/domain/workbook.types'
 import { IRenderManagerService, Vector2 } from '@univerjs/engine-render'
 import { SheetSkeletonManagerService } from '@univerjs/preset-sheets-core'
 import type { WorkbookVisualObject } from '../shared/desktop-api'

@@ -1,4 +1,4 @@
-import { type AiRuntime } from '@chatoffice/ai-provider'
+import { type AiRuntime } from '@chaoffice/ai-provider'
 
 /**
  * Video task registry — the main-process home of every in-flight video

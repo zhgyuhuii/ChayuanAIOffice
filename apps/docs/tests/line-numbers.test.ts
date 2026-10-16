@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
-import type { LineNumbering, SectionInfo } from '@chatoffice/docx-engine'
+import type { LineNumbering, SectionInfo } from '@chaoffice/docx-engine'
 import {
   columnAt,
   columnLefts,

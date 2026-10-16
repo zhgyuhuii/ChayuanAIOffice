@@ -40,8 +40,8 @@ beforeEach(() => {
     setAiSettings: async () => undefined,
     setAiCurrentModel: async () => undefined,
     aiDiscoverModels: async () => ({ models: [] }),
-    chatofficeStatus: async () => ({ state: 'signed-out' }),
-    chatofficeLogin: async () => undefined,
+    chaofficeStatus: async () => ({ state: 'signed-out' }),
+    chaofficeLogin: async () => undefined,
     aiLocalToolStatus: async () => ({ state: 'missing' }),
     aiLocalToolInstall: async () => ({ ok: false }),
   } as unknown as HomeApi

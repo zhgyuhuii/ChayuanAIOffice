@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react'
 import { useRef, useState } from 'react'
-import { useDismissablePopover } from '@chatoffice/ui'
+import { useDismissablePopover } from '@chaoffice/ui'
 import { useI18n } from './i18n/locale'
 import { MenuRows, OptSample, type MenuRowOption } from './ExcelShell'
 import { CaretIcon } from './ribbon-icons'

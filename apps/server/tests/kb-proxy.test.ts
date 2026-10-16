@@ -3,14 +3,14 @@ import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { openLocalArea } from '@chatoffice/storage-adapter'
+import { openLocalArea } from '@chaoffice/storage-adapter'
 import { buildServer } from '../src/app.ts'
 
 const dirs: string[] = []
 const servers: Server[] = []
 
 function tempArea() {
-  const dir = mkdtempSync(join(tmpdir(), 'chatoffice-kb-bff-'))
+  const dir = mkdtempSync(join(tmpdir(), 'chaoffice-kb-bff-'))
   dirs.push(dir)
   return openLocalArea({ rootDir: dir })
 }

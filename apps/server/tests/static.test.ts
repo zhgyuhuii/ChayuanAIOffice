@@ -2,13 +2,13 @@ import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { openLocalArea } from '@chatoffice/storage-adapter'
+import { openLocalArea } from '@chaoffice/storage-adapter'
 import { buildServer } from '../src/app.ts'
 
 const dirs: string[] = []
 
 function tempArea() {
-  const dir = mkdtempSync(join(tmpdir(), 'chatoffice-static-'))
+  const dir = mkdtempSync(join(tmpdir(), 'chaoffice-static-'))
   dirs.push(dir)
   return openLocalArea({ rootDir: dir })
 }
@@ -18,11 +18,11 @@ afterEach(() => {
 })
 
 function webRoot(): string {
-  const dir = mkdtempSync(join(tmpdir(), 'chatoffice-www-'))
+  const dir = mkdtempSync(join(tmpdir(), 'chaoffice-www-'))
   dirs.push(dir)
   mkdirSync(join(dir, 'editors', 'docs'), { recursive: true })
   writeFileSync(join(dir, 'index.html'), '<html>host</html>')
-  writeFileSync(join(dir, 'config.js'), 'window.CHATOFFICE_EDITORS = {}')
+  writeFileSync(join(dir, 'config.js'), 'window.CHAOFFICE_EDITORS = {}')
   writeFileSync(join(dir, 'editors', 'docs', 'index.html'), '<html>docs</html>')
   return dir
 }

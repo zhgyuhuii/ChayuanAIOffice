@@ -16,11 +16,11 @@ import type {
   WorkbookVisualEdit,
   WorkbookVisualObject,
 } from '../shared/desktop-api'
-import { columnLabel, parseRange } from '@chatoffice/xlsx-gateway/domain/cell-address'
-import { fillDisplayColor, resolveStyleColor } from '@chatoffice/xlsx-gateway/domain/style-color'
-import { splitSheetRef } from '@chatoffice/xlsx-gateway/domain/chart-visual'
+import { columnLabel, parseRange } from '@chaoffice/xlsx-gateway/domain/cell-address'
+import { fillDisplayColor, resolveStyleColor } from '@chaoffice/xlsx-gateway/domain/style-color'
+import { splitSheetRef } from '@chaoffice/xlsx-gateway/domain/chart-visual'
 import { CHART_CATEGORY_WIRE_MAX, CHART_TEXT_WIRE_MAX } from '../shared/desktop-api'
-import { ADDABLE_SHAPE_TYPES } from '@chatoffice/xlsx-gateway/shared/shape-types'
+import { ADDABLE_SHAPE_TYPES } from '@chaoffice/xlsx-gateway/shared/shape-types'
 import { INDENT_STEP_PX } from './selection-format'
 import type { SharedFormulaResolver } from './shared-formula-journal'
 import type { SheetProtectionInfo } from './sheet-protection'

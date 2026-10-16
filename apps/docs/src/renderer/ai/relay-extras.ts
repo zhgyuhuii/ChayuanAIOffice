@@ -1,4 +1,4 @@
-import type { AgentSkill, AgentToolCall, ToolExecution } from '@chatoffice/agent-core'
+import type { AgentSkill, AgentToolCall, ToolExecution } from '@chaoffice/agent-core'
 import type {
   RelayDockDocInfo,
   RelayEvent,

@@ -52,8 +52,8 @@ describe('selectedWordCount', () => {
   })
 
   it('counts a mixed CJK/latin selection the way the dialog would', () => {
-    const editor = createEditor([para('ChatOffice \u601d\u7ef4\u5bfc\u56fe')])
-    // the whole paragraph: "ChatOffice" as 1 word + 4 asian chars
+    const editor = createEditor([para('ChaOffice \u601d\u7ef4\u5bfc\u56fe')])
+    // the whole paragraph: "ChaOffice" as 1 word + 4 asian chars
     editor.commands.setTextSelection({ from: 1, to: editor.state.doc.content.size - 1 })
     expect(selectedWordCount(editor.state.doc, editor.state.selection)).toBe(5)
   })

@@ -21,7 +21,7 @@ async function waitForWorkbook(page: Page, sheetName = 'Sheet1'): Promise<void> 
 // widest incompressible row, so nothing may paint past its padding edge.
 for (const lang of ['fr', 'en']) {
   test(`sheets: Format Cells dialog content stays inside the card (${lang})`, async () => {
-    const scratch = await mkdtemp(join(tmpdir(), 'chatoffice-fmtcells-e2e-'))
+    const scratch = await mkdtemp(join(tmpdir(), 'chaoffice-fmtcells-e2e-'))
     const workbook = join(scratch, 'format-cells.xlsx')
     await copyFile(FIXTURE, workbook)
 

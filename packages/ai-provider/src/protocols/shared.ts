@@ -1,4 +1,4 @@
-import type { AgentToolCall } from '@chatoffice/agent-core'
+import type { AgentToolCall } from '@chaoffice/agent-core'
 import type { AiTokenUsage } from '../types'
 
 // ---- endpoint URL composition ----

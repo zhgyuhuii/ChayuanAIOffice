@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { createBlankPptx, openPptx } from '@chatoffice/pptx-engine'
+import { createBlankPptx, openPptx } from '@chaoffice/pptx-engine'
 import { runTxn } from '../src/ops/executor'
 import '../src/ops/index'
 

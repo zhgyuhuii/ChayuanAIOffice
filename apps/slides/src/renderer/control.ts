@@ -1,6 +1,6 @@
-import type { RenderNode, RenderSlide } from '@chatoffice/pptx-render'
+import type { RenderNode, RenderSlide } from '@chaoffice/pptx-render'
 
-/** Request/reply the shell relays from `chatoffice open --slide/--el` and `chatoffice selection`. */
+/** Request/reply the shell relays from `chaoffice open --slide/--el` and `chaoffice selection`. */
 export type ControlRequest =
   { cmd: 'goto'; target: { kind: string; slide?: number; el?: string } } | { cmd: 'selection' }
 

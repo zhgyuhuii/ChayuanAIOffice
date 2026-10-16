@@ -105,7 +105,7 @@ function bareName(spec) {
   if (spec.startsWith('.') || spec.startsWith('/')) return null
   const parts = spec.split('/')
   const name = spec.startsWith('@') ? parts.slice(0, 2).join('/') : parts[0]
-  if (BUILTIN.has(name) || name.startsWith('@chatoffice/')) return null
+  if (BUILTIN.has(name) || name.startsWith('@chaoffice/')) return null
   // the specifier regex also fires on prose inside string concatenations
   return NPM_NAME.test(name) ? name : null
 }
@@ -342,8 +342,8 @@ const FONTS = [
     'Copyright 2020 The Poppins Project Authors (https://github.com/itfoundry/Poppins).\nLatin subset with unmodified metrics and advances; renamed.',
   ],
   [
-    // adapted: 上游 b08e2ebf 新增 DM Sans 字体第三方声明（品牌映射 ChatOffice）
-    'ChatOffice DM Sans (DM Sans derivative)',
+    // adapted: 上游 b08e2ebf 新增 DM Sans 字体第三方声明（品牌映射 ChaOffice）
+    'ChaOffice DM Sans (DM Sans derivative)',
     'SIL OFL 1.1',
     'Copyright 2014-2017 Indian Type Foundry (info@indiantypefoundry.com). Copyright 2019 Google LLC.\nLatin subset with unmodified metrics and advances; renamed.',
   ],

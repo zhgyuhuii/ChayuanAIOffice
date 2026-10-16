@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest'
 import { getSharedAiRuntime, registerSharedAiIpc } from '../src/index'
-import type { FileSourceFs } from '@chatoffice/ai-provider'
+import type { FileSourceFs } from '@chaoffice/ai-provider'
 
 /**
  * Desktop harness auto-recognition (自动识别): with a discovered/pinned dsh
@@ -68,8 +68,8 @@ function makeHarnessHome(root: string): string {
     join(models, 'proxy-keys.json'),
     JSON.stringify({
       keys: [
-        { agentId: 'chatoffice', key: 'chatop-agent-chatoffice-REVOKED', revoked: true },
-        { agentId: 'chatoffice', key: 'chatop-agent-chatoffice-LIVE', revoked: false },
+        { agentId: 'chaoffice', key: 'chatop-agent-chaoffice-REVOKED', revoked: true },
+        { agentId: 'chaoffice', key: 'chatop-agent-chaoffice-LIVE', revoked: false },
       ],
     }),
   )
@@ -89,12 +89,12 @@ function makeRegistrar(root: string, home: string, officeSettings: unknown) {
     settingsPath: officeFile,
     fs: realFs,
     dshHome: home,
-    chatoffice: {
+    chaoffice: {
       apiKey: () => '',
       hasAuth: () => false,
       status: async () => ({ loggedIn: false }),
     },
-    chatofficeLogin: () => {},
+    chaofficeLogin: () => {},
     translate: (key, params) =>
       params && typeof params.provider === 'string' ? `${key}:${params.provider}` : key,
   })
@@ -108,7 +108,7 @@ describe('registerSharedAiIpc × harness 自动识别', () => {
 
   /** hermetic proxy stub: /v1/models accepts only the given bearer; the
    *  management plane issues a fresh key on demand */
-  function stubProxy(acceptKey: string | null, issued = 'chatop-agent-chatoffice-ISSUED'): void {
+  function stubProxy(acceptKey: string | null, issued = 'chatop-agent-chaoffice-ISSUED'): void {
     vi.stubGlobal(
       'fetch',
       vi.fn(async (input: string, init?: RequestInit) => {
@@ -129,7 +129,7 @@ describe('registerSharedAiIpc × harness 自动识别', () => {
   }
 
   it('fuses the chatop-local group, keeps the custom profile, and overrides the poisoned proxy key', async () => {
-    stubProxy('chatop-agent-chatoffice-LIVE')
+    stubProxy('chatop-agent-chaoffice-LIVE')
     const root = tempRoot()
     const home = makeHarnessHome(root)
     const { runtime } = makeRegistrar(root, home, OFFICE_SETTINGS)
@@ -154,7 +154,7 @@ describe('registerSharedAiIpc × harness 自动识别', () => {
       profileId: 'custom-muwpb51k',
       modelId: 'local/qwen3-4b-instruct-2507-q3ks',
     })
-    expect(call.apiKey).toBe('chatop-agent-chatoffice-LIVE')
+    expect(call.apiKey).toBe('chatop-agent-chaoffice-LIVE')
     expect(call.baseUrl).toBe('http://127.0.0.1:52581/v1')
 
     // the synthetic chatop-local profile resolves to the same managed key
@@ -162,7 +162,7 @@ describe('registerSharedAiIpc × harness 自动识别', () => {
       profileId: 'chatop-local',
       modelId: 'local/qwen3-4b-instruct-2507-q3ks',
     })
-    expect(localCall.apiKey).toBe('chatop-agent-chatoffice-LIVE')
+    expect(localCall.apiKey).toBe('chatop-agent-chaoffice-LIVE')
   })
 
   it('self-heals when the file-recorded live key is rejected: reissues through the management plane', async () => {
@@ -178,7 +178,7 @@ describe('registerSharedAiIpc × harness 自动识别', () => {
       profileId: 'custom-muwpb51k',
       modelId: 'local/qwen3-4b-instruct-2507-q3ks',
     })
-    expect(call.apiKey).toBe('chatop-agent-chatoffice-ISSUED')
+    expect(call.apiKey).toBe('chatop-agent-chaoffice-ISSUED')
   })
 
   it('writes keep the office-local custom profile and the selection (read-only fusion)', async () => {

@@ -22,7 +22,7 @@ const page = ctx.pages().find((p) => p.url().startsWith('file://'))
 ok('A1 shell page up', !!page)
 await page.waitForTimeout(1000)
 // 新鲜实例会弹新手引导浮层,预落 seen 旗标避免挡点击
-await page.evaluate(() => window.chatOffice.setOnboardingSeen())
+await page.evaluate(() => window.chaOffice.setOnboardingSeen())
 await page.reload()
 await page.waitForTimeout(1200)
 
@@ -38,7 +38,7 @@ ctx.on('page', (p) => watchCommands(p))
 
 const dockList = () =>
   page.evaluate(async () =>
-    (await window.chatOfficeDock.list()).map((t) => [t.kind, t.title, t.active]),
+    (await window.chaOfficeDock.list()).map((t) => [t.kind, t.title, t.active]),
   )
 
 const MAINLINE = [
@@ -50,7 +50,7 @@ const MAINLINE = [
 ]
 await page.evaluate(async (messages) => {
   const now = Date.now()
-  await window.chatOffice.chatSessionsSave([
+  await window.chaOffice.chatSessionsSave([
     { id: 'sess-iron', title: '铁律验收会话', createdAt: now, updatedAt: now, messages },
   ])
 }, MAINLINE)
@@ -68,7 +68,7 @@ const tabSeen = await page.evaluate(() => {
 })
 ok('A2 injected mainline session opens', tabSeen)
 
-const opened = await page.evaluate(() => window.chatOfficeDock.open('docs', { newBlank: true }))
+const opened = await page.evaluate(() => window.chaOfficeDock.open('docs', { newBlank: true }))
 ok('A3 dock.open returns docs tab', !!opened?.id)
 let docsPage = null
 for (let i = 0; i < 20 && !docsPage; i++) {
@@ -173,7 +173,7 @@ if (docsPage) {
 }
 
 relayLog.length = 0
-const md = await page.evaluate(() => window.chatOfficeDock.open('markdown', { newBlank: true }))
+const md = await page.evaluate(() => window.chaOfficeDock.open('markdown', { newBlank: true }))
 ok('A10 markdown dock tab opens', !!md?.id && md.id !== opened.id)
 await page.waitForTimeout(2200)
 console.log('  dock list after md:', JSON.stringify(await dockList()))
@@ -183,7 +183,7 @@ ok(
   sync2.some((l) => l.includes('docs=2')),
   JSON.stringify(sync2),
 )
-await page.evaluate((id) => window.chatOfficeDock.activate(id), opened.id)
+await page.evaluate((id) => window.chaOfficeDock.activate(id), opened.id)
 await page.waitForTimeout(1000)
 console.log('  dock list after manual activate:', JSON.stringify(await dockList()))
 relayLog.length = 0
@@ -204,7 +204,7 @@ ok(
 // switch 已证激活切换;铁律的另一半=激活目标 loop 重种子(markdown 无中继
 // 服务(P3 范围),以切回 docs 的同一路径断言:docs 页应再次收到 seed)
 relayLog.length = 0
-await page.evaluate((id) => window.chatOfficeDock.activate(id), opened.id)
+await page.evaluate((id) => window.chaOfficeDock.activate(id), opened.id)
 await page.waitForTimeout(1200)
 ok(
   'A10 target loop re-seeded on activation (iron rule: seed on switch, n = live mainline size)',
@@ -215,7 +215,7 @@ ok(
 const paras = Array.from({ length: 250 }, (_, i) => `<p>流式段落 ${i + 1}:占位分块验证。</p>`)
 const bigDoc = await page.evaluate(
   (html) =>
-    window.chatOfficeDock.open('docs', {
+    window.chaOfficeDock.open('docs', {
       newBlank: true,
       aiContent: { title: 'phased-verify', html },
     }),
@@ -254,11 +254,11 @@ ok(
 )
 
 await page.evaluate(async () => {
-  for (const t of await window.chatOfficeDock.list()) await window.chatOfficeDock.close(t.id)
+  for (const t of await window.chaOfficeDock.list()) await window.chaOfficeDock.close(t.id)
 })
 await page.waitForTimeout(1500)
 const cleared = await page.evaluate(async () => {
-  const sessions = await window.chatOffice.chatSessionsLoad()
+  const sessions = await window.chaOffice.chatSessionsLoad()
   return sessions.find((x) => x.id === 'sess-iron')?.dock === undefined
 })
 ok('A12 session dock memory cleared when pane empties', cleared)

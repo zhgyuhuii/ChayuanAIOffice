@@ -104,7 +104,7 @@ export function partitionDropPayload(raw: unknown): {
 
 /** Symbol.for keeps repeated installs idempotent when several bundled copies of
  *  this module end up in one process (mirrors navigation-guard). */
-const INSTALLED = Symbol.for('chatoffice.drop-open-installed')
+const INSTALLED = Symbol.for('chaoffice.drop-open-installed')
 
 /**
  * Preload-side hook: makes `drop` fire for document drags anywhere in the

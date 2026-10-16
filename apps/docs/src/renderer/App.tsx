@@ -29,8 +29,8 @@ import {
   createZoomWheelClassifier,
   useAiSidebarEnabled,
   useAutoSavePref,
-} from '@chatoffice/ui'
-import { defaultSettingsV2 } from '@chatoffice/ai-provider/browser'
+} from '@chaoffice/ui'
+import { defaultSettingsV2 } from '@chaoffice/ai-provider/browser'
 import { wordRangeAtCaret } from './editor/comments'
 import { setFieldInstr, toggleAllFieldCodes, type FieldRange } from './editor/field-codes'
 import { linkTarget } from './editor/link-actions'
@@ -97,7 +97,7 @@ import {
   type ThemeFonts,
   type PictureWatermarkSpec,
   type WatermarkSpec,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import type { AiDocContent, AiSettingsV2, MenuCommand, OpenDocxResult } from '../shared/ipc'
 import { ZoteroDocumentController } from './zotero/controller'
 import { AiPanel, AI_REVISION_AUTHOR } from './ai/AiPanel'
@@ -366,11 +366,11 @@ import {
 import { deleteBlankParagraphs } from './docops/text-ops'
 import { isFormModeActive, setFormMode } from './docops/form-mode'
 import { tablesToXlsxBase64, dataUrlToBase64File } from './docops/table-export'
-import type { ChartDesignerInsert } from '@chatoffice/chart-kit/designer'
+import type { ChartDesignerInsert } from '@chaoffice/chart-kit/designer'
 
 // 惰性加载:设计器拖 1MB 示例库(chart-kit data/examples.json),点开才拉,不进编辑器启动图
 const ChartDesignerModal = lazy(() =>
-  import('@chatoffice/chart-kit/designer').then((m) => ({ default: m.ChartDesignerModal })),
+  import('@chaoffice/chart-kit/designer').then((m) => ({ default: m.ChartDesignerModal })),
 )
 import {
   getActiveSubEditor,
@@ -843,7 +843,7 @@ export function App() {
   const multipageActiveRef = useRef<number | null>(null)
   const mpFramesRef = useRef<PageFrame[]>([])
   // Word-style dark page (editor/dark-page.ts): the shell's document-page-theme
-  // setting (chatoffice#1811) decides which theme the page follows; a light
+  // setting (chaoffice#1811) decides which theme the page follows; a light
   // page theme never shows a dark page, in the dark one it is on by default
   // until the user switches it off, and that choice sticks (dark-page-pref.ts)
   const themeDark = useUiThemeIsDark()
@@ -1643,8 +1643,8 @@ export function App() {
         let optionJson = detail.optionJson
         if (!optionJson && detail.code) {
           try {
-            const { runOptionCode } = await import('@chatoffice/chart-kit/sandbox')
-            const { stringifyOption } = await import('@chatoffice/chart-kit/serialize')
+            const { runOptionCode } = await import('@chaoffice/chart-kit/sandbox')
+            const { stringifyOption } = await import('@chaoffice/chart-kit/serialize')
             const r = await runOptionCode(detail.code)
             if (!r.ok) {
               window.dispatchEvent(
@@ -1667,7 +1667,7 @@ export function App() {
           }
         }
         // 快照:AI 插入也必须有图(sidecar 可重放,快照供打开显示)
-        const { renderOptionSnapshot } = await import('@chatoffice/chart-kit/snapshot')
+        const { renderOptionSnapshot } = await import('@chaoffice/chart-kit/snapshot')
         let opt: unknown
         try {
           opt = JSON.parse(optionJson)
@@ -4012,7 +4012,7 @@ export function App() {
     // pixels, so block heights read under a 10% (or 88%) canvas zoom differ from
     // the 100% layout by up to a pixel per line — enough to move page breaks and
     // to park a paragraph in the wrong column of an unequal-width section
-    // (chatoffice#1970). Passes measure the canvas at zoom 1 and restore the
+    // (chaoffice#1970). Passes measure the canvas at zoom 1 and restore the
     // view zoom before the viewport-dependent reads (locate).
     let factor = zoom / 100
     const mTopPx = canvasTop
@@ -6600,9 +6600,9 @@ export function App() {
     if (gap) startGapHfEditRef.current(gap)
   }, [])
 
-  // chatoffice CLI (`open --block`, `selection`): the shell evaluates this hook
+  // chaoffice CLI (`open --block`, `selection`): the shell evaluates this hook
   useEffect(() => {
-    ;(window as unknown as Record<string, unknown>).__chatofficeControl = (req: ControlRequest) =>
+    ;(window as unknown as Record<string, unknown>).__chaofficeControl = (req: ControlRequest) =>
       handleDocsControl(req, editor, doc !== null)
   })
 

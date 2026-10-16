@@ -19,7 +19,7 @@ import { buildArgv, resolveTools, toolShape, type ResolvedTool } from './tools'
 const ABOUT =
   'ChaAI Office: create, read, convert, edit and render Office documents locally (docx, xlsx, pptx, pdf, md, html, csv). The app need not be running; render, convert-to-pdf and create_pdf start a hidden ChaAI Office process for a few seconds.'
 const WORKFLOW = [
-  'Editing: read the file with the *_read tool, write the ops with the op reference from guide (or the chatoffice://guide/* resources), then *_apply. A rejected op names its index and reason; fix that op and resend the whole batch.',
+  'Editing: read the file with the *_read tool, write the ops with the op reference from guide (or the chaoffice://guide/* resources), then *_apply. A rejected op names its index and reason; fix that op and resend the whole batch.',
   'A new presentation for a person: deck_start (style sheet + outline), deck_page once per page in order, deck_build, then slides_render to look and slides_audit for geometry, deck_replace to fix a page. Edits to an existing deck: slides_read + slides_apply, keeping its design.',
 ]
 
@@ -44,31 +44,31 @@ export function remoteInstructions(baseUrl: string): string {
 
 const GUIDES: { uri: string; name: string; argv: string[]; description: string }[] = [
   {
-    uri: 'chatoffice://guide/docs',
+    uri: 'chaoffice://guide/docs',
     name: 'Word ops reference',
     argv: ['guide', 'docs'],
     description: 'every docs_apply op with its fields and the restricted-HTML rules',
   },
   {
-    uri: 'chatoffice://guide/sheets',
+    uri: 'chaoffice://guide/sheets',
     name: 'Excel ops reference',
     argv: ['guide', 'sheets'],
     description: 'every sheet_apply DSL op with its fields',
   },
   {
-    uri: 'chatoffice://guide/slides',
+    uri: 'chaoffice://guide/slides',
     name: 'PowerPoint ops reference',
     argv: ['guide', 'slides'],
     description: 'the slides_apply op groups and vocabulary',
   },
   {
-    uri: 'chatoffice://guide/slides/design',
+    uri: 'chaoffice://guide/slides/design',
     name: 'Deck design guide',
     argv: ['guide', 'slides', 'design'],
     description: 'the staged deck workflow: style sheet, outline, one page at a time, build, QC',
   },
   {
-    uri: 'chatoffice://guide/slides/spec',
+    uri: 'chaoffice://guide/slides/spec',
     name: 'Deck spec format',
     argv: ['guide', 'slides', 'spec'],
     description: 'the outline and one-page spec JSON the deck_* tools take',
@@ -83,7 +83,7 @@ export function createMcpServer(ctx: McpContext, opts: ServerOptions = {}): McpS
   const registry = opts.registry ?? defaultRegistry()
   const remote = ctx.mode === 'http'
   const server = new McpServer(
-    { name: 'chatoffice', version: VERSION },
+    { name: 'chaoffice', version: VERSION },
     { instructions: remote ? remoteInstructions(ctx.baseUrl ?? '') : INSTRUCTIONS },
   )
 

@@ -240,7 +240,7 @@ export async function applyVisualAdditions(
         )
         touchedEntries.add(sidecarPath)
         await registerContentTypeDefault(pkg, 'json', 'application/json', touchedEntries)
-        echartDescr = `chatoffice-echart:${sidecarPath}`
+        echartDescr = `chaoffice-echart:${sidecarPath}`
       }
       await appendAnchor(
         pkg,

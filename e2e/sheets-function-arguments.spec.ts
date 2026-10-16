@@ -24,7 +24,7 @@ interface SheetFacade {
 }
 
 test('Insert Function leads into Function Arguments; fx reopens the call pre-filled', async () => {
-  const scratch = await mkdtemp(join(tmpdir(), 'chatoffice-fn-args-'))
+  const scratch = await mkdtemp(join(tmpdir(), 'chaoffice-fn-args-'))
   const launched = await launchShell({
     onboardingSeen: true,
     videoDir: 'sheets-function-arguments',
@@ -54,8 +54,8 @@ test('Insert Function leads into Function Arguments; fx reopens the call pre-fil
 
     const debugSheet = (fn: string) =>
       sheets.evaluate((body) => {
-        const debug = (window as unknown as { __chatofficeDebug: { univerAPI: SheetFacade } })
-          .__chatofficeDebug
+        const debug = (window as unknown as { __chaofficeDebug: { univerAPI: SheetFacade } })
+          .__chaofficeDebug
         const sheet = debug.univerAPI.getActiveWorkbook().getActiveSheet()
         return new Function('sheet', body)(sheet) as unknown
       }, fn)

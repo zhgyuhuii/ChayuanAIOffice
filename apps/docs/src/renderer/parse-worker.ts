@@ -1,4 +1,4 @@
-import { parseDocx } from '@chatoffice/docx-engine'
+import { parseDocx } from '@chaoffice/docx-engine'
 import type { ParseWorkerRequest, ParseWorkerResponse } from './parse-off-thread'
 
 /** Worker entry: parse a .docx off the UI thread and hand the model back. */

@@ -8,7 +8,7 @@
 
 | 项 | 结果 | 证据 |
 |---|---|---|
-| 打包产物 | ✅ | apps/shell/release/ChaAIOffice-1.0.5-arm64.dmg（218MB）；app.asar 内 package.json version=1.0.5 / chatofficeUpstreamVersion=0.11.0；Resources/{cli/chaoffice.cjs, docs, sheets, slides, pdf, markdown, html} 七件齐 |
+| 打包产物 | ✅ | apps/shell/release/ChaAIOffice-1.0.5-arm64.dmg（218MB）；app.asar 内 package.json version=1.0.5 / chaofficeUpstreamVersion=0.11.0；Resources/{cli/chaoffice.cjs, docs, sheets, slides, pdf, markdown, html} 七件齐 |
 | build:all | ✅ exit 0 | /tmp/r24-buildall.log |
 | typecheck | ✅ 全仓 0 错误 | npm run typecheck 全链 exit 0 |
 | vitest 全工作区 | ✅ 全绿 | docs 3494 / shell 1034（112 文件）/ ai-provider 606 / ai-search 106 / sheets 3437+ / slides 1475+ / cli 313 …（终态 run：除本次修复项外零失败） |

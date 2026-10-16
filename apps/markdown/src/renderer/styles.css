@@ -1,6 +1,6 @@
 /* Per-app accent (word-blue family) + markdown-only tokens.
  * Chrome tokens (surface/text/border/…, AI panel --color-*) come from
- * @chatoffice/ui/tokens.css; nothing here may shadow those names. */
+ * @chaoffice/ui/tokens.css; nothing here may shadow those names. */
 :root {
   --accent: #185abd;
   --accent-dark: #124a9e;
@@ -405,7 +405,7 @@ button {
 
 /* While a popover is open the row must deliver presses (drag regions swallow
    them), so outside-press dismissal can see presses on the blank band */
-html.chatoffice-popover-open .ribbon-tabs {
+html.chaoffice-popover-open .ribbon-tabs {
   -webkit-app-region: no-drag;
 }
 
@@ -594,7 +594,7 @@ html.chatoffice-popover-open .ribbon-tabs {
   font-size: 11.5px;
 }
 
-/* block-style picker (shared @chatoffice/ui gs-dd dropdown): same box as the
+/* block-style picker (shared @chaoffice/ui gs-dd dropdown): same box as the
  * docs/slides font pickers (28px tall, 3px radius, 13px label, 7px inline
  * padding, strong border) */
 .rb-style.gs-dd {
@@ -2194,7 +2194,7 @@ html.chatoffice-popover-open .ribbon-tabs {
   opacity: 1;
 }
 
-/* language picker (shared @chatoffice/ui gs-dd dropdown), sized like the copy
+/* language picker (shared @chaoffice/ui gs-dd dropdown), sized like the copy
    button beside it */
 .md-codeblock-lang .gs-dd-btn {
   height: 22px;
@@ -3039,7 +3039,7 @@ div.tiptap-mathematics-render {
  * the flex item of this row is that div. A `>` selector aimed at .cm-editor
  * selects nothing here, leaving the host on the flex default of shrink-to-fit:
  * a .txt/.json pane then showed a narrow strip of editor beside empty canvas
- * (chatoffice#1969). */
+ * (chaoffice#1969). */
 .source-editor > * {
   flex: 1;
   min-width: 0;
@@ -3053,7 +3053,7 @@ div.tiptap-mathematics-render {
   min-width: 0;
 }
 
-/* Image host configuration dialog (chatoffice#388). Colors come from the shared
+/* Image host configuration dialog (chaoffice#388). Colors come from the shared
  * tokens (theming rules in CLAUDE.md); the two raw values live on
  * custom-property definitions, the only place raw colors are allowed. */
 .image-host-backdrop {

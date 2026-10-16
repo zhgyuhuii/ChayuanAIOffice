@@ -2,7 +2,7 @@ import { spawn, execFile } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import type { LocalToolStatus, LocalToolOpResult } from '@chatoffice/ai-provider'
+import type { LocalToolStatus, LocalToolOpResult } from '@chaoffice/ai-provider'
 
 /**
  * 本地与自建厂商的一键安装/探测/启动 —— ai:local-tool-* 通道的实现。

@@ -1,6 +1,6 @@
 /**
  * Password prompt dialog shown when opening an encrypted PDF, matching the
- * docs PasswordDialog (mockups/protect-dialogs-chatoffice.html §1/2): top-left
+ * docs PasswordDialog (mockups/protect-dialogs-chaoffice.html §1/2): top-left
  * title, description with the quoted file name, labelled password field with
  * a reveal toggle, inline error, cancel / open footer buttons.
  *

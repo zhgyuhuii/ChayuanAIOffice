@@ -1,5 +1,5 @@
 import type { PDFDocumentProxy } from 'pdfjs-dist'
-import { foldCase } from '@chatoffice/ui'
+import { foldCase } from '@chaoffice/ui'
 
 /** One hit: original page + PDF user-space rects (multiple when spanning several text items) */
 export interface SearchMatch {

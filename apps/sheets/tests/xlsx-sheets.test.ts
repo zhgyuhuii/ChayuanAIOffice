@@ -4,8 +4,8 @@ import { describe, expect, it } from 'vitest'
 import {
   applyCellEditsToXlsx,
   assertOnlyTouchedEntriesChanged,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
-import { relsPathFor, resolveRelTarget } from '@chatoffice/xlsx-gateway/gateway/xlsx-drawing-add'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
+import { relsPathFor, resolveRelTarget } from '@chaoffice/xlsx-gateway/gateway/xlsx-drawing-add'
 import {
   classifyRemovedSheetRels,
   definedNamesUseToken,
@@ -20,7 +20,7 @@ import {
   stripPageSetupRelIds,
   tableDisplayName,
   validateSheetName,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-sheets'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-sheets'
 import {
   buildCompatibilityFixture,
   buildSatelliteSheetFixture,

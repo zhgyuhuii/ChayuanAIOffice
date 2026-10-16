@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { PictureRenderNode, RenderSlide, ShapeRenderNode } from '@chatoffice/pptx-render'
+import type { PictureRenderNode, RenderSlide, ShapeRenderNode } from '@chaoffice/pptx-render'
 import { auditSlideFindings, auditSlideLayout, formatAudit } from '../src/slides/layout-audit'
 
 const W = 1280

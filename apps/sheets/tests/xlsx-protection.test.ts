@@ -5,7 +5,7 @@ import {
   applySheetProtection,
   applyWorkbookProtection,
   SheetProtectionError,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-protection'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-protection'
 
 const BARE = '<worksheet><sheetData/><autoFilter ref="A1:C4"/></worksheet>'
 

@@ -5,7 +5,7 @@ import {
   BLANK_ORDERED_NUM_ID,
   buildBlankDocx,
   parseDocx,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { blocksToPmDoc } from '../src/renderer/editor/convert'
 import { executeTool } from '../src/renderer/ai/tools'
 

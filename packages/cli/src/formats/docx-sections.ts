@@ -4,7 +4,7 @@ import {
   type SaveBlock,
   type SaveOptions,
   type SectionInfo,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import type { OpenDocument } from './docx'
 
 import type {

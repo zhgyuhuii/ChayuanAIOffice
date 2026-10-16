@@ -1,6 +1,6 @@
 /**
  * Static web hosting inside the BFF (single-artifact form ②, decision #9):
- * when CHATOFFICE_STATIC_DIR points at the build:web output, this image
+ * when CHAOFFICE_STATIC_DIR points at the build:web output, this image
  * serves the editor SPA bundle alongside the API — one container, one port.
  *
  * Registered AFTER the API routes so /healthz, /rpc/* and /ai/* always win.
@@ -30,7 +30,7 @@ const MIME: Record<string, string> = {
 
 export function attachStatic(app: FastifyInstance, root: string): void {
   if (!existsSync(root)) {
-    app.log?.warn?.(`[static] CHATOFFICE_STATIC_DIR missing: ${root}`)
+    app.log?.warn?.(`[static] CHAOFFICE_STATIC_DIR missing: ${root}`)
     return
   }
 

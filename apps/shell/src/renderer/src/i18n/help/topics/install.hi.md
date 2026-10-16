@@ -1,4 +1,4 @@
-# ChatOffice इंस्टॉल करना
+# ChaOffice इंस्टॉल करना
 
 हर बिल्ड [Releases पेज](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) पर प्रकाशित होता है। सभी `main` से बनी होती हैं; और macOS तथा Windows के इंस्टॉलर हस्ताक्षरित होते हैं।
 
@@ -18,32 +18,32 @@
 
 ## macOS पर
 
-`.dmg` खोलें और **ChatOffice** को Applications में खींचें। Intel बिल्ड में पहली बार चलाने पर यह खोलने की पुष्टि माँगता है: Applications में ऐप पर राइट-क्लिक करके ▸ खोलें चुनें। यह बिना हस्ताक्षर वाली डिस्क इमेज के सामने Gatekeeper है, क्षतिग्रस्त डाउनलोड नहीं।
+`.dmg` खोलें और **ChaOffice** को Applications में खींचें। Intel बिल्ड में पहली बार चलाने पर यह खोलने की पुष्टि माँगता है: Applications में ऐप पर राइट-क्लिक करके ▸ खोलें चुनें। यह बिना हस्ताक्षर वाली डिस्क इमेज के सामने Gatekeeper है, क्षतिग्रस्त डाउनलोड नहीं।
 
 ## Windows पर
 
-`.exe` इंस्टॉलर चलाएँ। यह ChatOffice को Start मेन्यू में रखता है और `.docx`, `.xlsx`, `.pptx`, `.pdf` तथा इन्हीं जैसे प्रकार पंजीकृत कर देता है, ताकि किसी फ़ाइल पर डबल-क्लिक उसे खोल दे।
+`.exe` इंस्टॉलर चलाएँ। यह ChaOffice को Start मेन्यू में रखता है और `.docx`, `.xlsx`, `.pptx`, `.pdf` तथा इन्हीं जैसे प्रकार पंजीकृत कर देता है, ताकि किसी फ़ाइल पर डबल-क्लिक उसे खोल दे।
 
 ## Linux पर
 
 **Debian / Ubuntu**
 
 ```sh
-sudo apt install ./chatoffice_<version>_amd64.deb
+sudo apt install ./chaoffice_<version>_amd64.deb
 ```
 
 **Fedora / RHEL / openSUSE**
 
 ```sh
-sudo dnf install ./chatoffice-<version>.x86_64.rpm     # Fedora / RHEL family
-sudo zypper install ./chatoffice-<version>.x86_64.rpm  # openSUSE
+sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
+sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
 
 **AppImage** — बिना किसी इंस्टॉल चरण के, जहाँ है वहीं चलता है:
 
 ```sh
-chmod +x ChatOffice-<version>.AppImage
-./ChatOffice-<version>.AppImage
+chmod +x ChaOffice-<version>.AppImage
+./ChaOffice-<version>.AppImage
 ```
 
 इसे FUSE 2 रनटाइम चाहिए। यदि आप इसे इंस्टॉल नहीं करना चाहते, तो `--appimage-extract-and-run` के साथ चलाएँ, और सैंडबॉक्स निकाली गई निर्देशिका से ही काम करेगी।
@@ -64,4 +64,4 @@ chmod +x ChatOffice-<version>.AppImage
 
 ## कमांड लाइन भी साथ आती है
 
-हर इंस्टॉल में `chatoffice` कमांड रहती है जो उसी इंजनों से बात करती है जिन्हें विंडो इस्तेमाल करती है, इसलिए दोनों किसी फ़ाइल पर कभी असहमत नहीं होतीं। macOS और Windows पर यह ऐप बंडल के भीतर होती है; और `chatoffice install-cli` इसे आपके `PATH` में रख देती है। यह क्या कर सकती है, इसके लिए **कमांड लाइन और एजेंट** देखें।
+हर इंस्टॉल में `chaoffice` कमांड रहती है जो उसी इंजनों से बात करती है जिन्हें विंडो इस्तेमाल करती है, इसलिए दोनों किसी फ़ाइल पर कभी असहमत नहीं होतीं। macOS और Windows पर यह ऐप बंडल के भीतर होती है; और `chaoffice install-cli` इसे आपके `PATH` में रख देती है। यह क्या कर सकती है, इसके लिए **कमांड लाइन और एजेंट** देखें।

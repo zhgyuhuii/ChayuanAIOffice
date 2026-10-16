@@ -1,4 +1,4 @@
-import type { TableRenderNode } from '@chatoffice/pptx-render'
+import type { TableRenderNode } from '@chaoffice/pptx-render'
 import { describe, expect, it } from 'vitest'
 import {
   tableCellAtPoint,

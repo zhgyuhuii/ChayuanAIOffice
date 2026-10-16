@@ -1,5 +1,5 @@
 {
-  "name": "@chatoffice/pptx-render",
+  "name": "@chaoffice/pptx-render",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -18,7 +18,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@chatoffice/pptx-engine": "*",
+    "@chaoffice/pptx-engine": "*",
     "opentype.js": "^2.0.0",
     "bidi-js": "^1.0.3"
   },

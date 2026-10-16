@@ -69,8 +69,8 @@ pdf/markdown/html 为 `tab==='chat' && chat.length>0`。
   - 合并写法模板：`apps/shell/src/renderer/src/strings.ts:7244-7250`（`localStrings` spread 合并，制度 §3.1 试点）
 - 上游 `genoffice`（remote `upstream` = `/Users/zyh/work/genoffice`）：同样拥有六端 AiPanel 文件
   （上游 docs 的 `newChat` 在 :1108，与本地已漂移）与 project-store 聊天 API；**没有** PanelTabs/DockShell/dock.css。
-- 测试：根 `npm test` 按 workspace 链式执行；新测试分别跑 `npm test -w @chatoffice/project-store`、
-  `npm test -w @chatoffice/ui`。既有相关套件：`packages/ui/tests/`（dock-shell 等）、`packages/project-store/tests/`（store/traversal-limit 等）。
+- 测试：根 `npm test` 按 workspace 链式执行；新测试分别跑 `npm test -w @chaoffice/project-store`、
+  `npm test -w @chaoffice/ui`。既有相关套件：`packages/ui/tests/`（dock-shell 等）、`packages/project-store/tests/`（store/traversal-limit 等）。
 
 ---
 
@@ -403,7 +403,7 @@ tab 行**没有**历史 tab。🕘 图标常驻 `actions` 槽 `[+] [🕘]`，点
 | packages/ui | `packages/ui/tests/ai-conversations.test.tsx`（新） | create/close/restore/activate 状态机；**activeTab 仲裁四序**（activeId 有效 / localStorage 残留 'chat'/'history' 视无效 / openIds[0] 兜底 / 'empty'）；runningIds 传播到 tab 圆点；首条消息置标题 + 懒加载回填空标题；关到零进入 'empty' 空态；**关闭空会话不产生历史条目且元数据被删（D12）**；无 projectApi 降级内存态 |
 | packages/ui | `packages/ui/tests/ai-history-popover.test.tsx`（新，D13） | 图标点击开浮层、点外部关闭；条目点击 restore 并收起；空历史显示 empty 文案；单删/全删走确认 |
 | packages/ui | `packages/ui/tests/panel-tabs.test.ts`（扩展既有或新增） | ✕ 点击不切 tab；running 圆点渲染；onClose 后 tab 消失 |
-| 回归 | 既有 `dock-shell.test` / `dock-shell-drag.test` / `store.test` / `traversal-limit.test` 及六端构建 | 全绿（`npm test -w @chatoffice/project-store`、`npm test -w @chatoffice/ui`、根 `npm test`） |
+| 回归 | 既有 `dock-shell.test` / `dock-shell-drag.test` / `store.test` / `traversal-limit.test` 及六端构建 | 全绿（`npm test -w @chaoffice/project-store`、`npm test -w @chaoffice/ui`、根 `npm test`） |
 | 手动冒烟 | 六端 `dev:desktop` 各跑一遍 §7 清单 | 逐项勾选 |
 
 ---
@@ -511,7 +511,7 @@ tab 行**没有**历史 tab。🕘 图标常驻 `actions` 槽 `[+] [🕘]`，点
 - 六端面板：tab 行删 `history` 项；actions 槽常驻 `[+] [🕘]`；删各自 history tab 体与 `historyConfirm` 状态（docs/slides/markdown/html/pdf 面板级，sheets 的在 App.tsx）；空态引导 `onOpenHistory` 改开浮层。sheets 特有：`AiChatPanel` 自持 `historyOpen` 状态，`conversations` prop 删 `onEmptyOpenHistory`、`history.onDelete/onDeleteAll` 改传 `conv.removeClosed/removeAllClosed` 直调（确认在浮层内完成）。
 - i18n：六端 local 文件键改名 `aiTabHistory` → `aiHistoryTooltip`（20 语言 × 6 文件；值沿用原「历史对话」翻译）。
 - 测试：`packages/ui/tests/ai-conversations.test.tsx` 补 D12 五用例（空会话丢弃+元数据删除 / 首条消息后进历史 / setRunning、touch 标记已发言 / 存量空历史条目不可见 / restore 后 close 回历史）+ 仲裁 ② 'history' 残留无效用例；新文件 `packages/ui/tests/ai-history-popover.test.tsx`（开关/点外关闭/条目还原收起/空文案/单删全删确认）；docs 两处旧断言（tab 数 4→3）随 D13 语义更新。
-- 验证：`@chatoffice/ui` 140、`@chatoffice/project-store` 95、docs 2663、sheets 2850、slides 890、pdf 778、markdown 464、html 186、shell 638 测试全绿；ui/project-store/docs/sheets/slides/pdf/markdown/html/shell typecheck 全过。
+- 验证：`@chaoffice/ui` 140、`@chaoffice/project-store` 95、docs 2663、sheets 2850、slides 890、pdf 778、markdown 464、html 186、shell 638 测试全绿；ui/project-store/docs/sheets/slides/pdf/markdown/html/shell typecheck 全过。
 - 台账：`docs/upstream-sync.md` §11 已补 D12/D13 条目；六端 hunk 处 LOCAL 标记已追加增量段。
 
 **判定实现说明（与计划措辞的偏差）**：计划写「close(id) 前置分流」，本实现把「空」的判定放在 hook（通过既有上报链累积「已发言」信号），不新增会话体回调/句柄方法——因为会话体懒加载失败或未完成时无法可靠回答「transcript 是否为空」，而上报链信号是运行态事实，误判面更小；`restore()` 直接标记已发言，杜绝「还原后立即关闭误丢」的竞态。语义与 D12 决策一致。

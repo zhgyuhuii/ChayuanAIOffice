@@ -14,7 +14,7 @@ import type {
   PictureRenderNode,
   RenderNode,
   RenderFill,
-} from '@chatoffice/pptx-render'
+} from '@chaoffice/pptx-render'
 import type { EditParagraph, EditRun } from '../shared/ipc'
 
 /** Format container captured by the render layer (pure data, serializable) */

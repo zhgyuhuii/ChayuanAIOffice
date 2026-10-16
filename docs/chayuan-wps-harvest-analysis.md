@@ -130,12 +130,12 @@ wps 实现全部走 `doc.Tables` JSAPI；本项目走 ProseMirror doc 遍历（`
 ## 9. 品牌 / 链接 / skill（全仓修正）
 
 - **开源地址**：`GITHUB_REPO_URL`（packages/electron-utils/src/github-menu.ts）与 stars fetch（shell/main/index.ts L603）、updater releases（updater.ts L346）、package.json repository/homepage（根+shell）、README badges（19 语言）、`NPX_INSTALL_COMMAND`（IntegrationsPane）全部从 `zhgyuhuii/ChayuanAIOffice`/`zhgyuhuii/ChayuanAIOffice` 改为 **`zhgyuhuii/ChayuanAIOffice`**。
-- **skill**：`skills/chatoffice` → 更名 `chaoffice`，SKILL.md 重写为与实际可执行命令一致（headless CLI 名、用法、参数），设置页 IntegrationsPane 文案/命令同步，安装/卸载/导出链路回归。
+- **skill**：`skills/chaoffice` → 更名 `chaoffice`，SKILL.md 重写为与实际可执行命令一致（headless CLI 名、用法、参数），设置页 IntegrationsPane 文案/命令同步，安装/卸载/导出链路回归。
 - **headless CLI**：无头导出与 MCP 通道引用的 CLI 名称同步修正。
 
 ## 10. DeepSeek harness 运行态
 
-`npm run dist:chatop` 产物（`dist/chatop-chatoffice-<ver>/`）部署到 `/Users/zyh/work/chayuan-harness` desktop 的 app resource 槽位（`host-side.cjs start({pluginDir,...})`），拉起 BFF sidecar + 编辑器 web，做一轮运行态冒烟（打开 docs、AI 面板可用、新 tab 可见）。
+`npm run dist:chatop` 产物（`dist/chatop-chaoffice-<ver>/`）部署到 `/Users/zyh/work/chayuan-harness` desktop 的 app resource 槽位（`host-side.cjs start({pluginDir,...})`），拉起 BFF sidecar + 编辑器 web，做一轮运行态冒烟（打开 docs、AI 面板可用、新 tab 可见）。
 
 ## 11. 与上游隔离策略（铁律）
 

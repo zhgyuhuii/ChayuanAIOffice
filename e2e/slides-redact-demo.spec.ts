@@ -102,7 +102,7 @@ async function buildPptx(path: string): Promise<void> {
 
 test('a reader can withhold a picture from the model without losing it', async () => {
   test.setTimeout(180_000)
-  const dir = await mkdtemp(join(tmpdir(), 'chatoffice-redact-slides-'))
+  const dir = await mkdtemp(join(tmpdir(), 'chaoffice-redact-slides-'))
   const pptx = join(dir, 'deck.pptx')
   await buildPptx(pptx)
 

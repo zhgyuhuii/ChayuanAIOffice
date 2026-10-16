@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { launchShell, closeAndSaveVideo, waitForPageWithUrl } from './helpers'
 
-// the preload exposes window.__chatofficeDebug only under this env var
+// the preload exposes window.__chaofficeDebug only under this env var
 process.env.GENOFFICE_DEBUG_HOOKS = '1'
 
 /**
@@ -17,7 +17,7 @@ process.env.GENOFFICE_DEBUG_HOOKS = '1'
  */
 test.describe('sheets: tiled paste of formulas survives save', () => {
   test('followers keep their (shifted) formula in the saved xlsx', async () => {
-    const scratch = await mkdtemp(join(tmpdir(), 'chatoffice-paste-save-'))
+    const scratch = await mkdtemp(join(tmpdir(), 'chaoffice-paste-save-'))
     const launched = await launchShell({
       onboardingSeen: true,
       videoDir: 'sheets-paste-shared-formula-save',
@@ -51,7 +51,7 @@ test.describe('sheets: tiled paste of formulas survives save', () => {
 
       // source row A1:C1: two values and a formula referencing the row
       await sheets.evaluate(async () => {
-        const debug = (window as unknown as Record<string, unknown>).__chatofficeDebug as {
+        const debug = (window as unknown as Record<string, unknown>).__chaofficeDebug as {
           univerAPI: {
             getActiveWorkbook(): {
               getActiveSheet(): {
@@ -74,7 +74,7 @@ test.describe('sheets: tiled paste of formulas survives save', () => {
 
       // tile-paste into A2:C3 — row 3's formula cell becomes an si follower
       await sheets.evaluate(() => {
-        const debug = (window as unknown as Record<string, unknown>).__chatofficeDebug as {
+        const debug = (window as unknown as Record<string, unknown>).__chaofficeDebug as {
           univerAPI: {
             getActiveWorkbook(): {
               getActiveSheet(): {
@@ -98,7 +98,7 @@ test.describe('sheets: tiled paste of formulas survives save', () => {
         wc?.send('menu:action', 'save')
       })
 
-      const saveDir = join(scratch, 'ChatOffice')
+      const saveDir = join(scratch, 'ChaOffice')
       await expect(async () => {
         const files = (await readdir(saveDir)).filter((f) => f.endsWith('.xlsx'))
         expect(files).toHaveLength(1)

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { AI_PROVIDERS, defaultAiSettings } from '@chatoffice/ai-provider'
+import { AI_PROVIDERS, defaultAiSettings } from '@chaoffice/ai-provider'
 import {
   aiModelPickerGroups,
   aiModelPickerSelection,
@@ -15,7 +15,7 @@ describe('aiModelPickerGroups', () => {
 
   it('lists ChaAI Office only when signed in', () => {
     const ids = aiModelPickerGroups(defaultAiSettings(), true).map((g) => g.id)
-    expect(ids).toEqual(['chatoffice'])
+    expect(ids).toEqual(['chaoffice'])
   })
 
   it('adds a vendor once its key is set and puts an off-catalog model first', () => {
@@ -55,7 +55,7 @@ describe('selection round trip', () => {
   it('falls back to ChaAI Office when the stored provider is unusable', () => {
     const settings = defaultAiSettings()
     settings.provider = 'anthropic'
-    expect(aiModelPickerSelection(settings).provider).toBe('chatoffice')
+    expect(aiModelPickerSelection(settings).provider).toBe('chaoffice')
   })
 })
 

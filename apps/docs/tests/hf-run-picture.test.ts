@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { PAGE_MARK, type HfParagraph } from '@chatoffice/docx-engine'
+import { PAGE_MARK, type HfParagraph } from '@chaoffice/docx-engine'
 import {
   hfTabSegments,
   hfWithoutPageMarks,

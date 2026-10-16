@@ -47,12 +47,12 @@ async function openFromHome(app: ElectronApplication, home: Page, file: string):
 }
 
 /** the fix's observable end state: the document's editable surface holds focus */
-/** A1 of the active sheet via the debug hooks (chatoffice branding of the upstream helper). */
+/** A1 of the active sheet via the debug hooks (chaoffice branding of the upstream helper). */
 async function cellA1Value(page: Page): Promise<unknown> {
   return page.evaluate(() => {
     const api = (
       window as unknown as {
-        __chatofficeDebug: {
+        __chaofficeDebug: {
           univerAPI: {
             getActiveWorkbook(): {
               getActiveSheet(): { getRange(a: string): { getValue(): unknown } }
@@ -60,7 +60,7 @@ async function cellA1Value(page: Page): Promise<unknown> {
           }
         }
       }
-    ).__chatofficeDebug.univerAPI
+    ).__chaofficeDebug.univerAPI
     return api.getActiveWorkbook()?.getActiveSheet()?.getRange('A1')?.getValue() ?? null
   })
 }
@@ -87,7 +87,7 @@ async function activeRangeNotation(page: Page): Promise<string | null> {
   return page.evaluate(() => {
     const api = (
       window as unknown as {
-        __chatofficeDebug?: {
+        __chaofficeDebug?: {
           univerAPI?: {
             getActiveWorkbook?: () => {
               getActiveSheet?: () => {
@@ -97,7 +97,7 @@ async function activeRangeNotation(page: Page): Promise<string | null> {
           }
         }
       }
-    ).__chatofficeDebug?.univerAPI
+    ).__chaofficeDebug?.univerAPI
     return (
       api?.getActiveWorkbook?.()?.getActiveSheet?.()?.getActiveRange?.()?.getA1Notation?.() ?? null
     )
@@ -148,7 +148,7 @@ async function expectViewFocused(app: ElectronApplication, urlPart: string): Pro
 }
 
 test('docs: typing works immediately after opening a file from Home', async () => {
-  const scratch = await mkdtemp(join(tmpdir(), 'chatoffice-openfocus-e2e-'))
+  const scratch = await mkdtemp(join(tmpdir(), 'chaoffice-openfocus-e2e-'))
   const docx = join(scratch, 'open-focus.docx')
   await copyFile(DOCX, docx)
 
@@ -170,7 +170,7 @@ test('docs: typing works immediately after opening a file from Home', async () =
 })
 
 test('sheets: typing into the active cell works immediately after opening from Home', async () => {
-  const scratch = await mkdtemp(join(tmpdir(), 'chatoffice-openfocus-e2e-'))
+  const scratch = await mkdtemp(join(tmpdir(), 'chaoffice-openfocus-e2e-'))
   const xlsx = join(scratch, 'open-focus.xlsx')
   await copyFile(XLSX, xlsx)
 
@@ -188,7 +188,7 @@ test('sheets: typing into the active cell works immediately after opening from H
     const sheets = await waitForPageWithUrl(launched.app, '://sheets/')
     await sheets.waitForFunction(
       () =>
-        (window as unknown as { __chatofficeDebug?: { univerAPI?: unknown } }).__chatofficeDebug
+        (window as unknown as { __chaofficeDebug?: { univerAPI?: unknown } }).__chaofficeDebug
           ?.univerAPI,
       null,
       { timeout: 60_000 },
@@ -208,7 +208,7 @@ test('sheets: typing into the active cell works immediately after opening from H
     // A burst of text can still be dropped after every gate passes: the
     // editor element is focused and connected, but the adopted view's input
     // pipeline is not wired to Univer yet, so the editor stays empty and the
-    // Enter that follows only moves the cursor down (CI-only, chatoffice#1150).
+    // Enter that follows only moves the cursor down (CI-only, chaoffice#1150).
     // Retry exactly that, up to three attempts, keeping every attempt's layer
     // snapshot in the failure message.
     const attempts: string[] = []
@@ -234,7 +234,7 @@ test('sheets: typing into the active cell works immediately after opening from H
       // independently in an adopted view: the CI-only signature is keydowns
       // arriving (Enter moves the cursor) while the IME-style text-input
       // channel (insertText) drops everything — and character-key simulation
-      // can omit input events in the same view (chatoffice#1151's original reason for
+      // can omit input events in the same view (chaoffice#1151's original reason for
       // insertText). So every attempt alternates the channel instead of
       // repeating the one that just failed: odd attempts open the editor with
       // a real keydown and commit the rest via insertText; even attempts type
@@ -250,9 +250,9 @@ test('sheets: typing into the active cell works immediately after opening from H
       const focusCtx = await sheets.evaluate(() => {
         const api = (
           window as unknown as {
-            __chatofficeDebug?: { focusContext?: () => Record<string, unknown> }
+            __chaofficeDebug?: { focusContext?: () => Record<string, unknown> }
           }
-        ).__chatofficeDebug
+        ).__chaofficeDebug
         return api?.focusContext?.() ?? null
       })
       await sheets.keyboard.press('Enter')

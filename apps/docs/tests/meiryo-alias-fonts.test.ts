@@ -33,9 +33,9 @@ describe('Meiryo UI GO', () => {
     rules.find((r) => r.range === range && r.bold === bold)
 
   it('serves kana and JP punctuation from the bundled faces without size-adjust', () => {
-    expect(find(KANA_RANGE)?.src).toBe("url('./ChatOfficeUIKanaJP-Regular.woff2') format('woff2')")
+    expect(find(KANA_RANGE)?.src).toBe("url('./ChaOfficeUIKanaJP-Regular.woff2') format('woff2')")
     expect(find(KANA_RANGE, true)?.src).toBe(
-      "url('./ChatOfficeUIKanaJP-Bold.woff2') format('woff2')",
+      "url('./ChaOfficeUIKanaJP-Bold.woff2') format('woff2')",
     )
     expect(find(KANA_RANGE)?.adjust).toBeUndefined()
     expect(find(KANA_RANGE, true)?.adjust).toBeUndefined()
@@ -58,8 +58,8 @@ describe('Meiryo UI GO', () => {
 })
 
 describe('ChaAI Office UI Kana JP (Meiryo UI advances, full height)', () => {
-  const regular = readWoff2(join(FONTS, 'ChatOfficeUIKanaJP-Regular.woff2'))
-  const bold = readWoff2(join(FONTS, 'ChatOfficeUIKanaJP-Bold.woff2'))
+  const regular = readWoff2(join(FONTS, 'ChaOfficeUIKanaJP-Regular.woff2'))
+  const bold = readWoff2(join(FONTS, 'ChaOfficeUIKanaJP-Bold.woff2'))
   const near = (font: typeof regular, cp: number, em: number) =>
     expect(advanceEm(font, cp)).toBeCloseTo(em, 3)
 

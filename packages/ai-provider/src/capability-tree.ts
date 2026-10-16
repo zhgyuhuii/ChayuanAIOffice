@@ -42,7 +42,7 @@ const CAPABILITY_VENDORS: Record<AiCapabilityKind, string[]> = {
     'aliyun-bailian',
     'minimax',
     'recraft',
-    'chatoffice',
+    'chaoffice',
   ],
   videoGen: [
     'aliyun-bailian',
@@ -57,7 +57,7 @@ const CAPABILITY_VENDORS: Record<AiCapabilityKind, string[]> = {
     'runway',
     'vidu',
     'pixverse',
-    'chatoffice',
+    'chaoffice',
   ],
   imageUnderstanding: [
     'openai',
@@ -66,9 +66,9 @@ const CAPABILITY_VENDORS: Record<AiCapabilityKind, string[]> = {
     'zhipu',
     'grok',
     'aliyun-bailian',
-    'chatoffice',
+    'chaoffice',
   ],
-  videoUnderstanding: ['gemini', 'volcengine', 'zhipu', 'aliyun-bailian', 'chatoffice'],
+  videoUnderstanding: ['gemini', 'volcengine', 'zhipu', 'aliyun-bailian', 'chaoffice'],
   // voice: mirrors the wired speech adapters (openai-compatible shapes, gemini
   // audio, dashscope native cosyvoice/paraformer)
   speechSynthesis: ['openai', 'gemini', 'aliyun-bailian'],
@@ -242,7 +242,7 @@ export function resolveCapabilityDefault(
 
 /** can a vendor's model list be re-fetched (login-backed profiles cannot)? */
 export function capabilityVendorRefreshable(vendorId: string): boolean {
-  return vendorId !== 'chatoffice'
+  return vendorId !== 'chaoffice'
 }
 
 // ── search platforms (网络搜索 group children) ─────────────────────────

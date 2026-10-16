@@ -23,7 +23,7 @@ import {
   type AiImageSource,
   type AiModelSelection,
   type AiSettingsV2,
-} from '@chatoffice/ai-provider/browser'
+} from '@chaoffice/ai-provider/browser'
 import type { ModelSettingsBridge } from './ModelSettingsPage'
 import { modelSettingsStrings } from './model-settings-strings'
 

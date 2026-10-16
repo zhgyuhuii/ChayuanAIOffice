@@ -1,4 +1,4 @@
-import { createIpcTransport, type AgentTransport } from '@chatoffice/agent-core'
+import { createIpcTransport, type AgentTransport } from '@chaoffice/agent-core'
 import type { AiModelSelection } from '../../shared/ipc'
 import { t } from '../i18n/locale'
 

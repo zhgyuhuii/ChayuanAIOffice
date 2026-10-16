@@ -9,9 +9,9 @@ import {
   type AgentImage,
   type AgentSkill,
   type AgentTransport,
-} from '@chatoffice/agent-core'
-import { inferModelType, modelAcceptsImages, type AiSettingsV2 } from '@chatoffice/ai-provider/browser'
-import { auditSlideLayout } from '@chatoffice/pipelines/slides/layout-audit'
+} from '@chaoffice/agent-core'
+import { inferModelType, modelAcceptsImages, type AiSettingsV2 } from '@chaoffice/ai-provider/browser'
+import { auditSlideLayout } from '@chaoffice/pipelines/slides/layout-audit'
 import { createSlidesSkill, formatSlideDump, type DeckAccess } from './slides-skill'
 import qcVisualPrompt from './prompts/qc-visual.md?raw'
 import qcGeometryPrompt from './prompts/qc-geometry.md?raw'

@@ -13,7 +13,7 @@ import {
   mergeCells,
   splitCell,
 } from '@tiptap/pm/tables'
-import { platformShortcuts } from '@chatoffice/i18n'
+import { platformShortcuts } from '@chaoffice/i18n'
 import { redactTextBetween, type RedactableNode } from '../ai/redact-view'
 
 import { useI18n, type StringKey } from '../i18n/locale'
@@ -50,7 +50,7 @@ import { fieldRangeAt, toggleFieldCodes, type FieldRange } from '../editor/field
 import { hasRedactionIn } from '../editor/redaction'
 import type { SpellLanguages } from '../../shared/ipc'
 import { TRANSLATE_LANGS, appLangKey } from './translate-langs'
-import type { TextboxDisplay } from '@chatoffice/docx-engine'
+import type { TextboxDisplay } from '@chaoffice/docx-engine'
 
 export { FontDialog } from './FontDialog'
 

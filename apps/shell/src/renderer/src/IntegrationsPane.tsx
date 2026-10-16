@@ -5,7 +5,7 @@ import {
   kbSetOrigin,
   kbStrings,
   type KbDiscoverPayload,
-} from '@chatoffice/ui'
+} from '@chaoffice/ui'
 import type { TFunc } from './locale'
 import { McpServerSection } from './McpServerSection'
 import type {
@@ -16,7 +16,7 @@ import type {
 } from '../../shared/integrations-api'
 
 // ── Settings → Integrations ─────────────────────────────────
-// Installs the bundled `chatoffice` skill into the coding agents found on this
+// Installs the bundled `chaoffice` skill into the coding agents found on this
 // machine. Every write starts with a click and shows the absolute path first,
 // because the app does not see the shell's CODEX_HOME-style overrides and the
 // user has to be able to spot a wrong target.
@@ -50,8 +50,8 @@ export interface McpLaunch {
 
 /**
  * How an MCP client starts `chaoffice mcp`. Clients spawn without a shell, so on Windows
- * neither chatoffice.cmd nor cmd /c is safe (a path with a space splits); the snippet does
- * what chatoffice.cmd does: the app binary as Node on the bundled CLI. Elsewhere it is the
+ * neither chaoffice.cmd nor cmd /c is safe (a path with a space splits); the snippet does
+ * what chaoffice.cmd does: the app binary as Node on the bundled CLI. Elsewhere it is the
  * bare name once it is on the PATH, else the launcher itself.
  */
 export function mcpLaunch(cli: { status: string; launcherDir: string }): McpLaunch {

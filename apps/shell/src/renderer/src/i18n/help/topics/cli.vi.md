@@ -1,19 +1,19 @@
 # Dòng lệnh và tác nhân
 
-Mọi bản cài đặt đều kèm lệnh `chatoffice` điều khiển đúng những engine mà cửa sổ dùng — cùng bộ phân tích, cùng bộ ghi, cùng bộ kết xuất. Một tệp do ứng dụng lưu và một tệp do lệnh ghi là cùng một tệp, và một kiểm tra mà bảng AI của ứng dụng vượt qua thì lệnh cũng vượt qua.
+Mọi bản cài đặt đều kèm lệnh `chaoffice` điều khiển đúng những engine mà cửa sổ dùng — cùng bộ phân tích, cùng bộ ghi, cùng bộ kết xuất. Một tệp do ứng dụng lưu và một tệp do lệnh ghi là cùng một tệp, và một kiểm tra mà bảng AI của ứng dụng vượt qua thì lệnh cũng vượt qua.
 
 ```sh
-chatoffice --help          # every command
-chatoffice guide slides    # the op reference, for writing your own
+chaoffice --help          # every command
+chaoffice guide slides    # the op reference, for writing your own
 ```
 
 Đó là toàn bộ bề mặt trong một màn hình — mọi lệnh đều có một dòng giải thích nó làm gì, rồi đến các tùy chọn toàn cục và mã thoát:
 
-![Kết quả thực tế của chatoffice --help: biểu ngữ phiên bản, từng lệnh kèm mô tả một dòng, cùng các tùy chọn toàn cục và mã thoát](img/cli.png)
+![Kết quả thực tế của chaoffice --help: biểu ngữ phiên bản, từng lệnh kèm mô tả một dòng, cùng các tùy chọn toàn cục và mã thoát](img/cli.png)
 
 ## Lấy lệnh
 
-macOS và Windows kèm nó trong bó ứng dụng. Để gọi bằng tên, chạy một lần `chatoffice install-cli`: nó liên kết tệp nhị phân trong bó vào một thư mục trên PATH của bạn — trên macOS là `/usr/local/bin` khi đó không phải tiền tố Homebrew (thư mục của Homebrew không bao giờ bị động vào), không thì vào bin của người dùng — hoặc trên Windows vào `PATH` người dùng của bạn.
+macOS và Windows kèm nó trong bó ứng dụng. Để gọi bằng tên, chạy một lần `chaoffice install-cli`: nó liên kết tệp nhị phân trong bó vào một thư mục trên PATH của bạn — trên macOS là `/usr/local/bin` khi đó không phải tiền tố Homebrew (thư mục của Homebrew không bao giờ bị động vào), không thì vào bin của người dùng — hoặc trên Windows vào `PATH` người dùng của bạn.
 
 ## Những lệnh đáng biết
 
@@ -31,26 +31,26 @@ macOS và Windows kèm nó trong bó ứng dụng. Để gọi bằng tên, ch�
 | `merge`           | Điền các vùng chờ `{{key}}` trong một mẫu `.docx`, `.pptx` hoặc `.xlsx`.                                                                                                                                                                                               |
 | `capabilities`    | Báo cáo những tính năng đám mây nào đã được cấu hình trên máy này.                                                                                                                                                                                                     |
 | `guide`           | Tra cứu thao tác và các hướng dẫn thiết kế, sinh ra từ đúng những định nghĩa mà bộ thực thi dùng để kiểm tra — nên nó không thể lệch khỏi những gì `apply` chấp nhận. `--json` trả về tra cứu kèm lược đồ của từng thao tác.                                           |
-| `install-cli`     | Đưa `chatoffice` vào `PATH`.                                                                                                                                                                                                                                            |
+| `install-cli`     | Đưa `chaoffice` vào `PATH`.                                                                                                                                                                                                                                            |
 | `skill`           | Liệt kê các tác nhân lập trình tìm thấy trên máy này rồi cài hoặc cập nhật kỹ năng ChaAI Office trong chúng.                                                                                                                                                              |
 | `mcp`             | Phục vụ mọi lệnh như một công cụ của Model Context Protocol. Xem **Kết nối tác nhân lập trình**.                                                                                                                                                                       |
 
 ## Soạn thảo: tài liệu, bảng tính, bản trình chiếu
 
-`chatoffice docs`, `chatoffice sheet` và `chatoffice slides` đọc và sửa qua đúng lối ghi mà ứng dụng dùng, và chúng chia sẻ một từ vựng: một **thao tác** (op) là một lần sửa, còn một **đặc tả** (spec) là danh sách các thao tác áp dụng theo thứ tự.
+`chaoffice docs`, `chaoffice sheet` và `chaoffice slides` đọc và sửa qua đúng lối ghi mà ứng dụng dùng, và chúng chia sẻ một từ vựng: một **thao tác** (op) là một lần sửa, còn một **đặc tả** (spec) là danh sách các thao tác áp dụng theo thứ tự.
 
 ```sh
-chatoffice sheet read report.xlsx
-chatoffice slides apply deck.pptx --ops ops.json --dry-run
-chatoffice docs apply brief.docx --ops ops.json
+chaoffice sheet read report.xlsx
+chaoffice slides apply deck.pptx --ops ops.json --dry-run
+chaoffice docs apply brief.docx --ops ops.json
 ```
 
 `--dry-run` cho biết một lô sẽ làm gì và không ghi gì cả, đây là cách rẻ nhất để kiểm tra một đặc tả trước khi nó áp dụng. Bảng AI trong ứng dụng chạy đúng trên những thao tác này, nên bất cứ điều gì bạn nhờ nó làm thì bạn cũng viết kịch bản được.
 
 ## Model Context Protocol
 
-`chatoffice mcp` phục vụ mọi lệnh như một công cụ MCP, và `chatoffice mcp install <agent|all>` đăng ký nó vào cấu hình riêng của một tác nhân lập trình. Xem **Kết nối tác nhân lập trình** cho phần bên kia.
+`chaoffice mcp` phục vụ mọi lệnh như một công cụ MCP, và `chaoffice mcp install <agent|all>` đăng ký nó vào cấu hình riêng của một tác nhân lập trình. Xem **Kết nối tác nhân lập trình** cho phần bên kia.
 
 ## Điều lệnh không làm
 
-Nó đọc tệp và ghi tệp. Nó không phải ứng dụng: không có cửa sổ, và hộp thoại cập nhật trong ứng dụng không áp dụng. Bất cứ thứ gì cần cửa sổ — bảng AI, lượt kiểm tra chất lượng trên một trang chiếu đã kết xuất — đều phải chờ bạn mở tệp ra. `chatoffice render` đưa cho bạn các điểm ảnh mà không cần cửa sổ, và `chatoffice slides` tự kiểm tra bố cục của một bộ trình chiếu.
+Nó đọc tệp và ghi tệp. Nó không phải ứng dụng: không có cửa sổ, và hộp thoại cập nhật trong ứng dụng không áp dụng. Bất cứ thứ gì cần cửa sổ — bảng AI, lượt kiểm tra chất lượng trên một trang chiếu đã kết xuất — đều phải chờ bạn mở tệp ra. `chaoffice render` đưa cho bạn các điểm ảnh mà không cần cửa sổ, và `chaoffice slides` tự kiểm tra bố cục của một bộ trình chiếu.

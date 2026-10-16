@@ -1,4 +1,4 @@
-import type { ImageDpi } from '@chatoffice/pptx-render'
+import type { ImageDpi } from '@chaoffice/pptx-render'
 import type { Size } from './video-size'
 
 /** PowerPoint for Mac lays untagged bitmaps out at 2 px per point; Windows at 96 dpi. */

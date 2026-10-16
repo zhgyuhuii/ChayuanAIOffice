@@ -5,7 +5,7 @@
  * the chat tab to follow the run (handled by the caller).
  */
 import React from 'react'
-import { AssistantLibraryBrowser } from '@chatoffice/ui/assistant-library'
+import { AssistantLibraryBrowser } from '@chaoffice/ui/assistant-library'
 import { IconAiAskSelection, IconAiBeautify, IconAiFactCheck, IconAiImage } from '../components/icons'
 
 export interface AssistantAction {

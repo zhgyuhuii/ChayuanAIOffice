@@ -1,5 +1,5 @@
 /**
- * Excel-standard shortcuts Univer doesn't ship (alpha: Merrick, #chatoffice-6).
+ * Excel-standard shortcuts Univer doesn't ship (alpha: Merrick, #chaoffice-6).
  *
  * Univer's KeyCode enum stops at SPACE/arrows — Home, End, PageUp and
  * PageDown don't even have names, so nothing upstream can bind them. The
@@ -49,16 +49,16 @@ const KEY_HOME = 36
 const KEY_NUMPAD_ADD = 107
 const KEY_NUMPAD_SUBTRACT = 109
 
-const ACTIVATE_ADJACENT_SHEET_ID = 'chatoffice.command.activate-adjacent-sheet'
-const SELECT_SHEET_HOME_ID = 'chatoffice.command.select-sheet-home'
-const SELECT_SHEET_END_ID = 'chatoffice.command.select-sheet-end'
-const SELECT_ROW_HOME_ID = 'chatoffice.command.select-row-home'
-const SELECT_WHOLE_COLUMN_ID = 'chatoffice.command.select-whole-column'
-const SELECT_WHOLE_ROW_ID = 'chatoffice.command.select-whole-row'
-const HIDE_SELECTED_ROWS_ID = 'chatoffice.command.hide-selected-rows'
-const UNHIDE_SELECTED_ROWS_ID = 'chatoffice.command.unhide-selected-rows'
-const HIDE_SELECTED_COLS_ID = 'chatoffice.command.hide-selected-cols'
-const UNHIDE_SELECTED_COLS_ID = 'chatoffice.command.unhide-selected-cols'
+const ACTIVATE_ADJACENT_SHEET_ID = 'chaoffice.command.activate-adjacent-sheet'
+const SELECT_SHEET_HOME_ID = 'chaoffice.command.select-sheet-home'
+const SELECT_SHEET_END_ID = 'chaoffice.command.select-sheet-end'
+const SELECT_ROW_HOME_ID = 'chaoffice.command.select-row-home'
+const SELECT_WHOLE_COLUMN_ID = 'chaoffice.command.select-whole-column'
+const SELECT_WHOLE_ROW_ID = 'chaoffice.command.select-whole-row'
+const HIDE_SELECTED_ROWS_ID = 'chaoffice.command.hide-selected-rows'
+const UNHIDE_SELECTED_ROWS_ID = 'chaoffice.command.unhide-selected-rows'
+const HIDE_SELECTED_COLS_ID = 'chaoffice.command.hide-selected-cols'
+const UNHIDE_SELECTED_COLS_ID = 'chaoffice.command.unhide-selected-cols'
 
 /** first visible line at or after `from` (hidden rows/columns are not landing spots) */
 function firstVisible(worksheet: Worksheet, axis: 'row' | 'column', from: number): number {

@@ -1,7 +1,7 @@
 import { mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { basename, dirname, extname, join } from 'node:path'
-import { PdfLoadError } from '@chatoffice/pdf2docx'
+import { PdfLoadError } from '@chaoffice/pdf2docx'
 import { flagBool, flagString, type ParsedArgs } from '../args'
 import { csvToXlsx } from '../formats/csv'
 import { convertOdp, convertOdt } from '../formats/odf'
@@ -154,7 +154,7 @@ async function run(
   const viaApp = appTarget(from, to)
   if (viaApp) {
     const r = await exportViaApp(input, viaApp, output, { env: ctx.env, log: ctx.log })
-    return { detail: { via: 'chatoffice --headless-export', summary: r.summary } }
+    return { detail: { via: 'chaoffice --headless-export', summary: r.summary } }
   }
   if (from === 'pdf') {
     const r = await convertPdfOrThrow(input, to as PdfTarget, password, ctx)
@@ -206,7 +206,7 @@ async function docxToMarkdown(docx: Uint8Array, ctx: CommandContext): Promise<Pr
       ctx.warn({
         code: 'images_dropped',
         message: `${exported.skipped.images} image(s) have no Markdown form and were dropped`,
-        suggestion: 'use `chatoffice docs read --html` when the images matter',
+        suggestion: 'use `chaoffice docs read --html` when the images matter',
       })
     }
     return {
@@ -241,12 +241,12 @@ async function convertPdfViaDocx(
     const md = await docxToMarkdown(pdf.bytes, ctx)
     return { bytes: md.bytes, detail: { ...via, ...md.detail } }
   }
-  const dir = mkdtempSync(join(tmpdir(), 'chatoffice-convert-'))
+  const dir = mkdtempSync(join(tmpdir(), 'chaoffice-convert-'))
   const docxPath = join(dir, `${basename(input, extname(input))}.docx`)
   try {
     writeFileSync(docxPath, pdf.bytes)
     const r = await exportViaApp(docxPath, 'html', output, { env: ctx.env, log: ctx.log })
-    return { detail: { ...via, via: 'chatoffice --headless-export', summary: r.summary } }
+    return { detail: { ...via, via: 'chaoffice --headless-export', summary: r.summary } }
   } finally {
     try {
       rmSync(dir, { recursive: true, force: true })

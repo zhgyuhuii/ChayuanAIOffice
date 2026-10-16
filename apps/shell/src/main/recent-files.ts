@@ -1,6 +1,6 @@
 import { statSync } from 'node:fs'
 import { basename, extname } from 'node:path'
-import { isRemoteUri } from '@chatoffice/storage-adapter'
+import { isRemoteUri } from '@chaoffice/storage-adapter'
 import type { RecentEntry, RecentPage, RecentQuery } from '../shared/home-api'
 
 const RECENT_PAGE_DEFAULT = 50

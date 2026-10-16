@@ -23,7 +23,7 @@ Hell / Dunkel / System folgen. „System folgen“ richtet sich nach dem Erschei
 - **Position der KI-Seitenleiste** (links oder rechts), **Textgröße im KI-Bereich** und **Rechtschreibprüfung im KI-Chat**.
 - **KI-Panel in neuen Dokumenten öffnen** — aus, ein neues Dokument startet mit eingeklapptem Panel, einen Klick entfernt.
 - **Alle Dokumente automatisch speichern** schaltet AutoSave in jedem Editor standardmäßig ein; für ein einzelnes Fenster können Sie es weiterhin abschalten.
-- **Speicherort** mit der Schaltfläche **Ändern** und **Standard-App für Office-Dokumente**, um .docx / .xlsx / .pptx für ChatOffice zu beanspruchen.
+- **Speicherort** mit der Schaltfläche **Ändern** und **Standard-App für Office-Dokumente**, um .docx / .xlsx / .pptx für ChaOffice zu beanspruchen.
 
 ## KI-Medien & Suche
 
@@ -39,7 +39,7 @@ Keine Schalter — jede Fähigkeit wählt den Anbieter, der sie bedient, und Sch
 
 ## Standard-App-Zuordnungen
 
-Die Einstellungen können ChatOffice als Programm für .docx / .xlsx / .pptx / .pdf und verwandte Formate hinterlegen (Registrierung als Standard-App auf Plattformebene; bestätigen Sie, wenn Sie dazu aufgefordert werden).
+Die Einstellungen können ChaOffice als Programm für .docx / .xlsx / .pptx / .pdf und verwandte Formate hinterlegen (Registrierung als Standard-App auf Plattformebene; bestätigen Sie, wenn Sie dazu aufgefordert werden).
 
 ## Hinweise zu Drittanbietersoftware und Updates
 
@@ -48,13 +48,13 @@ Die Einstellungen können ChatOffice als Programm für .docx / .xlsx / .pptx / .
 
 ## Bei Genspark anmelden
 
-- Der Anmeldeeinstieg (Einstellungen oder Liste der Cloud-Projekte) nutzt ein **Gerätecode**-Verfahren: ChatOffice zeigt einen Code und öffnet die Anmeldung im Browser; danach geht es automatisch weiter.
+- Der Anmeldeeinstieg (Einstellungen oder Liste der Cloud-Projekte) nutzt ein **Gerätecode**-Verfahren: ChaOffice zeigt einen Code und öffnet die Anmeldung im Browser; danach geht es automatisch weiter.
 - Die Anmeldung wird nur genutzt für: die Liste der Cloud-Projekte und die gehosteten Modelle von Genspark. Ohne sie funktionieren alle lokalen Funktionen und benutzerdefinierten Modelle weiter.
 - Das Abmelden ist in den Einstellungen ein Klick.
 
 ## MCP-Integration (für erfahrene Anwender / KI-Clients)
 
-**Integrationen** ist der Bereich, der ChatOffice mit einem Coding-Agenten verbindet, und er hat einen eigenen Artikel: Einen Coding-Agenten anbinden. Die Kurzfassung — wählen Sie einen Weg (die Kommandozeile oder MCP), folgen Sie dem jeweiligen Abschnitt und starten Sie dann einen neuen Chat.
+**Integrationen** ist der Bereich, der ChaOffice mit einem Coding-Agenten verbindet, und er hat einen eigenen Artikel: Einen Coding-Agenten anbinden. Die Kurzfassung — wählen Sie einen Weg (die Kommandozeile oder MCP), folgen Sie dem jeweiligen Abschnitt und starten Sie dann einen neuen Chat.
 
 ![Einstellungen ▸ Integrationen: die drei Schritte, dann die Skill-Zeilen und die MCP-Optionen](img/settings-integrations.png)
 
@@ -64,6 +64,6 @@ Unter **Lokaler HTTP-Server** kann die App den Server auch selbst betreiben — 
 
 | Befehl             | Was er bewirkt             |
 | ------------------ | -------------------------- |
-| `chatoffice <file>` | eine Datei öffnen          |
-| `chatoffice mcp`    | lokalen MCP-Server starten |
-| `chatoffice --help` | alle Befehle und Optionen  |
+| `chaoffice <file>` | eine Datei öffnen          |
+| `chaoffice mcp`    | lokalen MCP-Server starten |
+| `chaoffice --help` | alle Befehle und Optionen  |

@@ -1,13 +1,13 @@
 <p align="center">
-  <a href="https://chatoffice.ai/">
+  <a href="https://chaoffice.ai/">
     <picture>
       <source srcset="../assets/readme/hero-dark.webp" media="(prefers-color-scheme: dark)">
-      <img src="../assets/readme/hero.webp" alt="ChatOffice — حزمة المكتب المفتوحة المصدر المدعومة بالذكاء الاصطناعي: Docs و Sheets و Slides و PDF و Markdown و HTML مع لوحة ذكاء اصطناعي مدمجة" width="100%">
+      <img src="../assets/readme/hero.webp" alt="ChaOffice — حزمة المكتب المفتوحة المصدر المدعومة بالذكاء الاصطناعي: Docs و Sheets و Slides و PDF و Markdown و HTML مع لوحة ذكاء اصطناعي مدمجة" width="100%">
     </picture>
   </a>
 </p>
 
-<h1 align="center" dir="rtl">ChatOffice</h1>
+<h1 align="center" dir="rtl">ChaOffice</h1>
 
 <p align="center" dir="rtl"><b>أول حزمة Office متكاملة المزايا ومفتوحة المصدر تعمل بالذكاء الاصطناعي في العالم.</b><br>
 ملفات Word و Excel و PowerPoint و PDF، يحرّرها أنت والذكاء الاصطناعي الخاص بك، وتُحفظ بالصيغ الأصلية نفسها.</p>
@@ -24,12 +24,12 @@
 <p align="center" dir="rtl">
   <a href="#download"><b>التنزيل</b></a> ·
   <a href="#command-line-and-agent-skill"><b>CLI</b></a> ·
-  <a href="https://chatoffice.ai/"><b>الموقع الإلكتروني</b></a> ·
-  <a href="https://chatoffice.ai/join"><b>المجتمع</b></a> ·
+  <a href="https://chaoffice.ai/"><b>الموقع الإلكتروني</b></a> ·
+  <a href="https://chaoffice.ai/join"><b>المجتمع</b></a> ·
   <a href="../../PRIVACY.md"><b>الخصوصية</b></a>
 </p>
 
-ChatOffice بديل مجاني ومفتوح المصدر لـ Microsoft Office على macOS و Windows
+ChaOffice بديل مجاني ومفتوح المصدر لـ Microsoft Office على macOS و Windows
 و Linux. يفتح البرنامج ويحفظ مباشرة ملفات `.docx` و `.xlsx` و `.pptx` الأصلية،
 ويحرّر ملفات PDF و Markdown و HTML، ويضع وكيل ذكاء اصطناعي إلى جانب كل مستند —
 لا كمربع محادثة مُلحق بشكل عرضي، بل كمحرّر يقرأ الملف، وينفّذ التغيير، ويوضّح
@@ -50,7 +50,7 @@ ChatOffice بديل مجاني ومفتوح المصدر لـ Microsoft Office �
   أو استخدم مفتاحك الخاص مع Claude أو OpenAI أو Gemini أو DeepSeek أو Kimi أو
   GLM أو Qwen أو Doubao أو MiniMax أو Grok أو Mistral أو OpenRouter أو Requesty، أو أي
   نقطة نهاية متوافقة مع OpenAI، بما في ذلك الخوادم المحلية.
-- **قابل للبرمجة وجاهز للوكلاء.** يأتي التطبيق مع سطر أوامر `chatoffice` ومهارة
+- **قابل للبرمجة وجاهز للوكلاء.** يأتي التطبيق مع سطر أوامر `chaoffice` ومهارة
   لكل من Claude Code وCodex وCursor وGemini CLI وGitHub Copilot وOpenCode
   وWindsurf، ليتمكّن وكيل البرمجة من إنشاء ملفات Office حقيقية وتحويلها
   وقراءتها وتحريرها على جهازك دون فتح أي نافذة.
@@ -70,8 +70,8 @@ ChatOffice بديل مجاني ومفتوح المصدر لـ Microsoft Office �
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/docs-report.webp" alt="تطبيق ChatOffice Docs يعرض صفحة تقرير سنوي بعمودين مع صورة غلاف بعرض الصفحة كاملة، وجدول مؤشرات أداء مظلّل، وترويسة وتذييل، بتكبير 80% مع لوحة الذكاء الاصطناعي مطوية"></td>
-<td width="50%"><img src="../assets/readme/docs-ai.webp" alt="ChatOffice Docs: نظرة عامة عن الشركة مع صورة بانر؛ أعاد الذكاء الاصطناعي صياغة قسم النظرة العامة بإحكام وأضاف قسمًا جديدًا بنقاط، وتوفّر اللوحة تراجعًا بضغطة واحدة"></td>
+<td width="50%"><img src="../assets/readme/docs-report.webp" alt="تطبيق ChaOffice Docs يعرض صفحة تقرير سنوي بعمودين مع صورة غلاف بعرض الصفحة كاملة، وجدول مؤشرات أداء مظلّل، وترويسة وتذييل، بتكبير 80% مع لوحة الذكاء الاصطناعي مطوية"></td>
+<td width="50%"><img src="../assets/readme/docs-ai.webp" alt="ChaOffice Docs: نظرة عامة عن الشركة مع صورة بانر؛ أعاد الذكاء الاصطناعي صياغة قسم النظرة العامة بإحكام وأضاف قسمًا جديدًا بنقاط، وتوفّر اللوحة تراجعًا بضغطة واحدة"></td>
 </tr>
 <tr>
 <td dir="rtl"><b>يفتح الملف كما يعرضه Word تمامًا</b> — أقسام بعمودين، صور بعرض الصفحة كاملة، جداول مظلّلة، ترويسات وتذييلات، وتقسيم إلى صفحات بحسب مقاييس أسطر Word. الأنماط والتعليقات وتتبّع التغييرات والمعادلات والكتابة بالحبر تبقى سليمة دون تغيير عند الحفظ.</td>
@@ -83,8 +83,8 @@ ChatOffice بديل مجاني ومفتوح المصدر لـ Microsoft Office �
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/sheets-ai.webp" alt="ChatOffice Sheets: أضاف الذكاء الاصطناعي ورقة ملخّص (Summary) تعرض الإيرادات بحسب المنطقة والفئة باستخدام صِيَغ SUMIF، إضافة إلى رسم بياني بالأعمدة، مع تقرير بـ 43 تغييرًا مُطبَّقًا وزر تراجع"></td>
-<td width="50%"><img src="../assets/readme/sheets-qa.webp" alt="ChatOffice Sheets: عند سؤاله عن المنطقة الأعلى إيرادًا في الربع الثاني، يجيب الذكاء الاصطناعي بأوروبا مع تفصيل حسب الفئة، ويستشهد بالخلايا التي استخدمها كروابط، إلى جانب ورقة Orders"></td>
+<td width="50%"><img src="../assets/readme/sheets-ai.webp" alt="ChaOffice Sheets: أضاف الذكاء الاصطناعي ورقة ملخّص (Summary) تعرض الإيرادات بحسب المنطقة والفئة باستخدام صِيَغ SUMIF، إضافة إلى رسم بياني بالأعمدة، مع تقرير بـ 43 تغييرًا مُطبَّقًا وزر تراجع"></td>
+<td width="50%"><img src="../assets/readme/sheets-qa.webp" alt="ChaOffice Sheets: عند سؤاله عن المنطقة الأعلى إيرادًا في الربع الثاني، يجيب الذكاء الاصطناعي بأوروبا مع تفصيل حسب الفئة، ويستشهد بالخلايا التي استخدمها كروابط، إلى جانب ورقة Orders"></td>
 </tr>
 <tr>
 <td dir="rtl"><b>ابنِه</b> — من جملة واحدة، يضيف الوكيل ورقة ملخّص بصِيَغ <code>SUMIF</code> فعلية حسب المنطقة والفئة، ويُدرج رسمًا بيانيًا بالأعمدة، ويطبّق الـ43 تغييرًا كدفعة واحدة قابلة للتراجع.</td>
@@ -94,15 +94,15 @@ ChatOffice بديل مجاني ومفتوح المصدر لـ Microsoft Office �
 
 ### 3 · Slides — من توجيه (prompt) إلى عرض تقديمي `.pptx` كامل
 
-<img src="../assets/readme/slides-generate.webp" alt="لقطات متسارعة لـ ChatOffice Slides وهو يُنشئ عرض المستثمرين Aurora Home: يخطط الذكاء الاصطناعي القصة في اللوحة، وتظهر الشرائح على القماش واحدة تلو الأخرى، وينتهي العرض المكتمل بطلب الإغلاق (closing ask)" width="100%">
+<img src="../assets/readme/slides-generate.webp" alt="لقطات متسارعة لـ ChaOffice Slides وهو يُنشئ عرض المستثمرين Aurora Home: يخطط الذكاء الاصطناعي القصة في اللوحة، وتظهر الشرائح على القماش واحدة تلو الأخرى، وينتهي العرض المكتمل بطلب الإغلاق (closing ask)" width="100%">
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/slides-cover.webp" alt="ChatOffice Slides: شريحة الغلاف لعرض تقديمي لمستثمري Aurora Home من إنشاء الذكاء الاصطناعي على لوحة الرسم، مع التوجيه الأصلي المكوَّن من سطر واحد وملخّص الذكاء الاصطناعي لما بناه في اللوحة"></td>
-<td width="50%"><img src="../assets/readme/slides-ai.webp" alt="ChatOffice Slides: الشريحة الختامية المصمَّمة لنفس العرض المكوَّن من 11 شريحة، مع شريط المصغّرات على اليسار ولوحة الذكاء الاصطناعي تلخّص السرد القصصي"></td>
+<td width="50%"><img src="../assets/readme/slides-cover.webp" alt="ChaOffice Slides: شريحة الغلاف لعرض تقديمي لمستثمري Aurora Home من إنشاء الذكاء الاصطناعي على لوحة الرسم، مع التوجيه الأصلي المكوَّن من سطر واحد وملخّص الذكاء الاصطناعي لما بناه في اللوحة"></td>
+<td width="50%"><img src="../assets/readme/slides-ai.webp" alt="ChaOffice Slides: الشريحة الختامية المصمَّمة لنفس العرض المكوَّن من 11 شريحة، مع شريط المصغّرات على اليسار ولوحة الذكاء الاصطناعي تلخّص السرد القصصي"></td>
 </tr>
 <tr>
-<td dir="rtl"><b>سطر واحد كمُدخل</b> — "أنشئ عرضًا تقديميًا من 10 شرائح لعرضه على المستثمرين لصالح Aurora Home…". يخطّط ChatOffice للسرد القصصي، ويبحث عن الأرقام، ويُعِدّ مسودة كل شريحة على لوحة الرسم كملف <code>.pptx</code> فعلي.</td>
+<td dir="rtl"><b>سطر واحد كمُدخل</b> — "أنشئ عرضًا تقديميًا من 10 شرائح لعرضه على المستثمرين لصالح Aurora Home…". يخطّط ChaOffice للسرد القصصي، ويبحث عن الأرقام، ويُعِدّ مسودة كل شريحة على لوحة الرسم كملف <code>.pptx</code> فعلي.</td>
 <td dir="rtl"><b>عرض تقديمي جاهز كمُخرَج</b> — إحدى عشرة شريحة مصمَّمة بخطوط وصور متّسقة ودعوة ختامية لاتخاذ إجراء؛ استمر في التحرير عبر الشرائح الرئيسية والتخطيطات والأدلة الذكية والقصّ غير المدمِّر، أو اطلب من اللوحة إعادة التصميم أو الصياغة أو إعادة الترتيب.</td>
 </tr>
 </table>
@@ -111,8 +111,8 @@ ChatOffice بديل مجاني ومفتوح المصدر لـ Microsoft Office �
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/pdf-edit.webp" alt="ChatOffice PDF: يحدّد وضع تحرير النص كل كتلة نصية في الصفحة للتحرير في مكانها، بينما تجيب لوحة الذكاء الاصطناعي عن سؤال حول التقرير مع استشهادات بأرقام الصفحات"></td>
-<td width="50%"><img src="../assets/readme/pdf-convert.webp" alt="تطبيق ChatOffice Docs يعرض مستند Word محوَّلًا محليًا من ملف PDF الخاص بالمراجعة الفصلية لشركة Helios، مفتوحًا في تبويب ثانٍ إلى جانب ملف PDF الأصلي"></td>
+<td width="50%"><img src="../assets/readme/pdf-edit.webp" alt="ChaOffice PDF: يحدّد وضع تحرير النص كل كتلة نصية في الصفحة للتحرير في مكانها، بينما تجيب لوحة الذكاء الاصطناعي عن سؤال حول التقرير مع استشهادات بأرقام الصفحات"></td>
+<td width="50%"><img src="../assets/readme/pdf-convert.webp" alt="تطبيق ChaOffice Docs يعرض مستند Word محوَّلًا محليًا من ملف PDF الخاص بالمراجعة الفصلية لشركة Helios، مفتوحًا في تبويب ثانٍ إلى جانب ملف PDF الأصلي"></td>
 </tr>
 <tr>
 <td dir="rtl"><b>حرّر داخل الصفحة</b> — يحدّد وضع تحرير النص كل كتلة نصية لإعادة الكتابة في مكانها؛ ويُعاد كتابة تدفّق المحتوى عبر PDFium بالخطوط الأصلية نفسها، لا بتعليق تغطية فوق النص. اسأل الذكاء الاصطناعي عن تقرير طويل واحصل على إجابات مع استشهادات بأرقام الصفحات.</td>
@@ -127,11 +127,11 @@ ChatOffice بديل مجاني ومفتوح المصدر لـ Microsoft Office �
 الألوان، والخطوط، وتوجهات الأسلوب — ثم يبني ملف `.html` واحدًا مستقلًا بالكامل
 استنادًا إلى تلك العناصر (tokens).
 
-<img src="../assets/readme/html-restyle-motion.webp" alt="لقطات متسارعة لـ ChatOffice HTML وهو يعيد تصميم صفحة الوصول الخاصة بـ Lumen: طلب Restyle واحد في اللوحة يحوّل صفحة Midnight Studio الداكنة إلى نسخة Solar Daybreak الدافئة، بينما يبقى كل قسم وكل المحتوى في مكانه" width="100%">
+<img src="../assets/readme/html-restyle-motion.webp" alt="لقطات متسارعة لـ ChaOffice HTML وهو يعيد تصميم صفحة الوصول الخاصة بـ Lumen: طلب Restyle واحد في اللوحة يحوّل صفحة Midnight Studio الداكنة إلى نسخة Solar Daybreak الدافئة، بينما يبقى كل قسم وكل المحتوى في مكانه" width="100%">
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/html-ai.webp" alt="ChatOffice HTML: صفحة هبوط تم إنشاؤها لمصباح مكتبي يعمل بالطاقة الشمسية باتجاه Midnight Studio الداكن، معروضة في المعاينة المباشرة مع لوحة الذكاء الاصطناعي تلخّص الصفحة التي بنتها للتو"></td>
+<td width="50%"><img src="../assets/readme/html-ai.webp" alt="ChaOffice HTML: صفحة هبوط تم إنشاؤها لمصباح مكتبي يعمل بالطاقة الشمسية باتجاه Midnight Studio الداكن، معروضة في المعاينة المباشرة مع لوحة الذكاء الاصطناعي تلخّص الصفحة التي بنتها للتو"></td>
 <td width="50%"><img src="../assets/readme/html-restyle.webp" alt="نفس صفحة هبوط Lumen بعد إعادة تصميمها بواسطة الذكاء الاصطناعي إلى اتجاه Solar Daybreak الدافئ: خلفية بلون الورق، وعناوين بخط Serif، ولمسة برتقالية، مع الحفاظ على جميع الأقسام والنصوص"></td>
 </tr>
 <tr>
@@ -141,8 +141,8 @@ ChatOffice بديل مجاني ومفتوح المصدر لـ Microsoft Office �
 </table>
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/html-dashboard.webp" alt="ChatOffice HTML: واجهة لوحة تحكم شخصية تم إنشاؤها لمصمِّم مستقل بأسلوب كتّاني دافئ، مع شريط جانبي أيسر، وترحيب بخط Serif، وأربع بطاقات مقاييس"></td>
-<td width="50%"><img src="../assets/readme/html-report.webp" alt="ChatOffice HTML: تقرير بيانات عن سوق السيارات الكهربائية تم إنشاؤه بأسلوب الصحيفة الكبيرة (broadsheet)، مع ترويسة بخط Serif، ورقم عنوان رئيسي بقيمة 17.3 مليون، وصفّ إحصاءات"></td>
+<td width="50%"><img src="../assets/readme/html-dashboard.webp" alt="ChaOffice HTML: واجهة لوحة تحكم شخصية تم إنشاؤها لمصمِّم مستقل بأسلوب كتّاني دافئ، مع شريط جانبي أيسر، وترحيب بخط Serif، وأربع بطاقات مقاييس"></td>
+<td width="50%"><img src="../assets/readme/html-report.webp" alt="ChaOffice HTML: تقرير بيانات عن سوق السيارات الكهربائية تم إنشاؤه بأسلوب الصحيفة الكبيرة (broadsheet)، مع ترويسة بخط Serif، ورقم عنوان رئيسي بقيمة 17.3 مليون، وصفّ إحصاءات"></td>
 </tr>
 <tr>
 <td dir="rtl"><b>نماذج واجهات (UI mockups)</b> — تحوّل قالب البداية "لوحة التحكم الشخصية" شخصية افتراضية إلى تخطيط عملي: شريط جانبي، ترحيب، رسم Sparkline لساعات العمل القابلة للفوترة، وبطاقات فواتير ونسب استغلال، وكل ذلك HTML فعلي يمكنك تسليمه لمطوِّر.</td>
@@ -154,8 +154,8 @@ ChatOffice بديل مجاني ومفتوح المصدر لـ Microsoft Office �
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/markdown-ai.webp" alt="ChatOffice Markdown: فقرة محدَّدة تعرض نافذة منبثقة Ask AI مع تعليمات مكتوبة وشرائح اقتراحات مثل Polish وMake more concise وExpand وFix grammar، إضافة إلى زرَّي Send now وAdd to queue"></td>
-<td width="50%"><img src="../assets/readme/markdown-render.webp" alt="تطبيق ChatOffice Markdown يعرض مستند ملاحظات إطلاق يحتوي على جدول، ومخطط تدفّق Mermaid، وقائمة مهام، مع توجيهات البداية الخاصة بلوحة الذكاء الاصطناعي على اليسار"></td>
+<td width="50%"><img src="../assets/readme/markdown-ai.webp" alt="ChaOffice Markdown: فقرة محدَّدة تعرض نافذة منبثقة Ask AI مع تعليمات مكتوبة وشرائح اقتراحات مثل Polish وMake more concise وExpand وFix grammar، إضافة إلى زرَّي Send now وAdd to queue"></td>
+<td width="50%"><img src="../assets/readme/markdown-render.webp" alt="تطبيق ChaOffice Markdown يعرض مستند ملاحظات إطلاق يحتوي على جدول، ومخطط تدفّق Mermaid، وقائمة مهام، مع توجيهات البداية الخاصة بلوحة الذكاء الاصطناعي على اليسار"></td>
 </tr>
 <tr>
 <td dir="rtl"><b>اسأل الذكاء الاصطناعي عن نص محدَّد</b> — حدِّد أي فقرة فتظهر شريحة <b>Ask AI</b>: اكتب تعليمًا أو اختر اقتراحًا، وأرسله فورًا، أو أضِف عدة تعديلات مرتبطة بمواضع محدَّدة إلى قائمة انتظار ونفِّذها في مرة واحدة. نفس المدخل موجود في كل التطبيقات.</td>
@@ -163,27 +163,27 @@ ChatOffice بديل مجاني ومفتوح المصدر لـ Microsoft Office �
 </tr>
 </table>
 
-### 7 · CLI — وكيل البرمجة الخاص بك يقود ChatOffice، على جهازك
+### 7 · CLI — وكيل البرمجة الخاص بك يقود ChaOffice، على جهازك
 
-يأتي ChatOffice مع سطر أوامر `chatoffice` ومهارة وكيل. ثبّت المهارة، وسيتمكّن
+يأتي ChaOffice مع سطر أوامر `chaoffice` ومهارة وكيل. ثبّت المهارة، وسيتمكّن
 Claude Code أو Codex أو Cursor أو Gemini CLI أو GitHub Copilot أو OpenCode أو
 Windsurf من إنشاء ملفات Office حقيقية وتحويلها وقراءتها وتحريرها عبر المحرّكات
 نفسها التي تستخدمها التطبيقات، دون فتح أي نافذة.
 
-<img src="../assets/readme/cli-deck-in-app.webp" alt="ChatOffice Slides يعرض عرضًا تقديميًا من ثماني شرائح عن المجموعة الشمسية بناه وكيل برمجة عبر سطر أوامر chatoffice: شريحة الغلاف على لوحة الرسم، وثماني مصغّرات على اليسار، ولوحة الذكاء الاصطناعي مفتوحة" width="100%">
+<img src="../assets/readme/cli-deck-in-app.webp" alt="ChaOffice Slides يعرض عرضًا تقديميًا من ثماني شرائح عن المجموعة الشمسية بناه وكيل برمجة عبر سطر أوامر chaoffice: شريحة الغلاف على لوحة الرسم، وثماني مصغّرات على اليسار، ولوحة الذكاء الاصطناعي مفتوحة" width="100%">
 
 <table>
 <tr>
 <td width="50%"><img src="../assets/readme/cli-slides-grid.webp" alt="الشرائح الثماني المُصيَّرة لعرض المجموعة الشمسية جنبًا إلى جنب: الغلاف، والجدول الزمني للاستكشاف، وأربعة أرقام رئيسية، ورسم بياني بالأعمدة لأقطار الكواكب، والعوالم الصخرية مقابل العمالقة، ورقم الشمس البارز 99.8%، وشبكة العمالقة الأربعة، والخلاصات"></td>
-<td width="50%"><img src="../assets/readme/cli-integrations.webp" alt="إعدادات ChatOffice، صفحة Integrations: مهارة chatoffice مثبَّتة في Claude Code، مع أزرار Install بجوار Codex وCursor"></td>
+<td width="50%"><img src="../assets/readme/cli-integrations.webp" alt="إعدادات ChaOffice، صفحة Integrations: مهارة chaoffice مثبَّتة في Claude Code، مع أزرار Install بجوار Codex وCursor"></td>
 </tr>
 <tr>
-<td dir="rtl"><b>توجيه واحد إلى وكيلك</b> — "أنشئ عرضًا تقديميًا من ثماني شرائح عن المجموعة الشمسية." يقرأ الوكيل المهارة، ويكتب ورقة أنماط ومخططًا ومواصفة صفحة واحدة لكل شريحة، ويولّد الصورتين بواسطة <code>chatoffice image</code>، ويترك <code>chatoffice slides check</code> يرفض أي عنصر يتجاوز الحدود أو يتداخل قبل أن يجمّع <code>chatoffice create</code> ملف <code>.pptx</code> ويُعيد <code>slides render</code> صورة PNG لكل شريحة لمعاينتها.</td>
-<td dir="rtl"><b>ثبّت مرة واحدة، من الإعدادات → التكاملات</b> — يسرد ChatOffice وكلاء البرمجة الذين يجدهم على هذا الجهاز ويكتب المهارة في كل وكيل تختاره. أو نزّل المهارة كملف zip، أو شغّل <code>npx skills add zhgyuhuii/ChayuanAIOffice</code>. الأوامر وسير العمل الكامل في <a href="#command-line-and-agent-skill">سطر الأوامر ومهارة الوكيل</a>.</td>
+<td dir="rtl"><b>توجيه واحد إلى وكيلك</b> — "أنشئ عرضًا تقديميًا من ثماني شرائح عن المجموعة الشمسية." يقرأ الوكيل المهارة، ويكتب ورقة أنماط ومخططًا ومواصفة صفحة واحدة لكل شريحة، ويولّد الصورتين بواسطة <code>chaoffice image</code>، ويترك <code>chaoffice slides check</code> يرفض أي عنصر يتجاوز الحدود أو يتداخل قبل أن يجمّع <code>chaoffice create</code> ملف <code>.pptx</code> ويُعيد <code>slides render</code> صورة PNG لكل شريحة لمعاينتها.</td>
+<td dir="rtl"><b>ثبّت مرة واحدة، من الإعدادات → التكاملات</b> — يسرد ChaOffice وكلاء البرمجة الذين يجدهم على هذا الجهاز ويكتب المهارة في كل وكيل تختاره. أو نزّل المهارة كملف zip، أو شغّل <code>npx skills add zhgyuhuii/ChayuanAIOffice</code>. الأوامر وسير العمل الكامل في <a href="#command-line-and-agent-skill">سطر الأوامر ومهارة الوكيل</a>.</td>
 </tr>
 </table>
 
-## لماذا ChatOffice
+## لماذا ChaOffice
 
 - **مفتوح المصدر**، برخصة Apache-2.0، ويُطوَّر علنًا على GitHub.
 - **لك لتشغيله.** تطبيقات أصلية لأنظمة macOS و Windows و Linux؛ تبقى الملفات
@@ -199,7 +199,7 @@ Windsurf من إنشاء ملفات Office حقيقية وتحويلها وقر�
 - **PDF يُعالَج كما ينبغي.** حرِّر النص داخل الصفحة مباشرة، وحوِّل PDF إلى Word
   أو Excel أو PowerPoint على جهازك، مع OCR للنظام لملفات المسح الممسوحة.
 - **Markdown و HTML أيضًا**، بنفس لوحة الذكاء الاصطناعي وتصدير محلي إلى Word.
-- **قابل للبرمجة.** سطر أوامر `chatoffice` ومهارة وكيل يضعان كل محرّك في خدمة
+- **قابل للبرمجة.** سطر أوامر `chaoffice` ومهارة وكيل يضعان كل محرّك في خدمة
   Claude Code وCodex وCursor وغيرها من وكلاء البرمجة، مع بقاء كل شيء على الجهاز.
 - **مجاني**، للأفراد والفرق على حد سواء.
 
@@ -226,10 +226,10 @@ Grok أو Qwen أو MiniMax أو أي نقطة نهاية للصور متواف�
 
 ## سطر الأوامر ومهارة الوكيل
 
-كل ما تستطيع التطبيقات فعله بملف، يستطيع سطر أوامر `chatoffice` فعله من
+كل ما تستطيع التطبيقات فعله بملف، يستطيع سطر أوامر `chaoffice` فعله من
 الطرفية: فحص ملفات Word وExcel وPowerPoint وPDF وMarkdown وHTML وتحويلها
 وإنشاؤها وقراءتها وتحريرها على المحرّكات نفسها، دون واجهة رسومية. يُثبَّت مع
-ChatOffice، ولا يحتاج إلى بيئة تشغيل خاصة به، ولا يرسل أي مستند إلى أي مكان.
+ChaOffice، ولا يحتاج إلى بيئة تشغيل خاصة به، ولا يرسل أي مستند إلى أي مكان.
 وبالاقتران مع **مهارة الوكيل** المرفقة، يحوّل وكيل البرمجة إلى عامل مستندات
 يُنتج ملفات Office حقيقية بدلًا من تقريبات بصيغة Markdown.
 
@@ -240,29 +240,29 @@ ChatOffice، ولا يحتاج إلى بيئة تشغيل خاصة به، ولا
 
 | الطريقة                                | ما يحدث                                                                                                                                            |
 | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **الإعدادات → التكاملات** في التطبيق   | يسرد الوكلاء الموجودين على هذا الجهاز؛ وبنقرة واحدة يكتب المهارة في كل وكيل تختاره. ويظهر زر **Update** عندما يصدر إصدار من ChatOffice بمهارة أحدث. |
+| **الإعدادات → التكاملات** في التطبيق   | يسرد الوكلاء الموجودين على هذا الجهاز؛ وبنقرة واحدة يكتب المهارة في كل وكيل تختاره. ويظهر زر **Update** عندما يصدر إصدار من ChaOffice بمهارة أحدث. |
 | **التنزيل كملف zip** من الصفحة نفسها   | التنسيق الذي يقبله claude.ai وتطبيقات Claude لسطح المكتب والمساعدون الآخرون كمهارة مرفوعة.                                                         |
 | `npx skills add zhgyuhuii/ChayuanAIOffice` | يثبّت من هذا المستودع في أي وكيل متوافق مع المهارات.                                                                                               |
 
 ثم ابدأ محادثة جديدة واطلب مستندًا. تعلّم المهارة الوكيل متى يلجأ إلى
-`chatoffice`، وكيف يقرأ الملف قبل تحريره، وكيف يتحقّق من عمله بنفسه.
+`chaoffice`، وكيف يقرأ الملف قبل تحريره، وكيف يتحقّق من عمله بنفسه.
 
 ### بداية سريعة من الطرفية
 
 ```bash
-chatoffice --version
-chatoffice info report.docx --json                  # headings and blocks; or sheets, slides, pages
-chatoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx, …
-chatoffice create --type docx --from notes.md --out notes.docx
-chatoffice create --type xlsx --from table.json --out sales.xlsx   # "=SUM(B2:B9)" cells stay live formulas
-chatoffice docs read report.docx --range 0-9 --json # then `docs apply --ops edits.json` edits in place
-chatoffice render report.docx --out shots/          # one PNG per page, to look at what you made
-chatoffice open sales.xlsx                          # hand the result to the editor
+chaoffice --version
+chaoffice info report.docx --json                  # headings and blocks; or sheets, slides, pages
+chaoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx, …
+chaoffice create --type docx --from notes.md --out notes.docx
+chaoffice create --type xlsx --from table.json --out sales.xlsx   # "=SUM(B2:B9)" cells stay live formulas
+chaoffice docs read report.docx --range 0-9 --json # then `docs apply --ops edits.json` edits in place
+chaoffice render report.docx --out shots/          # one PNG per page, to look at what you made
+chaoffice open sales.xlsx                          # hand the result to the editor
 ```
 
 يطبع كل أمر ملخّصًا من سطر واحد، أو كائن JSON واحدًا مع `--json`. التعديلات
 ذرّية: العملية المرفوضة تترك الملف كما هو وتعود برسالة خطأ إرشادية. يسرد
-`chatoffice help` مجموعة الأوامر الحالية؛ والمرجع الكامل في
+`chaoffice help` مجموعة الأوامر الحالية؛ والمرجع الكامل في
 [packages/cli/README.md](../../packages/cli/README.md).
 
 ### ما الذي يشغّله الوكيل فعليًا
@@ -272,21 +272,21 @@ chatoffice open sales.xlsx                          # hand the result to the edi
 كل مرحلة قبل أن تبدأ التالية:
 
 ```bash
-chatoffice capabilities --json                        # which cloud tools ChatOffice has configured
-chatoffice guide slides design                        # the deck workflow and layout library
-chatoffice image "the eight planets in a row …" --aspect 16:9 --out deck/assets/cover.jpg
-chatoffice slides check deck/outline.json --json      # 8 pages, no findings
-chatoffice slides check deck/pages/01.json --json     # builds one slide, audits overflow and overlap
+chaoffice capabilities --json                        # which cloud tools ChaOffice has configured
+chaoffice guide slides design                        # the deck workflow and layout library
+chaoffice image "the eight planets in a row …" --aspect 16:9 --out deck/assets/cover.jpg
+chaoffice slides check deck/outline.json --json      # 8 pages, no findings
+chaoffice slides check deck/pages/01.json --json     # builds one slide, audits overflow and overlap
 …                                                    # one page file per slide, fixed until each check is clean
-chatoffice create --type pptx --spec deck/pages --outline deck/outline.json --out deck/solar-system.pptx --json
-chatoffice slides render deck/solar-system.pptx --out deck/shots --json
-chatoffice slides audit deck/solar-system.pptx --json    # 8 slides, no layout issues
-chatoffice slides replace deck/solar-system.pptx --slide 4 --spec deck/pages/05.json --json
-chatoffice open deck/solar-system.pptx
+chaoffice create --type pptx --spec deck/pages --outline deck/outline.json --out deck/solar-system.pptx --json
+chaoffice slides render deck/solar-system.pptx --out deck/shots --json
+chaoffice slides audit deck/solar-system.pptx --json    # 8 slides, no layout issues
+chaoffice slides replace deck/solar-system.pptx --slide 4 --spec deck/pages/05.json --json
+chaoffice open deck/solar-system.pptx
 ```
 
-لا يحدث أي استدعاء لنموذج داخل `chatoffice`: الوكيل هو من يفكّر، وسطر الأوامر
-هو من يبني ويتحقّق، وتُفتح النتيجة في ChatOffice أو PowerPoint كملف `.pptx` عادي.
+لا يحدث أي استدعاء لنموذج داخل `chaoffice`: الوكيل هو من يفكّر، وسطر الأوامر
+هو من يبني ويتحقّق، وتُفتح النتيجة في ChaOffice أو PowerPoint كملف `.pptx` عادي.
 
 <a id="download"></a>
 
@@ -308,18 +308,18 @@ chatoffice open deck/solar-system.pptx
 <details>
 <summary><b>التثبيت على Linux</b></summary>
 
-يتم تثبيت حزمة deb باستخدام apt — فيسحب التبعيات المطلوبة ويضيف ChatOffice إلى
+يتم تثبيت حزمة deb باستخدام apt — فيسحب التبعيات المطلوبة ويضيف ChaOffice إلى
 قائمة التطبيقات:
 
 ```bash
-sudo apt install ./chatoffice_<version>_amd64.deb
+sudo apt install ./chaoffice_<version>_amd64.deb
 ```
 
 على Fedora / عائلة RHEL / openSUSE، ثبِّت حزمة rpm بدلًا من ذلك:
 
 ```bash
-sudo dnf install ./chatoffice-<version>.x86_64.rpm     # Fedora / RHEL family
-sudo zypper install ./chatoffice-<version>.x86_64.rpm  # openSUSE
+sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
+sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
 
 يعمل ملف AppImage مباشرة من مكانه: ثبِّت بيئة تشغيل FUSE 2
@@ -327,8 +327,8 @@ sudo zypper install ./chatoffice-<version>.x86_64.rpm  # openSUSE
 ثم اجعل الملف قابلاً للتنفيذ، وشغِّله:
 
 ```bash
-chmod +x ChatOffice-<version>.AppImage
-./ChatOffice-<version>.AppImage
+chmod +x ChaOffice-<version>.AppImage
+./ChaOffice-<version>.AppImage
 ```
 
 </details>
@@ -369,42 +369,42 @@ npm run dist:linux   # package Linux AppImage + deb + rpm
 
 يحتاج تطبيق Sheets بالإضافة إلى ذلك إلى سلسلة أدوات Rust لعمليته المساعدة
 الخاصة بـ xlsx (يجب أن يكون `cargo` متاحًا في PATH)؛ ويقوم أمر
-`npm run build -w @chatoffice/sheets` بتجميعه تلقائيًا. راجع
+`npm run build -w @chaoffice/sheets` بتجميعه تلقائيًا. راجع
 [CONTRIBUTING.md](../../CONTRIBUTING.md) لمعرفة الفحوصات التي يجب أن يمر بها
 كل تغيير وكيفية دمج طلبات السحب (pull requests).
 
 ## المجتمع
 
-ChatOffice قيد تطوير نشط، وملاحظاتك هي ما يشكِّل مستقبله.
+ChaOffice قيد تطوير نشط، وملاحظاتك هي ما يشكِّل مستقبله.
 
 - **أبلغ عن خطأ أو اطلب ميزة جديدة** عبر
   [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues).
-- **انضم إلى محادثة مجموعة ChatOffice** على
-  [GenTeam](https://chatoffice.ai/join) للتواصل مع الفريق والمستخدمين الآخرين.
-- **أضِف نجمة (Star) للمستودع** إذا كان ChatOffice مفيدًا لك — فهذه أفضل طريقة
+- **انضم إلى محادثة مجموعة ChaOffice** على
+  [GenTeam](https://chaoffice.ai/join) للتواصل مع الفريق والمستخدمين الآخرين.
+- **أضِف نجمة (Star) للمستودع** إذا كان ChaOffice مفيدًا لك — فهذه أفضل طريقة
   لدعم المشروع.
 
 ## الأسئلة الشائعة
 
 <details>
-<summary><b>هل ChatOffice مجاني؟</b></summary>
+<summary><b>هل ChaOffice مجاني؟</b></summary>
 
-نعم. ChatOffice مجاني ومفتوح المصدر بموجب ترخيص Apache-2.0 — لا نسخة تجريبية
+نعم. ChaOffice مجاني ومفتوح المصدر بموجب ترخيص Apache-2.0 — لا نسخة تجريبية
 ولا باقة مدفوعة للتطبيقات نفسها.
 
 </details>
 
 <details>
-<summary><b>هل يمكن لـ ChatOffice فتح ملفات Microsoft Word و Excel و PowerPoint؟</b></summary>
+<summary><b>هل يمكن لـ ChaOffice فتح ملفات Microsoft Word و Excel و PowerPoint؟</b></summary>
 
-نعم. يفتح ChatOffice ملفات `.docx` و `.xlsx` و `.pptx` الأصلية ويحفظها.
+نعم. يفتح ChaOffice ملفات `.docx` و `.xlsx` و `.pptx` الأصلية ويحفظها.
 والحفظ يحافظ على البايتات: تُكتب الأجزاء التي لم تلمسها من الملف كما هي
 حرفيًا بايتًا ببايت، فتستمر المستندات في العمل في Microsoft Office.
 
 </details>
 
 <details>
-<summary><b>هل يعمل ChatOffice دون اتصال بالإنترنت؟</b></summary>
+<summary><b>هل يعمل ChaOffice دون اتصال بالإنترنت؟</b></summary>
 
 تحرير المستندات محلي بالكامل — لا تغادر الملفات جهازك أبدًا عند الفتح أو
 التحرير أو الحفظ أو التحويل. تحتاج ميزات الذكاء الاصطناعي (الوكلاء، والبحث،
@@ -414,7 +414,7 @@ ChatOffice قيد تطوير نشط، وملاحظاتك هي ما يشكِّل 
 </details>
 
 <details>
-<summary><b>هل يمكن لـ ChatOffice تحرير ملفات PDF؟</b></summary>
+<summary><b>هل يمكن لـ ChaOffice تحرير ملفات PDF؟</b></summary>
 
 نعم — تحرير حقيقي لنص وصور PDF يعيد كتابة تدفّق محتوى الصفحة مع الحفاظ على
 الخطوط الأصلية، وليس بتعليقات تغطية فوق النص.
@@ -422,7 +422,7 @@ ChatOffice قيد تطوير نشط، وملاحظاتك هي ما يشكِّل 
 </details>
 
 <details>
-<summary><b>هل يمكن لـ ChatOffice تحويل PDF إلى Word أو Excel أو PowerPoint؟</b></summary>
+<summary><b>هل يمكن لـ ChaOffice تحويل PDF إلى Word أو Excel أو PowerPoint؟</b></summary>
 
 نعم — بالكامل على الجهاز: استخراج على مستوى الحروف عبر PDFium إلى جانب تحليل
 للتخطيط يعتمد على الأشكال الهندسية، دون أي خدمة سحابية أو رفع للملفات. وتشمل
@@ -435,7 +435,7 @@ macOS و Windows، فتُحوَّل إلى نص قابل للتحرير بدلً
 <summary><b>هل يمكنني استخدام نموذج ذكاء اصطناعي أو مفتاح API خاص بي؟</b></summary>
 
 نعم. إلى جانب تسجيل الدخول بواسطة Genspark الذي لا يتطلب أي مفتاح، يدعم
-ChatOffice استخدام مفتاحك الخاص مع Claude وOpenAI وGemini وDeepSeek وKimi
+ChaOffice استخدام مفتاحك الخاص مع Claude وOpenAI وGemini وDeepSeek وKimi
 وGLM وQwen وDoubao وMiniMax وGrok وMistral وOpenRouter وRequesty وOpenCode Zen/Go،
 إضافة إلى أي نقطة نهاية متوافقة مع OpenAI — بما في ذلك خوادم النماذج المحلية.
 ولكل من البحث وتوليد الصور وتحليل الصور والفيديو مفاتيحه الخاصة تحت
@@ -444,7 +444,7 @@ Settings → AI Media & Search.
 </details>
 
 <details>
-<summary><b>هل يمكن لـ ChatOffice تحويل HTML إلى Word؟</b></summary>
+<summary><b>هل يمكن لـ ChaOffice تحويل HTML إلى Word؟</b></summary>
 
 نعم — يُنتج خيار Export as Word في تطبيق HTML ملف `.docx` أصليًا قابلًا
 للتحرير، بالكامل على الجهاز. تُعرَض الصفحة داخل محرك Chromium المدمج وتُحوَّل
@@ -455,9 +455,9 @@ Settings → AI Media & Search.
 </details>
 
 <details>
-<summary><b>هل يمكنني تشغيل ChatOffice من Claude Code أو Codex أو Cursor أو من سكربت؟</b></summary>
+<summary><b>هل يمكنني تشغيل ChaOffice من Claude Code أو Codex أو Cursor أو من سكربت؟</b></summary>
 
-نعم. يثبّت ChatOffice سطر أوامر `chatoffice` يشغّل المحرّكات نفسها دون واجهة
+نعم. يثبّت ChaOffice سطر أوامر `chaoffice` يشغّل المحرّكات نفسها دون واجهة
 رسومية: افحص المستندات وحوّلها وأنشئها واقرأها وحرّرها من الطرفية أو من
 سكربت، مع مخرجات `--json` للبرامج. وتعلّم مهارة الوكيل المرفقة Claude Code
 وCodex وCursor وGemini CLI وGitHub Copilot وOpenCode وWindsurf استخدامه؛ ثبّتها
@@ -467,12 +467,12 @@ Settings → AI Media & Search.
 </details>
 
 <details>
-<summary><b>هل يجمع ChatOffice أي بيانات؟</b></summary>
+<summary><b>هل يجمع ChaOffice أي بيانات؟</b></summary>
 
 ترسل الإصدارات الرسمية المعبَّأة بيانات استخدام محدودة بشكل افتراضي، ويمكنك
 تعطيل هذا الإرسال في أي وقت من Settings → General. لا تُرسَل عبر هذه البيانات
 أبدًا محتويات المستندات، أو أسماء الملفات، أو مساراتها، أو هوية الحساب، أو
-عناوين البريد الإلكتروني. راجع [ChatOffice Privacy](../../PRIVACY.md)
+عناوين البريد الإلكتروني. راجع [ChaOffice Privacy](../../PRIVACY.md)
 للاطلاع على الإفصاح الكامل عن الأحداث والبيانات المُجمَّعة.
 
 </details>
@@ -485,7 +485,7 @@ Settings → AI Media & Search.
 
 ## شكر وتقدير
 
-ما كان لـ ChatOffice أن يكون ممكنًا لولا هذه المشاريع المفتوحة المصدر:
+ما كان لـ ChaOffice أن يكون ممكنًا لولا هذه المشاريع المفتوحة المصدر:
 
 - [Electron](https://www.electronjs.org/) — بيئة تشغيل سطح المكتب لكل التطبيقات.
 - [Univer](https://github.com/dream-num/univer) (Apache-2.0) — نواة واجهة جدول
@@ -529,10 +529,10 @@ MIT/Apache-2.0/BSD-3-Clause/OFL.
 
 ## الترخيص
 
-يخضع ChatOffice لترخيص [Apache License 2.0](../../LICENSE)، مع استثناء واحد:
+يخضع ChaOffice لترخيص [Apache License 2.0](../../LICENSE)، مع استثناء واحد:
 دليل `ee/` محجوز لوحدات المؤسسات (enterprise) المستقبلية ويخضع لـ
-[ChatOffice Enterprise License](../../ee/LICENSE).
+[ChaOffice Enterprise License](../../ee/LICENSE).
 
-اسما وشعارا ChatOffice و Genspark هما علامتان تجاريتان مملوكتان لشركة
+اسما وشعارا ChaOffice و Genspark هما علامتان تجاريتان مملوكتان لشركة
 Mainfunc, Inc. لا يمنح ترخيص Apache-2.0 إذنًا باستخدامهما (راجع البند 6)؛
 ويجب أن تستخدم النسخ المتفرعة (forks) هويتها البصرية الخاصة.

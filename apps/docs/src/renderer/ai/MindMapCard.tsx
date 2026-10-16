@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { MindMapTreeNode } from '@chatoffice/agent-core'
+import type { MindMapTreeNode } from '@chaoffice/agent-core'
 import {
   countMindMapNodes,
   layoutMindMap,

@@ -16,7 +16,7 @@ import {
   isKbStatus,
   KbError,
   type KbHttpClient,
-} from '@chatoffice/ai-provider'
+} from '@chaoffice/ai-provider'
 
 export interface KbProxyOptions {
   /** same harness block attachAiProxy receives; absent = KB routes degrade */

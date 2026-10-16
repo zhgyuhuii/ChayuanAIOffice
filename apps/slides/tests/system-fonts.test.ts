@@ -1,19 +1,19 @@
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
-import type { RunStyle } from '@chatoffice/pptx-render'
+import type { RunStyle } from '@chaoffice/pptx-render'
 
 // Vitest turns ?asset imports into /@fs URLs, while font metrics reads the files from disk.
-vi.mock('@chatoffice/ui/fonts/Carlito-Regular.ttf?asset', () => ({
+vi.mock('@chaoffice/ui/fonts/Carlito-Regular.ttf?asset', () => ({
   default: resolve(process.cwd(), '../../packages/ui/src/fonts/Carlito-Regular.ttf'),
 }))
-vi.mock('@chatoffice/ui/fonts/Carlito-Bold.ttf?asset', () => ({
+vi.mock('@chaoffice/ui/fonts/Carlito-Bold.ttf?asset', () => ({
   default: resolve(process.cwd(), '../../packages/ui/src/fonts/Carlito-Bold.ttf'),
 }))
-vi.mock('@chatoffice/ui/fonts/Carlito-Italic.ttf?asset', () => ({
+vi.mock('@chaoffice/ui/fonts/Carlito-Italic.ttf?asset', () => ({
   default: resolve(process.cwd(), '../../packages/ui/src/fonts/Carlito-Italic.ttf'),
 }))
-vi.mock('@chatoffice/ui/fonts/Carlito-BoldItalic.ttf?asset', () => ({
+vi.mock('@chaoffice/ui/fonts/Carlito-BoldItalic.ttf?asset', () => ({
   default: resolve(process.cwd(), '../../packages/ui/src/fonts/Carlito-BoldItalic.ttf'),
 }))
 

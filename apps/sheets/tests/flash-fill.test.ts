@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   applyFlashFillTemplate,
   inferFlashFillTemplate,
-} from '@chatoffice/xlsx-gateway/domain/flash-fill'
+} from '@chaoffice/xlsx-gateway/domain/flash-fill'
 
 describe('inferFlashFillTemplate', () => {
   it('learns a join with literal glue from one example', () => {

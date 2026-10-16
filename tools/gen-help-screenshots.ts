@@ -16,8 +16,8 @@
  * says nothing about that — so a run that only overrides userData still finds
  * the developer's key and greets them by name (verified: that is what a local
  * e2e run does today). HOME is the one lever that covers both it and the
- * `~/.chatoffice/bin` shim. `GENOFFICE_AUTH_DIR` is not enough on its own: it
- * redirects ChatOffice's own key and leaves the shared gsk CLI config in place.
+ * `~/.chaoffice/bin` shim. `GENOFFICE_AUTH_DIR` is not enough on its own: it
+ * redirects ChaOffice's own key and leaves the shared gsk CLI config in place.
  *
  * With no key, `gskLoginInfo()` returns null, the app reads as signed out, and
  * the greeting, the account row and the Genspark Projects entry all disappear —
@@ -60,7 +60,7 @@ function minimalPdf(): Buffer {
     null, // stream, filled below
     '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
   ]
-  const stream = `BT /F1 18 Tf 72 700 Td (ChatOffice Manual Sample) Tj ET\nBT /F1 11 Tf 72 660 Td (This paragraph is here so you can try text selection.) Tj ET\nBT /F1 11 Tf 72 620 Td (SECRET ONE needs redaction.) Tj ET\nBT /F1 11 Tf 72 580 Td (More filler text on the sample page.) Tj ET`
+  const stream = `BT /F1 18 Tf 72 700 Td (ChaOffice Manual Sample) Tj ET\nBT /F1 11 Tf 72 660 Td (This paragraph is here so you can try text selection.) Tj ET\nBT /F1 11 Tf 72 620 Td (SECRET ONE needs redaction.) Tj ET\nBT /F1 11 Tf 72 580 Td (More filler text on the sample page.) Tj ET`
   objects[3] = `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`
   let pdf = '%PDF-1.4\n'
   const offsets: number[] = []
@@ -84,7 +84,7 @@ interface Scratch {
 }
 
 async function makeScratch(): Promise<Scratch> {
-  const root = mkdtempSync(join(tmpdir(), 'chatoffice-help-shots-'))
+  const root = mkdtempSync(join(tmpdir(), 'chaoffice-help-shots-'))
   const home = join(root, 'home')
   const userData = join(root, 'userdata')
   const samples = join(root, 'help-samples')
@@ -95,7 +95,7 @@ async function makeScratch(): Promise<Scratch> {
   // /var/folders/<xx>/<per-user-hash>/T, so it differs per machine. This has to
   // be absolute and creatable, which is all resolveDefaultSaveDir asks of a
   // configured dir.
-  const saveDir = process.platform === 'win32' ? 'C:\\ChatOffice' : '/tmp/ChatOffice'
+  const saveDir = process.platform === 'win32' ? 'C:\\ChaOffice' : '/tmp/ChaOffice'
   for (const dir of [home, userData, samples, saveDir]) mkdirSync(dir, { recursive: true })
 
   // the file list the Home figure shows; types only — the figures are about
@@ -153,7 +153,7 @@ async function launch(scratch: Scratch, lang: string): Promise<ElectronApplicati
       ...hostEnv,
       HOME: scratch.home,
       GENOFFICE_USER_DATA: scratch.userData,
-      GENOFFICE_AUTH_DIR: join(scratch.home, '.chatoffice'),
+      GENOFFICE_AUTH_DIR: join(scratch.home, '.chaoffice'),
       GENOFFICE_NO_SPARE_VIEW: '1',
       GENOFFICE_LANG: lang,
     },

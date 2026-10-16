@@ -25,7 +25,7 @@ export interface RemoteStorageConfig {
   bucket: string
   accessKeyId: string
   secretAccessKey: string
-  /** Key prefix every document is stored under, e.g. `chatoffice/`. */
+  /** Key prefix every document is stored under, e.g. `chaoffice/`. */
   prefix: string
   /** MinIO requires path-style; OSS defaults to virtual-hosted style. */
   pathStyle: boolean

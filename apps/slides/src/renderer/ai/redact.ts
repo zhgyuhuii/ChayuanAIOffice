@@ -29,7 +29,7 @@ import {
   placeholderInstruction as buildInstruction,
   placeholderSource,
   type PlaceholderSpec,
-} from '@chatoffice/agent-core/redact-core'
+} from '@chaoffice/agent-core/redact-core'
 
 /** What this editor's markers need that another's do not. */
 const SLIDES_SPEC: PlaceholderSpec = {
@@ -152,4 +152,4 @@ export {
   readPlaceholderLabel,
   sanitizeLabel,
   type PlaceholderIssue,
-} from '@chatoffice/agent-core/redact-core'
+} from '@chaoffice/agent-core/redact-core'

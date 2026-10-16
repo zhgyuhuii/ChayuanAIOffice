@@ -4,7 +4,7 @@
  */
 import React, { useState } from 'react'
 import { useEscOverlay } from '../esc-overlay'
-import { Dropdown } from '@chatoffice/ui'
+import { Dropdown } from '@chaoffice/ui'
 import { useModalDialog } from './modal-dialog'
 import type { LinkTargetOp } from '../../shared/ipc'
 import { EQUATION_GALLERY } from '../insert-presets'

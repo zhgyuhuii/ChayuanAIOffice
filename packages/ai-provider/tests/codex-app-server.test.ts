@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { mkdtemp, mkdir, rm, utimes, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
-import type { AgentToolDef } from '@chatoffice/agent-core'
+import type { AgentToolDef } from '@chaoffice/agent-core'
 import {
   activePermissionProfileId,
   buildCodexAppServerPrompt,
@@ -55,7 +55,7 @@ const tools: AgentToolDef[] = [
 
 describe('Codex app-server bridge', () => {
   it('automatically selects the newest complete desktop-managed Codex install', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'chatoffice-codex-discovery-'))
+    const root = await mkdtemp(join(tmpdir(), 'chaoffice-codex-discovery-'))
     try {
       const older = join(root, 'old-release')
       const newer = join(root, 'new-release')
@@ -79,7 +79,7 @@ describe('Codex app-server bridge', () => {
   })
 
   it('migrates a stale saved hash path to the current managed install', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'chatoffice-codex-migration-'))
+    const root = await mkdtemp(join(tmpdir(), 'chaoffice-codex-migration-'))
     try {
       const current = join(root, 'current-release')
       await mkdir(current)
@@ -104,22 +104,22 @@ describe('Codex app-server bridge', () => {
 
   it('confines Codex tool reads to the temp dir through a permission profile', () => {
     const config = { apiKey: '', model: 'gpt-5.6-terra' }
-    const params = codexThreadStartParams(config, '/tmp/chatoffice-codex-x', 'profile')
+    const params = codexThreadStartParams(config, '/tmp/chaoffice-codex-x', 'profile')
     expect(params).not.toHaveProperty('sandbox')
     expect(params.approvalPolicy).toBe('never')
     expect(params.config).toEqual({
-      default_permissions: 'chatoffice',
+      default_permissions: 'chaoffice',
       permissions: {
-        chatoffice: {
-          filesystem: { ':minimal': 'read', '/tmp/chatoffice-codex-x': 'read' },
+        chaoffice: {
+          filesystem: { ':minimal': 'read', '/tmp/chaoffice-codex-x': 'read' },
         },
       },
     })
-    expect(codexThreadStartParams(config, '/tmp/chatoffice-codex-x', 'read-only')).toMatchObject({
+    expect(codexThreadStartParams(config, '/tmp/chaoffice-codex-x', 'read-only')).toMatchObject({
       sandbox: 'read-only',
     })
-    expect(activePermissionProfileId({ activePermissionProfile: { id: 'chatoffice' } })).toBe(
-      'chatoffice',
+    expect(activePermissionProfileId({ activePermissionProfile: { id: 'chaoffice' } })).toBe(
+      'chaoffice',
     )
     expect(activePermissionProfileId({ activePermissionProfile: null })).toBeUndefined()
   })

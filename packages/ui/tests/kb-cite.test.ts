@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { renderCitationChips } from '../src/kb/kb-cite'
-import type { KbCitation } from '@chatoffice/ai-provider/browser'
+import type { KbCitation } from '@chaoffice/ai-provider/browser'
 
 describe('renderCitationChips', () => {
   const citations: KbCitation[] = [

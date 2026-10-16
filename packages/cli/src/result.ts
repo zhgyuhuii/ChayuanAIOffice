@@ -146,7 +146,7 @@ export function formatHuman(r: CommandResult): string {
 }
 
 export function formatHumanError(err: CliError): string {
-  const lines = [`chatoffice: ${err.message}`]
+  const lines = [`chaoffice: ${err.message}`]
   if (err.suggestion) lines.push(`  hint: ${err.suggestion}`)
   if (err.detail) {
     const { batch, ...rest } = err.detail

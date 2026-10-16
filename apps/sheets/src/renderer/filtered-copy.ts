@@ -44,7 +44,7 @@ export function installFilteredCopyHook(runtime: UniverRuntime): { dispose(): vo
   const filterService = injector.get(SheetsFilterService)
   const instanceService = injector.get(IUniverInstanceService)
   return clipboardService.addClipboardHook({
-    id: 'chatoffice-filtered-copy',
+    id: 'chaoffice-filtered-copy',
     getFilteredOutRows: (unitId, subUnitId, range) => {
       const filterModel = filterService.getFilterModel(unitId, subUnitId)
       const worksheet = instanceService.getUniverSheetInstance(unitId)?.getSheetBySheetId(subUnitId)

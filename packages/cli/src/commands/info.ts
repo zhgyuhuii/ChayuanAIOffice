@@ -1,6 +1,6 @@
 import { statSync } from 'node:fs'
-import { parseDocx } from '@chatoffice/docx-engine'
-import { openPptx } from '@chatoffice/pptx-engine'
+import { parseDocx } from '@chaoffice/docx-engine'
+import { openPptx } from '@chaoffice/pptx-engine'
 import { flagString } from '../args'
 import { csvInfo } from '../formats/csv'
 import { pdfInfo } from '../formats/pdf'

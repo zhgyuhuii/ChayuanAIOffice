@@ -4,7 +4,7 @@ import {
   resolveCustomEndpoints,
   resolveProfileCredential,
   type AiCustomProfile,
-} from '@chatoffice/ai-provider'
+} from '@chaoffice/ai-provider'
 import {
   aiSettingsInputSchema,
 } from '../src/shared/desktop-api'

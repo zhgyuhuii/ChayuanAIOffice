@@ -1,5 +1,5 @@
 import JSZip from 'jszip'
-import { assertZipInflatesWithinLimits, assertZipWithinLimits } from '@chatoffice/docx-engine'
+import { assertZipInflatesWithinLimits, assertZipWithinLimits } from '@chaoffice/docx-engine'
 import { resolveTarget } from './opc'
 import { XMLParser } from 'fast-xml-parser'
 

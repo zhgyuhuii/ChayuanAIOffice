@@ -6,7 +6,7 @@ import type {
   ControlTarget,
   RendererControlReply,
   RendererControlRequest,
-} from '@chatoffice/cli/control-protocol'
+} from '@chaoffice/cli/control-protocol'
 import type { TabKind } from '../shared/tabs-api'
 
 export interface ControlHost {
@@ -27,7 +27,7 @@ const TARGET_KIND_BY_TAB: Partial<Record<TabKind, ControlTarget['kind']>> = {
 
 /**
  * Runs one CLI control request against the open tabs. Renderers register
- * `window.__chatofficeControl`; the shell evaluates it through the debugger
+ * `window.__chaofficeControl`; the shell evaluates it through the debugger
  * channel, so no preload surface grows and an unloaded document simply
  * answers `not_ready` until its file is in.
  */
@@ -58,7 +58,7 @@ export function controlHandler(host: ControlHost): (req: ControlRequest) => Prom
     const tab = host.findTab(req.path)
     if (!tab) {
       return fail('file_not_open_in_gui', `ChaAI Office does not have ${req.path} open`, {
-        suggestion: `chatoffice open ${req.path}`,
+        suggestion: `chaoffice open ${req.path}`,
       })
     }
     return ask(tab.webContents, { cmd: 'selection' }, host.readyTimeoutMs)
@@ -111,7 +111,7 @@ async function evaluateControl(
 ): Promise<RendererControlReply> {
   if (wc.isDestroyed() || wc.isLoading()) return { status: 'not_ready' }
   const script = `(async () => {
-    const handler = window.__chatofficeControl
+    const handler = window.__chaofficeControl
     if (typeof handler !== 'function') return { status: 'not_ready' }
     try {
       return await handler(${JSON.stringify(request)})

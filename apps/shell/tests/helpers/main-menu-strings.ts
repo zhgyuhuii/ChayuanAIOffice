@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { runInNewContext } from 'node:vm'
 import ts from 'typescript'
-import { createI18n, type Lang } from '@chatoffice/i18n'
+import { createI18n, type Lang } from '@chaoffice/i18n'
 import type { TabMenuStringKey } from '../../src/main/tab-menu'
 
 // Read the production table without importing index.ts and starting Electron.

@@ -60,13 +60,13 @@ function dyingBody(prefix: Buffer): ReadableStream<Uint8Array> {
 }
 
 /** the artifact url; its trailing extension must match `fileExtension` (see getCacheUpdateFileName) */
-const artifactUrl = new URL('https://cdn.example.test/chatoffice-mac-1.2.3.zip')
+const artifactUrl = new URL('https://cdn.example.test/chaoffice-mac-1.2.3.zip')
 /** what electron-updater names the file it downloads, and renames the temp file to */
-const artifactName = 'chatoffice-mac-1.2.3.zip'
+const artifactName = 'chaoffice-mac-1.2.3.zip'
 const tempName = `temp-${artifactName}`
 
 beforeEach(async () => {
-  dir = await mkdtemp(join(tmpdir(), 'chatoffice-resume-e2e-'))
+  dir = await mkdtemp(join(tmpdir(), 'chaoffice-resume-e2e-'))
   const cacheDir = join(dir, 'updater-cache')
   pendingDir = join(cacheDir, 'pending')
   resumeDir = join(cacheDir, 'resume')
@@ -225,7 +225,7 @@ describe('resume state vs. the updater emptying its own cache dir', () => {
     const { updater } = makeRealUpdater()
     // a part left behind by an earlier update that never completed
     await mkdir(resumeDir, { recursive: true })
-    const stale = 'temp-chatoffice-mac-1.2.2.zip'
+    const stale = 'temp-chaoffice-mac-1.2.2.zip'
     await writeFile(join(resumeDir, `${stale}.part`), PREFIX)
     await writeFile(
       join(resumeDir, `${stale}.part.json`),

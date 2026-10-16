@@ -13,7 +13,7 @@ import {
   type ListItemRef,
   type NumberingDef,
   type NumberingLevel,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import type { DocState, PendingNumbering } from './doc-state'
 import { t } from './i18n/locale'
 

@@ -1,6 +1,6 @@
 /**
  * Compact color well for the format pane: a swatch trigger opening the shared
- * Word-style palette (@chatoffice/ui ColorPicker), fixed + anchored below the
+ * Word-style palette (@chaoffice/ui ColorPicker), fixed + anchored below the
  * trigger so it escapes the pane's scroll clip and opens leftwards (the pane
  * hugs the window's right edge).
  *
@@ -10,7 +10,7 @@
  */
 import { useEffect, useRef, useState } from 'react'
 import { useEscOverlay } from '../esc-overlay'
-import { ColorPicker } from '@chatoffice/ui'
+import { ColorPicker } from '@chaoffice/ui'
 import { useI18n } from '../i18n/locale'
 import { armColorInput } from '../color-input'
 

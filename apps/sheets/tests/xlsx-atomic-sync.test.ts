@@ -7,7 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import {
   syncFileBestEffort,
   writeXlsxAtomically,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
 
 describe('syncFileBestEffort', () => {
   let directory: string

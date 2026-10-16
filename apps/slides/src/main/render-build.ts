@@ -3,9 +3,9 @@
  * BFF (plan v2.2 batch 4): opened deck → renderer-facing RenderSlide[].
  * No Electron imports — node-only.
  */
-import type { OpenedPptx } from '@chatoffice/pptx-engine'
-import { parseTheme, parseClrMap, resolveSchemeColor } from '@chatoffice/pptx-engine'
-import { buildRenderSlide, type RenderSlide } from '@chatoffice/pptx-render'
+import type { OpenedPptx } from '@chaoffice/pptx-engine'
+import { parseTheme, parseClrMap, resolveSchemeColor } from '@chaoffice/pptx-engine'
+import { buildRenderSlide, type RenderSlide } from '@chaoffice/pptx-render'
 import { tiffToPng } from './tiff-decode'
 import { neutralizeJpegOrientation } from './jpeg-orientation'
 import { displayMime } from './media-mime'

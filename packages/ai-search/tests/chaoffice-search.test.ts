@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest'
 import {
-  chatofficeChildEnv,
+  chaofficeChildEnv,
   setChaOfficeProxyUrl,
   parseChaOfficeOutput,
   parseChaOfficeWebSearch,
@@ -10,7 +10,7 @@ import {
   parseChaOfficePastProjects,
   extractChaOfficeText,
   parseToolCliNdjson,
-} from '../src/chatoffice'
+} from '../src/chaoffice'
 
 describe('parseChaOfficeOutput', () => {
   it('parses clean JSON', () => {
@@ -48,11 +48,11 @@ describe('parseChaOfficeOutput', () => {
   })
 })
 
-describe('chatofficeChildEnv', () => {
+describe('chaofficeChildEnv', () => {
   afterEach(() => setChaOfficeProxyUrl(''))
 
   it('sets ELECTRON_RUN_AS_NODE and no proxy vars when no proxy is known', () => {
-    const env = chatofficeChildEnv({ PATH: '/bin' })
+    const env = chaofficeChildEnv({ PATH: '/bin' })
     expect(env.ELECTRON_RUN_AS_NODE).toBe('1')
     expect(env.NODE_USE_ENV_PROXY).toBeUndefined()
     expect(env.HTTPS_PROXY).toBeUndefined()
@@ -60,27 +60,27 @@ describe('chatofficeChildEnv', () => {
 
   it('forwards the proxy registered by the main-process bootstrap', () => {
     setChaOfficeProxyUrl('http://127.0.0.1:7890')
-    const env = chatofficeChildEnv({ PATH: '/bin' })
+    const env = chaofficeChildEnv({ PATH: '/bin' })
     expect(env.NODE_USE_ENV_PROXY).toBe('1')
     expect(env.HTTPS_PROXY).toBe('http://127.0.0.1:7890')
     expect(env.HTTP_PROXY).toBe('http://127.0.0.1:7890')
   })
 
   it('falls back to inherited proxy env vars (terminal launch)', () => {
-    const env = chatofficeChildEnv({ https_proxy: 'http://10.0.0.1:8080' })
+    const env = chaofficeChildEnv({ https_proxy: 'http://10.0.0.1:8080' })
     expect(env.NODE_USE_ENV_PROXY).toBe('1')
     expect(env.HTTPS_PROXY).toBe('http://10.0.0.1:8080')
   })
 
   it('prefers the registered proxy over env vars', () => {
     setChaOfficeProxyUrl('http://127.0.0.1:7890')
-    const env = chatofficeChildEnv({ HTTPS_PROXY: 'http://10.0.0.1:8080' })
+    const env = chaofficeChildEnv({ HTTPS_PROXY: 'http://10.0.0.1:8080' })
     expect(env.HTTPS_PROXY).toBe('http://127.0.0.1:7890')
   })
 
   it('scrubs lowercase/ALL_PROXY variants so they cannot override the selection', () => {
     setChaOfficeProxyUrl('http://127.0.0.1:7890')
-    const env = chatofficeChildEnv({
+    const env = chaofficeChildEnv({
       https_proxy: 'socks5://127.0.0.1:1080',
       http_proxy: 'http://10.0.0.1:8080',
       all_proxy: 'socks5://127.0.0.1:1080',
@@ -93,7 +93,7 @@ describe('chatofficeChildEnv', () => {
 
   it('ignores SOCKS proxies (undici env proxy is http(s)-only)', () => {
     setChaOfficeProxyUrl('socks5://127.0.0.1:1080')
-    const env = chatofficeChildEnv({ ALL_PROXY: 'socks5://127.0.0.1:1080' })
+    const env = chaofficeChildEnv({ ALL_PROXY: 'socks5://127.0.0.1:1080' })
     expect(env.NODE_USE_ENV_PROXY).toBeUndefined()
     expect(env.HTTPS_PROXY).toBeUndefined()
   })
@@ -189,7 +189,7 @@ describe('parseChaOfficeImageSearch', () => {
 })
 
 describe('parseChaOfficePastProjects', () => {
-  // real `chatoffice projects --artifact_types slides` shape (trimmed)
+  // real `chaoffice projects --artifact_types slides` shape (trimmed)
   const raw = {
     version: 1,
     status: 'ok',

@@ -86,15 +86,15 @@ const zh = {
     'audio-understanding': '音频理解',
     'video-understanding': '视频理解',
   } as Record<string, string>,
-  // chatoffice special card
-  chatofficeLoginTitle: '察元AIOffice 登录',
-  chatofficeLoginDesc:
+  // chaoffice special card
+  chaofficeLoginTitle: '察元AIOffice 登录',
+  chaofficeLoginDesc:
     '登录后可使用默认模型与云端工具（网页/图片搜索、兜底生图）。不登录也能使用自己配置的任何模型。',
-  chatofficeLoggedIn: '已登录：{email}',
-  chatofficeLoggedInNoEmail: '已登录',
-  chatofficeLoggedOut: '未登录',
-  chatofficeLoginBtn: '登录',
-  chatofficePresetModels: '可用模型',
+  chaofficeLoggedIn: '已登录：{email}',
+  chaofficeLoggedInNoEmail: '已登录',
+  chaofficeLoggedOut: '未登录',
+  chaofficeLoginBtn: '登录',
+  chaofficePresetModels: '可用模型',
   // misc
   freeNokey: '免密钥',
   freeFreekey: '免费密钥',
@@ -241,14 +241,14 @@ const en = {
     'audio-understanding': 'Audio',
     'video-understanding': 'Video',
   } as Record<string, string>,
-  chatofficeLoginTitle: 'ChaAI Office sign-in',
-  chatofficeLoginDesc:
+  chaofficeLoginTitle: 'ChaAI Office sign-in',
+  chaofficeLoginDesc:
     'Sign in for the default models and cloud tools (web/image search, fallback image gen). Everything you configure yourself works without signing in.',
-  chatofficeLoggedIn: 'Signed in: {email}',
-  chatofficeLoggedInNoEmail: 'Signed in',
-  chatofficeLoggedOut: 'Not signed in',
-  chatofficeLoginBtn: 'Sign in',
-  chatofficePresetModels: 'Available models',
+  chaofficeLoggedIn: 'Signed in: {email}',
+  chaofficeLoggedInNoEmail: 'Signed in',
+  chaofficeLoggedOut: 'Not signed in',
+  chaofficeLoginBtn: 'Sign in',
+  chaofficePresetModels: 'Available models',
   freeNokey: 'Keyless',
   freeFreekey: 'Free key',
   freeTier: 'Free tier',

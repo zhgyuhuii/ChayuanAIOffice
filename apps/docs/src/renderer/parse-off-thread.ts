@@ -1,4 +1,4 @@
-import { parseDocx } from '@chatoffice/docx-engine'
+import { parseDocx } from '@chaoffice/docx-engine'
 
 type Parsed = Awaited<ReturnType<typeof parseDocx>>
 

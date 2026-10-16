@@ -1,6 +1,6 @@
 import { ANTHROPIC_BASE_URL } from './protocols/anthropic'
 import { GEMINI_BASE_URL } from './protocols/gemini'
-import { AI_PROVIDERS, CHATOFFICE_LLM_BASE_URLS, DEEPSEEK_V41_FLASH } from './providers'
+import { AI_PROVIDERS, CHAOFFICE_LLM_BASE_URLS, DEEPSEEK_V41_FLASH } from './providers'
 import {
   customProtocolBaseUrl,
   normalizeCustomProfile,
@@ -20,11 +20,11 @@ export type AiProtocol =
 
 export interface ProviderCapabilities {
   /**
-   * 'chatoffice-login': the ChaOffice session key is injected by the main process;
+   * 'chaoffice-login': the ChaOffice session key is injected by the main process;
    * 'api-key': the user supplies their own key;
    * 'codex-chatgpt': the Codex CLI's existing login is reused.
    */
-  auth: 'chatoffice-login' | 'api-key' | 'codex-chatgpt'
+  auth: 'chaoffice-login' | 'api-key' | 'codex-chatgpt'
   /** chat models accept image input (declarative; for custom endpoints it is assumed, not known) */
   vision: boolean
 }
@@ -125,19 +125,19 @@ function fixedEndpoint(
 }
 
 export const AI_PROVIDER_ADAPTERS: Record<AiProviderId, ProviderAdapter> = {
-  chatoffice: {
-    meta: metaOf('chatoffice'),
-    capabilities: { auth: 'chatoffice-login', vision: true },
+  chaoffice: {
+    meta: metaOf('chaoffice'),
+    capabilities: { auth: 'chaoffice-login', vision: true },
     // Route by model id prefix: claude uses the Anthropic protocol (preserves image
     // input fidelity), the rest OpenAI-compatible. The proxy's gemini endpoint was
     // removed server-side (405 as of 2026-08-31) along with its gemini models.
     resolveEndpoint(config) {
       if (config.model.startsWith('claude')) {
-        return { protocol: 'anthropic', baseUrl: CHATOFFICE_LLM_BASE_URLS.anthropic }
+        return { protocol: 'anthropic', baseUrl: CHAOFFICE_LLM_BASE_URLS.anthropic }
       }
       return {
         protocol: 'openai-compatible',
-        baseUrl: CHATOFFICE_LLM_BASE_URLS.openai,
+        baseUrl: CHAOFFICE_LLM_BASE_URLS.openai,
         ...(modelHasFixedSampling(config.model) ? { omitTemperature: true } : {}),
       }
     },

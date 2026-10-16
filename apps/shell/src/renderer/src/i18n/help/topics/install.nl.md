@@ -1,4 +1,4 @@
-# ChatOffice installeren
+# ChaOffice installeren
 
 Elke build staat op de [Releases-pagina](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest). Ze komen allemaal uit `main`; de installateurs voor macOS en Windows zijn ondertekend.
 
@@ -18,32 +18,32 @@ Oudere versies blijven op de Releases-pagina staan.
 
 ## Op macOS
 
-Open het `.dmg` en sleep **ChatOffice** naar Programma's. Bij een Intel-build vraagt de eerste keer starten om bevestiging: klik met de rechtermuis op de app in Programma's ▸ Open. Dat is Gatekeeper die een schijfkopie tegenkomt die niet-ondertekend lijkt, geen beschadigde download.
+Open het `.dmg` en sleep **ChaOffice** naar Programma's. Bij een Intel-build vraagt de eerste keer starten om bevestiging: klik met de rechtermuis op de app in Programma's ▸ Open. Dat is Gatekeeper die een schijfkopie tegenkomt die niet-ondertekend lijkt, geen beschadigde download.
 
 ## Op Windows
 
-Voer de installateur `.exe` uit. Die zet ChatOffice in het Startmenu en registreert `.docx`, `.xlsx`, `.pptx`, `.pdf` en soortgelijke, zodat een dubbelklik op een bestand het opent.
+Voer de installateur `.exe` uit. Die zet ChaOffice in het Startmenu en registreert `.docx`, `.xlsx`, `.pptx`, `.pdf` en soortgelijke, zodat een dubbelklik op een bestand het opent.
 
 ## Op Linux
 
 **Debian / Ubuntu**
 
 ```sh
-sudo apt install ./chatoffice_<version>_amd64.deb
+sudo apt install ./chaoffice_<version>_amd64.deb
 ```
 
 **Fedora / RHEL / openSUSE**
 
 ```sh
-sudo dnf install ./chatoffice-<version>.x86_64.rpm     # Fedora / RHEL family
-sudo zypper install ./chatoffice-<version>.x86_64.rpm  # openSUSE
+sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
+sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
 
 **AppImage** — draait waar het staat, zonder installatiestap:
 
 ```sh
-chmod +x ChatOffice-<version>.AppImage
-./ChatOffice-<version>.AppImage
+chmod +x ChaOffice-<version>.AppImage
+./ChaOffice-<version>.AppImage
 ```
 
 Het heeft de FUSE 2-runtime nodig. Wil je die niet installeren, start het dan met `--appimage-extract-and-run`; de sandbox werkt vanuit de uitgepakte map.
@@ -64,4 +64,4 @@ Ze pakken alle drie de gepubliceerde artefacten in plaats van de app opnieuw te 
 
 ## De opdrachtregel zit erbij
 
-Elke installatie bevat een `chatoffice`-commando dat met dezelfde engines praat als het venster, zodat de twee nooit over een bestand het oneens zijn. Op macOS en Windows zit het in de app-bundel; `chatoffice install-cli` zet het in je `PATH`. Wat het kan doen, lees je in **Opdrachtregel en agents**.
+Elke installatie bevat een `chaoffice`-commando dat met dezelfde engines praat als het venster, zodat de twee nooit over een bestand het oneens zijn. Op macOS en Windows zit het in de app-bundel; `chaoffice install-cli` zet het in je `PATH`. Wat het kan doen, lees je in **Opdrachtregel en agents**.

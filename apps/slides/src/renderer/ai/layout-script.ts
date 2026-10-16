@@ -13,7 +13,7 @@
  */
 
 import type { EditParagraph } from '../../shared/ipc'
-import { FONT_SIZE_PT_MIN, FONT_SIZE_PT_MAX } from '@chatoffice/pptx-ops/font-size'
+import { FONT_SIZE_PT_MIN, FONT_SIZE_PT_MAX } from '@chaoffice/pptx-ops/font-size'
 import { interpretLayoutScript } from './layout-script-interpreter'
 import { boundedJsonStringify, truncateString } from './bounded-json'
 // Debug output that flows into the next model request, per script run.

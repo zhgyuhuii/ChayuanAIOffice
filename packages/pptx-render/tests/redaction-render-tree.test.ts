@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { parseSlide } from '@chatoffice/pptx-engine'
+import { parseSlide } from '@chaoffice/pptx-engine'
 import { buildRenderSlide } from '../src/index'
-import { setRedactExt } from '@chatoffice/pptx-engine'
+import { setRedactExt } from '@chaoffice/pptx-engine'
 
 /**
  * The mark has to reach the render tree, because that is what the model's read

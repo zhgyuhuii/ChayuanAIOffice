@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { AgentToolCall } from '@chatoffice/agent-core'
+import type { AgentToolCall } from '@chaoffice/agent-core'
 import { streamForProvider } from '../src/stream'
 import { okResponse, sseStream } from './test-utils'
 

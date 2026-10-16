@@ -9,8 +9,8 @@
 
 import * as Y from 'yjs'
 import { join } from 'node:path'
-import type { StorageArea } from '@chatoffice/storage-adapter'
-import { openLocalArea } from '@chatoffice/storage-adapter'
+import type { StorageArea } from '@chaoffice/storage-adapter'
+import { openLocalArea } from '@chaoffice/storage-adapter'
 import type { ServiceContext } from '../runtime.js'
 import { defineService, ServiceEmitter } from '../runtime.js'
 

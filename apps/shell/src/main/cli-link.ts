@@ -2,7 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { app } from 'electron'
-import { installCliLink } from '@chatoffice/cli/install'
+import { installCliLink } from '@chaoffice/cli/install'
 import { writeAppSetting } from './app-settings'
 
 const SETTING_KEY = 'cliLink'
@@ -15,13 +15,13 @@ interface CliLinkRecord {
 
 /**
  * Every launch: record where the chaoffice launcher lives so agents can find it
- * without a PATH (the `chaoffice` skill reads `~/.chatoffice/launcher`), then
+ * without a PATH (the `chaoffice` skill reads `~/.chaoffice/launcher`), then
  * try to expose it on the PATH. The dmg has no installer step to do that, so
  * macOS retries on each start until a writable directory turns up. Windows
  * gets its PATH entry from the NSIS installer on every install and update, so
  * nothing runs here: the PATH probe spawns PowerShell, and with Windows
  * Terminal as the default console host a hidden child still flashes a window
- * on the first launch of each version (chatoffice#2011). Silent and best effort.
+ * on the first launch of each version (chaoffice#2011). Silent and best effort.
  */
 export function installCliLinkBestEffort(settingsPath: string): void {
   if (!app.isPackaged) return
@@ -57,7 +57,7 @@ export function isEphemeralInstall(resourcesPath: string, env: NodeJS.ProcessEnv
 
 /** Same directory the chaoffice CLI uses for auth.json and its audit log. */
 export function launcherFilePath(env: NodeJS.ProcessEnv): string {
-  return join(env.GENOFFICE_AUTH_DIR || join(homedir(), '.chatoffice'), 'launcher')
+  return join(env.GENOFFICE_AUTH_DIR || join(homedir(), '.chaoffice'), 'launcher')
 }
 
 /** One line, the directory holding chaoffice / chaoffice.cmd; rewritten only when it changed. */

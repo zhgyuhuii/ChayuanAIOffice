@@ -11,7 +11,7 @@ import {
   isBridgeRequest,
   isBridgeSubscribe,
   type BridgeResponse,
-} from '@chatoffice/web-bridge'
+} from '@chaoffice/web-bridge'
 import { extToKind, fileStore, openEditorFor } from './file-open.js'
 import { tabManager } from './tab-manager.js'
 
@@ -19,10 +19,10 @@ function bffBase(): string {
   // Dev: the vite host on 5180 proxies /rpc (and /ai) to the BFF on 8787, so
   // the page stays single-origin (no CORS). In production the sidecar serves
   // both under one origin; behind the dsh-plugin proxy the app lives under
-  // /chatoffice-app/ and a path-relative rpc URL keeps the proxy in front of
+  // /chaoffice-app/ and a path-relative rpc URL keeps the proxy in front of
   // the sidecar.
   const dir = location.pathname.replace(/\/$/, '')
-  return dir.endsWith('/chatoffice-app') ? dir : ''
+  return dir.endsWith('/chaoffice-app') ? dir : ''
 }
 
 async function handleRpc(channel: string, args: unknown[]): Promise<unknown> {

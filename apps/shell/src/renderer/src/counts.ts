@@ -1,4 +1,4 @@
-import type { Lang, Params } from '@chatoffice/i18n'
+import type { Lang, Params } from '@chaoffice/i18n'
 import type { RecentPage } from '../../shared/home-api'
 
 export type FileCountKey = 'fileCount' | 'fileCountOne'

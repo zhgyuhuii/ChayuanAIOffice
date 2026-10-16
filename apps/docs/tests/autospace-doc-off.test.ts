@@ -6,7 +6,7 @@
  * jsdom has no canvas, so every non-bundled face measures as missing here.
  */
 import { describe, expect, it } from 'vitest'
-import type { DocDefaults, ParsedDocFull, StyleInfo } from '@chatoffice/docx-engine'
+import type { DocDefaults, ParsedDocFull, StyleInfo } from '@chaoffice/docx-engine'
 import { docAutospaceOff, docStyleCss } from '../src/renderer/doc-style-css'
 
 ;(globalThis as { CSS?: unknown }).CSS ??= { escape: (s: string) => s }

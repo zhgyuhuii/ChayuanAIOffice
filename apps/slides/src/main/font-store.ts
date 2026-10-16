@@ -2,7 +2,7 @@
 import { join } from 'node:path'
 import { readFileSync } from 'node:fs'
 import { app, net } from 'electron'
-import type { OpenedPptx } from '@chatoffice/pptx-engine'
+import type { OpenedPptx } from '@chaoffice/pptx-engine'
 import {
   downloadCatalogEntry as downloadEntry,
   downloadFontFamily as downloadFromStore,
@@ -11,8 +11,8 @@ import {
   normalizeCdnBaseUrl,
   type CatalogEntry,
   type FontStoreEnv,
-} from '@chatoffice/electron-utils/font-store'
-import { FONT_CATALOG, type CatalogFamily } from '@chatoffice/electron-utils/font-catalog'
+} from '@chaoffice/electron-utils/font-store'
+import { FONT_CATALOG, type CatalogFamily } from '@chaoffice/electron-utils/font-catalog'
 import { familyAvailable, fontFileFamilies, setUserFontDir } from './fonts'
 
 export { FONT_CATALOG, normalizeCdnBaseUrl }

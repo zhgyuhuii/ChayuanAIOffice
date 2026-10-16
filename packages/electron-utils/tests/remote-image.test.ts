@@ -13,7 +13,7 @@ vi.mock('node:dns/promises', () => ({
 const png = () => new Response('img', { status: 200 })
 
 describe('remoteImageHeaders', () => {
-  it('sends a Referer for chatoffice hosts', () => {
+  it('sends a Referer for chaoffice hosts', () => {
     expect(remoteImageHeaders('https://sspark.genspark.ai/a.png').Referer).toBe(
       'https://www.genspark.ai/',
     )

@@ -23,7 +23,7 @@ Světlý / Tmavý / Podle systému. Volba Podle systému sleduje vzhled operačn
 - **Pozice postranního panelu AI** (vlevo nebo vpravo), **Velikost textu panelu AI** a **Kontrola pravopisu v chatu AI**.
 - **Otevírat panel AI v nových dokumentech** — vypnuto, nový dokument začíná se složeným panelem, na jedno kliknutí.
 - **Automaticky ukládat všechny dokumenty** zapne ve výchozím stavu automatické ukládání v každém editoru; pro jedno okno ho můžete i nadále vypnout.
-- **Umístění pro ukládání** s tlačítkem **Změnit** a **Výchozí aplikace pro dokumenty Office**, aby ChatOffice přebíral .docx / .xlsx / .pptx.
+- **Umístění pro ukládání** s tlačítkem **Změnit** a **Výchozí aplikace pro dokumenty Office**, aby ChaOffice přebíral .docx / .xlsx / .pptx.
 
 ## AI média a vyhledávání
 
@@ -39,7 +39,7 @@ Nejsou to přepínače — každá schopnost si vybere dodavatele, který ji pos
 
 ## Přiřazení jako výchozí aplikace
 
-Nastavení může zaregistrovat ChatOffice jako aplikaci pro soubory .docx / .xlsx / .pptx / .pdf a podobné (registrace výchozí aplikace na úrovni systému; potvrzení, když o něj systém požádá).
+Nastavení může zaregistrovat ChaOffice jako aplikaci pro soubory .docx / .xlsx / .pptx / .pdf a podobné (registrace výchozí aplikace na úrovni systému; potvrzení, když o něj systém požádá).
 
 ## Informace o softwaru třetích stran a aktualizace
 
@@ -48,13 +48,13 @@ Nastavení může zaregistrovat ChatOffice jako aplikaci pro soubory .docx / .xl
 
 ## Přihlášení ke Genspark
 
-- Místo přihlášení (v nastavení nebo v seznamu cloudových projektů) používá postup s **kódem zařízení**: ChatOffice zobrazí kód a otevře přihlašovací stránku v prohlížeči; po dokončení postup pokračuje automaticky.
+- Místo přihlášení (v nastavení nebo v seznamu cloudových projektů) používá postup s **kódem zařízení**: ChaOffice zobrazí kód a otevře přihlašovací stránku v prohlížeči; po dokončení postup pokračuje automaticky.
 - Přihlášení slouží pouze k: seznamu cloudových projektů a modelům hostovaným Gensparkem. Bez něj fungují dál všechny místní funkce i vlastní modely.
 - Odhlášení je jedno kliknutí v nastavení.
 
 ## Integrace MCP (pro pokročilé uživatele a klienty AI)
 
-**Integrace** je panel, který propojí ChatOffice s programovým agentem, a má o tom vlastní kapitolu: Připojení programového agenta. Zkrátka — vyberte cestu (příkazová řádka, nebo MCP), řiďte se danou částí a pak začněte nový chat a zeptejte se.
+**Integrace** je panel, který propojí ChaOffice s programovým agentem, a má o tom vlastní kapitolu: Připojení programového agenta. Zkrátka — vyberte cestu (příkazová řádka, nebo MCP), řiďte se danou částí a pak začněte nový chat a zeptejte se.
 
 ![Nastavení ▸ Integrace: tři kroky, pak řádky dovedností a možnosti MCP](img/settings-integrations.png)
 
@@ -64,6 +64,6 @@ Pod **Místní HTTP server** umí aplikace server spustit sama — přepínač z
 
 | Příkaz               | Co dělá                     |
 | -------------------- | --------------------------- |
-| `chatoffice <soubor>` | otevře soubor               |
-| `chatoffice mcp`      | spustí místní server MCP    |
-| `chatoffice --help`   | všechny příkazy a přepínače |
+| `chaoffice <soubor>` | otevře soubor               |
+| `chaoffice mcp`      | spustí místní server MCP    |
+| `chaoffice --help`   | všechny příkazy a přepínače |

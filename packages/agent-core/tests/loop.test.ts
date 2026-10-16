@@ -969,7 +969,7 @@ describe('AgentLoop', () => {
   })
 
   it('after tools mutate, an empty final model turn still stores non-empty history for follow-ups', async () => {
-    // Regression for chatoffice#12 / #22: first AI prompt mutates via tools with no
+    // Regression for chaoffice#12 / #22: first AI prompt mutates via tools with no
     // prose, second prompt must not inherit an empty assistant content block.
     const transport = scriptedTransport([
       (cb) => {
@@ -1880,16 +1880,16 @@ describe('AgentLoop compaction', () => {
       invalidArgumentFields(readCells, { addresses: ['A1', 'B2'], sheetId: 'Sheet1' }),
     ).toEqual([])
     expect(invalidArgumentFields(readCells, { addresses: [] })).toEqual([])
-    expect(invalidArgumentFields(webSearch, { query: 'chatoffice', maxResults: 6 })).toEqual([])
+    expect(invalidArgumentFields(webSearch, { query: 'chaoffice', maxResults: 6 })).toEqual([])
     // omitted optional field, and an undeclared extra key, are both fine
-    expect(invalidArgumentFields(webSearch, { query: 'chatoffice' })).toEqual([])
+    expect(invalidArgumentFields(webSearch, { query: 'chaoffice' })).toEqual([])
     expect(invalidArgumentFields(webSearch, { query: 'x', page: 2 })).toEqual([])
     expect(invalidArgumentFields(loadGuides, { guides: ['writing', 'formatting'] })).toEqual([])
     // the same tools do catch a mangled argument
     expect(invalidArgumentFields(readCells, { addresses: 'A1:D20' })).toEqual([
       '"addresses" expected array',
     ])
-    expect(invalidArgumentFields(webSearch, { query: 'chatoffice', maxResults: '6' })).toEqual([
+    expect(invalidArgumentFields(webSearch, { query: 'chaoffice', maxResults: '6' })).toEqual([
       '"maxResults" expected integer',
     ])
   })

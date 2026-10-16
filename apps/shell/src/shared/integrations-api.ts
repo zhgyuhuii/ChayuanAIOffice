@@ -3,13 +3,13 @@ import type {
   AgentTarget,
   SkillInstallState,
   SkillInstallStatus,
-} from '@chatoffice/cli/agent-skills'
-import type { InstallOutcome } from '@chatoffice/cli/install'
+} from '@chaoffice/cli/agent-skills'
+import type { InstallOutcome } from '@chaoffice/cli/install'
 
 export type { AgentId, AgentTarget, SkillInstallState, SkillInstallStatus }
 
 export interface CliStatus extends InstallOutcome {
-  /** directory holding the chatoffice launcher (what `~/.chatoffice/launcher` points at) */
+  /** directory holding the chaoffice launcher (what `~/.chaoffice/launcher` points at) */
   launcherDir: string
   /** app runs from a dmg / AppImage mount: the launcher path will not survive a restart */
   ephemeral: boolean
@@ -35,7 +35,7 @@ export interface IntegrationsApi {
   uninstallSkill(agentId: AgentId): Promise<SkillInstallState>
   /** folder picker for "install elsewhere"; null when cancelled */
   pickSkillDir(title: string): Promise<string | null>
-  /** save dialog + write of chatoffice-skill-<version>.zip; the saved path, null when cancelled */
+  /** save dialog + write of chaoffice-skill-<version>.zip; the saved path, null when cancelled */
   saveSkillZip(title: string): Promise<string | null>
   /** put text on the clipboard (paths, the manual PATH command) */
   copyText(text: string): Promise<void>

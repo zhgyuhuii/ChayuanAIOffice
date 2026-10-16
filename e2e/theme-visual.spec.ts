@@ -21,7 +21,7 @@ async function findShellPage(app: ElectronApplication, timeoutMs = 15_000): Prom
 
 function setTheme(page: Page, theme: 'light' | 'dark' | 'system'): Promise<void> {
   return page.evaluate((t) => {
-    const api = (window as unknown as { chatOffice: { setTheme(v: string): Promise<void> } }).chatOffice
+    const api = (window as unknown as { chaOffice: { setTheme(v: string): Promise<void> } }).chaOffice
     return api.setTheme(t)
   }, theme)
 }
@@ -59,7 +59,7 @@ function minimalPdf(): Buffer {
 
 test.describe('theme visual adoption', () => {
   test('html editor surface follows dark theme', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'chatoffice-theme-html-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chaoffice-theme-html-'))
     const htmlPath = join(dir, 'doc.html')
     await writeFile(htmlPath, '<html><body><p>Body.</p></body></html>\n')
 
@@ -91,7 +91,7 @@ test.describe('theme visual adoption', () => {
   })
 
   test('markdown editor surface follows dark theme', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'chatoffice-theme-md-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chaoffice-theme-md-'))
     const mdPath = join(dir, 'doc.md')
     await writeFile(mdPath, '# Doc\n\nBody.\n')
 
@@ -295,7 +295,7 @@ test.describe('theme visual adoption', () => {
   })
 
   test('pdf chrome follows dark theme while the page stays paper-white', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'chatoffice-theme-pdf-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chaoffice-theme-pdf-'))
     const pdfPath = join(dir, 'doc.pdf')
     await writeFile(pdfPath, minimalPdf())
 

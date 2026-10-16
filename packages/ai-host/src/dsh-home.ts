@@ -9,7 +9,7 @@ import { homedir as osHomedir } from 'node:os'
  * can carry several of them at once (a migrated production root next to a live
  * dev-shell root — both recording the same proxyPort while only one service
  * actually listens). Discovery therefore:
- *  1. honors explicit env pins (CHATOP_DSH_HOME > CHATOFFICE_DSH_HOME > DSH_HOME),
+ *  1. honors explicit env pins (CHATOP_DSH_HOME > CHAOFFICE_DSH_HOME > DSH_HOME),
  *  2. falls back through the standalone conventions (~/.chatop, ~/.dsh) and
  *     every known per-user chatop-data root,
  *  3. among candidates that carry a model-service state.json, prefers one
@@ -94,7 +94,7 @@ export async function discoverDshHome(
 
   const pinned = [
     env.CHATOP_DSH_HOME,
-    env.CHATOFFICE_DSH_HOME,
+    env.CHAOFFICE_DSH_HOME,
     env.DSH_HOME,
   ].filter((v): v is string => !!v && v.trim() !== '')
   const roots = [

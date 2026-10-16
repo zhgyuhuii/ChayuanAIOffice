@@ -7,7 +7,7 @@
  */
 import type { PathCmd } from './edit-points'
 import type React from 'react'
-import type { GroupRenderNode, RenderNode, RenderSlide } from '@chatoffice/pptx-render'
+import type { GroupRenderNode, RenderNode, RenderSlide } from '@chaoffice/pptx-render'
 import type {
   AnimationItem,
   GetLayoutsResult,

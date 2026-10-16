@@ -1,5 +1,5 @@
 import type { Editor } from '@tiptap/core'
-import type { ImageWrap, TextboxDisplay } from '@chatoffice/docx-engine'
+import type { ImageWrap, TextboxDisplay } from '@chaoffice/docx-engine'
 
 const EMU_PER_PX = 9525
 

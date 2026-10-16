@@ -9,7 +9,7 @@ import { Editor } from '@tiptap/core'
 import { editorExtensions } from '../src/renderer/editor/extensions'
 import { AiPanel } from '../src/renderer/ai/AiPanel'
 // adapted: the panel takes the local AiSettingsV2 shape
-import { defaultSettingsV2, type AiSettingsV2 } from '@chatoffice/ai-provider'
+import { defaultSettingsV2, type AiSettingsV2 } from '@chaoffice/ai-provider'
 
 const settings: AiSettingsV2 = defaultSettingsV2()
 

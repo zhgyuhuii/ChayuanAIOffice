@@ -28,7 +28,7 @@ vi.mock('electron', () => ({
   },
 }))
 
-vi.mock('@chatoffice/cli/agent-skills', () => {
+vi.mock('@chaoffice/cli/agent-skills', () => {
   const skillsDir = '/home/me/.claude/skills'
   return {
     LEDGER_KEY: 'agentSkillInstalls',
@@ -46,7 +46,7 @@ vi.mock('@chatoffice/cli/agent-skills', () => {
   }
 })
 
-vi.mock('@chatoffice/cli/install', () => ({ inspectCliLink: () => ({ linked: false }) }))
+vi.mock('@chaoffice/cli/install', () => ({ inspectCliLink: () => ({ linked: false }) }))
 
 import { registerIntegrationsIpc } from '../src/main/integrations-ipc'
 import { INTEGRATIONS_CHANNELS } from '../src/shared/integrations-api'
@@ -65,7 +65,7 @@ beforeEach(() => {
   h.handlers.clear()
   h.installed.length = 0
   h.dialogResult = { canceled: true, filePaths: [] }
-  dir = mkdtempSync(join(tmpdir(), 'chatoffice-integrations-'))
+  dir = mkdtempSync(join(tmpdir(), 'chaoffice-integrations-'))
   writeFileSync(join(dir, 'SKILL.md'), '---\nname: genoffice\n---\n')
   writeFileSync(join(dir, 'package.json'), JSON.stringify({ version: '0.0.0' }))
   registerIntegrationsIpc({

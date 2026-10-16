@@ -1,4 +1,4 @@
-import type { WorkbookCommandBatch } from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
+import type { WorkbookCommandBatch } from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
 
 export class UnsupportedPromptError extends Error {
   constructor() {

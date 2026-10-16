@@ -1,4 +1,4 @@
-/** Request/reply the shell relays from `chatoffice open --page` and `chatoffice selection`. */
+/** Request/reply the shell relays from `chaoffice open --page` and `chaoffice selection`. */
 export type ControlRequest =
   { cmd: 'goto'; target: { kind: string; page?: number } } | { cmd: 'selection' }
 

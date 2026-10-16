@@ -15,8 +15,8 @@
     // file-parse ships as TS source and its deps fail this package's stricter compiler options;
     // types go through a local shim (src/types/file-parse.d.ts) while the runtime bundle still uses the real source
     "paths": {
-      "@chatoffice/file-parse": ["./src/types/file-parse.d.ts"],
-      "@chatoffice/docx-engine/math": ["./src/types/docx-engine-math.d.ts"]
+      "@chaoffice/file-parse": ["./src/types/file-parse.d.ts"],
+      "@chaoffice/docx-engine/math": ["./src/types/docx-engine-math.d.ts"]
     }
   },
   "include": [

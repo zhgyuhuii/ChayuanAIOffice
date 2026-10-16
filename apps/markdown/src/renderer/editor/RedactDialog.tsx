@@ -1,4 +1,4 @@
-import { useRedactLabelField } from '@chatoffice/ui'
+import { useRedactLabelField } from '@chaoffice/ui'
 import { useI18n } from '../i18n/locale'
 
 interface Props {

@@ -6,10 +6,10 @@ import {
   echoStyleColor,
   normalizeStyleColor,
   resolveStyleColor,
-} from '@chatoffice/xlsx-gateway/domain/style-color'
-import { StylesheetEditor } from '@chatoffice/xlsx-gateway/gateway/xlsx-styles'
-import { parseStylesheetFormats } from '@chatoffice/xlsx-gateway/gateway/xlsx-style-read'
-import { formatOpLabel } from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
+} from '@chaoffice/xlsx-gateway/domain/style-color'
+import { StylesheetEditor } from '@chaoffice/xlsx-gateway/gateway/xlsx-styles'
+import { parseStylesheetFormats } from '@chaoffice/xlsx-gateway/gateway/xlsx-style-read'
+import { formatOpLabel } from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
 import { fromNeutralStyle } from '../src/renderer/edit-journal'
 
 const STYLES = `<?xml version="1.0" encoding="UTF-8"?>
