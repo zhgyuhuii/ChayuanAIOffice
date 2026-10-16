@@ -170,10 +170,11 @@ test.describe('theme visual adoption', () => {
       await expect.poll(async () => luminance(await pageBg())).toBeGreaterThan(180)
       expect(luminance(await pageInk())).toBeLessThan(60)
       await editorPage.screenshot({ path: screenshotPath('theme-docs-dark-white-page') })
-          // adapted (LOCAL R24): 磁贴等价（AI Sheets → .xlsx）
-      shellPage.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => undefined)
-
-      shellPage.evaluate((ext) => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === `.xlsx`)?.dispatchEvent(new MouseEvent('click', { bubbles: true })), 'xlsx')
+      // adapted (LOCAL R24): 磁贴等价（AI Sheets → .xlsx）
+      await shellPage.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => undefined)
+      await shellPage.evaluate((ext) => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === `.xlsx`)?.dispatchEvent(new MouseEvent('click', { bubbles: true })), 'xlsx')
+    } finally {
+      await closeAndSaveVideo(launched, 'theme-visual-docs')
     }
   })
 
