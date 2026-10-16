@@ -18,6 +18,7 @@ import type {
   CreateDocumentRequest,
   CreateDocumentResult,
 } from '../../../docs/src/shared/ipc'
+import type { KbFileInfo, KbReadPage, KbSearchHit } from '@chatoffice/agent-core'
 import type { UpdateChannel, UpdateUiState } from './update-api'
 import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
 
@@ -57,13 +58,23 @@ export type UiLanguage =
 export type UiTheme = 'light' | 'dark' | 'system'
 
 /**
- * Document page theme preference (genoffice#1811): what the editors' canvas/paper does
+ * Document page theme preference (chatoffice#1811): what the editors' canvas/paper does
  * relative to the UI theme. 'follow' reproduces the previous single-theme
  * behavior; 'light'/'dark' pin the paper regardless of the UI theme.
  */
 export type DocTheme = 'follow' | 'light' | 'dark'
 
 /** shell-wide AutoSave default for every editor; updatedAt is 0 until first set */
+/** mirrors AUTHOR_NAME_MAX in @chatoffice/electron-utils (the renderer cannot import it) */
+export const AUTHOR_NAME_MAX = 120
+
+export interface AuthorNameSetting {
+  /** stored override; '' means "use fallback" */
+  value: string
+  /** the OS account name */
+  fallback: string
+}
+
 export interface AutoSaveDefault {
   on: boolean
   updatedAt: number
@@ -173,12 +184,12 @@ export interface FileSearchHit extends RecentEntry {
 
 /**
  * Endpoints the search reranker can judge against. The hosted Jev routes are
- * OpenRouter and TypeSafe's own API; Perplexity and Cloudflare host their own
- * decision models; Kev and Rizzo Flow are local /v1/systemone servers;
- * `custom` points at any other /v1/systemone-compatible server.
+ * OpenRouter and TypeSafe's own API; Perplexity, Cloudflare and Liquid AI host
+ * their own decision models; Kev and Rizzo Flow are local /v1/systemone
+ * servers; `custom` points at any other /v1/systemone-compatible server.
  */
 export type DecisionEndpoint =
-  | 'openrouter' | 'direct' | 'perplexity' | 'cloudflare' | 'kev' | 'rizzo' | 'custom'
+  | 'openrouter' | 'direct' | 'perplexity' | 'liquid' | 'cloudflare' | 'kev' | 'rizzo' | 'custom'
 
 /** home search options persisted in app-settings.json under `fileSearch` */
 export interface FileSearchSettings {
@@ -193,7 +204,7 @@ export interface FileSearchSettings {
   customModel: string
   /** `cloudflare` endpoint only: Workers AI account id */
   cloudflareAccountId: string
-  /** `cloudflare` endpoint only: Workers AI model path, e.g. @cf/cloudflare/clef */
+  /** `cloudflare` endpoint only: Workers AI model path, e.g. @cf/cloudflare/clef or @cf/cloudflare/clef-omni */
   cloudflareModel: string
 }
 
@@ -249,6 +260,21 @@ export interface HomeApi {
   statPaths(paths: string[]): Promise<RecentEntry[]>
   /** star / unstar a file */
   toggleStar(path: string): Promise<void>
+  // ---- knowledge-base ask panel: the reader's starred corpus, askable ----
+  /** the starred corpus as the AI's knowledge base */
+  kbList(): Promise<KbFileInfo[]>
+  /** full-text search over the corpus */
+  kbSearch(query: { q: string; limit?: number }): Promise<KbSearchHit[]>
+  /** one page of a corpus file's parsed text (path must be in kbList) */
+  kbRead(path: string, offset: number): Promise<KbReadPage>
+  /** write the AI's markdown as a new .md / .docx in the save folder; resolves to its path */
+  kbCreateDocument(request: {
+    title: string
+    format: 'md' | 'docx'
+    content: string
+  }): Promise<{ path: string }>
+  /** the user's AI provider settings (shared with every app's panel) */
+  getAiSettings(): Promise<AiSettingsV2>
   /** open an existing file, routing to the right module by extension */
   /** open the in-app illustrated user manual (help tab); main routes it like openPath */
   openHelp(): Promise<void>
@@ -358,7 +384,7 @@ export interface HomeApi {
   getTheme(): Promise<UiTheme>
   /** switch + persist the UI theme; broadcasts 'app:theme-changed' to all web contents */
   setTheme(theme: UiTheme): Promise<void>
-  /** current document page theme preference (genoffice#1811, persisted in userData/app-settings.json) */
+  /** current document page theme preference (chatoffice#1811, persisted in userData/app-settings.json) */
   getDocumentTheme(): Promise<DocTheme>
   /** switch + persist the document page theme; broadcasts 'app:document-theme-changed' to all web contents */
   setDocumentTheme(theme: DocTheme): Promise<void>
@@ -385,6 +411,10 @@ export interface HomeApi {
   getAnalyticsEnabled(): Promise<boolean>
   /** persist an explicit analytics opt-in or opt-out */
   setAnalyticsEnabled(enabled: boolean): Promise<boolean>
+  /** name on comments and tracked changes; `value` is the stored override ('' = use `fallback`, the OS account) */
+  getAuthorName(): Promise<AuthorNameSetting>
+  /** persist; broadcasts 'app:author-name-changed' (the effective name) to all web contents */
+  setAuthorName(value: string): Promise<AuthorNameSetting>
   /** effective default save folder for new/untitled files (configured in userData/app-settings.json, falls back to <Documents>/ChaOffice) */
   getDefaultSaveDir(): Promise<string>
   /** directory picker to change the default save folder; resolves to the new folder, or null when canceled or the pick was unusable */
@@ -501,6 +531,15 @@ export interface HomeApi {
   /** AI panel layout prefs (upstream parity; applied by editor panels) */
   getAiPanelPrefs(): Promise<AiPanelPrefs>
   setAiPanelPrefs(patch: Partial<AiPanelPrefs>): Promise<AiPanelPrefs>
+  // ---- knowledge-base ask panel (upstream #1915/#1940): the reader's starred corpus, askable ----
+  /** the starred corpus as the AI's knowledge base */
+  kbList(): Promise<KbFileInfo[]>
+  /** full-text search over the corpus */
+  kbSearch(query: { q: string; limit?: number }): Promise<KbSearchHit[]>
+  /** one page of a corpus file's parsed text (path must be in kbList) */
+  kbRead(path: string, offset: number): Promise<KbReadPage>
+  /** write the AI's markdown as a new .md / .docx in the save folder; resolves to its path */
+  kbCreateDocument(request: { title: string; format: 'md' | 'docx'; content: string }): Promise<{ path: string }>
 }
 
 // ── Home chat (AI agent on the home screen) ─────────────────
@@ -887,6 +926,8 @@ export const HOME_CHANNELS = {
   openMcpLogFile: 'home:open-mcp-log-file',
   getAnalyticsEnabled: 'home:get-analytics-enabled',
   setAnalyticsEnabled: 'home:set-analytics-enabled',
+  getAuthorName: 'home:get-author-name',
+  setAuthorName: 'home:set-author-name',
   getAiPanelPrefs: 'home:get-ai-panel-prefs',
   setAiPanelPrefs: 'home:set-ai-panel-prefs',
   getDefaultSaveDir: 'home:get-default-save-dir',
@@ -905,6 +946,11 @@ export const HOME_CHANNELS = {
   chatSessionsLoad: 'home:chat-sessions-load',
   chatSessionsSave: 'home:chat-sessions-save',
   systemFileSearch: 'home:system-file-search',
+  // knowledge-base ask panel (upstream #1915/#1940; handlers live in the shell main)
+  kbList: 'kb:list',
+  kbSearch: 'kb:search',
+  kbRead: 'kb:read',
+  kbCreateDocument: 'kb:create-document',
 } as const
 
 export const PROJECT_CHANNELS = {

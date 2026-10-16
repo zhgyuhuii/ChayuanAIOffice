@@ -12,6 +12,7 @@ import { KB_CHANNELS } from '@chatoffice/ai-host/kb-channels'
 const api: HtmlApi = {
   consumePending: () => ipcRenderer.invoke(HTML_CHANNELS.consumePending),
   consumeAiContent: () => ipcRenderer.invoke(HTML_CHANNELS.consumeAiContent),
+  openSourcePath: (path: string) => ipcRenderer.invoke('home:open-path', path),
   consumeHeadlessExport: () => ipcRenderer.invoke(HTML_CHANNELS.consumeHeadlessExport),
   headlessExportDone: (result: { ok: boolean; error?: string }) =>
     ipcRenderer.send(HTML_CHANNELS.headlessExportDone, result),

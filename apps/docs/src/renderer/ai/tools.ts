@@ -9,6 +9,7 @@ import type {
 } from '@chatoffice/docx-engine'
 import { sanitizeSvg } from '@chatoffice/pptx-render/svg-sanitize'
 import { rasterizeSvg } from '@chatoffice/pptx-render/svg-raster'
+import type { ToolDisplay } from '@chatoffice/agent-core'
 import type {
   AgentToolCall,
   AgentToolDef,
@@ -16,8 +17,11 @@ import type {
   CreateDocumentType,
 } from '../../shared/ipc'
 import { t } from '../i18n/locale'
+import { MIND_MAP_LIMITS, MIND_MAP_TOOL, parseMindMapTree } from './mind-map'
 import { executeOps, opNames } from './ops'
 import { clipExcerpt, repliesOf, resolveCommentAnchor } from './comment-ops'
+import { redactTextBetween } from './redact-view'
+import { insertPictureAtSelection } from '../editor/insert-picture'
 import {
   PAGE_SETUP_TOOL,
   SECTION_BREAK_TOOL,
@@ -876,6 +880,7 @@ export const AGENT_TOOLS: AgentToolDef[] = [
       required: ['title', 'content'],
     },
   },
+  MIND_MAP_TOOL,
 ]
 
 /**
@@ -939,6 +944,8 @@ export interface ToolExecution {
   mutated: boolean
   /** short human-readable label for the chat activity chip */
   summary: string
+  /** UI-only side channel (never enters the LLM context) */
+  display?: ToolDisplay
 }
 
 const fail = (summary: string, output: string): ToolExecution => ({
@@ -1540,22 +1547,16 @@ async function insertImageDataUrl(
     // freshness baseline stale, so only our own insertion may mark the doc
     // seen. Checked right before the write — there is no async gap after.
     const userEditedDuringFetch = editedExternally(editor)
-    editor
-      .chain()
-      .focus()
-      .insertContent({
-        type: 'docProtected',
-        attrs: {
-          docxIndex: null,
-          blockType: 'image',
-          label: labels.blockLabel,
-          imageDataUrl: dataUrl,
-          imageWidthPx: w,
-          imageHeightPx: h,
-          genImage: { base64, mime, widthPx: w, heightPx: h },
-        },
-      })
-      .run()
+    // 上游 #2035 快照:插图统一走 insertPictureAtSelection(表格单元格内降级为
+    // docInlineImage 内联图,正文仍是 docProtected 块)——genImage 元数据保持
+    insertPictureAtSelection(editor, {
+      dataUrl,
+      base64,
+      mime,
+      widthPx: w,
+      heightPx: h,
+      label: labels.blockLabel,
+    })
     if (!userEditedDuringFetch) markDocSeen(editor)
     return {
       output: `Inserted the image (${w}×${h}px).`,
@@ -1727,6 +1728,26 @@ function executeSyncTool(
         summary: t('aiSumReadDocContext'),
       }
 
+    case 'generate_mindmap': {
+      const summary = t('aiSumMindMap')
+      const parsed = parseMindMapTree(call.input, editor.state.doc.childCount)
+      if (!parsed.ok) return fail(summary, parsed.error)
+      const focus = typeof call.input.focus === 'string' ? call.input.focus.trim() : ''
+      const trimmedNote = parsed.trimmed
+        ? ` (trimmed to the ${MIND_MAP_LIMITS.maxNodes}-node / depth-${MIND_MAP_LIMITS.maxDepth} limit)`
+        : ''
+      return {
+        output:
+          `Mind map rendered as an interactive card in the chat: ${parsed.nodeCount} nodes, depth ${parsed.depth}` +
+          `${focus ? `, focused on "${focus.slice(0, MIND_MAP_LIMITS.maxFocusChars)}"` : ''}${trimmedNote}. ` +
+          'The user can expand branches, click a node to ask about it, jump to the cited block, or export the map. ' +
+          'Do not repeat the map content; reply with one short sentence.',
+        mutated: false,
+        summary,
+        display: { kind: 'mindmap', tree: parsed.tree },
+      }
+    }
+
     case 'read_blocks': {
       const range = validRange(editor, call.input.startBlockIndex, call.input.endBlockIndex)
       if (!range) return fail(t('aiSumReadBlocks'), rangeError(editor))
@@ -1865,7 +1886,9 @@ function executeSyncTool(
         return schema.text(n.text ?? '', marks)
       })
       const blockIndex = $from.index(0)
-      const oldText = doc.textBetween(range.from, range.to, ' ', ' ')
+      // the echo quotes what was replaced back to the model, so a selection
+      // covering a withheld span would undo the withholding right here
+      const oldText = redactTextBetween(editor.getJSON(), range.from, range.to, ' ')
       replaceInlineRange(editor, range.from, range.to, nodes, track)
       const newText = nodes.map((n) => n.textContent).join('')
       return {

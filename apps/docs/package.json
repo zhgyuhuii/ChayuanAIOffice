@@ -94,6 +94,7 @@
     }
   },
   "dependencies": {
+    "@chatoffice/agent-core": "*",
     "@chatoffice/ai-host": "*",
     "@chatoffice/electron-utils": "*",
     "@chatoffice/font-metrics": "*",

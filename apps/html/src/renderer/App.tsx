@@ -9,6 +9,8 @@ import {
   useAutoSavePref,
   type FindPanelStrings,
   type FindTarget,
+  aiPanelInitiallyOpen,
+  useAiSidebarEnabled,
 } from '@chatoffice/ui'
 import bootLogo from './assets/boot-logo.png'
 import {
@@ -161,8 +163,11 @@ export default function App() {
     return () => off?.()
   }, [])
   const [aiOpen, setAiOpen] = useState(
-    () => !DOCKED_BOOT && localStorage.getItem('htmlapp.showAi') !== '0',
+    // #1951: the shell's "show the AI sidebar" switch gates the boot state too
+    () => !DOCKED_BOOT && aiPanelInitiallyOpen('htmlapp.showAi'),
   )
+  // #1951: the sidebar switch is a soft hide; it closes the panel when off
+  const aiSidebarEnabled = useAiSidebarEnabled(setAiOpen)
   const [aiPreset, setAiPreset] = useState<AiPreset | null>(null)
   const [editQueue, setEditQueue] = useState<EditQueueItem[]>([])
   const [askMode, setAskMode] = useState<AskMode | null>(null)
@@ -668,8 +673,9 @@ export default function App() {
     const src = textRef.current
     // one pin per element; several queued edits on the same element share it and list their ordinals
     const bySid = new Map<number, string[]>()
+    const proj = map && buildProjection(src, map)
     items.forEach((item, i) => {
-      const target = map && resolveQueueItem(buildProjection(src, map), map, item).target
+      const target = proj && resolveQueueItem(proj, map, item).target
       if (target) bySid.set(target.sid, [...(bySid.get(target.sid) ?? []), String(i + 1)])
     })
     const marks = [...bySid].map(([sid, ordinals]) => ({ sid, label: ordinals.join('·') }))
@@ -698,13 +704,10 @@ export default function App() {
         }
         case 'gx:markClick': {
           const map = getMap()
+          const proj = buildProjection(textRef.current, map)
           // a shared pin opens the most recent edit on that element; the others stay reachable from the queue card
           const item = editQueueRef.current
-            .filter(
-              (q) =>
-                resolveQueueItem(buildProjection(textRef.current, map), map, q).target?.sid ===
-                msg.sid,
-            )
+            .filter((q) => resolveQueueItem(proj, map, q).target?.sid === msg.sid)
             .at(-1)
           if (!item) return
           selectSid(item.sid, { reveal: true })
@@ -1591,7 +1594,7 @@ export default function App() {
         legacyWidthKey="html-ai-panel-width"
         open={aiOpen}
         onOpenChange={setAiOpen}
-        panelAvailable={status === 'ready'}
+        panelAvailable={status === 'ready' && (aiSidebarEnabled || aiOpen)}
         labels={{
           panelTitle: t('aiPanelTitle'),
           layoutMenu: t('aiDockLayoutTitle'),

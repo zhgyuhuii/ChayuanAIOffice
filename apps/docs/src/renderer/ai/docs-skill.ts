@@ -1,3 +1,5 @@
+import { placeholderInstruction } from './redact'
+import { redactLabelsOf } from './redact-view'
 import type { Editor } from '@tiptap/core'
 import type { AgentSkill } from '@chatoffice/agent-core'
 import type { AiImageSource } from '../../shared/ipc'
@@ -83,9 +85,15 @@ export function createDocsSkill(
     id: 'docx',
     get systemPrompt() {
       // LOCAL 并集: 本地图源指令行(IMAGE_SOURCE_DIRECTIVE)+ 上游 #544 媒体工具可用性注记
+      // + 上游 #1883 文档含 redact 占位时追加占位说明(仅在确有占位 span 时)
+      const editor = getEditor()
+      const labels = editor
+        ? redactLabelsOf(editor.getJSON() as unknown as Parameters<typeof redactLabelsOf>[0])
+        : []
+      const redact = labels.length > 0 ? `\n\n${placeholderInstruction(labels)}` : ''
       const line = getImageSource ? IMAGE_SOURCE_DIRECTIVE[getImageSource()] : ''
       const base = line ? `${AGENT_SYSTEM_PROMPT}\n${line}` : AGENT_SYSTEM_PROMPT
-      return base + mediaOffNote()
+      return base + mediaOffNote() + redact
     },
     get tools() {
       // 上游 #544: generate_image/analyze_media 按可用性过滤(替代静态 tools 列表)

@@ -10,6 +10,9 @@ import {
   DockShell,
   useDismissablePopover,
   isMacStandaloneWindow,
+  useAiSidebarEnabled,
+  useRibbonCollapse,
+  type AiTokenUsageView,
 } from '@chatoffice/ui'
 import {
   CaretIcon,
@@ -296,6 +299,11 @@ interface ExcelShellProps {
   readonly openingWorkbook?: boolean | undefined
   /// true while the real LLM agent is running (composer disabled meanwhile).
   readonly aiBusy: boolean
+  /** tokens billed across the session, shown beside the composer */
+  readonly sessionUsage?: AiTokenUsageView
+  /** the opened CSV had no data rows: the grid shows one notice instead */
+  readonly emptyCsvNotice: boolean
+  readonly onDismissEmptyCsvNotice: () => void
   readonly chat: readonly AiChatMessage[]
   readonly historicChat?: readonly AiChatMessage[]
   /// Chat attachments (chips + 📎 button + drag-and-drop), same structure as the
@@ -515,6 +523,8 @@ export interface PageLayoutEcho {
   readonly printHeadings?: boolean | undefined
   readonly showGridlines: boolean
   readonly showHeadings: boolean
+  /// Mirrored grid (column A at the right edge) for the active sheet.
+  readonly rightToLeft: boolean
   readonly printArea?: string | null | undefined
   readonly printTitles?: string | null | undefined
   readonly header?: HeaderFooterParts | null | undefined
@@ -552,6 +562,9 @@ export function ExcelShell({
   sheetHasContent,
   openingWorkbook,
   aiBusy,
+  sessionUsage,
+  emptyCsvNotice,
+  onDismissEmptyCsvNotice,
   chat,
   historicChat,
   attachments,
@@ -657,6 +670,15 @@ export function ExcelShell({
   // tab row clips instead of wrapping when narrow; wheel + edge arrows page it
   const tabStrip = useTabStripOverflow()
   const [activeTab, setActiveTab] = useState<RibbonTab>('Home')
+
+  // #362/#1891 ⌥⌘K 紧凑密度(docs parity):共享 hook 持有三态循环与快捷键,
+  // rootClass 挂到 header 让 styles.css 的 .ribbon-compact 密度生效
+  const collapse = useRibbonCollapse('ai-sheets-ribbon-collapsed', {
+    collapse: t('appRibbonCollapse'),
+    expand: t('appRibbonExpand'),
+    compact: t('appRibbonCompact'),
+    expandFull: t('appRibbonExpand'),
+  })
   // WPS 双击标签折叠/展开功能区; 右下角图标同; 状态本地持久化
   const [collapsed, setCollapsed] = useState(() => {
     try {
@@ -682,6 +704,7 @@ export function ExcelShell({
   const [isCopilotOpen, setIsCopilotOpen] = useState(
     () => !DOCKED_BOOT && localStorage.getItem('ai-sheets-show-ai') !== '0',
   )
+
   const dockedRef = useRef(DOCKED_BOOT)
   const [dockedEditor, setDockedEditor] = useState(DOCKED_BOOT)
   useEffect(() => {
@@ -698,11 +721,16 @@ export function ExcelShell({
   const openCopilotIfUndocked = useCallback(() => {
     if (!dockedRef.current) setIsCopilotOpen(true)
   }, [])
+  // the sidebar switch is a soft hide; it closes the panel when it turns off
+  const aiSidebarEnabled = useAiSidebarEnabled(setIsCopilotOpen)
   useEffect(() => {
     // a docked boot must not clobber the user's persisted preference
     if (dockedRef.current) return
     localStorage.setItem('ai-sheets-show-ai', isCopilotOpen ? '1' : '0')
   }, [isCopilotOpen])
+  // the "show the AI sidebar" setting off hides the copilot rail (soft hide):
+  // an explicit AI action (ribbon run, toggle) still opens the panel, and
+  // closing it returns to hidden — no dead affordances, no invisible runs
   const [showFormatCells, setShowFormatCells] = useState(false)
   // 设置单元格格式对话框的初始 tab（字体/对齐/数字组的角落启动箭头定位）
   const [formatCellsTab, setFormatCellsTab] = useState<
@@ -1096,7 +1124,9 @@ export function ExcelShell({
 
   return (
     <main
-      className={`app-shell ${isCopilotOpen ? '' : 'copilot-collapsed'}`}
+      className={`app-shell ${isCopilotOpen ? '' : 'copilot-collapsed'}${
+        !isCopilotOpen && !aiSidebarEnabled ? ' copilot-off' : ''
+      }`}
       inert={openingWorkbook}
       aria-busy={openingWorkbook}
     >
@@ -1139,8 +1169,14 @@ export function ExcelShell({
             prompt={prompt}
             preview={preview}
             aiBusy={aiBusy}
+            sessionUsage={sessionUsage}
             onPromptChange={onPromptChange}
             onSend={onSend}
+            onSendQueued={(text, atts) => {
+              if (aiBusy) return false
+              onSend(text, atts)
+              return true
+            }}
             onStop={onStop}
             {...(conversations !== undefined ? { conversations } : {})}
             onUndo={onUndo}
@@ -1153,11 +1189,12 @@ export function ExcelShell({
         )}
       >
         <div className="editor-col">
-          <header className={`excel-header${collapsed ? ' collapsed' : ''}`}>
+          <header className={`excel-header${collapsed ? ' collapsed' : ''} ${collapse.rootClass}`}>
             <nav
               className={`ribbon-tabs ${IN_TAB ? '' : IS_MAC ? 'ribbon-tabs-mac' : 'ribbon-tabs-win'}`}
               aria-label={t('appScopeWorkbook')}
             >
+
               <div className="file-tab-wrap" ref={fileMenuRef}>
                 <button
                   type="button"
@@ -1490,6 +1527,20 @@ export function ExcelShell({
             </div>
             <section className="workbook-area">
               <div id="univer-container" className="spreadsheet" />
+              {emptyCsvNotice && (
+                <div className="csv-empty-notice" role="status">
+                  <span>{t('appCsvEmpty')}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onDismissEmptyCsvNotice()
+                      onOpen?.()
+                    }}
+                  >
+                    {t('appOpenWorkbookTitle')}
+                  </button>
+                </div>
+              )}
             </section>
             {aiSelectionAskAnchor && aiScopeRange && !aiBusy && (
               <AiSelectionAsk
@@ -4588,6 +4639,14 @@ function Ribbon({
             >
               <i className="check-box">{pageLayout.showHeadings ? '✓' : ''}</i>
               {t('appHeadings')}
+            </button>
+            <button
+              className="check-item"
+              data-tip={t('appRightToLeft')}
+              onClick={() => onCommand('toggle-right-to-left')}
+            >
+              <i className="check-box">{pageLayout.rightToLeft ? '✓' : ''}</i>
+              {t('appRightToLeft')}
             </button>
             <button
               className="check-item"

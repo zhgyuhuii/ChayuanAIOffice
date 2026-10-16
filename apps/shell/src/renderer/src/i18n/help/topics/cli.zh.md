@@ -13,7 +13,7 @@ chatoffice guide slides    # the op reference, for writing your own
 
 ## 取得命令
 
-macOS 和 Windows 上它位于应用包内。想直接按名字调用，先运行一次 `chatoffice install-cli`：它会把包内的二进制文件软链接到 `/usr/local/bin`，Windows 上则链接到你的用户 `PATH`。
+macOS 和 Windows 上它位于应用包内。想直接按名字调用，先运行一次 `chatoffice install-cli`：它把包内的二进制链接到你 PATH 上的某个目录——macOS 上优先 `/usr/local/bin`（但绝不会写进 Homebrew 自己的目录），否则用你的用户 bin——Windows 上则链接到你的用户 `PATH`。
 
 ## 值得记住的命令
 
@@ -32,7 +32,7 @@ macOS 和 Windows 上它位于应用包内。想直接按名字调用，先运�
 | `capabilities`    | 报告本机配置了哪些云端功能。                                                                                                           |
 | `guide`           | 操作参考与设计指南，由执行器校验所依据的同一份定义生成，因此不会与 `apply` 接受的内容产生偏差。`--json` 会带上每个操作的 schema 返回。 |
 | `install-cli`     | 把 `chatoffice` 放进 `PATH`。                                                                                                           |
-| `skill`           | 列出本机找到的编程代理，并在其中安装或更新 ChatOffice 技能。                                                                            |
+| `skill`           | 列出本机找到的编程代理，并在其中安装或更新 ChaAI Office 技能。                                                                            |
 | `mcp`             | 把每条命令作为 Model Context Protocol 工具提供。见**连接编程代理**。                                                                   |
 
 ## 编辑：docs、sheets、slides

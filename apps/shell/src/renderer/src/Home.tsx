@@ -8,6 +8,7 @@ import iconMd from './assets/file-md.png'
 import iconHtml from './assets/file-html.png'
 import iconDwg from './assets/file-dwg.png'
 import iconMind from './assets/file-mind.png'
+import { KbAskPanel } from './KbAskPanel'
 import type {
   AccountStatus,
   CloudProjectKind,
@@ -75,11 +76,17 @@ const PAGE_SIZE = 50
 const FILE_ICONS: Record<string, string> = {
   docx: iconDocx,
   doc: iconDocx,
+  odt: iconDocx,
+  ott: iconDocx,
   xlsx: iconXlsx,
   xlsm: iconXlsx,
   xls: iconXlsx,
   csv: iconXlsx,
+  ods: iconXlsx,
+  ots: iconXlsx,
   pptx: iconPptx,
+  odp: iconPptx,
+  otp: iconPptx,
   pdf: iconPdf,
   md: iconMd,
   markdown: iconMd,
@@ -95,7 +102,17 @@ const FILE_ICONS: Record<string, string> = {
    width, so it ellipsizes and a hover ScreenTip carries the full list. Keep in
    sync with the main-process open-dialog filter (OPEN_DIALOG_EXTENSIONS). */
 const OPEN_LOCAL_EXTENSIONS =
-  '.docx / .xlsx / .xlsm / .xls / .csv / .tsv / .pptx / .pdf / .md / .html'
+  '.docx / .odt / .ott / .xlsx / .xlsm / .xls / .csv / .tsv / .ods / .ots / .pptx / .odp / .otp / .pdf / .md / .html'
+
+/**
+ * Width of the viewport that fixed-position menus anchor to. The layout engine
+ * owns this coordinate system, so documentElement's client rect is the value to
+ * compute menu offsets from; window.innerWidth can disagree on scaled Linux
+ * desktops, which pushed row menus past the window's left edge (上游 #1949).
+ */
+function fixedViewportWidth(): number {
+  return document.documentElement.clientWidth
+}
 
 function FileBadge({ ext, size }: { ext: string; size: number }) {
   const icon = FILE_ICONS[ext]
@@ -169,9 +186,9 @@ const RECENT_FILTERS: { key: string; label: string }[] = [
 
 /** sidebar filter keys that stand for a family of extensions (mirrors recent-files.ts) */
 const FILTER_FAMILY: Record<string, readonly string[]> = {
-  docx: ['docx', 'doc'],
-  xlsx: ['xlsx', 'xlsm', 'xls', 'csv', 'tsv'],
-  pptx: ['pptx', 'ppt'],
+  docx: ['docx', 'doc', 'odt', 'ott'],
+  xlsx: ['xlsx', 'xlsm', 'xls', 'csv', 'tsv', 'ods', 'ots'],
+  pptx: ['pptx', 'ppt', 'odp', 'otp'],
   md: ['md', 'markdown', 'txt', 'json'],
   html: ['html', 'htm'],
 }
@@ -1165,6 +1182,8 @@ export function Home() {
   const [loadingMore, setLoadingMore] = useState(false)
   // ChaOffice web projects take over the content area (the chat hides meanwhile)
   const [cloudMode, setCloudMode] = useState(false)
+  // the knowledge-base ask panel takes over the content area the same way
+  const [askMode, setAskMode] = useState(false)
   const [filter, setFilter] = useState('all')
   // ── Pending-unsaved restore banner (documents that crashed before their first
   // save; created via 新建表格/PDF or AI generation, never written to disk) ──
@@ -2397,10 +2416,11 @@ export function Home() {
     const dividers = spec.items.length - rows
     const estHeight = (spec.title ? 30 : 0) + rows * 28 + dividers * 9 + 12
     const estWidth = 224
+    // 上游 #1949：锚定布局视口（documentElement），缩放 Linux 桌面上 window.innerWidth 可能不一致
+    const vw = fixedViewportWidth()
     const clampedY =
       y + estHeight > window.innerHeight ? Math.max(8, window.innerHeight - estHeight - 8) : y
-    const clampedX =
-      x + estWidth > window.innerWidth ? Math.max(8, window.innerWidth - estWidth - 8) : x
+    const clampedX = x + estWidth > vw ? Math.max(8, vw - estWidth - 8) : x
     setCtxMenu({ ...spec, x: clampedX, y: clampedY })
   }
 
@@ -3379,6 +3399,30 @@ export function Home() {
             </svg>
             <span className="nav-label">{t('navUserGuide')}</span>
           </button>
+          {/* 上游 #1915/#1940 kb-ask 入口：问答面板接管主区，与云端项目互斥 */}
+          <button
+            className={`nav-item${askMode ? ' active' : ''}`}
+            onClick={() => {
+              setAskMode(!askMode)
+              setRowMenu(null)
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path
+                d="M14 10.5c0 .9-.7 1.6-1.6 1.6H5.4L2 14.5V3.6C2 2.7 2.7 2 3.6 2h8.8c.9 0 1.6.7 1.6 1.6z"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M5 6.2h6M5 8.6h4"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+              />
+            </svg>
+            <span className="nav-label">{t('navAsk')}</span>
+          </button>
         </nav>
 
         {loggedIn && (
@@ -3387,6 +3431,7 @@ export function Home() {
               className={`side-sec-head-row cloud-head${cloudMode ? ' active' : ''}`}
               onClick={() => {
                 setCloudMode(!cloudMode)
+                setAskMode(false)
                 setRowMenu(null)
               }}
             >
@@ -3511,7 +3556,12 @@ export function Home() {
         onLostPointerCapture={endSidebarDrag}
       />
 
-      {cloudMode ? (
+      {askMode ? (
+        <KbAskPanel
+          onOpenPath={(path) => void window.chaOffice.openPath(path)}
+          onGoToRecents={() => setAskMode(false)}
+        />
+      ) : cloudMode ? (
         <CloudProjectsView />
       ) : (
         <>

@@ -1,5 +1,10 @@
 /** Browser-safe settings surface. Keep Node-backed transports out of renderer bundles. */
 export type {
+  AiCustomCompat,
+  AiCustomEndpoint,
+  AiCustomModelProfile,
+  AiCustomProfile,
+  AiCustomProtocol,
   AiProviderConfig,
   AiImageSource,
   AiProviderId,
@@ -45,7 +50,6 @@ export { activeProvider } from './providers'
 export type { AiModelType } from './model-type'
 export { modelAcceptsImages } from './settings-v2'
 export { functionCallingVerdict, resolveModelCapabilities } from './capabilities'
-export { imageGenerationAvailable, mediaAnalysisAvailable } from './media'
 export {
   CHATOFFICE_PRESET_MODELS,
   NO_MODELS_API,
@@ -67,9 +71,25 @@ export {
 export type { AiCapabilityKind, SearchPlatformKind, SearchPlatformMeta } from './capability-tree'
 /** sentinel: untouched key field so the backend keeps the stored secret */
 export const KEEP_KEY = '__keep__'
-export { getProviderAdapter, modelLacksVision } from './registry'
+export { endpointSupportsVision, getProviderAdapter, modelLacksVision } from './registry'
 export type { AiProtocol } from './registry'
-export { AI_MEDIA_PROVIDERS } from './media'
+export { AI_MEDIA_PROVIDERS, imageGenerationAvailable, mediaAnalysisAvailable } from './media'
+export {
+  activeCustomEndpoint,
+  customEndpointLabel,
+  newCustomEndpointId,
+  removeCustomEndpoint,
+  resolveCustomEndpoints,
+  selectCustomEndpoint,
+  upsertCustomEndpoint,
+} from './custom-endpoints'
+export {
+  AI_CUSTOM_PROTOCOLS,
+  declaredModelProfile,
+  normalizeCustomProfile,
+  resolveCustomProfile,
+} from './custom-profile'
+export type { ResolvedCustomProfile } from './custom-profile'
 export { AI_SEARCH_PROVIDERS } from './search-settings'
 export { discoverModels } from './discovery'
 export { setAiUserAgent } from './fetch'

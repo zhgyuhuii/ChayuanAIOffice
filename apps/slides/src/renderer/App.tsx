@@ -114,6 +114,9 @@ import {
   isMacStandaloneWindow,
   useAutoSavePref,
   type AiScopeQuoteData,
+  aiPanelInitiallyOpen,
+  rememberAiPanelOpen,
+  useAiSidebarEnabled,
 } from '@chatoffice/ui'
 import type { ChartPresetDef, IconDef, SmartArtDef } from './insert-presets'
 import { InsertImageDialog } from '@chatoffice/ui/InsertImageDialog'
@@ -521,13 +524,18 @@ export function App() {
       dockedRef.current = docked
       setDockedEditor(docked)
       // popped out to a full tab: the editor's own panel preference returns
-      if (!docked) setShowAi(localStorage.getItem('ai-slides-show-ai') !== '0')
+      if (!docked) setShowAi(aiPanelInitiallyOpen('ai-slides-show-ai'))
     })
     return () => off?.()
   }, [])
   const [showAi, setShowAi] = useState(
-    () => !DOCKED_BOOT && localStorage.getItem('ai-slides-show-ai') !== '0',
+    () => !DOCKED_BOOT && aiPanelInitiallyOpen('ai-slides-show-ai'),
   )
+  // Settings › "show the AI sidebar" off hides the panel and its rail (Word's
+  // Copilot-pane model): an explicit Ask-AI action still opens the panel for
+  // this deck, and closing it returns to hidden. The dock stays mounted; the
+  // hook closes it when the switch itself goes off.
+  const aiSidebarEnabled = useAiSidebarEnabled(setShowAi)
   const [showFormat, setShowFormat] = useState(false)
   const [showBgFormat, setShowBgFormat] = useState(false)
   const [aiSettings, setAiSettings] = useState<AiSettingsV2 | null>(null)
@@ -611,7 +619,7 @@ export function App() {
   const [showRuler, setShowRuler] = useState(false)
   const [showGrid, setShowGrid] = useState(false)
   const [showGuides, setShowGuides] = useState(false)
-  const [formatSizeNonce, setFormatSizeNonce] = useState(0)
+  const [, setFormatSizeNonce] = useState(0)
   // Draggable guides (pos = 0..1 relative to page width/height); persisted to localStorage by document path
   const [guides, setGuides] = useState<Array<{ axis: 'v' | 'h'; pos: number }>>([
     { axis: 'v', pos: 0.5 },
@@ -1354,7 +1362,7 @@ export function App() {
   const toggleAi = useCallback(() => {
     if (dockedRef.current) return
     setShowAi((v) => {
-      localStorage.setItem('ai-slides-show-ai', v ? '0' : '1')
+      rememberAiPanelOpen('ai-slides-show-ai', !v)
       return !v
     })
   }, [])
@@ -1362,7 +1370,7 @@ export function App() {
   /** DockShell open/close sink (rail expand, collapse button) — persists like toggleAi */
   const setAiOpen = useCallback((open: boolean) => {
     if (dockedRef.current && open) return
-    localStorage.setItem('ai-slides-show-ai', open ? '1' : '0')
+    rememberAiPanelOpen('ai-slides-show-ai', open)
     setShowAi(open)
   }, [])
 
@@ -1377,7 +1385,7 @@ export function App() {
     ) => {
       if (!dockedRef.current) {
         setShowAi(() => {
-          localStorage.setItem('ai-slides-show-ai', '1')
+          rememberAiPanelOpen('ai-slides-show-ai', true)
           return true
         })
       }
@@ -1519,7 +1527,7 @@ export function App() {
       // The queue lives in the panel; annotating with it collapsed would look like nothing happened
       if (!dockedRef.current) {
         setShowAi(() => {
-          localStorage.setItem('ai-slides-show-ai', '1')
+          rememberAiPanelOpen('ai-slides-show-ai', true)
           return true
         })
       }
@@ -3050,6 +3058,44 @@ export function App() {
     [current],
   )
 
+  // upstream edit-points multi-transform: local gesture UI 未启编（动画面板超集期裁定）,
+  // 保留接线待编辑点 UI 采纳时启用
+  const _onTransformMulti = useCallback(
+    async (
+      items: Array<{
+        sourceId: string
+        groupId?: string
+        box: { x: number; y: number; w: number; h: number; rotationDeg: number }
+      }>,
+    ) => {
+      const updated = await window.slidesApi.editTransformMulti({
+        slideIndex: current,
+        fitWidthPx: FIT_WIDTH,
+        items: items.map((it) => ({
+          sourceId: it.sourceId,
+          ...(it.groupId ? { groupId: it.groupId } : {}),
+          xPx: it.box.x,
+          yPx: it.box.y,
+          wPx: it.box.w,
+          hPx: it.box.h,
+          rotationDeg: it.box.rotationDeg,
+        })),
+      })
+      if (updated) {
+        setSlides((s) => s.map((sl, i) => (i === current ? updated : sl)))
+        setDirty(true)
+      }
+    },
+    [current],
+  )
+
+  const _onTransformCancel = useCallback(async () => {
+    const updated = await window.slidesApi.cancelTransformPreview({ slideIndex: current })
+    if (updated) setSlides((s) => s.map((sl, i) => (i === current ? updated : sl)))
+    // Preview frames marked the deck dirty; the rollback may have made it clean again
+    void window.slidesApi.isDirty().then(setDirty)
+  }, [current])
+
   // Yellow adjust-handle drag: throttled preview commits keep the geometry live,
   // the release commit is never dropped (edit-transform gesture undo semantics)
   const adjustLastSent = useRef(0)
@@ -3753,7 +3799,7 @@ export function App() {
         storageKey="aislides.dock"
         open={showAi && !!aiSettings}
         onOpenChange={setAiOpen}
-        panelAvailable={!!slide && viewMode !== 'reading' && viewMode !== 'sorter'}
+        panelAvailable={!!slide && viewMode !== 'reading' && viewMode !== 'sorter' && (aiSidebarEnabled || showAi)}
         onStateChange={setAiDock}
         labels={{
           panelTitle: t('aiPanelTitle'),
@@ -4627,9 +4673,10 @@ export function App() {
                                     continue
                                   }
                                   void f.arrayBuffer().then((buf) => {
+                                    const ext = fileExt(f.name) || 'png'
                                     void insertExternalImage(
                                       bytesToBase64(new Uint8Array(buf)),
-                                      fileExt(f.name) || 'png',
+                                      ext === 'jpeg' ? 'jpg' : ext,
                                       at,
                                     )
                                   })
@@ -4658,7 +4705,7 @@ export function App() {
                                 onOpenContextTab={openContextTab}
                                 onContextMenu={onCanvasContextMenu}
                                 onMarqueeSelect={setSelectedIds}
-                                onDuplicateTo={(id, dx, dy) => void duplicateSelected([id], dx, dy)}
+                                onDuplicateTo={(ids, dx, dy) => void duplicateSelected(ids, dx, dy)}
                                 images={images}
                                 zoom={zoom}
                                 enteredGroupId={enteredGroupId}

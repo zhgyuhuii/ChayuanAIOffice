@@ -1,6 +1,8 @@
 import { Suspense, memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Lang } from '@chatoffice/i18n'
+
+export type ConvertFormat = 'pdf' | 'html' | 'md' | 'images'
 import type {
   ChangeEvent,
   KeyboardEvent as ReactKeyboardEvent,
@@ -79,6 +81,7 @@ import { distributeSelectedColumns, setSelectedColumnWidth } from '../editor/tab
 import {
   distributeRowsEvenly,
   enterSelectedTable,
+  inTableOrSelected,
   selectTablePart,
   tableCellsSelection,
   setCellAlignment,
@@ -187,6 +190,7 @@ import {
   IconBorderTop,
   IconBullets,
   IconCaret,
+  IconConvert,
   IconColDelete,
   IconColInsertLeft,
   IconColInsertRight,
@@ -285,6 +289,8 @@ export interface RibbonProps {
   onSaveAs: () => void
   /** 察元 AI docops 服务组（察元 tab 的助手/对话框/批量操作/导出） */
   chayuan?: ChayuanServices
+  /** Home ▸ Convert：把当前文档导出为 pdf/html/md/images */
+  onConvert: (format: ConvertFormat) => void
   showAi: boolean
   onToggleAi: () => void
   section: SectionSettings | null
@@ -329,7 +335,7 @@ export interface RibbonProps {
   zoom: number
   onZoom: (zoom: number) => void
   /** compute zoom from the current window size (Word: page width / whole page) */
-  onZoomFit: (mode: 'width' | 'page') => void
+  onZoomFit: (mode: 'width' | 'page' | 'multi') => void
   onZoomDialog: () => void
   darkPage: boolean
   onDarkPage: (v: boolean) => void
@@ -748,8 +754,9 @@ function RibbonInner({
   onSave,
   onSaveAs,
   chayuan,
-  showAi,
-  onToggleAi,
+  onConvert,
+  showAi: _showAi,
+  onToggleAi: _onToggleAi,
   section,
   onSection,
   activeSection,
@@ -1311,6 +1318,26 @@ function RibbonInner({
     runTableCommand(
       setSelectionBorders(mode, { style: borderStyle, szEighths: borderSz, color: borderColor }),
     )
+  }
+
+  // Word's Home ▸ Borders is the table gallery whenever the selection sits in a
+  // table: the lines go on the selected cells, not on their paragraphs. A
+  // focused textbox / header / footer sub-editor is never "in a table".
+  const HOME_BORDER_CELL_MODE: Record<string, TableBorderMode> = {
+    b: 'bottom',
+    t: 'top',
+    l: 'left',
+    r: 'right',
+    tblr: 'all',
+    none: 'none',
+  }
+  const applyHomeBorders = (borders: string | null) => {
+    if (!sub && inTableOrSelected(editor.state)) {
+      applyCellBorders(HOME_BORDER_CELL_MODE[borders ?? 'none'])
+      setDropdown(null)
+      return
+    }
+    setParaAttr({ borders })
   }
 
   /** Set row height for selected rows (twips; null = auto) */
@@ -2082,6 +2109,26 @@ function RibbonInner({
     </button>
   )
 
+  const convertItems = (
+    [
+      ['pdf', 'ribbonConvertPdf'],
+      ['html', 'ribbonConvertHtml'],
+      ['md', 'ribbonConvertMarkdown'],
+      ['images', 'ribbonConvertImages'],
+    ] as const
+  ).map(([format, key]) => (
+    <button
+      key={format}
+      disabled={!hasDoc}
+      onClick={() => {
+        setDropdown(null)
+        onConvert(format)
+      }}
+    >
+      {t(key)}
+    </button>
+  ))
+
   return (
     <div
       className={`ribbon ${collapse.rootClass}`}
@@ -2128,6 +2175,8 @@ function RibbonInner({
                 >
                   {t('ribbonSaveAs')} <span className="file-menu-key">Ctrl+Shift+S</span>
                 </button>
+                <div className="file-menu-sep" />
+                {convertItems}
               </div>
             )}
           </div>
@@ -2921,7 +2970,7 @@ function RibbonInner({
                     </div>
                   )}
                 </div>
-                <div className="table-tool-col">
+                <div className="table-tool-col table-tool-col-three">
                   <div className="table-tool-grid table-tool-grid-four">
                     <button onClick={() => runTableCommand(addRowBefore)}>
                       <IconRowInsertAbove />
@@ -3147,6 +3196,34 @@ function RibbonInner({
           </div>
         ) : tab === 'home' ? (
           <>
+
+            <div className="ribbon-group">
+              <div className="ribbon-group-items">
+                <div className="rb-split-wrap">
+                  <button
+                    className={`rb-big${dropdown === 'convert' ? ' active' : ''}`}
+                    disabled={!hasDoc}
+                    data-tip={t('ribbonConvertTip')}
+                    aria-expanded={dropdown === 'convert'}
+                    onClick={() => setDropdown((v) => (v === 'convert' ? null : 'convert'))}
+                  >
+                    <span className="rb-big-icon">
+                      <IconConvert size={22} />
+                      <IconCaret />
+                    </span>
+                    <span>{t('ribbonConvert')}</span>
+                  </button>
+                  {dropdown === 'convert' && (
+                    <div data-rb-panel="" className="spacing-menu paste-menu" role="menu">
+                      {convertItems}
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="ribbon-group-label">{t('ribbonConvert')}</div>
+            </div>
+
+            <div className="ribbon-sep" />
 
             {/* ---- Clipboard ---- */}
             <div className="ribbon-group">
@@ -3961,22 +4038,22 @@ function RibbonInner({
                     </button>
                     {dropdown === 'borders' && (
                       <div data-rb-panel="" className="spacing-menu borders-menu">
-                        <button onClick={() => setParaAttr({ borders: 'b' })}>
+                        <button onClick={() => applyHomeBorders('b')}>
                           {t('ribbonBorderBottom')}
                         </button>
-                        <button onClick={() => setParaAttr({ borders: 't' })}>
+                        <button onClick={() => applyHomeBorders('t')}>
                           {t('ribbonBorderTop')}
                         </button>
-                        <button onClick={() => setParaAttr({ borders: 'l' })}>
+                        <button onClick={() => applyHomeBorders('l')}>
                           {t('ribbonBorderLeft')}
                         </button>
-                        <button onClick={() => setParaAttr({ borders: 'r' })}>
+                        <button onClick={() => applyHomeBorders('r')}>
                           {t('ribbonBorderRight')}
                         </button>
-                        <button onClick={() => setParaAttr({ borders: 'tblr' })}>
+                        <button onClick={() => applyHomeBorders('tblr')}>
                           {t('ribbonBorderBox')}
                         </button>
-                        <button onClick={() => setParaAttr({ borders: null })}>
+                        <button onClick={() => applyHomeBorders(null)}>
                           {t('ribbonNoBorders')}
                         </button>
                       </div>
@@ -4193,8 +4270,6 @@ function RibbonInner({
             onZoom={onZoom}
             onZoomFit={onZoomFit}
             onZoomDialog={onZoomDialog}
-            showAi={showAi}
-            onToggleAi={onToggleAi}
             darkPage={darkPage}
             onDarkPage={onDarkPage}
             showRuler={showRuler}

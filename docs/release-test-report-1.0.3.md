@@ -11,7 +11,7 @@
 ## 阶段 1 · 打包安装 — PASS（过程中修复 3 项打包链事故）
 - ✓ dmg 生成并安装（CFBundleShortVersionString = 1.0.3，版本铁律）
 - ✓ 首页完整渲染：左树（新建六格式+文件树+对话/项目/最近）+ 对话面板 + 快速创建 + 六能力卡片
-- ✓ 首页品牌 = 察元AIOffice（zh 映射），无 GenOffice 泄漏
+- ✓ 首页品牌 = 察元AIOffice（zh 映射），无 ChaAI Office 泄漏
 - ✓ 首启 onboarding（跳过可用）；关闭重开会话状态保持（tabs/文件树/最近恢复）
 - ✓ 单实例锁：第二实例无新进程/新窗口
 - 测试中当场修复并回归：①shell package.json 重复 version 键（0.11.0 上游键混入，1.0.3 胜出）②CLI 版本烙印契约断裂（build.mjs 取上游+loader 合并本地资产，banner `__cliAppVersion`）③docs styles.css 孤儿规则（postcss Unclosed block）④shell tabbar.css/settings.css 两处未闭合块（浏览器吞规则→首页裸渲染）⑤全 app+包 CSS 括号配平扫描

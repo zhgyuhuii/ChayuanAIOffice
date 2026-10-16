@@ -17,14 +17,24 @@
   },
   "scripts": {
     "build": "node build.mjs && node collect-deps.mjs",
-    "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@chatoffice/ai-provider": "*",
     "@chatoffice/ai-search": "*",
     "@chatoffice/docx-engine": "*",
+    "@chatoffice/pdf2docx": "*",
+    "@chatoffice/pipelines": "*",
+    "@chatoffice/pptx-engine": "*",
+    "@chatoffice/pptx-ops": "*",
+    "@chatoffice/pptx-render": "*",
+    "@chatoffice/xlsx-gateway": "*",
+    "@chatoffice/ai-provider": "*",
+    "@chatoffice/ai-search": "*",
+    "@chatoffice/docx-engine": "*",
+    "@chatoffice/odf2ooxml": "*",
     "@chatoffice/pdf2docx": "*",
     "@chatoffice/pipelines": "*",
     "@chatoffice/pptx-engine": "*",

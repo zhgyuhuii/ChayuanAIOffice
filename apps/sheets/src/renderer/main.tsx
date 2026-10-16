@@ -6,6 +6,8 @@ import { applyAiPanelPrefs, installScreenTips } from '@chatoffice/ui'
 import '@chatoffice/ui/tokens.css'
 import '@chatoffice/ui/screentip.css'
 import '@chatoffice/ui/ai-model-picker.css'
+import '@chatoffice/ui/ai-queue-strip.css'
+import '@chatoffice/ui/ai-usage.css'
 import '@chatoffice/ui/color-picker.css'
 import '@chatoffice/ui/dropdown.css'
 import '@chatoffice/ui/dock.css'
@@ -17,7 +19,11 @@ import '@chatoffice/ui/ai-scope-quote.css'
 import '@univerjs/preset-sheets-core/lib/index.css'
 
 import { App } from './App'
-import { installCanvasFontFallback, registerCellFontAliases } from './cell-font-fallback'
+import {
+  installCanvasFontFallback,
+  registerTextDingbatsFace,
+  untilCellFontsLoaded,
+} from './cell-font-fallback'
 import { LocaleProvider, setModuleLang } from './i18n/locale'
 import type { DocTheme, UiTheme } from '../shared/desktop-api'
 import './styles.css'
@@ -52,16 +58,15 @@ function applyDocumentTheme(theme: DocTheme): void {
 // Canvas fillText never triggers @font-face downloads, so the bundled Carlito
 // faces (Calibri/Aptos aliases in styles.css) must be loaded before Univer's
 // first skeleton — MDW, wrap points, and #### overflow all measure with them.
+// The Office-font aliases load with each workbook (openLazyWorkbook).
 async function loadCellFonts(): Promise<void> {
-  const loads: Promise<unknown>[] = [registerCellFontAliases()]
+  const loads: Promise<unknown>[] = [registerTextDingbatsFace()]
   for (const variant of ['', 'bold ', 'italic ', 'italic bold ']) {
     for (const family of ['Calibri', 'Aptos', "'Aptos Narrow'", 'Carlito']) {
       loads.push(document.fonts?.load?.(`${variant}16px ${family}`)?.catch(() => {}) ?? [])
     }
   }
-  // Local assets resolve in milliseconds; the timeout only guards a broken
-  // bundle from blanking the app.
-  await Promise.race([Promise.all(loads), new Promise((resolve) => setTimeout(resolve, 3000))])
+  await untilCellFontsLoaded(Promise.all(loads))
 }
 
 // Bare renderer run (npm run dev:renderer without Electron or the web-bridge

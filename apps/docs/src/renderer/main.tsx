@@ -1,10 +1,14 @@
 import { createRoot } from 'react-dom/client'
 import { htmlDir, htmlLang, type Lang } from '@chatoffice/i18n'
 import { App } from './App'
+import { setAuthorName } from './author-name'
 import { LocaleProvider, setModuleLang } from './i18n/locale'
 import type { DocTheme, UiTheme } from '../shared/ipc'
 import '@chatoffice/ui/tokens.css'
 import '@chatoffice/ui/screentip.css'
+import '@chatoffice/ui/ai-model-picker.css'
+import '@chatoffice/ui/ai-queue-strip.css'
+import '@chatoffice/ui/ai-usage.css'
 import '@chatoffice/ui/color-picker.css'
 import '@chatoffice/ui/dropdown.css'
 import '@chatoffice/ui/dock.css'
@@ -61,6 +65,11 @@ async function bootstrap(): Promise<void> {
     .then(applyAiPanelPrefs)
     .catch(() => {})
   window.desktop?.onAiPanelPrefsChanged?.(applyAiPanelPrefs)
+  await window.desktop
+    ?.getAuthorName?.()
+    .then(setAuthorName)
+    .catch(() => {})
+  window.desktop?.onAuthorNameChanged?.(setAuthorName)
   createRoot(document.getElementById('root')!).render(
     <LocaleProvider initial={lang}>
       <App />

@@ -195,7 +195,8 @@ describe('resolveAiSettings', () => {
       },
       defaultAiSettings(),
     )
-    expect(resolved.providers.chatoffice.model).toBe('claude-opus-4-7')
+    // adapted: 上游 genspark 供应商本地改名 chatoffice，断言跟随；退役 gemini 系重映射目标随上游更新为 claude-opus-5-5
+    expect(resolved.providers.chatoffice.model).toBe('claude-opus-5-5')
 
     const gpt = resolveAiSettings(
       {

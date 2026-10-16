@@ -11,8 +11,9 @@ import {
   writeFileSync,
 } from 'node:fs'
 import { copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
+import { refreshCsvDigest } from './csv-digest'
 import { createServer } from 'node:http'
-import { homedir, userInfo } from 'node:os'
+import { homedir } from 'node:os'
 import { basename, dirname, isAbsolute, join } from 'node:path'
 
 import {
@@ -63,6 +64,9 @@ import {
   installRendererProtocol,
   registerRendererScheme,
   rendererUrl,
+  writeJsonAtomic,
+  recoveryCopyDiskNewer,
+  configuredAuthorName,
 } from '@chatoffice/electron-utils'
 import { createI18n, getUiLang, type Lang, normalizeLang, setUiLang } from '@chatoffice/i18n'
 import { ProjectStore } from '@chatoffice/project-store'
@@ -86,6 +90,7 @@ import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-serve
 import {
   blankXlsxBuffer,
   csvToXlsxBuffer,
+  csvToXlsxBufferForOpen,
   decodeCsvBuffer,
   sheetCsvToXlsxBuffer,
 } from '@chatoffice/xlsx-gateway/gateway/csv-import'
@@ -185,6 +190,10 @@ const tMain = createI18n({
     filterSpreadsheets: '电子表格',
     filterXlsx: 'Excel 工作簿',
     filterXlsm: 'Excel 启用宏的工作簿',
+    odsImportMsg: '转换 .{ext} 工作簿？',
+    odsImportDetail:
+      'ChaAI Office 只编辑 .xlsx，不编辑 ODF。数值、公式和日期会被转换过来（公式改写为 Excel 语法，无法安全改写的只保留它的当前结果）；样式、列宽和图表不会保留。原文件不会被修改，转换出的副本首次保存时另存为 .xlsx。', // public-hygiene: allow
+    odsImportConvertBtn: '转换并打开',
     dlgAddAttachment: '添加附件',
     filterSupported: '支持的文件',
     filterAll: '所有文件',
@@ -209,6 +218,7 @@ const tMain = createI18n({
     errImgBadType: '该文件不是 PNG/JPEG/GIF 图片。',
     errDiskChanged: '工作簿在打开后被磁盘上的改动覆盖——请改用另存为。',
     autosaveFoundTitle: '发现自动恢复版本',
+    autosaveDiskNewer: '注意：此恢复副本保存后，磁盘上的文件又被修改过。恢复将替换这些较新的更改。',
     autosaveFoundBody:
       '上次会话有未保存的更改。要恢复自动保存的版本吗?恢复后,保存将直接覆盖原文件。',
     autosaveRestore: '恢复',
@@ -244,6 +254,10 @@ const tMain = createI18n({
     filterSpreadsheets: 'Spreadsheets',
     filterXlsx: 'Excel Workbooks',
     filterXlsm: 'Excel Macro-Enabled Workbooks',
+    odsImportMsg: 'Convert this .{ext} workbook?',
+    odsImportDetail:
+      'ChaAI Office edits .xlsx, not ODF. Values, formulas and dates carry over (formulas are rewritten into Excel syntax, and any that cannot be rewritten safely keeps its current result). Styles, column widths and charts are not carried over. The original file is never changed; the converted copy saves as .xlsx the first time you save.',
+    odsImportConvertBtn: 'Convert and open',
     dlgAddAttachment: 'Add Attachments',
     filterSupported: 'Supported Files',
     filterAll: 'All Files',
@@ -271,6 +285,8 @@ const tMain = createI18n({
     errImgBadType: 'The file is not a PNG/JPEG/GIF image.',
     errDiskChanged: 'The workbook changed on disk after it was opened — use Save As instead.',
     autosaveFoundTitle: 'Recovered version found',
+    autosaveDiskNewer:
+      'Note: the file on disk was modified after this recovery copy was saved. Restoring replaces those newer changes.',
     autosaveFoundBody:
       'There are unsaved changes from your last session. Restore the autosaved version? Saving after a restore overwrites the original file.',
     autosaveRestore: 'Restore',
@@ -308,6 +324,10 @@ const tMain = createI18n({
     filterSpreadsheets: 'スプレッドシート',
     filterXlsx: 'Excel ブック',
     filterXlsm: 'Excel マクロ有効ブック',
+    odsImportMsg: 'この .{ext} ワークブックを変換しますか？',
+    odsImportDetail:
+      'ChaAI Office は ODF ではなく .xlsx を編集します。値・数式・日付は変換されます（数式は Excel の構文に書き換えられ、安全に書き換えられないものは現在の値だけが残ります）。スタイル、列の幅、グラフは引き継がれません。元のファイルは変更されず、変換後のコピーは最初に保存する際 .xlsx として保存されます。',
+    odsImportConvertBtn: '変換して開く',
     dlgAddAttachment: '添付ファイルを追加',
     filterSupported: 'サポートされているファイル',
     filterAll: 'すべてのファイル',
@@ -336,6 +356,8 @@ const tMain = createI18n({
     errDiskChanged:
       'ブックを開いた後にディスク上で変更されています — 名前を付けて保存を使用してください。',
     autosaveFoundTitle: '自動回復バージョンがあります',
+    autosaveDiskNewer:
+      '注意: この回復コピーの保存後にディスク上のファイルが変更されています。復元するとその新しい変更は置き換えられます。',
     autosaveFoundBody:
       '前回のセッションに未保存の変更があります。自動保存版を復元しますか?復元後に保存すると、元のファイルは上書きされます。',
     autosaveRestore: '復元',
@@ -374,6 +396,10 @@ const tMain = createI18n({
     filterSpreadsheets: '스프레드시트',
     filterXlsx: 'Excel 통합 문서',
     filterXlsm: 'Excel 매크로 사용 통합 문서',
+    odsImportMsg: '이 .{ext} 워크북을 변환할까요?',
+    odsImportDetail:
+      'ChaAI Office은 ODF가 아니라 .xlsx를 편집합니다. 값, 수식, 날짜는 변환됩니다(수식은 Excel 구문으로 다시 쓰이며, 안전하게 다시 쓸 수 없는 수식은 현재 값만 남습니다). 스타일, 열 너비, 차트는 옮겨지지 않습니다. 원본 파일은 변경되지 않으며, 변환된 사본은 처음 저장할 때 .xlsx로 저장됩니다.',
+    odsImportConvertBtn: '변환 후 열기',
     dlgAddAttachment: '첨부 파일 추가',
     filterSupported: '지원되는 파일',
     filterAll: '모든 파일',
@@ -403,6 +429,8 @@ const tMain = createI18n({
     errDiskChanged:
       '통합 문서가 열린 후 디스크에서 변경되었습니다. 다른 이름으로 저장을 사용하세요.',
     autosaveFoundTitle: '자동 복구 버전 발견',
+    autosaveDiskNewer:
+      '참고: 이 복구 사본이 저장된 후 디스크의 파일이 수정되었습니다. 복원하면 그 최신 변경 내용이 대체됩니다.',
     autosaveFoundBody:
       '마지막 세션에 저장되지 않은 변경 내용이 있습니다. 자동 저장 버전을 복원할까요? 복원 후 저장하면 원본 파일을 덮어씁니다.',
     autosaveRestore: '복원',
@@ -441,6 +469,10 @@ const tMain = createI18n({
     filterSpreadsheets: 'Feuilles de calcul',
     filterXlsx: 'Classeurs Excel',
     filterXlsm: 'Classeurs Excel prenant en charge les macros',
+    odsImportMsg: 'Convertir ce classeur .{ext} ?',
+    odsImportDetail:
+      'ChaAI Office modifie des .xlsx, pas de l’ODF. Les valeurs, les formules et les dates sont converties (les formules sont réécrites en syntaxe Excel ; celles qui ne peuvent pas l’être en sécurité gardent leur résultat actuel). Les styles, les largeurs de colonne et les graphiques ne sont pas repris. Le fichier d’origine n’est jamais modifié ; la copie convertie s’enregistre en .xlsx lors du premier enregistrement.',
+    odsImportConvertBtn: 'Convertir et ouvrir',
     dlgAddAttachment: 'Ajouter des pièces jointes',
     filterSupported: 'Fichiers pris en charge',
     filterAll: 'Tous les fichiers',
@@ -470,6 +502,8 @@ const tMain = createI18n({
     errDiskChanged:
       'Le classeur a été modifié sur le disque après son ouverture — utilisez Enregistrer sous.',
     autosaveFoundTitle: 'Version récupérée trouvée',
+    autosaveDiskNewer:
+      'Remarque : le fichier sur le disque a été modifié après l’enregistrement de cette copie de récupération. La restauration remplacera ces modifications plus récentes.',
     autosaveFoundBody:
       "Des modifications non enregistrées existent. Restaurer la version auto-enregistrée ? Après restauration, l'enregistrement remplacera le fichier d'origine.",
     autosaveRestore: 'Restaurer',
@@ -509,6 +543,10 @@ const tMain = createI18n({
     filterSpreadsheets: 'Tabellenkalkulationen',
     filterXlsx: 'Excel-Arbeitsmappen',
     filterXlsm: 'Excel-Arbeitsmappen mit Makros',
+    odsImportMsg: 'Diese .{ext}-Arbeitsmappe konvertieren?',
+    odsImportDetail:
+      'ChaAI Office bearbeitet .xlsx, nicht ODF. Werte, Formeln und Datumsangaben werden konvertiert (Formeln werden in Excel-Syntax umgeschrieben; was sich nicht sicher umschreiben lässt, behält seinen aktuellen Wert). Formatierungen, Spaltenbreiten und Diagramme entfallen. Die Originaldatei bleibt unverändert; die konvertierte Kopie wird beim ersten Speichern als .xlsx angelegt.',
+    odsImportConvertBtn: 'Konvertieren und öffnen',
     dlgAddAttachment: 'Anlagen hinzufügen',
     filterSupported: 'Unterstützte Dateien',
     filterAll: 'Alle Dateien',
@@ -538,6 +576,8 @@ const tMain = createI18n({
     errDiskChanged:
       'Die Arbeitsmappe wurde nach dem Öffnen auf dem Datenträger geändert — verwenden Sie stattdessen „Speichern unter“.',
     autosaveFoundTitle: 'Wiederhergestellte Version gefunden',
+    autosaveDiskNewer:
+      'Hinweis: Die Datei auf dem Datenträger wurde nach dem Speichern dieser Wiederherstellungskopie geändert. Beim Wiederherstellen werden diese neueren Änderungen ersetzt.',
     autosaveFoundBody:
       'Es gibt ungespeicherte Änderungen. Automatisch gespeicherte Version wiederherstellen? Nach der Wiederherstellung überschreibt Speichern die Originaldatei.',
     autosaveRestore: 'Wiederherstellen',
@@ -576,6 +616,10 @@ const tMain = createI18n({
     filterSpreadsheets: 'Hojas de cálculo',
     filterXlsx: 'Libros de Excel',
     filterXlsm: 'Libros de Excel habilitados para macros',
+    odsImportMsg: '¿Convertir este libro .{ext}?',
+    odsImportDetail:
+      'ChaAI Office edita .xlsx, no ODF. Los valores, las fórmulas y las fechas se convierten (las fórmulas se reescriben con sintaxis de Excel; las que no se pueden reescribir con seguridad conservan su resultado actual). Los estilos, el ancho de columna y los gráficos no se conservan. El archivo original nunca se modifica; la copia convertida se guarda como .xlsx la primera vez que se guarda.',
+    odsImportConvertBtn: 'Convertir y abrir',
     dlgAddAttachment: 'Agregar datos adjuntos',
     filterSupported: 'Archivos compatibles',
     filterAll: 'Todos los archivos',
@@ -605,6 +649,8 @@ const tMain = createI18n({
     errImgBadType: 'El archivo no es una imagen PNG/JPEG/GIF.',
     errDiskChanged: 'El libro cambió en el disco después de abrirse; usa Guardar como en su lugar.',
     autosaveFoundTitle: 'Se encontró una versión recuperada',
+    autosaveDiskNewer:
+      'Nota: el archivo en disco se modificó después de guardar esta copia de recuperación. Restaurar reemplazará esos cambios más recientes.',
     autosaveFoundBody:
       'Hay cambios sin guardar de la última sesión. ¿Restaurar la versión autoguardada? Tras restaurar, guardar sobrescribirá el archivo original.',
     autosaveRestore: 'Restaurar',
@@ -643,6 +689,10 @@ const tMain = createI18n({
     filterSpreadsheets: 'สเปรดชีต',
     filterXlsx: 'เวิร์กบุ๊ก Excel',
     filterXlsm: 'เวิร์กบุ๊ก Excel ที่เปิดใช้งานแมโคร',
+    odsImportMsg: 'แปลงเวิร์กบุ๊ก .{ext} นี้ไหม?',
+    odsImportDetail:
+      'ChaAI Office แก้ไข .xlsx ไม่ใช่ ODF ค่า สูตร และวันที่จะถูกแปลง (สูตรเขียนใหม่เป็นไวยากรณ์ Excel และสูตรที่เขียนใหม่อย่างปลอดภัยไม่ได้จะคงค่าปัจจุบันไว้) สไตล์ ความกว้างคอลัมน์ และแผนภูมิจะไม่ถูกโอนมา ไฟล์ต้นทางจะไม่ถูกแก้ไข และสำเนาที่แปลงแล้วจะบันทึกเป็น .xlsx ในการบันทึกครั้งแรก',
+    odsImportConvertBtn: 'แปลงแล้วเปิด',
     dlgAddAttachment: 'เพิ่มสิ่งที่แนบ',
     filterSupported: 'ไฟล์ที่รองรับ',
     filterAll: 'ไฟล์ทั้งหมด',
@@ -670,6 +720,8 @@ const tMain = createI18n({
     errImgBadType: 'ไฟล์นี้ไม่ใช่รูปภาพ PNG/JPEG/GIF',
     errDiskChanged: 'เวิร์กบุ๊กถูกเปลี่ยนแปลงบนดิสก์หลังจากเปิด — โปรดใช้บันทึกเป็นแทน',
     autosaveFoundTitle: 'พบเวอร์ชันกู้คืนอัตโนมัติ',
+    autosaveDiskNewer:
+      'หมายเหตุ: ไฟล์บนดิสก์ถูกแก้ไขหลังจากบันทึกสำเนากู้คืนนี้ การกู้คืนจะแทนที่การเปลี่ยนแปลงที่ใหม่กว่าเหล่านั้น',
     autosaveFoundBody:
       'มีการเปลี่ยนแปลงที่ยังไม่ได้บันทึกจากครั้งก่อน ต้องการกู้คืนหรือไม่? หลังกู้คืน การบันทึกจะเขียนทับไฟล์ต้นฉบับ',
     autosaveRestore: 'กู้คืน',
@@ -708,6 +760,10 @@ const tMain = createI18n({
     filterSpreadsheets: 'Lembar bentang',
     filterXlsx: 'Buku kerja Excel',
     filterXlsm: 'Buku kerja Excel dengan makro aktif',
+    odsImportMsg: 'Konversi buku kerja .{ext} ini?',
+    odsImportDetail:
+      'ChaAI Office mengedit .xlsx, bukan ODF. Nilai, rumus, dan tanggal ikut terkonversi (rumus ditulis ulang ke sintaks Excel; rumus yang tidak bisa ditulis ulang dengan aman mempertahankan hasilnya). Gaya, lebar kolom, dan grafik tidak ikut dibawa. File asli tidak pernah diubah; hasil konversi disimpan sebagai .xlsx saat penyimpanan pertama.',
+    odsImportConvertBtn: 'Konversi dan buka',
     dlgAddAttachment: 'Tambahkan lampiran',
     filterSupported: 'File yang didukung',
     filterAll: 'Semua file',
@@ -734,6 +790,8 @@ const tMain = createI18n({
     errImgBadType: 'File ini bukan gambar PNG/JPEG/GIF.',
     errDiskChanged: 'Buku kerja berubah di disk setelah dibuka — gunakan Simpan Sebagai.',
     autosaveFoundTitle: 'Versi pemulihan ditemukan',
+    autosaveDiskNewer:
+      'Catatan: file di disk diubah setelah salinan pemulihan ini disimpan. Memulihkan akan menggantikan perubahan yang lebih baru tersebut.',
     autosaveFoundBody:
       'Ada perubahan yang belum disimpan dari sesi terakhir. Pulihkan versi tersimpan otomatis? Setelah dipulihkan, menyimpan akan menimpa file asli.',
     autosaveRestore: 'Pulihkan',
@@ -772,6 +830,10 @@ const tMain = createI18n({
     filterSpreadsheets: 'Электронные таблицы',
     filterXlsx: 'Книги Excel',
     filterXlsm: 'Книги Excel с поддержкой макросов',
+    odsImportMsg: 'Преобразовать эту книгу .{ext}?',
+    odsImportDetail:
+      'ChaAI Office редактирует .xlsx, а не ODF. Значения, формулы и даты переносятся (формулы переписываются в синтаксис Excel; те, что нельзя переписать безопасно, сохраняют текущий результат). Стили, ширина столбцов и диаграммы не переносятся. Исходный файл никогда не изменяется; преобразованная копия при первом сохранении записывается как .xlsx.',
+    odsImportConvertBtn: 'Преобразовать и открыть',
     dlgAddAttachment: 'Добавить вложения',
     filterSupported: 'Поддерживаемые файлы',
     filterAll: 'Все файлы',
@@ -799,6 +861,8 @@ const tMain = createI18n({
     errImgBadType: 'Этот файл не является изображением PNG/JPEG/GIF.',
     errDiskChanged: 'Книга была изменена на диске после открытия — используйте «Сохранить как».',
     autosaveFoundTitle: 'Найдена восстановленная версия',
+    autosaveDiskNewer:
+      'Внимание: файл на диске был изменён после сохранения этой копии восстановления. Восстановление заменит эти более новые изменения.',
     autosaveFoundBody:
       'Есть несохранённые изменения из прошлого сеанса. Восстановить автосохранённую версию? После восстановления сохранение перезапишет исходный файл.',
     autosaveRestore: 'Восстановить',
@@ -837,6 +901,10 @@ const tMain = createI18n({
     filterSpreadsheets: 'جداول البيانات',
     filterXlsx: 'مصنفات Excel',
     filterXlsm: 'مصنفات Excel ممكّنة بوحدات الماكرو',
+    odsImportMsg: 'تحويل دفتر عمل .{ext} هذا؟',
+    odsImportDetail:
+      'يحرّر ChaAI Office ملفات ‎.xlsx ولا يحرّر ODF. تُحوَّل القيم والصيغ والتواريخ (تُعاد كتابة الصيغ بصيغة Excel، والصيغ التي لا يمكن إعادة كتابتها بأمان تحتفظ بنتيجتها الحالية). لا تُنقل الأنماط وعرض الأعمدة والرسوم البيانية. لا يتغيّر الملف الأصلي أبدًا؛ والنسخة المحوّلة تُحفظ بصيغة ‎.xlsx عند أول حفظ.',
+    odsImportConvertBtn: 'تحويل وفتح',
     dlgAddAttachment: 'إضافة مرفقات',
     filterSupported: 'الملفات المدعومة',
     filterAll: 'كل الملفات',
@@ -863,6 +931,8 @@ const tMain = createI18n({
     errImgBadType: 'هذا الملف ليس صورة PNG/JPEG/GIF.',
     errDiskChanged: 'تم تغيير المصنف على القرص بعد فتحه — استخدم «حفظ باسم» بدلاً من ذلك.',
     autosaveFoundTitle: 'تم العثور على نسخة مستردة',
+    autosaveDiskNewer:
+      'ملاحظة: تم تعديل الملف على القرص بعد حفظ نسخة الاسترداد هذه. ستؤدي الاستعادة إلى استبدال تلك التغييرات الأحدث.',
     autosaveFoundBody:
       'توجد تغييرات غير محفوظة من الجلسة الأخيرة. هل تريد استعادة النسخة المحفوظة تلقائيًا؟ بعد الاستعادة، سيؤدي الحفظ إلى استبدال الملف الأصلي.',
     autosaveRestore: 'استعادة',
@@ -899,6 +969,10 @@ const tMain = createI18n({
     filterSpreadsheets: 'Planilhas',
     filterXlsx: 'Pastas de Trabalho do Excel',
     filterXlsm: 'Pastas de Trabalho Habilitadas para Macro do Excel',
+    odsImportMsg: 'Converter este livro .{ext}?',
+    odsImportDetail:
+      'O ChaAI Office edita .xlsx, não ODF. Valores, fórmulas e datas são convertidos (as fórmulas são reescritas na sintaxe do Excel; as que não podem ser reescritas com segurança mantêm o resultado atual). Estilos, largura de coluna e gráficos não são mantidos. O arquivo original nunca é alterado; a cópia convertida é salva como .xlsx no primeiro salvamento.',
+    odsImportConvertBtn: 'Converter e abrir',
     dlgAddAttachment: 'Adicionar Anexos',
     filterSupported: 'Arquivos Compatíveis',
     filterAll: 'Todos os Arquivos',
@@ -927,6 +1001,8 @@ const tMain = createI18n({
     errImgBadType: 'O arquivo não é uma imagem PNG/JPEG/GIF.',
     errDiskChanged: 'A pasta de trabalho foi alterada no disco após ser aberta — use Salvar Como.',
     autosaveFoundTitle: 'Versão recuperada encontrada',
+    autosaveDiskNewer:
+      'Nota: o arquivo no disco foi modificado depois que esta cópia de recuperação foi salva. Restaurar substituirá essas alterações mais recentes.',
     autosaveFoundBody:
       'Há alterações não salvas da sua última sessão. Restaurar a versão salva automaticamente? Após restaurar, salvar sobrescreverá o arquivo original.',
     autosaveRestore: 'Restaurar',
@@ -965,6 +1041,10 @@ const tMain = createI18n({
     filterSpreadsheets: 'Fogli di calcolo',
     filterXlsx: 'Cartelle di lavoro di Excel',
     filterXlsm: 'Cartelle di lavoro di Excel con attivazione macro',
+    odsImportMsg: 'Convertire questa cartella di lavoro .{ext}?',
+    odsImportDetail:
+      'ChaAI Office modifica .xlsx, non ODF. Valori, formule e date vengono convertiti (le formule sono riscritte nella sintassi di Excel; quelle che non possono essere riscritte in sicurezza mantengono il risultato attuale). Stili, larghezza colonne e grafici non vengono riportati. Il file originale non viene mai modificato; la copia convertita si salva come .xlsx al primo salvataggio.',
+    odsImportConvertBtn: 'Converti e apri',
     dlgAddAttachment: 'Aggiungi allegati',
     filterSupported: 'File supportati',
     filterAll: 'Tutti i file',
@@ -994,6 +1074,8 @@ const tMain = createI18n({
     errDiskChanged:
       "La cartella di lavoro è stata modificata sul disco dopo l'apertura — usa Salva con nome.",
     autosaveFoundTitle: 'Trovata versione recuperata',
+    autosaveDiskNewer:
+      'Nota: il file su disco è stato modificato dopo il salvataggio di questa copia di ripristino. Il ripristino sostituirà tali modifiche più recenti.',
     autosaveFoundBody:
       "Ci sono modifiche non salvate dall'ultima sessione. Ripristinare la versione salvata automaticamente? Dopo il ripristino, il salvataggio sovrascriverà il file originale.",
     autosaveRestore: 'Ripristina',
@@ -1032,6 +1114,10 @@ const tMain = createI18n({
     filterSpreadsheets: 'Arkusze kalkulacyjne',
     filterXlsx: 'Skoroszyty programu Excel',
     filterXlsm: 'Skoroszyty programu Excel z obsługą makr',
+    odsImportMsg: 'Skonwertować ten skoroszyt .{ext}?',
+    odsImportDetail:
+      'ChaAI Office edytuje .xlsx, a nie ODF. Wartości, formuły i daty są konwertowane (formuły są przepisywane na składnię Excela; te, których nie można przepisać bezpiecznie, zachowują bieżący wynik). Style, szerokości kolumn i wykresy nie są przenoszone. Plik oryginalny nigdy nie jest zmieniany; skonwertowana kopia zapisuje się jako .xlsx przy pierwszym zapisaniu.',
+    odsImportConvertBtn: 'Konwertuj i otwórz',
     dlgAddAttachment: 'Dodaj załączniki',
     filterSupported: 'Obsługiwane pliki',
     filterAll: 'Wszystkie pliki',
@@ -1060,6 +1146,8 @@ const tMain = createI18n({
     errImgBadType: 'Plik nie jest obrazem PNG/JPEG/GIF.',
     errDiskChanged: 'Skoroszyt został zmieniony na dysku po otwarciu — użyj polecenia Zapisz jako.',
     autosaveFoundTitle: 'Znaleziono odzyskaną wersję',
+    autosaveDiskNewer:
+      'Uwaga: plik na dysku został zmodyfikowany po zapisaniu tej kopii odzyskiwania. Przywrócenie zastąpi te nowsze zmiany.',
     autosaveFoundBody:
       'Istnieją niezapisane zmiany z ostatniej sesji. Przywrócić wersję zapisaną automatycznie? Po przywróceniu zapisanie nadpisze oryginalny plik.',
     autosaveRestore: 'Przywróć',
@@ -1098,6 +1186,10 @@ const tMain = createI18n({
     filterSpreadsheets: 'Tabulky',
     filterXlsx: 'Sešity Excelu',
     filterXlsm: 'Sešity Excelu s podporou maker',
+    odsImportMsg: 'Převést tento sešit .{ext}?',
+    odsImportDetail:
+      'ChaAI Office upravuje .xlsx, nikoli ODF. Hodnoty, vzorce a data se převedou (vzorce se přepíší do syntaxe Excelu; ty, které nelze přepsat bezpečně, ponechají si aktuální výsledek). Styly, šířky sloupců a grafy se nepřenesou. Původní soubor se nikdy nemění; převedená kopie se při prvním uložení uloží jako .xlsx.',
+    odsImportConvertBtn: 'Převést a otevřít',
     dlgAddAttachment: 'Přidat přílohy',
     filterSupported: 'Podporované soubory',
     filterAll: 'Všechny soubory',
@@ -1122,6 +1214,8 @@ const tMain = createI18n({
     errImgBadType: 'Soubor není obrázek PNG/JPEG/GIF.',
     errDiskChanged: 'Sešit byl po otevření změněn na disku — použijte místo toho Uložit jako.',
     autosaveFoundTitle: 'Nalezena obnovená verze',
+    autosaveDiskNewer:
+      'Poznámka: soubor na disku byl změněn po uložení této kopie pro obnovení. Obnovení tyto novější změny nahradí.',
     autosaveFoundBody:
       'Z poslední relace existují neuložené změny. Obnovit automaticky uloženou verzi? Uložení po obnovení přepíše původní soubor.',
     autosaveRestore: 'Obnovit',
@@ -1164,6 +1258,10 @@ const tMain = createI18n({
     filterSpreadsheets: 'Spreadsheets',
     filterXlsx: 'Excel-werkmappen',
     filterXlsm: "Excel-werkmappen met macro's",
+    odsImportMsg: 'Deze .{ext}-werkmap converteren?',
+    odsImportDetail:
+      'ChaAI Office bewerkt .xlsx, niet ODF. Waarden, formules en datums worden geconverteerd (formules worden herschreven in Excel-syntaxis; formules die niet veilig herschreven kunnen worden houden hun huidige resultaat). Stijlen, kolombreedtes en diagrammen worden niet overgenomen. Het oorspronkelijke bestand wordt nooit gewijzigd; de geconverteerde kop slaat bij het eerste opslaan op als .xlsx.',
+    odsImportConvertBtn: 'Converteren en openen',
     dlgAddAttachment: 'Bijlagen toevoegen',
     filterSupported: 'Ondersteunde bestanden',
     filterAll: 'Alle bestanden',
@@ -1193,6 +1291,8 @@ const tMain = createI18n({
     errDiskChanged:
       'De werkmap is op de schijf gewijzigd nadat deze was geopend — gebruik Opslaan als.',
     autosaveFoundTitle: 'Herstelde versie gevonden',
+    autosaveDiskNewer:
+      'Let op: het bestand op schijf is gewijzigd nadat deze herstelkopie is opgeslagen. Herstellen vervangt die nieuwere wijzigingen.',
     autosaveFoundBody:
       'Er zijn niet-opgeslagen wijzigingen van uw laatste sessie. De automatisch opgeslagen versie herstellen? Na herstel overschrijft opslaan het originele bestand.',
     autosaveRestore: 'Herstellen',
@@ -1231,6 +1331,10 @@ const tMain = createI18n({
     filterSpreadsheets: 'Hamparan',
     filterXlsx: 'Buku Kerja Excel',
     filterXlsm: 'Buku Kerja Excel Didayakan Makro',
+    odsImportMsg: 'Tukar buku kerja .{ext} ini?',
+    odsImportDetail:
+      'ChaAI Office menyunting .xlsx, bukan ODF. Nilai, formula dan tarikh ditukar (formula ditulis semula dalam sintaks Excel; yang tidak dapat ditulis semula dengan selamat mengekalkan hasil semasanya). Gaya, lebar lajur dan carta tidak dibawa. Fail asal tidak pernah diubah; salinan yang ditukar disimpan sebagai .xlsx pada simpanan pertama.',
+    odsImportConvertBtn: 'Tukar dan buka',
     dlgAddAttachment: 'Tambah Lampiran',
     filterSupported: 'Fail yang Disokong',
     filterAll: 'Semua Fail',
@@ -1258,6 +1362,8 @@ const tMain = createI18n({
     errImgBadType: 'Fail ini bukan imej PNG/JPEG/GIF.',
     errDiskChanged: 'Buku kerja telah diubah pada cakera selepas dibuka — gunakan Simpan Sebagai.',
     autosaveFoundTitle: 'Versi pulihan ditemui',
+    autosaveDiskNewer:
+      'Nota: fail pada cakera telah diubah suai selepas salinan pemulihan ini disimpan. Memulihkan akan menggantikan perubahan yang lebih baharu itu.',
     autosaveFoundBody:
       'Terdapat perubahan yang belum disimpan daripada sesi terakhir anda. Pulihkan versi yang disimpan secara automatik? Selepas pemulihan, menyimpan akan menulis ganti fail asal.',
     autosaveRestore: 'Pulihkan',
@@ -1297,6 +1403,10 @@ const tMain = createI18n({
     filterSpreadsheets: 'גיליונות אלקטרוניים',
     filterXlsx: 'חוברות עבודה של Excel',
     filterXlsm: 'חוברות עבודה של Excel מותאמות מאקרו',
+    odsImportMsg: 'להמיר חוברת עבודה .{ext} זו?',
+    odsImportDetail:
+      'ChaAI Office עורך קבצי .xlsx ולא ODF. ערכים, נוסחאות ותאריכים מומרים (נוסחאות נכתבות מחדש בתחביר Excel; כאלה שאי אפשר לכתוב מחדש בבטחה שומרות על התוצאה הנוכחית). עיצוב, רוחב עמודות ותרשימים לא עוברים. קובץ המקור לעולם אינו משתנה; העותק שהומר נשמר כקובץ .xlsx בשמירה הראשונה.',
+    odsImportConvertBtn: 'המר ופתח',
     dlgAddAttachment: 'הוספת קבצים מצורפים',
     filterSupported: 'קבצים נתמכים',
     filterAll: 'כל הקבצים',
@@ -1322,6 +1432,8 @@ const tMain = createI18n({
     errImgBadType: 'הקובץ אינו תמונת PNG/JPEG/GIF.',
     errDiskChanged: 'חוברת העבודה השתנתה בדיסק לאחר פתיחתה — השתמש בשמירה בשם.',
     autosaveFoundTitle: 'נמצאה גרסה משוחזרת',
+    autosaveDiskNewer:
+      'שים לב: הקובץ בדיסק שונה לאחר שמירת עותק השחזור הזה. שחזור יחליף את השינויים החדשים יותר.',
     autosaveFoundBody:
       'קיימים שינויים שלא נשמרו מהפעלה הקודמת. לשחזר את הגרסה שנשמרה אוטומטית? לאחר השחזור, שמירה תדרוס את הקובץ המקורי.',
     autosaveRestore: 'שחזר',
@@ -1358,6 +1470,10 @@ const tMain = createI18n({
     filterSpreadsheets: 'स्प्रेडशीट',
     filterXlsx: 'Excel कार्यपुस्तिकाएँ',
     filterXlsm: 'Excel मैक्रो-सक्षम कार्यपुस्तिकाएँ',
+    odsImportMsg: 'इस .{ext} वर्कबुक को बदलें?',
+    odsImportDetail:
+      'ChaAI Office .xlsx संपादित करता है, ODF नहीं। मान, सूत्र और तारीखें बदल दी जाती हैं (सूत्र Excel सिंटैक्स में फिर से लिखे जाते हैं; जिन्हें सुरक्षित रूप से नहीं लिखा जा सका वे अपना वर्तमान मान रखते हैं)। स्टाइल, कॉलम चौड़ाई और चार्ट नहीं आते। मूल फ़ाइल कभी नहीं बदलती; बदली हुई प्रति पहली बार सहेजते समय .xlsx के रूप में सहेजी जाती है।',
+    odsImportConvertBtn: 'बदलकर खोलें',
     dlgAddAttachment: 'अनुलग्नक जोड़ें',
     filterSupported: 'समर्थित फ़ाइलें',
     filterAll: 'सभी फ़ाइलें',
@@ -1386,6 +1502,8 @@ const tMain = createI18n({
     errDiskChanged:
       'खोले जाने के बाद कार्यपुस्तिका डिस्क पर बदल गई — इसके बजाय इस रूप में सहेजें का उपयोग करें।',
     autosaveFoundTitle: 'पुनर्प्राप्त संस्करण मिला',
+    autosaveDiskNewer:
+      'ध्यान दें: यह पुनर्प्राप्ति प्रति सहेजे जाने के बाद डिस्क पर फ़ाइल में बदलाव किया गया है। पुनर्स्थापित करने पर वे नए बदलाव बदल दिए जाएँगे।',
     autosaveFoundBody:
       'आपके पिछले सत्र से सहेजे नहीं गए परिवर्तन हैं। स्वतः सहेजा गया संस्करण पुनर्स्थापित करें? पुनर्स्थापना के बाद, सहेजने पर मूल फ़ाइल अधिलेखित हो जाएगी।',
     autosaveRestore: 'पुनर्स्थापित करें',
@@ -1421,6 +1539,12 @@ const tMain = createI18n({
       'CSV केवल एक शीट के मान रखता है — सूत्र, स्वरूपण और अतिरिक्त शीट .csv फ़ाइल में सहेजे नहीं जाते।',
   },
   vi: {
+    odsImportMsg: 'Chuyển đổi sổ làm việc .{ext} này?',
+    odsImportDetail:
+      'Sổ làm việc sẽ được chuyển đổi sang định dạng OOXML và mở dưới dạng bản sao có thể chỉnh sửa.',
+    odsImportConvertBtn: 'Chuyển đổi và mở',
+    autosaveDiskNewer:
+      'Lưu ý: sau khi bản khôi phục này được lưu, tệp trên đĩa đã bị sửa đổi. Khôi phục sẽ thay thế các thay đổi mới hơn đó.',
     filterSpreadsheets: 'Bảng tính',
     filterXlsx: 'Sổ làm việc Excel',
     filterXlsm: 'Sổ làm việc Excel hỗ trợ Macro',
@@ -1488,6 +1612,10 @@ const tMain = createI18n({
     filterSpreadsheets: '電子試算表',
     filterXlsx: 'Excel 活頁簿',
     filterXlsm: 'Excel 啟用巨集的活頁簿',
+    odsImportMsg: '轉換這個 .{ext} 工作簿？',
+    odsImportDetail:
+      'ChaAI Office 只編輯 .xlsx，不編輯 ODF。數值、公式與日期會被轉換（公式改寫為 Excel 語法，無法安全改寫的僅保留其目前結果）；樣式、欄寬與圖表不會帶入。原始檔案不會被修改，轉換後的複本第一次儲存時會另存為 .xlsx。', // public-hygiene: allow
+    odsImportConvertBtn: '轉換並開啟',
     dlgAddAttachment: '新增附件',
     filterSupported: '支援的檔案',
     filterAll: '所有檔案',
@@ -1512,6 +1640,7 @@ const tMain = createI18n({
     errImgBadType: '該檔案不是 PNG/JPEG/GIF 圖片。',
     errDiskChanged: '活頁簿在開啟後被磁碟上的變更覆蓋——請改用另存新檔。',
     autosaveFoundTitle: '發現自動復原版本',
+    autosaveDiskNewer: '注意：此復原副本儲存後，磁碟上的檔案又被修改過。復原將取代這些較新的變更。',
     autosaveFoundBody:
       '上次工作階段有未儲存的變更。要復原自動儲存的版本嗎?復原後,儲存將直接覆寫原檔案。',
     autosaveRestore: '復原',
@@ -1730,7 +1859,7 @@ interface SheetsTabSession {
 /// Same ceiling as local add_image (readLocalImage's 20MB check)
 const MAX_REMOTE_IMAGE_BYTES = 20 * 1024 * 1024
 /** Max CSV bytes converted on open: prevents 500MB CSV OOMing main before sidecar limits. */
-const MAX_CSV_IMPORT_BYTES = 32 * 1024 * 1024
+const MAX_DELIMITED_IMPORT_BYTES = 32 * 1024 * 1024
 
 
 const unsavedNewWorkbooks = new Map<string, { suggestSaveAs: string; tempDir: string }>()
@@ -1746,7 +1875,7 @@ function readUnsavedNewIndex(): string[] {
 
 function writeUnsavedNewIndex(list: string[]): void {
   try {
-    writeFileSync(unsavedNewIndexPath(), JSON.stringify(list))
+    writeJsonAtomic(unsavedNewIndexPath(), list)
   } catch (error) {
     console.warn('[sheets] unsaved-new index write failed:', error)
   }
@@ -1831,6 +1960,12 @@ async function saveFileDialog(event: IpcMainInvokeEvent, options: SaveDialogOpti
     configuredDefaultSaveDir(app),
   )
 }
+
+/** Workbook file extensions the open pipeline accepts. Single source for the
+ *  picker filters, the merge-source check, and the crash re-open check.
+ *  .ods opens through the same import conversion as .xls. */
+const WORKBOOK_EXTS = new Set(['xlsx', 'xlsm', 'xls', 'csv', 'tsv', 'ods', 'ots'])
+const WORKBOOK_FILTER_EXTENSIONS = [...WORKBOOK_EXTS]
 
 /** register a tab's webContents/client pair and wire up cleanup on teardown */
 function registerSheetsSession(webContents: WebContents, client: XlsxSidecarClient): void {
@@ -1982,6 +2117,7 @@ function promptRecoveryRestore(
   contents: WebContents,
   filePath: string,
   recoveryPath: string,
+  onDisk = true,
 ): Promise<RecoveryChoice> {
   return new Promise((resolve) => {
     let savedAtMs = Date.now()
@@ -2000,7 +2136,7 @@ function promptRecoveryRestore(
     contents.once('destroyed', onDestroyed)
     contents.send(IPC_CHANNELS.recoveryPrompt, {
       title: tm('autosaveFoundTitle'),
-      body: tm('autosaveFoundBody'),
+      body: recoveryPromptBody(filePath, recoveryPath, onDisk),
       restoreLabel: tm('autosaveRestore'),
       discardLabel: tm('autosaveDiscard'),
       fileName: basename(filePath),
@@ -2011,7 +2147,10 @@ function promptRecoveryRestore(
 
 /** Native message-box fallback for the rare open with no live renderer to draw the prompt. */
 async function promptRecoveryRestoreNative(
+  filePath: string,
+  recoveryPath: string,
   parent?: BrowserWindow | undefined,
+  onDisk = true,
 ): Promise<RecoveryChoice> {
   const options = {
     type: 'question' as const,
@@ -2019,7 +2158,7 @@ async function promptRecoveryRestoreNative(
     defaultId: 0,
     cancelId: 1,
     message: tm('autosaveFoundTitle'),
-    detail: tm('autosaveFoundBody'),
+    detail: recoveryPromptBody(filePath, recoveryPath, onDisk),
   }
   const answer = parent
     ? await dialog.showMessageBox(parent, options)
@@ -2027,16 +2166,12 @@ async function promptRecoveryRestoreNative(
   return answer.response === 0 ? 'restore' : 'discard'
 }
 
-/** Recovery copy newer than the file itself, i.e. unsaved work from a lost session. */
+/** Recovery copy left by a lost session. A newer original does not discard it (the copy
+ * may hold the only pre-crash edits): the prompt just says the disk file is newer. */
 function pendingRecoveryFor(filePath: string): string | null {
   const copy = recoveryPathFor(filePath)
   try {
-    if (!existsSync(copy)) return null
-    if (statSync(copy).mtimeMs <= statSync(filePath).mtimeMs) {
-      unlinkSync(copy)
-      return null
-    }
-    return copy
+    return existsSync(copy) ? copy : null
   } catch {
     return null
   }
@@ -2047,6 +2182,19 @@ const SETTINGS_PATH = () => userDataPath('ai-settings.json')
 /** ChaOffice cloud backend removed — always false */
 function chatofficeCloudToolsOn(): boolean {
   return false
+}
+
+function recoveryPromptBody(filePath: string, recoveryPath: string, onDisk: boolean): string {
+  const body = tm('autosaveFoundBody')
+  // an unsaved workbook's would-be name is not the file restore writes to
+  if (!onDisk) return body
+  try {
+    return recoveryCopyDiskNewer(statSync(recoveryPath).mtimeMs, statSync(filePath).mtimeMs)
+      ? `${body}\n\n${tm('autosaveDiskNewer')}`
+      : body
+  } catch {
+    return body
+  }
 }
 
 /** v2 AI runtime, created by registerSheetsAiIpc and reused by per-app channels */
@@ -2606,11 +2754,7 @@ export function registerSheetsIpc(): void {
 
   ipcMain.handle(IPC_CHANNELS.userDisplayName, (event): string => {
     sessionFor(event)
-    try {
-      return userInfo().username
-    } catch {
-      return ''
-    }
+    return configuredAuthorName(app)
   })
 
   // Registered here (not in registerSheetsAiIpc, skipped in shell mode):
@@ -2743,7 +2887,7 @@ export function registerSheetsIpc(): void {
     if (!path) {
       const selection = await openFileDialog(event, {
         properties: ['openFile'],
-        filters: [{ name: tm('filterSpreadsheets'), extensions: ['xlsx', 'xlsm', 'xls', 'csv'] }],
+        filters: [{ name: tm('filterSpreadsheets'), extensions: WORKBOOK_FILTER_EXTENSIONS }],
       })
       if (selection.canceled || !selection.filePaths[0]) return null
       path = selection.filePaths[0]
@@ -2754,6 +2898,8 @@ export function registerSheetsIpc(): void {
       event.sender,
       dialogParent(event),
     )
+    // a declined import (an .ods the user chose not to convert) opens nothing
+    if (!prepared) return null
     // The recovery prompt (or the file dialog / import conversion) can outlive
     // the tab: once the renderer is destroyed, its 'destroyed' handler has
     // already run closeAllSessions and dropped the tab entry, so a session
@@ -2777,6 +2923,7 @@ export function registerSheetsIpc(): void {
           : undefined),
       csvImport: prepared.csvImport,
       csvSourcePath: prepared.csvSourcePath,
+      emptyCsv: prepared.emptyCsv,
       importTempDir: prepared.importTempDir,
       restoreTarget: prepared.restoreTarget,
       blankDraft,
@@ -2853,6 +3000,9 @@ export function registerSheetsIpc(): void {
           dialogParent(event),
           { skipRecoveryPrompt: true },
         )
+        // imports are never declined on this path (no per-file prompt), but a
+        // declined open must skip the file rather than abort the batch
+        if (!prepared) continue
         if (event.sender.isDestroyed()) {
           if (prepared.importTempDir !== undefined) {
             await cleanupImportTempDirectory(app.getPath('temp'), prepared.importTempDir)
@@ -2863,6 +3013,7 @@ export function registerSheetsIpc(): void {
           suggestSaveAs: prepared.suggestSaveAs,
           csvImport: prepared.csvImport,
           csvSourcePath: prepared.csvSourcePath,
+          emptyCsv: prepared.emptyCsv,
           importTempDir: prepared.importTempDir,
           restoreTarget: prepared.restoreTarget,
         })
@@ -2884,7 +3035,7 @@ export function registerSheetsIpc(): void {
   ipcMain.handle(IPC_CHANNELS.selectWorkbooksForMerge, async (event) => {
     const selection = await openFileDialog(event, {
       properties: ['openFile', 'multiSelections'],
-      filters: [{ name: tm('filterSpreadsheets'), extensions: ['xlsx', 'xlsm', 'xls', 'csv'] }],
+      filters: [{ name: tm('filterSpreadsheets'), extensions: WORKBOOK_FILTER_EXTENSIONS }],
     })
     if (selection.canceled || selection.filePaths.length === 0) return null
     return openMergeSources(event, selection.filePaths)
@@ -3203,17 +3354,10 @@ export function registerSheetsIpc(): void {
       Buffer.from(request.content, 'utf8'),
     ])
     await atomicWriteFile(targetPath, csvBytes)
-    // An export can land on a CSV session's own source file — refresh that
-    // session's guard digest so its next Save doesn't mistake this write for
-    // an external change.
+    // An export can land on a CSV session's own source file; refresh the
+    // digest so the next Save does not read this write as an external change.
     const writtenSha = await sha256File(targetPath).catch(() => undefined)
-    if (writtenSha !== undefined) {
-      for (const [sessionId, session] of entry.sessions) {
-        if (session.csvSourcePath === targetPath) {
-          entry.sessions.set(sessionId, { ...session, csvSourceSha: writtenSha })
-        }
-      }
-    }
+    if (writtenSha !== undefined) refreshCsvDigest(entry.sessions, targetPath, writtenSha)
     return { canceled: false, path: targetPath }
   })
 
@@ -4267,12 +4411,13 @@ async function openWorkbookSession(
     suggestSaveAs?: string | undefined
     csvImport?: boolean | undefined
     csvSourcePath?: string | undefined
+    emptyCsv?: boolean | undefined
     importTempDir?: string | undefined
     restoreTarget?: string | undefined
     blankDraft?: boolean | undefined
   },
 ): Promise<WorkbookFile> {
-  const { suggestSaveAs, csvImport, csvSourcePath, importTempDir, restoreTarget, blankDraft } =
+  const { suggestSaveAs, csvImport, csvSourcePath, emptyCsv, importTempDir, restoreTarget, blankDraft } =
     options ?? {}
   // Snapshot first, then the sidecar opens the snapshot (not the live path):
   // everything the session serves — cell reads, media, recalc, saves — comes
@@ -4304,6 +4449,7 @@ async function openWorkbookSession(
       ...(blankDraft ? { blankDraft: true } : {}),
       ...(csvImport ? { csvImport } : {}),
       ...(csvSourcePath === undefined ? {} : { csvSourcePath }),
+      ...(emptyCsv ? { emptyCsv: true } : {}),
       ...(csvSourceSha === undefined ? {} : { csvSourceSha }),
       ...(importTempDir === undefined ? {} : { importTempDir }),
       ...(restoreTarget === undefined ? {} : { restoreTarget }),
@@ -4320,6 +4466,7 @@ async function openWorkbookSession(
       needsSaveAs: suggestSaveAs !== undefined,
       ...(blankDraft ? { blankDraft: true } : {}),
       ...(csvSourcePath === undefined ? {} : { csvPath: csvSourcePath }),
+      ...(emptyCsv ? { emptyCsv: true } : {}),
       restoredFromRecovery: restoreTarget !== undefined,
       automaticRecoveryDisabled: !allowsAutomaticWorkbookRecovery(opened.sheets),
     })
@@ -4334,6 +4481,26 @@ async function openWorkbookSession(
   }
 }
 
+/// A 0-byte .xlsx is an empty workbook, not a corrupt one. The sidecar needs a
+/// real archive, so a blank one opens from the temp dir with the original as
+/// the write-back target (the restore path: Save writes it even with no edits).
+async function openEmptyXlsx(path: string): Promise<{
+  openPath: string
+  importTempDir: string
+  restoreTarget: string
+}> {
+  const directory = join(app.getPath('temp'), 'chatoffice-imports', randomUUID())
+  await mkdir(directory, { recursive: true })
+  const openPath = join(directory, basename(path))
+  try {
+    await writeFile(openPath, (await csvToXlsxBufferForOpen('', 'Sheet1')).buffer)
+  } catch (error) {
+    await cleanupImportTempDirectory(app.getPath('temp'), directory)
+    throw error
+  }
+  return { openPath, importTempDir: directory, restoreTarget: path }
+}
+
 /** which legacy charset an Excel CSV most likely uses, judged by the UI language */
 function legacyCsvCharset(): string | undefined {
   const byLang: Partial<Record<Lang, string>> = {
@@ -4345,8 +4512,35 @@ function legacyCsvCharset(): string | undefined {
   return byLang[getUiLang()]
 }
 
-/// .xls and .csv open as a converted copy in the temp dir; the session
-/// remembers the original's .xlsx sibling as the Save As default.
+/**
+ * Confirm an .ods/.ots import before it converts. Unlike .xls, the loss here is not
+ * "what the editor did not touch survives": reading ODF re-enters the workbook
+ * model as a brand-new .xlsx, so styles beyond date formats are dropped by
+ * construction. Returns false when the user declines, which cancels the open.
+ * Batch opens pass skipRecoveryPrompt and never reach this.
+ */
+async function promptOdsImport(
+  parent: BrowserWindow | undefined,
+  extension: string,
+): Promise<boolean> {
+  const options = {
+    type: 'warning' as const,
+    message: tm('odsImportMsg', { ext: extension }),
+    detail: tm('odsImportDetail'),
+    buttons: [tm('odsImportConvertBtn'), tm('btnCancel')],
+    defaultId: 0,
+    cancelId: 1,
+    noLink: true,
+  }
+  const { response } = parent
+    ? await dialog.showMessageBox(parent, options)
+    : await dialog.showMessageBox(options)
+  return response === 0
+}
+
+/// .xls, .tsv and the ODF imports (.ods/.ots) open as a converted copy in the temp dir; the session
+/// remembers the original's .xlsx sibling as the Save As default. .csv converts
+/// the same way but keeps its file identity, so Save writes values back to it.
 async function prepareWorkbookForOpen(
   client: XlsxSidecarClient,
   path: string,
@@ -4360,9 +4554,17 @@ async function prepareWorkbookForOpen(
   csvSourcePath?: string
   importTempDir?: string
   restoreTarget?: string
-}> {
+  emptyCsv?: boolean
+} | null> {
   const extension = path.slice(path.lastIndexOf('.') + 1).toLowerCase()
-  if (extension !== 'csv' && extension !== 'xls') {
+  // ODF has no editable representation here at all (.ots is the same package
+  // with a -template mimetype): the user confirms the lossy .xlsx copy first,
+  // and declining leaves the file unopened and unwritten.
+  const odfImport = extension === 'ods' || extension === 'ots'
+  if (odfImport && !options?.skipRecoveryPrompt && !(await promptOdsImport(parent, extension))) {
+    return null
+  }
+  if (!odfImport && extension !== 'csv' && extension !== 'tsv' && extension !== 'xls') {
     // Unsaved work from a lost session: offer the recovery copy. Restoring
     // opens it with restoreTarget pointing back at the original, so a plain
     // Save writes straight back over the file the user opened — the restore
@@ -4374,24 +4576,35 @@ async function prepareWorkbookForOpen(
       const choice =
         contents && !contents.isDestroyed()
           ? await promptRecoveryRestore(contents, path, recovery)
-          : await promptRecoveryRestoreNative(parent)
+          : await promptRecoveryRestoreNative(path, recovery, parent)
       if (choice === 'restore') return { openPath: recovery, restoreTarget: path }
       if (choice === 'discard') clearWorkbookRecovery(path)
     }
+    if (extension === 'xlsx' && (await stat(path)).size === 0) return openEmptyXlsx(path)
     return { openPath: path }
   }
   const stem = basename(path).replace(/\.[^.]+$/, '')
   const directory = join(app.getPath('temp'), 'chatoffice-imports', randomUUID())
   await mkdir(directory, { recursive: true })
   const openPath = join(directory, `${stem}.xlsx`)
+  let emptyCsv = false
   try {
-    if (extension === 'csv') {
+    if (extension === 'csv' || extension === 'tsv') {
       const csvStat = await stat(path)
-      if (csvStat.size > MAX_CSV_IMPORT_BYTES) throw new Error(tm('errFileTooLarge'))
-      await writeFile(
-        openPath,
-        await csvToXlsxBuffer(decodeCsvBuffer(await readFile(path), legacyCsvCharset())),
+      if (csvStat.size > MAX_DELIMITED_IMPORT_BYTES) throw new Error(tm('errFileTooLarge'))
+      const converted = await csvToXlsxBufferForOpen(
+        decodeCsvBuffer(await readFile(path), legacyCsvCharset()),
+        'Sheet1',
+        // A .tsv's delimiter is declared by its extension, and sniffing by
+        // frequency can get it wrong: annotation-heavy exports (gene
+        // descriptions, database cross-references) hold comma-separated
+        // lists, so a narrow table ends up with more commas than tabs and
+        // every row shatters on the comma. A .csv keeps the sniff — the prose
+        // guard in resolveImportDelimiter is what that path needs.
+        extension === 'tsv' ? '\t' : undefined,
       )
+      emptyCsv = converted.empty
+      await writeFile(openPath, converted.buffer)
     } else {
       await client.convertWorkbook({ path, targetPath: openPath })
     }
@@ -4400,10 +4613,17 @@ async function prepareWorkbookForOpen(
     throw error
   }
   // CSV keeps its file identity: Save writes the values back to the original
-  // .csv (Excel's behavior), so no Save As detour is suggested. Legacy .xls
-  // still routes the first save through Save As to a fresh .xlsx.
+  // .csv (Excel's behavior), so no Save As detour is suggested. Legacy .xls and
+  // view-only .tsv route the first save through Save As to a fresh .xlsx —
+  // writing values back to a .tsv would need a tab serializer this path lacks.
   return extension === 'csv'
-    ? { openPath, importTempDir: directory, csvImport: true, csvSourcePath: path }
+    ? {
+        openPath,
+        importTempDir: directory,
+        csvImport: true,
+        csvSourcePath: path,
+        ...(emptyCsv ? { emptyCsv: true } : {}),
+      }
     : { openPath, importTempDir: directory, suggestSaveAs: path.replace(/\.[^.]+$/, '.xlsx') }
 }
 

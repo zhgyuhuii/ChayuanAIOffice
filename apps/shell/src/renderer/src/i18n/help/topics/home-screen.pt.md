@@ -1,15 +1,15 @@
 # O ecrã Início: onde ficam os seus arquivos
 
-O ecrã Início é a página inicial do ChatOffice: uma barra de navegação à esquerda e, à direita, as listas de arquivos e os cartões de criação rápida.
+O ecrã Início é a página inicial do ChaAI Office: uma barra de navegação à esquerda e, à direita, as listas de arquivos e os cartões de criação rápida.
 
 ![O ecrã Início](img/home-screen.png)
 
 ## Navegação na barra lateral
 
 - **Recentes**: os arquivos que você abriu recentemente. Cada linha traz o momento — hoje, ontem ou a data.
-- **Favoritos**: os arquivos que você marcou com uma estrela. Passe o cursor sobre a linha do arquivo e clique na estrela para adicioná-lo ou removê-lo.
-- **Guia do Usuário**: abre este manual.
-- **ChaAI Office Projects**: depois de entrar na sua conta ChaAI Office, mostra os projetos que você criou com o ChaAI Office AI na web; clique em um deles para continuar editando no navegador. Há pesquisa, ordenação por data, atualização e carregar mais.
+- **Favoritos**: os arquivos que você marcou com uma estrela. Passe o cursor sobre a linha do arquivo e clique na estrela para adicioná-lo ou removê-lo. **Mover para grupo** no menu ⋯ organiza os favoritos em grupos nomeados; a visualização Favoritos filtra por eles.
+- **Ask AI**: o painel de base de conhecimento — pergunte e receba respostas citadas dos seus arquivos favoritados (veja abaixo).
+- **Genspark Projects**: depois de entrar na sua conta Genspark, mostra os projetos que você criou com o Genspark AI na web; clique em um deles para continuar editando no navegador. Há pesquisa, ordenação por data, atualização e carregar mais.
 - **Pastas**: os diretórios que adiciona à barra lateral com **Adicionar pasta…**, ou que arrasta até lá a partir do gestor de ficheiros. Cada um torna-se uma raiz que pode abrir, onde criar subpastas, renomear e remover; a que ficar indisponível aparece como indisponível e pode ser retirada da lista. **Nova pasta** cria outra.
 
 Não há aqui nenhuma entrada Lixeira. Os arquivos excluídos vão para a lixeira do sistema, e restaurá-los é assunto do sistema operacional.
@@ -36,7 +36,7 @@ Marque a caixa de uma linha, ou faça ⌘/ctrl-clique, para construir uma seleç
 A caixa de pesquisa no topo corresponde a duas coisas ao mesmo tempo:
 
 - **Nomes de arquivos**: filtragem rápida por nome.
-- **Conteúdo dos arquivos**: o ChatOffice indexa seus arquivos em segundo plano (texto dentro de docx/xlsx/pptx/pdf/md/html), pelo que pesquisar no corpo do texto também encontra arquivos. O âmbito e as opções ficam nas configurações de pesquisa.
+- **Conteúdo dos arquivos**: o ChaAI Office indexa seus arquivos em segundo plano (texto dentro de docx/xlsx/pptx/pdf/md/html), pelo que pesquisar no corpo do texto também encontra arquivos. O âmbito e as opções ficam nas configurações de pesquisa.
 
 ## Cartões de início rápido
 
@@ -52,12 +52,20 @@ O que faz cada cartão:
 - **AI Markdown** (.md): um documento Markdown em branco no editor Markdown.
 - **AI HTML** (.html): uma página web em branco no editor HTML.
 - **AI PDF** (.pdf): diferente dos restantes — cria **imediatamente** um PDF em branco verdadeiro de uma página na pasta de destino e abre-o como um ficheiro normal (o editor de PDF trabalha sobre ficheiros reais). Bom para anotar, ocultar partes do documento ou acrescentar texto; o arquivo pode ser renomeado automaticamente a partir do conteúdo no primeiro salvamento.
-- **Abrir arquivo local**: um seletor de arquivos do sistema para Word (.docx/.doc), Excel (.xlsx/.xlsm/.xls/.csv/.tsv), PowerPoint (.pptx/.ppt), PDF, Markdown (.md/.markdown) e páginas web (.html/.htm). É possível selecionar vários; cada arquivo recebe a sua própria guia.
+- **Abrir arquivo local**: um seletor de arquivos do sistema para Word (.docx/.doc), Excel (.xlsx/.xlsm/.xls/.csv/.tsv), PowerPoint (.pptx/.ppt), PDF, Markdown (.md/.markdown) e páginas web (.html/.htm). É possível selecionar vários; cada arquivo recebe a sua própria guia. Arquivos de texto (.txt, .json) também abrem aqui — entram na visão de código do editor Markdown.
 
 > Dica: Arquivo ▸ Novo na barra de menus cria os mesmos tipos de documento (⌘N/Ctrl+N usa por omissão um documento de texto); arrastar um arquivo para a janela abre-o.
 
-## Projetos na nuvem (ChaAI Office Projects)
+## Pergunte à sua base de conhecimento
 
-- O primeiro uso exige entrar na sua conta ChaAI Office (fluxo de código de dispositivo: o ChatOffice mostra um código e você conclui o início de sessão no navegador).
+- Favorite arquivos primeiro (qualquer tipo que o app leia); o cabeçalho do painel conta o conjunto, e uma base vazia pede que você favorite algo.
+- As respostas citam os arquivos de origem; clique numa citação para abrir o arquivo no editor dele.
+- Existe entrar com a conta Genspark. A conversa vive só na memória — fechar o app a encerra.
+- A busca roda no índice local de arquivos, como a do Início; arquivos desaparecidos saem do conjunto em silêncio.
+- Grupos organizam só a lista de Favoritos — a base de conhecimento sempre abrange todos os arquivos favoritados.
+
+## Projetos na nuvem (Genspark Projects)
+
+- O primeiro uso exige entrar na sua conta Genspark (fluxo de código de dispositivo: o ChaAI Office mostra um código e você conclui o início de sessão no navegador).
 - A lista de projetos fica sincronizada com a web; Abrir no navegador leva lá para continuar.
 - Não entrar não afeta nenhuma das funcionalidades locais.

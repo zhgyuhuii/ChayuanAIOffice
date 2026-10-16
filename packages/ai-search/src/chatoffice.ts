@@ -26,7 +26,14 @@ import {
   type WebSearchResult,
 } from './shared'
 // LOCAL(2026-09-22, f5247d3..476e5023): 上游 #657 watch 函数重放为 chatoffice 命名
-import { chatofficeApiKey as chatofficeAuthApiKey, chatofficeAuthPath, reloadChatofficeAuth } from './chatoffice-auth'
+// LOCAL(2026-10-15, sync/24): 上游 #1950 拒键(401)恢复流并入,recoverFromRejectedGskKey→recoverFromRejectedChatofficeKey
+import {
+  chatofficeApiKey as chatofficeAuthApiKey,
+  chatofficeAuthPath,
+  recoverFromRejectedChatofficeKey,
+  reloadChatofficeAuth,
+  type ChaOfficeRecoveryOutcome,
+} from './chatoffice-auth'
 
 const SEARCH_TIMEOUT_MS = 60_000
 const GENERATE_TIMEOUT_MS = 600_000
@@ -85,17 +92,94 @@ function electronCompatArgs(): string[] {
  * key_name) → shared chatoffice CLI login (bills to the Claw bucket).
  */
 export function chatofficeCliApiKey(): string {
-  if (process.env.CHATOFFICE_API_KEY) return process.env.CHATOFFICE_API_KEY
+  const env = process.env.CHATOFFICE_API_KEY
+  if (env && !rejectedKeys.has(env)) return env
   const own = chatofficeAuthApiKey()
-  if (own) return own
+  if (own && !rejectedKeys.has(own)) return own
   try {
     const configPath = join(homedir(), '.chatoffice-tool-cli', 'config.json')
     if (!existsSync(configPath)) return ''
     const config = JSON.parse(readFileSync(configPath, 'utf-8')) as { api_key?: string }
-    return config.api_key ?? ''
+    const shared = config.api_key ?? ''
+    return rejectedKeys.has(shared) ? '' : shared
   } catch {
     return ''
   }
+}
+
+// ── Rejected keys (401) ─────────────────────────────────────────────
+
+/**
+ * Keys the server answered 401 for (expired / revoked). ChaOffice's own key
+ * is also deleted from disk; env and shared chatoffice CLI keys belong to
+ * someone else, so they are only skipped for the rest of this process.
+ */
+const rejectedKeys = new Set<string>()
+
+/** Thrown when a chatoffice-key call is refused with 401 and no fresh key could be minted. */
+export class ChaOfficeAuthError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'ChaOfficeAuthError'
+  }
+}
+
+/** Whether an error text reports an HTTP 401 (chatoffice CLI, tool_cli, LLM proxy shapes). */
+export function isChatofficeUnauthorizedText(text: unknown): boolean {
+  return /\bHTTP 401\b|\b401 Unauthorized\b/i.test(String(text ?? ''))
+}
+
+/**
+ * Records that `key` was refused with 401: it stops being offered (so
+ * hasChaOfficeAuth() / ai:chatoffice-status report signed-out and the existing
+ * sign-in UI appears) and the re-mint / re-login recovery starts. The
+ * invalidation is synchronous, before the first await, so a caller can report
+ * the failure right after this returns.
+ */
+export function noteChatofficeKeyRejected(
+  key: string,
+  options: { allowLogin?: boolean } = {},
+): Promise<ChaOfficeRecoveryOutcome> {
+  if (key) rejectedKeys.add(key)
+  return recoverFromRejectedChatofficeKey(key, options)
+}
+
+/**
+ * For callers that used the chatoffice key outside this module (the ChaOffice
+ * LLM proxy chat/stream): when `error` reports a 401, drop the key and start
+ * the recovery in the background. Returns whether it was an auth failure.
+ */
+export function noteChatofficeCallFailure(key: string, error: unknown): boolean {
+  if (!key) return false
+  const text = error instanceof Error ? error.message : String(error ?? '')
+  if (!isChatofficeUnauthorizedText(text)) return false
+  void noteChatofficeKeyRejected(key).catch(() => {})
+  return true
+}
+
+/**
+ * Runs `call` with the current key; on a 401 drops the key and, when the
+ * stored session minted a replacement, retries exactly once with it.
+ */
+async function withKeyRecovery<T>(
+  call: (key: string) => Promise<T>,
+  options: { allowLogin?: boolean } = {},
+): Promise<T> {
+  const key = chatofficeCliApiKey()
+  try {
+    return await call(key)
+  } catch (err) {
+    if (!(err instanceof ChaOfficeAuthError)) throw err
+    const outcome = await noteChatofficeKeyRejected(key, options)
+    const next = chatofficeCliApiKey()
+    if (outcome !== 'reminted' || !next || next === key) throw err
+    return call(next)
+  }
+}
+
+/** Test hook: forget rejected keys. */
+export function resetChatofficeRejectedKeys(): void {
+  rejectedKeys.clear()
 }
 
 /**
@@ -201,11 +285,28 @@ export function parseChaOfficeOutput(stdout: string): unknown {
   throw new Error(`No JSON found in chatoffice output: ${stdout.slice(0, 300)}`)
 }
 
-function runChaOffice(args: string[], timeoutMs: number, signal?: AbortSignal): Promise<unknown> {
+/** `passive`: a status/background call — a rejected key is dropped but no browser login opens */
+function runChaOffice(
+  args: string[],
+  timeoutMs: number,
+  signal?: AbortSignal,
+  passive = false,
+): Promise<unknown> {
   const entry = resolveChaOfficeEntry()
   if (!entry) return Promise.reject(new Error('@chatoffice/cli is not installed'))
+  return withKeyRecovery((key) => runChaOfficeOnce(entry, key, args, timeoutMs, signal), {
+    allowLogin: !passive,
+  })
+}
+
+function runChaOfficeOnce(
+  entry: string,
+  key: string,
+  args: string[],
+  timeoutMs: number,
+  signal?: AbortSignal,
+): Promise<unknown> {
   // inject the resolved key so the CLI bills the same identity as our direct HTTP calls
-  const key = chatofficeCliApiKey()
   return new Promise((resolve, reject) => {
     execFile(
       process.execPath,
@@ -223,14 +324,23 @@ function runChaOffice(args: string[], timeoutMs: number, signal?: AbortSignal): 
         if (err) {
           // chatoffice's real failure reason (auth/network/quota) is in stderr; append it to ease debugging
           const errText = (stderr || '').toString().trim().slice(0, 500)
-          reject(errText ? new Error(`${err.message} | stderr: ${errText}`) : err)
+          const message = errText ? `${err.message} | stderr: ${errText}` : err.message
+          // the CLI prints a refused call's {status:'error', message:'HTTP 401…'} on stdout
+          const unauthorized =
+            !!key && (isChatofficeUnauthorizedText(stdout) || isChatofficeUnauthorizedText(stderr))
+          reject(unauthorized ? new ChaOfficeAuthError(message) : errText ? new Error(message) : err)
           return
         }
         try {
           const result = parseChaOfficeOutput(String(stdout))
           const rec = asRecord(result)
           if (rec.status && rec.status !== 'ok') {
-            reject(new Error(`chatoffice returned an error: ${rec.message ?? rec.status}`))
+            const message = `chatoffice returned an error: ${rec.message ?? rec.status}`
+            reject(
+              key && isChatofficeUnauthorizedText(rec.message)
+                ? new ChaOfficeAuthError(message)
+                : new Error(message),
+            )
             return
           }
           resolve(result)
@@ -447,8 +557,17 @@ async function toolCliPost(
   timeoutMs: number,
   signal?: AbortSignal,
 ): Promise<unknown> {
-  const key = chatofficeCliApiKey()
-  if (!key) throw new Error('Not logged in to ChaOffice (chatoffice login)')
+  if (!chatofficeCliApiKey()) throw new Error('Not logged in to ChaOffice (chatoffice login)')
+  return withKeyRecovery((key) => toolCliPostOnce(key, path, body, timeoutMs, signal))
+}
+
+async function toolCliPostOnce(
+  key: string,
+  path: string,
+  body: unknown,
+  timeoutMs: number,
+  signal?: AbortSignal,
+): Promise<unknown> {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), timeoutMs)
   const onAbort = () => controller.abort()
@@ -466,7 +585,10 @@ async function toolCliPost(
       signal: controller.signal,
     })
     const text = await resp.text()
-    if (!resp.ok) throw new Error(`tool_cli ${path} HTTP ${resp.status}: ${text.slice(0, 200)}`)
+    if (!resp.ok) {
+      const message = `tool_cli ${path} HTTP ${resp.status}: ${text.slice(0, 200)}`
+      throw resp.status === 401 ? new ChaOfficeAuthError(message) : new Error(message)
+    }
     const result = parseToolCliNdjson(text)
     if (result.status !== 'ok') {
       throw new Error(`tool_cli ${path} failed: ${result.message ?? result.status}`)
@@ -694,7 +816,8 @@ export async function chatofficeListPastProjects(
   if (options.artifactTypes?.length) args.push('--artifact_types', ...options.artifactTypes)
   if (options.limit !== undefined) args.push('--limit', String(options.limit))
   if (options.offset) args.push('--offset', String(options.offset))
-  const raw = await runChaOffice(args, SEARCH_TIMEOUT_MS, options.signal)
+  // background sync: never the reason a browser window opens
+  const raw = await runChaOffice(args, SEARCH_TIMEOUT_MS, options.signal, true)
   return parseChaOfficePastProjects(raw)
 }
 
@@ -707,7 +830,7 @@ export interface ChaOfficeLoginInfo {
 /** Current login info; null when not logged in */
 export async function chatofficeLoginInfo(): Promise<ChaOfficeLoginInfo | null> {
   try {
-    const raw = await runChaOffice(['login-info'], SEARCH_TIMEOUT_MS)
+    const raw = await runChaOffice(['login-info'], SEARCH_TIMEOUT_MS, undefined, true)
     const d = asRecord(asRecord(raw).data ?? raw)
     if (!d.email) return null
     const info: ChaOfficeLoginInfo = {

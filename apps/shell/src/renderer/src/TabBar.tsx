@@ -86,6 +86,15 @@ function WindowControls({ side }: { side: 'left' | 'right' }): ReactElement | nu
   )
 }
 
+/**
+ * Formats hover tooltip for document tab:
+ * - Tabs with a saved filePath show the full title on line 1, and the full absolute path on line 2.
+ * - Untitled or Home/Help tabs without a filePath show the title alone.
+ */
+export function formatTabTooltip(tab: TabSummary): string {
+  return tab.filePath ? `${tab.title}\n${tab.filePath}` : tab.title
+}
+
 /** Panel glyph: outlined window with one side column filled to signal the target pane */
 function PaneToggleIcon({ side }: { side: 'left' | 'right' }): ReactElement {
   return (
@@ -206,6 +215,22 @@ export function TabBar() {
   renamingRef.current = renaming
   const tabsRef = useRef(tabs)
   tabsRef.current = tabs
+  /** open the inline rename box on a file tab (double-click, or "Rename" in the tab menu) */
+  const beginRename = (tab: TabSummary) => {
+    if (tab.id === 'home' || !tab.filePath) return
+    // whole name, extension included: only the shell may change an extension
+    setRenaming({ id: tab.id, value: tab.title })
+  }
+  const beginRenameRef = useRef(beginRename)
+  beginRenameRef.current = beginRename
+  useEffect(
+    () =>
+      window.chaOfficeTabs.onStartRename?.((id) => {
+        const tab = tabsRef.current.find((candidate) => candidate.id === id)
+        if (tab) beginRenameRef.current(tab)
+      }),
+    [],
+  )
   const commitRename = () => {
     const r = renamingRef.current
     renamingRef.current = null
@@ -542,10 +567,21 @@ export function TabBar() {
               key={tab.id}
               className={`tab-item ${tab.kind === 'home' ? 'tab-home' : ''} ${tab.active ? 'active' : ''} ${dragVisual?.id === tab.id ? 'drag-source' : ''}`}
               // long file names ellipsize in the strip — hover reveals the
-              // full title (the close button's own tooltip still wins there)
-              title={tab.title}
+              // full title and where the file is (the close button's own tooltip still wins there)
+              title={formatTabTooltip(tab)}
               style={dragStyle}
+              onAuxClick={(event) => {
+                if (event.button !== 1 || !tab.closable) return
+                event.preventDefault()
+                void window.chaOfficeTabs.close(tab.id)
+              }}
               onMouseDown={(event) => {
+                // middle button: stop Chromium's autoscroll on the scrollable
+                // strip so the tab is still under the pointer at auxclick
+                if (event.button === 1) {
+                  event.preventDefault()
+                  return
+                }
                 // the strip captures the pointer for dragging, which retargets
                 // the derived dblclick to the strip; pointer events carry no
                 // click count either, so read it off the compat mousedown
@@ -556,8 +592,7 @@ export function TabBar() {
                 // the input mounts and autofocuses inside this dispatch; the
                 // default mousedown focus step would blur it straight away
                 event.preventDefault()
-                // whole name, extension included: only the shell may change an extension
-                setRenaming({ id: tab.id, value: tab.title })
+                beginRename(tab)
               }}
               onPointerDown={(event) => {
                 if (event.button !== 0) return

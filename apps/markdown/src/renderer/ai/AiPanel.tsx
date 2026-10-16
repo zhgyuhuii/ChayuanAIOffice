@@ -1,11 +1,17 @@
 import { useEffect, useRef, useState, lazy, Suspense } from 'react'
 import { createMarkdownMediaSkill } from './media-skill'
 import type { ReactElement, ReactNode } from 'react'
-import { AgentLoop, composeSkills, streamText } from '@chatoffice/agent-core'
+import { AgentLoop, composeSkills, streamText, type MindMapTreeNode } from '@chatoffice/agent-core'
 import type { AiSettingsV2 } from '@chatoffice/ai-provider'
 import {
   AiComposer,
+  AiQueueStrip,
+  AI_QUEUE_LABELS,
+  AiScopeQuote,
   AiTypingIndicator,
+  AiUsageChip,
+  addTokenUsage,
+  createFileNav,
   Markdown,
   KbPickerButton,
   ModelPickerButton,
@@ -18,10 +24,11 @@ import {
   AiTabConfirm,
   AI_CONTINUE_INSTRUCTION,
   type AiActiveTab,
-  AiScopeQuote,
   KbCitePreview,
   type AiScopeQuoteData,
+  type AiTokenUsageView,
   type KbCitation,
+  useChatRunQueue,
 } from '@chatoffice/ui'
 import { defaultSettingsV2, pickImageModel } from '@chatoffice/ai-provider/browser'
 import { markdownModelBridge } from './model-bridge'
@@ -31,6 +38,7 @@ import { aiLangDirective, t as tGlobal, useI18n } from '../i18n/locale'
 import { clearAiHighlights } from '../editor/aiHighlight'
 import { setInactiveSelectionShown } from '../editor/inactiveSelection'
 import { createMarkdownSkill, MARKDOWN_RULES } from './markdown-skill'
+import { MindMapCard } from './MindMapCard'
 import {
   buildDocWriterRequest,
   countMarkdownBlocks,
@@ -93,10 +101,15 @@ interface ChatEntry {
   /** the run failed and this user message was rolled back out of the model context */
   undelivered?: boolean
   tools?: ToolActivity[]
+  /** interactive mind map from generate_mindmap's side-channel display (session-only;
+   * the persisted transcript keeps the tool call, so a reopened file can regenerate) */
+  mindmap?: MindMapTreeNode
   /** the selection this user message targeted, frozen at send */
   scope?: AiScopeQuoteData
   /** KB citations behind the [n] chips of this assistant turn */
   kbCitations?: KbCitation[]
+  /** tokens the provider billed for this reply, summed across its turns (absent when unreported) */
+  usage?: AiTokenUsageView
 }
 
 /** longest selection excerpt echoed on a user bubble */
@@ -197,6 +210,16 @@ function AiConversationBody({
   const [chat, setChat] = useState<ChatEntry[]>([])
   const [prompt, setPrompt] = useState('')
   const [busy, setBusy] = useState(false)
+  /** messages queued while a reply runs; the pump re-runs them through send on settle */
+  const msgQueue = useChatRunQueue<void>({
+    busy,
+    submit: (text) => {
+      const loop = loopRef.current
+      if (!loop || loop.busy) return false
+      send(text, text, null)
+      return true
+    },
+  })
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null)
   const [snapshots, setSnapshots] = useState<Snapshot[]>([])
   // bumped on selection/doc changes so the scope chip & queue rows stay fresh
@@ -263,6 +286,10 @@ function AiConversationBody({
   const runMutatedRef = useRef(false)
   /** tool activity of the whole run, for transcript persistence */
   const runToolsRef = useRef<ToolActivity[]>([])
+  /** tokens billed so far in the in-flight run (summed across turns) */
+  const runUsageRef = useRef<AiTokenUsageView | undefined>(undefined)
+  /** tokens billed across the panel's session (the composer chip) */
+  const [sessionUsage, setSessionUsage] = useState<AiTokenUsageView | undefined>(undefined)
   const chatIdsRef = useRef<{ projectId: string; chatId: string } | null>(null)
   /** messages sent before resolveChat returned, flushed once the chat id is known */
   const pendingPersistRef = useRef<
@@ -461,6 +488,9 @@ function AiConversationBody({
               [...prev, { label, time, doc: snapshotBefore }].slice(-MAX_SNAPSHOTS),
             )
           }
+          // mind maps ride the UI-only display side channel onto the message
+          const display = execution.display
+          const mindmap = display?.kind === 'mindmap' ? display.tree : undefined
           const activity: ToolActivity = {
             name: call.name,
             summary: execution.summary,
@@ -472,12 +502,17 @@ function AiConversationBody({
             // Swap out the running placeholder pushed by onToolStart (parse-fail calls have none)
             const tools = [...(last.tools ?? [])]
             if (tools.at(-1)?.running) tools.pop()
-            return { tools: [...tools, activity] }
+            return { tools: [...tools, activity], ...(mindmap ? { mindmap } : {}) }
           })
         },
         onTurnEnd: () => {
           patchLast({ streaming: false })
           setChat((prev) => [...prev, { role: 'assistant', text: '', streaming: true }])
+        },
+        onUsage: (usage) => {
+          runUsageRef.current = addTokenUsage(runUsageRef.current, usage)
+          setSessionUsage((prev) => addTokenUsage(prev, usage))
+          patchLast({ usage: runUsageRef.current })
         },
         onDone: ({ text, cancelled, turnLimit, truncated }) => {
           const base = turnLimit
@@ -679,6 +714,7 @@ function AiConversationBody({
     runDisplayRef.current = displayText ?? instruction
     runMutatedRef.current = false
     runToolsRef.current = []
+    runUsageRef.current = undefined
     // a queue batch carries its own display text: no selection quote
     const scope =
       retryScope !== undefined
@@ -720,7 +756,18 @@ function AiConversationBody({
     })()
   }
 
-  const stop = (): void => loopRef.current?.cancel()
+  const stop = (): void => {
+    msgQueue.hold()
+    loopRef.current?.cancel()
+  }
+
+  /** Enter while a reply runs: the draft joins the queue above the composer */
+  const enqueueDraft = () => {
+    const text = prompt.trim()
+    if (!text) return
+    msgQueue.enqueue(text, undefined)
+    setPrompt('')
+  }
 
   const busyRef = useRef(false)
   const idleWaitersRef = useRef<Array<() => void>>([])
@@ -838,6 +885,10 @@ function AiConversationBody({
       if (index !== null && current) navigateToBlock(current, index)
     },
   }
+  // [name](filenav:///abs/path) citations open the cited file in its own app
+  const fileNav = createFileNav((path) => {
+    void window.markdownApi.openSourcePath(path)
+  })
 
   /** submit every still-anchored queued edit as one batch run */
   const sendQueue = (): void => {
@@ -972,6 +1023,15 @@ function AiConversationBody({
               >
                 {t('aiQuickPolish')}
               </button>
+              <button
+                className="ai-starter"
+                onClick={() => {
+                  setPrompt(t('aiQuickMindMapPrompt'))
+                  inputRef.current?.focus()
+                }}
+              >
+                {t('aiQuickMindMap')}
+              </button>
             </div>
           </div>
         )}
@@ -1019,7 +1079,7 @@ function AiConversationBody({
                   <div dir="auto">
                     <Markdown
                       text={entry.text}
-                      nav={docNav}
+                      navs={[docNav, fileNav]}
                       citations={entry.kbCitations}
                       onCitationClick={setKbCiteView}
                       onInsertImage={(src) =>
@@ -1039,6 +1099,24 @@ function AiConversationBody({
                 )
               )}
               {hasTools && <ToolChipList tools={entry.tools!} />}
+              {entry.mindmap && (
+                <MindMapCard
+                  tree={entry.mindmap}
+                  onAsk={(label) => {
+                    setPrompt(t('aiMindMapAskPrompt', { label }))
+                    inputRef.current?.focus()
+                  }}
+                  onJumpBlock={(index) => {
+                    const current = depsRef.current.getEditor()
+                    if (current) navigateToBlock(current, index)
+                  }}
+                />
+              )}
+              {entry.usage && (
+                <div className="ai-message-usage">
+                  <AiUsageChip usage={entry.usage} lang={lang} />
+                </div>
+              )}
               {showToolbar && (
                 <div className="ai-msg-toolbar">
                   <button
@@ -1168,6 +1246,20 @@ function AiConversationBody({
           />
         )}
         <AiComposer
+          queueStrip={
+            <AiQueueStrip
+              items={msgQueue.queued}
+              labels={AI_QUEUE_LABELS[lang]}
+              onUpdate={msgQueue.update}
+              onRemove={msgQueue.remove}
+              onClear={msgQueue.clear}
+              paused={msgQueue.paused}
+              onTogglePause={msgQueue.togglePaused}
+              onMove={msgQueue.move}
+            />
+          }
+          onQueue={enqueueDraft}
+          queuePlaceholder={AI_QUEUE_LABELS[lang].queuePlaceholder}
           value={prompt}
           busy={busy}
           header={
@@ -1223,6 +1315,8 @@ function AiConversationBody({
                 }}
                 onOpenSettings={() => setModelSettingsOpen(true)}
               />
+              {/* #1944: per-session token usage chip */}
+              {sessionUsage && <AiUsageChip usage={sessionUsage} session lang={lang} />}
             </>
           }
           textareaRef={inputRef}

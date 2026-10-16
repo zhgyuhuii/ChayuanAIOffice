@@ -8,7 +8,7 @@
 
 | # | 决策点 | 结论 |
 |---|--------|------|
-| 1 | 开源口径 | 如实开源：Apache-2.0 + `ee/` 企业目录例外；如实致谢上游 GenOffice 并说明持续上游同步（已至第十六轮）。公开仓库 `zhgyuhuii/ChayuanAIOffice` 真实存在，README 以仓库事实为准；官网营销页不挂 GitHub 链接与仓库开源不矛盾 |
+| 1 | 开源口径 | 如实开源：Apache-2.0 + `ee/` 企业目录例外；如实致谢上游 ChaAI Office 并说明持续上游同步（已至第十六轮）。公开仓库 `zhgyuhuii/ChayuanAIOffice` 真实存在，README 以仓库事实为准；官网营销页不挂 GitHub 链接与仓库开源不矛盾 |
 | 2 | 官网 | **https://aidooo.com/** （已验证在线，察元产品家族首页）。`chatoffice.ai` 是他人产品（Pitchbar），任何指向都禁止出现 |
 | 3 | 家族命名 | 严格官网口径卡（`/Users/zyh/work/website/src/config/productFacts.js`）：**察元AI OS / 察元AI Office / 察元AI工舱 / 察元AI文档助手 / 察元AI指挥调度平台（必须带「研发中」）**。旧名一律不上 README：察元AI超级智能体、察元WPS、ChatOffice、ChaAI Office。命名红线：中文产品名「察元AI+X」连写无空格；「察元AI OS」「察元AI Office」英文后缀保留空格不得连写；产品全名必须带 AI |
 | 4 | 察元AI共仓 | = 察元AI工舱 = `/Users/zyh/work/chatop-os`（浏览器云桌面·数字员工工作站，GPL-2.0，Docker 镜像 `cmdbird/chatop:latest` 纯文本提及、不放未验证链接） |
@@ -16,14 +16,14 @@
 | 6 | 双语形态 | **英文主体 + 中文章节**：README.md 英文正文在前，后接「简体中文」章节，中文为同结构完整镜像（非缩水摘要），含中文关键词表 |
 | 7 | docs/i18n 旧翻译 | 16 国旧品牌翻译**保留但不索引**：README 不链它们，不删不改（上游同步件）；新 README 语言行只保留 English / 简体中文锚点 |
 | 8 | 关键词组织 | aidooo.com 首页 SEO 关键词**全量入一张双语总表**，加「所属产品」列归位守不失实底线（含下述待补词） |
-| 9 | 品牌残留清理 | 删 "world's first"（上游 GenOffice 宣称）；删上游 YouTube 演示视频（B2pLdMX95v4）；删 "Mainfunc, Inc." 商标段（上游遗产）；版本号一律不写死，用 Releases 链接 |
+| 9 | 品牌残留清理 | 删 "world's first"（上游 ChaAI Office 宣称）；删上游 YouTube 演示视频（B2pLdMX95v4）；删 "Mainfunc, Inc." 商标段（上游遗产）；版本号一律不写死，用 Releases 链接 |
 
 ## 1. 品牌与事实速查（写作时直接引用，全部已核实）
 
 - **本仓（开发仓）**：`/Users/zyh/work/chayuan-office`，remote `git@github.com:zhgyuhuii/chayuan-office.git`（私有）
 - **公开仓**：`zhgyuhuii/ChayuanAIOffice`（描述「察元AIOffice 察元办公套件」，公开、活跃）→ 徽章 / Release / Downloads 全指这里
 - **推送检出**：`/Users/zyh/work/chayuan-ai-office`（同 remote 的另一份检出；SSH 已验证 zhgyuhuii 可推送）。**注意**：其中已有一批未提交的品牌改动（M README/PRIVACY/SECURITY/图标等，最近提交停在「品牌全面统一为 ChatOffice」）——执行时先 `git status` + `git diff` 审阅那批改动是什么，**只提交本任务相关文件**（README.md + docs/assets/readme/**），存量改动不动、不混提，除非所有者明确指示
-- **上游**：GenOffice（`genspark-ai/genoffice`，官网 genoffice.ai）。本仓为下游再品牌化发行版；`upstream` remote 指向 `/Users/zyh/work/genoffice`。致谢段可链上游 GitHub 仓库，**不链 genoffice.ai**
+- **上游**：ChaAI Office（`genspark-ai/chatoffice`，官网 genoffice.ai）。本仓为下游再品牌化发行版；`upstream` remote 指向 `/Users/zyh/work/genoffice`。致谢段可链上游 GitHub 仓库，**不链 genoffice.ai**
 - **品牌 ↔ 代码标识对照**（LLM Quick Facts 必写）：对外品牌=察元AI Office / Chayuan AI Office；CLI=`chaoffice`；npm scope=`@chatoffice`；用户数据目录=`~/.chatoffice`；打包名历史上为 `chatoffice_<v>_amd64.deb` 等。代码标识如实保留，README 提供对照表说明
 - **AI 账号叙事**：UI 已把 Genspark 品牌化为「察元AI Office 账号」（`apps/shell/src/renderer/src/strings.ts`：accountGenspark='察元AIOffice 账号'）。README 功能叙述写「内置账号登录，无需 API key」；Genspark/gsk 仅作为代码层事实出现在工程细节（`packages/ai-search`），不作为对外品牌词
 - **apps 全清单**：docs / sheets / slides / pdf / markdown / html 六编辑器 + shell（套件壳）+ web（浏览器宿主）+ server（BFF）
@@ -59,7 +59,7 @@
 - 标题：`察元AI Office · Chayuan AI Office`；一句话定位（AI-first 办公套件，真实 OOXML/PDF 格式，本地优先）
 - 徽章：License Apache-2.0 / Release / Downloads → `zhgyuhuii/ChayuanAIOffice`
 - 导航行：Download · [Website](https://aidooo.com/) · Product Family · CLI · MCP · Privacy · Security
-- **LLM Quick Facts 块**：这是什么仓库 / 规范名（察元AI Office = Chayuan AI Office）/ CLI `chaoffice`、npm `@chatoffice`、目录 `~/.chatoffice` 对照 / 基于 GenOffice 上游持续同步的下游发行版（非 GenOffice 官方）/ 官网 aidooo.com / 与 Genspark、chatoffice.ai 无关联
+- **LLM Quick Facts 块**：这是什么仓库 / 规范名（察元AI Office = Chayuan AI Office）/ CLI `chaoffice`、npm `@chatoffice`、目录 `~/.chatoffice` 对照 / 基于 ChaAI Office 上游持续同步的下游发行版（非 ChaAI Office 官方）/ 官网 aidooo.com / 与 Genspark、chatoffice.ai 无关联
 - hero 图：`docs/assets/readme/screenshots/home.png` + `<img width="49%">` 双列四宫格（docs/sheets/slides/pdf heroes）
 
 ### 正文 15 节
@@ -74,8 +74,8 @@
 9. **Keywords（SEO / LLM retrieval）** —— 双语总表，列：关键词（中）/ Keyword（EN）/ 所属产品。全量收录 aidooo.com 首页词：察元AI、察元AI工舱、AI工舱云桌面、数字员工、本地AI工作台、断网可用AI、离线大模型、本地部署大模型、国产大模型、DeepSeek、RAG知识库、WPS AI助手、WPS加载项、AI文档助手、公文写作、合同审查AI、AI校对、保密检查、AI视频生成、数字人、OCR、语音转文字、Chayuan、政企私有化部署、麒麟/UOS 国产化适配 + 本仓词：AI Office 套件、开源 AI Office、字节保真 docx、PDF 转 Word、本地 Office 引擎、chaoffice CLI、MCP、桌面办公套件。旧名「察元AI超级智能体」不入表（共识 3），对应行写察元AI OS
 10. **FAQ** —— 更新：是否开源（是，Apache-2.0+ee 例外）/ 离线能力 / 与 Microsoft Office、WPS 的关系（打开保存真实格式；文档助手是 WPS 加载项）/ 家族产品关系 / 数据收集（现 PRIVACY 表述保留）
 11. **Security** —— 链 SECURITY.md，保留进程沙箱/IPC 校验/AI 内容威胁模型表述
-12. **Upstream & Acknowledgements** —— 上游 GenOffice 致谢段（链 GitHub 仓，不链 genoffice.ai）+ 现 Electron/Univer/PDFium/pdf.js/Tiptap/Konva/HarfBuzz/calamine/IronCalc/字体 致谢保留
-13. **License** —— Apache-2.0 + `ee/` 企业例外（ChaAI Office Enterprise License 文件名如实引用）；商标段改写：察元/Chayuan 品牌归项目所有者；GenOffice/GenSpark 商标归其各自所有者；删除 Mainfunc, Inc. 段
+12. **Upstream & Acknowledgements** —— 上游 ChaAI Office 致谢段（链 GitHub 仓，不链 genoffice.ai）+ 现 Electron/Univer/PDFium/pdf.js/Tiptap/Konva/HarfBuzz/calamine/IronCalc/字体 致谢保留
+13. **License** —— Apache-2.0 + `ee/` 企业例外（ChaAI Office Enterprise License 文件名如实引用）；商标段改写：察元/Chayuan 品牌归项目所有者；ChaAI Office/GenSpark 商标归其各自所有者；删除 Mainfunc, Inc. 段
 14. **Privacy** —— 链 PRIVACY.md，保留分析数据口径
 15. **简体中文** —— 同结构完整镜像：定位/家族/功能/架构/下载/CLI/MCP/开发/中文关键词表/FAQ/许可；语言行仅 English · 简体中文（不索引 docs/i18n）
 

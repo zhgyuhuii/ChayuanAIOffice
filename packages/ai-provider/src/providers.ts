@@ -1,3 +1,5 @@
+import { normalizeCustomProfile } from './custom-profile'
+import { resolveCustomEndpoints } from './custom-endpoints'
 import { defaultAiMediaSettings, resolveAiMediaSettings } from './media'
 import { defaultAiSearchSettings, resolveAiSearchSettings } from './search-settings'
 import type { AiProviderId, AiProviderMeta, AiSettings, LegacyAiSettings } from './types'
@@ -50,17 +52,20 @@ export const AI_PROVIDERS: AiProviderMeta[] = [
     // bare gpt-5.6 and the gemini family dropped off it (verified 2026-08-31).
     // DeepSeek goes by the proxy's hyphenated pool id; V4.1 Flash takes images
     // (live-verified 2026-09-15). gpt-6-astra: chat, tool call and image
-    // input all live-verified through the proxy 2026-09-17
+    // input all live-verified through the proxy 2026-09-17; claude-opus-5-5,
+    // gpt-6-sol and gpt-6-luna the same way 2026-09-24. Opus 4.7/4.8 dropped
+    // 2026-10-09: 5.5 is cheaper and supersedes both.
     models: [
-      'claude-opus-4-7',
-      'claude-opus-4-8',
+      'claude-opus-5-5',
       'claude-sonnet-4-6',
       'gpt-6-astra',
+      'gpt-6-sol',
+      'gpt-6-luna',
       'gpt-5.6-terra',
       'gpt-5.6-luna',
       DEEPSEEK_V41_FLASH,
     ],
-    defaultModel: 'claude-opus-4-7',
+    defaultModel: 'claude-opus-5-5',
     keyPlaceholder: 'Not required - sign in to ChaAI Office',
   },
   {
@@ -76,15 +81,19 @@ export const AI_PROVIDERS: AiProviderMeta[] = [
   {
     id: 'anthropic',
     label: 'Claude',
-    // current-generation ids per platform.claude.com models overview (2026-08)
+    // current-generation ids per platform.claude.com models overview (2026-10-09).
+    // Fable needs data retention enabled on the org, otherwise the API answers
+    // model_not_available; every other id is served to any key.
     models: [
-      'claude-opus-5',
+      'claude-opus-5-5',
       'claude-sonnet-5',
+      'claude-fable-5-1',
+      'claude-opus-5',
       'claude-fable-5',
       'claude-opus-4-8',
       'claude-opus-4-7',
       'claude-sonnet-4-6',
-      'claude-haiku-4-5-20251001',
+      'claude-haiku-5-5',
     ],
     defaultModel: 'claude-sonnet-5',
     keyPlaceholder: 'sk-ant-api03-...',
@@ -356,14 +365,14 @@ export const AI_PROVIDERS: AiProviderMeta[] = [
     id: 'opencode-zen',
     label: 'OpenCode Zen',
     // Pay-as-you-go gateway (opencode.ai/docs/zen); ids exactly as GET
-    // /zen/v1/models lists them (2026-09-03). GPT-5.x, Grok and Muse Spark
+    // /zen/v1/models lists them (2026-10-09). GPT-5.x/6, Grok and Muse Spark
     // are served only through the Responses API, which has no protocol here,
     // so they stay out until one exists.
     models: [
       'claude-sonnet-5',
       'claude-opus-5',
       'claude-fable-5-1',
-      'claude-haiku-4-5',
+      'claude-haiku-5-5',
       'gemini-3.7-flash',
       'gemini-3.1-pro',
       'kimi-k3',
@@ -496,9 +505,11 @@ const RETIRED_MODELS: Partial<Record<AiProviderId, Record<string, string>>> = {
   // provider default since no gemini id is served at all
   chatoffice: {
     'gpt-5.6': 'gpt-5.6-terra',
-    'gemini-3.1-pro-preview': 'claude-opus-4-7',
-    'gemini-3-flash-preview': 'claude-opus-4-7',
-    'gemini-3.7-flash': 'claude-opus-4-7',
+    'gemini-3.1-pro-preview': 'claude-opus-5-5',
+    'gemini-3-flash-preview': 'claude-opus-5-5',
+    'gemini-3.7-flash': 'claude-opus-5-5',
+    'claude-opus-4-7': 'claude-opus-5-5',
+    'claude-opus-4-8': 'claude-opus-5-5',
   },
   // 5-Turbo left the Z.ai price card late 2026-08; 5.3 Flash is the cheap tier now
   glm: { 'glm-5-turbo': 'glm-5.3-flash' },
@@ -534,19 +545,28 @@ export function maxOutputTokensOf(
 
 const str = (v: unknown): string => (typeof v === 'string' ? v.trim() : '')
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value)
+}
+
 /** pasted keys/URLs/model ids often carry stray whitespace, which turns into a 401 with a valid key */
-function trimConfigs(providers: AiSettings['providers']): AiSettings['providers'] {
-  const trimmed = { ...providers }
-  for (const [id, config] of Object.entries(trimmed)) {
-    trimmed[id as AiProviderId] = {
+function trimConfigs(providers: Record<string, unknown>): AiSettings['providers'] {
+  const trimmed: Record<string, unknown> = {}
+  for (const [id, config] of Object.entries(providers)) {
+    if (!isRecord(config)) continue
+    // A stored profile is user data like the rest: normalizeCustomProfile
+    // bounds and drops what it cannot honor (an absent/empty one stays absent).
+    const profile = normalizeCustomProfile(config.profile)
+    trimmed[id] = {
       ...config,
       apiKey: str(config.apiKey),
       model: str(config.model),
       ...(config.baseUrl !== undefined ? { baseUrl: str(config.baseUrl) } : {}),
       ...(config.cliPath !== undefined ? { cliPath: str(config.cliPath) } : {}),
+      ...(profile ? { profile } : {}),
     }
   }
-  return trimmed
+  return trimmed as AiSettings['providers']
 }
 
 function migrateRetiredModels(providers: AiSettings['providers']): AiSettings['providers'] {
@@ -579,10 +599,12 @@ export function resolveAiSettings(
     }
     defaults.media = resolveAiMediaSettings(stored.media ?? defaults.media)
     defaults.search = resolveAiSearchSettings(stored.search ?? defaults.search)
-    return defaults
+    return resolveCustomEndpoints(defaults)
   }
-  return {
+  return resolveCustomEndpoints({
     provider: stored.provider ?? defaults.provider,
+    customEndpoints: stored.customEndpoints,
+    customEndpoint: stored.customEndpoint,
     // Trim before migrating: a pasted " deepseek-reasoner " must still hit
     // the retired-id remap instead of being sent to the API verbatim.
     providers: migrateRetiredModels(trimConfigs({ ...defaults.providers, ...stored.providers })),
@@ -595,5 +617,5 @@ export function resolveAiSettings(
           maxOutputTokens: clampMaxOutputTokens(stored.maxOutputTokens ?? defaults.maxOutputTokens),
         }
       : {}),
-  }
+  })
 }

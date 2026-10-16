@@ -114,7 +114,7 @@ describe('chatoffice cli', () => {
   })
 
   it('open fails with exit code 4 when no app binary is available', async () => {
-    // A GenOffice already running on this machine publishes its control endpoint in the
+    // A ChaAI Office already running on this machine publishes its control endpoint in the
     // user-data dir; `open` would then hand the file to that live instance and exit 0,
     // never reaching the missing-binary path. Isolate the lookup like control.test.ts does.
     const r = await run(['open', DOCX, '--json'], {

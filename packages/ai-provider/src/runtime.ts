@@ -486,7 +486,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
   }
 
   /** BYOK image model only — the chatoffice cloud fallback is gone (the cloud
-   * backend belongs to the GenOffice upstream, not this build). Error when no
+   * backend belongs to the ChaAI Office upstream, not this build). Error when no
    * image model exists. If the user configured an image model, its failure is
    * the answer — silent fallbacks would hide broken keys. An explicit `model`
    * selection (insert-media dialog) is honored when it still points at an

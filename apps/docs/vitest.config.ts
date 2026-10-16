@@ -32,6 +32,10 @@ export default defineConfig({
         replacement: local('../../packages/font-metrics/src/index.ts'),
       },
       {
+        find: '@chatoffice/electron-utils/print-job',
+        replacement: local('../../packages/electron-utils/src/print-job.ts'),
+      },
+      {
         find: '@chatoffice/electron-utils/atomic-write',
         replacement: local('../../packages/electron-utils/src/atomic-write.ts'),
       },

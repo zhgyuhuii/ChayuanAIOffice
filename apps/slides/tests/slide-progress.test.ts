@@ -96,7 +96,7 @@ describe('generation progress checklist reminds the AI to fill gaps', () => {
     expect(afterPlan).toContain('0 generated')
   })
 
-  it('caps the unfinished-page list injected into context (genoffice#1100)', async () => {
+  it('caps the unfinished-page list injected into context (chatoffice#1100)', async () => {
     const { access } = makeAccess()
     const skill = createSlidesSkill(access)
     await skill.executeTool(planCall(150))

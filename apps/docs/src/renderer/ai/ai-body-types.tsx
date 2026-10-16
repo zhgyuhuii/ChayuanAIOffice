@@ -6,6 +6,7 @@
 import { useState } from 'react'
 import type { AttachmentMeta } from '../../shared/ipc'
 import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
+import type { MindMapTreeNode } from '@chatoffice/agent-core'
 import type { PmNode } from '../editor/convert'
 import { useI18n, type StringKey } from '../i18n/locale'
 import filePdfIcon from '../assets/file-pdf.png'
@@ -65,6 +66,13 @@ export interface ChatEntry {
   scope?: import('@chatoffice/ui').AiScopeQuoteData
   /** KB citations behind the [n] chips of this assistant turn */
   kbCitations?: import('@chatoffice/ui').KbCitation[]
+  /** interactive mind map from generate_mindmap's side-channel display (session-only;
+   * the persisted transcript keeps the tool call, so a reopened file can regenerate)
+   * (R24 上游 #1999 织入) */
+  mindmap?: MindMapTreeNode
+  /** tokens the provider billed for this reply, summed across its turns (absent when unreported)
+   * (R24 上游 #1944 织入) */
+  usage?: import('@chatoffice/ui').AiTokenUsageView
 }
 
 /** longest selection excerpt echoed on a user bubble */
@@ -81,6 +89,7 @@ export const EditStarters: StringKey[] = [
   'aiStarterPolishAll',
   'aiStarterContinue',
   'aiStarterFillTemplate',
+  'aiStarterMindMap',
 ]
 
 /** Clipboard bitmap MIME → attachment extension (corresponds to ATTACHMENT_IMAGE_EXTS) */

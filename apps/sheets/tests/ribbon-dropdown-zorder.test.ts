@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 /**
- * Regression pin for the ribbon-header z-order lift (genoffice#1767).
+ * Regression pin for the ribbon-header z-order lift (chatoffice#1767).
  *
  * .excel-header is z-index: 10, so it opens a stacking context and a ribbon
  * dropdown popover's own z-index is trapped inside it, painting under the

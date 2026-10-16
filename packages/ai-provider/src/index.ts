@@ -1,4 +1,9 @@
 export type {
+  AiCustomCompat,
+  AiCustomEndpoint,
+  AiCustomModelProfile,
+  AiCustomProfile,
+  AiCustomProtocol,
   AiChatRequest,
   AiChatResponse,
   AiImageSource,
@@ -14,6 +19,7 @@ export type {
   AiStreamChunk,
   AiStreamRequest,
   AiStreamRequestV2,
+  AiTokenUsage,
   AiWireProtocol,
   ChaOfficeAccountStatus,
   LegacyAiSettings,
@@ -39,6 +45,27 @@ export type {
 } from './registry'
 export { sanitizeAiSettings, sanitizeCliPath, validCliPath } from './ai-settings-guard'
 export {
+  activeCustomEndpoint,
+  customEndpointLabel,
+  newCustomEndpointId,
+  removeCustomEndpoint,
+  resolveCustomEndpoints,
+  selectCustomEndpoint,
+  upsertCustomEndpoint,
+} from './custom-endpoints'
+export {
+  AI_CUSTOM_PROTOCOLS,
+  declaredModelProfile,
+  normalizeCustomProfile,
+  resolveCustomProfile,
+} from './custom-profile'
+export type { ResolvedCustomProfile } from './custom-profile'
+export { resolveProfileCredential } from './credential-env'
+export type { EnvLookup } from './credential-env'
+export {
+  AI_MEDIA_PROVIDERS,
+  GEMINI_MEDIA_BASE_URL,
+  OPENAI_IMAGES_BASE_URL,
   activeMediaConfig,
   activeMediaProvider,
   defaultAiMediaSettings,

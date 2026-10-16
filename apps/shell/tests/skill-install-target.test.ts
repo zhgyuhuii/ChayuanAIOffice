@@ -32,7 +32,7 @@ vi.mock('@chatoffice/cli/agent-skills', () => {
   const skillsDir = '/home/me/.claude/skills'
   return {
     LEDGER_KEY: 'agentSkillInstalls',
-    bundledSkillFrom: () => ({ name: 'genoffice', version: '1.0.0', text: 'x' }),
+    bundledSkillFrom: () => ({ name: 'chaoffice', version: '1.0.0', text: 'x' }),
     buildSkillZip: async () => Buffer.alloc(0),
     detectAgents: () => [{ id: 'claude-code', label: 'Claude Code', skillsDir }],
     agentTarget: (id: string) =>
@@ -65,7 +65,7 @@ beforeEach(() => {
   h.handlers.clear()
   h.installed.length = 0
   h.dialogResult = { canceled: true, filePaths: [] }
-  dir = mkdtempSync(join(tmpdir(), 'genoffice-integrations-'))
+  dir = mkdtempSync(join(tmpdir(), 'chatoffice-integrations-'))
   writeFileSync(join(dir, 'SKILL.md'), '---\nname: genoffice\n---\n')
   writeFileSync(join(dir, 'package.json'), JSON.stringify({ version: '0.0.0' }))
   registerIntegrationsIpc({

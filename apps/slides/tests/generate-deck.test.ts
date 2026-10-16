@@ -414,7 +414,7 @@ describe('generate_deck batched planning (topic mode)', () => {
     expect(ctx).toContain('all generated')
   })
 
-  it('clamps an absurd approx_pages to MAX_APPROX_PAGES planner work (genoffice#1100)', async () => {
+  it('clamps an absurd approx_pages to MAX_APPROX_PAGES planner work (chatoffice#1100)', async () => {
     const { access, getPages } = makeAccess()
     let planCalls = 0
     const plan = access.planDeckOutline!

@@ -125,6 +125,8 @@ export interface TabsApi {
    * process hides the active editor view for the modal's lifetime.
    */
   setShellModalOpen(open: boolean): void
+  /** subscribe to main process requesting inline rename of a tab */
+  onStartRename?(handler: (id: string) => void): () => void
 }
 
 export const TABS_CHANNELS = {
@@ -149,6 +151,7 @@ export const TABS_CHANNELS = {
   treeInset: 'tabs:tree-inset',
   treeWidth: 'tabs:tree-width',
   shellModal: 'tabs:shell-modal',
+  startRename: 'tabs:start-rename',
 } as const
 
 /// 自绘窗口控制（Windows/Linux 用；macOS 用原生红绿灯，web/dsh 无窗口概念）

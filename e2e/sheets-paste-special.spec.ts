@@ -31,7 +31,7 @@ interface SheetDims {
 }
 
 test('paste special: transpose, add operation, paste link, undo', async () => {
-  const scratch = await mkdtemp(join(tmpdir(), 'genoffice-paste-special-'))
+  const scratch = await mkdtemp(join(tmpdir(), 'chatoffice-paste-special-'))
   const launched = await launchShell({ onboardingSeen: true, videoDir: 'sheets-paste-special' })
   try {
     const { app, page } = launched
