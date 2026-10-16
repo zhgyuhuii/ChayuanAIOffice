@@ -53,7 +53,9 @@ test('re-enabling spellcheck respells existing text without user input', async (
   const launched = await launchShell({ onboardingSeen: true, videoDir: 'spellcheck-reenable' })
   const { app, page } = launched
   try {
-    await page.locator('.quick-card').first().click()
+    // adapted (LOCAL R24): 本地首页为新建磁贴形态（无上游 quick-card）——点 .docx 磁贴
+    await page.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => {})
+    await page.evaluate(() => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === '.docx')?.dispatchEvent(new MouseEvent('click', { bubbles: true })))
     const editor = await waitForPageWithUrl(app, '://docs/')
     const docPage = editor.locator('.doc-page[contenteditable="true"][spellcheck="true"]')
     await docPage.waitFor()
@@ -107,7 +109,10 @@ test('toggling spellcheck never scrolls the view to the caret', async () => {
   const launched = await launchShell({ onboardingSeen: true, videoDir: 'spellcheck-noscroll' })
   const { app } = launched
   try {
-    await launched.page.locator('.quick-card').first().click()
+    // adapted (LOCAL R24): 磁贴等价（第二处）
+    const p2 = launched.page
+    await p2.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => {})
+    await p2.evaluate(() => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === '.docx')?.dispatchEvent(new MouseEvent('click', { bubbles: true })))
     const editor = await waitForPageWithUrl(app, '://docs/')
     await editor.locator('.doc-page').waitFor()
     await wait(1500)

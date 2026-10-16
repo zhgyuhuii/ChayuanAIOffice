@@ -9,7 +9,10 @@ test.describe('html editor', () => {
     const launched = await launchShell({ onboardingSeen: true, videoDir: 'new-html-tab' })
     const { app, page } = launched
     try {
-      const card = page.locator('.quick-card', { hasText: 'AI HTML' })
+            // adapted (LOCAL R24): 磁贴等价（AI HTML → .html）
+      page.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => undefined)
+      const card = page.evaluateHandle((ext) => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === `.html`), 'html')
+
       await expect(card).toHaveCount(1)
       await card.click()
 

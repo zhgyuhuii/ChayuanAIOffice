@@ -56,7 +56,7 @@ test('the manual survives an editor switch that swaps the application menu', asy
       [join(dir, 'sample.md'), '://markdown/', 'markdown again'],
     ] as const) {
       await writeFile(path, '# Sample\n\nA markdown note.\n').catch(() => {})
-      await page.evaluate((p) => window.aiOffice.openPath(p), path)
+      await page.evaluate((p) => window.chaOffice.openPath(p), path)
       await waitForPageWithUrl(launched.app, url)
       await page.waitForTimeout(1200)
 

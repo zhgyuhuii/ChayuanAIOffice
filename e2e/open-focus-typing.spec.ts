@@ -39,7 +39,7 @@ async function openFromHome(app: ElectronApplication, home: Page, file: string):
     .toBe(true)
   await home.evaluate(
     (p) =>
-      (window as unknown as { aiOffice: { openPath(p: string): Promise<void> } }).aiOffice.openPath(
+      (window as unknown as { chaOffice: { openPath(p: string): Promise<void> } }).chaOffice.openPath(
         p,
       ),
     file,

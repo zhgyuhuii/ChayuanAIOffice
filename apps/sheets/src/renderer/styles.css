@@ -1034,12 +1034,28 @@ html.chatoffice-popover-open .ribbon-tabs {
   grid-auto-flow: column;
 }
 
+/* LOCAL(R24 真机验收): 紧凑档名钮平铺规则钉了 min-height:56px，把 File 页
+ * 名钮（另存为/导出等菜单钮）撑出 48px 紧凑带 9px（#1891 契约 e2e 抓出）。
+ * 紧凑档名钮回到单行图标带，跟随带高。 */
+.ribbon-compact .ribbon-group-named .menu-btn-name {
+  min-height: 0;
+  max-height: 100%;
+  align-self: center;
+}
+
 /* The Insert tab's chart-type cluster is a 3×3 grid of 17px cells (53px
  * tall); transposed to two rows it fits with room to spare. */
 .ribbon-compact .chart-grid {
   grid-template-columns: none;
   grid-template-rows: repeat(2, auto);
   grid-auto-flow: column;
+}
+
+/* LOCAL(R24 真机验收): 图表钮图标实为 22px（上游 #1891 契约 e2e 抓出），
+ * 22×2 行 + 缝隙在 48px 紧凑带溢出 4px——紧凑档收到 16px 两行即入带。 */
+.ribbon-compact .chart-grid button svg {
+  width: 16px;
+  height: 16px;
 }
 
 /* Bare colored ribbon glyphs — no chip background.

@@ -27,7 +27,9 @@ test.describe('#2029 the comment author follows Settings → General → User na
       expect(saved.authorName).toBe('Ada Lovelace')
       await shellPage.locator('.set-close').click()
 
-      await shellPage.locator('.quick-card', { hasText: 'AI Slides' }).click()
+      // adapted (LOCAL R24): 磁贴等价（.pptx）
+      await shellPage.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => {})
+      await shellPage.evaluate(() => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === '.pptx')?.dispatchEvent(new MouseEvent('click', { bubbles: true })))
       const editor = await waitForPageWithUrl(launched.app, '://slides/')
       await editor.waitForSelector('.stage-wrap canvas', { timeout: 30_000 })
 

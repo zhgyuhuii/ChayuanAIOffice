@@ -14,7 +14,9 @@ test('multiple pages grid follows clicks and the caret, collapses at 100%', asyn
   const launched = await launchShell({ onboardingSeen: true, videoDir: 'docs-multipage-view' })
   const { app, page } = launched
   try {
-    await page.locator('.quick-card').first().click()
+    // adapted (LOCAL R24): 本地首页为新建磁贴形态（无上游 quick-card）——点 .docx 磁贴
+    await page.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => {})
+    await page.evaluate(() => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === '.docx')?.dispatchEvent(new MouseEvent('click', { bubbles: true })))
     const editor = await waitForPageWithUrl(app, '://docs/')
     const docPage = editor.locator('.doc-page[contenteditable="true"]')
     await docPage.waitFor()

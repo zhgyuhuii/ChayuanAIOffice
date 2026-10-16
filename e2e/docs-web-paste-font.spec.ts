@@ -37,8 +37,10 @@ test.describe('docs web-HTML paste fonts', () => {
     const launched = await launchShell({ onboardingSeen: true, videoDir: 'docs-web-paste-font' })
     const { app, page } = launched
     try {
-      await expect(page.locator('.quick-card').first()).toContainText('AI Docs')
-      await page.locator('.quick-card').first().click()
+            // adapted (LOCAL R24): 磁贴等价（AI Docs → .docx）
+      page.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => undefined)
+      page.evaluate((ext) => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === `.docx`)?.dispatchEvent(new MouseEvent('click', { bubbles: true })), 'docx')
+
       const editorPage = await waitForPageWithUrl(app, '://docs/')
       await editorPage.waitForFunction(
         () => Boolean((window as unknown as AidocsWindow).__aidocs?.editor),

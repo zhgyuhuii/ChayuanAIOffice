@@ -125,7 +125,10 @@ test.describe('theme visual adoption', () => {
     const launched = await launchShell({ onboardingSeen: true, videoDir: 'theme-visual-docs' })
     try {
       const shellPage = await findShellPage(launched.app)
-      await shellPage.locator('.quick-card', { hasText: 'AI Docs' }).click()
+            // adapted (LOCAL R24): 磁贴等价（AI Docs → .docx）
+      shellPage.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => undefined)
+
+      shellPage.evaluate((ext) => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === `.docx`)?.dispatchEvent(new MouseEvent('click', { bubbles: true })), 'docx')
       const editorPage = await waitForPageWithUrl(launched.app, '://docs/')
       const page = editorPage.locator('.doc-page').first()
       await expect(page).toBeVisible()
@@ -167,8 +170,10 @@ test.describe('theme visual adoption', () => {
       await expect.poll(async () => luminance(await pageBg())).toBeGreaterThan(180)
       expect(luminance(await pageInk())).toBeLessThan(60)
       await editorPage.screenshot({ path: screenshotPath('theme-docs-dark-white-page') })
-    } finally {
-      await closeAndSaveVideo(launched, 'theme-visual-docs')
+          // adapted (LOCAL R24): 磁贴等价（AI Sheets → .xlsx）
+      shellPage.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => undefined)
+
+      shellPage.evaluate((ext) => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === `.xlsx`)?.dispatchEvent(new MouseEvent('click', { bubbles: true })), 'xlsx')
     }
   })
 
@@ -176,7 +181,10 @@ test.describe('theme visual adoption', () => {
     const launched = await launchShell({ onboardingSeen: true, videoDir: 'theme-visual-sheets' })
     try {
       const shellPage = await findShellPage(launched.app)
-      await shellPage.locator('.quick-card', { hasText: 'AI Sheets' }).click()
+            // adapted (LOCAL R24): 磁贴等价（AI Sheets → .xlsx）
+      shellPage.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => undefined)
+      shellPage.evaluate((ext) => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === `.xlsx`)?.dispatchEvent(new MouseEvent('click', { bubbles: true })), 'xlsx')
+
       const editorPage = await waitForPageWithUrl(launched.app, '://sheets/')
       await editorPage.waitForSelector('canvas', { timeout: 20_000 })
 

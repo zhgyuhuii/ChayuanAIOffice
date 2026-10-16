@@ -24,10 +24,14 @@ test('slides: compact ribbon fits every tab without clipping', async () => {
     videoDir: 'slides-ribbon-compact-clip',
   })
   try {
-    const shellPage = launched.app.windows()[0]!
-    await shellPage.evaluate(() =>
-      (window as never as { aiOffice: { newSlide(): Promise<void> } }).aiOffice.newSlide(),
-    )
+    const shellPage = launched.page
+    await shellPage.waitForFunction((ext) => [...document.querySelectorAll('.side-new-tile')].some((b) => b.textContent?.trim() === `.${ext}`), 'pptx', { timeout: 20_000 })
+    // adapted (LOCAL R24): 上游 window.aiOffice.newDoc() 桥本地不存在——
+    // 经首页新建磁贴（本地树内联形态）等价创建
+    await shellPage.evaluate((ext) => {
+      const tile = [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === `.${ext}`)
+      ;(tile as HTMLElement).dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    }, 'pptx')
     const page = await waitForPageWithUrl(launched.app, '://slides/')
     await page.waitForSelector('.ribbon-body', { timeout: 30_000 })
     await page.waitForTimeout(1_500)

@@ -32,7 +32,7 @@ test('tab context menu saves current edits from a background tab and tooltip sho
     await expect(tabItem).toHaveAttribute('title', `notes.md\n${source}`)
 
     const tabId = await home.evaluate(async () => {
-      const api = (window as unknown as { aiOfficeTabs: TabsApi }).aiOfficeTabs
+      const api = (window as unknown as { chaOfficeTabs: TabsApi }).chaOfficeTabs
       const tab = (await api.list()).find((item) => item.kind === 'markdown')!
       await api.activate('home')
       return tab.id
@@ -47,7 +47,7 @@ test('tab context menu saves current edits from a background tab and tooltip sho
     }, target)
 
     await home.evaluate(
-      (id) => (window as unknown as { aiOfficeTabs: TabsApi }).aiOfficeTabs.showTabMenu(id, 20, 20),
+      (id) => (window as unknown as { chaOfficeTabs: TabsApi }).chaOfficeTabs.showTabMenu(id, 20, 20),
       tabId,
     )
 
@@ -81,7 +81,7 @@ test('tab context menu saves current edits from a background tab and tooltip sho
       .toContain('Unsaved context-menu edit.')
 
     const active = await home.evaluate(async () =>
-      (await (window as unknown as { aiOfficeTabs: TabsApi }).aiOfficeTabs.list()).find(
+      (await (window as unknown as { chaOfficeTabs: TabsApi }).chaOfficeTabs.list()).find(
         (item) => item.active,
       ),
     )
@@ -112,7 +112,7 @@ test('Present tab has no enabled Save, Save As or Print commands', async () => {
       .poll(async () =>
         home.evaluate(
           async () =>
-            (await (window as unknown as { aiOfficeTabs: TabsApi }).aiOfficeTabs.list()).filter(
+            (await (window as unknown as { chaOfficeTabs: TabsApi }).chaOfficeTabs.list()).filter(
               (tab) => tab.kind === 'html',
             ).length,
         ),
@@ -120,7 +120,7 @@ test('Present tab has no enabled Save, Save As or Print commands', async () => {
       .toBe(2)
     const previewId = await home.evaluate(
       async () =>
-        (await (window as unknown as { aiOfficeTabs: TabsApi }).aiOfficeTabs.list()).find(
+        (await (window as unknown as { chaOfficeTabs: TabsApi }).chaOfficeTabs.list()).find(
           (tab) => tab.active && tab.kind === 'html',
         )!.id,
     )
@@ -131,7 +131,7 @@ test('Present tab has no enabled Save, Save As or Print commands', async () => {
       }
     })
     await home.evaluate(
-      (id) => (window as unknown as { aiOfficeTabs: TabsApi }).aiOfficeTabs.showTabMenu(id, 20, 20),
+      (id) => (window as unknown as { chaOfficeTabs: TabsApi }).chaOfficeTabs.showTabMenu(id, 20, 20),
       previewId,
     )
     const commands = await launched.app.evaluate(() => {

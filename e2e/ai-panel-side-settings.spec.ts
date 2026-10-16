@@ -17,7 +17,7 @@ test('AI panel side persists across restart and updates an open Docs tab without
     ).toContainText('Right')
     await page.screenshot({ path: screenshotPath('ai-panel-side-settings') })
     await page.locator('.set-close').click()
-    await page.evaluate((path) => window.aiOffice.openPath(path), fixture)
+    await page.evaluate((path) => window.chaOffice.openPath(path), fixture)
     const editor = await waitForPageWithUrl(launched.app, '://docs/')
     await expect(editor.locator('.ProseMirror').first()).toBeVisible()
     await expect(editor.locator('html')).toHaveAttribute('data-ai-panel-side', 'right')

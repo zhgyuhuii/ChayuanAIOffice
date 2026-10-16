@@ -47,7 +47,9 @@ for (const { name, card, url, host } of APPS) {
       videoDir: `rtl-${name}`,
     })
     try {
-      await launched.page.locator('.quick-card').nth(card).click()
+            // adapted (LOCAL R24): 磁贴按 NEW_ITEMS 序等价
+      launched.page.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => undefined)
+      launched.page.evaluate((i) => { const t = [...document.querySelectorAll('.side-new-tile')][i]; t?.dispatchEvent(new MouseEvent('click', { bubbles: true })) }, card)
       const page = await waitForPageWithUrl(launched.app, url)
       const surface = page.locator(host).first()
       await expect(surface).toBeVisible({ timeout: 45_000 })

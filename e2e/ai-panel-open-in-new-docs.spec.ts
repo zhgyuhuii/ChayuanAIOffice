@@ -11,10 +11,13 @@ import { launchShell, closeAndSaveVideo, waitForPageWithUrl } from './helpers'
  */
 
 /** collapsed = the rail only; expanded = the composer is on screen */
+// adapted (LOCAL R24): 本地面板是 DockShell（无上游 .ai-dock 类）——
+// collapsed = 编辑器里看不到 composer 输入框（收起成 rail）
 async function aiPanelState(
   editor: import('@playwright/test').Page,
 ): Promise<'collapsed' | 'expanded'> {
-  return (await editor.locator('.ai-dock.collapsed').count()) > 0 ? 'collapsed' : 'expanded'
+  const composer = editor.locator('.ai-input-box textarea').first()
+  return (await composer.isVisible().catch(() => false)) ? 'expanded' : 'collapsed'
 }
 
 async function turnOffOpenInNewDocs(page: import('@playwright/test').Page): Promise<void> {
@@ -44,12 +47,13 @@ test.describe('#1589 the "open the AI panel in new documents" setting', () => {
 
     const restarted = await launchShell({ userDataDir, videoDir: 'ai-panel-1589-new-doc' })
     try {
-      await expect(restarted.page.locator('.quick-card').first()).toContainText('AI Docs')
-      await restarted.page.locator('.quick-card').first().click()
+      // adapted (LOCAL R24): 磁贴等价
+      await restarted.page.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => {})
+      await restarted.page.evaluate(() => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === '.docx')?.dispatchEvent(new MouseEvent('click', { bubbles: true })))
       const editor = await waitForPageWithUrl(restarted.app, '://docs/')
       await expect(editor.locator('.ProseMirror').first()).toBeVisible({ timeout: 30_000 })
       expect(await aiPanelState(editor)).toBe('collapsed')
-      await expect(editor.locator('.ai-composer textarea')).toBeHidden()
+      await expect(editor.locator('.ai-input-box textarea')).toBeHidden()
     } finally {
       await closeAndSaveVideo(restarted, 'ai-panel-1589-new-doc')
     }
@@ -63,12 +67,13 @@ test.describe('#1589 the "open the AI panel in new documents" setting', () => {
     test.setTimeout(300_000)
     const launched = await launchShell({ onboardingSeen: true, videoDir: 'ai-panel-1589-on-new' })
     try {
-      await expect(launched.page.locator('.quick-card').first()).toContainText('AI Docs')
-      await launched.page.locator('.quick-card').first().click()
+      // adapted (LOCAL R24): 磁贴等价
+      await launched.page.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => {})
+      await launched.page.evaluate(() => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === '.docx')?.dispatchEvent(new MouseEvent('click', { bubbles: true })))
       const editor = await waitForPageWithUrl(launched.app, '://docs/')
       await expect(editor.locator('.ProseMirror').first()).toBeVisible({ timeout: 30_000 })
       expect(await aiPanelState(editor)).toBe('expanded')
-      await expect(editor.locator('.ai-composer textarea')).toBeVisible()
+      await expect(editor.locator('.ai-input-box textarea')).toBeVisible()
     } finally {
       await closeAndSaveVideo(launched, 'ai-panel-1589-on-new')
     }

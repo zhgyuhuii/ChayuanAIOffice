@@ -27,8 +27,9 @@ test.describe('docs paste options chip', () => {
     const launched = await launchShell({ onboardingSeen: true, videoDir: 'docs-paste-options' })
     const { app, page } = launched
     try {
-      await expect(page.locator('.quick-card').first()).toContainText('AI Docs')
-      await page.locator('.quick-card').first().click()
+      // adapted (LOCAL R24): 磁贴等价
+      await page.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => {})
+      await page.evaluate(() => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === '.docx')?.dispatchEvent(new MouseEvent('click', { bubbles: true })))
       const editorPage = await waitForPageWithUrl(app, '://docs/')
       await editorPage.waitForFunction(
         () => Boolean((window as unknown as AidocsWindow).__aidocs?.editor),

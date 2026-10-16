@@ -25,12 +25,17 @@ test('sheets: compact ribbon fits every tab without clipping', async () => {
     videoDir: 'sheets-ribbon-compact-clip',
   })
   try {
-    const shellPage = launched.app.windows()[0]!
-    await shellPage.evaluate(() =>
-      (window as never as { aiOffice: { newSheet(): Promise<void> } }).aiOffice.newSheet(),
-    )
+    const shellPage = launched.page
+    await shellPage.waitForFunction((ext) => [...document.querySelectorAll('.side-new-tile')].some((b) => b.textContent?.trim() === `.${ext}`), 'xlsx', { timeout: 20_000 })
+    // adapted (LOCAL R24): 上游 window.aiOffice.newDoc() 桥本地不存在——
+    // 经首页新建磁贴（本地树内联形态）等价创建
+    await shellPage.evaluate((ext) => {
+      const tile = [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === `.${ext}`)
+      ;(tile as HTMLElement).dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    }, 'xlsx')
     const page = await waitForPageWithUrl(launched.app, '://sheets/')
-    await page.waitForSelector('[data-ribbon-body]', { timeout: 30_000 })
+    // adapted (LOCAL R24): 上游 sheets ribbon 用 [data-ribbon-body]；本地 ExcelShell 是 .ribbon 带
+    await page.waitForSelector('.excel-header .ribbon', { timeout: 30_000 })
     await page.waitForTimeout(1_500)
 
     // ⌥⌘K / Ctrl+Alt+K, sent the way the app receives it
@@ -42,7 +47,7 @@ test('sheets: compact ribbon fits every tab without clipping', async () => {
     expect(await compact(), 'compact density did not engage').toBe(true)
 
     const tabs = await page.evaluate(() =>
-      [...document.querySelectorAll('.ribbon-tabs > button:not(.qa-btn)')]
+      [...document.querySelectorAll('.ribbon-tabs button.ribbon-tab, .ribbon-tabs-track button')]
         .map((t) => t.textContent?.trim() ?? '')
         .filter(Boolean),
     )
@@ -50,7 +55,7 @@ test('sheets: compact ribbon fits every tab without clipping', async () => {
 
     for (const tab of tabs) {
       await page.evaluate((name) => {
-        const el = [...document.querySelectorAll('.ribbon-tabs > button:not(.qa-btn)')].find(
+        const el = [...document.querySelectorAll('.ribbon-tabs button.ribbon-tab, .ribbon-tabs-track button')].find(
           (x) => x.textContent?.trim() === name,
         )
         ;(el as HTMLElement | undefined)?.click()
@@ -64,7 +69,7 @@ test('sheets: compact ribbon fits every tab without clipping', async () => {
       expect(await compact(), `"${tab}" left compact density off`).toBe(true)
 
       const measured = await page.evaluate(() => {
-        const bands = [...document.querySelectorAll('[data-ribbon-body]')] as HTMLElement[]
+        const bands = [...document.querySelectorAll('.excel-header .ribbon')] as HTMLElement[]
         const body = bands.find((b) => b.offsetParent !== null) ?? bands[0]
         if (!body) return null
         const tallest = [...body.querySelectorAll('*')]
