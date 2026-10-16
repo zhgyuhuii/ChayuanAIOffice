@@ -42,6 +42,8 @@ export interface ChayuanTabProps {
   dropdown: string | null
   setDropdown: SetDropdown
   chayuan: ChayuanServices
+  /** LOCAL(R24): 上游 #1999 思维导图快捷入口——发送 aiMindMapPrompt 预设并自动运行 */
+  onAiPreset?: (text: string) => void
 }
 
 function bigBtn(opts: {
@@ -125,7 +127,7 @@ const IMAGE_BATCH_ITEMS: Array<{
   { labelKey: 'ribbonIbDeleteCaption', run: (s) => s.runOp('images.deleteCaptions') },
 ]
 
-export function ChayuanTab({ hasDoc, dropdown, setDropdown, chayuan }: ChayuanTabProps) {
+export function ChayuanTab({ hasDoc, dropdown, setDropdown, chayuan, onAiPreset }: ChayuanTabProps) {
   const run = (id: string) => () => chayuan.runAssistant(id)
   const dialog = (kind: DocOpsDialogKind) => () => chayuan.openDialog(kind)
 
@@ -181,6 +183,21 @@ export function ChayuanTab({ hasDoc, dropdown, setDropdown, chayuan }: ChayuanTa
               })),
             )}
           </div>
+          {/* LOCAL(R24): 上游 #1999 思维导图快捷入口（上游置于 AI 组，本地按 R20 裁定放察元页） */}
+          {bigBtn({
+            labelKey: 'aiMindMapBtn',
+            icon: (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="9" y="3" width="6" height="4.4" rx="1.1" stroke="currentColor" strokeWidth="1.5" />
+                <rect x="2.5" y="16.6" width="6" height="4.4" rx="1.1" stroke="currentColor" strokeWidth="1.5" />
+                <rect x="15.5" y="16.6" width="6" height="4.4" rx="1.1" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M12 7.5v3.6M5.5 16.5v-2.4a1.6 1.6 0 0 1 1.6-1.6h9.8a1.6 1.6 0 0 1 1.6 1.6v2.4M12 11.1v1.4"
+                  stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            ),
+            disabled: !hasDoc,
+            onClick: () => onAiPreset?.(t('aiMindMapPrompt')),
+          })}
           {bigBtn({
             labelKey: 'ribbonChayuanTextToImage',
             icon: icon(IconPicture),

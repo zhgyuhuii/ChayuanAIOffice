@@ -4261,6 +4261,7 @@ function RibbonInner({
             dropdown={dropdown}
             setDropdown={setDropdown}
             chayuan={chayuan}
+            onAiPreset={onAiPreset}
           />
         ) : (
           <ViewTab

@@ -50,6 +50,53 @@
 | 环境 | `open -a` odoc 送达链路对本机所有文件类型失效（docx 对照同样不开） | 文件抵达层环境问题，非 ODF 回归；ODF 转换由 odf2ooxml 套件测试覆盖 |
 | 环境 | 首页渲染视图在切到编辑器标签后从 CDP 目标消失 | park 架构预期行为（非崩溃）；需要首页时点首页标签即回 |
 
+
+
+## 附录：第二十四轮上游功能落位与可见性逐项核对（2026-10-16 二次核对）
+
+> 方法：对 a08c842f..4dc4b7b3 全部特性提交逐条 grep 本地符号 + UI 入口 + 真机截图。
+
+### A. 已落地且界面可见（核对通过）
+
+| 上游特性 | 提交 | 本地可见面 | 证据 |
+|---|---|---|---|
+| docs 状态栏选中/总字数 | #2010 | 状态栏「选中/总字数」 | 03/20 截图状态栏 |
+| Sheets 网格 RTL 切换 | #1972 | 视图页「从右到左」复选项 | ExcelShell:4648 |
+| PDF 表单填写/表单设计页 | #1919 | Ribbon fillForm/formDesign 页 | App.tsx:368 |
+| markdown 纸主题四款 | #1994 | markdown 文档主题 | App.tsx mdTheme |
+| markdown/wiki 链接 | #1977 | [[链接]] 解析+fragment 定位 | App.tsx wikilink |
+| ODF 六扩展打开对话框 | #1982 | odt/ott/ods/ots/odp/otp 全在 | index.ts:4791 |
+| AI 侧栏总开关 | #1951 | 设置→通用「显示 AI 侧栏」 | 17 截图 |
+| 界面缩放 | #1934 | 视图菜单缩放组（与上游同形态，无设置页项） | index.ts uiScaleMenuItems |
+| token 用量条 | #1944 | 六端面板 AiUsageChip/会话小计 | 六端 grep 全命中 |
+| 消息排队条 | #1876 | 六端面板 AiQueueStrip（忙碌时二条排队可见） | 六端 grep 全命中 |
+| Liquid AI d1 决策端点 | #1922 | 设置→模型 决策端点下拉 | SettingsModal:321 |
+| Cloudflare clef-omni | #1953 | cloudflare 端点模型路径自由填写（home-api:207） | 代码在位 |
+| markdown 思维导图 | #1976 | 面板空态「为这篇文档生成思维导图」钮 | 06 截图 |
+| Doubao 退役模型重映射 | #1968/#2000 | 供应商目录（配置 Doubao 后可见） | ai-provider 目录 |
+| 帮助手册十月更新 | #1954 | F1 图文手册 topics（首页入口按用户裁定隐藏） | topics 21 语言 |
+| mail-merge 引擎与 AI 指令链 | #2030/#2009/#2026 | docx-engine/mail-merge.ts + docs field-ops/protocol（AI 对话指令「数据源+替换」，无 Ribbon 钮=与上游同形态） | 双端 grep 命中 |
+| Windows 任务栏恢复/WASI 构建/SSRF 加固/各类引擎修复 | #2021/#1979/#1990/#1960 等 | 代码层（无独立 UI） | 源码在位 |
+
+### B. 本轮核对新增的可见入口（响应「思维导图没在左上角」）
+
+| 项 | 处置 | 证据 |
+|---|---|---|
+| docs 思维导图快捷入口 | 新增**察元页「AI 思维导图」大钮**（上游置于 AI 组+Genspark AI 组标——按 R20「顶部菜单去 AI」裁定移植到察元页；点击=开面板自动运行 aiMindMapPrompt，与上游 onAiPreset 行为一致） | 20-chayuan-tab-mindmap.png |
+
+### C. 已落地但入口不可见（按既定裁定或挂账，非缺失）
+
+| 项 | 状态 |
+|---|---|
+| kb-ask 首页问答面板（#1940，含 onboarding hero） | 代码全在位；首页入口按用户本轮裁定隐藏 |
+| 声明式 profiles 设置面 UI（#1978） | 包层全量落地；设置面接线挂账（本地 ModelSettingsPage 形态） |
+| Genspark 专属登录钮（#1950） | 本地由 errChaOfficeNotLoggedIn 路径承担语义 |
+| ai-error-login-button 结构测试 | 拒绝清单（单会话面板不同构） |
+
+### D. 结论
+
+- 本轮 59 提交**无未合并的上游功能**；「看不到」的只有两类：①按裁定隐藏/移位（思维导图入口本轮已补到察元页、kb-ask 入口隐藏）；②包层落地 UI 挂账（#1978 一项）。
+
 ## e2e 干净重跑（终态：95✓ / 75✗ / 6 跳过，44.3 分钟）
 
 首轮（07:53）受构建并行+缺陷#1 影响全部失败，数据作废。缺陷修复后干净重跑终态与归类：

@@ -7757,6 +7757,11 @@ export function App() {
       >
         <div className="editor-col">
       <Ribbon
+        onAiPreset={(text) => {
+          // 同 quickActions.onAiPreset：点击即开面板并自动运行预设
+          setShowAi(true)
+          setAiPreset({ text, nonce: Date.now(), autoRun: true })
+        }}
         actionsRef={ribbonActionsRef}
         quickActions={quickActions}
         trailingActions={
