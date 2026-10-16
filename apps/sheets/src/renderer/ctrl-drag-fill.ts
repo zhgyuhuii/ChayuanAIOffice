@@ -4,7 +4,7 @@
  * a series repeats instead. Univer's default hook picks COPY for a single
  * numeric cell and SERIES otherwise; an APPEND hook's answer outranks it,
  * so this one flips the choice whenever the modifier was down when the drag
- * ended (public issue genoffice#808).
+ * ended (public issue chatoffice#808).
  */
 import {
   CellValueType,

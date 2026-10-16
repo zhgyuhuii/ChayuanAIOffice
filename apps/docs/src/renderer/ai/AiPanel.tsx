@@ -39,6 +39,7 @@ import {
 } from '@chatoffice/ui'
 import type { DockChrome } from '@chatoffice/ui'
 import { IconNewChat } from '../components/icons'
+import { redactTextBetween, type RedactableNode } from './redact-view'
 
 // 惰性加载:模型设置页(含厂商 logo 组)只在打开时拉取,不进启动图
 const ModelSettingsPage = lazy(() =>
@@ -353,11 +354,12 @@ export function AiPanel({
 
   // a core-pack assistant run pushed from the context menu / ribbon: build the
   // instruction against the live selection and send it like a typed message
-  /** current selection as plain text, sampled at assistant-run time */
+  /** current selection as plain text, sampled at assistant-run time
+   *  (R24 上游 #1883 织入: withheld spans project placeholders, never the hidden words) */
   const getSelectionText = () => {
     if (!editor || editor.state.selection.empty) return ''
     const { from, to } = editor.state.selection
-    return editor.state.doc.textBetween(from, to, '\n\n')
+    return redactTextBetween(editor.getJSON() as RedactableNode, from, to, '\n\n')
   }
 
   useEffect(() => {

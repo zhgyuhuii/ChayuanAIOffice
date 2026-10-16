@@ -13,7 +13,7 @@ chatoffice guide slides    # the op reference, for writing your own
 
 ## Obter o comando
 
-macOS e Windows incluem-no dentro do pacote da aplicação. Para o usar pelo nome, execute `chatoffice install-cli` uma vez: cria uma ligação simbólica para o binário incluído em `/usr/local/bin`, ou no `PATH` do seu utilizador no Windows.
+macOS e Windows o trazem dentro do pacote do app. Para chamá-lo pelo nome, rode uma vez `chatoffice install-cli`: ele liga o binário do pacote num diretório do seu PATH — no macOS `/usr/local/bin` quando não for um prefixo do Homebrew (os diretórios do Homebrew nunca são tocados), senão o seu bin de usuário — ou no seu `PATH` de usuário no Windows.
 
 ## Os comandos que vale a pena conhecer
 
@@ -32,7 +32,7 @@ macOS e Windows incluem-no dentro do pacote da aplicação. Para o usar pelo nom
 | `capabilities`    | Indica que funcionalidades na nuvem estão configuradas nesta máquina.                                                                                                                                                                                                                                 |
 | `guide`           | A referência de operações e os guias de design, gerados a partir das mesmas definições contra as quais o executor valida — por isso não pode divergir do que `apply` aceita. `--json` devolve-a com o esquema de cada operação.                                                                       |
 | `install-cli`     | Coloca o `chatoffice` no `PATH`.                                                                                                                                                                                                                                                                       |
-| `skill`           | Lista os agentes de programação encontrados nesta máquina e instala ou atualiza neles a competência do ChatOffice.                                                                                                                                                                                     |
+| `skill`           | Lista os agentes de programação encontrados nesta máquina e instala ou atualiza neles a competência do ChaAI Office.                                                                                                                                                                                     |
 | `mcp`             | Serve cada comando como uma ferramenta do Model Context Protocol. Consulte **Ligar um agente de programação**.                                                                                                                                                                                        |
 
 ## Edição: documentos, folhas, apresentações

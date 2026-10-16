@@ -182,6 +182,19 @@ export const vi = {
   aiCmdImages: 'Đã cập nhật {count} hình ảnh',
   aiCmdToc: 'Đã chèn mục lục ({count} mục)',
   aiCmdSkipped: ' (đã bỏ qua {count} khối được bảo vệ)',
+  aiStarterMindMap: 'Tạo bản đồ tư duy cho tài liệu này',
+  aiMindMapBtn: 'Bản đồ tư duy AI',
+  aiMindMapPrompt:
+    'Tạo bản đồ tư duy cho tài liệu này, sắp xếp các chủ đề chính và khái niệm then chốt theo cấu trúc các phần',
+  aiSumMindMap: 'Tạo bản đồ tư duy',
+  aiMindMapTitle: 'Bản đồ tư duy',
+  aiMindMapNodes: '{count} nút',
+  aiMindMapAskPrompt: 'Hãy giới thiệu về "{label}" trong tài liệu này',
+  aiMindMapJump: 'Đến đoạn được trích dẫn',
+  aiMindMapExport: 'Xuất PNG',
+  aiMindMapReset: 'Đặt lại khung nhìn',
+  aiMindMapExpand: 'Mở rộng nhánh',
+  aiMindMapCollapse: 'Thu gọn nhánh',
   aiAssistantScopeDoc: '全文',
   aiSumInsertedSvg: '插入 SVG 插图',
   aiDockFloat: '悬浮窗口',
@@ -212,4 +225,4 @@ export const vi = {
   aiTabChat: '对话',
   aiSummarizeDesc: '总结全文要点，快速把握内容',
   aiNoModelErrorBody: '配置一个自己的供应商（密钥即用），或登录 察元AIOffice 使用默认模型。全程无需账号。',
-}
+} satisfies Record<keyof typeof zh, string>

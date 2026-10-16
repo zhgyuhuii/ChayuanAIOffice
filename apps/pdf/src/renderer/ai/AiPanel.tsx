@@ -5,6 +5,12 @@ import type { AiSettingsV2 } from '@chatoffice/ai-provider'
 import {
   AiComposer,
   AiTypingIndicator,
+  AiQueueStrip,
+  AI_QUEUE_LABELS,
+  AiUsageChip,
+  addTokenUsage,
+  useChatRunQueue,
+  createFileNav,
   KbPickerButton,
   ModelPickerButton,
   useKbAugment,
@@ -19,6 +25,7 @@ import {
   AiScopeQuote,
   KbCitePreview,
   type AiScopeQuoteData,
+  type AiTokenUsageView,
   type KbCitation,
 } from '@chatoffice/ui'
 import type { DockChrome } from '@chatoffice/ui'
@@ -79,6 +86,8 @@ interface ChatEntry {
   scope?: AiScopeQuoteData
   /** KB citations behind the [n] chips of this assistant turn */
   kbCitations?: KbCitation[]
+  /** tokens the provider billed for this reply, summed across its turns (absent when unreported) */
+  usage?: AiTokenUsageView
 }
 
 /** longest selection excerpt echoed on a user bubble */
@@ -136,6 +145,16 @@ function AiConversationBody({
   const [chat, setChat] = useState<ChatEntry[]>([])
   const [prompt, setPrompt] = useState('')
   const [busy, setBusy] = useState(false)
+  /** messages queued while a reply runs; the pump re-runs them through send on settle */
+  const msgQueue = useChatRunQueue<void>({
+    busy,
+    submit: (text) => {
+      const loop = loopRef.current
+      if (!loop || loop.busy) return false
+      send(text, null)
+      return true
+    },
+  })
   const [phase, setPhase] = useState<Phase>('thinking')
   /** the scope chip's expandable preview of the selected text */
   const [scopePreviewOpen, setScopePreviewOpen] = useState(false)
@@ -150,6 +169,10 @@ function AiConversationBody({
       assistant rows would break restore() on strict-alternation providers) */
   const runTextsRef = useRef<string[]>([])
   const runToolsRef = useRef<ToolActivity[]>([])
+  /** tokens billed so far in the in-flight run (summed across turns) */
+  const runUsageRef = useRef<AiTokenUsageView | undefined>(undefined)
+  /** tokens billed across the panel's session (the composer chip) */
+  const [sessionUsage, setSessionUsage] = useState<AiTokenUsageView | undefined>(undefined)
   const chatStore = () =>
     (
       window as Window & {
@@ -457,6 +480,8 @@ function AiConversationBody({
       moveTextBlock: (idx, block, d) => apiRef.current.moveTextBlock(idx, block, d),
       insertText: (input) => apiRef.current.insertText(input),
       addFormMark: (idx, kind, rect) => apiRef.current.addFormMark(idx, kind, rect),
+      formWidgets: (idx) => apiRef.current.formWidgets(idx),
+      pageBoxes: (idx) => apiRef.current.pageBoxes(idx),
       textInserts: () => apiRef.current.textInserts(),
       updateTextInsert: (id, edit) => apiRef.current.updateTextInsert(id, edit),
       moveTextInsert: (id, origin) => apiRef.current.moveTextInsert(id, origin),
@@ -527,6 +552,11 @@ function AiConversationBody({
               model: panelSettings.currentModel?.modelId,
             },
           ])
+        },
+        onUsage: (usage) => {
+          runUsageRef.current = addTokenUsage(runUsageRef.current, usage)
+          setSessionUsage((prev) => addTokenUsage(prev, usage))
+          patchLast({ usage: runUsageRef.current })
         },
         onDone: ({ text, cancelled, turnLimit, truncated }) => {
           const base = turnLimit
@@ -617,6 +647,7 @@ function AiConversationBody({
     segTextRef.current = ''
     runTextsRef.current = []
     runToolsRef.current = []
+    runUsageRef.current = undefined
     setChat((prev) => [
       ...prev,
       { role: 'user', text: instruction },
@@ -647,7 +678,18 @@ function AiConversationBody({
   // LOCAL(2026-09-21, d8201ad0): D10 续作入口(半截轮次恢复后「继续」)
   const continueRun = (): void => send(AI_CONTINUE_INSTRUCTION)
 
-  const stop = (): void => loopRef.current?.cancel()
+  const stop = (): void => {
+    msgQueue.hold()
+    loopRef.current?.cancel()
+  }
+
+  /** Enter while a reply runs: the draft joins the queue above the composer */
+  const enqueueDraft = () => {
+    const text = prompt.trim()
+    if (!text) return
+    msgQueue.enqueue(text, undefined)
+    setPrompt('')
+  }
 
   const busyRef = useRef(false)
   const idleWaitersRef = useRef<Array<() => void>>([])
@@ -733,6 +775,10 @@ function AiConversationBody({
       if (page !== null) apiRef.current.gotoPage(page)
     },
   }
+  // [name](filenav:///abs/path) citations open the cited file in its own app
+  const fileNav = createFileNav((path) => {
+    void window.pdfApi.openSourcePath(path)
+  })
 
   /** Assistant tab: the one-click actions from the old empty state, docs list style */
   const assistantItems = [
@@ -820,11 +866,16 @@ function AiConversationBody({
               className={`ai-msg ai-msg-assistant${entry.isError ? ' ai-msg-error' : ''}`}
             >
               {hasTools && <ToolChipList tools={entry.tools!} />}
+              {entry.usage && (
+                <div className="ai-message-usage">
+                  <AiUsageChip usage={entry.usage} lang={lang} />
+                </div>
+              )}
               {entry.text && (
                 <div dir="auto">
                   <Markdown
                     text={entry.text}
-                    nav={pdfNav}
+                    navs={[pdfNav, fileNav]}
                     citations={entry.kbCitations}
                     onCitationClick={setKbCiteView}
                   />
@@ -875,6 +926,20 @@ function AiConversationBody({
 
       <div className="ai-composer" style={tab === 'chat' ? undefined : { display: 'none' }}>
         <AiComposer
+          queueStrip={
+            <AiQueueStrip
+              items={msgQueue.queued}
+              labels={AI_QUEUE_LABELS[lang]}
+              onUpdate={msgQueue.update}
+              onRemove={msgQueue.remove}
+              onClear={msgQueue.clear}
+              paused={msgQueue.paused}
+              onTogglePause={msgQueue.togglePaused}
+              onMove={msgQueue.move}
+            />
+          }
+          onQueue={enqueueDraft}
+          queuePlaceholder={AI_QUEUE_LABELS[lang].queuePlaceholder}
           value={prompt}
           busy={busy}
           header={
@@ -941,6 +1006,7 @@ function AiConversationBody({
                 }}
                 onOpenSettings={() => setModelSettingsOpen(true)}
               />
+              {sessionUsage && <AiUsageChip usage={sessionUsage} session lang={lang} />}
             </>
           }
           onChange={setPrompt}

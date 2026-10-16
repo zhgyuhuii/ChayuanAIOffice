@@ -16,7 +16,7 @@
  * says nothing about that — so a run that only overrides userData still finds
  * the developer's key and greets them by name (verified: that is what a local
  * e2e run does today). HOME is the one lever that covers both it and the
- * `~/.genoffice/bin` shim. `GENOFFICE_AUTH_DIR` is not enough on its own: it
+ * `~/.chatoffice/bin` shim. `GENOFFICE_AUTH_DIR` is not enough on its own: it
  * redirects ChatOffice's own key and leaves the shared gsk CLI config in place.
  *
  * With no key, `gskLoginInfo()` returns null, the app reads as signed out, and
@@ -84,7 +84,7 @@ interface Scratch {
 }
 
 async function makeScratch(): Promise<Scratch> {
-  const root = mkdtempSync(join(tmpdir(), 'genoffice-help-shots-'))
+  const root = mkdtempSync(join(tmpdir(), 'chatoffice-help-shots-'))
   const home = join(root, 'home')
   const userData = join(root, 'userdata')
   const samples = join(root, 'help-samples')
@@ -153,7 +153,7 @@ async function launch(scratch: Scratch, lang: string): Promise<ElectronApplicati
       ...hostEnv,
       HOME: scratch.home,
       GENOFFICE_USER_DATA: scratch.userData,
-      GENOFFICE_AUTH_DIR: join(scratch.home, '.genoffice'),
+      GENOFFICE_AUTH_DIR: join(scratch.home, '.chatoffice'),
       GENOFFICE_NO_SPARE_VIEW: '1',
       GENOFFICE_LANG: lang,
     },

@@ -44,7 +44,7 @@ interface Run {
 
 /** One deck, one language: the PNG bytes a selection copy puts on the clipboard. */
 async function run(lang: string): Promise<Run> {
-  const dir = await mkdtemp(join(tmpdir(), `genoffice-rtl-png-${lang}-`))
+  const dir = await mkdtemp(join(tmpdir(), `chatoffice-rtl-png-${lang}-`))
   try {
     const fixture = join(dir, 'fixture')
     await cp(resolve('e2e/assets/font-manager-rubik'), fixture, { recursive: true })

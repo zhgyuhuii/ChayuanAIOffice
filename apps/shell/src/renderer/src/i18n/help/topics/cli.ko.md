@@ -13,7 +13,7 @@ chatoffice guide slides    # the op reference, for writing your own
 
 ## 명령 준비하기
 
-macOS와 Windows에서는 앱 번들 안에 있습니다. 이름으로 부르려면 `chatoffice install-cli`을 한 번 실행하세요. 번들에 들어 있는 바이너리를 `/usr/local/bin`에, Windows에서는 사용자 `PATH`에 심볼릭 링크로 연결합니다.
+macOS와 Windows에서는 앱 번들 안에 들어 있습니다. 이름으로 호출하려면 `chatoffice install-cli`를 한 번 실행하세요: 번들 안의 바이너리를 PATH의 디렉터리에 연결합니다 — macOS에서는 Homebrew 접두어가 아닌 경우 `/usr/local/bin`(Homebrew 자체 디렉터리에는 절대 쓰지 않습니다), 그 외에는 사용자 bin으로, Windows에서는 사용자 `PATH`로 연결합니다.
 
 ## 알아 둘 만한 명령
 
@@ -32,7 +32,7 @@ macOS와 Windows에서는 앱 번들 안에 있습니다. 이름으로 부르려
 | `capabilities`    | 이 컴퓨터에서 클라우드 기능이 어떻게 설정되어 있는지 보고합니다.                                                                                                                                               |
 | `guide`           | op 레퍼런스와 디자인 가이드입니다. executor가 검증하는 바로 그 정의에서 만들어지므로 `apply`가 받아들이는 것과 어긋날 수 없습니다. `--json`을 주면 각 op의 스키마와 함께 나옵니다.                             |
 | `install-cli`     | `chatoffice`를 `PATH`에 넣습니다.                                                                                                                                                                               |
-| `skill`           | 이 컴퓨터에서 찾은 코딩 에이전트를 나열하고, 그 안에 ChatOffice 스킬을 설치하거나 갱신합니다.                                                                                                                   |
+| `skill`           | 이 컴퓨터에서 찾은 코딩 에이전트를 나열하고, 그 안에 ChaAI Office 스킬을 설치하거나 갱신합니다.                                                                                                                   |
 | `mcp`             | 모든 명령을 Model Context Protocol 도구로 제공합니다. **코딩 에이전트 연결**를 보세요.                                                                                                                         |
 
 ## 편집: 문서, 스프레드시트, 슬라이드

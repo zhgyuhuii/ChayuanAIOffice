@@ -90,6 +90,7 @@ import {
 } from './edit-journal'
 import { applyShowFormulasView, formulaViewSheets } from './formula-view'
 import { t } from './i18n/locale'
+import { applyRightToLeftView, sheetIsRightToLeft } from './sheet-rtl-view'
 import { mergeWorkbooksIntoCurrent } from './merge-workbooks'
 import {
   handleOpenSlicerPicker,
@@ -2150,6 +2151,16 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
         ctx.setPendingEdits(journalSize(state.editJournal))
       }
       ctx.setMessage(next ? t('appShowingFormulas') : t('appShowingValues'))
+      return
+    }
+    case 'toggle-right-to-left': {
+      // Grid direction is per-sheet state (sheetView/@rightToLeft); the
+      // mutation listener journals it, so Univer's own undo/redo of the
+      // flip keeps the journal in step.
+      if (!worksheet) return
+      const next = !sheetIsRightToLeft(worksheet)
+      applyRightToLeftView(runtime, next)
+      ctx.setMessage(next ? t('appRightToLeftOn') : t('appRightToLeftOff'))
       return
     }
     case 'trace-precedents':

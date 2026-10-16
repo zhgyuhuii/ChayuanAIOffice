@@ -13,7 +13,7 @@ That is the whole surface in one screen — every command with a line saying wha
 
 ## Getting the command
 
-macOS and Windows ship it inside the app bundle. To use it by name, run `chatoffice install-cli` once: it symlinks the bundled binary into `/usr/local/bin`, or into your user `PATH` on Windows.
+macOS and Windows ship it inside the app bundle. To use it by name, run `chatoffice install-cli` once: it links the bundled binary into a directory on your PATH — on macOS `/usr/local/bin` where that is not a Homebrew prefix (Homebrew's own directories are never touched), otherwise your user bin — or into your user `PATH` on Windows.
 
 ## The commands worth knowing
 
@@ -32,7 +32,7 @@ macOS and Windows ship it inside the app bundle. To use it by name, run `chatoff
 | `capabilities`    | Report which cloud features are configured on this machine.                                                                                                                                                         |
 | `guide`           | The op reference and design guides, generated from the same definitions the executor validates against — so it cannot drift from what `apply` accepts. `--json` returns it with each op's schema.                   |
 | `install-cli`     | Put `chatoffice` on the `PATH`.                                                                                                                                                                                      |
-| `skill`           | List the coding agents found on this machine and install or update the ChatOffice skill in them.                                                                                                                     |
+| `skill`           | List the coding agents found on this machine and install or update the ChaAI Office skill in them.                                                                                                                     |
 | `mcp`             | Serve every command as a Model Context Protocol tool. See **Connecting a coding agent**.                                                                                                                            |
 
 ## Editing: docs, sheets, slides

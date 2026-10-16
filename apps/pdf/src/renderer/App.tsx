@@ -45,6 +45,59 @@ import { flattenThread, pendingNoteKey, threadSubtree, visibleNoteThreads } from
 import type { NoteInput, NoteThreadItem, SavedNoteAnnot } from './note-threads'
 import { FormLayer } from './FormLayer'
 import {
+  FormDesignLayer,
+  FormFieldProps,
+  NUDGE_PTS,
+  clampRectToPage,
+  designWidgetId,
+  widgetDesignId,
+} from './FormDesignLayer'
+import type { DesignField, FormDesignTool } from './FormDesignLayer'
+import { collectDetectInput, detectFormFields } from './form-detect'
+import { checkboxWidgetAt, markRectForBox, printedBoxAt } from './form-mark-target'
+
+type Arrange =
+  | 'left'
+  | 'right'
+  | 'top'
+  | 'bottom'
+  | 'centerH'
+  | 'centerV'
+  | 'distributeH'
+  | 'distributeV'
+  | 'sameWidth'
+  | 'sameHeight'
+  | 'sameSize'
+
+const PASTE_OFFSET_PTS = 12
+/// Printer option that is not a device name (Electron: '' = OS default printer)
+const PRINT_SYSTEM_DIALOG = '\u0000system-dialog'
+// macOS's print sheet already carries copies/duplex, so it stays the default there
+const IS_MAC = navigator.platform.toLowerCase().includes('mac')
+const PRINT_DUPLEX_MODES: PrintDuplex[] = ['simplex', 'longEdge', 'shortEdge']
+/** Auto-detect stops here so a long scanned form cannot flood the document with fields */
+const DETECT_FIELD_CAP = 300
+
+/** Field names still taken once pending widget removals are applied (a fully removed field frees its name) */
+function liveFieldNames(
+  catalog: FormCatalog | null,
+  edits: Map<string, FormWidgetEditInput>,
+): string[] {
+  if (!catalog) return []
+  const alive = new Set<string>()
+  for (const w of catalog.widgets) if (!edits.get(w.id)?.remove) alive.add(w.fieldName)
+  const names = [
+    ...[...catalog.fields.keys()].filter((name) => alive.has(name)),
+    ...catalog.otherFieldNames,
+  ]
+  // Every ancestor of a dotted name is a field group: generators and validation treat it as taken
+  const groups = names.flatMap((name) => {
+    const parts = name.split('.')
+    return parts.slice(0, -1).map((_, i) => parts.slice(0, i + 1).join('.'))
+  })
+  return [...names, ...groups]
+}
+import {
   buildFormCatalog,
   documentFormFeatures,
   hasXfaMarker,
@@ -66,9 +119,13 @@ import type { PdfViewState } from './view-state'
 import { LinkLayer } from './LinkLayer'
 import { OutlinePanel } from './OutlinePanel'
 import type { OutlineNode } from './OutlinePanel'
-import { printPdf } from './print'
+import { buildHeadingOutline, remapOutlinePages } from './heading-outline'
+import { filterPageParity, printPdf, type PageParity } from './print'
+import type { PrintDuplex, PrinterInfo } from '../shared/ipc'
 import { PasswordDialog } from './PasswordDialog'
 import { PropertiesDialog } from './PropertiesDialog'
+import { CertSignDialog } from './CertSignDialog'
+import { SignaturesDialog, overallSignatureStatus } from './SignaturesDialog'
 import { SignatureDialog, fileToCanvas } from './SignatureDialog'
 import type { SignatureData } from './SignatureDialog'
 import { signatureDrawingForField } from './signature-field'
@@ -112,6 +169,8 @@ import {
   Dropdown,
   useDismissablePopover,
   isMacStandaloneWindow,
+  useRibbonCollapse,
+  useAiSidebarEnabled,
 } from '@chatoffice/ui'
 import '@chatoffice/ui/dock.css'
 import { useI18n } from './i18n/locale'
@@ -121,6 +180,9 @@ import type {
   DrawingInput,
   FormValueInput,
   ImageEditFailure,
+  FormFieldInput,
+  FormFieldKind,
+  FormWidgetEditInput,
   ImageEditInput,
   ImageLayer,
   MarkupType,
@@ -128,6 +190,7 @@ import type {
   NoteEditInput,
   PageImageRef,
   PdfConvertFormat,
+  PdfSignatureInfo,
   StaticFormFillRecord,
   StampInput,
   TextEditFailure,
@@ -165,6 +228,8 @@ import {
   rgb255ToHex,
   styleRunsToKeyRuns,
   styleSegCss,
+  boldCss,
+  boldToken,
   keyRunsToStyleRuns,
   blockRectKey,
   blockMoveInput,
@@ -193,6 +258,8 @@ import type {
   StampConfig,
   SavedMarkupAnnot,
   LocalAnnotDelete,
+  LocalBlankPage,
+  LocalFormField,
   LocalNoteEdit,
   EditSnapshot,
   SavedSnapshot,
@@ -210,10 +277,22 @@ import {
   IconArrow,
   IconNote,
   IconSign,
+  IconCertSign,
+  IconSignatures,
   IconPreviousField,
   IconNextField,
   IconCompleteForm,
   IconFormText,
+  IconFieldText,
+  IconFieldCheckbox,
+  IconFieldSignature,
+  IconFieldKeep,
+  IconFieldArrange,
+  IconFieldDetect,
+  IconFieldDate,
+  IconFieldRadio,
+  IconFieldChoice,
+  IconFieldPreview,
   IconFormCheck,
   IconFormCross,
   IconExportImg,
@@ -286,18 +365,51 @@ const RIBBON_TABS = [
   { id: 'page', labelKey: 'ribbonTabPage' },
   { id: 'view', labelKey: 'ribbonTabView' },
 ] as const
-type RibbonTab = (typeof RIBBON_TABS)[number]['id'] | 'fillForm'
+type RibbonTab = (typeof RIBBON_TABS)[number]['id'] | 'fillForm' | 'formDesign'
 
 export default function App() {
   const { lang, t } = useI18n()
   // tab row clips instead of wrapping when narrow; wheel + edge arrows page it
   const tabStrip = useTabStripOverflow()
+  const collapse = useRibbonCollapse('chatoffice-pdf-ribbon-collapsed', {
+    collapse: t('ribbonCollapse'),
+    expand: t('ribbonExpand'),
+    // ⌥⌘K / Ctrl+Alt+K: the icon-only middle density (docs parity, see #362)
+    compact: t('ribbonCompact'),
+    expandFull: t('ribbonExpand'),
+  })
   const [doc, setDoc] = useState<PDFDocumentProxy | null>(null)
   const [filePath, setFilePath] = useState('')
   const [status, setStatus] = useState<'loading' | 'error' | 'empty' | 'password' | 'ready'>(
     'loading',
   )
   const [sizes, setSizes] = useState<PageSize[]>([])
+  // Blank pages added this session live past the document's pages as virtual original
+  // indices (see BlankPageInput); allSizes is the page table every index lookup uses
+  const [blankPages, setBlankPages] = useState<LocalBlankPage[]>([])
+  const blankPagesRef = useRef(blankPages)
+  blankPagesRef.current = blankPages
+  const commitBlankPages = (next: LocalBlankPage[]) => {
+    blankPagesRef.current = next
+    setBlankPages(next)
+  }
+  const allSizes = useMemo(() => {
+    if (blankPages.length === 0) return sizes
+    const table = [...sizes]
+    for (const b of blankPages)
+      table[b.input.pageIndex] = { width: b.input.width, height: b.input.height }
+    return table
+  }, [sizes, blankPages])
+  const isBlankPage = (origIdx: number) => origIdx >= sizes.length
+  // Ref-based views for code that runs before React re-renders (AI tool turns): a blank
+  // page committed a moment ago is already addressable
+  const blankSizeNow = (origIdx: number): PageSize | undefined => {
+    const b = blankPagesRef.current.find((x) => x.input.pageIndex === origIdx)
+    return b ? { width: b.input.width, height: b.input.height } : undefined
+  }
+  const pageCountNow = () => sizes.length + blankPagesRef.current.length
+  const [pageOrigins] = useState<[number, number][]>([])
+  const [pageUserUnits] = useState<number[]>([])
   const [baseRots, setBaseRots] = useState<number[]>([])
   const [scale, setScale] = useState(1)
   const [currentPage, setCurrentPage] = useState(1)
@@ -346,6 +458,10 @@ export default function App() {
   const [aiCollapsed, setAiCollapsed] = useState(
     () => localStorage.getItem('chatoffice-pdf-show-ai') === '0',
   )
+  /** the panel setter in the "true = visible" sense the sidebar hook expects */
+  const setAiOpen = useCallback((open: boolean) => setAiCollapsed(!open), [])
+  // the sidebar switch is a soft hide; it closes the panel when it turns off
+  const aiSidebarEnabled = useAiSidebarEnabled(setAiOpen)
   useEffect(() => {
     localStorage.setItem('chatoffice-pdf-show-ai', aiCollapsed ? '0' : '1')
   }, [aiCollapsed])
@@ -721,7 +837,15 @@ export default function App() {
   const [fileSize, setFileSize] = useState(0)
   const [dragFrom, setDragFrom] = useState<number | null>(null)
   const [dragOver, setDragOver] = useState<number | null>(null)
+  /** True when the outline pane shows headings generated from page text, not the file's own outline */
+  const [outlineGenerated, setOutlineGenerated] = useState(false)
+  /** Document the current outline tree was read from (a stale load must not overwrite a newer one) */
+  const outlineDocRef = useRef<PDFDocumentProxy | null>(null)
   const [signDlg, setSignDlg] = useState(false)
+  /** Certificate (digital) signatures found in the file on disk, verified by the main process */
+  const [digitalSignatures, setDigitalSignatures] = useState<PdfSignatureInfo[]>([])
+  const [certSignDlg, setCertSignDlg] = useState(false)
+  const [signaturesDlg, setSignaturesDlg] = useState(false)
   /** Confirmed signature awaiting placement; when non-null the page enters click-to-place mode */
   const [pendingSign, setPendingSign] = useState<SignatureData | null>(null)
   /** A /Sig widget selected from the form layer; confirmed signatures fit this rect directly. */
@@ -735,6 +859,38 @@ export default function App() {
   const [formEdits, setFormEdits] = useState<Map<string, FormValueInput>>(new Map())
   const formEditsRef = useRef(formEdits)
   formEditsRef.current = formEdits
+  const [formFields, setFormFields] = useState<LocalFormField[]>([])
+  // Written only through commitFormFields: re-syncing the ref from render state would let a
+  // high-priority render (a click) that skipped a queued post-save update reset it to the
+  // pre-save list, and the next placement would resurrect the saved fields as pending
+  const formFieldsRef = useRef(formFields)
+  const commitFormFields = (next: LocalFormField[]) => {
+    formFieldsRef.current = next
+    setFormFields(next)
+  }
+  const [formWidgetEdits, setFormWidgetEdits] = useState<Map<string, FormWidgetEditInput>>(
+    new Map(),
+  )
+  const formWidgetEditsRef = useRef(formWidgetEdits)
+  formWidgetEditsRef.current = formWidgetEdits
+  const [formDesignTool, setFormDesignTool] = useState<FormDesignTool | null>(null)
+  const [formDesignKeepTool, setFormDesignKeepTool] = useState(false)
+  const [formDesignPreview, setFormDesignPreview] = useState(false)
+  const [selectedFormFieldIds, setSelectedFormFieldIds] = useState<string[]>([])
+  const setSelectedFormFieldId = (id: string | null) => setSelectedFormFieldIds(id ? [id] : [])
+  const [formMenu, setFormMenu] = useState<{
+    x: number
+    y: number
+    fieldId: string | null
+    pageIndex: number
+  } | null>(null)
+  const formMenuRef = useRef<HTMLDivElement | null>(null)
+  const [arrangeOpen, setArrangeOpen] = useState(false)
+  const [detectingFields, setDetectingFields] = useState(false)
+  const arrangeWrapRef = useRef<HTMLDivElement | null>(null)
+  const formClipboardRef = useRef<FormFieldInput[]>([])
+  /** The field just placed: its card takes focus and offers Cancel */
+  const [freshFormFieldId, setFreshFormFieldId] = useState<string | null>(null)
   const [rotations, setRotations] = useState<Map<number, number>>(new Map())
   /** Latest rotations for same-turn AI geometry (an apply_ops rotation then an image bake) */
   const rotationsRef = useRef(rotations)
@@ -836,6 +992,12 @@ export default function App() {
   const [printMode, setPrintMode] = useState<'all' | 'current' | 'custom'>('all')
   const [printInput, setPrintInput] = useState('')
   const [printInvalid, setPrintInvalid] = useState(false)
+  const [printParity, setPrintParity] = useState<PageParity>('all')
+  const [printers, setPrinters] = useState<PrinterInfo[]>([])
+  const [printDevice, setPrintDevice] = useState(IS_MAC ? PRINT_SYSTEM_DIALOG : '')
+  const [printCopies, setPrintCopies] = useState(1)
+  const [printCollate, setPrintCollate] = useState(true)
+  const [printDuplex, setPrintDuplex] = useState<PrintDuplex>('simplex')
   /** Page-crop dialog: rendered page bitmap + which page it shows */
   const [pageCropDlg, setPageCropDlg] = useState<{ png: string; origIdx: number } | null>(null)
   const [cropAllPages, setCropAllPages] = useState(false)
@@ -874,9 +1036,9 @@ export default function App() {
 
   /** Visible pages (with unsaved reorder, deleted pages hidden): position → original page index */
   const visList = useMemo(() => {
-    const base = order ?? sizes.map((_, i) => i)
+    const base = order ?? allSizes.map((_, i) => i)
     return base.filter((i) => !deleted.has(i))
-  }, [sizes, deleted, order])
+  }, [allSizes, deleted, order])
   const pageCount = visList.length
   // AI tool calls within one turn run before React re-renders, so the order and
   // deletions they read and write go through these refs instead of the closed-over state
@@ -885,7 +1047,7 @@ export default function App() {
   const deletedRef = useRef(deleted)
   deletedRef.current = deleted
   const visListOf = (ord: number[] | null) =>
-    (ord ?? sizes.map((_, i) => i)).filter((i) => !deletedRef.current.has(i))
+    (ord ?? allSizes.map((_, i) => i)).filter((i) => !deletedRef.current.has(i))
 
   const rows = useMemo(() => spreadRows(visList, spread), [visList, spread])
 
@@ -902,10 +1064,18 @@ export default function App() {
   /** Page geometry: unrotated size + total display rotation; the single entry point for overlay coord conversion */
   const pageGeom = useCallback(
     (origIdx: number): PageGeom => {
-      const s = sizes[origIdx]!
-      return { pw: s.width, ph: s.height, rot: (baseRots[origIdx] ?? 0) + rotDelta(origIdx) }
+      const s = allSizes[origIdx] ?? blankSizeNow(origIdx)!
+      const [x0, y0] = pageOrigins[origIdx] ?? [0, 0]
+      return {
+        pw: s.width,
+        ph: s.height,
+        rot: (baseRots[origIdx] ?? 0) + rotDelta(origIdx),
+        x0,
+        y0,
+        userUnit: pageUserUnits[origIdx] ?? 1,
+      }
     },
-    [sizes, baseRots, rotDelta],
+    [allSizes, baseRots, pageOrigins, pageUserUnits, rotDelta],
   )
   /** Latest geometry for async pipelines that must not rebind on rotation (OCR) */
   const pageGeomRef = useRef(pageGeom)
@@ -988,6 +1158,13 @@ export default function App() {
         setSavedStaticFormFills([])
         setActiveFormWidgetId(null)
         formControlRefs.current.clear()
+        commitFormFields([])
+        commitBlankPages([])
+        setFormWidgetEdits(new Map())
+        setFormDesignTool(null)
+        setFormDesignPreview(false)
+        setSelectedFormFieldId(null)
+        setFreshFormFieldId(null)
       }
       const task = getDocument({
         data: bytes,
@@ -1046,7 +1223,12 @@ export default function App() {
       try {
         setFormCatalog(await buildFormCatalog(loaded))
       } catch {
-        setFormCatalog({ widgets: [], fields: new Map(), byPage: new Map() })
+        setFormCatalog({
+          widgets: [],
+          fields: new Map(),
+          byPage: new Map(),
+          otherFieldNames: new Set(),
+        })
       }
       try {
         setSavedStaticFormFills(await window.pdfApi.listStaticFormFills(path))
@@ -1091,6 +1273,7 @@ export default function App() {
         setTextDraft(null)
         setStampCfg(null)
         setFormEdits(new Map())
+        setFormWidgetEdits(new Map())
         setSignatureTarget(null)
         rotationsRef.current = new Map()
         setRotations(rotationsRef.current)
@@ -1103,7 +1286,29 @@ export default function App() {
         // Post-save reload: subtract exactly what the save wrote. Edits made while the
         // write was in flight stay pending, with page indices remapped through the
         // saved deletions/reorder (a page missing from pageMap is gone from the file).
-        const remap = saved.pageMap
+        const remap = new Map(saved.pageMap)
+        // Blank pages added while the write was in flight keep their edits: their virtual
+        // indices move past the reloaded document's pages and remap like any other page
+        const inFlightBlanks = blankPagesRef.current
+          .filter((b) => !saved.blankPageIds.has(b.id))
+          .sort((a, b) => a.input.pageIndex - b.input.pageIndex)
+          .map((b, k) => {
+            const pageIndex = loaded.numPages + k
+            remap.set(b.input.pageIndex, pageIndex)
+            return { ...b, input: { ...b.input, pageIndex } }
+          })
+        setOutline((prev) => (prev ? remapOutlinePages(prev, remap) : prev))
+        // Redaction marks are deliberately omitted from ordinary saves. Keep them
+        // through the reload, remapping their original page indices if this save
+        // changed page order or removed pages while it was running.
+        setRedactions((prev) =>
+          prev.flatMap((mark) => {
+            const ni = remap.get(mark.pageIndex)
+            return ni === undefined
+              ? []
+              : [ni === mark.pageIndex ? mark : { ...mark, pageIndex: ni }]
+          }),
+        )
         setMarkups((prev) =>
           prev.flatMap((mk) => {
             if (saved.markupIds.has(mk.id)) return []
@@ -1168,6 +1373,15 @@ export default function App() {
             ]
           }),
         )
+        commitBlankPages(inFlightBlanks)
+        commitFormFields(
+          formFieldsRef.current.flatMap((f) => {
+            if (saved.formFieldIds.has(f.id)) return []
+            const ni = remap.get(f.input.pageIndex)
+            if (ni === undefined) return []
+            return [ni === f.input.pageIndex ? f : { ...f, input: { ...f.input, pageIndex: ni } }]
+          }),
+        )
         updateImageEdits((prev) =>
           prev.flatMap((ie) => {
             if (saved.imageEditIds.has(ie.id)) return []
@@ -1200,6 +1414,15 @@ export default function App() {
           for (const [k, v] of prev) if (saved.formEdits.get(k) !== v) next.set(k, v)
           return next
         })
+        setFormWidgetEdits((prev) => {
+          const next = new Map<string, FormWidgetEditInput>()
+          for (const [k, v] of prev) if (saved.formWidgetEdits.get(k) !== v) next.set(k, v)
+          return next
+        })
+        // Pending fields written by this save are gone from the design list; a selection pointing at
+        // them would keep Delete/Arrange armed with nothing to act on
+        setSelectedFormFieldIds((prev) => prev.filter((id) => !saved.formFieldIds.has(id)))
+        setFreshFormFieldId((prev) => (prev && saved.formFieldIds.has(prev) ? null : prev))
         const nextRotations = new Map<number, number>()
         for (const [oldIdx, delta] of rotationsRef.current) {
           const residual = (((delta - (saved.rotations.get(oldIdx) ?? 0)) % 360) + 360) % 360
@@ -1231,10 +1454,28 @@ export default function App() {
       setDeleteToast(false)
       setUndoStack([])
       setRedoStack([])
-      void loaded.getOutline().then(
-        (o) => setOutline(o && o.length > 0 ? (o as OutlineNode[]) : null),
-        () => setOutline(null),
-      )
+      outlineDocRef.current = loaded
+      // A save-reload keeps the current tree (page indices already remapped
+      // above) visible while headings rescan
+      if (!saved) {
+        setOutline(null)
+        setOutlineGenerated(false)
+      }
+      void loaded
+        .getOutline()
+        .then(
+          (o) => (o && o.length > 0 ? (o as OutlineNode[]) : null),
+          () => null,
+        )
+        .then(async (embedded) => {
+          const stale = () => outlineDocRef.current !== loaded
+          const generated = embedded
+            ? null
+            : await buildHeadingOutline(loaded, stale).catch(() => null)
+          if (stale()) return
+          setOutline(embedded ?? generated)
+          setOutlineGenerated(!embedded && generated !== null)
+        })
       // pdfjs-dist 6.x removed PDFDocumentProxy.destroy(); go through the loading task
       if (previous) void previous.loadingTask.destroy()
       return loaded.numPages
@@ -1298,12 +1539,12 @@ export default function App() {
   useEffect(() => {
     if (
       activeFormWidgetId &&
-      formCatalog &&
-      !formCatalog.widgets.some((widget) => widget.id === activeFormWidgetId)
+      ((formCatalog && !formCatalog.widgets.some((widget) => widget.id === activeFormWidgetId)) ||
+        formWidgetEdits.get(activeFormWidgetId)?.remove)
     ) {
       setActiveFormWidgetId(null)
     }
-  }, [activeFormWidgetId, formCatalog])
+  }, [activeFormWidgetId, formCatalog, formWidgetEdits])
 
   const clampScale = (s: number) => Math.min(MAX_SCALE, Math.max(MIN_SCALE, s))
 
@@ -1524,7 +1765,80 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- scrollToPage reads the same render's rows
   }, [visList])
 
-  const formWidgets = visibleFormWidgets(formCatalog, visList)
+  /** The file's widgets with pending Form Design edits applied: moved, re-flagged, removed */
+  const liveFormCatalog = useMemo((): FormCatalog | null => {
+    if (!formCatalog || formWidgetEdits.size === 0) return formCatalog
+    const widgets = formCatalog.widgets.flatMap((w) => {
+      const e = formWidgetEdits.get(w.id)
+      if (!e) return [w]
+      if (e.remove) return []
+      return [{ ...w, rect: e.rect ?? w.rect, required: e.required ?? w.required }]
+    })
+    const byPage = new Map<number, FormWidget[]>()
+    for (const w of widgets) byPage.set(w.pageIndex, [...(byPage.get(w.pageIndex) ?? []), w])
+    return { ...formCatalog, widgets, byPage }
+  }, [formCatalog, formWidgetEdits])
+  const designFieldsByPage = useMemo(() => {
+    const out = new Map<number, DesignField[]>()
+    const push = (f: DesignField) => out.set(f.pageIndex, [...(out.get(f.pageIndex) ?? []), f])
+    for (const w of liveFormCatalog?.widgets ?? []) {
+      push({
+        id: widgetDesignId(w.id),
+        kind: w.kind,
+        name: w.fieldName,
+        pageIndex: w.pageIndex,
+        rect: w.rect,
+        required: w.required,
+        existing: true,
+      })
+    }
+    for (const f of formFields) {
+      push({
+        id: f.id,
+        kind: f.input.kind,
+        name: f.input.name,
+        pageIndex: f.input.pageIndex,
+        rect: f.input.rect,
+        required: !!f.input.required,
+        existing: false,
+        pending: f,
+      })
+    }
+    return out
+  }, [liveFormCatalog, formFields])
+  const selectedDesignFields = useMemo(() => {
+    const all = [...designFieldsByPage.values()].flat()
+    return selectedFormFieldIds.flatMap((id) => all.filter((f) => f.id === id))
+  }, [designFieldsByPage, selectedFormFieldIds])
+  const selectedDesignField = selectedDesignFields.length === 1 ? selectedDesignFields[0]! : null
+  // A pending field with its property card open is still being authored: saves leave it out
+  // until Done, or a save landing mid-edit writes the stale version and the post-save reload
+  // drops the edits made meanwhile
+  const heldFormFieldId =
+    selectedDesignField && !selectedDesignField.existing && !formDesignPreview
+      ? selectedDesignField.id
+      : null
+  const savableFormFields = heldFormFieldId
+    ? formFields.filter((f) => f.id !== heldFormFieldId)
+    : formFields
+  const selectedFormFieldIdSet = useMemo(
+    () => new Set(selectedFormFieldIds),
+    [selectedFormFieldIds],
+  )
+  const arrangeItems: [Arrange, string, number][] = [
+    ['left', t('formDesignAlignLeft'), 2],
+    ['centerH', t('formDesignAlignCenterH'), 2],
+    ['right', t('formDesignAlignRight'), 2],
+    ['top', t('formDesignAlignTop'), 2],
+    ['centerV', t('formDesignAlignCenterV'), 2],
+    ['bottom', t('formDesignAlignBottom'), 2],
+    ['distributeH', t('formDesignDistributeH'), 3],
+    ['distributeV', t('formDesignDistributeV'), 3],
+    ['sameWidth', t('formDesignSameWidth'), 2],
+    ['sameHeight', t('formDesignSameHeight'), 2],
+    ['sameSize', t('formDesignSameSize'), 2],
+  ]
+  const formWidgets = visibleFormWidgets(liveFormCatalog, visList)
   const signedFormWidgetIds = useMemo(
     () =>
       new Set(
@@ -1623,7 +1937,7 @@ export default function App() {
     return [...records.values()]
   }, [imageEdits, savedStaticFormFills])
 
-  const ordinaryDirty =
+  const dirtyBesidesFormFields =
     markups.length > 0 ||
     annotDeletes.length > 0 ||
     noteEdits.length > 0 ||
@@ -1633,10 +1947,14 @@ export default function App() {
     imageEdits.length > 0 ||
     stampCfg !== null ||
     formEdits.size > 0 ||
+    blankPages.length > 0 ||
+    formWidgetEdits.size > 0 ||
     rotations.size > 0 ||
     deleted.size > 0 ||
     order !== null ||
     metadata !== null
+  const ordinaryDirty = dirtyBesidesFormFields || formFields.length > 0
+  const savableDirty = dirtyBesidesFormFields || savableFormFields.length > 0
   const dirty = redactions.length > 0 || ordinaryDirty
 
   // Mirror dirty state to the main process (close-tab/close-window guard)
@@ -1679,6 +1997,9 @@ export default function App() {
     imageEdits: imageEditsRef.current,
     stampCfg: stampRef.current,
     formEdits: formEditsRef.current,
+    formFields: formFieldsRef.current,
+    blankPages: blankPagesRef.current,
+    formWidgetEdits: formWidgetEditsRef.current,
     rotations: rotationsRef.current,
     deleted: deletedRef.current,
     order: orderRef.current,
@@ -1697,7 +2018,7 @@ export default function App() {
 
   const editOpContext = (): OpContext => ({
     readOnly,
-    pageCount: sizes.length,
+    pageCount: pageCountNow(),
     deleted: deletedRef.current,
     claimedImages: new Set(
       imageEditsRef.current.flatMap((e) =>
@@ -1706,6 +2027,16 @@ export default function App() {
           : [`${e.input.pageIndex}:${imageRectKey(e.input.oldRect)}`],
       ),
     ),
+    fieldNames: new Set([
+      ...liveFieldNames(formCatalog, formWidgetEditsRef.current),
+      ...formFieldsRef.current.map((f) => f.input.name),
+    ]),
+    radioGroups: new Set([
+      ...[...(formCatalog?.fields.values() ?? [])]
+        .filter((f) => f.kind === 'radio')
+        .map((f) => f.name),
+      ...formFieldsRef.current.filter((f) => f.input.kind === 'radio').map((f) => f.input.name),
+    ]),
   })
 
   /**
@@ -1750,6 +2081,12 @@ export default function App() {
     if (touched.has('formEdits')) {
       formEditsRef.current = reduce('formEdits', formEditsRef.current)
       setFormEdits(formEditsRef.current)
+    }
+    if (touched.has('formFields')) commitFormFields(reduce('formFields', formFieldsRef.current))
+    if (touched.has('blankPages')) commitBlankPages(reduce('blankPages', blankPagesRef.current))
+    if (touched.has('formWidgetEdits')) {
+      formWidgetEditsRef.current = reduce('formWidgetEdits', formWidgetEditsRef.current)
+      setFormWidgetEdits(formWidgetEditsRef.current)
     }
     if (touched.has('rotations')) {
       rotationsRef.current = reduce('rotations', rotationsRef.current)
@@ -1801,13 +2138,15 @@ export default function App() {
     applyEditOps([
       {
         op: 'setPageOrder',
-        order: [...vis, ...sizes.map((_, i) => i).filter((i) => !vis.includes(i))],
+        order: [...vis, ...allSizes.map((_, i) => i).filter((i) => !vis.includes(i))],
       },
     ])
 
   const applySnapshot = (s: EditSnapshot) => {
     markupsRef.current = s.markups
     formEditsRef.current = s.formEdits
+    formWidgetEditsRef.current = s.formWidgetEdits
+    setFormWidgetEdits(s.formWidgetEdits)
     annotDeletesRef.current = s.annotDeletes
     noteEditsRef.current = s.noteEdits
     drawingsRef.current = s.drawings
@@ -1821,6 +2160,12 @@ export default function App() {
     setDrawings(s.drawings)
     applyTextEdits(() => s.textEdits)
     commitTextInserts(s.textInserts)
+    commitFormFields(s.formFields)
+    commitBlankPages(s.blankPages)
+    setSelectedFormFieldIds((cur) =>
+      cur.filter((id) => designWidgetId(id) || s.formFields.some((f) => f.id === id)),
+    )
+    setFreshFormFieldId((cur) => (cur && s.formFields.some((f) => f.id === cur) ? cur : null))
     updateImageEdits(() => s.imageEdits)
     setTextDraft(null)
     // The comment being rewritten may not exist in the restored snapshot; confirming a
@@ -2459,7 +2804,7 @@ export default function App() {
   const resolveDocFont = async (origIdx: number, fontId: string): Promise<DocFontStyle | null> => {
     const cached = docFontsRef.current.get(fontId)
     if (cached) return cached
-    if (!doc) return null
+    if (!doc || isBlankPage(origIdx)) return null
     try {
       const page = await doc.getPage(origIdx + 1)
       const f = page.commonObjs.get(fontId) as { name?: string } | null
@@ -3275,6 +3620,494 @@ export default function App() {
     return plan.te
   }
 
+  // ── Form Design: author new AcroForm fields (pending until saved) ──
+
+  const lastRadioGroupRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (ribbonTab !== 'formDesign') {
+      setFormDesignTool(null)
+      setFormDesignPreview(false)
+      setSelectedFormFieldId(null)
+      setFreshFormFieldId(null)
+      lastRadioGroupRef.current = null
+    }
+  }, [ribbonTab])
+
+  const startFormDesignTool = (kind: FormDesignTool) => {
+    if (formDesignTool === kind) {
+      setFormDesignTool(null)
+      return
+    }
+    setEditTextMode(false)
+    setTextDraft(null)
+    setPendingTextInsert(null)
+    setDrawTool(null)
+    setPendingSign(null)
+    setSignatureTarget(null)
+    setEditImageMode(false)
+    setImagePick(null)
+    setPendingStaticFill(null)
+    setSelected(null)
+    setSelectedFormFieldId(null)
+    setFreshFormFieldId(null)
+    setFormDesignPreview(false)
+    setFormDesignTool(kind)
+  }
+
+  const nextFieldName = (prefix: string): string => {
+    const taken = editOpContext().fieldNames ?? new Set<string>()
+    for (let n = 1; ; n++) {
+      const name = `${prefix}_${n}`
+      if (!taken.has(name)) return name
+    }
+  }
+
+  /** Consecutive radio buttons join the group placed last; the first one starts a new group.
+   *  Done saves the button, so the group is remembered by name rather than read off the pending list */
+  const nextRadio = (): Pick<FormFieldInput, 'name' | 'exportValue'> => {
+    const remembered = lastRadioGroupRef.current
+    const name =
+      remembered &&
+      (formCatalog?.fields.get(remembered)?.kind === 'radio' ||
+        formFieldsRef.current.some((f) => f.input.kind === 'radio' && f.input.name === remembered))
+        ? remembered
+        : nextFieldName('radio')
+    lastRadioGroupRef.current = name
+    const used = new Set([
+      ...formFieldsRef.current
+        .filter((f) => f.input.kind === 'radio' && f.input.name === name)
+        .map((f) => f.input.exportValue),
+      ...(formCatalog?.fields.get(name)?.options ?? []),
+    ])
+    for (let n = 1; ; n++) {
+      const exportValue = `option_${n}`
+      if (!used.has(exportValue)) return { name, exportValue }
+    }
+  }
+
+  const addFormField = (
+    tool: FormDesignTool,
+    pageIndex: number,
+    rect: FormFieldInput['rect'],
+    keepTool = false,
+  ) => {
+    const kind: FormFieldKind = tool === 'date' ? 'text' : tool
+    const field: FormFieldInput =
+      kind === 'radio'
+        ? { ...nextRadio(), kind, pageIndex, rect }
+        : {
+            name: nextFieldName(tool),
+            kind,
+            pageIndex,
+            rect,
+            ...(tool === 'date' ? { dateFormat: 'yyyy-mm-dd' } : {}),
+            ...(kind === 'choice' ? { options: ['Option 1', 'Option 2'] } : {}),
+          }
+    const plan = applyEditOps([{ op: 'addFormField', field }])
+    if (plan.failures.length > 0) {
+      showNotice(plan.failures[0]!.error)
+      return
+    }
+    const created = plan.records[0]?.created?.[0] ?? null
+    setSelectedFormFieldId(created)
+    setFreshFormFieldId(created)
+    // One placement per arming, like WPS/Acrobat; Ctrl/⌘ or the ribbon toggle keeps the tool
+    if (!keepTool && !formDesignKeepTool) setFormDesignTool(null)
+  }
+
+  const patchFormField = (id: string, input: Partial<FormFieldInput>, coalesceKey?: string) => {
+    const field = formFieldsRef.current.find((f) => f.id === id)
+    const kind = field?.input.kind
+    // Changing the value or moving the button into another group must keep values unique there
+    if (kind === 'radio' && ('exportValue' in input || 'name' in input)) {
+      const next = (input.exportValue ?? field!.input.exportValue ?? '').trim()
+      const group = (input.name ?? field!.input.name).trim()
+      const taken =
+        formFieldsRef.current.some(
+          (f) =>
+            f.id !== id &&
+            f.input.kind === 'radio' &&
+            f.input.name === group &&
+            f.input.exportValue === next,
+        ) || (formCatalog?.fields.get(group)?.options ?? []).includes(next)
+      if (!next || taken) {
+        showNotice(t('formDesignExportValueTaken'))
+        return false
+      }
+    }
+    const ops: Op[] = [{ op: 'patchFormField', id, kind, input }]
+    // A radio group has one default: checking this button unchecks its pending siblings
+    if (kind === 'radio' && input.checked) {
+      for (const f of formFieldsRef.current) {
+        if (
+          f.id !== id &&
+          f.input.kind === 'radio' &&
+          f.input.name === field!.input.name &&
+          f.input.checked
+        )
+          ops.push({ op: 'patchFormField', id: f.id, kind, input: { checked: false } })
+      }
+    }
+    const plan = applyEditOps(ops, { coalesceKey })
+    if (plan.failures.length > 0)
+      showNotice(
+        t(
+          'options' in input
+            ? 'formDesignOptionsEmpty'
+            : 'exportValue' in input
+              ? 'formDesignExportValueTaken'
+              : 'formDesignNameInvalid',
+        ),
+      )
+    return plan.failures.length === 0
+  }
+
+  /** Existing widgets edit through their own bucket; only rect and required apply to them */
+  const patchDesignField = (
+    field: DesignField,
+    input: Partial<FormFieldInput>,
+    coalesceKey?: string,
+  ) => {
+    const widgetId = designWidgetId(field.id)
+    if (!widgetId) return patchFormField(field.id, input, coalesceKey)
+    if (input.rect && isSignedWidget(widgetId)) {
+      showNotice(t('formDesignSignedLocked'))
+      return false
+    }
+    const patch: Partial<FormWidgetEditInput> = {}
+    if (input.rect) patch.rect = input.rect
+    if (input.required !== undefined) patch.required = input.required
+    if (Object.keys(patch).length === 0) return true
+    const plan = applyEditOps(
+      [{ op: 'editFormWidget', widgetId, fieldName: field.name, input: patch }],
+      { coalesceKey },
+    )
+    return plan.failures.length === 0
+  }
+
+  const deleteFormField = (id: string) => {
+    const widgetId = designWidgetId(id)
+    if (widgetId) {
+      const w = formCatalog?.widgets.find((x) => x.id === widgetId)
+      if (w && isSignedWidget(widgetId)) {
+        showNotice(t('formDesignSignedLocked'))
+        return
+      }
+      if (w) {
+        applyEditOps([
+          { op: 'editFormWidget', widgetId, fieldName: w.fieldName, input: { remove: true } },
+        ])
+        showNotice(t('formDesignDeleted'))
+      }
+    } else if (formFieldsRef.current.some((f) => f.id === id)) {
+      applyEditOps([{ op: 'removeFormField', id }])
+      showNotice(t('formDesignDeleted'))
+    }
+    setSelectedFormFieldIds((cur) => cur.filter((x) => x !== id))
+    setFreshFormFieldId((cur) => (cur === id ? null : cur))
+  }
+
+  /** One undo step for a group move/align; signed widgets are skipped with a notice */
+  const applyDesignRects = (
+    changes: { field: DesignField; rect: FormFieldInput['rect'] }[],
+    coalesceKey?: string,
+  ) => {
+    const ops: Op[] = []
+    let locked = false
+    for (const { field, rect } of changes) {
+      const widgetId = designWidgetId(field.id)
+      if (!widgetId) ops.push({ op: 'patchFormField', id: field.id, input: { rect } })
+      else if (isSignedWidget(widgetId)) locked = true
+      else ops.push({ op: 'editFormWidget', widgetId, fieldName: field.name, input: { rect } })
+    }
+    if (locked) showNotice(t('formDesignSignedLocked'))
+    if (ops.length > 0) applyEditOps(ops, { coalesceKey })
+  }
+
+  /** Align/distribute/size the selection in display space (what the user sees), per page */
+  const arrangeSelected = (how: Arrange) => {
+    const byPage = new Map<number, DesignField[]>()
+    for (const f of selectedDesignFields)
+      byPage.set(f.pageIndex, [...(byPage.get(f.pageIndex) ?? []), f])
+    const changes: { field: DesignField; rect: FormFieldInput['rect'] }[] = []
+    for (const [pageIndex, fields] of byPage) {
+      if (fields.length < 2) continue
+      const geom = pageGeom(pageIndex)
+      const boxes = fields.map((f) => ({ f, b: pdfRectToCss(geom, f.rect, 1) }))
+      const anchor = boxes[0]!.b
+      const minL = Math.min(...boxes.map((x) => x.b.left))
+      const maxR = Math.max(...boxes.map((x) => x.b.left + x.b.width))
+      const minT = Math.min(...boxes.map((x) => x.b.top))
+      const maxB = Math.max(...boxes.map((x) => x.b.top + x.b.height))
+      const next = boxes.map(({ b }) => ({ ...b }))
+      switch (how) {
+        case 'left':
+          next.forEach((b) => (b.left = minL))
+          break
+        case 'right':
+          next.forEach((b) => (b.left = maxR - b.width))
+          break
+        case 'top':
+          next.forEach((b) => (b.top = minT))
+          break
+        case 'bottom':
+          next.forEach((b) => (b.top = maxB - b.height))
+          break
+        case 'centerH':
+          next.forEach((b) => (b.left = (minL + maxR) / 2 - b.width / 2))
+          break
+        case 'centerV':
+          next.forEach((b) => (b.top = (minT + maxB) / 2 - b.height / 2))
+          break
+        case 'sameWidth':
+          next.forEach((b) => (b.width = anchor.width))
+          break
+        case 'sameHeight':
+          next.forEach((b) => (b.height = anchor.height))
+          break
+        case 'sameSize':
+          next.forEach((b) => {
+            b.width = anchor.width
+            b.height = anchor.height
+          })
+          break
+        case 'distributeH':
+        case 'distributeV': {
+          if (next.length < 3) break
+          const horizontal = how === 'distributeH'
+          const order = next
+            .map((_, i) => i)
+            .sort((i, j) =>
+              horizontal ? next[i]!.left - next[j]!.left : next[i]!.top - next[j]!.top,
+            )
+          const total = next.reduce((acc, b) => acc + (horizontal ? b.width : b.height), 0)
+          const span = horizontal ? maxR - minL : maxB - minT
+          const gap = (span - total) / (next.length - 1)
+          let cursor = horizontal ? minL : minT
+          for (const i of order) {
+            const b = next[i]!
+            if (horizontal) b.left = cursor
+            else b.top = cursor
+            cursor += (horizontal ? b.width : b.height) + gap
+          }
+          break
+        }
+      }
+      const size = dispSize(pageIndex)
+      next.forEach((b, i) => {
+        const [ax, ay] = viewToPdf(geom, b.left, b.top)
+        const [bx, by] = viewToPdf(geom, b.left + b.width, b.top + b.height)
+        changes.push({
+          field: boxes[i]!.f,
+          rect: clampRectToPage(
+            [Math.min(ax, bx), Math.min(ay, by), Math.max(ax, bx), Math.max(ay, by)],
+            geom,
+            size.width,
+            size.height,
+          ),
+        })
+      })
+    }
+    if (changes.length > 0) applyDesignRects(changes)
+  }
+
+  /** Copyable description of a design field; saved widgets are re-created as new fields on paste */
+  const designFieldInput = (f: DesignField): FormFieldInput | null => {
+    if (f.pending) return f.pending.input
+    const widgetId = designWidgetId(f.id)
+    const w = widgetId ? formCatalog?.widgets.find((x) => x.id === widgetId) : undefined
+    if (!w) return null
+    return {
+      name: w.fieldName,
+      kind: w.kind,
+      pageIndex: w.pageIndex,
+      rect: f.rect,
+      required: f.required,
+      ...(w.kind === 'text'
+        ? {
+            multiLine: w.multiLine,
+            maxLen: w.maxLen ?? undefined,
+            textAlignment: w.textAlignment,
+            ...(w.dateFormat ? { dateFormat: w.dateFormat } : {}),
+          }
+        : {}),
+      ...(w.kind === 'radio' ? { exportValue: w.buttonValue } : {}),
+      ...(w.kind === 'choice'
+        ? { options: w.options.map((o) => o.exportValue), value: w.value }
+        : {}),
+    }
+  }
+
+  const copySelectedFormFields = () => {
+    const inputs = selectedDesignFields.flatMap((f) => designFieldInput(f) ?? [])
+    if (inputs.length === 0) return false
+    formClipboardRef.current = inputs
+    return true
+  }
+
+  /** Paste as new fields (fresh unique names, radio groups renamed together), shifted by 12 pt */
+  const pasteFormFields = (pageIndex?: number) => {
+    const items = formClipboardRef.current
+    if (items.length === 0) return
+    const taken = new Set(editOpContext().fieldNames ?? [])
+    const fresh = (base: string) => {
+      const stem = base.replace(/_\d+$/, '')
+      for (let n = 1; ; n++) {
+        const name = `${stem}_${n}`
+        if (!taken.has(name)) {
+          taken.add(name)
+          return name
+        }
+      }
+    }
+    const radioNames = new Map<string, string>()
+    const ops: Op[] = items.map((input) => {
+      let name = radioNames.get(input.name)
+      if (!name) {
+        name = fresh(input.name)
+        if (input.kind === 'radio') radioNames.set(input.name, name)
+      }
+      const [x1, y1, x2, y2] = input.rect
+      const page = pageIndex ?? input.pageIndex
+      const size = dispSize(page)
+      const geom = pageGeom(page)
+      // Down-and-right on screen, whatever the page rotation
+      const [ox, oy] = viewToPdf(geom, 0, 0)
+      const [px, py] = viewToPdf(geom, PASTE_OFFSET_PTS, PASTE_OFFSET_PTS)
+      const [dx, dy] = [px - ox, py - oy]
+      const rect = clampRectToPage(
+        [x1 + dx, y1 + dy, x2 + dx, y2 + dy],
+        geom,
+        size.width,
+        size.height,
+      )
+      return { op: 'addFormField', field: { ...input, name, pageIndex: page, rect } }
+    })
+    const plan = applyEditOps(ops)
+    if (plan.failures.length > 0) {
+      showNotice(plan.failures[0]!.error)
+      return
+    }
+    setSelectedFormFieldIds(plan.records.flatMap((r) => r.created ?? []))
+    setFreshFormFieldId(null)
+  }
+
+  const duplicateSelectedFormFields = () => {
+    const before = formClipboardRef.current
+    if (copySelectedFormFields()) pasteFormFields()
+    formClipboardRef.current = before
+  }
+
+  /** One undo step for the whole selection; signed widgets stay and are reported once */
+  const deleteSelectedFormFields = () => {
+    const ops: Op[] = []
+    let locked = false
+    for (const id of selectedFormFieldIds) {
+      const widgetId = designWidgetId(id)
+      if (widgetId) {
+        const w = formCatalog?.widgets.find((x) => x.id === widgetId)
+        if (!w) continue
+        if (isSignedWidget(widgetId)) locked = true
+        else
+          ops.push({
+            op: 'editFormWidget',
+            widgetId,
+            fieldName: w.fieldName,
+            input: { remove: true },
+          })
+      } else if (formFieldsRef.current.some((f) => f.id === id)) {
+        ops.push({ op: 'removeFormField', id })
+      }
+    }
+    if (locked) showNotice(t('formDesignSignedLocked'))
+    if (ops.length === 0) return
+    applyEditOps(ops)
+    setSelectedFormFieldIds([])
+    setFreshFormFieldId(null)
+    showNotice(t('formDesignDeleted'))
+  }
+
+  /** Scan every page for blanks a reader would fill (underscores, boxes, "Label:" gaps) and add them as pending fields */
+  const detectFields = async () => {
+    if (!doc || detectingFields) return
+    setDetectingFields(true)
+    try {
+      const taken = new Set(editOpContext().fieldNames ?? [])
+      const found: FormFieldInput[] = []
+      for (const origIdx of visList) {
+        const page = await doc.getPage(origIdx + 1)
+        const { items, shapes } = await collectDetectInput(page)
+        const g = pageGeom(origIdx)
+        const unit = g.userUnit ?? 1
+        const x0 = g.x0 ?? 0
+        const y0 = g.y0 ?? 0
+        const occupied = [
+          ...(liveFormCatalog?.byPage.get(origIdx) ?? []).map((w) => w.rect),
+          ...formFieldsRef.current
+            .filter((f) => f.input.pageIndex === origIdx)
+            .map((f) => f.input.rect),
+        ]
+        const fields = detectFormFields({
+          pageIndex: origIdx,
+          pageBox: [x0, y0, x0 + g.pw / unit, y0 + g.ph / unit],
+          items,
+          shapes,
+          occupied,
+          taken,
+        })
+        for (const f of fields) taken.add(f.name)
+        found.push(...fields)
+        if (found.length >= DETECT_FIELD_CAP) break
+      }
+      if (found.length === 0) {
+        showNotice(t('formDesignDetectedNone'))
+        return
+      }
+      const plan = applyEditOps(
+        found.slice(0, DETECT_FIELD_CAP).map((field) => ({ op: 'addFormField', field })),
+      )
+      if (plan.failures.length > 0) {
+        showNotice(plan.failures[0]!.error)
+        return
+      }
+      setFormDesignTool(null)
+      setFreshFormFieldId(null)
+      setSelectedFormFieldIds(plan.records.flatMap((r) => r.created ?? []))
+      showNotice(t('formDesignDetected', { count: plan.records.length }))
+    } finally {
+      setDetectingFields(false)
+    }
+  }
+
+  /** A signed field (saved visual signature or a pending one) stays put, as in Acrobat */
+  const isSignedWidget = (widgetId: string) =>
+    signedFormWidgetIds.has(widgetId) ||
+    !!formCatalog?.widgets.find((x) => x.id === widgetId)?.signed
+
+  /** Arrow keys move on screen; the display delta goes through each page's rotation */
+  const nudgeSelectedFormFields = (vx: number, vy: number) => {
+    applyDesignRects(
+      selectedDesignFields.map((field) => {
+        const geom = pageGeom(field.pageIndex)
+        const size = dispSize(field.pageIndex)
+        const [ax, ay] = viewToPdf(geom, 0, 0)
+        const [bx, by] = viewToPdf(geom, vx, vy)
+        const [dx, dy] = [bx - ax, by - ay]
+        const [x1, y1, x2, y2] = field.rect
+        return {
+          field,
+          rect: clampRectToPage(
+            [x1 + dx, y1 + dy, x2 + dx, y2 + dy],
+            geom,
+            size.width,
+            size.height,
+          ),
+        }
+      }),
+      `formFields:nudge:${selectedFormFieldIds.join(',')}`,
+    )
+  }
+
   const deleteSelected = () => {
     const sel = selected
     if (!sel) return
@@ -3369,6 +4202,7 @@ export default function App() {
   const editsPayload = (
     edits: LocalTextEdit[] = textEdits,
     noteFlush?: { drawings: LocalDrawing[]; noteEdits: LocalNoteEdit[] },
+    fields: LocalFormField[] = savableFormFields,
   ) => ({
     markups: markups.map(({ id: _id, ...rest }) => rest),
     annotDeletes: annotDeletes.map((d): AnnotDeleteInput => ({
@@ -3393,6 +4227,9 @@ export default function App() {
     staticFormFills,
     stamps: stampCfg ? renderStamps(stampCfg, visList) : [],
     formValues: [...formEdits.values()],
+    formFields: fields.map((f) => f.input),
+    blankPages: blankPages.map((b) => b.input),
+    formWidgetEdits: [...formWidgetEdits.values()],
     rotations: [...rotations].map(([pageIndex, delta]) => ({ pageIndex, delta })),
     deletedPages: [...deleted],
     ...(order ? { pageOrder: visList } : {}),
@@ -3412,9 +4249,13 @@ export default function App() {
       post-save reload has committed. Running the follow-up straight off the completion
       promise would reuse the pre-reload render's closure — dirty still true, the saved
       edits still listed — and write them onto the file a second time. */
-  const queuedSavesRef = useRef<{ autosave: boolean; resolve: (ok: boolean) => void }[]>([])
+  const queuedSavesRef = useRef<
+    { autosave: boolean; flushAll: boolean; resolve: (ok: boolean) => void }[]
+  >([])
 
-  const save = (autosave = false): Promise<boolean> => {
+  // flushAll also writes the field whose card is open: callers that treat success as
+  // "everything is in the file" (close-tab Save, flushThen) must not leave it behind
+  const save = (autosave = false, flushAll = false): Promise<boolean> => {
     if (redactionRequestInFlightRef.current) return Promise.resolve(false)
     // A save is already writing: queue behind it instead of reporting failure — the
     // close prompt's "Save" and ⌘S regularly collide with the blur-triggered autosave
@@ -3422,7 +4263,9 @@ export default function App() {
     // covers two triggers landing in the same frame, where the saveState snapshot
     // still reads 'idle' for both.
     if (saveInFlightRef.current !== null) {
-      return new Promise<boolean>((resolve) => queuedSavesRef.current.push({ autosave, resolve }))
+      return new Promise<boolean>((resolve) =>
+        queuedSavesRef.current.push({ autosave, flushAll, resolve }),
+      )
     }
     // Fold an open floating-editor draft in first: keyboard save and autosave can land
     // mid-typing, and the post-save reload closes the editor — without this the
@@ -3430,8 +4273,13 @@ export default function App() {
     const edits = commitTextDraft()
     // Same for an open comment-edit box in the notes margin
     const noteFlush = commitNoteEdit()
+    // From the ref, not render state: a queued save drains on the first commit after the
+    // previous save lands, and that render may not have applied the reload's subtraction yet
+    const pending = formFieldsRef.current
+    const fields =
+      flushAll || !heldFormFieldId ? pending : pending.filter((f) => f.id !== heldFormFieldId)
     const anythingToSave =
-      dirty ||
+      (flushAll ? ordinaryDirty : savableDirty) ||
       edits !== textEdits ||
       noteFlush.drawings !== drawings ||
       noteFlush.noteEdits !== noteEdits
@@ -3451,6 +4299,9 @@ export default function App() {
       imageEditIds: new Set(imageEdits.map((ie) => ie.id)),
       stampCfg,
       formEdits,
+      formFieldIds: new Set(fields.map((f) => f.id)),
+      blankPageIds: new Set(blankPages.map((b) => b.id)),
+      formWidgetEdits,
       rotations,
       metadata,
       pageMap: new Map(visList.map((origIdx, i) => [origIdx, i])),
@@ -3471,7 +4322,7 @@ export default function App() {
       const result = await window.pdfApi.save({
         path: filePath,
         ...(suggestedName ? { suggestedName } : {}),
-        ...editsPayload(edits, noteFlush),
+        ...editsPayload(edits, noteFlush, fields),
       })
       if (!result.ok) {
         if ('canceled' in result) {
@@ -3543,7 +4394,8 @@ export default function App() {
     queuedSavesRef.current = []
     // One explicit request makes the whole drained batch explicit (autosave opt-in)
     const autosaveOnly = queued.every((q) => q.autosave)
-    void save(autosaveOnly).then((ok) => {
+    const flushAll = queued.some((q) => q.flushAll)
+    void save(autosaveOnly, flushAll).then((ok) => {
       for (const q of queued) q.resolve(ok)
     })
   })
@@ -3615,7 +4467,7 @@ export default function App() {
             imageEdits: [],
             ...(lateNoteEdits.length > 0 ? { noteEdits: lateNoteEdits } : {}),
           }
-        : editsPayload(draftEdits, noteFlush)
+        : editsPayload(draftEdits, noteFlush, formFields)
     setSaveState('saving')
     const result = await window.pdfApi.save({ path: filePath, targetPath, ...edits })
     if (!result.ok) {
@@ -3684,6 +4536,9 @@ export default function App() {
       imageEdits.length > 0 ||
       stampCfg !== null ||
       formEdits.size > 0 ||
+      formFields.length > 0 ||
+      blankPages.length > 0 ||
+      formWidgetEdits.size > 0 ||
       rotations.size > 0 ||
       deleted.size > 0 ||
       order !== null ||
@@ -3741,6 +4596,14 @@ export default function App() {
     },
   )
 
+  // Done in the field popover persists the field; runs after the render that folded in
+  // the Enter-key name commit so the save sees the patched field
+  const [formDesignDoneSave, setFormDesignDoneSave] = useState(0)
+  useEffect(() => {
+    if (formDesignDoneSave > 0) void save()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formDesignDoneSave])
+
   // ── Page operations ──
 
   const rotatePages = (origIdxs: number[], dir: RotateDelta): string | null => {
@@ -3780,14 +4643,14 @@ export default function App() {
       buildStamps(
         pages.map((origIdx, i) => ({
           origIdx,
-          pw: sizes[origIdx]!.width,
-          ph: sizes[origIdx]!.height,
+          pw: allSizes[origIdx]!.width,
+          ph: allSizes[origIdx]!.height,
           displayNo: i + 1,
         })),
         cfg.wm,
         cfg.hf,
       ),
-    [sizes],
+    [allSizes],
   )
 
   const applyStamps = (wm: WatermarkConfig | null, hf: HeaderFooterConfig | null) => {
@@ -4045,30 +4908,89 @@ export default function App() {
     setPendingStaticFill(null)
   }
 
+  const pdfRectFromView = (
+    geom: PageGeom,
+    left: number,
+    top: number,
+    w: number,
+    h: number,
+  ): [number, number, number, number] => {
+    const [ax, ay] = viewToPdf(geom, left, top)
+    const [bx, by] = viewToPdf(geom, left + w, top + h)
+    return [Math.min(ax, bx), Math.min(ay, by), Math.max(ax, bx), Math.max(ay, by)]
+  }
+
+  const pageBoxShapesRef = useRef(
+    new Map<number, readonly (readonly [number, number, number, number])[]>(),
+  )
+  useEffect(() => {
+    pageBoxShapesRef.current = new Map()
+  }, [doc])
+  const pageBoxShapes = async (origIdx: number) => {
+    const cached = pageBoxShapesRef.current.get(origIdx)
+    if (cached) return cached
+    if (!doc) return []
+    const shapes = await collectDetectInput(await doc.getPage(origIdx + 1))
+      .then((r) => r.shapes)
+      .catch(() => [])
+    pageBoxShapesRef.current.set(origIdx, shapes)
+    return shapes
+  }
+
+  /** A check/cross dropped on an interactive check box ticks that field; on a printed box it fills the box */
+  const placeFormMark = async (
+    kind: 'check' | 'cross',
+    pick: Extract<SignatureData, { kind: 'image' }>,
+    origIdx: number,
+    vx: number,
+    vy: number,
+  ) => {
+    const geom = pageGeom(origIdx)
+    const [px, py] = viewToPdf(geom, vx, vy)
+    const widget = checkboxWidgetAt(liveFormCatalog?.byPage.get(origIdx) ?? [], px, py)
+    if (widget) {
+      applyEditOps([
+        { op: 'setFormValue', value: { name: widget.fieldName, kind: 'checkbox', checked: true } },
+      ])
+      return
+    }
+    const box = printedBoxAt(await pageBoxShapes(origIdx), px, py)
+    if (box) {
+      const rect = markRectForBox(box)
+      const image = renderStaticFormMark(kind, rect[2] - rect[0])
+      if (image) commitPlacedImage(origIdx, image.image, rect, kind)
+      return
+    }
+    const disp = geomDispSize(geom)
+    const left = Math.min(Math.max(vx - pick.width / 2, 0), Math.max(disp.width - pick.width, 0))
+    const top = Math.min(Math.max(vy - pick.height / 2, 0), Math.max(disp.height - pick.height, 0))
+    commitPlacedImage(
+      origIdx,
+      pick.image,
+      pdfRectFromView(geom, left, top, pick.width, pick.height),
+      kind,
+    )
+  }
+
   /** Drop the picked image centered on the click point, into the text-below band by default */
   const placeImage = (origIdx: number, vx: number, vy: number) => {
     const pick = imagePick
     if (!pick) return
+    const fill = pendingStaticFill
+    setImagePick(null)
+    setPendingStaticFill(null)
+    if (fill === 'check' || fill === 'cross') {
+      void placeFormMark(fill, pick, origIdx, vx, vy)
+      return
+    }
     const geom = pageGeom(origIdx)
     const disp = geomDispSize(geom)
-    const k = pendingStaticFill
-      ? staticFormFillPlaceK()
-      : imagePlaceK(pick, disp.width, disp.height)
+    const k = fill ? staticFormFillPlaceK() : imagePlaceK(pick, disp.width, disp.height)
     const w = pick.width * k
     const h = pick.height * k
     const left = Math.min(Math.max(vx - w / 2, 0), Math.max(disp.width - w, 0))
     const top = Math.min(Math.max(vy - h / 2, 0), Math.max(disp.height - h, 0))
-    const [ax, ay] = viewToPdf(geom, left, top)
-    const [bx, by] = viewToPdf(geom, left + w, top + h)
-    const rect: [number, number, number, number] = [
-      Math.min(ax, bx),
-      Math.min(ay, by),
-      Math.max(ax, bx),
-      Math.max(ay, by),
-    ]
-    commitPlacedImage(origIdx, pick.image, rect, pendingStaticFill)
-    setImagePick(null)
-    setPendingStaticFill(null)
+    commitPlacedImage(origIdx, pick.image, pdfRectFromView(geom, left, top, w, h), fill)
   }
 
   /** Queue an insertImage op; fill != null tags it as a static form fill (text/check/cross) */
@@ -4809,6 +5731,19 @@ export default function App() {
         const pageNumbers: number[] = []
         const canvas = document.createElement('canvas')
         for (const origIdx of targets) {
+          if (isBlankPage(origIdx)) {
+            const d = dispSize(origIdx)
+            canvas.width = Math.floor((d.width * 150) / 72)
+            canvas.height = Math.floor((d.height * 150) / 72)
+            const ctx2d = canvas.getContext('2d')
+            if (ctx2d) {
+              ctx2d.fillStyle = '#fff'
+              ctx2d.fillRect(0, 0, canvas.width, canvas.height)
+            }
+            images.push(canvas.toDataURL('image/png').split(',')[1] ?? '')
+            pageNumbers.push(visList.indexOf(origIdx) + 1)
+            continue
+          }
           const page = await doc.getPage(origIdx + 1)
           const viewport = page.getViewport({
             scale: 150 / 72,
@@ -4995,7 +5930,11 @@ export default function App() {
 
   /** Extract/insert work on the file on disk — flush unsaved changes first; undefined = the save failed */
   const flushThen = async <T,>(fn: () => Promise<T>): Promise<T | undefined> => {
-    if (dirty && !(await save())) return undefined
+    if (redactions.length > 0) {
+      opFailed(t('redactStructureBlocked'))
+      return undefined
+    }
+    if (dirty && !(await save(false, true))) return undefined
     return fn()
   }
 
@@ -5034,10 +5973,6 @@ export default function App() {
       }),
     )
   }
-  const insertBlankPageAt = (afterVisIdx: number) =>
-    rewriteInPlace(() =>
-      window.pdfApi.insertBlankPage({ path: filePath, afterPageIndex: afterVisIdx }),
-    )
   const splitPdfToFolder = (chunkSize: number) =>
     runFileOp(() => window.pdfApi.splitPdf({ path: filePath, chunkSize, baseName: baseName() }))
   const mergePagesToFile = (
@@ -5088,17 +6023,41 @@ export default function App() {
     void extractPagesToFile(pages.map((n) => n - 1))
   }
 
-  const insertPdf = (afterOrigIdx: number) =>
-    flushThen(async () => {
-      const result = await window.pdfApi.insertPdf({ path: filePath, afterPageIndex: afterOrigIdx })
+  const insertPdf = (afterOrigIdx: number) => {
+    // the flush bakes the visible order into the file, so the anchor becomes its visible position
+    const afterPageIndex = visListOf(orderRef.current).indexOf(afterOrigIdx)
+    return flushThen(async () => {
+      const result = await window.pdfApi.insertPdf({ path: filePath, afterPageIndex })
       if (!result.ok) {
         opFailed(result.error)
         return
       }
       if (!('canceled' in result)) await loadDoc(filePath, doc)
     })
+  }
 
-  const insertBlankPage = (afterOrigIdx: number) => insertBlankPageAt(visList.indexOf(afterOrigIdx))
+  /** Pending edit like a new slide in Slides: shows up at once, drags, undoes, lands in the file on save. -1 / null = first page */
+  const insertBlankPage = (
+    afterOrigIdx: number | null,
+  ): { ok: true; pageIndex: number } | { ok: false; error: string } => {
+    const after = afterOrigIdx !== null && afterOrigIdx >= 0 ? afterOrigIdx : null
+    const neighbor = after ?? visListOf(orderRef.current)[0]
+    const size =
+      neighbor !== undefined && (allSizes[neighbor] ?? blankSizeNow(neighbor))
+        ? geomDispSize(pageGeomRef.current(neighbor))
+        : { width: 595.28, height: 841.89 }
+    const pageIndex = sizes.length + blankPagesRef.current.length
+    const plan = applyEditOpsRef.current([
+      { op: 'insertBlankPage', after, pageIndex, width: size.width, height: size.height },
+    ])
+    if (plan.failures.length > 0) {
+      const error = plan.failures[0]!.error
+      opFailed(error)
+      return { ok: false, error }
+    }
+    scrollAfterReorderRef.current = pageIndex
+    return { ok: true, pageIndex }
+  }
 
   const openSplitDlg = () => {
     setSplitInput('1')
@@ -5177,7 +6136,7 @@ export default function App() {
 
   /** Render the page as displayed (rotation included) for the crop dialog */
   const openPageCrop = async (origIdx: number) => {
-    if (!doc) return
+    if (!doc || isBlankPage(origIdx)) return
     try {
       const page = await doc.getPage(origIdx + 1)
       const rotation = (((page.rotate + rotDelta(origIdx)) % 360) + 360) % 360
@@ -5216,7 +6175,12 @@ export default function App() {
     setPrintMode('all')
     setPrintInput(String(printCurrentPage))
     setPrintInvalid(false)
+    setPrintParity('all')
     setPrintDlg(true)
+    window.pdfApi
+      .listPrinters()
+      .then(setPrinters)
+      .catch(() => undefined)
   }
 
   /** Print: save first (markups/forms/page ops all into the file), then reload from the file to render, avoiding a destroyed old doc */
@@ -5228,6 +6192,15 @@ export default function App() {
   const printDoc = async (pages?: number[]) => {
     if (printBusyRef.current) return
     printBusyRef.current = true
+    const job =
+      printDevice === PRINT_SYSTEM_DIALOG
+        ? undefined
+        : {
+            deviceName: printDevice,
+            copies: printCopies,
+            collate: printCollate,
+            duplex: printDuplex,
+          }
     try {
       await flushThen(async () => {
         setPrinting(true)
@@ -5235,7 +6208,7 @@ export default function App() {
           const data = await window.pdfApi.readFile(filePath)
           const pdoc = await getDocument({ data: new Uint8Array(data), ...DOC_OPTS }).promise
           try {
-            await printPdf(pdoc, pages)
+            await printPdf(pdoc, pages, job)
           } finally {
             void pdoc.loadingTask.destroy()
           }
@@ -5252,23 +6225,19 @@ export default function App() {
 
   /** Print dialog confirm: visible page numbers → 1-based file pages */
   const confirmPrint = () => {
-    if (printMode === 'all') {
-      setPrintDlg(false)
-      void printDoc()
-      return
-    }
-    if (printMode === 'current') {
-      setPrintDlg(false)
-      void printDoc([printCurrentPage])
-      return
-    }
-    const pages = parsePageRanges(printInput, pageCount)
-    if (!pages || pages.length === 0) {
+    const pages =
+      printMode === 'all'
+        ? Array.from({ length: pageCount }, (_x, i) => i + 1)
+        : printMode === 'current'
+          ? [printCurrentPage]
+          : parsePageRanges(printInput, pageCount)
+    const subset = pages ? filterPageParity(pages, printParity) : []
+    if (subset.length === 0) {
       setPrintInvalid(true)
       return
     }
     setPrintDlg(false)
-    void printDoc(pages)
+    void printDoc(printMode === 'all' && printParity === 'all' ? undefined : subset)
   }
 
   /** Capability surface for AI tools; rebuilt each render (AiPanel mirrors it via refs to get the latest) */
@@ -5286,6 +6255,9 @@ export default function App() {
     add(noteEdits.length, 'note edits')
     add(drawings.length, 'drawings')
     add(formEdits.size, 'form field changes')
+    add(formFields.length, 'new form fields (Form Design)')
+    add(blankPages.length, 'blank pages added')
+    add(formWidgetEdits.size, 'existing form field changes (Form Design)')
     add(rotations.size, 'page rotations')
     add(deleted.size, 'page deletions')
     if (order) parts.push('page order changed')
@@ -5344,7 +6316,7 @@ export default function App() {
   const aiApi: PdfAppDeps = {
     doc: () => doc,
     fileName: () => fileName,
-    pageCount: () => sizes.length,
+    pageCount: pageCountNow,
     currentPage: () => (visList[currentPage - 1] ?? 0) + 1,
     readOnly: () => readOnly,
     ocrText: (origIdx) => ocrPages.get(origIdx)?.entry.text ?? null,
@@ -5528,13 +6500,16 @@ export default function App() {
       const image = renderStaticFormMark(kind, Math.max(rect[2] - rect[0], rect[3] - rect[1]))
       if (image) commitPlacedImage(origIdx, image.image, rect, kind)
     },
+    formWidgets: (origIdx) => liveFormCatalog?.byPage.get(origIdx) ?? [],
+    pageBoxes: pageBoxShapes,
     editFonts: () => editFonts,
     formEdits: () => formEdits,
     applyOps: (ops, opts) =>
       opts?.dryRun ? planEditOps(ops, editOpContext(), newId) : applyEditOpsRef.current(ops),
     metadata: () => metadataRef.current ?? docInfo,
     pageOrder: () => visListOf(orderRef.current),
-    pageGeom: (origIdx) => (sizes[origIdx] ? pageGeom(origIdx) : null),
+    pageGeom: (origIdx) =>
+      (allSizes[origIdx] ?? blankSizeNow(origIdx)) ? pageGeom(origIdx) : null,
     listImages: () => (filePath ? window.pdfApi.listPageImages(filePath) : Promise.resolve([])),
     isImageClaimed: isImageClaimedNow,
     insertImage: (origIdx, png, rect, layer) => {
@@ -5586,7 +6561,7 @@ export default function App() {
       applyEditOpsRef.current([{ op: 'setStamps', cfg }])
     },
     createDocument: (request) => window.pdfApi.createDocument(request),
-    insertBlankPage: insertBlankPageAt,
+    insertBlankPage,
     setPageSize: resizePages,
     cropPages: cropPagesOnDisk,
     replacePages: replacePagesOnDisk,
@@ -5640,6 +6615,21 @@ export default function App() {
   useDismissablePopover(thumbMenu != null, () => setThumbMenu(null), {
     inside: () => [thumbMenuRef.current],
   })
+  useDismissablePopover(formMenu != null, () => setFormMenu(null), {
+    inside: () => [formMenuRef.current],
+  })
+  // The field menu is tall; keep it inside the window when opened near the bottom/right edge
+  useLayoutEffect(() => {
+    const el = formMenuRef.current
+    if (!formMenu || !el) return
+    const r = el.getBoundingClientRect()
+    const left = Math.max(0, Math.min(formMenu.x, window.innerWidth - r.width - 4))
+    const top = Math.max(0, Math.min(formMenu.y, window.innerHeight - r.height - 4))
+    if (left !== formMenu.x || top !== formMenu.y) setFormMenu({ ...formMenu, x: left, y: top })
+  }, [formMenu])
+  useDismissablePopover(arrangeOpen, () => setArrangeOpen(false), {
+    inside: () => [arrangeWrapRef.current],
+  })
 
   // Draw-color palette (Annotate tab). Guarded by its own wrap ref — the
   // generic `.rb-drop-wrap` class is shared with the highlight split button,
@@ -5676,10 +6666,15 @@ export default function App() {
     inside: () => [convertWrapRef.current],
   })
 
-  // Main process picked "Save" in the close prompt → save and report the result
+  // Main process asked for a save (close prompt, menu Save, export) → save and report the result
   useEffect(() => {
-    return window.pdfApi.onCloseSaveRequest(() => {
-      void save().then((ok) => window.pdfApi.sendCloseSaveResult(ok))
+    return window.pdfApi.onCloseSaveRequest(({ flushAll }) => {
+      if (redactions.length > 0) {
+        showNotice(t('redactSaveAsHint'))
+        window.pdfApi.sendCloseSaveResult(false)
+        return
+      }
+      void save(false, flushAll).then((ok) => window.pdfApi.sendCloseSaveResult(ok))
     })
   })
 
@@ -5714,6 +6709,31 @@ export default function App() {
       if (!shouldHandleDocumentUndo(e.target, e.key, e.metaKey || e.ctrlKey)) return
       if (e.metaKey || e.ctrlKey) {
         const k = e.key.toLowerCase()
+        if (ribbonTab === 'formDesign' && !formDesignPreview && !inEditable) {
+          if (k === 'c' && selectedFormFieldIds.length > 0) {
+            e.preventDefault()
+            copySelectedFormFields()
+            return
+          }
+          if (k === 'v' && formClipboardRef.current.length > 0) {
+            e.preventDefault()
+            pasteFormFields()
+            return
+          }
+          if (k === 'd' && selectedFormFieldIds.length > 0) {
+            e.preventDefault()
+            duplicateSelectedFormFields()
+            return
+          }
+          if (k === 'a') {
+            e.preventDefault()
+            const page = selectedDesignFields[0]?.pageIndex ?? visList[currentPage - 1]
+            setSelectedFormFieldIds(
+              page === undefined ? [] : (designFieldsByPage.get(page) ?? []).map((f) => f.id),
+            )
+            return
+          }
+        }
         if (k === 's') {
           e.preventDefault()
           void save()
@@ -5753,11 +6773,37 @@ export default function App() {
         else if (noteDraft) setNoteDraft(null)
         else if (activeNote) setActiveNote(null)
         else if (drawTool) setDrawTool(null)
+        else if (formMenu) setFormMenu(null)
+        else if (formDesignTool) setFormDesignTool(null)
+        else if (selectedFormFieldIds.length > 0) setSelectedFormFieldIds([])
         else if (selected) setSelected(null)
         else if (searchOpen) closeSearch()
         return
       }
       if (inEditable) return
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedFormFieldIds.length > 0) {
+        e.preventDefault()
+        deleteSelectedFormFields()
+        return
+      }
+      if (
+        selectedDesignFields.length > 0 &&
+        ribbonTab === 'formDesign' &&
+        e.key.startsWith('Arrow')
+      ) {
+        const step = NUDGE_PTS * (e.shiftKey ? 10 : 1)
+        const [vx, vy] =
+          e.key === 'ArrowLeft'
+            ? [-step, 0]
+            : e.key === 'ArrowRight'
+              ? [step, 0]
+              : e.key === 'ArrowUp'
+                ? [0, -step]
+                : [0, step]
+        e.preventDefault()
+        nudgeSelectedFormFields(vx, vy)
+        return
+      }
       if ((e.key === 'Delete' || e.key === 'Backspace') && selected) {
         e.preventDefault()
         deleteSelected()
@@ -5802,6 +6848,34 @@ export default function App() {
   })
 
   // Ctrl/⌘ + wheel zoom (native listener: React's wheel is passive and can't preventDefault)
+  const queuedScaleRef = useRef<number | null>(null)
+  useLayoutEffect(() => {
+    queuedScaleRef.current = null
+  }, [scale])
+
+  // renamed / moved from the shell: keep saving to the file's new location
+  useEffect(() => window.pdfApi.onFileRenamed((next) => setFilePath(next)), [])
+
+  // Re-read the signatures whenever the document on screen is (re)loaded: a save rewrites the
+  // file, which is exactly when an old signature stops matching
+  useEffect(() => {
+    if (!doc || !filePath) {
+      setDigitalSignatures([])
+      return
+    }
+    let cancelled = false
+    void window.pdfApi
+      .listDigitalSignatures(filePath)
+      .then((list) => {
+        if (!cancelled) setDigitalSignatures(list)
+      })
+      .catch(() => {
+        if (!cancelled) setDigitalSignatures([])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [doc, filePath])
   useEffect(() => {
     const el = scrollRef.current
     if (!el) return
@@ -5861,6 +6935,8 @@ export default function App() {
   }
 
   const menuOrig = thumbMenu?.origIdx ?? -1
+  const menuInGap = thumbMenu != null && thumbMenu.origIdx === null
+  const menuInsertAfter = menuInGap ? (thumbMenu.afterOrigIdx ?? -1) : menuOrig
 
   /** Ribbon AI buttons: expand the dock and auto-run the prompt in the assistant */
   const runAiPreset = (text: string): void => {
@@ -5903,7 +6979,7 @@ export default function App() {
                 <span className="rb-color-bar" style={{ background: cssRgb(highlightColor) }} />
               </span>
             </span>
-            {t('highlight')}
+            <span>{t('highlight')}</span>
           </button>
           <button
             className={`rb-highlight-caret${highlightColorOpen ? ' active' : ''}`}
@@ -5932,7 +7008,7 @@ export default function App() {
           <span className="rb-big-icon">
             <IconUnderline />
           </span>
-          {t('underline')}
+          <span>{t('underline')}</span>
         </button>
         <button
           className="rb-big"
@@ -5943,7 +7019,7 @@ export default function App() {
           <span className="rb-big-icon">
             <IconStrike />
           </span>
-          {t('strikeout')}
+          <span>{t('strikeout')}</span>
         </button>
       </div>
     </div>
@@ -5993,7 +7069,7 @@ export default function App() {
           <span className="rb-big-icon">
             <IconFitWidth />
           </span>
-          {t('fitWidth')}
+          <span>{t('fitWidth')}</span>
         </button>
         <button
           className="rb-big"
@@ -6005,7 +7081,7 @@ export default function App() {
           <span className="rb-big-icon">
             <IconFitPage />
           </span>
-          {t('fitPage')}
+          <span>{t('fitPage')}</span>
         </button>
       </div>
     </div>
@@ -6020,7 +7096,7 @@ export default function App() {
       <span className="rb-big-icon">
         <IconSearch />
       </span>
-      {t('search')}
+      <span>{t('search')}</span>
     </button>
   )
 
@@ -6042,7 +7118,7 @@ export default function App() {
       <span className="rb-big-icon">
         <IconEditText />
       </span>
-      {t('editText')}
+      <span>{t('editText')}</span>
     </button>
   )
 
@@ -6073,7 +7149,7 @@ export default function App() {
       <span className="rb-big-icon">
         <IconFormText />
       </span>
-      {t('insertText')}
+      <span>{t('insertText')}</span>
     </button>
   )
 
@@ -6082,6 +7158,36 @@ export default function App() {
     widget.signed || signedFormWidgetIds.has(widget.id)
   const firstSignatureWidget =
     formWidgets.find((widget) => widget.kind === 'signature' && !formWidgetSigned(widget)) ?? null
+
+  const openCertSignDialog = () => {
+    if (dirty || saveInFlightRef.current !== null) {
+      showNotice(t('certSaveFirst'))
+      return
+    }
+    setCertSignDlg(true)
+  }
+
+  /** The signed copy becomes this tab's document; reload it like a Save As target */
+  const adoptSignedFile = async (path: string) => {
+    setCertSignDlg(false)
+    const scrollTop = scrollRef.current?.scrollTop ?? 0
+    setFilePath(path)
+    setStatus('loading')
+    try {
+      await loadDoc(path, doc)
+      searchIndexCache.clear()
+      setSearchMatches([])
+      setSearchCur(0)
+      setStatus('ready')
+      requestAnimationFrame(() => {
+        if (scrollRef.current) scrollRef.current.scrollTop = scrollTop
+      })
+      showNotice(t('certSigned', { name: path.split(/[\\/]/).pop() ?? path }))
+    } catch (err) {
+      setStatus('error')
+      opFailed(err instanceof Error ? err.message : String(err))
+    }
+  }
 
   const openSignatureDialog = (target: FormWidget | null) => {
     setEditTextMode(false)
@@ -6119,7 +7225,7 @@ export default function App() {
           <span className="rb-big-icon">
             <IconThumbs />
           </span>
-          {t('thumbs')}
+          <span>{t('thumbs')}</span>
         </button>
         <button
           className={`rb-big${sidebar === 'outline' ? ' active' : ''}`}
@@ -6129,7 +7235,7 @@ export default function App() {
           <span className="rb-big-icon">
             <IconOutline />
           </span>
-          {t('outline')}
+          <span>{t('outline')}</span>
         </button>
         {searchBtn}
         <button
@@ -6138,7 +7244,7 @@ export default function App() {
           onClick={() => setSpread((v) => (v === 1 ? 2 : 1))}
         >
           <span className="rb-big-icon">{spread === 2 ? <IconSinglePage /> : <IconSpread />}</span>
-          {spread === 2 ? t('singlePage') : t('twoPage')}
+          <span>{spread === 2 ? t('singlePage') : t('twoPage')}</span>
         </button>
         <button
           className={`rb-big${nightMode ? ' active' : ''}`}
@@ -6148,7 +7254,7 @@ export default function App() {
           <span className="rb-big-icon">
             <IconNight />
           </span>
-          {t('nightMode')}
+          <span>{t('nightMode')}</span>
         </button>
       </div>
     </div>
@@ -6158,8 +7264,8 @@ export default function App() {
   // a left/right docked AI panel spans the full window height, level with the
   // ribbon's top edge, instead of squeezing the editor area below the ribbon)
   const ribbon = (
-    <div className="ribbon">
-      <div className="ribbon-tabs">
+    <div className={`ribbon ${collapse.rootClass}`} ref={collapse.rootRef}>
+      <div className="ribbon-tabs" onDoubleClick={collapse.onTabsDoubleClick}>
         <button
           className="qa-btn"
           data-tip={`${t('save')} (${platformShortcuts('⌘S')})`}
@@ -6193,20 +7299,38 @@ export default function App() {
             {RIBBON_TABS.map(({ id, labelKey }) => (
               <button
                 key={id}
-                className={`ribbon-tab${ribbonTab === id ? ' active' : ''}`}
-                onClick={() => setRibbonTab(id)}
+                className={`ribbon-tab ${collapse.tabClass(ribbonTab === id)}`}
+                data-tip={collapse.tabTip(ribbonTab === id)}
+                onClick={() => {
+                  collapse.onTabPress(ribbonTab === id)
+                  setRibbonTab(id)
+                }}
               >
                 {t(labelKey)}
               </button>
             ))}
             {!readOnly && (
               <button
-                className={`ribbon-tab ribbon-tab-context${
-                  ribbonTab === 'fillForm' ? ' active' : ''
-                }`}
-                onClick={() => setRibbonTab('fillForm')}
+                className={`ribbon-tab ribbon-tab-context ${collapse.tabClass(ribbonTab === 'fillForm')}`}
+                data-tip={collapse.tabTip(ribbonTab === 'fillForm')}
+                onClick={() => {
+                  collapse.onTabPress(ribbonTab === 'fillForm')
+                  setRibbonTab('fillForm')
+                }}
               >
                 {t('ribbonTabFillForm')}
+              </button>
+            )}
+            {!readOnly && (
+              <button
+                className={`ribbon-tab ribbon-tab-context ${collapse.tabClass(ribbonTab === 'formDesign')}`}
+                data-tip={collapse.tabTip(ribbonTab === 'formDesign')}
+                onClick={() => {
+                  collapse.onTabPress(ribbonTab === 'formDesign')
+                  setRibbonTab('formDesign')
+                }}
+              >
+                {t('ribbonTabFormDesign')}
               </button>
             )}
           </div>
@@ -6216,6 +7340,7 @@ export default function App() {
             tailLabel={t('ribbonTabScrollRight')}
           />
         </div>
+        <span className="ribbon-tabs-spacer" />
         {readOnly && <span className="tb-readonly">{t('roEncrypted')}</span>}
         {/* The file on disk is only touched by an explicit save until then. */}
         {saveState === 'saving' ? (
@@ -6235,7 +7360,7 @@ export default function App() {
           </span>
         )}
         <AiPanelToggle
-          open={!aiCollapsed}
+          open={!aiCollapsed && aiSidebarEnabled}
           onToggle={() => setAiCollapsed((v) => !v)}
           label={t('aiOpenAssistant')}
         />
@@ -6309,6 +7434,8 @@ export default function App() {
                       <button onClick={() => void convertTo('docx')}>{t('convertToWord')}</button>
                       <button onClick={() => void convertTo('xlsx')}>{t('convertToExcel')}</button>
                       <button onClick={() => void convertTo('pptx')}>{t('convertToPpt')}</button>
+                      <button onClick={() => void convertTo('md')}>{t('convertToMarkdown')}</button>
+                      <button onClick={() => void convertTo('html')}>{t('convertToHtml')}</button>
                     </div>
                   )}
                 </div>
@@ -6463,6 +7590,29 @@ export default function App() {
                   </span>
                   {t('sign')}
                 </button>
+                <button
+                  className="rb-big"
+                  disabled={readOnly || status !== 'ready'}
+                  data-tip={t('certSignHint')}
+                  onClick={openCertSignDialog}
+                >
+                  <span className="rb-big-icon">
+                    <IconCertSign />
+                  </span>
+                  <span>{t('certSign')}</span>
+                </button>
+                {digitalSignatures.length > 0 && (
+                  <button
+                    className="rb-big"
+                    data-tip={t('sigPanelHint')}
+                    onClick={() => setSignaturesDlg(true)}
+                  >
+                    <span className="rb-big-icon">
+                      <IconSignatures />
+                    </span>
+                    <span>{t('sigPanel')}</span>
+                  </button>
+                )}
                 <div ref={drawColorWrapRef} className="rb-drop-wrap">
                   <button
                     className={`rb-big${colorOpen ? ' active' : ''}`}
@@ -6688,6 +7838,147 @@ export default function App() {
             </div>
           </>
         )}
+        {ribbonTab === 'formDesign' && (
+          <>
+            <div className="ribbon-group">
+              <div className="ribbon-group-items">
+                {(
+                  [
+                    ['text', IconFieldText, 'formDesignText', 'formDesignTextHint'],
+                    ['date', IconFieldDate, 'formDesignDate', 'formDesignDateHint'],
+                    [
+                      'checkbox',
+                      IconFieldCheckbox,
+                      'formDesignCheckbox',
+                      'formDesignCheckboxHint',
+                    ],
+                    ['radio', IconFieldRadio, 'formDesignRadio', 'formDesignRadioHint'],
+                    ['choice', IconFieldChoice, 'formDesignChoice', 'formDesignChoiceHint'],
+                    [
+                      'signature',
+                      IconFieldSignature,
+                      'formDesignSignature',
+                      'formDesignSignatureHint',
+                    ],
+                  ] as const
+                ).map(([kind, FieldIcon, labelKey, hintKey]) => (
+                  <button
+                    key={kind}
+                    className={`rb-big${formDesignTool === kind ? ' active' : ''}`}
+                    disabled={readOnly}
+                    data-tip={t(hintKey)}
+                    aria-pressed={formDesignTool === kind}
+                    onClick={() => startFormDesignTool(kind)}
+                  >
+                    <span className="rb-big-icon">
+                      <FieldIcon />
+                    </span>
+                    <span>{t(labelKey)}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="ribbon-sep" />
+            <div className="ribbon-group">
+              <div className="ribbon-group-items">
+                <button
+                  className={`rb-big${formDesignKeepTool ? ' active' : ''}`}
+                  disabled={readOnly}
+                  data-tip={t('formDesignKeepToolHint')}
+                  aria-pressed={formDesignKeepTool}
+                  onClick={() => setFormDesignKeepTool((v) => !v)}
+                >
+                  <span className="rb-big-icon">
+                    <IconFieldKeep />
+                  </span>
+                  <span>{t('formDesignKeepTool')}</span>
+                </button>
+                <button
+                  className={`rb-big${formDesignPreview ? ' active' : ''}`}
+                  disabled={readOnly}
+                  data-tip={t('formDesignPreviewHint')}
+                  aria-pressed={formDesignPreview}
+                  onClick={() => {
+                    setFormDesignTool(null)
+                    setSelectedFormFieldId(null)
+                    setFreshFormFieldId(null)
+                    setFormDesignPreview((v) => !v)
+                  }}
+                >
+                  <span className="rb-big-icon">
+                    <IconFieldPreview />
+                  </span>
+                  <span>{t('formDesignPreview')}</span>
+                </button>
+                <button
+                  className="rb-big"
+                  disabled={readOnly || detectingFields || !doc}
+                  data-tip={t('formDesignDetectHint')}
+                  onClick={() => void detectFields()}
+                >
+                  <span className="rb-big-icon">
+                    <IconFieldDetect />
+                  </span>
+                  <span>
+                    {detectingFields ? t('formDesignDetecting') : t('formDesignDetect')}
+                  </span>
+                </button>
+                <div className="rb-drop-wrap" ref={arrangeWrapRef}>
+                  <button
+                    className={`rb-big${arrangeOpen ? ' active' : ''}`}
+                    disabled={selectedFormFieldIds.length < 2}
+                    data-tip={t('formDesignArrangeHint')}
+                    onClick={() => setArrangeOpen((v) => !v)}
+                  >
+                    <span className="rb-big-icon">
+                      <IconFieldArrange />
+                      <RbCaret />
+                    </span>
+                    <span>{t('formDesignArrange')}</span>
+                  </button>
+                  {arrangeOpen && (
+                    <div className="rb-drop rb-menu">
+                      {arrangeItems.map(([how, label, min]) => (
+                        <button
+                          key={how}
+                          disabled={selectedFormFieldIds.length < min}
+                          onClick={() => {
+                            setArrangeOpen(false)
+                            arrangeSelected(how)
+                          }}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button
+                  className="rb-big"
+                  disabled={selectedFormFieldIds.length === 0}
+                  data-tip={t('formDesignDelete')}
+                  onClick={deleteSelectedFormFields}
+                >
+                  <span className="rb-big-icon">
+                    <IconTrash />
+                  </span>
+                  <span>{t('formDesignDelete')}</span>
+                </button>
+                <span className="form-ribbon-progress">
+                  {formDesignPreview
+                    ? t('formDesignPreviewOn')
+                    : formDesignTool
+                      ? t('formDesignPlaceHint')
+                      : formFields.length + formWidgetEdits.size > 0
+                        ? t('formDesignPending', {
+                            count: formFields.length + formWidgetEdits.size,
+                          })
+                        : t('formDesignEmptyHint')}
+                </span>
+              </div>
+            </div>
+          </>
+        )}
         {ribbonTab === 'page' && (
           <>
             <div className="ribbon-group">
@@ -6885,7 +8176,7 @@ export default function App() {
         className={`app-main${isMacStandaloneWindow() ? ' mac-standalone' : ''}`}
         storageKey="aipdf.dock"
         legacyWidthKey="pdf-ai-panel-width"
-        open={!aiCollapsed}
+        open={!aiCollapsed && aiSidebarEnabled}
         onOpenChange={(open) => setAiCollapsed(!open)}
         labels={{
           panelTitle: t('aiPanelTitle'),
@@ -6912,6 +8203,24 @@ export default function App() {
         <div className="pdf-col">
           {ribbon}
           <div className="app-content">
+            {digitalSignatures.length > 0 && (
+              <div className={`pdf-sig-banner ${overallSignatureStatus(digitalSignatures)}`}>
+                <IconSignatures />
+                <span>
+                  {t(
+                    {
+                      valid: 'sigBannerValid',
+                      untrusted: 'sigBannerUntrusted',
+                      warning: 'sigBannerWarning',
+                      invalid: 'sigBannerInvalid',
+                    }[overallSignatureStatus(digitalSignatures)] as 'sigBannerValid',
+                  )}
+                </span>
+                <button className="pdf-modal-btn" onClick={() => setSignaturesDlg(true)}>
+                  {t('sigBannerView')}
+                </button>
+              </div>
+            )}
             <div className="pdf-body">
               {sidebar === 'outline' && outline && (
                 <div className="pdf-thumbs pdf-outline-pane" style={{ width: sidebarW }}>
@@ -6941,6 +8250,7 @@ export default function App() {
                   </div>
                   <OutlinePanel
                     outline={outline}
+                    note={outlineGenerated ? t('outlineGenerated') : undefined}
                     label={t('outline')}
                     emptyLabel={t('searchNoResults')}
                     onGoToDest={(dest) => void goToDest(dest)}
@@ -6948,7 +8258,32 @@ export default function App() {
                 </div>
               )}
               {sidebar === 'thumbs' && (
-                <div ref={thumbsRef} className="pdf-thumbs" style={{ width: sidebarW }}>
+                <div
+                  ref={thumbsRef}
+                  className="pdf-thumbs"
+                  style={{ width: sidebarW }}
+                  onContextMenu={(e) => {
+                    // .pdf-thumb's own padding-bottom is the inter-page gap; its handler lets that bubble up
+                    const target = e.target as HTMLElement
+                    if (
+                      readOnly ||
+                      (target !== e.currentTarget && !target.classList.contains('pdf-thumb'))
+                    )
+                      return
+                    e.preventDefault()
+                    // Gap click: insert after the page above the pointer (end of document below the last one)
+                    let above = -1
+                    for (const el of e.currentTarget.querySelectorAll<HTMLElement>('.pdf-thumb')) {
+                      if (el.getBoundingClientRect().top < e.clientY) above = Number(el.dataset.idx)
+                    }
+                    setThumbMenu({
+                      x: Math.min(e.clientX, window.innerWidth - 190),
+                      y: Math.min(e.clientY, window.innerHeight - 100),
+                      origIdx: null,
+                      afterOrigIdx: visList[above] ?? null,
+                    })
+                  }}
+                >
                   {visList.map((origIdx, v) => {
                     const size = dispSize(origIdx)
                     return (                      <div
@@ -6987,6 +8322,7 @@ export default function App() {
                         }}
                         onClick={() => scrollToPage(v + 1)}
                         onContextMenu={(e) => {
+                          if (e.target === e.currentTarget) return
                           e.preventDefault()
                           setThumbMenu({
                             x: Math.min(e.clientX, window.innerWidth - 190),
@@ -6999,13 +8335,15 @@ export default function App() {
                           className="pdf-thumb-box"
                           style={{ aspectRatio: `${size.width} / ${size.height}` }}
                         >
-                          <PdfThumb
-                            doc={doc}
-                            pageNo={origIdx + 1}
-                            rotationDelta={rotDelta(origIdx)}
-                            visible={visibleThumbs.has(v)}
-                            rasterW={thumbRasterW}
-                          />
+                          {!isBlankPage(origIdx) && (
+                            <PdfThumb
+                              doc={doc}
+                              pageNo={origIdx + 1}
+                              rotationDelta={rotDelta(origIdx)}
+                              visible={visibleThumbs.has(v)}
+                              rasterW={thumbRasterW}
+                            />
+                          )}
                           {/* Pending erase ops patch the thumb too, so it tracks the canvas */}
                           {livePreview.has(origIdx) &&
                             (() => {
@@ -7201,14 +8539,16 @@ export default function App() {
                               }
                             }}
                           >
-                            <PdfPage
-                              doc={doc}
-                              pageNo={origIdx + 1}
-                              scale={scale}
-                              rotationDelta={rotDelta(origIdx)}
-                              visible={rowVisible}
-                              onRenderState={pageRenderState}
-                            />
+                            {!isBlankPage(origIdx) && (
+                              <PdfPage
+                                doc={doc}
+                                pageNo={origIdx + 1}
+                                scale={scale}
+                                rotationDelta={rotDelta(origIdx)}
+                                visible={rowVisible}
+                                onRenderState={pageRenderState}
+                              />
+                            )}
                             {livePreview.has(origIdx) &&
                               (() => {
                                 const lp = livePreview.get(origIdx)!
@@ -7675,13 +9015,7 @@ export default function App() {
                                     const sizePt = textDraft.size ?? textDraft.fontSize
                                     const draftStyle = `${
                                       textDraft.italic || seedF?.italic ? 'italic ' : ''
-                                    }${
-                                      textDraft.bold
-                                        ? 'bold'
-                                        : seedF?.weight
-                                          ? String(seedF.weight)
-                                          : ''
-                                    }`.trim()
+                                    }${boldToken(textDraft.bold, !!textDraft.font, seedF?.weight)}`.trim()
                                     // Block editor: width locks to the block so the textarea's
                                     // soft wrap previews the reflow; height tracks the committed
                                     // wrap count (in the block's own leading, plus headroom for
@@ -7883,7 +9217,7 @@ export default function App() {
                                                 : {}),
                                               ...(draftCss ? { fontFamily: draftCss } : {}),
                                               ...(textDraft.bold
-                                                ? { fontWeight: 700 }
+                                                ? boldCss(true, !!textDraft.font, seedF?.weight)
                                                 : seedF?.weight
                                                   ? { fontWeight: seedF.weight }
                                                   : {}),
@@ -7964,7 +9298,7 @@ export default function App() {
                                                   'var(--pdf-textedit-ink)',
                                                 ...(draftCss ? { fontFamily: draftCss } : {}),
                                                 ...(textDraft.bold
-                                                  ? { fontWeight: 700 }
+                                                  ? boldCss(true, !!textDraft.font, seedF?.weight)
                                                   : seedF?.weight
                                                     ? { fontWeight: seedF.weight }
                                                     : {}),
@@ -7979,7 +9313,10 @@ export default function App() {
                                                     return <Fragment key={i}>{seg.text}</Fragment>
                                                   const s = decodeStyle(seg.color)
                                                   return (
-                                                    <span key={i} style={styleSegCss(s, scale)}>
+                                                    <span
+                                                      key={i}
+                                                      style={styleSegCss(s, scale, textDraft.font)}
+                                                    >
                                                       {seg.text}
                                                     </span>
                                                   )
@@ -8178,6 +9515,95 @@ export default function App() {
                                     ])
                                   }
                                 />
+                                <FormDesignLayer
+                                  designing={
+                                    ribbonTab === 'formDesign' && !readOnly && !formDesignPreview
+                                  }
+                                  preview={ribbonTab === 'formDesign' && formDesignPreview}
+                                  tool={
+                                    ribbonTab === 'formDesign' && !readOnly ? formDesignTool : null
+                                  }
+                                  geom={geom}
+                                  scale={scale}
+                                  pageWidth={size.width}
+                                  pageHeight={size.height}
+                                  fields={designFieldsByPage.get(origIdx) ?? []}
+                                  selectedIds={selectedFormFieldIdSet}
+                                  onCreate={(kind, rect, keep) =>
+                                    addFormField(kind, origIdx, rect, keep)
+                                  }
+                                  onSelect={(ids, mode) => {
+                                    setSelectedFormFieldIds((cur) => {
+                                      if (mode === 'replace') return ids
+                                      const next = cur.filter((x) => !ids.includes(x))
+                                      for (const id of ids) if (!cur.includes(id)) next.push(id)
+                                      return next
+                                    })
+                                    setFreshFormFieldId((cur) =>
+                                      ids.length === 1 && cur === ids[0] ? cur : null,
+                                    )
+                                  }}
+                                  onRects={(changes) => {
+                                    const fields = designFieldsByPage.get(origIdx) ?? []
+                                    applyDesignRects(
+                                      changes.flatMap(({ id, rect }) => {
+                                        const field = fields.find((x) => x.id === id)
+                                        return field ? [{ field, rect }] : []
+                                      }),
+                                    )
+                                  }}
+                                  onContextMenu={(e, fieldId) =>
+                                    setFormMenu({
+                                      x: e.clientX,
+                                      y: e.clientY,
+                                      fieldId,
+                                      pageIndex: origIdx,
+                                    })
+                                  }
+                                />
+                                {ribbonTab === 'formDesign' &&
+                                  !formDesignPreview &&
+                                  selectedDesignField &&
+                                  selectedDesignField.pageIndex === origIdx &&
+                                  (() => {
+                                    const f = selectedDesignField
+                                    const box = pdfRectToCss(geom, f.rect, scale)
+                                    return (
+                                      <FormFieldProps
+                                        key={f.id}
+                                        field={f}
+                                        isNew={freshFormFieldId === f.id}
+                                        style={{ left: box.left, top: box.top + box.height + 6 }}
+                                        labels={{
+                                          required: t('formDesignRequired'),
+                                          multiLine: t('formDesignMultiLine'),
+                                          defaultValue: t('formDesignDefaultValue'),
+                                          defaultChecked: t('formDesignDefaultChecked'),
+                                          remove: t('formDesignDelete'),
+                                          done: t('formDesignDone'),
+                                          cancel: t('formDesignCancel'),
+                                          existingHint: t('formDesignExistingHint'),
+                                          exportValue: t('formDesignExportValue'),
+                                          radioGroupHint: t('formDesignRadioGroupHint'),
+                                          options: t('formDesignOptions'),
+                                          dateFormat: t('formDesignDateFormat'),
+                                        }}
+                                        onPatch={(input, key) => patchDesignField(f, input, key)}
+                                        onDelete={() => deleteFormField(f.id)}
+                                        onDone={() => {
+                                          setSelectedFormFieldId(null)
+                                          setFreshFormFieldId(null)
+                                          setFormDesignDoneSave((n) => n + 1)
+                                        }}
+                                        onCancel={() => {
+                                          if (!f.existing)
+                                            applyEditOps([{ op: 'removeFormField', id: f.id }])
+                                          setSelectedFormFieldId(null)
+                                          setFreshFormFieldId(null)
+                                        }}
+                                      />
+                                    )
+                                  })()}
                                 {/* Ghost pin for the note being typed into the margin draft card */}
                                 {noteDraft?.origIdx === origIdx &&
                                   (() => {
@@ -8212,15 +9638,17 @@ export default function App() {
                                       </div>
                                     )
                                   })()}
-                                <LinkLayer
-                                  doc={doc}
-                                  pageNo={origIdx + 1}
-                                  geom={geom}
-                                  scale={scale}
-                                  onGoToDest={(dest) => void goToDest(dest)}
-                                />
+                                {!isBlankPage(origIdx) && (
+                                  <LinkLayer
+                                    doc={doc}
+                                    pageNo={origIdx + 1}
+                                    geom={geom}
+                                    scale={scale}
+                                    onGoToDest={(dest) => void goToDest(dest)}
+                                  />
+                                )}
                                 <FormLayer
-                                  widgets={formCatalog?.byPage.get(origIdx) ?? []}
+                                  widgets={liveFormCatalog?.byPage.get(origIdx) ?? []}
                                   geom={geom}
                                   scale={scale}
                                   readOnly={readOnly}
@@ -8228,10 +9656,13 @@ export default function App() {
                                   activeWidgetId={activeFormWidgetId}
                                   signedWidgetIds={signedFormWidgetIds}
                                   signatureLabel={t('formSignField')}
+                                  dateInvalidLabel={(format) => t('formDateInvalid', { format })}
+                                  datePickLabel={t('formDatePick')}
                                   registerControl={registerFormControl}
                                   onFocus={(widget) => {
                                     setActiveFormWidgetId(widget.id)
-                                    setRibbonTab('fillForm')
+                                    // Form Design preview fills in place; leaving the tab would end the preview
+                                    if (ribbonTab !== 'formDesign') setRibbonTab('fillForm')
                                   }}
                                   onSignature={(widget) => openSignatureDialog(widget)}
                                   onEdit={(v2) =>
@@ -8572,49 +10003,87 @@ export default function App() {
                   </button>
                 </div>
               )}
+              {ocrRun && (
+                <div className="pdf-toast pdf-toast-notice" role="status">
+                  <span>
+                    {ocrRun.stop === null
+                      ? t('ocrRunning', { done: ocrRun.done, total: ocrRun.total })
+                      : ocrRun.stop === 'cap'
+                        ? t('ocrPageCap', {
+                            done: ocrRun.done,
+                            total: ocrRun.total,
+                            limit: AUTO_OCR_PAGE_CAP,
+                          })
+                        : t('ocrStopped', { done: ocrRun.done, total: ocrRun.total })}
+                  </span>
+                  {ocrRun.stop === null ? (
+                    <button type="button" onClick={() => ocrAbortRef.current?.abort()}>
+                      {t('cancel')}
+                    </button>
+                  ) : (
+                    <>
+                      {ocrPending !== null && (
+                        <button
+                          type="button"
+                          onClick={() => startOcrPass(ocrPending, ocrRun?.done ?? 0)}
+                        >
+                          {t('ocrContinue')}
+                        </button>
+                      )}
+                      <button type="button" onClick={() => setOcrRun(null)}>
+                        {t('ok')}
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
               {thumbMenu && (
                 <div
                   ref={thumbMenuRef}
                   className="thumb-menu file-menu"
                   style={{ left: thumbMenu.x, top: thumbMenu.y }}
                 >
+                  {!menuInGap && (
+                    <>
+                      <button
+                        onClick={() => {
+                          rotatePage(menuOrig, -90)
+                          setThumbMenu(null)
+                        }}
+                      >
+                        {t('rotateLeft')}
+                      </button>
+                      <button
+                        onClick={() => {
+                          rotatePage(menuOrig, 90)
+                          setThumbMenu(null)
+                        }}
+                      >
+                        {t('rotateRight')}
+                      </button>
+                      <button
+                        disabled={pageCount <= 1}
+                        onClick={() => {
+                          deletePage(menuOrig)
+                          setThumbMenu(null)
+                        }}
+                      >
+                        {t('deletePage')}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setThumbMenu(null)
+                          void extractPage(menuOrig)
+                        }}
+                      >
+                        {t('extractPage')}
+                      </button>
+                    </>
+                  )}
                   <button
                     onClick={() => {
-                      rotatePage(menuOrig, -90)
                       setThumbMenu(null)
-                    }}
-                  >
-                    {t('rotateLeft')}
-                  </button>
-                  <button
-                    onClick={() => {
-                      rotatePage(menuOrig, 90)
-                      setThumbMenu(null)
-                    }}
-                  >
-                    {t('rotateRight')}
-                  </button>
-                  <button
-                    disabled={pageCount <= 1}
-                    onClick={() => {
-                      deletePage(menuOrig)
-                      setThumbMenu(null)
-                    }}
-                  >
-                    {t('deletePage')}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setThumbMenu(null)
-                      void extractPage(menuOrig)
-                    }}
-                  >
-                    {t('extractPage')}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setThumbMenu(null)
-                      void insertPdf(menuOrig)
+                      void insertPdf(menuInsertAfter)
                     }}
                   >
                     {t('insertPdf')}
@@ -8622,11 +10091,83 @@ export default function App() {
                   <button
                     onClick={() => {
                       setThumbMenu(null)
-                      void insertBlankPage(menuOrig)
+                      insertBlankPage(menuInsertAfter)
                     }}
                   >
                     {t('insertBlankPage')}
                   </button>
+                </div>
+              )}
+              {formMenu && (
+                <div
+                  ref={formMenuRef}
+                  className="thumb-menu file-menu"
+                  style={{ left: formMenu.x, top: formMenu.y }}
+                >
+                  {formMenu.fieldId && (
+                    <>
+                      <button
+                        disabled={selectedFormFieldIds.length !== 1}
+                        onClick={() => {
+                          setFormMenu(null)
+                          setSelectedFormFieldId(formMenu.fieldId)
+                        }}
+                      >
+                        {t('formDesignProperties')}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setFormMenu(null)
+                          copySelectedFormFields()
+                        }}
+                      >
+                        {t('formDesignCopy')}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setFormMenu(null)
+                          duplicateSelectedFormFields()
+                        }}
+                      >
+                        {t('formDesignDuplicate')}
+                      </button>
+                    </>
+                  )}
+                  <button
+                    disabled={formClipboardRef.current.length === 0}
+                    onClick={() => {
+                      setFormMenu(null)
+                      pasteFormFields(formMenu.pageIndex)
+                    }}
+                  >
+                    {t('formDesignPaste')}
+                  </button>
+                  {formMenu.fieldId && (
+                    <>
+                      <div className="thumb-menu-sep" />
+                      {arrangeItems.map(([how, label, min]) => (
+                        <button
+                          key={how}
+                          disabled={selectedFormFieldIds.length < min}
+                          onClick={() => {
+                            setFormMenu(null)
+                            arrangeSelected(how)
+                          }}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                      <div className="thumb-menu-sep" />
+                      <button
+                        onClick={() => {
+                          setFormMenu(null)
+                          deleteSelectedFormFields()
+                        }}
+                      >
+                        {t('formDesignDelete')}
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
               {stampDlg && (
@@ -8668,6 +10209,25 @@ export default function App() {
                     setPropsDlg(false)
                     applyEditOps([{ op: 'setMetadata', metadata: meta }])
                   }}
+                />
+              )}
+              {certSignDlg && (
+                <CertSignDialog
+                  t={t}
+                  filePath={filePath}
+                  pageCount={pageCount}
+                  currentPage={currentPage}
+                  hasSignatures={digitalSignatures.length > 0}
+                  onCancel={() => setCertSignDlg(false)}
+                  onSigned={(path) => void adoptSignedFile(path)}
+                />
+              )}
+              {signaturesDlg && (
+                <SignaturesDialog
+                  t={t}
+                  signatures={digitalSignatures}
+                  onClose={() => setSignaturesDlg(false)}
+                  onGoToPage={(pageIndex) => scrollToPage(pageIndex + 1)}
                 />
               )}
               {signDlg && (
@@ -8848,12 +10408,80 @@ export default function App() {
                 <div className="pdf-modal-mask" onClick={() => setPrintDlg(false)}>
                   <div className="pdf-modal" onClick={(e) => e.stopPropagation()}>
                     <div className="pdf-modal-title">{t('print')}</div>
+                    <label className="pdf-modal-row pdf-print-field">
+                      <span>{t('printPrinter')}</span>
+                      <select
+                        className="pdf-modal-input"
+                        value={printDevice}
+                        onChange={(e) => setPrintDevice(e.target.value)}
+                      >
+                        <option value="">{t('printDefaultPrinter')}</option>
+                        {printers.map((p) => (
+                          <option key={p.name} value={p.name}>
+                            {p.displayName}
+                          </option>
+                        ))}
+                        <option value={PRINT_SYSTEM_DIALOG}>{t('printSystemDialog')}</option>
+                      </select>
+                    </label>
+                    <div className="pdf-modal-row pdf-print-field">
+                      <label className="pdf-print-copies">
+                        <span>{t('printCopies')}</span>
+                        <input
+                          className="pdf-modal-input"
+                          type="number"
+                          min={1}
+                          max={999}
+                          value={printCopies}
+                          disabled={printDevice === PRINT_SYSTEM_DIALOG}
+                          onChange={(e) =>
+                            setPrintCopies(
+                              Math.min(999, Math.max(1, Math.round(Number(e.target.value)) || 1)),
+                            )
+                          }
+                        />
+                      </label>
+                      <label className="pdf-modal-check">
+                        <input
+                          type="checkbox"
+                          checked={printCollate}
+                          disabled={printDevice === PRINT_SYSTEM_DIALOG || printCopies < 2}
+                          onChange={(e) => setPrintCollate(e.target.checked)}
+                        />
+                        {t('printCollate')}
+                      </label>
+                    </div>
+                    <label className="pdf-modal-row pdf-print-field">
+                      <span>{t('printDuplex')}</span>
+                      <select
+                        className="pdf-modal-input"
+                        value={printDuplex}
+                        disabled={printDevice === PRINT_SYSTEM_DIALOG}
+                        onChange={(e) => setPrintDuplex(e.target.value as PrintDuplex)}
+                      >
+                        {PRINT_DUPLEX_MODES.map((m) => (
+                          <option key={m} value={m}>
+                            {t(
+                              m === 'simplex'
+                                ? 'printDuplexOff'
+                                : m === 'longEdge'
+                                  ? 'printDuplexLong'
+                                  : 'printDuplexShort',
+                            )}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <div className="pdf-print-divider" />
                     <label className="pdf-modal-row">
                       <input
                         type="radio"
                         name="print-range"
                         checked={printMode === 'all'}
-                        onChange={() => setPrintMode('all')}
+                        onChange={() => {
+                          setPrintMode('all')
+                          setPrintInvalid(false)
+                        }}
                       />
                       <span>{t('printRangeAll')}</span>
                     </label>
@@ -8862,10 +10490,13 @@ export default function App() {
                         type="radio"
                         name="print-range"
                         checked={printMode === 'current'}
-                        onChange={() => setPrintMode('current')}
+                        onChange={() => {
+                          setPrintMode('current')
+                          setPrintInvalid(false)
+                        }}
                       />
                       <span>
-                        {t('printRangeCurrent')} ({currentPage})
+                        {t('printRangeCurrent')} ({printCurrentPage})
                       </span>
                     </label>
                     <label className="pdf-modal-row">
@@ -8892,6 +10523,24 @@ export default function App() {
                           else if (e.key === 'Escape') setPrintDlg(false)
                         }}
                       />
+                    )}
+                    <label className="pdf-modal-row pdf-print-field">
+                      <span>{t('printSubset')}</span>
+                      <select
+                        className="pdf-modal-input"
+                        value={printParity}
+                        onChange={(e) => {
+                          setPrintParity(e.target.value as PageParity)
+                          setPrintInvalid(false)
+                        }}
+                      >
+                        <option value="all">{t('printSubsetAll')}</option>
+                        <option value="odd">{t('printSubsetOdd')}</option>
+                        <option value="even">{t('printSubsetEven')}</option>
+                      </select>
+                    </label>
+                    {printInvalid && printMode !== 'custom' && (
+                      <div className="pdf-modal-hint pdf-print-empty">{t('printSubsetEmpty')}</div>
                     )}
                     <div className="pdf-modal-actions">
                       <button className="pdf-modal-btn" onClick={() => setPrintDlg(false)}>

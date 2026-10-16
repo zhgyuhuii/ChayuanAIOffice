@@ -13,7 +13,7 @@ Das ist die gesamte Oberfläche auf einem Bildschirm — jeder Befehl mit einer 
 
 ## Den Befehl bereitstellen
 
-Unter macOS und Windows liefert die App ihn im Bundle mit. Um ihn beim Namen aufzurufen, führen Sie einmal `chatoffice install-cli` aus: Das legt einen symbolischen Link zum mitgelieferten Binary in `/usr/local/bin` an, unter Windows im Benutzer-`PATH`.
+macOS und Windows liefern es im App-Bundle mit. Um es beim Namen aufzurufen, einmal `chatoffice install-cli` ausführen: es verlinkt die gebündelte Binärdatei in ein Verzeichnis Ihres PATH — auf macOS `/usr/local/bin`, sofern das kein Homebrew-Präfix ist (Homebrews eigene Verzeichnisse werden nie angetastet), sonst Ihr Benutzer-bin — oder unter Windows in Ihren Benutzer-`PATH`.
 
 ## Die Befehle, die man kennen sollte
 
@@ -32,7 +32,7 @@ Unter macOS und Windows liefert die App ihn im Bundle mit. Um ihn beim Namen auf
 | `capabilities`    | Melden, welche Cloud-Funktionen auf diesem Rechner konfiguriert sind.                                                                                                                                                                                                 |
 | `guide`           | Die op-Referenz und die Design-Leitfäden, erzeugt aus genau den Definitionen, gegen die der Executor prüft — sie kann also nicht von dem abweichen, was `apply` akzeptiert. `--json` liefert sie mit dem Schema jedes ops.                                            |
 | `install-cli`     | `chatoffice` in den `PATH` legen.                                                                                                                                                                                                                                      |
-| `skill`           | Die auf diesem Rechner gefundenen Coding-Agenten auflisten und den ChatOffice-Skill dort installieren oder aktualisieren.                                                                                                                                              |
+| `skill`           | Die auf diesem Rechner gefundenen Coding-Agenten auflisten und den ChaAI Office-Skill dort installieren oder aktualisieren.                                                                                                                                              |
 | `mcp`             | Jeden Befehl als Model-Context-Protocol-Werkzeug bereitstellen. Siehe **Einen Coding-Agenten anbinden**.                                                                                                                                                              |
 
 ## Bearbeiten: Dokumente, Tabellen, Folien

@@ -13,18 +13,21 @@
     "./lazy-media": "./src/lazy-media.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "fixtures": "tsx scripts/generate-fixtures.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "fixtures": "tsx scripts/generate-fixtures.ts"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@chatoffice/chart-kit": "*",
+    "@chatoffice/pptx-engine": "*",
+    "@chatoffice/zip-gate": "*",
+    "@chatoffice/agent-core": "*",
     "@chatoffice/pptx-engine": "*",
     "@chatoffice/zip-gate": "*",
     "fast-xml-parser": "^5.3.4",
     "jszip": "^3.10.1",
-    "utif2": "^4.1.0",
-    "@chatoffice/chart-kit": "*"
+    "utif2": "^4.1.0"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",

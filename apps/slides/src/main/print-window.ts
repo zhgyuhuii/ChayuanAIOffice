@@ -12,7 +12,7 @@ export async function printSlidesHtml(
     html,
     window: win,
     fileName: 'slides.html',
-    dirPrefix: 'genoffice-slides-print-',
+    dirPrefix: 'chatoffice-slides-print-',
     platform,
   })
   if (!outcome.ok) return { ok: false, error: outcome.error }

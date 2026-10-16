@@ -13,7 +13,7 @@ Itulah seluruh permukaannya dalam satu layar — setiap perintah dengan satu bar
 
 ## Mendapatkan perintahnya
 
-macOS dan Windows menyertakannya di dalam bundel aplikasi. Untuk memakainya dengan namanya, jalankan `chatoffice install-cli` sekali: perintah ini membuat symbolic link dari biner yang disertakan ke `/usr/local/bin`, atau ke `PATH` milik pengguna Anda di Windows.
+macOS dan Windows menyertakannya di dalam bundel aplikasi. Untuk memanggilnya dengan nama, jalankan sekali `chatoffice install-cli`: ia menautkan biner bundel ke direktori di PATH Anda — di macOS `/usr/local/bin` selama itu bukan prefiks Homebrew (direktori milik Homebrew tak pernah disentuh), kalau tidak ke bin pengguna Anda — atau di Windows ke `PATH` pengguna Anda.
 
 ## Perintah yang perlu diketahui
 
@@ -32,7 +32,7 @@ macOS dan Windows menyertakannya di dalam bundel aplikasi. Untuk memakainya deng
 | `capabilities`    | Melaporkan fitur awan mana yang sudah dikonfigurasi di komputer ini.                                                                                                                                                                                     |
 | `guide`           | Referensi op dan panduan desain, dibangkitkan dari definisi yang sama dengan yang dipakai eksekutor untuk memvalidasi — jadi tidak mungkin melenceng dari apa yang diterima `apply`. `--json` mengembalikannya beserta skema tiap op.                    |
 | `install-cli`     | Menaruh `chatoffice` di `PATH`.                                                                                                                                                                                                                           |
-| `skill`           | Mendaftarkan agen pemrograman yang ditemukan di komputer ini, lalu memasang atau memperbarui skill ChatOffice di dalamnya.                                                                                                                                |
+| `skill`           | Mendaftarkan agen pemrograman yang ditemukan di komputer ini, lalu memasang atau memperbarui skill ChaAI Office di dalamnya.                                                                                                                                |
 | `mcp`             | Menyajikan semua perintah sebagai alat Model Context Protocol. Lihat **Menghubungkan agen pemrograman**.                                                                                                                                                 |
 
 ## Menyunting: dokumen, lembar, presentasi

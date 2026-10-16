@@ -13,7 +13,7 @@ To je celá plocha na jedné obrazovce — každý příkaz s řádkem, který �
 
 ## Získání příkazu
 
-Systémy macOS a Windows jej dodávají uvnitř balíčku aplikace. Chcete-li jej volat jménem, spusťte jednou `chatoffice install-cli`: vytvoří symbolický odkaz na přiložený spustitelný soubor v `/usr/local/bin`, nebo v uživatelské `PATH` v systému Windows.
+V macOS i Windows je příkaz uvnitř balíčku aplikace. Chcete-li ho volat jménem, spusťte jednou `chatoffice install-cli`: napojí binárku z balíčku do adresáře na vaší PATH — v macOS `/usr/local/bin`, pokud to není prefix Homebrew (adresáře samotného Homebrew se nikdy nedotýká), jinak do vašeho uživatelského bin — nebo na Windows do uživatelské `PATH`.
 
 ## Příkazy, které stojí za to znát
 
@@ -32,7 +32,7 @@ Systémy macOS a Windows jej dodávají uvnitř balíčku aplikace. Chcete-li je
 | `capabilities`    | Označí, které cloudové funkce jsou na tomto počítači nastavené.                                                                                                                                               |
 | `guide`           | Referenční příručka op a návrhové průvodce, vygenerované ze stejných definic, proti kterým executor validuje — takže se nemůže rozejít s tím, co přijímá `apply`. `--json` ji vrátí se schématem každé op.    |
 | `install-cli`     | Umístí `chatoffice` do `PATH`.                                                                                                                                                                                 |
-| `skill`           | Vypíše programové agenty nalezené na tomto počítači a nainstaluje do nich nebo v nich aktualizuje dovednost ChatOffice.                                                                                        |
+| `skill`           | Vypíše programové agenty nalezené na tomto počítači a nainstaluje do nich nebo v nich aktualizuje dovednost ChaAI Office.                                                                                        |
 | `mcp`             | Vystaví každý příkaz jako nástroj Model Context Protocol. Viz **Připojení programového agenta**.                                                                                                              |
 
 ## Úpravy: Docs, Sheets, Slides

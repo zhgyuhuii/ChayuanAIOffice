@@ -13,7 +13,7 @@ chatoffice guide slides    # the op reference, for writing your own
 
 ## Lấy lệnh
 
-macOS và Windows đặt nó bên trong gói ứng dụng. Muốn gọi theo tên, hãy chạy `chatoffice install-cli` một lần: lệnh này tạo liên kết tượng trỏ tới tệp nhị phân đi kèm trong `/usr/local/bin`, hoặc trong `PATH` của người dùng trên Windows.
+macOS và Windows kèm nó trong bó ứng dụng. Để gọi bằng tên, chạy một lần `chatoffice install-cli`: nó liên kết tệp nhị phân trong bó vào một thư mục trên PATH của bạn — trên macOS là `/usr/local/bin` khi đó không phải tiền tố Homebrew (thư mục của Homebrew không bao giờ bị động vào), không thì vào bin của người dùng — hoặc trên Windows vào `PATH` người dùng của bạn.
 
 ## Những lệnh đáng biết
 
@@ -32,7 +32,7 @@ macOS và Windows đặt nó bên trong gói ứng dụng. Muốn gọi theo tê
 | `capabilities`    | Báo cáo những tính năng đám mây nào đã được cấu hình trên máy này.                                                                                                                                                                                                     |
 | `guide`           | Tra cứu thao tác và các hướng dẫn thiết kế, sinh ra từ đúng những định nghĩa mà bộ thực thi dùng để kiểm tra — nên nó không thể lệch khỏi những gì `apply` chấp nhận. `--json` trả về tra cứu kèm lược đồ của từng thao tác.                                           |
 | `install-cli`     | Đưa `chatoffice` vào `PATH`.                                                                                                                                                                                                                                            |
-| `skill`           | Liệt kê các tác nhân lập trình tìm thấy trên máy này rồi cài hoặc cập nhật kỹ năng ChatOffice trong chúng.                                                                                                                                                              |
+| `skill`           | Liệt kê các tác nhân lập trình tìm thấy trên máy này rồi cài hoặc cập nhật kỹ năng ChaAI Office trong chúng.                                                                                                                                                              |
 | `mcp`             | Phục vụ mọi lệnh như một công cụ của Model Context Protocol. Xem **Kết nối tác nhân lập trình**.                                                                                                                                                                       |
 
 ## Soạn thảo: tài liệu, bảng tính, bản trình chiếu

@@ -10,6 +10,7 @@ import { KB_CHANNELS } from '@chatoffice/ai-host/kb-channels'
 
 const api: PdfApi = {
   consumePending: () => ipcRenderer.invoke(PDF_CHANNELS.consumePending),
+  openSourcePath: (path: string) => ipcRenderer.invoke('home:open-path', path),
   readFile: (path) => ipcRenderer.invoke(PDF_CHANNELS.readFile, path),
   save: (request) => ipcRenderer.invoke(PDF_CHANNELS.save, request),
   writeRecovery: (request) => ipcRenderer.invoke(PDF_CHANNELS.writeRecovery, request),
@@ -41,13 +42,22 @@ const api: PdfApi = {
     ipcRenderer.invoke(AI_CHANNELS.imageSearch, query, maxResults),
   fetchImage: (url) => ipcRenderer.invoke(AI_CHANNELS.fetchImage, url),
   generateImage: (op) => ipcRenderer.invoke(PDF_CHANNELS.generateImage, op),
+  listDigitalSignatures: (path) => ipcRenderer.invoke(PDF_CHANNELS.listDigitalSignatures, path),
+  pickCertificate: () => ipcRenderer.invoke(PDF_CHANNELS.pickCertificate),
+  listSystemCertificates: (storePassword) =>
+    ipcRenderer.invoke(PDF_CHANNELS.listSystemCertificates, storePassword),
+  releaseCertificate: (certId) => ipcRenderer.send(PDF_CHANNELS.releaseCertificate, certId),
+  inspectCertificate: (certId, password, storePassword) =>
+    ipcRenderer.invoke(PDF_CHANNELS.inspectCertificate, certId, password, storePassword),
+  signWithCertificate: (request) => ipcRenderer.invoke(PDF_CHANNELS.signWithCertificate, request),
   listSavedSignatures: () => ipcRenderer.invoke(PDF_CHANNELS.listSignatures),
   addSavedSignature: (data) => ipcRenderer.invoke(PDF_CHANNELS.addSignature, data),
   removeSavedSignature: (id) => ipcRenderer.invoke(PDF_CHANNELS.removeSignature, id),
   getUsername: () => ipcRenderer.invoke(PDF_CHANNELS.getUsername),
   setDirty: (dirty) => ipcRenderer.send(PDF_CHANNELS.dirtyChanged, dirty),
   onCloseSaveRequest: (handler) => {
-    const listener = () => handler()
+    const listener = (_e: unknown, opts?: { flushAll?: boolean }) =>
+      handler({ flushAll: opts?.flushAll === true })
     ipcRenderer.on(PDF_CHANNELS.closeSaveRequest, listener)
     return () => ipcRenderer.removeListener(PDF_CHANNELS.closeSaveRequest, listener)
   },
@@ -63,6 +73,8 @@ const api: PdfApi = {
     ipcRenderer.on(PDF_CHANNELS.saveAsFlow, listener)
     return () => ipcRenderer.removeListener(PDF_CHANNELS.saveAsFlow, listener)
   },
+  print: (job) => ipcRenderer.invoke(PDF_CHANNELS.print, job),
+  listPrinters: () => ipcRenderer.invoke(PDF_CHANNELS.printers),
   onPrintRequest: (handler) => {
     const listener = () => handler()
     ipcRenderer.on(PDF_CHANNELS.printRequest, listener)

@@ -37,7 +37,8 @@ test('Jev reranking lives in its own settings section, saves instantly, and repo
     await expect
       .poll(async () => {
         const saved = JSON.parse(await readFile(join(userDataDir, 'app-settings.json'), 'utf8'))
-        return saved.fileSearch?.jevEndpoint
+        // adapted: 本地 #1922 决策端点模型落地后写入 endpoint（旧 jevEndpoint 仅为兼容读）
+        return saved.fileSearch?.endpoint
       })
       .toBe('direct')
 
@@ -47,14 +48,32 @@ test('Jev reranking lives in its own settings section, saves instantly, and repo
     await expect(page.locator('[role="status"]')).not.toBeEmpty()
     await page.screenshot({ path: screenshotPath('settings-media-search-test') })
 
-    // 密钥分端点保存
+    // 密钥分端点保存；本地 main 持久化 normalizeFileSearchSettings 全形——
+    // `toEqual` 全形断言即 tripwire：新增端点必须显式过这里而不是给每个设置文件悄悄加键
     await page.locator('#set-search-jev-key').fill('ts-key')
     await expect
       .poll(async () => {
         const saved = JSON.parse(await readFile(join(userDataDir, 'app-settings.json'), 'utf8'))
-        return saved.fileSearch?.jevKeys
+        return saved.fileSearch
       })
-      .toEqual({ openrouter: '', direct: 'ts-key' })
+      .toEqual({
+        rerank: true,
+        endpoint: 'direct',
+        keys: {
+          openrouter: '',
+          direct: 'ts-key',
+          perplexity: '',
+          liquid: '',
+          cloudflare: '',
+          kev: '',
+          rizzo: '',
+          custom: '',
+        },
+        customBaseUrl: '',
+        customModel: '',
+        cloudflareAccountId: '',
+        cloudflareModel: '@cf/cloudflare/clef',
+      })
   } finally {
     await closeAndSaveVideo(launched, 'settings-media-search')
   }

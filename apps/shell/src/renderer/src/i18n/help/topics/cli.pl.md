@@ -13,7 +13,7 @@ To cała powierzchnia na jednym ekranie — każde polecenie z wierszem, który 
 
 ## Zdobycie polecenia
 
-Systemy macOS i Windows dostarczają je w pakiecie aplikacji. Aby używać go po nazwie, uruchom raz `chatoffice install-cli`: tworzy dowiązanie symboliczne do dołączonego pliku binarnego w `/usr/local/bin` albo w `PATH` użytkownika w systemie Windows.
+W macOS i Windows polecenie siedzi w pakiecie aplikacji. Aby wołać je po imieniu, uruchom raz `chatoffice install-cli`: podlinkuje binarium z pakietu do katalogu na Twoim PATH — w macOS `/usr/local/bin`, o ile to nie prefiks Homebrew (katalogi samego Homebrew nigdy nie są ruszane), inaczej do Twojego bin użytkownika — albo do użytkowniczego `PATH` w Windows.
 
 ## Polecenia warte znajomości
 
@@ -32,7 +32,7 @@ Systemy macOS i Windows dostarczają je w pakiecie aplikacji. Aby używać go po
 | `capabilities`    | Zgłasza, które funkcje chmurowe są skonfigurowane na tym komputerze.                                                                                                                                                                     |
 | `guide`           | Referencja op i przewodniki projektowe, wygenerowane z tych samych definicji, względem których waliduje executor — więc nie może się rozjechać z tym, co przyjmuje `apply`. `--json` zwraca je ze schematem każdej op.                   |
 | `install-cli`     | Umieszcza `chatoffice` w `PATH`.                                                                                                                                                                                                          |
-| `skill`           | Wypisuje agentów programistycznych znalezionych na tym komputerze i instaluje w nich lub aktualizuje skill ChatOffice.                                                                                                                    |
+| `skill`           | Wypisuje agentów programistycznych znalezionych na tym komputerze i instaluje w nich lub aktualizuje skill ChaAI Office.                                                                                                                    |
 | `mcp`             | Udostępnia każde polecenie jako narzędzie Model Context Protocol. Zobacz **Podłączenie z agentem programistycznym**.                                                                                                                     |
 
 ## Edycja: Docs, Sheets, Slides

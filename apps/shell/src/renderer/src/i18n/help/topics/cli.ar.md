@@ -13,7 +13,7 @@ chatoffice guide slides    # the op reference, for writing your own
 
 ## الحصول على الأمر
 
-يشحنه macOS وWindows داخل حزمة التطبيق. لاستخدامه باسمه، شغّل `chatoffice install-cli` مرة واحدة: فهو ينشئ ارتباطًا رمزيًا للملف التنفيذي المضمّن في `/usr/local/bin`، أو في `PATH` الخاص بمستخدمك على Windows.
+في macOS وWindows يأتي الأمر داخل حزمة التطبيق. لمناداته بالاسم شغّل `chatoffice install-cli` مرة واحدة: يصل الملف الثنائي من الحزمة بدليل على PATH لديك — في macOS إلى ‎/usr/local/bin‎ ما لم يكن بادئة Homebrew ‏(أدلة Homebrew نفسها لا تُمس أبدًا)، وإلا إلى دليل bin الخاص بك — أو في Windows إلى ‏`PATH`‎ المستخدم.
 
 ## الأوامر التي تستحق المعرفة
 
@@ -32,7 +32,7 @@ chatoffice guide slides    # the op reference, for writing your own
 | `capabilities`    | الإبلاغ عن ميزات السحابة المهيّأة على هذا الجهاز.                                                                                                                                             |
 | `guide`           | مرجع العمليات وأدلة التصميم، مولَّد من التعريفات نفسها التي يتحقق منها المنفّذ — لذا لا يمكن أن ينحرف عمّا يقبله `apply`. ويعيد `--json` المرجع مع مخطط كل عملية.                             |
 | `install-cli`     | وضع `chatoffice` في `PATH`.                                                                                                                                                                    |
-| `skill`           | عرض وكلاء البرمجة الموجودين على هذا الجهاز وتثبيت مهارة ChatOffice فيها أو تحديثها.                                                                                                            |
+| `skill`           | عرض وكلاء البرمجة الموجودين على هذا الجهاز وتثبيت مهارة ChaAI Office فيها أو تحديثها.                                                                                                            |
 | `mcp`             | تقديم كل أمر كأداة ضمن Model Context Protocol. انظر **ربط وكيل برمجي**.                                                                                                                       |
 
 ## التحرير: مستندات وجداول وعروض

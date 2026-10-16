@@ -6,6 +6,7 @@
  */
 export const localStrings = {
   zh: {
+    navUserGuide: '使用手册',
     secChats: '对话',
     sidebarTabList: '左树分组',
     // 胶囊 Tab 用短词（A 区上游值为「最近使用」，B 区覆盖防同步冲回）
@@ -329,6 +330,7 @@ export const localStrings = {
       purchaseReasonUnavailable: '激活功能暂不可用，请联系客服',
   },
   en: {
+    navUserGuide: 'User Guide',
     secChats: 'Chats',
     sidebarTabList: 'Sidebar sections',
     chatPaneShow: 'Show conversation',
@@ -660,6 +662,7 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   ja: {
+    navUserGuide: 'ユーザーガイド',
     secChats: 'チャット',
     sidebarTabList: 'サイドバー項目',
     chatPaneShow: 'チャットを表示',
@@ -993,6 +996,7 @@ export const localStrings = {
       purchaseReasonUnavailable: '認証機能は現在利用できません。サポートにお問い合わせください',
   },
   ko: {
+    navUserGuide: '사용자 가이드',
     secChats: '대화',
     sidebarTabList: '사이드바 섹션',
     chatPaneShow: '대화 표시',
@@ -1321,6 +1325,7 @@ export const localStrings = {
       purchaseReasonUnavailable: '인증 기능을 일시적으로 사용할 수 없습니다. 고객지원팀에 문의해 주세요',
   },
   fr: {
+    navUserGuide: "Guide de l'utilisateur",
     secChats: 'Conversations',
     sidebarTabList: 'Sections de la barre latérale',
     chatPaneShow: 'Afficher la conversation',
@@ -1663,6 +1668,7 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation momentanément indisponible, contactez le support',
   },
   de: {
+    navUserGuide: 'Benutzerhandbuch',
     secChats: 'Chats',
     sidebarTabList: 'Seitenleisten-Bereiche',
     chatPaneShow: 'Unterhaltung anzeigen',
@@ -2000,6 +2006,7 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Aktivierung derzeit nicht verfügbar, bitte den Support kontaktieren',
   },
   es: {
+    navUserGuide: 'Guía del usuario',
     secChats: 'Conversaciones',
     sidebarTabList: 'Secciones de la barra lateral',
     chatPaneShow: 'Mostrar conversación',
@@ -2337,6 +2344,7 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activación no disponible temporalmente, contacta con el soporte',
   },
   th: {
+    navUserGuide: 'คู่มือผู้ใช้',
     secChats: 'บทสนทนา',
     sidebarTabList: 'ส่วนของแถบข้าง',
     chatPaneShow: 'แสดงบทสนทนา',
@@ -2665,6 +2673,7 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   id: {
+    navUserGuide: 'Panduan Pengguna',
     secChats: 'Obrolan',
     sidebarTabList: 'Bagian bilah sisi',
     chatPaneShow: 'Tampilkan obrolan',
@@ -3000,6 +3009,7 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   ru: {
+    navUserGuide: 'Руководство пользователя',
     secChats: 'Чаты',
     sidebarTabList: 'Разделы боковой панели',
     chatPaneShow: 'Показать чат',
@@ -3333,6 +3343,7 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Активация временно недоступна, обратитесь в поддержку',
   },
   ar: {
+    navUserGuide: 'دليل المستخدم',
     secChats: 'المحادثات',
     sidebarTabList: 'أقسام الشريط الجانبي',
     chatPaneShow: 'إظهار المحادثة',
@@ -3662,6 +3673,7 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   pt: {
+    navUserGuide: 'Guia do Usuário',
     secChats: 'Conversas',
     sidebarTabList: 'Seções da barra lateral',
     chatPaneShow: 'Mostrar conversa',
@@ -4001,6 +4013,7 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Ativação temporariamente indisponível, contate o suporte',
   },
   it: {
+    navUserGuide: "Guida dell'utente",
     secChats: 'Conversazioni',
     sidebarTabList: 'Sezioni della barra laterale',
     chatPaneShow: 'Mostra conversazione',
@@ -4339,6 +4352,7 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Attivazione temporaneamente non disponibile, contatta l\'assistenza',
   },
   pl: {
+    navUserGuide: 'Podręcznik użytkownika',
     secChats: 'Czaty',
     sidebarTabList: 'Sekcje panelu bocznego',
     chatPaneShow: 'Pokaż rozmowę',
@@ -4676,6 +4690,7 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Aktywacja chwilowo niedostępna, skontaktuj się z wsparciem',
   },
   cs: {
+    navUserGuide: 'Uživatelská příručka',
     secChats: 'Chaty',
     sidebarTabList: 'Sekce postranního panelu',
     chatPaneShow: 'Zobrazit konverzaci',
@@ -5006,6 +5021,7 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   nl: {
+    navUserGuide: 'Gebruikershandleiding',
     secChats: 'Chats',
     sidebarTabList: 'Zijbalksecties',
     chatPaneShow: 'Gesprek tonen',
@@ -5346,6 +5362,7 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   ms: {
+    navUserGuide: 'Panduan Pengguna',
     secChats: 'Sembang',
     sidebarTabList: 'Seksi bar sisi',
     chatPaneShow: 'Tunjuk sembang',
@@ -5681,6 +5698,7 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   he: {
+    navUserGuide: 'מדריך למשתמש',
     secChats: 'שיחות',
     sidebarTabList: 'מקטעי סרגל הצד',
     chatPaneShow: 'הצג שיחה',
@@ -6007,6 +6025,7 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   hi: {
+    navUserGuide: 'उपयोगकर्ता गाइड',
     secChats: 'चैट',
     sidebarTabList: 'साइडबार अनुभाग',
     chatPaneShow: 'बातचीत दिखाएँ',
@@ -6340,6 +6359,7 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   'zh-TW': {
+    navUserGuide: '使用手冊',
     kbPickerLabel: '知識庫',
     kbChipRemove: '移除知識庫',
     kbUnavailableNotice: '知識庫暫不可達，本次回答未使用知識庫',
@@ -6661,6 +6681,7 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   vi: {
+    navUserGuide: 'Hướng dẫn sử dụng',
     secChats: '对话',
     sidebarTabList: '左树分组',
     // 胶囊 Tab 用短词（A 区上游值为「最近使用」，B 区覆盖防同步冲回）

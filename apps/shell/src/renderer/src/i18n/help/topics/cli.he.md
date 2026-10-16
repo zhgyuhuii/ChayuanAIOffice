@@ -13,7 +13,7 @@ chatoffice guide slides    # the op reference, for writing your own
 
 ## קבלת הפקודה
 
-‏macOS ו-Windows מגיעים עמה בתוך חבילת האפליקציה. כדי להשתמש בה לפי השם, הריצו פעם אחת `chatoffice install-cli`: היא יוצרת קישור סמבולי לקובץ ההפעלה המצורף אל `/usr/local/bin`, או אל `PATH` של המשתמש שלכם ב-Windows.
+ב-macOS וב-Windows הפקודה מגיעה בתוך חבילת האפליקציה. כדי לקרוא לה בשם, הריצו פעם אחת `chatoffice install-cli`: היא מקשרת את הבינארי מהחבילה לספרייה ב-PATH שלכם — ב-macOS אל ‎/usr/local/bin‎ כשזו לא קידומת Homebrew ‏(ספריות Homebrew עצמן לא נוגעות לעולם), אחרת אל ספריית ה-bin של המשתמש — או ב-Windows אל `PATH` המשתמש.
 
 ## הפקודות שכדאי להכיר
 
@@ -32,7 +32,7 @@ chatoffice guide slides    # the op reference, for writing your own
 | `capabilities`    | מדווחת אילו יכולות ענן מוגדרות במחשב הזה.                                                                                                                               |
 | `guide`           | מפניית הפעולות ומדריכי העיצוב, נוצרות מאותם הגדרות שמולן המבצע מאמת — ולכן היא לא יכולה לסטות ממה ש-`apply` מקבל. `--json` מחזיר אותה עם הסכמה של כל פעולה.             |
 | `install-cli`     | מציבה את `chatoffice` ב-`PATH`.                                                                                                                                          |
-| `skill`           | מפרטת את סוכני התכנון שנמצאו במחשב הזה ומתקינה בהם או מעדכנת את המיומנות של ChatOffice.                                                                                  |
+| `skill`           | מפרטת את סוכני התכנון שנמצאו במחשב הזה ומתקינה בהם או מעדכנת את המיומנות של ChaAI Office.                                                                                  |
 | `mcp`             | מגישה כל פקודה ככלי ב- Model Context Protocol. ראו **חיבור סוכן תכנון**.                                                                                                |
 
 ## עריכה: מסמכים, גיליונות, מצגות

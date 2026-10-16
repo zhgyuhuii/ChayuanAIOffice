@@ -50,6 +50,7 @@ import {
 import type { DockEditorOptions, DockKind, DockRect, DockTabSummary } from '../shared/dock-api'
 import { rendererUrl, safeExternalUrl } from '@chatoffice/electron-utils'
 import type { DocumentTabKind, OpenDocumentTab, TabKind, TabSummary } from '../shared/tabs-api'
+import { isSettledRect, tabStripHeight } from '../shared/tab-drag-geometry'
 /** a tab lifted out of the strip with its live view: what "Open in New Window",
  *  tear-off and dock hand back and forth between the shell and a detached window */
 export interface DetachedTab {
@@ -74,8 +75,6 @@ interface TabRecord {
   docked?: boolean
 }
 
-/** must match the tab strip's rendered height (apps/shell/src/renderer/src/TabBar.tsx) */
-const TAB_STRIP_HEIGHT = 40
 /** default home sidebar width (home.css .sidebar); the renderer mirrors its
  *  live width over setTreeWidth, so this is only the pre-first-message value */
 const TREE_SIDEBAR_DEFAULT = 232
@@ -114,6 +113,12 @@ export class TabManager {
    *  the active tab */
   private dockRect: DockRect | null = null
   private activeDockId: string | null = null
+  /** told when a tab with a file is closed (not detached), so it can be reopened
+   *  (upstream #2021/#2031 localized document actions) */
+  private closedListener: ((tab: { kind: TabKind; filePath: string }) => void) | null = null
+  /** views whose HTML-fullscreen listeners are installed: a view that leaves
+   *  for a detached window and docks back must not get a second pair */
+  private readonly fullScreenTracked = new WeakSet<WebContentsView>()
   /** Sheets renderer mounted ahead of the next open: parsing its bundle and
    *  booting Univer is the bulk of a workbook's open time, and the shell hands
    *  the path over after mount anyway. */
@@ -126,6 +131,11 @@ export class TabManager {
     private readonly applyMenuFor: (kind: TabKind) => void,
     /** localized placeholder title for a tab that has no file yet */
     private readonly untitledTitleFor?: (kind: TabKind) => string,
+    /**
+     * The live interface scale (chatoffice#1913). A getter rather than a value so a change
+     * made from the View menu reaches the next layout without rebuilding this.
+     */
+    private readonly uiScale: () => number = () => 1,
   ) {
     // Layout once synchronously for macOS/Windows (bounds are already correct),
     // then once more on the next tick. On Linux/X11, `resize` fires before the
@@ -138,6 +148,15 @@ export class TabManager {
       setImmediate(() => this.layout())
     })
     shellWindow.webContents.once('did-finish-load', () => this.scheduleSpareSheetsView(1500))
+    // Windows fires `restore` when a minimized window comes back from the taskbar,
+    // sometimes before the client bounds have settled — the same stale-geometry
+    // race as Linux/X11 maximize (issue #15). Reconcile synchronously (the bounds
+    // are usually already right) and once more on the next tick. Bounded: exactly
+    // two layout passes per restore, no polling, no recurring timers. (upstream #2021)
+    shellWindow.on('restore', () => {
+      this.reconcileAfterWindowRestore()
+      setImmediate(() => this.reconcileAfterWindowRestore())
+    })
   }
 
   private scheduleSpareSheetsView(delayMs: number): void {
@@ -153,7 +172,10 @@ export class TabManager {
       )
       this.shellWindow.contentView.addChildView(view)
       view.setVisible(false)
-      view.setBounds(this.contentBounds())
+      // the window may be minimized or mid-restore when the spare spawns; a
+      // degenerate rect would leave the spare zero-sized until its next layout
+      const bounds = this.contentBounds()
+      if (isSettledRect(bounds)) view.setBounds(bounds)
       view.webContents.once('render-process-gone', () => {
         if (this.spareSheetsView !== view) return
         this.spareSheetsView = null
@@ -192,12 +214,17 @@ export class TabManager {
     if (active?.view && this.bleedWcIds.has(active.view.webContents.id)) {
       return { x: 0, y: 0, width, height }
     }
+    // The strip is `zoom`ed by the interface scale (upstream #1934), so its
+    // rendered height grows with it — positioning the view at the unscaled
+    // constant would paint the document underneath a taller tab strip. The
+    // home tree inset (local dock architecture) applies on top.
+    const strip = tabStripHeight(this.uiScale())
     const x = this.treeInset ? this.treeWidth : 0
     return {
       x,
-      y: TAB_STRIP_HEIGHT,
+      y: strip,
       width: Math.max(0, width - x),
-      height: Math.max(0, height - TAB_STRIP_HEIGHT),
+      height: Math.max(0, height - strip),
     }
   }
 
@@ -292,6 +319,11 @@ export class TabManager {
   layout(): void {
     // Deferred resize layouts can land after the shell window was closed.
     if (this.shellWindow.isDestroyed()) return
+    // A minimized or mid-restore window can report a degenerate client rect;
+    // applying it would shrink the active view to nothing — the white screen
+    // after a Windows taskbar restore (upstream #2021). Keep the last good
+    // layout instead.
+    if (!isSettledRect(this.contentBounds())) return
     // §12 hardening: an activeId whose tab record is gone (closed/lost under
     // us) must never wedge the layout chain — fall back to Home so the
     // mounted-view sweep below still runs.
@@ -332,6 +364,17 @@ export class TabManager {
         if (!tab) child.setVisible(false)
       }
     }
+  }
+
+  /**
+   * Re-fit the active view after the native window returns from the taskbar
+   * (upstream #2021). Deliberately narrower than activateTab: no visibility
+   * toggles, no focus, no menu, no onChanged — the active tab, its
+   * WebContentsView and every other document stay exactly as they were.
+   */
+  reconcileAfterWindowRestore(): void {
+    if (this.shellWindow.isDestroyed() || this.shellWindow.isMinimized()) return
+    this.layout()
   }
 
   /** files open in any tab, for the open-documents registry */
@@ -824,6 +867,10 @@ export class TabManager {
       if (!t.view) continue
       t.view.setVisible(!t.docked && t.id === id && !this.shellModalOpen)
     }
+    const bounds = this.contentBounds()
+    // a bring-forward while the window is minimized or mid-restore must not
+    // zero-size the view being activated (same guard as layout(), upstream #2021)
+    if (target.view && isSettledRect(bounds)) target.view.setBounds(bounds)
     this.activeId = id
     if (target.kind === 'sheets') this.scheduleSpareSheetsView(3000)
     else this.discardSpareSheetsView()
@@ -1051,6 +1098,8 @@ export class TabManager {
     if (this.htmlFullScreenId === id) this.htmlFullScreenId = null
     const [removed] = this.tabs.splice(idx, 1)
     if (this.activeDockId === id) this.activeDockId = this.dockedNeighbor(id)
+    if (removed.filePath && !removed.present)
+      this.closedListener?.({ kind: removed.kind, filePath: removed.filePath })
     if (this.activeId === id) {
       const fallback = this.tabs[idx - 1] ?? this.tabs[0]
       this.activateTab(fallback.id)
@@ -1081,6 +1130,12 @@ export class TabManager {
   async closeOtherTabs(keepId: string): Promise<void> {
     const ids = this.tabs.filter((t) => t.id !== HOME_ID && t.id !== keepId).map((t) => t.id)
     for (const id of ids) await this.closeTab(id)
+  }
+
+  /** told when a tab with a file is closed (not detached), so it can be reopened
+   *  (feeds the File menu "reopen closed document" action, upstream #2031) */
+  setClosedListener(listener: ((tab: { kind: TabKind; filePath: string }) => void) | null): void {
+    this.closedListener = listener
   }
 
   /** Remove a tab from the strip WITHOUT destroying its WebContentsView and

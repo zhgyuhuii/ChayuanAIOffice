@@ -44,7 +44,6 @@ import {
   matrixBounds,
   modelCellValue,
   navigateToAnchor,
-  preloadEntireWorkbook,
   workbookStructureLocked,
   queueFormulaRecalc,
   queueSparklineInstall,
@@ -113,9 +112,14 @@ import {
   structuralDeleteFormulaError,
   collectStreamedFormulaPrecedents,
 } from './plan-operations'
+import {
+  registerCellFontAliases,
+  untilCellFontsLoaded,
+  workbookFontFamilies,
+} from './cell-font-fallback'
 import { isNumericIdentifierText } from './cell-warning'
 import { consumePendingUndoCarry, undoStackDepth } from './undo-carry'
-import { useAutoSavePref, useKbAugment } from '@chatoffice/ui'
+import { useAutoSavePref, useKbAugment, type AiTokenUsageView } from '@chatoffice/ui'
 import { createSaveGate } from './save-scheduler'
 // ILayoutService lives in the UI layer, not core (upstream: @univerjs/ui;
 // local convention re-exports it via the core preset).
@@ -214,7 +218,8 @@ import {
 import { InMemoryWorkbookAdapter } from '@chatoffice/xlsx-gateway/domain/in-memory-workbook'
 import { cfRuleUnsaveableReason, iconSetSaveable } from '@chatoffice/xlsx-gateway/gateway/xlsx-cf'
 import { installLazyFindBridge } from './lazy-find'
-import { fitsFullLoad, opensInFormulaMode, workbookCellCounts } from './load-budget'
+import { startFullLoad } from './full-load'
+import { opensInFormulaMode, workbookCellCounts } from './load-budget'
 import { installReplaceAutoSearch } from './replace-autosearch'
 import {
   installCrossHighlight,
@@ -289,6 +294,7 @@ import {
   ROW_COLUMN_MUTATIONS,
   SET_FROZEN_MUTATION,
   SET_NUMFMT_MUTATION,
+  SET_RIGHT_TO_LEFT_MUTATION,
   TOGGLE_GRIDLINES_MUTATION,
   SET_ZOOM_OPERATION,
   SET_ZOOM_COMMAND,
@@ -301,6 +307,7 @@ import {
   STRUCTURE_LOCK_COMMANDS,
 } from './app-constants'
 import {
+  fullLoadGate,
   largestRangeCells,
   rangeHasStreamedFormulas,
   reorderCommandRanges,
@@ -387,6 +394,7 @@ import { RangePickBar, type RangePickRequest } from './range-pick'
 import { selectionRefText } from './range-pick-ref'
 import { installSupportedFunctionProbe } from './function-registry-probe'
 import { installCellFilenameFunction } from './cell-function'
+import { installRightToLeftCommand, refreshSheetRender, sheetIsRightToLeft } from './sheet-rtl-view'
 import { installFormulaLexerFix } from './formula-lexer-fix'
 import { installErrorValueAlignment } from './error-value-align'
 import { installFormulaNewlineDisplay } from './formula-newline-display'
@@ -414,9 +422,18 @@ import { sharedFormulaResolverFor } from './shared-formula-journal'
 import { installCellClipAnchorFix } from './cell-clip-anchor-fix'
 import { installBorderOverflowExclusionFix } from './border-overflow-exclusion'
 import { installCfEmptySheetFastPath } from './cf-empty-fast-path'
+import { installOtherFormulaAnchor } from './other-formula-anchor'
 import { installMergeBorderFix } from './merge-border-fix'
 import { installThickBorderFix } from './thick-border-fix'
 import { installCenterContinuousRender } from './center-continuous'
+import { installExcelFilterButton } from './filter-button-excel-style'
+import {
+  extendLargeFilterRange,
+  installLargeFilterValues,
+  isLargeFilterSheet,
+  largeFilterAction,
+} from './large-filter'
+import { resetLargeFilter } from './large-filter-state'
 import { installForceStringMarkGate, installLongTextRender } from './long-text-render'
 import { installAutofitWrapBudget } from './autofit-wrap-budget'
 import { installAutofitLinePitch } from './autofit-line-pitch'
@@ -428,6 +445,7 @@ import { installRtlTextDirectionFix } from './rtl-text-fix'
 import { installRtlGridMirror } from './rtl-grid-mirror'
 import { installMultiRowAutofit } from './autofit-multi-row'
 import { registerExcelJumpNav } from './excel-jump-nav'
+import { registerEditorWordJump } from './editor-word-jump'
 import { registerExcelShortcuts } from './excel-shortcuts'
 import { installCopyMaterialize } from './copy-materialize'
 import {
@@ -459,7 +477,7 @@ import {
   handleApplyHeaderFooter as handleApplyHeaderFooterImpl,
   handleExportPdf as handleExportPdfImpl,
   handlePageLayoutCommand as handlePageLayoutCommandImpl,
-  createPrintPreviewHost,
+  openPrintPreviewHost,
   type PrintPreviewHost,
   type PageLayoutContext,
 } from './page-layout-actions'
@@ -767,7 +785,6 @@ export function App({
   /// cancelled, so instead of a silent no-op the user gets an explicit offer
   /// to fully load the workbook first.
   const [fullLoadPrompt, setFullLoadPrompt] = useState<'ask' | 'tooLarge' | null>(null)
-  const fullLoadRunning = useRef(false)
   const [message, setMessage] = useState(t('appReadyInitial'))
   const sheetTabActions = useMemo(
     () => createSheetTabActions({ univerRef, lazyWorkbookRef, notify: setMessage }),
@@ -1106,7 +1123,7 @@ export function App({
               if (state.flags.preloadComplete) return true
               const runtime = univerRef.current
               if (runtime && !state.flags.preloadRunning) {
-                void preloadEntireWorkbook(runtime, lazyWorkbookRef, setMessage)
+                void startFullLoad(runtime, lazyWorkbookRef, setMessage)
               }
               return false
             },
@@ -1397,6 +1414,10 @@ export function App({
   const patchLastAssistant = (fn: (entry: AiChatMessage) => AiChatMessage): void => {
     activeRunPatchRef.current?.(fn)
   }
+  // upstream #1944 (usage per reply/session): the session total the composer chip
+  // shows. The conversation hosts own the runs; their per-reply reports land here
+  // once the host module grows a usage callback (this round: panel surface only).
+  const [sessionUsage] = useState<AiTokenUsageView | undefined>(undefined)
   /** App-level auto-save of a completed run; entries patched via activeRunPatchRef */
   async function autoSaveCompletedAiRun(): Promise<void> {
     const applies = aiApplyPromisesRef.current
@@ -1668,6 +1689,7 @@ export function App({
     installLoadAutoHeightGate()
     installBorderOverflowExclusionFix()
     installCfEmptySheetFastPath()
+    installOtherFormulaAnchor()
     installCellClipAnchorFix()
     // Borders stored on a merged range's main cell must render their edge
     // segments like Excel; stock Univer drops them entirely.
@@ -1681,10 +1703,14 @@ export function App({
     // sheetView rightToLeft="1": mirror the grid geometry (column A on the
     // right, headers on the right) while keeping logical indices.
     installRtlGridMirror()
+    // Univer defines the right-to-left command/mutation pair but never
+    // registers it; without this the View tab's toggle would silently no-op.
+    installRightToLeftCommand(runtime)
     installRichTextBidiFix()
     // Excel's "Center Across Selection": center anchor text over its run of
     // blank same-format neighbors instead of folding it inside one cell.
     installCenterContinuousRender()
+    installExcelFilterButton()
     // Paragraph-sized plain text cells: draw only the slice that can reach the
     // clip box instead of shaping the whole string every frame.
     installLongTextRender()
@@ -1803,6 +1829,8 @@ export function App({
     // Ctrl/Cmd+Arrow data-edge jumps must stop at formula cells even when
     // their values are empty strings or not yet materialized (cache mode).
     registerExcelJumpNav(runtime)
+    // Ctrl+arrow (mac: Option) word jumps inside the cell editor / formula bar
+    registerEditorWordJump(runtime)
     // Excel-standard keys Univer doesn't ship: worksheet-tab switching,
     // Ctrl+Home/End, Home, whole row/column selection. The used-end hint
     // covers streamed workbooks whose cell matrix is a loaded window.
@@ -1854,6 +1882,9 @@ export function App({
       setPendingEdits(journalSize(state.editJournal))
     }
     void window.desktopApi.getUserDisplayName?.().then((name) => threadStore.setAuthor(name))
+    const offAuthorChanged = window.desktopApi.onUserDisplayNameChanged?.((name) =>
+      threadStore.setAuthor(name),
+    )
     // Univer's own UI (rule-management panels, dialogs) follows the app
     // language instead of hard-coded English.
     void applyUniverLocale(runtime, getLang())
@@ -2075,6 +2106,7 @@ export function App({
           event.id !== MOVE_ROWS_MUTATION &&
           event.id !== SET_FROZEN_MUTATION &&
           event.id !== TOGGLE_GRIDLINES_MUTATION &&
+          event.id !== SET_RIGHT_TO_LEFT_MUTATION &&
           event.id !== SET_ZOOM_OPERATION &&
           event.id !== SET_ZOOM_COMMAND
         ) {
@@ -2301,6 +2333,18 @@ export function App({
         }
         if (FILTER_MUTATIONS.has(event.id)) {
           recordFilterChange(state.editJournal, params.subUnitId)
+          if (
+            event.id === 'sheet.mutation.set-filter-range' &&
+            isLargeFilterSheet(state, params.subUnitId)
+          ) {
+            const worksheet = runtime.univerAPI
+              .getActiveWorkbook()
+              ?.getSheetBySheetId(params.subUnitId)
+            if (worksheet) extendLargeFilterRange(runtime, state, worksheet)
+          }
+          if (event.id === 'sheet.mutation.remove-filter') {
+            resetLargeFilter(state, params.subUnitId)
+          }
           setPendingEdits(journalSize(state.editJournal))
           return
         }
@@ -2343,6 +2387,25 @@ export function App({
             })
             setPendingEdits(journalSize(state.editJournal))
           }
+          return
+        }
+        if (event.id === SET_RIGHT_TO_LEFT_MUTATION) {
+          // Journaling from the mutation (not the ribbon handler) keeps the
+          // save in step with Univer's own undo/redo of the direction flip;
+          // the rebuild also re-runs the mirrored viewport anchors, which
+          // undo/redo dispatches without the command's render side effects.
+          const rtl = event.params as { subUnitId?: string; rightToLeft?: number } | undefined
+          if (
+            rtl?.subUnitId &&
+            rtl.rightToLeft !== undefined &&
+            !isSheetRemoved(state.editJournal, rtl.subUnitId)
+          ) {
+            recordPageSetup(state.editJournal, rtl.subUnitId, {
+              rightToLeft: rtl.rightToLeft === 1,
+            })
+            setPendingEdits(journalSize(state.editJournal))
+          }
+          refreshSheetRender(runtime)
           return
         }
         if (event.id === SET_ZOOM_OPERATION || event.id === SET_ZOOM_COMMAND) {
@@ -2737,15 +2800,38 @@ export function App({
             event.cancel = true
             // A silent footer note read as "filtering is broken" — raise an
             // explicit offer to fully load instead.
-            if (fullLoadRunning.current || state.formulaMode) {
-              // formula-mode workbooks preload automatically at open — the
-              // gate only holds during that brief window
-              setMessage(t('appFullLoadRunning'))
-            } else {
-              setFullLoadPrompt(
-                fitsFullLoad(workbookCellCounts(state.file.sheets)) ? 'ask' : 'tooLarge',
+            // Formula-mode workbooks preload automatically at open — the gate
+            // only holds during that brief window. Any other running
+            // preload (Load all, Print / PDF export) shows the same notice.
+            const verdict = fullLoadGate({
+              formulaMode: state.formulaMode,
+              preloadRunning: state.flags.preloadRunning,
+              cellCounts: workbookCellCounts(state.file.sheets),
+            })
+            if (verdict === 'workbookTooLarge' && subUnitId !== undefined) {
+              // Past the budget the filter runs on column projections read
+              // from the file (large-filter.ts); the panel opens as usual.
+              installLargeFilterValues(runtime, lazyWorkbookRef, isLargeFilterSheet, (loading) =>
+                setMessage(t(loading ? 'appLargeFilterLoading' : 'appReadyInitial')),
               )
+              const worksheet = runtime.univerAPI.getActiveWorkbook()?.getSheetBySheetId(subUnitId)
+              const action = worksheet ? largeFilterAction(event.id, event.params, worksheet) : null
+              if (!action) {
+                event.cancel = false
+                return
+              }
+              event.cancel = true
+              setMessage(t('appLargeFilterApplying'))
+              void action(runtime, state)
+                .then(() => {
+                  setPendingEdits(journalSize(state.editJournal))
+                  setMessage(t('appReadyInitial'))
+                })
+                .catch((error: unknown) => setMessage(String(error)))
+              return
             }
+            if (verdict === 'loading') setMessage(t('appFullLoadRunning'))
+            else setFullLoadPrompt(verdict === 'offerFullLoad' ? 'ask' : 'tooLarge')
             return
           }
           if (!isFilter) {
@@ -2762,7 +2848,7 @@ export function App({
             const verdict = reorderGate({
               formulaMode: state.formulaMode,
               preloadComplete: state.flags.preloadComplete,
-              preloadRunning: state.flags.preloadRunning || fullLoadRunning.current,
+              preloadRunning: state.flags.preloadRunning,
               isAddedSheet,
               cellCounts: workbookCellCounts(state.file.sheets),
               rangeCells: largestRangeCells(ranges),
@@ -3050,6 +3136,7 @@ export function App({
       unsubscribeCloseSave()
       offThemeChanged?.()
       offDocThemeChanged?.()
+      offAuthorChanged?.()
       undoRedoSub.unsubscribe()
       findRevealDispose()
       gridGrowthDispose()
@@ -5330,6 +5417,7 @@ export function App({
     opts?: { continueChat?: boolean; onInitialRangeLoaded?: () => void },
   ): Promise<boolean> {
     if (!(await commitActiveEditor())) return false
+    await untilCellFontsLoaded(registerCellFontAliases(workbookFontFamilies(opened)))
     const selected: WorkbookFile = {
       ...opened,
       visuals: opened.visuals.map((visual) =>
@@ -5616,7 +5704,7 @@ export function App({
             : undefined,
         ).then(() => refreshPrintAreaMarkers())
         if (state.formulaMode) {
-          void preloadEntireWorkbook(runtime, lazyWorkbookRef, setMessage)
+          void startFullLoad(runtime, lazyWorkbookRef, setMessage)
         } else {
           // Deferred so first paint and initial streaming win the sidecar.
           setTimeout(() => {
@@ -5671,7 +5759,8 @@ export function App({
         return
       }
       openLazyWorkbook(selected)
-      setMessage(t('appOpened', { name: selected.name }))
+      setEmptyCsvNotice(selected.emptyCsv === true)
+      setMessage(selected.emptyCsv ? '' : t('appOpened', { name: selected.name }))
     } catch (error: unknown) {
       setMessage(error instanceof Error ? error.message : t('appOpenFailed'))
     } finally {
@@ -5739,7 +5828,7 @@ export function App({
     if (action === 'open') {
       void handleInspectWorkbook()
     } else if (action === 'print') {
-      setPrintHost(createPrintPreviewHost(pageLayoutContext()))
+      void openPrintPreviewHost(pageLayoutContext()).then(setPrintHost)
     } else if (action === 'export-pdf') {
       void handleExportPdfImpl(pageLayoutContext())
     } else if (action === 'export-csv') {
@@ -6138,7 +6227,13 @@ export function App({
       (worksheet ? worksheet.getSheet().getConfig().rowHeader.hidden !== BooleanNumber.TRUE : true)
     const pageBreakPreview = sheetId ? pageBreakPreviewSheets.has(sheetId) : false
     if (!worksheet || !state || !sheetId) {
-      return { ...journalState, showGridlines, showHeadings, pageBreakPreview }
+      return {
+        ...journalState,
+        showGridlines,
+        showHeadings,
+        pageBreakPreview,
+        rightToLeft: journalState.rightToLeft ?? false,
+      }
     }
     // Ribbon echoes resolve through the same pipeline as the PDF export, so a
     // file-saved print area / gridlines / headings check on instead of
@@ -6168,6 +6263,7 @@ export function App({
       printTitles: setup.printTitles ?? undefined,
       showGridlines,
       showHeadings,
+      rightToLeft: journalState.rightToLeft ?? (worksheet ? sheetIsRightToLeft(worksheet) : false),
       pageBreakPreview,
     }
   })()
@@ -6263,12 +6359,10 @@ export function App({
                   onClick={() => {
                     setFullLoadPrompt(null)
                     const runtime = univerRef.current
-                    if (!runtime || fullLoadRunning.current) return
-                    fullLoadRunning.current = true
+                    if (!runtime) return
                     setMessage(t('appFullLoadRunning'))
-                    void preloadEntireWorkbook(runtime, lazyWorkbookRef, setMessage).finally(() => {
-                      fullLoadRunning.current = false
-                    })
+                    // Joins a load that is already running (e.g. from Print).
+                    void startFullLoad(runtime, lazyWorkbookRef, setMessage)
                   }}
                 >
                   {t('appFullLoadStart')}
@@ -6419,6 +6513,9 @@ export function App({
           })
         }}
         aiBusy={aiBusy}
+        {...(sessionUsage !== undefined ? { sessionUsage } : {})}
+        emptyCsvNotice={emptyCsvNotice}
+        onDismissEmptyCsvNotice={() => setEmptyCsvNotice(false)}
         chat={chat}
         historicChat={historicChat}
         attachments={attachments}

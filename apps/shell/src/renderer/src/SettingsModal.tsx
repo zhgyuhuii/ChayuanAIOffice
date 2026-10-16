@@ -7,6 +7,7 @@ import {
   AI_CUSTOM_FONT_MIN_PX,
   AI_CUSTOM_FONT_MAX_PX,
 } from '@chatoffice/ui/ai-panel-prefs'
+import { AUTHOR_NAME_MAX } from '../../shared/home-api'
 import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { ModelSettingsPage } from '@chatoffice/ui/ModelSettingsPage'
@@ -18,6 +19,7 @@ import { useI18n } from './locale'
 import type { StringKey } from './locale'
 import type {
   AccountStatus,
+  AuthorNameSetting,
   DefaultAppStatus,
   DocTheme,
   FileSearchSettings,
@@ -68,7 +70,7 @@ const THEME_OPTIONS = [
   { value: 'dark', labelKey: 'themeDark' },
 ] as const satisfies readonly { value: UiTheme; labelKey: StringKey }[]
 
-// Document page theme (genoffice#1811): the canvas/paper preference the editors follow;
+// Document page theme (chatoffice#1811): the canvas/paper preference the editors follow;
 // 'follow' keeps the pre-existing behavior of riding the UI theme
 const DOC_THEME_OPTIONS = [
   { value: 'follow', labelKey: 'docThemeFollowApp' },
@@ -316,6 +318,7 @@ const JEV_ENDPOINTS: { value: DecisionEndpoint; label: string }[] = [
   { value: 'openrouter', label: 'OpenRouter' },
   { value: 'direct', label: 'TypeSafe' },
   { value: 'perplexity', label: 'Perplexity' },
+  { value: 'liquid', label: 'Liquid AI (d1)' },
   { value: 'cloudflare', label: 'Cloudflare' },
   { value: 'kev', label: 'Kev (local)' },
   { value: 'rizzo', label: 'Rizzo Flow (local)' },
@@ -586,6 +589,7 @@ export function SettingsModal({
   const [defaultAppBusy, setDefaultAppBusy] = useState(false)
   const [defaultAppFailed, setDefaultAppFailed] = useState(false)
   const [aiPrefs, setAiPrefs] = useState<AiPanelPrefs>(DEFAULT_AI_PANEL_PREFS)
+  const [authorName, setAuthorName] = useState<AuthorNameSetting>({ value: '', fallback: '' })
   const [channel, setChannel] = useState<'stable' | 'beta'>('stable')
   const [appVersion, setAppVersion] = useState('')
   const [githubStars, setGithubStars] = useState<number | null>(null)
@@ -612,6 +616,9 @@ export function SettingsModal({
     })
     void window.chaOffice.getAiPanelPrefs?.().then((prefs) => {
       if (alive) setAiPrefs(prefs)
+    })
+    void window.chaOffice.getAuthorName?.().then((v) => {
+      if (alive) setAuthorName(v)
     })
     void window.chaOffice.getUpdateChannel?.().then((ch) => {
       if (alive) setChannel(ch)
@@ -660,6 +667,11 @@ export function SettingsModal({
   const applyDocumentTheme = (next: DocTheme) => {
     setDocTheme(next)
     void window.chaOffice.setDocumentTheme(next)
+  }
+
+  // 上游快照（#2000）：作者名（导出/协作者显示兜底）；失焦/回车即保存
+  const commitAuthorName = () => {
+    void window.chaOffice.setAuthorName?.(authorName.value).then(setAuthorName)
   }
 
   // Windows only opens the system page; re-read ownership when the user comes back
@@ -852,6 +864,31 @@ export function SettingsModal({
                 <div className="set-field">
                   <div className="set-field-text">
                     <div className="set-field-stack">
+                      <label className="set-field-label" htmlFor="set-author-name">
+                        {t('setAuthorName')}
+                      </label>
+                      <div className="set-field-desc">{t('setAuthorNameDesc')}</div>
+                    </div>
+                  </div>
+                  <input
+                    id="set-author-name"
+                    className="set-input"
+                    type="text"
+                    value={authorName.value}
+                    placeholder={authorName.fallback}
+                    maxLength={AUTHOR_NAME_MAX}
+                    spellCheck={false}
+                    autoComplete="off"
+                    onChange={(e) => setAuthorName((prev) => ({ ...prev, value: e.target.value }))}
+                    onBlur={commitAuthorName}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') e.currentTarget.blur()
+                    }}
+                  />
+                </div>
+                <div className="set-field">
+                  <div className="set-field-text">
+                    <div className="set-field-stack">
                       <div className="set-field-label">{t('setAiSpellcheck')}</div>
                       <div className="set-field-desc">{t('setAiSpellcheckDesc')}</div>
                     </div>
@@ -862,6 +899,21 @@ export function SettingsModal({
                     aria-checked={aiPrefs.spellcheck}
                     aria-label={t('setAiSpellcheck')}
                     onClick={() => updateAiPrefs({ spellcheck: !aiPrefs.spellcheck })}
+                  />
+                </div>
+                <div className="set-field">
+                  <div className="set-field-text">
+                    <div className="set-field-stack">
+                      <div className="set-field-label">{t('setAiShowSidebar')}</div>
+                      <div className="set-field-desc">{t('setAiShowSidebarDesc')}</div>
+                    </div>
+                  </div>
+                  <button
+                    className="set-switch"
+                    role="switch"
+                    aria-checked={aiPrefs.showAiSidebar}
+                    aria-label={t('setAiShowSidebar')}
+                    onClick={() => updateAiPrefs({ showAiSidebar: !aiPrefs.showAiSidebar })}
                   />
                 </div>
                 <div className="set-field">

@@ -30,7 +30,6 @@ import { execFile } from 'node:child_process'
 import { readFile, writeFile, rm, stat, mkdir, open } from 'node:fs/promises'
 import { createHash, randomUUID } from 'node:crypto'
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync } from 'node:fs'
-import { userInfo } from 'node:os'
 import { basename, dirname, join, resolve } from 'node:path'
 import { printSlidesHtml } from './print-window'
 import { cleanupExpiredGeneratedPages } from './generated-page-temp'
@@ -59,6 +58,8 @@ import {
   rendererUrl,
   MAX_REMOTE_IMAGE_BYTES,
   readBodyCapped,
+  recoveryCopyDiskNewer,
+  configuredAuthorName,
 } from '@chatoffice/electron-utils'
 import {
   resolveGroupChildId,
@@ -71,6 +72,7 @@ import {
 } from '@chatoffice/pptx-ops'
 import { matchesElementRef } from '@chatoffice/pptx-engine/identity'
 import { buildPagePptx, parsePageSpec } from '@chatoffice/pipelines/slides'
+import { convertOdpToPptx } from '../../../../packages/odf2ooxml/src'
 import { sniffImageMime } from './media-mime'
 import { getUiLang, normalizeLang, setUiLang } from '@chatoffice/i18n'
 import { ProjectStore } from '@chatoffice/project-store'
@@ -157,12 +159,16 @@ import {
   type RenderSlide,
   type RenderTextLayout,
 } from '@chatoffice/pptx-render'
+// From its own electron-utils subpath rather than the package barrel: the
+// barrel drags Electron-only modules into headless bundles.
+import { atomicWriteFile } from '@chatoffice/electron-utils/atomic-write'
 import { DEFAULT_PICTURE_DPI, pictureFrame } from './picture-frame'
 import { refineComplexWidths, shapedMetricsReady } from './shaped-metrics'
 import { cfbKind, isCfbHeader } from './cfb-sniff'
 import { unplayableAudioCodec } from './mp4-audio-sniff'
 import { audioFrame, videoFrame, videoSize, type Point, type Size } from './video-size'
 import { AUDIO_EXTS, VIDEO_EXTS } from '../shared/media-kinds'
+import { OPENABLE_DECK_EXTENSIONS, deckExtension } from '../shared/deck-open-formats'
 import type {
   AddChartOp,
   AddCommentOp,
@@ -511,13 +517,9 @@ export async function saveSessionDeckTo(session: Session, filePath: string): Pro
 
 const RECENT_PATH = () => join(app.getPath('userData'), 'slides-recent.json')
 
-/** Comment author name: system username, falling back to a generic "User" label. */
+/** Settings → General author name, falling back to the OS account */
 function commentAuthorName(): string {
-  try {
-    return userInfo().username || 'User'
-  } catch {
-    return 'User'
-  }
+  return configuredAuthorName(app)
 }
 
 async function readRecent(): Promise<string[]> {
@@ -748,18 +750,17 @@ export function discardSlidesRecovery(contents: WebContents): void {
   dropUntitledRecovery(contents.id)
 }
 
-/** On open, if a recovery copy newer than the original exists, ask whether to restore (still points at the original path; only save persists it). */
+/** On open, if a recovery copy exists, ask whether to restore (still points at the original path; only save persists it).
+ * A newer original does not discard the copy — it may hold the only pre-crash edits — the prompt just says the disk file is newer. */
 async function maybeRecoverBytes(
   path: string,
   original: Uint8Array,
 ): Promise<{ bytes: Uint8Array; recovered: boolean }> {
   const asPath = autosavePathFor(path)
+  let diskNewer: boolean
   try {
     const [asStat, origStat] = await Promise.all([stat(asPath), stat(path)])
-    if (asStat.mtimeMs <= origStat.mtimeMs) {
-      await rm(asPath, { force: true })
-      return { bytes: original, recovered: false }
-    }
+    diskNewer = recoveryCopyDiskNewer(asStat.mtimeMs, origStat.mtimeMs)
   } catch {
     return { bytes: original, recovered: false }
   }
@@ -770,7 +771,9 @@ async function maybeRecoverBytes(
     defaultId: 0,
     cancelId: 1,
     message: tm('autosaveFoundTitle'),
-    detail: tm('autosaveFoundBody'),
+    detail: diskNewer
+      ? `${tm('autosaveFoundBody')}\n\n${tm('autosaveDiskNewer')}`
+      : tm('autosaveFoundBody'),
   }
   const r = parent
     ? await dialog.showMessageBox(parent, options)
@@ -781,6 +784,59 @@ async function maybeRecoverBytes(
   }
   await rm(asPath, { force: true })
   return { bytes: original, recovered: false }
+}
+
+/**
+ * An .odp opens only as a converted .pptx deck: confirm the lossy import,
+ * pick the destination (the sibling .pptx by default), convert, write the
+ * file and open it — the explicit-destination flow the PDF "Export as
+ * PowerPoint" path already uses, so every later Save lands in the copy the
+ * user chose. Anything that is not an .odp passes through unchanged; null
+ * cancels the open.
+ */
+async function preparePresentationForOpen(filePath: string): Promise<string | null> {
+  const extension = deckExtension(filePath)
+  if (extension !== 'odp' && extension !== 'otp') return filePath
+  const parent = dialogParent()
+  const options = {
+    type: 'warning' as const,
+    message: tm('odpImportMsg', { ext: extension }),
+    detail: tm('odpImportDetail'),
+    buttons: [tm('odpImportConvertBtn'), tm('btnCancel')],
+    defaultId: 0,
+    cancelId: 1,
+    noLink: true,
+  }
+  const { response } = parent
+    ? await dialog.showMessageBox(parent, options)
+    : await dialog.showMessageBox(options)
+  if (response !== 0) return null
+  const r = await showSaveDialogWithMemory(
+    dialog,
+    parent,
+    {
+      defaultPath: join(dirname(filePath), basename(filePath).replace(/\.(odp|otp)$/i, '.pptx')),
+      filters: [{ name: 'PowerPoint', extensions: ['pptx'] }],
+    },
+    getDraftsDir(),
+  )
+  if (r.canceled || !r.filePath) return null
+  try {
+    const result = await convertOdpToPptx(new Uint8Array(await readFile(filePath)))
+    // atomic like the Docs and shell copies: a plain write leaves a truncated
+    // .pptx where the user expects a deck if the process dies mid-write
+    await atomicWriteFile(r.filePath, Buffer.from(result.pptx))
+  } catch {
+    const errorOptions = {
+      type: 'error' as const,
+      message: tm('odpImportFailedTitle'),
+      detail: tm('odpImportFailedBody'),
+    }
+    if (parent) await dialog.showMessageBox(parent, errorOptions)
+    else await dialog.showMessageBox(errorOptions)
+    return null
+  }
+  return r.filePath
 }
 
 /**
@@ -1112,6 +1168,7 @@ export function applySessionTxn(session: Session, req: ApplyTxnOp): ApplyTxnResu
         ? { target: `${rec.op.target.slide}${rec.op.target.el ? `/${rec.op.target.el}` : ''}` }
         : {}),
       ...(rec.created ? { created: rec.created } : {}),
+      ...(opNote(rec) ? { note: opNote(rec) } : {}),
     })),
     ...(r.failures?.length ? { failures: compact(r.failures) } : {}),
     slides: buildAllRenderSlides(session.opened, session.fitWidthPx),
@@ -1181,6 +1238,8 @@ function nowrapContentWidth(text: RenderTextLayout): number {
  * Triggered only by text edits (resize gestures do not write: the layout cap locks the stored
  * value, and writing back during a gesture would ratchet one way); top-level elements only.
  */
+const opNote = (rec: { after?: unknown }) => (rec.after as { note?: string } | undefined)?.note
+
 function syncAutofitScale(
   session: Session,
   slideIndex: number,
@@ -1459,18 +1518,22 @@ export function registerSlidesIpc(): void {
     const parent = dialogParent()
     const options = {
       properties: ['openFile' as const],
-      filters: [{ name: 'PowerPoint', extensions: ['pptx', 'ppt'] }],
+      filters: [{ name: 'PowerPoint', extensions: [...OPENABLE_DECK_EXTENSIONS] }],
     }
     const r = await showOpenDialogWithMemory(dialog, parent, options)
     if (r.canceled || !r.filePaths[0]) return null
-    if (await rejectLegacyPpt(r.filePaths[0])) return null
-    return openAndBuild(e.sender, r.filePaths[0], fitWidthPx)
+    const prepared = await preparePresentationForOpen(r.filePaths[0])
+    if (!prepared) return null
+    if (await rejectLegacyPpt(prepared)) return null
+    return openAndBuild(e.sender, prepared, fitWidthPx)
   })
 
   ipcMain.handle('slides:open-path', async (e, path: string, fitWidthPx: number) => {
     if (!path || !existsSync(path)) return null
-    if (await rejectLegacyPpt(path)) return null
-    return openAndBuild(e.sender, path, fitWidthPx)
+    const prepared = await preparePresentationForOpen(path)
+    if (!prepared) return null
+    if (await rejectLegacyPpt(prepared)) return null
+    return openAndBuild(e.sender, prepared, fitWidthPx)
   })
 
   ipcMain.handle('slides:consume-pending-open', async (e, fitWidthPx: number) => {
@@ -1485,12 +1548,13 @@ export function registerSlidesIpc(): void {
       }
       // A CFB file (legacy .ppt / encrypted, possibly misnamed .pptx) can never
       // parse: tell the user and drop it, or every relaunch restores a blank tab
-      if (await rejectLegacyPpt(queued)) {
+      const prepared = await preparePresentationForOpen(queued)
+      if (!prepared || (await rejectLegacyPpt(prepared))) {
         dropQueued()
         return null
       }
       // Clear the queue only after a successful open: keep it on parse failure or a mid-flight renderer reload, so a remount can retry
-      const result = await openAndBuild(e.sender, queued, fitWidthPx)
+      const result = await openAndBuild(e.sender, prepared, fitWidthPx)
       dropQueued()
       return result
     }
@@ -1690,12 +1754,14 @@ export function registerSlidesIpc(): void {
     let pushed = false
     if (op.preview) {
       if (!session.transformPreview) {
+        session.previewRedo = session.redoStack
         pushHistory(session)
         pushed = true
         session.transformPreview = true
       }
     } else if (session.transformPreview) {
       session.transformPreview = false
+      session.previewRedo = undefined
     } else {
       pushHistory(session)
       pushed = true
@@ -1711,10 +1777,29 @@ export function registerSlidesIpc(): void {
       // flag would make later frames skip pushHistory and cost the commit its undo step.
       if (pushed) {
         session.undoStack.pop()
-        if (op.preview) session.transformPreview = false
+        if (op.preview) {
+          session.transformPreview = false
+          if (session.previewRedo) session.redoStack = session.previewRedo
+          session.previewRedo = undefined
+        }
       }
       return null
     }
+    return rebuildSlide(session, op.slideIndex)
+  })
+
+  // Escape mid-resize: the preview frames live in the model and their undo snapshot is the
+  // pre-gesture state, so restoring that snapshot and dropping it leaves no trace of the gesture
+  ipcMain.handle('slides:cancel-transform-preview', (e, op: { slideIndex: number }) => {
+    const session = sessions.get(e.sender.id)
+    if (!session || !session.transformPreview) return null
+    session.transformPreview = false
+    const snap = session.undoStack.pop()
+    if (snap) restoreSnapshot(session, snap)
+    if (session.previewRedo) session.redoStack = session.previewRedo
+    session.previewRedo = undefined
+    scheduleHistoryNotify(session)
+    scheduleDeckBroadcast(session)
     return rebuildSlide(session, op.slideIndex)
   })
 
@@ -1811,9 +1896,12 @@ export function registerSlidesIpc(): void {
       return { error: r.failures?.[0]?.error ?? 'the transaction could not be applied' }
     }
     let rendered = rebuildSlide(session, op.slideIndex)
+    const notes: string[] = []
     for (const rec of r.records ?? []) {
       const o = rec.op
       const id = o.target?.el
+      const note = opNote(rec)
+      if (note) notes.push(`${id ?? o.op}: ${note}`)
       if (!id || o.group || !rendered) continue
       if (o.op === 'setText') {
         // Level changes rematerialized inside the op; autofit would fight the reparse
@@ -1825,7 +1913,7 @@ export function registerSlidesIpc(): void {
         rendered = syncAutofitScale(session, op.slideIndex, id, rendered)
       }
     }
-    return rendered ? { slide: rendered } : null
+    return rendered ? { slide: rendered, ...(notes.length ? { notes } : {}) } : null
   })
   // ── Cloud single-page generation (chatoffice slide_generate): brief → cloud HTML+conversion → one-slide
   // pptx saved to a temp file. Returns a marker string that slides:land-generated-pages redeems for

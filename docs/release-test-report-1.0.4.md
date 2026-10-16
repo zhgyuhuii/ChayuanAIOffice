@@ -9,13 +9,13 @@
 
 - ✓ `npm run typecheck` — EXIT 0（全工作区）
 - ✓ `npm run test` — EXIT 0，0 FAIL
-- ✓ 品牌残留 grep 仅 4 处，全为豁免类：`default-app.ts:83`（/Applications/GenOffice.app 路径兼容）、`cover-pages.ts:7-8`（上游 docx 封面魔法标记，改则破坏旧文档兼容）、`runtime.ts:489`（注释）
+- ✓ 品牌残留 grep 仅 4 处，全为豁免类：`default-app.ts:83`（/Applications/ChaAI Office.app 路径兼容）、`cover-pages.ts:7-8`（上游 docx 封面魔法标记，改则破坏旧文档兼容）、`runtime.ts:489`（注释）
 
 ## 阶段 1 · 打包安装
 
 - ✓ 安装：/Applications/ChaAI Office.app，CFBundleShortVersionString 1.0.4
 - ✓ 首页：左树 + 对话面板 + 2×3 新建矩阵 + 搜索 + 快速创建卡（截图 office-shot-home.png）
-- ✓ logo 与产品名：察元AIOffice / ChaAI Office，无 GenOffice/Genspark 残留
+- ✓ logo 与产品名：察元AIOffice / ChaAI Office，无 ChaAI Office/Genspark 残留
 - ✓ 首启引导：三页 onboarding 正常，可跳过
 - ✓ 单实例锁：二次 `open` 后主进程仍为同一 PID（84104）
 - ✓ 会话保持：杀进程重启后对话历史与文档 tab 全部恢复

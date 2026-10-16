@@ -289,6 +289,27 @@ describe('resolveEffectivePageSetup', () => {
     expect(setup.printAreas).toEqual(['B2:C3'])
   })
 
+  it('prints a reversed print area instead of refusing the export', () => {
+    const setup = resolveEffectivePageSetup({}, null, { printArea: "'S'!$B$4:$A$1" })
+    expect(setup.printAreas).toEqual(['A1:B4'])
+    const payload = buildSheetPrintPayload(fakeWorksheet(), setup, 'Book.pdf', 'S1')
+    expect(payload.html).toContain('<table ')
+    expect(payload.html).toContain('A1')
+    expect(payload.html).toContain('B3')
+  })
+
+  it('gives each page table the colgroup-sum width (fixed layout needs a non-auto width)', () => {
+    const worksheet: PrintWorksheet = {
+      ...fakeWorksheet(),
+      getLastColumn: () => 2,
+      // 20px / 5px / 60px, like a narrow coloured column between text columns
+      getColumnWidth: (column: number) => [20, 5, 60][column] ?? 100,
+    }
+    const payload = buildSheetPrintPayload(worksheet, payloadSetup({}), 'Book.pdf', 'S1')
+    // 0.75pt per px: 15 + 3.75 + 45
+    expect(payload.html).toContain('<table style="width:63.75pt">')
+  })
+
   it('drops title rows stretched past the cap by inserts between them', () => {
     const setup = resolveEffectivePageSetup({}, null, { printTitles: "'S'!$1:$2" }, [
       { kind: 'insert-rows', index: 1, count: 25 },
@@ -296,7 +317,7 @@ describe('resolveEffectivePageSetup', () => {
     expect(setup.printTitles).toBeNull()
     // the export payload still builds instead of throwing on the span
     const payload = buildSheetPrintPayload(fakeWorksheet(), setup, 'Book.pdf', 'S1')
-    expect(payload.html).toContain('<table>')
+    expect(payload.html).toContain('<table ')
   })
 })
 
@@ -782,7 +803,7 @@ describe('layoutSheetPrint', () => {
       getColumnWidth: () => Infinity,
     }
     const payload = buildSheetPrintPayload(hostile, payloadSetup({}), 'Book.pdf', 'S1')
-    expect(payload.html).toContain('<table>')
+    expect(payload.html).toContain('<table ')
     expect(payload.html).not.toContain('NaN')
     expect(payload.html).not.toContain('Infinity')
     expect(payload.margins).toEqual({ top: 0, bottom: 0, left: 0, right: 0 })

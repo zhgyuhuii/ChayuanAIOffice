@@ -224,6 +224,8 @@ export interface HtmlApi {
   consumePending(): Promise<string | null>
   /** AI-authored content for this untitled view (create_document), consumed on boot; null = plain untitled document */
   consumeAiContent(): Promise<HtmlAiContent | null>
+  /** open any shell-routed document path (an AI answer's filenav citation) */
+  openSourcePath(path: string): Promise<void>
   /** Headless export mode: the path and format this hidden renderer must export, null in normal use */
   consumeHeadlessExport(): Promise<HeadlessExportTarget | null>
   /** Headless export mode: report the export outcome so the main process can quit */

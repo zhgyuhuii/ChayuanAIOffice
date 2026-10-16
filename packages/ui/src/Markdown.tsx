@@ -7,9 +7,9 @@ import type { KbCitation } from '@chatoffice/ai-provider/browser'
  * Tolerates partial (streaming) input — anything unrecognized renders as
  * plain text.
  *
- * Markdown links stay literal text unless the host passes `nav` and the href
- * carries its scheme — then they become in-app navigation links. External
- * URLs never turn into clickable links here.
+ * Markdown links stay literal text unless the host passes a nav (single `nav`
+ * prop or a `navs` list) whose scheme the href carries — then they become
+ * in-app navigation links. External URLs never turn into clickable links here.
  *
  * Images (`![alt](src)`, data:image/https: sources only) render as small
  * thumbnails — generated images would otherwise fill the panel — and open a
@@ -31,6 +31,11 @@ export interface MarkdownNav {
 export interface MarkdownImage {
   /** Resolve an image href from `![alt](href)`; return undefined to skip the image */
   resolve?: (href: string) => string | undefined
+}
+
+/** first nav whose scheme prefixes href; undefined keeps the link dead text */
+function matchNav(navs: readonly MarkdownNav[], href: string): MarkdownNav | undefined {
+  return navs.find((n) => href.startsWith(n.scheme))
 }
 
 // Hrefs may carry one level of balanced parens (sheet names like `Data (2)`
@@ -55,10 +60,10 @@ interface CiteContext {
   onCitationClick: (citation: KbCitation) => void
 }
 
-// adapted: 上游 665e1912 图床 images resolver 作为第 6 参织入本地 renderInline
+// adapted: 上游 #1915 navs 列表导航 + 图床 images resolver 作为第 6 参织入本地 renderInline
 function renderInline(
   text: string,
-  nav?: MarkdownNav,
+  navs: readonly MarkdownNav[],
   cite?: CiteContext,
   onZoomOpen?: (src: string) => void,
   insert?: { run: (src: string) => void; label: string },
@@ -142,7 +147,8 @@ function renderInline(
     } else if (tok.startsWith('[')) {
       const link = LINK_RE.exec(tok)
       const href = link?.[2] ?? ''
-      if (link && nav && href.startsWith(nav.scheme)) {
+      const hit = link ? matchNav(navs, href) : undefined
+      if (link && hit) {
         out.push(
           <a
             key={key++}
@@ -150,7 +156,7 @@ function renderInline(
             href={href}
             onClick={(e) => {
               e.preventDefault()
-              nav.onNavigate(href)
+              hit.onNavigate(href)
             }}
           >
             {link[1]}
@@ -314,6 +320,7 @@ function parseBlocks(text: string): MdBlock[] {
 export function Markdown({
   text,
   nav,
+  navs,
   images,
   citations,
   onCitationClick,
@@ -322,6 +329,7 @@ export function Markdown({
 }: {
   text: string
   nav?: MarkdownNav
+  navs?: readonly MarkdownNav[]
   /** adapted: 上游图床 resolve 钩子；未提供时本地安全源白名单仍生效 */
   images?: MarkdownImage
   citations?: readonly KbCitation[] | undefined
@@ -331,6 +339,9 @@ export function Markdown({
   onInsertImage?: ((src: string) => void) | undefined
   insertImageLabel?: string | undefined
 }): React.JSX.Element {
+  // the legacy single nav rides along with the newer list; first scheme
+  // match wins, and hosts never pass overlapping schemes anyway
+  const navList: readonly MarkdownNav[] = nav ? [nav, ...(navs ?? [])] : (navs ?? [])
   const cite: CiteContext | undefined =
     citations && citations.length > 0 && onCitationClick
       ? { citations, onCitationClick }
@@ -358,7 +369,7 @@ export function Markdown({
           // the manual styles h2/h3 distinctly)
           return (
             <p key={i} className={`ai-md-h ai-md-h${b.level}`}>
-              {renderInline(b.text, nav, cite, openZoom, insert, images)}
+              {renderInline(b.text, navList, cite, openZoom, insert, images)}
             </p>
           )
         }
@@ -395,7 +406,7 @@ export function Markdown({
         }
         if (b.kind === 'ul' || b.kind === 'ol') {
           const items = b.items.map((it, j) => (
-            <li key={j}>{renderInline(it, nav, cite, openZoom, insert, images)}</li>
+            <li key={j}>{renderInline(it, navList, cite, openZoom, insert, images)}</li>
           ))
           return b.kind === 'ul' ? <ul key={i}>{items}</ul> : <ol key={i}>{items}</ol>
         }
@@ -424,7 +435,7 @@ export function Markdown({
                   <tr>
                     {b.head.map((c, j) => (
                       <th key={j} style={cellStyle(j)}>
-                        {renderInline(c, nav, cite, openZoom, insert, images)}
+                        {renderInline(c, navList, cite, openZoom, insert, images)}
                       </th>
                     ))}
                   </tr>
@@ -434,7 +445,7 @@ export function Markdown({
                     <tr key={r}>
                       {row.map((c, j) => (
                         <td key={j} style={cellStyle(j)}>
-                          {renderInline(c, nav, cite, openZoom, insert, images)}
+                          {renderInline(c, navList, cite, openZoom, insert, images)}
                         </td>
                       ))}
                     </tr>
@@ -449,7 +460,7 @@ export function Markdown({
             {b.lines.map((ln, j) => (
               <Fragment key={j}>
                 {j > 0 && <br />}
-                {renderInline(ln, nav, cite, openZoom, insert, images)}
+                {renderInline(ln, navList, cite, openZoom, insert, images)}
               </Fragment>
             ))}
           </p>

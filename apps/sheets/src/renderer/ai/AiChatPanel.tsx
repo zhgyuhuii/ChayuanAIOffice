@@ -2,6 +2,11 @@ import React, { useEffect, useRef, useState, lazy, Suspense } from 'react'
 import {
   AiComposer,
   AiTypingIndicator,
+  AiQueueStrip,
+  AI_QUEUE_LABELS,
+  AiUsageChip,
+  type AiTokenUsageView,
+  useChatRunQueue,
   Markdown,
   PanelTabs,
   usePanelTab,
@@ -17,6 +22,7 @@ import {
   KbCitePreview,
   KbPickerButton,
   ModelPickerButton,
+  createFileNav,
   useKbAugment,
   type KbCitation,
 } from '@chatoffice/ui'
@@ -217,6 +223,8 @@ export interface AiChatMessage {
   readonly attachments?: readonly AttachmentMeta[] | undefined
   /** the range this user message targeted, frozen at send */
   readonly scope?: AiScopeQuoteData | undefined
+  /** tokens the provider billed for this reply, summed across its turns (absent when unreported) */
+  readonly usage?: AiTokenUsageView | undefined
 }
 
 export function AiChatPanel({
@@ -233,9 +241,11 @@ export function AiChatPanel({
   onAddAttachmentPaths,
   onAddPastedImage,
   onRemoveAttachment,
+  onSendQueued,
   prompt,
   preview,
   aiBusy,
+  sessionUsage,
   onPromptChange,
   onSend,
   onStop,
@@ -271,6 +281,8 @@ export function AiChatPanel({
   readonly prompt: string
   readonly preview: ChangePlan | null
   readonly aiBusy: boolean
+  /** tokens billed across the session, shown beside the composer */
+  readonly sessionUsage?: AiTokenUsageView | undefined
   readonly onPromptChange: (prompt: string) => void
   /** Send the composer text, or the given instruction when provided (used by the
    *  failed-run Retry, which also resends the message's original attachments;
@@ -280,6 +292,8 @@ export function AiChatPanel({
     attachments?: readonly AttachmentMeta[],
     retryIndex?: number,
   ) => void
+  /** a queued message is ready to run: return false to keep it queued (panel busy some other way) */
+  readonly onSendQueued?: (instruction: string, attachments: readonly AttachmentMeta[]) => boolean
   readonly onStop: () => void
   readonly onUndo: (steps: number) => void
   /** LOCAL(2026-09-21, d8201ad0): 多会话(多 tab)接线(上游无此实现;收敛条件:上游原生多会话) */
@@ -332,7 +346,7 @@ export function AiChatPanel({
         { id: 'chat', label: t('aiTabChat') },
         { id: 'assistant', label: t('aiTabAssistant') },
       ]
-  const [legacyTab, selectTab] = usePanelTab('aisheets.aiTab', [...aiTabs] as { id: string; label: string }[])  
+  const [legacyTab, selectTab] = usePanelTab('aisheets.aiTab', [...aiTabs] as { id: string; label: string }[])
   const tab = conversations ? conversations.activeId : legacyTab
   // D13: 历史不再是 tab——对话体显隐不再需要 history 分支(会话 tab 常显转录)
   const showChatBody = true
@@ -353,6 +367,13 @@ export function AiChatPanel({
     }
   }
   const [modelSettingsOpen, setModelSettingsOpen] = useState(false)
+  /** messages queued while a reply runs; the pump re-sends them through onSend on settle */
+  const msgQueue = useChatRunQueue<readonly AttachmentMeta[]>({
+    busy: aiBusy,
+    submit: (text, atts) => onSendQueued?.(text, atts) ?? false,
+  })
+  // Panel chrome follows the UI language; message text follows its own content (dir=auto below)
+  const isRtl = lang === 'ar' || lang === 'he'
   const chatRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
   const stickToBottomRef = useRef(true)
@@ -434,11 +455,26 @@ export function AiChatPanel({
 
   /** [B12](sheetnav://B12) links in answers jump the grid to the cited range */
   const citationNav = { scheme: SHEET_NAV_SCHEME, onNavigate: onCitation }
+  // [name](filenav:///abs/path) citations open the cited file in its own app
+  const fileNav = createFileNav((path) => {
+    void window.desktopApi.openSourcePath(path)
+  })
 
   const send = (): void => {
     if (!canSend) return
     stickToBottomRef.current = true
     onSend()
+  }
+
+  /** Enter while a reply runs: the draft joins the queue above the composer */
+  const enqueueDraft = (): void => {
+    const text = prompt.trim()
+    if (!text) return
+    // the queued message owns the composer attachments; the pump hands them to onSend
+    const atts = attachments
+    for (const a of atts) onRemoveAttachment(a.path)
+    msgQueue.enqueue(text, atts)
+    onPromptChange('')
   }
 
   const onDrop = (e: React.DragEvent): void => {
@@ -495,7 +531,11 @@ export function AiChatPanel({
             <>
               <button
                 className="ai-header-btn"
-                onClick={conversations.onCreate}
+                onClick={() => {
+                  // a new conversation also discards drafts queued behind a running reply
+                  msgQueue.clear()
+                  conversations.onCreate()
+                }}
                 data-tip={t('aiNewChat')}
                 aria-label={t('aiNewChat')}
               >
@@ -565,7 +605,7 @@ export function AiChatPanel({
                   <div dir="auto">
                     <Markdown
                       text={entry.text}
-                      nav={citationNav}
+                      navs={[citationNav, fileNav]}
                       onInsertImage={onInsertImage}
                       insertImageLabel={lang.startsWith('zh') ? '插入表格' : 'Insert'}
                     />
@@ -624,11 +664,16 @@ export function AiChatPanel({
             ) : (
               <>
                 {entry.tools.length > 0 && <ToolChipList tools={entry.tools} />}
+                {entry.usage && (
+                  <div className="ai-message-usage">
+                    <AiUsageChip usage={entry.usage} lang={lang} />
+                  </div>
+                )}
                 {entry.text ? (
                   <div dir="auto">
                     <Markdown
                       text={entry.text}
-                      nav={citationNav}
+                      navs={[citationNav, fileNav]}
                       citations={entry.kbCitations}
                       onCitationClick={setKbCiteView}
                       onInsertImage={onInsertImage}
@@ -746,6 +791,20 @@ export function AiChatPanel({
       >
         {attachNotice && <div className="ai-attach-notice">{attachNotice}</div>}
         <AiComposer
+          queueStrip={
+            <AiQueueStrip
+              items={msgQueue.queued}
+              labels={AI_QUEUE_LABELS[lang]}
+              onUpdate={msgQueue.update}
+              onRemove={msgQueue.remove}
+              onClear={msgQueue.clear}
+              paused={msgQueue.paused}
+              onTogglePause={msgQueue.togglePaused}
+              onMove={msgQueue.move}
+            />
+          }
+          onQueue={enqueueDraft}
+          queuePlaceholder={AI_QUEUE_LABELS[lang].queuePlaceholder}
           header={
             <>
               {/* Only a deliberate multi-cell selection shows here: it tells the
@@ -872,6 +931,7 @@ export function AiChatPanel({
                 }}
                 onOpenSettings={() => setModelSettingsOpen(true)}
               />
+              {sessionUsage && <AiUsageChip usage={sessionUsage} session lang={lang} />}
               <button
                 className="ai-attach-btn"
                 onClick={onPickAttachments}
@@ -885,7 +945,10 @@ export function AiChatPanel({
           textareaRef={inputRef}
           onChange={onPromptChange}
           onSend={send}
-          onStop={onStop}
+          onStop={() => {
+            msgQueue.hold()
+            onStop()
+          }}
           onPasteFiles={onPasteFiles}
         />
       </div>

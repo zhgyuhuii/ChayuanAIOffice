@@ -195,7 +195,7 @@ export interface ApplyTxnResult {
   plan?: string[]
   failures?: Array<{ index: number; error: string }>
   /** compact journal echo: op name, target, ids minted by additive ops */
-  records?: Array<{ op: string; target?: string; created?: string[] }>
+  records?: Array<{ op: string; target?: string; created?: string[]; note?: string }>
   /** full deck after a mutation (a transaction may touch any slide) */
   slides?: RenderSlide[]
 }
@@ -1542,6 +1542,8 @@ export interface SlidesApi {
   editTransform: (op: EditTransformOp) => Promise<RenderSlide | null>
   /** Multi-selection nudge/rotate: every item commits like editTransform, all in one undo step */
   editTransformMulti: (op: EditTransformMultiOp) => Promise<RenderSlide | null>
+  /** Escape during a previewed resize: drop the gesture's preview frames and its undo snapshot */
+  cancelTransformPreview: (op: { slideIndex: number }) => Promise<RenderSlide | null>
   /** Connector endpoint drag: reposition ends and attach/detach shape anchors (stCxn/endCxn) */
   editConnectorEndpoints: (op: EditConnectorEndpointsOp) => Promise<RenderSlide | null>
   /** Batch position update (align/distribute); all items share one undo step */
@@ -1834,7 +1836,7 @@ export interface SlidesApi {
   /** Apply an edit script's collected primitives as ONE atomic op transaction (the executor rolls back on any failure); returns the rebuilt slide or a guided error */
   applyEditScript: (
     op: ApplyEditScriptOp,
-  ) => Promise<{ slide: RenderSlide } | { error: string } | null>
+  ) => Promise<{ slide: RenderSlide; notes?: string[] } | { error: string } | null>
   /** AI batch surface: apply raw ops as one transaction (atomic/per_op, dry-run supported) */
   applyTxn: (op: ApplyTxnOp) => Promise<ApplyTxnResult | null>
   /** AI video generation: the main process resolves the videoGeneration default model,

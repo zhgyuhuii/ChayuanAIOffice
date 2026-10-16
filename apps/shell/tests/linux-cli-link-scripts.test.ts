@@ -46,7 +46,7 @@ function makeRoot() {
   }
 }
 
-describe.skipIf(process.platform === 'win32')('linux cli link scripts (genoffice#893)', () => {
+describe.skipIf(process.platform === 'win32')('linux cli link scripts (chatoffice#893)', () => {
   it('links a free name, a dead link and a link into the old install', () => {
     const t = makeRoot()
     expect(t.install()).toEqual({ code: 0, stderr: '' })

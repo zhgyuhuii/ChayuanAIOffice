@@ -1,6 +1,11 @@
 export { AiPanelSideButton } from './AiPanelSideButton'
 export { FilesPane, FilesEdgeTab, type FilesPaneProps } from './files-pane/FilesPane'
 export { AiComposer } from './AiComposer'
+export { AiQueueStrip } from './AiQueueStrip'
+export { useChatRunQueue, type ChatRunQueue, type QueuedChatMessage } from './chat-run-queue'
+export { AI_QUEUE_LABELS, type AiQueueStripLabels } from './strings-ai-queue'
+export { AiUsageChip, addTokenUsage, formatTokenCount, type AiTokenUsageView } from './AiUsageChip'
+export { AI_USAGE_LABELS, type AiUsageLabels } from './strings-ai-usage'
 export { AiScopeQuote, type AiScopeQuoteData } from './AiScopeQuote'
 export {
   AI_CUSTOM_FONT_MAX_PX,
@@ -16,7 +21,14 @@ export {
   type AiPanelPrefs,
   type AiPanelSide,
 } from './ai-panel-prefs'
-export { applyAiPanelPrefs, useAiPanelPrefs, aiPanelWidthAtPointer, aiPanelInitiallyOpen, rememberAiPanelOpen } from './ai-panel-prefs-store'
+export {
+  applyAiPanelPrefs,
+  aiPanelInitiallyOpen,
+  rememberAiPanelOpen,
+  useAiPanelPrefs,
+  useAiSidebarEnabled,
+  aiPanelWidthAtPointer,
+} from './ai-panel-prefs-store'
 export {
   ColorPicker,
   THEME_COLORS,
@@ -86,6 +98,7 @@ export { AI_CONTINUE_INSTRUCTION } from './aiContinuation'
 export { AiPanelToggle, type AiPanelToggleProps } from './AiPanelToggle'
 export { IconSend, IconStop, type IconProps } from './icons'
 export { Markdown, type MarkdownNav } from './Markdown'
+export { FILE_NAV_SCHEME, createFileNav, fileNavHref, parseFileNavHref } from './file-nav'
 export { isSymbolFontFamily } from './symbol-fonts'
 export {
   BUILTIN_FONT_FAMILIES,

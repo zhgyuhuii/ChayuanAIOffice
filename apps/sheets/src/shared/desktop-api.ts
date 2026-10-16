@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
+import { normalizeCustomProfile } from '@chatoffice/ai-provider/browser'
 
 import {
   HEADER_FOOTER_PICTURE_POSITION,
@@ -103,6 +104,10 @@ const worksheetMetadataSchema = z
     /// Cells with a value, formula or style (rowCount x columnCount is only
     /// the bounding box). Optional for compatibility with an older sidecar.
     storedCellCount: z.number().int().nonnegative().optional(),
+    /// Stored cells with a value or formula, and the box they span.
+    valueCellCount: z.number().int().nonnegative().optional(),
+    valueRowCount: z.number().int().nonnegative().optional(),
+    valueColumnCount: z.number().int().nonnegative().optional(),
     columnWidths: z.array(
       z
         .object({
@@ -879,6 +884,8 @@ export const workbookFileSchema = z
     /// writes it back here. Background flows (AutoSave, crash recovery)
     /// stand down: silently flattening the file would lose data.
     csvPath: z.string().min(1).optional(),
+    /// The source CSV had no data rows; the renderer opens a blank grid with one notice.
+    emptyCsv: z.boolean().optional(),
     /// Session opened from a restored crash-recovery copy: Save silently
     /// writes back to the original file, and the 30s recovery writer stands
     /// down (it would overwrite the copy the sidecar is streaming from).
@@ -1534,6 +1541,8 @@ export const workbookPageSetupStateSchema = z
     zoomScale: z.number().int().min(10).max(400).optional(),
     showFormulas: z.boolean().optional(),
     showHeadings: z.boolean().optional(),
+    /// sheetView/@rightToLeft — the grid is mirrored (column A at the right).
+    rightToLeft: z.boolean().optional(),
     printArea: z.union([z.string().min(1).max(255), z.null()]).optional(),
     printTitles: z.union([z.string().regex(/^\d{1,7}:\d{1,7}$/), z.null()]).optional(),
     /// Frozen pane counts; both present together, 0/0 removes the pane.
@@ -2568,16 +2577,52 @@ export type WorkbookConditionalRule = z.infer<typeof conditionalRuleSchema>
 // site, which has every known provider key once merged through
 // resolveAiSettings/defaultAiSettings. ----
 
+const aiCustomCompatSchema = z
+  .object({
+    omitTemperature: z.boolean().optional(),
+    echoReasoning: z.boolean().optional(),
+    vision: z.boolean().optional(),
+    useMaxCompletionTokens: z.boolean().optional(),
+  })
+  .strict()
+
+const aiCustomModelProfileSchema = z
+  .object({
+    id: z.string().trim().min(1),
+    alias: z.string().optional(),
+    name: z.string().optional(),
+    ...aiCustomCompatSchema.shape,
+    maxTokens: z.number().int().positive().optional(),
+    contextWindow: z.number().int().positive().optional(),
+  })
+  .strict()
+
+// Keep IPC fields explicit, then use the canonical normalizer for header
+// legality and profile size bounds, just like the other apps' settings gate.
+const aiCustomProfileSchema = z
+  .object({
+    api: z.enum(['openai-compatible', 'anthropic', 'gemini']).optional(),
+    apiKeyEnv: z.string().optional(),
+    headers: z.record(z.string(), z.string()).optional(),
+    idleTimeoutMs: z.number().int().positive().optional(),
+    compat: aiCustomCompatSchema.optional(),
+    bodyExtras: z.record(z.string(), z.unknown()).optional(),
+    modelProfiles: z.array(aiCustomModelProfileSchema).optional(),
+    probedProfiles: z.array(aiCustomModelProfileSchema).optional(),
+  })
+  .strict()
+
 const aiProviderConfigSchema = z
   .object({
     apiKey: z.string(),
     model: z.string(),
     baseUrl: z.string().optional(),
     cliPath: z.string().optional(),
+    profile: aiCustomProfileSchema.transform(normalizeCustomProfile).optional(),
   })
   .strict()
 
-const _aiMediaProviderConfigSchema = z
+const aiMediaProviderConfigSchema = z
   .object({
     apiKey: z.string(),
     baseUrl: z.string().optional(),
@@ -2586,10 +2631,52 @@ const _aiMediaProviderConfigSchema = z
   })
   .strict()
 
+const aiCustomEndpointSchema = z
+  .object({
+    id: z.string().min(1),
+    name: z.string(),
+    baseUrl: z.string(),
+    apiKey: z.string(),
+    model: z.string(),
+    models: z.array(z.string()).optional(),
+    ...aiCustomProfileSchema.shape,
+  })
+  .strict()
+  .transform(({ id, name, baseUrl, apiKey, model, models, ...profile }) => ({
+    id,
+    name,
+    baseUrl,
+    apiKey,
+    model,
+    ...(models !== undefined ? { models } : {}),
+    ...normalizeCustomProfile(profile),
+  }))
+
 export const aiSettingsInputSchema = z
   .object({
     provider: z.string().min(1),
     providers: z.record(z.string(), aiProviderConfigSchema),
+    customEndpoints: z.array(aiCustomEndpointSchema).optional(),
+    customEndpoint: z.string().optional(),
+    gskToolsEnabled: z.boolean().optional(),
+    media: z
+      .object({
+        imageProvider: z.string().min(1).optional(),
+        analysisProvider: z.string().min(1).optional(),
+        videoAnalysisProvider: z.string().min(1).optional(),
+        // pre-catalog single choice, still accepted on read
+        provider: z.string().min(1).optional(),
+        providers: z.record(z.string(), aiMediaProviderConfigSchema),
+      })
+      .strict()
+      .optional(),
+    search: z
+      .object({
+        provider: z.string().min(1),
+        providers: z.record(z.string(), z.object({ apiKey: z.string() }).strict()),
+      })
+      .strict()
+      .optional(),
     // bounds are enforced by clampMaxOutputTokens on read; the schema only
     // rejects nonsense (this object is .strict(), so an omitted key here would
     // make the whole settings save fail)
@@ -2944,6 +3031,8 @@ export interface VideoTaskInfo {
 }
 
 export interface DesktopApi {
+  /** open any shell-routed document path (an AI answer's filenav citation) */
+  openSourcePath(path: string): Promise<void>
   /** current UI language (persisted by the shell in app-settings.json) */
   getLanguage(): Promise<'zh' | 'en' | 'ja' | 'ko' | 'fr' | 'de' | 'es' | 'th' | 'id' | 'ru' | 'ar'>
   /** language switched from the shell home page */
@@ -3060,8 +3149,9 @@ export interface DesktopApi {
   consumeHeadlessExport(): Promise<string | null>
   /// Headless export mode: report the export outcome so the main process can quit.
   headlessExportDone(result: { ok: boolean; error?: string }): void
-  /// Display name for authored threaded comments (OS account name).
+  /// Author name for threaded comments (Settings → General, falling back to the OS account).
   getUserDisplayName(): Promise<string>
+  onUserDisplayNameChanged(handler: (name: string) => void): () => void
   /** v2 settings view: BYOK keys redacted to the KEEP_KEY sentinel */
   getAiSettings(): Promise<AiSettingsV2>
   /** persist the view; KEEP_KEY entries keep their stored key */

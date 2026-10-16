@@ -271,6 +271,52 @@ async function establishSession(accessToken: string, signal: AbortSignal): Promi
   return cookie
 }
 
+/** Server detail on a mint refused because the session is not a fresh login. */
+export const FRESH_AUTH_REQUIRED = 'fresh_browser_authentication_required'
+
+export type MintResult =
+  | { kind: 'ok'; apiKey: string; keyId?: string }
+  /** the session is too old to mint a key: only a new interactive login helps */
+  | { kind: 'fresh_auth_required' }
+  | { kind: 'error'; reason: string }
+
+/**
+ * Classifies an /api/api_tokens/create answer. A 403 carrying
+ * FRESH_AUTH_REQUIRED means "sign in again"; any other non-2xx or a body
+ * without a token is a plain error. (exported for tests)
+ */
+export function classifyMintResponse(status: number, json: Record<string, unknown>): MintResult {
+  if (status === 403 && json.detail === FRESH_AUTH_REQUIRED) return { kind: 'fresh_auth_required' }
+  const data = asRecord(json.data)
+  const apiKey = typeof data.token === 'string' ? data.token : ''
+  if (status >= 200 && status < 300 && apiKey) {
+    return {
+      kind: 'ok',
+      apiKey,
+      ...(typeof data.key_id === 'string' ? { keyId: data.key_id } : {}),
+    }
+  }
+  const message =
+    typeof json.message === 'string' && json.message
+      ? json.message
+      : typeof json.detail === 'string' && json.detail
+        ? json.detail
+        : status >= 200 && status < 300
+          ? 'API key creation failed'
+          : `API key creation failed (HTTP ${status})`
+  return { kind: 'error', reason: message }
+}
+
+async function mintKey(cookie: string, signal: AbortSignal): Promise<MintResult> {
+  const { resp, json } = await httpJson(`${baseUrl()}/api/api_tokens/create`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Cookie: cookie },
+    body: JSON.stringify({ key_name: KEY_NAME }),
+    signal,
+  })
+  return classifyMintResponse(resp.status, json)
+}
+
 async function runDeviceLogin(
   signal: AbortSignal,
   emit: (progress: ChaOfficeLoginProgress) => void,
@@ -305,28 +351,27 @@ async function runDeviceLogin(
     throw new LoginFlowError('expired')
   }
 
+  // the session minted from a just-approved device code is a fresh login, so
+  // the server's fresh-auth gate passes here; a refusal anyway is reported, not retried
   const cookie = await establishSession(accessToken, signal)
-  const { json: created } = await httpJson(`${baseUrl()}/api/api_tokens/create`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Cookie: cookie },
-    body: JSON.stringify({ key_name: KEY_NAME }),
-    signal,
-  })
-  const data = asRecord(created.data)
-  const apiKey = typeof data.token === 'string' ? data.token : ''
-  if (!apiKey) {
-    throw new LoginFlowError(String(created.message ?? 'API key creation failed'))
-  }
-  const previousKeyId = loadChatofficeAuth()?.keyId
+  const minted = await mintKey(cookie, signal)
+  if (minted.kind === 'fresh_auth_required') throw new LoginFlowError('fresh_auth_required')
+  if (minted.kind === 'error') throw new LoginFlowError(minted.reason)
+  const previousKeyId = loadChatofficeAuth()?.keyId ?? staleKeyId
   saveAuth({
-    apiKey,
-    ...(typeof data.key_id === 'string' ? { keyId: data.key_id } : {}),
+    apiKey: minted.apiKey,
+    ...(minted.keyId ? { keyId: minted.keyId } : {}),
     accessToken,
   })
+  staleKeyId = undefined
+  staleAccessToken = undefined
+  lastRemintedKey = undefined
+  // a completed login re-arms the one automatic re-login for the next rejected key
+  autoLoginLaunched = false
   emit({ phase: 'success' })
   // re-login replaces the key: revoke the superseded one so it can't pile up
   // server-side (best-effort — the new login must not fail on this)
-  if (previousKeyId && previousKeyId !== data.key_id) {
+  if (previousKeyId && previousKeyId !== minted.keyId) {
     try {
       await revokeKey(cookie, previousKeyId, signal)
     } catch {
@@ -376,6 +421,137 @@ export function startChatofficeLogin(
   return true
 }
 
+// ── Rejected-key recovery ────────────────────────────────────────────
+
+/** keyId of a key dropped after a 401, so the next login still revokes it */
+let staleKeyId: string | undefined
+/** Bearer kept from the dropped auth: the one silent re-mint attempt rides on it */
+let staleAccessToken: string | undefined
+/** a key that came from the silent re-mint: if it is rejected too, go straight to login */
+let lastRemintedKey: string | undefined
+/** one automatic browser launch per rejected key; reset by a completed login */
+let autoLoginLaunched = false
+let loginOpener: ((url: string) => void) | null = null
+let recovery: Promise<ChaOfficeRecoveryOutcome> | null = null
+/** bumped by an explicit sign-out: a recovery started before it must not sign back in */
+let signOutGeneration = 0
+
+export type ChaOfficeRecoveryOutcome =
+  /** the stored session minted a new key (server gate off) — the next call just works */
+  | 'reminted'
+  /** the device-code login was opened in the browser */
+  | 'login_started'
+  /** a login is needed but none was launched (already in flight, already tried once, or no opener) */
+  | 'login_required'
+
+/**
+ * Browser opener for the automatic re-login after a rejected key (this module
+ * is Electron-free). Registered by the main process; without one, recovery
+ * only signs out locally and the existing login button takes over.
+ */
+export function setChaOfficeLoginOpener(openUrl: ((url: string) => void) | null): void {
+  loginOpener = openUrl
+}
+
+/**
+ * Drops ChaOffice's own key from memory and disk when it equals `key` (the
+ * server answered 401: expired or revoked), so hasChaOfficeAuth() turns false
+ * and the existing sign-in UI shows. Returns whether our key was dropped.
+ */
+export function invalidateChatofficeKey(key: string): boolean {
+  // re-read disk: another process may already have replaced the rejected key
+  // with a fresh one, which must survive
+  reloadChatofficeAuth()
+  const auth = loadChatofficeAuth()
+  if (!key || !auth || auth.apiKey !== key) return false
+  staleKeyId = auth.keyId
+  staleAccessToken = auth.accessToken
+  clearAuth()
+  return true
+}
+
+async function remintWithStoredSession(accessToken: string, generation: number): Promise<boolean> {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), HTTP_TIMEOUT_MS)
+  try {
+    const cookie = await establishSession(accessToken, controller.signal)
+    const minted = await mintKey(cookie, controller.signal)
+    // fresh_auth_required (gate on) and every other failure fall back to the interactive login
+    if (minted.kind !== 'ok') return false
+    // the user signed out while this was in flight: the key must not land
+    if (generation !== signOutGeneration) return false
+    // another process may have logged in meanwhile; never overwrite its key
+    reloadChatofficeAuth()
+    if (loadChatofficeAuth()) return true
+    saveAuth({
+      apiKey: minted.apiKey,
+      ...(minted.keyId ? { keyId: minted.keyId } : {}),
+      accessToken,
+    })
+    staleKeyId = undefined
+    lastRemintedKey = minted.apiKey
+    return true
+  } catch {
+    return false
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
+/**
+ * Recovery after a chatoffice-key call answered 401: drop the key, try one
+ * silent re-mint with the stored session, and when that is refused (the server
+ * requires a fresh login) open the device-code login once. Concurrent
+ * failures share one recovery; a login cancelled or expired leaves the
+ * signed-out state for the existing "sign in" button rather than relaunching.
+ * `allowLogin: false` (background/status calls) stops before the browser.
+ */
+export function recoverFromRejectedChatofficeKey(
+  key: string,
+  options: { allowLogin?: boolean } = {},
+): Promise<ChaOfficeRecoveryOutcome> {
+  const allowLogin = options.allowLogin ?? true
+  const generation = signOutGeneration
+  if (recovery) {
+    // a passive caller must not upgrade a shared run into a browser launch, nor
+    // the reverse; a sign-out while waiting ends the streak instead of retrying
+    return recovery.then((outcome) =>
+      outcome !== 'login_required' || !allowLogin || generation !== signOutGeneration
+        ? outcome
+        : recoverFromRejectedChatofficeKey('', options),
+    )
+  }
+  const run = (async (): Promise<ChaOfficeRecoveryOutcome> => {
+    const wasReminted = !!key && key === lastRemintedKey
+    invalidateChatofficeKey(key)
+    // the Bearer gets one silent attempt: a refused re-mint will be refused again
+    const bearer = staleAccessToken
+    staleAccessToken = undefined
+    if (!wasReminted && bearer && (await remintWithStoredSession(bearer, generation))) {
+      return 'reminted'
+    }
+    if (
+      !allowLogin ||
+      generation !== signOutGeneration ||
+      chatofficeLoginInFlight() ||
+      autoLoginLaunched ||
+      !loginOpener
+    ) {
+      return 'login_required'
+    }
+    autoLoginLaunched = true
+    const open = loginOpener
+    startChatofficeLogin((progress) => {
+      if (progress.phase === 'url' && progress.url) open(progress.url)
+    })
+    return 'login_started'
+  })().finally(() => {
+    if (recovery === run) recovery = null
+  })
+  recovery = run
+  return run
+}
+
 /** True while a login started via startChatofficeLogin is in flight. */
 export function chatofficeLoginInFlight(): boolean {
   return activeLogin !== null
@@ -399,6 +575,8 @@ export function ensureChatofficeLogin(openUrl: (url: string) => void): void {
  * (~/.chatoffice-tool-cli) is untouched — terminal chatoffice and Claw keep working.
  */
 export async function chatofficeLogout(): Promise<void> {
+  // invalidate any in-flight recovery first: its re-mint or login must not undo this sign-out
+  signOutGeneration++
   const auth = loadChatofficeAuth()
   if (auth?.accessToken && auth.keyId) {
     const controller = new AbortController()
@@ -412,12 +590,22 @@ export async function chatofficeLogout(): Promise<void> {
       clearTimeout(timer)
     }
   }
+  // an explicit sign-out must not be undone by a later silent re-mint
+  staleKeyId = undefined
+  staleAccessToken = undefined
   clearAuth()
 }
 
-/** Test hook: drop the auth cache and fetch-channel state. */
+/** Test hook: drop the auth cache, fetch-channel and recovery state. */
 export function resetChatofficeAuthCache(): void {
   cachedAuth = undefined
+  staleKeyId = undefined
+  staleAccessToken = undefined
+  lastRemintedKey = undefined
+  autoLoginLaunched = false
+  recovery = null
+  activeLogin?.cancel()
+  activeLogin = null
   proxyFetchCache = undefined
   proxyFallbackPreferred = false
 }

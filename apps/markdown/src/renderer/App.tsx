@@ -6,7 +6,12 @@ import {
 } from './markdown/roundtripSerializer'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import bootLogo from './assets/boot-logo.png'
-import { ImageViewer, useAutoSavePref } from '@chatoffice/ui'
+import {
+  ImageViewer,
+  aiPanelInitiallyOpen,
+  useAutoSavePref,
+  useAiSidebarEnabled,
+} from '@chatoffice/ui'
 import {
   pollUntilReady,
   runHeadlessRendererExport,
@@ -18,7 +23,7 @@ import { TextSelection } from '@tiptap/pm/state'
 import { exportImages } from './export/imageExport'
 import { decodeImageDataUrl, toDocxImage } from './export/exportImage'
 import type { StringKey } from './i18n/locale'
-import { useI18n } from './i18n/locale'
+import { t as translate, useI18n } from './i18n/locale'
 import {
   buildFrontmatterRaw,
   frontmatterInner,
@@ -32,12 +37,16 @@ import { tiptapFindTarget } from './editor/findTarget'
 import { collectOutline, type OutlineItem } from './editor/outline'
 import { buildSlashItems } from './editor/slashCommand'
 import type { SlashController, SlashMenuState } from './editor/slashCommand'
+import { wikiFragmentPosition } from './editor/wikilink'
 import { dirOf, setImageBaseDir, VIEW_IMAGE_EVENT } from './editor/localImage'
 import { Ribbon } from './components/Ribbon'
+import type { MarkdownTheme } from '../shared/markdown-theme'
 import { ImageHostDialog } from './components/ImageHostDialog'
+import { RedactMenu } from './components/RedactMenu'
 import { OutlinePane } from './components/OutlinePane'
 import { SlashMenu, type SlashMenuHandle } from './components/SlashMenu'
 import { ToastHost } from './components/toast'
+import { showToast } from './components/toast-bus'
 import { TableMenu } from './components/TableMenu'
 import { FrontmatterPanel } from './components/FrontmatterPanel'
 import { AiAskPopover } from './components/AiAskPopover'
@@ -49,7 +58,6 @@ import { DOCX_MAX_IMAGE_PX, exportDocxBytes } from './export/docxExport'
 import { buildPrintHtml } from './export/printHtml'
 import { diagramSvgToPng, renderDiagram } from './editor/diagrams'
 import type { DiagramLanguage } from './editor/diagrams'
-import { resolveImageSrc } from './editor/localImage'
 import type { ExportFormat, SaveMode } from '../shared/ipc'
 import { uiOp } from './editor/ops'
 
@@ -107,16 +115,6 @@ function applyImageRewrites(
   editor.view.dispatch(transaction)
 }
 
-/** Measure a document image via the DOM (the editor already displays it) */
-function measureImage(displaySrc: string): Promise<{ width: number; height: number } | null> {
-  return new Promise((resolvePromise) => {
-    const img = new Image()
-    img.onload = () => resolvePromise({ width: img.naturalWidth, height: img.naturalHeight })
-    img.onerror = () => resolvePromise(null)
-    img.src = displaySrc
-  })
-}
-
 /** File name for an AI-generated untitled document: first heading, else first words */
 export function deriveAutoFileName(editor: Editor): string {
   const doc = editor.state.doc
@@ -148,7 +146,7 @@ export default function App() {
   // panel=0 (docked boot, P1 契约): the Home conversation is the chat surface
   const DOCKED_BOOT = new URLSearchParams(window.location.search).get('panel') === '0'
   const dockedRef = useRef(DOCKED_BOOT)
-  const [dockedEditor, setDockedEditor] = useState(DOCKED_BOOT)
+  const [, setDockedEditor] = useState(DOCKED_BOOT)
   useEffect(() => {
     const off = window.markdownApi?.onDockedState?.((docked) => {
       dockedRef.current = docked
@@ -159,8 +157,11 @@ export default function App() {
     return () => off?.()
   }, [])
   const [aiOpen, setAiOpen] = useState(
-    () => !DOCKED_BOOT && localStorage.getItem('mdapp.showAi') !== '0',
+    // #1951: the shell's "show the AI sidebar" switch gates the boot state too
+    () => !DOCKED_BOOT && aiPanelInitiallyOpen('mdapp.showAi'),
   )
+  // #1951: the sidebar switch is a soft hide; it closes the panel when off
+  const aiSidebarEnabled = useAiSidebarEnabled(setAiOpen)
   const [outlineWidth, setOutlineWidth] = useState(
     () => Number(localStorage.getItem('mdapp.outlineWidth')) || undefined,
   )
@@ -179,6 +180,26 @@ export default function App() {
   const [outlineOpen, setOutlineOpen] = useState(false)
   const [spellcheck, setSpellcheck] = useState(
     () => localStorage.getItem('mdapp.spellcheck') !== '0',
+  )
+  // paper theme (markdown-themes.css scopes the palette on data-markdown-theme)
+  const [mdTheme, setMdTheme] = useState<MarkdownTheme>('default')
+  useEffect(() => {
+    window.markdownApi
+      .getMarkdownTheme?.()
+      .then(setMdTheme)
+      .catch(() => {})
+  }, [])
+  const pickMarkdownTheme = (theme: MarkdownTheme): void => {
+    setMdTheme(theme)
+    // the boot path sets this once; live picks re-scope it here
+    if (theme === 'default') document.documentElement.removeAttribute('data-markdown-theme')
+    else document.documentElement.setAttribute('data-markdown-theme', theme)
+    window.markdownApi.setMarkdownTheme(theme).catch(() => {})
+  }
+  // off by default: it takes over the editor's right-click menu, and a reader
+  // should opt into that rather than discover it
+  const [redactEnabled, setRedactEnabled] = useState(
+    () => localStorage.getItem('mdapp.redact') === '1',
   )
   const [viewImage, setViewImage] = useState<string | null>(null)
   useEffect(() => {
@@ -239,6 +260,28 @@ export default function App() {
     })()
   }, [])
 
+  /**
+   * Land on the heading a wiki link pointed at. The fragment waited in main
+   * for this path — the shell activates an open tab without waking anything —
+   * so it is taken here, once the note is actually on screen.
+   */
+  const jumpToWikiFragment = useCallback((path: string): void => {
+    const current = editorRef.current
+    if (!current) return
+    // The browser test harness stubs markdownApi without the Electron-only
+    // wiki channels; a missing API here means nothing to jump to, not a
+    // failed load.
+    if (typeof window.markdownApi.takeWikiFragment !== 'function') return
+    void window.markdownApi.takeWikiFragment(path).then((fragment) => {
+      if (!fragment || filePathRef.current !== path) return
+      const pos = wikiFragmentPosition(current.state.doc, fragment)
+      if (pos === null) return
+      const selection = TextSelection.near(current.state.doc.resolve(pos))
+      current.view.dispatch(current.state.tr.setSelection(selection).scrollIntoView())
+      current.view.focus()
+    })
+  }, [])
+
   const extensions = useMemo(() => {
     const controller: SlashController = {
       onOpen: setSlashState,
@@ -250,8 +293,20 @@ export default function App() {
       slashController: controller,
       slashItems: () =>
         buildSlashItems({ insertImage: filePathRef.current ? insertImage : undefined }),
+      wikiLink: {
+        getDocumentPath: () => filePathRef.current ?? '',
+        onOpen: (path, fragment) => {
+          void window.markdownApi.rememberWikiFragment(path, fragment)
+          void window.markdownApi.openSourcePath(path)
+          // a link into the note already on screen opens no tab; jump here
+          if (filePathRef.current === path) jumpToWikiFragment(path)
+        },
+        // the module-level `t`, not the hook's: this memo holds the closure for
+        // the life of the editor, and the hook's `t` is a new function each render
+        onUnresolved: (target) => showToast(translate('wikiLinkUnresolved', { target }), 'error'),
+      },
     })
-  }, [insertImage])
+  }, [insertImage, jumpToWikiFragment])
 
   const editor = useEditor({
     extensions,
@@ -304,6 +359,8 @@ export default function App() {
           const inner = frontmatterInner(envelope.frontmatter)
           setFmText(inner)
           if (inner) setFmOpen(true)
+          // wiki links (#1977): land on the `#fragment` the link carried
+          jumpToWikiFragment(path)
         } else {
           envelopeRef.current = { ...EMPTY_ENVELOPE }
           // AI-authored content (create_document): set it as this untitled
@@ -343,7 +400,7 @@ export default function App() {
     return () => {
       cancelled = true
     }
-  }, [editor, roundTripEnabled])
+  }, [editor, roundTripEnabled, jumpToWikiFragment])
 
   const onFrontmatterChange = useCallback(
     (inner: string) => {
@@ -878,7 +935,7 @@ export default function App() {
         legacyWidthKey="markdown-ai-panel-width"
         open={aiOpen}
         onOpenChange={setAiOpen}
-        panelAvailable={status === 'ready'}
+        panelAvailable={status === 'ready' && (aiSidebarEnabled || aiOpen)}
         labels={{
           panelTitle: t('aiPanelTitle'),
           layoutMenu: t('aiDockLayoutTitle'),
@@ -919,6 +976,8 @@ export default function App() {
             autoSave={autoSave}
             onToggleAutoSave={setAutoSave}
             imageEnabled={Boolean(filePath)}
+            mdTheme={mdTheme}
+            onMarkdownTheme={pickMarkdownTheme}
             onInsertImage={insertImage}
             onImageHost={() => setImageHostOpen(true)}
             frontmatterOpen={fmOpen}
@@ -934,6 +993,11 @@ export default function App() {
             onToggleAi={() => setAiOpen((v) => !v)}
             onAiPreset={askSendNow}
             sourceMode={Boolean(filePath && /\.(txt|json)$/i.test(filePath))}
+            redactEnabled={redactEnabled}
+            onToggleRedact={(on) => {
+              setRedactEnabled(on)
+              localStorage.setItem('mdapp.redact', on ? '1' : '0')
+            }}
           />
           {status === 'loading' && (
             <div className="center-note">
@@ -1005,6 +1069,7 @@ export default function App() {
         </div>
       </DockShell>
       <SlashMenu ref={slashMenuRef} state={slashState} onDismiss={() => setSlashState(null)} />
+      <RedactMenu editor={editor} enabled={redactEnabled} />
       <ToastHost />
       {imageHostOpen && (
         <ImageHostDialog onClose={() => setImageHostOpen(false)} onSaved={() => {}} />

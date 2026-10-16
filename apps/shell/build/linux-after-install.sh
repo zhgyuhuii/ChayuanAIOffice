@@ -10,7 +10,7 @@ if [ -f "$sandbox" ]; then
 fi
 # Expose the chatoffice command line shipped inside the app. Only an absent
 # name, a dead link or a link into our own install dir is taken over; anything
-# else at /usr/bin/chaoffice belongs to another program (genoffice#893 parity).
+# else at /usr/bin/chaoffice belongs to another program (chatoffice#893 parity).
 launcher="$app_dir/resources/cli/chaoffice"
 link="/usr/bin/chaoffice"
 [ -x "$launcher" ] || exit 0

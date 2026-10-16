@@ -1,4 +1,5 @@
 import type { PDFDocumentProxy } from 'pdfjs-dist'
+import type { PrintJobOptions } from '../shared/ipc'
 
 /** Baseline raster density (previous behavior — quality never drops below this). */
 const BASE_DPI = 150
@@ -12,6 +13,14 @@ const TARGET_DPI = 200
  * instead of pushing the renderer out of memory on long scanned PDFs.
  */
 const MAX_PRINT_PIXELS = 150_000_000
+
+/** How long to wait for the dialog to report back before giving up. Chromium
+    and Electron both fire `afterprint`, but a suppressed print (blocked popup,
+    kiosk policy, stubbed `window.print`) never does: unbounded, the promise
+    never settles, the print root keeps every rasterized data URL alive, and
+    the caller's busy flag stays set so no later print is accepted. Sized to
+    outlast a real dialog the user is still reading. */
+export const PRINT_DIALOG_TIMEOUT_MS = 300_000
 
 /**
  * Render scale for a document given each page's area at scale 1 (PDF points²):
@@ -38,7 +47,50 @@ export function printScaleForAreas(areas: number[]): number {
  * The 200 DPI pixel budget is computed over the selected pages only, so a
  * small range out of a huge document still prints at full target quality.
  */
-export async function printPdf(doc: PDFDocumentProxy, pages?: number[]): Promise<void> {
+/** Settles when the print dialog reports back, when `window.print` fails
+    outright, or when the wait exceeds the bound. Always detaches the listener
+    and the timer, so a wedged dialog cannot leak either. */
+function waitForPrintDialog(timeoutMs: number): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    let timer: ReturnType<typeof setTimeout> | null = null
+    const detach = () => {
+      if (timer !== null) clearTimeout(timer)
+      timer = null
+      window.removeEventListener('afterprint', onAfterPrint)
+    }
+    function onAfterPrint(): void {
+      detach()
+      resolve()
+    }
+    timer = setTimeout(() => {
+      detach()
+      reject(new Error('the print dialog never reported completion; released the rendered pages'))
+    }, timeoutMs)
+    window.addEventListener('afterprint', onAfterPrint)
+    try {
+      window.print()
+    } catch (err) {
+      detach()
+      reject(err instanceof Error ? err : new Error(String(err)))
+    }
+  })
+}
+
+/** Keep every other page of a file-page list, Word's "odd pages / even pages" subset. */
+export function filterPageParity(pages: number[], parity: PageParity): number[] {
+  if (parity === 'all') return pages
+  return pages.filter((n) => n % 2 === (parity === 'odd' ? 1 : 0))
+}
+
+export type PageParity = 'all' | 'odd' | 'even'
+
+/** `job`: a chosen printer prints silently through the main process with its
+    copies/duplex options; omitted, the system print dialog takes over. */
+export async function printPdf(
+  doc: PDFDocumentProxy,
+  pages?: number[],
+  job?: PrintJobOptions,
+): Promise<void> {
   const root = document.createElement('div')
   root.className = 'pdf-print-root'
   const canvas = document.createElement('canvas')
@@ -120,14 +172,12 @@ export async function printPdf(doc: PDFDocumentProxy, pages?: number[]): Promise
   document.body.appendChild(root)
   try {
     await Promise.all([...root.querySelectorAll('img')].map((img) => img.decode()))
-    await new Promise<void>((resolve) => {
-      const done = () => {
-        window.removeEventListener('afterprint', done)
-        resolve()
-      }
-      window.addEventListener('afterprint', done)
-      window.print()
-    })
+    if (job) {
+      const r = await window.pdfApi.print(job)
+      if (!r.ok && r.error) throw new Error(r.error)
+    } else {
+      await waitForPrintDialog(PRINT_DIALOG_TIMEOUT_MS)
+    }
   } finally {
     root.remove()
   }

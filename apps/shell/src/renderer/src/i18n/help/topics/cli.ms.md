@@ -13,7 +13,7 @@ Itulah keseluruhan permukaannya dalam satu skrin — setiap arahan dengan satu b
 
 ## Mendapatkan perintah itu
 
-macOS dan Windows menghantarnya di dalam bungkus aplikasi. Untuk menggunakannya mengikut nama, jalankan `chatoffice install-cli` sekali: ia membuat symlink bagi binari yang dibungkus itu ke dalam `/usr/local/bin`, atau ke dalam `PATH` pengguna anda pada Windows.
+macOS dan Windows menyertainya dalam bungkusan aplikasi. Untuk memanggilnya dengan nama, jalankan sekali `chatoffice install-cli`: ia memautkan binari bungkusan ke direktori pada PATH anda — pada macOS `/usr/local/bin` selagi itu bukan prefiks Homebrew (direktori milik Homebrew tidak pernah disentuh), jika tidak ke bin pengguna anda — atau pada Windows ke `PATH` pengguna anda.
 
 ## Perintah yang perlu diketahui
 
@@ -32,7 +32,7 @@ macOS dan Windows menghantarnya di dalam bungkus aplikasi. Untuk menggunakannya 
 | `capabilities`    | Melaporkan keupayaan awan yang dikonfigurasi pada mesin ini.                                                                                                                                                                                        |
 | `guide`           | Rujukan op dan panduan reka bentuk, dijana daripada definisi yang sama seperti yang disahkan oleh pelaku — jadi ia tidak mungkin berbeza daripada apa yang diterima oleh `apply`. `--json` mengembalikannya bersama skema setiap op.                |
 | `install-cli`     | Meletakkan `chatoffice` pada `PATH`.                                                                                                                                                                                                                 |
-| `skill`           | Menyenaraikan ejen penulisan kod yang ditemui pada mesin ini, dan memasang atau mengemas kini kemahiran ChatOffice di dalamnya.                                                                                                                      |
+| `skill`           | Menyenaraikan ejen penulisan kod yang ditemui pada mesin ini, dan memasang atau mengemas kini kemahiran ChaAI Office di dalamnya.                                                                                                                      |
 | `mcp`             | Menyediakan setiap perintah sebagai alat Model Context Protocol. Lihat **Menyambungkan ejen penulisan kod**.                                                                                                                                        |
 
 ## Penyuntingan: docs, sheets, slides

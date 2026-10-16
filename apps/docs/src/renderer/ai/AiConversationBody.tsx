@@ -42,12 +42,19 @@ import {
   KbPickerButton,
   Markdown,
   ModelPickerButton,
+  AiQueueStrip,
+  AI_QUEUE_LABELS,
+  AiUsageChip,
+  addTokenUsage,
+  useChatRunQueue,
   useKbAugment,
   USER_LOGIN_READY,
   AI_CONTINUE_INSTRUCTION,
   type AiScopeQuoteData,
   type KbCitation,
 } from '@chatoffice/ui'
+import { redactTextBetween, type RedactableNode } from './redact-view'
+import { MindMapCard } from './MindMapCard'
 import { enabledChatModels } from '@chatoffice/ai-provider/browser'
 import { AI_REVISION_AUTHOR } from './AiPanel'
 import { markDocSeen, type AiCommentsAccess, type AiDocExtras, type AiHeaderFooterAccess } from './tools'
@@ -186,6 +193,19 @@ export function AiConversationBody({
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
   const busyRef = useRef(false)
+  /** R24 上游 #1876 织入: messages queued while a reply runs; the pump re-runs them through runWith on settle */
+  const msgQueue = useChatRunQueue<{
+    attachments: AttachmentMeta[]
+    scope: AiScopeQuoteData | null
+  }>({
+    busy,
+    submit: (text, meta) => {
+      const loop = loopRef.current
+      if (!loop || loop.busy || pendingSendRef.current) return false
+      runWithRef.current(text, text, meta.attachments, meta.scope)
+      return true
+    },
+  })
   /** waiters resolved when a run fully settles (stop() awaits them: D10 时序保证) */
   const idleWaitersRef = useRef<Array<() => void>>([])
   const setBusyTracked = (v: boolean): void => {
@@ -329,6 +349,10 @@ export function AiConversationBody({
   const runToolsRef = useRef<
     Array<{ name: string; summary: string; isError?: boolean; input?: string; output?: string }>
   >([])
+  /** R24 上游 #1944 织入: tokens billed so far in the in-flight run (summed across turns) */
+  const runUsageRef = useRef<import('@chatoffice/ui').AiTokenUsageView | undefined>(undefined)
+  /** tokens billed across this conversation's session (the composer chip) */
+  const [sessionUsage, setSessionUsage] = useState<import('@chatoffice/ui').AiTokenUsageView | undefined>(undefined)
   /** the loop's streamed text so far — the interrupted persist keeps this half turn (D10) */
   const halfTextRef = useRef('')
 
@@ -485,6 +509,9 @@ export function AiConversationBody({
             // tracking off: accept immediately; tracking on: handled in the Review tab
             if (!trackChangesRef.current) clearAiHighlights(true)
           }
+          // R24 上游 #1999 织入: mind maps ride the UI-only display side channel onto the message
+          const display = execution.display
+          const mindmap = display?.kind === 'mindmap' ? display.tree : undefined
           runToolsRef.current.push({
             name: call.name,
             summary: execution.summary,
@@ -510,6 +537,7 @@ export function AiConversationBody({
                     : undefined,
                 },
               ],
+              ...(mindmap ? { mindmap } : {}),
             }
           })
         },
@@ -519,6 +547,12 @@ export function AiConversationBody({
             ...prev,
             { role: 'assistant', text: '', streaming: true, model: runModelRef.current },
           ])
+        },
+        onUsage: (usage) => {
+          // R24 上游 #1944 织入: per-reply and per-session token chips
+          runUsageRef.current = addTokenUsage(runUsageRef.current, usage)
+          setSessionUsage((prev) => addTokenUsage(prev, usage))
+          patchLastAssistant({ usage: runUsageRef.current })
         },
         onDone: ({ text, cancelled, turnLimit, truncated }) => {
           // module-level t: the loop is created once; the component's t goes stale
@@ -621,10 +655,19 @@ export function AiConversationBody({
   }, [editor])
 
   // scope chip data, recomputed per render (the scope tick above keeps it fresh)
+  // R24 上游 #1883 织入: the chip previews the projection the model will read —
+  // withheld spans (redact mark) show their placeholder, never the hidden words
   const liveSelection = editor.state.selection
   const selectionText = liveSelection.empty
     ? ''
-    : editor.state.doc.textBetween(liveSelection.from, liveSelection.to, '\n', ' ').trim()
+    : redactTextBetween(
+        editor.getJSON() as RedactableNode,
+        liveSelection.from,
+        liveSelection.to,
+        '\n',
+      )
+        .replace(/\s+/g, ' ')
+        .trim()
   const hasScopeSelection = selectionText.length > 0
 
   /** the × on the scope chip: collapse the selection so the run targets the whole document */
@@ -635,7 +678,10 @@ export function AiConversationBody({
   const selectionScopeQuote = (): AiScopeQuoteData | undefined => {
     const { from, to, empty } = editor.state.selection
     if (empty) return undefined
-    const text = editor.state.doc.textBetween(from, to, ' ', ' ').replace(/\s+/g, ' ').trim()
+    // R24 上游 #1883 织入: the quote rides to the model, so withheld spans project placeholders
+    const text = redactTextBetween(editor.getJSON() as RedactableNode, from, to, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
     if (!text) return undefined
     return {
       label: t('aiScopeSelection', { words: countWords(text) }),
@@ -739,6 +785,7 @@ export function AiConversationBody({
     lastInstructionRef.current = instruction
     runToolsRef.current = []
     runSnapshotRef.current = null
+    runUsageRef.current = undefined
     halfTextRef.current = ''
     stickToBottomRef.current = true
     runModelRef.current = settingsRef.current.currentModel?.modelId
@@ -803,6 +850,8 @@ export function AiConversationBody({
   runWithRef.current = runWith
 
   const cancel = () => {
+    // R24 上游 #1876 织入: a user Stop holds the queue (next queued message waits for an explicit send)
+    msgQueue.hold()
     if (pendingSendRef.current) pendingSendRef.current.aborted = true
     loopRef.current?.cancel()
   }
@@ -847,6 +896,25 @@ export function AiConversationBody({
     )
 
   const continueRun = () => runWith(AI_CONTINUE_INSTRUCTION, t('aiContinue'))
+
+  /** R24 上游 #1876 织入: Enter while a reply runs — the draft joins the queue above the composer */
+  const enqueueDraft = () => {
+    const text = input.trim()
+    if (!text) return
+    // snapshot + consume the composer attachments exactly like a send does: the
+    // queued message owns them, and pump time hands them to runWith as an override
+    const attachments = attachmentsRef.current
+    if (attachments.length > 0) {
+      const seen = new Set(sentAttachmentsRef.current.map((a) => a.path))
+      sentAttachmentsRef.current = [
+        ...sentAttachmentsRef.current,
+        ...attachments.filter((a) => !seen.has(a.path)),
+      ]
+      setAttachments([])
+    }
+    msgQueue.enqueue(text, { attachments, scope: selectionScopeQuote() ?? null })
+    setInput('')
+  }
 
   const copyMessage = (text: string, idx: number) => {
     void navigator.clipboard.writeText(text)
@@ -1148,7 +1216,23 @@ export function AiConversationBody({
               ) : (
                 <span dir="auto">{entry.text}</span>
               )}
+              {entry.role === 'assistant' && entry.usage && (
+                <div className="ai-message-usage">
+                  <AiUsageChip usage={entry.usage} lang={lang} />
+                </div>
+              )}
               {entry.tools && entry.tools.length > 0 && <ToolChipList tools={entry.tools} />}
+              {/* R24 上游 #1999 织入: interactive mind map card (session-only side channel) */}
+              {entry.mindmap && (
+                <MindMapCard
+                  tree={entry.mindmap}
+                  onAsk={(label) => {
+                    setInput(t('aiMindMapAskPrompt', { label }))
+                    inputRef.current?.focus()
+                  }}
+                  onJumpBlock={(index) => navigateToBlock(editorRef.current, index)}
+                />
+              )}
               {entry.role === 'assistant' && entry.model && !entry.streaming && (
                 <div className="ai-msg-model" title={entry.model}>
                   {entry.model}
@@ -1286,6 +1370,21 @@ export function AiConversationBody({
           onFocus={(qid) => onQueueFocus?.(qid)}
         />
         <AiComposer
+          queueStrip={
+            // R24 上游 #1876 织入: queued messages strip above the composer
+            <AiQueueStrip
+              items={msgQueue.queued}
+              labels={AI_QUEUE_LABELS[lang]}
+              onUpdate={msgQueue.update}
+              onRemove={msgQueue.remove}
+              onClear={msgQueue.clear}
+              paused={msgQueue.paused}
+              onTogglePause={msgQueue.togglePaused}
+              onMove={msgQueue.move}
+            />
+          }
+          onQueue={enqueueDraft}
+          queuePlaceholder={AI_QUEUE_LABELS[lang].queuePlaceholder}
           header={
             (hasScopeSelection || attachments.length > 0) && (
               <>
@@ -1403,6 +1502,8 @@ export function AiConversationBody({
             <>
               <KbPickerButton lang={lang} selected={kb.selected} onToggle={kb.toggle} />
               <ModelPickerButton settings={settings} onPick={onPickModel} onOpenSettings={onOpenModelSettings} />
+              {/* R24 上游 #1944 织入: session-total token chip */}
+              {sessionUsage && <AiUsageChip usage={sessionUsage} session lang={lang} />}
               <button
                 className="ai-attach-btn"
                 onClick={pickAttachments}

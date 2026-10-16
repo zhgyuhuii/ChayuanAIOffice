@@ -78,6 +78,12 @@ import {
   useAiPanelPrefs,
   type AiScopeQuoteData,
   type KbCitation,
+  AiQueueStrip,
+  AI_QUEUE_LABELS,
+  AiUsageChip,
+  addTokenUsage,
+  useChatRunQueue,
+  type AiTokenUsageView,
 } from '@chatoffice/ui'
 import {
   defaultSettingsV2,
@@ -295,6 +301,8 @@ interface ChatEntry {
   scope?: AiScopeQuoteData
   /** KB citations behind the [n] chips of this assistant turn */
   kbCitations?: KbCitation[]
+  /** tokens the provider billed for this reply, summed across its turns (absent when unreported) */
+  usage?: AiTokenUsageView
 }
 
 /** Empty deck → generation starters; deck with content → polish starters */
@@ -495,6 +503,21 @@ function AiConversationBody({
       for (const w of waiters) w()
     }
   }
+  /** messages queued while a reply runs; the pump re-runs them through runWith on settle */
+  const msgQueue = useChatRunQueue<{
+    attachments: AttachmentMeta[]
+    scope: AiScopeQuoteData | undefined
+  }>({
+    busy,
+    submit: (text, meta) => {
+      // the QC pass edits the deck with busy=false: refuse and let the pump retry
+      if (qcRunningRef.current || runStartingRef.current) return false
+      const loop = loopRef.current
+      if (!loop || loop.busy) return false
+      runWith(text, text, { attachments: meta.attachments, scope: meta.scope })
+      return true
+    },
+  })
   const [chat, setChat] = useState<ChatEntry[]>([])
   /** Past conversation restored from JSONL (read-only transcript, not fed to the model) */
   const [historicChat, setHistoricChat] = useState<ChatEntry[]>([])
@@ -697,6 +720,10 @@ function AiConversationBody({
   >([])
   /** Last streamed text of the current turn: the only copy left when a run dies before onDone */
   const streamedTextRef = useRef('')
+  /** tokens billed so far in the in-flight run (summed across turns) */
+  const runUsageRef = useRef<AiTokenUsageView | undefined>(undefined)
+  /** tokens billed across the panel's session (the composer chip) */
+  const [sessionUsage, setSessionUsage] = useState<AiTokenUsageView | undefined>(undefined)
 
   // ── Chat history persistence ──────────────────────────────────────────────
   // LOCAL(2026-09-21, d8201ad0): 会话实例走 conversation.chatId(immutable,loadChat
@@ -966,7 +993,7 @@ function AiConversationBody({
     // The three slides generation steps (style/planning/per-page HTML) force the high-quality model (only on
     // anthropic-messages profiles; other protocols keep the user selection, avoiding nonexistent model ids).
     // Chat/fine-tuning still uses the user's configured model.
-    const SLIDES_GEN_MODEL = 'claude-opus-4-7'
+    const SLIDES_GEN_MODEL = 'claude-opus-5-5'
     // On-demand selection with the generation model overridden (the profile must have it enabled).
     const selectionForGen = (): AiModelSelection => {
       const cur = settingsRef.current
@@ -1668,6 +1695,11 @@ function AiConversationBody({
             { role: 'assistant', text: '', streaming: true, model: runModelRef.current },
           ])
         },
+        onUsage: (usage) => {
+          runUsageRef.current = addTokenUsage(runUsageRef.current, usage)
+          setSessionUsage((prev) => addTokenUsage(prev, usage))
+          patchLastAssistant({ usage: runUsageRef.current })
+        },
         onDone: ({ text, cancelled, turnLimit, degraded, truncated }) => {
           // Degraded runs badge their reply: the operator model lacks native
           // function calling and tools ran over the JSON-text protocol.
@@ -1868,6 +1900,31 @@ function AiConversationBody({
 
   const run = () => runWith(input.trim())
 
+  /** Enter while a reply runs: the draft joins the queue above the composer */
+  const enqueueDraft = () => {
+    const text = input.trim()
+    if (!text) return
+    // snapshot + consume the composer attachments exactly like a send does
+    const attachments = attachmentsRef.current
+    if (attachments.length > 0) {
+      const seen = new Set(sentAttachmentsRef.current.map((a) => a.path))
+      sentAttachmentsRef.current = [
+        ...sentAttachmentsRef.current,
+        ...attachments.filter((a) => !seen.has(a.path)),
+      ]
+      setAttachments([])
+      attachmentsRef.current = []
+    }
+    const scope =
+      selectedRef.current.length > 0
+        ? {
+            label: `${t('aiScopeSlide', { n: current + 1 })} · ${t('aiScopeSelection', { count: selectedRef.current.length })}`,
+          }
+        : undefined
+    msgQueue.enqueue(text, { attachments, scope })
+    setInput('')
+  }
+
   /** Image attachments read as base64, sent multimodally with this user message (≤5MB per image, max 20; isomorphic to docs) */
   const MAX_IMAGES_PER_MESSAGE = 20
   /** Brand-asset cap: logos/mascots are few; keeps writer prompts and pptx media small */
@@ -2049,6 +2106,7 @@ function AiConversationBody({
     runToolsRef.current = []
     streamedTextRef.current = ''
     runSnapshotIdRef.current = null
+    runUsageRef.current = undefined
     stickToBottomRef.current = true
     // Internal orchestration prompts (like generate_deck step notes) skip the chat bubble and go only to the model
     const shown = displayText ?? instruction
@@ -2112,6 +2170,7 @@ function AiConversationBody({
       runToolsRef.current = []
       streamedTextRef.current = ''
       runSnapshotIdRef.current = null
+      runUsageRef.current = undefined
       stickToBottomRef.current = true
       setChat((prev) => [
         ...prev.map((e) =>
@@ -2323,6 +2382,7 @@ function AiConversationBody({
   }
 
   const cancel = () => {
+    msgQueue.hold()
     dismissClarify()
     qcAbortRef.current?.abort()
     loopRef.current?.cancel()
@@ -2396,6 +2456,7 @@ function AiConversationBody({
   const continueRun = () => runWith(AI_CONTINUE_INSTRUCTION)
 
   const newChat = () => {
+    msgQueue.clear()
     dismissClarify()
     qcAbortRef.current?.abort()
     loopRef.current?.reset()
@@ -2682,6 +2743,11 @@ function AiConversationBody({
                 <span dir="auto">{entry.text}</span>
               )}
               {entry.tools && entry.tools.length > 0 && <ToolChipList tools={entry.tools} />}
+              {entry.role === 'assistant' && entry.usage && (
+                <div className="ai-message-usage">
+                  <AiUsageChip usage={entry.usage} lang={lang} />
+                </div>
+              )}
               {entry.error && (
                 <div className="ai-msg-error">{t('aiMsgError', { error: entry.error })}</div>
               )}
@@ -2832,6 +2898,16 @@ function AiConversationBody({
           )}
           {attachNotice && <div className="ai-attach-notice">{attachNotice}</div>}
           <div className="ai-input-box">
+            <AiQueueStrip
+              items={msgQueue.queued}
+              labels={AI_QUEUE_LABELS[lang]}
+              onUpdate={msgQueue.update}
+              onRemove={msgQueue.remove}
+              onClear={msgQueue.clear}
+              paused={msgQueue.paused}
+              onTogglePause={msgQueue.togglePaused}
+              onMove={msgQueue.move}
+            />
             {attachments.length > 0 && (
               <div className="ai-attachments" onScroll={onAttachmentsScroll}>
                 {attachments.map((a) =>
@@ -2898,7 +2974,11 @@ function AiConversationBody({
               spellCheck={spellcheck}
               data-slides-ai-input="true"
               data-deck-undo-ready={!busy && !inputEditedSinceRunRef.current ? 'true' : 'false'}
-              placeholder={t(deckEmpty ? 'aiInputPlaceholderGen' : 'aiInputPlaceholder')}
+              placeholder={
+                busy
+                  ? AI_QUEUE_LABELS[lang].queuePlaceholder
+                  : t(deckEmpty ? 'aiInputPlaceholderGen' : 'aiInputPlaceholder')
+              }
               onChange={(e) => {
                 inputEditedSinceRunRef.current = true
                 setInput(e.target.value)
@@ -2906,7 +2986,8 @@ function AiConversationBody({
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
                   e.preventDefault()
-                  run()
+                  if (busy) enqueueDraft()
+                  else run()
                 } else if (e.key === 'Escape' && busy) {
                   e.preventDefault()
                   cancel()
@@ -2929,6 +3010,7 @@ function AiConversationBody({
                 }}
                 onOpenSettings={() => setModelSettingsOpen(true)}
               />
+              {sessionUsage && <AiUsageChip usage={sessionUsage} session lang={lang} />}
               <button
                 className="ai-attach-btn"
                 onClick={pickAttachments}
