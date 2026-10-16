@@ -6345,7 +6345,10 @@ async function performDocsClose(
   return requestRendererSave(contents)
 }
 
-export function createDocsView(openPath?: string, opts?: { hidePanel?: boolean }): WebContentsView {
+export function createDocsView(
+  openPath?: string,
+  opts?: { hidePanel?: boolean; preset?: string },
+): WebContentsView {
   const view = new WebContentsView({
     webPreferences: {
       preload: runtime.preloadPath,
@@ -6371,6 +6374,8 @@ export function createDocsView(openPath?: string, opts?: { hidePanel?: boolean }
   // only; the editor's persisted panel preference is not touched.
   const query: Record<string, string> = { mode: 'tab' }
   if (opts?.hidePanel) query.panel = '0'
+  // LOCAL(R24 用户裁定): 思维导图新建——预设经 URL 参数直通渲染层
+  if (opts?.preset) query.preset = opts.preset
   void view.webContents.loadURL(rendererUrl(runtime.rendererUrl, 'docs', query))
   // view.webContents becomes undefined after destroy, so grab the id beforehand
   const wcId = view.webContents.id
