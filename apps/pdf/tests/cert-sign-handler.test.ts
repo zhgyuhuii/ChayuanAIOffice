@@ -33,6 +33,7 @@ class FakeContents {
   send = vi.fn()
 }
 vi.mock('electron', () => ({
+    nativeImage: { createFromPath: vi.fn(() => ({ toPNG: vi.fn(() => Buffer.alloc(0)) })) },
   app: { on: vi.fn(), whenReady: () => new Promise(() => {}) },
   dialog: {
     showOpenDialog: (...args: unknown[]) => pickOpen(...args),

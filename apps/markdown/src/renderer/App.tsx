@@ -45,6 +45,8 @@ import { ImageHostDialog } from './components/ImageHostDialog'
 import { RedactMenu } from './components/RedactMenu'
 import { OutlinePane } from './components/OutlinePane'
 import { SlashMenu, type SlashMenuHandle } from './components/SlashMenu'
+import { BacklinksPane } from './components/BacklinksPane'
+import { GraphView } from './components/GraphView'
 import { ToastHost } from './components/toast'
 import { showToast } from './components/toast-bus'
 import { TableMenu } from './components/TableMenu'
@@ -174,8 +176,10 @@ export default function App() {
   editQueueRef.current = editQueue
   const queueSeqRef = useRef(0)
   const [autoSave, setAutoSave] = useAutoSavePref('mdapp.autoSave', window.markdownApi)
-  const [_showFind, setShowFind] = useState(false)
-  const [_findFocus, setFindFocus] = useState<FindFocusRequest>({ field: 'find', nonce: 0 })
+  const [showFind, setShowFind] = useState(false)
+  const [findFocus, setFindFocus] = useState<FindFocusRequest>({ field: 'find', nonce: 0 })
+  const [backlinksOpen, setBacklinksOpen] = useState(false)
+  const [graphOpen, setGraphOpen] = useState(false)
   const [sourceViewOpen, setSourceViewOpen] = useState(false)
   const [outlineOpen, setOutlineOpen] = useState(false)
   const [spellcheck, setSpellcheck] = useState(
@@ -893,6 +897,9 @@ export default function App() {
     },
   }
 
+  // .txt/.json edit their bytes directly: no wiki links, no backlinks, no graph
+  const sourceMode = Boolean(filePath && /\.(txt|json)$/i.test(filePath))
+
   const fileName = filePath ? filePath.replace(/^.*[/\\]/, '') : null
   const statusText =
     saveState === 'saving'
@@ -987,12 +994,15 @@ export default function App() {
             outlineOpen={outlineOpen}
             onToggleOutline={() => setOutlineOpen((v) => !v)}
             hasOutline={outlineItems.length > 0}
+            backlinksOpen={backlinksOpen}
+            onToggleBacklinks={() => setBacklinksOpen((v) => !v)}
+            onOpenGraph={() => setGraphOpen(true)}
             spellcheck={spellcheck}
             onToggleSpellcheck={() => setSpellcheck((v) => !v)}
             aiOpen={aiOpen}
             onToggleAi={() => setAiOpen((v) => !v)}
             onAiPreset={askSendNow}
-            sourceMode={Boolean(filePath && /\.(txt|json)$/i.test(filePath))}
+            sourceMode={sourceMode}
             redactEnabled={redactEnabled}
             onToggleRedact={(on) => {
               setRedactEnabled(on)
@@ -1011,6 +1021,12 @@ export default function App() {
                 onJump={jumpToOutline}
                 width={outlineWidth}
                 onResize={setOutlineWidth}
+              />
+            )}
+            {backlinksOpen && !sourceMode && (
+              <BacklinksPane
+                path={filePath}
+                onOpen={(path) => void window.markdownApi.openSourcePath(path)}
               />
             )}
             <div className="app-content">
@@ -1071,6 +1087,16 @@ export default function App() {
       <SlashMenu ref={slashMenuRef} state={slashState} onDismiss={() => setSlashState(null)} />
       <RedactMenu editor={editor} enabled={redactEnabled} />
       <ToastHost />
+      {graphOpen && (
+        <GraphView
+          current={filePath}
+          onClose={() => setGraphOpen(false)}
+          onOpen={(path) => {
+            setGraphOpen(false)
+            void window.markdownApi.openSourcePath(path)
+          }}
+        />
+      )}
       {imageHostOpen && (
         <ImageHostDialog onClose={() => setImageHostOpen(false)} onSaved={() => {}} />
       )}
