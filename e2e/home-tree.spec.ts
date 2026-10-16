@@ -43,7 +43,7 @@ test.describe('ZCode 式左树（对话|项目双 Tab）', () => {
     try {
       // 预写会话档案（含一条已归档），reload 让树读档
       await page.evaluate(async (sessions) => {
-        await window.chatOffice.chatSessionsSave(sessions)
+        await window.chaOffice.chatSessionsSave(sessions)
       }, seededSessions)
       await page.reload()
       // 双 Tab：默认落在「对话」，「项目」tab 待切换
@@ -118,7 +118,7 @@ test.describe('ZCode 式左树（对话|项目双 Tab）', () => {
     const { page } = launched
     try {
       await page.evaluate(async (sessions) => {
-        await window.chatOffice.chatSessionsSave(sessions)
+        await window.chaOffice.chatSessionsSave(sessions)
         await window.chatOfficeProject.createProject('验证项目甲')
         window.dispatchEvent(new Event('focus'))
       }, seededSessions)
@@ -180,7 +180,7 @@ test.describe('ZCode 式左树（对话|项目双 Tab）', () => {
     const { page } = launched
     try {
       await page.evaluate(async (sessions) => {
-        await window.chatOffice.chatSessionsSave(sessions)
+        await window.chaOffice.chatSessionsSave(sessions)
       }, seededSessions)
       await page.reload()
 

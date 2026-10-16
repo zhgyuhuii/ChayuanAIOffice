@@ -9,12 +9,12 @@ async function findShellPage(app: ElectronApplication, timeoutMs = 15_000): Prom
   for (;;) {
     for (const candidate of app.windows()) {
       const has = await candidate
-        .evaluate(() => Boolean((window as unknown as { chatOffice?: unknown }).chatOffice))
+        .evaluate(() => Boolean((window as unknown as { chaOffice?: unknown }).chaOffice))
         .catch(() => false)
       if (has) return candidate
     }
     const remaining = deadline - Date.now()
-    if (remaining <= 0) throw new Error('No window exposing window.chatOffice')
+    if (remaining <= 0) throw new Error('No window exposing window.chaOffice')
     await app.waitForEvent('window', { timeout: Math.min(remaining, 1_000) }).catch(() => {})
   }
 }

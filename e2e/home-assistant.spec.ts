@@ -58,7 +58,7 @@ test.describe('docked editor carries no internal chat (P1 契约)', () => {
     const { page } = launched
     try {
       await page.evaluate(async () => {
-        await window.chatOfficeDock.open('docs', { newBlank: true })
+        await window.chaOfficeDock.open('docs', { newBlank: true })
       })
       // the docked editor view boots with ?panel=0
       const dockPage = await waitForPageWithUrl(launched.app, 'panel=0')

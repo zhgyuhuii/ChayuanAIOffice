@@ -10,7 +10,7 @@ function themeAttr(page: Page): Promise<string | null> {
 
 function hasHomeApi(page: Page): Promise<boolean> {
   return page
-    .evaluate(() => Boolean((window as unknown as { chatOffice?: unknown }).chatOffice))
+    .evaluate(() => Boolean((window as unknown as { chaOffice?: unknown }).chaOffice))
     .catch(() => false)
 }
 
@@ -22,7 +22,7 @@ async function findShellPage(app: ElectronApplication, timeoutMs = 15_000): Prom
       if (await hasHomeApi(candidate)) return candidate
     }
     const remaining = deadline - Date.now()
-    if (remaining <= 0) throw new Error('No window exposing window.chatOffice')
+    if (remaining <= 0) throw new Error('No window exposing window.chaOffice')
     await app.waitForEvent('window', { timeout: Math.min(remaining, 1_000) }).catch(() => {})
   }
 }
