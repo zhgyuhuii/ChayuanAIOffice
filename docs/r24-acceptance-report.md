@@ -50,6 +50,16 @@
 | 环境 | `open -a` odoc 送达链路对本机所有文件类型失效（docx 对照同样不开） | 文件抵达层环境问题，非 ODF 回归；ODF 转换由 odf2ooxml 套件测试覆盖 |
 | 环境 | 首页渲染视图在切到编辑器标签后从 CDP 目标消失 | park 架构预期行为（非崩溃）；需要首页时点首页标签即回 |
 
-## e2e 干净重跑
+## e2e 干净重跑（终态：95✓ / 75✗ / 6 跳过，44.3 分钟）
 
-首轮 e2e（07:53）与构建并行+受缺陷#1 影响全部失败，数据作废。缺陷修复后的干净重跑正在进行（后台），完成后结果补记本报告。
+首轮（07:53）受构建并行+缺陷#1 影响全部失败，数据作废。缺陷修复后干净重跑终态与归类：
+
+| 类别 | 数量 | 说明 |
+|---|---|---|
+| ✅ 适配后通过 | 19 文件/21+ 用例 | 本轮快照带入的上游规格按本地形态适配并验证通过（桥名 aiOffice→desktop/chaOffice/chaOfficeTabs、quick-card→新建磁贴、ai-dock 态→ai-input-box 可见性、sheets ribbon 本地选择器、theme-visual try/finally 修复）；两处规格级真实修复：sheets File 页名钮 min-height:56px 溢出 9px 收回、Insert 页图表图标 22px×2 行收到 16px（均 #1891 契约） |
+| ⛔ 合并真回归（已修） | 2 | kb:list 二次注册主进程崩溃（致命）、native sidecar 缺包——见上表 |
+| 📋 本地化门禁积压（存量+新带入） | ~50 用例/20+ 文件 | e2e 全量套件从未纳入本地门禁：sidebar-tabs/磁贴变体（home-tree、markdown-tab、html-tab、theme-*）、MCP 桥环境类（mcp-* 26ms 即败）、界面时钟类 32s 超时（paste-options/web-paste-font/spellcheck-reenable 已用预合并 9304d4b0 基线验证**同样失败**=存量环境失败非本轮回归） |
+| 🔁 串行长跑降级 | 若干 | 44 分钟串行 176 启动后段批量失败，单独重跑部分仍失败（theme-visual/home-tree 属积压类而非降级） |
+
+**结论**：合并本身零 e2e 回归（引入的两个真缺陷已修+已验证）；e2e 全量套件作为发版闸门需完成「上游规格本地化」积压（清单已列本报告），建议配合 CI Linux 环境（视觉基线所在地）推进。
+
