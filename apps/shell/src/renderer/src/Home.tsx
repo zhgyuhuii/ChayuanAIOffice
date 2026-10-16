@@ -1875,10 +1875,6 @@ export function Home() {
   const handleNewDoc = () => {
     void window.chaOffice.newDoc(newFileOpts())
   }
-  // LOCAL(R24 用户裁定): 新建思维导图——新文档 + ?preset=mindmap 自动运行思维导图预设
-  const handleNewMindMap = () => {
-    void window.chaOffice.newDoc({ ...newFileOpts(), preset: 'mindmap' as const })
-  }
 
   const handleNewSheet = () => {
     void window.chaOffice.newSheet(newFileOpts())
@@ -1907,8 +1903,6 @@ export function Home() {
     { ext: 'md', title: t('newMarkdown'), sub: '.md', action: handleNewMarkdown },
     { ext: 'html', title: t('newHtml'), sub: '.html', action: handleNewHtml },
     { ext: 'pdf', title: t('newPdf'), sub: '.pdf', action: handleNewPdf },
-    // LOCAL(R24 用户裁定): 思维导图创建磁贴（新文档+自动运行 aiMindMapPrompt）
-    { ext: 'mindmap', title: t('newMindMap'), sub: 'AI', action: handleNewMindMap },
   ]
 
   // ── Sidebar quick actions: 「新建」collapsible group — 6 new-file rows +

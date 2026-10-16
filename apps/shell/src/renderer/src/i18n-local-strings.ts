@@ -6,7 +6,6 @@
  */
 export const localStrings = {
   zh: {
-    newMindMap: "新建思维导图",
     navUserGuide: '使用手册',
     secChats: '对话',
     sidebarTabList: '左树分组',
@@ -331,7 +330,6 @@ export const localStrings = {
       purchaseReasonUnavailable: '激活功能暂不可用，请联系客服',
   },
   en: {
-    newMindMap: "New Mind Map",
     navUserGuide: 'User Guide',
     secChats: 'Chats',
     sidebarTabList: 'Sidebar sections',
@@ -664,7 +662,6 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   ja: {
-    newMindMap: "マインドマップを新規作成",
     navUserGuide: 'ユーザーガイド',
     secChats: 'チャット',
     sidebarTabList: 'サイドバー項目',
@@ -999,7 +996,6 @@ export const localStrings = {
       purchaseReasonUnavailable: '認証機能は現在利用できません。サポートにお問い合わせください',
   },
   ko: {
-    newMindMap: "새 마인드맵",
     navUserGuide: '사용자 가이드',
     secChats: '대화',
     sidebarTabList: '사이드바 섹션',
@@ -1329,7 +1325,6 @@ export const localStrings = {
       purchaseReasonUnavailable: '인증 기능을 일시적으로 사용할 수 없습니다. 고객지원팀에 문의해 주세요',
   },
   fr: {
-    newMindMap: "Nouvelle carte mentale",
     navUserGuide: "Guide de l'utilisateur",
     secChats: 'Conversations',
     sidebarTabList: 'Sections de la barre latérale',
@@ -1673,7 +1668,6 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation momentanément indisponible, contactez le support',
   },
   de: {
-    newMindMap: "Neue Mindmap",
     navUserGuide: 'Benutzerhandbuch',
     secChats: 'Chats',
     sidebarTabList: 'Seitenleisten-Bereiche',
@@ -2012,7 +2006,6 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Aktivierung derzeit nicht verfügbar, bitte den Support kontaktieren',
   },
   es: {
-    newMindMap: "Nuevo mapa mental",
     navUserGuide: 'Guía del usuario',
     secChats: 'Conversaciones',
     sidebarTabList: 'Secciones de la barra lateral',
@@ -2351,7 +2344,6 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activación no disponible temporalmente, contacta con el soporte',
   },
   th: {
-    newMindMap: "แผนผังความคิดใหม่",
     navUserGuide: 'คู่มือผู้ใช้',
     secChats: 'บทสนทนา',
     sidebarTabList: 'ส่วนของแถบข้าง',
@@ -2681,7 +2673,6 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   id: {
-    newMindMap: "Peta pikiran baru",
     navUserGuide: 'Panduan Pengguna',
     secChats: 'Obrolan',
     sidebarTabList: 'Bagian bilah sisi',
@@ -3018,7 +3009,6 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   ru: {
-    newMindMap: "Новая интеллект-карта",
     navUserGuide: 'Руководство пользователя',
     secChats: 'Чаты',
     sidebarTabList: 'Разделы боковой панели',
@@ -3353,7 +3343,6 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Активация временно недоступна, обратитесь в поддержку',
   },
   ar: {
-    newMindMap: "خريطة ذهنية جديدة",
     navUserGuide: 'دليل المستخدم',
     secChats: 'المحادثات',
     sidebarTabList: 'أقسام الشريط الجانبي',
@@ -3684,7 +3673,6 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   pt: {
-    newMindMap: "Novo mapa mental",
     navUserGuide: 'Guia do Usuário',
     secChats: 'Conversas',
     sidebarTabList: 'Seções da barra lateral',
@@ -4025,7 +4013,6 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Ativação temporariamente indisponível, contate o suporte',
   },
   it: {
-    newMindMap: "Nuova mappa mentale",
     navUserGuide: "Guida dell'utente",
     secChats: 'Conversazioni',
     sidebarTabList: 'Sezioni della barra laterale',
@@ -4365,7 +4352,6 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Attivazione temporaneamente non disponibile, contatta l\'assistenza',
   },
   pl: {
-    newMindMap: "Nowa mapa myśli",
     navUserGuide: 'Podręcznik użytkownika',
     secChats: 'Czaty',
     sidebarTabList: 'Sekcje panelu bocznego',
@@ -4704,7 +4690,6 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Aktywacja chwilowo niedostępna, skontaktuj się z wsparciem',
   },
   cs: {
-    newMindMap: "Nová myšlenková mapa",
     navUserGuide: 'Uživatelská příručka',
     secChats: 'Chaty',
     sidebarTabList: 'Sekce postranního panelu',
@@ -5036,7 +5021,6 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   nl: {
-    newMindMap: "Nieuwe mindmap",
     navUserGuide: 'Gebruikershandleiding',
     secChats: 'Chats',
     sidebarTabList: 'Zijbalksecties',
@@ -5378,7 +5362,6 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   ms: {
-    newMindMap: "Peta minda baru",
     navUserGuide: 'Panduan Pengguna',
     secChats: 'Sembang',
     sidebarTabList: 'Seksi bar sisi',
@@ -5715,7 +5698,6 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   he: {
-    newMindMap: "מפת חשיבה חדשה",
     navUserGuide: 'מדריך למשתמש',
     secChats: 'שיחות',
     sidebarTabList: 'מקטעי סרגל הצד',
@@ -6043,7 +6025,6 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   hi: {
-    newMindMap: "नया माइंड मैप",
     navUserGuide: 'उपयोगकर्ता गाइड',
     secChats: 'चैट',
     sidebarTabList: 'साइडबार अनुभाग',
@@ -6378,7 +6359,6 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   'zh-TW': {
-    newMindMap: '新增思維導圖',
     navUserGuide: '使用手冊',
     kbPickerLabel: '知識庫',
     kbChipRemove: '移除知識庫',
@@ -6701,7 +6681,6 @@ export const localStrings = {
       purchaseReasonUnavailable: 'Activation is temporarily unavailable, please contact support',
   },
   vi: {
-    newMindMap: "Sơ đồ tư duy mới",
     navUserGuide: 'Hướng dẫn sử dụng',
     secChats: '对话',
     sidebarTabList: '左树分组',

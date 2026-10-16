@@ -27,8 +27,6 @@ export interface NewFileOpts {
   dir?: string
   /** route the new file into a Home project (local feature) */
   projectId?: string
-  /** LOCAL(R24 用户裁定): 'mindmap' —— 新文档 + 自动运行思维导图预设（URL 参数直通 docs 渲染层） */
-  preset?: 'mindmap'
 }
 import type { DockKind } from './dock-api'
 

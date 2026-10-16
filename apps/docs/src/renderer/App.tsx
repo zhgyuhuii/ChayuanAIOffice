@@ -1463,19 +1463,6 @@ export function App() {
     setDocopsToast(text)
     window.setTimeout(() => setDocopsToast((cur) => (cur === text ? null : cur)), 4000)
   }, [])
-  // LOCAL(R24 用户裁定): 新建思维导图——shell 以 ?preset=mindmap 打开新文档，
-  // 编辑器就绪后自动开面板并运行思维导图预设（与察元页/「+」菜单入口同语义）
-  useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('preset') !== 'mindmap') return
-    const timer = setInterval(() => {
-      if (!editor) return
-      clearInterval(timer)
-      setShowAi(true)
-      setAiPreset({ text: t('aiMindMapPrompt'), nonce: Date.now(), autoRun: true })
-    }, 300)
-    return () => clearInterval(timer)
-  }, [editor])
-
   const chayuanCompleter = useMemo(
     () => makeCompleter(() => settings.currentModel ?? null),
     [settings],
@@ -7770,6 +7757,11 @@ export function App() {
       >
         <div className="editor-col">
       <Ribbon
+        onAiPreset={(text) => {
+          // 同 quickActions.onAiPreset：点击即开面板并自动运行预设
+          setShowAi(true)
+          setAiPreset({ text, nonce: Date.now(), autoRun: true })
+        }}
         actionsRef={ribbonActionsRef}
         quickActions={quickActions}
         trailingActions={

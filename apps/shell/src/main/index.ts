@@ -871,7 +871,6 @@ const tMain = createI18n({
     // LOCAL(2026-10-10, f9162fc9): tab"+"新建菜单 menuNewMarkdown 去 AI 品牌残留——zh「MD文档/新建MD文档」、其余语言中性「Markdown」(上游曾启动改名后放弃并钉名 AI Markdown;2026-10 维护者裁定改名,上游再动此键以本行为准) + 收敛条件:上游若完成官方改名则取上游
     menuNewMarkdown: 'MD文档',
     menuNewPdf: 'PDF文档',
-    menuNewMindMap: '思维导图',
     menuNewHtml: 'HTML文档',
     menuExportPdf: '导出为 PDF…',
     menuExportImages: '导出为图片…',
@@ -1013,7 +1012,6 @@ const tMain = createI18n({
     menuNewSlide: 'Slides',
     menuNewMarkdown: 'Markdown',
     menuNewPdf: 'PDF Doc',
-    menuNewMindMap: 'Mind Map',
     menuNewHtml: 'HTML',
     menuExportPdf: 'Export as PDF…',
     menuExportImages: 'Export as Images…',
@@ -1161,7 +1159,6 @@ const tMain = createI18n({
     menuNewMarkdown: 'Markdown',
     menuNewHtml: 'HTML',
     menuNewPdf: 'PDF',
-    menuNewMindMap: 'Sơ đồ tư duy',
     menuExportPdf: 'Xuất dưới dạng PDF…',
     menuExportImages: 'Xuất dưới dạng hình ảnh…',
     menuExportHtml: 'Xuất dưới dạng HTML một tệp…',
@@ -1308,7 +1305,6 @@ const tMain = createI18n({
     menuNewSlide: 'スライド',
     menuNewMarkdown: 'Markdown',
     menuNewPdf: 'PDF文書',
-    menuNewMindMap: 'マインドマップ',
     menuNewHtml: 'HTML',
     menuExportPdf: 'PDF として書き出す…',
     menuExportImages: '画像としてエクスポート…',
@@ -1459,7 +1455,6 @@ const tMain = createI18n({
     menuNewSlide: '슬라이드',
     menuNewMarkdown: 'Markdown',
     menuNewPdf: 'PDF 문서',
-    menuNewMindMap: '마인드맵',
     menuNewHtml: 'HTML',
     menuExportPdf: 'PDF로 내보내기…',
     menuExportImages: '이미지로 내보내기…',
@@ -1609,7 +1604,6 @@ const tMain = createI18n({
     menuNewSlide: 'Diapos',
     menuNewMarkdown: 'Markdown',
     menuNewPdf: 'Doc PDF',
-    menuNewMindMap: 'Carte mentale',
     menuNewHtml: 'HTML',
     menuExportPdf: 'Exporter en PDF…',
     menuExportImages: 'Exporter en images…',
@@ -1761,7 +1755,6 @@ const tMain = createI18n({
     menuNewSlide: 'Folien',
     menuNewMarkdown: 'Markdown',
     menuNewPdf: 'PDF-Dok',
-    menuNewMindMap: 'Mindmap',
     menuNewHtml: 'HTML',
     menuExportPdf: 'Als PDF exportieren…',
     menuExportImages: 'Als Bilder exportieren…',
@@ -1913,7 +1906,6 @@ const tMain = createI18n({
     menuNewSlide: 'Diapos',
     menuNewMarkdown: 'Markdown',
     menuNewPdf: 'Doc PDF',
-    menuNewMindMap: 'Mapa mental',
     menuNewHtml: 'HTML',
     menuExportPdf: 'Exportar como PDF…',
     menuExportImages: 'Exportar como imágenes…',
@@ -2065,7 +2057,6 @@ const tMain = createI18n({
     menuNewSlide: 'สไลด์',
     menuNewMarkdown: 'Markdown',
     menuNewPdf: 'เอกสาร PDF',
-    menuNewMindMap: 'แผนผังความคิด',
     menuNewHtml: 'HTML',
     menuExportPdf: 'ส่งออกเป็น PDF…',
     menuExportImages: 'ส่งออกเป็นรูปภาพ…',
@@ -2212,7 +2203,6 @@ const tMain = createI18n({
     menuNewSlide: 'Slide',
     menuNewMarkdown: 'Markdown',
     menuNewPdf: 'Dok PDF',
-    menuNewMindMap: 'Peta pikiran',
     menuNewHtml: 'HTML',
     menuExportPdf: 'Ekspor sebagai PDF…',
     menuExportImages: 'Ekspor sebagai gambar…',
@@ -2364,7 +2354,6 @@ const tMain = createI18n({
     menuNewSlide: 'Слайды',
     menuNewMarkdown: 'Markdown',
     menuNewPdf: 'Док PDF',
-    menuNewMindMap: 'Интеллект-карта',
     menuNewHtml: 'HTML',
     menuExportPdf: 'Экспортировать в PDF…',
     menuExportImages: 'Экспорт в изображения…',
@@ -2516,7 +2505,6 @@ const tMain = createI18n({
     menuNewSlide: 'شرائح',
     menuNewMarkdown: 'Markdown',
     menuNewPdf: 'مستند PDF',
-    menuNewMindMap: 'خريطة ذهنية',
     menuNewHtml: 'HTML',
     menuExportPdf: 'تصدير بتنسيق PDF…',
     menuExportImages: 'تصدير كصور…',
@@ -2663,7 +2651,6 @@ const tMain = createI18n({
     menuNewSlide: 'Slides',
     menuNewMarkdown: 'Markdown',
     menuNewPdf: 'Doc PDF',
-    menuNewMindMap: 'Mapa mental',
     menuNewHtml: 'HTML',
     menuExportPdf: 'Exportar como PDF…',
     menuExportImages: 'Exportar como imagens…',
@@ -2815,7 +2802,6 @@ const tMain = createI18n({
     menuNewSlide: 'Slide',
     menuNewMarkdown: 'Markdown',
     menuNewPdf: 'Doc PDF',
-    menuNewMindMap: 'Mappa mentale',
     menuNewHtml: 'HTML',
     menuExportPdf: 'Esporta come PDF…',
     menuExportImages: 'Esporta come immagini…',
@@ -2967,7 +2953,6 @@ const tMain = createI18n({
     menuNewSlide: 'Slajdy',
     menuNewMarkdown: 'Markdown',
     menuNewPdf: 'Dok PDF',
-    menuNewMindMap: 'Mapa myśli',
     menuNewHtml: 'HTML',
     menuExportPdf: 'Eksportuj jako PDF…',
     menuExportImages: 'Eksportuj jako obrazy…',
@@ -3120,7 +3105,6 @@ const tMain = createI18n({
     menuNewMarkdown: 'Markdown',
     menuNewHtml: 'HTML',
     menuNewPdf: 'PDF',
-    menuNewMindMap: 'Myšlenková mapa',
     menuExportPdf: 'Exportovat jako PDF…',
     menuExportImages: 'Exportovat jako obrázky…',
     menuExportHtml: 'Exportovat jako samostatné HTML…',
@@ -3266,7 +3250,6 @@ const tMain = createI18n({
     menuNewSlide: 'Dia',
     menuNewMarkdown: 'Markdown',
     menuNewPdf: 'Doc PDF',
-    menuNewMindMap: 'Mindmap',
     menuNewHtml: 'HTML',
     menuExportPdf: 'Exporteren als PDF…',
     menuExportImages: 'Exporteren als afbeeldingen…',
@@ -3418,7 +3401,6 @@ const tMain = createI18n({
     menuNewSlide: 'Slaid',
     menuNewMarkdown: 'Markdown',
     menuNewPdf: 'Dok PDF',
-    menuNewMindMap: 'Peta minda',
     menuNewHtml: 'HTML',
     menuExportPdf: 'Eksport sebagai PDF…',
     menuExportImages: 'Eksport sebagai imej…',
@@ -3569,7 +3551,6 @@ const tMain = createI18n({
     menuNewSlide: 'שקופיות',
     menuNewMarkdown: 'Markdown',
     menuNewPdf: 'מסמך PDF',
-    menuNewMindMap: 'מפת חשיבה',
     menuNewHtml: 'HTML',
     menuExportPdf: 'ייצוא כ-PDF…',
     menuExportImages: 'ייצוא כתמונות…',
@@ -3715,7 +3696,6 @@ const tMain = createI18n({
     menuNewSlide: 'स्लाइड',
     menuNewMarkdown: 'Markdown',
     menuNewPdf: 'PDF दस्तावेज़',
-    menuNewMindMap: 'माइंड मैप',
     menuNewHtml: 'HTML',
     menuExportPdf: 'PDF के रूप में निर्यात…',
     menuExportImages: 'छवियों के रूप में निर्यात…',
@@ -3867,7 +3847,6 @@ const tMain = createI18n({
     menuNewSlide: '簡報',
     menuNewMarkdown: 'Markdown',
     menuNewPdf: 'PDF文件',
-    menuNewMindMap: 'माइंड मैप',
     menuNewHtml: 'HTML',
     menuExportPdf: '匯出為 PDF…',
     menuExportImages: '匯出為圖片…',
@@ -5145,18 +5124,6 @@ function newDocTab(): void {
     // creating a document is as much a value moment as opening one
     recordStarPromptDocOpen()
     analytics.track('file_new', { kind: 'docx' })
-  } catch (err) {
-    surfaceNewTabError(err)
-  }
-}
-
-/** LOCAL(R24 用户裁定): 新建思维导图——新文档 + URL 参数把 aiMindMapPrompt 预设带进
- *  docs 渲染层（App 读 ?preset=mindmap 自动开面板运行），无新增 IPC 通道 */
-function newMindMapTab(): void {
-  try {
-    bindPendingDir('doc', tabManager?.openDocsTab(undefined, { newBlank: true, preset: 'mindmap' }))
-    recordStarPromptDocOpen()
-    analytics.track('file_new', { kind: 'mindmap' })
   } catch (err) {
     surfaceNewTabError(err)
   }
@@ -7121,12 +7088,6 @@ function registerTabsIpc(): void {
         label: tm('menuNewPdf'),
         icon: menuIcons().pdf,
         click: () => void newPdfTab(),
-      },
-      {
-        // LOCAL(R24 用户裁定): 顶部 + 新建菜单补「思维导图」——新文档+自动运行 aiMindMapPrompt
-        label: tm('menuNewMindMap'),
-        icon: menuIcons().docx,
-        click: () => void newMindMapTab(),
       },
       { type: 'separator' },
       { label: tm('menuOpen'), click: () => void openFileViaDialog() },
