@@ -14,12 +14,12 @@ import {
   resolveSchemeColor,
   type OpenedPptx,
   type Slide,
-} from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
 import {
   buildRenderSlide,
   type FontMetricsProvider,
   type RenderSlide,
-} from '@chatoffice/pptx-render'
+} from '@chaoffice/pptx-render'
 import { createSystemFontMetrics, resetFontRegistry } from './fonts'
 import { tiffToPng } from './tiff-decode'
 import { neutralizeJpegOrientation } from './jpeg-orientation'

@@ -1,4 +1,4 @@
-import type { AgentSkill } from '@chatoffice/agent-core'
+import type { AgentSkill } from '@chaoffice/agent-core'
 import basePrompt from './prompts/base.md?raw'
 import { verifySheetsResponse } from './response-verify'
 import {

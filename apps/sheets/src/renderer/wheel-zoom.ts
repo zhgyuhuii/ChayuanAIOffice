@@ -1,4 +1,4 @@
-import { createZoomWheelClassifier, notchStep } from '@chatoffice/ui'
+import { createZoomWheelClassifier, notchStep } from '@chaoffice/ui'
 
 /// Same range as the status-bar slider and +/- buttons.
 export const SHEET_ZOOM_MIN = 0.5

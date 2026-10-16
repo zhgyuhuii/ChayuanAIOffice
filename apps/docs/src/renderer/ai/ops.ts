@@ -3,7 +3,7 @@ import type { Editor } from '@tiptap/core'
 import { Fragment as PmFragment } from '@tiptap/pm/model'
 import type { Mark as ProseMirrorMark, Node as PmDocNode, Schema } from '@tiptap/pm/model'
 import type { Transaction } from '@tiptap/pm/state'
-import { generateTocFieldXml, type TocEntry } from '@chatoffice/docx-engine'
+import { generateTocFieldXml, type TocEntry } from '@chaoffice/docx-engine'
 import { isEastAsianFontName } from '../font-list'
 import { t } from '../i18n/locale'
 import { blockRangePositions, isTrackedDeleted, liveText } from './doc-utils'
@@ -930,7 +930,7 @@ function runFindReplace(op: Op, env: RunEnv): OpResult {
     //    block with none is the document's own text, and a `{{token}}` in it
     //    is content to be filled in rather than a marker of ours — a mail
     //    merge template is the normal case, and policing it is what stopped
-    //    `chatoffice merge` from filling a docx at all. Where a block is
+    //    `chaoffice merge` from filling a docx at all. Where a block is
     //    policed, the whole `{{...}}` bag has to match, so a marker cannot be
     //    renamed, split, or shadowed by a token the model invented.
     //

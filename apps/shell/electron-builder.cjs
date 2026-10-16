@@ -3,7 +3,7 @@
  * auto-update feed URL can be injected at build time instead of living in
  * the repo).
  *
- * CHATOFFICE_UPDATE_URL — public base URL of the update channel (the generic
+ * CHAOFFICE_UPDATE_URL — public base URL of the update channel (the generic
  * provider prefix that serves latest.yml / latest-mac.yml). Required for
  * release builds; CI provides it as a repository secret. For local release
  * builds put it in apps/shell/electron-builder.env (gitignored) — the
@@ -13,14 +13,14 @@
  * the publish config is omitted: electron-builder then bakes no
  * app-update.yml into the app and in-app auto-update stays disabled.
  *
- * CHATOFFICE_GA4_MEASUREMENT_ID / CHATOFFICE_GA4_API_SECRET — GA4 Measurement
+ * CHAOFFICE_GA4_MEASUREMENT_ID / CHAOFFICE_GA4_API_SECRET — GA4 Measurement
  * Protocol credentials for anonymous usage analytics, injected the same way
  * (CI secrets, or apps/shell/electron-builder.env locally). They are written
  * into the packaged app's package.json via extraMetadata and read back by
  * src/main/analytics.ts. When either is unset — every source/fork build —
  * nothing is injected and the app runs with analytics fully disabled.
  *
- * CHATOFFICE_FONT_CDN_URL — base URL for the curated downloadable-font catalog.
+ * CHAOFFICE_FONT_CDN_URL — base URL for the curated downloadable-font catalog.
  * Official release jobs inject it through extraMetadata so the endpoint stays
  * out of source. Without it, font download prompts/catalog entries are hidden;
  * users can still install local font files.
@@ -63,22 +63,22 @@ function normalizeHttpsBaseUrl(name, value) {
   }
 }
 
-const updateUrl = process.env.CHATOFFICE_UPDATE_URL
-const ga4MeasurementId = process.env.CHATOFFICE_GA4_MEASUREMENT_ID
-const ga4ApiSecret = process.env.CHATOFFICE_GA4_API_SECRET
+const updateUrl = process.env.CHAOFFICE_UPDATE_URL
+const ga4MeasurementId = process.env.CHAOFFICE_GA4_MEASUREMENT_ID
+const ga4ApiSecret = process.env.CHAOFFICE_GA4_API_SECRET
 const fontCdnUrl = normalizeHttpsBaseUrl(
-  'CHATOFFICE_FONT_CDN_URL',
-  process.env.CHATOFFICE_FONT_CDN_URL,
+  'CHAOFFICE_FONT_CDN_URL',
+  process.env.CHAOFFICE_FONT_CDN_URL,
 )
 
-// CHATOFFICE_MAC_X64=1 — opt into packaging the Intel (x64) dmg/zip alongside
+// CHAOFFICE_MAC_X64=1 — opt into packaging the Intel (x64) dmg/zip alongside
 // arm64. Off by default: Intel packages must only ever ship signed with the
 // company certificate (planned dual-track pipeline), so the current release
 // pipeline stays arm64-only and never produces a personally-signed Intel
-// artifact. The downstream layout (feed archive name, ChatOffice-intel.dmg
+// artifact. The downstream layout (feed archive name, ChaOffice-intel.dmg
 // alias) keys off which dmgs exist, so flipping this flag is the single
 // switch.
-const includeMacX64 = process.env.CHATOFFICE_MAC_X64 === '1'
+const includeMacX64 = process.env.CHAOFFICE_MAC_X64 === '1'
 
 // GENOFFICE_WIN_ARM64=1 — package the Windows ARM64 installer instead of x64.
 // CI runs it as a second electron-builder pass (own BUILD_DIR) after the
@@ -89,7 +89,7 @@ const includeMacX64 = process.env.CHATOFFICE_MAC_X64 === '1'
 const winArm64 = process.env.GENOFFICE_WIN_ARM64 === '1'
 // 7-Zip packs ARM64 executables with its ARM64 branch filter, which the NSIS
 // install-time extractor (Nsis7z) cannot decode: it silently skips
-// ChatOffice.exe and every dll (electron-builder#9983). BCJ it can decode.
+// ChaOffice.exe and every dll (electron-builder#9983). BCJ it can decode.
 if (winArm64 && !process.env.ELECTRON_BUILDER_7Z_FILTER) {
   process.env.ELECTRON_BUILDER_7Z_FILTER = 'BCJ'
 }
@@ -203,7 +203,7 @@ function assertUniversalVisionOcr() {
 // Runs from the beforePack hook, not at module load: gen-third-party-notices
 // requires this config to read extraResources, and the dist:* scripts run
 // notices before build:all, when the out dirs legitimately don't exist yet.
-// When the mac build packages BOTH arches (CHATOFFICE_MAC_X64=1) its
+// When the mac build packages BOTH arches (CHAOFFICE_MAC_X64=1) its
 // extraResources entry is a single path shared by the two packs, so the
 // sidecar there must be a lipo fat binary — a host-arch-only build (the plain
 // `native:build` dev path) would silently ship an arm64 sidecar inside the
@@ -227,7 +227,7 @@ function assertUniversalSidecar() {
   const sidecar = join(__dirname, '../sheets/native/xlsx-engine/target/release/xlsx-sidecar')
   if (!existsSync(sidecar)) {
     throw new Error(
-      `mac extraResources source missing: ${sidecar} (run "npm run native:build:universal -w @chatoffice/sheets" first)`,
+      `mac extraResources source missing: ${sidecar} (run "npm run native:build:universal -w @chaoffice/sheets" first)`,
     )
   }
   const archs = execFileSync('lipo', ['-archs', sidecar], { encoding: 'utf8' }).trim().split(/\s+/)
@@ -235,7 +235,7 @@ function assertUniversalSidecar() {
     if (!archs.includes(want)) {
       throw new Error(
         `xlsx-sidecar is [${archs.join(', ')}] but both mac arch packages ship it — ` +
-          'run "npm run native:build:universal -w @chatoffice/sheets" before packaging mac',
+          'run "npm run native:build:universal -w @chaoffice/sheets" before packaging mac',
       )
     }
   }
@@ -388,7 +388,7 @@ const FILE_ASSOCIATIONS = [
     mimeType: 'text/csv',
   },
   {
-    // opens as a converted copy and saves as .xlsx (chatoffice#1146)
+    // opens as a converted copy and saves as .xlsx (chaoffice#1146)
     ext: 'tsv',
     name: 'TSV Document',
     role: 'Editor',
@@ -570,7 +570,7 @@ const config = {
     // with ELECTRON_RUN_AS_NODE (as the gsk CLI above already does), so the
     // RunAsNode fuse must stay enabled. Layout (Resources/cli next to wasm/,
     // native/, ocr/) is what packages/cli/src/resources.ts expects. The
-    // chatoffice files are the pre-rename compatibility shims.
+    // chaoffice files are the pre-rename compatibility shims.
     {
       from: '../../packages/cli/dist/chaoffice.cjs',
       to: 'cli/chaoffice.cjs',
@@ -584,12 +584,12 @@ const config = {
       to: 'cli/chaoffice.cmd',
     },
     {
-      from: '../../packages/cli/bin/chatoffice',
-      to: 'cli/chatoffice',
+      from: '../../packages/cli/bin/chaoffice',
+      to: 'cli/chaoffice',
     },
     {
-      from: '../../packages/cli/bin/chatoffice.cmd',
-      to: 'cli/chatoffice.cmd',
+      from: '../../packages/cli/bin/chaoffice.cmd',
+      to: 'cli/chaoffice.cmd',
     },
     // the CLI's version (Settings → Integrations shows it) and the agent skill
     // the same pane installs into Claude Code / Codex / …; bytes identical to the repo file
@@ -601,7 +601,7 @@ const config = {
       from: '../../skills/chaoffice/SKILL.md',
       to: 'cli/skills/chaoffice/SKILL.md',
     },
-    // runtime deps the chatoffice bundle leaves external (jsdom for the Word/Markdown
+    // runtime deps the chaoffice bundle leaves external (jsdom for the Word/Markdown
     // paths); collected by packages/cli/collect-deps.mjs during its build
     {
       from: '../../packages/cli/dist/node_modules',
@@ -620,7 +620,7 @@ const config = {
   // build/ as <icon>.icns for the mac CFBundleDocumentTypes entry and
   // <icon>.ico for the NSIS DefaultIcon registry value. Without it both
   // platforms fall back to the app icon, so every associated file shows the
-  // bare ChatOffice logo instead of a per-type document icon. The icns/ico
+  // bare ChaOffice logo instead of a per-type document icon. The icns/ico
   // pairs are generated from the shell renderer's file-type tiles by
   // tools/gen-file-association-icons.mjs.
   fileAssociations: FILE_ASSOCIATIONS,
@@ -628,9 +628,9 @@ const config = {
   mac: {
     // Two separate arch packages (NOT universal): arm64 keeps the exact
     // artifact names and update-feed entries it always had, x64 (opt-in via
-    // CHATOFFICE_MAC_X64=1, see includeMacX64 above) adds Intel support with
-    // electron-builder's default arch-less names (ChatOffice-<v>.dmg /
-    // ChatOffice-<v>-mac.zip). Both zips land in one latest-mac.yml and
+    // CHAOFFICE_MAC_X64=1, see includeMacX64 above) adds Intel support with
+    // electron-builder's default arch-less names (ChaOffice-<v>.dmg /
+    // ChaOffice-<v>-mac.zip). Both zips land in one latest-mac.yml and
     // electron-updater picks by process.arch. Dual-arch packs ship the same
     // lipo fat xlsx-sidecar (see assertUniversalSidecar above).
     target: [
@@ -689,7 +689,7 @@ const config = {
 
     // GTK/NSS runtime deps) + rpm (dnf/zypper install on Fedora / RHEL /
     // openSUSE). Default artifact names are kept on purpose —
-    // ChatOffice-<v>.AppImage / chatoffice_<v>_amd64.deb — because the public
+    // ChaOffice-<v>.AppImage / chaoffice_<v>_amd64.deb — because the public
     // README download links and the already-published linux-v0.5.149 release
     // use them.
     target: [
@@ -706,22 +706,22 @@ const config = {
     category: 'Office',
     // Icon SET directory, not the single 1024px png: electron-builder does
     // not resize a lone png, so deb/rpm would install only
-    // hicolor/1024x1024/apps/chatoffice.png — a size absent from the hicolor
+    // hicolor/1024x1024/apps/chaoffice.png — a size absent from the hicolor
     // theme index, leaving GNOME/KDE launchers on the generic fallback icon
-    // (chatoffice-ai/chatoffice#90). The set ships every standard raster size.
+    // (chaoffice-ai/chaoffice#90). The set ships every standard raster size.
     icon: 'build/icons',
     // mac and win name the binary from productName; linux instead derives it
-    // from package.json "name", and "@chatoffice/shell" sanitizes to the
-    // invalid "@chatofficeshell". Setting it explicitly also makes the
-    // generated chatoffice.desktop match the WM_CLASS Electron reports (it
+    // from package.json "name", and "@chaoffice/shell" sanitizes to the
+    // invalid "@chaofficeshell". Setting it explicitly also makes the
+    // generated chaoffice.desktop match the WM_CLASS Electron reports (it
     // takes that from the executable basename), so the running window links
     // back to its launcher entry.
     executableName: 'chaoffice',
     // Electron takes its X11 app_id from package.json "desktopName"
-    // (chatoffice.desktop); syncDesktopName makes electron-builder name the
+    // (chaoffice.desktop); syncDesktopName makes electron-builder name the
     // .desktop file and its StartupWMClass from the same value. Without it
     // StartupWMClass falls back to productName ("ChaAI Office"), which does not
-    // match the "chatoffice" WM_CLASS the window actually reports — and X11
+    // match the "chaoffice" WM_CLASS the window actually reports — and X11
     // compares case-sensitively, so the taskbar shows an unlinked window.
     syncDesktopName: true,
     extraResources: [
@@ -731,24 +731,24 @@ const config = {
       },
     ],
   },
-  // Same "@chatoffice/shell" problem as executableName above: the default deb
+  // Same "@chaoffice/shell" problem as executableName above: the default deb
   // artifact name derives from package.json "name", and the scope's "/" makes
-  // fpm treat "@chatoffice" as a directory. Spell the published name out
-  // (chatoffice_<version>_amd64.deb, matching the linux-v0.5.149 release).
+  // fpm treat "@chaoffice" as a directory. Spell the published name out
+  // (chaoffice_<version>_amd64.deb, matching the linux-v0.5.149 release).
   // packageName pins the control Package field to the same value the 0.5.149
   // deb shipped with — apt treats a different Package name as an unrelated
   // install, breaking upgrades. Without it, fpm receives productName
-  // "ChatOffice" and only happens to downcase it to the right value.
+  // "ChaOffice" and only happens to downcase it to the right value.
   deb: {
     // 2026-09-23 用户明令：包名对齐 mac 侧「ChaAI Office-版本号」；control 里的
     // Package 仍为 chaoffice，apt 升级链不受影响
     artifactName: 'ChaAIOffice-${version}-${arch}.deb',
     packageName: 'chaoffice',
-    // expose the chatoffice command line shipped inside the app
+    // expose the chaoffice command line shipped inside the app
     afterInstall: 'build/linux-after-install.sh',
     afterRemove: 'build/linux-after-remove.sh',
   },
-  // Same "@chatoffice/shell" naming problem as deb: spell the artifact name
+  // Same "@chaoffice/shell" naming problem as deb: spell the artifact name
   // out (${arch} expands to the rpm arch string, x86_64) and pin the rpm
   // Package name so dnf/zypper treat successive releases as upgrades of the
   // same package. Like deb, rpm installs run no in-app updater — users
@@ -839,19 +839,19 @@ const config = {
 // individually (Smart App Control, WDAC/AppLocker, AV heuristics) block
 // unsigned child processes — the unsigned xlsx-sidecar.exe died with
 // "spawn UNKNOWN" on such machines even though the installer itself was
-// signed. When CI exports CHATOFFICE_WIN_SIGN_MODE ("test" = alpha
+// signed. When CI exports CHAOFFICE_WIN_SIGN_MODE ("test" = alpha
 // self-signed PFX, "production" = DigiCert KeyLocker — the two modes of
 // scripts/win-sign.cjs, whose env-var contract applies here too), every
-// binary electron-builder signs for win (ChatOffice.exe, the NSIS
+// binary electron-builder signs for win (ChaOffice.exe, the NSIS
 // uninstaller, and the installer) goes through that script. The static
 // extraResources binaries (xlsx-sidecar.exe, win-ocr.exe) are signed by the
 // workflow before packaging since electron-builder does not sign
 // extraResources. Unset (local / fork builds) keeps the old behavior:
 // electron-builder has no signing config and packages everything unsigned.
-const winSignMode = process.env.CHATOFFICE_WIN_SIGN_MODE
+const winSignMode = process.env.CHAOFFICE_WIN_SIGN_MODE
 if (winSignMode) {
   if (winSignMode !== 'test' && winSignMode !== 'production') {
-    throw new Error(`CHATOFFICE_WIN_SIGN_MODE must be "test" or "production", got "${winSignMode}"`)
+    throw new Error(`CHAOFFICE_WIN_SIGN_MODE must be "test" or "production", got "${winSignMode}"`)
   }
   config.win.signtoolOptions = {
     // Single pass per file: the sha1+sha256 dual-signing default is a
@@ -882,12 +882,12 @@ if (updateUrl) {
 // so the version and all injected feature settings survive together.
 const extraMetadata = {}
 if (ga4MeasurementId && ga4ApiSecret) {
-  extraMetadata.chatofficeAnalytics = {
+  extraMetadata.chaofficeAnalytics = {
     measurementId: ga4MeasurementId,
     apiSecret: ga4ApiSecret,
   }
 }
-if (fontCdnUrl) extraMetadata.chatofficeFontCdn = { baseUrl: fontCdnUrl }
+if (fontCdnUrl) extraMetadata.chaofficeFontCdn = { baseUrl: fontCdnUrl }
 if (Object.keys(extraMetadata).length) config.extraMetadata = extraMetadata
 
 module.exports = config

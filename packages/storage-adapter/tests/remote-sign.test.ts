@@ -95,8 +95,8 @@ describe('AWS URI encoding', () => {
   })
 
   it('preserves slashes in object-key paths', () => {
-    expect(encodeAwsUriPath('chatoffice/会 议/v2.docx')).toBe(
-      'chatoffice/%E4%BC%9A%20%E8%AE%AE/v2.docx',
+    expect(encodeAwsUriPath('chaoffice/会 议/v2.docx')).toBe(
+      'chaoffice/%E4%BC%9A%20%E8%AE%AE/v2.docx',
     )
   })
 

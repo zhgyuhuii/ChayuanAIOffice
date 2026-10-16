@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { applyDvRules } from '@chatoffice/xlsx-gateway/gateway/xlsx-dv'
+import { applyDvRules } from '@chaoffice/xlsx-gateway/gateway/xlsx-dv'
 import { toUniverDvRule } from '../src/renderer/univer-sync'
 
 const SHEET =

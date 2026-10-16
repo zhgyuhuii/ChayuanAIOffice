@@ -1,6 +1,6 @@
-import { pickImageModel, resolveCurrentModel } from '@chatoffice/ai-provider/browser'
-import type { AiModelSelection } from '@chatoffice/ai-provider'
-import type { AgentMessage } from '@chatoffice/agent-core'
+import { pickImageModel, resolveCurrentModel } from '@chaoffice/ai-provider/browser'
+import type { AiModelSelection } from '@chaoffice/ai-provider'
+import type { AgentMessage } from '@chaoffice/agent-core'
 import type { HomeAgentBridge } from './agent'
 
 /**

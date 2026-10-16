@@ -6,10 +6,10 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js'
-import { parseDocx } from '@chatoffice/docx-engine'
-import { openPptx } from '@chatoffice/pptx-engine'
-import { parseDocx } from '@chatoffice/docx-engine'
-import { openPptx } from '@chatoffice/pptx-engine'
+import { parseDocx } from '@chaoffice/docx-engine'
+import { openPptx } from '@chaoffice/pptx-engine'
+import { parseDocx } from '@chaoffice/docx-engine'
+import { openPptx } from '@chaoffice/pptx-engine'
 import JSZip from 'jszip'
 import { PDFDocument, StandardFonts } from 'pdf-lib'
 import {
@@ -174,7 +174,7 @@ async function waitForHealth(p: number, timeoutMs = 10_000): Promise<void> {
 
 async function connect(): Promise<Client> {
   await waitForHealth(port)
-  const client = new Client({ name: 'chatoffice-acceptance', version: '1.0.0' })
+  const client = new Client({ name: 'chaoffice-acceptance', version: '1.0.0' })
   // exactly the shape in the mcpServers entry under test
   await client.connect(new StreamableHTTPClientTransport(new URL(`http://127.0.0.1:${port}/mcp`)))
   return client
@@ -201,7 +201,7 @@ async function call(
 
 beforeAll(async () => {
   port = await freePort()
-  workDir = await mkdtemp(join(tmpdir(), 'chatoffice-acceptance-'))
+  workDir = await mkdtemp(join(tmpdir(), 'chaoffice-acceptance-'))
   logPath = join(workDir, 'mcp-log.txt')
   configureMcpRuntime({
     version: '0.9.0-acceptance',
@@ -385,7 +385,7 @@ describe('MCP surface over Streamable HTTP (/mcp)', () => {
       expect(savedSheet.isError).toBe(false)
       expect(sheets.saved).toEqual([join(workDir, 'book.xlsx')])
 
-      // ── 8. open_in_chatoffice routes .docx, refuses others ────────────────
+      // ── 8. open_in_chaoffice routes .docx, refuses others ────────────────
       // ── 8. open_in_chaoffice routes .docx, refuses others ────────────────
       const openableDocx = join(workDir, 'open-me.docx')
       await writeFile(openableDocx, 'placeholder')

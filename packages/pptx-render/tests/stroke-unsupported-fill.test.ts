@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { resolveStroke } from '../src/fill'
 import { makeViewport } from '../src/coords'
-import type { Stroke } from '@chatoffice/pptx-engine'
+import type { Stroke } from '@chaoffice/pptx-engine'
 
 const vp = makeViewport({ cx: 9525 * 1000, cy: 9525 * 1000 }, 1000)
 

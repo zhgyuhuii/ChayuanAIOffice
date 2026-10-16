@@ -16,7 +16,7 @@ import {
   patchSlideAdvanceTimeXml,
   patchSlideTransitionXml,
   readSlideAdvanceTimeXml,
-} from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
 
 describe('computePlayOrder (playback order)', () => {
   const slides = [{}, { hidden: true }, {}, {}, { hidden: true }]

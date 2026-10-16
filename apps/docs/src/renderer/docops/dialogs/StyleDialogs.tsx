@@ -2,7 +2,7 @@
 // 清理未使用的样式 (checkbox cleanup; deletions ride SaveOptions.styleDeletes).
 import { useMemo, useState } from 'react'
 import type { Editor } from '@tiptap/core'
-import type { StyleInfo } from '@chatoffice/docx-engine'
+import type { StyleInfo } from '@chaoffice/docx-engine'
 import { TextSelection } from '@tiptap/pm/state'
 import { useI18n } from '../../i18n/locale'
 import { DocOpsModal, DocOpsNotice } from './DocOpsModal'

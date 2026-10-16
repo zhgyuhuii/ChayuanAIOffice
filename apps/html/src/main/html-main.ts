@@ -26,7 +26,7 @@ import type { WebContents } from 'electron'
 import {
   registerMediaIpc,
   registerSharedKbIpc
-} from '@chatoffice/ai-host'
+} from '@chaoffice/ai-host'
 import {
   configuredDefaultSaveDir,
   contextMenuLabels,
@@ -45,10 +45,10 @@ import {
   readBodyCapped,
   printHtmlDocument,
   type PrintDialogOutcome,
-} from '@chatoffice/electron-utils'
-import { createI18n, getUiLang } from '@chatoffice/i18n'
-import { parseFileToText } from '@chatoffice/file-parse'
-import { generateImageTool } from '@chatoffice/ai-search'
+} from '@chaoffice/electron-utils'
+import { createI18n, getUiLang } from '@chaoffice/i18n'
+import { parseFileToText } from '@chaoffice/file-parse'
+import { generateImageTool } from '@chaoffice/ai-search'
 import { convertHtmlToDocx } from '../../../../packages/html2docx/src'
 import { atomicWriteFile } from './atomic-write'
 import { ElectronBrowserDriver } from '../../../../packages/html2docx/src/drivers/electron'
@@ -681,7 +681,7 @@ const TEXT_EXTS = new Set([
   'sql',
   'css',
 ])
-/** office/pdf formats get text extracted via @chatoffice/file-parse; images skip extraction and go multimodal */
+/** office/pdf formats get text extracted via @chaoffice/file-parse; images skip extraction and go multimodal */
 const ATTACHMENT_EXTS = new Set([
   ...TEXT_EXTS,
   'doc',
@@ -771,7 +771,7 @@ function savePastedImage(data: unknown, ext: unknown): string | null {
         ? Buffer.from(data.buffer, data.byteOffset, data.byteLength)
         : null
   if (!bytes || bytes.byteLength === 0) return null
-  const dir = join(app.getPath('temp'), 'chatoffice-pasted')
+  const dir = join(app.getPath('temp'), 'chaoffice-pasted')
   mkdirSync(dir, { recursive: true })
   prunePastedImages(dir)
   const stamp = new Date().toISOString().slice(0, 19).replace(/[-:]/g, '').replace('T', '-')
@@ -1001,7 +1001,7 @@ function printHtml(html: string, docPath: string | undefined): Promise<PrintDial
     html: buildPreviewDocument(html, base),
     window: new BrowserWindow({ show: false, webPreferences: { sandbox: true } }),
     fileName: 'print.html',
-    dirPrefix: 'chatoffice-html-print-',
+    dirPrefix: 'chaoffice-html-print-',
   })
 }
 
@@ -1676,7 +1676,7 @@ function registerHtmlIpc(): void {
       if (docxExportPrepareHook && !(await docxExportPrepareHook(picked.filePath))) {
         return { ok: true, canceled: true }
       }
-      const workDir = await mkdtemp(join(tmpdir(), 'chatoffice-html-docx-'))
+      const workDir = await mkdtemp(join(tmpdir(), 'chaoffice-html-docx-'))
       let driver: ElectronBrowserDriver | null = null
       try {
         // Same document the preview shows (scripts on, relative assets via html-asset://):
@@ -1738,7 +1738,7 @@ function registerHtmlIpc(): void {
               configuredDefaultSaveDir(app),
             )
       if (picked.canceled || !picked.filePath) return { ok: true, canceled: true }
-      const workDir = await mkdtemp(join(tmpdir(), 'chatoffice-html-pdf-'))
+      const workDir = await mkdtemp(join(tmpdir(), 'chaoffice-html-pdf-'))
       try {
         const docPath = savePathByWc.get(e.sender.id)
         await writeFile(picked.filePath, await renderPrintPdf(request.html, docPath, workDir))
@@ -1978,7 +1978,7 @@ export function createHtmlView(
   return view
 }
 
-/** Standalone window mode: `npm run dev -w @chatoffice/html`, md path passed via argv */
+/** Standalone window mode: `npm run dev -w @chaoffice/html`, md path passed via argv */
 export function startHtmlStandalone(): void {
   registerPrivilegedSchemes()
   installNavigationGuard(app)

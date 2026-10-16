@@ -6,7 +6,7 @@
 import {
   FORMULA_REFERENCE_PATTERN,
   qualifierMatches,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-structure'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-structure'
 import { swapPosition, toSwapSpans } from './edit-journal'
 
 export interface ClosureSheetInput {

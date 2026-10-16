@@ -51,7 +51,7 @@ export type { AiModelType } from './model-type'
 export { modelAcceptsImages } from './settings-v2'
 export { functionCallingVerdict, resolveModelCapabilities } from './capabilities'
 export {
-  CHATOFFICE_PRESET_MODELS,
+  CHAOFFICE_PRESET_MODELS,
   NO_MODELS_API,
   VENDORS,
   VENDOR_BY_ID,

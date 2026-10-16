@@ -1,5 +1,5 @@
 /**
- * Wrapper around chatoffice (ChaOffice CLI, @chatoffice/cli) — search / image generation /
+ * Wrapper around chaoffice (ChaOffice CLI, @chaoffice/cli) — search / image generation /
  * media analysis / upload / transcription.
  *
  * Execution: the main process spawns the CLI's JS entry with
@@ -7,7 +7,7 @@
  * no-op in a plain Node environment), avoiding the Windows problem where
  * .cmd files cannot be passed to execFile.
  *
- * Auth: chatofficeCliApiKey() below. When not logged in, hasChaOfficeAuth() returns false and
+ * Auth: chaofficeCliApiKey() below. When not logged in, hasChaOfficeAuth() returns false and
  * callers should fall back to other implementations (e.g. Serper search).
  */
 
@@ -20,20 +20,20 @@ import {
   isCopyrightHost,
   asRecord,
   firstItem,
-  chatofficeProxyUrl,
+  chaofficeProxyUrl,
   safeHost,
   type ImageSearchResult,
   type WebSearchResult,
 } from './shared'
-// LOCAL(2026-09-22, f5247d3..476e5023): 上游 #657 watch 函数重放为 chatoffice 命名
-// LOCAL(2026-10-15, sync/24): 上游 #1950 拒键(401)恢复流并入,recoverFromRejectedGskKey→recoverFromRejectedChatofficeKey
+// LOCAL(2026-09-22, f5247d3..476e5023): 上游 #657 watch 函数重放为 chaoffice 命名
+// LOCAL(2026-10-15, sync/24): 上游 #1950 拒键(401)恢复流并入,recoverFromRejectedGskKey→recoverFromRejectedChaofficeKey
 import {
-  chatofficeApiKey as chatofficeAuthApiKey,
-  chatofficeAuthPath,
-  recoverFromRejectedChatofficeKey,
-  reloadChatofficeAuth,
+  chaofficeApiKey as chaofficeAuthApiKey,
+  chaofficeAuthPath,
+  recoverFromRejectedChaofficeKey,
+  reloadChaofficeAuth,
   type ChaOfficeRecoveryOutcome,
-} from './chatoffice-auth'
+} from './chaoffice-auth'
 
 const SEARCH_TIMEOUT_MS = 60_000
 const GENERATE_TIMEOUT_MS = 600_000
@@ -43,19 +43,19 @@ const MAX_BUFFER = 32 * 1024 * 1024
 
 let cachedEntry: string | null | undefined
 
-/** JS entry of @chatoffice/cli (null if not found). Can be overridden via GSK_CLI_PATH. */
+/** JS entry of @chaoffice/cli (null if not found). Can be overridden via GSK_CLI_PATH. */
 export function resolveChaOfficeEntry(): string | null {
   if (process.env.GSK_CLI_PATH) return process.env.GSK_CLI_PATH
   if (cachedEntry !== undefined) return cachedEntry
   try {
     const require = createRequire(import.meta.url)
-    cachedEntry = require.resolve('@chatoffice/cli/dist/index.js')
+    cachedEntry = require.resolve('@chaoffice/cli/dist/index.js')
   } catch {
     // The packaged app has no node_modules; electron-builder extraResources
-    // copies the CLI into Resources/chatoffice/
+    // copies the CLI into Resources/chaoffice/
     const resourcesPath = (process as { resourcesPath?: string }).resourcesPath
     const packed = resourcesPath
-      ? join(resourcesPath, 'chatoffice', 'node_modules', '@chatoffice', 'cli', 'dist', 'index.js')
+      ? join(resourcesPath, 'chaoffice', 'node_modules', '@chaoffice', 'cli', 'dist', 'index.js')
       : null
     cachedEntry = packed && existsSync(packed) ? packed : null
   }
@@ -75,7 +75,7 @@ function electronCompatArgs(): string[] {
   if (!process.versions.electron) return []
   if (compatPath === undefined) {
     try {
-      const dir = join(homedir(), '.chatoffice', 'bin')
+      const dir = join(homedir(), '.chaoffice', 'bin')
       mkdirSync(dir, { recursive: true })
       compatPath = join(dir, 'electron-compat.js')
       writeFileSync(compatPath, 'delete process.versions.electron;\n')
@@ -88,16 +88,16 @@ function electronCompatArgs(): string[] {
 
 /**
  * API key for ChaOffice LLM proxy / tool_cli auth; '' when not logged in.
- * Priority: CHATOFFICE_API_KEY env → ChaOffice's own key (bills to us via its
- * key_name) → shared chatoffice CLI login (bills to the Claw bucket).
+ * Priority: CHAOFFICE_API_KEY env → ChaOffice's own key (bills to us via its
+ * key_name) → shared chaoffice CLI login (bills to the Claw bucket).
  */
-export function chatofficeCliApiKey(): string {
-  const env = process.env.CHATOFFICE_API_KEY
+export function chaofficeCliApiKey(): string {
+  const env = process.env.CHAOFFICE_API_KEY
   if (env && !rejectedKeys.has(env)) return env
-  const own = chatofficeAuthApiKey()
+  const own = chaofficeAuthApiKey()
   if (own && !rejectedKeys.has(own)) return own
   try {
-    const configPath = join(homedir(), '.chatoffice-tool-cli', 'config.json')
+    const configPath = join(homedir(), '.chaoffice-tool-cli', 'config.json')
     if (!existsSync(configPath)) return ''
     const config = JSON.parse(readFileSync(configPath, 'utf-8')) as { api_key?: string }
     const shared = config.api_key ?? ''
@@ -111,12 +111,12 @@ export function chatofficeCliApiKey(): string {
 
 /**
  * Keys the server answered 401 for (expired / revoked). ChaOffice's own key
- * is also deleted from disk; env and shared chatoffice CLI keys belong to
+ * is also deleted from disk; env and shared chaoffice CLI keys belong to
  * someone else, so they are only skipped for the rest of this process.
  */
 const rejectedKeys = new Set<string>()
 
-/** Thrown when a chatoffice-key call is refused with 401 and no fresh key could be minted. */
+/** Thrown when a chaoffice-key call is refused with 401 and no fresh key could be minted. */
 export class ChaOfficeAuthError extends Error {
   constructor(message: string) {
     super(message)
@@ -124,36 +124,36 @@ export class ChaOfficeAuthError extends Error {
   }
 }
 
-/** Whether an error text reports an HTTP 401 (chatoffice CLI, tool_cli, LLM proxy shapes). */
-export function isChatofficeUnauthorizedText(text: unknown): boolean {
+/** Whether an error text reports an HTTP 401 (chaoffice CLI, tool_cli, LLM proxy shapes). */
+export function isChaofficeUnauthorizedText(text: unknown): boolean {
   return /\bHTTP 401\b|\b401 Unauthorized\b/i.test(String(text ?? ''))
 }
 
 /**
  * Records that `key` was refused with 401: it stops being offered (so
- * hasChaOfficeAuth() / ai:chatoffice-status report signed-out and the existing
+ * hasChaOfficeAuth() / ai:chaoffice-status report signed-out and the existing
  * sign-in UI appears) and the re-mint / re-login recovery starts. The
  * invalidation is synchronous, before the first await, so a caller can report
  * the failure right after this returns.
  */
-export function noteChatofficeKeyRejected(
+export function noteChaofficeKeyRejected(
   key: string,
   options: { allowLogin?: boolean } = {},
 ): Promise<ChaOfficeRecoveryOutcome> {
   if (key) rejectedKeys.add(key)
-  return recoverFromRejectedChatofficeKey(key, options)
+  return recoverFromRejectedChaofficeKey(key, options)
 }
 
 /**
- * For callers that used the chatoffice key outside this module (the ChaOffice
+ * For callers that used the chaoffice key outside this module (the ChaOffice
  * LLM proxy chat/stream): when `error` reports a 401, drop the key and start
  * the recovery in the background. Returns whether it was an auth failure.
  */
-export function noteChatofficeCallFailure(key: string, error: unknown): boolean {
+export function noteChaofficeCallFailure(key: string, error: unknown): boolean {
   if (!key) return false
   const text = error instanceof Error ? error.message : String(error ?? '')
-  if (!isChatofficeUnauthorizedText(text)) return false
-  void noteChatofficeKeyRejected(key).catch(() => {})
+  if (!isChaofficeUnauthorizedText(text)) return false
+  void noteChaofficeKeyRejected(key).catch(() => {})
   return true
 }
 
@@ -165,42 +165,42 @@ async function withKeyRecovery<T>(
   call: (key: string) => Promise<T>,
   options: { allowLogin?: boolean } = {},
 ): Promise<T> {
-  const key = chatofficeCliApiKey()
+  const key = chaofficeCliApiKey()
   try {
     return await call(key)
   } catch (err) {
     if (!(err instanceof ChaOfficeAuthError)) throw err
-    const outcome = await noteChatofficeKeyRejected(key, options)
-    const next = chatofficeCliApiKey()
+    const outcome = await noteChaofficeKeyRejected(key, options)
+    const next = chaofficeCliApiKey()
     if (outcome !== 'reminted' || !next || next === key) throw err
     return call(next)
   }
 }
 
 /** Test hook: forget rejected keys. */
-export function resetChatofficeRejectedKeys(): void {
+export function resetChaofficeRejectedKeys(): void {
   rejectedKeys.clear()
 }
 
 /**
- * Fires when the effective chatoffice key changes on disk — another
+ * Fires when the effective chaoffice key changes on disk — another
  * ChaOffice-family app re-logging in mints a new key and revokes the one this
  * process holds. Polls by path (watchFile): auth.json is replaced whole, and
  * fs.watch misses events for a moment after it is armed.
  */
-export function watchChatofficeApiKey(
+export function watchChaofficeApiKey(
   onChange: (key: string) => void,
   intervalMs = 2000,
 ): () => void {
-  let last = chatofficeCliApiKey()
+  let last = chaofficeCliApiKey()
   const check = (): void => {
-    reloadChatofficeAuth()
-    const key = chatofficeCliApiKey()
+    reloadChaofficeAuth()
+    const key = chaofficeCliApiKey()
     if (key === last) return
     last = key
     onChange(key)
   }
-  const files = [chatofficeAuthPath(), join(homedir(), '.chatoffice-tool-cli', 'config.json')]
+  const files = [chaofficeAuthPath(), join(homedir(), '.chaoffice-tool-cli', 'config.json')]
   for (const f of files) watchFile(f, { persistent: false, interval: intervalMs }, check)
   return () => {
     for (const f of files) unwatchFile(f, check)
@@ -208,30 +208,30 @@ export function watchChatofficeApiKey(
 }
 
 /**
- * Whether chatoffice is usable (CLI installed and logged in / has a key). Callers use this to decide fallback.
+ * Whether chaoffice is usable (CLI installed and logged in / has a key). Callers use this to decide fallback.
  * Set AI_SEARCH_DISABLE_GSK=1 to force-disable (test isolation / force Serper).
  */
 export function hasChaOfficeAuth(): boolean {
   if (process.env.AI_SEARCH_DISABLE_GSK === '1') return false
-  return !!chatofficeCliApiKey() && resolveChaOfficeEntry() !== null
+  return !!chaofficeCliApiKey() && resolveChaOfficeEntry() !== null
 }
 
 // ── Child-process proxy plumbing ────────────────────────────────────
 
 // The main process's undici dispatcher (see the apps' proxy bootstraps) never
 // reaches child processes: without forwarding they dial genspark.ai directly.
-export { setChaOfficeProxyUrl, chatofficeProxyUrl } from './shared'
+export { setChaOfficeProxyUrl, chaofficeProxyUrl } from './shared'
 
 /**
- * env for chatoffice CLI children: Electron-as-Node plus proxy forwarding. The CLI
+ * env for chaoffice CLI children: Electron-as-Node plus proxy forwarding. The CLI
  * uses Node's built-in fetch, which ignores proxy env vars unless
  * NODE_USE_ENV_PROXY=1 (Node >= 24 — Electron 41 ships Node 24). Only
  * http(s):// proxies are forwarded; undici's env proxy cannot speak SOCKS.
  */
-export function chatofficeChildEnv(base: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
+export function chaofficeChildEnv(base: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
   const env: NodeJS.ProcessEnv = { ...base, ELECTRON_RUN_AS_NODE: '1' }
   const proxy = [
-    chatofficeProxyUrl(),
+    chaofficeProxyUrl(),
     base.HTTPS_PROXY,
     base.https_proxy,
     base.HTTP_PROXY,
@@ -256,7 +256,7 @@ export function chatofficeChildEnv(base: NodeJS.ProcessEnv = process.env): NodeJ
 // ── Low-level execution ─────────────────────────────────────────────
 
 /**
- * chatoffice output may have [INFO] log lines mixed in before or after the JSON;
+ * chaoffice output may have [INFO] log lines mixed in before or after the JSON;
  * scan for a line starting with { or [ and parse the longest valid JSON
  * block from there, shrinking past any trailing logs.
  */
@@ -282,7 +282,7 @@ export function parseChaOfficeOutput(stdout: string): unknown {
       }
     }
   }
-  throw new Error(`No JSON found in chatoffice output: ${stdout.slice(0, 300)}`)
+  throw new Error(`No JSON found in chaoffice output: ${stdout.slice(0, 300)}`)
 }
 
 /** `passive`: a status/background call — a rejected key is dropped but no browser login opens */
@@ -293,7 +293,7 @@ function runChaOffice(
   passive = false,
 ): Promise<unknown> {
   const entry = resolveChaOfficeEntry()
-  if (!entry) return Promise.reject(new Error('@chatoffice/cli is not installed'))
+  if (!entry) return Promise.reject(new Error('@chaoffice/cli is not installed'))
   return withKeyRecovery((key) => runChaOfficeOnce(entry, key, args, timeoutMs, signal), {
     allowLogin: !passive,
   })
@@ -315,19 +315,19 @@ function runChaOfficeOnce(
         timeout: timeoutMs,
         maxBuffer: MAX_BUFFER,
         env: {
-          ...chatofficeChildEnv(),
-          ...(key ? { CHATOFFICE_API_KEY: key } : {}),
+          ...chaofficeChildEnv(),
+          ...(key ? { CHAOFFICE_API_KEY: key } : {}),
         },
         ...(signal ? { signal } : {}),
       },
       (err, stdout, stderr) => {
         if (err) {
-          // chatoffice's real failure reason (auth/network/quota) is in stderr; append it to ease debugging
+          // chaoffice's real failure reason (auth/network/quota) is in stderr; append it to ease debugging
           const errText = (stderr || '').toString().trim().slice(0, 500)
           const message = errText ? `${err.message} | stderr: ${errText}` : err.message
           // the CLI prints a refused call's {status:'error', message:'HTTP 401…'} on stdout
           const unauthorized =
-            !!key && (isChatofficeUnauthorizedText(stdout) || isChatofficeUnauthorizedText(stderr))
+            !!key && (isChaofficeUnauthorizedText(stdout) || isChaofficeUnauthorizedText(stderr))
           reject(unauthorized ? new ChaOfficeAuthError(message) : errText ? new Error(message) : err)
           return
         }
@@ -335,9 +335,9 @@ function runChaOfficeOnce(
           const result = parseChaOfficeOutput(String(stdout))
           const rec = asRecord(result)
           if (rec.status && rec.status !== 'ok') {
-            const message = `chatoffice returned an error: ${rec.message ?? rec.status}`
+            const message = `chaoffice returned an error: ${rec.message ?? rec.status}`
             reject(
-              key && isChatofficeUnauthorizedText(rec.message)
+              key && isChaofficeUnauthorizedText(rec.message)
                 ? new ChaOfficeAuthError(message)
                 : new Error(message),
             )
@@ -354,24 +354,24 @@ function runChaOfficeOnce(
 
 // ── Search ──────────────────────────────────────────────────────────
 
-// LOCAL(2026-09-22, f5247d3..476e5023): 上游 #555 结果数/字段长度钳制——随 gsk.ts→chatoffice.ts
-// 重命名跟随,符号名 MAX_GSK_*→MAX_CHATOFFICE_*(第十二轮同型坑)
+// LOCAL(2026-09-22, f5247d3..476e5023): 上游 #555 结果数/字段长度钳制——随 gsk.ts→chaoffice.ts
+// 重命名跟随,符号名 MAX_GSK_*→MAX_CHAOFFICE_*(第十二轮同型坑)
 /** Max search results kept; longest snippet/title chars (prevents MB fields blowing context). */
-export const MAX_CHATOFFICE_RESULTS = 20
-export const MAX_CHATOFFICE_SNIPPET_CHARS = 2_000
-const MAX_CHATOFFICE_URL_CHARS = 8_192
+export const MAX_CHAOFFICE_RESULTS = 20
+export const MAX_CHAOFFICE_SNIPPET_CHARS = 2_000
+const MAX_CHAOFFICE_URL_CHARS = 8_192
 
 function normalizeMaxResults(n: number): number {
   if (!Number.isFinite(n)) return 6
   return Math.min(20, Math.max(1, Math.floor(n)))
 }
 
-function clipField(v: unknown, max = MAX_CHATOFFICE_SNIPPET_CHARS): string {
+function clipField(v: unknown, max = MAX_CHAOFFICE_SNIPPET_CHARS): string {
   const s = String(v ?? '')
   return s.length > max ? s.slice(0, max) : s
 }
 
-/** Parses the `chatoffice search` response shape data.organic_results[{title,link,snippet}] (exported for tests) */
+/** Parses the `chaoffice search` response shape data.organic_results[{title,link,snippet}] (exported for tests) */
 export function parseChaOfficeWebSearch(
   raw: unknown,
   maxResults: number,
@@ -383,19 +383,19 @@ export function parseChaOfficeWebSearch(
     const o = asRecord(item)
     return {
       title: clipField(o.title),
-      url: clipField(o.link, MAX_CHATOFFICE_URL_CHARS),
+      url: clipField(o.link, MAX_CHAOFFICE_URL_CHARS),
       snippet: clipField(o.snippet),
     }
   })
   const answerRaw = typeof data.answer === 'string' && data.answer ? data.answer : undefined
   const answer =
-    answerRaw !== undefined && answerRaw.length > MAX_CHATOFFICE_SNIPPET_CHARS
-      ? `${answerRaw.slice(0, MAX_CHATOFFICE_SNIPPET_CHARS)}…`
+    answerRaw !== undefined && answerRaw.length > MAX_CHAOFFICE_SNIPPET_CHARS
+      ? `${answerRaw.slice(0, MAX_CHAOFFICE_SNIPPET_CHARS)}…`
       : answerRaw
   return answer !== undefined ? { results, answer } : { results }
 }
 
-export async function chatofficeWebSearch(
+export async function chaofficeWebSearch(
   query: string,
   maxResults = 6,
 ): Promise<{ results: WebSearchResult[]; answer?: string }> {
@@ -403,7 +403,7 @@ export async function chatofficeWebSearch(
   return parseChaOfficeWebSearch(raw, maxResults)
 }
 
-/** Parses the `chatoffice img-search` response shape data[{image_url,title,source,link,width,height}] (exported for tests) */
+/** Parses the `chaoffice img-search` response shape data[{image_url,title,source,link,width,height}] (exported for tests) */
 export function parseChaOfficeImageSearch(raw: unknown, maxResults: number): ImageSearchResult[] {
   const dataRaw = asRecord(raw).data
   const data: unknown[] = Array.isArray(dataRaw) ? dataRaw : []
@@ -429,7 +429,7 @@ export function parseChaOfficeImageSearch(raw: unknown, maxResults: number): Ima
   return images
 }
 
-export async function chatofficeImageSearch(
+export async function chaofficeImageSearch(
   query: string,
   maxResults = 8,
   /** 1-based page; mapped to --offset for the CLI (unrecognized flags degrade to page 1) */
@@ -462,20 +462,20 @@ export interface ChaOfficeGeneratedImage {
   taskId: string
 }
 
-/** Parses `chatoffice img` results: prefers data.generated_images[].image_urls_nowatermark (exported for tests) */
+/** Parses `chaoffice img` results: prefers data.generated_images[].image_urls_nowatermark (exported for tests) */
 export function parseChaOfficeGeneratedImage(raw: unknown): ChaOfficeGeneratedImage {
   const data = asRecord(asRecord(raw).data ?? raw)
   const img = asRecord(firstItem(data.generated_images ?? data.images ?? []))
   const url = firstItem(img.image_urls_nowatermark) ?? firstItem(img.image_urls) ?? img.url ?? ''
   if (!url) {
     throw new Error(
-      `chatoffice image generation returned no result: ${JSON.stringify(raw).slice(0, 200)}`,
+      `chaoffice image generation returned no result: ${JSON.stringify(raw).slice(0, 200)}`,
     )
   }
   return { url: String(url), taskId: String(img.task_id ?? '') }
 }
 
-export async function chatofficeGenerateImage(
+export async function chaofficeGenerateImage(
   options: ChaOfficeGenerateImageOptions,
   signal?: AbortSignal,
 ): Promise<ChaOfficeGeneratedImage> {
@@ -486,18 +486,18 @@ export async function chatofficeGenerateImage(
   if (options.imageSize) args.push('--image_size', options.imageSize)
   const raw = await runChaOffice(args, GENERATE_TIMEOUT_MS, signal)
   const result = parseChaOfficeGeneratedImage(raw)
-  // Bare chatoffice file URLs (/api/files/) return 403; swap for a signed direct link with a token
+  // Bare chaoffice file URLs (/api/files/) return 403; swap for a signed direct link with a token
   // so later plain fetch downloads (e.g. insert_web_image) need no auth
-  result.url = await chatofficeResolveDownloadUrl(result.url)
+  result.url = await chaofficeResolveDownloadUrl(result.url)
   return result
 }
 
 /**
- * Swaps a chatoffice file wrapper URL for an anonymously downloadable signed direct link (`chatoffice download`).
- * Non-chatoffice file URLs are returned as-is; on swap failure the URL is also returned as-is
+ * Swaps a chaoffice file wrapper URL for an anonymously downloadable signed direct link (`chaoffice download`).
+ * Non-chaoffice file URLs are returned as-is; on swap failure the URL is also returned as-is
  * (callers handle download failures themselves).
  */
-export async function chatofficeResolveDownloadUrl(url: string): Promise<string> {
+export async function chaofficeResolveDownloadUrl(url: string): Promise<string> {
   if (!url.includes('/api/files/')) return url
   try {
     const raw = asRecord(await runChaOffice(['download', url], SEARCH_TIMEOUT_MS))
@@ -557,7 +557,7 @@ async function toolCliPost(
   timeoutMs: number,
   signal?: AbortSignal,
 ): Promise<unknown> {
-  if (!chatofficeCliApiKey()) throw new Error('Not logged in to ChaOffice (chatoffice login)')
+  if (!chaofficeCliApiKey()) throw new Error('Not logged in to ChaOffice (chaoffice login)')
   return withKeyRecovery((key) => toolCliPostOnce(key, path, body, timeoutMs, signal))
 }
 
@@ -579,7 +579,7 @@ async function toolCliPostOnce(
       headers: {
         'X-Api-Key': key,
         'Content-Type': 'application/json',
-        'X-Agent-Type': 'chatoffice',
+        'X-Agent-Type': 'chaoffice',
       },
       body: JSON.stringify(body),
       signal: controller.signal,
@@ -604,7 +604,7 @@ async function toolCliPostOnce(
  * Generates one editable slide in the cloud (brief → HTML → one-slide PPTX)
  * and returns the downloaded PPTX bytes plus the model that produced it.
  */
-export async function chatofficeSlideGenerate(
+export async function chaofficeSlideGenerate(
   options: ChaOfficeSlideGenerateOptions,
 ): Promise<{ bytes: Uint8Array; model: string }> {
   const { signal } = options
@@ -647,17 +647,17 @@ export function parseChaOfficeConvertResult(raw: unknown): string {
 }
 
 /**
- * Uploads a local PDF and converts it to DOCX in the cloud (`chatoffice convert`,
+ * Uploads a local PDF and converts it to DOCX in the cloud (`chaoffice convert`,
  * costs 5 credits); returns the DOCX bytes.
  */
-export async function chatofficeConvertPdfToDocx(
+export async function chaofficeConvertPdfToDocx(
   filePath: string,
   signal?: AbortSignal,
 ): Promise<Uint8Array> {
-  const wrapperUrl = await chatofficeUpload(filePath)
+  const wrapperUrl = await chaofficeUpload(filePath)
   const raw = await runChaOffice(['convert', wrapperUrl], GENERATE_TIMEOUT_MS, signal)
   const link = parseChaOfficeConvertResult(raw)
-  const downloadUrl = await chatofficeResolveDownloadUrl(link)
+  const downloadUrl = await chaofficeResolveDownloadUrl(link)
   const resp = await fetch(downloadUrl, signal ? { signal } : undefined)
   if (!resp.ok) throw new Error(`DOCX download failed: HTTP ${resp.status}`)
   return new Uint8Array(await resp.arrayBuffer())
@@ -665,7 +665,7 @@ export async function chatofficeConvertPdfToDocx(
 
 // ── Media analysis / transcription ──────────────────────────────────
 
-/** Best-effort text extraction from chatoffice analysis-type command output (shape varies by task, so be lenient; exported for tests) */
+/** Best-effort text extraction from chaoffice analysis-type command output (shape varies by task, so be lenient; exported for tests) */
 export function extractChaOfficeText(raw: unknown): string {
   const data = asRecord(raw).data ?? raw
   if (typeof data === 'string') return data
@@ -693,7 +693,7 @@ export interface ChaOfficeAnalyzeMediaOptions {
   requirements: string
 }
 
-export async function chatofficeAnalyzeMedia(
+export async function chaofficeAnalyzeMedia(
   options: ChaOfficeAnalyzeMediaOptions,
   signal?: AbortSignal,
 ): Promise<string> {
@@ -717,7 +717,7 @@ export interface ChaOfficeTranscribeOptions {
   model?: string
 }
 
-export async function chatofficeTranscribe(
+export async function chaofficeTranscribe(
   options: ChaOfficeTranscribeOptions,
   signal?: AbortSignal,
 ): Promise<string> {
@@ -730,13 +730,13 @@ export async function chatofficeTranscribe(
 
 // ── File upload / login ─────────────────────────────────────────────
 
-/** Uploads a local file and returns a file wrapper URL (usable as input to other chatoffice commands) */
-export async function chatofficeUpload(filePath: string): Promise<string> {
+/** Uploads a local file and returns a file wrapper URL (usable as input to other chaoffice commands) */
+export async function chaofficeUpload(filePath: string): Promise<string> {
   const raw = asRecord(await runChaOffice(['upload', filePath], GENERATE_TIMEOUT_MS))
   const dataRec = asRecord(raw.data)
   const url = dataRec.file_wrapper_url ?? raw.url ?? dataRec.url
   if (!url)
-    throw new Error(`chatoffice upload did not return a URL: ${JSON.stringify(raw).slice(0, 200)}`)
+    throw new Error(`chaoffice upload did not return a URL: ${JSON.stringify(raw).slice(0, 200)}`)
   return String(url)
 }
 
@@ -760,7 +760,7 @@ export interface ChaOfficePastProjectsPage {
 }
 
 /**
- * Parses `chatoffice projects`. data.projects lacks project_url — it only appears in
+ * Parses `chaoffice projects`. data.projects lacks project_url — it only appears in
  * session_state.past_projects — so take it from there, falling back to
  * deriving it from the project id. (exported for tests)
  */
@@ -808,8 +808,8 @@ export interface ChaOfficeListPastProjectsOptions {
   signal?: AbortSignal
 }
 
-/** Lists the user's own past ChaOffice web projects, newest first (`chatoffice projects`). */
-export async function chatofficeListPastProjects(
+/** Lists the user's own past ChaOffice web projects, newest first (`chaoffice projects`). */
+export async function chaofficeListPastProjects(
   options: ChaOfficeListPastProjectsOptions = {},
 ): Promise<ChaOfficePastProjectsPage> {
   const args = ['projects']
@@ -828,7 +828,7 @@ export interface ChaOfficeLoginInfo {
 }
 
 /** Current login info; null when not logged in */
-export async function chatofficeLoginInfo(): Promise<ChaOfficeLoginInfo | null> {
+export async function chaofficeLoginInfo(): Promise<ChaOfficeLoginInfo | null> {
   try {
     const raw = await runChaOffice(['login-info'], SEARCH_TIMEOUT_MS, undefined, true)
     const d = asRecord(asRecord(raw).data ?? raw)

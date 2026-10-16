@@ -2,9 +2,9 @@ import { Fragment, useEffect, useId, useRef, useState, useSyncExternalStore } fr
 import { shapeRunFontSize, shapeTextOverflowClass, shapeTextScaleStyle } from './shape-text-scale'
 import { createPortal } from 'react-dom'
 import { BooleanNumber, numfmt } from '@univerjs/core'
-import { isMetafileMime, metafileToDataUrl } from '@chatoffice/docx-engine/metafile'
-import { shapePreviewPath } from '@chatoffice/ui/shape-gallery'
-import { Dropdown, useDismissablePopover } from '@chatoffice/ui'
+import { isMetafileMime, metafileToDataUrl } from '@chaoffice/docx-engine/metafile'
+import { shapePreviewPath } from '@chaoffice/ui/shape-gallery'
+import { Dropdown, useDismissablePopover } from '@chaoffice/ui'
 
 import type { createUniver } from './create-univer'
 
@@ -16,8 +16,8 @@ import {
   scatterAxisBounds,
   splitSheetRef,
   valueAxisScale,
-} from '@chatoffice/xlsx-gateway/domain/chart-visual'
-import { parseAddress } from '@chatoffice/xlsx-gateway/domain/cell-address'
+} from '@chaoffice/xlsx-gateway/domain/chart-visual'
+import { parseAddress } from '@chaoffice/xlsx-gateway/domain/cell-address'
 import { ColorDropdown } from './ColorDropdown'
 import { t } from './i18n/locale'
 import { isEditableShape, isEditableVisual } from './visual-editable'

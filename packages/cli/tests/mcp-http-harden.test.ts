@@ -251,7 +251,7 @@ function rawRequest(port: number, request: string): Promise<string> {
 
 /** Delete this server's stored copy found under the tmp FileStore roots. */
 function removeStoredCopy(name: string): void {
-  const prefix = `chatoffice-mcp-http-${process.pid}-`
+  const prefix = `chaoffice-mcp-http-${process.pid}-`
   for (const entry of readdirSync(tmpdir())) {
     if (!entry.startsWith(prefix)) continue
     removeMatching(join(tmpdir(), entry), name)

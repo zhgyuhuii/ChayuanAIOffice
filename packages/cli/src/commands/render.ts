@@ -128,7 +128,7 @@ export const renderCommand: CommandDef = {
     const detail: Record<string, unknown> = {
       files: [...files, ...crops].map((f) => ({ ...f, page: f.page + 1 })),
       formats: RENDERABLE,
-      via: path.toLowerCase().endsWith('.pdf') ? 'pdfium' : 'chatoffice --headless-export + pdfium',
+      via: path.toLowerCase().endsWith('.pdf') ? 'pdfium' : 'chaoffice --headless-export + pdfium',
     }
     if (flagBool(args, 'grid')) {
       const sheet = contactSheet(
@@ -229,7 +229,7 @@ function locate(
         reason: 'target_not_found',
         suggestion: guess
           ? `did you mean ${guess}?`
-          : 'run `chatoffice slides read <file>` for the ids',
+          : 'run `chaoffice slides read <file>` for the ids',
       },
     )
   }

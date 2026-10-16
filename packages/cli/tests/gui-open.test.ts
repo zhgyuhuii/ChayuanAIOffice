@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { chatofficeUserDataDir, guiOpenDocuments } from '../src/gui'
+import { chaofficeUserDataDir, guiOpenDocuments } from '../src/gui'
 import { run, tempDir } from './helpers'
 
 function registry(dir: string, pid: number, paths: string[]): Record<string, string> {
@@ -26,8 +26,8 @@ async function workbook(dir: string): Promise<string> {
 
 describe('GUI-open documents', () => {
   it('locates the shell userData directory and honours the override', () => {
-    expect(chatofficeUserDataDir({ GENOFFICE_USER_DATA: '/u' })).toBe('/u')
-    expect(chatofficeUserDataDir({}).endsWith('ChaOffice')).toBe(true)
+    expect(chaofficeUserDataDir({ GENOFFICE_USER_DATA: '/u' })).toBe('/u')
+    expect(chaofficeUserDataDir({}).endsWith('ChaOffice')).toBe(true)
   })
 
   it('ignores a missing, malformed or crash-leftover registry', () => {

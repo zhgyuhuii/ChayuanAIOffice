@@ -1,4 +1,4 @@
-import type { NoteInfo } from '@chatoffice/docx-engine'
+import type { NoteInfo } from '@chaoffice/docx-engine'
 import { noteMarkText } from '../note-format'
 import { useI18n } from '../i18n/locale'
 

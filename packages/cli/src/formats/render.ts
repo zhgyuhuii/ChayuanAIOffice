@@ -75,7 +75,7 @@ export async function renderToPngs(
       { reason: 'unsupported' },
     )
   }
-  const tmpPdf = ext === 'pdf' ? null : join(tmpdir(), `chatoffice-render-${randomUUID()}.pdf`)
+  const tmpPdf = ext === 'pdf' ? null : join(tmpdir(), `chaoffice-render-${randomUUID()}.pdf`)
   try {
     if (tmpPdf) await exportViaApp(path, 'pdf', tmpPdf, { env: ctx.env, log: opts.log })
     const pages = await rasterizePdf(readInput(tmpPdf ?? path), opts.scale, opts.only, opts.range)

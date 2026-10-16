@@ -5,38 +5,38 @@ import {
   ResponseTooLargeError,
   fetchRemoteImage,
   readBodyCapped,
-} from '@chatoffice/electron-utils/remote-image'
+} from '@chaoffice/electron-utils/remote-image'
 import {
   columnIndex,
   columnLabel,
   parseAddress,
   parseRange,
   type RangeBounds,
-} from '@chatoffice/xlsx-gateway/domain/cell-address'
-import type { ChartVisualState } from '@chatoffice/xlsx-gateway/domain/chart-visual'
+} from '@chaoffice/xlsx-gateway/domain/cell-address'
+import type { ChartVisualState } from '@chaoffice/xlsx-gateway/domain/chart-visual'
 import {
   matchableCellText,
   type WorkbookOperation,
-} from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
+} from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
 import type {
   WorkbookSnapshot,
   WorksheetState,
-} from '@chatoffice/xlsx-gateway/domain/workbook.types'
-import type { CfWireRule } from '@chatoffice/xlsx-gateway/gateway/xlsx-cf'
+} from '@chaoffice/xlsx-gateway/domain/workbook.types'
+import type { CfWireRule } from '@chaoffice/xlsx-gateway/gateway/xlsx-cf'
 import type {
   DefinedNameEntry,
   DefinedNamesState,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-defined-names'
-import type { ChartAdd, DrawingAnchor } from '@chatoffice/xlsx-gateway/gateway/xlsx-drawing-add'
-import type { DvWireRule } from '@chatoffice/xlsx-gateway/gateway/xlsx-dv'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-defined-names'
+import type { ChartAdd, DrawingAnchor } from '@chaoffice/xlsx-gateway/gateway/xlsx-drawing-add'
+import type { DvWireRule } from '@chaoffice/xlsx-gateway/gateway/xlsx-dv'
 import {
   areasOverlap,
   buildPivotLayout,
   PivotLayoutError,
   pivotOutputArea,
   type PivotScalar,
-} from '@chatoffice/xlsx-gateway/domain/pivot-layout'
-import type { SheetFilterState } from '@chatoffice/xlsx-gateway/gateway/xlsx-filter'
+} from '@chaoffice/xlsx-gateway/domain/pivot-layout'
+import type { SheetFilterState } from '@chaoffice/xlsx-gateway/gateway/xlsx-filter'
 import type {
   SheetCfState,
   SheetDvState,
@@ -48,10 +48,10 @@ import type {
   SheetStructuralOps,
   SheetTableAddition,
   SheetVisualAddition,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
-import type { SheetNote } from '@chatoffice/xlsx-gateway/gateway/xlsx-notes'
-import type { SheetPageSetupState } from '@chatoffice/xlsx-gateway/gateway/xlsx-page-setup'
-import type { WorkbookChartEdit } from '@chatoffice/xlsx-gateway/shared/edit-schemas'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
+import type { SheetNote } from '@chaoffice/xlsx-gateway/gateway/xlsx-notes'
+import type { SheetPageSetupState } from '@chaoffice/xlsx-gateway/gateway/xlsx-page-setup'
+import type { WorkbookChartEdit } from '@chaoffice/xlsx-gateway/shared/edit-schemas'
 import { assertAllowed, type PathContext } from '../fs'
 import { classifyOpError } from '../op-errors'
 import { CliError, EXIT } from '../result'
@@ -246,7 +246,7 @@ export async function buildGatewayPayloads(input: GatewayBuildInput): Promise<Ga
       { failures: [classifyOpError(index, op, message)] },
       {
         reason: 'op_rejected',
-        suggestion: 'fix the op against `chatoffice guide sheets`, then resend the whole batch',
+        suggestion: 'fix the op against `chaoffice guide sheets`, then resend the whole batch',
       },
     )
   }
@@ -479,7 +479,7 @@ export async function buildGatewayPayloads(input: GatewayBuildInput): Promise<Ga
           reject(
             i,
             op.op,
-            'chartPath must be a chart part of the file (xl/charts/chartN.xml); `chatoffice info` lists them',
+            'chartPath must be a chart part of the file (xl/charts/chartN.xml); `chaoffice info` lists them',
           )
         }
         if (op.seriesData !== undefined) {

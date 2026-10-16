@@ -1,4 +1,4 @@
-import type { Lang } from '@chatoffice/i18n'
+import type { Lang } from '@chaoffice/i18n'
 import type { AiPanelSide } from './ai-panel-prefs'
 
 // Shared by every editor's AI header; each label names the destination side.

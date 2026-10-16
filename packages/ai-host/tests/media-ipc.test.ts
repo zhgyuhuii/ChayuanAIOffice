@@ -2,7 +2,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { registerMediaJobAdapter, type MediaJobAdapter } from '@chatoffice/ai-provider'
+import { registerMediaJobAdapter, type MediaJobAdapter } from '@chaoffice/ai-provider'
 import { persistGeneratedImage, registerFetchImageIpc, registerMediaIpc } from '../src/media-ipc'
 import { createByokImageHandler } from '../src/index'
 
@@ -310,7 +310,7 @@ describe('registerMediaIpc end-to-end', () => {
         readFile: (p) => import('node:fs/promises').then((m) => m.readFile(p, 'utf8')),
         writeFile: (p, c) => import('node:fs/promises').then((m) => m.writeFile(p, c, 'utf8')),
       },
-      chatoffice: {
+      chaoffice: {
         apiKey: () => '',
         hasAuth: () => false,
         status: async () => ({ loggedIn: false }),

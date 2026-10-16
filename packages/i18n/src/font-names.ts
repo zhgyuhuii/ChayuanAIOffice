@@ -1,12 +1,12 @@
 /**
  * CJK font-family spellings per script — the locale dictionary behind the
- * suite-wide font pickers (@chatoffice/ui/src/font-list.ts consumes it).
+ * suite-wide font pickers (@chaoffice/ui/src/font-list.ts consumes it).
  *
  * The localized spellings (Han, Kana, Hangul) are functional data, not UI copy:
  * they are the family names the OS font enumeration reports on CJK-locale
  * systems and the names CJK documents expect in their font slots. They live in
  * this i18n package — the one place the repo keeps locale strings — while the
- * picker logic that consumes them stays in @chatoffice/ui.
+ * picker logic that consumes them stays in @chaoffice/ui.
  */
 
 // GB/T 9704 official-document fonts included so government documents can be

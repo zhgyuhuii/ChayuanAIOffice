@@ -1,4 +1,4 @@
-import type { AgentSkill, AgentToolCall, AgentToolDef, ToolExecution } from '@chatoffice/agent-core'
+import type { AgentSkill, AgentToolCall, AgentToolDef, ToolExecution } from '@chaoffice/agent-core'
 import { t } from '../i18n/locale'
 import type { ElementEntry, ParseMap } from '../document/parse-map'
 import type { HtmlOp, OpError } from '../document/ops'
@@ -649,7 +649,7 @@ export function createHtmlSkillCore(access: HtmlDocAccess): {
       }
       const brief = parseBrief(text)
       const briefBlock = brief
-        ? `\n\n## Brief (pinned in <meta name="chatoffice:brief">)\n${briefSummary(brief)}\nNew content follows this core hook and style; a restyle starts by updating the --brief-* variables and this meta via plan_page.`
+        ? `\n\n## Brief (pinned in <meta name="chaoffice:brief">)\n${briefSummary(brief)}\nNew content follows this core hook and style; a restyle starts by updating the --brief-* variables and this meta via plan_page.`
         : ''
       const budget =
         CONTEXT_MAX_CHARS - head.join('\n').length - selection.length - briefBlock.length - 40
@@ -924,7 +924,7 @@ export function createHtmlSkillCore(access: HtmlDocAccess): {
             return {
               output: `Brief confirmed (${mode}).${edited}\n${briefSummary(decision.brief)}\n${
                 pinned
-                  ? 'The brief is now pinned in <head> (meta name="chatoffice:brief"). '
+                  ? 'The brief is now pinned in <head> (meta name="chaoffice:brief"). '
                   : 'The pinned brief was already current. '
               }${
                 mode === 'restyle'

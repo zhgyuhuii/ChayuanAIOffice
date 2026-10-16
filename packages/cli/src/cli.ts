@@ -35,7 +35,7 @@ import { didYouMean } from './suggest'
 
 declare const __GENOFFICE_VERSION__: string | undefined
 
-/** The @chatoffice/cli package version: inlined by build.mjs, read from disk when running from source. */
+/** The @chaoffice/cli package version: inlined by build.mjs, read from disk when running from source. */
 export const VERSION: string =
   typeof __GENOFFICE_VERSION__ === 'string' ? __GENOFFICE_VERSION__ : devVersion()
 
@@ -120,7 +120,7 @@ export async function runCli(argv: readonly string[], opts: RunOptions = {}): Pr
               name,
               registry.list().map((d) => d.name),
             ),
-            'run `chatoffice help` for the command list',
+            'run `chaoffice help` for the command list',
           ),
         },
       ),
@@ -141,7 +141,7 @@ export async function runCli(argv: readonly string[], opts: RunOptions = {}): Pr
           reason: 'unknown_option',
           suggestion: withGuess(
             didYouMean(unknown[0]!, known),
-            `run \`chatoffice help ${def.name}\` for its options`,
+            `run \`chaoffice help ${def.name}\` for its options`,
             '--',
           ),
         },
@@ -224,9 +224,9 @@ function globalHelp(registry: CommandRegistry): string {
   const defs = registry.list()
   const width = Math.max(...defs.map((d) => d.name.length))
   return [
-    `chatoffice ${VERSION} — ChaAI Office command line`,
+    `chaoffice ${VERSION} — ChaAI Office command line`,
     '',
-    'Usage: chatoffice <command> [options]',
+    'Usage: chaoffice <command> [options]',
     '',
     'Commands:',
     ...defs.map((d) => `  ${d.name.padEnd(width)}  ${d.summary}`),
@@ -250,7 +250,7 @@ if (isMain) {
   const exit = (code: number) => process.stdout.write('', () => process.exit(code))
   runCli(process.argv.slice(2)).then(exit, (err) => {
     process.stderr.write(
-      `chatoffice: ${err instanceof Error ? (err.stack ?? err.message) : String(err)}\n`,
+      `chaoffice: ${err instanceof Error ? (err.stack ?? err.message) : String(err)}\n`,
     )
     exit(EXIT.conversion)
   })

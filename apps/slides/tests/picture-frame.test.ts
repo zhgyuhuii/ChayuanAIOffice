@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { imageDpiFromBytes } from '@chatoffice/pptx-render'
+import { imageDpiFromBytes } from '@chaoffice/pptx-render'
 import { pictureFrame } from '../src/main/picture-frame'
 
 const PT = 12700

@@ -3,13 +3,13 @@ import { readFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { openLocalArea } from '@chatoffice/storage-adapter'
+import { openLocalArea } from '@chaoffice/storage-adapter'
 import { buildServer } from '../src/app.ts'
 
 const dirs: string[] = []
 
 function tempArea() {
-  const dir = mkdtempSync(join(tmpdir(), 'chatoffice-bff-'))
+  const dir = mkdtempSync(join(tmpdir(), 'chaoffice-bff-'))
   dirs.push(dir)
   return openLocalArea({ rootDir: dir })
 }
@@ -109,7 +109,7 @@ describe('auth (jwt mode)', () => {
   }
 
   it('rejects missing/invalid tokens on rpc routes and accepts a valid sub', async () => {
-    const { app } = buildServer({ area: tempArea(), auth: { mode: 'jwt', audience: 'chatoffice' } })
+    const { app } = buildServer({ area: tempArea(), auth: { mode: 'jwt', audience: 'chaoffice' } })
     const noToken = await app.inject({
       method: 'POST',
       url: '/rpc/settings/get',
@@ -129,7 +129,7 @@ describe('auth (jwt mode)', () => {
       method: 'POST',
       url: '/rpc/settings/get',
       payload: { args: ['x'] },
-      headers: { authorization: `Bearer ${tokenFor('u1', 'chatoffice')}` },
+      headers: { authorization: `Bearer ${tokenFor('u1', 'chaoffice')}` },
     })
     expect(ok.statusCode).toBe(200)
 
@@ -140,11 +140,11 @@ describe('auth (jwt mode)', () => {
 
 describe('AI endpoints', () => {
   it('serves v2 settings defaults and round-trips a saved view with KEEP_KEY', async () => {
-    const dataDir = await Promise.resolve(mkdtempSync(join(tmpdir(), 'chatoffice-ai-')))
+    const dataDir = await Promise.resolve(mkdtempSync(join(tmpdir(), 'chaoffice-ai-')))
     const { app } = buildServer({ area: tempArea(), ai: { dataDir } })
     const first = await app.inject({ method: 'GET', url: '/ai/settings' })
     expect(first.json().version).toBe(2)
-    // web form filters the chatoffice-login profile: the default view is an empty, configure-first list
+    // web form filters the chaoffice-login profile: the default view is an empty, configure-first list
     expect(first.json().profiles).toEqual([])
 
     const view = first.json()
@@ -179,7 +179,7 @@ describe('AI endpoints', () => {
     const { app } = buildServer({
       area: tempArea(),
       ai: {
-        dataDir: mkdtempSync(join(tmpdir(), 'chatoffice-ai-')),
+        dataDir: mkdtempSync(join(tmpdir(), 'chaoffice-ai-')),
         onCall: (r) => seen.push(r as unknown as Record<string, unknown>),
       },
     })
@@ -193,7 +193,7 @@ describe('AI endpoints', () => {
   })
 
   it('streams an error chunk (SSE) when the selection has no key', async () => {
-    const dataDir = await Promise.resolve(mkdtempSync(join(tmpdir(), 'chatoffice-ai-')))
+    const dataDir = await Promise.resolve(mkdtempSync(join(tmpdir(), 'chaoffice-ai-')))
     const { app } = buildServer({ area: tempArea(), ai: { dataDir } })
     const view = (await app.inject({ method: 'GET', url: '/ai/settings' })).json()
     view.profiles.push({
@@ -231,8 +231,8 @@ describe('AI endpoints', () => {
 
 describe('AI harness fusion (dsh plugin form)', () => {
   it('reads chatop-* profiles from the dsh settings file, keys resolved from credentials', async () => {
-    const dataDir = mkdtempSync(join(tmpdir(), 'chatoffice-ai-'))
-    const dshHome = mkdtempSync(join(tmpdir(), 'chatoffice-dsh-'))
+    const dataDir = mkdtempSync(join(tmpdir(), 'chaoffice-ai-'))
+    const dshHome = mkdtempSync(join(tmpdir(), 'chaoffice-dsh-'))
     writeFileSync(
       join(dshHome, 'settings.yaml'),
       [
@@ -280,8 +280,8 @@ describe('AI harness fusion (dsh plugin form)', () => {
 
 describe('AI harness fusion: chatop-models local models', () => {
   it('surfaces installed local chat models as the chatop-local group and defaults to the running one', async () => {
-    const dataDir = mkdtempSync(join(tmpdir(), 'chatoffice-ai-'))
-    const dshHome = mkdtempSync(join(tmpdir(), 'chatoffice-dsh-'))
+    const dataDir = mkdtempSync(join(tmpdir(), 'chaoffice-ai-'))
+    const dshHome = mkdtempSync(join(tmpdir(), 'chaoffice-dsh-'))
     writeFileSync(
       join(dshHome, 'settings.yaml'),
       [
@@ -355,7 +355,7 @@ describe('POST /rpc/remoteStorage/*', () => {
       bucket: 'docs',
       accessKeyId: 'AK',
       secretAccessKey: 'SK',
-      prefix: 'chatoffice/',
+      prefix: 'chaoffice/',
       pathStyle: true,
       enabled: true,
     }

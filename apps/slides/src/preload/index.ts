@@ -1,11 +1,11 @@
-import type { AiPanelPrefs } from '@chatoffice/ui'
+import type { AiPanelPrefs } from '@chaoffice/ui'
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import type { IpcRendererEvent } from 'electron'
-import type { RenderSlide } from '@chatoffice/pptx-render'
-import { KB_CHANNELS } from '@chatoffice/ai-host/kb-channels'
-import type { ProjectApi } from '@chatoffice/project-store'
-import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
-import { installFilesPaneBridge } from '@chatoffice/electron-utils/files-pane-bridge'
+import type { RenderSlide } from '@chaoffice/pptx-render'
+import { KB_CHANNELS } from '@chaoffice/ai-host/kb-channels'
+import type { ProjectApi } from '@chaoffice/project-store'
+import { installDropOpenBridge } from '@chaoffice/electron-utils/drop-open'
+import { installFilesPaneBridge } from '@chaoffice/electron-utils/files-pane-bridge'
 import type {
   AddChartOp,
   AddElementOp,
@@ -447,8 +447,8 @@ const api: SlidesApi = {
   aiStream: (request: AiStreamWireRequest) => ipcRenderer.invoke('ai:stream', request),
   aiStreamCancel: (requestId: string) => ipcRenderer.invoke('ai:stream-cancel', requestId),
   aiChaOfficeStatus: (withEmail?: boolean) =>
-    ipcRenderer.invoke('ai:chatoffice-status', withEmail),
-  aiChaOfficeLogin: () => ipcRenderer.invoke('ai:chatoffice-login'),
+    ipcRenderer.invoke('ai:chaoffice-status', withEmail),
+  aiChaOfficeLogin: () => ipcRenderer.invoke('ai:chaoffice-login'),
   aiLocalToolStatus: (vendorId: string) => ipcRenderer.invoke('ai:local-tool-status', vendorId),
   aiLocalToolInstall: (vendorId: string, onLine?: (line: string) => void) => {
     if (!onLine) return ipcRenderer.invoke('ai:local-tool-install', vendorId)
@@ -533,7 +533,7 @@ const api: SlidesApi = {
   }) => ipcRenderer.invoke('ai:generate-video', op),
   analyzeMedia: (op: { mediaUrls: string[]; requirements: string }) =>
     ipcRenderer.invoke('ai:analyze-media', op),
-  chatofficeStatus: () => ipcRenderer.invoke('ai:chatoffice-status'),
+  chaofficeStatus: () => ipcRenderer.invoke('ai:chaoffice-status'),
   onAiStream: (handler: (chunk: AiStreamChunk) => void) => {
     const listener = (_e: IpcRendererEvent, chunk: AiStreamChunk) => handler(chunk)
     ipcRenderer.on('ai:stream-chunk', listener)

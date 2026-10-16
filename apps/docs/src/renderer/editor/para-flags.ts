@@ -1,4 +1,4 @@
-import type { DocDefaults, ParaFormat, StyleDisplay } from '@chatoffice/docx-engine'
+import type { DocDefaults, ParaFormat, StyleDisplay } from '@chaoffice/docx-engine'
 import type { BlockMeta } from '../pagination-types'
 
 export interface DirectParaFlags {

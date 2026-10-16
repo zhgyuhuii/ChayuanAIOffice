@@ -1,5 +1,5 @@
 {
-  "name": "@chatoffice/server",
+  "name": "@chaoffice/server",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -16,13 +16,13 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@chatoffice/ai-provider": "*",
-    "@chatoffice/ai-search": "*",
-    "@chatoffice/electron-utils": "*",
-    "@chatoffice/pptx-engine": "*",
-    "@chatoffice/pptx-render": "*",
-    "@chatoffice/service-core": "*",
-    "@chatoffice/storage-adapter": "*",
+    "@chaoffice/ai-provider": "*",
+    "@chaoffice/ai-search": "*",
+    "@chaoffice/electron-utils": "*",
+    "@chaoffice/pptx-engine": "*",
+    "@chaoffice/pptx-render": "*",
+    "@chaoffice/service-core": "*",
+    "@chaoffice/storage-adapter": "*",
     "fastify": "^5.2.1",
     "tsx": "^4.19.2"
   },

@@ -1,10 +1,10 @@
 import { readFileSync, unlinkSync, writeFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import {
-  chatofficeCliApiKey,
-  chatofficeListPastProjects,
+  chaofficeCliApiKey,
+  chaofficeListPastProjects,
   hasChaOfficeAuth,
-} from '@chatoffice/ai-search'
+} from '@chaoffice/ai-search'
 import type { CloudProjectEntry, CloudProjectKind, CloudProjectsSnapshot } from '../shared/home-api'
 
 const SYNC_PAGE = 100
@@ -18,7 +18,7 @@ export function kindFromType(type: string): CloudProjectKind | 'other' {
   return KINDS.find((k) => type.startsWith(k)) ?? 'other'
 }
 
-export const CHATOFFICE_ORIGIN = 'https://www.genspark.ai'
+export const CHAOFFICE_ORIGIN = 'https://www.genspark.ai'
 
 /** API ctime carries no timezone marker and is UTC; append Z before parsing */
 function ctimeToMs(ctime: string): number {
@@ -35,9 +35,9 @@ function ctimeToMs(ctime: string): number {
  * (exported for tests)
  */
 export function cloudStoreOwner(): string {
-  const key = chatofficeCliApiKey()
+  const key = chaofficeCliApiKey()
   if (!key) return ''
-  return createHash('sha256').update(`chatoffice-cloud-store:${key}`).digest('hex').slice(0, 16)
+  return createHash('sha256').update(`chaoffice-cloud-store:${key}`).digest('hex').slice(0, 16)
 }
 
 /** disk shape: the snapshot plus the owner tag (stripped before it reaches the renderer) */
@@ -114,7 +114,7 @@ async function doSync(storePath: string, owner: string): Promise<CloudProjectsSn
   const seen = new Set<string>()
   let offset = 0
   for (;;) {
-    const page = await chatofficeListPastProjects({
+    const page = await chaofficeListPastProjects({
       artifactTypes: [...KINDS],
       limit: SYNC_PAGE,
       offset,
@@ -158,9 +158,9 @@ async function doSync(storePath: string, owner: string): Promise<CloudProjectsSn
   return snapshot
 }
 
-/** Only relative chatoffice paths may be opened externally (renderer input is untrusted). */
+/** Only relative chaoffice paths may be opened externally (renderer input is untrusted). */
 export function cloudProjectExternalUrl(projectUrl: unknown): string | null {
   if (typeof projectUrl !== 'string') return null
   if (!projectUrl.startsWith('/') || projectUrl.startsWith('//')) return null
-  return `${CHATOFFICE_ORIGIN}${projectUrl}`
+  return `${CHAOFFICE_ORIGIN}${projectUrl}`
 }

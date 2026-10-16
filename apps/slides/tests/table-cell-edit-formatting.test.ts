@@ -14,8 +14,8 @@ import {
   savePptx,
   type OpenedPptx,
   type TableElement,
-} from '@chatoffice/pptx-engine'
-import { runTxn } from '@chatoffice/pptx-ops'
+} from '@chaoffice/pptx-engine'
+import { runTxn } from '@chaoffice/pptx-ops'
 
 let opened: OpenedPptx
 let tableId: string

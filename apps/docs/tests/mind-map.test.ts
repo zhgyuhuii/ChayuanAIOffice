@@ -13,7 +13,7 @@ import {
   wrapLabel,
 } from '../src/renderer/ai/mind-map'
 import { AGENT_SYSTEM_PROMPT } from '../src/renderer/ai/protocol'
-import type { MindMapTreeNode } from '@chatoffice/agent-core'
+import type { MindMapTreeNode } from '@chaoffice/agent-core'
 
 const NUM_IDS = { bullet: null, ordered: null }
 

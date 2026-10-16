@@ -2,7 +2,7 @@ import { expect, describe, it } from 'vitest'
 /**
  * 表格扩展场景补充包
  */
-import { expandToPrimitiveOps } from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
+import { expandToPrimitiveOps } from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
 const DSL = (op: unknown) => expandToPrimitiveOps([op] as never)
 
 describe('sheets 扩展 · 场景补充包', () => {

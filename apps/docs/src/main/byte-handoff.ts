@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { LAZY_MEDIA_SCHEME } from '@chatoffice/docx-engine/lazy-media'
+import { LAZY_MEDIA_SCHEME } from '@chaoffice/docx-engine/lazy-media'
 
 /**
  * Document bytes cross to the renderer over the media protocol instead of an

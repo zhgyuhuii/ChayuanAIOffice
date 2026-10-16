@@ -1,4 +1,4 @@
-# 安装 ChatOffice
+# 安装 ChaOffice
 
 每个构建都发布在 [Releases 页面](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)。它们全部出自 `main`；macOS 与 Windows 的安装包已签名。
 
@@ -18,32 +18,32 @@
 
 ## 在 macOS 上
 
-打开 `.dmg`，把 **ChatOffice** 拖进「应用程序」文件夹。Intel 版首次启动时会请你确认打开：在「应用程序」里右键点这个应用 ▸ 打开。这只是 Gatekeeper 遇到一个看起来未签名的磁盘映像，并不是下载损坏。
+打开 `.dmg`，把 **ChaOffice** 拖进「应用程序」文件夹。Intel 版首次启动时会请你确认打开：在「应用程序」里右键点这个应用 ▸ 打开。这只是 Gatekeeper 遇到一个看起来未签名的磁盘映像，并不是下载损坏。
 
 ## 在 Windows 上
 
-运行 `.exe` 安装程序。它会把 ChatOffice 放进开始菜单，并注册 `.docx`、`.xlsx`、`.pptx`、`.pdf` 等格式，双击文件就会用 ChatOffice 打开。
+运行 `.exe` 安装程序。它会把 ChaOffice 放进开始菜单，并注册 `.docx`、`.xlsx`、`.pptx`、`.pdf` 等格式，双击文件就会用 ChaOffice 打开。
 
 ## 在 Linux 上
 
 **Debian / Ubuntu**
 
 ```sh
-sudo apt install ./chatoffice_<version>_amd64.deb
+sudo apt install ./chaoffice_<version>_amd64.deb
 ```
 
 **Fedora / RHEL / openSUSE**
 
 ```sh
-sudo dnf install ./chatoffice-<version>.x86_64.rpm     # Fedora / RHEL family
-sudo zypper install ./chatoffice-<version>.x86_64.rpm  # openSUSE
+sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
+sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
 
 **AppImage** — 免安装，放在哪儿就在哪儿运行：
 
 ```sh
-chmod +x ChatOffice-<version>.AppImage
-./ChatOffice-<version>.AppImage
+chmod +x ChaOffice-<version>.AppImage
+./ChaOffice-<version>.AppImage
 ```
 
 它需要 FUSE 2 运行时。如果不想安装它，可以用 `--appimage-extract-and-run` 来运行，沙箱会从解压出来的目录工作。
@@ -64,4 +64,4 @@ chmod +x ChatOffice-<version>.AppImage
 
 ## 命令行随包附带
 
-每个安装版本都带一个 `chatoffice` 命令，它和窗口调用的是同一套引擎，因此两者对同一个文件不会给出不同的结果。在 macOS 和 Windows 上它位于应用包内；`chatoffice install-cli` 会把它放进你的 `PATH`。它能做什么，见**命令行与代理**。
+每个安装版本都带一个 `chaoffice` 命令，它和窗口调用的是同一套引擎，因此两者对同一个文件不会给出不同的结果。在 macOS 和 Windows 上它位于应用包内；`chaoffice install-cli` 会把它放进你的 `PATH`。它能做什么，见**命令行与代理**。

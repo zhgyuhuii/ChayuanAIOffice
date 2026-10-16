@@ -14,19 +14,19 @@ import type {
   AddTableRowOperation,
   DeleteTableColumnOperation,
   DeleteTableRowOperation,
-} from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
-import { columnLabel, parseAddress, parseRange } from '@chatoffice/xlsx-gateway/domain/cell-address'
-import { renameRefSheet } from '@chatoffice/xlsx-gateway/domain/chart-visual'
+} from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
+import { columnLabel, parseAddress, parseRange } from '@chaoffice/xlsx-gateway/domain/cell-address'
+import { renameRefSheet } from '@chaoffice/xlsx-gateway/domain/chart-visual'
 import {
   allowedByValueFilter,
   matchesLabelFilter,
   type PivotFilterDef,
-} from '@chatoffice/xlsx-gateway/domain/pivot-filters'
+} from '@chaoffice/xlsx-gateway/domain/pivot-filters'
 import {
   evaluatePivotFormula,
   parsePivotFormula,
-} from '@chatoffice/xlsx-gateway/domain/pivot-formula'
-import { groupValue, type PivotFieldGrouping } from '@chatoffice/xlsx-gateway/domain/pivot-grouping'
+} from '@chaoffice/xlsx-gateway/domain/pivot-formula'
+import { groupValue, type PivotFieldGrouping } from '@chaoffice/xlsx-gateway/domain/pivot-grouping'
 import {
   areasOverlap,
   buildPivotLayout,
@@ -37,7 +37,7 @@ import {
   type PivotArea,
   type PivotLayout,
   type PivotLayoutErrorCode,
-} from '@chatoffice/xlsx-gateway/domain/pivot-layout'
+} from '@chaoffice/xlsx-gateway/domain/pivot-layout'
 import type {
   WorkbookPivotAdd,
   WorkbookTableAdd,
@@ -55,7 +55,7 @@ import { optionsOfTableAdd } from './table-design'
 import { DEFAULT_TABLE_STYLE, builtinTablePalette, tableThemeJson } from './table-styles'
 import { t } from './i18n/locale'
 import type { OoXmlPivotConfig, PivotField } from './PivotDialog'
-import type { PivotDefinition } from '@chatoffice/xlsx-gateway/gateway/xlsx-pivot'
+import type { PivotDefinition } from '@chaoffice/xlsx-gateway/gateway/xlsx-pivot'
 import {
   AGG_CAPTIONS,
   applyFormatPatchToRange,

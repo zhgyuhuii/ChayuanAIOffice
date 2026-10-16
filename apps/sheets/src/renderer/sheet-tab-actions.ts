@@ -113,7 +113,7 @@ export function createSheetTabActions(deps: {
         .__getInjector()
         .get(IConfirmService)
         .confirm({
-          id: 'chatoffice.sheet-tab.delete',
+          id: 'chaoffice.sheet-tab.delete',
           title: { title: t('dlgSheetDeleteTitle') },
           children: { title: t('dlgSheetDeleteBody', { count: ids.length }) },
           cancelText: t('dlgCancel'),

@@ -5,7 +5,7 @@
  *
  * The other fourteen figures are the running app. `install`, `cli` and `mcp` are
  * not screens, so they cannot be captured the way the app is: there is no window
- * that lists the installer files, prints `chatoffice --help`, or registers an MCP
+ * that lists the installer files, prints `chaoffice --help`, or registers an MCP
  * server. Composing those by hand would put invented text in a committed PNG, so
  * every line in these three figures is stdout captured from the real binary.
  *
@@ -15,14 +15,14 @@
  * `packages/pptx-ops/src/op-docs.ts` imports its op guides with Vite's `?raw`
  * suffix, which is not a Node loader feature, so the run dies on
  * `ERR_UNKNOWN_FILE_EXTENSION ".md"`. The supported build is the esbuild bundle
- * (`npm run build -w @chatoffice/cli`), which resolves `?raw` and is what the
+ * (`npm run build -w @chaoffice/cli`), which resolves `?raw` and is what the
  * packaged app actually ships. So the figure shows what the shipped command
  * prints, not what a source run would.
  *
  * ## Why mcp is captured with `--help` and not `mcp install all`
  *
  * Both were run. `mcp install all` and `mcp list` print the absolute path of the
- * resolved `chatoffice` binary and the absolute path of every agent's config file
+ * resolved `chaoffice` binary and the absolute path of every agent's config file
  * under `$HOME`, so a capture of either puts this machine's build path and
  * account name into a committed PNG and churns on every run. `mcp --help` is the
  * same real command printing its real usage, carries no path at all, and covers
@@ -60,7 +60,7 @@ import { join, resolve } from 'node:path'
 const REPO = resolve(__dirname, '..')
 const SHELL_DIR = join(REPO, 'apps/shell')
 const OUT_DIR = join(REPO, 'apps/shell/src/renderer/src/i18n/help/topics/img')
-const CLI_BUNDLE = join(REPO, 'packages/cli/dist/chatoffice.cjs')
+const CLI_BUNDLE = join(REPO, 'packages/cli/dist/chaoffice.cjs')
 
 /** Only these three names; the other figures in OUT_DIR belong to the other script. */
 type Figure = 'cli' | 'mcp' | 'install'
@@ -81,7 +81,7 @@ function capture(args: string[], env: NodeJS.ProcessEnv = {}): string {
   })
   if (run.error) throw run.error
   const out = `${run.stdout ?? ''}${run.stderr ?? ''}`.replace(/\s+$/, '')
-  if (!out) throw new Error(`chatoffice ${args.join(' ')} printed nothing (exit ${run.status})`)
+  if (!out) throw new Error(`chaoffice ${args.join(' ')} printed nothing (exit ${run.status})`)
   return out
 }
 
@@ -89,13 +89,13 @@ function capture(args: string[], env: NodeJS.ProcessEnv = {}): string {
 function ensureCliBundle(): void {
   if (existsSync(CLI_BUNDLE)) return
   process.stdout.write('building the CLI bundle...\n')
-  const build = spawnSync('npm', ['run', 'build', '-w', '@chatoffice/cli'], {
+  const build = spawnSync('npm', ['run', 'build', '-w', '@chaoffice/cli'], {
     cwd: REPO,
     encoding: 'utf8',
     stdio: 'inherit',
   })
   if (build.status !== 0 || !existsSync(CLI_BUNDLE)) {
-    throw new Error('could not build packages/cli; run npm run build -w @chatoffice/cli by hand')
+    throw new Error('could not build packages/cli; run npm run build -w @chaoffice/cli by hand')
   }
 }
 
@@ -167,7 +167,7 @@ function figureHtml(title: string, blocks: { command: string; output: string }[]
 </style></head>
 <body>
   <div class="card">
-    <div class="head"><span class="app">ChatOffice</span><span class="sep">—</span><span>${escapeHtml(title)}</span></div>
+    <div class="head"><span class="app">ChaOffice</span><span class="sep">—</span><span>${escapeHtml(title)}</span></div>
     <div class="term">
 ${body}
     </div>
@@ -252,7 +252,7 @@ async function shootInstall(): Promise<void> {
       'apps/shell is not built; run `npm run build:all` first so the About pane can be captured',
     )
   }
-  const root = mkdtempSync(join(tmpdir(), 'chatoffice-install-figs-'))
+  const root = mkdtempSync(join(tmpdir(), 'chaoffice-install-figs-'))
   const home = join(root, 'home')
   const userData = join(root, 'userdata')
   for (const dir of [home, userData]) mkdirSync(dir, { recursive: true })
@@ -272,7 +272,7 @@ async function shootInstall(): Promise<void> {
         ...hostEnv,
         HOME: home,
         GENOFFICE_USER_DATA: userData,
-        GENOFFICE_AUTH_DIR: join(home, '.chatoffice'),
+        GENOFFICE_AUTH_DIR: join(home, '.chaoffice'),
         GENOFFICE_NO_SPARE_VIEW: '1',
         GENOFFICE_LANG: 'en',
       },
@@ -317,8 +317,8 @@ async function main(): Promise<void> {
   if (take('cli')) {
     ensureCliBundle()
     await shootHtml(
-      figureHtml('chatoffice --help', [
-        { command: 'chatoffice --help', output: capture(['--help']) },
+      figureHtml('chaoffice --help', [
+        { command: 'chaoffice --help', output: capture(['--help']) },
       ]),
       'cli',
     )
@@ -327,8 +327,8 @@ async function main(): Promise<void> {
   if (take('mcp')) {
     ensureCliBundle()
     await shootHtml(
-      figureHtml('chatoffice mcp --help', [
-        { command: 'chatoffice mcp --help', output: capture(['mcp', '--help']) },
+      figureHtml('chaoffice mcp --help', [
+        { command: 'chaoffice mcp --help', output: capture(['mcp', '--help']) },
       ]),
       'mcp',
     )

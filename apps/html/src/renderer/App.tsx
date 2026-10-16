@@ -11,12 +11,12 @@ import {
   type FindTarget,
   aiPanelInitiallyOpen,
   useAiSidebarEnabled,
-} from '@chatoffice/ui'
+} from '@chaoffice/ui'
 import bootLogo from './assets/boot-logo.png'
 import {
   pollUntilReady,
   runHeadlessRendererExport,
-} from '@chatoffice/electron-utils/headless-export'
+} from '@chaoffice/electron-utils/headless-export'
 import { useI18n } from './i18n/locale'
 import { parseDocText, serializeDocText, type Envelope } from './document/envelope'
 import {
@@ -46,8 +46,8 @@ import {
   type CanvasMode,
   type ViewMode,
 } from './components/Ribbon'
-import { CropDialog, CutoutDialog } from '@chatoffice/ui/image-dialogs'
-import type { ImageDialogLabels } from '@chatoffice/ui/image-dialogs'
+import { CropDialog, CutoutDialog } from '@chaoffice/ui/image-dialogs'
+import type { ImageDialogLabels } from '@chaoffice/ui/image-dialogs'
 import { FloatToolbar } from './components/FloatToolbar'
 import { RedactDialog } from './components/RedactDialog'
 import { redactClearPlan, redactMarkPlan, type RedactPlan } from './document/redact-edit'

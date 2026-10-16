@@ -1,5 +1,5 @@
 {
-  "name": "@chatoffice/xlsx-gateway",
+  "name": "@chaoffice/xlsx-gateway",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "jszip": "^3.10.1",
-    "@chatoffice/zip-gate": "*",
+    "@chaoffice/zip-gate": "*",
     "numfmt": "^3.2.6",
     "zod": "^4.3.6"
   },

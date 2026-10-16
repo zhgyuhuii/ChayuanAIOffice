@@ -13,17 +13,17 @@ import {
   type DiscoveryTarget,
   type FileSourceFs,
   type ChaOfficeAccountStatus,
-} from '@chatoffice/ai-provider'
+} from '@chaoffice/ai-provider'
 import {
   imageSearch,
   searchStockImages,
   StockSearchError,
   webSearch,
   type StockSource,
-} from '@chatoffice/ai-search'
-import { fetchRemoteImage } from '@chatoffice/electron-utils/remote-image'
-import { abortOnDestroyed } from '@chatoffice/electron-utils'
-import { CHATOP_LOCAL_AGENT_ID, CHATOP_LOCAL_PROFILE_ID, parseChatopProxyKey } from '@chatoffice/ai-provider'
+} from '@chaoffice/ai-search'
+import { fetchRemoteImage } from '@chaoffice/electron-utils/remote-image'
+import { abortOnDestroyed } from '@chaoffice/electron-utils'
+import { CHATOP_LOCAL_AGENT_ID, CHATOP_LOCAL_PROFILE_ID, parseChatopProxyKey } from '@chaoffice/ai-provider'
 import {
   createVideoTaskRegistry,
   type VideoTaskRegistry,
@@ -54,7 +54,7 @@ export {
 export function createByokImageHandler(deps: {
   settingsPath: () => string
   fs: FileSourceFs
-  chatoffice: AiRuntimeChaOffice
+  chaoffice: AiRuntimeChaOffice
 }): (req: {
   prompt: string
   aspectRatio?: string
@@ -67,7 +67,7 @@ export function createByokImageHandler(deps: {
   }
   const runtime = createAiRuntime({
     source: createFileSource(deps.settingsPath(), deps.fs),
-    chatoffice: deps.chatoffice,
+    chaoffice: deps.chaoffice,
     translate: (key, params) => {
       const base = RUNTIME_ERRORS[key] ?? key
       return params && typeof params.provider === 'string' ? `${base}: ${params.provider}` : base
@@ -169,9 +169,9 @@ export interface SharedAiIpcDeps {
   settingsPath: string
   /** injected Node fs (atomic write + watch live in the app) */
   fs: FileSourceFs
-  chatoffice: AiRuntimeChaOffice
-  /** opens the chatoffice device-code login flow (app closes over shell.openExternal) */
-  chatofficeLogin: () => void
+  chaoffice: AiRuntimeChaOffice
+  /** opens the chaoffice device-code login flow (app closes over shell.openExternal) */
+  chaofficeLogin: () => void
   translate: (key: string, params?: Record<string, unknown>) => string
   /** video task registry wiring (absent = ai:video-* channels stay unregistered) */
   videoTasks?: VideoTaskRegistryDeps
@@ -198,11 +198,11 @@ export interface AiStreamWireRequest {
 
 /**
  * Register ai:get-settings / ai:set-settings / ai:set-current-model /
- * ai:discover-models / ai:stream(+-cancel,-chunk) / ai:chatoffice-status /
- * ai:chatoffice-login. (ai:chat and per-app channels stay in the apps.) Returns the
+ * ai:discover-models / ai:stream(+-cancel,-chunk) / ai:chaoffice-status /
+ * ai:chaoffice-login. (ai:chat and per-app channels stay in the apps.) Returns the
  * runtime so per-app handlers can reuse the same resolution.
  */
-export type { AiModelSelection, AiRuntime } from '@chatoffice/ai-provider'
+export type { AiModelSelection, AiRuntime } from '@chaoffice/ai-provider'
 
 /**
  * The runtime the most recent registerSharedAiIpc call created. Every editor
@@ -220,7 +220,7 @@ export function getSharedAiRuntime(): AiRuntime | null {
 }
 
 export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
-  const { ipcMain, chatoffice, translate } = deps
+  const { ipcMain, chaoffice, translate } = deps
 
   const fileSource = createFileSource(deps.settingsPath, deps.fs)
 
@@ -258,7 +258,7 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
       dshHomeInfo = info
       if (info) {
         // upgrade the settings source to read-only harness fusion; the office
-        // file stays the sidecar (selections, chatoffice profiles, custom BYOK)
+        // file stays the sidecar (selections, chaoffice profiles, custom BYOK)
         const home = info.home
         activeSource = createHarnessSource({
           readDshFile: (rel) => deps.fs.readFile(join(home, rel)),
@@ -358,7 +358,7 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
 
   const runtime = createAiRuntime({
     source,
-    chatoffice,
+    chaoffice,
     translate,
     resolveSecret: async (profile) => {
       const info = await ensureDshHome()
@@ -388,13 +388,13 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   ipcMain.handle('ai:get-settings', (): Promise<AiSettingsV2> => runtime.getSettingsView())
 
   ipcMain.handle(
-    'ai:chatoffice-status',
+    'ai:chaoffice-status',
     async (_event, withEmail?: boolean): Promise<ChaOfficeAccountStatus> =>
-      chatoffice.status(!!withEmail),
+      chaoffice.status(!!withEmail),
   )
 
-  ipcMain.handle('ai:chatoffice-login', () => {
-    deps.chatofficeLogin()
+  ipcMain.handle('ai:chaoffice-login', () => {
+    deps.chaofficeLogin()
   })
 
   // the settings view carries KEEP_KEY sentinels; the runtime merges stored keys back
@@ -473,7 +473,7 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   })
 
   // ── picture-source channels (insert-image dialog) ────────────────────
-  // Web image search: per-platform pick or fallback chain (chatoffice →
+  // Web image search: per-platform pick or fallback chain (chaoffice →
   // Serper → Bing → Openverse), per-tier attempts attached for the dialog's
   // diagnostics. Keys resolve main-side from ai-settings (search.providers,
   // legacy searchApiKeys) then env. Results map to the dialog's WebImageItem

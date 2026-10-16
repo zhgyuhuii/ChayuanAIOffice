@@ -23,7 +23,7 @@
  *   - space-before/space-after keep their face value (Word does not grid-snap them)
  */
 
-import type { DocGrid, Run } from '@chatoffice/docx-engine'
+import type { DocGrid, Run } from '@chaoffice/docx-engine'
 
 // ─── Font metrics interface (same interface as pptx-render/metrics.ts) ─────
 
@@ -179,7 +179,7 @@ const JA_FONT_RE =
 
 /** Korean font names (Windows/Noto/Source Han/Nanum faces + bundled subsets) */
 const KO_FONT_RE =
-  /malgun|맑은|batang|바탕|myeongjo|myungjo|명조|gungsuh|궁서|gulim|굴림|dotum|돋움|nanum|나눔|chatoffice (sans|serif) kr|(noto|source han) (sans|serif)[^,]*\bk(r|orean)?\b/i
+  /malgun|맑은|batang|바탕|myeongjo|myungjo|명조|gungsuh|궁서|gulim|굴림|dotum|돋움|nanum|나눔|chaoffice (sans|serif) kr|(noto|source han) (sans|serif)[^,]*\bk(r|orean)?\b/i
 
 /**
  * Per-font single-spacing line-height factor. Re-baselined against Word for
@@ -632,15 +632,15 @@ export function computeLineHeight(
 export const BUNDLED_FONTS = new Set([
   'Noto Sans CJK SC',
   'Noto Serif CJK SC',
-  'ChatOffice Sans KR',
-  'ChatOffice Serif KR',
-  'ChatOffice Gothic KR',
-  'ChatOffice Poppins',
-  'ChatOffice DM Sans',
-  'ChatOffice Tamil',
-  'ChatOffice Fullwidth TC',
-  'ChatOffice Songti SC',
-  'ChatOffice Songti TC',
+  'ChaOffice Sans KR',
+  'ChaOffice Serif KR',
+  'ChaOffice Gothic KR',
+  'ChaOffice Poppins',
+  'ChaOffice DM Sans',
+  'ChaOffice Tamil',
+  'ChaOffice Fullwidth TC',
+  'ChaOffice Songti SC',
+  'ChaOffice Songti TC',
   'Carlito GO',
   'Aptos GO',
   'Aptos Display GO',
@@ -708,7 +708,7 @@ const GENERIC_FAMILIES = new Set([
  * Bundled web face that leads a chain but has not loaded yet: canvas measures
  * the next installed family instead (an unloaded font-display:block face is
  * skipped), so the strut would carry e.g. Apple SD Gothic Neo's 0.90/0.30
- * under ChatOffice Sans KR spans (1.16/0.29) and every hangul line unions
+ * under ChaOffice Sans KR spans (1.16/0.29) and every hangul line unions
  * ~1.5px past its line-height (+1pt per Korean table row vs Word).
  */
 export function unloadedBundledPrimary(chain: string): string | null {
@@ -921,16 +921,16 @@ export function cssFontFamily(font: string, followAltName = true): string {
   // CJK fallback at chain end (GB2312 subset bundled in fonts.css): no tofu even without system Chinese fonts
   const CJK_SERIF = 'Noto Serif CJK SC'
   const CJK_SANS = 'Noto Sans CJK SC'
-  // 'ChatOffice Box Drawing' (fonts.css): U+2500 rules would otherwise fall to
+  // 'ChaOffice Box Drawing' (fonts.css): U+2500 rules would otherwise fall to
   // the fullwidth CJK subset and overflow the column
-  const BOX = 'ChatOffice Box Drawing'
+  const BOX = 'ChaOffice Box Drawing'
   // 'Calibri Arabic GO' (fonts.css): Calibri's own Arabic; Carlito has none
   if (f.includes('calibri'))
     return `${chain(font, 'Carlito GO', 'Calibri Arabic GO', CJK_SANS)},sans-serif`
   // Aptos (M365 cloud face, never installed locally): line metrics equal
   // Calibri's (Word probe 2026-08-22) but its advances do not, so the
   // size-adjusted Carlito aliases in fonts.css stand in (probe 2026-09-03).
-  // 'ChatOffice PUA Blank' keeps AI-residue PUA tokens invisible like Word
+  // 'ChaOffice PUA Blank' keeps AI-residue PUA tokens invisible like Word
   // (Carlito would otherwise supply a box .notdef for them).
   if (f.includes('aptos')) {
     // the aliases are calibrated for the body and Display cuts only; Aptos
@@ -940,7 +940,7 @@ export function cssFontFamily(font: string, followAltName = true): string {
       : f.includes('display')
         ? 'Aptos Display GO'
         : 'Aptos GO'
-    return `${chain(font, alias, 'ChatOffice PUA Blank', CJK_SANS)},sans-serif`
+    return `${chain(font, alias, 'ChaOffice PUA Blank', CJK_SANS)},sans-serif`
   }
   // Cambria Math text runs lay out with Cambria's advances in Word (fonts.css
   // alias); only the symbols need a math face
@@ -969,7 +969,7 @@ export function cssFontFamily(font: string, followAltName = true): string {
   // Segoe UI is an M365 cloud font Word renders real; where it is missing the
   // size-adjusted Helvetica alias (fonts.css) carries its narrower advances
   if (SEGOE_UI_TEXT_RE.test(f))
-    return `${chain(font, 'Segoe UI GO', 'Noto Sans CJK GO', 'ChatOffice PUA Blank')},sans-serif`
+    return `${chain(font, 'Segoe UI GO', 'Noto Sans CJK GO', 'ChaOffice PUA Blank')},sans-serif`
   // Consolas is Office-only: the size-adjusted Menlo alias (fonts.css) carries its advances
   if (f.includes('consolas')) return `${chain(font, 'Consolas GO', CJK_SANS)},monospace`
   // Century Gothic is Office-only too: the per-case size-adjusted Liberation
@@ -983,10 +983,10 @@ export function cssFontFamily(font: string, followAltName = true): string {
   if (f.includes('nunito')) return `${chain(font, 'Nunito Sans GO', CJK_SANS)},sans-serif`
   // Poppins is an M365 cloud font Word renders real; the bundled Latin subset
   // (fonts.css) carries its true advances (probe 2026-09-01)
-  if (f.includes('poppins')) return `${chain(font, 'ChatOffice Poppins', CJK_SANS)},sans-serif`
+  if (f.includes('poppins')) return `${chain(font, 'ChaOffice Poppins', CJK_SANS)},sans-serif`
   // DM Sans renders real in Word when installed; the bundled Latin subset
   // (fonts.css) carries its true advances (corpus 2026-09-30)
-  if (f.includes('dm sans')) return `${chain(font, 'ChatOffice DM Sans', CJK_SANS)},sans-serif`
+  if (f.includes('dm sans')) return `${chain(font, 'ChaOffice DM Sans', CJK_SANS)},sans-serif`
   // Montserrat is an M365 cloud font Word renders real, ignoring its fontTable
   // altName; the per-class size-adjusted Liberation Sans alias (fonts.css)
   // carries its wide advances. Only the cloud family names qualify: a
@@ -1003,13 +1003,13 @@ export function cssFontFamily(font: string, followAltName = true): string {
   // wholesale (probe 2026-08-23, gov-doc sample confirmed)
   if ((f.includes('\u6977\u4f53') || f.includes('kaiti')) && /gb2312|gbk/.test(f))
     return `${chain(font, 'Microsoft YaHei', 'PingFang SC', CJK_SANS)},sans-serif`
-  // 'ChatOffice Songti SC' (fonts.css local() alias of Songti SC): macOS Chromium
+  // 'ChaOffice Songti SC' (fonts.css local() alias of Songti SC): macOS Chromium
   // refuses synthetic bold for 'Songti SC' by name at weight 600/700; the alias,
   // registered weight-normal only, lets Blink synthesize. Unresolvable elsewhere.
   // SimSun's ASCII is half-width fixed pitch (0.5em); the Songti stand-in is proportional
   // FZ XiaoBiaoSong is missing on Word for Mac and substitutes SimSun (probe 2026-09-30)
   if (/simsun|\u5b8b\u4f53|nsimsun|\u5c0f\u6807\u5b8b|xiaobiaosong/.test(f)) {
-    return `${chain(font, 'ChatOffice SimSun Latin', 'ChatOffice Songti SC', 'STSong', 'SimSun', CJK_SERIF)},serif`
+    return `${chain(font, 'ChaOffice SimSun Latin', 'ChaOffice Songti SC', 'STSong', 'SimSun', CJK_SERIF)},serif`
   }
   if (f.includes('simhei') || f.includes('黑体') || f.includes('细黑') || f.includes('xihei'))
     return `${chain(font, 'Heiti SC', 'STHeiti', 'SimHei', 'PingFang SC', CJK_SANS)},sans-serif`
@@ -1024,22 +1024,22 @@ export function cssFontFamily(font: string, followAltName = true): string {
   if (f.includes('隶书') || f.includes('lisu'))
     return `${chain(font, 'Baoli SC', 'LiSu', CJK_SERIF)},serif`
   // Japanese/Korean/Traditional Chinese: fall back within the same script (win/mac family names as mutual backups) so Han glyphs don't render with Simplified forms.
-  // 'ChatOffice *' entries are CJK-only local() aliases (fonts.css): the underlying
+  // 'ChaOffice *' entries are CJK-only local() aliases (fonts.css): the underlying
   // system faces draw Cyrillic/Greek fullwidth, so those scripts must pass through
-  const JA_SANS = ['Yu Gothic', 'ChatOffice Hiragino Sans', 'Meiryo', 'Noto Sans JP']
+  const JA_SANS = ['Yu Gothic', 'ChaOffice Hiragino Sans', 'Meiryo', 'Noto Sans JP']
   const JA_SERIF = [
     'Yu Mincho',
-    'ChatOffice Hiragino Mincho',
-    'ChatOffice MS Mincho',
+    'ChaOffice Hiragino Mincho',
+    'ChaOffice MS Mincho',
     'Noto Serif JP',
   ]
-  const KO_SANS = ['Malgun Gothic', 'ChatOffice Sans KR', 'Apple SD Gothic Neo', 'Noto Sans KR']
-  const KO_SERIF = ['ChatOffice Batang', 'ChatOffice Serif KR', 'ChatOffice Myungjo', 'Noto Serif KR']
-  const TC_SANS = ['Microsoft JhengHei', 'PingFang TC', 'ChatOffice Heiti TC', 'Noto Sans TC']
-  // 'ChatOffice Fullwidth TC' (fonts.css): fullwidth U+FF0D/FF0F/FF3C/FF3F/FF5E whose Songti TC glyphs look half-width
-  const TC_SERIF = ['ChatOffice MingLiU', 'ChatOffice Fullwidth TC', 'Songti TC', 'Noto Serif TC']
+  const KO_SANS = ['Malgun Gothic', 'ChaOffice Sans KR', 'Apple SD Gothic Neo', 'Noto Sans KR']
+  const KO_SERIF = ['ChaOffice Batang', 'ChaOffice Serif KR', 'ChaOffice Myungjo', 'Noto Serif KR']
+  const TC_SANS = ['Microsoft JhengHei', 'PingFang TC', 'ChaOffice Heiti TC', 'Noto Sans TC']
+  // 'ChaOffice Fullwidth TC' (fonts.css): fullwidth U+FF0D/FF0F/FF3C/FF3F/FF5E whose Songti TC glyphs look half-width
+  const TC_SERIF = ['ChaOffice MingLiU', 'ChaOffice Fullwidth TC', 'Songti TC', 'Noto Serif TC']
   const SC_SANS = ['PingFang SC', 'Microsoft YaHei', CJK_SANS]
-  const SC_SERIF = ['ChatOffice Songti SC', 'STSong', 'SimSun', CJK_SERIF]
+  const SC_SERIF = ['ChaOffice Songti SC', 'STSong', 'SimSun', CJK_SERIF]
   const nfkc = font.normalize('NFKC')
   // Arabic: bundled Noto subsets stand in for missing fonts; Chromium's silent
   // fallback is a Geeza Pro-style UI face, larger and heavier than the naskh
@@ -1144,7 +1144,7 @@ export function cssFontFamily(font: string, followAltName = true): string {
     // claims: hangul lands on Batang (1em, Word probe 2026-09-06). The
     // SC/TC/JP chains carry no hangul, so without this tail Chromium falls to
     // the system sans (Apple SD Gothic Neo, 0.865em) and lines wrap late
-    const hangulTail = !isKr && missingLocally() ? ['ChatOffice Batang', 'ChatOffice Serif KR'] : []
+    const hangulTail = !isKr && missingLocally() ? ['ChaOffice Batang', 'ChaOffice Serif KR'] : []
     return `${chain(...head, ...krLatin, ...chainFor, ...hangulTail)},${serif ? 'serif' : 'sans-serif'}`
   }
   if (JA_FONT_RE.test(nfkc)) {
@@ -1197,7 +1197,7 @@ export function cssFontFamily(font: string, followAltName = true): string {
     // real-metric subset leads the sans chain instead of the Batang-ward
     // substitution. Installed Nanum still resolves at the literal head.
     if (/nanum ?gothic|나눔 ?고딕/i.test(nfkc)) {
-      return `${chain(font, 'ChatOffice Gothic KR', ...KO_SANS)},sans-serif`
+      return `${chain(font, 'ChaOffice Gothic KR', ...KO_SANS)},sans-serif`
     }
     // -Che fixed-pitch faces render real in Word with half-width Latin
     // (0.5em fixed, probe 2026-08-24); ASCII rides the bundled Che face,
@@ -1206,7 +1206,7 @@ export function cssFontFamily(font: string, followAltName = true): string {
     if (/(?:batang|gulim|dotum|gungsuh) ?che\b|(?:바탕|굴림|돋움|궁서)체/i.test(nfkc)) {
       const cheGungsuh = /gungsuh|궁서/i.test(nfkc)
       const cheSerif = cheGungsuh || /batang|바탕/i.test(nfkc)
-      return `${chain(font, 'ChatOffice Che Latin KR', ...(cheGungsuh ? ['GungSeo'] : []), ...(cheSerif ? KO_SERIF : KO_SANS))},${cheSerif ? 'serif' : 'sans-serif'}`
+      return `${chain(font, 'ChaOffice Che Latin KR', ...(cheGungsuh ? ['GungSeo'] : []), ...(cheSerif ? KO_SERIF : KO_SANS))},${cheSerif ? 'serif' : 'sans-serif'}`
     }
     // Gungsuh ships with Office (batang.ttc) and Word renders it real; its
     // Latin is typewriter-slab at ~0.58em advances — Courier New is the
@@ -1236,14 +1236,14 @@ export function cssFontFamily(font: string, followAltName = true): string {
   // Kefa alias (fonts.css) re-centers Chromium's ~1.35x-wide Kefa fallback. On
   // Windows the declared name resolves natively ahead of the alias.
   if (/nyala|ebrima|abyssinica|ethiopic/i.test(nfkc)) {
-    return `${chain(font, 'ChatOffice Ethiopic')},sans-serif`
+    return `${chain(font, 'ChaOffice Ethiopic')},sans-serif`
   }
   // Tamil: Latha renders through the bundled Latha-metric face (fonts.css);
   // Vijaya and missing Tamil names lay out as Vijaya on Word for Mac (probe
   // 2026-09-30), whose advances InaiMathi matches within 1 % (Latha is 44 %
   // wider). On Windows the declared name resolves natively ahead of the chain.
   if (/latha/i.test(nfkc)) {
-    return `${chain(font, 'ChatOffice Tamil', 'InaiMathi', 'Tamil MN', 'Tamil Sangam MN')},sans-serif`
+    return `${chain(font, 'ChaOffice Tamil', 'InaiMathi', 'Tamil MN', 'Tamil Sangam MN')},sans-serif`
   }
   if (TAMIL_FONT_RE.test(nfkc)) {
     return `${chain(font, 'Vijaya', 'InaiMathi', 'Tamil Sangam MN', 'Tamil MN')},sans-serif`
@@ -1275,7 +1275,7 @@ export function cssFontFamily(font: string, followAltName = true): string {
       : CJK_SANS
   // the GO aliases exclude PUA, so the blank face keeps those codepoints
   // invisible (the full subsets' blank .notdef used to catch them)
-  const pua = latinNamed ? ['ChatOffice PUA Blank'] : []
+  const pua = latinNamed ? ['ChaOffice PUA Blank'] : []
   return `${chain(font, tail, ...pua)},${serifLike ? 'serif' : 'sans-serif'}`
 }
 

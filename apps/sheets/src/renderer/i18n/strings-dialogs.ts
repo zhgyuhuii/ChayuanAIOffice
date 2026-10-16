@@ -1,4 +1,4 @@
-import { defineStrings } from '@chatoffice/i18n'
+import { defineStrings } from '@chaoffice/i18n'
 import { zh } from './dialogs/zh'
 import { en } from './dialogs/en'
 import { ja } from './dialogs/ja'

@@ -1,4 +1,4 @@
-import type { ShapeRenderNode } from '@chatoffice/pptx-render'
+import type { ShapeRenderNode } from '@chaoffice/pptx-render'
 import type { ActionCtx } from './action-context'
 import { deleteVertex, shapeToEditablePath, vertices, type PathCmd } from './edit-points'
 

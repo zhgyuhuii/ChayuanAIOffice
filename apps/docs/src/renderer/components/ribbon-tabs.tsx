@@ -7,7 +7,7 @@ import {
   useDismissablePopover,
   wordArtSolidColor,
   type WordArtPreset,
-} from '@chatoffice/ui'
+} from '@chaoffice/ui'
 import {
   buildLineParagraphXml,
   buildShapeParagraphXml,
@@ -17,7 +17,7 @@ import {
   type HeaderFooter,
   type StyleInfo,
   type TextboxDisplay,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import type { DocsTabInfo } from '../../shared/ipc'
 import { runUiOps } from '../ai/ops'
 import { stepDocsZoom } from '../wheel-zoom'

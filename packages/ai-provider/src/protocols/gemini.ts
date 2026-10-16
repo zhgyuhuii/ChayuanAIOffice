@@ -1,7 +1,7 @@
-import type { AgentMessage, AgentToolDef } from '@chatoffice/agent-core'
+import type { AgentMessage, AgentToolDef } from '@chaoffice/agent-core'
 import { aiFetch } from '../fetch'
 import { httpBodyDetail } from '../http-error'
-import { chatofficeAttributionHeaders, opencodeSessionHeaders } from '../providers'
+import { chaofficeAttributionHeaders, opencodeSessionHeaders } from '../providers'
 import type { AiChatResponse, AiProviderConfig, AiTokenUsage } from '../types'
 import { createStreamWatchdog, type StreamWatchdog } from '../watchdog'
 import { toGeminiSchema } from './gemini-schema'
@@ -185,7 +185,7 @@ async function geminiTurn(
     headers: {
       'Content-Type': 'application/json',
       'x-goog-api-key': config.apiKey,
-      ...chatofficeAttributionHeaders(baseUrl),
+      ...chaofficeAttributionHeaders(baseUrl),
       ...opencodeSessionHeaders(baseUrl, cb.sessionId),
       ...options.headers,
     },
@@ -305,7 +305,7 @@ export async function chatGemini(
     headers: {
       'Content-Type': 'application/json',
       'x-goog-api-key': config.apiKey,
-      ...chatofficeAttributionHeaders(baseUrl),
+      ...chaofficeAttributionHeaders(baseUrl),
       ...opencodeSessionHeaders(baseUrl),
       ...options.headers,
     },

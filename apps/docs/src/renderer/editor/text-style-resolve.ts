@@ -1,5 +1,5 @@
 import type { Editor } from '@tiptap/core'
-import type { DocDefaults, StyleInfo } from '@chatoffice/docx-engine'
+import type { DocDefaults, StyleInfo } from '@chaoffice/docx-engine'
 
 const TEXT_BLOCK_TYPES = new Set(['docParagraph', 'docHeading', 'docListItem'])
 

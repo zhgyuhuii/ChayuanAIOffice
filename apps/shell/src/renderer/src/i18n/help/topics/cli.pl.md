@@ -1,19 +1,19 @@
 # Wiersz poleceń i agenci
 
-Każda instalacja zawiera polecenie `chatoffice`, które napędza te same silniki co okno — te same parsery, ten sam moduł zapisu, ten sam renderujący. Plik zapisany przez aplikację i plik zapisany przez polecenie to ten sam plik, a kontrola, którą przechodzi panel AI aplikacji, przechodzi też polecenie.
+Każda instalacja zawiera polecenie `chaoffice`, które napędza te same silniki co okno — te same parsery, ten sam moduł zapisu, ten sam renderujący. Plik zapisany przez aplikację i plik zapisany przez polecenie to ten sam plik, a kontrola, którą przechodzi panel AI aplikacji, przechodzi też polecenie.
 
 ```sh
-chatoffice --help          # every command
-chatoffice guide slides    # the op reference, for writing your own
+chaoffice --help          # every command
+chaoffice guide slides    # the op reference, for writing your own
 ```
 
 To cała powierzchnia na jednym ekranie — każde polecenie z wierszem, który mówi, co robi, a potem opcje globalne i kody wyjścia:
 
-![Rzeczywiste wyjście polecenia chatoffice --help: banner wersji, każde polecenie z opisem w jednym wierszu oraz opcje globalne i kody wyjścia](img/cli.png)
+![Rzeczywiste wyjście polecenia chaoffice --help: banner wersji, każde polecenie z opisem w jednym wierszu oraz opcje globalne i kody wyjścia](img/cli.png)
 
 ## Zdobycie polecenia
 
-W macOS i Windows polecenie siedzi w pakiecie aplikacji. Aby wołać je po imieniu, uruchom raz `chatoffice install-cli`: podlinkuje binarium z pakietu do katalogu na Twoim PATH — w macOS `/usr/local/bin`, o ile to nie prefiks Homebrew (katalogi samego Homebrew nigdy nie są ruszane), inaczej do Twojego bin użytkownika — albo do użytkowniczego `PATH` w Windows.
+W macOS i Windows polecenie siedzi w pakiecie aplikacji. Aby wołać je po imieniu, uruchom raz `chaoffice install-cli`: podlinkuje binarium z pakietu do katalogu na Twoim PATH — w macOS `/usr/local/bin`, o ile to nie prefiks Homebrew (katalogi samego Homebrew nigdy nie są ruszane), inaczej do Twojego bin użytkownika — albo do użytkowniczego `PATH` w Windows.
 
 ## Polecenia warte znajomości
 
@@ -31,26 +31,26 @@ W macOS i Windows polecenie siedzi w pakiecie aplikacji. Aby wołać je po imien
 | `merge`           | Wypełnia symbole zastępcze `{{key}}` w szablonie `.docx`, `.pptx` lub `.xlsx`.                                                                                                                                                           |
 | `capabilities`    | Zgłasza, które funkcje chmurowe są skonfigurowane na tym komputerze.                                                                                                                                                                     |
 | `guide`           | Referencja op i przewodniki projektowe, wygenerowane z tych samych definicji, względem których waliduje executor — więc nie może się rozjechać z tym, co przyjmuje `apply`. `--json` zwraca je ze schematem każdej op.                   |
-| `install-cli`     | Umieszcza `chatoffice` w `PATH`.                                                                                                                                                                                                          |
+| `install-cli`     | Umieszcza `chaoffice` w `PATH`.                                                                                                                                                                                                          |
 | `skill`           | Wypisuje agentów programistycznych znalezionych na tym komputerze i instaluje w nich lub aktualizuje skill ChaAI Office.                                                                                                                    |
 | `mcp`             | Udostępnia każde polecenie jako narzędzie Model Context Protocol. Zobacz **Podłączenie z agentem programistycznym**.                                                                                                                     |
 
 ## Edycja: Docs, Sheets, Slides
 
-`chatoffice docs`, `chatoffice sheet` i `chatoffice slides` czytają i edytują przez tę samą ścieżkę zapisu co aplikacja i dzielą jedno słownictwo: **op** to pojedyncza zmiana, a **spec** to lista op zastosowanych po kolei.
+`chaoffice docs`, `chaoffice sheet` i `chaoffice slides` czytają i edytują przez tę samą ścieżkę zapisu co aplikacja i dzielą jedno słownictwo: **op** to pojedyncza zmiana, a **spec** to lista op zastosowanych po kolei.
 
 ```sh
-chatoffice sheet read report.xlsx
-chatoffice slides apply deck.pptx --ops ops.json --dry-run
-chatoffice docs apply brief.docx --ops ops.json
+chaoffice sheet read report.xlsx
+chaoffice slides apply deck.pptx --ops ops.json --dry-run
+chaoffice docs apply brief.docx --ops ops.json
 ```
 
 `--dry-run` zgłasza, co zrobiłaby partia, i nic nie zapisuje — to najtańszy sposób na sprawdzenie spec przed zastosowaniem. Panel AI w aplikacji działa dokładnie na tych op, więc wszystko, o co możesz go zapytać, możesz też zapisać w skrypcie.
 
 ## Model Context Protocol
 
-`chatoffice mcp` udostępnia każde polecenie jako narzędzie MCP, a `chatoffice mcp install <agent|all>` rejestruje je we własnej konfiguracji agenta programistycznego. Tej strony dotyczy rozdział **Podłączenie z agentem programistycznym**.
+`chaoffice mcp` udostępnia każde polecenie jako narzędzie MCP, a `chaoffice mcp install <agent|all>` rejestruje je we własnej konfiguracji agenta programistycznego. Tej strony dotyczy rozdział **Podłączenie z agentem programistycznym**.
 
 ## Czego polecenie nie robi
 
-Czyta i zapisuje plik. To nie jest aplikacja: nie ma okna, a okno aktualizacji w aplikacji nie ma tu zastosowania. Wszystko, co wymaga okna — panel AI, kontrola jakości wyrenderowanej slajdy — musi poczekać, aż otworzysz plik. `chatoffice render` daje ci piksele bez okna, a `chatoffice slides` sam sprawdza układ prezentacji.
+Czyta i zapisuje plik. To nie jest aplikacja: nie ma okna, a okno aktualizacji w aplikacji nie ma tu zastosowania. Wszystko, co wymaga okna — panel AI, kontrola jakości wyrenderowanej slajdy — musi poczekać, aż otworzysz plik. `chaoffice render` daje ci piksele bez okna, a `chaoffice slides` sam sprawdza układ prezentacji.

@@ -76,12 +76,12 @@ import {
   setContextMenuInterceptor,
   writeJsonAtomic,
   recoveryCopyDiskNewer,
-} from '@chatoffice/electron-utils'
-import { configureMetricsCache, familyVerticalMetrics } from '@chatoffice/font-metrics'
-import { createI18n, getUiLang, normalizeLang, setUiLang } from '@chatoffice/i18n'
-import { ProjectStore } from '@chatoffice/project-store'
+} from '@chaoffice/electron-utils'
+import { configureMetricsCache, familyVerticalMetrics } from '@chaoffice/font-metrics'
+import { createI18n, getUiLang, normalizeLang, setUiLang } from '@chaoffice/i18n'
+import { ProjectStore } from '@chaoffice/project-store'
 // LOCAL(2026-09-21, d8201ad0): 多会话对话索引(B 区新模块)
-import { ConversationStore, bindConversationsIpc } from '@chatoffice/project-store'
+import { ConversationStore, bindConversationsIpc } from '@chaoffice/project-store'
 import {
   bindRemoteFilesIpc,
   createRemoteFilesHost,
@@ -92,7 +92,7 @@ import {
   RemoteConflictError,
   type RemoteFilesHost,
   type RemoteStorageConfig,
-} from '@chatoffice/storage-adapter'
+} from '@chaoffice/storage-adapter'
 import type {
   IpcMainInvokeEvent,
   MenuItemConstructorOptions,
@@ -100,7 +100,7 @@ import type {
   SaveDialogOptions,
   WebContents,
 } from 'electron'
-import { parseFileToText } from '@chatoffice/file-parse'
+import { parseFileToText } from '@chaoffice/file-parse'
 import { convertHtmlToDocx } from '../../../../packages/html2docx/src'
 import { ElectronBrowserDriver } from '../../../../packages/html2docx/src/drivers/electron'
 import { convertOdtToDocx } from '../../../../packages/odf2ooxml/src'
@@ -110,25 +110,25 @@ import {
   type AiModelSelection,
   type AiRuntime,
   setAiUserAgent,
-} from '@chatoffice/ai-provider'
+} from '@chaoffice/ai-provider'
 import {
   persistGeneratedImage,
   registerMediaIpc,
   registerSharedAiIpc,
   registerSharedKbIpc,
-} from '@chatoffice/ai-host'
-import { listCodexModels, shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
+} from '@chaoffice/ai-host'
+import { listCodexModels, shutdownCodexAppServers } from '@chaoffice/ai-provider/codex-app-server'
 // LOCAL(2026-09-22, f5247d3..476e5023): 上游 #544 analyze_media 工具并入本地 ai-search 导入
-// (gsk→chatoffice 符号映射;analyzeMediaTool 不引——其 ai:analyze-media 专用通道被本地
+// (gsk→chaoffice 符号映射;analyzeMediaTool 不引——其 ai:analyze-media 专用通道被本地
 // media-understand 统一通道替代;generateImageTool/testSearchProvider 等上游命名本地无对应导出,不引)
 import {
-  ensureChatofficeLogin,
-  chatofficeApiKey,
-  chatofficeLoginInfo,
+  ensureChaofficeLogin,
+  chaofficeApiKey,
+  chaofficeLoginInfo,
   hasChaOfficeAuth,
   webSearch,
   imageSearch,
-} from '@chatoffice/ai-search'
+} from '@chaoffice/ai-search'
 import type {
   AiDocContent,
   AttachmentAddResult,
@@ -3006,7 +3006,7 @@ function allowPdfWrite(wcId: number, filePath: string): void {
 // Fidelity-harness escape hatch: headless runs have no save dialog to authorize
 // paths, so an explicitly configured directory (set only by our test scripts)
 // is treated as pre-authorized for PDF export.
-const testExportDir = process.env.CHATOFFICE_TEST_EXPORT_DIR || null
+const testExportDir = process.env.CHAOFFICE_TEST_EXPORT_DIR || null
 
 function canPdfWrite(wcId: number, filePath: string): boolean {
   if (testExportDir && filePath.startsWith(testExportDir + '/')) return true
@@ -3345,7 +3345,7 @@ const TEXT_EXTS = new Set([
   'sql',
   'css',
 ])
-/** office/pdf formats get text extracted via @chatoffice/file-parse; images skip extraction and go multimodal (files:read-image) */
+/** office/pdf formats get text extracted via @chaoffice/file-parse; images skip extraction and go multimodal (files:read-image) */
 const ATTACHMENT_EXTS = new Set([
   ...TEXT_EXTS,
   'doc',
@@ -3436,7 +3436,7 @@ function savePastedImage(data: unknown, ext: unknown): string | null {
         ? Buffer.from(data.buffer, data.byteOffset, data.byteLength)
         : null
   if (!bytes || bytes.byteLength === 0) return null
-  const dir = join(app.getPath('temp'), 'chatoffice-pasted')
+  const dir = join(app.getPath('temp'), 'chaoffice-pasted')
   mkdirSync(dir, { recursive: true })
   prunePastedImages(dir)
   const stamp = new Date().toISOString().slice(0, 19).replace(/[-:]/g, '').replace('T', '-')
@@ -3445,7 +3445,7 @@ function savePastedImage(data: unknown, ext: unknown): string | null {
   return filePath
 }
 
-/** parse an attachment to text via @chatoffice/file-parse (docx/pdf/pptx/xlsx/plain text) */
+/** parse an attachment to text via @chaoffice/file-parse (docx/pdf/pptx/xlsx/plain text) */
 async function extractAttachmentText(filePath: string): Promise<string> {
   const stat = statSync(filePath)
   const stamp = `${stat.mtimeMs}:${stat.size}`
@@ -3471,17 +3471,17 @@ const TWIPS_PER_INCH = 1440
 
 // ---- AI settings + chat proxy (main process avoids renderer CORS) ----
 // provider metadata, settings defaults/migration, and per-provider streaming/chat
-// implementations live in @chatoffice/ai-provider, shared with apps/sheets.
+// implementations live in @chaoffice/ai-provider, shared with apps/sheets.
 
 const SETTINGS_PATH = () => userDataPath('ai-settings.json')
 
 /** ChaOffice cloud backend removed — always false */
-function chatofficeCloudToolsOn(): boolean {
+function chaofficeCloudToolsOn(): boolean {
   return false
 }
 
 /**
- * v2 AI runtime: the generic ai:* channels come from @chatoffice/ai-host's
+ * v2 AI runtime: the generic ai:* channels come from @chaoffice/ai-host's
  * shared registrar; docs adds its per-app channels below and reuses the
  * runtime for one-shot chat and BYOK-first image generation.
  */
@@ -3515,10 +3515,10 @@ export function registerAiIpc(): void {
     ipcMain,
     settingsPath: () => SETTINGS_PATH(),
     mediaDir: () => join(app.getPath('userData'), 'media', 'files'),
-    // LOCAL(2026-09-22, f5247d3..476e5023): 惰性图片(chatoffice-docx-media://)物化为
+    // LOCAL(2026-09-22, f5247d3..476e5023): 惰性图片(chaoffice-docx-media://)物化为
     // data: URL——上游 #544 的 ai:analyze-media handler 曾内置此解析,现统一进媒体通道
     resolveSource: async (source) => {
-      if (!source.startsWith('chatoffice-docx-media://')) return null
+      if (!source.startsWith('chaoffice-docx-media://')) return null
       const lazy = await readLazyMedia(source).catch(() => null)
       if (!lazy) return null
       return `data:${lazy.mime};base64,${lazy.body.toString('base64')}`
@@ -3554,17 +3554,17 @@ function resolveDshHome(): string | undefined {
         }
       },
     },
-    chatoffice: {
-      apiKey: () => chatofficeApiKey(),
+    chaoffice: {
+      apiKey: () => chaofficeApiKey(),
       hasAuth: () => hasChaOfficeAuth(),
       status: async (withEmail) => {
         if (!hasChaOfficeAuth()) return { loggedIn: false }
         if (!withEmail) return { loggedIn: true }
-        const info = await chatofficeLoginInfo()
+        const info = await chaofficeLoginInfo()
         return info?.email ? { loggedIn: true, email: info.email } : { loggedIn: true }
       },
     },
-    chatofficeLogin: () => ensureChatofficeLogin((url) => void shell.openExternal(url)),
+    chaofficeLogin: () => ensureChaofficeLogin((url) => void shell.openExternal(url)),
     translate: (key, params) =>
       tm(key as Parameters<typeof tm>[0], params as Parameters<typeof tm>[1]),
     videoTasks: {
@@ -3603,7 +3603,7 @@ function resolveDshHome(): string | undefined {
       return await webSearch(
         String(query),
         typeof maxResults === 'number' ? maxResults : 6,
-        chatofficeCloudToolsOn(),
+        chaofficeCloudToolsOn(),
         {
           serper:
             providers?.serper?.apiKey ||
@@ -3672,7 +3672,7 @@ function resolveDshHome(): string | undefined {
       return await imageSearch(
         String(query),
         typeof maxResults === 'number' ? maxResults : 8,
-        chatofficeCloudToolsOn(),
+        chaofficeCloudToolsOn(),
       )
     } catch (err) {
       return { images: [], method: 'error', error: String(err) }
@@ -3710,7 +3710,7 @@ function resolveDshHome(): string | undefined {
 
   // docs-owned (like pdf:generate-image): slides' ai:generate-image is only
   // registered once a slides view exists, so docs needs its own channel.
-  // BYOK image model first (needs no login); chatoffice is the fallback backend.
+  // BYOK image model first (needs no login); chaoffice is the fallback backend.
   ipcMain.handle(
     'docs:ai-generate-image',
     async (_event, op: { prompt?: unknown; aspectRatio?: unknown }) => {
@@ -3745,7 +3745,7 @@ function resolveDshHome(): string | undefined {
         return { ok: false, error: tm('errAiBusy') }
       }
       // (上游 df8d7c6d 的 noteGskCallFailure 记账属其 gsk 登录态架构;本地登录态由
-      //  ai-host 统一管理(ai:chatoffice-status),此处不引上游符号)
+      //  ai-host 统一管理(ai:chaoffice-status),此处不引上游符号)
       return result
     },
   )
@@ -3839,7 +3839,7 @@ export function projectFileRenamed(oldPath: string, newPath: string): void {
   }
 }
 
-// LOCAL(2026-09-21, d8201ad0): 多会话对话索引存储(单例;B 区逻辑在 @chatoffice/project-store/conversations)
+// LOCAL(2026-09-21, d8201ad0): 多会话对话索引存储(单例;B 区逻辑在 @chaoffice/project-store/conversations)
 let conversationsStore: ConversationStore | null = null
 function getConversationsStore(): ConversationStore {
   if (!conversationsStore) {
@@ -4425,7 +4425,7 @@ export function registerDocsIpc(): void {
     if (typeof html !== 'string' || !html.trim() || html.length > ALT_CHUNK_HTML_MAX_CHARS) {
       return null
     }
-    const workDir = await mkdtemp(join(tmpdir(), 'chatoffice-altchunk-'))
+    const workDir = await mkdtemp(join(tmpdir(), 'chaoffice-altchunk-'))
     let driver: ElectronBrowserDriver | null = null
     try {
       const htmlPath = join(workDir, 'chunk.html')
@@ -5326,7 +5326,7 @@ export function registerDocsIpc(): void {
     }
     if (!dir) return null
     const wcId = event.sender.id
-    const pdfPath = join(tmpdir(), `chatoffice-docs-images-${randomUUID()}.pdf`)
+    const pdfPath = join(tmpdir(), `chaoffice-docs-images-${randomUUID()}.pdf`)
     allowPdfWrite(wcId, pdfPath)
     imageExportTemps.set(wcId, (imageExportTemps.get(wcId) ?? new Set()).add(pdfPath))
     imageExportDirs.set(wcId, (imageExportDirs.get(wcId) ?? new Set()).add(dir))
@@ -6429,7 +6429,7 @@ export function startDocsStandalone(): void {
 
   app.whenReady().then(() => {
     installRendererProtocol({ docs: join(__dirname, '../renderer') })
-    setUiLang(normalizeLang(process.env.CHATOFFICE_LANG ?? app.getLocale()))
+    setUiLang(normalizeLang(process.env.CHAOFFICE_LANG ?? app.getLocale()))
     // packaged builds get the Dock icon from icon.icns; dev shows Electron's default
     if (isDev && process.platform === 'darwin') {
       app.dock?.setIcon(APP_ICON)

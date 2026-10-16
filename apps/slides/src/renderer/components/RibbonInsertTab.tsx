@@ -1,8 +1,8 @@
 /** Insert tab of the slides ribbon. Extracted from Ribbon.tsx. */
 import type { InsertKind } from '../../shared/ipc'
-import { platformShortcuts } from '@chatoffice/i18n'
+import { platformShortcuts } from '@chaoffice/i18n'
 import { ICON_COLORS, ICON_GALLERY, SHAPE_GALLERY, SMARTART_GALLERY } from '../insert-presets'
-import { WORDART_PRESETS, wordArtStrokePx } from '@chatoffice/ui'
+import { WORDART_PRESETS, wordArtStrokePx } from '@chaoffice/ui'
 import type { StringKey } from '../i18n/locale'
 import { ChartKindThumb } from './ChartTypeDialog'
 import { TableInsertDialog } from './InsertDialogs'

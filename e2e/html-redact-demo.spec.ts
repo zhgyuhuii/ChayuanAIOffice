@@ -81,7 +81,7 @@ async function hideSelection(page: import('@playwright/test').Page, label: strin
 
 test('a reader can withhold a value in the source view without changing the page', async () => {
   test.setTimeout(180_000)
-  const dir = await mkdtemp(join(tmpdir(), 'chatoffice-redact-html-'))
+  const dir = await mkdtemp(join(tmpdir(), 'chaoffice-redact-html-'))
   const htmlPath = join(dir, 'page.html')
   await writeFile(htmlPath, SOURCE)
 

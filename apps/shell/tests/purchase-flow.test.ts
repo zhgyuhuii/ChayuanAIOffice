@@ -20,7 +20,7 @@ const ipcHandlers = vi.hoisted(() => new Map<string, (...args: unknown[]) => unk
 
 vi.mock('electron', () => ({
   app: {
-    getPath: (name: string) => (name === 'userData' ? electronState.userData : `/tmp/chatoffice-${name}`),
+    getPath: (name: string) => (name === 'userData' ? electronState.userData : `/tmp/chaoffice-${name}`),
     get isPackaged() {
       return electronState.isPackaged
     },
@@ -116,7 +116,7 @@ describe('purchase flow (registerPurchaseIpc + state file)', () => {
     delete process.env.CHATOP_LICENSE_HMAC_KEY
     delete process.env.CHATOP_BUY_BASE_URL
     // pin the dev-key file to an absent path: a real store key pinned on THIS
-    // machine (~/.chatoffice/license-hmac-key.txt) must not leak into tests
+    // machine (~/.chaoffice/license-hmac-key.txt) must not leak into tests
     process.env.CHATOP_LICENSE_DEV_KEY_FILE = join(dir, 'absent-license-key.txt')
     registerPurchaseIpc()
   })
@@ -251,7 +251,7 @@ describe('purchase flow (registerPurchaseIpc + state file)', () => {
       webContents: { send: (ch: string, payload: unknown) => sends.push([ch, payload]) },
     }
     openPurchasePage(fakeWin as never)
-    expect(sends).toEqual([['chatoffice/purchase:event', { kind: 'open-page' }]])
+    expect(sends).toEqual([['chaoffice/purchase:event', { kind: 'open-page' }]])
     openPurchasePage({ isDestroyed: () => true } as never)
     expect(sends).toHaveLength(1)
   })

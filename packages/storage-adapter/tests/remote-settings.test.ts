@@ -27,7 +27,7 @@ import type { RemoteStorageConfig } from '../src/index.js'
 const dirs: string[] = []
 
 function tempFile(name = 'storage-settings.json'): string {
-  const dir = mkdtempSync(join(tmpdir(), 'chatoffice-storage-settings-'))
+  const dir = mkdtempSync(join(tmpdir(), 'chaoffice-storage-settings-'))
   dirs.push(dir)
   return join(dir, name)
 }
@@ -171,13 +171,13 @@ describe('settings file round-trip', () => {
 
 describe('applyRemoteStorageEnvSeed', () => {
   const env = {
-    CHATOFFICE_STORAGE_ENDPOINT: 'http://minio:9000',
-    CHATOFFICE_STORAGE_BUCKET: 'docs',
-    CHATOFFICE_STORAGE_ACCESS_KEY_ID: 'AK',
-    CHATOFFICE_STORAGE_SECRET_ACCESS_KEY: 'SK',
-    CHATOFFICE_STORAGE_NAME: 'Docker MinIO',
-    CHATOFFICE_STORAGE_PATH_STYLE: 'true',
-    CHATOFFICE_STORAGE_PREFIX: 'office/',
+    CHAOFFICE_STORAGE_ENDPOINT: 'http://minio:9000',
+    CHAOFFICE_STORAGE_BUCKET: 'docs',
+    CHAOFFICE_STORAGE_ACCESS_KEY_ID: 'AK',
+    CHAOFFICE_STORAGE_SECRET_ACCESS_KEY: 'SK',
+    CHAOFFICE_STORAGE_NAME: 'Docker MinIO',
+    CHAOFFICE_STORAGE_PATH_STYLE: 'true',
+    CHAOFFICE_STORAGE_PREFIX: 'office/',
   }
 
   it('seeds an empty config list and points the default location at it', () => {
@@ -203,7 +203,7 @@ describe('applyRemoteStorageEnvSeed', () => {
   it('requires the mandatory variables', () => {
     expect(
       applyRemoteStorageEnvSeed(emptyRemoteStorageSettings(), {
-        CHATOFFICE_STORAGE_ENDPOINT: 'http://x',
+        CHAOFFICE_STORAGE_ENDPOINT: 'http://x',
       }).configs,
     ).toHaveLength(0)
   })

@@ -51,8 +51,8 @@ export interface CapabilityVerdict {
   reason?: string
 }
 
-/** chatoffice's proxy normalizes its preset models behind stable endpoints */
-const PROXY_GUARANTEED_VENDORS = new Set(['chatoffice'])
+/** chaoffice's proxy normalizes its preset models behind stable endpoints */
+const PROXY_GUARANTEED_VENDORS = new Set(['chaoffice'])
 
 /**
  * Known no-FC models on their official APIs. Self-hosted engines (vLLM with a
@@ -104,7 +104,7 @@ export const IMAGE_GEN_VENDOR_IDS = new Set([
   'openai',
   'aliyun-bailian',
   'recraft',
-  'chatoffice',
+  'chaoffice',
   // any OpenAI-compatible gateway: generateViaOpenAiImages is protocol-level
   // ({base}/images/generations) and agnes/new-api-style hosts answer it —
   // gated per profile below, where the host actually speaks the dialect
@@ -132,7 +132,7 @@ export const VIDEO_GEN_VENDOR_IDS = new Set([
   'runway',
   'vidu',
   'pixverse',
-  'chatoffice',
+  'chaoffice',
   'openai-compatible',
   'oneapi',
   'new-api',

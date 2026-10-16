@@ -1,7 +1,7 @@
 import type { Editor } from '@tiptap/core'
 import { navigateToBlock } from './ai/doc-nav'
 
-/** Request/reply the shell relays from `chatoffice open --block` and `chatoffice selection`. */
+/** Request/reply the shell relays from `chaoffice open --block` and `chaoffice selection`. */
 export type ControlRequest =
   { cmd: 'goto'; target: { kind: string; block?: number } } | { cmd: 'selection' }
 

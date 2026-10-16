@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { CommentInfo } from '@chatoffice/docx-engine'
+import type { CommentInfo } from '@chaoffice/docx-engine'
 import { measureCommentSpots } from '../src/renderer/components/PaginationPreview'
 
 /** stub layout: jsdom has no layout engine, so anchors declare their rects */

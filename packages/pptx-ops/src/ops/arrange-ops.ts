@@ -17,7 +17,7 @@ import {
   type ConnectionSide,
   type Slide,
   type SlideElement,
-} from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
 import {
   GuidedError,
   register,

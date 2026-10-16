@@ -19,7 +19,7 @@ import {
 } from '../src/renderer/docops/declassify'
 import { encryptPayloadWithPassword, decryptPayload, fingerprintText } from '../src/renderer/docops/declassify-crypto'
 import { scanFormFields, setFormMode, isFormModeActive, fillFormFields } from '../src/renderer/docops/form-mode'
-import type { StyleInfo } from '@chatoffice/docx-engine'
+import type { StyleInfo } from '@chaoffice/docx-engine'
 
 function para(text: string, docxIndex = 0) {
   return {

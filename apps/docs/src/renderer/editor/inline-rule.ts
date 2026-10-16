@@ -1,4 +1,4 @@
-import type { Run } from '@chatoffice/docx-engine'
+import type { Run } from '@chaoffice/docx-engine'
 
 export type InlineRule = NonNullable<NonNullable<Run['image']>['rule']>
 

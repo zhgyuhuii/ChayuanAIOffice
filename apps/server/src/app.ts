@@ -12,13 +12,13 @@
 
 import { resolve } from 'node:path'
 import Fastify, { type FastifyInstance } from 'fastify'
-import type { ServiceCore, ServiceDefinition } from '@chatoffice/service-core'
-import { createCore } from '@chatoffice/service-core'
-import { chatHistoryService } from '@chatoffice/service-core'
-import { remoteStorageService } from '@chatoffice/service-core'
-import { settingsService } from '@chatoffice/service-core'
-import { xlsxSidecarService } from '@chatoffice/service-core'
-import { openLocalArea, RemoteStorageError, type StorageArea } from '@chatoffice/storage-adapter'
+import type { ServiceCore, ServiceDefinition } from '@chaoffice/service-core'
+import { createCore } from '@chaoffice/service-core'
+import { chatHistoryService } from '@chaoffice/service-core'
+import { remoteStorageService } from '@chaoffice/service-core'
+import { settingsService } from '@chaoffice/service-core'
+import { xlsxSidecarService } from '@chaoffice/service-core'
+import { openLocalArea, RemoteStorageError, type StorageArea } from '@chaoffice/storage-adapter'
 import { attachAuthHooks, type AuthOptions } from './auth.js'
 import { attachWsGateway } from './ws-gateway.js'
 import { attachAiProxy, type AiProxyOptions } from './ai-proxy.js'
@@ -143,9 +143,9 @@ export function buildServer(options: ServerOptions = {}): BuiltServer {
 
   attachAuthHooks(app, options.auth)
   attachWsGateway(app, core)
-  const dshHome = process.env.CHATOFFICE_DSH_HOME
-  const dshRpc = process.env.CHATOFFICE_DSH_RPC_ORIGIN
-  const dshRpcFile = process.env.CHATOFFICE_DSH_RPC_ORIGIN_FILE
+  const dshHome = process.env.CHAOFFICE_DSH_HOME
+  const dshRpc = process.env.CHAOFFICE_DSH_RPC_ORIGIN
+  const dshRpcFile = process.env.CHAOFFICE_DSH_RPC_ORIGIN_FILE
   attachAiProxy(app, {
     ...options.ai,
     dataDir: options.ai?.dataDir ?? dataDir,

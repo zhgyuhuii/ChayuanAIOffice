@@ -1,8 +1,8 @@
 import JSZip from 'jszip'
 import { describe, expect, it } from 'vitest'
 
-import { applyCellEditsToXlsx, type CellEdit } from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
-import { translateSharedFormula } from '@chatoffice/xlsx-gateway/gateway/xlsx-structure'
+import { applyCellEditsToXlsx, type CellEdit } from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
+import { translateSharedFormula } from '@chaoffice/xlsx-gateway/gateway/xlsx-structure'
 
 describe('translateSharedFormula', () => {
   it('shifts relative references by the follower offset', () => {

@@ -37,9 +37,9 @@ export interface Brief {
   version: 1
 }
 
-export const BRIEF_META_NAME = 'chatoffice:brief'
+export const BRIEF_META_NAME = 'chaoffice:brief'
 
-const META_RE = /<meta\s+[^>]*name\s*=\s*["']chatoffice:brief["'][^>]*>/i
+const META_RE = /<meta\s+[^>]*name\s*=\s*["']chaoffice:brief["'][^>]*>/i
 
 function decodeAttr(value: string): string {
   return value

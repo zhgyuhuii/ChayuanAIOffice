@@ -19,12 +19,12 @@ import type {
   TransitionSpec,
 } from '../../shared/ipc'
 import type { InkPenSettings, InkTool } from '../ink'
-import type { WordArtPreset } from '@chatoffice/ui'
+import type { WordArtPreset } from '@chaoffice/ui'
 import type { ChartPresetDef, IconDef, SmartArtDef } from '../insert-presets'
 import type { ZoomMode } from '../zoom-actions'
 import type { SlideThemePreset } from '../themes'
-import type { ChartStyleInfo } from '@chatoffice/pptx-render'
-import { BUILTIN_FONT_FAMILIES } from '@chatoffice/ui'
+import type { ChartStyleInfo } from '@chaoffice/pptx-render'
+import { BUILTIN_FONT_FAMILIES } from '@chaoffice/ui'
 import type { ContextTabRequest } from './context-tabs'
 import { useI18n } from '../i18n/locale'
 import { layoutLabel } from '../layout-names'
@@ -53,7 +53,7 @@ export type SlidesViewMode = 'normal' | 'outline' | 'sorter' | 'reading'
 export const FONT_FAMILIES = BUILTIN_FONT_FAMILIES
 
 /** Font size dropdown candidates (pt): the same ladder grow/shrink font walks */
-export { FONT_SIZES } from '@chatoffice/pptx-ops/font-size'
+export { FONT_SIZES } from '@chaoffice/pptx-ops/font-size'
 
 /** Font color palette (applied with onMouseDown while editing, so the native picker doesn't steal focus and commit the edit) */
 export const TEXT_COLORS = [

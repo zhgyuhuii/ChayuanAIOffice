@@ -1,4 +1,4 @@
-import type { AiPanelPrefs } from '@chatoffice/ui'
+import type { AiPanelPrefs } from '@chaoffice/ui'
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 
 import type {
@@ -7,8 +7,8 @@ import type {
   AiSettingsV2,
   AiStreamChunk,
   ChaOfficeAccountStatus,
-} from '@chatoffice/ai-provider'
-import type { ProjectApi } from '@chatoffice/project-store'
+} from '@chaoffice/ai-provider'
+import type { ProjectApi } from '@chaoffice/project-store'
 import type {
   AttachmentAddResult,
   AttachmentImageResult,
@@ -59,8 +59,8 @@ import {
   MAX_SAVE_EDITS_TOTAL,
   SAVE_EDITS_CHUNK_JSON_MAX,
 } from '../shared/ipc-channels'
-import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
-import { KB_CHANNELS } from '@chatoffice/ai-host/kb-channels'
+import { installDropOpenBridge } from '@chaoffice/electron-utils/drop-open'
+import { KB_CHANNELS } from '@chaoffice/ai-host/kb-channels'
 
 const desktopApi: DesktopApi = {
   getLanguage: () => ipcRenderer.invoke('app:get-language'),
@@ -558,7 +558,7 @@ const desktopApi: DesktopApi = {
     return (await ipcRenderer.invoke(
       IPC_CHANNELS.aiLocalToolStatus,
       vendorId,
-    )) as import('@chatoffice/ai-provider').LocalToolStatus
+    )) as import('@chaoffice/ai-provider').LocalToolStatus
   },
   async aiLocalToolInstall(vendorId: string, onLine?: (line: string) => void) {
     if (!onLine) return ipcRenderer.invoke(IPC_CHANNELS.aiLocalToolInstall, vendorId)
@@ -574,7 +574,7 @@ const desktopApi: DesktopApi = {
     return (await ipcRenderer.invoke(
       IPC_CHANNELS.aiLocalToolStart,
       vendorId,
-    )) as import('@chatoffice/ai-provider').LocalToolOpResult
+    )) as import('@chaoffice/ai-provider').LocalToolOpResult
   },
   async webSearch(query, maxResults) {
     if (typeof query !== 'string' || !query.trim() || query.length > 512) {
@@ -868,10 +868,10 @@ const projectApi: ProjectApi = {
 contextBridge.exposeInMainWorld('projectApi', projectApi)
 
 // Off by default. e2e drivers launch the BUILT app with GENOFFICE_DEBUG_HOOKS=1
-// so the renderer exposes window.__chatofficeDebug (see App.tsx) — the dev-only
+// so the renderer exposes window.__chaofficeDebug (see App.tsx) — the dev-only
 // __univerAPI hook does not exist in production bundles.
 if (process.env.GENOFFICE_DEBUG_HOOKS === '1') {
-  contextBridge.exposeInMainWorld('__chatofficeDebugHooks', true)
+  contextBridge.exposeInMainWorld('__chaofficeDebugHooks', true)
 }
 
 // open documents dragged from the OS onto this tab as a new shell tab

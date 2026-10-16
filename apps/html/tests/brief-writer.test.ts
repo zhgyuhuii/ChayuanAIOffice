@@ -4,7 +4,7 @@ import type {
   AgentStreamCallbacks,
   AgentStreamRequest,
   AgentTransport,
-} from '@chatoffice/agent-core'
+} from '@chaoffice/agent-core'
 import {
   buildBriefWriterRequest,
   extractBriefJson,

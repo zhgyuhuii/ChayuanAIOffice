@@ -99,7 +99,7 @@ import {
   type TextboxListMarker,
   type ParaFrame,
   type TextFlowDirection,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import {
   substituteBullet,
   markerFallbackFace,
@@ -1968,7 +1968,7 @@ export const DocListItem = Node.create({
         }),
       },
       // our own clipboard HTML: renderHTML emits <div class="doc-li …">, which
-      // no rule matched before r117 — pasting a ChatOffice list item degraded it
+      // no rule matched before r117 — pasting a ChaOffice list item degraded it
       // to plain text. kind/ilvl ride in data-para; classes are the fallback.
       {
         tag: 'div.doc-li',
@@ -3731,7 +3731,7 @@ export const DocTable = Node.create({
       // content box — subtract the left margin. And the offset is CLAMPED so
       // the table never hangs past the right content edge: unclamped
       // page-anchored deal-doc captables rendered half off-page (alpha
-      // ledger, #chatoffice-feedback task #6). Word keeps floats on the page.
+      // ledger, #chaoffice-feedback task #6). Word keeps floats on the page.
       const fromPageEdge = node.attrs.tblFloatHorzAnchor === 'page'
       const tblWidth = Number(node.attrs.widthPx) || Number(node.attrs.tblFloatWidthPx) || 0
       const xSpec = node.attrs.tblFloatXSpec as string | null
@@ -3871,7 +3871,7 @@ export const DocTable = Node.create({
         },
         // prosemirror-tables previews a column drag by writing px widths onto the
         // colgroup and table; without this ProseMirror treats that as foreign DOM
-        // and redraws the table from the model on every mousemove (chatoffice#1156)
+        // and redraws the table from the model on every mousemove (chaoffice#1156)
         ignoreMutation: (mutation) => {
           if (mutation.type === 'selection') return false
           const { target } = mutation

@@ -1,32 +1,32 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    // the docs/markdown editor modules are typed against the DOM even though chatoffice runs them under jsdom
+    // the docs/markdown editor modules are typed against the DOM even though chaoffice runs them under jsdom
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
     "types": ["node"],
     // resolve sibling source packages by path (worktree-safe, see pdf2docx/tsconfig.json)
     "paths": {
-      "@chatoffice/docx-engine": ["../docx-engine/src/index.ts"],
-      "@chatoffice/pptx-engine": ["../pptx-engine/src/index.ts"],
-      "@chatoffice/pdf2docx": ["../pdf2docx/src/index.ts"],
-      "@chatoffice/pptx-ops": ["../pptx-ops/src/index.ts"],
-      "@chatoffice/pptx-render": ["../pptx-render/src/index.ts"],
-      "@chatoffice/pipelines/slides": ["../pipelines/src/slides/index.ts"],
-      "@chatoffice/pptx-ops/op-docs": ["../pptx-ops/src/op-docs.ts"],
-      "@chatoffice/pptx-ops/font-size": ["../pptx-ops/src/font-size.ts"],
-      "@chatoffice/xlsx-gateway/*": ["../xlsx-gateway/src/*"],
-      "@chatoffice/font-metrics": ["../font-metrics/src/index.ts"],
-      "@chatoffice/electron-utils": ["../electron-utils/src/index.ts"],
-      "@chatoffice/electron-utils/*": ["../electron-utils/src/*"],
-      "@chatoffice/ai-search": ["../ai-search/src/index.ts"],
-      "@chatoffice/ai-provider": ["../ai-provider/src/index.ts"],
-      "@chatoffice/ai-provider/browser": ["../ai-provider/src/browser.ts"],
-      "@chatoffice/i18n": ["../i18n/src/index.ts"],
-      "@chatoffice/ui": ["../ui/src/index.ts"]
+      "@chaoffice/docx-engine": ["../docx-engine/src/index.ts"],
+      "@chaoffice/pptx-engine": ["../pptx-engine/src/index.ts"],
+      "@chaoffice/pdf2docx": ["../pdf2docx/src/index.ts"],
+      "@chaoffice/pptx-ops": ["../pptx-ops/src/index.ts"],
+      "@chaoffice/pptx-render": ["../pptx-render/src/index.ts"],
+      "@chaoffice/pipelines/slides": ["../pipelines/src/slides/index.ts"],
+      "@chaoffice/pptx-ops/op-docs": ["../pptx-ops/src/op-docs.ts"],
+      "@chaoffice/pptx-ops/font-size": ["../pptx-ops/src/font-size.ts"],
+      "@chaoffice/xlsx-gateway/*": ["../xlsx-gateway/src/*"],
+      "@chaoffice/font-metrics": ["../font-metrics/src/index.ts"],
+      "@chaoffice/electron-utils": ["../electron-utils/src/index.ts"],
+      "@chaoffice/electron-utils/*": ["../electron-utils/src/*"],
+      "@chaoffice/ai-search": ["../ai-search/src/index.ts"],
+      "@chaoffice/ai-provider": ["../ai-provider/src/index.ts"],
+      "@chaoffice/ai-provider/browser": ["../ai-provider/src/browser.ts"],
+      "@chaoffice/i18n": ["../i18n/src/index.ts"],
+      "@chaoffice/ui": ["../ui/src/index.ts"]
     }
   },
-  // ambient declarations travel with the sources chatoffice reuses: package module shims and the
+  // ambient declarations travel with the sources chaoffice reuses: package module shims and the
   // renderer window globals (window.desktop / window.markdownApi) the editor modules reference
   "include": [
     "src",

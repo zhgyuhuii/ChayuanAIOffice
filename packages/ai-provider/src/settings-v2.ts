@@ -1,5 +1,5 @@
 import { inferModelType, matchesModelType, type AiModelType } from './model-type'
-import { CHATOFFICE_LLM_BASE_URLS, clampMaxOutputTokens } from './providers'
+import { CHAOFFICE_LLM_BASE_URLS, clampMaxOutputTokens } from './providers'
 import { modelHasFixedSampling, modelLacksVision, type AiProtocol } from './registry'
 import type {
   AiImageSource,
@@ -11,7 +11,7 @@ import type {
   AiSettingsV2,
   AiWireProtocol,
 } from './types'
-import { CHATOFFICE_PRESET_MODELS, VENDOR_BY_ID } from './vendor-catalog'
+import { CHAOFFICE_PRESET_MODELS, VENDOR_BY_ID } from './vendor-catalog'
 
 /**
  * Settings v2 core: migration from v1, and the profile+model → wire-call
@@ -52,25 +52,25 @@ export const WIRE_TO_INTERNAL: Record<AiWireProtocol, AiProtocol> = {
   'gemini-native': 'gemini',
 }
 
-/** chatoffice's proxy routes claude onto the Anthropic protocol; everything
+/** chaoffice's proxy routes claude onto the Anthropic protocol; everything
  * else (gemini included) rides the OpenAI-compatible endpoint — the proxy's
  * gemini endpoint was removed server-side (405 as of 2026-08-31). */
-export function chatofficeEndpointFor(model: string): { protocol: AiProtocol; baseUrl: string } {
+export function chaofficeEndpointFor(model: string): { protocol: AiProtocol; baseUrl: string } {
   if (model.startsWith('claude'))
-    return { protocol: 'anthropic', baseUrl: CHATOFFICE_LLM_BASE_URLS.anthropic }
-  return { protocol: 'openai-compatible', baseUrl: CHATOFFICE_LLM_BASE_URLS.openai }
+    return { protocol: 'anthropic', baseUrl: CHAOFFICE_LLM_BASE_URLS.anthropic }
+  return { protocol: 'openai-compatible', baseUrl: CHAOFFICE_LLM_BASE_URLS.openai }
 }
 
-export function chatofficeProfile(): AiProviderProfile {
+export function chaofficeProfile(): AiProviderProfile {
   return {
-    id: 'chatoffice',
-    vendorId: 'chatoffice',
+    id: 'chaoffice',
+    vendorId: 'chaoffice',
     displayName: 'ChaAI Office',
     protocol: 'openai-completions', // placeholder; the resolver routes per model
     baseUrl: '',
-    auth: 'chatoffice-login',
+    auth: 'chaoffice-login',
     enabled: true,
-    models: CHATOFFICE_PRESET_MODELS.map((id) => ({ id })),
+    models: CHAOFFICE_PRESET_MODELS.map((id) => ({ id })),
   }
 }
 
@@ -79,7 +79,7 @@ export function chatofficeProfile(): AiProviderProfile {
 export function defaultSettingsV2(): AiSettingsV2 {
   return {
     version: 2,
-    profiles: [{ ...chatofficeProfile(), enabled: false }],
+    profiles: [{ ...chaofficeProfile(), enabled: false }],
   }
 }
 
@@ -157,7 +157,7 @@ export function resolveCurrentModel(settings: AiSettingsV2): AiModelSelection | 
 }
 
 /** chat-only variant for paths that must land on a model able to answer chat
- * regardless of what the user had picked: the signed-out chatoffice heal and
+ * regardless of what the user had picked: the signed-out chaoffice heal and
  * the legacy-migration default */
 export function resolveChatCurrentModel(settings: AiSettingsV2): AiModelSelection | undefined {
   if (settings.currentModel) {
@@ -191,7 +191,7 @@ function normalizeGeminiBase(baseUrl: string): string {
 
 /**
  * Resolve one model call: protocol endpoint + per-vendor quirks. The caller
- * supplies the secret (inline key, harness credential ref, or chatoffice session) —
+ * supplies the secret (inline key, harness credential ref, or chaoffice session) —
  * this function never reads storage.
  */
 export function resolveModelCall(
@@ -204,14 +204,14 @@ export function resolveModelCall(
   const entry = profile.models.find((m) => m.id === selection.modelId)
   if (!entry) throw new Error(`Model ${selection.modelId} is not enabled on ${profile.displayName}`)
 
-  if (profile.auth === 'chatoffice-login') {
-    const ep = chatofficeEndpointFor(selection.modelId)
+  if (profile.auth === 'chaoffice-login') {
+    const ep = chaofficeEndpointFor(selection.modelId)
     return {
       protocol: ep.protocol,
       baseUrl: ep.baseUrl,
       apiKey,
       model: selection.modelId,
-      vendorId: 'chatoffice',
+      vendorId: 'chaoffice',
       ...(modelHasFixedSampling(selection.modelId) ? { omitTemperature: true } : {}),
     }
   }
@@ -256,7 +256,7 @@ function migrateV1Provider(
   id: string,
   config: { apiKey?: string; model?: string; baseUrl?: string },
 ): AiProviderProfile | null {
-  if (id === 'chatoffice') return null // handled separately as the login profile
+  if (id === 'chaoffice') return null // handled separately as the login profile
   const modelId = (config.model ?? '').trim()
   const model = RETIRED_MODELS[modelId] ?? modelId
   const apiKey = (config.apiKey ?? '').trim()
@@ -297,7 +297,7 @@ export interface StoredAiSettings {
   provider?: string
   providers?: Record<string, { apiKey?: string; model?: string; baseUrl?: string }>
   /** legacy field — read for migration, no longer written */
-  chatofficeToolsEnabled?: boolean
+  chaofficeToolsEnabled?: boolean
   /** per-turn output-token cap (upstream f105f36; clamped on read) */
   maxOutputTokens?: number
   /** legacy pre-provider shape */
@@ -333,9 +333,9 @@ export function migrateSettingsV2(stored: StoredAiSettings | null | undefined): 
     return normalizeV2(stored as AiSettingsV2)
   }
 
-  // chatoffice is born disabled: enabling it is an explicit user act (login +
+  // chaoffice is born disabled: enabling it is an explicit user act (login +
   // model pick in the settings page), never a default
-  const profiles: AiProviderProfile[] = [{ ...chatofficeProfile(), enabled: false }]
+  const profiles: AiProviderProfile[] = [{ ...chaofficeProfile(), enabled: false }]
   let currentModel: AiModelSelection | undefined
 
   if (stored?.providers) {
@@ -345,7 +345,7 @@ export function migrateSettingsV2(stored: StoredAiSettings | null | undefined): 
     }
     // honor the v1 active provider when it migrated into a usable profile
     const active =
-      stored.provider && stored.provider !== 'chatoffice'
+      stored.provider && stored.provider !== 'chaoffice'
         ? migrateV1Provider(
             stored.provider,
             stored.providers[stored.provider] ?? { apiKey: '', model: '' },
@@ -389,7 +389,7 @@ const LEGACY_AUTH = 'gsk-login'
 
 /** remap a legacy profile id (persisted selections point at the old id) */
 function migratedProfileId(id: string | undefined): string | undefined {
-  return id === LEGACY_PROFILE_ID ? 'chatoffice' : id
+  return id === LEGACY_PROFILE_ID ? 'chaoffice' : id
 }
 
 /** trim/dedupe an existing v2 blob and drop selections that no longer resolve */
@@ -414,7 +414,7 @@ function normalizeV2(settings: AiSettingsV2): AiSettingsV2 {
         // legacy blob: login-backed profile stored under its old id/auth kind
         id,
         ...(vendorId ? { vendorId } : {}),
-        ...(p.auth === (LEGACY_AUTH as string) ? { auth: 'chatoffice-login' as const } : {}),
+        ...(p.auth === (LEGACY_AUTH as string) ? { auth: 'chaoffice-login' as const } : {}),
         displayName: p.displayName?.trim() || p.id,
         baseUrl: p.baseUrl?.trim() ?? '',
         apiKey: p.apiKey?.trim() ?? '',
@@ -423,7 +423,7 @@ function normalizeV2(settings: AiSettingsV2): AiSettingsV2 {
     })
   const next: AiSettingsV2 = {
     version: 2,
-    profiles: profiles.length ? profiles : [{ ...chatofficeProfile(), enabled: false }],
+    profiles: profiles.length ? profiles : [{ ...chaofficeProfile(), enabled: false }],
     ...(settings.maxOutputTokens !== undefined
       ? { maxOutputTokens: clampMaxOutputTokens(settings.maxOutputTokens) }
       : {}),

@@ -201,13 +201,13 @@ describe.skipIf(!hasNss || process.platform !== 'linux')('against a real NSS dat
     const before = new Set(
       (await import('node:fs'))
         .readdirSync(tmpdir())
-        .filter((n) => n.startsWith('chatoffice-cert-')),
+        .filter((n) => n.startsWith('chaoffice-cert-')),
     )
     const listing = await listSystemCertificates(undefined, env())
     await exportSystemCertificate(listing.certs[0]!.ref, undefined, env())
     const after = (await import('node:fs'))
       .readdirSync(tmpdir())
-      .filter((n) => n.startsWith('chatoffice-cert-') && !before.has(n))
+      .filter((n) => n.startsWith('chaoffice-cert-') && !before.has(n))
     expect(after).toEqual([])
   }, 60_000)
 })

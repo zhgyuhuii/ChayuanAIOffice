@@ -1,5 +1,5 @@
 {
-  "name": "@chatoffice/ai-host",
+  "name": "@chaoffice/ai-host",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -15,9 +15,9 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@chatoffice/ai-provider": "*",
-    "@chatoffice/ai-search": "*",
-    "@chatoffice/electron-utils": "*"
+    "@chaoffice/ai-provider": "*",
+    "@chaoffice/ai-search": "*",
+    "@chaoffice/electron-utils": "*"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

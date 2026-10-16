@@ -11,7 +11,7 @@ import type { StringKey } from './locale'
 /** mcp.json snippet a client needs to reach the local server */
 function mcpConfigExample(port: string): string {
   return JSON.stringify(
-    { mcpServers: { chatoffice: { url: `http://127.0.0.1:${port}/mcp` } } },
+    { mcpServers: { chaoffice: { url: `http://127.0.0.1:${port}/mcp` } } },
     null,
     2,
   )

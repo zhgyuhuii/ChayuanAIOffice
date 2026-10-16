@@ -13,9 +13,9 @@ import {
   savePptx,
   type OpenedPptx,
   type TextElement,
-} from '@chatoffice/pptx-engine'
-import { runTxn, elementDurableId, slideDurableId } from '@chatoffice/pptx-ops'
-import { elementCNvPrId, groupChildDurableId, patchSlideXml } from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
+import { runTxn, elementDurableId, slideDurableId } from '@chaoffice/pptx-ops'
+import { elementCNvPrId, groupChildDurableId, patchSlideXml } from '@chaoffice/pptx-engine'
 
 let opened: OpenedPptx
 

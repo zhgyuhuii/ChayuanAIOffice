@@ -4,7 +4,7 @@
  * 镶边行填充），套用时按选区逐行落成直接格式——保存管线尚不支持把自定义
  * 样式写成 xlsx dxfs，故自定义样式不走 xl/tables 命名样式。
  */
-import type { CellFormatPatch } from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
+import type { CellFormatPatch } from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
 
 export interface CustomTableStyle {
   readonly id: string

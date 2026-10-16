@@ -21,7 +21,7 @@
 
 | 项 | 结果 | 证据（docs/r24-acceptance/） |
 |---|---|---|
-| T-O-01 版本与启动 | ✅ | app.asar version=1.0.5/chatofficeUpstreamVersion=0.11.0；01-home.png 启动正常 |
+| T-O-01 版本与启动 | ✅ | app.asar version=1.0.5/chaofficeUpstreamVersion=0.11.0；01-home.png 启动正常 |
 | T-O-02 本地模型识别 | ✅（口径内） | 察元OS 桌面无运行中本地模型（生产根无权重、52581 空载）→ 下拉无本地组=符合「清单＝运行中模型」口径；agnes 云厂商组正常 |
 | T-O-03 模型下拉联动 | ✅ | 14-home-model-picker.png：模型设置…入口/全部·对话·生图·视频生成筛选/AGNES 分组五模型/选中态蓝字 |
 | T-O-04 六类文档新建+保存重开 | ✅ | 六格式逐一点击新建全开（02/04/05/06/07/08）；存量 大美河山.docx 打字→⌘S→关标签→重开内容在（09/往返断言 true） |
@@ -108,8 +108,8 @@
 |---|---|---|
 | 与上游逐字节一致（完全吸收） | **416** | 快照直取 + 干净 3-way 后无本地差异的部分 |
 | 适配合并（本地有意差异） | **577** | 品牌/察元形态/A 区架构/本轮适配，全部有台账记录 |
-| 上游新增文件本地缺失 | 2 | 均为**已裁定**：ai-error-login-button.test.ts（拒绝清单·单会话面板不同构）、gsk-reauth.test.ts（改名跟随→chatoffice-reauth.test.ts，内容已移植） |
-| 本地删除 vs 上游编辑 | 11 | 全部已处置：ai-search 三件改名移植（内容已并入 chatoffice-auth/chatoffice）、KR 字体字节收编、flatpak mime 移植、5 个本地删除的 e2e/测试维持删除 |
+| 上游新增文件本地缺失 | 2 | 均为**已裁定**：ai-error-login-button.test.ts（拒绝清单·单会话面板不同构）、gsk-reauth.test.ts（改名跟随→chaoffice-reauth.test.ts，内容已移植） |
+| 本地删除 vs 上游编辑 | 11 | 全部已处置：ai-search 三件改名移植（内容已并入 chaoffice-auth/chaoffice）、KR 字体字节收编、flatpak mime 移植、5 个本地删除的 e2e/测试维持删除 |
 | **真实遗漏** | **0** | — |
 
 **结论：上游 a08c842f..4dc4b7b3 全部代码变更已合并进本项目，零遗漏。**

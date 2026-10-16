@@ -2,7 +2,7 @@
  * Web/dsh-form knowledge-base bridge (docs/kb-integration-plan.md §5.1):
  * exposes the same `window.chaOfficeKb` contract the desktop preloads
  * install, backed by same-origin fetches against the sidecar's /kb/* proxy.
- * The base keeps the /chatoffice-app prefix when running behind the dsh
+ * The base keeps the /chaoffice-app prefix when running behind the dsh
  * plugin's reverse proxy so both the shell page and editor pages resolve.
  */
 
@@ -15,9 +15,9 @@ export interface KbFetchBridge {
   setOrigin(origin: string | null): Promise<unknown>
 }
 
-/** '' in the plain web form; '/chatoffice-app' behind the dsh plugin proxy */
+/** '' in the plain web form; '/chaoffice-app' behind the dsh plugin proxy */
 export function kbApiBase(pathname = window.location.pathname): string {
-  const marker = '/chatoffice-app'
+  const marker = '/chaoffice-app'
   const idx = pathname.indexOf(marker)
   return idx >= 0 ? pathname.slice(0, idx + marker.length) : ''
 }

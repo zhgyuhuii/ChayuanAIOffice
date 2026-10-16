@@ -19,7 +19,7 @@ const BUILD = join(__dirname, '..', 'build')
 
 /** The scripts hardcode the package paths; a copy with the two roots swapped runs against a temp tree. */
 function makeRoot() {
-  const root = mkdtempSync(join(tmpdir(), 'chatoffice-postinst-'))
+  const root = mkdtempSync(join(tmpdir(), 'chaoffice-postinst-'))
   const opt = join(root, 'opt', 'ChaAI Office')
   const bin = join(root, 'usr', 'bin')
   mkdirSync(join(opt, 'resources', 'cli'), { recursive: true })
@@ -46,7 +46,7 @@ function makeRoot() {
   }
 }
 
-describe.skipIf(process.platform === 'win32')('linux cli link scripts (chatoffice#893)', () => {
+describe.skipIf(process.platform === 'win32')('linux cli link scripts (chaoffice#893)', () => {
   it('links a free name, a dead link and a link into the old install', () => {
     const t = makeRoot()
     expect(t.install()).toEqual({ code: 0, stderr: '' })

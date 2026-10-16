@@ -14,7 +14,7 @@ import {
 import {
   useAiConversations,
   type AiActiveTab,
-} from '@chatoffice/ui'
+} from '@chaoffice/ui'
 import {
   AiSheetsConversation,
   type SheetsConversationHandle,
@@ -22,7 +22,7 @@ import {
 } from './ai/AiSheetsConversation'
 // 惰性加载:设计器拖 1MB 示例库(chart-kit data/examples.json),点开才拉,不进表格启动图
 const ChartDesignerModal = lazy(() =>
-  import('@chatoffice/chart-kit/designer').then((m) => ({ default: m.ChartDesignerModal })),
+  import('@chaoffice/chart-kit/designer').then((m) => ({ default: m.ChartDesignerModal })),
 )
 import { pushBulkFillUndo } from './bulk-fill-undo'
 import { focusWorksheet } from './sheet-focus'
@@ -76,7 +76,7 @@ import { installGridGrowth } from './grid-growth'
 import {
   pollUntilReady,
   runHeadlessRendererExport,
-} from '@chatoffice/electron-utils/headless-export'
+} from '@chaoffice/electron-utils/headless-export'
 import {
   installJournalSuppressionUndoFilter,
   installLoadAutoHeightGate,
@@ -119,7 +119,7 @@ import {
 } from './cell-font-fallback'
 import { isNumericIdentifierText } from './cell-warning'
 import { consumePendingUndoCarry, undoStackDepth } from './undo-carry'
-import { useAutoSavePref, useKbAugment, type AiTokenUsageView } from '@chatoffice/ui'
+import { useAutoSavePref, useKbAugment, type AiTokenUsageView } from '@chaoffice/ui'
 import { createSaveGate } from './save-scheduler'
 // ILayoutService lives in the UI layer, not core (upstream: @univerjs/ui;
 // local convention re-exports it via the core preset).
@@ -185,19 +185,19 @@ import {
 } from './table-design-actions'
 
 import {
-} from '@chatoffice/agent-core'
+} from '@chaoffice/agent-core'
 import {
   type AiSettingsV2,
-} from '@chatoffice/ai-provider/browser'
+} from '@chaoffice/ai-provider/browser'
 import {
   copyTargetBounds,
   filteredCopySourceRows,
   matchableCellText,
   replaceOccurrences,
   type WorkbookOperation,
-} from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
-import { offsetFormulaRefs } from '@chatoffice/xlsx-gateway/domain/formula-shift'
-import { computeSortedRowOrder } from '@chatoffice/xlsx-gateway/domain/sort-range'
+} from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
+import { offsetFormulaRefs } from '@chaoffice/xlsx-gateway/domain/formula-shift'
+import { computeSortedRowOrder } from '@chaoffice/xlsx-gateway/domain/sort-range'
 import {
   columnIndex,
   columnLabel,
@@ -205,7 +205,7 @@ import {
   parseAddress,
   parseRange,
   rangeCellCount,
-} from '@chatoffice/xlsx-gateway/domain/cell-address'
+} from '@chaoffice/xlsx-gateway/domain/cell-address'
 import { aggregateWorkbookRange } from './ai/aggregate-range'
 import { collectCellFormulaTexts, quadraticFormulaError } from './formula-cost'
 import {
@@ -214,9 +214,9 @@ import {
   chartSupportsSeriesReplace,
   withDefaultBarLabels,
   type CellBounds,
-} from '@chatoffice/xlsx-gateway/domain/chart-visual'
-import { InMemoryWorkbookAdapter } from '@chatoffice/xlsx-gateway/domain/in-memory-workbook'
-import { cfRuleUnsaveableReason, iconSetSaveable } from '@chatoffice/xlsx-gateway/gateway/xlsx-cf'
+} from '@chaoffice/xlsx-gateway/domain/chart-visual'
+import { InMemoryWorkbookAdapter } from '@chaoffice/xlsx-gateway/domain/in-memory-workbook'
+import { cfRuleUnsaveableReason, iconSetSaveable } from '@chaoffice/xlsx-gateway/gateway/xlsx-cf'
 import { installLazyFindBridge } from './lazy-find'
 import { startFullLoad } from './full-load'
 import { opensInFormulaMode, workbookCellCounts } from './load-budget'
@@ -235,7 +235,7 @@ import {
   toggleOutlineGroup,
 } from './outline-actions'
 import { moveOutlineEntries, shiftOutlineEntries } from './outline-model'
-import type { ApplyOutcome, ChangePlan } from '@chatoffice/xlsx-gateway/domain/workbook.types'
+import type { ApplyOutcome, ChangePlan } from '@chaoffice/xlsx-gateway/domain/workbook.types'
 import { createElectronTransport } from './ai/transport'
 import {
   MAX_READ_RANGE_CELLS,
@@ -343,7 +343,7 @@ import {
   type TimelinePickerState,
   refreshPivotTables as refreshPivotTablesImpl,
 } from './pivot-actions'
-import type { ChartRecommendations } from '@chatoffice/xlsx-gateway/domain/chart-recommend'
+import type { ChartRecommendations } from '@chaoffice/xlsx-gateway/domain/chart-recommend'
 import {
   cellAtClientPoint,
   handleInsertChart as handleInsertChartImpl,
@@ -410,8 +410,8 @@ import {
 import {
   hashSheetPassword,
   verifySheetPassword,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-protection-hash'
-import type { SheetProtectionAllow } from '@chatoffice/xlsx-gateway/gateway/xlsx-protection'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-protection-hash'
+import type { SheetProtectionAllow } from '@chaoffice/xlsx-gateway/gateway/xlsx-protection'
 import { installCtrlDragFill } from './ctrl-drag-fill'
 import { installContextSubmenuReopenFix } from './context-submenu-reopen-fix'
 import { installMenuInputEnter } from './menu-input-enter'
@@ -1205,15 +1205,15 @@ export function App({
   const aiSettingsRef = useRef<AiSettingsV2 | null>(null)
   aiSettingsRef.current = aiSettings
 
-  /** chatoffice login state for the cloud-tools gate (refreshed on mount and window focus) */
-  const chatofficeLoggedInRef = useRef(false)
+  /** chaoffice login state for the cloud-tools gate (refreshed on mount and window focus) */
+  const chaofficeLoggedInRef = useRef(false)
   useEffect(() => {
     let alive = true
     const refresh = () => {
       void window.desktopApi
         ?.aiChaOfficeStatus()
         .then((s) => {
-          if (alive) chatofficeLoggedInRef.current = !!s?.loggedIn
+          if (alive) chaofficeLoggedInRef.current = !!s?.loggedIn
         })
         .catch(() => {})
     }
@@ -1574,7 +1574,7 @@ export function App({
   useEffect(() => {
     // Univer paints the grid on canvas, so it can't follow the CSS tokens —
     // mirror the canvas state into its official darkMode flag: an explicit
-    // <html data-doc-theme> pin (chatoffice#1811) wins, otherwise the <html data-theme>
+    // <html data-doc-theme> pin (chaoffice#1811) wins, otherwise the <html data-theme>
     // state as before
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)')
     const isDarkTheme = () => {
@@ -1815,7 +1815,7 @@ export function App({
     })
     const ctrlDragFillDisposable = installCtrlDragFill(runtime)
     // A context-menu submenu re-hovered within Univer's close delay stays
-    // invisible; re-trigger its positioning (chatoffice#337).
+    // invisible; re-trigger its positioning (chaoffice#337).
     const contextSubmenuReopenDisposable = installContextSubmenuReopenFix()
     // Enter in a context-menu count box (insert N rows/columns, column
     // width) runs the row's action instead of only committing the number.
@@ -1848,7 +1848,7 @@ export function App({
     })
     // Wide expression CF rules register folded/windowed formula ranges so
     // the engine stops rebuilding millions of per-cell dependency trees on
-    // every stream-in recalculation (chatoffice#158).
+    // every stream-in recalculation (chaoffice#158).
     const cfFormulaFoldDisposable = installCfFormulaFold(runtime)
     // duplicateValues / uniqueValues compare display text like Excel (1981233
     // and "1981233" are duplicates).
@@ -5550,10 +5550,10 @@ export function App({
       ;(window as unknown as Record<string, unknown>).__ribbonCommand = handleRibbonCommand
     }
     // Built-app e2e hook, off by default: the preload exposes
-    // __chatofficeDebugHooks only when GENOFFICE_DEBUG_HOOKS=1 (scroll/freeze
+    // __chaofficeDebugHooks only when GENOFFICE_DEBUG_HOOKS=1 (scroll/freeze
     // drivers read Univer's render state through the Facade).
-    if ((window as unknown as Record<string, unknown>).__chatofficeDebugHooks === true) {
-      ;(window as unknown as Record<string, unknown>).__chatofficeDebug = {
+    if ((window as unknown as Record<string, unknown>).__chaofficeDebugHooks === true) {
+      ;(window as unknown as Record<string, unknown>).__chaofficeDebug = {
         univerAPI: univerRef.current?.univerAPI,
         findReplaceService: univerRef.current?.univer.__getInjector().get(IFindReplaceService),
         // ground truth for typing-into-the-adopted-spare failures: the
@@ -6101,8 +6101,8 @@ export function App({
   }
 
   const renderEchartPoster = async (optionJson: string, title?: string): Promise<string> => {
-    const { parseOptionSmart } = await import('@chatoffice/chart-kit/revive')
-    const { renderOptionSnapshot } = await import('@chatoffice/chart-kit/snapshot')
+    const { parseOptionSmart } = await import('@chaoffice/chart-kit/revive')
+    const { renderOptionSnapshot } = await import('@chaoffice/chart-kit/snapshot')
     const option = await parseOptionSmart(optionJson)
     const url = await renderOptionSnapshot(option, { width: 640, height: 400 })
     void title
@@ -6298,9 +6298,9 @@ export function App({
     }
   })()
 
-  // chatoffice CLI (`open --range`, `selection`): the shell evaluates this hook
+  // chaoffice CLI (`open --range`, `selection`): the shell evaluates this hook
   useEffect(() => {
-    ;(window as unknown as Record<string, unknown>).__chatofficeControl = (req: ControlRequest) =>
+    ;(window as unknown as Record<string, unknown>).__chaofficeControl = (req: ControlRequest) =>
       handleSheetsControl(
         req,
         univerRef.current?.univerAPI.getActiveWorkbook(),

@@ -1,8 +1,8 @@
 import { Suspense, useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from 'react'
 import type { IFunctionInfo } from '@univerjs/engine-formula'
-import { platformShortcuts } from '@chatoffice/i18n'
-import { TabStripArrows, useTabStripOverflow } from '@chatoffice/ribbon'
-import { SHAPE_GALLERY_GROUPS, ShapePreview } from '@chatoffice/ui/shape-gallery'
+import { platformShortcuts } from '@chaoffice/i18n'
+import { TabStripArrows, useTabStripOverflow } from '@chaoffice/ribbon'
+import { SHAPE_GALLERY_GROUPS, ShapePreview } from '@chaoffice/ui/shape-gallery'
 import {
   AiPanelToggle,
   ColorPicker,
@@ -13,7 +13,7 @@ import {
   useAiSidebarEnabled,
   useRibbonCollapse,
   type AiTokenUsageView,
-} from '@chatoffice/ui'
+} from '@chaoffice/ui'
 import {
   CaretIcon,
   RIBBON_GLYPH_ICONS,
@@ -35,13 +35,13 @@ import {
 } from './ribbon-menu'
 import { ConvertMenuSelect } from './ConvertMenuSelect'
 
-import { InsertImageDialog } from '@chatoffice/ui/InsertImageDialog'
-import type { InsertImageBridge } from '@chatoffice/ui/InsertImageDialog'
-import type { WebImageItem } from '@chatoffice/ui/InsertImageDialog'
-import { ensurePipelineImage } from '@chatoffice/ui/image-transcode'
-import { ModelSettingsPageLazy } from '@chatoffice/ui/ModelSettingsPageLazy'
+import { InsertImageDialog } from '@chaoffice/ui/InsertImageDialog'
+import type { InsertImageBridge } from '@chaoffice/ui/InsertImageDialog'
+import type { WebImageItem } from '@chaoffice/ui/InsertImageDialog'
+import { ensurePipelineImage } from '@chaoffice/ui/image-transcode'
+import { ModelSettingsPageLazy } from '@chaoffice/ui/ModelSettingsPageLazy'
 import { sheetsModelBridge } from './ai/model-bridge'
-import { compressImageForDisplay } from '@chatoffice/ui'
+import { compressImageForDisplay } from '@chaoffice/ui'
 import { ColorDropdown } from './ColorDropdown'
 import { FormatCellsDialog } from './FormatCellsDialog'
 import { InsertDeleteCellsDialog } from './InsertDeleteCellsDialog'
@@ -50,7 +50,7 @@ import { BatchRenameSheetDialog, MoveCopySheetDialog } from './SheetMenuDialogs'
 import { PictureCropDialog } from './PictureCropDialog'
 import { AllowEditRangesDialog } from './AllowEditRangesDialog'
 import { ProtectSheetDialog } from './ProtectSheetDialog'
-import type { SheetProtectionAllow } from '@chatoffice/xlsx-gateway/gateway/xlsx-protection'
+import type { SheetProtectionAllow } from '@chaoffice/xlsx-gateway/gateway/xlsx-protection'
 import { GoToDialog } from './GoToDialog'
 import { SheetTabContextMenu } from './SheetTabContextMenu'
 import type { SheetTabActions } from './sheet-tab-actions'
@@ -75,7 +75,7 @@ import { fontFamilyGroups, useSystemFontFamilies } from './system-fonts'
 import { isGridKeyTarget, shouldInterceptClearSelection } from './clear-selection-keyboard'
 import { COLOR_SCALE_PRESETS, DATA_BAR_PRESETS, iconSetOf } from './cf-gallery'
 import { listCustomCellStyles, listCustomTableStyles } from './custom-styles'
-import { columnLabel, parseAddress } from '@chatoffice/xlsx-gateway/domain/cell-address'
+import { columnLabel, parseAddress } from '@chaoffice/xlsx-gateway/domain/cell-address'
 import {
   CfRuleDialog,
   CondStatsDialog,
@@ -92,11 +92,11 @@ import {
 } from './data-process-dialogs'
 import type { SheetVisualRef } from './ribbon-actions'
 
-import type { ChartSeriesVisualState } from '@chatoffice/xlsx-gateway/domain/chart-visual'
-import type { ChangePlan } from '@chatoffice/xlsx-gateway/domain/workbook.types'
+import type { ChartSeriesVisualState } from '@chaoffice/xlsx-gateway/domain/chart-visual'
+import type { ChangePlan } from '@chaoffice/xlsx-gateway/domain/workbook.types'
 import type { AttachmentMeta } from '../shared/desktop-api'
 import { AiChatPanel, type AiChatMessage } from './ai/AiChatPanel'
-import type { AiSettingsV2 } from '@chatoffice/ai-provider'
+import type { AiSettingsV2 } from '@chaoffice/ai-provider'
 import { AiSelectionAsk } from './ai/AiSelectionAsk'
 import type { SelectionAskAnchor } from './ai/selection-ask'
 import {
@@ -832,11 +832,11 @@ export function ExcelShell({
     // right-clicking anywhere in it outside the tab strip opens our menu.
     // Everything else the decision covers is sheet-context-menu.ts's: the
     // grid right-click must cancel the DOM event or Electron's native menu
-    // stacks on top of Univer's own (chatoffice#1816).
+    // stacks on top of Univer's own (chaoffice#1816).
     const onContextMenu = (event: MouseEvent): void => {
       const action = sheetContextMenuAction(event.target)
       // the custom footer's stats menu rides the local status bar; here we
-      // only keep the native-menu suppression (chatoffice#1816)
+      // only keep the native-menu suppression (chaoffice#1816)
       if (action.statsMenu || action.suppressNativeMenu) event.preventDefault()
     }
     document.addEventListener('contextmenu', onContextMenu)

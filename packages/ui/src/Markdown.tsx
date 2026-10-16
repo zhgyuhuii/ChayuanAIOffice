@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useState, type ReactNode } from 'react'
-import type { KbCitation } from '@chatoffice/ai-provider/browser'
+import type { KbCitation } from '@chaoffice/ai-provider/browser'
 
 /**
  * Minimal dependency-free markdown for chat bubbles: paragraphs, ul/ol,

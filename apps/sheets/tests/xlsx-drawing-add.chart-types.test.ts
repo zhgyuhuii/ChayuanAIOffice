@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { buildChartXml, type ChartAdd } from '@chatoffice/xlsx-gateway/gateway/xlsx-drawing-add'
+import { buildChartXml, type ChartAdd } from '@chaoffice/xlsx-gateway/gateway/xlsx-drawing-add'
 
 const chart = (chartType: ChartAdd['chartType'], categories: readonly string[]): ChartAdd => ({
   chartType,

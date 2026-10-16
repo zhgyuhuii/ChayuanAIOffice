@@ -5,7 +5,7 @@
  */
 import { expect, describe, it } from 'vitest'
 import { buildDocx } from '../../../../packages/docx-engine/tests/helpers/build-docx'
-import { parseDocx, saveDocx } from '@chatoffice/docx-engine'
+import { parseDocx, saveDocx } from '@chaoffice/docx-engine'
 
 const make = (bodyXml: string) => buildDocx({ bodyXml })
 const runsOf = (parsed: { blocks: Array<{ runs?: Array<{ text?: string }> }> }) =>

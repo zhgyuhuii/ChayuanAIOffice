@@ -10,4 +10,4 @@ export {
   markerTabAdvance,
   type ListItemRef,
   type ListMarkerInfo,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'

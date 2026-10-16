@@ -13,7 +13,7 @@ import { createContext, disposeContext, type McpContext } from './run'
 import { createMcpServer, type ServeOptions } from './server'
 
 /**
- * `chatoffice mcp --http <port>`: the same tools over Streamable HTTP for clients
+ * `chaoffice mcp --http <port>`: the same tools over Streamable HTTP for clients
  * on other machines. Routes:
  *   POST /mcp            the MCP session (GET for the notification stream, DELETE to end it)
  *   PUT  /files/<name>   upload a file (also POST /files?name=), reply { url, name, size }
@@ -51,7 +51,7 @@ export async function startHttp(opts: HttpServeOptions): Promise<HttpHandle> {
   // '' would bypass the loopback default and bind every interface
   const host = opts.host?.trim() || '127.0.0.1'
   const files = new FileStore(
-    join(tmpdir(), `chatoffice-mcp-http-${process.pid}-${randomBytes(4).toString('hex')}`),
+    join(tmpdir(), `chaoffice-mcp-http-${process.pid}-${randomBytes(4).toString('hex')}`),
   )
   const roots = opts.env.GENOFFICE_ALLOWED_ROOTS?.trim()
   const env = {
@@ -242,7 +242,7 @@ export async function startHttp(opts: HttpServeOptions): Promise<HttpHandle> {
   const route = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
     const url = new URL(req.url ?? '/', 'http://placeholder')
     if (url.pathname === '/health' && req.method === 'GET') {
-      json(res, 200, { status: 'ok', server: 'chatoffice', sessions: sessions.size })
+      json(res, 200, { status: 'ok', server: 'chaoffice', sessions: sessions.size })
       return
     }
     // no token and a loopback bind: refuse Host headers a rebound DNS name would carry

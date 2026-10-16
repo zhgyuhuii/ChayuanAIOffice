@@ -1,4 +1,4 @@
-import { printHtmlDocument, type PrintDialogWindow } from '@chatoffice/electron-utils'
+import { printHtmlDocument, type PrintDialogWindow } from '@chaoffice/electron-utils'
 
 export type PrintWindow = PrintDialogWindow
 
@@ -12,7 +12,7 @@ export async function printSlidesHtml(
     html,
     window: win,
     fileName: 'slides.html',
-    dirPrefix: 'chatoffice-slides-print-',
+    dirPrefix: 'chaoffice-slides-print-',
     platform,
   })
   if (!outcome.ok) return { ok: false, error: outcome.error }

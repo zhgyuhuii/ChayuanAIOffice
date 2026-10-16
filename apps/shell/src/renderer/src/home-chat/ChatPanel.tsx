@@ -11,11 +11,11 @@ import {
   renderCitationChips,
   useDismissablePopover,
   useKbSelection,
-} from '@chatoffice/ui'
+} from '@chaoffice/ui'
 import attachIcon from '../assets/attach-icon.png'
 import qrCodeIcon from '../assets/qrcode.png'
 import wxpayIcon from '../assets/wxpay.png'
-import type { AiModelSelection, AiSettingsV2, KbCitation } from '@chatoffice/ai-provider'
+import type { AiModelSelection, AiSettingsV2, KbCitation } from '@chaoffice/ai-provider'
 import { useI18n } from '../locale'
 import { openPurchaseDialog } from '../PurchaseModal'
 import { MonoFileIcon } from '../file-icons'
@@ -769,7 +769,7 @@ export function ChatPanel({
   /** 页脚星标脉动记忆：点过一次后只保留静态按钮（可再点） */
   const [starDone, setStarDone] = useState(() => {
     try {
-      return localStorage.getItem('chatoffice.welcomeStarDone') === '1'
+      return localStorage.getItem('chaoffice.welcomeStarDone') === '1'
     } catch {
       return false
     }
@@ -777,7 +777,7 @@ export function ChatPanel({
   const goStar = () => {
     setStarDone(true)
     try {
-      localStorage.setItem('chatoffice.welcomeStarDone', '1')
+      localStorage.setItem('chaoffice.welcomeStarDone', '1')
     } catch {
       // storage unavailable (private mode shim): the pulse simply stops for this run
     }

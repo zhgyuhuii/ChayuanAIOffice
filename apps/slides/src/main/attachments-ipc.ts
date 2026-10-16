@@ -8,8 +8,8 @@
 import { app, dialog, ipcMain } from 'electron'
 import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { basename, join } from 'node:path'
-import { showOpenDialogWithMemory } from '@chatoffice/electron-utils'
-import { parseFileToText } from '@chatoffice/file-parse'
+import { showOpenDialogWithMemory } from '@chaoffice/electron-utils'
+import { parseFileToText } from '@chaoffice/file-parse'
 import type {
   AttachmentAddResult,
   AttachmentImageResult,
@@ -51,7 +51,7 @@ const ATTACHMENT_TEXT_EXTS = new Set([
   'sql',
   'css',
 ])
-/** office/pdf formats extract text via @chatoffice/file-parse; images skip text extraction and go multimodal (slides:files-read-image) */
+/** office/pdf formats extract text via @chaoffice/file-parse; images skip text extraction and go multimodal (slides:files-read-image) */
 const ATTACHMENT_EXTS = new Set([
   ...ATTACHMENT_TEXT_EXTS,
   'doc',
@@ -147,7 +147,7 @@ function savePastedImage(
   // Renderer-driven clipboard bytes hit the temp disk: enforce the same 5MB
   // image cap as file attachments so pastes cannot fill the disk.
   if (bytes.byteLength > ATTACHMENT_IMAGE_MAX_BYTES) return { error: 'too-large' }
-  const dir = join(app.getPath('temp'), 'chatoffice-pasted')
+  const dir = join(app.getPath('temp'), 'chaoffice-pasted')
   mkdirSync(dir, { recursive: true })
   const stamp = new Date().toISOString().slice(0, 19).replace(/[-:]/g, '').replace('T', '-')
   const filePath = join(dir, `pasted-${stamp}-${++pastedImageSeq}.${cleanExt}`)
@@ -155,7 +155,7 @@ function savePastedImage(
   return { path: filePath }
 }
 
-/** Extract attachment text via @chatoffice/file-parse (docx/pdf/pptx/xlsx/plain text) */
+/** Extract attachment text via @chaoffice/file-parse (docx/pdf/pptx/xlsx/plain text) */
 async function extractAttachmentText(filePath: string): Promise<string> {
   const stat = statSync(filePath)
   const stamp = `${stat.mtimeMs}:${stat.size}`

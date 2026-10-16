@@ -5,7 +5,7 @@ import {
   type DocDefaults,
   type StyleInfo,
   type StyleUpsert,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { useI18n } from '../i18n/locale'
 import {
   activeStyleKey,

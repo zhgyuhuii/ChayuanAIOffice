@@ -1,5 +1,5 @@
 import { placeholderSource } from './redact'
-import type { GlyphRun, RenderNode, ShapeRenderNode, TextLine } from '@chatoffice/pptx-render'
+import type { GlyphRun, RenderNode, ShapeRenderNode, TextLine } from '@chaoffice/pptx-render'
 
 /**
  * The model-facing view of a slide: every withheld span becomes its marker and

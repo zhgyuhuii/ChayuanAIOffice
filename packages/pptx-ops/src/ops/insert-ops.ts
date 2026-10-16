@@ -21,7 +21,7 @@ import {
   type NewElementOptions,
   type NewTableOptions,
   type Paragraph,
-} from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
 import {
   coerceBytes,
   dataUrlExt,

@@ -6,7 +6,7 @@
 import { useState } from 'react'
 import type { AttachmentMeta } from '../../shared/ipc'
 import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
-import type { MindMapTreeNode } from '@chatoffice/agent-core'
+import type { MindMapTreeNode } from '@chaoffice/agent-core'
 import type { PmNode } from '../editor/convert'
 import { useI18n, type StringKey } from '../i18n/locale'
 import filePdfIcon from '../assets/file-pdf.png'
@@ -53,7 +53,7 @@ export interface ChatEntry {
   turnLimit?: boolean
   /** D10: restored interrupted turn (half text kept, rendered with the badge) */
   interrupted?: boolean
-  /** the run failed because ChatOffice is signed out — render an inline sign-in button */
+  /** the run failed because ChaOffice is signed out — render an inline sign-in button */
   loginRequired?: boolean
   /** tool executions performed during this assistant turn */
   tools?: ToolActivity[]
@@ -63,16 +63,16 @@ export interface ChatEntry {
   attachments?: AttachmentMeta[]
   /** model id that produced this assistant turn (display only) */
   model?: string
-  scope?: import('@chatoffice/ui').AiScopeQuoteData
+  scope?: import('@chaoffice/ui').AiScopeQuoteData
   /** KB citations behind the [n] chips of this assistant turn */
-  kbCitations?: import('@chatoffice/ui').KbCitation[]
+  kbCitations?: import('@chaoffice/ui').KbCitation[]
   /** interactive mind map from generate_mindmap's side-channel display (session-only;
    * the persisted transcript keeps the tool call, so a reopened file can regenerate)
    * (R24 上游 #1999 织入) */
   mindmap?: MindMapTreeNode
   /** tokens the provider billed for this reply, summed across its turns (absent when unreported)
    * (R24 上游 #1944 织入) */
-  usage?: import('@chatoffice/ui').AiTokenUsageView
+  usage?: import('@chaoffice/ui').AiTokenUsageView
 }
 
 /** longest selection excerpt echoed on a user bubble */
@@ -100,7 +100,7 @@ export const PASTE_MIME_EXT: Record<string, string> = {
   'image/webp': 'webp',
 }
 
-/** File-type icons for attachment cards (ChatOffice attachment icon set) */
+/** File-type icons for attachment cards (ChaOffice attachment icon set) */
 export const ATTACHMENT_CARD_ICON_GROUPS: [icon: string, exts: string[]][] = [
   [fileWordIcon, ['doc', 'docx']],
   [fileExcelIcon, ['xls', 'xlsx', 'xlsm', 'csv', 'tsv']],

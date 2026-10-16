@@ -3,8 +3,8 @@ import {
   activeSearchProvider,
   imageGenerationAvailable,
   mediaAnalysisAvailable,
-} from '@chatoffice/ai-provider'
-import { hasChaOfficeAuth, readAiSettingsFile } from '@chatoffice/ai-search'
+} from '@chaoffice/ai-provider'
+import { hasChaOfficeAuth, readAiSettingsFile } from '@chaoffice/ai-search'
 import { aiSettingsPath, prepareCloud } from '../cloud'
 import type { CommandDef } from '../registry'
 import { appLaunch } from '../resources'

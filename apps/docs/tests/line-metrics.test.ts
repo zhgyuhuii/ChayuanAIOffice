@@ -723,10 +723,10 @@ describe('cssFontFamily', () => {
       "'Calibri Light','Carlito GO','Calibri Arabic GO','Noto Sans CJK SC',sans-serif",
     )
     expect(cssFontFamily('Times New Roman')).toBe(
-      "'Times New Roman','Liberation Serif','ChatOffice Box Drawing','Noto Serif CJK SC',serif",
+      "'Times New Roman','Liberation Serif','ChaOffice Box Drawing','Noto Serif CJK SC',serif",
     )
     expect(cssFontFamily('宋体')).toBe(
-      "'宋体','ChatOffice SimSun Latin','ChatOffice Songti SC','STSong','SimSun','Noto Serif CJK SC',serif",
+      "'宋体','ChaOffice SimSun Latin','ChaOffice Songti SC','STSong','SimSun','Noto Serif CJK SC',serif",
     )
   })
 
@@ -747,7 +747,7 @@ describe('cssFontFamily', () => {
     )
     // FZ XiaoBiaoSong substitutes SimSun on Word for Mac (probe 2026-09-30)
     expect(cssFontFamily('\u65b9\u6b63\u5c0f\u6807\u5b8b_GBK')).toBe(
-      "'\u65b9\u6b63\u5c0f\u6807\u5b8b_GBK','ChatOffice SimSun Latin','ChatOffice Songti SC','STSong','SimSun','Noto Serif CJK SC',serif",
+      "'\u65b9\u6b63\u5c0f\u6807\u5b8b_GBK','ChaOffice SimSun Latin','ChaOffice Songti SC','STSong','SimSun','Noto Serif CJK SC',serif",
     )
     expect(cssFontFamily('\u65b9\u6b63\u5c0f\u6807\u5b8b\u7b80\u4f53')).not.toContain(
       "'Microsoft YaHei'",
@@ -764,10 +764,10 @@ describe('cssFontFamily', () => {
 
   it('unknown Latin-named family takes the CJK-range-only alias tail', () => {
     expect(cssFontFamily('SomeCustomFont')).toBe(
-      "'SomeCustomFont','Noto Sans CJK GO','ChatOffice PUA Blank',sans-serif",
+      "'SomeCustomFont','Noto Sans CJK GO','ChaOffice PUA Blank',sans-serif",
     )
     expect(cssFontFamily('PT Serif Custom')).toBe(
-      "'PT Serif Custom','Noto Serif CJK GO','ChatOffice PUA Blank',serif",
+      "'PT Serif Custom','Noto Serif CJK GO','ChaOffice PUA Blank',serif",
     )
   })
 
@@ -802,12 +802,12 @@ describe('cssFontFamily', () => {
 
   it('Japanese fonts → same-script fallback chain, never falls back to Simplified Chinese', () => {
     expect(cssFontFamily('游ゴシック')).toBe(
-      "'游ゴシック','Yu Gothic GO','Yu Gothic Sans GO','Yu Gothic','ChatOffice Hiragino Sans','Meiryo','Noto Sans JP',sans-serif",
+      "'游ゴシック','Yu Gothic GO','Yu Gothic Sans GO','Yu Gothic','ChaOffice Hiragino Sans','Meiryo','Noto Sans JP',sans-serif",
     )
     expect(cssFontFamily('ＭＳ Ｐ明朝')).toBe(
-      "'ＭＳ Ｐ明朝','Yu Mincho','ChatOffice Hiragino Mincho','ChatOffice MS Mincho','Noto Serif JP',serif",
+      "'ＭＳ Ｐ明朝','Yu Mincho','ChaOffice Hiragino Mincho','ChaOffice MS Mincho','Noto Serif JP',serif",
     )
-    expect(cssFontFamily('Meiryo')).toContain("'ChatOffice Hiragino Sans'")
+    expect(cssFontFamily('Meiryo')).toContain("'ChaOffice Hiragino Sans'")
     expect(cssFontFamily('Meiryo')).not.toContain('CJK SC')
   })
 
@@ -817,7 +817,7 @@ describe('cssFontFamily', () => {
     it('missing BIZ UDP names take the JA sans chain and the Yu Gothic factor, even the Mincho cut', () => {
       for (const name of ['BIZ UDPゴシック', 'BIZ UDPGothic', 'BIZ UDP明朝 Medium']) {
         expect(cssFontFamily(name)).toBe(
-          `'${name}','Yu Gothic','ChatOffice Hiragino Sans','Meiryo','Noto Sans JP',sans-serif`,
+          `'${name}','Yu Gothic','ChaOffice Hiragino Sans','Meiryo','Noto Sans JP',sans-serif`,
         )
         expect(lineHeightFactor(name)).toBe(1.44)
         expect(isCjkFontName(name)).toBe(true)
@@ -845,7 +845,7 @@ describe('cssFontFamily', () => {
       for (const name of [kyokasho, minchoB, popTai, gothicM, hiraginoKakuGo]) {
         expect(lineHeightFactor(name)).toBe(1.44)
         expect(cssFontFamily(name)).toBe(
-          `'${name}','Yu Gothic','ChatOffice Hiragino Sans','Meiryo','Noto Sans JP',sans-serif`,
+          `'${name}','Yu Gothic','ChaOffice Hiragino Sans','Meiryo','Noto Sans JP',sans-serif`,
         )
         expect(isCjkFontName(name)).toBe(true)
       }
@@ -879,10 +879,10 @@ describe('cssFontFamily', () => {
 
   it('Meiryo (UI) leads with the range-limited metric aliases ahead of the JP sans chain', () => {
     expect(cssFontFamily('Meiryo UI')).toBe(
-      "'Meiryo UI','Meiryo UI GO','Yu Gothic','ChatOffice Hiragino Sans','Meiryo','Noto Sans JP',sans-serif",
+      "'Meiryo UI','Meiryo UI GO','Yu Gothic','ChaOffice Hiragino Sans','Meiryo','Noto Sans JP',sans-serif",
     )
     expect(cssFontFamily('メイリオ')).toBe(
-      "'メイリオ','Meiryo GO','Yu Gothic','ChatOffice Hiragino Sans','Meiryo','Noto Sans JP',sans-serif",
+      "'メイリオ','Meiryo GO','Yu Gothic','ChaOffice Hiragino Sans','Meiryo','Noto Sans JP',sans-serif",
     )
     expect(cssFontFamily('Meiryo')).toContain("'Meiryo GO'")
     // localized UI spelling still selects the UI cut
@@ -894,7 +894,7 @@ describe('cssFontFamily', () => {
 
   it('MS Gothic family leads with its Word-metric alias (fonts.css), fullwidth names included', () => {
     expect(cssFontFamily('ＭＳ ゴシック')).toBe(
-      "'ＭＳ ゴシック','MS Gothic GO','Yu Gothic','ChatOffice Hiragino Sans','Meiryo','Noto Sans JP',sans-serif",
+      "'ＭＳ ゴシック','MS Gothic GO','Yu Gothic','ChaOffice Hiragino Sans','Meiryo','Noto Sans JP',sans-serif",
     )
     expect(cssFontFamily('MS Gothic')).toContain("'MS Gothic GO'")
     expect(cssFontFamily('ＭＳ Ｐゴシック')).toContain(
@@ -943,22 +943,22 @@ describe('cssFontFamily', () => {
 
     it('missing SC sans routes to the SimSun-class serif chain', () => {
       expect(cssFontFamily('Noto Sans SC')).toBe(
-        "'Noto Sans SC','ChatOffice Songti SC','STSong','SimSun','Noto Serif CJK SC','ChatOffice Batang','ChatOffice Serif KR',serif",
+        "'Noto Sans SC','ChaOffice Songti SC','STSong','SimSun','Noto Serif CJK SC','ChaOffice Batang','ChaOffice Serif KR',serif",
       )
     })
 
     it('bundled subset faces count as missing and never lead the chain', () => {
       expect(cssFontFamily('Noto Sans CJK SC')).toBe(
-        "'ChatOffice Songti SC','STSong','SimSun','Noto Serif CJK SC','ChatOffice Batang','ChatOffice Serif KR',serif",
+        "'ChaOffice Songti SC','STSong','SimSun','Noto Serif CJK SC','ChaOffice Batang','ChaOffice Serif KR',serif",
       )
       expect(cssFontFamily('Noto Serif CJK SC')).toBe(
-        "'ChatOffice Songti SC','STSong','SimSun','Noto Serif CJK SC','ChatOffice Batang','ChatOffice Serif KR',serif",
+        "'ChaOffice Songti SC','STSong','SimSun','Noto Serif CJK SC','ChaOffice Batang','ChaOffice Serif KR',serif",
       )
     })
 
     it('true SC serif declares keep their name at the head', () => {
       expect(cssFontFamily('Noto Serif SC')).toBe(
-        "'Noto Serif SC','ChatOffice Songti SC','STSong','SimSun','Noto Serif CJK SC','ChatOffice Batang','ChatOffice Serif KR',serif",
+        "'Noto Serif SC','ChaOffice Songti SC','STSong','SimSun','Noto Serif CJK SC','ChaOffice Batang','ChaOffice Serif KR',serif",
       )
     })
 
@@ -971,13 +971,13 @@ describe('cssFontFamily', () => {
 
     it('jp/kr/tc variants keep their same-script substitution', () => {
       expect(cssFontFamily('Noto Sans CJK JP')).toBe(
-        "'Noto Sans CJK JP','Yu Mincho','ChatOffice Hiragino Mincho','ChatOffice MS Mincho','Noto Serif JP','ChatOffice Batang','ChatOffice Serif KR',serif",
+        "'Noto Sans CJK JP','Yu Mincho','ChaOffice Hiragino Mincho','ChaOffice MS Mincho','Noto Serif JP','ChaOffice Batang','ChaOffice Serif KR',serif",
       )
       expect(cssFontFamily('Source Han Sans K')).toBe(
-        "'Source Han Sans K','KR Theme Latin GO','ChatOffice Batang','ChatOffice Serif KR','ChatOffice Myungjo','Noto Serif KR',serif",
+        "'Source Han Sans K','KR Theme Latin GO','ChaOffice Batang','ChaOffice Serif KR','ChaOffice Myungjo','Noto Serif KR',serif",
       )
       expect(cssFontFamily('Noto Sans CJK TC')).toBe(
-        "'Noto Sans CJK TC','ChatOffice MingLiU','ChatOffice Fullwidth TC','Songti TC','Noto Serif TC','ChatOffice Batang','ChatOffice Serif KR',serif",
+        "'Noto Sans CJK TC','ChaOffice MingLiU','ChaOffice Fullwidth TC','Songti TC','Noto Serif TC','ChaOffice Batang','ChaOffice Serif KR',serif",
       )
     })
 
@@ -986,28 +986,28 @@ describe('cssFontFamily', () => {
       // Batang for every w:lang; the SC/TC/JP chains alone would drop hangul on
       // the system sans (0.865em) and wrap a 3-line Korean cell in 2 (sample 027)
       expect(cssFontFamily('Noto Sans CJK SC')).toMatch(
-        /'ChatOffice Batang','ChatOffice Serif KR',serif$/,
+        /'ChaOffice Batang','ChaOffice Serif KR',serif$/,
       )
       expect(cssDualFontFamily('Calibri', 'Noto Sans CJK SC')).toMatch(
-        /'ChatOffice Serif KR',serif$/,
+        /'ChaOffice Serif KR',serif$/,
       )
       stubCanvas(['Source Han Sans CN'])
-      expect(cssFontFamily('Source Han Sans CN')).not.toContain('ChatOffice Serif KR')
+      expect(cssFontFamily('Source Han Sans CN')).not.toContain('ChaOffice Serif KR')
     })
   })
 
   it('Korean/Traditional Chinese fonts → same-script fallback chain', () => {
     expect(cssFontFamily('맑은 고딕')).toBe(
-      "'맑은 고딕','Malgun Gothic','ChatOffice Sans KR','Apple SD Gothic Neo','Noto Sans KR',sans-serif",
+      "'맑은 고딕','Malgun Gothic','ChaOffice Sans KR','Apple SD Gothic Neo','Noto Sans KR',sans-serif",
     )
     expect(cssFontFamily('Batang')).toBe(
-      "'Batang','ChatOffice Batang','ChatOffice Serif KR','ChatOffice Myungjo','Noto Serif KR',serif",
+      "'Batang','ChaOffice Batang','ChaOffice Serif KR','ChaOffice Myungjo','Noto Serif KR',serif",
     )
     expect(cssFontFamily('微軟正黑體')).toBe(
-      "'微軟正黑體','Microsoft JhengHei','PingFang TC','ChatOffice Heiti TC','Noto Sans TC',sans-serif",
+      "'微軟正黑體','Microsoft JhengHei','PingFang TC','ChaOffice Heiti TC','Noto Sans TC',sans-serif",
     )
     expect(cssFontFamily('新細明體')).toBe(
-      "'新細明體','ChatOffice MingLiU','ChatOffice Fullwidth TC','Songti TC','Noto Serif TC',serif",
+      "'新細明體','ChaOffice MingLiU','ChaOffice Fullwidth TC','Songti TC','Noto Serif TC',serif",
     )
   })
 
@@ -1016,14 +1016,14 @@ describe('cssFontFamily', () => {
 
     it('missing KR variant gets the theme Latin head ahead of the Batang chain', () => {
       expect(cssFontFamily('Noto Sans CJK KR')).toBe(
-        "'Noto Sans CJK KR','KR Theme Latin GO','ChatOffice Batang','ChatOffice Serif KR','ChatOffice Myungjo','Noto Serif KR',serif",
+        "'Noto Sans CJK KR','KR Theme Latin GO','ChaOffice Batang','ChaOffice Serif KR','ChaOffice Myungjo','Noto Serif KR',serif",
       )
     })
 
     it('installed KR variant keeps its chain without the theme Latin head', () => {
       stubCanvas(['Noto Serif CJK KR'])
       expect(cssFontFamily('Noto Serif CJK KR')).toBe(
-        "'Noto Serif CJK KR','ChatOffice Batang','ChatOffice Serif KR','ChatOffice Myungjo','Noto Serif KR',serif",
+        "'Noto Serif CJK KR','ChaOffice Batang','ChaOffice Serif KR','ChaOffice Myungjo','Noto Serif KR',serif",
       )
     })
 
@@ -1035,25 +1035,25 @@ describe('cssFontFamily', () => {
     it('the matching source family leads the bundled real-metric face', () => {
       stubCanvas(['NanumGothic'])
       expect(cssFontFamily('NanumGothic')).toBe(
-        "'NanumGothic','ChatOffice Gothic KR','Malgun Gothic','ChatOffice Sans KR','Apple SD Gothic Neo','Noto Sans KR',sans-serif",
+        "'NanumGothic','ChaOffice Gothic KR','Malgun Gothic','ChaOffice Sans KR','Apple SD Gothic Neo','Noto Sans KR',sans-serif",
       )
     })
 
     it('the localized source name takes the bundled face when missing', () => {
       expect(cssFontFamily('나눔고딕')).toBe(
-        "'나눔고딕','ChatOffice Gothic KR','Malgun Gothic','ChatOffice Sans KR','Apple SD Gothic Neo','Noto Sans KR',sans-serif",
+        "'나눔고딕','ChaOffice Gothic KR','Malgun Gothic','ChaOffice Sans KR','Apple SD Gothic Neo','Noto Sans KR',sans-serif",
       )
     })
 
     it('other source-vendor families keep the Batang-normalized serif chain', () => {
       expect(cssFontFamily('NanumBarunGothic')).toBe(
-        "'NanumBarunGothic','ChatOffice Batang','ChatOffice Serif KR','ChatOffice Myungjo','Noto Serif KR',serif",
+        "'NanumBarunGothic','ChaOffice Batang','ChaOffice Serif KR','ChaOffice Myungjo','Noto Serif KR',serif",
       )
     })
 
     it('Latha leads the bundled Latha-metric face; other Tamil names lay out as Vijaya', () => {
       expect(cssFontFamily('Latha')).toBe(
-        "'Latha','ChatOffice Tamil','InaiMathi','Tamil MN','Tamil Sangam MN',sans-serif",
+        "'Latha','ChaOffice Tamil','InaiMathi','Tamil MN','Tamil Sangam MN',sans-serif",
       )
       expect(lineHeightFactor('Latha')).toBe(1.6686)
       // Word for Mac renders Vijaya and missing Tamil names with cloud-font
@@ -1079,7 +1079,7 @@ describe('document fontTable substitution hints', () => {
   it('missing hangul-named face with a sans PANOSE takes the Malgun class', () => {
     setDocFontTable([{ name: '원신한 Light', panose: '020B0303000000000000' }])
     expect(cssFontFamily('원신한 Light')).toBe(
-      "'원신한 Light','Malgun Gothic','ChatOffice Sans KR','Apple SD Gothic Neo','Noto Sans KR',sans-serif",
+      "'원신한 Light','Malgun Gothic','ChaOffice Sans KR','Apple SD Gothic Neo','Noto Sans KR',sans-serif",
     )
     expect(krLineFactor('원신한 Light')).toBe(1.7371)
     expect(cjkDeclaredLineFactor('원신한 Light')).toBe(1.7371)
@@ -1091,9 +1091,9 @@ describe('document fontTable substitution hints', () => {
       { name: '가온글꼴', panose: '02020603000000000000' },
       { name: '나래글꼴', panose: '00000000000000000000' },
     ])
-    expect(cssFontFamily('가온글꼴')).toContain("'ChatOffice Batang'")
+    expect(cssFontFamily('가온글꼴')).toContain("'ChaOffice Batang'")
     expect(krLineFactor('가온글꼴')).toBe(1.3029)
-    expect(cssFontFamily('나래글꼴')).toContain("'ChatOffice Batang'")
+    expect(cssFontFamily('나래글꼴')).toContain("'ChaOffice Batang'")
     expect(krLineFactor('나래글꼴')).toBe(1.3029)
     expect(krLineFactor('다솜글꼴')).toBe(1.3029)
     expect(cjkDeclaredLineFactor('다솜글꼴')).toBe(1.3029)
@@ -1102,8 +1102,8 @@ describe('document fontTable substitution hints', () => {
   it('missing Noto Sans KR with a sans PANOSE takes the Malgun class (Word probe 2026-09-11)', () => {
     setDocFontTable([{ name: 'Noto Sans KR', panose: '020B0200000000000000' }])
     const css = cssFontFamily('Noto Sans KR')
-    expect(css).toContain("'ChatOffice Sans KR'")
-    expect(css).not.toContain("'ChatOffice Batang'")
+    expect(css).toContain("'ChaOffice Sans KR'")
+    expect(css).not.toContain("'ChaOffice Batang'")
     expect(css).not.toContain("'KR Theme Latin GO'")
     expect(css.endsWith('sans-serif')).toBe(true)
     expect(lineHeightFactor('Noto Sans KR')).toBe(1.7371)
@@ -1113,7 +1113,7 @@ describe('document fontTable substitution hints', () => {
 
   it('Noto Sans KR without a fontTable sans hint stays Batang-ward (Word probe 2026-08-13)', () => {
     setDocFontTable([{ name: 'Noto Sans KR', panose: '00000000000000000000' }])
-    expect(cssFontFamily('Noto Sans KR')).toContain("'ChatOffice Batang'")
+    expect(cssFontFamily('Noto Sans KR')).toContain("'ChaOffice Batang'")
     expect(lineHeightFactor('Noto Sans KR')).toBe(1.3029)
     setDocFontTable(null)
     expect(cjkDeclaredLineFactor('Noto Sans KR')).toBe(1.3029)
@@ -1123,7 +1123,7 @@ describe('document fontTable substitution hints', () => {
     setDocFontTable([
       { name: 'Noto Sans CJK KR', altName: 'Cambria', panose: '00000000000000000000' },
     ])
-    expect(cssFontFamily('Noto Sans CJK KR')).toContain("'ChatOffice Batang'")
+    expect(cssFontFamily('Noto Sans CJK KR')).toContain("'ChaOffice Batang'")
     expect(cssFontFamily('Noto Sans CJK KR')).not.toContain("'Cambria'")
     expect(cjkDeclaredLineFactor('Noto Sans CJK KR')).toBe(1.3029)
     expect(krLineFactor('Noto Sans CJK KR')).toBe(1.3029)
@@ -1145,7 +1145,7 @@ describe('document fontTable substitution hints', () => {
     stubCanvas(['InstalledCloudFont'])
     setDocFontTable([{ name: 'InstalledCloudFont', altName: '仿宋' }])
     expect(cssFontFamily('InstalledCloudFont')).toBe(
-      "'InstalledCloudFont','Noto Sans CJK GO','ChatOffice PUA Blank',sans-serif",
+      "'InstalledCloudFont','Noto Sans CJK GO','ChaOffice PUA Blank',sans-serif",
     )
   })
 })
@@ -1155,7 +1155,7 @@ describe('Segoe UI (M365 cloud face)', () => {
     for (const name of ['Segoe UI', 'Segoe UI Semibold', 'Segoe UI Light']) {
       expect(lineHeightFactor(name)).toBe(1.3301)
       expect(cssFontFamily(name)).toBe(
-        `'${name}','Segoe UI GO','Noto Sans CJK GO','ChatOffice PUA Blank',sans-serif`,
+        `'${name}','Segoe UI GO','Noto Sans CJK GO','ChaOffice PUA Blank',sans-serif`,
       )
     }
   })
@@ -1172,10 +1172,10 @@ describe('Aptos (M365 cloud face)', () => {
 
   it('takes the size-adjusted Carlito aliases and the Calibri factor (Word probes 2026-08-22/09-03)', () => {
     expect(cssFontFamily('Aptos')).toBe(
-      "'Aptos','Aptos GO','ChatOffice PUA Blank','Noto Sans CJK SC',sans-serif",
+      "'Aptos','Aptos GO','ChaOffice PUA Blank','Noto Sans CJK SC',sans-serif",
     )
     expect(cssFontFamily('Aptos Display')).toBe(
-      "'Aptos Display','Aptos Display GO','ChatOffice PUA Blank','Noto Sans CJK SC',sans-serif",
+      "'Aptos Display','Aptos Display GO','ChaOffice PUA Blank','Noto Sans CJK SC',sans-serif",
     )
     expect(lineHeightFactor('Aptos')).toBe(1.22)
     expect(lineHeightFactor('Aptos Display')).toBe(1.22)
@@ -1184,7 +1184,7 @@ describe('Aptos (M365 cloud face)', () => {
   it('other Aptos cuts keep unscaled Carlito (Narrow measures ~Carlito; Mono/Serif unprobed)', () => {
     for (const name of ['Aptos Narrow', 'Aptos Mono', 'Aptos Serif']) {
       expect(cssFontFamily(name)).toBe(
-        `'${name}','Carlito GO','ChatOffice PUA Blank','Noto Sans CJK SC',sans-serif`,
+        `'${name}','Carlito GO','ChaOffice PUA Blank','Noto Sans CJK SC',sans-serif`,
       )
     }
   })
@@ -1345,13 +1345,13 @@ describe('Korean line metrics', () => {
 
   it('Korean ascii face in a dual-slot chain keeps only the literal family plus the Latin backstop', () => {
     expect(cssDualFontFamily('맑은 고딕', 'Batang')).toBe(
-      "'맑은 고딕','Latin Sans GO','Batang','ChatOffice Batang','ChatOffice Serif KR','ChatOffice Myungjo','Noto Serif KR',serif",
+      "'맑은 고딕','Latin Sans GO','Batang','ChaOffice Batang','ChaOffice Serif KR','ChaOffice Myungjo','Noto Serif KR',serif",
     )
   })
 
   it('mono ascii face keeps its mono faces, CJK falls through to the eastAsia font', () => {
     expect(cssDualFontFamily('Consolas', 'SimSun')).toBe(
-      "'Consolas','Consolas GO','SimSun','ChatOffice SimSun Latin','ChatOffice Songti SC','STSong','Noto Serif CJK SC',serif",
+      "'Consolas','Consolas GO','SimSun','ChaOffice SimSun Latin','ChaOffice Songti SC','STSong','Noto Serif CJK SC',serif",
     )
   })
 
@@ -1359,18 +1359,18 @@ describe('Korean line metrics', () => {
     // ascii face + all its named fallbacks missing: Latin resolves the backstop, not Cambria/EA
     expect(cssDualFontFamily('Microsoft New Tai Lue', 'Cambria')).toBe(
       "'Microsoft New Tai Lue','Segoe UI','Helvetica','Liberation Sans','Latin Sans GO'," +
-        "'Cambria','Caladea','ChatOffice Box Drawing','Noto Serif CJK SC',serif",
+        "'Cambria','Caladea','ChaOffice Box Drawing','Noto Serif CJK SC',serif",
     )
     expect(cssDualFontFamily('Times New Roman', '宋体')).toBe(
-      "'Times New Roman','Liberation Serif','ChatOffice Box Drawing','Latin Serif GO'," +
-        "'宋体','ChatOffice SimSun Latin','ChatOffice Songti SC','STSong','SimSun','Noto Serif CJK SC',serif",
+      "'Times New Roman','Liberation Serif','ChaOffice Box Drawing','Latin Serif GO'," +
+        "'宋体','ChaOffice SimSun Latin','ChaOffice Songti SC','STSong','SimSun','Noto Serif CJK SC',serif",
     )
   })
 
   it('eastAsia-only runs route Latin through the inherited ascii chain', () => {
     expect(cssEaOnlyFontFamily('宋体')).toBe(
       "var(--doc-latin-chain,'Latin Serif GO')," +
-        "'宋体','ChatOffice SimSun Latin','ChatOffice Songti SC','STSong','SimSun','Noto Serif CJK SC',serif",
+        "'宋体','ChaOffice SimSun Latin','ChaOffice Songti SC','STSong','SimSun','Noto Serif CJK SC',serif",
     )
     expect(cssEaOnlyFontFamily('黑体')).toContain("var(--doc-latin-chain,'Latin Sans GO')")
     expect(cssRunFontFamily(null, 'Arial Unicode MS')).toContain('var(--doc-latin-chain')
@@ -1380,21 +1380,21 @@ describe('Korean line metrics', () => {
 
   it('docLatinChainCss carries the Latin head plus backstop', () => {
     expect(docLatinChainCss('Times New Roman')).toBe(
-      "'Times New Roman','Liberation Serif','ChatOffice Box Drawing','Latin Serif GO'",
+      "'Times New Roman','Liberation Serif','ChaOffice Box Drawing','Latin Serif GO'",
     )
   })
 
   it('Office-real faces take Word-probed chains and factors (probe 2026-08-23)', () => {
     // Palatino Linotype ships with Office; macOS Palatino matches its widths
     expect(cssFontFamily('Palatino Linotype')).toBe(
-      "'Palatino Linotype','Palatino','Book Antiqua','ChatOffice Box Drawing','Noto Serif CJK SC',serif",
+      "'Palatino Linotype','Palatino','Book Antiqua','ChaOffice Box Drawing','Noto Serif CJK SC',serif",
     )
     expect(lineHeightFactor('Palatino Linotype')).toBe(1.35)
     expect(lineHeightFactor('Palatino')).toBe(1.105)
     expect(lineHeightFactor('Book Antiqua')).toBe(1.21)
     // Gungsuh's Latin is typewriter-slab: Courier New leads, hangul falls through
     expect(cssFontFamily('Gungsuh')).toBe(
-      "'Gungsuh','Courier New','GungSeo','ChatOffice Batang','ChatOffice Serif KR','ChatOffice Myungjo','Noto Serif KR',serif",
+      "'Gungsuh','Courier New','GungSeo','ChaOffice Batang','ChaOffice Serif KR','ChaOffice Myungjo','Noto Serif KR',serif",
     )
     expect(lineHeightFactor('Gungsuh')).toBe(1.3029)
     // Nunito Sans is an Office cloud font Word renders real
@@ -1404,13 +1404,13 @@ describe('Korean line metrics', () => {
     // factor exactly 1.500 = hhea/typo); the bundled Latin subset leads
     expect(lineHeightFactor('Poppins')).toBe(1.5)
     expect(cssFontFamily('Poppins')).toBe(
-      "'Poppins','ChatOffice Poppins','Noto Sans CJK SC',sans-serif",
+      "'Poppins','ChaOffice Poppins','Noto Sans CJK SC',sans-serif",
     )
     // DM Sans renders real when installed (corpus 2026-09-30: 1.302 = hhea);
     // the bundled Latin subset leads the fallback
     expect(lineHeightFactor('DM Sans')).toBe(1.302)
     expect(cssFontFamily('DM Sans')).toBe(
-      "'DM Sans','ChatOffice DM Sans','Noto Sans CJK SC',sans-serif",
+      "'DM Sans','ChaOffice DM Sans','Noto Sans CJK SC',sans-serif",
     )
   })
 

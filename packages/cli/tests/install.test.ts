@@ -101,7 +101,7 @@ describe('installCliLink', () => {
 
   it('reports a missing /usr/local/bin as unwritable instead of skipping it', () => {
     const dir = tempDir()
-    const launcher = join(dir, 'chatoffice')
+    const launcher = join(dir, 'chaoffice')
     writeFileSync(launcher, '')
     const absent = join(dir, 'no-such-bin')
     const r = installCliLink({ launcher, platform: 'linux', candidateDirs: [absent] })
@@ -125,7 +125,7 @@ describe('installCliLink', () => {
     )
   })
 
-  it('falls back to $XDG_BIN_HOME, then ~/.local/bin, when the system dirs refuse (chatoffice#1019)', () => {
+  it('falls back to $XDG_BIN_HOME, then ~/.local/bin, when the system dirs refuse (chaoffice#1019)', () => {
     const home = tempDir()
     expect(defaultCandidateDirs('linux', { HOME: home })).toEqual([
       '/usr/local/bin',
@@ -194,8 +194,8 @@ describe('installCliLink', () => {
       return { ok: true, stdout: scripts.length === 1 ? 'linked\n' : 'present\n' }
     }
     const launcher =
-      "C:\\Users\\O'Brien\\AppData\\Local\\Programs\\ChaOffice\\resources\\chatoffice\\chatoffice.cmd"
-    const dir = "C:\\Users\\O'Brien\\AppData\\Local\\Programs\\ChaOffice\\resources\\chatoffice"
+      "C:\\Users\\O'Brien\\AppData\\Local\\Programs\\ChaOffice\\resources\\chaoffice\\chaoffice.cmd"
+    const dir = "C:\\Users\\O'Brien\\AppData\\Local\\Programs\\ChaOffice\\resources\\chaoffice"
     const first = installCliLink({ launcher, platform: 'win32', runPowerShell: run })
     expect(first).toEqual({ status: 'linked', location: dir })
     expect(scripts[0]).toContain("$dir = 'C:\\Users\\O''Brien\\AppData")
@@ -217,14 +217,14 @@ describe('installCliLink', () => {
 
   it('inspects the Windows PATH read-only', () => {
     const scripts: string[] = []
-    const launcher = 'C:\\ChaOffice\\resources\\chatoffice\\chatoffice.cmd'
+    const launcher = 'C:\\ChaOffice\\resources\\chaoffice\\chaoffice.cmd'
     const present = inspectCliLink({
       launcher,
       platform: 'win32',
       runPowerShell: (s) => (scripts.push(s), { ok: true, stdout: 'present\n' }),
     })
     expect(present.status).toBe('present')
-    expect(present.location).toBe('C:\\ChaOffice\\resources\\chatoffice')
+    expect(present.location).toBe('C:\\ChaOffice\\resources\\chaoffice')
     expect(scripts[0]).not.toContain('SetValue')
     const missing = inspectCliLink({
       launcher,

@@ -12,11 +12,11 @@ import { launchShell, closeAndSaveVideo, waitForPageWithUrl, screenshotPath } fr
  */
 test.describe('sheets: new blank workbook', () => {
   test('quick-create writes a backing file and saves the first edit', async () => {
-    const scratch = await mkdtemp(join(tmpdir(), 'chatoffice-sheets-blank-'))
+    const scratch = await mkdtemp(join(tmpdir(), 'chaoffice-sheets-blank-'))
     const launched = await launchShell({ onboardingSeen: true, videoDir: 'sheets-new-blank' })
     try {
       const { app, page } = launched
-      // keep the auto-created workbook out of the real ~/Documents/ChatOffice
+      // keep the auto-created workbook out of the real ~/Documents/ChaOffice
       await app.evaluate(({ app: electronApp }, dir) => {
         electronApp.setPath('documents', dir)
       }, scratch)
@@ -33,7 +33,7 @@ test.describe('sheets: new blank workbook', () => {
       await sheets.waitForTimeout(1_500)
 
       // the backing file exists before any edit
-      const saveDir = join(scratch, 'ChatOffice')
+      const saveDir = join(scratch, 'ChaOffice')
       const created = (await readdir(saveDir)).filter((f) => f.endsWith('.xlsx'))
       expect(created).toHaveLength(1)
       const workbook = join(saveDir, created[0])

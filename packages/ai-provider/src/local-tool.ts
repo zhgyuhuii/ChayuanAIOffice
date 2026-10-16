@@ -1,7 +1,7 @@
 /**
  * Local self-hosted tool probes — the wire shape behind the model-settings
  * "one-click install" card for the 本地与自建 vendor group. The main process
- * fills it per vendor + platform (@chatoffice/ai-host/src/local-tools); the
+ * fills it per vendor + platform (@chaoffice/ai-host/src/local-tools); the
  * renderer only reads the flags, so this module stays dependency-free.
  */
 

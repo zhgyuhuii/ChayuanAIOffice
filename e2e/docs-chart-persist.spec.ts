@@ -20,7 +20,7 @@ async function makeChartDocx(): Promise<string> {
     { kind: 'original', docxIndex: 0 },
     { kind: 'chart', chart: CHART },
   ])
-  const dir = await mkdtemp(join(tmpdir(), 'chatoffice-chart-e2e-'))
+  const dir = await mkdtemp(join(tmpdir(), 'chaoffice-chart-e2e-'))
   const file = join(dir, 'chart-doc.docx')
   await writeFile(file, saved)
   return file

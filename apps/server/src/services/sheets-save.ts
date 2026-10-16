@@ -56,7 +56,7 @@ export function createSheetsSaveService(deps: { xlsx: { command: Command; sessio
       // errors surface as precise schema messages instead of deep TypeErrors.
       const request = workbookSaveRequestSchema.parse(input.request)
       const info = deps.xlsx.sessionInfo(input.sessionId)
-      const targetDir = mkdtempSync(join(tmpdir(), 'chatoffice-save-'))
+      const targetDir = mkdtempSync(join(tmpdir(), 'chaoffice-save-'))
       const targetPath = join(targetDir, `saved-${randomUUID()}.xlsx`)
       try {
         const session = {

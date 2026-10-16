@@ -80,7 +80,7 @@
 
 **WPS 需求**：无直接对应；本项目三端富面板依赖 CSS Anchor Positioning（Electron 43/新 Chromium），老浏览器完全不可见。
 
-**分析逻辑**：`@chatoffice/ui` 增加 `useAnchorFallback`：`CSS.supports('anchor-name: --a')` 为假时，用 trigger `getBoundingClientRect()` 计算 fixed 定位（翻转策略简化为：下方放不下放上），挂 `.anchor-fallback` class 关闭 anchor CSS。sheets MenuSelect、slides rb-drop、docs dropdown 三处接入。
+**分析逻辑**：`@chaoffice/ui` 增加 `useAnchorFallback`：`CSS.supports('anchor-name: --a')` 为假时，用 trigger `getBoundingClientRect()` 计算 fixed 定位（翻转策略简化为：下方放不下放上），挂 `.anchor-fallback` class 关闭 anchor CSS。sheets MenuSelect、slides rb-drop、docs dropdown 三处接入。
 
 **达到效果**：老 Chromium/Firefox 上面板以 JS 定位呈现，不再消失；新浏览器零变化。
 

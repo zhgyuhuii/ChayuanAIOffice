@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { addElement, createBlankPptx, openPptx } from '@chatoffice/pptx-engine'
-import { runTxn } from '@chatoffice/pptx-ops'
+import { addElement, createBlankPptx, openPptx } from '@chaoffice/pptx-engine'
+import { runTxn } from '@chaoffice/pptx-ops'
 
 describe('setEffects op end-to-end probe', () => {
   it('applies an outer shadow through the op registry', async () => {

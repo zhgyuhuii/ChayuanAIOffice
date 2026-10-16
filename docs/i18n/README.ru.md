@@ -1,13 +1,13 @@
 <p align="center">
-  <a href="https://chatoffice.ai/">
+  <a href="https://chaoffice.ai/">
     <picture>
       <source srcset="../assets/readme/hero-dark.webp" media="(prefers-color-scheme: dark)">
-      <img src="../assets/readme/hero.webp" alt="ChatOffice — свободный AI-офисный пакет с открытым исходным кодом: Docs, Sheets, Slides, PDF, Markdown и HTML со встроенной AI-панелью" width="100%">
+      <img src="../assets/readme/hero.webp" alt="ChaOffice — свободный AI-офисный пакет с открытым исходным кодом: Docs, Sheets, Slides, PDF, Markdown и HTML со встроенной AI-панелью" width="100%">
     </picture>
   </a>
 </p>
 
-<h1 align="center">ChatOffice</h1>
+<h1 align="center">ChaOffice</h1>
 
 <p align="center"><b>Первый в мире полнофункциональный офисный пакет с открытым исходным кодом и AI.</b><br>
 Файлы Word, Excel, PowerPoint и PDF, редактируемые вами и вашим AI, сохраняются обратно в реальных форматах.</p>
@@ -24,12 +24,12 @@
 <p align="center">
   <a href="#download"><b>Скачать</b></a> ·
   <a href="#command-line-and-agent-skill"><b>CLI</b></a> ·
-  <a href="https://chatoffice.ai/"><b>Сайт</b></a> ·
-  <a href="https://chatoffice.ai/join"><b>Сообщество</b></a> ·
+  <a href="https://chaoffice.ai/"><b>Сайт</b></a> ·
+  <a href="https://chaoffice.ai/join"><b>Сообщество</b></a> ·
   <a href="../../PRIVACY.md"><b>Конфиденциальность</b></a>
 </p>
 
-ChatOffice — бесплатная альтернатива Microsoft Office с открытым исходным
+ChaOffice — бесплатная альтернатива Microsoft Office с открытым исходным
 кодом для macOS, Windows и Linux. Она открывает и сохраняет нативные файлы
 `.docx`, `.xlsx` и `.pptx`, редактирует PDF, Markdown и HTML и размещает
 AI-агента рядом с каждым документом — не чат-бокс, прикрученный сбоку, а
@@ -53,7 +53,7 @@ AI-агента рядом с каждым документом — не чат-
   DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty или
   любого совместимого с OpenAI эндпоинта, включая локальные серверы.
 - **Скриптуемость и готовность к агентам.** В комплекте с приложением идёт
-  командная строка `chatoffice` и скилл для Claude Code, Codex, Cursor,
+  командная строка `chaoffice` и скилл для Claude Code, Codex, Cursor,
   Gemini CLI, GitHub Copilot, OpenCode и Windsurf, так что кодинг-агент может
   создавать, конвертировать, читать и редактировать настоящие файлы Office на
   вашем компьютере, не открывая ни одного окна.
@@ -73,8 +73,8 @@ AI-агента рядом с каждым документом — не чат-
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/docs-report.webp" alt="ChatOffice Docs отображает страницу годового отчёта в две колонки с полноширинным изображением на обложке, затемнённой таблицей KPI, верхним и нижним колонтитулами при масштабе 80% и свёрнутой AI-панелью"></td>
-<td width="50%"><img src="../assets/readme/docs-ai.webp" alt="ChatOffice Docs: обзор компании с изображением-баннером; AI сократил раздел Overview и добавил новый раздел со списком, а панель предлагает откат одним щелчком"></td>
+<td width="50%"><img src="../assets/readme/docs-report.webp" alt="ChaOffice Docs отображает страницу годового отчёта в две колонки с полноширинным изображением на обложке, затемнённой таблицей KPI, верхним и нижним колонтитулами при масштабе 80% и свёрнутой AI-панелью"></td>
+<td width="50%"><img src="../assets/readme/docs-ai.webp" alt="ChaOffice Docs: обзор компании с изображением-баннером; AI сократил раздел Overview и добавил новый раздел со списком, а панель предлагает откат одним щелчком"></td>
 </tr>
 <tr>
 <td><b>Открывает файл так же, как его вёрстку задаёт Word</b> — двухколоночные разделы, изображения на всю страницу, затемнённые таблицы, колонтитулы, разбиение на страницы по метрикам строк Word. Стили, комментарии, отслеживаемые изменения, формулы и рукописный ввод переживают round-trip без изменений.</td>
@@ -86,8 +86,8 @@ AI-агента рядом с каждым документом — не чат-
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/sheets-ai.webp" alt="ChatOffice Sheets: AI добавил лист Summary с доходом по регионам и категориям на формулах SUMIF, плюс столбчатую диаграмму, и сообщает о 43 применённых изменениях с кнопкой отмены"></td>
-<td width="50%"><img src="../assets/readme/sheets-qa.webp" alt="ChatOffice Sheets: на вопрос о том, какой регион лидировал по доходу во втором квартале, AI отвечает «Европа» с разбивкой по категориям и указывает точные ячейки как ссылки-цитаты, рядом с листом Orders"></td>
+<td width="50%"><img src="../assets/readme/sheets-ai.webp" alt="ChaOffice Sheets: AI добавил лист Summary с доходом по регионам и категориям на формулах SUMIF, плюс столбчатую диаграмму, и сообщает о 43 применённых изменениях с кнопкой отмены"></td>
+<td width="50%"><img src="../assets/readme/sheets-qa.webp" alt="ChaOffice Sheets: на вопрос о том, какой регион лидировал по доходу во втором квартале, AI отвечает «Европа» с разбивкой по категориям и указывает точные ячейки как ссылки-цитаты, рядом с листом Orders"></td>
 </tr>
 <tr>
 <td><b>Постройте это</b> — из одного предложения агент добавляет лист Summary с настоящими формулами <code>SUMIF</code> по регионам и категориям, вставляет столбчатую диаграмму и применяет все 43 изменения одним отменяемым пакетом.</td>
@@ -97,15 +97,15 @@ AI-агента рядом с каждым документом — не чат-
 
 ### 3 · Slides — от промпта до готовой презентации `.pptx`
 
-<img src="../assets/readme/slides-generate.webp" alt="Таймлапс создания презентации ChatOffice Slides для инвесторской колоды Aurora Home: ИИ планирует сюжет в панели, слайды появляются на холсте один за другим, а готовая презентация завершается финальным призывом к действию" width="100%">
+<img src="../assets/readme/slides-generate.webp" alt="Таймлапс создания презентации ChaOffice Slides для инвесторской колоды Aurora Home: ИИ планирует сюжет в панели, слайды появляются на холсте один за другим, а готовая презентация завершается финальным призывом к действию" width="100%">
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/slides-cover.webp" alt="ChatOffice Slides: титульный слайд презентации для инвесторов Aurora Home, созданной AI, на холсте, с исходным однострочным промптом и резюме AI о том, что было построено, на панели"></td>
-<td width="50%"><img src="../assets/readme/slides-ai.webp" alt="ChatOffice Slides: оформленный финальный слайд той же презентации из 11 слайдов, с полосой миниатюр слева и AI-панелью, подытоживающей сюжетную линию"></td>
+<td width="50%"><img src="../assets/readme/slides-cover.webp" alt="ChaOffice Slides: титульный слайд презентации для инвесторов Aurora Home, созданной AI, на холсте, с исходным однострочным промптом и резюме AI о том, что было построено, на панели"></td>
+<td width="50%"><img src="../assets/readme/slides-ai.webp" alt="ChaOffice Slides: оформленный финальный слайд той же презентации из 11 слайдов, с полосой миниатюр слева и AI-панелью, подытоживающей сюжетную линию"></td>
 </tr>
 <tr>
-<td><b>Одна строка на входе</b> — «Создай презентацию для инвесторов из 10 слайдов для Aurora Home…». ChatOffice выстраивает сюжетную линию, собирает цифры и создаёт каждый слайд прямо на холсте как настоящий файл <code>.pptx</code>.</td>
+<td><b>Одна строка на входе</b> — «Создай презентацию для инвесторов из 10 слайдов для Aurora Home…». ChaOffice выстраивает сюжетную линию, собирает цифры и создаёт каждый слайд прямо на холсте как настоящий файл <code>.pptx</code>.</td>
 <td><b>Готовая презентация на выходе</b> — одиннадцать оформленных слайдов с единой типографикой, иллюстрациями и завершающим призывом к действию; продолжайте редактировать с помощью мастер-слайдов, макетов, умных направляющих и неразрушающей обрезки, либо попросите панель изменить стиль, переписать текст или переставить слайды.</td>
 </tr>
 </table>
@@ -114,8 +114,8 @@ AI-агента рядом с каждым документом — не чат-
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/pdf-edit.webp" alt="ChatOffice PDF: режим редактирования текста обводит каждый текстовый блок на странице для редактирования на месте, а AI-панель отвечает на вопрос об отчёте со ссылками на страницы"></td>
-<td width="50%"><img src="../assets/readme/pdf-convert.webp" alt="ChatOffice Docs показывает документ Word, конвертированный локально из квартального отчёта Helios в формате PDF, открытый во второй вкладке рядом с исходным PDF"></td>
+<td width="50%"><img src="../assets/readme/pdf-edit.webp" alt="ChaOffice PDF: режим редактирования текста обводит каждый текстовый блок на странице для редактирования на месте, а AI-панель отвечает на вопрос об отчёте со ссылками на страницы"></td>
+<td width="50%"><img src="../assets/readme/pdf-convert.webp" alt="ChaOffice Docs показывает документ Word, конвертированный локально из квартального отчёта Helios в формате PDF, открытый во второй вкладке рядом с исходным PDF"></td>
 </tr>
 <tr>
 <td><b>Редактируйте прямо на странице</b> — режим редактирования текста обводит каждый текстовый блок для повторного набора на месте; поток содержимого страницы переписывается через PDFium с сохранением исходных шрифтов, а не поверх маскирующей аннотацией. Спросите AI о длинном отчёте и получите ответ со ссылками на страницы.</td>
@@ -129,11 +129,11 @@ AI-агента рядом с каждым документом — не чат-
 **дизайн-бриф** — крючок, палитру, типографику и стилевые направления — а
 затем собирает единый самодостаточный файл `.html` на основе этих токенов.
 
-<img src="../assets/readme/html-restyle-motion.webp" alt="Таймлапс изменения стиля ChatOffice HTML для лендинга Lumen: один запрос Restyle в панели превращает тёмную страницу Midnight Studio в тёплую версию Solar Daybreak, при этом все разделы и весь текст остаются на месте" width="100%">
+<img src="../assets/readme/html-restyle-motion.webp" alt="Таймлапс изменения стиля ChaOffice HTML для лендинга Lumen: один запрос Restyle в панели превращает тёмную страницу Midnight Studio в тёплую версию Solar Daybreak, при этом все разделы и весь текст остаются на месте" width="100%">
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/html-ai.webp" alt="ChatOffice HTML: сгенерированный лендинг для настольной лампы на солнечных батареях в тёмном направлении Midnight Studio, показанный в живом предпросмотре, с AI-панелью, резюмирующей только что созданную страницу"></td>
+<td width="50%"><img src="../assets/readme/html-ai.webp" alt="ChaOffice HTML: сгенерированный лендинг для настольной лампы на солнечных батареях в тёмном направлении Midnight Studio, показанный в живом предпросмотре, с AI-панелью, резюмирующей только что созданную страницу"></td>
 <td width="50%"><img src="../assets/readme/html-restyle.webp" alt="Тот же лендинг Lumen, переоформленный AI в тёплом направлении Solar Daybreak: бумажный фон, серифные заголовки и оранжевый акцент, с сохранением всех разделов и всего текста"></td>
 </tr>
 <tr>
@@ -143,8 +143,8 @@ AI-агента рядом с каждым документом — не чат-
 </table>
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/html-dashboard.webp" alt="ChatOffice HTML: сгенерированный интерфейс личного дашборда для дизайнера-фрилансера в тёплом «льняном» стиле, с боковой панелью, серифным приветствием и четырьмя карточками показателей"></td>
-<td width="50%"><img src="../assets/readme/html-report.webp" alt="ChatOffice HTML: сгенерированный отчёт о рынке электромобилей в стиле широкоформатной газеты, с серифной шапкой, заголовной цифрой 17,3 миллиона и строкой статистики"></td>
+<td width="50%"><img src="../assets/readme/html-dashboard.webp" alt="ChaOffice HTML: сгенерированный интерфейс личного дашборда для дизайнера-фрилансера в тёплом «льняном» стиле, с боковой панелью, серифным приветствием и четырьмя карточками показателей"></td>
+<td width="50%"><img src="../assets/readme/html-report.webp" alt="ChaOffice HTML: сгенерированный отчёт о рынке электромобилей в стиле широкоформатной газеты, с серифной шапкой, заголовной цифрой 17,3 миллиона и строкой статистики"></td>
 </tr>
 <tr>
 <td><b>Макеты интерфейсов</b> — стартовый шаблон «личный дашборд» превращает персону в рабочий макет: боковая панель, приветствие, спарклайн оплачиваемых часов, карточки счетов и загрузки — всё в виде настоящего HTML, который можно передать разработчику.</td>
@@ -156,8 +156,8 @@ AI-агента рядом с каждым документом — не чат-
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/markdown-ai.webp" alt="ChatOffice Markdown: у выделенного абзаца всплывает окно Ask AI с введённой инструкцией и чипами-подсказками, такими как «Отполировать», «Сделать короче», «Развернуть» и «Исправить грамматику», а также кнопками «Отправить сейчас» и «Добавить в очередь»"></td>
-<td width="50%"><img src="../assets/readme/markdown-render.webp" alt="ChatOffice Markdown отображает документ с заметками о релизе, содержащий таблицу, блок-схему Mermaid и список задач, со стартовыми промптами AI-панели слева"></td>
+<td width="50%"><img src="../assets/readme/markdown-ai.webp" alt="ChaOffice Markdown: у выделенного абзаца всплывает окно Ask AI с введённой инструкцией и чипами-подсказками, такими как «Отполировать», «Сделать короче», «Развернуть» и «Исправить грамматику», а также кнопками «Отправить сейчас» и «Добавить в очередь»"></td>
+<td width="50%"><img src="../assets/readme/markdown-render.webp" alt="ChaOffice Markdown отображает документ с заметками о релизе, содержащий таблицу, блок-схему Mermaid и список задач, со стартовыми промптами AI-панели слева"></td>
 </tr>
 <tr>
 <td><b>Спросите AI о выделенном фрагменте</b> — выделите любой отрывок, и появится чип <b>Ask AI</b>: введите инструкцию или выберите подсказку, отправьте её сразу или поставьте несколько привязанных правок в очередь и выполните их за один проход. Такая же точка входа есть в каждом приложении.</td>
@@ -165,27 +165,27 @@ AI-агента рядом с каждым документом — не чат-
 </tr>
 </table>
 
-### 7 · CLI — ваш кодинг-агент управляет ChatOffice на вашем компьютере
+### 7 · CLI — ваш кодинг-агент управляет ChaOffice на вашем компьютере
 
-В ChatOffice входит командная строка `chatoffice` и агентный скилл. Установите
+В ChaOffice входит командная строка `chaoffice` и агентный скилл. Установите
 скилл — и Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode или
 Windsurf смогут создавать, конвертировать, читать и редактировать настоящие
 файлы Office через те же движки, что и приложения, не открывая ни одного окна.
 
-<img src="../assets/readme/cli-deck-in-app.webp" alt="ChatOffice Slides показывает презентацию о Солнечной системе из восьми слайдов, которую кодинг-агент собрал через командную строку chatoffice: титульный слайд на холсте, восемь миниатюр слева и открытая AI-панель" width="100%">
+<img src="../assets/readme/cli-deck-in-app.webp" alt="ChaOffice Slides показывает презентацию о Солнечной системе из восьми слайдов, которую кодинг-агент собрал через командную строку chaoffice: титульный слайд на холсте, восемь миниатюр слева и открытая AI-панель" width="100%">
 
 <table>
 <tr>
 <td width="50%"><img src="../assets/readme/cli-slides-grid.webp" alt="Восемь отрисованных слайдов презентации о Солнечной системе рядом друг с другом: обложка, хронология исследований, четыре ключевых числа, столбчатая диаграмма диаметров планет, каменистые миры против гигантов, заголовная цифра 99,8% для Солнца, сетка четырёх гигантов и выводы"></td>
-<td width="50%"><img src="../assets/readme/cli-integrations.webp" alt="ChatOffice Settings, страница Integrations: скилл chatoffice установлен в Claude Code, рядом с Codex и Cursor — кнопки Install"></td>
+<td width="50%"><img src="../assets/readme/cli-integrations.webp" alt="ChaOffice Settings, страница Integrations: скилл chaoffice установлен в Claude Code, рядом с Codex и Cursor — кнопки Install"></td>
 </tr>
 <tr>
-<td><b>Один промпт вашему агенту</b> — «Сделай презентацию о Солнечной системе из восьми слайдов». Агент читает скилл, пишет таблицу стилей, план и по одной спецификации страницы на слайд, генерирует две фотографии через <code>chatoffice image</code> и даёт <code>chatoffice slides check</code> отклонить всё, что выходит за границы или перекрывается, прежде чем <code>chatoffice create</code> соберёт <code>.pptx</code>, а <code>slides render</code> вернёт по одному PNG на слайд для просмотра.</td>
-<td><b>Установите один раз, через Настройки → Интеграции</b> — ChatOffice перечисляет кодинг-агентов, найденных на этом компьютере, и записывает скилл в каждый выбранный вами. Либо скачайте скилл в виде zip или выполните <code>npx skills add zhgyuhuii/ChayuanAIOffice</code>. Команды и полный рабочий процесс — в разделе <a href="#command-line-and-agent-skill">Командная строка и агентный скилл</a>.</td>
+<td><b>Один промпт вашему агенту</b> — «Сделай презентацию о Солнечной системе из восьми слайдов». Агент читает скилл, пишет таблицу стилей, план и по одной спецификации страницы на слайд, генерирует две фотографии через <code>chaoffice image</code> и даёт <code>chaoffice slides check</code> отклонить всё, что выходит за границы или перекрывается, прежде чем <code>chaoffice create</code> соберёт <code>.pptx</code>, а <code>slides render</code> вернёт по одному PNG на слайд для просмотра.</td>
+<td><b>Установите один раз, через Настройки → Интеграции</b> — ChaOffice перечисляет кодинг-агентов, найденных на этом компьютере, и записывает скилл в каждый выбранный вами. Либо скачайте скилл в виде zip или выполните <code>npx skills add zhgyuhuii/ChayuanAIOffice</code>. Команды и полный рабочий процесс — в разделе <a href="#command-line-and-agent-skill">Командная строка и агентный скилл</a>.</td>
 </tr>
 </table>
 
-## Почему ChatOffice
+## Почему ChaOffice
 
 - **Открытый исходный код**, Apache-2.0, разрабатывается открыто на GitHub.
 - **Ваш собственный.** Нативные приложения для macOS, Windows и Linux; файлы
@@ -204,7 +204,7 @@ Windsurf смогут создавать, конвертировать, чита
   в систему OCR для сканов.
 - **А также Markdown и HTML**, с той же панелью AI и локальным экспортом в
   Word.
-- **Скриптуемость.** Командная строка `chatoffice` и агентный скилл отдают
+- **Скриптуемость.** Командная строка `chaoffice` и агентный скилл отдают
   каждый движок в распоряжение Claude Code, Codex, Cursor и других
   кодинг-агентов — по-прежнему на устройстве.
 - **Бесплатно**, как для отдельных пользователей, так и для команд.
@@ -234,10 +234,10 @@ MiniMax или любой совместимый с OpenAI эндпоинт дл
 
 ## Командная строка и агентный скилл
 
-Всё, что приложения умеют делать с файлом, командная строка `chatoffice` умеет
+Всё, что приложения умеют делать с файлом, командная строка `chaoffice` умеет
 делать из терминала: инспектировать, конвертировать, создавать, читать и
 редактировать Word, Excel, PowerPoint, PDF, Markdown и HTML на тех же движках,
-без графического интерфейса. Она устанавливается вместе с ChatOffice, не
+без графического интерфейса. Она устанавливается вместе с ChaOffice, не
 требует собственной среды выполнения и никогда никуда не отправляет документы.
 В паре со встроенным **агентным скиллом** она превращает кодинг-агента в
 работника с документами, который выдаёт настоящие файлы Office вместо
@@ -251,30 +251,30 @@ OpenCode и Windsurf сразу из коробки, а также с любым
 
 | Как                                     | Что происходит                                                                                                                                                                   |
 | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Настройки → Интеграции** в приложении | Показывает агентов, найденных на этом компьютере; один клик записывает скилл в каждый выбранный. Когда релиз ChatOffice приносит более новый скилл, появляется кнопка **Update**. |
+| **Настройки → Интеграции** в приложении | Показывает агентов, найденных на этом компьютере; один клик записывает скилл в каждый выбранный. Когда релиз ChaOffice приносит более новый скилл, появляется кнопка **Update**. |
 | **Скачать как zip** на той же странице  | Формат, который claude.ai, десктопные приложения Claude и другие ассистенты принимают как загружаемый скилл.                                                                     |
 | `npx skills add zhgyuhuii/ChayuanAIOffice`  | Устанавливает скилл из этого репозитория в любой агент, поддерживающий скиллы.                                                                                                   |
 
 Затем начните новый чат и попросите документ. Скилл учит агента, когда
-обращаться к `chatoffice`, как прочитать файл перед редактированием и как
+обращаться к `chaoffice`, как прочитать файл перед редактированием и как
 проверять собственную работу.
 
 ### Быстрый старт из терминала
 
 ```bash
-chatoffice --version
-chatoffice info report.docx --json                  # headings and blocks; or sheets, slides, pages
-chatoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx, …
-chatoffice create --type docx --from notes.md --out notes.docx
-chatoffice create --type xlsx --from table.json --out sales.xlsx   # "=SUM(B2:B9)" cells stay live formulas
-chatoffice docs read report.docx --range 0-9 --json # then `docs apply --ops edits.json` edits in place
-chatoffice render report.docx --out shots/          # one PNG per page, to look at what you made
-chatoffice open sales.xlsx                          # hand the result to the editor
+chaoffice --version
+chaoffice info report.docx --json                  # headings and blocks; or sheets, slides, pages
+chaoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx, …
+chaoffice create --type docx --from notes.md --out notes.docx
+chaoffice create --type xlsx --from table.json --out sales.xlsx   # "=SUM(B2:B9)" cells stay live formulas
+chaoffice docs read report.docx --range 0-9 --json # then `docs apply --ops edits.json` edits in place
+chaoffice render report.docx --out shots/          # one PNG per page, to look at what you made
+chaoffice open sales.xlsx                          # hand the result to the editor
 ```
 
 Каждая команда выводит однострочную сводку или один JSON-объект с `--json`.
 Правки атомарны: отклонённая операция оставляет файл нетронутым и возвращается
-с подсказкой об ошибке. `chatoffice help` показывает актуальный набор команд;
+с подсказкой об ошибке. `chaoffice help` показывает актуальный набор команд;
 полный справочник — в [packages/cli/README.md](../../packages/cli/README.md).
 
 ### Что на самом деле запускает агент
@@ -284,21 +284,21 @@ Claude Code. За кулисами агент следовал поэтапно�
 проверял каждый этап, прежде чем начинался следующий:
 
 ```bash
-chatoffice capabilities --json                        # which cloud tools ChatOffice has configured
-chatoffice guide slides design                        # the deck workflow and layout library
-chatoffice image "the eight planets in a row …" --aspect 16:9 --out deck/assets/cover.jpg
-chatoffice slides check deck/outline.json --json      # 8 pages, no findings
-chatoffice slides check deck/pages/01.json --json     # builds one slide, audits overflow and overlap
+chaoffice capabilities --json                        # which cloud tools ChaOffice has configured
+chaoffice guide slides design                        # the deck workflow and layout library
+chaoffice image "the eight planets in a row …" --aspect 16:9 --out deck/assets/cover.jpg
+chaoffice slides check deck/outline.json --json      # 8 pages, no findings
+chaoffice slides check deck/pages/01.json --json     # builds one slide, audits overflow and overlap
 …                                                    # one page file per slide, fixed until each check is clean
-chatoffice create --type pptx --spec deck/pages --outline deck/outline.json --out deck/solar-system.pptx --json
-chatoffice slides render deck/solar-system.pptx --out deck/shots --json
-chatoffice slides audit deck/solar-system.pptx --json    # 8 slides, no layout issues
-chatoffice slides replace deck/solar-system.pptx --slide 4 --spec deck/pages/05.json --json
-chatoffice open deck/solar-system.pptx
+chaoffice create --type pptx --spec deck/pages --outline deck/outline.json --out deck/solar-system.pptx --json
+chaoffice slides render deck/solar-system.pptx --out deck/shots --json
+chaoffice slides audit deck/solar-system.pptx --json    # 8 slides, no layout issues
+chaoffice slides replace deck/solar-system.pptx --slide 4 --spec deck/pages/05.json --json
+chaoffice open deck/solar-system.pptx
 ```
 
-Внутри `chatoffice` не происходит ни одного вызова модели: агент думает, CLI
-собирает и проверяет, а результат открывается в ChatOffice или PowerPoint как
+Внутри `chaoffice` не происходит ни одного вызова модели: агент думает, CLI
+собирает и проверяет, а результат открывается в ChaOffice или PowerPoint как
 обычный `.pptx`.
 
 <a id="download"></a>
@@ -323,17 +323,17 @@ chatoffice open deck/solar-system.pptx
 <summary><b>Установка на Linux</b></summary>
 
 Deb-пакет устанавливается через apt — он подтягивает зависимости и
-добавляет ChatOffice в меню приложений:
+добавляет ChaOffice в меню приложений:
 
 ```bash
-sudo apt install ./chatoffice_<version>_amd64.deb
+sudo apt install ./chaoffice_<version>_amd64.deb
 ```
 
 На Fedora / в семействе RHEL / openSUSE вместо этого установите rpm-пакет:
 
 ```bash
-sudo dnf install ./chatoffice-<version>.x86_64.rpm     # Fedora / RHEL family
-sudo zypper install ./chatoffice-<version>.x86_64.rpm  # openSUSE
+sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
+sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
 
 AppImage запускается прямо на месте: установите runtime FUSE 2
@@ -341,8 +341,8 @@ AppImage запускается прямо на месте: установите
 `libfuse2t64`), сделайте файл исполняемым и запустите его:
 
 ```bash
-chmod +x ChatOffice-<version>.AppImage
-./ChatOffice-<version>.AppImage
+chmod +x ChaOffice-<version>.AppImage
+./ChaOffice-<version>.AppImage
 ```
 
 </details>
@@ -383,37 +383,37 @@ npm run dist:linux   # package Linux AppImage + deb + rpm
 ```
 
 Приложению Sheets также нужен инструментарий Rust для его xlsx sidecar
-(`cargo` в PATH); команда `npm run build -w @chatoffice/sheets` собирает его
+(`cargo` в PATH); команда `npm run build -w @chaoffice/sheets` собирает его
 автоматически. Список проверок, которые должно проходить каждое изменение, и
 порядок принятия pull request-ов — в [CONTRIBUTING.md](../../CONTRIBUTING.md).
 
 ## Сообщество
 
-ChatOffice активно развивается, и ваши отзывы влияют на его развитие.
+ChaOffice активно развивается, и ваши отзывы влияют на его развитие.
 
 - **Сообщите об ошибке или предложите функцию** в
   [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues).
-- **Присоединяйтесь к групповому чату ChatOffice** в
-  [GenTeam](https://chatoffice.ai/join), чтобы общаться с командой и другими
+- **Присоединяйтесь к групповому чату ChaOffice** в
+  [GenTeam](https://chaoffice.ai/join), чтобы общаться с командой и другими
   пользователями.
-- **Поставьте звезду репозиторию**, если ChatOffice вам полезен — это лучший
+- **Поставьте звезду репозиторию**, если ChaOffice вам полезен — это лучший
   способ поддержать проект.
 
 ## Часто задаваемые вопросы
 
 <details>
-<summary><b>ChatOffice бесплатен?</b></summary>
+<summary><b>ChaOffice бесплатен?</b></summary>
 
-Да. ChatOffice бесплатен и распространяется с открытым исходным кодом по
+Да. ChaOffice бесплатен и распространяется с открытым исходным кодом по
 лицензии Apache-2.0 — ни пробного периода, ни платного тарифа для самих
 приложений.
 
 </details>
 
 <details>
-<summary><b>Может ли ChatOffice открывать файлы Microsoft Word, Excel и PowerPoint?</b></summary>
+<summary><b>Может ли ChaOffice открывать файлы Microsoft Word, Excel и PowerPoint?</b></summary>
 
-Да. ChatOffice открывает и сохраняет нативные файлы `.docx`, `.xlsx` и
+Да. ChaOffice открывает и сохраняет нативные файлы `.docx`, `.xlsx` и
 `.pptx`. Сохранение выполняется побайтово: части файла, которые вы не
 трогали, записываются обратно байт в байт, поэтому документы продолжают
 работать в Microsoft Office.
@@ -421,7 +421,7 @@ ChatOffice активно развивается, и ваши отзывы вл�
 </details>
 
 <details>
-<summary><b>Работает ли ChatOffice офлайн?</b></summary>
+<summary><b>Работает ли ChaOffice офлайн?</b></summary>
 
 Редактирование документов полностью локально — файлы никогда не покидают
 ваш компьютер при открытии, редактировании, сохранении или конвертации.
@@ -432,7 +432,7 @@ ChatOffice активно развивается, и ваши отзывы вл�
 </details>
 
 <details>
-<summary><b>Может ли ChatOffice редактировать файлы PDF?</b></summary>
+<summary><b>Может ли ChaOffice редактировать файлы PDF?</b></summary>
 
 Да — это настоящее редактирование текста и изображений PDF, которое
 переписывает поток содержимого страницы с сохранением исходных шрифтов, а не
@@ -441,7 +441,7 @@ ChatOffice активно развивается, и ваши отзывы вл�
 </details>
 
 <details>
-<summary><b>Может ли ChatOffice конвертировать PDF в Word, Excel или PowerPoint?</b></summary>
+<summary><b>Может ли ChaOffice конвертировать PDF в Word, Excel или PowerPoint?</b></summary>
 
 Да — полностью на устройстве: посимвольное извлечение через PDFium плюс
 анализ вёрстки на основе геометрии, без облачных сервисов и без загрузки
@@ -454,7 +454,7 @@ Windows их читает системный OCR, поэтому они конв
 <details>
 <summary><b>Могу ли я использовать свою AI-модель или API-ключ?</b></summary>
 
-Да. Помимо входа через Genspark без ключей, ChatOffice поддерживает
+Да. Помимо входа через Genspark без ключей, ChaOffice поддерживает
 собственный ключ для Claude, OpenAI, Gemini, DeepSeek, Kimi, GLM, Qwen,
 Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty и OpenCode Zen/Go, а также любой
 совместимый с OpenAI эндпоинт — включая локальные серверы моделей. Поиск,
@@ -464,7 +464,7 @@ Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty и OpenCode Zen/Go, а та
 </details>
 
 <details>
-<summary><b>Может ли ChatOffice конвертировать HTML в Word?</b></summary>
+<summary><b>Может ли ChaOffice конвертировать HTML в Word?</b></summary>
 
 Да — функция Export as Word в приложении HTML создаёт нативный редактируемый
 файл `.docx` полностью на устройстве. Страница отрисовывается во встроенном
@@ -476,9 +476,9 @@ Chromium и сводится к настоящим структурам Word: з
 </details>
 
 <details>
-<summary><b>Могу ли я управлять ChatOffice из Claude Code, Codex, Cursor или скрипта?</b></summary>
+<summary><b>Могу ли я управлять ChaOffice из Claude Code, Codex, Cursor или скрипта?</b></summary>
 
-Да. ChatOffice устанавливает командную строку `chatoffice`, которая запускает те
+Да. ChaOffice устанавливает командную строку `chaoffice`, которая запускает те
 же движки без графического интерфейса: инспектируйте, конвертируйте,
 создавайте, читайте и редактируйте документы из терминала или скрипта, с
 выводом `--json` для программ. Встроенный агентный скилл учит Claude Code,
@@ -489,14 +489,14 @@ Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode и Windsurf пользова
 </details>
 
 <details>
-<summary><b>Собирает ли ChatOffice какие-либо данные?</b></summary>
+<summary><b>Собирает ли ChaOffice какие-либо данные?</b></summary>
 
 Официальные собранные сборки по умолчанию отправляют ограниченную
 аналитику использования, и вы можете отключить её в любой момент в разделе
 Settings → General. Аналитика никогда не передаёт содержимое документов,
 имена и пути файлов, идентификатор учётной записи или адреса электронной
 почты. Полный перечень событий и раскрытие данных — в
-[ChatOffice Privacy](../../PRIVACY.md).
+[ChaOffice Privacy](../../PRIVACY.md).
 
 </details>
 
@@ -508,7 +508,7 @@ Settings → General. Аналитика никогда не передаёт с
 
 ## Благодарности
 
-ChatOffice был бы невозможен без этих проектов с открытым исходным кодом:
+ChaOffice был бы невозможен без этих проектов с открытым исходным кодом:
 
 - [Electron](https://www.electronjs.org/) — среда выполнения для каждого
   приложения.
@@ -558,10 +558,10 @@ MIT/Apache-2.0/BSD-3-Clause/OFL.
 
 ## Лицензия
 
-ChatOffice распространяется по лицензии [Apache License 2.0](../../LICENSE),
+ChaOffice распространяется по лицензии [Apache License 2.0](../../LICENSE),
 с одним исключением: каталог `ee/` зарезервирован для будущих корпоративных
-модулей и покрывается [ChatOffice Enterprise License](../../ee/LICENSE).
+модулей и покрывается [ChaOffice Enterprise License](../../ee/LICENSE).
 
-Названия и логотипы ChatOffice и Genspark являются товарными знаками Mainfunc,
+Названия и логотипы ChaOffice и Genspark являются товарными знаками Mainfunc,
 Inc. Лицензия Apache-2.0 не даёт права использовать их (см. раздел 6);
 форки должны использовать собственный брендинг.

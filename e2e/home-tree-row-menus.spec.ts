@@ -21,7 +21,7 @@ test.describe('home tree row menus', () => {
   let root: string
 
   test.beforeEach(() => {
-    root = realpathSync(mkdtempSync(join(tmpdir(), 'chatoffice-e2e-root-')))
+    root = realpathSync(mkdtempSync(join(tmpdir(), 'chaoffice-e2e-root-')))
     mkdirSync(join(root, 'Clients', 'Contracts'), { recursive: true })
     for (let i = 1; i <= 14; i++) mkdirSync(join(root, `f${String(i).padStart(2, '0')}`))
     writeFileSync(join(root, 'report.docx'), 'x')

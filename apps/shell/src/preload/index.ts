@@ -1,9 +1,9 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import type { IpcRendererEvent } from 'electron'
-import type { AiModelEntry, AiSettingsV2, ChaOfficeAccountStatus } from '@chatoffice/ai-provider'
-import { normalizeAiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
-import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
-import { createRemoteFilesClient } from '@chatoffice/storage-adapter/remote-ipc'
+import type { AiModelEntry, AiSettingsV2, ChaOfficeAccountStatus } from '@chaoffice/ai-provider'
+import { normalizeAiPanelPrefs } from '@chaoffice/ui/ai-panel-prefs'
+import { installDropOpenBridge } from '@chaoffice/electron-utils/drop-open'
+import { createRemoteFilesClient } from '@chaoffice/storage-adapter/remote-ipc'
 import type { UpdateUiState } from '../shared/update-api'
 import type {
   AccountLoginEvent,
@@ -54,7 +54,7 @@ import type { WindowControlsApi } from '../shared/tabs-api'
 import type { DockApi, DockTabSummary, PanelTurnReport } from '../shared/dock-api'
 import type { RelayEvent } from '../shared/relay-protocol'
 import { DOCK_CHANNELS } from '../shared/dock-api'
-import { KB_CHANNELS } from '@chatoffice/ai-host/kb-channels'
+import { KB_CHANNELS } from '@chaoffice/ai-host/kb-channels'
 
 const UI_LANGUAGES: readonly UiLanguage[] = [
   'zh',
@@ -586,17 +586,17 @@ const homeApi: HomeApi = {
       error?: string
     }
   },
-  async chatofficeStatus(withEmail) {
-    return (await ipcRenderer.invoke('ai:chatoffice-status', withEmail)) as ChaOfficeAccountStatus
+  async chaofficeStatus(withEmail) {
+    return (await ipcRenderer.invoke('ai:chaoffice-status', withEmail)) as ChaOfficeAccountStatus
   },
-  async chatofficeLogin() {
-    await ipcRenderer.invoke('ai:chatoffice-login')
+  async chaofficeLogin() {
+    await ipcRenderer.invoke('ai:chaoffice-login')
   },
   async aiLocalToolStatus(vendorId: string) {
     return (await ipcRenderer.invoke(
       'ai:local-tool-status',
       vendorId,
-    )) as import('@chatoffice/ai-provider').LocalToolStatus
+    )) as import('@chaoffice/ai-provider').LocalToolStatus
   },
   async aiLocalToolInstall(vendorId: string, onLine?: (line: string) => void) {
     if (!onLine) return ipcRenderer.invoke('ai:local-tool-install', vendorId)
@@ -612,7 +612,7 @@ const homeApi: HomeApi = {
     return (await ipcRenderer.invoke(
       'ai:local-tool-start',
       vendorId,
-    )) as import('@chatoffice/ai-provider').LocalToolOpResult
+    )) as import('@chaoffice/ai-provider').LocalToolOpResult
   },
   // 生图、媒体与搜索：搜索平台连通性探测（主进程执行，未保存的 key 也可测）
   async aiTestSearchPlatform(req: { platform: string; key?: string }) {

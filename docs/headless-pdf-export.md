@@ -1,6 +1,6 @@
 # Headless PDF export
 
-Every "export to PDF" path in ChatOffice can be driven without a visible
+Every "export to PDF" path in ChaOffice can be driven without a visible
 editor window, behind one entry point:
 
 ```
@@ -12,7 +12,7 @@ one line to stdout and exits. It does **not** take the single-instance lock,
 so it runs happily alongside a GUI instance.
 
 ```
-$ ChatOffice --headless-export report.docx --to pdf --out report.pdf --json
+$ ChaOffice --headless-export report.docx --to pdf --out report.pdf --json
 {"status":"ok","summary":"Exported /w/report.docx to /w/report.pdf","output_path":"/w/report.pdf"}
 ```
 
@@ -45,7 +45,7 @@ On failure the JSON envelope is
 
 The grammar, the exit codes and the renderer-side waiting helpers live in
 `packages/electron-utils/src/headless-export.ts`; the renderer half is
-imported through the `@chatoffice/electron-utils/headless-export` subpath so a
+imported through the `@chaoffice/electron-utils/headless-export` subpath so a
 renderer bundle never pulls in `node:` builtins.
 
 `apps/shell/src/main/headless-export.ts` validates the paths and routes by

@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 
-import { Dropdown } from '@chatoffice/ui'
+import { Dropdown } from '@chaoffice/ui'
 import type {
   PivotAggregation,
   PivotShowDataAs,
-} from '@chatoffice/xlsx-gateway/domain/pivot-value-modes'
+} from '@chaoffice/xlsx-gateway/domain/pivot-value-modes'
 
 import { useI18n, type StringKey, type TFunc } from './i18n/locale'
 import { useModalDialog } from './modal-dialog'

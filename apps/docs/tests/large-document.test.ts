@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { Block } from '@chatoffice/docx-engine'
+import type { Block } from '@chaoffice/docx-engine'
 import {
   CHARS_PER_BLOCK,
   HUGE_DOC_REFUSE_WEIGHT,

@@ -6,7 +6,7 @@ import {} from '@tiptap/pm/tables'
 import { cssCsFontFamily, cssRunFontFamily, cssFontFamily, lineHeightFactor } from '../line-metrics'
 import { isEastAsianFontName } from '../font-list'
 import { t } from '../i18n/locale'
-import {} from '@chatoffice/docx-engine'
+import {} from '@chaoffice/docx-engine'
 import { dkBackground } from './dark-page'
 import { runBorderDecls } from './run-border'
 import { fillInk } from './shading-ink'
@@ -23,7 +23,7 @@ import {
   positionDecl,
   textEffectDecls,
 } from './text-effects'
-import { symbolGlyph, symbolPuaChar } from '@chatoffice/docx-engine'
+import { symbolGlyph, symbolPuaChar } from '@chaoffice/docx-engine'
 import { symbolFontCovers } from '../font-check'
 
 /**
@@ -469,10 +469,10 @@ export function fontAttrsFromFamilyChain(chain: string | undefined): Record<stri
         !/^var\(|\)$/.test(x) &&
         !/^(serif|sans-serif|monospace|cursive|fantasy|system-ui)$/i.test(x) &&
         !CSS_ONLY_FAMILY.test(x) &&
-        // internal fonts.css aliases are not user picks: 'ChatOffice *', the
+        // internal fonts.css aliases are not user picks: 'ChaOffice *', the
         // '* GO' renamed/range-limited faces (Carlito GO, KR Theme Latin GO,
         // Noto Sans/Serif CJK GO...) and the size-adjusted Noto Arabic aliases
-        !/^chatoffice /i.test(x) &&
+        !/^chaoffice /i.test(x) &&
         !/ go$/i.test(x) &&
         !/^noto (naskh|sans) arabic (w|ta|tnr)$/i.test(x),
     )

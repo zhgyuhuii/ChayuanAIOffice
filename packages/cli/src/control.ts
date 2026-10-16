@@ -9,14 +9,14 @@ import {
   type ControlReply,
   type ControlRequest,
 } from './control-protocol'
-import { chatofficeUserDataDir } from './gui'
+import { chaofficeUserDataDir } from './gui'
 import { CliError, EXIT, type ErrorReason } from './result'
 
 /** The running shell's control endpoint, or null when no live shell published one. */
 export function controlEndpoint(env: NodeJS.ProcessEnv): ControlEndpoint | null {
   const dirs = env.GENOFFICE_USER_DATA
     ? [env.GENOFFICE_USER_DATA]
-    : [chatofficeUserDataDir(env), `${chatofficeUserDataDir(env)} Dev`]
+    : [chaofficeUserDataDir(env), `${chaofficeUserDataDir(env)} Dev`]
   for (const dir of dirs) {
     const file = join(dir, CONTROL_FILE)
     if (!existsSync(file)) continue
@@ -79,7 +79,7 @@ export function controlRequest(
         reject(
           new CliError(EXIT.app, `ChaAI Office did not answer: ${why}`, undefined, {
             reason: 'app_unavailable',
-            suggestion: 'start ChaAI Office (or `chatoffice open <file>`) and retry',
+            suggestion: 'start ChaAI Office (or `chaoffice open <file>`) and retry',
           }),
         ),
       )
@@ -135,7 +135,7 @@ function defaultSuggestion(reason: ErrorReason, detail: Record<string, unknown>)
     case 'sheet_not_found':
       return 'use one of `detail.sheets` verbatim'
     case 'file_not_open_in_gui':
-      return 'run `chatoffice open <file>` first'
+      return 'run `chaoffice open <file>` first'
     default:
       return 'check the target and retry'
   }

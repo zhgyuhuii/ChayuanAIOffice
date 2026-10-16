@@ -1,5 +1,5 @@
 import type { Node as PmNode } from '@tiptap/pm/model'
-import type { StyleInfo } from '@chatoffice/docx-engine'
+import type { StyleInfo } from '@chaoffice/docx-engine'
 
 export interface HeadingRef {
   text: string

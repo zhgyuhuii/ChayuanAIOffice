@@ -1,6 +1,6 @@
 /**
  * 示例库访问层:读取采集管线生成的 data/examples.json(Q8)。
- * 数据由 `npm run harvest -w @chatoffice/chart-kit` 重新生成,
+ * 数据由 `npm run harvest -w @chaoffice/chart-kit` 重新生成,
  * 提交入库保证构建可复现(Q13 版本锁定同理)。
  */
 

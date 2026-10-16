@@ -4,7 +4,7 @@ import {
   applyTitlePg,
   type SectionInfo,
   type SectionSettings,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import type { AgentToolDef } from '../../shared/ipc'
 
 /**

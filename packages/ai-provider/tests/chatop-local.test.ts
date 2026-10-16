@@ -72,15 +72,15 @@ describe('chatop-local: source parsing', () => {
 })
 
 describe('chatop-local: proxy key parsing', () => {
-  it('finds the live key for the chatoffice agent; skips revoked and foreign agents', () => {
+  it('finds the live key for the chaoffice agent; skips revoked and foreign agents', () => {
     const doc = JSON.stringify({
       keys: [
         { agentId: 'chatop-kb', key: 'chatop-agent-chatop-kb-x', revoked: false },
-        { agentId: 'chatoffice', key: 'chatop-agent-chatoffice-old', revoked: true },
-        { agentId: 'chatoffice', key: 'chatop-agent-chatoffice-live', revoked: false },
+        { agentId: 'chaoffice', key: 'chatop-agent-chaoffice-old', revoked: true },
+        { agentId: 'chaoffice', key: 'chatop-agent-chaoffice-live', revoked: false },
       ],
     })
-    expect(parseChatopProxyKey(doc)).toBe('chatop-agent-chatoffice-live')
+    expect(parseChatopProxyKey(doc)).toBe('chatop-agent-chaoffice-live')
     expect(parseChatopProxyKey('{"keys":[]}', 'chatop-kb')).toBeNull()
     expect(parseChatopProxyKey('not json')).toBeNull()
   })

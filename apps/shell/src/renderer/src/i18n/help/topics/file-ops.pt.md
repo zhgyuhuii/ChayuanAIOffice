@@ -17,7 +17,7 @@ As regras: a extensão é preservada automaticamente; caracteres proibidos, pont
 
 ## Excluir
 
-- **⋯ ▸ Excluir** no Início: pergunta quais os ficheiros e depois move-os para a **lixeira do sistema**, onde o sistema operacional os pode restaurar. O ChatOffice não guarda nenhum desfazer próprio para isto — a recuperação é responsabilidade da lixeira, não de um aviso.
+- **⋯ ▸ Excluir** no Início: pergunta quais os ficheiros e depois move-os para a **lixeira do sistema**, onde o sistema operacional os pode restaurar. O ChaOffice não guarda nenhum desfazer próprio para isto — a recuperação é responsabilidade da lixeira, não de um aviso.
 
 ## Duplicar
 

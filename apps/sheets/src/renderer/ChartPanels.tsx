@@ -1,11 +1,11 @@
 import { useState } from 'react'
 
-import { Dropdown } from '@chatoffice/ui'
+import { Dropdown } from '@chaoffice/ui'
 
 import {
   transposeChartSeries,
   type ChartVisualState,
-} from '@chatoffice/xlsx-gateway/domain/chart-visual'
+} from '@chaoffice/xlsx-gateway/domain/chart-visual'
 import { ColorDropdown } from './ColorDropdown'
 import { useI18n, type StringKey, type TFunc } from './i18n/locale'
 import type { ChartEditData, ChartElementRef, ChartVectorRead } from './WorkbookVisuals'

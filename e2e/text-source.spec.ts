@@ -17,7 +17,7 @@ const BOM = '\uFEFF'
 const ORIGINAL_TEXT = `${BOM}first line\r\nsecond line`
 test.describe('source text files', () => {
   test('a .txt picked on Home opens as source and saves back byte-identical', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'chatoffice-txt-home-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chaoffice-txt-home-'))
     const txtPath = join(dir, 'notes.txt')
     await writeFile(txtPath, Buffer.from(ORIGINAL_TEXT, 'utf8'))
 
@@ -57,7 +57,7 @@ test.describe('source text files', () => {
   })
 
   test('editing a BOM + CRLF .txt keeps the BOM, the CRLF and the missing trailing newline', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'chatoffice-txt-roundtrip-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chaoffice-txt-roundtrip-'))
     const txtPath = join(dir, 'notes.txt')
     await writeFile(txtPath, Buffer.from(ORIGINAL_TEXT, 'utf8'))
 

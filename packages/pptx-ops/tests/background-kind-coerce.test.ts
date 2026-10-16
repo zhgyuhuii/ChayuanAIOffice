@@ -5,7 +5,7 @@
  * whole atomic batch; with nothing inferrable the guided error fires unchanged.
  */
 import { describe, it, expect, beforeAll } from 'vitest'
-import { createBlankPptx, openPptx, type OpenedPptx } from '@chatoffice/pptx-engine'
+import { createBlankPptx, openPptx, type OpenedPptx } from '@chaoffice/pptx-engine'
 import { runTxn } from '../src/ops/executor'
 import '../src/ops/index'
 

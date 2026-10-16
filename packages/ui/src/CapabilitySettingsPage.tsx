@@ -24,9 +24,9 @@ import {
   type AiProviderProfile,
   type AiSettingsV2,
   type SearchPlatformMeta,
-} from '@chatoffice/ai-provider/browser'
+} from '@chaoffice/ai-provider/browser'
 import type { ModelSettingsBridge } from './ModelSettingsPage'
-import type { AiSearchSettings } from '@chatoffice/ai-provider/browser'
+import type { AiSearchSettings } from '@chaoffice/ai-provider/browser'
 import { capabilitySettingsStrings, fmtCapability } from './capability-settings-strings'
 import { VendorLogo } from './VendorLogo'
 import './capability-settings.css'

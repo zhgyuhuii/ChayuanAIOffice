@@ -1,4 +1,4 @@
-import type { AgentMessage, AgentToolDef } from '@chatoffice/agent-core'
+import type { AgentMessage, AgentToolDef } from '@chaoffice/agent-core'
 import { withOutputCapFallback } from './output-cap'
 import { streamAnthropic } from './protocols/anthropic'
 import { streamGemini } from './protocols/gemini'

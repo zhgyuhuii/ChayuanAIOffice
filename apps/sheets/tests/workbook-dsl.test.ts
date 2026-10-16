@@ -5,13 +5,13 @@ import {
   structuralOpLabel,
   workbookCommandBatchSchema,
   workbookOperationSchema,
-} from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
+} from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
 import {
   columnIndex,
   columnLabel,
   parseRange,
   rangeCellCount,
-} from '@chatoffice/xlsx-gateway/domain/cell-address'
+} from '@chaoffice/xlsx-gateway/domain/cell-address'
 
 describe('cell-address helpers', () => {
   it('round-trips column labels', () => {

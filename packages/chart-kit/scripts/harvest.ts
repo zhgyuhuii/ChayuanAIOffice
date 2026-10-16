@@ -7,7 +7,7 @@
  *     → 能捕获 option 的收录 → data/examples.json + data/coverage.json
  * 每组保底(Q8):官方示例全灭的组注入 chartkit 基础模板(src/examples/baselines.ts)。
  *
- * 运行:npm run harvest -w @chatoffice/chart-kit [-- --examples-dir <dir>]
+ * 运行:npm run harvest -w @chaoffice/chart-kit [-- --examples-dir <dir>]
  */
 
 import fs from 'node:fs'

@@ -1,4 +1,4 @@
-import type { NewImage } from '@chatoffice/docx-engine'
+import type { NewImage } from '@chaoffice/docx-engine'
 import { MERMAID_LANGUAGE, renderMermaid } from './mermaid'
 import { WAVEDROM_LANGUAGE, renderWavedrom } from './wavedrom'
 

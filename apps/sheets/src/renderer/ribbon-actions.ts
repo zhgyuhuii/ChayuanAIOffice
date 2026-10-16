@@ -18,15 +18,15 @@ import { IRenderManagerService, SHEET_VIEWPORT_KEY } from '@univerjs/engine-rend
 import { ISheetClipboardService, SheetSkeletonManagerService } from '@univerjs/preset-sheets-core'
 import { CFNumberOperator, CFValueType } from '@univerjs/preset-sheets-conditional-formatting'
 import type { IIconSetType } from '@univerjs/sheets-conditional-formatting'
-import { columnLabel, formatAddress } from '@chatoffice/xlsx-gateway/domain/cell-address'
-import type { WorkbookOperation } from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
-import type { ApplyOutcome } from '@chatoffice/xlsx-gateway/domain/workbook.types'
+import { columnLabel, formatAddress } from '@chaoffice/xlsx-gateway/domain/cell-address'
+import type { WorkbookOperation } from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
+import type { ApplyOutcome } from '@chaoffice/xlsx-gateway/domain/workbook.types'
 import { SET_ROW_IS_AUTO_HEIGHT_COMMAND } from './autofit-multi-row'
 import { CELL_HIDDEN_KEY, CELL_LOCKED_KEY, effectiveSheetProtection } from './sheet-protection'
 import { fullColumnSpans, fullRowSpans } from './autofit-selection'
 import { nextSheetName } from './op-executor'
-import { transposeChartSeries, type ChartSeriesVisualState } from '@chatoffice/xlsx-gateway/domain/chart-visual'
-import { applyFlashFillTemplate, inferFlashFillTemplate } from '@chatoffice/xlsx-gateway/domain/flash-fill'
+import { transposeChartSeries, type ChartSeriesVisualState } from '@chaoffice/xlsx-gateway/domain/chart-visual'
+import { applyFlashFillTemplate, inferFlashFillTemplate } from '@chaoffice/xlsx-gateway/domain/flash-fill'
 import { csvSheetById, serializeActiveSheetCsv } from './csv-export'
 import { parseTsv, plainTextFromCells } from './clipboard-tsv'
 import { boundingRange, renderRangeToPng } from './range-image'
@@ -35,7 +35,7 @@ import type {
   WorkbookStyleEdit,
   WorkbookVisualObject,
 } from '../shared/desktop-api'
-import type { CellFormatPatch } from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
+import type { CellFormatPatch } from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
 import {
   CELL_STYLE_PRESETS,
   CHART_LABEL_COMMANDS,

@@ -3,7 +3,7 @@
  * format, fill/stroke, background, theme, table style, and chart edits.
  * Functions read the latest App state through ActionCtx.
  */
-import type { ShapeRenderNode } from '@chatoffice/pptx-render'
+import type { ShapeRenderNode } from '@chaoffice/pptx-render'
 import type {
   EditBackgroundOp,
   EditChartOp,
@@ -11,7 +11,7 @@ import type {
   EditTableStyleOp,
   GradientFillSpec,
 } from '../shared/ipc'
-import type { FontSizeStep } from '@chatoffice/pptx-ops/font-size'
+import type { FontSizeStep } from '@chaoffice/pptx-ops/font-size'
 import type { ActionCtx } from './action-context'
 import { FIT_WIDTH } from './app-constants'
 import {

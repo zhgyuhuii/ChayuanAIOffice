@@ -1,7 +1,7 @@
 // model-complete — one-shot non-streaming completion for docops services
 // (declassify keyword extraction). Reuses the AI panel's IPC transport and the
 // current model selection, so provider routing/settings behave identically.
-import { streamText } from '@chatoffice/agent-core'
+import { streamText } from '@chaoffice/agent-core'
 import { createElectronTransport } from '../ai/transport'
 import type { AiModelSelection } from '../../shared/ipc'
 

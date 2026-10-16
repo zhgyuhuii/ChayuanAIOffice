@@ -6,7 +6,7 @@ import { defineConfig, type Plugin } from 'vite'
 
 const repoRoot = fileURLToPath(new URL('../../', import.meta.url))
 const distWeb = join(repoRoot, 'dist', 'web')
-const bff = process.env.CHATOFFICE_BFF_URL ?? 'http://localhost:52587'
+const bff = process.env.CHAOFFICE_BFF_URL ?? 'http://localhost:52587'
 
 const MIME: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
@@ -38,7 +38,7 @@ const MIME: Record<string, string> = {
  */
 function devEditorAssets(): Plugin {
   return {
-    name: 'chatoffice-dev-editor-assets',
+    name: 'chaoffice-dev-editor-assets',
     configureServer(server) {
       if (!existsSync(join(distWeb, 'editors'))) {
         server.config.logger.warn(
@@ -76,7 +76,7 @@ function devEditorAssets(): Plugin {
 export default defineConfig({
   plugins: [react(), devEditorAssets()],
   // The host runs on 5180 in dev (editors 5173–5177 as standalone dev servers,
-  // BFF 8787 — proxied here so the page stays single-origin). CHATOFFICE_BFF_URL
+  // BFF 8787 — proxied here so the page stays single-origin). CHAOFFICE_BFF_URL
   // overrides the target when 8787 is held by something else (e.g. the legacy
   // docker stack) and the BFF runs on another port.
   server: {

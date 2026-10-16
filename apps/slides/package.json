@@ -1,5 +1,5 @@
 {
-  "name": "@chatoffice/slides",
+  "name": "@chaoffice/slides",
   "productName": "ChaOffice Slides",
   "version": "0.1.0",
   "license": "Apache-2.0",
@@ -18,17 +18,17 @@
     "dist:dir": "electron-vite build && electron-builder --dir"
   },
   "devDependencies": {
-    "@chatoffice/agent-core": "*",
-    "@chatoffice/ai-provider": "*",
-    "@chatoffice/ai-search": "*",
-    "@chatoffice/file-parse": "*",
-    "@chatoffice/i18n": "*",
-    "@chatoffice/pptx-engine": "*",
-    "@chatoffice/pptx-ops": "*",
-    "@chatoffice/pipelines": "*",
-    "@chatoffice/pptx-render": "*",
-    "@chatoffice/project-store": "*",
-    "@chatoffice/ui": "*",
+    "@chaoffice/agent-core": "*",
+    "@chaoffice/ai-provider": "*",
+    "@chaoffice/ai-search": "*",
+    "@chaoffice/file-parse": "*",
+    "@chaoffice/i18n": "*",
+    "@chaoffice/pptx-engine": "*",
+    "@chaoffice/pptx-ops": "*",
+    "@chaoffice/pipelines": "*",
+    "@chaoffice/pptx-render": "*",
+    "@chaoffice/project-store": "*",
+    "@chaoffice/ui": "*",
     "@types/opentype.js": "^1.3.8",
     "@types/pngjs": "^6.0.5",
     "@types/react": "^19.2.14",
@@ -49,7 +49,7 @@
   },
   "author": "ChaOffice",
   "build": {
-    "appId": "com.chatoffice.slides",
+    "appId": "com.chaoffice.slides",
     "productName": "ChaOffice Slides",
     "electronVersion": "43.3.0",
     "directories": {
@@ -89,12 +89,12 @@
     }
   },
   "dependencies": {
-    "@chatoffice/electron-utils": "*",
-    "@chatoffice/ribbon": "*",
+    "@chaoffice/electron-utils": "*",
+    "@chaoffice/ribbon": "*",
     "acorn": "^8.18.0",
     "harfbuzzjs": "^1.4.0",
     "pngjs": "^7.0.0",
     "utif2": "^4.1.0",
-    "@chatoffice/agent-core": "*"
+    "@chaoffice/agent-core": "*"
   }
 }

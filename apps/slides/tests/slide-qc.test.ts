@@ -4,7 +4,7 @@
  *  - createSlideFixSkill: tool allowlist wraps the full slides skill without losing the executor
  */
 import { describe, it, expect } from 'vitest'
-import type { AgentStreamRequest, AgentTransport } from '@chatoffice/agent-core'
+import type { AgentStreamRequest, AgentTransport } from '@chaoffice/agent-core'
 import {
   generatedPageRange,
   mergeQcPages,
@@ -14,7 +14,7 @@ import {
   qcSlidePage,
   settingsSupportVision,
 } from '../src/renderer/ai/slide-qc'
-import type { AiSettingsV2 } from '@chatoffice/ai-provider'
+import type { AiSettingsV2 } from '@chaoffice/ai-provider'
 import type { DeckAccess } from '../src/renderer/ai/slides-skill'
 
 const access: DeckAccess = {

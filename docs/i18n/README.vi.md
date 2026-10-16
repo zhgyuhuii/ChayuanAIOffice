@@ -13,10 +13,10 @@
 Tệp Word, Excel, PowerPoint và PDF do bạn và AI của bạn cùng chỉnh sửa, được lưu lại đúng định dạng gốc.</p>
 
 <p align="center">
-  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/genspark-ai/chatoffice" alt="License: Apache-2.0"></a>
-  <a href="https://github.com/genspark-ai/chatoffice/releases/latest"><img src="https://img.shields.io/github/v/release/genspark-ai/chatoffice" alt="Latest release"></a>
-  <a href="https://github.com/genspark-ai/chatoffice/releases"><img src="https://img.shields.io/github/downloads/genspark-ai/chatoffice/total" alt="Downloads"></a>
-  <a href="https://github.com/genspark-ai/chatoffice/stargazers"><img src="https://img.shields.io/github/stars/genspark-ai/chatoffice?style=flat" alt="GitHub stars"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/genspark-ai/chaoffice" alt="License: Apache-2.0"></a>
+  <a href="https://github.com/genspark-ai/chaoffice/releases/latest"><img src="https://img.shields.io/github/v/release/genspark-ai/chaoffice" alt="Latest release"></a>
+  <a href="https://github.com/genspark-ai/chaoffice/releases"><img src="https://img.shields.io/github/downloads/genspark-ai/chaoffice/total" alt="Downloads"></a>
+  <a href="https://github.com/genspark-ai/chaoffice/stargazers"><img src="https://img.shields.io/github/stars/genspark-ai/chaoffice?style=flat" alt="GitHub stars"></a>
   <a href="https://x.com/merrickbuilds"><img src="https://img.shields.io/badge/follow-%40merrickbuilds-000000?logo=x&logoColor=white" alt="Follow @merrickbuilds on X"></a>
 </p>
 
@@ -70,9 +70,9 @@ soạn thảo đọc tệp, thực hiện thay đổi, và chỉ cho bạn chín
   chuyển đổi, đọc và chỉnh sửa tệp Office thật ngay trên máy của bạn mà
   không cần mở cửa sổ nào.
 
-**Tải ngay:** [macOS](https://github.com/genspark-ai/chatoffice/releases/latest) (Apple Silicon và Intel) ·
-[Windows](https://github.com/genspark-ai/chatoffice/releases/latest) (x64 và Arm) ·
-[Linux](https://github.com/genspark-ai/chatoffice/releases/latest) (deb, rpm, AppImage) —
+**Tải ngay:** [macOS](https://github.com/genspark-ai/chaoffice/releases/latest) (Apple Silicon và Intel) ·
+[Windows](https://github.com/genspark-ai/chaoffice/releases/latest) (x64 và Arm) ·
+[Linux](https://github.com/genspark-ai/chaoffice/releases/latest) (deb, rpm, AppImage) —
 chi tiết và yêu cầu hệ thống xem mục [Tải xuống](#download).
 
 ## Demo
@@ -287,7 +287,7 @@ khi <code>genoffice create</code> lắp <code>.pptx</code> và
 <td><b>Cài một lần, từ Settings → Integrations</b> — ChaAI Office liệt kê các
 agent lập trình tìm thấy trên máy này và ghi skill vào mỗi agent bạn chọn.
 Hoặc tải skill dưới dạng zip, hoặc chạy <code>npx skills add
-genspark-ai/chatoffice</code>. Các lệnh và toàn bộ quy trình nằm ở
+genspark-ai/chaoffice</code>. Các lệnh và toàn bộ quy trình nằm ở
 <a href="#command-line-and-agent-skill">Dòng lệnh và agent skill</a>.</td>
 </tr>
 </table>
@@ -410,7 +410,7 @@ OpenCode và Windsurf ngay từ đầu, bất kỳ agent nào đọc được sk
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Settings → Integrations** trong ứng dụng | Liệt kê các agent tìm thấy trên máy này; một cú bấm ghi skill vào từng agent bạn chọn. Nút **Update** xuất hiện khi một bản phát hành ChaAI Office mang skill mới hơn. |
 | **Download as zip** trên cùng trang        | Đúng cấu trúc claude.ai, ứng dụng Claude desktop và các trợ lý khác chấp nhận như skill tải lên.                                                                    |
-| `npx skills add genspark-ai/chatoffice`     | Cài từ kho lưu trữ này vào bất kỳ agent tương thích skills nào.                                                                                                     |
+| `npx skills add genspark-ai/chaoffice`     | Cài từ kho lưu trữ này vào bất kỳ agent tương thích skills nào.                                                                                                     |
 
 Sau đó mở một cuộc trò chuyện mới và yêu cầu một tài liệu. Skill dạy agent
 khi nào nên dùng tới `genoffice`, cách đọc tệp trước khi sửa, và cách tự
@@ -538,17 +538,17 @@ hình trong ChaAI Office.
 
 | Nền tảng                             | Yêu cầu                                               | Tải xuống                                                                                   |
 | ------------------------------------ | ----------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [`.dmg` mới nhất (arm64)](https://github.com/genspark-ai/chatoffice/releases/latest)         |
-| **macOS** — Intel (x64)              | macOS 11+                                             | [`.dmg` mới nhất (x64)](https://github.com/genspark-ai/chatoffice/releases/latest)           |
-| **Windows** (x64, đa số máy tính)    | Windows 10+, Intel/AMD                                | [Trình cài `-x64.exe` mới nhất](https://github.com/genspark-ai/chatoffice/releases/latest)   |
-| **Windows** on Arm (ARM64)           | Windows 11 on Arm (Snapdragon X và tương tự)          | [Trình cài `-arm64.exe` mới nhất](https://github.com/genspark-ai/chatoffice/releases/latest) |
-| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 trở lên)            | [`.deb` mới nhất](https://github.com/genspark-ai/chatoffice/releases/latest)                 |
-| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [`.rpm` mới nhất](https://github.com/genspark-ai/chatoffice/releases/latest)                 |
-| **Linux** — các bản phân phối khác   | x86_64, glibc 2.34+, FUSE 2                           | [`.AppImage` mới nhất](https://github.com/genspark-ai/chatoffice/releases/latest)            |
+| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [`.dmg` mới nhất (arm64)](https://github.com/genspark-ai/chaoffice/releases/latest)         |
+| **macOS** — Intel (x64)              | macOS 11+                                             | [`.dmg` mới nhất (x64)](https://github.com/genspark-ai/chaoffice/releases/latest)           |
+| **Windows** (x64, đa số máy tính)    | Windows 10+, Intel/AMD                                | [Trình cài `-x64.exe` mới nhất](https://github.com/genspark-ai/chaoffice/releases/latest)   |
+| **Windows** on Arm (ARM64)           | Windows 11 on Arm (Snapdragon X và tương tự)          | [Trình cài `-arm64.exe` mới nhất](https://github.com/genspark-ai/chaoffice/releases/latest) |
+| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 trở lên)            | [`.deb` mới nhất](https://github.com/genspark-ai/chaoffice/releases/latest)                 |
+| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [`.rpm` mới nhất](https://github.com/genspark-ai/chaoffice/releases/latest)                 |
+| **Linux** — các bản phân phối khác   | x86_64, glibc 2.34+, FUSE 2                           | [`.AppImage` mới nhất](https://github.com/genspark-ai/chaoffice/releases/latest)            |
 
 Mọi bản dựng đều đến từ `main`; trình cài macOS và Windows có ký số. Các
 phiên bản cũ nằm trên trang
-[Releases](https://github.com/genspark-ai/chatoffice/releases).
+[Releases](https://github.com/genspark-ai/chaoffice/releases).
 
 <details>
 <summary><b>Cài trên Linux</b></summary>
@@ -614,7 +614,7 @@ npm run dist:linux   # package Linux AppImage + deb + rpm
 ```
 
 Ứng dụng sheets cần thêm một toolchain Rust cho xlsx sidecar của nó
-(`cargo` trên PATH); `npm run build -w @chatoffice/sheets` tự biên dịch nó.
+(`cargo` trên PATH); `npm run build -w @chaoffice/sheets` tự biên dịch nó.
 Xem [CONTRIBUTING.md](../../CONTRIBUTING.md) để biết các kiểm tra mọi thay
 đổi phải qua và cách pull request được hợp nhất.
 
@@ -623,7 +623,7 @@ Xem [CONTRIBUTING.md](../../CONTRIBUTING.md) để biết các kiểm tra mọi 
 ChaAI Office đang được phát triển liên tục và phản hồi của bạn định hình nó.
 
 - **Báo lỗi hoặc đề xuất tính năng** trong
-  [GitHub Issues](https://github.com/genspark-ai/chatoffice/issues).
+  [GitHub Issues](https://github.com/genspark-ai/chaoffice/issues).
 - **Tham gia trò chuyện nhóm ChaAI Office** trên
   [GenTeam](https://genoffice.ai/join) để nói chuyện với đội ngũ và những
   người dùng khác.

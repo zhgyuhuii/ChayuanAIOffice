@@ -27,7 +27,7 @@ import {
   toSaveVisualEdits,
 } from './edit-journal'
 import { activeCsvSheet, handleExportCsv, serializeActiveSheetCsv } from './csv-export'
-import type { CellState } from '@chatoffice/xlsx-gateway/domain/workbook.types'
+import type { CellState } from '@chaoffice/xlsx-gateway/domain/workbook.types'
 import { verifiedFormulaValues } from './formula-values'
 import { t } from './i18n/locale'
 import { noteBackgroundFlushOutcome } from './flush-health'

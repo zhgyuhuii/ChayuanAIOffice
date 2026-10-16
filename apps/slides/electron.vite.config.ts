@@ -9,44 +9,44 @@ const here = dirname(fileURLToPath(import.meta.url))
 // avoids bundling stale implementations when node_modules links point elsewhere)
 const workspaceAlias = {
   // Subpath before the bare name: string aliases are prefix replacements
-  '@chatoffice/pptx-engine/table-grid': resolve(
+  '@chaoffice/pptx-engine/table-grid': resolve(
     here,
     '../../packages/pptx-engine/src/table-grid.ts',
   ),
-  '@chatoffice/pptx-engine/identity': resolve(here, '../../packages/pptx-engine/src/identity.ts'),
-  '@chatoffice/pptx-engine/named-action': resolve(
+  '@chaoffice/pptx-engine/identity': resolve(here, '../../packages/pptx-engine/src/identity.ts'),
+  '@chaoffice/pptx-engine/named-action': resolve(
     here,
     '../../packages/pptx-engine/src/named-action.ts',
   ),
-  '@chatoffice/pptx-engine/custgeom': resolve(here, '../../packages/pptx-engine/src/custgeom.ts'),
-  '@chatoffice/pptx-engine/background-promote': resolve(
+  '@chaoffice/pptx-engine/custgeom': resolve(here, '../../packages/pptx-engine/src/custgeom.ts'),
+  '@chaoffice/pptx-engine/background-promote': resolve(
     here,
     '../../packages/pptx-engine/src/background-promote.ts',
   ),
-  '@chatoffice/pptx-engine': resolve(here, '../../packages/pptx-engine/src/index.ts'),
-  '@chatoffice/pptx-ops/op-docs': resolve(here, '../../packages/pptx-ops/src/op-docs.ts'),
-  '@chatoffice/pptx-ops/font-size': resolve(here, '../../packages/pptx-ops/src/font-size.ts'),
-  '@chatoffice/pptx-ops': resolve(here, '../../packages/pptx-ops/src/index.ts'),
-  '@chatoffice/pptx-render/preset-geometry': resolve(
+  '@chaoffice/pptx-engine': resolve(here, '../../packages/pptx-engine/src/index.ts'),
+  '@chaoffice/pptx-ops/op-docs': resolve(here, '../../packages/pptx-ops/src/op-docs.ts'),
+  '@chaoffice/pptx-ops/font-size': resolve(here, '../../packages/pptx-ops/src/font-size.ts'),
+  '@chaoffice/pptx-ops': resolve(here, '../../packages/pptx-ops/src/index.ts'),
+  '@chaoffice/pptx-render/preset-geometry': resolve(
     here,
     '../../packages/pptx-render/src/preset-geometry.ts',
   ),
-  '@chatoffice/pptx-render': resolve(here, '../../packages/pptx-render/src/index.ts'),
-  '@chatoffice/pipelines/slides/cover-crop': resolve(
+  '@chaoffice/pptx-render': resolve(here, '../../packages/pptx-render/src/index.ts'),
+  '@chaoffice/pipelines/slides/cover-crop': resolve(
     here,
     '../../packages/pipelines/src/slides/cover-crop.ts',
   ),
-  '@chatoffice/pipelines/slides/layout-audit': resolve(
+  '@chaoffice/pipelines/slides/layout-audit': resolve(
     here,
     '../../packages/pipelines/src/slides/layout-audit.ts',
   ),
-  '@chatoffice/pipelines/slides': resolve(here, '../../packages/pipelines/src/slides/index.ts'),
+  '@chaoffice/pipelines/slides': resolve(here, '../../packages/pipelines/src/slides/index.ts'),
   // Metafile (EMF/WMF) rasterizer shared with the docs engine (renderer-only: needs canvas)
-  '@chatoffice/docx-engine/metafile': resolve(here, '../../packages/docx-engine/src/metafile.ts'),
+  '@chaoffice/docx-engine/metafile': resolve(here, '../../packages/docx-engine/src/metafile.ts'),
 }
 
 export default defineConfig({
-  // Main process/preload must bundle @chatoffice/* sources (they are pulled in as TS
+  // Main process/preload must bundle @chaoffice/* sources (they are pulled in as TS
   // source with extensionless relative imports; externalizing them under Node
   // yields ERR_MODULE_NOT_FOUND).
   main: {
@@ -55,13 +55,13 @@ export default defineConfig({
     plugins: [
       externalizeDepsPlugin({
         exclude: [
-          '@chatoffice/pptx-engine',
-          '@chatoffice/pptx-ops',
-          '@chatoffice/pptx-render',
-          '@chatoffice/pipelines',
-          '@chatoffice/ai-search',
-          '@chatoffice/file-parse',
-          '@chatoffice/electron-utils',
+          '@chaoffice/pptx-engine',
+          '@chaoffice/pptx-ops',
+          '@chaoffice/pptx-render',
+          '@chaoffice/pipelines',
+          '@chaoffice/ai-search',
+          '@chaoffice/file-parse',
+          '@chaoffice/electron-utils',
           'opentype.js',
         ],
       }),
@@ -69,7 +69,7 @@ export default defineConfig({
   },
   preload: {
     // electron-utils ships raw TS source — must be bundled, not left external
-    plugins: [externalizeDepsPlugin({ exclude: ['@chatoffice/electron-utils'] })],
+    plugins: [externalizeDepsPlugin({ exclude: ['@chaoffice/electron-utils'] })],
   },
   renderer: {
     resolve: { alias: workspaceAlias },

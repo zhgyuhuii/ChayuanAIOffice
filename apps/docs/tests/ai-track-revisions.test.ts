@@ -6,7 +6,7 @@ import {
   buildBlankDocx,
   parseDocx,
   saveDocx,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { blocksToPmDoc, pmDocToSavePlan, type PmNode } from '../src/renderer/editor/convert'
 import { applyRevisionsBy, collectRevisions } from '../src/renderer/editor/revisions'
 import { executeTool } from '../src/renderer/ai/tools'

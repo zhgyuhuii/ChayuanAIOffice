@@ -6,7 +6,7 @@ import {
   parseDocx,
   saveDocx,
   type SaveBlock,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 
 /**
  * M0 de-risking spike: the whole docx generation recipe

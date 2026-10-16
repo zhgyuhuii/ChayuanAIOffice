@@ -4,8 +4,8 @@ import {
   applyPlanToXlsx,
   inventoryXlsx,
   readBasicWorkbook,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
-import type { ChangePlan } from '@chatoffice/xlsx-gateway/domain/workbook.types'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
+import type { ChangePlan } from '@chaoffice/xlsx-gateway/domain/workbook.types'
 import { buildCompatibilityFixture } from './fixture-builder'
 
 describe('XLSX preservation gateway', () => {

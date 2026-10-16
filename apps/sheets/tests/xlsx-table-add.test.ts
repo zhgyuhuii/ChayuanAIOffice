@@ -4,8 +4,8 @@ import { describe, expect, it } from 'vitest'
 import {
   createBufferEntrySource,
   planCellEditsToXlsx,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
-import type { SheetTableAddition } from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
+import type { SheetTableAddition } from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
 import { buildEditFixture, buildStructureFixture } from './fixture-builder'
 
 function tableAddition(overrides: Partial<SheetTableAddition> = {}): SheetTableAddition {

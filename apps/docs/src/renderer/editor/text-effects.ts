@@ -1,4 +1,4 @@
-import type { TextEffect, TextGlow } from '@chatoffice/docx-engine'
+import type { TextEffect, TextGlow } from '@chaoffice/docx-engine'
 
 const TEXT_EFFECTS: ReadonlySet<string> = new Set(['outline', 'emboss', 'imprint', 'shadow'])
 

@@ -22,7 +22,7 @@ const CONFIG = {
   bucket: 'docs',
   accessKeyId: 'AK',
   secretAccessKey: 'SK',
-  prefix: 'chatoffice/',
+  prefix: 'chaoffice/',
   pathStyle: true,
   enabled: true,
 }
@@ -65,7 +65,7 @@ function fakeClient(): RemoteStorageClient {
 
 /** Wires host + client through in-memory transports, like ipcMain/ipcRenderer would. */
 function wiredPair() {
-  const root = mkdtempSync(join(tmpdir(), 'chatoffice-remote-ipc-'))
+  const root = mkdtempSync(join(tmpdir(), 'chaoffice-remote-ipc-'))
   roots.push(root)
   const remote = fakeClient()
   const channels = new Map<
@@ -88,10 +88,10 @@ function wiredPair() {
         indexDir: join(root, 'remote-index'),
         clientFactory: () => remote,
         env: {
-          CHATOFFICE_STORAGE_ENDPOINT: 'http://127.0.0.1:9000',
-          CHATOFFICE_STORAGE_BUCKET: 'docs',
-          CHATOFFICE_STORAGE_ACCESS_KEY_ID: 'AK',
-          CHATOFFICE_STORAGE_SECRET_ACCESS_KEY: 'SK',
+          CHAOFFICE_STORAGE_ENDPOINT: 'http://127.0.0.1:9000',
+          CHAOFFICE_STORAGE_BUCKET: 'docs',
+          CHAOFFICE_STORAGE_ACCESS_KEY_ID: 'AK',
+          CHAOFFICE_STORAGE_SECRET_ACCESS_KEY: 'SK',
         },
       }),
       queue: createPendingSyncQueue({ dir: join(root, 'queue'), resolveClient: () => remote }),
@@ -125,16 +125,16 @@ describe('remote files IPC bridge', () => {
 
     const put = await client.uploadObject(
       'cfg-1',
-      'chatoffice/a.docx',
+      'chaoffice/a.docx',
       Buffer.from('bytes').toString('base64'),
     )
     expect(put.etag).toBe('e-1')
-    const read = await client.readObject('cfg-1', 'chatoffice/a.docx')
+    const read = await client.readObject('cfg-1', 'chaoffice/a.docx')
     expect(Buffer.from(read.base64, 'base64').toString()).toBe('bytes')
 
     await client.queueEnqueue(
       'cfg-1',
-      'chatoffice/a.docx',
+      'chaoffice/a.docx',
       Buffer.from('queued').toString('base64'),
       null,
     )
@@ -143,7 +143,7 @@ describe('remote files IPC bridge', () => {
     expect(outcomes[0].outcome).toBe('synced')
     expect(await client.queueStatus()).toHaveLength(0)
 
-    await client.queueDiscard('cfg-1', 'chatoffice/never.docx')
+    await client.queueDiscard('cfg-1', 'chaoffice/never.docx')
     expect((await client.testConnection(CONFIG)).versioningEnabled).toBe(true)
   })
 

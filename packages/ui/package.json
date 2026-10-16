@@ -1,5 +1,5 @@
 {
-  "name": "@chatoffice/ui",
+  "name": "@chaoffice/ui",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -51,9 +51,9 @@
     "vitest": "^4.1.11"
   },
   "dependencies": {
-    "@chatoffice/agent-core": "*",
-    "@chatoffice/ai-provider": "*",
-    "@chatoffice/i18n": "*",
-    "@chatoffice/pptx-render": "*"
+    "@chaoffice/agent-core": "*",
+    "@chaoffice/ai-provider": "*",
+    "@chaoffice/i18n": "*",
+    "@chaoffice/pptx-render": "*"
   }
 }

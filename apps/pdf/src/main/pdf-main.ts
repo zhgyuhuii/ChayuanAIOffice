@@ -35,17 +35,17 @@ import {
   installRendererProtocol,
   registerRendererScheme,
   rendererUrl,
-} from '@chatoffice/electron-utils'
-import { createI18n, getUiLang } from '@chatoffice/i18n'
-import { hasChaOfficeAuth } from '@chatoffice/ai-search'
+} from '@chaoffice/electron-utils'
+import { createI18n, getUiLang } from '@chaoffice/i18n'
+import { hasChaOfficeAuth } from '@chaoffice/ai-search'
 import {
   registerFetchImageIpc,
   registerMediaIpc,
   createByokImageHandler,
   registerSharedKbIpc,
-} from '@chatoffice/ai-host'
+} from '@chaoffice/ai-host'
 import { PDF_CHANNELS } from '../shared/ipc'
-import { printJobOptions } from '@chatoffice/electron-utils/print-job'
+import { printJobOptions } from '@chaoffice/electron-utils/print-job'
 import { buildExportImagePaths, hasValidExportPageNumbers } from './export-images'
 import type {
   ExportImagesRequest,
@@ -1243,7 +1243,7 @@ function byokGenerateImage(req: { prompt: string; aspectRatio?: string }) {
         }
       },
     },
-    chatoffice: {
+    chaoffice: {
       apiKey: () => '',
       hasAuth: () => hasChaOfficeAuth(),
       status: async () => ({ loggedIn: hasChaOfficeAuth() }),
@@ -2186,7 +2186,7 @@ export function createPdfView(openPath?: string | null): WebContentsView {
   return view
 }
 
-/** Standalone window mode: `npm run dev -w @chatoffice/pdf`, pdf path passed via argv */
+/** Standalone window mode: `npm run dev -w @chaoffice/pdf`, pdf path passed via argv */
 export function startPdfStandalone(): void {
   registerRendererScheme()
   installNavigationGuard(app)

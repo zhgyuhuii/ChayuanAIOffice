@@ -1,8 +1,8 @@
-import type { AgentMessage, AgentToolCall, AgentToolDef } from '@chatoffice/agent-core'
+import type { AgentMessage, AgentToolCall, AgentToolDef } from '@chaoffice/agent-core'
 import type { AiModelType } from './model-type'
 
 export type AiProviderId =
-  | 'chatoffice'
+  | 'chaoffice'
   | 'codex'
   | 'anthropic'
   | 'gemini'
@@ -59,18 +59,18 @@ export interface AiModelSelection {
 }
 
 export interface AiProviderProfile {
-  /** unique within the settings file; 'chatoffice' is the fixed login-backed profile */
+  /** unique within the settings file; 'chaoffice' is the fixed login-backed profile */
   id: string
   /** link into the vendor catalog (defaults, logo, key console page); absent for ad-hoc custom profiles */
   vendorId?: string
   displayName: string
   protocol: AiWireProtocol
   baseUrl: string
-  /** inline secret (desktop local file / docker server file); empty for chatoffice-login or ref-backed profiles */
+  /** inline secret (desktop local file / docker server file); empty for chaoffice-login or ref-backed profiles */
   apiKey?: string
   /** backend-resolved credential ref (harness settings source writes refs, not secrets) */
   apiKeyRef?: string
-  auth: 'api-key' | 'chatoffice-login'
+  auth: 'api-key' | 'chaoffice-login'
   /** endpoint accepts an empty key (ollama-like local runtimes) */
   ollamaLike?: boolean
   enabled: boolean
@@ -128,7 +128,7 @@ export interface AiStreamRequestV2 {
   signal?: AbortSignal
 }
 
-/** ChaOffice account status (chatoffice login state; the sole auth source for AI features) */
+/** ChaOffice account status (chaoffice login state; the sole auth source for AI features) */
 export interface ChaOfficeAccountStatus {
   loggedIn: boolean
   email?: string
@@ -264,7 +264,7 @@ export interface AiProviderMeta {
 
 /** Image generation / media analysis backends (separate from the chat provider) */
 export type AiMediaProviderId =
-  | 'chatoffice'
+  | 'chaoffice'
   | 'openai'
   | 'gemini'
   | 'doubao'

@@ -23,7 +23,7 @@ Light / Dark / System. System follows the OS appearance, and the editors re-skin
 - **AI sidebar position** (left or right), **AI panel text size**, and **Spell check in AI chat**.
 - **Open the AI panel in new documents** — off, a new document starts with the panel collapsed and one click away.
 - **Auto-save all documents** turns AutoSave on by default in every editor; you can still switch it off for one window.
-- **Save Location** with a **Change** button, and **Default app for Office documents** to claim .docx / .xlsx / .pptx for ChatOffice.
+- **Save Location** with a **Change** button, and **Default app for Office documents** to claim .docx / .xlsx / .pptx for ChaOffice.
 
 ## AI Media & Search
 
@@ -39,7 +39,7 @@ Not switches — each capability picks the vendor that serves it, and a vendor's
 
 ## Default app bindings
 
-Settings can register ChatOffice as the handler for .docx / .xlsx / .pptx / .pdf and friends (platform-level default-app registration; confirm when prompted).
+Settings can register ChaOffice as the handler for .docx / .xlsx / .pptx / .pdf and friends (platform-level default-app registration; confirm when prompted).
 
 ## Third-party notices and updates
 
@@ -48,13 +48,13 @@ Settings can register ChatOffice as the handler for .docx / .xlsx / .pptx / .pdf
 
 ## Genspark sign-in
 
-- The sign-in entry (settings or the cloud project list) uses a **device-code** flow: ChatOffice shows a code and opens the browser login; it continues automatically once done.
+- The sign-in entry (settings or the cloud project list) uses a **device-code** flow: ChaOffice shows a code and opens the browser login; it continues automatically once done.
 - Sign-in is used only for: the cloud project list and Genspark's hosted models. Without it, every local feature and custom models keep working.
 - Sign out is one click in settings.
 
 ## MCP integration (for advanced users / AI clients)
 
-**Integrations** is the pane that connects ChatOffice to a coding agent, and it has its own article: Connecting a coding agent. The short version — pick a route (the command line, or MCP), follow that section, then start a new chat and ask.
+**Integrations** is the pane that connects ChaOffice to a coding agent, and it has its own article: Connecting a coding agent. The short version — pick a route (the command line, or MCP), follow that section, then start a new chat and ask.
 
 ![Settings ▸ Integrations: the three steps, then the skill rows and the MCP options](img/settings-integrations.png)
 
@@ -64,6 +64,6 @@ Under **Local HTTP server** the app can run the server itself — an enable swit
 
 | Command            | What it does               |
 | ------------------ | -------------------------- |
-| `chatoffice <file>` | open a file                |
-| `chatoffice mcp`    | start the local MCP server |
-| `chatoffice --help` | every command and flag     |
+| `chaoffice <file>` | open a file                |
+| `chaoffice mcp`    | start the local MCP server |
+| `chaoffice --help` | every command and flag     |

@@ -1,4 +1,4 @@
-/* Shared chrome/AI-panel tokens come from @chatoffice/ui/tokens.css (imported
+/* Shared chrome/AI-panel tokens come from @chaoffice/ui/tokens.css (imported
  * before this file in main.tsx); only shell-specific tokens live here. */
 :root {
   /* ChaOffice DS v4.1: guide/onboarding accent is the brand blue */

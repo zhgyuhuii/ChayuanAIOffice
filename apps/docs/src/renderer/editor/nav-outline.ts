@@ -5,7 +5,7 @@
  */
 import type { Schema } from '@tiptap/pm/model'
 import { TextSelection, type Transaction } from '@tiptap/pm/state'
-import type { StyleInfo } from '@chatoffice/docx-engine'
+import type { StyleInfo } from '@chaoffice/docx-engine'
 import type { HeadingRef } from './headings'
 import { matchContext, type FindMatch } from './find'
 

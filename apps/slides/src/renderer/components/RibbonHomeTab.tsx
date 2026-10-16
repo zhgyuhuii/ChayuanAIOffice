@@ -1,7 +1,7 @@
 /** Home tab of the slides ribbon. Extracted from Ribbon.tsx. */
 import { useState } from 'react'
-import { platformShortcuts } from '@chatoffice/i18n'
-import { ColorPicker, isSymbolFontFamily, partitionFontFamilies } from '@chatoffice/ui'
+import { platformShortcuts } from '@chaoffice/i18n'
+import { ColorPicker, isSymbolFontFamily, partitionFontFamilies } from '@chaoffice/ui'
 import { saveEditSelection } from '../TextEditOverlay'
 import { armColorInput } from '../color-input'
 import { displayFontFamily } from '../konva-adapter'

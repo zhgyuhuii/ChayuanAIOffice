@@ -34,7 +34,7 @@ import {
   type ParagraphFormatPatch,
   type TextBody,
   type TextElement,
-} from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
 import type { EditParagraph } from '../types'
 import {
   applyEditParagraphs,

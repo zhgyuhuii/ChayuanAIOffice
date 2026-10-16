@@ -32,7 +32,7 @@ function setup(
       return startImpl?.(request)
     },
     cancel: (requestId) => cancelled.push(requestId),
-    getSettings: () => ({ provider: 'chatoffice' }),
+    getSettings: () => ({ provider: 'chaoffice' }),
     unknownErrorText: () => 'unknown error',
     timeoutErrorText: () => 'timed out',
     ...(creditsErrorText ? { creditsErrorText } : {}),
@@ -58,7 +58,7 @@ describe('createIpcTransport', () => {
   it('starts one request with settings and forwards deltas and tool calls', () => {
     const { started, cb, emit } = setup()
     expect(started).toHaveLength(1)
-    expect(started[0]!.settings).toEqual({ provider: 'chatoffice' })
+    expect(started[0]!.settings).toEqual({ provider: 'chaoffice' })
     expect(started[0]!.system).toBe('sys')
 
     emit({ type: 'delta', text: 'hi' })

@@ -4,7 +4,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
-import { DockShell, type DockChrome } from '@chatoffice/ui'
+import { DockShell, type DockChrome } from '@chaoffice/ui'
 
 const LABELS = {
   panelTitle: 'AI 助手',

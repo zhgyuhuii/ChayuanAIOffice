@@ -137,14 +137,14 @@ describe('chatForProvider', () => {
     )
   })
 
-  it('chatoffice: routes by model prefix to the proxy endpoints', async () => {
+  it('chaoffice: routes by model prefix to the proxy endpoints', async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValue(jsonResponse({ content: [{ type: 'text', text: 'ok' }] }))
     vi.stubGlobal('fetch', fetchMock)
     await chatForProvider(
-      'chatoffice',
-      { apiKey: 'chatoffice-k', model: 'claude-opus-4-7' },
+      'chaoffice',
+      { apiKey: 'chaoffice-k', model: 'claude-opus-4-7' },
       'sys',
       'hi',
     )
@@ -153,26 +153,26 @@ describe('chatForProvider', () => {
       expect.anything(),
     )
     fetchMock.mockResolvedValue(jsonResponse({ choices: [{ message: { content: 'ok' } }] }))
-    await chatForProvider('chatoffice', { apiKey: 'chatoffice-k', model: 'gpt-5.2' }, 'sys', 'hi')
+    await chatForProvider('chaoffice', { apiKey: 'chaoffice-k', model: 'gpt-5.2' }, 'sys', 'hi')
     expect(fetchMock).toHaveBeenLastCalledWith(
       'https://www.genspark.ai/api/llm_proxy/v1/chat/completions',
       expect.anything(),
     )
   })
 
-  it('chatoffice: stamps X-Agent-Type; direct vendors do not get it', async () => {
+  it('chaoffice: stamps X-Agent-Type; direct vendors do not get it', async () => {
     const fetchMock = vi
       .fn()
       .mockImplementation(async () => jsonResponse({ content: [{ type: 'text', text: 'ok' }] }))
     vi.stubGlobal('fetch', fetchMock)
     await chatForProvider(
-      'chatoffice',
-      { apiKey: 'chatoffice-k', model: 'claude-opus-4-7' },
+      'chaoffice',
+      { apiKey: 'chaoffice-k', model: 'claude-opus-4-7' },
       'sys',
       'hi',
     )
     expect((fetchMock.mock.calls[0]![1].headers as Record<string, string>)['X-Agent-Type']).toBe(
-      'chatoffice',
+      'chaoffice',
     )
     fetchMock.mockClear()
     await chatForProvider('anthropic', { apiKey: 'k', model: 'claude-opus-4-7' }, 'sys', 'hi')

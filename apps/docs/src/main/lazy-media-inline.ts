@@ -1,4 +1,4 @@
-import { LAZY_MEDIA_SCHEME } from '@chatoffice/docx-engine/lazy-media'
+import { LAZY_MEDIA_SCHEME } from '@chaoffice/docx-engine/lazy-media'
 
 /**
  * Exported HTML leaves the app: every lazily served picture it references

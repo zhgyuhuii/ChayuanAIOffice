@@ -9,13 +9,13 @@ import { spawn } from 'node:child_process'
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm'
 
 const jobs = [
-  { name: 'server', color: 'red', cmd: ['run', 'dev', '-w', '@chatoffice/server'] },
-  { name: 'web', color: 'magenta', cmd: ['run', 'dev', '-w', '@chatoffice/web'] },
-  { name: 'docs', color: 'blue', cmd: ['run', 'dev:renderer', '-w', '@chatoffice/docs'] },
-  { name: 'sheets', color: 'green', cmd: ['run', 'dev:renderer', '-w', '@chatoffice/sheets'] },
-  { name: 'slides', color: 'yellow', cmd: ['run', 'dev:renderer', '-w', '@chatoffice/slides'] },
-  { name: 'pdf', color: 'cyan', cmd: ['run', 'dev:renderer', '-w', '@chatoffice/pdf'] },
-  { name: 'markdown', color: 'white', cmd: ['run', 'dev:renderer', '-w', '@chatoffice/markdown'] },
+  { name: 'server', color: 'red', cmd: ['run', 'dev', '-w', '@chaoffice/server'] },
+  { name: 'web', color: 'magenta', cmd: ['run', 'dev', '-w', '@chaoffice/web'] },
+  { name: 'docs', color: 'blue', cmd: ['run', 'dev:renderer', '-w', '@chaoffice/docs'] },
+  { name: 'sheets', color: 'green', cmd: ['run', 'dev:renderer', '-w', '@chaoffice/sheets'] },
+  { name: 'slides', color: 'yellow', cmd: ['run', 'dev:renderer', '-w', '@chaoffice/slides'] },
+  { name: 'pdf', color: 'cyan', cmd: ['run', 'dev:renderer', '-w', '@chaoffice/pdf'] },
+  { name: 'markdown', color: 'white', cmd: ['run', 'dev:renderer', '-w', '@chaoffice/markdown'] },
 ]
 
 const colors = {

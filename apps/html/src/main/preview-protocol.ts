@@ -1,4 +1,4 @@
-import { DOCX_MEDIA_SCHEME_PRIVILEGE, RENDERER_SCHEME_PRIVILEGE } from '@chatoffice/electron-utils'
+import { DOCX_MEDIA_SCHEME_PRIVILEGE, RENDERER_SCHEME_PRIVILEGE } from '@chaoffice/electron-utils'
 import { protocol } from 'electron'
 import { ASSET_SCHEME, PREVIEW_SCHEME, buildPreviewDocument } from './preview-document'
 

@@ -12,7 +12,7 @@ type ChunkListener = (chunk: unknown) => void
 
 export interface AiHttpBridge {
   getAiSettings(): Promise<unknown>
-  capabilities(): Promise<{ chatofficeAvailable: boolean }>
+  capabilities(): Promise<{ chaofficeAvailable: boolean }>
   setAiSettings(view: unknown): Promise<void>
   setAiCurrentModel(selection: unknown): Promise<void>
   aiDiscoverModels(target: unknown): Promise<unknown>
@@ -55,12 +55,12 @@ async function retryGet<T>(url: string, attempts = 12, delayMs = 1000): Promise<
   }
 }
 
-/** '' in the plain web form; '/chatoffice-app' behind the dsh plugin proxy
+/** '' in the plain web form; '/chaoffice-app' behind the dsh plugin proxy
  *  (same derivation as kbApiBase). Callers used to pass nothing, which sent
  *  every editor AI request to the origin root → 404 → an empty model picker
  *  while the Home page (own baseURI-based URL) worked. */
 function defaultAiBase(pathname = window.location.pathname): string {
-  const marker = '/chatoffice-app'
+  const marker = '/chaoffice-app'
   const idx = pathname.indexOf(marker)
   return idx >= 0 ? pathname.slice(0, idx + marker.length) : ''
 }
@@ -78,7 +78,7 @@ export function createAiHttpBridge(baseUrl = defaultAiBase()): AiHttpBridge {
       return retryGet<unknown>(`${baseUrl}/ai/settings`)
     },
     async capabilities() {
-      return jsonPost<{ chatofficeAvailable: boolean }>(
+      return jsonPost<{ chaofficeAvailable: boolean }>(
         `${baseUrl}/ai/capabilities`,
         undefined,
         'GET',
@@ -97,7 +97,7 @@ export function createAiHttpBridge(baseUrl = defaultAiBase()): AiHttpBridge {
       return { loggedIn: false }
     },
     async aiChaOfficeLogin() {
-      /* chatoffice login is desktop-only; the web form is pure BYOK */
+      /* chaoffice login is desktop-only; the web form is pure BYOK */
     },
     async aiStream(request) {
       const { requestId } = request as { requestId: string }

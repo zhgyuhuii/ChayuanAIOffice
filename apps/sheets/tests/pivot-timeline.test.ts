@@ -5,7 +5,7 @@ import {
   monthKeyParts,
   timelineDomainOf,
   timelineSelection,
-} from '@chatoffice/xlsx-gateway/domain/pivot-timeline'
+} from '@chaoffice/xlsx-gateway/domain/pivot-timeline'
 
 const item = (x: number | null, hidden = false) => ({ x, hidden })
 

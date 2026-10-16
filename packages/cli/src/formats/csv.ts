@@ -3,7 +3,7 @@ import {
   decodeCsvBuffer,
   parseCsv,
   sniffDelimiter,
-} from '@chatoffice/xlsx-gateway/gateway/csv-import'
+} from '@chaoffice/xlsx-gateway/gateway/csv-import'
 
 export interface CsvInfo {
   rows: number

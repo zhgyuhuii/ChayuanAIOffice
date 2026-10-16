@@ -1,4 +1,4 @@
-import type { SaveBlock } from '@chatoffice/docx-engine'
+import type { SaveBlock } from '@chaoffice/docx-engine'
 
 export interface SectPrRewrite {
   /** the parsed sectPr fragment as it sits in the block's original bytes */

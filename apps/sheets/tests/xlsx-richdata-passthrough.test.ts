@@ -5,7 +5,7 @@ import {
   applyCellEditsToXlsx,
   assertOnlyTouchedEntriesChanged,
   type CellEdit,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
 
 const contentTypes = `<?xml version="1.0" encoding="UTF-8"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">

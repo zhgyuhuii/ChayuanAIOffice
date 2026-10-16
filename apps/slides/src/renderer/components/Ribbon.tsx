@@ -18,7 +18,7 @@ import type {
   TransitionSoundKey,
   TransitionSpec,
 } from '../../shared/ipc'
-import type { ChartStyleInfo } from '@chatoffice/pptx-render'
+import type { ChartStyleInfo } from '@chaoffice/pptx-render'
 import {
   useDismissablePopover,
   useRibbonCollapse,
@@ -26,7 +26,7 @@ import {
   THEME_COLORS,
   THEME_COLOR_SHADES,
   STANDARD_COLORS,
-} from '@chatoffice/ui'
+} from '@chaoffice/ui'
 import { getRecentColors, pushRecentColor } from '../recent-colors'
 import { ICON_COLORS } from '../insert-presets'
 import { THEME_PRESETS, type SlideThemePreset } from '../themes'
@@ -34,7 +34,7 @@ import { restoreEditSelection } from '../TextEditOverlay'
 import { armColorInput, toPickerHex } from '../color-input'
 import { nextPreset, prevPreset } from '../zoom-steps'
 import { TABLE_SHADING_COLORS } from './table-shading-colors'
-import { TabStripArrows, useTabStripOverflow } from '@chatoffice/ribbon'
+import { TabStripArrows, useTabStripOverflow } from '@chaoffice/ribbon'
 import { useI18n, type StringKey } from '../i18n/locale'
 import {
   IconSlideMaster,
@@ -139,7 +139,7 @@ import texCork from '../assets/textures/cork.png'
 import texParchment from '../assets/textures/parchment.png'
 import iconCrop from '../assets/icon-crop.png'
 import { ChartTypeDialog } from './ChartTypeDialog'
-import { AiPanelToggle } from '@chatoffice/ui'
+import { AiPanelToggle } from '@chaoffice/ui'
 import {
   BIG,
   Group,

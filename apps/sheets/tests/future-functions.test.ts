@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { withFutureFunctionMarkers } from '@chatoffice/xlsx-gateway/gateway/future-functions'
+import { withFutureFunctionMarkers } from '@chaoffice/xlsx-gateway/gateway/future-functions'
 
 describe('withFutureFunctionMarkers', () => {
   it('prefixes future functions for storage', () => {

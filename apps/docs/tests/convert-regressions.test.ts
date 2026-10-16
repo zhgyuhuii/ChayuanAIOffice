@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { Block, GeneratedBlock, SectionInfo, TableModel } from '@chatoffice/docx-engine'
+import type { Block, GeneratedBlock, SectionInfo, TableModel } from '@chaoffice/docx-engine'
 import {
   blocksToPmDoc,
   capTableRowHeights,

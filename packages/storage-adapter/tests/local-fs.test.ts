@@ -7,7 +7,7 @@ import { openLocalArea, openStorageArea, resolveWithin } from '../src/index.js'
 const dirs: string[] = []
 
 function tempRoot(): string {
-  const dir = mkdtempSync(join(tmpdir(), 'chatoffice-storage-'))
+  const dir = mkdtempSync(join(tmpdir(), 'chaoffice-storage-'))
   dirs.push(dir)
   return dir
 }

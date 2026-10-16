@@ -1,7 +1,7 @@
 import { placeholderInstruction } from './redact'
 import { redactLabelsOf } from './redact-view'
 import type { Editor } from '@tiptap/core'
-import type { AgentSkill } from '@chatoffice/agent-core'
+import type { AgentSkill } from '@chaoffice/agent-core'
 import type { AiImageSource } from '../../shared/ipc'
 import {
   AGENT_SYSTEM_PROMPT,

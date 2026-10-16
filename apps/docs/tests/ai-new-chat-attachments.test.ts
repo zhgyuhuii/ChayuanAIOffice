@@ -6,7 +6,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { editorExtensions } from '../src/renderer/editor/extensions'
 import { AiPanel } from '../src/renderer/ai/AiPanel'
 // adapted: the panel takes the local AiSettingsV2 shape
-import { defaultSettingsV2, type AiSettingsV2 } from '@chatoffice/ai-provider'
+import { defaultSettingsV2, type AiSettingsV2 } from '@chaoffice/ai-provider'
 
 // LOCAL(2026-09-21, d8201ad0): 多会话语义——暂存附件属于其会话实例:
 // 「+ 新建对话」切到全新会话,新会话的 composer 附件条为空(原 #224 诉求);

@@ -12,10 +12,10 @@ import {
   synthesizeSpeechWithModel,
   type FileSourceFs,
   type ResolvedModelCall,
-} from '@chatoffice/ai-provider'
-import { fetchRemoteImage } from '@chatoffice/electron-utils/remote-image'
-import { fetchWithSsrfGuard } from '@chatoffice/electron-utils/safe-remote-url'
-import { storeGeneratedImage } from '@chatoffice/electron-utils/generated-images'
+} from '@chaoffice/ai-provider'
+import { fetchRemoteImage } from '@chaoffice/electron-utils/remote-image'
+import { fetchWithSsrfGuard } from '@chaoffice/electron-utils/safe-remote-url'
+import { storeGeneratedImage } from '@chaoffice/electron-utils/generated-images'
 
 /**
  * Unified media-model IPC — one registrar, six channels, every editor main:
@@ -57,7 +57,7 @@ export interface MediaIpcDeps {
   fetchImpl?: typeof fetch
   /**
    * LOCAL(2026-09-22, f5247d3..476e5023): app-specific source resolver hook —
-   * a URL scheme loadMediaSource cannot read (docs' chatoffice-docx-media://
+   * a URL scheme loadMediaSource cannot read (docs' chaoffice-docx-media://
    * lazy pictures) gets materialized into something it does (data:/file:/…).
    * Resolved value replaces the source; a null/throw keeps the source as-is.
    */

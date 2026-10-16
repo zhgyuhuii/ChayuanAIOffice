@@ -1,8 +1,8 @@
 /**
  * ChaOffice's own ChaOffice identity: device-code login (office_addin_auth,
- * app_type=chatoffice) minting a chatoffice API key named "chatoffice" — the key_name
- * lands in billing as billing_tag, attributing all traffic (incl. chatoffice CLI
- * subprocesses) to ChaOffice. Stored in ~/.chatoffice/auth.json, deliberately
+ * app_type=chaoffice) minting a chaoffice API key named "chaoffice" — the key_name
+ * lands in billing as billing_tag, attributing all traffic (incl. chaoffice CLI
+ * subprocesses) to ChaOffice. Stored in ~/.chaoffice/auth.json, deliberately
  * NOT the shared config.json that Claw Desktop overwrites on every launch.
  *
  * Flow: POST /device_code → browser approve → poll /token for a 30-day Bearer
@@ -14,7 +14,7 @@ import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from '
 import { createRequire } from 'node:module'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { asRecord, chatofficeProxyUrl } from './shared'
+import { asRecord, chaofficeProxyUrl } from './shared'
 
 /** Progress event for the browser login flow. */
 export interface ChaOfficeLoginProgress {
@@ -25,8 +25,8 @@ export interface ChaOfficeLoginProgress {
   error?: string
 }
 
-const APP_TYPE = 'chatoffice'
-const KEY_NAME = 'chatoffice'
+const APP_TYPE = 'chaoffice'
+const KEY_NAME = 'chaoffice'
 const HTTP_TIMEOUT_MS = 30_000
 
 function baseUrl(): string {
@@ -77,7 +77,7 @@ const GATEWAY_ERROR_STATUSES = new Set([407, 502, 504])
  * is bot-challenged, see resolveFetch). null when no proxy is registered.
  */
 async function proxyFallbackFetch(): Promise<typeof fetch | null> {
-  const proxyUrl = chatofficeProxyUrl()
+  const proxyUrl = chaofficeProxyUrl()
   if (!proxyUrl) return null
   if (proxyFetchCache?.url === proxyUrl) return proxyFetchCache.impl
   let impl: typeof fetch = (...args) => fetch(...args)
@@ -88,7 +88,7 @@ async function proxyFallbackFetch(): Promise<typeof fetch | null> {
         session?: { fromPartition: (partition: string) => ProxySession }
       }
       if (session) {
-        const ses = session.fromPartition('chatoffice-login-proxy')
+        const ses = session.fromPartition('chaoffice-login-proxy')
         await ses.setProxy({ proxyRules: proxyUrl })
         impl = ses.fetch.bind(ses)
       }
@@ -108,22 +108,22 @@ async function loginFetchChannels(): Promise<(typeof fetch)[]> {
   return proxyFallbackPreferred ? [fallback, primary] : [primary, fallback]
 }
 
-/** Override dir via CHATOFFICE_AUTH_DIR (test isolation). */
-export function chatofficeAuthPath(): string {
-  return join(process.env.CHATOFFICE_AUTH_DIR || join(homedir(), '.chatoffice'), 'auth.json')
+/** Override dir via CHAOFFICE_AUTH_DIR (test isolation). */
+export function chaofficeAuthPath(): string {
+  return join(process.env.CHAOFFICE_AUTH_DIR || join(homedir(), '.chaoffice'), 'auth.json')
 }
 
-export interface ChatofficeAuth {
+export interface ChaofficeAuth {
   apiKey: string
   keyId?: string
   accessToken?: string
 }
 
-let cachedAuth: ChatofficeAuth | null | undefined
+let cachedAuth: ChaofficeAuth | null | undefined
 
-function readAuthFile(): ChatofficeAuth | null {
+function readAuthFile(): ChaofficeAuth | null {
   try {
-    const raw = asRecord(JSON.parse(readFileSync(chatofficeAuthPath(), 'utf-8')))
+    const raw = asRecord(JSON.parse(readFileSync(chaofficeAuthPath(), 'utf-8')))
     if (typeof raw.api_key !== 'string' || !raw.api_key) return null
     return {
       apiKey: raw.api_key,
@@ -137,23 +137,23 @@ function readAuthFile(): ChatofficeAuth | null {
   }
 }
 
-export function loadChatofficeAuth(): ChatofficeAuth | null {
+export function loadChaofficeAuth(): ChaofficeAuth | null {
   if (cachedAuth === undefined) cachedAuth = readAuthFile()
   return cachedAuth
 }
 
 /** The ChaOffice-named api key; '' when not signed in. Cached (invalidated by login/logout). */
-export function chatofficeApiKey(): string {
-  return loadChatofficeAuth()?.apiKey ?? ''
+export function chaofficeApiKey(): string {
+  return loadChaofficeAuth()?.apiKey ?? ''
 }
 
 /** Drop the cache so the next read sees a key written by another process. */
-export function reloadChatofficeAuth(): void {
+export function reloadChaofficeAuth(): void {
   cachedAuth = undefined
 }
 
-function saveAuth(auth: ChatofficeAuth): void {
-  const path = chatofficeAuthPath()
+function saveAuth(auth: ChaofficeAuth): void {
+  const path = chaofficeAuthPath()
   mkdirSync(dirname(path), { recursive: true })
   writeFileSync(
     path,
@@ -169,7 +169,7 @@ function saveAuth(auth: ChatofficeAuth): void {
 
 function clearAuth(): void {
   try {
-    if (existsSync(chatofficeAuthPath())) unlinkSync(chatofficeAuthPath())
+    if (existsSync(chaofficeAuthPath())) unlinkSync(chaofficeAuthPath())
   } catch {
     /* local sign-out must not throw */
   }
@@ -357,7 +357,7 @@ async function runDeviceLogin(
   const minted = await mintKey(cookie, signal)
   if (minted.kind === 'fresh_auth_required') throw new LoginFlowError('fresh_auth_required')
   if (minted.kind === 'error') throw new LoginFlowError(minted.reason)
-  const previousKeyId = loadChatofficeAuth()?.keyId ?? staleKeyId
+  const previousKeyId = loadChaofficeAuth()?.keyId ?? staleKeyId
   saveAuth({
     apiKey: minted.apiKey,
     ...(minted.keyId ? { keyId: minted.keyId } : {}),
@@ -387,7 +387,7 @@ let activeLogin: { cancel: () => void } | null = null
  * (its device code would otherwise be approved into a dead flow). The caller
  * opens `url` in the system browser. Returns whether the flow was started.
  */
-export function startChatofficeLogin(
+export function startChaofficeLogin(
   onEvent?: (progress: ChaOfficeLoginProgress) => void,
 ): boolean {
   activeLogin?.cancel()
@@ -458,11 +458,11 @@ export function setChaOfficeLoginOpener(openUrl: ((url: string) => void) | null)
  * server answered 401: expired or revoked), so hasChaOfficeAuth() turns false
  * and the existing sign-in UI shows. Returns whether our key was dropped.
  */
-export function invalidateChatofficeKey(key: string): boolean {
+export function invalidateChaofficeKey(key: string): boolean {
   // re-read disk: another process may already have replaced the rejected key
   // with a fresh one, which must survive
-  reloadChatofficeAuth()
-  const auth = loadChatofficeAuth()
+  reloadChaofficeAuth()
+  const auth = loadChaofficeAuth()
   if (!key || !auth || auth.apiKey !== key) return false
   staleKeyId = auth.keyId
   staleAccessToken = auth.accessToken
@@ -481,8 +481,8 @@ async function remintWithStoredSession(accessToken: string, generation: number):
     // the user signed out while this was in flight: the key must not land
     if (generation !== signOutGeneration) return false
     // another process may have logged in meanwhile; never overwrite its key
-    reloadChatofficeAuth()
-    if (loadChatofficeAuth()) return true
+    reloadChaofficeAuth()
+    if (loadChaofficeAuth()) return true
     saveAuth({
       apiKey: minted.apiKey,
       ...(minted.keyId ? { keyId: minted.keyId } : {}),
@@ -499,14 +499,14 @@ async function remintWithStoredSession(accessToken: string, generation: number):
 }
 
 /**
- * Recovery after a chatoffice-key call answered 401: drop the key, try one
+ * Recovery after a chaoffice-key call answered 401: drop the key, try one
  * silent re-mint with the stored session, and when that is refused (the server
  * requires a fresh login) open the device-code login once. Concurrent
  * failures share one recovery; a login cancelled or expired leaves the
  * signed-out state for the existing "sign in" button rather than relaunching.
  * `allowLogin: false` (background/status calls) stops before the browser.
  */
-export function recoverFromRejectedChatofficeKey(
+export function recoverFromRejectedChaofficeKey(
   key: string,
   options: { allowLogin?: boolean } = {},
 ): Promise<ChaOfficeRecoveryOutcome> {
@@ -518,12 +518,12 @@ export function recoverFromRejectedChatofficeKey(
     return recovery.then((outcome) =>
       outcome !== 'login_required' || !allowLogin || generation !== signOutGeneration
         ? outcome
-        : recoverFromRejectedChatofficeKey('', options),
+        : recoverFromRejectedChaofficeKey('', options),
     )
   }
   const run = (async (): Promise<ChaOfficeRecoveryOutcome> => {
     const wasReminted = !!key && key === lastRemintedKey
-    invalidateChatofficeKey(key)
+    invalidateChaofficeKey(key)
     // the Bearer gets one silent attempt: a refused re-mint will be refused again
     const bearer = staleAccessToken
     staleAccessToken = undefined
@@ -533,7 +533,7 @@ export function recoverFromRejectedChatofficeKey(
     if (
       !allowLogin ||
       generation !== signOutGeneration ||
-      chatofficeLoginInFlight() ||
+      chaofficeLoginInFlight() ||
       autoLoginLaunched ||
       !loginOpener
     ) {
@@ -541,7 +541,7 @@ export function recoverFromRejectedChatofficeKey(
     }
     autoLoginLaunched = true
     const open = loginOpener
-    startChatofficeLogin((progress) => {
+    startChaofficeLogin((progress) => {
       if (progress.phase === 'url' && progress.url) open(progress.url)
     })
     return 'login_started'
@@ -552,8 +552,8 @@ export function recoverFromRejectedChatofficeKey(
   return run
 }
 
-/** True while a login started via startChatofficeLogin is in flight. */
-export function chatofficeLoginInFlight(): boolean {
+/** True while a login started via startChaofficeLogin is in flight. */
+export function chaofficeLoginInFlight(): boolean {
   return activeLogin !== null
 }
 
@@ -562,22 +562,22 @@ export function chatofficeLoginInFlight(): boolean {
  * in-flight flow (restarting would strand it on a dead device code); openUrl
  * is the caller's browser opener (this module is Electron-free).
  */
-export function ensureChatofficeLogin(openUrl: (url: string) => void): void {
-  if (chatofficeLoginInFlight()) return
-  startChatofficeLogin((progress) => {
+export function ensureChaofficeLogin(openUrl: (url: string) => void): void {
+  if (chaofficeLoginInFlight()) return
+  startChaofficeLogin((progress) => {
     if (progress.url) openUrl(progress.url)
   })
 }
 
 /**
  * Signs out of ChaOffice only: best-effort server-side revoke of the
- * chatoffice key, then local removal. The shared chatoffice CLI login
- * (~/.chatoffice-tool-cli) is untouched — terminal chatoffice and Claw keep working.
+ * chaoffice key, then local removal. The shared chaoffice CLI login
+ * (~/.chaoffice-tool-cli) is untouched — terminal chaoffice and Claw keep working.
  */
-export async function chatofficeLogout(): Promise<void> {
+export async function chaofficeLogout(): Promise<void> {
   // invalidate any in-flight recovery first: its re-mint or login must not undo this sign-out
   signOutGeneration++
-  const auth = loadChatofficeAuth()
+  const auth = loadChaofficeAuth()
   if (auth?.accessToken && auth.keyId) {
     const controller = new AbortController()
     const timer = setTimeout(() => controller.abort(), HTTP_TIMEOUT_MS)
@@ -597,7 +597,7 @@ export async function chatofficeLogout(): Promise<void> {
 }
 
 /** Test hook: drop the auth cache, fetch-channel and recovery state. */
-export function resetChatofficeAuthCache(): void {
+export function resetChaofficeAuthCache(): void {
   cachedAuth = undefined
   staleKeyId = undefined
   staleAccessToken = undefined
@@ -611,6 +611,6 @@ export function resetChatofficeAuthCache(): void {
 }
 
 /** Test hook: whether the proxy fallback channel is currently preferred. */
-export function chatofficeProxyFallbackPreferred(): boolean {
+export function chaofficeProxyFallbackPreferred(): boolean {
   return proxyFallbackPreferred
 }

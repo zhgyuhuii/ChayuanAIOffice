@@ -4,7 +4,7 @@
  * Every change journals (file visuals as drawing edits, session visuals in
  * place) and lands on the Univer undo stack as one step.
  */
-import { ADDABLE_SHAPE_TYPES } from '@chatoffice/xlsx-gateway/shared/shape-types'
+import { ADDABLE_SHAPE_TYPES } from '@chaoffice/xlsx-gateway/shared/shape-types'
 import { BehaviorSubject } from 'rxjs'
 import type { WorkbookVisualObject } from '../shared/desktop-api'
 import {

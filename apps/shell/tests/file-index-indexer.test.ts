@@ -16,8 +16,8 @@ let store: FileIndexStore
 let indexer: FileIndexer | null
 
 beforeEach(() => {
-  dir = mkdtempSync(join(tmpdir(), 'chatoffice-indexer-'))
-  storeDir = mkdtempSync(join(tmpdir(), 'chatoffice-indexer-db-'))
+  dir = mkdtempSync(join(tmpdir(), 'chaoffice-indexer-'))
+  storeDir = mkdtempSync(join(tmpdir(), 'chaoffice-indexer-db-'))
   mkdirSync(join(dir, 'hang'))
   writeFileSync(join(dir, 'hang', 'poison.pdf'), 'unparseable')
   mkdirSync(join(dir, 'good'))

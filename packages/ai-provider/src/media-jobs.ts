@@ -24,7 +24,7 @@ export interface MediaJobRequest {
   apiKey: string
   prompt: string
   /** vendor API root for self-hosted/proxied deployments; adapters fall back
-   * to the official endpoint when absent (openai/chatoffice/gemini use it) */
+   * to the official endpoint when absent (openai/chaoffice/gemini use it) */
   baseUrl?: string
   /** first-frame image for image-to-video (public URL; base64 only where the vendor takes it) */
   imageUrl?: string
@@ -820,7 +820,7 @@ registerMediaJobAdapter({
   },
 })
 
-// ── OpenAI-shaped videos API (vendorId: openai / chatoffice) ──
+// ── OpenAI-shaped videos API (vendorId: openai / chaoffice) ──
 // POST {base}/videos {model,prompt,size,seconds} → {id,status:queued}
 // GET {base}/videos/{id} → status queued/in_progress/completed/failed
 // GET {base}/videos/{id}/content → mp4 bytes (Bearer-authenticated, so the
@@ -895,9 +895,9 @@ function openAiVideosAdapter(vendorId: string, defaultBase: string, defaultModel
 }
 
 registerMediaJobAdapter(openAiVideosAdapter('openai', 'https://api.openai.com/v1', 'sora-2'))
-// chatoffice proxy: only surfaces video models when the upstream model list
+// chaoffice proxy: only surfaces video models when the upstream model list
 // really returns video-generation entries (data-driven; see listMediaModels)
-registerMediaJobAdapter(openAiVideosAdapter('chatoffice', '', 'sora-2'))
+registerMediaJobAdapter(openAiVideosAdapter('chaoffice', '', 'sora-2'))
 // Generic OpenAI-compatible gateways (agnes/new-api style): the videos
 // protocol ({base}/videos) is protocol-level exactly like images/generations —
 // the profile's own baseUrl supplies the base. A host that doesn't proxy the

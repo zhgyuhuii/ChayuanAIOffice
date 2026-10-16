@@ -10,7 +10,7 @@ import {
   readRibbonDensity,
   useRibbonCollapse,
   type RibbonDensity,
-} from '@chatoffice/ui'
+} from '@chaoffice/ui'
 
 const TABS = ['home', 'insert'] as const
 // the opt-in labels: without `compact`/`expandFull` the hook stays two-state

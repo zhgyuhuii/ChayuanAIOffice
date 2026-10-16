@@ -8,13 +8,13 @@
 import JSZip from 'jszip'
 import { describe, expect, it } from 'vitest'
 
-import { applyCellEditsToXlsx } from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
+import { applyCellEditsToXlsx } from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
 import {
   maxSheetIdInWorkbook,
   parseSheetElements,
   pivotCacheReadsFromSheet,
   renameSheetInPivotCacheSource,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-sheets'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-sheets'
 
 const MAIN_NS = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
 const REL_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'

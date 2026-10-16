@@ -2,7 +2,7 @@
  * "Set as Default Shape": the fill/line that new gallery shapes start with.
  * PowerPoint stores it per deck; ours is per install (localStorage).
  */
-import type { RenderNode } from '@chatoffice/pptx-render'
+import type { RenderNode } from '@chaoffice/pptx-render'
 
 export interface DefaultShapeStyle {
   fillColor?: string

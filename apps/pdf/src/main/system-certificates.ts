@@ -110,7 +110,7 @@ const defaultEnv = (): SystemStoreEnv => ({
 
 /** Scratch directory readable by this user only, removed when `work` settles */
 async function withPrivateDir<T>(work: (dir: string) => Promise<T>): Promise<T> {
-  const dir = await mkdtemp(join(tmpdir(), 'chatoffice-cert-'))
+  const dir = await mkdtemp(join(tmpdir(), 'chaoffice-cert-'))
   try {
     return await work(dir)
   } finally {

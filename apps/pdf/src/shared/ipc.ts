@@ -1,7 +1,7 @@
-import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
-import type { Lang } from '@chatoffice/i18n'
-import type { AiModelSelection, AiSettingsV2, AiStreamChunk } from '@chatoffice/ai-provider'
-import type { PrintDuplex, PrintJobOptions, PrinterInfo } from '@chatoffice/electron-utils/print-job'
+import type { AiPanelPrefs } from '@chaoffice/ui/ai-panel-prefs'
+import type { Lang } from '@chaoffice/i18n'
+import type { AiModelSelection, AiSettingsV2, AiStreamChunk } from '@chaoffice/ai-provider'
+import type { PrintDuplex, PrintJobOptions, PrinterInfo } from '@chaoffice/electron-utils/print-job'
 export type { PrintDuplex, PrintJobOptions, PrinterInfo }
 
 export const PDF_CHANNELS = {
@@ -874,8 +874,8 @@ export const AI_CHANNELS = {
   setSettings: 'ai:set-settings',
   setCurrentModel: 'ai:set-current-model',
   discoverModels: 'ai:discover-models',
-  chatofficeStatus: 'ai:chatoffice-status',
-  chatofficeLogin: 'ai:chatoffice-login',
+  chaofficeStatus: 'ai:chaoffice-status',
+  chaofficeLogin: 'ai:chaoffice-login',
   localToolStatus: 'ai:local-tool-status',
   localToolInstall: 'ai:local-tool-install',
   localToolStart: 'ai:local-tool-start',
@@ -961,7 +961,7 @@ export interface PdfApi {
   imageSearch(query: string, maxResults?: number): Promise<ImageSearchResponse>
   /** Download an image URL in the main process (SSRF-guarded, avoids CORS); null on failure */
   fetchImage(url: string): Promise<{ base64: string; mime: string } | null>
-  /** AI image generation via ChaOffice (chatoffice); returns a downloadable URL or an error message */
+  /** AI image generation via ChaOffice (chaoffice); returns a downloadable URL or an error message */
   generateImage(op: { prompt: string; aspectRatio?: string }): Promise<{
     url?: string
     error?: string
@@ -1023,22 +1023,22 @@ export interface PdfApi {
   onChromePressed(handler: () => void): () => void
   getAiSettings(): Promise<AiSettingsV2>
   setAiSettings(view: AiSettingsV2): Promise<void>
-  setAiCurrentModel(selection: import('@chatoffice/ai-provider').AiModelSelection): Promise<void>
+  setAiCurrentModel(selection: import('@chaoffice/ai-provider').AiModelSelection): Promise<void>
   aiDiscoverModels(
-    target: import('@chatoffice/ai-provider').DiscoveryTarget,
-  ): Promise<{ models: import('@chatoffice/ai-provider').AiModelEntry[]; error?: string }>
+    target: import('@chaoffice/ai-provider').DiscoveryTarget,
+  ): Promise<{ models: import('@chaoffice/ai-provider').AiModelEntry[]; error?: string }>
   aiChaOfficeLogin(): Promise<void>
   /** 本地与自建：探测 / 一键安装 / 启动（模型设置页状态卡） */
-  aiLocalToolStatus(vendorId: string): Promise<import('@chatoffice/ai-provider').LocalToolStatus>
+  aiLocalToolStatus(vendorId: string): Promise<import('@chaoffice/ai-provider').LocalToolStatus>
   aiLocalToolInstall(
     vendorId: string,
     onLine?: (line: string) => void,
-  ): Promise<import('@chatoffice/ai-provider').LocalToolOpResult>
-  aiLocalToolStart(vendorId: string): Promise<import('@chatoffice/ai-provider').LocalToolOpResult>
-  /** ChaOffice login state (chatoffice); gates the cloud-only generate_image tool */
-  chatofficeStatus(
+  ): Promise<import('@chaoffice/ai-provider').LocalToolOpResult>
+  aiLocalToolStart(vendorId: string): Promise<import('@chaoffice/ai-provider').LocalToolOpResult>
+  /** ChaOffice login state (chaoffice); gates the cloud-only generate_image tool */
+  chaofficeStatus(
     withEmail?: boolean,
-  ): Promise<import('@chatoffice/ai-provider').ChaOfficeAccountStatus>
+  ): Promise<import('@chaoffice/ai-provider').ChaOfficeAccountStatus>
   aiStream(request: {
     requestId: string
     settings: AiModelSelection

@@ -5,7 +5,7 @@ import {
   aiPanelZoom,
   normalizeAiPanelPrefs,
   sameAiPanelPrefs,
-} from '@chatoffice/ui/ai-panel-prefs'
+} from '@chaoffice/ui/ai-panel-prefs'
 
 describe('normalizeAiPanelPrefs', () => {
   it('falls back to defaults for missing or malformed input', () => {

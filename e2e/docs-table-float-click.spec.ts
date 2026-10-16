@@ -66,7 +66,7 @@ test.describe('docs floating table click', () => {
   let docPath: string
 
   test.beforeEach(async () => {
-    dir = realpathSync(mkdtempSync(join(tmpdir(), 'chatoffice-e2e-tblp-')))
+    dir = realpathSync(mkdtempSync(join(tmpdir(), 'chaoffice-e2e-tblp-')))
     docPath = join(dir, 'floating.docx')
     writeFileSync(docPath, await docxWithFloatingTable())
   })

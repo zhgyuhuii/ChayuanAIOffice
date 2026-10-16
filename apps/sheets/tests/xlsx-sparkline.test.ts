@@ -6,12 +6,12 @@ import {
   assertOnlyTouchedEntriesChanged,
   createBufferEntrySource,
   planCellEditsToXlsx,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
-import type { SheetSparklineAddition } from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
+import type { SheetSparklineAddition } from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
 import {
   applySparklineAdditions,
   SparklineAddError,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-sparkline'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-sparkline'
 import { buildEditFixture } from './fixture-builder'
 
 const X14_URI = '{05C60535-1F16-4fd2-B633-F4F36F0B64E0}'

@@ -2,7 +2,7 @@ import { app, dialog } from 'electron'
 import type { BrowserWindow } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import type { UpdateInfo } from 'electron-updater'
-import { createI18n, getUiLang } from '@chatoffice/i18n'
+import { createI18n, getUiLang } from '@chaoffice/i18n'
 
 /**
  * Full-package auto-update for the standalone ChaOffice Docs app over the generic

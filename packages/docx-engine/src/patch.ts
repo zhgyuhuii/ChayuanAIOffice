@@ -1,5 +1,5 @@
 import JSZip from 'jszip'
-import { REDACT_EL, REDACT_NS, REDACT_PREFIX } from '@chatoffice/agent-core/redact-range'
+import { REDACT_EL, REDACT_NS, REDACT_PREFIX } from '@chaoffice/agent-core/redact-range'
 import {
   applyImageWrap,
   generateParagraphXml,

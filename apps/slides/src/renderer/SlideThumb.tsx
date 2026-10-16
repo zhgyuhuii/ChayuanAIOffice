@@ -5,7 +5,7 @@
 import React, { useEffect, useRef } from 'react'
 import { Stage, Layer, Rect } from 'react-konva'
 import type Konva from 'konva'
-import type { RenderSlide } from '@chatoffice/pptx-render'
+import type { RenderSlide } from '@chaoffice/pptx-render'
 import { fillToKonva } from './konva-adapter'
 import { StaticNode } from './NodeBody'
 

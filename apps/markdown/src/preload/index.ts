@@ -1,14 +1,14 @@
-import type { AiPanelPrefs } from '@chatoffice/ui'
+import type { AiPanelPrefs } from '@chaoffice/ui'
 import { contextBridge, ipcRenderer } from 'electron'
-import type { Lang } from '@chatoffice/i18n'
-import type { AiStreamChunk } from '@chatoffice/ai-provider'
-import type { ProjectApi } from '@chatoffice/project-store'
-import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
-import { installFilesPaneBridge } from '@chatoffice/electron-utils/files-pane-bridge'
+import type { Lang } from '@chaoffice/i18n'
+import type { AiStreamChunk } from '@chaoffice/ai-provider'
+import type { ProjectApi } from '@chaoffice/project-store'
+import { installDropOpenBridge } from '@chaoffice/electron-utils/drop-open'
+import { installFilesPaneBridge } from '@chaoffice/electron-utils/files-pane-bridge'
 import { AI_CHANNELS, MARKDOWN_CHANNELS } from '../shared/ipc'
 import { normalizeMarkdownTheme, type MarkdownTheme } from '../shared/markdown-theme'
 import type { AutoSaveDefault, DocTheme, ExportFormat, MarkdownApi, SaveMode, UiTheme } from '../shared/ipc'
-import { KB_CHANNELS } from '@chatoffice/ai-host/kb-channels'
+import { KB_CHANNELS } from '@chaoffice/ai-host/kb-channels'
 
 const api: MarkdownApi = {
   consumePending: () => ipcRenderer.invoke(MARKDOWN_CHANNELS.consumePending),
@@ -137,8 +137,8 @@ const api: MarkdownApi = {
   setAiSettings: (view) => ipcRenderer.invoke(AI_CHANNELS.setSettings, view),
   setAiCurrentModel: (selection) => ipcRenderer.invoke(AI_CHANNELS.setCurrentModel, selection),
   aiDiscoverModels: (target) => ipcRenderer.invoke(AI_CHANNELS.discoverModels, target),
-  aiChaOfficeStatus: (withEmail) => ipcRenderer.invoke(AI_CHANNELS.chatofficeStatus, withEmail),
-  aiChaOfficeLogin: () => ipcRenderer.invoke(AI_CHANNELS.chatofficeLogin),
+  aiChaOfficeStatus: (withEmail) => ipcRenderer.invoke(AI_CHANNELS.chaofficeStatus, withEmail),
+  aiChaOfficeLogin: () => ipcRenderer.invoke(AI_CHANNELS.chaofficeLogin),
   aiLocalToolStatus: (vendorId) => ipcRenderer.invoke(AI_CHANNELS.localToolStatus, vendorId),
   aiLocalToolInstall: (vendorId, onLine) => {
     if (!onLine) return ipcRenderer.invoke(AI_CHANNELS.localToolInstall, vendorId)

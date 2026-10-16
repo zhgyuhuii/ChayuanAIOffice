@@ -18,7 +18,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
-  CHATOFFICE_PRESET_MODELS,
+  CHAOFFICE_PRESET_MODELS,
   KEEP_KEY,
   NO_MODELS_API,
   VENDORS,
@@ -35,7 +35,7 @@ import {
   type LocalToolOpResult,
   type LocalToolStatus,
   type VendorCatalogEntry,
-} from '@chatoffice/ai-provider/browser'
+} from '@chaoffice/ai-provider/browser'
 import { fmt, modelSettingsStrings } from './model-settings-strings'
 import { useDismissablePopover } from './popover-dismiss'
 import { USER_LOGIN_READY } from './feature-flags'
@@ -43,17 +43,17 @@ import { VendorLogo } from './VendorLogo'
 // self-contained styles: every consumer gets them with the component
 import './model-settings.css'
 
-export type { LocalToolStatus, LocalToolOpResult } from '@chatoffice/ai-provider/browser'
+export type { LocalToolStatus, LocalToolOpResult } from '@chaoffice/ai-provider/browser'
 
 export interface ModelSettingsBridge {
   getSettings(): Promise<AiSettingsV2>
   saveSettings(view: AiSettingsV2): Promise<void>
   setCurrentModel(selection: AiModelSelection): Promise<void>
   discoverModels(target: DiscoveryTarget): Promise<{ models: AiModelEntry[]; error?: string }>
-  chatofficeStatus?(withEmail?: boolean): Promise<{ loggedIn: boolean; email?: string }>
-  chatofficeLogin?(): void | Promise<void>
-  /** web form: chatoffice login is desktop-only — the page hides the chatoffice card */
-  capabilities?(): Promise<{ chatofficeAvailable: boolean }>
+  chaofficeStatus?(withEmail?: boolean): Promise<{ loggedIn: boolean; email?: string }>
+  chaofficeLogin?(): void | Promise<void>
+  /** web form: chaoffice login is desktop-only — the page hides the chaoffice card */
+  capabilities?(): Promise<{ chaofficeAvailable: boolean }>
   /** 本地与自建：探测/一键安装/启动 —— 仅桌面桥实现；web 桥不接，UI 自动隐藏 */
   localToolStatus?(vendorId: string): Promise<LocalToolStatus>
   localToolInstall?(vendorId: string, onLine?: (line: string) => void): Promise<LocalToolOpResult>
@@ -157,7 +157,7 @@ export function ModelSettingsPage({
   const locale = lang ?? (typeof document !== 'undefined' ? document.documentElement.lang : 'zh')
   const t = useMemo(() => modelSettingsStrings(locale), [locale])
   const [settings, setSettings] = useState<AiSettingsV2 | null>(null)
-  const [chatofficeAvailable, setChaOfficeAvailable] = useState(true)
+  const [chaofficeAvailable, setChaOfficeAvailable] = useState(true)
   /** '' = 说明页（初次进入的落地）；厂商 id = 该厂商的配置表单 */
   const [selected, setSelected] = useState<string>(
     initialVendor && VENDOR_BY_ID.has(initialVendor) ? initialVendor : '',
@@ -176,7 +176,7 @@ export function ModelSettingsPage({
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
   /** enabled-profile rows expanded to show their model sub-lists in the left pane */
   const [expandedVendors, setExpandedVendors] = useState<Set<string>>(new Set())
-  const [chatoffice, setChaOffice] = useState<{ loggedIn: boolean; email?: string } | null>(null)
+  const [chaoffice, setChaOffice] = useState<{ loggedIn: boolean; email?: string } | null>(null)
   /** 本地与自建：一键安装/探测状态（仅桌面桥实现） */
   const [tool, setTool] = useState<LocalToolStatus | null>(null)
   const [toolProbing, setToolProbing] = useState(false)
@@ -243,16 +243,16 @@ export function ModelSettingsPage({
     void fetchSettings()
     const onFocus = () => void fetchSettings()
     window.addEventListener('focus', onFocus)
-    if (bridge.chatofficeStatus) {
+    if (bridge.chaofficeStatus) {
       void bridge
-        .chatofficeStatus(true)
+        .chaofficeStatus(true)
         .then(setChaOffice)
         .catch(() => setChaOffice(null))
     }
     if (bridge.capabilities) {
       void bridge
         .capabilities()
-        .then((c) => setChaOfficeAvailable(c.chatofficeAvailable !== false))
+        .then((c) => setChaOfficeAvailable(c.chaofficeAvailable !== false))
         .catch(() => setChaOfficeAvailable(true))
     }
     return () => {
@@ -276,10 +276,10 @@ export function ModelSettingsPage({
           .filter(Boolean)
           .join(keyJoiner)
       : apiKeyInput
-  const isChaOffice = selected === 'chatoffice'
+  const isChaOffice = selected === 'chaoffice'
   /** 登录功能未开放（USER_LOGIN_READY=false）时，ChaOffice 视同不可用：
    * 目录行、已启用列表与登录卡整体隐藏 */
-  const chatofficeUsable = USER_LOGIN_READY && chatofficeAvailable
+  const chaofficeUsable = USER_LOGIN_READY && chaofficeAvailable
   /** 本地与自建厂商（排除自定义兼容入口）才探测本地安装 */
   const localToolVendor =
     selectedVendor?.group === 'local' && selectedVendor.id !== 'openai-compatible' ? selected : ''
@@ -298,13 +298,13 @@ export function ModelSettingsPage({
       vendors: VENDORS.filter(
         (v) =>
           v.group === group.id &&
-          !(!chatofficeUsable && v.id === 'chatoffice') &&
+          !(!chaofficeUsable && v.id === 'chaoffice') &&
           !enabledProfiles.some((p) => (p.vendorId ?? p.id) === v.id) &&
           matchesTagFilter(v, tagFilter) &&
           match(v.name, v.nameZh, v.id),
       ),
     })).filter((g) => g.vendors.length > 0)
-  }, [enabledProfiles, search, tagFilter, chatofficeUsable, locale])
+  }, [enabledProfiles, search, tagFilter, chaofficeUsable, locale])
 
   // ── form seeding on vendor switch ─────────────────────────────────────
   useEffect(() => {
@@ -595,33 +595,33 @@ export function ModelSettingsPage({
   }
 
   const toggleChaOfficeModel = async (modelId: string, on: boolean) => {
-    const profile = profiles.find((p) => p.id === 'chatoffice')
+    const profile = profiles.find((p) => p.id === 'chaoffice')
     if (!profile) return
     const currentIds = new Set(profile.models.map((m) => m.id))
     const nextModels = on
-      ? CHATOFFICE_PRESET_MODELS.filter((id) => currentIds.has(id) || id === modelId).map((id) => ({
+      ? CHAOFFICE_PRESET_MODELS.filter((id) => currentIds.has(id) || id === modelId).map((id) => ({
           id,
         }))
       : profile.models.filter((m) => m.id !== modelId)
     // picking a model is the explicit act that enables the login-backed profile
     const nextProfiles = profiles.map((p) =>
-      p.id === 'chatoffice' ? { ...p, enabled: true, models: nextModels } : p,
+      p.id === 'chaoffice' ? { ...p, enabled: true, models: nextModels } : p,
     )
     const next: AiSettingsV2 = { ...settings!, profiles: nextProfiles }
     if (
-      next.currentModel?.profileId === 'chatoffice' &&
+      next.currentModel?.profileId === 'chaoffice' &&
       !nextModels.some((m) => m.id === next.currentModel!.modelId)
     ) {
-      if (nextModels[0]) next.currentModel = { profileId: 'chatoffice', modelId: nextModels[0].id }
+      if (nextModels[0]) next.currentModel = { profileId: 'chaoffice', modelId: nextModels[0].id }
       else delete next.currentModel
     }
     await persist(sanitize(next))
   }
 
   // ── chatop-shaped pieces ──────────────────────────────────────────────
-  const enabledList = chatofficeUsable
-    ? enabledProfiles.filter((p) => p.id !== 'chatoffice' || p.models.length > 0)
-    : enabledProfiles.filter((p) => p.id !== 'chatoffice')
+  const enabledList = chaofficeUsable
+    ? enabledProfiles.filter((p) => p.id !== 'chaoffice' || p.models.length > 0)
+    : enabledProfiles.filter((p) => p.id !== 'chaoffice')
 
   const VendorRow = ({ id, name, active }: { id: string; name: string; active?: boolean }) => {
     const profile = active ? profiles.find((p) => p.id === id) : undefined
@@ -993,8 +993,8 @@ export function ModelSettingsPage({
                   G
                 </span>
                 <div className="msp-pane-titles">
-                  <div className="msp-pane-name">{t.chatofficeLoginTitle}</div>
-                  <div className="msp-pane-status">{t.chatofficeLoginDesc}</div>
+                  <div className="msp-pane-name">{t.chaofficeLoginTitle}</div>
+                  <div className="msp-pane-status">{t.chaofficeLoginDesc}</div>
                 </div>
               </div>
               {msg && (
@@ -1002,30 +1002,30 @@ export function ModelSettingsPage({
                   {msg.text}
                 </p>
               )}
-              <div className="msp-chatoffice-row">
+              <div className="msp-chaoffice-row">
                 <span
-                  className={`msp-dot is-big${chatoffice?.loggedIn ? ' is-on' : ''}`}
+                  className={`msp-dot is-big${chaoffice?.loggedIn ? ' is-on' : ''}`}
                   aria-hidden
                 />
-                <span className="msp-chatoffice-state">
-                  {chatoffice?.loggedIn
-                    ? chatoffice.email
-                      ? fmt(t.chatofficeLoggedIn, { email: chatoffice.email })
-                      : t.chatofficeLoggedInNoEmail
-                    : t.chatofficeLoggedOut}
+                <span className="msp-chaoffice-state">
+                  {chaoffice?.loggedIn
+                    ? chaoffice.email
+                      ? fmt(t.chaofficeLoggedIn, { email: chaoffice.email })
+                      : t.chaofficeLoggedInNoEmail
+                    : t.chaofficeLoggedOut}
                 </span>
-                {!chatoffice?.loggedIn && bridge.chatofficeLogin && (
+                {!chaoffice?.loggedIn && bridge.chaofficeLogin && (
                   <button
                     type="button"
                     className="msp-btn msp-btn-primary"
-                    onClick={() => void bridge.chatofficeLogin?.()}
+                    onClick={() => void bridge.chaofficeLogin?.()}
                   >
-                    {t.chatofficeLoginBtn}
+                    {t.chaofficeLoginBtn}
                   </button>
                 )}
               </div>
               <ModelList
-                entries={CHATOFFICE_PRESET_MODELS.map((id) => ({
+                entries={CHAOFFICE_PRESET_MODELS.map((id) => ({
                   id,
                   enabled: selectedProfile?.models.some((m) => m.id === id) ?? false,
                 }))}

@@ -162,7 +162,7 @@ test.describe('MCP visible grid session', () => {
       // the shell UI shows a real sheets tab (the visible half of the feature)
       const editorTab = page.locator('.tab-bar .tab-item:not(.tab-home)')
       await expect(editorTab).toHaveCount(1)
-      const editorPage = await waitForPageWithUrl(app, 'chatoffice-app://sheets')
+      const editorPage = await waitForPageWithUrl(app, 'chaoffice-app://sheets')
 
       // 2. workbook overview first: ops address sheets by id
       const overview = await call('read_sheet', {})

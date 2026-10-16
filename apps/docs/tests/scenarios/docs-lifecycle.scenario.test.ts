@@ -4,7 +4,7 @@
  */
 import { expect, describe, it } from 'vitest'
 import { buildDocx } from '../../../../packages/docx-engine/tests/helpers/build-docx'
-import { parseDocx, saveDocx } from '@chatoffice/docx-engine'
+import { parseDocx, saveDocx } from '@chaoffice/docx-engine'
 
 async function makeDoc(bodyXml: string) {
   return buildDocx({ bodyXml })

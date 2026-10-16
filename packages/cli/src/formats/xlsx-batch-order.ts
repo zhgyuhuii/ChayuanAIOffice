@@ -1,12 +1,12 @@
-import type { RangeBounds } from '@chatoffice/xlsx-gateway/domain/cell-address'
+import type { RangeBounds } from '@chaoffice/xlsx-gateway/domain/cell-address'
 import {
   shiftIndex,
   shiftSpecForOp,
   type ShiftSpec,
-} from '@chatoffice/xlsx-gateway/domain/formula-shift'
-import { InMemoryWorkbookAdapter } from '@chatoffice/xlsx-gateway/domain/in-memory-workbook'
-import type { StructuralOperation } from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
-import type { WorkbookSnapshot } from '@chatoffice/xlsx-gateway/domain/workbook.types'
+} from '@chaoffice/xlsx-gateway/domain/formula-shift'
+import { InMemoryWorkbookAdapter } from '@chaoffice/xlsx-gateway/domain/in-memory-workbook'
+import type { StructuralOperation } from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
+import type { WorkbookSnapshot } from '@chaoffice/xlsx-gateway/domain/workbook.types'
 import { CliError, EXIT, type ErrorHints } from '../result'
 
 export type BatchOp = Record<string, unknown> & { op: string; __index?: number }
@@ -43,7 +43,7 @@ export function replayStructure(
     if (!REPLAYED_OPS.has(op.op) && op.op !== 'rename_sheet') continue
     const plan = adapter.plan({
       dslVersion: 1,
-      transactionId: `chatoffice-structure-${index}`,
+      transactionId: `chaoffice-structure-${index}`,
       baseRevision: adapter.getSnapshot().revision,
       summary: 'structural replay',
       operations: [op as unknown as StructuralOperation],

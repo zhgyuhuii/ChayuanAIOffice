@@ -8,7 +8,7 @@
 // adapted: 收录上游 --doc-font-box/--doc-lead-top/--doc-lh-cap 断言与新增
 // NoSpacing 字形位移/倍数用例(对应本文件 doc-style-css 的 lineSrc 接线)
 import { describe, expect, it } from 'vitest'
-import type { ParsedDocFull, StyleDisplay, StyleInfo } from '@chatoffice/docx-engine'
+import type { ParsedDocFull, StyleDisplay, StyleInfo } from '@chaoffice/docx-engine'
 import { docStyleCss } from '../src/renderer/doc-style-css'
 
 ;(globalThis as { CSS?: unknown }).CSS ??= { escape: (s: string) => s }

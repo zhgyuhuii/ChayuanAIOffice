@@ -1,4 +1,4 @@
-import type { ExecutedToolCall } from '@chatoffice/agent-core'
+import type { ExecutedToolCall } from '@chaoffice/agent-core'
 
 /**
  * Claimed-selection guard for the sheets skill (AgentSkill.verifyResponse):

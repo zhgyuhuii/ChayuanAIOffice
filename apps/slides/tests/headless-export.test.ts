@@ -56,12 +56,12 @@ describe('waitForDeckSettled', () => {
   })
 
   it('waits for the private Office fonts to finish registering', async () => {
-    window.__chatofficeDocFontsSynced = false
-    setTimeout(() => (window.__chatofficeDocFontsSynced = true), 10)
+    window.__chaofficeDocFontsSynced = false
+    setTimeout(() => (window.__chaofficeDocFontsSynced = true), 10)
     const t0 = Date.now()
     await waitForDeckSettled(deck, fast)
     expect(Date.now() - t0).toBeGreaterThanOrEqual(8)
-    delete window.__chatofficeDocFontsSynced
+    delete window.__chaofficeDocFontsSynced
   })
 })
 

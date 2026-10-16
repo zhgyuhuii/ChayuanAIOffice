@@ -1,5 +1,5 @@
 {
-  "name": "@chatoffice/docx-engine",
+  "name": "@chaoffice/docx-engine",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -19,12 +19,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@chatoffice/chart-kit": "*",
-    "@chatoffice/pptx-engine": "*",
-    "@chatoffice/zip-gate": "*",
-    "@chatoffice/agent-core": "*",
-    "@chatoffice/pptx-engine": "*",
-    "@chatoffice/zip-gate": "*",
+    "@chaoffice/chart-kit": "*",
+    "@chaoffice/pptx-engine": "*",
+    "@chaoffice/zip-gate": "*",
+    "@chaoffice/agent-core": "*",
+    "@chaoffice/pptx-engine": "*",
+    "@chaoffice/zip-gate": "*",
     "fast-xml-parser": "^5.3.4",
     "jszip": "^3.10.1",
     "utif2": "^4.1.0"

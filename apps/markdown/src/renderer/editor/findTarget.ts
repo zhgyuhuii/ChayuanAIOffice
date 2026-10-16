@@ -1,5 +1,5 @@
 import type { Editor } from '@tiptap/core'
-import { findInText, type FindOptions, type FindTarget } from '@chatoffice/ui'
+import { findInText, type FindOptions, type FindTarget } from '@chaoffice/ui'
 import { searchPluginKey, type SearchRange } from './searchHighlight'
 
 /** collect matches inside textblocks; inline content is flattened so matches spanning marks are found */

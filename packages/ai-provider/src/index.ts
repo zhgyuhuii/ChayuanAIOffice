@@ -26,7 +26,7 @@ export type {
 } from './types'
 export {
   AI_PROVIDERS,
-  CHATOFFICE_LLM_BASE_URLS,
+  CHAOFFICE_LLM_BASE_URLS,
   DEFAULT_MAX_OUTPUT_TOKENS,
   MAX_MAX_OUTPUT_TOKENS,
   MIN_MAX_OUTPUT_TOKENS,
@@ -128,8 +128,8 @@ export {
   enabledChatModels,
   findProfile,
   resolveDefaultModel,
-  chatofficeEndpointFor,
-  chatofficeProfile,
+  chaofficeEndpointFor,
+  chaofficeProfile,
   isChatModel,
   isImageGenModel,
   isVideoGenModel,
@@ -154,7 +154,7 @@ export {
 export type { AiCapabilityKind, SearchPlatformKind, SearchPlatformMeta } from './capability-tree'
 export type { VendorCatalogEntry } from './vendor-catalog'
 export {
-  CHATOFFICE_PRESET_MODELS,
+  CHAOFFICE_PRESET_MODELS,
   NO_MODELS_API,
   VENDORS,
   VENDOR_BY_ID,

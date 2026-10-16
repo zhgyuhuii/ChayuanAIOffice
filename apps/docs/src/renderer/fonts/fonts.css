@@ -13,28 +13,28 @@
    (tools/patch-carlito-vi.py); renamed per OFL Reserved Font Name clause */
 @font-face {
   font-family: 'Carlito GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Regular.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Regular.ttf');
   font-weight: normal;
   font-style: normal;
   font-display: block;
 }
 @font-face {
   font-family: 'Carlito GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Bold.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Bold.ttf');
   font-weight: bold;
   font-style: normal;
   font-display: block;
 }
 @font-face {
   font-family: 'Carlito GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Italic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Italic.ttf');
   font-weight: normal;
   font-style: italic;
   font-display: block;
 }
 @font-face {
   font-family: 'Carlito GO';
-  src: url('@chatoffice/ui/fonts/Carlito-BoldItalic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-BoldItalic.ttf');
   font-weight: bold;
   font-style: italic;
   font-display: block;
@@ -240,7 +240,7 @@
  * sans Basic Latin matches Malgun (tools/normalize-kr-sans-hmtx.py).
  */
 @font-face {
-  font-family: 'ChatOffice Sans KR';
+  font-family: 'ChaOffice Sans KR';
   src: url('./ChaAI OfficeSansKR-Regular-subset.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
@@ -1199,7 +1199,7 @@
  * ~Carlito, bold +3%, digits +3.2%/+6.5%, space -14.7%. */
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Regular.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Regular.ttf');
   size-adjust: 106.5%;
   font-weight: normal;
   font-style: normal;
@@ -1207,7 +1207,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Bold.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Bold.ttf');
   size-adjust: 110%;
   font-weight: bold;
   font-style: normal;
@@ -1215,7 +1215,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Italic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Italic.ttf');
   size-adjust: 106.9%;
   font-weight: normal;
   font-style: italic;
@@ -1223,7 +1223,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-BoldItalic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-BoldItalic.ttf');
   size-adjust: 110.2%;
   font-weight: bold;
   font-style: italic;
@@ -1231,7 +1231,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Regular.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Regular.ttf');
   size-adjust: 105.4%;
   unicode-range: U+0030-0039;
   font-weight: normal;
@@ -1240,7 +1240,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Bold.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Bold.ttf');
   size-adjust: 105.4%;
   unicode-range: U+0030-0039;
   font-weight: bold;
@@ -1249,7 +1249,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Italic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Italic.ttf');
   size-adjust: 105.4%;
   unicode-range: U+0030-0039;
   font-weight: normal;
@@ -1258,7 +1258,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-BoldItalic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-BoldItalic.ttf');
   size-adjust: 105.4%;
   unicode-range: U+0030-0039;
   font-weight: bold;
@@ -1267,7 +1267,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Regular.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Regular.ttf');
   size-adjust: 89.8%;
   unicode-range: U+0020, U+00A0;
   font-weight: normal;
@@ -1276,7 +1276,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Bold.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Bold.ttf');
   size-adjust: 89.8%;
   unicode-range: U+0020, U+00A0;
   font-weight: bold;
@@ -1285,7 +1285,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Italic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Italic.ttf');
   size-adjust: 89.8%;
   unicode-range: U+0020, U+00A0;
   font-weight: normal;
@@ -1294,7 +1294,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-BoldItalic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-BoldItalic.ttf');
   size-adjust: 89.8%;
   unicode-range: U+0020, U+00A0;
   font-weight: bold;
@@ -1306,7 +1306,7 @@
  * 0.29-0.39em, | 0.27em; the same advance in every weight. */
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Regular.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Regular.ttf');
   size-adjust: 92.4%;
   unicode-range: U+005F, U+2013;
   font-weight: normal;
@@ -1315,7 +1315,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Bold.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Bold.ttf');
   size-adjust: 92.4%;
   unicode-range: U+005F, U+2013;
   font-weight: bold;
@@ -1324,7 +1324,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Italic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Italic.ttf');
   size-adjust: 92.4%;
   unicode-range: U+005F, U+2013;
   font-weight: normal;
@@ -1333,7 +1333,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-BoldItalic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-BoldItalic.ttf');
   size-adjust: 92.4%;
   unicode-range: U+005F, U+2013;
   font-weight: bold;
@@ -1342,7 +1342,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Regular.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Regular.ttf');
   size-adjust: 89%;
   unicode-range: U+0021, U+002F, U+005C;
   font-weight: normal;
@@ -1351,7 +1351,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Bold.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Bold.ttf');
   size-adjust: 89%;
   unicode-range: U+0021, U+002F, U+005C;
   font-weight: bold;
@@ -1360,7 +1360,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Italic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Italic.ttf');
   size-adjust: 89%;
   unicode-range: U+0021, U+002F, U+005C;
   font-weight: normal;
@@ -1369,7 +1369,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-BoldItalic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-BoldItalic.ttf');
   size-adjust: 89%;
   unicode-range: U+0021, U+002F, U+005C;
   font-weight: bold;
@@ -1378,7 +1378,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Regular.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Regular.ttf');
   size-adjust: 57.5%;
   unicode-range: U+007C;
   font-weight: normal;
@@ -1387,7 +1387,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Bold.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Bold.ttf');
   size-adjust: 57.5%;
   unicode-range: U+007C;
   font-weight: bold;
@@ -1396,7 +1396,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Italic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Italic.ttf');
   size-adjust: 57.5%;
   unicode-range: U+007C;
   font-weight: normal;
@@ -1405,7 +1405,7 @@
 }
 @font-face {
   font-family: 'Aptos GO';
-  src: url('@chatoffice/ui/fonts/Carlito-BoldItalic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-BoldItalic.ttf');
   size-adjust: 57.5%;
   unicode-range: U+007C;
   font-weight: bold;
@@ -1415,7 +1415,7 @@
 
 @font-face {
   font-family: 'Aptos Display GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Regular.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Regular.ttf');
   size-adjust: 99.9%;
   font-weight: normal;
   font-style: normal;
@@ -1423,7 +1423,7 @@
 }
 @font-face {
   font-family: 'Aptos Display GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Bold.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Bold.ttf');
   size-adjust: 103%;
   font-weight: bold;
   font-style: normal;
@@ -1431,7 +1431,7 @@
 }
 @font-face {
   font-family: 'Aptos Display GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Italic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Italic.ttf');
   size-adjust: 100.5%;
   font-weight: normal;
   font-style: italic;
@@ -1439,7 +1439,7 @@
 }
 @font-face {
   font-family: 'Aptos Display GO';
-  src: url('@chatoffice/ui/fonts/Carlito-BoldItalic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-BoldItalic.ttf');
   size-adjust: 103.5%;
   font-weight: bold;
   font-style: italic;
@@ -1447,7 +1447,7 @@
 }
 @font-face {
   font-family: 'Aptos Display GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Regular.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Regular.ttf');
   size-adjust: 103.2%;
   unicode-range: U+0030-0039;
   font-weight: normal;
@@ -1456,7 +1456,7 @@
 }
 @font-face {
   font-family: 'Aptos Display GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Bold.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Bold.ttf');
   size-adjust: 106.5%;
   unicode-range: U+0030-0039;
   font-weight: bold;
@@ -1465,7 +1465,7 @@
 }
 @font-face {
   font-family: 'Aptos Display GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Italic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Italic.ttf');
   size-adjust: 103.2%;
   unicode-range: U+0030-0039;
   font-weight: normal;
@@ -1474,7 +1474,7 @@
 }
 @font-face {
   font-family: 'Aptos Display GO';
-  src: url('@chatoffice/ui/fonts/Carlito-BoldItalic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-BoldItalic.ttf');
   size-adjust: 106.5%;
   unicode-range: U+0030-0039;
   font-weight: bold;
@@ -1483,7 +1483,7 @@
 }
 @font-face {
   font-family: 'Aptos Display GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Regular.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Regular.ttf');
   size-adjust: 85.3%;
   unicode-range: U+0020, U+00A0;
   font-weight: normal;
@@ -1492,7 +1492,7 @@
 }
 @font-face {
   font-family: 'Aptos Display GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Bold.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Bold.ttf');
   size-adjust: 85.3%;
   unicode-range: U+0020, U+00A0;
   font-weight: bold;
@@ -1501,7 +1501,7 @@
 }
 @font-face {
   font-family: 'Aptos Display GO';
-  src: url('@chatoffice/ui/fonts/Carlito-Italic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-Italic.ttf');
   size-adjust: 85.3%;
   unicode-range: U+0020, U+00A0;
   font-weight: normal;
@@ -1510,7 +1510,7 @@
 }
 @font-face {
   font-family: 'Aptos Display GO';
-  src: url('@chatoffice/ui/fonts/Carlito-BoldItalic.ttf');
+  src: url('@chaoffice/ui/fonts/Carlito-BoldItalic.ttf');
   size-adjust: 85.3%;
   unicode-range: U+0020, U+00A0;
   font-weight: bold;
@@ -1554,15 +1554,15 @@
  * Latin subset is bundled (tools/build-dm-sans-font.py). A locally installed
  * DM Sans still precedes this face in the chain. */
 @font-face {
-  font-family: 'ChatOffice DM Sans';
-  src: url('./ChatOfficeDMSans-Regular-subset.woff2') format('woff2');
+  font-family: 'ChaOffice DM Sans';
+  src: url('./ChaOfficeDMSans-Regular-subset.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
   font-display: block;
 }
 @font-face {
-  font-family: 'ChatOffice DM Sans';
-  src: url('./ChatOfficeDMSans-Bold-subset.woff2') format('woff2');
+  font-family: 'ChaOffice DM Sans';
+  src: url('./ChaOfficeDMSans-Bold-subset.woff2') format('woff2');
   font-weight: bold;
   font-style: normal;
   font-display: block;
@@ -1775,7 +1775,7 @@
  * these aliases in the chain. */
 @font-face {
   font-family: 'Meiryo UI GO';
-  src: url('./ChatOfficeUIKanaJP-Regular.woff2') format('woff2');
+  src: url('./ChaOfficeUIKanaJP-Regular.woff2') format('woff2');
   unicode-range: U+3000-3002, U+3008-3011, U+3014-3015, U+3041-3096, U+3099-30FF;
   font-weight: normal;
   font-style: normal;
@@ -1783,7 +1783,7 @@
 }
 @font-face {
   font-family: 'Meiryo UI GO';
-  src: url('./ChatOfficeUIKanaJP-Bold.woff2') format('woff2');
+  src: url('./ChaOfficeUIKanaJP-Bold.woff2') format('woff2');
   unicode-range: U+3000-3002, U+3008-3011, U+3014-3015, U+3041-3096, U+3099-30FF;
   font-weight: bold;
   font-style: normal;
@@ -2610,8 +2610,8 @@
  * through to AppleMyungjo, whose U+2082 is a full-width (1.0em) glyph —
  * "Cu₂O" rendered as "Cu₂ O". Serve them from bundled latin faces instead. */
 @font-face {
-  font-family: 'ChatOffice Sans KR';
-  src: url('@chatoffice/ui/fonts/Carlito-Regular.ttf') format('truetype');
+  font-family: 'ChaOffice Sans KR';
+  src: url('@chaoffice/ui/fonts/Carlito-Regular.ttf') format('truetype');
   unicode-range: U+2070-209F, U+00B2-00B3, U+00B9;
   font-weight: normal;
   font-style: normal;
@@ -2620,7 +2620,7 @@
 @font-face {
   font-family: 'ChaAI Office Serif KR';
   /* Carlito, not Caladea/LiberationSerif: only Carlito covers the whole block */
-  src: url('@chatoffice/ui/fonts/Carlito-Regular.ttf') format('truetype');
+  src: url('@chaoffice/ui/fonts/Carlito-Regular.ttf') format('truetype');
   unicode-range: U+2070-209F, U+00B2-00B3, U+00B9;
   font-weight: normal;
   font-style: normal;
@@ -2651,7 +2651,7 @@
 }
 @font-face {
   font-family: 'Noto Sans CJK SC';
-  src: url('@chatoffice/ui/fonts/Carlito-Regular.ttf') format('truetype');
+  src: url('@chaoffice/ui/fonts/Carlito-Regular.ttf') format('truetype');
   unicode-range: U+2070-2071, U+2074-2094;
   font-weight: normal;
   font-style: normal;

@@ -8,19 +8,19 @@ import { CliError, EXIT } from '../result'
 export function launcherPath(): string | null {
   const packaged = packagedResourcesDir()
   if (packaged)
-    return join(packaged, 'cli', process.platform === 'win32' ? 'chatoffice.cmd' : 'chatoffice')
+    return join(packaged, 'cli', process.platform === 'win32' ? 'chaoffice.cmd' : 'chaoffice')
   const root = repoRoot()
-  return root ? join(root, 'packages', 'cli', 'bin', 'chatoffice') : null
+  return root ? join(root, 'packages', 'cli', 'bin', 'chaoffice') : null
 }
 
 export const installCommand: CommandDef = {
   name: 'install-cli',
   summary:
-    'Put chatoffice on the PATH (symlink into /usr/local/bin or ~/.local/bin, or the user PATH on Windows).',
+    'Put chaoffice on the PATH (symlink into /usr/local/bin or ~/.local/bin, or the user PATH on Windows).',
   usage: 'install-cli',
   async run() {
     const launcher = launcherPath()
-    if (!launcher) throw new CliError(EXIT.app, 'cannot locate the chatoffice launcher')
+    if (!launcher) throw new CliError(EXIT.app, 'cannot locate the chaoffice launcher')
     const r = installCliLink({ launcher })
     const detail = {
       status: r.status,
@@ -30,8 +30,8 @@ export const installCommand: CommandDef = {
     }
     const onPath = (verb: string) =>
       r.pathHint
-        ? `chatoffice is ${verb} linked at ${r.location}, but ${dirname(r.location ?? '')} is not on your PATH; add it with: ${r.pathHint}`
-        : `chatoffice is ${verb} on the PATH (${r.location})`
+        ? `chaoffice is ${verb} linked at ${r.location}, but ${dirname(r.location ?? '')} is not on your PATH; add it with: ${r.pathHint}`
+        : `chaoffice is ${verb} on the PATH (${r.location})`
     switch (r.status) {
       case 'linked':
         return { summary: onPath('now'), detail }

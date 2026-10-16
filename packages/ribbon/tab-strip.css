@@ -1,4 +1,4 @@
-/* Ribbon tab-strip overflow (shared, from @chatoffice/ribbon/tab-strip.css).
+/* Ribbon tab-strip overflow (shared, from @chaoffice/ribbon/tab-strip.css).
    When the tab row runs out of width it clips instead of wrapping; the wheel
    scrolls it and TabStripArrows page through the hidden tabs. Hosts wrap the
    scrolling tabs as .ribbon-tabs-scroll > .ribbon-tabs-track and keep their

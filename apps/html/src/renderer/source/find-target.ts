@@ -1,5 +1,5 @@
 import { EditorView } from '@codemirror/view'
-import type { FindOptions, FindTarget } from '@chatoffice/ui'
+import type { FindOptions, FindTarget } from '@chaoffice/ui'
 import { collectMatches, setFindHits, type FindRange } from './cm-find'
 import { External } from './cm-setup'
 

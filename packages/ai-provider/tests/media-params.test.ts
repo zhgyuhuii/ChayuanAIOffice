@@ -85,7 +85,7 @@ describe('videoParamSpec', () => {
   })
 
   it('unknown vendors fall back to the generic aspect/duration shape', () => {
-    expect(videoParamSpec('chatoffice', 'some-video-model').fields.map((f) => f.id)).toEqual([
+    expect(videoParamSpec('chaoffice', 'some-video-model').fields.map((f) => f.id)).toEqual([
       'aspectRatio',
       'durationSeconds',
     ])

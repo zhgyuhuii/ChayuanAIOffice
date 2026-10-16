@@ -1,5 +1,5 @@
 /**
- * @chatoffice/mobile-touch — shared mobile interaction kit (consensus #7):
+ * @chaoffice/mobile-touch — shared mobile interaction kit (consensus #7):
  * gestures, selection handles, editor overlay, keyboard avoidance.
  *
  * P1 shipped keyboard avoidance, long-press and double-tap; P2 completes the

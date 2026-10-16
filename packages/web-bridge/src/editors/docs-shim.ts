@@ -103,17 +103,17 @@ export function installDocsShim(client: BridgeClient): void {
     },
 
     async getLanguage(): Promise<string> {
-      return (localStorage.getItem('chatoffice.lang') as string) ?? 'zh'
+      return (localStorage.getItem('chaoffice.lang') as string) ?? 'zh'
     },
     async getTheme(): Promise<'light' | 'dark' | 'system'> {
-      return ((localStorage.getItem('chatoffice.theme') as 'light' | 'dark' | 'system') ?? 'system')
+      return ((localStorage.getItem('chaoffice.theme') as 'light' | 'dark' | 'system') ?? 'system')
     },
     onLanguageChanged: (h: (l: string) => void) => {
-      window.addEventListener('go-lang', () => h(localStorage.getItem('chatoffice.lang') ?? 'zh'))
+      window.addEventListener('go-lang', () => h(localStorage.getItem('chaoffice.lang') ?? 'zh'))
       return () => undefined
     },
     onThemeChanged: (h: (t: string) => void) => {
-      window.addEventListener('go-theme', () => h(localStorage.getItem('chatoffice.theme') ?? 'system'))
+      window.addEventListener('go-theme', () => h(localStorage.getItem('chaoffice.theme') ?? 'system'))
       return () => undefined
     },
     onChromePressed: () => () => undefined,

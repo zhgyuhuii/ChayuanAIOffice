@@ -30,7 +30,7 @@ export function fsAccessSupported(): boolean {
     typeof (window as FsWindow).showOpenFilePicker === 'function'
 }
 
-const DB_NAME = 'chatoffice-fs'
+const DB_NAME = 'chaoffice-fs'
 const STORE = 'handles'
 
 function idb(): Promise<IDBDatabase> {

@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest'
 import {
   applyVisualEdits,
   VisualEditError,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-drawing-edit'
-import type { MutablePackage } from '@chatoffice/xlsx-gateway/gateway/xlsx-drawing-add'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-drawing-edit'
+import type { MutablePackage } from '@chaoffice/xlsx-gateway/gateway/xlsx-drawing-add'
 
 const ANCHOR = {
   fromRow: 2,

@@ -11,13 +11,13 @@ import { expect, describe, it, beforeEach } from 'vitest'
 import {
   expandToPrimitiveOps,
   workbookOperationSchema,
-} from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
+} from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
 import {
   columnIndex,
   columnLabel,
   parseRange,
   rangeCellCount,
-} from '@chatoffice/xlsx-gateway/domain/cell-address'
+} from '@chaoffice/xlsx-gateway/domain/cell-address'
 
 const DSL = (op: unknown) => expandToPrimitiveOps([op] as never)
 

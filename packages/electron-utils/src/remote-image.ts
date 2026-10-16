@@ -1,6 +1,6 @@
 /// Downloader for AI-inserted images. Image-search results largely live on the
 /// ChaOffice CDN (sspark.genspark.ai), which intermittently refuses bare
-/// requests; browser-like headers plus a Referer on chatoffice hosts and a couple
+/// requests; browser-like headers plus a Referer on chaoffice hosts and a couple
 /// of retries turn most of those transient failures into successful inserts.
 
 import { readGeneratedImage } from './generated-images'

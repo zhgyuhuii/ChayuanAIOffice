@@ -29,7 +29,7 @@
 ## 2. 派生默认细则（无异议即按此执行）
 
 - **双击路由**：独立公式元素（addMath 产物）双击弹编辑对话框；混排文本框（第三方文件里公式与文字同段）双击仍进文本编辑——混排段落的公式按 #8 字节直通保护。
-- **descr 载荷格式**：`chatoffice-math:<latex>` 前缀标记，与 ink 载荷共存约定一致。
+- **descr 载荷格式**：`chaoffice-math:<latex>` 前缀标记，与 ink 载荷共存约定一致。
 - **addMath op 形态**：`{latex, target:{slide}, offset:{x,y,cx,cy}, fontSizePt?}`，走 apply_ops 词汇表（不设独立工具——模型对 applyOps 已熟练）；offset 为 EMU。
 - **渲染排版基线**：行内块（run 内联在文字流中，越过基线上下伸展）；独立公式元素居中段落。
 - **测试即验收**：#10 清单逐条成为 LaTeX→IR→OMML→parse 回环断言 + 渲染布局快照断言。

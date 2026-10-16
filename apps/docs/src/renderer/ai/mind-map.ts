@@ -1,4 +1,4 @@
-import type { AgentToolDef, MindMapTreeNode } from '@chatoffice/agent-core'
+import type { AgentToolDef, MindMapTreeNode } from '@chaoffice/agent-core'
 
 /**
  * Mind map generation for the docs assistant: the tool definition the model

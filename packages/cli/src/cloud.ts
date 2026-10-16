@@ -1,18 +1,18 @@
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
-import { setChaOfficeProxyUrl } from '@chatoffice/ai-search'
-import { chatofficeUserDataDir } from './gui'
+import { setChaOfficeProxyUrl } from '@chaoffice/ai-search'
+import { chaofficeUserDataDir } from './gui'
 import { packagedResourcesDir } from './resources'
 
 /**
  * The cloud commands (search / image / media) reuse the editors' provider
- * routing: Genspark when signed in (~/.chatoffice/auth.json) and cloud tools
+ * routing: Genspark when signed in (~/.chaoffice/auth.json) and cloud tools
  * are on, otherwise the BYOK provider chosen in the app's AI settings. That
- * settings file lives in the shell's Electron userData directory, which chatoffice
+ * settings file lives in the shell's Electron userData directory, which chaoffice
  * has to locate without Electron.
  */
 export function aiSettingsPath(env: NodeJS.ProcessEnv): string {
-  return env.GENOFFICE_AI_SETTINGS || join(chatofficeUserDataDir(env), 'ai-settings.json')
+  return env.GENOFFICE_AI_SETTINGS || join(chaofficeUserDataDir(env), 'ai-settings.json')
 }
 
 /** First http(s) proxy in the usual environment variables, as the app's main process reads them. */

@@ -1,5 +1,5 @@
 {
-  "name": "@chatoffice/shell",
+  "name": "@chaoffice/shell",
   "productName": "ChaAI Office",
   "version": "1.0.5",
   "license": "Apache-2.0",
@@ -20,22 +20,22 @@
     "dist:linux": "npm run notices && electron-vite build && electron-builder --linux"
   },
   "devDependencies": {
-    "@chatoffice/agent-core": "*",
-    "@chatoffice/ai-provider": "*",
-    "@chatoffice/ai-search": "*",
-    "@chatoffice/cli": "*",
-    "@chatoffice/docs": "*",
-    "@chatoffice/docx-engine": "*",
-    "@chatoffice/electron-utils": "*",
-    "@chatoffice/i18n": "*",
-    "@chatoffice/pipelines": "*",
-    "@chatoffice/pptx-engine": "*",
-    "@chatoffice/pptx-render": "*",
-    "@chatoffice/sheets": "*",
-    "@chatoffice/slides": "*",
-    "@chatoffice/storage-adapter": "*",
-    "@chatoffice/ui": "*",
-    "@chatoffice/xlsx-gateway": "*",
+    "@chaoffice/agent-core": "*",
+    "@chaoffice/ai-provider": "*",
+    "@chaoffice/ai-search": "*",
+    "@chaoffice/cli": "*",
+    "@chaoffice/docs": "*",
+    "@chaoffice/docx-engine": "*",
+    "@chaoffice/electron-utils": "*",
+    "@chaoffice/i18n": "*",
+    "@chaoffice/pipelines": "*",
+    "@chaoffice/pptx-engine": "*",
+    "@chaoffice/pptx-render": "*",
+    "@chaoffice/sheets": "*",
+    "@chaoffice/slides": "*",
+    "@chaoffice/storage-adapter": "*",
+    "@chaoffice/ui": "*",
+    "@chaoffice/xlsx-gateway": "*",
     "@modelcontextprotocol/sdk": "^1.32.1",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.2.14",
@@ -56,5 +56,5 @@
   "dependencies": {
     "qrcode": "^1.5.4"
   },
-  "chatofficeUpstreamVersion": "0.11.0"
+  "chaofficeUpstreamVersion": "0.11.0"
 }

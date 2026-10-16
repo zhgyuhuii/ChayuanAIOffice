@@ -16,7 +16,7 @@ afterEach(() => {
 })
 
 /**
- * @param sourceMode the .txt/.json "this file is source text" flag from chatoffice#1848
+ * @param sourceMode the .txt/.json "this file is source text" flag from chaoffice#1848
  * @param sourceViewOpen this PR's markdown source view, kept a separate flag
  *   because the two mean different things and can never both be on
  */

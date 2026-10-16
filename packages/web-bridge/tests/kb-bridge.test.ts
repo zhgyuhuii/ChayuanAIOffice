@@ -2,9 +2,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createKbFetchBridge, kbApiBase, kbFileUrl } from '../src/kb-bridge'
 
 describe('kbApiBase', () => {
-  it('keeps the /chatoffice-app prefix behind the dsh plugin proxy', () => {
-    expect(kbApiBase('/chatoffice-app/')).toBe('/chatoffice-app')
-    expect(kbApiBase('/chatoffice-app/editors/docs/')).toBe('/chatoffice-app')
+  it('keeps the /chaoffice-app prefix behind the dsh plugin proxy', () => {
+    expect(kbApiBase('/chaoffice-app/')).toBe('/chaoffice-app')
+    expect(kbApiBase('/chaoffice-app/editors/docs/')).toBe('/chaoffice-app')
   })
 
   it('uses the origin root in the plain web form', () => {
@@ -20,18 +20,18 @@ describe('kbFileUrl / bridge.file', () => {
 
   it('builds the same-origin download URL, prefix included', async () => {
     vi.stubGlobal('window', {
-      location: { origin: 'http://127.0.0.1:52584', pathname: '/chatoffice-app/' },
+      location: { origin: 'http://127.0.0.1:52584', pathname: '/chaoffice-app/' },
     })
-    const url = kbFileUrl({ kbId: '公司制度库', docId: 'd1' }, '/chatoffice-app')
+    const url = kbFileUrl({ kbId: '公司制度库', docId: 'd1' }, '/chaoffice-app')
     expect(url).toBe(
-      'http://127.0.0.1:52584/chatoffice-app/kb/file?kbId=' +
+      'http://127.0.0.1:52584/chaoffice-app/kb/file?kbId=' +
         encodeURIComponent('公司制度库') +
         '&docId=d1',
     )
-    const bridge = createKbFetchBridge('/chatoffice-app')
+    const bridge = createKbFetchBridge('/chaoffice-app')
     await expect(bridge.file({ kbId: 'k', docId: 'd2' })).resolves.toMatchObject({
       ok: true,
-      url: 'http://127.0.0.1:52584/chatoffice-app/kb/file?kbId=k&docId=d2',
+      url: 'http://127.0.0.1:52584/chaoffice-app/kb/file?kbId=k&docId=d2',
     })
   })
 })

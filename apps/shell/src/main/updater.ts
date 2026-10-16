@@ -5,7 +5,7 @@ import type { BrowserWindow } from 'electron'
 import { autoUpdater, CancellationToken } from 'electron-updater'
 import { installResumeDownload } from './update-resume'
 import type { UpdateInfo } from 'electron-updater'
-import { createI18n, getUiLang, htmlLang } from '@chatoffice/i18n'
+import { createI18n, getUiLang, htmlLang } from '@chaoffice/i18n'
 import type {
   UpdateChannel,
   UpdatePhase,
@@ -28,7 +28,7 @@ import {
  * the update channel prefix (production builds only). The packaged app reads
  * that URL from resources/app-update.yml, which electron-builder bakes in
  * from the `publish` config in apps/shell/electron-builder.cjs — the URL
- * itself is injected at build time via the CHATOFFICE_UPDATE_URL env var and
+ * itself is injected at build time via the CHAOFFICE_UPDATE_URL env var and
  * is intentionally not committed to the repo.
  *
  * UX is the strong-guidance modal card (update-window.ts), not a native

@@ -51,7 +51,7 @@ export async function printHtmlDocument({
   html,
   window: win,
   fileName = 'print.html',
-  dirPrefix = 'chatoffice-print-',
+  dirPrefix = 'chaoffice-print-',
   platform = process.platform,
 }: PrintDocumentOptions): Promise<PrintDialogOutcome> {
   let tempDir: string | null = null

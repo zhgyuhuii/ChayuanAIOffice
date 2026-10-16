@@ -5,7 +5,7 @@ import {
   openPptx,
   replacePictureBytes,
   type PictureElement,
-} from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
 import type { Session } from '../src/main/session-state'
 import {
   beginHistoryBatch,

@@ -11,7 +11,7 @@ import {
   type KbCitation,
   type KbHit,
   type KbStatus,
-} from '@chatoffice/ai-provider/browser'
+} from '@chaoffice/ai-provider/browser'
 
 export type { KbCitation, KbHit, KbStatus }
 
@@ -76,7 +76,7 @@ export function kbBridge(): KbBridgeApi | null {
 }
 
 /** context budget for retrieval augmentation, in characters of hit text */
-const BUDGET_KEY = 'chatoffice-kb-budget'
+const BUDGET_KEY = 'chaoffice-kb-budget'
 export function kbBudget(): number {
   try {
     const raw = Number(localStorage.getItem(BUDGET_KEY))
@@ -93,7 +93,7 @@ export function setKbBudget(chars: number): void {
   }
 }
 
-const SELECTED_KEY = 'chatoffice-kb-selected'
+const SELECTED_KEY = 'chaoffice-kb-selected'
 export function kbSelectedIds(): string[] {
   try {
     const raw = JSON.parse(localStorage.getItem(SELECTED_KEY) ?? '[]') as unknown

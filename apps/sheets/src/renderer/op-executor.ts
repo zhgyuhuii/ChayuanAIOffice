@@ -5,7 +5,7 @@
  * AI proposes; every function receives its App-scope context explicitly.
  */
 import { IUndoRedoService } from '@univerjs/core'
-import type { CellBounds } from '@chatoffice/xlsx-gateway/domain/chart-visual'
+import type { CellBounds } from '@chaoffice/xlsx-gateway/domain/chart-visual'
 import {
   columnIndex,
   columnLabel,
@@ -13,22 +13,22 @@ import {
   parseAddress,
   parseRange,
   rangeCellCount,
-} from '@chatoffice/xlsx-gateway/domain/cell-address'
-import { offsetFormulaRefs } from '@chatoffice/xlsx-gateway/domain/formula-shift'
-import { MAX_GRID_COLUMNS, MAX_GRID_ROWS } from '@chatoffice/xlsx-gateway/shared/grid-bounds'
-import { computeSortedRowOrder } from '@chatoffice/xlsx-gateway/domain/sort-range'
+} from '@chaoffice/xlsx-gateway/domain/cell-address'
+import { offsetFormulaRefs } from '@chaoffice/xlsx-gateway/domain/formula-shift'
+import { MAX_GRID_COLUMNS, MAX_GRID_ROWS } from '@chaoffice/xlsx-gateway/shared/grid-bounds'
+import { computeSortedRowOrder } from '@chaoffice/xlsx-gateway/domain/sort-range'
 import {
   copyTargetBounds,
   filteredCopySourceRows,
   matchableCellText,
   replaceOccurrences,
   type WorkbookOperation,
-} from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
+} from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
 import type {
   ApplyOutcome,
   ChangePlan,
   StructuralChange,
-} from '@chatoffice/xlsx-gateway/domain/workbook.types'
+} from '@chaoffice/xlsx-gateway/domain/workbook.types'
 import { pushBulkFillUndo } from './bulk-fill-undo'
 import { MAX_PENDING_AI_EDIT_CELLS } from './app-constants'
 import {
@@ -64,7 +64,7 @@ import { effectiveSheetProtection, mergeSheetProtectionAllow } from './sheet-pro
 import {
   hashSheetPassword,
   verifySheetPassword,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-protection-hash'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-protection-hash'
 import type {
   ActiveWorkbook,
   LazyWorkbookState,

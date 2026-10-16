@@ -7,8 +7,8 @@
 /// several sheets with different paper or orientation.
 
 import { BorderStyleTypes } from '@univerjs/core'
-import { htmlLang, type Lang } from '@chatoffice/i18n'
-import { columnIndex, columnLabel } from '@chatoffice/xlsx-gateway/domain/cell-address'
+import { htmlLang, type Lang } from '@chaoffice/i18n'
+import { columnIndex, columnLabel } from '@chaoffice/xlsx-gateway/domain/cell-address'
 
 import type { WorkbookExportPdfRequest } from '../shared/desktop-api'
 import type { HeaderFooterParts } from './edit-journal'

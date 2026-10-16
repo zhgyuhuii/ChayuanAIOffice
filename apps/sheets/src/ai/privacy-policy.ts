@@ -1,4 +1,4 @@
-import type { CellScalar } from '@chatoffice/xlsx-gateway/domain/workbook.types'
+import type { CellScalar } from '@chaoffice/xlsx-gateway/domain/workbook.types'
 
 export type UploadPolicy = 'allow' | 'redact' | 'statistics-only' | 'deny'
 

@@ -1,5 +1,5 @@
 {
-  "name": "@chatoffice/pdf2docx",
+  "name": "@chaoffice/pdf2docx",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -15,9 +15,9 @@
   },
   "dependencies": {
     "@embedpdf/pdfium": "^2.15.0",
-    "@chatoffice/docx-engine": "*",
-    "@chatoffice/font-metrics": "*",
-    "@chatoffice/pptx-engine": "*",
+    "@chaoffice/docx-engine": "*",
+    "@chaoffice/font-metrics": "*",
+    "@chaoffice/pptx-engine": "*",
     "bidi-js": "^1.0.3",
     "jszip": "^3.10.1"
   },

@@ -21,7 +21,7 @@ import {
   type Slide,
   type SlideAnimation,
   type SlideElement,
-} from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
 import {
   GuidedError,
   register,

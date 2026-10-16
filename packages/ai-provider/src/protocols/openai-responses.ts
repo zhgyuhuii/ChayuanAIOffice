@@ -1,7 +1,7 @@
-import type { AgentMessage, AgentToolCall, AgentToolDef } from '@chatoffice/agent-core'
+import type { AgentMessage, AgentToolCall, AgentToolDef } from '@chaoffice/agent-core'
 import { aiFetch } from '../fetch'
 import { httpBodyDetail } from '../http-error'
-import { chatofficeAttributionHeaders } from '../providers'
+import { chaofficeAttributionHeaders } from '../providers'
 import type { AiChatResponse, AiProviderConfig } from '../types'
 import { createStreamWatchdog, type StreamWatchdog } from '../watchdog'
 import {
@@ -167,7 +167,7 @@ async function responsesTurn(
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${config.apiKey}`,
-      ...chatofficeAttributionHeaders(baseUrl),
+      ...chaofficeAttributionHeaders(baseUrl),
     },
     body: JSON.stringify({
       model: config.model,
@@ -327,7 +327,7 @@ export async function chatOpenAiResponses(
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${config.apiKey}`,
-      ...chatofficeAttributionHeaders(baseUrl),
+      ...chaofficeAttributionHeaders(baseUrl),
     },
     body: JSON.stringify({
       model: config.model,

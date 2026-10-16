@@ -10,12 +10,12 @@ import {
   columnLabel,
   parseAddress,
   type CellCoordinates,
-} from '@chatoffice/xlsx-gateway/domain/cell-address'
+} from '@chaoffice/xlsx-gateway/domain/cell-address'
 import {
   decodeCsvBuffer,
   isNumericCell,
   parseCsv,
-} from '@chatoffice/xlsx-gateway/gateway/csv-import'
+} from '@chaoffice/xlsx-gateway/gateway/csv-import'
 import type { AdvancedFilterColumn, AdvancedFilterCriteria } from './AdvancedFilterDialog'
 import {
   buildLabelMatrix,

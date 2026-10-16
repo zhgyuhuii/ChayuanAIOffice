@@ -1,4 +1,4 @@
-import { parseChartPartXml, type ChartDisplay } from '@chatoffice/docx-engine'
+import { parseChartPartXml, type ChartDisplay } from '@chaoffice/docx-engine'
 import { describe, expect, it } from 'vitest'
 import {
   CHART_TITLE_ROW_PX,

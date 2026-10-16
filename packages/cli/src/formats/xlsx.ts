@@ -5,8 +5,8 @@ import {
   decodeCsvBuffer,
   isNumericCell,
   parseCsv,
-} from '@chatoffice/xlsx-gateway/gateway/csv-import'
-import { columnLabel, parseAddress } from '@chatoffice/xlsx-gateway/domain/cell-address'
+} from '@chaoffice/xlsx-gateway/gateway/csv-import'
+import { columnLabel, parseAddress } from '@chaoffice/xlsx-gateway/domain/cell-address'
 import {
   assembleWithJsZip,
   createBufferEntrySource,
@@ -16,10 +16,10 @@ import {
   type SheetFormulaValues,
   type SheetStructuralOps,
   type XlsxMutation,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
-import { maxRelationshipId, type SheetEditPlan } from '@chatoffice/xlsx-gateway/gateway/xlsx-sheets'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
+import { maxRelationshipId, type SheetEditPlan } from '@chaoffice/xlsx-gateway/gateway/xlsx-sheets'
 import { EMPTY_PAYLOADS, type GatewayPayloads } from './xlsx-gateway-ops'
-import type { WorkbookStyleEdit } from '@chatoffice/xlsx-gateway/shared/edit-schemas'
+import type { WorkbookStyleEdit } from '@chaoffice/xlsx-gateway/shared/edit-schemas'
 import {
   echoStyleColor,
   fillDisplayColor,
@@ -28,11 +28,11 @@ import {
   resolveStyleColor,
   type StyleColor,
   type StyleColorEcho,
-} from '@chatoffice/xlsx-gateway/domain/style-color'
+} from '@chaoffice/xlsx-gateway/domain/style-color'
 import {
   parseStylesheetFormats,
   type StylesheetFormats,
-} from '@chatoffice/xlsx-gateway/gateway/xlsx-style-read'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-style-read'
 import { readFile } from 'node:fs/promises'
 import { atomicWriteFile } from '../../../../apps/sheets/src/main/atomic-write'
 import { XlsxSidecarClient } from '../../../../apps/sheets/src/main/xlsx-sidecar-client'
@@ -479,7 +479,7 @@ export async function readSheet(path: string, opts: ReadOptions): Promise<SheetR
           pending.push({ row: c.row, column: c.column })
       }
     }
-    // formulas written without a cached value (e.g. by chatoffice itself) are evaluated on the fly
+    // formulas written without a cached value (e.g. by chaoffice itself) are evaluated on the fly
     if (pending.length) {
       const box = boundingBox(pending)
       const cells = await recalcRange(client, path, meta.name, box)

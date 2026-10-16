@@ -4,19 +4,19 @@ import type { AiSettingsSource } from '../src/settings-source'
 import type { AiSettingsV2, AiStreamChunk } from '../src/types'
 
 /**
- * The login-gates-nothing heal: a current model parked on the chatoffice
+ * The login-gates-nothing heal: a current model parked on the chaoffice
  * profile while signed out falls through to the first usable BYOK chat
- * model (persisted), so chat keeps working. With no alternative the chatoffice
+ * model (persisted), so chat keeps working. With no alternative the chaoffice
  * error stays as the sign-in guidance.
  */
 
-const chatofficeProfile = {
-  id: 'chatoffice',
-  vendorId: 'chatoffice',
+const chaofficeProfile = {
+  id: 'chaoffice',
+  vendorId: 'chaoffice',
   displayName: 'ChaOffice',
   protocol: 'openai-completions' as const,
   baseUrl: '',
-  auth: 'chatoffice-login' as const,
+  auth: 'chaoffice-login' as const,
   enabled: true,
   models: [{ id: 'claude-opus-4-7' }],
 }
@@ -57,14 +57,14 @@ const noChaOffice = {
 
 const translate = (key: string) => key
 
-describe('runtime chatoffice fallback heal', () => {
-  it('switches the current model off the chatoffice profile when signed out and a BYOK chat model exists', async () => {
+describe('runtime chaoffice fallback heal', () => {
+  it('switches the current model off the chaoffice profile when signed out and a BYOK chat model exists', async () => {
     const source = makeSource({
       version: 2,
-      profiles: [chatofficeProfile, byokProfile()],
-      currentModel: { profileId: 'chatoffice', modelId: 'claude-opus-4-7' },
+      profiles: [chaofficeProfile, byokProfile()],
+      currentModel: { profileId: 'chaoffice', modelId: 'claude-opus-4-7' },
     })
-    const runtime = createAiRuntime({ source, chatoffice: noChaOffice, translate })
+    const runtime = createAiRuntime({ source, chaoffice: noChaOffice, translate })
 
     const view = await runtime.getSettingsView()
     expect(view.currentModel).toEqual({ profileId: 'zhipu', modelId: 'glm-5.3' })
@@ -74,42 +74,42 @@ describe('runtime chatoffice fallback heal', () => {
     expect(source.writes.length).toBe(1)
   })
 
-  it('keeps the chatoffice selection (sign-in guidance) when no alternative exists', async () => {
+  it('keeps the chaoffice selection (sign-in guidance) when no alternative exists', async () => {
     const source = makeSource({
       version: 2,
-      profiles: [chatofficeProfile],
-      currentModel: { profileId: 'chatoffice', modelId: 'claude-opus-4-7' },
+      profiles: [chaofficeProfile],
+      currentModel: { profileId: 'chaoffice', modelId: 'claude-opus-4-7' },
     })
-    const runtime = createAiRuntime({ source, chatoffice: noChaOffice, translate })
+    const runtime = createAiRuntime({ source, chaoffice: noChaOffice, translate })
 
     const view = await runtime.getSettingsView()
-    expect(view.currentModel).toEqual({ profileId: 'chatoffice', modelId: 'claude-opus-4-7' })
+    expect(view.currentModel).toEqual({ profileId: 'chaoffice', modelId: 'claude-opus-4-7' })
     expect(source.writes.length).toBe(0)
   })
 
-  it('leaves the chatoffice selection alone while signed in', async () => {
+  it('leaves the chaoffice selection alone while signed in', async () => {
     const source = makeSource({
       version: 2,
-      profiles: [chatofficeProfile, byokProfile()],
-      currentModel: { profileId: 'chatoffice', modelId: 'claude-opus-4-7' },
+      profiles: [chaofficeProfile, byokProfile()],
+      currentModel: { profileId: 'chaoffice', modelId: 'claude-opus-4-7' },
     })
     const runtime = createAiRuntime({
       source,
-      chatoffice: { ...noChaOffice, hasAuth: () => true, apiKey: () => 'chatoffice-key' },
+      chaoffice: { ...noChaOffice, hasAuth: () => true, apiKey: () => 'chaoffice-key' },
       translate,
     })
     const view = await runtime.getSettingsView()
-    expect(view.currentModel).toEqual({ profileId: 'chatoffice', modelId: 'claude-opus-4-7' })
+    expect(view.currentModel).toEqual({ profileId: 'chaoffice', modelId: 'claude-opus-4-7' })
     expect(source.writes.length).toBe(0)
   })
 
-  it('a run with a parked chatoffice selection resolves the BYOK fallback instead of erroring', async () => {
+  it('a run with a parked chaoffice selection resolves the BYOK fallback instead of erroring', async () => {
     const source = makeSource({
       version: 2,
-      profiles: [chatofficeProfile, byokProfile()],
-      currentModel: { profileId: 'chatoffice', modelId: 'claude-opus-4-7' },
+      profiles: [chaofficeProfile, byokProfile()],
+      currentModel: { profileId: 'chaoffice', modelId: 'claude-opus-4-7' },
     })
-    const runtime = createAiRuntime({ source, chatoffice: noChaOffice, translate })
+    const runtime = createAiRuntime({ source, chaoffice: noChaOffice, translate })
     const chunks: AiStreamChunk[] = []
     // the healed read swaps the selection before resolution; resolveForRun on
     // the stale selection would throw — verify via the healed view + resolve

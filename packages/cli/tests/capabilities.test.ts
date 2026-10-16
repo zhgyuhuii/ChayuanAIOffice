@@ -24,7 +24,7 @@ function settingsFile(dir: string, settings: Record<string, unknown>): string {
   return path
 }
 
-describe('chatoffice capabilities', () => {
+describe('chaoffice capabilities', () => {
   it('falls back to keyless web search even when signed out with default settings', async () => {
     const dir = tempDir()
     const r = await run(['capabilities', '--json'], {

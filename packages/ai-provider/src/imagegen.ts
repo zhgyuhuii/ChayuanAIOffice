@@ -1,6 +1,6 @@
 import { aiFetch } from './fetch'
 import { httpBodyDetail } from './http-error'
-import { chatofficeAttributionHeaders } from './providers'
+import { chaofficeAttributionHeaders } from './providers'
 import type { ResolvedModelCall } from './settings-v2'
 
 /**
@@ -76,7 +76,7 @@ async function generateViaOpenAiImages(
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${call.apiKey}`,
-      ...chatofficeAttributionHeaders(call.baseUrl),
+      ...chaofficeAttributionHeaders(call.baseUrl),
     },
     body: JSON.stringify({
       model: call.model,
@@ -238,7 +238,7 @@ async function generateViaGemini(
       headers: {
         'Content-Type': 'application/json',
         'x-goog-api-key': call.apiKey,
-        ...chatofficeAttributionHeaders(call.baseUrl),
+        ...chaofficeAttributionHeaders(call.baseUrl),
       },
       body: JSON.stringify({
         contents: [{ role: 'user', parts: [{ text: req.prompt }] }],

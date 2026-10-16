@@ -1,4 +1,4 @@
-import type { AgentToolDef } from '@chatoffice/agent-core'
+import type { AgentToolDef } from '@chaoffice/agent-core'
 import type { ExternalMcpServerTools, ExternalMcpToolInfo } from '../../../shared/mcp-client-api'
 
 /**

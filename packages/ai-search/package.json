@@ -1,5 +1,5 @@
 {
-  "name": "@chatoffice/ai-search",
+  "name": "@chaoffice/ai-search",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -14,8 +14,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@chatoffice/ai-provider": "*",
-    "@chatoffice/electron-utils": "*",
+    "@chaoffice/ai-provider": "*",
+    "@chaoffice/electron-utils": "*",
     "@modelcontextprotocol/sdk": "^1.32.1"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { HfParagraph, HfTextBox } from '@chatoffice/docx-engine'
+import type { HfParagraph, HfTextBox } from '@chaoffice/docx-engine'
 import {
   hfTextBoxClass,
   hfTextBoxStyle,

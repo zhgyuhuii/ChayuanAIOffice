@@ -8,7 +8,7 @@ import {
   createKnowledgeBaseSkill,
   type CreateDocumentFormat,
   type KbFileInfo,
-} from '@chatoffice/agent-core'
+} from '@chaoffice/agent-core'
 import {
   AiComposer,
   AiTypingIndicator,
@@ -17,8 +17,8 @@ import {
   createFileNav,
   Markdown,
   type AiTokenUsageView,
-} from '@chatoffice/ui'
-import { resolveCurrentModel, type AiModelSelection } from '@chatoffice/ai-provider/browser'
+} from '@chaoffice/ui'
+import { resolveCurrentModel, type AiModelSelection } from '@chaoffice/ai-provider/browser'
 import { useI18n } from './locale'
 import sendEnterOn from './assets/send-enter-on.png'
 import sendEnterOff from './assets/send-enter-off.png'

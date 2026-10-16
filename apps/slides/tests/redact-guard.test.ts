@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { parseSlide, setRedactExt } from '@chatoffice/pptx-engine'
-import { buildRenderSlide, type RenderSlide, type RenderNode } from '@chatoffice/pptx-render'
+import { parseSlide, setRedactExt } from '@chaoffice/pptx-engine'
+import { buildRenderSlide, type RenderSlide, type RenderNode } from '@chaoffice/pptx-render'
 import { redactGuardFor } from '../src/renderer/ai/redact-guard'
 
 /**

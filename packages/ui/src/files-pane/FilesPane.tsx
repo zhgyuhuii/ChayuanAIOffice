@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { DragEvent, MouseEvent, ReactElement } from 'react'
-import type { Lang } from '@chatoffice/i18n'
+import type { Lang } from '@chaoffice/i18n'
 import { useDismissablePopover } from '../popover-dismiss'
 import { tFilesPane } from './strings'
 import type {
@@ -20,9 +20,9 @@ export interface FilesPaneProps {
 }
 
 /** drag payload shared with the shell home screen (JSON array of absolute paths) */
-const DRAG_PATHS_MIME = 'application/x-chatoffice-paths'
+const DRAG_PATHS_MIME = 'application/x-chaoffice-paths'
 const DRAG_EXPAND_DELAY_MS = 600
-const EXPANDED_KEY = 'chatoffice.filesPane.expanded'
+const EXPANDED_KEY = 'chaoffice.filesPane.expanded'
 
 const BADGE: Record<string, { label: string; color: string }> = {
   docx: { label: 'W', color: '#2b63d9' },

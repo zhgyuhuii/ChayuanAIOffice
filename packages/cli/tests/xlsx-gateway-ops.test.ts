@@ -43,7 +43,7 @@ async function apply(path: string, ops: unknown[], extra: string[] = []) {
   return run(['sheet', 'apply', path, '--ops', file, '--json', ...extra])
 }
 
-describe('chatoffice sheet apply --ops: gateway-written features', () => {
+describe('chaoffice sheet apply --ops: gateway-written features', () => {
   it('writes freeze panes, hidden rows/cols, page setup, hyperlinks and a note', async () => {
     const dir = tempDir()
     const out = await book(dir)
@@ -438,7 +438,7 @@ describe('chatoffice sheet apply --ops: gateway-written features', () => {
   })
 })
 
-describe('chatoffice sheet read: features and --formats', () => {
+describe('chaoffice sheet read: features and --formats', () => {
   it.skipIf(!xlsxSidecarPath())(
     'reports panes, filter, merges, charts and cell formats',
     async () => {
@@ -497,7 +497,7 @@ describe('chatoffice sheet read: features and --formats', () => {
   )
 })
 
-describe('chatoffice sheet apply --ops: pivots, sparklines, print setup', () => {
+describe('chaoffice sheet apply --ops: pivots, sparklines, print setup', () => {
   const SALES = [
     ['region', 'product', 'amount'],
     ['North', 'A', 10],

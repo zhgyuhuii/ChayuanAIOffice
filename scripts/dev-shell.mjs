@@ -17,7 +17,7 @@ const env = {
   PDF_RENDERER_URL: `http://localhost:${process.env.PDF_DEV_PORT ?? 5176}`,
   MARKDOWN_RENDERER_URL: `http://localhost:${process.env.MARKDOWN_DEV_PORT ?? 5177}`,
   // LOCAL(2026-09-21, d8201ad0): html 渲染端此前漏设——shell 模式下 html 编辑器会回退到
-  // 旧打包产物(chatoffice-app://),dev 调试不到 vite 热更代码;与五端对齐补上
+  // 旧打包产物(chaoffice-app://),dev 调试不到 vite 热更代码;与五端对齐补上
   HTML_RENDERER_URL: `http://localhost:${process.env.HTML_DEV_PORT ?? 5178}`,
   // Linux dev：electron 的 SUID chrome-sandbox 要求 root 属主+4755，开发检出装不出来
   // （FATAL: sandbox ... aborting now）。dev 一律免沙箱启动，与 e2e helpers 的先例一致；
@@ -26,7 +26,7 @@ const env = {
 }
 
 // shell: true — on Windows `npm` is npm.cmd, which spawn cannot launch directly
-const child = spawn('npm', ['run', 'dev', '-w', '@chatoffice/shell'], {
+const child = spawn('npm', ['run', 'dev', '-w', '@chaoffice/shell'], {
   stdio: 'inherit',
   env,
   shell: true,

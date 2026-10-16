@@ -1,26 +1,26 @@
 import { createRoot } from 'react-dom/client'
-import { htmlDir, htmlLang, type Lang } from '@chatoffice/i18n'
+import { htmlDir, htmlLang, type Lang } from '@chaoffice/i18n'
 import App from './App'
 import { LocaleProvider } from './i18n/locale'
 import type { DocTheme, UiTheme } from '../shared/ipc'
-import '@chatoffice/ui/tokens.css'
-import '@chatoffice/ui/screentip.css'
-import '@chatoffice/ui/ai-model-picker.css'
-import '@chatoffice/ui/ai-queue-strip.css'
-import '@chatoffice/ui/ai-usage.css'
-import '@chatoffice/ui/dropdown.css'
-import '@chatoffice/ui/dock.css'
-import '@chatoffice/ui/ribbon-collapse.css'
-import '@chatoffice/ui/markdown.css'
-import '@chatoffice/ui/ai-panel-prefs.css'
-import '@chatoffice/ui/ai-scope-quote.css'
-import '@chatoffice/ui/find-panel.css'
-import '@chatoffice/ui/files-pane.css'
-import '@chatoffice/ui/image-viewer.css'
+import '@chaoffice/ui/tokens.css'
+import '@chaoffice/ui/screentip.css'
+import '@chaoffice/ui/ai-model-picker.css'
+import '@chaoffice/ui/ai-queue-strip.css'
+import '@chaoffice/ui/ai-usage.css'
+import '@chaoffice/ui/dropdown.css'
+import '@chaoffice/ui/dock.css'
+import '@chaoffice/ui/ribbon-collapse.css'
+import '@chaoffice/ui/markdown.css'
+import '@chaoffice/ui/ai-panel-prefs.css'
+import '@chaoffice/ui/ai-scope-quote.css'
+import '@chaoffice/ui/find-panel.css'
+import '@chaoffice/ui/files-pane.css'
+import '@chaoffice/ui/image-viewer.css'
 import 'katex/dist/katex.min.css'
 import './styles.css'
 import './markdown-themes.css'
-import { applyAiPanelPrefs, installScreenTips } from '@chatoffice/ui'
+import { applyAiPanelPrefs, installScreenTips } from '@chaoffice/ui'
 import type { MarkdownTheme } from '../shared/markdown-theme'
 
 installScreenTips()
@@ -37,7 +37,7 @@ function applyMarkdownTheme(theme: MarkdownTheme): void {
 }
 
 function applyDocumentTheme(theme: DocTheme): void {
-  // data-doc-theme drives the preview paper (chatoffice#1811); absent means 'follow' the UI theme
+  // data-doc-theme drives the preview paper (chaoffice#1811); absent means 'follow' the UI theme
   if (theme === 'follow') document.documentElement.removeAttribute('data-doc-theme')
   else document.documentElement.setAttribute('data-doc-theme', theme)
 }

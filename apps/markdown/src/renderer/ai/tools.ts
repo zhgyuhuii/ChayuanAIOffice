@@ -1,9 +1,9 @@
 import { modelTextOf, redactJson, redactTextBetween } from '../editor/redact'
 import type { Editor, JSONContent } from '@tiptap/core'
 import type { Node as PmNode } from '@tiptap/pm/model'
-import type { AgentToolCall, AgentToolDef, ToolExecution } from '@chatoffice/agent-core'
-import { sanitizeSvg } from '@chatoffice/pptx-render/svg-sanitize'
-import { rasterizeSvg } from '@chatoffice/pptx-render/svg-raster'
+import type { AgentToolCall, AgentToolDef, ToolExecution } from '@chaoffice/agent-core'
+import { sanitizeSvg } from '@chaoffice/pptx-render/svg-sanitize'
+import { rasterizeSvg } from '@chaoffice/pptx-render/svg-raster'
 import { t } from '../i18n/locale'
 import {
   DraftLanding,

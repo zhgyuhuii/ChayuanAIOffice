@@ -73,12 +73,12 @@ vi.mock('electron', () => ({
   },
 }))
 
-vi.mock('@chatoffice/electron-utils', () => ({
+vi.mock('@chaoffice/electron-utils', () => ({
   configuredDefaultSaveDir: vi.fn(() => tmpdir()),
   contextMenuLabels: vi.fn(() => ({})),
   installContextMenu: vi.fn(),
   installNavigationGuard: vi.fn(),
-  rendererUrl: vi.fn(() => 'chatoffice-app://markdown/index.html'),
+  rendererUrl: vi.fn(() => 'chaoffice-app://markdown/index.html'),
   safeExternalUrl: vi.fn(() => null),
   showOpenDialogWithMemory: vi.fn(),
   showSaveDialogWithMemory: (...args: unknown[]) => showSaveDialogWithMemory(...args),

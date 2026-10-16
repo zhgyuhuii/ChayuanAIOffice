@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { TextboxDisplay } from '@chatoffice/docx-engine'
+import type { TextboxDisplay } from '@chaoffice/docx-engine'
 import { textboxBandBottom, textboxBandTop } from '../src/renderer/editor/extensions'
 describe('wrapTopAndBottom band vs live box height', () => {
   const box: TextboxDisplay = { paras: [], bandTopPx: 20, bandBottomPx: 70, heightPx: 50 }

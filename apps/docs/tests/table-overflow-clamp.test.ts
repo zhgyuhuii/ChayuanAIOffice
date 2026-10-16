@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseDocx, readSections, type Block, type TableModel } from '@chatoffice/docx-engine'
+import { parseDocx, readSections, type Block, type TableModel } from '@chaoffice/docx-engine'
 import { buildDocx } from '../../../packages/docx-engine/tests/helpers/build-docx'
 import {
   blocksToPmDoc,

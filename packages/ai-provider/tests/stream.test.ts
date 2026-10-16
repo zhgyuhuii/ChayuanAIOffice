@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { AgentToolCall } from '@chatoffice/agent-core'
+import type { AgentToolCall } from '@chaoffice/agent-core'
 import { AiCreditsError, sseLines, streamForProvider } from '../src/stream'
 import {
   MAX_RESPONSE_BODY_BYTES,
@@ -239,7 +239,7 @@ describe('streamForProvider: temperature policy', () => {
     expect(bodies[1].temperature).toBe(0.3)
   })
 
-  // issue chatoffice-ai/chatoffice#147: every model in the OpenAI BYOK dropdown is GPT-5.x,
+  // issue chaoffice-ai/chaoffice#147: every model in the OpenAI BYOK dropdown is GPT-5.x,
   // and api.openai.com 400s `max_tokens` for that family
   it('caps OpenAI via max_completion_tokens and other vendors via max_tokens', async () => {
     const fetchMock = vi.fn().mockImplementation(() => Promise.resolve(okTurn()))
@@ -616,7 +616,7 @@ describe('streamForProvider: anthropic', () => {
 
   it('never sends an empty assistant content array when history has edits-only replies', async () => {
     // Prior empty terminal turns would map to content:[] and break follow-ups
-    // on Anthropic (chatoffice#12 / #22 class of multi-turn failures).
+    // on Anthropic (chaoffice#12 / #22 class of multi-turn failures).
     const fetchMock = vi
       .fn()
       .mockResolvedValue(
@@ -1169,14 +1169,14 @@ describe('streamForProvider: openai-compatible', () => {
   })
 })
 
-describe('streamForProvider: chatoffice', () => {
+describe('streamForProvider: chaoffice', () => {
   it('routes claude models to the Anthropic-compatible proxy endpoint', async () => {
     const fetchMock = vi.fn().mockResolvedValue(okResponse(sseStream([])))
     vi.stubGlobal('fetch', fetchMock)
     const { cb } = collector()
     await streamForProvider(
-      'chatoffice',
-      { apiKey: 'chatoffice-k', model: 'claude-opus-4-7' },
+      'chaoffice',
+      { apiKey: 'chaoffice-k', model: 'claude-opus-4-7' },
       'sys',
       [],
       [],
@@ -1186,7 +1186,7 @@ describe('streamForProvider: chatoffice', () => {
     expect(fetchMock).toHaveBeenCalledWith(
       'https://www.genspark.ai/api/anthropic/v1/messages',
       expect.objectContaining({
-        headers: expect.objectContaining({ 'x-api-key': 'chatoffice-k' }),
+        headers: expect.objectContaining({ 'x-api-key': 'chaoffice-k' }),
       }),
     )
   })
@@ -1197,8 +1197,8 @@ describe('streamForProvider: chatoffice', () => {
     vi.stubGlobal('fetch', fetchMock)
     const { cb } = collector()
     await streamForProvider(
-      'chatoffice',
-      { apiKey: 'chatoffice-k', model: 'gpt-5.2' },
+      'chaoffice',
+      { apiKey: 'chaoffice-k', model: 'gpt-5.2' },
       'sys',
       [],
       [],
@@ -1217,8 +1217,8 @@ describe('streamForProvider: chatoffice', () => {
       vi.stubGlobal('fetch', fetchMock)
       const { cb } = collector()
       await streamForProvider(
-        'chatoffice',
-        { apiKey: 'chatoffice-k', model },
+        'chaoffice',
+        { apiKey: 'chaoffice-k', model },
         'sys',
         [],
         [],
@@ -1228,7 +1228,7 @@ describe('streamForProvider: chatoffice', () => {
       expect(fetchMock).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
-          headers: expect.objectContaining({ 'X-Agent-Type': 'chatoffice' }),
+          headers: expect.objectContaining({ 'X-Agent-Type': 'chaoffice' }),
         }),
       )
     }
@@ -1449,7 +1449,7 @@ describe('streamForProvider: interleaved-thinking reasoning', () => {
     const reasoning: string[] = []
     const { deltas, cb } = collector()
     await streamForProvider(
-      'chatoffice',
+      'chaoffice',
       { apiKey: 'k', model: 'deep-seek-v4-flash' },
       'sys',
       toolLoopMessages,
@@ -1468,7 +1468,7 @@ describe('streamForProvider: interleaved-thinking reasoning', () => {
     const fetchMock = vi.fn().mockImplementation(() => Promise.resolve(reasoningTurn()))
     vi.stubGlobal('fetch', fetchMock)
     await streamForProvider(
-      'chatoffice',
+      'chaoffice',
       { apiKey: 'k', model: 'gpt-5.6-luna' },
       'sys',
       toolLoopMessages,

@@ -23,7 +23,7 @@ import {
   type ReactNode,
 } from 'react'
 import { createPortal } from 'react-dom'
-import { useDismissablePopover } from '@chatoffice/ui/popover-dismiss'
+import { useDismissablePopover } from '@chaoffice/ui/popover-dismiss'
 import { CaretIcon, RIBBON_GLYPH_ICONS } from './ribbon-icons'
 
 export interface MenuOption {

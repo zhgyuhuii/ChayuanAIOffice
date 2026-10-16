@@ -1,4 +1,4 @@
-# WPS 三大板块 Ribbon 对比分析（ChatOffice ↔ WPS Office）
+# WPS 三大板块 Ribbon 对比分析（ChaOffice ↔ WPS Office）
 
 > 对比基准：WPS Office macOS 版截图 31 张（Word 9 / Excel 11 / PPT 11，覆盖全部选项卡），存于仓库外
 > `~/Downloads/wps-screen/{wps-word,wps-excel,wps-ppt}`。

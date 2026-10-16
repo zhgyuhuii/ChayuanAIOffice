@@ -1,7 +1,7 @@
-import type { AgentMessage, AgentToolCall, AgentToolDef } from '@chatoffice/agent-core'
+import type { AgentMessage, AgentToolCall, AgentToolDef } from '@chaoffice/agent-core'
 import { aiFetch } from '../fetch'
 import { httpBodyDetail } from '../http-error'
-import { chatofficeAttributionHeaders, opencodeSessionHeaders } from '../providers'
+import { chaofficeAttributionHeaders, opencodeSessionHeaders } from '../providers'
 import { modelEchoesReasoning } from '../registry'
 import { inferModelType } from '../model-type'
 import type { AiChatResponse, AiProviderConfig } from '../types'
@@ -260,7 +260,7 @@ async function openAiCompatibleTurn(
     headers: {
       'Content-Type': 'application/json',
       ...(config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {}),
-      ...chatofficeAttributionHeaders(baseUrl),
+      ...chaofficeAttributionHeaders(baseUrl),
       ...opencodeSessionHeaders(baseUrl, cb.sessionId),
       // user-hosted endpoints may route on static headers; merged last so a
       // deliberate profile header beats an inferred one
@@ -459,7 +459,7 @@ export async function chatOpenAiCompatible(
     headers: {
       'Content-Type': 'application/json',
       ...(config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {}),
-      ...chatofficeAttributionHeaders(baseUrl),
+      ...chaofficeAttributionHeaders(baseUrl),
       ...opencodeSessionHeaders(baseUrl),
       ...options.headers,
     },

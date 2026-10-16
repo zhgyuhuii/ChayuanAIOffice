@@ -4,7 +4,7 @@
  * color alone made them vanish from the canvas while PowerPoint shows them.
  */
 import { describe, expect, it } from 'vitest'
-import type { RenderStroke } from '@chatoffice/pptx-render'
+import type { RenderStroke } from '@chaoffice/pptx-render'
 import {
   connectorHeadColor,
   connectorStrokeProps,

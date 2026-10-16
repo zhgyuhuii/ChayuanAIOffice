@@ -1,9 +1,9 @@
 import { spawn } from 'node:child_process'
 
 /**
- * Shell-main half of the MCP → `chatoffice` CLI delegation.
+ * Shell-main half of the MCP → `chaoffice` CLI delegation.
  *
- * The app already ships the CLI (`@chatoffice/cli`) and runs it on its own Node
+ * The app already ships the CLI (`@chaoffice/cli`) and runs it on its own Node
  * runtime, so the headless MCP tools do not reimplement document engines: they
  * spawn the same CLI a shell user or another agent would, with `--json`, and
  * map its result contract (`{ status, command, summary, output_path, detail }`,
@@ -50,7 +50,7 @@ export interface CliRunOptions {
 }
 
 export interface CliRunner {
-  /** run `chatoffice <args> --json`; never rejects — failures come back as `ok:false` */
+  /** run `chaoffice <args> --json`; never rejects — failures come back as `ok:false` */
   run(args: string[], options?: CliRunOptions): Promise<CliRunOutcome>
 }
 

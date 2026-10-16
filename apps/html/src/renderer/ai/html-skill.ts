@@ -1,4 +1,4 @@
-import type { AgentSkill } from '@chatoffice/agent-core'
+import type { AgentSkill } from '@chaoffice/agent-core'
 import { createHtmlSkill, type HtmlDocAccess } from './tools'
 import { buildProjection, placeholderInstruction } from './redact'
 

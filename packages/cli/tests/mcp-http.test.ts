@@ -25,7 +25,7 @@ type Content = {
   resource?: { uri: string; blob?: string }
 }
 
-describe('chatoffice mcp --http', () => {
+describe('chaoffice mcp --http', () => {
   let handle: HttpHandle
   let client: Client
   let dir: string

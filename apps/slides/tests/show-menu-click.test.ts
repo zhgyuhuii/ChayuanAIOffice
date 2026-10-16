@@ -3,7 +3,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
-import type { RenderSlide } from '@chatoffice/pptx-render'
+import type { RenderSlide } from '@chaoffice/pptx-render'
 
 vi.mock('react-konva', () => {
   const stub = () => null

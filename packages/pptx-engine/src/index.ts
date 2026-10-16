@@ -2193,7 +2193,7 @@ function ensureDefaultContentType(archive: PackageArchive, ext: string, contentT
   // Insert before </Types>. indexOf('>') finds the XML declaration's closing
   // angle bracket first, so splicing there would put the Default between the
   // declaration and <Types> — outside the root element — and every OPC reader
-  // would then reject the package (chatoffice#1518).
+  // would then reject the package (chaoffice#1518).
   const def = `<Default Extension="${ext}" ContentType="${contentType}"/>`
   archive.entries.set(
     ctPath,

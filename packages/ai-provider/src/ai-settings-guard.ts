@@ -5,7 +5,7 @@
  * cliPath probe). SECURITY.md promises payloads are schema-checked in the main
  * process; a compromised renderer must not be able to plant an arbitrary
  * cliPath (later spawn()ed by the Codex app-server) or a baseUrl that would
- * receive the user's chatoffice bearer token. Electron-free so unit tests can import
+ * receive the user's chaoffice bearer token. Electron-free so unit tests can import
  * it directly.
  *
  * Coercion follows the file's own house style (String() narrowing like the

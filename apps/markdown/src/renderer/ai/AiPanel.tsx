@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, lazy, Suspense } from 'react'
 import { createMarkdownMediaSkill } from './media-skill'
 import type { ReactElement, ReactNode } from 'react'
-import { AgentLoop, composeSkills, streamText, type MindMapTreeNode } from '@chatoffice/agent-core'
-import type { AiSettingsV2 } from '@chatoffice/ai-provider'
+import { AgentLoop, composeSkills, streamText, type MindMapTreeNode } from '@chaoffice/agent-core'
+import type { AiSettingsV2 } from '@chaoffice/ai-provider'
 import {
   AiComposer,
   AiQueueStrip,
@@ -29,10 +29,10 @@ import {
   type AiTokenUsageView,
   type KbCitation,
   useChatRunQueue,
-} from '@chatoffice/ui'
-import { defaultSettingsV2, pickImageModel } from '@chatoffice/ai-provider/browser'
+} from '@chaoffice/ui'
+import { defaultSettingsV2, pickImageModel } from '@chaoffice/ai-provider/browser'
 import { markdownModelBridge } from './model-bridge'
-import type { DockChrome } from '@chatoffice/ui'
+import type { DockChrome } from '@chaoffice/ui'
 import type { Editor } from '@tiptap/core'
 import { aiLangDirective, t as tGlobal, useI18n } from '../i18n/locale'
 import { clearAiHighlights } from '../editor/aiHighlight'
@@ -59,11 +59,11 @@ import {
 } from './edit-queue'
 import { DOC_NAV_SCHEME, navigateToBlock, parseDocNavHref } from './doc-nav'
 import { AiFeatureIcon, AssistantTab } from './AssistantTab'
-import { AssistantLibraryBrowser } from '@chatoffice/ui/assistant-library'
+import { AssistantLibraryBrowser } from '@chaoffice/ui/assistant-library'
 
 // 惰性加载:模型设置页(含厂商 logo 组)只在打开时拉取,不进启动图
 const ModelSettingsPage = lazy(() =>
-  import('@chatoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
+  import('@chaoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
 )
 
 // Word-parity count (docs word-count.ts): Asian chars one by one + non-Asian words

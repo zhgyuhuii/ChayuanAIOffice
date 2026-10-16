@@ -2,7 +2,7 @@
 
 import type { PdfApi } from '../shared/ipc'
 
-import type { FilesPaneApi } from '@chatoffice/ui'
+import type { FilesPaneApi } from '@chaoffice/ui'
 
 declare global {
   interface Window {

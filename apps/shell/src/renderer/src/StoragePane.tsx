@@ -4,7 +4,7 @@ import type {
   RemoteStorageConfig,
   RemoteStorageSettings,
   TestConnectionResult,
-} from '@chatoffice/storage-adapter'
+} from '@chaoffice/storage-adapter'
 import { useI18n } from './locale'
 
 declare global {
@@ -27,7 +27,7 @@ const EMPTY_CONFIG_DRAFT = (): RemoteStorageConfig => ({
   bucket: '',
   accessKeyId: '',
   secretAccessKey: '',
-  prefix: 'chatoffice/',
+  prefix: 'chaoffice/',
   pathStyle: true,
   enabled: true,
 })

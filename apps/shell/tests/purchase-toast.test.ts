@@ -3,7 +3,7 @@
  * Purchase toast (LOCAL purchase feature): renders on {kind:'reminder'} from
  * the main-process scheduler, auto-dismisses after 60s, click (and the
  * {kind:'open-page'} event) opens the purchase dialog via the
- * chatoffice-purchase-open window event. Mounts only when the Electron
+ * chaoffice-purchase-open window event. Mounts only when the Electron
  * bridge exists.
  */
 import { act, createElement } from 'react'
@@ -87,7 +87,7 @@ describe('PurchaseToast', () => {
   it('open-page event does not toast; toast click dispatches the dialog event', () => {
     const events: string[] = []
     const onOpen = () => events.push('open')
-    window.addEventListener('chatoffice-purchase-open', onOpen)
+    window.addEventListener('chaoffice-purchase-open', onOpen)
     const h = mountWithBridge(() => {})
     h.fire({ kind: 'open-page' })
     expect(document.querySelector('[data-purchase-toast]')).toBeNull()
@@ -102,6 +102,6 @@ describe('PurchaseToast', () => {
     expect(events).toEqual(['open', 'open'])
     expect(document.querySelector('[data-purchase-toast]')).toBeNull()
     h.unmount()
-    window.removeEventListener('chatoffice-purchase-open', onOpen)
+    window.removeEventListener('chaoffice-purchase-open', onOpen)
   })
 })

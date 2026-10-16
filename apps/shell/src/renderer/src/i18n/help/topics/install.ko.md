@@ -1,4 +1,4 @@
-# ChatOffice 설치
+# ChaOffice 설치
 
 모든 빌드는 [Releases 페이지](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)에 올라 있습니다. 모두 `main`에서 나오며, macOS와 Windows 설치 프로그램은 서명되어 있습니다.
 
@@ -18,32 +18,32 @@
 
 ## macOS에서
 
-`.dmg`을 열고 **ChatOffice**를 Applications로 끌어다 놓습니다. Intel 빌드에서는 첫 실행 때 열기 확인을 요구합니다. Applications에서 앱을 오른쪽 클릭하고 ▸ 열기 하세요. 이건 손상된 다운로드가 아니라, 서명되지 않은 것처럼 보이는 디스크 이미지를 만난 Gatekeeper의 동작입니다.
+`.dmg`을 열고 **ChaOffice**를 Applications로 끌어다 놓습니다. Intel 빌드에서는 첫 실행 때 열기 확인을 요구합니다. Applications에서 앱을 오른쪽 클릭하고 ▸ 열기 하세요. 이건 손상된 다운로드가 아니라, 서명되지 않은 것처럼 보이는 디스크 이미지를 만난 Gatekeeper의 동작입니다.
 
 ## Windows에서
 
-`.exe` 설치 프로그램을 실행합니다. ChatOffice를 시작 메뉴에 넣고 `.docx`, `.xlsx`, `.pptx`, `.pdf` 등을 등록해서, 파일을 두 번 클릭하면 열립니다.
+`.exe` 설치 프로그램을 실행합니다. ChaOffice를 시작 메뉴에 넣고 `.docx`, `.xlsx`, `.pptx`, `.pdf` 등을 등록해서, 파일을 두 번 클릭하면 열립니다.
 
 ## Linux에서
 
 **Debian / Ubuntu**
 
 ```sh
-sudo apt install ./chatoffice_<version>_amd64.deb
+sudo apt install ./chaoffice_<version>_amd64.deb
 ```
 
 **Fedora / RHEL / openSUSE**
 
 ```sh
-sudo dnf install ./chatoffice-<version>.x86_64.rpm     # Fedora / RHEL family
-sudo zypper install ./chatoffice-<version>.x86_64.rpm  # openSUSE
+sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
+sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
 
 **AppImage** — 설치 단계 없이, 그 자리에서 실행됩니다:
 
 ```sh
-chmod +x ChatOffice-<version>.AppImage
-./ChatOffice-<version>.AppImage
+chmod +x ChaOffice-<version>.AppImage
+./ChaOffice-<version>.AppImage
 ```
 
 FUSE 2 런타임이 필요합니다. 설치하기를 꺼리면 `--appimage-extract-and-run`으로 실행하세요. 풀린 디렉터리에서 샌드박스가 동작합니다.
@@ -64,4 +64,4 @@ FUSE 2 런타임이 필요합니다. 설치하기를 꺼리면 `--appimage-extra
 
 ## 명령줄도 함께 옵니다
 
-모든 설치본에는 `chatoffice` 명령이 들어 있고, 창이 쓰는 바로 그 엔진을 구동합니다. 같은 파일에 대한 둘의 판단이 어긋날 일은 없습니다. macOS와 Windows에서는 앱 번들 안에 있으며, `chatoffice install-cli`로 `PATH`에 넣습니다. 무엇을 할 수 있는지는 **명령줄과 에이전트**를 보세요.
+모든 설치본에는 `chaoffice` 명령이 들어 있고, 창이 쓰는 바로 그 엔진을 구동합니다. 같은 파일에 대한 둘의 판단이 어긋날 일은 없습니다. macOS와 Windows에서는 앱 번들 안에 있으며, `chaoffice install-cli`로 `PATH`에 넣습니다. 무엇을 할 수 있는지는 **명령줄과 에이전트**를 보세요.

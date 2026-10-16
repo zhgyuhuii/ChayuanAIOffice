@@ -6,7 +6,7 @@ import {
   setSystemShortDate,
   shortDateNumFmtId,
   shortDatePatternForSystemLocale,
-} from '@chatoffice/xlsx-gateway/shared/short-date'
+} from '@chaoffice/xlsx-gateway/shared/short-date'
 
 describe('shortDatePatternForSystemLocale', () => {
   it.each([

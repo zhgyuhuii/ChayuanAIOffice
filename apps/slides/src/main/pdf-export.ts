@@ -153,7 +153,7 @@ export async function exportSlidesPdf({
   let tempDir: string | null = null
   let timer: ReturnType<typeof setTimeout> | undefined
   try {
-    tempDir = await mkdtemp(join(tmpdir(), 'chatoffice-slides-pdf-'))
+    tempDir = await mkdtemp(join(tmpdir(), 'chaoffice-slides-pdf-'))
     const htmlPath = join(tempDir, 'slides.html')
     await writeFile(htmlPath, buildPdfExportHtml(pages, widthIn, heightIn, links, fontCss), 'utf8')
     const result = await Promise.race([

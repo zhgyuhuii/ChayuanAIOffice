@@ -6,7 +6,7 @@
  */
 import { describe, it, expect } from 'vitest'
 import { createSlidesSkill, MAX_APPROX_PAGES, type DeckAccess } from '../src/renderer/ai/slides-skill'
-import type { RenderSlide } from '@chatoffice/pptx-render'
+import type { RenderSlide } from '@chaoffice/pptx-render'
 import type { AgentToolCall } from '../src/shared/ipc'
 
 function makeAccess(opts?: {
@@ -266,7 +266,7 @@ describe('generate_deck self-driven page-by-page generation', () => {
   })
 })
 
-describe('generate_deck local page generation (cloud/chatoffice unavailable)', () => {
+describe('generate_deck local page generation (cloud/chaoffice unavailable)', () => {
   it('cloud disabled → the local spec builder generates every page through the same marker landing', async () => {
     const { access, genPageCalls, localPageCalls, landOrder, getPages } = makeAccess({
       cloudEnabled: false,
@@ -414,7 +414,7 @@ describe('generate_deck batched planning (topic mode)', () => {
     expect(ctx).toContain('all generated')
   })
 
-  it('clamps an absurd approx_pages to MAX_APPROX_PAGES planner work (chatoffice#1100)', async () => {
+  it('clamps an absurd approx_pages to MAX_APPROX_PAGES planner work (chaoffice#1100)', async () => {
     const { access, getPages } = makeAccess()
     let planCalls = 0
     const plan = access.planDeckOutline!

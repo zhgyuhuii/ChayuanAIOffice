@@ -16,7 +16,7 @@ function fakeMachine(agents: string[]) {
   return { home, env: { GENOFFICE_HOME: home, GENOFFICE_USER_DATA: userData } }
 }
 
-describe('chatoffice skill', () => {
+describe('chaoffice skill', () => {
   it('path prints the bundled SKILL.md', async () => {
     const r = await run(['skill', 'path', '--json'])
     expect(r.code).toBe(0)

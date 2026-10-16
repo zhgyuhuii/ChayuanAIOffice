@@ -1,7 +1,7 @@
-import type { AgentSkill } from '@chatoffice/agent-core'
-import type { AiImageSource } from '@chatoffice/ai-provider'
-import { sanitizeSvg } from '@chatoffice/pptx-render/svg-sanitize'
-import { rasterizeSvg } from '@chatoffice/pptx-render/svg-raster'
+import type { AgentSkill } from '@chaoffice/agent-core'
+import type { AiImageSource } from '@chaoffice/ai-provider'
+import { sanitizeSvg } from '@chaoffice/pptx-render/svg-sanitize'
+import { rasterizeSvg } from '@chaoffice/pptx-render/svg-raster'
 import { t } from '../i18n/locale'
 import { registerSvgDataUrl } from './svg-bank'
 

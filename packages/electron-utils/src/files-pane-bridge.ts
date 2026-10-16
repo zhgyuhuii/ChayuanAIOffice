@@ -20,7 +20,7 @@ export const FILES_PANE_CHANNELS = {
   folderChanged: 'home:folder-changed',
 } as const
 
-/** the global every editor preload exposes for @chatoffice/ui's FilesPane */
+/** the global every editor preload exposes for @chaoffice/ui's FilesPane */
 export const FILES_PANE_GLOBAL = 'filesPaneApi'
 
 export function buildFilesPaneApi() {

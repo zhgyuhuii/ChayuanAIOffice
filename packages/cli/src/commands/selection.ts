@@ -14,7 +14,7 @@ export const selectionCommand: CommandDef = {
     if (!endpoint) {
       throw new CliError(EXIT.app, 'ChaAI Office is not running', undefined, {
         reason: 'app_unavailable',
-        suggestion: `run \`chatoffice open ${path}\` and ask the user to select something`,
+        suggestion: `run \`chaoffice open ${path}\` and ask the user to select something`,
       })
     }
     const result = await controlRequest(endpoint, { cmd: 'selection', path })

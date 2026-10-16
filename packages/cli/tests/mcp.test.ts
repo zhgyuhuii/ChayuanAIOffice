@@ -192,8 +192,8 @@ describe('mcp server', () => {
     expect(r.text).toContain('Word ops')
     expect(() => r.json()).toThrow()
     const { resources } = await client.listResources()
-    expect(resources.map((x) => x.uri)).toContain('chatoffice://guide/slides/spec')
-    const spec = await client.readResource({ uri: 'chatoffice://guide/slides/spec' })
+    expect(resources.map((x) => x.uri)).toContain('chaoffice://guide/slides/spec')
+    const spec = await client.readResource({ uri: 'chaoffice://guide/slides/spec' })
     expect((spec.contents[0] as { text: string }).text.length).toBeGreaterThan(200)
   })
 

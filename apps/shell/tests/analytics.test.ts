@@ -31,36 +31,36 @@ function okFetch() {
 
 describe('extractAnalyticsKeys', () => {
   it('reads the injected block from package.json', () => {
-    expect(extractAnalyticsKeys({ chatofficeAnalytics: KEYS })).toEqual(KEYS)
+    expect(extractAnalyticsKeys({ chaofficeAnalytics: KEYS })).toEqual(KEYS)
   })
 
   it('trims whitespace around the values', () => {
     expect(
       extractAnalyticsKeys({
-        chatofficeAnalytics: { measurementId: ' G-1 ', apiSecret: ' s ' },
+        chaofficeAnalytics: { measurementId: ' G-1 ', apiSecret: ' s ' },
       }),
     ).toEqual({ measurementId: 'G-1', apiSecret: 's' })
   })
 
   it('returns null when the block is missing (source/fork builds)', () => {
-    expect(extractAnalyticsKeys({ name: '@chatoffice/shell' })).toBeNull()
+    expect(extractAnalyticsKeys({ name: '@chaoffice/shell' })).toBeNull()
     expect(extractAnalyticsKeys(null)).toBeNull()
     expect(extractAnalyticsKeys('nope')).toBeNull()
   })
 
   it('returns null when either credential is empty or not a string', () => {
     expect(
-      extractAnalyticsKeys({ chatofficeAnalytics: { measurementId: 'G-1', apiSecret: '' } }),
+      extractAnalyticsKeys({ chaofficeAnalytics: { measurementId: 'G-1', apiSecret: '' } }),
     ).toBeNull()
     expect(
-      extractAnalyticsKeys({ chatofficeAnalytics: { measurementId: 42, apiSecret: 's' } }),
+      extractAnalyticsKeys({ chaofficeAnalytics: { measurementId: 42, apiSecret: 's' } }),
     ).toBeNull()
-    expect(extractAnalyticsKeys({ chatofficeAnalytics: { measurementId: 'G-1' } })).toBeNull()
+    expect(extractAnalyticsKeys({ chaofficeAnalytics: { measurementId: 'G-1' } })).toBeNull()
   })
 
   it('accepts metadata only for a packaged runtime', () => {
-    expect(extractPackagedAnalyticsKeys({ chatofficeAnalytics: KEYS }, true)).toEqual(KEYS)
-    expect(extractPackagedAnalyticsKeys({ chatofficeAnalytics: KEYS }, false)).toBeNull()
+    expect(extractPackagedAnalyticsKeys({ chaofficeAnalytics: KEYS }, true)).toEqual(KEYS)
+    expect(extractPackagedAnalyticsKeys({ chaofficeAnalytics: KEYS }, false)).toBeNull()
   })
 })
 

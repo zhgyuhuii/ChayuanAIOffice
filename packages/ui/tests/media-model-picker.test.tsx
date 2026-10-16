@@ -9,7 +9,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
-import { VENDOR_BY_ID } from '@chatoffice/ai-provider'
+import { VENDOR_BY_ID } from '@chaoffice/ai-provider'
 import { MediaModelPicker, type MediaModelPickerProps } from '../src/MediaModelPicker'
 import type { MediaModelOption } from '../src/InsertImageDialog'
 

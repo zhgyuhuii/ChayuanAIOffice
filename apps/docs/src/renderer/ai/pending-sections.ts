@@ -1,6 +1,6 @@
 import type { Editor } from '@tiptap/core'
 import type { Node as PmDocNode } from '@tiptap/pm/model'
-import type { SectionInfo } from '@chatoffice/docx-engine'
+import type { SectionInfo } from '@chaoffice/docx-engine'
 import { markDocSeen } from './tools'
 
 /**

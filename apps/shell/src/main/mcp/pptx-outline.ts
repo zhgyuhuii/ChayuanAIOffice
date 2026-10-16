@@ -1,11 +1,11 @@
-import type { Op } from '@chatoffice/pptx-ops'
+import type { Op } from '@chaoffice/pptx-ops'
 
 /**
  * Headless pptx generation for the MCP server: outline -> op sequence.
  *
  * Pure functions over data — no DOM, no Electron, no filesystem. The ops use
- * the canonical `@chatoffice/pptx-ops` vocabulary and are handed to the
- * `chatoffice` CLI (`create --type pptx --ops`), which builds and saves the deck
+ * the canonical `@chaoffice/pptx-ops` vocabulary and are handed to the
+ * `chaoffice` CLI (`create --type pptx --ops`), which builds and saves the deck
  * through the same engine the app uses — so this module carries only the
  * ergonomic outline→ops adapter, not any deck-building code.
  *

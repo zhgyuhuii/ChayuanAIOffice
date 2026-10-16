@@ -7,7 +7,7 @@
  */
 import { appendFileSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
-import type { AgentMessage, AgentToolCall, AgentToolDef } from '@chatoffice/agent-core'
+import type { AgentMessage, AgentToolCall, AgentToolDef } from '@chaoffice/agent-core'
 import type { AiTokenUsage } from './types'
 
 export interface AiTraceRequest {

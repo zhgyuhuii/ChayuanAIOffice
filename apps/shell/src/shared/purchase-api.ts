@@ -18,9 +18,9 @@
  */
 
 export const PURCHASE_CHANNELS = {
-  state: 'chatoffice/purchase:state',
-  activate: 'chatoffice/purchase:activate',
-  event: 'chatoffice/purchase:event',
+  state: 'chaoffice/purchase:state',
+  activate: 'chaoffice/purchase:activate',
+  event: 'chaoffice/purchase:event',
 } as const
 
 /** Snapshot served to the renderer for the dialog and any status display. */

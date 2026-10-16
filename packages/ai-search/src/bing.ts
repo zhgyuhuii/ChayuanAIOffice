@@ -1,6 +1,6 @@
 /**
  * Bing Images scraper — the China-reachable keyless backend in the image
- * fallback chain (chatoffice → Serper → Bing → Openverse). Scraping is
+ * fallback chain (chaoffice → Serper → Bing → Openverse). Scraping is
  * inherently brittle: every parse failure throws so the chain moves on to
  * Openverse instead of surfacing an empty gallery.
  */

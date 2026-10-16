@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { metafileToDataUrl } from '@chatoffice/docx-engine/metafile'
+import { metafileToDataUrl } from '@chaoffice/docx-engine/metafile'
 import { createImageLoader, MAX_METAFILE_BASE64_CHARS } from '../src/renderer/image-loader'
 
-vi.mock('@chatoffice/docx-engine/metafile', () => ({
+vi.mock('@chaoffice/docx-engine/metafile', () => ({
   metafileToDataUrl: vi.fn(async () => 'data:image/png;base64,AA=='),
 }))
 
@@ -97,7 +97,7 @@ describe('createImageLoader', () => {
 })
 
 describe('metafile rasterization waits for private fonts', () => {
-  const flag = window as { __chatofficeDocFontsSynced?: boolean }
+  const flag = window as { __chaofficeDocFontsSynced?: boolean }
   beforeEach(() => {
     FakeImage.instances = []
     vi.stubGlobal('Image', FakeImage)
@@ -108,16 +108,16 @@ describe('metafile rasterization waits for private fonts', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
     vi.useRealTimers()
-    delete flag.__chatofficeDocFontsSynced
+    delete flag.__chaofficeDocFontsSynced
   })
 
   it('holds the EMF until the doc-fonts sync flag flips, then rasterizes', async () => {
-    flag.__chatofficeDocFontsSynced = false
+    flag.__chaofficeDocFontsSynced = false
     const loader = createImageLoader(vi.fn(), 16, 100)
     loader.load(['data:image/x-emf;base64,AQAAAA=='])
     await vi.advanceTimersByTimeAsync(300)
     expect(metafileToDataUrl).not.toHaveBeenCalled()
-    flag.__chatofficeDocFontsSynced = true
+    flag.__chaofficeDocFontsSynced = true
     await vi.advanceTimersByTimeAsync(100)
     expect(metafileToDataUrl).toHaveBeenCalledTimes(1)
   })

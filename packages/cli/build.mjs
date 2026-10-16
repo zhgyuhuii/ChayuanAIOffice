@@ -12,7 +12,7 @@ const { version } = JSON.parse(await readFile(join(here, 'package.json'), 'utf8'
 /**
  * A packaged build overrides the app version through electron-builder
  * extraMetadata, which never reaches this file; GENOFFICE_APP_VERSION carries
- * it in, so the bundled `chatoffice --version` cannot drift from the app that
+ * it in, so the bundled `chaoffice --version` cannot drift from the app that
  * shipped it. Unset (a plain workspace build) keeps the CLI package version.
  */
 export const CLI_VERSION_ENV = 'GENOFFICE_APP_VERSION'

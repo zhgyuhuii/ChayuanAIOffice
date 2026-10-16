@@ -9,7 +9,7 @@ import {
   columnIndex,
   parseRange,
   rangeCellCount,
-} from '@chatoffice/xlsx-gateway/domain/cell-address'
+} from '@chaoffice/xlsx-gateway/domain/cell-address'
 
 describe('sheets roundtrip · 列地址全谱系', () => {
   it('SR-01 A-Z 全部往返', () => {

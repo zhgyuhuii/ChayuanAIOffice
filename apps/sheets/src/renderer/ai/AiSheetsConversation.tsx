@@ -20,14 +20,14 @@ import {
   composeSkills,
   COMPLETED_VIA_TOOLS_TEXT,
   type AgentImage,
-} from '@chatoffice/agent-core'
-import { enabledChatModels, pickImageModel, type AiSettingsV2 } from '@chatoffice/ai-provider/browser'
+} from '@chaoffice/agent-core'
+import { enabledChatModels, pickImageModel, type AiSettingsV2 } from '@chaoffice/ai-provider/browser'
 import {
   AiScopeQuote,
   type AiScopeQuoteData,
   type KbCitation,
   useKbAugment,
-} from '@chatoffice/ui'
+} from '@chaoffice/ui'
 import { aiLangDirective, useI18n } from '../i18n/locale'
 import {
   ATTACHMENT_IMAGE_EXTS,

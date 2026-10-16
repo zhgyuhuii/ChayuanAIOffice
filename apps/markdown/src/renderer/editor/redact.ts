@@ -23,12 +23,12 @@ import {
   placeholderInstruction as buildInstruction,
   placeholderSource,
   type PlaceholderSpec,
-} from '@chatoffice/agent-core/redact-core'
+} from '@chaoffice/agent-core/redact-core'
 
 import {
   redactTextBetween as sharedRedactTextBetween,
   type WithheldNode,
-} from '@chatoffice/agent-core/redact-range'
+} from '@chaoffice/agent-core/redact-range'
 
 /** The mark's node name, shared so the mark, the model view and the guard agree. */
 export const REDACT_MARK = 'redaction'
@@ -225,4 +225,4 @@ export {
   readPlaceholderLabel,
   sanitizeLabel,
   type PlaceholderIssue,
-} from '@chatoffice/agent-core/redact-core'
+} from '@chaoffice/agent-core/redact-core'

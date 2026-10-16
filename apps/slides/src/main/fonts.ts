@@ -19,14 +19,14 @@ import { join } from 'node:path'
 import { homedir, tmpdir } from 'node:os'
 import { createHash } from 'node:crypto'
 import * as opentype from 'opentype.js'
-import type { EmbeddedFontFace } from '@chatoffice/pptx-engine'
+import type { EmbeddedFontFace } from '@chaoffice/pptx-engine'
 import {
   OpentypeMetrics,
   HeuristicMetrics,
   type FontMetricsProvider,
   type OpentypeFontLike,
   type RunStyle,
-} from '@chatoffice/pptx-render'
+} from '@chaoffice/pptx-render'
 import { classifyCjkScript, classifyCjkScriptByNameScript } from '../shared/cjk-script'
 import { scanFontDirs, type ScanTask } from './font-scan'
 import {
@@ -37,10 +37,10 @@ import {
   type ShapedPrefFace,
   gtMeasure,
 } from './shaped-metrics'
-import carlitoRegular from '@chatoffice/ui/fonts/Carlito-Regular.ttf?asset'
-import carlitoBold from '@chatoffice/ui/fonts/Carlito-Bold.ttf?asset'
-import carlitoItalic from '@chatoffice/ui/fonts/Carlito-Italic.ttf?asset'
-import carlitoBoldItalic from '@chatoffice/ui/fonts/Carlito-BoldItalic.ttf?asset'
+import carlitoRegular from '@chaoffice/ui/fonts/Carlito-Regular.ttf?asset'
+import carlitoBold from '@chaoffice/ui/fonts/Carlito-Bold.ttf?asset'
+import carlitoItalic from '@chaoffice/ui/fonts/Carlito-Italic.ttf?asset'
+import carlitoBoldItalic from '@chaoffice/ui/fonts/Carlito-BoldItalic.ttf?asset'
 
 /**
  * Vite dev/test URLs (`/@fs/…?asset`) are not filesystem paths — recover the
@@ -85,7 +85,7 @@ export function getUserFontDir(): string | null {
  * the same private FontFace channel as Office DFonts. Registrations are process-wide and
  * live until the app exits — like PowerPoint keeping embedded fonts while the deck is open.
  */
-const EMBEDDED_FONT_DIR = join(tmpdir(), 'chatoffice-embedded-fonts')
+const EMBEDDED_FONT_DIR = join(tmpdir(), 'chaoffice-embedded-fonts')
 /** norm(typeface) -> styleKey ('<bold><italic>') -> extracted sfnt path */
 const embeddedFaces = new Map<string, Map<string, string>>()
 

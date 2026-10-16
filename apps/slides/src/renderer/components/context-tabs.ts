@@ -1,4 +1,4 @@
-import type { RenderNode } from '@chatoffice/pptx-render'
+import type { RenderNode } from '@chaoffice/pptx-render'
 
 /** 'mixed' = multi-select spanning pictures/groups: only selection-wide commands (outline) apply */
 export type ContextElementType =

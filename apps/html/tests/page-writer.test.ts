@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { AgentStreamCallbacks, AgentTransport } from '@chatoffice/agent-core'
+import type { AgentStreamCallbacks, AgentTransport } from '@chaoffice/agent-core'
 import {
   buildPageWriterRequest,
   extractPageHtml,

@@ -81,9 +81,9 @@ describe('fontAttrsFromFamilyChain', () => {
     })
   })
 
-  it('skips internal ChatOffice aliases even at the chain head', () => {
+  it('skips internal ChaOffice aliases even at the chain head', () => {
     expect(
-      fontAttrsFromFamilyChain("'ChatOffice Songti SC','STSong','SimSun','Noto Serif CJK SC',serif"),
+      fontAttrsFromFamilyChain("'ChaOffice Songti SC','STSong','SimSun','Noto Serif CJK SC',serif"),
     ).toEqual({ font: 'STSong' })
   })
 
@@ -93,7 +93,7 @@ describe('fontAttrsFromFamilyChain', () => {
       fontAscii: 'SomeCustomFont',
     })
     expect(
-      fontAttrsFromFamilyChain("'PT Serif Custom','Noto Serif CJK GO','ChatOffice PUA Blank',serif"),
+      fontAttrsFromFamilyChain("'PT Serif Custom','Noto Serif CJK GO','ChaOffice PUA Blank',serif"),
     ).toEqual({ font: 'PT Serif Custom', fontAscii: 'PT Serif Custom' })
   })
 

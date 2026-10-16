@@ -1,11 +1,11 @@
-import { elementDurableId, openPptx, slideDurableId } from '@chatoffice/pptx-engine'
+import { elementDurableId, openPptx, slideDurableId } from '@chaoffice/pptx-engine'
 import {
   buildRenderSlide,
   EMU_PER_PX_96,
   imageSizeFromBytes,
   type FontMetricsProvider,
   type ImageSize,
-} from '@chatoffice/pptx-render'
+} from '@chaoffice/pptx-render'
 import { auditSlideFindings, type AuditFinding } from './layout-audit'
 
 export interface DeckAuditPage {

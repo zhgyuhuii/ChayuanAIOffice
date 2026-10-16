@@ -7,7 +7,7 @@ import {
   openPptx,
   promoteSlideBackground,
   savePptx,
-} from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
 import {
   buildPagePptx,
   parsePageSpecObject,

@@ -4,7 +4,7 @@
  *
  * Storage follows the established ai-settings.json pattern: plaintext JSON,
  * file mode 0600 (no-op where the OS ignores modes), atomic tmp+rename writes.
- * Self-hosted deployments can seed a default config via CHATOFFICE_STORAGE_*
+ * Self-hosted deployments can seed a default config via CHAOFFICE_STORAGE_*
  * environment variables, mirroring how MINIO_ROOT_* is handled in compose.
  */
 
@@ -14,7 +14,7 @@ import { dirname } from 'node:path'
 import type { RemoteStorageConfig, RemoteStorageProtocol, RemoteStorageSettings } from './types.js'
 
 export const REMOTE_STORAGE_SETTINGS_VERSION = 1
-export const DEFAULT_REMOTE_PREFIX = 'chatoffice/'
+export const DEFAULT_REMOTE_PREFIX = 'chaoffice/'
 export const ENV_SEEDED_CONFIG_ID = 'env-default'
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -143,7 +143,7 @@ export function writeRemoteStorageSettingsFile(
 }
 
 /**
- * Seeds a default config from CHATOFFICE_STORAGE_* environment variables, but
+ * Seeds a default config from CHAOFFICE_STORAGE_* environment variables, but
  * only into an otherwise-empty config list (env is a bootstrap, not an
  * override): ENDPOINT, REGION, BUCKET, ACCESS_KEY_ID, SECRET_ACCESS_KEY are
  * required; NAME, PROTOCOL, PREFIX, PATH_STYLE are optional.
@@ -153,23 +153,23 @@ export function applyRemoteStorageEnvSeed(
   env: Record<string, string | undefined> = process.env,
 ): RemoteStorageSettings {
   if (settings.configs.length > 0) return settings
-  const endpoint = env.CHATOFFICE_STORAGE_ENDPOINT
-  const bucket = env.CHATOFFICE_STORAGE_BUCKET
-  const accessKeyId = env.CHATOFFICE_STORAGE_ACCESS_KEY_ID
-  const secretAccessKey = env.CHATOFFICE_STORAGE_SECRET_ACCESS_KEY
+  const endpoint = env.CHAOFFICE_STORAGE_ENDPOINT
+  const bucket = env.CHAOFFICE_STORAGE_BUCKET
+  const accessKeyId = env.CHAOFFICE_STORAGE_ACCESS_KEY_ID
+  const secretAccessKey = env.CHAOFFICE_STORAGE_SECRET_ACCESS_KEY
   if (!endpoint || !bucket || !accessKeyId || !secretAccessKey) return settings
   const config: RemoteStorageConfig = {
     id: ENV_SEEDED_CONFIG_ID,
-    name: env.CHATOFFICE_STORAGE_NAME || 'Server storage',
-    protocol: asProtocol(env.CHATOFFICE_STORAGE_PROTOCOL),
+    name: env.CHAOFFICE_STORAGE_NAME || 'Server storage',
+    protocol: asProtocol(env.CHAOFFICE_STORAGE_PROTOCOL),
     endpoint: endpoint.replace(/\/+$/, ''),
-    region: env.CHATOFFICE_STORAGE_REGION || 'us-east-1',
+    region: env.CHAOFFICE_STORAGE_REGION || 'us-east-1',
     bucket,
     accessKeyId,
     secretAccessKey,
-    prefix: env.CHATOFFICE_STORAGE_PREFIX || DEFAULT_REMOTE_PREFIX,
+    prefix: env.CHAOFFICE_STORAGE_PREFIX || DEFAULT_REMOTE_PREFIX,
     pathStyle:
-      env.CHATOFFICE_STORAGE_PATH_STYLE === 'true' || env.CHATOFFICE_STORAGE_PATH_STYLE === '1',
+      env.CHAOFFICE_STORAGE_PATH_STYLE === 'true' || env.CHAOFFICE_STORAGE_PATH_STYLE === '1',
     enabled: true,
   }
   return { ...settings, configs: [config], defaultLocation: { configId: config.id } }

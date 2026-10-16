@@ -1,4 +1,4 @@
-# Установка ChatOffice
+# Установка ChaOffice
 
 Каждая сборка опубликована на [странице релизов](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest). Все они собраны из `main`; установщики для macOS и Windows подписаны.
 
@@ -18,32 +18,32 @@
 
 ## В macOS
 
-Откройте `.dmg` и перетащите **ChatOffice** в «Программы». В сборке для Intel первый запуск попросит подтвердить открытие: щёлкните по приложению в «Программах» правой кнопкой ▸ «Открыть». Это Gatekeeper столкнулся с образом диска, который выглядит неподписанным, а не повреждённая загрузка.
+Откройте `.dmg` и перетащите **ChaOffice** в «Программы». В сборке для Intel первый запуск попросит подтвердить открытие: щёлкните по приложению в «Программах» правой кнопкой ▸ «Открыть». Это Gatekeeper столкнулся с образом диска, который выглядит неподписанным, а не повреждённая загрузка.
 
 ## В Windows
 
-Запустите установщик `.exe`. Он помещает ChatOffice в меню «Пуск» и регистрирует `.docx`, `.xlsx`, `.pptx`, `.pdf` и подобные форматы как приложения по умолчанию, так что двойной щелчок по файлу открывает его в ChatOffice.
+Запустите установщик `.exe`. Он помещает ChaOffice в меню «Пуск» и регистрирует `.docx`, `.xlsx`, `.pptx`, `.pdf` и подобные форматы как приложения по умолчанию, так что двойной щелчок по файлу открывает его в ChaOffice.
 
 ## В Linux
 
 **Debian / Ubuntu**
 
 ```sh
-sudo apt install ./chatoffice_<version>_amd64.deb
+sudo apt install ./chaoffice_<version>_amd64.deb
 ```
 
 **Fedora / RHEL / openSUSE**
 
 ```sh
-sudo dnf install ./chatoffice-<version>.x86_64.rpm     # Fedora / RHEL family
-sudo zypper install ./chatoffice-<version>.x86_64.rpm  # openSUSE
+sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
+sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
 
 **AppImage** — запускается оттуда, где лежит, без шага установки:
 
 ```sh
-chmod +x ChatOffice-<version>.AppImage
-./ChatOffice-<version>.AppImage
+chmod +x ChaOffice-<version>.AppImage
+./ChaOffice-<version>.AppImage
 ```
 
 Ему нужна среда выполнения FUSE 2. Если ставить её не хочется, запустите его с `--appimage-extract-and-run` — и песочница будет работать из распакованного каталога.
@@ -64,4 +64,4 @@ chmod +x ChatOffice-<version>.AppImage
 
 ## Командная строка идёт в комплекте
 
-Каждая установка включает команду `chatoffice`, которая работает через те же движки, что и окно, поэтому они никогда не расходятся во мнении о файле. В macOS и Windows она лежит внутри пакета приложения; `chatoffice install-cli` помещает её в ваш `PATH`. Что она умеет — см. **Командная строка и агенты**.
+Каждая установка включает команду `chaoffice`, которая работает через те же движки, что и окно, поэтому они никогда не расходятся во мнении о файле. В macOS и Windows она лежит внутри пакета приложения; `chaoffice install-cli` помещает её в ваш `PATH`. Что она умеет — см. **Командная строка и агенты**.

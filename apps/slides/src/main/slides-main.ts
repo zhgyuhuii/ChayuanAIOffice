@@ -35,10 +35,10 @@ import { printSlidesHtml } from './print-window'
 import { cleanupExpiredGeneratedPages } from './generated-page-temp'
 import { exportSlidesPdf } from './pdf-export'
 import {
-  chatofficeApiKey,
-  chatofficeSlideGenerate,
+  chaofficeApiKey,
+  chaofficeSlideGenerate,
   setChaOfficeProxyUrl,
-} from '@chatoffice/ai-search'
+} from '@chaoffice/ai-search'
 import {
   appMenuLabels,
   configuredDefaultSaveDir,
@@ -60,7 +60,7 @@ import {
   readBodyCapped,
   recoveryCopyDiskNewer,
   configuredAuthorName,
-} from '@chatoffice/electron-utils'
+} from '@chaoffice/electron-utils'
 import {
   resolveGroupChildId,
   runTxn,
@@ -69,15 +69,15 @@ import {
   type TxnRequest,
   type TxnResult,
   mapScriptOps,
-} from '@chatoffice/pptx-ops'
-import { matchesElementRef } from '@chatoffice/pptx-engine/identity'
-import { buildPagePptx, parsePageSpec } from '@chatoffice/pipelines/slides'
+} from '@chaoffice/pptx-ops'
+import { matchesElementRef } from '@chaoffice/pptx-engine/identity'
+import { buildPagePptx, parsePageSpec } from '@chaoffice/pipelines/slides'
 import { convertOdpToPptx } from '../../../../packages/odf2ooxml/src'
 import { sniffImageMime } from './media-mime'
-import { getUiLang, normalizeLang, setUiLang } from '@chatoffice/i18n'
-import { ProjectStore } from '@chatoffice/project-store'
+import { getUiLang, normalizeLang, setUiLang } from '@chaoffice/i18n'
+import { ProjectStore } from '@chaoffice/project-store'
 // LOCAL(2026-09-21, d8201ad0): 多会话对话索引(B 区新模块)
-import { ConversationStore, bindConversationsIpc } from '@chatoffice/project-store'
+import { ConversationStore, bindConversationsIpc } from '@chaoffice/project-store'
 import {
   newPasteCascade,
   pageKey,
@@ -148,8 +148,8 @@ import {
   type Paragraph,
   type Slide,
   type TextElement,
-} from '@chatoffice/pptx-engine'
-import { readSlideEchart, slideEchartPartOf, updateSlideEchart } from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
+import { readSlideEchart, slideEchartPartOf, updateSlideEchart } from '@chaoffice/pptx-engine'
 import {
   buildRenderSlide,
   layoutText,
@@ -158,10 +158,10 @@ import {
   imageDpiFromBytes,
   type RenderSlide,
   type RenderTextLayout,
-} from '@chatoffice/pptx-render'
+} from '@chaoffice/pptx-render'
 // From its own electron-utils subpath rather than the package barrel: the
 // barrel drags Electron-only modules into headless bundles.
-import { atomicWriteFile } from '@chatoffice/electron-utils/atomic-write'
+import { atomicWriteFile } from '@chaoffice/electron-utils/atomic-write'
 import { DEFAULT_PICTURE_DPI, pictureFrame } from './picture-frame'
 import { refineComplexWidths, shapedMetricsReady } from './shaped-metrics'
 import { cfbKind, isCfbHeader } from './cfb-sniff'
@@ -964,7 +964,7 @@ function getDraftsDir(): string {
  * drafts: nothing here is user-visible — the real file appears only at first
  * save, which routes through Save As. */
 function hiddenDraftsDir(): string {
-  return join(app.getPath('temp'), 'chatoffice-slides-drafts')
+  return join(app.getPath('temp'), 'chaoffice-slides-drafts')
 }
 
 /** Fallback draft filename: <untitled label>-YYYYMMDD-HHmmss.pptx */
@@ -1915,10 +1915,10 @@ export function registerSlidesIpc(): void {
     }
     return rendered ? { slide: rendered, ...(notes.length ? { notes } : {}) } : null
   })
-  // ── Cloud single-page generation (chatoffice slide_generate): brief → cloud HTML+conversion → one-slide
+  // ── Cloud single-page generation (chaoffice slide_generate): brief → cloud HTML+conversion → one-slide
   // pptx saved to a temp file. Returns a marker string that slides:land-generated-pages redeems for
-  // the bytes. Enabled when chatoffice is logged in; CHATOFFICE_CLOUD_SLIDE=0 is the kill switch.
-  const cloudSlideEnabled = () => process.env.CHATOFFICE_CLOUD_SLIDE !== '0' && !!chatofficeApiKey()
+  // the bytes. Enabled when chaoffice is logged in; CHAOFFICE_CLOUD_SLIDE=0 is the kill switch.
+  const cloudSlideEnabled = () => process.env.CHAOFFICE_CLOUD_SLIDE !== '0' && !!chaofficeApiKey()
 
   ipcMain.handle('slides:cloud-gen-status', () => ({ enabled: cloudSlideEnabled() }))
 
@@ -1953,7 +1953,7 @@ export function registerSlidesIpc(): void {
         // Ultra resolves to the opus-class slide model server-side; standard is the
         // lighter MiniMax M3 model. Keep an explicit escape hatch for quality
         // comparisons and emergency rollback.
-        const tier = process.env.CHATOFFICE_CLOUD_SLIDE_TIER === 'standard' ? 'standard' : 'ultra'
+        const tier = process.env.CHAOFFICE_CLOUD_SLIDE_TIER === 'standard' ? 'standard' : 'ultra'
         const started = Date.now()
         // Stop must reach the cloud request: without this the generation keeps
         // running (and billing) after the user pressed stop
@@ -1964,7 +1964,7 @@ export function registerSlidesIpc(): void {
         let bytes: Uint8Array
         let model: string
         try {
-          ;({ bytes, model } = await chatofficeSlideGenerate({
+          ;({ bytes, model } = await chaofficeSlideGenerate({
             tier,
             brief: String(op.brief ?? ''),
             title: op.title ? String(op.title) : undefined,
@@ -1982,7 +1982,7 @@ export function registerSlidesIpc(): void {
         console.log(
           `[cloud-slide] page generated: tier=${tier} model=${model} bytes=${bytes.length} ms=${Date.now() - started}`,
         )
-        const dir = join(app.getPath('temp'), 'chatoffice-cloud-pages')
+        const dir = join(app.getPath('temp'), 'chaoffice-cloud-pages')
         mkdirSync(dir, { recursive: true })
         const path = join(dir, `${randomUUID()}.pptx`)
         await writeFile(path, bytes)
@@ -1994,7 +1994,7 @@ export function registerSlidesIpc(): void {
     },
   )
 
-  // ── Local single-page generation (no chatoffice needed, e.g. BYOK): a JSON slide spec written by
+  // ── Local single-page generation (no chaoffice needed, e.g. BYOK): a JSON slide spec written by
   // the renderer's LLM call is built directly into a one-slide pptx with pptx-engine
   // primitives — no HTML intermediate. Returns the same marker kind as the cloud path, so
   // landing (slides:land-generated-pages) is shared.
@@ -2038,7 +2038,7 @@ export function registerSlidesIpc(): void {
         console.log(
           `[local-slide] page generated: bytes=${bytes.length} imageFails=${imageFailures.length} ms=${Date.now() - started}`,
         )
-        const dir = join(app.getPath('temp'), 'chatoffice-local-pages')
+        const dir = join(app.getPath('temp'), 'chaoffice-local-pages')
         mkdirSync(dir, { recursive: true })
         const path = join(dir, `${randomUUID()}.pptx`)
         await writeFile(path, bytes)
@@ -2332,7 +2332,7 @@ export function registerSlidesIpc(): void {
     return rebuilt ? { slide: rebuilt, sourceId: r.records![0]!.created![0]! } : null
   })
 
-  // Shim over the canonical op (see @chatoffice/pptx-ops): the op owns validation/mutation/journal;
+  // Shim over the canonical op (see @chaoffice/pptx-ops): the op owns validation/mutation/journal;
   // the shim keeps session lookup, undo bookkeeping, and RenderSlide rebuilding.
   ipcMain.handle('slides:delete-element', (e, op: DeleteElementOp) => {
     const session = sessions.get(e.sender.id)
@@ -2763,7 +2763,7 @@ export function registerSlidesIpc(): void {
     const pngs = op.pngs?.length === bundles.length ? op.pngs : undefined
     slideClipboard = { bundles, ...(pngs ? { pngs } : {}) }
     // Marker so plain ⌘V knows the latest copy was a slide (element copies / external copies overwrite it)
-    clipboard.writeBuffer('io.chatoffice.slides.slide', Buffer.from('1'))
+    clipboard.writeBuffer('io.chaoffice.slides.slide', Buffer.from('1'))
     return true
   })
 
@@ -3640,7 +3640,7 @@ export function registerSlidesIpc(): void {
   }
 
   ipcMain.handle('slides:clipboard-external', () => {
-    if (slideClipboard && clipboardMarker('io.chatoffice.slides.slide')) return { kind: 'slide' }
+    if (slideClipboard && clipboardMarker('io.chaoffice.slides.slide')) return { kind: 'slide' }
     if (elementClipboard && elementClipboardMarkerMatches(elementClipboard.token))
       return { kind: 'internal' }
     const img = clipboard.readImage()
@@ -3652,7 +3652,7 @@ export function registerSlidesIpc(): void {
 
   // Menu-enable probe: is there anything a paste would act on? (no image decode)
   ipcMain.handle('slides:clipboard-probe', () => {
-    if (slideClipboard && clipboardMarker('io.chatoffice.slides.slide')) return true
+    if (slideClipboard && clipboardMarker('io.chaoffice.slides.slide')) return true
     if (elementClipboard && elementClipboardMarkerMatches(elementClipboard.token)) return true
     if (clipboard.availableFormats().some((f) => f.startsWith('image/'))) return true
     return clipboard.readText().trim().length > 0
@@ -5110,7 +5110,7 @@ function getSlidesProjectStore(): ProjectStore {
   return slidesProjectStore
 }
 
-// LOCAL(2026-09-21, d8201ad0): 多会话对话索引存储(单例;B 区逻辑在 @chatoffice/project-store/conversations)
+// LOCAL(2026-09-21, d8201ad0): 多会话对话索引存储(单例;B 区逻辑在 @chaoffice/project-store/conversations)
 let slidesConversationsStore: ConversationStore | null = null
 function getSlidesConversationsStore(): ConversationStore {
   if (!slidesConversationsStore) {
@@ -5483,7 +5483,7 @@ export function installSlidesMenu(): void {
  */
 async function applyMainProcessProxy(): Promise<void> {
   const setDispatcher = async (proxyUrl: string) => {
-    // spawned chatoffice CLI children do their own fetch and never see the
+    // spawned chaoffice CLI children do their own fetch and never see the
     // dispatcher below — forward the proxy to them via env
     setChaOfficeProxyUrl(proxyUrl)
     try {
@@ -5510,7 +5510,7 @@ async function applyMainProcessProxy(): Promise<void> {
   try {
     await app.whenReady()
     // PAC/rule proxies answer per-host: probe the host the login flow, the
-    // ChaOffice LLM proxy and the chatoffice CLI actually target
+    // ChaOffice LLM proxy and the chaoffice CLI actually target
     const resolved = await electronSession.defaultSession.resolveProxy('https://www.genspark.ai/')
     // resolveProxy returns strings like "PROXY 127.0.0.1:1087" or "DIRECT"
     const m = /PROXY\s+([^;]+)/i.exec(resolved || '')
@@ -5534,11 +5534,11 @@ export function startSlidesStandalone(): void {
     app.commandLine.appendSwitch('remote-debugging-port', process.env.SLIDES_CDP_PORT)
     app.commandLine.appendSwitch('remote-allow-origins', '*')
   }
-  // CHATOFFICE_USER_DATA: test drivers point this at a scratch dir so automated
+  // CHAOFFICE_USER_DATA: test drivers point this at a scratch dir so automated
   // instances get their own userData AND single-instance lock (the lock is scoped
   // to userData), allowing parallel instances alongside a normal dev run.
-  if (!app.isPackaged && process.env.CHATOFFICE_USER_DATA) {
-    app.setPath('userData', process.env.CHATOFFICE_USER_DATA)
+  if (!app.isPackaged && process.env.CHAOFFICE_USER_DATA) {
+    app.setPath('userData', process.env.CHAOFFICE_USER_DATA)
   }
   // The main process's Node fetch (undici) does not use the system proxy by default, so access
   // from mainland China to overseas LLM APIs like api.anthropic.com hits ETIMEDOUT on direct
@@ -5571,7 +5571,7 @@ export function startSlidesStandalone(): void {
 
   app.whenReady().then(async () => {
     installRendererProtocol({ slides: join(__dirname, '../renderer') })
-    setUiLang(normalizeLang(process.env.CHATOFFICE_LANG ?? app.getLocale()))
+    setUiLang(normalizeLang(process.env.CHAOFFICE_LANG ?? app.getLocale()))
     // Dev runs from the stock Electron.app; packaged mac takes the icon from icon.icns
     if (!app.isPackaged && process.platform === 'darwin') app.dock?.setIcon(APP_ICON)
     registerSlidesIpc()

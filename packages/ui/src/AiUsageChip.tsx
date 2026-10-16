@@ -1,6 +1,6 @@
 import React from 'react'
-import type { Lang } from '@chatoffice/i18n'
-import type { AgentTokenUsage } from '@chatoffice/agent-core'
+import type { Lang } from '@chaoffice/i18n'
+import type { AgentTokenUsage } from '@chaoffice/agent-core'
 import { AI_USAGE_LABELS } from './strings-ai-usage'
 import './ai-usage.css'
 

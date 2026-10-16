@@ -95,7 +95,7 @@ describe('printHtmlToPdf', () => {
   })
 
   it('removes the temp dir when the window cannot be created', async () => {
-    const leftovers = () => readdirSync(tmpdir()).filter((d) => d.startsWith('chatoffice-ai-doc-'))
+    const leftovers = () => readdirSync(tmpdir()).filter((d) => d.startsWith('chaoffice-ai-doc-'))
     const before = leftovers().length
     await expect(
       printHtmlToPdf(buildPrintableHtml('Test', ''), () => {

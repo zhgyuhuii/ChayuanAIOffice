@@ -4,7 +4,7 @@ import {
   buildPivotLayout,
   PivotLayoutError,
   pivotOutputArea,
-} from '@chatoffice/xlsx-gateway/domain/pivot-layout'
+} from '@chaoffice/xlsx-gateway/domain/pivot-layout'
 
 const GRID = [
   ['region', 'product', 'amount'],

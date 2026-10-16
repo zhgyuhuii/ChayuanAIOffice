@@ -39,11 +39,11 @@ import type {
   AiStreamRequestV2,
   ChaOfficeAccountStatus,
 } from './types'
-import type { AgentMessage } from '@chatoffice/agent-core'
+import type { AgentMessage } from '@chaoffice/agent-core'
 
 /**
  * Backend runtime shared by the Electron mains and the BFF: one place that
- * owns the settings source, secret resolution (inline key / chatoffice session),
+ * owns the settings source, secret resolution (inline key / chaoffice session),
  * the stream loop with keepalive + error mapping, discovery, and BYOK-first
  * image generation. Hosts wire their transport (IPC or HTTP) on top.
  */
@@ -59,7 +59,7 @@ export interface AiRuntimeChaOffice {
 
 export interface AiRuntimeDeps {
   source: AiSettingsSource
-  chatoffice: AiRuntimeChaOffice
+  chaoffice: AiRuntimeChaOffice
   translate: (key: string, params?: Record<string, unknown>) => string
   /**
    * server-side secret resolution for profiles that only carry a key reference
@@ -138,7 +138,7 @@ function mergeKeys(view: AiSettingsV2, stored: AiSettingsV2): AiSettingsV2 {
 }
 
 export function createAiRuntime(deps: AiRuntimeDeps) {
-  const { source, chatoffice, translate, resolveSecret } = deps
+  const { source, chaoffice, translate, resolveSecret } = deps
 
   /** resolver first (may override a stale inline key), then inline key,
    *  keyless-local sentinel, else nothing */
@@ -154,14 +154,14 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
 
   const readRaw = async (): Promise<AiSettingsV2> => {
     let settings = await source.read()
-    // login gates nothing (consensus): a current model parked on the chatoffice
+    // login gates nothing (consensus): a current model parked on the chaoffice
     // profile while signed out falls through to the first usable BYOK chat
-    // model, so chat keeps working instead of erroring. The chatoffice error with its
+    // model, so chat keeps working instead of erroring. The chaoffice error with its
     // inline sign-in button stays the guidance only when nothing else exists.
     const current = resolveChatCurrentModel(settings)
-    if (current?.profileId === 'chatoffice' && !chatoffice.hasAuth()) {
+    if (current?.profileId === 'chaoffice' && !chaoffice.hasAuth()) {
       const fallback = enabledChatModels(settings).find((m) => {
-        if (m.profileId === 'chatoffice') return false
+        if (m.profileId === 'chaoffice') return false
         const profile = findProfile(settings, m.profileId)
         return !!profile && (!!profile.apiKey || !!profile.ollamaLike || !!profile.apiKeyRef)
       })
@@ -194,15 +194,15 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     await source.write({ ...settings, currentModel: selection })
   }
 
-  /** resolve one run: profile + secret (chatoffice session for chatoffice) → wire call */
+  /** resolve one run: profile + secret (chaoffice session for chaoffice) → wire call */
   const resolveForRun = async (selection: AiModelSelection): Promise<ResolvedModelCall> => {
     const settings = await readRaw()
     const profile = findProfile(settings, selection.profileId)
     if (!profile) throw new Error(translate('errNoModel'))
-    if (profile.auth === 'chatoffice-login') {
-      if (!chatoffice.hasAuth() || !chatoffice.apiKey())
+    if (profile.auth === 'chaoffice-login') {
+      if (!chaoffice.hasAuth() || !chaoffice.apiKey())
         throw new Error(translate('errChaOfficeNotLoggedIn'))
-      return resolveModelCall(settings, selection, chatoffice.apiKey())
+      return resolveModelCall(settings, selection, chaoffice.apiKey())
     }
     if (profile.vendorId === 'codex' || profile.id === 'codex') {
       // Codex reuses the Codex CLI's own ChatGPT login (catalog auth
@@ -485,7 +485,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     return profile.apiKey ?? null
   }
 
-  /** BYOK image model only — the chatoffice cloud fallback is gone (the cloud
+  /** BYOK image model only — the chaoffice cloud fallback is gone (the cloud
    * backend belongs to the ChaAI Office upstream, not this build). Error when no
    * image model exists. If the user configured an image model, its failure is
    * the answer — silent fallbacks would hide broken keys. An explicit `model`
@@ -549,7 +549,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
   /** enabled media-generation models across profiles with their param specs —
    *  the insert-media dialog's model picker list (specs are computed main-side
    *  so the renderer stays vendor-agnostic). image entries always; video entries
-   *  only for vendors with a wired MediaJobClient adapter. chatoffice video is
+   *  only for vendors with a wired MediaJobClient adapter. chaoffice video is
    *  data-driven: it appears only when the proxy's model list carries
    *  video-generation entries. Entries matching the capability defaults
    *  (settings.imageModel / modelDefaults.videoGeneration, or the first

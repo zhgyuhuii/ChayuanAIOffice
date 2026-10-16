@@ -119,7 +119,7 @@ test.describe('ZCode 式左树（对话|项目双 Tab）', () => {
     try {
       await page.evaluate(async (sessions) => {
         await window.chaOffice.chatSessionsSave(sessions)
-        await window.chatOfficeProject.createProject('验证项目甲')
+        await window.chaOfficeProject.createProject('验证项目甲')
         window.dispatchEvent(new Event('focus'))
       }, seededSessions)
       await page.reload()

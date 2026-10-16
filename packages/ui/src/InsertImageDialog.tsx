@@ -6,7 +6,7 @@ import {
   findProfile,
   resolveCapabilityDefault,
   type AiSettingsV2,
-} from '@chatoffice/ai-provider/browser'
+} from '@chaoffice/ai-provider/browser'
 import { insertImageStrings } from './insert-image-strings'
 import { MediaModelPicker } from './MediaModelPicker'
 import './insert-image.css'

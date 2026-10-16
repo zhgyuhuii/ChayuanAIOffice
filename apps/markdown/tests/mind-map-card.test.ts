@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
-import type { MindMapTreeNode } from '@chatoffice/agent-core'
+import type { MindMapTreeNode } from '@chaoffice/agent-core'
 import { MindMapCard } from '../src/renderer/ai/MindMapCard'
 
 const tree: MindMapTreeNode = {

@@ -42,15 +42,15 @@ export const guideCommand: CommandDef = {
       throw new CliError(
         EXIT.usage,
         'guides available for: slides, docs, sheets',
-        { usage: 'chatoffice guide slides | chatoffice guide docs | chatoffice guide sheets' },
+        { usage: 'chaoffice guide slides | chaoffice guide docs | chaoffice guide sheets' },
         {
           reason: domain === undefined ? 'missing_argument' : 'invalid_argument',
-          suggestion: 'run `chatoffice guide slides|docs|sheets`',
+          suggestion: 'run `chaoffice guide slides|docs|sheets`',
         },
       )
     }
     if (domain === 'slides' && (topic === 'design' || topic === 'spec')) {
-      const { SLIDES_GUIDES } = await import('@chatoffice/pipelines/slides')
+      const { SLIDES_GUIDES } = await import('@chaoffice/pipelines/slides')
       return { summary: SLIDES_GUIDES[topic].content }
     }
     const { catalog, text } = await load(domain, topic, flagBool(args, 'index'))
@@ -77,7 +77,7 @@ export const guideCommand: CommandDef = {
           reason: 'invalid_argument',
           suggestion: guess
             ? `did you mean ${guess}?`
-            : `run \`chatoffice guide ${domain}\` for the groups and ops`,
+            : `run \`chaoffice guide ${domain}\` for the groups and ops`,
         },
       )
     }
@@ -104,7 +104,7 @@ async function load(
     const { catalog, htmlRules } = await docsCatalog()
     return { catalog, text: (group) => docsGuideText(catalog, htmlRules, group) }
   }
-  const docs = await import('@chatoffice/pptx-ops/op-docs')
+  const docs = await import('@chaoffice/pptx-ops/op-docs')
   const catalog = slidesCatalog(docs)
   return {
     catalog,
@@ -112,13 +112,13 @@ async function load(
       if (index) return docs.opSignatureIndex()
       if (group) return docs.opGuide(group)!
       return [
-        'Op groups (chatoffice guide slides <group> prints one; chatoffice guide slides <op> prints one op):',
+        'Op groups (chaoffice guide slides <group> prints one; chaoffice guide slides <op> prints one op):',
         docs.opGuideCatalog(),
         '',
-        'Building a new deck: `chatoffice guide slides design` (the staged workflow: style sheet, outline, one page file at a time, build, QC) and `chatoffice guide slides spec` (the outline and page spec JSON for `chatoffice slides check` and `chatoffice create --type pptx --spec`).',
+        'Building a new deck: `chaoffice guide slides design` (the staged workflow: style sheet, outline, one page file at a time, build, QC) and `chaoffice guide slides spec` (the outline and page spec JSON for `chaoffice slides check` and `chaoffice create --type pptx --spec`).',
         '',
         'Every op: { "op": "<name>", "target": { "slide": <index|"s_n">, "el"?: "e_*" }, ...fields }.',
-        'Units are EMU (914400 per inch; suffixes in/cm/mm/pt/px accepted); font sizes are pt. `chatoffice slides read <file>` lists ids and geometry.',
+        'Units are EMU (914400 per inch; suffixes in/cm/mm/pt/px accepted); font sizes are pt. `chaoffice slides read <file>` lists ids and geometry.',
         'Vocabulary:',
         docs.opVocabulary(),
       ].join('\n')
@@ -126,7 +126,7 @@ async function load(
   }
 }
 
-type SlidesOpDocs = typeof import('@chatoffice/pptx-ops/op-docs')
+type SlidesOpDocs = typeof import('@chaoffice/pptx-ops/op-docs')
 
 function slidesCatalog(docs: SlidesOpDocs): OpCatalog {
   const ops: OpEntry[] = Object.entries(docs.OP_DOCS)
@@ -142,8 +142,8 @@ function slidesCatalog(docs: SlidesOpDocs): OpCatalog {
 
 function docsGuideText(catalog: OpCatalog, htmlRules: string, group?: string): string {
   const lines = [
-    'Word ops (chatoffice docs apply --ops): a JSON array; every entry has "op".',
-    'Targets: { "blockIndexes": [..] } or { "nodeType": "docHeading"|"docParagraph"|"docListItem"|"image", "headingLevel"? }; get indexes from `chatoffice docs read`.',
+    'Word ops (chaoffice docs apply --ops): a JSON array; every entry has "op".',
+    'Targets: { "blockIndexes": [..] } or { "nodeType": "docHeading"|"docParagraph"|"docListItem"|"image", "headingLevel"? }; get indexes from `chaoffice docs read`.',
     'Field notation: bare = string, n = number, bool = boolean, ? = optional, a|b = one of.',
     '',
     ...renderGroups(catalog, group),

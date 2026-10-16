@@ -1,4 +1,4 @@
-import { parseDocx } from '@chatoffice/docx-engine'
+import { parseDocx } from '@chaoffice/docx-engine'
 
 /** flatten a parsed docx into readable text (structure markers preserved) */
 export async function docxToText(bytes: Uint8Array): Promise<string> {

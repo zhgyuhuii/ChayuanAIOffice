@@ -1,4 +1,4 @@
-import type { TextOutline } from '@chatoffice/docx-engine'
+import type { TextOutline } from '@chaoffice/docx-engine'
 
 /** CSS value for a w14:textOutline stroke (`-webkit-text-stroke`) */
 export function textOutlineCssValue(o: TextOutline): string {

@@ -15,7 +15,7 @@ import {
   type GradientFillPatch,
   type StrokePatch,
   type TextElement,
-} from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
 import {
   GuidedError,
   register,

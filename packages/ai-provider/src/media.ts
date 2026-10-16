@@ -233,9 +233,9 @@ export function defaultAiMediaSettings(): AiMediaSettings {
     }
   }
   return {
-    imageProvider: 'chatoffice',
-    analysisProvider: 'chatoffice',
-    videoAnalysisProvider: 'chatoffice',
+    imageProvider: 'chaoffice',
+    analysisProvider: 'chaoffice',
+    videoAnalysisProvider: 'chaoffice',
     providers,
   }
 }
@@ -302,17 +302,17 @@ export function activeMediaProvider(
   capability: MediaCapability,
 ): AiMediaProviderId {
   const media = settings.media
-  if (!media) return 'chatoffice'
+  if (!media) return 'chaoffice'
   const id =
     capability === 'image'
       ? media.imageProvider
       : capability === 'video'
         ? media.videoAnalysisProvider
         : media.analysisProvider
-  if (!id) return 'chatoffice'
+  if (!id) return 'chaoffice'
   const meta = getMediaProviderMeta(id)
-  if (!meta || !providerHasCapability(meta, capability)) return 'chatoffice'
-  if (!mediaConfigUsable(meta, media.providers?.[id])) return 'chatoffice'
+  if (!meta || !providerHasCapability(meta, capability)) return 'chaoffice'
+  if (!mediaConfigUsable(meta, media.providers?.[id])) return 'chaoffice'
   return id
 }
 
@@ -320,9 +320,9 @@ export function activeMediaProvider(
 export function activeMediaConfig(
   settings: Pick<AiSettings, 'media'>,
   capability: MediaCapability,
-): { provider: Exclude<AiMediaProviderId, 'chatoffice'>; config: AiMediaProviderConfig } | null {
+): { provider: Exclude<AiMediaProviderId, 'chaoffice'>; config: AiMediaProviderConfig } | null {
   const provider = activeMediaProvider(settings, capability)
-  if (provider === 'chatoffice') return null
+  if (provider === 'chaoffice') return null
   return { provider, config: settings.media!.providers[provider] }
 }
 

@@ -10,7 +10,7 @@
  *   (preload <out>/apps/server/src/tsx-assets.cjs first: `?asset` imports
  *   from the slides sources need it outside a bundler)
  *
- * with HOST/PORT/CHATOFFICE_DATA_DIR/CHATOFFICE_STATIC_DIR in its environment.
+ * with HOST/PORT/CHAOFFICE_DATA_DIR/CHAOFFICE_STATIC_DIR in its environment.
  *
  *   EMBEDDED_OUT=<dir>   override the output root (default dsh-plugin/embedded)
  *   SKIP_WEB=1           skip requiring/copying dist/web (server-only sidecar)
@@ -34,7 +34,7 @@ import { fileURLToPath } from 'node:url'
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const out = resolve(process.env.EMBEDDED_OUT ?? join(root, 'dsh-plugin', 'embedded'))
 
-// Transitive @chatoffice/* closure of apps/server plus the shipped slides/sheets
+// Transitive @chaoffice/* closure of apps/server plus the shipped slides/sheets
 // main sources. The synthetic workspace only links packages present here — a
 // missing one makes npm install fall through to the registry and crash
 // (arborist 'edgesOut' null), or the sidecar to fail on boot (ai-host/i18n/
@@ -106,7 +106,7 @@ writeFileSync(
   join(out, 'package.json'),
   JSON.stringify(
     {
-      name: 'chatoffice-embedded',
+      name: 'chaoffice-embedded',
       version: rootPkg.version,
       private: true,
       type: 'module',
@@ -149,7 +149,7 @@ for (const app of ['slides', 'sheets']) {
     join(out, 'apps', app, 'package.json'),
     JSON.stringify(
       {
-        name: `@chatoffice/${app}-src`,
+        name: `@chaoffice/${app}-src`,
         version: rootPkg.version,
         private: true,
         type: 'commonjs',

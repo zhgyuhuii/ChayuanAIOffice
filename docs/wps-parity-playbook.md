@@ -82,7 +82,7 @@
 | 7     | 截屏⌄                     | ⬜   | Electron `desktopCapturer` 选窗→写临时 PNG→走 addImageBytes（slides 有截屏先例可抄）         |
 | 8     | 形状⌄                     | ✅   | ShapeGallerySelect 已有                                                                      |
 | 9     | 图标⌄                     | ⬜   | 复用 docs/slides 图标画廊数据源（insert-presets 共享包）                                     |
-| 10    | 艺术字⌄                   | ⬜   | WordArt 预设在 `@chatoffice/ui wordart-presets.ts`（slides 用）；sheets 落成富文本单元格样式 |
+| 10    | 艺术字⌄                   | ⬜   | WordArt 预设在 `@chaoffice/ui wordart-presets.ts`（slides 用）；sheets 落成富文本单元格样式 |
 | 11    | 文本框⌄                   | ✅   | 文本组已有                                                                                   |
 | 12-13 | 流程图⌄ 思维导图⌄         | ⬜   | 挂起（无图形引擎；可由 ECharts graph/自制模板长期方案）                                      |
 | 14    | 仪表盘                    | ⬜   | ECharts gauge 走 chart-kit 标准组（chart-designer 加类型即可）                               |

@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { launchShell, closeAndSaveVideo, screenshotPath, waitForPageWithUrl } from './helpers'
 
 /**
- * The editors' Files pane (shared @chatoffice/ui component over the shell's
+ * The editors' Files pane (shared @chaoffice/ui component over the shell's
  * folder IPC), exercised in the Markdown app: toggle from the ribbon, current
  * file highlighted, click another file → the shell opens it in a new tab,
  * create a folder from the pane header.
@@ -14,7 +14,7 @@ test.describe('editor files pane', () => {
   let root: string
 
   test.beforeEach(() => {
-    root = realpathSync(mkdtempSync(join(tmpdir(), 'chatoffice-e2e-files-')))
+    root = realpathSync(mkdtempSync(join(tmpdir(), 'chaoffice-e2e-files-')))
     mkdirSync(join(root, 'Notes'))
     writeFileSync(join(root, 'Notes', 'first.md'), '# first')
     writeFileSync(join(root, 'Notes', 'second.md'), '# second')

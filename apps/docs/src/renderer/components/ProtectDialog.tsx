@@ -17,7 +17,7 @@ import {
   verifyProtectionPassword,
   type DocProtection,
   type WriteProtection,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { useI18n } from '../i18n/locale'
 import { FieldError, PasswordInput } from './PasswordInput'
 

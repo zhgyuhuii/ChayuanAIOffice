@@ -1,4 +1,4 @@
-import type { AgentSkill } from '@chatoffice/agent-core'
+import type { AgentSkill } from '@chaoffice/agent-core'
 import type { Editor } from '@tiptap/core'
 import type { AiDocWriter } from './doc-writer'
 import { redactLabelsOf, placeholderInstruction } from '../editor/redact'

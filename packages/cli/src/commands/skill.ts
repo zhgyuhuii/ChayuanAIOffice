@@ -17,7 +17,7 @@ import {
   type SkillLedger,
 } from '../agent-skills'
 import { flagBool, flagString } from '../args'
-import { chatofficeUserDataDir } from '../gui'
+import { chaofficeUserDataDir } from '../gui'
 import type { CommandContext, CommandDef } from '../registry'
 import { bundledSkillPath } from '../resources'
 import { CliError, EXIT, type Warning } from '../result'
@@ -32,7 +32,7 @@ import { didYouMean } from '../suggest'
 export const skillCommand: CommandDef = {
   name: 'skill',
   summary:
-    'List the coding agents found on this machine and install or update the bundled chatoffice skill for them.',
+    'List the coding agents found on this machine and install or update the bundled chaoffice skill for them.',
   usage: 'skill list | skill install <agent|all> [--dir <path>] [--force] | skill path',
   options: [
     { name: 'list', description: 'same as `skill list`' },
@@ -214,7 +214,7 @@ function install(
 }
 
 function refusal(state: SkillInstallState, force: boolean): string | null {
-  if (state.status === 'occupied') return 'the chatoffice folder there holds something else'
+  if (state.status === 'occupied') return 'the chaoffice folder there holds something else'
   if (force) return null
   if (state.status === 'newer')
     return `a newer skill ${state.installedVersion} is installed; not downgrading`
@@ -256,7 +256,7 @@ function bundled(): BundledSkill {
 }
 
 function settingsPath(env: NodeJS.ProcessEnv): string {
-  return join(chatofficeUserDataDir(env), 'app-settings.json')
+  return join(chaofficeUserDataDir(env), 'app-settings.json')
 }
 
 function readSettings(env: NodeJS.ProcessEnv): Record<string, unknown> {

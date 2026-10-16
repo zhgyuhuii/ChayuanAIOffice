@@ -1,5 +1,5 @@
 /**
- * Canonical op layer (@chatoffice/pptx-ops): registry validation with guided errors,
+ * Canonical op layer (@chaoffice/pptx-ops): registry validation with guided errors,
  * transaction executor semantics (atomic rollback / per_op / dry-run) — all
  * against a real in-memory deck (createBlankPptx + engine mutations), no mocks.
  */
@@ -18,7 +18,7 @@ import {
   type OpenedPptx,
   type SlideElement,
   type TextElement,
-} from '@chatoffice/pptx-engine'
+} from '@chaoffice/pptx-engine'
 import {
   runTxn,
   opNames,
@@ -27,7 +27,7 @@ import {
   mapScriptOps,
   normalizeLengthUnits,
   parseLength,
-} from '@chatoffice/pptx-ops'
+} from '@chaoffice/pptx-ops'
 
 let opened: OpenedPptx
 let titleId: string

@@ -45,7 +45,7 @@ const brief: Brief = {
 describe('brief persistence', () => {
   it('round-trips through the meta tag with quotes and angle brackets escaped', () => {
     const tag = briefMetaTag(brief)
-    expect(tag.startsWith(`<meta name="chatoffice:brief" content='`)).toBe(true)
+    expect(tag.startsWith(`<meta name="chaoffice:brief" content='`)).toBe(true)
     expect(tag).not.toContain("here's") // the apostrophe inside the single-quoted attribute is escaped
     const back = parseBrief(`<html><head>${tag}</head></html>`)
     expect(back?.core_hook).toBe(brief.core_hook)
@@ -62,21 +62,21 @@ describe('brief persistence', () => {
 
   it('injects after <meta charset>, else after <head>, else creates a head, and refreshes in place', () => {
     const a = injectBrief('<html><head><meta charset="utf-8"><title>x</title></head></html>', brief)
-    expect(a).toMatch(/<meta charset="utf-8">\n<meta name="chatoffice:brief"/)
+    expect(a).toMatch(/<meta charset="utf-8">\n<meta name="chaoffice:brief"/)
     const b = injectBrief('<html><head><title>x</title></head></html>', brief)
-    expect(b).toMatch(/<head>\n<meta name="chatoffice:brief"/)
+    expect(b).toMatch(/<head>\n<meta name="chaoffice:brief"/)
     const c = injectBrief('<html><body></body></html>', brief)
-    expect(c).toMatch(/<html>\n<head><meta name="chatoffice:brief"/)
+    expect(c).toMatch(/<html>\n<head><meta name="chaoffice:brief"/)
     const d = injectBrief('<p>frag</p>', brief)
-    expect(d.startsWith('<meta name="chatoffice:brief"')).toBe(true)
+    expect(d.startsWith('<meta name="chaoffice:brief"')).toBe(true)
     const refreshed = injectBrief(a, { ...brief, core_hook: 'changed' })
-    expect((refreshed.match(/chatoffice:brief/g) ?? []).length).toBe(1)
+    expect((refreshed.match(/chaoffice:brief/g) ?? []).length).toBe(1)
     expect(parseBrief(refreshed)?.core_hook).toBe('changed')
   })
 
   it('ignores malformed meta and summarizes compactly', () => {
-    expect(parseBrief(`<meta name="chatoffice:brief" content='{not json'>`)).toBeNull()
-    expect(parseBrief(`<meta name="chatoffice:brief" content='{"core_hook":1}'>`)).toBeNull()
+    expect(parseBrief(`<meta name="chaoffice:brief" content='{not json'>`)).toBeNull()
+    expect(parseBrief(`<meta name="chaoffice:brief" content='{"core_hook":1}'>`)).toBeNull()
     const s = briefSummary(brief)
     expect(s).toContain('core hook: Q3 grew 40%')
     expect(s).toContain('style: Boardroom navy — executive')

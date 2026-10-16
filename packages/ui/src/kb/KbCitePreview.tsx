@@ -6,7 +6,7 @@
  * render identical citation surfaces (docs/kb-integration-plan.md §6).
  */
 import { useEffect, useState } from 'react'
-import type { KbCitation } from '@chatoffice/ai-provider/browser'
+import type { KbCitation } from '@chaoffice/ai-provider/browser'
 import { kbDoc, kbFile } from './kb-api'
 import { kbStrings } from './kb-strings'
 import './kb.css'

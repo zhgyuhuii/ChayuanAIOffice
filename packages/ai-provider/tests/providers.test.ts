@@ -15,7 +15,7 @@ import type { AiProviderId } from '../src/types'
 describe('defaultAiSettings', () => {
   it('gives every provider its default model and an empty key by default', () => {
     const settings = defaultAiSettings()
-    expect(settings.provider).toBe('chatoffice')
+    expect(settings.provider).toBe('chaoffice')
     for (const meta of AI_PROVIDERS) {
       expect(settings.providers[meta.id].apiKey).toBe('')
       expect(settings.providers[meta.id].model).toBe(meta.defaultModel)
@@ -35,21 +35,21 @@ describe('defaultAiSettings', () => {
 
 describe('provider model catalog', () => {
   it('offers DeepSeek V4.1 Flash directly under the same versioned name as the pool', () => {
-    const chatoffice = AI_PROVIDERS.find((provider) => provider.id === 'chatoffice')!
+    const chaoffice = AI_PROVIDERS.find((provider) => provider.id === 'chaoffice')!
     const deepseek = AI_PROVIDERS.find((provider) => provider.id === 'deepseek')!
 
     expect(deepseek.models).toContain('deep-seek-v4.1-flash')
     expect(deepseek.models).not.toContain('deepseek-flash')
     expect(deepseek.models).not.toContain('deepseek-v4-flash')
     expect(deepseek.models).not.toContain('deepseek-v4-flash-vision-exp')
-    expect(chatoffice.models).not.toContain('deep-seek-v4-flash')
-    expect(chatoffice.models).not.toContain('deep-seek-v4-flash-vision-exp-openrouter')
+    expect(chaoffice.models).not.toContain('deep-seek-v4-flash')
+    expect(chaoffice.models).not.toContain('deep-seek-v4-flash-vision-exp-openrouter')
   })
 
   it('serves DeepSeek V4.1 Flash through the proxy under its hyphenated pool id', () => {
-    const chatoffice = AI_PROVIDERS.find((provider) => provider.id === 'chatoffice')!
-    expect(chatoffice.models).toContain('deep-seek-v4.1-flash')
-    expect(chatoffice.models).not.toContain('deep-seek-v4-pro')
+    const chaoffice = AI_PROVIDERS.find((provider) => provider.id === 'chaoffice')!
+    expect(chaoffice.models).toContain('deep-seek-v4.1-flash')
+    expect(chaoffice.models).not.toContain('deep-seek-v4-pro')
   })
 
   it('keeps Responses-only models out of the OpenCode tiers (no such protocol yet)', () => {
@@ -186,28 +186,28 @@ describe('resolveAiSettings', () => {
     }
   })
 
-  it('rewrites chatoffice model ids the proxy no longer serves', () => {
+  it('rewrites chaoffice model ids the proxy no longer serves', () => {
     const resolved = resolveAiSettings(
       {
         providers: {
-          chatoffice: { apiKey: '', model: 'gemini-3.7-flash' },
+          chaoffice: { apiKey: '', model: 'gemini-3.7-flash' },
         } as never,
       },
       defaultAiSettings(),
     )
-    // adapted: 上游 genspark 供应商本地改名 chatoffice，断言跟随；退役 gemini 系重映射目标随上游更新为 claude-opus-5-5
-    expect(resolved.providers.chatoffice.model).toBe('claude-opus-5-5')
+    // adapted: 上游 genspark 供应商本地改名 chaoffice，断言跟随；退役 gemini 系重映射目标随上游更新为 claude-opus-5-5
+    expect(resolved.providers.chaoffice.model).toBe('claude-opus-5-5')
 
     const gpt = resolveAiSettings(
       {
         providers: {
-          chatoffice: { apiKey: '', model: 'gpt-5.6' },
+          chaoffice: { apiKey: '', model: 'gpt-5.6' },
         } as never,
       },
       defaultAiSettings(),
     )
-    // adapted: 上游 genspark 供应商本地改名 chatoffice，断言跟随；glm 退役模型重映射用例收
-    expect(gpt.providers.chatoffice.model).toBe('gpt-5.6-terra')
+    // adapted: 上游 genspark 供应商本地改名 chaoffice，断言跟随；glm 退役模型重映射用例收
+    expect(gpt.providers.chaoffice.model).toBe('gpt-5.6-terra')
 
     const glm = resolveAiSettings(
       { providers: { glm: { apiKey: '', model: 'glm-5-turbo' } } as never },
@@ -317,12 +317,12 @@ describe('clampMaxOutputTokens', () => {
 })
 
 describe('activeProvider', () => {
-  it('honors a configured BYOK provider and falls back to chatoffice otherwise', () => {
+  it('honors a configured BYOK provider and falls back to chaoffice otherwise', () => {
     const settings = defaultAiSettings()
-    expect(activeProvider(settings)).toBe('chatoffice')
+    expect(activeProvider(settings)).toBe('chaoffice')
 
     settings.provider = 'kimi'
-    expect(activeProvider(settings)).toBe('chatoffice') // no key yet
+    expect(activeProvider(settings)).toBe('chaoffice') // no key yet
     settings.providers.kimi.apiKey = 'sk-user'
     expect(activeProvider(settings)).toBe('kimi')
   })
@@ -331,9 +331,9 @@ describe('activeProvider', () => {
     const settings = defaultAiSettings()
     settings.provider = 'custom'
     settings.providers.custom.apiKey = 'k'
-    expect(activeProvider(settings)).toBe('chatoffice')
+    expect(activeProvider(settings)).toBe('chaoffice')
     settings.providers.custom.baseUrl = 'http://localhost:1234/v1'
-    expect(activeProvider(settings)).toBe('chatoffice') // custom's default model is empty
+    expect(activeProvider(settings)).toBe('chaoffice') // custom's default model is empty
     settings.providers.custom.model = 'my-model'
     expect(activeProvider(settings)).toBe('custom')
   })
@@ -366,10 +366,10 @@ describe('activeProvider', () => {
     const settings = defaultAiSettings()
     settings.provider = 'kimi'
     settings.providers.kimi.apiKey = '   '
-    expect(activeProvider(settings)).toBe('chatoffice')
+    expect(activeProvider(settings)).toBe('chaoffice')
     settings.providers.kimi.apiKey = 'sk-user'
     settings.providers.kimi.model = '  '
-    expect(activeProvider(settings)).toBe('chatoffice')
+    expect(activeProvider(settings)).toBe('chaoffice')
     settings.providers.kimi.model = 'kimi-k2'
     expect(activeProvider(settings)).toBe('kimi')
 
@@ -377,18 +377,18 @@ describe('activeProvider', () => {
     custom.provider = 'custom'
     custom.providers.custom.baseUrl = '   '
     custom.providers.custom.model = 'my-model'
-    expect(activeProvider(custom)).toBe('chatoffice')
+    expect(activeProvider(custom)).toBe('chaoffice')
   })
 
-  it('falls back to chatoffice for unknown ids from a hand-edited settings file', () => {
+  it('falls back to chaoffice for unknown ids from a hand-edited settings file', () => {
     const settings = defaultAiSettings()
     settings.provider = 'nonsense' as AiProviderId
-    expect(activeProvider(settings)).toBe('chatoffice')
+    expect(activeProvider(settings)).toBe('chaoffice')
   })
 
-  it('chatoffice never requires a key (injected from the chatoffice login at request time)', () => {
+  it('chaoffice never requires a key (injected from the chaoffice login at request time)', () => {
     const settings = defaultAiSettings()
-    settings.provider = 'chatoffice'
-    expect(activeProvider(settings)).toBe('chatoffice')
+    settings.provider = 'chaoffice'
+    expect(activeProvider(settings)).toBe('chaoffice')
   })
 })

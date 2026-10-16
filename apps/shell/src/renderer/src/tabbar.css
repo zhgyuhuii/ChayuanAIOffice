@@ -31,7 +31,7 @@
 
 /* While a Home popover is open the strip must deliver presses (drag regions
    swallow them), so outside-press dismissal can see presses on the blank band */
-html.chatoffice-popover-open .tab-bar {
+html.chaoffice-popover-open .tab-bar {
   -webkit-app-region: no-drag;
 }
 
@@ -393,14 +393,14 @@ body.overlay-title-bar .tab-bar-drag-spacer {
  * resized tree stays fully visible beside the editor — with its divider and
  * drag handle, which a stale hardcoded clip used to cut off. 232px fallback =
  * home-layout SIDEBAR_DEFAULT. A shell modal (settings,
- * html.chatoffice-shell-modal set by Home's settings funnel) frees the whole
+ * html.chaoffice-shell-modal set by Home's settings funnel) frees the whole
  * window — the main process hides the covering editor view — so the clip must
  * drop or the dialog would still be cut at the strip. */
 .app-frame-content.doc-active {
   clip-path: inset(0 calc(100% - var(--tree-width, 232px)) 0 0);
 }
 
-html.chatoffice-shell-modal .app-frame-content.doc-active {
+html.chaoffice-shell-modal .app-frame-content.doc-active {
   clip-path: none;
 }
 

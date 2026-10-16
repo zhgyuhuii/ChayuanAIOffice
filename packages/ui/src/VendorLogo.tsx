@@ -1,9 +1,9 @@
 /**
  * VendorLogo — the harvested chatop vendor icon with a letter-avatar
- * fallback (chatoffice and any catalog row without an icon file).
+ * fallback (chaoffice and any catalog row without an icon file).
  */
 import React from 'react'
-import { VENDOR_BY_ID } from '@chatoffice/ai-provider/browser'
+import { VENDOR_BY_ID } from '@chaoffice/ai-provider/browser'
 import { VENDOR_LOGOS } from './vendor-logos'
 
 export interface VendorLogoProps {

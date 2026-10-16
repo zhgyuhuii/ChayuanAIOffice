@@ -40,7 +40,7 @@ window.ribbon = {
 - `idMso / insertBeforeMso / insertAfterMso` 实现与内置标签的**合并**而非替换;
 - 右键菜单经 `contextMenus` 同理扩展。
 
-## 二、ChatOffice 现状(代码级事实)
+## 二、ChaOffice 现状(代码级事实)
 
 | 维度 | 现状 | 评估 |
 | --- | --- | --- |
@@ -52,7 +52,7 @@ window.ribbon = {
 | i18n | `strings-ribbon.ts` 13,365 行、10 语言,键规整(`ribbonXxx` / `ribbonXxxTip`) | ✅ 直接可作 labelKey 体系 |
 | 扩展体系 | 完全没有 plugin/addon 机制 | 全新建设 |
 | IPC / 安全 | docs 主进程 56 个 IPC 通道;严格 CSP(`script-src 'self'`);`project-store` 已有持久化范式 | ✅ 声明式 XML 加载不需放宽 CSP;跑第三方代码需专门沙箱 |
-| 共享组件 | `@chatoffice/ui` 无 ribbon 抽象,但 `rb-big / ribbon-group / ribbon-tab` CSS 类名跨 app 一致(事实契约) | 渲染器共享可行 |
+| 共享组件 | `@chaoffice/ui` 无 ribbon 抽象,但 `rb-big / ribbon-group / ribbon-tab` CSS 类名跨 app 一致(事实契约) | 渲染器共享可行 |
 
 结论:现状是"编译期固定的 JSX Ribbon",与 WPS 方案的差距在三层 —— ① UI 不是数据;② 没有命令注册表;③ 没有外部代码运行时。但代码里已有全部种子(tab 数组、项级数据驱动、`menu:command` 字符串通道、i18n 键体系、CSS 类名约定)。
 
@@ -62,7 +62,7 @@ window.ribbon = {
 ┌─────────────────────────────────────────────────────┐
 │ L5 加载项生态: 目录/包/CLI(wpsjs 对标)/签名/市场      │
 ├─────────────────────────────────────────────────────┤
-│ L4 对外 API: @chatoffice/api(对象模型+事件+ribbonUI)  │
+│ L4 对外 API: @chaoffice/api(对象模型+事件+ribbonUI)  │
 ├─────────────────────────────────────────────────────┤
 │ L3 桥接运行时: 沙箱 iframe + postMessage + 权限门卫   │
 ├─────────────────────────────────────────────────────┤
@@ -114,12 +114,12 @@ WPS 用隐藏网页跑 `wps.js`;Electron 下等价物是**沙箱 iframe**(独立
 - `ribbonUI` 对象:`Invalidate() / InvalidateControl(id)` → 宿主重查询对应 `get*` 回调;
 - 事件(对标 `ApiEvent`):`DocumentChanged / SelectionChanged / DocSaved`,复用 editor 事件转发。
 
-### L4 对外 API(`@chatoffice/api`)
+### L4 对外 API(`@chaoffice/api`)
 
 TypeScript SDK,镜像 WPS 对象模型子集 + 本项目特色能力:
 
 ```ts
-ChatOffice.Application.ActiveDocument   // 读写文本/段落/表格(走 docx-engine)
+ChaOffice.Application.ActiveDocument   // 读写文本/段落/表格(走 docx-engine)
         .Selection                     // 范围、插入、格式
         .InsertText / .InsertTable / .InsertImage
         .Save() / .ExportPdf()
@@ -139,7 +139,7 @@ my-addin/
 └── icons/
 ```
 
-- **加载路径**:用户目录 `~/Library/Application Support/ChatOffice/addins/<id>/`(主进程 `addin:*` IPC + `project-store` 式持久化;安装/启停/卸载 UI 放"文件 → 选项 → 加载项");
+- **加载路径**:用户目录 `~/Library/Application Support/ChaOffice/addins/<id>/`(主进程 `addin:*` IPC + `project-store` 式持久化;安装/启停/卸载 UI 放"文件 → 选项 → 加载项");
 - **开发模式**:监听目录热重载(对标 `wpsjs` 调试体验),devtools 直连沙箱 iframe;
 - **分发**:zip 包 + manifest 内签名公钥/哈希,安装时校验;企业可策略预装。
 
@@ -155,10 +155,10 @@ my-addin/
 | P1 命令注册表 | 泛化 `menu:command`;Home tab 全部控件 onClick → `cmdId` | 1–2 周 | 内部完成"UI→命令"解耦 |
 | P2 Schema 化 | `packages/ribbon` 类型+渲染器;tab/group 级迁移(docs 先行,slides 跟进合并) | 3–6 周 | 内置 Ribbon 全数据驱动,视觉零变化(截图回归保障) |
 | P3 XML 加载 | CustomUI 兼容解析器+合并引擎;`addin:*` IPC;声明式加载项(仅 XML+图标,无代码)可装 | 2 周 | 第一个对外能力:改 XML 即改菜单 |
-| P4 桥接+API | 沙箱运行时、回调桥、`@chatoffice/api` 对象模型、Invalidate | 4–6 周 | 完整 WPS 级二次开发 |
-| P5 生态 | CLI(`chatoffice addin create/dev/build`)、签名、文档、示例库 | 持续 | 开发者生态 |
+| P4 桥接+API | 沙箱运行时、回调桥、`@chaoffice/api` 对象模型、Invalidate | 4–6 周 | 完整 WPS 级二次开发 |
+| P5 生态 | CLI(`chaoffice addin create/dev/build`)、签名、文档、示例库 | 持续 | 开发者生态 |
 
-**WPS 迁移友好性**:schema 取 CustomUI 兼容子集 + 相同回调命名,存量 WPS 加载项把 `wps.*` 调用改为 `ChatOffice.*` 即可完成大部分移植 —— 本身就是生态切入点。
+**WPS 迁移友好性**:schema 取 CustomUI 兼容子集 + 相同回调命名,存量 WPS 加载项把 `wps.*` 调用改为 `ChaOffice.*` 即可完成大部分移植 —— 本身就是生态切入点。
 
 ## 五、关键风险与对策
 

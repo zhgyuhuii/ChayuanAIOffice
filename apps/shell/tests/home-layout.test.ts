@@ -9,7 +9,7 @@ import {
   type HomeLayoutState,
 } from '../src/renderer/src/home-layout'
 
-const STORAGE_KEY = 'chatoffice.home-layout'
+const STORAGE_KEY = 'chaoffice.home-layout'
 
 const DEFAULTS: HomeLayoutState = {
   leftCollapsed: false,

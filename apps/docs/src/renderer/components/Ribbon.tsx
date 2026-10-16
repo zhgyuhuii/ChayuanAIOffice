@@ -1,6 +1,6 @@
 import { Suspense, memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import type { Lang } from '@chatoffice/i18n'
+import type { Lang } from '@chaoffice/i18n'
 
 export type ConvertFormat = 'pdf' | 'html' | 'md' | 'images'
 import type {
@@ -40,13 +40,13 @@ import type {
   TextboxParaDisplay,
   ThemeColors,
   ThemeFonts,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import {
   Dropdown,
   isSymbolFontFamily,
   useDismissablePopover,
   useRibbonCollapse,
-} from '@chatoffice/ui'
+} from '@chaoffice/ui'
 import { HIGHLIGHT_CSS } from '../editor/extensions'
 import { applyCase, type CaseMode } from '../editor/case-transform'
 import { isRtlUiLang, setParagraphDirection, setSelectionAlign } from '../editor/direction'
@@ -160,12 +160,12 @@ import {
   setParaAttrs,
   toggleParaSpace as toggleParaSpaceImpl,
 } from './ribbon-tabs'
-import { InsertImageDialog } from '@chatoffice/ui/InsertImageDialog'
-import type { InsertImageBridge } from '@chatoffice/ui/InsertImageDialog'
-import type { WebImageItem } from '@chatoffice/ui/InsertImageDialog'
-import { ensurePipelineImage } from '@chatoffice/ui/image-transcode'
+import { InsertImageDialog } from '@chaoffice/ui/InsertImageDialog'
+import type { InsertImageBridge } from '@chaoffice/ui/InsertImageDialog'
+import type { WebImageItem } from '@chaoffice/ui/InsertImageDialog'
+import { ensurePipelineImage } from '@chaoffice/ui/image-transcode'
 import { showToast } from './toast-bus'
-import { ModelSettingsPageLazy } from '@chatoffice/ui/ModelSettingsPageLazy'
+import { ModelSettingsPageLazy } from '@chaoffice/ui/ModelSettingsPageLazy'
 import { docsModelBridge } from '../ai/model-bridge'
 import { ChayuanTab, type ChayuanServices } from './ribbon-chayuan-tab'
 import { WRAP_OPTIONS } from './ContextMenu'
@@ -850,7 +850,7 @@ function RibbonInner({
   const collapse = useRibbonCollapse('aidocs.ribbonCollapsed', {
     collapse: t('ribbonCollapse'),
     expand: t('ribbonExpand'),
-    // ⌥⌘K / Ctrl+Alt+K: the icon-only middle density (see chatoffice#362)
+    // ⌥⌘K / Ctrl+Alt+K: the icon-only middle density (see chaoffice#362)
     compact: t('ribbonCompact'),
     expandFull: t('ribbonExpand'),
   })

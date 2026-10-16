@@ -8,7 +8,7 @@
  * without its raster fallback anyway), matching the per-element no-page-harm
  * rule for generated imagery.
  */
-import { repairSvgEntities, sanitizeSvg } from '@chatoffice/pptx-render'
+import { repairSvgEntities, sanitizeSvg } from '@chaoffice/pptx-render'
 import { rasterizeSvg } from './svg-raster'
 
 export interface SvgHydrateResult {

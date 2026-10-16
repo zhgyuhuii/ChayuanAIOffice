@@ -23,7 +23,7 @@ Tiga pilihan ialah Cerah, Gelap, dan Ikut Sistem. Mod Ikut Sistem mengikut rupa 
 - **Kedudukan bar sisi AI** (kiri atau kanan), **Saiz teks panel AI** dan **Semakan ejaan dalam sembang AI**.
 - **Buka panel AI dalam dokumen baharu** — dimatikan, dokumen baharu bermula dengan panel tertutup, sekali klik sahaja.
 - **Simpan automatik semua dokumen** membolehkan AutoSave secara lalai dalam setiap editor; anda masih boleh mematikannya untuk satu tetingkap sahaja.
-- **Lokasi simpanan** dengan butang **Tukar**, dan **Apl lalai untuk dokumen Office** untuk menuntut .docx / .xlsx / .pptx bagi ChatOffice.
+- **Lokasi simpanan** dengan butang **Tukar**, dan **Apl lalai untuk dokumen Office** untuk menuntut .docx / .xlsx / .pptx bagi ChaOffice.
 
 ## Media & Carian AI
 
@@ -39,7 +39,7 @@ Ia bukan suis — setiap keupayaan memilih pembekal yang menyediakannya, dan kun
 
 ## Penetapan sebagai aplikasi lalai
 
-Tetapan boleh mendaftar ChatOffice sebagai aplikasi yang mengendalikan fail .docx, .xlsx, .pptx, .pdf, dan yang lain. Pendaftaran ini dilakukan pada peringkat sistem, dan pengesahan diperlukan apabila diminta.
+Tetapan boleh mendaftar ChaOffice sebagai aplikasi yang mengendalikan fail .docx, .xlsx, .pptx, .pdf, dan yang lain. Pendaftaran ini dilakukan pada peringkat sistem, dan pengesahan diperlukan apabila diminta.
 
 ## Notis perisian pihak ketiga dan kemas kini
 
@@ -48,13 +48,13 @@ Tetapan boleh mendaftar ChatOffice sebagai aplikasi yang mengendalikan fail .doc
 
 ## Log masuk ke Genspark
 
-- Kemasukan log masuk, sama ada melalui tetapan atau senarai projek awan, menggunakan aliran **kod peranti**. ChatOffice memaparkan kod tersebut dan membuka halaman log masuk dalam pelayar, dan aliran ini akan diteruskan secara automatik selepas selesai.
+- Kemasukan log masuk, sama ada melalui tetapan atau senarai projek awan, menggunakan aliran **kod peranti**. ChaOffice memaparkan kod tersebut dan membuka halaman log masuk dalam pelayar, dan aliran ini akan diteruskan secara automatik selepas selesai.
 - Log masuk hanya digunakan untuk dua perkara, iaitu senarai projek awan dan model yang dihoskan oleh Genspark. Tanpa log masuk, setiap fungsi setempat dan model tersuai akan terus berfungsi.
 - Log keluar boleh dilakukan dengan satu klik dalam tetapan.
 
 ## Integrasi MCP
 
-**Integrasi** ialah panel yang menyambungkan ChatOffice kepada ejen penulisan kod, dan ia ada babnya sendiri: Menyambungkan ejen penulisan kod. Versi ringkas — pilih satu laluan (baris arahan, atau MCP), ikut bahagian itu, kemudian mulakan sembang baharu dan bertanya.
+**Integrasi** ialah panel yang menyambungkan ChaOffice kepada ejen penulisan kod, dan ia ada babnya sendiri: Menyambungkan ejen penulisan kod. Versi ringkas — pilih satu laluan (baris arahan, atau MCP), ikut bahagian itu, kemudian mulakan sembang baharu dan bertanya.
 
 ![Tetapan ▸ Integrasi: tiga langkah, kemudian baris kemahiran dan pilihan MCP](img/settings-integrations.png)
 
@@ -64,6 +64,6 @@ Di bawah **Pelayan HTTP tempatan**, aplikasi ini juga boleh menjalankan pelayan 
 
 | Perintah           | Fungsinya                             |
 | ------------------ | ------------------------------------- |
-| `chatoffice <fail>` | membuka fail                          |
-| `chatoffice mcp`    | memulakan pelayan MCP tempatan        |
-| `chatoffice --help` | memaparkan semua perintah dan pilihan |
+| `chaoffice <fail>` | membuka fail                          |
+| `chaoffice mcp`    | memulakan pelayan MCP tempatan        |
+| `chaoffice --help` | memaparkan semua perintah dan pilihan |

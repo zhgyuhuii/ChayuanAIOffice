@@ -94,7 +94,7 @@ describe('documentToMarkdown', () => {
       content: '<p></p>',
     })
     const png = 'data:image/png;base64,iVBORw0KGgo='
-    const lazy = 'chatoffice-docx-media://abc/word/media/photo%201.jpeg'
+    const lazy = 'chaoffice-docx-media://abc/word/media/photo%201.jpeg'
     try {
       editor.commands.setContent({
         type: 'doc',
@@ -153,10 +153,10 @@ describe('documentToMarkdown', () => {
       })
       expect(documentToMarkdown(editor)).toEqual({
         markdown:
-          'see ![](__chatoffice_media__/image1.png)\n\n' +
-          '![](__chatoffice_media__/image2.jpeg)\n\n' +
-          '![](__chatoffice_media__/image1.png)\n\n' +
-          '| tall | cell ![](__chatoffice_media__/image1.png) |\n| --- | --- |\n|  | b2 |\n',
+          'see ![](__chaoffice_media__/image1.png)\n\n' +
+          '![](__chaoffice_media__/image2.jpeg)\n\n' +
+          '![](__chaoffice_media__/image1.png)\n\n' +
+          '| tall | cell ![](__chaoffice_media__/image1.png) |\n| --- | --- |\n|  | b2 |\n',
         images: [
           { name: 'image1.png', src: png },
           { name: 'image2.jpeg', src: lazy },

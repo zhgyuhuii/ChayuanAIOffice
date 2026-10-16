@@ -16,7 +16,7 @@ import {
   type AiConversationMeta,
   type AiScopeQuoteData,
   AiScopeQuote,
-} from '@chatoffice/ui'
+} from '@chaoffice/ui'
 import {
   DockChrome,
   KbCitePreview,
@@ -25,15 +25,15 @@ import {
   createFileNav,
   useKbAugment,
   type KbCitation,
-} from '@chatoffice/ui'
+} from '@chaoffice/ui'
 import {
   defaultSettingsV2,
   enabledChatModels,
   type AiSettingsV2,
-} from '@chatoffice/ai-provider/browser'
+} from '@chaoffice/ai-provider/browser'
 import { sheetsModelBridge } from './model-bridge'
 import { AssistantTab } from './AssistantTab'
-import type { ChangePlan } from '@chatoffice/xlsx-gateway/domain/workbook.types'
+import type { ChangePlan } from '@chaoffice/xlsx-gateway/domain/workbook.types'
 import { ATTACHMENT_IMAGE_EXTS, type AttachmentMeta } from '../../shared/desktop-api'
 import { useI18n, type TFunc } from '../i18n/locale'
 import { SHEET_NAV_SCHEME } from './sheet-nav'
@@ -50,7 +50,7 @@ import fileGeneralIcon from '../assets/file-general.png'
 
 // 惰性加载:模型设置页(含厂商 logo 组)只在打开时拉取,不进启动图
 const ModelSettingsPage = lazy(() =>
-  import('@chatoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
+  import('@chaoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
 )
 
 /** Clipboard bitmap MIME → attachment extension (matches the main process's

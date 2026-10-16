@@ -5,7 +5,7 @@ import { BrowserWindow } from 'electron'
 
 /** Shared pagination for PDF and PNG export. Document scripts remain disabled. */
 export async function printMarkdownPdf(html: string): Promise<Buffer> {
-  const workDir = await mkdtemp(join(tmpdir(), 'chatoffice-md-print-'))
+  const workDir = await mkdtemp(join(tmpdir(), 'chaoffice-md-print-'))
   let printWin: BrowserWindow | undefined
   try {
     printWin = new BrowserWindow({

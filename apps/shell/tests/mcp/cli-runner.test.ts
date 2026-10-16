@@ -9,7 +9,7 @@ import {
 } from '../../src/main/mcp/cli-runner'
 
 function script(body: string): string {
-  const dir = mkdtempSync(join(tmpdir(), 'chatoffice-cli-runner-'))
+  const dir = mkdtempSync(join(tmpdir(), 'chaoffice-cli-runner-'))
   const file = join(dir, 'child.js')
   writeFileSync(file, body)
   return file

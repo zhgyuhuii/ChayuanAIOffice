@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, lazy, Suspense } from 'react'
 import type { ReactElement } from 'react'
-import { AgentLoop } from '@chatoffice/agent-core'
-import type { AiSettingsV2 } from '@chatoffice/ai-provider'
+import { AgentLoop } from '@chaoffice/agent-core'
+import type { AiSettingsV2 } from '@chaoffice/ai-provider'
 import {
   AiComposer,
   AiTypingIndicator,
@@ -27,14 +27,14 @@ import {
   type AiScopeQuoteData,
   type AiTokenUsageView,
   type KbCitation,
-} from '@chatoffice/ui'
-import type { DockChrome } from '@chatoffice/ui'
+} from '@chaoffice/ui'
+import type { DockChrome } from '@chaoffice/ui'
 import { AssistantTab, IconAiKeyPoints, IconAiSummarize } from './AssistantTab'
-import { AssistantLibraryBrowser } from '@chatoffice/ui/assistant-library'
-import { defaultSettingsV2, pickImageModel } from '@chatoffice/ai-provider/browser'
+import { AssistantLibraryBrowser } from '@chaoffice/ui/assistant-library'
+import { defaultSettingsV2, pickImageModel } from '@chaoffice/ai-provider/browser'
 import { pdfModelBridge } from './model-bridge'
 import { aiLangDirective, t as tGlobal, useI18n } from '../i18n/locale'
-import { Markdown } from '@chatoffice/ui'
+import { Markdown } from '@chaoffice/ui'
 import { createPdfSkill } from './pdf-skill'
 import { createElectronTransport } from './transport'
 import { PDF_NAV_SCHEME, parsePdfNavHref } from './pdf-nav'
@@ -42,7 +42,7 @@ import type { FileOpConfirm, PdfAiDeps, PdfAppDeps } from './tools'
 
 // 惰性加载:模型设置页(含厂商 logo 组)只在打开时拉取,不进启动图
 const ModelSettingsPage = lazy(() =>
-  import('@chatoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
+  import('@chaoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
 )
 
 // Word-parity count (same as docs/markdown): Asian chars one by one + non-Asian words
@@ -371,15 +371,15 @@ function AiConversationBody({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  /** chatoffice login state for the cloud-tools gate (refreshed on mount and window focus) */
-  const chatofficeLoggedInRef = useRef(false)
+  /** chaoffice login state for the cloud-tools gate (refreshed on mount and window focus) */
+  const chaofficeLoggedInRef = useRef(false)
   useEffect(() => {
     let alive = true
     const refresh = () => {
       void window.pdfApi
-        ?.chatofficeStatus()
+        ?.chaofficeStatus()
         .then((s) => {
-          if (alive) chatofficeLoggedInRef.current = !!s?.loggedIn
+          if (alive) chaofficeLoggedInRef.current = !!s?.loggedIn
         })
         .catch(() => {})
     }

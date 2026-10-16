@@ -1,12 +1,12 @@
 import { randomBytes } from 'node:crypto'
 import { dirname, extname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { generateImageTool } from '@chatoffice/ai-search'
+import { generateImageTool } from '@chaoffice/ai-search'
 import {
   MAX_REMOTE_IMAGE_BYTES,
   fetchRemoteImage,
   readBodyCapped,
-} from '@chatoffice/electron-utils/remote-image'
+} from '@chaoffice/electron-utils/remote-image'
 import { flagBool, flagString } from '../args'
 import { aiSettingsPath, prepareCloud } from '../cloud'
 import { resolveInput, resolveOutput, writeOutput } from '../fs'

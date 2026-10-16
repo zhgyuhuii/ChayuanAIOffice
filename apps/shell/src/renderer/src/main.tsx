@@ -1,16 +1,16 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import { htmlDir, htmlLang } from '@chatoffice/i18n'
+import { htmlDir, htmlLang } from '@chaoffice/i18n'
 import { AppFrame } from './AppFrame'
 import { LocaleProvider } from './locale'
-import '@chatoffice/ui/tokens.css'
-import '@chatoffice/ui/screentip.css'
-import '@chatoffice/ui/dropdown.css'
-import '@chatoffice/ui/dock.css'
-import '@chatoffice/ui/ai-usage.css'
+import '@chaoffice/ui/tokens.css'
+import '@chaoffice/ui/screentip.css'
+import '@chaoffice/ui/dropdown.css'
+import '@chaoffice/ui/dock.css'
+import '@chaoffice/ui/ai-usage.css'
 import './home.css'
 import './tabbar.css'
-import { installScreenTips } from '@chatoffice/ui'
+import { installScreenTips } from '@chaoffice/ui'
 
 installScreenTips()
 

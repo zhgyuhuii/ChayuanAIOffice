@@ -1,6 +1,6 @@
 # dsh 应用注册槽位协议（Application Slot Protocol）
 
-**状态**：提案（待 chayuan-harness 合入 PR）。作者：ChatOffice 插件化改造（总体计划 v2.1，决策 #11）。
+**状态**：提案（待 chayuan-harness 合入 PR）。作者：ChaOffice 插件化改造（总体计划 v2.1，决策 #11）。
 
 ## 动机
 
@@ -22,7 +22,7 @@ interface AppRegistrySlot {
 }
 
 interface AppRegistration {
-  id: string                    // 反向域名，如 "ai.chatoffice.suite"
+  id: string                    // 反向域名，如 "ai.chaoffice.suite"
   title: string                 // Dock/启动台显示名
   icon: string | { dataUrl: string }
   open(request: OpenRequest): void | WindowHandle

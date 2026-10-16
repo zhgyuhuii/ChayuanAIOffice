@@ -1,7 +1,7 @@
-import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
+import type { AiPanelPrefs } from '@chaoffice/ui/ai-panel-prefs'
 import type { ExportImageMime } from './export-image-mime'
-import type { Lang } from '@chatoffice/i18n'
-import type { AiModelSelection, AiSettingsV2, AiStreamChunk } from '@chatoffice/ai-provider'
+import type { Lang } from '@chaoffice/i18n'
+import type { AiModelSelection, AiSettingsV2, AiStreamChunk } from '@chaoffice/ai-provider'
 
 /** hard ceiling for one pasted/dropped image (base64 checked in the main process) */
 export const MAX_PASTED_IMAGE_BYTES = 50 * 1024 * 1024
@@ -37,7 +37,7 @@ export const MARKDOWN_CHANNELS = {
   getMarkdownTheme: 'markdown:get-theme',
   setMarkdownTheme: 'markdown:set-theme',
   uploadImage: 'markdown:upload-image',
-  viewImage: 'chatoffice:view-image',
+  viewImage: 'chaoffice:view-image',
   exportRequest: 'markdown:export-request',
   exportDocx: 'markdown:export-docx',
   exportPdf: 'markdown:export-pdf',
@@ -114,14 +114,14 @@ export interface WikiGraph {
 export type UiTheme = 'light' | 'dark' | 'system'
 
 /**
- * Document page theme preference (chatoffice#1811): what the editors' canvas/paper does
+ * Document page theme preference (chaoffice#1811): what the editors' canvas/paper does
  * relative to the UI theme. 'follow' keeps the previous single-theme behavior.
  */
 export type DocTheme = 'follow' | 'light' | 'dark'
 
 /**
  * Bring-your-own image host for pasted/dropped pictures in Markdown
- * (chatoffice#388). Keys are stored plaintext in the user's own settings file,
+ * (chaoffice#388). Keys are stored plaintext in the user's own settings file,
  * like every other credential in the app. The local assets/ copy stays the
  * fallback whenever the host is disabled, unconfigured or the upload fails.
  */
@@ -209,8 +209,8 @@ export const AI_CHANNELS = {
   setSettings: 'ai:set-settings',
   setCurrentModel: 'ai:set-current-model',
   discoverModels: 'ai:discover-models',
-  chatofficeStatus: 'ai:chatoffice-status',
-  chatofficeLogin: 'ai:chatoffice-login',
+  chaofficeStatus: 'ai:chaoffice-status',
+  chaofficeLogin: 'ai:chaoffice-login',
   localToolStatus: 'ai:local-tool-status',
   localToolInstall: 'ai:local-tool-install',
   localToolStart: 'ai:local-tool-start',
@@ -346,7 +346,7 @@ export interface MarkdownApi {
    */
   saveImage(data: { base64: string; ext: string }): Promise<string | null>
   /**
-   * The configured image host (chatoffice#388), or null when none was ever
+   * The configured image host (chaoffice#388), or null when none was ever
    * saved. Pasted/dropped images upload here first and fall back to the
    * local `assets/` copy when the upload fails or the host is disabled.
    */
@@ -408,21 +408,21 @@ export interface MarkdownApi {
   onChromePressed(handler: () => void): () => void
   getAiSettings(): Promise<AiSettingsV2>
   setAiSettings(view: AiSettingsV2): Promise<void>
-  setAiCurrentModel(selection: import('@chatoffice/ai-provider').AiModelSelection): Promise<void>
+  setAiCurrentModel(selection: import('@chaoffice/ai-provider').AiModelSelection): Promise<void>
   aiDiscoverModels(
-    target: import('@chatoffice/ai-provider').DiscoveryTarget,
-  ): Promise<{ models: import('@chatoffice/ai-provider').AiModelEntry[]; error?: string }>
+    target: import('@chaoffice/ai-provider').DiscoveryTarget,
+  ): Promise<{ models: import('@chaoffice/ai-provider').AiModelEntry[]; error?: string }>
   aiChaOfficeStatus(
     withEmail?: boolean,
-  ): Promise<import('@chatoffice/ai-provider').ChaOfficeAccountStatus>
+  ): Promise<import('@chaoffice/ai-provider').ChaOfficeAccountStatus>
   aiChaOfficeLogin(): Promise<void>
   /** 本地与自建：探测 / 一键安装 / 启动（模型设置页状态卡） */
-  aiLocalToolStatus(vendorId: string): Promise<import('@chatoffice/ai-provider').LocalToolStatus>
+  aiLocalToolStatus(vendorId: string): Promise<import('@chaoffice/ai-provider').LocalToolStatus>
   aiLocalToolInstall(
     vendorId: string,
     onLine?: (line: string) => void,
-  ): Promise<import('@chatoffice/ai-provider').LocalToolOpResult>
-  aiLocalToolStart(vendorId: string): Promise<import('@chatoffice/ai-provider').LocalToolOpResult>
+  ): Promise<import('@chaoffice/ai-provider').LocalToolOpResult>
+  aiLocalToolStart(vendorId: string): Promise<import('@chaoffice/ai-provider').LocalToolOpResult>
   aiStream(request: {
     requestId: string
     settings: AiModelSelection
@@ -439,7 +439,7 @@ export interface MarkdownApi {
   imageSearch(query: string, maxResults?: number): Promise<ImageSearchResult>
   /** Download an image URL in the main process (CORS-free, scheme/target validated) */
   fetchImage(url: string): Promise<{ base64: string; mime: string } | null>
-  /** ChaOffice cloud image generation (markdown-owned channel, chatoffice login required) */
+  /** ChaOffice cloud image generation (markdown-owned channel, chaoffice login required) */
   aiGenerateImage(op: { prompt: string; aspectRatio?: string }): Promise<{
     url?: string
     error?: string

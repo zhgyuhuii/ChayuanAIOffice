@@ -1,9 +1,9 @@
 /// <reference types="vite/client" />
 
-import type { ProjectApi } from '@chatoffice/project-store'
+import type { ProjectApi } from '@chaoffice/project-store'
 import type { HtmlApi } from '../shared/ipc'
 
-import type { FilesPaneApi } from '@chatoffice/ui'
+import type { FilesPaneApi } from '@chaoffice/ui'
 
 declare global {
   interface Window {

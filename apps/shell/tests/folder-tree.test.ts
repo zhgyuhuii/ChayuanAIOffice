@@ -44,7 +44,7 @@ function touch(rel: string, content = 'x'): string {
 }
 
 beforeEach(() => {
-  root = realpathSync(mkdtempSync(join(tmpdir(), 'chatoffice-folders-')))
+  root = realpathSync(mkdtempSync(join(tmpdir(), 'chaoffice-folders-')))
 })
 
 afterEach(() => {
@@ -75,7 +75,7 @@ describe('listFolder', () => {
   it('hides the Markdown assets folder only when it holds the asset manifest', () => {
     mkdirSync(join(root, 'assets'))
     expect(isHiddenEntry(root, 'assets', true)).toBe(false)
-    touch('assets/.chatoffice-assets.json', '{}')
+    touch('assets/.chaoffice-assets.json', '{}')
     expect(isHiddenEntry(root, 'assets', true)).toBe(true)
     expect(listFolder(root, new Set()).folders).toEqual([])
   })
@@ -146,7 +146,7 @@ describe('isInsideRoot', () => {
   })
 
   it('rejects a symlink inside the root that points outside it', () => {
-    const outside = mkdtempSync(join(tmpdir(), 'chatoffice-outside-'))
+    const outside = mkdtempSync(join(tmpdir(), 'chaoffice-outside-'))
     try {
       symlinkSync(outside, join(root, 'escape'))
       expect(isInsideRoot(root, join(root, 'escape'))).toBe(false)

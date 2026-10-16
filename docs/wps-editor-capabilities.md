@@ -54,7 +54,7 @@
 
 ### 3.5 关键发现：第三方加载项可注入右键菜单
 
-正右键菜单中的"察元AI 文本分析/翻译/知识库"与顶部 tab"察元AI助理/察元AI编审"，是**企业品牌（察元）通过 WPS 加载项注入的自定义菜单**——机制为 `ribbon.xml` 的 `<contextMenus><contextMenu idMso="ContextMenuText">` 节点（[WPS 开发文档：自定义功能区 CustomUI 标准](https://qn.cache.wpscdn.cn/encs/doc/office_v13/index.htm)、[加载项开发说明](https://open.wps.cn/documents/app-integration-dev/wps365/client/wpsoffice/wps-integration-mode/wps-addin-development/wps-addin-development-instructions)、社区案例 [ContextMenu 注入问题](https://bbs.wps.cn/topic/54168)）。这证明**本项目品牌（ChatOffice/察元系）已有 WPS 加载项注入实践**，是"文字右键 AI 菜单"的现成参照。
+正右键菜单中的"察元AI 文本分析/翻译/知识库"与顶部 tab"察元AI助理/察元AI编审"，是**企业品牌（察元）通过 WPS 加载项注入的自定义菜单**——机制为 `ribbon.xml` 的 `<contextMenus><contextMenu idMso="ContextMenuText">` 节点（[WPS 开发文档：自定义功能区 CustomUI 标准](https://qn.cache.wpscdn.cn/encs/doc/office_v13/index.htm)、[加载项开发说明](https://open.wps.cn/documents/app-integration-dev/wps365/client/wpsoffice/wps-integration-mode/wps-addin-development/wps-addin-development-instructions)、社区案例 [ContextMenu 注入问题](https://bbs.wps.cn/topic/54168)）。这证明**本项目品牌（ChaOffice/察元系）已有 WPS 加载项注入实践**，是"文字右键 AI 菜单"的现成参照。
 
 图片/形状右键菜单未实测（并发冲突避让）：官方加载项文档按 `idMso` 分 MenuText/MenuCell/MenuPicture 等多种上下文菜单，形状/图片必有独立菜单（环绕方式/裁剪/提取文字等），后续可单独补测。
 
@@ -79,13 +79,13 @@
 
 **实机入口对照**（macOS 版）：工具 tab → 开发工具组（运行宏[需启用]/录制新宏/宏安全性/WPS 宏编辑器）+ 加载项组（WPS 加载项）；开发工具上下文 tab → 宏组 / 加载项 / 控件工具箱（设计模式+JS 控件）/ XML 映射 / 组合。
 
-## 六、对 ChatOffice 的借鉴要点
+## 六、对 ChaOffice 的借鉴要点
 
 1. **AI 伴写交互范式**值得照抄：ghost text + Tab 采纳 + Alt+↓ 换方案——本项目 docs 的 tiptap 可用 decoration + 键盘拦截实现，成本低、心智与 WPS 一致。
 2. **流式落盘三件套**：临时层（不进 undo 栈）→ 逐段采纳 → 可中断；"AI 帮我写"的大纲先行/逐段生成是长文生成的正确形态。
 3. **右键菜单按内容类型分化** + mini 工具条上叠 AI 快捷（解析/翻译/续写）是高频好设计；本项目 ContextMenu 可按 text/table/image 分化并注入 AI 组。
 4. **上下文 ribbon tab**（表格工具等）本项目已有（contextTab），WPS 的"追加 tab"细节可对比对齐。
-5. **察元系 WPS 加载项的存在**说明公司有 WPS 二次开发通道；ChatOffice 若需与 WPS 生态互通（打开/保存回传、企业菜单），加载项 + JSAPI 是标准路径。
+5. **察元系 WPS 加载项的存在**说明公司有 WPS 二次开发通道；ChaOffice 若需与 WPS 生态互通（打开/保存回传、企业菜单），加载项 + JSAPI 是标准路径。
 
 ## 附：本次实测遗留
 

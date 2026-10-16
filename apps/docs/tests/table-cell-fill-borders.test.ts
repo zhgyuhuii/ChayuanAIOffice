@@ -1,5 +1,5 @@
 import { Editor } from '@tiptap/core'
-import { parseDocx } from '@chatoffice/docx-engine'
+import { parseDocx } from '@chaoffice/docx-engine'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'

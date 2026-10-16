@@ -1,12 +1,12 @@
 /**
- * The template chrome skeleton (chatoffice#1821): extraction from a deck's render tree
+ * The template chrome skeleton (chaoffice#1821): extraction from a deck's render tree
  * (title box / brand-image slot / accent shapes / background per page role)
  * and its prompt formatting. Pure logic — fixtures are loose render nodes.
  */
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
 
-import type { PlacedBox, RenderSlide } from '@chatoffice/pptx-render'
+import type { PlacedBox, RenderSlide } from '@chaoffice/pptx-render'
 
 import {
   extractLayoutSkeleton,

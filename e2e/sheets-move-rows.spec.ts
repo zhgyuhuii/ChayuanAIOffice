@@ -37,7 +37,7 @@ function rowHeaderPoint(origin: { x: number; y: number }, row: number) {
 
 test.describe('sheets: whole-row move', () => {
   test('drag-moving a row persists the new order and undo restores it', async () => {
-    const scratch = await mkdtemp(join(tmpdir(), 'chatoffice-moverows-e2e-'))
+    const scratch = await mkdtemp(join(tmpdir(), 'chaoffice-moverows-e2e-'))
     const workbook = join(scratch, 'move.xlsx')
     await copyFile(FIXTURE, workbook)
 

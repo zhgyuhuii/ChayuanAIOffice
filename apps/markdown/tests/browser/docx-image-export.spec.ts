@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { parseDocx } from '@chatoffice/docx-engine'
+import { parseDocx } from '@chaoffice/docx-engine'
 import { openSource } from './helpers'
 
 const SVG =

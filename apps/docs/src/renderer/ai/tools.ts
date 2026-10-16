@@ -6,10 +6,10 @@ import type {
   CommentInfo,
   NewChart,
   NoteInfo,
-} from '@chatoffice/docx-engine'
-import { sanitizeSvg } from '@chatoffice/pptx-render/svg-sanitize'
-import { rasterizeSvg } from '@chatoffice/pptx-render/svg-raster'
-import type { ToolDisplay } from '@chatoffice/agent-core'
+} from '@chaoffice/docx-engine'
+import { sanitizeSvg } from '@chaoffice/pptx-render/svg-sanitize'
+import { rasterizeSvg } from '@chaoffice/pptx-render/svg-raster'
+import type { ToolDisplay } from '@chaoffice/agent-core'
 import type {
   AgentToolCall,
   AgentToolDef,

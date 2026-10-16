@@ -1,7 +1,7 @@
 import type { IFunctionInfo } from '@univerjs/engine-formula'
 import { useMemo, useState } from 'react'
 
-import { Dropdown } from '@chatoffice/ui'
+import { Dropdown } from '@chaoffice/ui'
 
 import {
   buildFunctionCatalog,

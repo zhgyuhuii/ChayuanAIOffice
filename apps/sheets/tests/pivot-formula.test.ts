@@ -5,9 +5,9 @@ import {
   evaluatePivotFormula,
   formatPivotFormula,
   parsePivotFormula,
-} from '@chatoffice/xlsx-gateway/domain/pivot-formula'
-import { recomputePivotData } from '@chatoffice/xlsx-gateway/domain/pivot-engine'
-import { parsePivotDefinition } from '@chatoffice/xlsx-gateway/gateway/xlsx-pivot'
+} from '@chaoffice/xlsx-gateway/domain/pivot-formula'
+import { recomputePivotData } from '@chaoffice/xlsx-gateway/domain/pivot-engine'
+import { parsePivotDefinition } from '@chaoffice/xlsx-gateway/gateway/xlsx-pivot'
 
 const FIELDS = ['Revenue', 'Cost', 'Order Count']
 

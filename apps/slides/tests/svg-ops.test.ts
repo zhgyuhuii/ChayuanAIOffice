@@ -4,9 +4,9 @@
  * with its per-page guard — all against a real in-memory deck, no mocks.
  */
 import { describe, it, expect, beforeEach } from 'vitest'
-import { createBlankPptx, openPptx, savePptx, type OpenedPptx } from '@chatoffice/pptx-engine'
-import { runTxn, opNames } from '@chatoffice/pptx-ops'
-import { OP_DOCS, opVocabulary } from '@chatoffice/pptx-ops'
+import { createBlankPptx, openPptx, savePptx, type OpenedPptx } from '@chaoffice/pptx-engine'
+import { runTxn, opNames } from '@chaoffice/pptx-ops'
+import { OP_DOCS, opVocabulary } from '@chaoffice/pptx-ops'
 
 const PNG_1PX_BASE64 =
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='

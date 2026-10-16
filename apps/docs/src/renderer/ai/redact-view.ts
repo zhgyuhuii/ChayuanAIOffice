@@ -2,7 +2,7 @@ import {
   redactTextBetween as redactRangeTextBetween,
   type WithheldMark,
   type WithheldNode,
-} from '@chatoffice/agent-core/redact-range'
+} from '@chaoffice/agent-core/redact-range'
 import { REDACT_MARK, placeholderSource } from './redact'
 
 /**

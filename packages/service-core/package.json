@@ -1,5 +1,5 @@
 {
-  "name": "@chatoffice/service-core",
+  "name": "@chaoffice/service-core",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -14,8 +14,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@chatoffice/project-store": "*",
-    "@chatoffice/storage-adapter": "*",
+    "@chaoffice/project-store": "*",
+    "@chaoffice/storage-adapter": "*",
     "yjs": "^13.6.20"
   },
   "devDependencies": {

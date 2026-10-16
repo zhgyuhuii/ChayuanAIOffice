@@ -3,18 +3,18 @@ import { formatRemoteUri, isRemoteUri, parseRemoteUri } from '../src/remote/uri.
 
 describe('formatRemoteUri / parseRemoteUri', () => {
   it('round-trips plain keys', () => {
-    const uri = formatRemoteUri('cfg-1', 'chatoffice/report.docx')
-    expect(uri).toBe('remote://cfg-1/chatoffice/report.docx')
-    expect(parseRemoteUri(uri)).toEqual({ configId: 'cfg-1', key: 'chatoffice/report.docx' })
+    const uri = formatRemoteUri('cfg-1', 'chaoffice/report.docx')
+    expect(uri).toBe('remote://cfg-1/chaoffice/report.docx')
+    expect(parseRemoteUri(uri)).toEqual({ configId: 'cfg-1', key: 'chaoffice/report.docx' })
   })
 
   it('round-trips CJK names, spaces and special characters', () => {
-    const key = 'chatoffice/会议纪要 final (v2)!.docx'
+    const key = 'chaoffice/会议纪要 final (v2)!.docx'
     expect(parseRemoteUri(formatRemoteUri('cfg-1', key))?.key).toBe(key)
   })
 
   it('preserves empty path segments', () => {
-    const key = 'chatoffice//weird//name.txt'
+    const key = 'chaoffice//weird//name.txt'
     expect(parseRemoteUri(formatRemoteUri('cfg-1', key))?.key).toBe(key)
   })
 

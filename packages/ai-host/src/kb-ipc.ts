@@ -21,7 +21,7 @@ import {
   type KbHttpClient,
   type KbHit,
   type KbStatus,
-} from '@chatoffice/ai-provider'
+} from '@chaoffice/ai-provider'
 import { KB_CHANNELS } from './kb-channels'
 
 /** minimal handle surface so this module does not import the main index barrel;

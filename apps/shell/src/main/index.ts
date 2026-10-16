@@ -63,7 +63,7 @@ import appIconPath from './assets/app-icon.png?asset'
 // title-bar icon on Windows and Linux, and the macOS dock icon in dev builds
 // (packaged mac/win bake the same artwork into the app bundle / exe).
 const APP_ICON = nativeImage.createFromPath(appIconPath)
-import { createI18n, isLang, normalizeLang, setUiLang, type Lang } from '@chatoffice/i18n'
+import { createI18n, isLang, normalizeLang, setUiLang, type Lang } from '@chaoffice/i18n'
 import {
   AUTHOR_NAME_KEY,
   readAuthorNameSetting,
@@ -93,7 +93,7 @@ import {
   displayVersion,
   setUpdateCheckInvoker,
   installRendererProtocol,
-} from '@chatoffice/electron-utils'
+} from '@chaoffice/electron-utils'
 import { readAppSettings, writeAppSetting, writeAppSettings, writeAppSettingThen } from './app-settings'
 import { OPEN_DOCUMENTS_FILE, clearOpenDocuments, publishOpenDocuments } from './open-documents'
 import { startControlServer, type ControlServer } from './control-server'
@@ -134,22 +134,22 @@ import {
   syncCloudProjects,
 } from './cloud-projects'
 import { handleDroppedFiles } from './dropped-files'
-import { ProjectStore } from '@chatoffice/project-store'
-import { bindRemoteFilesIpc, isRemoteUri, parseRemoteUri } from '@chatoffice/storage-adapter'
+import { ProjectStore } from '@chaoffice/project-store'
+import { bindRemoteFilesIpc, isRemoteUri, parseRemoteUri } from '@chaoffice/storage-adapter'
 import { collectLaunchPaths } from './launch-paths'
 import {
-  ensureChatofficeLogin,
-  chatofficeLogout,
-  chatofficeConvertPdfToDocx,
-  chatofficeLoginInfo,
+  ensureChaofficeLogin,
+  chaofficeLogout,
+  chaofficeConvertPdfToDocx,
+  chaofficeLoginInfo,
   hasChaOfficeAuth,
-  loadChatofficeAuth,
+  loadChaofficeAuth,
   resolveChaOfficeEntry,
   setChaOfficeProxyUrl,
-  startChatofficeLogin,
-  watchChatofficeApiKey,
-} from '@chatoffice/ai-search'
-import { setRescueFetch } from '@chatoffice/ai-provider'
+  startChaofficeLogin,
+  watchChaofficeApiKey,
+} from '@chaoffice/ai-search'
+import { setRescueFetch } from '@chaoffice/ai-provider'
 
 import {
   buildDocsMenu,
@@ -195,7 +195,7 @@ import {
   authorizeMcpDocWrite,
 } from '../../../docs/src/main/docs-main'
 import { blankPdfBuffer } from '../../../pdf/src/main/blank-pdf'
-import { blankXlsxBuffer } from '@chatoffice/xlsx-gateway/gateway/csv-import'
+import { blankXlsxBuffer } from '@chaoffice/xlsx-gateway/gateway/csv-import'
 import {
   applyMcpSettings,
   clearMcpLogs,
@@ -335,7 +335,7 @@ import {
   normalizeAiPanelPrefs,
   sameAiPanelPrefs,
   type AiPanelPrefs,
-} from '@chatoffice/ui/ai-panel-prefs'
+} from '@chaoffice/ui/ai-panel-prefs'
 import type { TabKind } from '../shared/tabs-api'
 import { TABS_CHANNELS, WINDOW_CHANNELS } from '../shared/tabs-api'
 import type { DockEditorOptions, DockKind, DockRect } from '../shared/dock-api'
@@ -439,17 +439,17 @@ for (const stream of [process.stdout, process.stderr]) {
 // ANY unpacked run (`npm run shell`, `npm run dev`, `npx electron .`) must not
 // share the installed app's userData or single-instance lock — otherwise a dev
 // run silently quits and forwards its argv to the running installed ChaOffice.
-// CHATOFFICE_USER_DATA: test drivers point this at a scratch dir so an
+// CHAOFFICE_USER_DATA: test drivers point this at a scratch dir so an
 // automated instance can run alongside the dev instance (separate lock).
 if (!app.isPackaged) {
-  // CHATOFFICE_USER_DATA: test drivers point this at a scratch dir so an
+  // CHAOFFICE_USER_DATA: test drivers point this at a scratch dir so an
   // automated instance can run alongside the dev instance (separate lock).
-  if (process.env.CHATOFFICE_USER_DATA) {
-    app.setPath('userData', process.env.CHATOFFICE_USER_DATA)
+  if (process.env.CHAOFFICE_USER_DATA) {
+    app.setPath('userData', process.env.CHAOFFICE_USER_DATA)
   } else {
     // The dev profile used to live in "ChaOffice Dev"; the space breaks
     // unquoted shell expansions, rsync targets and .desktop Exec= lines, and
-    // XDG config entries are single tokens (upstream #1879 / chatoffice#1817,
+    // XDG config entries are single tokens (upstream #1879 / chaoffice#1817,
     // adapted to local naming). "ChaOffice-Dev" keeps the family naming of the
     // packaged profile. The old directory moves once — it sits on the same
     // volume as appData, so the rename is atomic, and a concurrent dev
@@ -525,7 +525,7 @@ const PDF_OUT = app.isPackaged
   ? join(process.resourcesPath, 'modules', 'pdf')
   : join(APPS_ROOT, 'pdf', 'out')
 let cliRunner: ReturnType<typeof createCliRunner> | null = null
-/** the bundled chatoffice CLI on the app's own Node runtime (MCP headless tools, Ask AI create_document) */
+/** the bundled chaoffice CLI on the app's own Node runtime (MCP headless tools, Ask AI create_document) */
 function bundledCliRunner(): ReturnType<typeof createCliRunner> {
   cliRunner ??= createCliRunner({
     executable: process.execPath,
@@ -592,7 +592,7 @@ registerPrivilegedSchemes()
 
 // ---- UI language ----
 // Persisted in userData/app-settings.json so the editor modules can read the
-// same file when they pick up i18n later. CHATOFFICE_LANG overrides for tests.
+// same file when they pick up i18n later. CHAOFFICE_LANG overrides for tests.
 
 const APP_SETTINGS_PATH = () => join(app.getPath('userData'), 'app-settings.json')
 const OPEN_DOCUMENTS_PATH = () => join(app.getPath('userData'), OPEN_DOCUMENTS_FILE)
@@ -613,8 +613,8 @@ let uiLang: Lang | null = null
 
 function currentLang(): Lang {
   if (uiLang) return uiLang
-  if (process.env.CHATOFFICE_LANG) {
-    uiLang = normalizeLang(process.env.CHATOFFICE_LANG)
+  if (process.env.CHAOFFICE_LANG) {
+    uiLang = normalizeLang(process.env.CHAOFFICE_LANG)
     setUiLang(uiLang)
     return uiLang
   }
@@ -927,7 +927,7 @@ const tMain = createI18n({
     pdfDocxBtnConvert: '继续',
     btnCancel: '取消',
     pdfDocxFailedMsg: '导出为 Word 失败',
-    pdfDocxNoCliMsg: '无法登录 察元AIOffice：缺少必需组件（chatoffice），请重新安装应用。',
+    pdfDocxNoCliMsg: '无法登录 察元AIOffice：缺少必需组件（chaoffice），请重新安装应用。',
     pdfConvertFailedMsg: '导出为 Markdown / HTML 失败',
     pdfDocxBusyMsg: '正在转换中，请等待当前导出完成。',
     menuExportPptx: '导出为 PPT…',
@@ -1067,7 +1067,7 @@ const tMain = createI18n({
     btnCancel: 'Cancel',
     pdfDocxFailedMsg: 'Export as Word failed',
     pdfDocxNoCliMsg:
-      'Cannot sign in to ChaAI Office: a required component (chatoffice) is missing. Please reinstall the app.',
+      'Cannot sign in to ChaAI Office: a required component (chaoffice) is missing. Please reinstall the app.',
     pdfConvertFailedMsg: 'Export as Markdown / HTML failed',
     pdfDocxBusyMsg: 'A Word export is already in progress. Please wait for it to finish.',
     menuExportPptx: 'Export as PowerPoint…',
@@ -1260,7 +1260,7 @@ const tMain = createI18n({
     pdfDocxConfirmDetail: '本次转换将消耗 5 credits，文件将上传至云端处理。',
     pdfDocxConfirmBalance: '当前余额 {balance} credits。',
     pdfDocxBtnConvert: '继续',
-    pdfDocxNoCliMsg: '无法登录 察元AIOffice：缺少必需组件（chatoffice），请重新安装应用。',
+    pdfDocxNoCliMsg: '无法登录 察元AIOffice：缺少必需组件（chaoffice），请重新安装应用。',
     tabCtxClose: '关闭',
     tabCtxCloseOthers: '关闭其他',
     tabCtxCloseLeft: '关闭左侧',
@@ -1364,7 +1364,7 @@ const tMain = createI18n({
     btnCancel: 'キャンセル',
     pdfDocxFailedMsg: 'Word への書き出しに失敗しました',
     pdfDocxNoCliMsg:
-      'ChaAI Office にサインインできません：必要なコンポーネント（chatoffice）が見つかりません。アプリを再インストールしてください。',
+      'ChaAI Office にサインインできません：必要なコンポーネント（chaoffice）が見つかりません。アプリを再インストールしてください。',
     pdfConvertFailedMsg: 'Markdown / HTML への書き出しに失敗しました',
     pdfDocxBusyMsg: 'Word への書き出しが進行中です。完了までお待ちください。',
     menuExportPptx: 'PowerPoint として書き出す…',
@@ -1514,7 +1514,7 @@ const tMain = createI18n({
     btnCancel: '취소',
     pdfDocxFailedMsg: 'Word로 내보내기 실패',
     pdfDocxNoCliMsg:
-      'ChaAI Office에 로그인할 수 없습니다. 필수 구성 요소(chatoffice)가 없습니다. 앱을 다시 설치해 주세요.',
+      'ChaAI Office에 로그인할 수 없습니다. 필수 구성 요소(chaoffice)가 없습니다. 앱을 다시 설치해 주세요.',
     pdfConvertFailedMsg: 'Markdown / HTML로 내보내기 실패',
     pdfDocxBusyMsg: 'Word 내보내기가 이미 진행 중입니다. 완료될 때까지 기다려 주세요.',
     menuExportPptx: 'PowerPoint로 내보내기…',
@@ -1663,7 +1663,7 @@ const tMain = createI18n({
     btnCancel: 'Annuler',
     pdfDocxFailedMsg: "Échec de l'export en Word",
     pdfDocxNoCliMsg:
-      "Connexion à ChaAI Office impossible : un composant requis (chatoffice) est manquant. Veuillez réinstaller l'application.",
+      "Connexion à ChaAI Office impossible : un composant requis (chaoffice) est manquant. Veuillez réinstaller l'application.",
     pdfConvertFailedMsg: "Échec de l'export en Markdown / HTML",
     pdfDocxBusyMsg: "Un export en Word est déjà en cours. Veuillez attendre qu'il se termine.",
     menuExportPptx: 'Exporter en PowerPoint…',
@@ -1814,7 +1814,7 @@ const tMain = createI18n({
     btnCancel: 'Abbrechen',
     pdfDocxFailedMsg: 'Word-Export fehlgeschlagen',
     pdfDocxNoCliMsg:
-      'Anmeldung bei ChaAI Office nicht möglich: Eine erforderliche Komponente (chatoffice) fehlt. Bitte installieren Sie die App neu.',
+      'Anmeldung bei ChaAI Office nicht möglich: Eine erforderliche Komponente (chaoffice) fehlt. Bitte installieren Sie die App neu.',
     pdfConvertFailedMsg: 'Markdown / HTML-Export fehlgeschlagen',
     pdfDocxBusyMsg: 'Ein Word-Export läuft bereits. Bitte warten Sie, bis er abgeschlossen ist.',
     menuExportPptx: 'Als PowerPoint exportieren…',
@@ -1965,7 +1965,7 @@ const tMain = createI18n({
     btnCancel: 'Cancelar',
     pdfDocxFailedMsg: 'Error al exportar como Word',
     pdfDocxNoCliMsg:
-      'No se puede iniciar sesión en ChaAI Office: falta un componente necesario (chatoffice). Reinstale la aplicación.',
+      'No se puede iniciar sesión en ChaAI Office: falta un componente necesario (chaoffice). Reinstale la aplicación.',
     pdfConvertFailedMsg: 'Error al exportar como Markdown / HTML',
     pdfDocxBusyMsg: 'Ya hay una exportación a Word en curso. Espera a que termine.',
     menuExportPptx: 'Exportar como PowerPoint…',
@@ -2115,7 +2115,7 @@ const tMain = createI18n({
     btnCancel: 'ยกเลิก',
     pdfDocxFailedMsg: 'ส่งออกเป็น Word ไม่สำเร็จ',
     pdfDocxNoCliMsg:
-      'ไม่สามารถลงชื่อเข้าใช้ ChaAI Office ได้: ไม่พบคอมโพเนนต์ที่จำเป็น (chatoffice) โปรดติดตั้งแอปใหม่',
+      'ไม่สามารถลงชื่อเข้าใช้ ChaAI Office ได้: ไม่พบคอมโพเนนต์ที่จำเป็น (chaoffice) โปรดติดตั้งแอปใหม่',
     pdfConvertFailedMsg: 'ส่งออกเป็น Markdown / HTML ไม่สำเร็จ',
     pdfDocxBusyMsg: 'กำลังส่งออกเป็น Word อยู่ โปรดรอให้เสร็จสิ้นก่อน',
     menuExportPptx: 'ส่งออกเป็น PowerPoint…',
@@ -2262,7 +2262,7 @@ const tMain = createI18n({
     btnCancel: 'Batal',
     pdfDocxFailedMsg: 'Gagal mengekspor sebagai Word',
     pdfDocxNoCliMsg:
-      'Tidak dapat masuk ke ChaAI Office: komponen yang diperlukan (chatoffice) tidak ditemukan. Silakan instal ulang aplikasi.',
+      'Tidak dapat masuk ke ChaAI Office: komponen yang diperlukan (chaoffice) tidak ditemukan. Silakan instal ulang aplikasi.',
     pdfConvertFailedMsg: 'Gagal mengekspor sebagai Markdown / HTML',
     pdfDocxBusyMsg: 'Ekspor ke Word sedang berlangsung. Harap tunggu hingga selesai.',
     menuExportPptx: 'Ekspor sebagai PowerPoint…',
@@ -2413,7 +2413,7 @@ const tMain = createI18n({
     btnCancel: 'Отмена',
     pdfDocxFailedMsg: 'Не удалось экспортировать в Word',
     pdfDocxNoCliMsg:
-      'Не удаётся войти в ChaAI Office: отсутствует необходимый компонент (chatoffice). Переустановите приложение.',
+      'Не удаётся войти в ChaAI Office: отсутствует необходимый компонент (chaoffice). Переустановите приложение.',
     pdfConvertFailedMsg: 'Не удалось экспортировать в Markdown / HTML',
     pdfDocxBusyMsg: 'Экспорт в Word уже выполняется. Дождитесь его завершения.',
     menuExportPptx: 'Экспортировать в PowerPoint…',
@@ -2563,7 +2563,7 @@ const tMain = createI18n({
     btnCancel: 'إلغاء',
     pdfDocxFailedMsg: 'فشل التصدير كملف Word',
     pdfDocxNoCliMsg:
-      'تعذّر تسجيل الدخول إلى ChaAI Office: المكوّن المطلوب (chatoffice) مفقود. يُرجى إعادة تثبيت التطبيق.',
+      'تعذّر تسجيل الدخول إلى ChaAI Office: المكوّن المطلوب (chaoffice) مفقود. يُرجى إعادة تثبيت التطبيق.',
     pdfConvertFailedMsg: 'فشل التصدير كملف Markdown / HTML',
     pdfDocxBusyMsg: 'يجري حاليًا تصدير إلى Word. يُرجى الانتظار حتى يكتمل.',
     menuExportPptx: 'تصدير كملف PowerPoint…',
@@ -2710,7 +2710,7 @@ const tMain = createI18n({
     btnCancel: 'Cancelar',
     pdfDocxFailedMsg: 'Falha ao exportar como Word',
     pdfDocxNoCliMsg:
-      'Não é possível iniciar sessão no ChaAI Office: falta um componente necessário (chatoffice). Reinstale o aplicativo.',
+      'Não é possível iniciar sessão no ChaAI Office: falta um componente necessário (chaoffice). Reinstale o aplicativo.',
     pdfConvertFailedMsg: 'Falha ao exportar como Markdown / HTML',
     pdfDocxBusyMsg: 'Já há uma exportação para Word em andamento. Aguarde a conclusão.',
     menuExportPptx: 'Exportar como PowerPoint…',
@@ -2861,7 +2861,7 @@ const tMain = createI18n({
     btnCancel: 'Annulla',
     pdfDocxFailedMsg: 'Esportazione in Word non riuscita',
     pdfDocxNoCliMsg:
-      "Impossibile accedere a ChaAI Office: manca un componente necessario (chatoffice). Reinstallare l'app.",
+      "Impossibile accedere a ChaAI Office: manca un componente necessario (chaoffice). Reinstallare l'app.",
     pdfConvertFailedMsg: 'Esportazione in Markdown / HTML non riuscita',
     pdfDocxBusyMsg: "Un'esportazione in Word è già in corso. Attendi il completamento.",
     menuExportPptx: 'Esporta come PowerPoint…',
@@ -3012,7 +3012,7 @@ const tMain = createI18n({
     btnCancel: 'Anuluj',
     pdfDocxFailedMsg: 'Eksport do formatu Word nie powiódł się',
     pdfDocxNoCliMsg:
-      'Nie można zalogować się do ChaAI Office: brakuje wymaganego komponentu (chatoffice). Zainstaluj aplikację ponownie.',
+      'Nie można zalogować się do ChaAI Office: brakuje wymaganego komponentu (chaoffice). Zainstaluj aplikację ponownie.',
     pdfConvertFailedMsg: 'Eksport do formatu Markdown / HTML nie powiódł się',
     pdfDocxBusyMsg: 'Eksport do formatu Word już trwa. Poczekaj na jego zakończenie.',
     menuExportPptx: 'Eksportuj jako PowerPoint…',
@@ -3205,7 +3205,7 @@ const tMain = createI18n({
     pdfDocxConfirmDetail: '本次转换将消耗 5 credits，文件将上传至云端处理。',
     pdfDocxConfirmBalance: '当前余额 {balance} credits。',
     pdfDocxBtnConvert: '继续',
-    pdfDocxNoCliMsg: '无法登录 ChaAI Office：缺少必需组件（chatoffice），请重新安装应用。',
+    pdfDocxNoCliMsg: '无法登录 ChaAI Office：缺少必需组件（chaoffice），请重新安装应用。',
     tabCtxClose: 'Zavřít',
     tabCtxCloseOthers: 'Zavřít ostatní',
     tabCtxCloseLeft: 'Zavřít vlevo',
@@ -3309,7 +3309,7 @@ const tMain = createI18n({
     btnCancel: 'Annuleren',
     pdfDocxFailedMsg: 'Exporteren als Word mislukt',
     pdfDocxNoCliMsg:
-      'Kan niet inloggen bij ChaAI Office: een vereist onderdeel (chatoffice) ontbreekt. Installeer de app opnieuw.',
+      'Kan niet inloggen bij ChaAI Office: een vereist onderdeel (chaoffice) ontbreekt. Installeer de app opnieuw.',
     pdfConvertFailedMsg: 'Exporteren als Markdown / HTML mislukt',
     pdfDocxBusyMsg: 'Er is al een Word-export bezig. Wacht tot deze is voltooid.',
     menuExportPptx: 'Exporteren als PowerPoint…',
@@ -3460,7 +3460,7 @@ const tMain = createI18n({
     btnCancel: 'Batal',
     pdfDocxFailedMsg: 'Gagal mengeksport sebagai Word',
     pdfDocxNoCliMsg:
-      'Tidak dapat log masuk ke ChaAI Office: komponen yang diperlukan (chatoffice) tiada. Sila pasang semula aplikasi.',
+      'Tidak dapat log masuk ke ChaAI Office: komponen yang diperlukan (chaoffice) tiada. Sila pasang semula aplikasi.',
     pdfConvertFailedMsg: 'Gagal mengeksport sebagai Markdown / HTML',
     pdfDocxBusyMsg: 'Eksport ke Word sedang dijalankan. Sila tunggu sehingga selesai.',
     menuExportPptx: 'Eksport sebagai PowerPoint…',
@@ -3608,7 +3608,7 @@ const tMain = createI18n({
     btnCancel: 'ביטול',
     pdfDocxFailedMsg: 'הייצוא כ-Word נכשל',
     pdfDocxNoCliMsg:
-      'לא ניתן להתחבר ל-ChaAI Office: רכיב נדרש (chatoffice) חסר. נא להתקין מחדש את האפליקציה.',
+      'לא ניתן להתחבר ל-ChaAI Office: רכיב נדרש (chaoffice) חסר. נא להתקין מחדש את האפליקציה.',
     pdfConvertFailedMsg: 'הייצוא כ-Markdown / HTML נכשל',
     pdfDocxBusyMsg: 'ייצוא ל-Word כבר מתבצע. נא להמתין לסיומו.',
     menuExportPptx: 'ייצוא כ-PowerPoint…',
@@ -3755,7 +3755,7 @@ const tMain = createI18n({
     btnCancel: 'रद्द करें',
     pdfDocxFailedMsg: 'Word के रूप में निर्यात विफल रहा',
     pdfDocxNoCliMsg:
-      'ChaAI Office में साइन इन नहीं किया जा सकता: आवश्यक घटक (chatoffice) मौजूद नहीं है। कृपया ऐप को फिर से इंस्टॉल करें।',
+      'ChaAI Office में साइन इन नहीं किया जा सकता: आवश्यक घटक (chaoffice) मौजूद नहीं है। कृपया ऐप को फिर से इंस्टॉल करें।',
     pdfConvertFailedMsg: 'Markdown / HTML के रूप में निर्यात विफल रहा',
     pdfDocxBusyMsg: 'Word के रूप में निर्यात पहले से चल रहा है। कृपया पूरा होने तक प्रतीक्षा करें।',
     menuExportPptx: 'PowerPoint के रूप में निर्यात करें…',
@@ -3903,7 +3903,7 @@ const tMain = createI18n({
     pdfDocxBtnConvert: '繼續',
     btnCancel: '取消',
     pdfDocxFailedMsg: '匯出為 Word 失敗',
-    pdfDocxNoCliMsg: '無法登入 察元AIOffice：缺少必要元件（chatoffice），請重新安裝應用程式。',
+    pdfDocxNoCliMsg: '無法登入 察元AIOffice：缺少必要元件（chaoffice），請重新安裝應用程式。',
     pdfConvertFailedMsg: '匯出為 Markdown / HTML 失敗',
     pdfDocxBusyMsg: '正在轉換中，請等待目前的匯出完成。',
     menuExportPptx: '匯出為 PPT…',
@@ -4260,7 +4260,7 @@ function refreshTitleBarOverlay(): void {
   }
 }
 
-/// Interface scale (upstream #1934 / chatoffice#1913). Read once at boot, then replaced by the View menu.
+/// Interface scale (upstream #1934 / chaoffice#1913). Read once at boot, then replaced by the View menu.
 let currentUiScale = 1
 
 /**
@@ -5070,7 +5070,7 @@ async function newSheetTab(recoverAs?: string): Promise<void> {
     suggestedPath = uniquePathIn(dir, `${tm('untitledSheet')} ${i}.xlsx`)
   try {
     // under the import root so the session-close cleanup removes it like an import copy
-    const tempDir = join(app.getPath('temp'), 'chatoffice-imports', randomUUID())
+    const tempDir = join(app.getPath('temp'), 'chaoffice-imports', randomUUID())
     mkdirSync(tempDir, { recursive: true })
     const backingPath = join(tempDir, basename(suggestedPath))
     // reserve the name before the first await so a second new tab picks another;
@@ -5281,7 +5281,7 @@ async function newPdfTab(): Promise<void> {
 
 /** Hidden working dir for untitled blank documents (never user-visible) */
 function blankDraftsDir(): string {
-  return join(app.getPath('temp'), 'chatoffice-blank-documents')
+  return join(app.getPath('temp'), 'chaoffice-blank-documents')
 }
 
 /**
@@ -5340,12 +5340,12 @@ function registerHomeIpc(): void {
   // registerAiIpc() (called above) exactly once for all window types —
   // a second registration here crashed the packaged app ("second handler
   // for 'kb:discover'"); the home composer and embedded editors share it.
-  // signed-in means ChaOffice's own device-code login; the shared chatoffice CLI key
+  // signed-in means ChaOffice's own device-code login; the shared chaoffice CLI key
   // is only a silent fallback, deliberately not shown here to nudge users onto our key
   ipcMain.handle(HOME_CHANNELS.accountStatus, async () => {
-    if (!loadChatofficeAuth()) return { loggedIn: false }
+    if (!loadChaofficeAuth()) return { loggedIn: false }
     await proxyBootstrap
-    const info = await chatofficeLoginInfo()
+    const info = await chaofficeLoginInfo()
     return info
       ? { loggedIn: true, email: info.email, creditBalance: info.creditBalance }
       : { loggedIn: true }
@@ -5364,7 +5364,7 @@ function registerHomeIpc(): void {
     }
     // open the browser on the first url event only; later events refresh the rescue URL
     let opened = false
-    const launched = startChatofficeLogin((progress) => {
+    const launched = startChaofficeLogin((progress) => {
       if (progress.url) {
         pendingLoginUrl = progress.url
         if (!opened) {
@@ -5384,7 +5384,7 @@ function registerHomeIpc(): void {
   })
 
   ipcMain.handle(HOME_CHANNELS.accountLogout, async () => {
-    await chatofficeLogout()
+    await chaofficeLogout()
     // the cloud projects cache belongs to the account that just signed out
     clearCloudProjectsStore(cloudProjectsStorePath())
   })
@@ -6222,7 +6222,7 @@ function registerHomeIpc(): void {
       const displaced: string[] = []
       const result = movePathsInto(sources, targetDir, conflictPolicy, folderErrors(), {
         replaceExisting: (path) => {
-          const parked = join(dirname(path), `.chatoffice-replaced-${Date.now()}-${basename(path)}`)
+          const parked = join(dirname(path), `.chaoffice-replaced-${Date.now()}-${basename(path)}`)
           const files = isDir(path) ? trackedFilesUnder(path) : [path]
           renameSync(path, parked)
           return {
@@ -6321,8 +6321,8 @@ function registerHomeIpc(): void {
     const state = readStarPrompt()
     const docOpens = state.docOpens ?? 0
     // dev preview of the card without waiting out the value thresholds
-    // (same pattern as CHATOFFICE_FAKE_UPDATE); nothing is recorded
-    if (!app.isPackaged && process.env.CHATOFFICE_FORCE_STAR_PROMPT) return { show: true, docOpens }
+    // (same pattern as CHAOFFICE_FAKE_UPDATE); nothing is recorded
+    if (!app.isPackaged && process.env.CHAOFFICE_FORCE_STAR_PROMPT) return { show: true, docOpens }
     const grant = (): StarPromptShow => {
       writeStarPrompt(withShown(state, now))
       starPromptSessionGrant = { show: true, docOpens }
@@ -6555,7 +6555,7 @@ function normalizedAccelerator(accelerator: string): string {
 function collectHiddenAccelerators(menu: Electron.Menu, item: Electron.MenuItem): void {
   const submenu = item.submenu as Electron.Menu | undefined
   if (!submenu) return
-  if (process.env.CHATOFFICE_MENU_DEBUG) {
+  if (process.env.CHAOFFICE_MENU_DEBUG) {
     console.log(
       '[menu-debug] collect from',
       item.label,
@@ -6623,11 +6623,11 @@ Menu.setApplicationMenu = ((menu: Electron.Menu | null) => {
 
 // 隐藏菜单的加速键派发：shell 与所有编辑器视图的 webContents 统一拦截
 app.on('web-contents-created', (_event, contents) => {
-  if (process.env.CHATOFFICE_MENU_DEBUG) {
+  if (process.env.CHAOFFICE_MENU_DEBUG) {
     console.log('[menu-debug] wc-created', contents.getType(), contents.getURL().slice(-30))
   }
   contents.on('before-input-event', (event, input) => {
-    if (process.env.CHATOFFICE_MENU_DEBUG && input.type === 'keyDown') {
+    if (process.env.CHAOFFICE_MENU_DEBUG && input.type === 'keyDown') {
       console.log(
         '[menu-debug] BIE',
         input.code,
@@ -6688,7 +6688,7 @@ function registerWindowControlsIpc(): void {
     win.on('maximize', () => broadcastMaximized(true))
     win.on('unmaximize', () => broadcastMaximized(false))
   })
-  if (process.env.CHATOFFICE_MENU_DEBUG) {
+  if (process.env.CHAOFFICE_MENU_DEBUG) {
     console.log('[wc-debug] ipc registered')
     // 无屏/自动化环境下的窗口真值端点（仅调试用）。POST /bounds 支持
     // 自动化驱动真实窗口缩放（ribbon 自适应阶梯的 M4 验收钩子）
@@ -7605,7 +7605,7 @@ let exportingPdfDocx = false
 
 /**
  * Export as Word for pdf tabs: flush pending edits, confirm the 5-credit cost,
- * pick the destination, then upload + cloud-convert via chatoffice file_convert. Not
+ * pick the destination, then upload + cloud-convert via chaoffice file_convert. Not
  * logged in → offer browser login and let the user re-trigger the export
  * afterwards. The destination is picked before converting so cancelling the
  * save dialog never wastes a paid conversion.
@@ -7633,7 +7633,7 @@ async function exportPdfAsDocx(): Promise<void> {
   try {
     if (!(await flushPdfSave(tab.webContents))) return
     if (!hasChaOfficeAuth()) {
-      // hasChaOfficeAuth() is also false when the chatoffice CLI itself cannot be resolved
+      // hasChaOfficeAuth() is also false when the chaoffice CLI itself cannot be resolved
       // (broken install); Sign In could not launch in that case, so surface
       // the real problem instead of a login dialog that cannot succeed.
       if (!resolveChaOfficeEntry()) {
@@ -7652,10 +7652,10 @@ async function exportPdfAsDocx(): Promise<void> {
         cancelId: 1,
         noLink: true,
       })
-      if (response === 0) ensureChatofficeLogin((url) => void shell.openExternal(url))
+      if (response === 0) ensureChaofficeLogin((url) => void shell.openExternal(url))
       return
     }
-    const balance = (await chatofficeLoginInfo())?.creditBalance
+    const balance = (await chaofficeLoginInfo())?.creditBalance
     const balanceLine =
       balance === undefined
         ? ''
@@ -7689,7 +7689,7 @@ async function exportPdfAsDocx(): Promise<void> {
       if (tabManager?.findDocsTabByPath(picked.filePath)) return
     }
     shellWindow.setProgressBar(2)
-    const bytes = await chatofficeConvertPdfToDocx(tab.filePath)
+    const bytes = await chaofficeConvertPdfToDocx(tab.filePath)
     writeFileSync(picked.filePath, bytes)
     openDocumentPath(picked.filePath)
   } catch (err) {
@@ -8179,7 +8179,7 @@ async function installMainProcessProxy(): Promise<void> {
   if (!proxyUrl) {
     try {
       // PAC/rule proxies answer per-host: probe the host the login flow, the
-      // ChaOffice LLM proxy and the chatoffice CLI actually target
+      // ChaOffice LLM proxy and the chaoffice CLI actually target
       const resolved = await session.defaultSession.resolveProxy('https://www.genspark.ai/')
       const m = /PROXY\s+([^;\s]+)/.exec(resolved)
       if (m) proxyUrl = `http://${m[1]}`
@@ -8188,7 +8188,7 @@ async function installMainProcessProxy(): Promise<void> {
     }
   }
   if (!proxyUrl) return
-  // spawned chatoffice CLI children (login/search/…) do their own fetch and never see
+  // spawned chaoffice CLI children (login/search/…) do their own fetch and never see
   // the dispatcher below — forward the proxy to them via env
   setChaOfficeProxyUrl(proxyUrl)
   try {
@@ -8309,7 +8309,7 @@ const headlessExporters: HeadlessExporters = {
 /**
  * The whole `--headless-export` run: no shell window, no menus, no updater,
  * no single-instance lock (a GUI instance may well be running). Prints
- * exactly one line and exits with the chatoffice convention (0/1/2/3).
+ * exactly one line and exits with the chaoffice convention (0/1/2/3).
  */
 async function runHeadlessExportEntry(
   parsed: Exclude<HeadlessArgvParse, { kind: 'none' }>,
@@ -8331,7 +8331,7 @@ async function runHeadlessExportEntry(
       resolve()
     })
   })
-  // app.quit() always exits 0; the chatoffice envelope needs the real code, and
+  // app.quit() always exits 0; the chaoffice envelope needs the real code, and
   // every teardown this run owns has already happened.
   app.exit(headlessExitCode(outcome))
 }
@@ -8397,13 +8397,13 @@ app.whenReady().then(async () => {
   }
   // another ChaOffice-family app re-logging in rotates the shared key; the
   // home page re-reads its account status. A logout that leaves only the
-  // chatoffice CLI fallback key is not a login
-  stopAuthWatch = watchChatofficeApiKey(() => {
-    if (!loadChatofficeAuth()) return
+  // chaoffice CLI fallback key is not a login
+  stopAuthWatch = watchChaofficeApiKey(() => {
+    if (!loadChaofficeAuth()) return
     for (const w of BrowserWindow.getAllWindows())
       w.webContents.send(HOME_CHANNELS.accountLoginEvent, { phase: 'success' })
   })
-  // a registry left by a crashed instance must not block chatoffice writes
+  // a registry left by a crashed instance must not block chaoffice writes
   ownsOpenDocumentsRegistry = true
   publishOpenDocuments(OPEN_DOCUMENTS_PATH(), [])
   if (!app.isPackaged) {
@@ -8520,7 +8520,7 @@ app.whenReady().then(async () => {
         discard: htmlDiscardPendingAssets,
       },
     }),
-    // the headless create_*/read_* tools delegate to the bundled chatoffice CLI
+    // the headless create_*/read_* tools delegate to the bundled chaoffice CLI
     // (the same engines, no second implementation); it runs on the app's own
     // Node runtime via ELECTRON_RUN_AS_NODE
     cliRunner: createCliRunner({

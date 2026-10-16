@@ -1,4 +1,4 @@
-import type { ParsedDoc, TableModel } from '@chatoffice/docx-engine'
+import type { ParsedDoc, TableModel } from '@chaoffice/docx-engine'
 import { BUNDLED_FONTS, cssFontFamily, isBundledFont } from './line-metrics'
 
 const GENERIC = new Set(['serif', 'sans-serif', 'monospace'])

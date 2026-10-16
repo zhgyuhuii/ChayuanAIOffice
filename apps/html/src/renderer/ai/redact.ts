@@ -46,7 +46,7 @@ import {
   sanitizeLabel as coreSanitizeLabel,
   placeholderInstruction as buildInstruction,
   type PlaceholderSpec,
-} from '@chatoffice/agent-core/redact-core'
+} from '@chaoffice/agent-core/redact-core'
 
 /** Attribute marking an element's own content. */
 export const MARK_ATTR = 'data-gx-redact'
@@ -358,4 +358,4 @@ export {
   isWholePlaceholder,
   readPlaceholderLabel,
   type PlaceholderIssue,
-} from '@chatoffice/agent-core/redact-core'
+} from '@chaoffice/agent-core/redact-core'

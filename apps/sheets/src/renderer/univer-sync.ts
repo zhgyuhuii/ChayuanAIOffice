@@ -52,23 +52,23 @@ import type {
   CellFormatPatch,
   SetDataValidationOperation,
   SetHyperlinkOperation,
-} from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
+} from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
 import {
   columnIndex,
   columnLabel,
   parseAddress,
   parseRange,
   rangeCellCount,
-} from '@chatoffice/xlsx-gateway/domain/cell-address'
-import { splitSheetRef, type CellBounds } from '@chatoffice/xlsx-gateway/domain/chart-visual'
-import { InMemoryWorkbookAdapter } from '@chatoffice/xlsx-gateway/domain/in-memory-workbook'
-import { WORST_FIRST_ICON_SETS } from '@chatoffice/xlsx-gateway/gateway/xlsx-cf'
+} from '@chaoffice/xlsx-gateway/domain/cell-address'
+import { splitSheetRef, type CellBounds } from '@chaoffice/xlsx-gateway/domain/chart-visual'
+import { InMemoryWorkbookAdapter } from '@chaoffice/xlsx-gateway/domain/in-memory-workbook'
+import { WORST_FIRST_ICON_SETS } from '@chaoffice/xlsx-gateway/gateway/xlsx-cf'
 import type {
   CellFormatState,
   CellScalar,
   CellState,
   WorkbookSnapshot,
-} from '@chatoffice/xlsx-gateway/domain/workbook.types'
+} from '@chaoffice/xlsx-gateway/domain/workbook.types'
 import type {
   WorkbookCellStyle,
   WorkbookCfState,
@@ -119,7 +119,7 @@ import {
 import { isPlainArithmeticFormula } from './formula-cached-fallback'
 import { degradeQuadraticFormulaCells } from './formula-cost'
 import { extractFunctionNames } from './formula-functions'
-import { DEFAULT_SHORT_DATE, setSystemShortDate } from '@chatoffice/xlsx-gateway/shared/short-date'
+import { DEFAULT_SHORT_DATE, setSystemShortDate } from '@chaoffice/xlsx-gateway/shared/short-date'
 import { getWorkbookMdw, REORDER_JOURNAL_MAX_CELLS, setWorkbookMdw } from './app-constants'
 import { excelRowPitchPx } from './autofit-line-pitch'
 import { batchWrapRowHeights, createUniverWrapMeasurer } from './wrap-row-height-batch'
@@ -4920,7 +4920,7 @@ export function patchWorksheetRangeInner(
       // SELECTION — conditional formatting strips the selected cells from
       // every rule, a rule-range rectangle decomposition that costs seconds
       // per eviction on wide rules and permanently fragments the rule
-      // (chatoffice#158). Eviction is internal bookkeeping; only cells move.
+      // (chaoffice#158). Eviction is internal bookkeeping; only cells move.
       // Engine-owned closure cells must survive the eviction ({} is a merge
       // no-op, so pinned cells stay untouched — clearing and re-installing a
       // formula re-dirties its whole dependency web).
@@ -5349,7 +5349,7 @@ interface PivotBand {
 
 /// Excel keeps pivot styling out of cell xfs entirely; paint the style bands
 /// resolved sidecar-side from pivotTableStyleInfo (calibrated against Excel
-/// for Mac: chatoffice-sample/sheets/calib/pivot-style-truths.json).
+/// for Mac: chaoffice-sample/sheets/calib/pivot-style-truths.json).
 ///
 /// Precedence, lowest first: wholeTable, row stripe, column stripe,
 /// firstColumn (row-label columns), subheading / subtotal, header (+ the

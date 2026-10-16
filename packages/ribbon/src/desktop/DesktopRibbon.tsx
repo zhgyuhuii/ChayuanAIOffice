@@ -24,7 +24,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { useDismissablePopover } from '@chatoffice/ui/popover-dismiss'
+import { useDismissablePopover } from '@chaoffice/ui/popover-dismiss'
 import type { CommandRegistry } from '../command/registry'
 import type {
   RibbonDropdownApi,

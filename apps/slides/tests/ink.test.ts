@@ -6,8 +6,8 @@
  * encode/decode plus hit testing.
  */
 import { describe, it, expect } from 'vitest'
-import { addPicture, createBlankPptx, openPptx, savePptx } from '@chatoffice/pptx-engine'
-import { buildRenderSlide, type PictureRenderNode } from '@chatoffice/pptx-render'
+import { addPicture, createBlankPptx, openPptx, savePptx } from '@chaoffice/pptx-engine'
+import { buildRenderSlide, type PictureRenderNode } from '@chaoffice/pptx-render'
 import {
   decodeInkPayload,
   encodeInkPayload,

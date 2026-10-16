@@ -10,7 +10,7 @@ import type {
   ChartRenderNode,
   PictureRenderNode,
   TableRenderNode,
-} from '@chatoffice/pptx-render'
+} from '@chaoffice/pptx-render'
 import { animGalleryKind } from './animation-play'
 import type {
   AiSettingsV2,
@@ -105,7 +105,7 @@ import { EquationDialog, HeaderFooterDialog, LinkDialog } from './components/Ins
 import { RedactDialog } from './components/RedactDialog'
 import { ZoomDialog } from './components/ZoomDialog'
 import { CutoutDialog } from './components/CutoutDialog'
-import type { WordArtPreset } from '@chatoffice/ui'
+import type { WordArtPreset } from '@chaoffice/ui'
 import {
   createWheelPager,
   createZoomWheelClassifier,
@@ -117,14 +117,14 @@ import {
   aiPanelInitiallyOpen,
   rememberAiPanelOpen,
   useAiSidebarEnabled,
-} from '@chatoffice/ui'
+} from '@chaoffice/ui'
 import type { ChartPresetDef, IconDef, SmartArtDef } from './insert-presets'
-import { InsertImageDialog } from '@chatoffice/ui/InsertImageDialog'
-import type { InsertImageBridge } from '@chatoffice/ui/InsertImageDialog'
-import type { WebImageItem } from '@chatoffice/ui/InsertImageDialog'
-import { ModelSettingsPageLazy } from '@chatoffice/ui/ModelSettingsPageLazy'
+import { InsertImageDialog } from '@chaoffice/ui/InsertImageDialog'
+import type { InsertImageBridge } from '@chaoffice/ui/InsertImageDialog'
+import type { WebImageItem } from '@chaoffice/ui/InsertImageDialog'
+import { ModelSettingsPageLazy } from '@chaoffice/ui/ModelSettingsPageLazy'
 import { slidesModelBridge } from './ai/model-bridge'
-import { compressImageForDisplay } from '@chatoffice/ui'
+import { compressImageForDisplay } from '@chaoffice/ui'
 import { ToastHost } from './components/toast'
 import { showToast } from './components/toast-bus'
 import { t, useI18n } from './i18n/locale'
@@ -154,7 +154,7 @@ import {
   ChartDesignerModal,
   type ChartDesignerInitial,
   type ChartDesignerInsert,
-} from '@chatoffice/chart-kit/designer'
+} from '@chaoffice/chart-kit/designer'
 import { StageRuler } from './components/StageRuler'
 import { formatRulerValue, type RulerUnit } from './ruler-ticks'
 import * as fileActions from './file-actions'
@@ -3686,9 +3686,9 @@ export function App() {
 
   const _fileName = slide ? path?.split('/').pop() || t('appUntitledPresentation') : undefined
 
-  // chatoffice CLI (`open --slide/--el`, `selection`): the shell evaluates this hook
+  // chaoffice CLI (`open --slide/--el`, `selection`): the shell evaluates this hook
   useEffect(() => {
-    ;(window as unknown as Record<string, unknown>).__chatofficeControl = (req: ControlRequest) =>
+    ;(window as unknown as Record<string, unknown>).__chaofficeControl = (req: ControlRequest) =>
       handleSlidesControl(req, {
         slides,
         path,

@@ -1,4 +1,4 @@
-import { defineStrings } from '@chatoffice/i18n'
+import { defineStrings } from '@chaoffice/i18n'
 
 /** Strings for editor/, pagination, and line-metrics */
 export const editorStrings = defineStrings({

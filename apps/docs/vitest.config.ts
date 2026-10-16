@@ -16,58 +16,58 @@ export default defineConfig({
   resolve: {
     alias: [
       {
-        find: '@chatoffice/ui/popover-dismiss',
+        find: '@chaoffice/ui/popover-dismiss',
         replacement: local('../../packages/ui/src/popover-dismiss.ts'),
       },
       {
-        find: '@chatoffice/docx-engine/lazy-media',
+        find: '@chaoffice/docx-engine/lazy-media',
         replacement: local('../../packages/docx-engine/src/lazy-media.ts'),
       },
       {
-        find: '@chatoffice/docx-engine',
+        find: '@chaoffice/docx-engine',
         replacement: local('../../packages/docx-engine/src/index.ts'),
       },
       {
-        find: '@chatoffice/font-metrics',
+        find: '@chaoffice/font-metrics',
         replacement: local('../../packages/font-metrics/src/index.ts'),
       },
       {
-        find: '@chatoffice/electron-utils/print-job',
+        find: '@chaoffice/electron-utils/print-job',
         replacement: local('../../packages/electron-utils/src/print-job.ts'),
       },
       {
-        find: '@chatoffice/electron-utils/atomic-write',
+        find: '@chaoffice/electron-utils/atomic-write',
         replacement: local('../../packages/electron-utils/src/atomic-write.ts'),
       },
       {
-        find: '@chatoffice/electron-utils/safe-external-url',
+        find: '@chaoffice/electron-utils/safe-external-url',
         replacement: local('../../packages/electron-utils/src/safe-external-url.ts'),
       },
       {
-        find: '@chatoffice/electron-utils/headless-export',
+        find: '@chaoffice/electron-utils/headless-export',
         replacement: local('../../packages/electron-utils/src/headless-export.ts'),
       },
       {
-        find: '@chatoffice/electron-utils',
+        find: '@chaoffice/electron-utils',
         replacement: local('../../packages/electron-utils/src/index.ts'),
       },
       {
-        find: '@chatoffice/ai-provider/browser',
+        find: '@chaoffice/ai-provider/browser',
         replacement: local('../../packages/ai-provider/src/browser.ts'),
       },
       {
-        find: '@chatoffice/ai-provider',
+        find: '@chaoffice/ai-provider',
         replacement: local('../../packages/ai-provider/src/index.ts'),
       },
-      { find: '@chatoffice/i18n', replacement: local('../../packages/i18n/src/index.ts') },
-      { find: '@chatoffice/ui/shape-gallery', replacement: local('../../packages/ui/src/shape-gallery.tsx') },
-      { find: '@chatoffice/ui/InsertImageDialog', replacement: local('../../packages/ui/src/InsertImageDialog.tsx') },
-      { find: '@chatoffice/ui/image-transcode', replacement: local('../../packages/ui/src/image-transcode.ts') },
-      { find: '@chatoffice/ui/image-dialogs', replacement: local('../../packages/ui/src/image-dialogs.tsx') },
-      { find: '@chatoffice/ui/ModelSettingsPage', replacement: local('../../packages/ui/src/ModelSettingsPage.tsx') },
-      { find: '@chatoffice/ui/ModelSettingsPageLazy', replacement: local('../../packages/ui/src/ModelSettingsPageLazy.ts') },
-      { find: '@chatoffice/ui/ModelDefaultsPage', replacement: local('../../packages/ui/src/ModelDefaultsPage.tsx') },
-      { find: '@chatoffice/ui', replacement: local('../../packages/ui/src/index.ts') },
+      { find: '@chaoffice/i18n', replacement: local('../../packages/i18n/src/index.ts') },
+      { find: '@chaoffice/ui/shape-gallery', replacement: local('../../packages/ui/src/shape-gallery.tsx') },
+      { find: '@chaoffice/ui/InsertImageDialog', replacement: local('../../packages/ui/src/InsertImageDialog.tsx') },
+      { find: '@chaoffice/ui/image-transcode', replacement: local('../../packages/ui/src/image-transcode.ts') },
+      { find: '@chaoffice/ui/image-dialogs', replacement: local('../../packages/ui/src/image-dialogs.tsx') },
+      { find: '@chaoffice/ui/ModelSettingsPage', replacement: local('../../packages/ui/src/ModelSettingsPage.tsx') },
+      { find: '@chaoffice/ui/ModelSettingsPageLazy', replacement: local('../../packages/ui/src/ModelSettingsPageLazy.ts') },
+      { find: '@chaoffice/ui/ModelDefaultsPage', replacement: local('../../packages/ui/src/ModelDefaultsPage.tsx') },
+      { find: '@chaoffice/ui', replacement: local('../../packages/ui/src/index.ts') },
     ],
   },
   test: {

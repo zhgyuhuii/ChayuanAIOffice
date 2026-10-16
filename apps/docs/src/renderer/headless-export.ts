@@ -12,7 +12,7 @@ import {
   runHeadlessRendererExport,
   type HeadlessExportReport,
   type HeadlessWaitOptions,
-} from '@chatoffice/electron-utils/headless-export'
+} from '@chaoffice/electron-utils/headless-export'
 
 /** Pagination publishes its slice list here on every remeasure (App.tsx). */
 interface PageDebug {

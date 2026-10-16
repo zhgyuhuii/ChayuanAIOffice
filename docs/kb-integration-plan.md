@@ -9,11 +9,11 @@
 
 1. **数据通路裁决:REST 接口直连**。直接消费 harness 既有的 KB HTTP API(`/api/chatop-kb/*`,位于 dsh web 进程内),office 侧自建一个轻量 KB 网关模块;**不采用 MCP 作为知识库通路**(裁决过程见 §3,MCP 重启条件见附录)。
 2. **两种形态都能自动发现,且 harness 侧零改动**:
-   - dsh 形态:sidecar 已知 dsh RPC origin(`CHATOFFICE_DSH_RPC_ORIGIN`/`_FILE`),KB 与 RPC 同在 dsh web 上,origin 即 KB origin;
+   - dsh 形态:sidecar 已知 dsh RPC origin(`CHAOFFICE_DSH_RPC_ORIGIN`/`_FILE`),KB 与 RPC 同在 dsh web 上,origin 即 KB origin;
    - 桌面安装包形态:四级发现(缓存 → 配置覆盖 → hint 文件 → loopback 端口探测 + 指纹校验)。
 3. **UI**:首页对话 composer 的 footerStart 中,与 ModelPickerButton 紧邻放置 `KbPickerButton`(支持多选库);popover 展示库清单 + 文档数 + 健康状态 + 来源。
 4. **对话查询**:选库后,每条用户消息发送前自动对各选中库做 `/search` 检索,结果以 `[n]` 编号注入上下文,office 自有 agent(用户所选模型)合成回答,渲染端把 `[n]` 后处理为引用 chips;不用 harness 的 `/ask`(见 §6.4)。P2 再补会话内 `kb_search`/`kb_read_doc` 原生工具供追问深挖。
-5. **嵌入 `PACKAGES` 铁律**:KB 网关先并入既有包 `@chatoffice/ai-provider`(已在嵌入清单内),规避"新包不登记 `package-embedded.mjs` → dsh 形态 sidecar 启动即死"的 xlsx-gateway 前车。
+5. **嵌入 `PACKAGES` 铁律**:KB 网关先并入既有包 `@chaoffice/ai-provider`(已在嵌入清单内),规避"新包不登记 `package-embedded.mjs` → dsh 形态 sidecar 启动即死"的 xlsx-gateway 前车。
 
 ---
 
@@ -41,9 +41,9 @@
 | 资产                     | 位置                                                                                                                                                                           | 对本案的意义                                                       |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
 | dsh 形态 origin 发现     | `apps/server/src/app.ts:143-160` 读三环境变量 → `attachAiProxy({harness:{dshHome,rpcOrigin,rpcOriginFile}})`;`ai-proxy.ts:135-150` origin 懒解析(直值或 5s 缓存读 origin 文件) | **KB 网关完全对称复用**:同一 origin,同一懒发现节奏                 |
-| dsh 形态 UI 同源         | dsh-plugin host 反代 `/chatoffice-app/*` → sidecar;渲染端相对路径 fetch 即同源可达 sidecar                                                                                     | 渲染端走 `fetch('kb/...')` 零 CORS                                 |
-| 桌面形态进程模型         | 无常驻 sidecar;`@chatoffice/ai-host` 在各编辑器主进程注册进程内 IPC;shell main 有 `window.chatOffice` 桥                                                                       | 桌面形态 KB 网关实例化在 shell main,经 IPC 暴露                    |
-| 渲染端能力探测惯例       | `ChatPanel.tsx:44-45` `typeof window.chatOffice.aiStream === 'function'` 守卫                                                                                                  | KB 桥必须同样 typeof 守卫(f1dcbd86 教训:桥缺方法=整应用首渲染崩死) |
+| dsh 形态 UI 同源         | dsh-plugin host 反代 `/chaoffice-app/*` → sidecar;渲染端相对路径 fetch 即同源可达 sidecar                                                                                     | 渲染端走 `fetch('kb/...')` 零 CORS                                 |
+| 桌面形态进程模型         | 无常驻 sidecar;`@chaoffice/ai-host` 在各编辑器主进程注册进程内 IPC;shell main 有 `window.chaOffice` 桥                                                                       | 桌面形态 KB 网关实例化在 shell main,经 IPC 暴露                    |
+| 渲染端能力探测惯例       | `ChatPanel.tsx:44-45` `typeof window.chaOffice.aiStream === 'function'` 守卫                                                                                                  | KB 桥必须同样 typeof 守卫(f1dcbd86 教训:桥缺方法=整应用首渲染崩死) |
 | composer 插槽            | `packages/ui/src/AiComposer.tsx` footerStart;`ChatPanel.tsx:1041-1112` 顺序=附件钮→`.chat-model-slot`(ModelPickerButton)→模式钮→AssistantPicker                                | KB 按钮插入点:附件钮之后、模型槽之前(紧邻模型,符合需求)            |
 | 编辑器面板同构           | docs/sheets/markdown/pdf/html/slides 的 AiPanel footerStart 均含 ModelPickerButton                                                                                             | P3 复用同一组件                                                    |
 | MCP 客户端(不用于本方案) | `apps/shell/src/main/mcp/external-client.ts`(stdio/http/sse)+ `externalMcpServers` 配置                                                                                        | 仅作 §3 对照项与附录备选                                           |
@@ -95,19 +95,19 @@
 ```
 L0  harness KB REST(/api/chatop-kb/*,dsh web 进程内,已存在,零改动)
       ↑ loopback HTTP
-L1  office KB 网关(新模块,并入 @chatoffice/ai-provider:kb-client.ts + kb-discovery.ts)
+L1  office KB 网关(新模块,并入 @chaoffice/ai-provider:kb-client.ts + kb-discovery.ts)
       · discover():四级发现 → {origin, source:'cached'|'env'|'probe'|'manual', health}
       · list()/search(kbId,q,topK)/readDoc(kbId,docId)   ← 稳定接口,传输可替换
       · 指纹校验(ok===true && Array.isArray(kbs)) + 熔断缓存(失败退避)
       ├─ 宿主① dsh/web 形态:apps/server 挂 attachKbProxy(与 attachAiProxy 平行)
-      │    渲染端 → 同源 fetch('kb/status'|'kb/search') → /chatoffice-app/ 反代 → sidecar → dsh
+      │    渲染端 → 同源 fetch('kb/status'|'kb/search') → /chaoffice-app/ 反代 → sidecar → dsh
       └─ 宿主② 桌面形态:shell main 实例化网关,注册 IPC 通道(KB_DISCOVER/KB_LIST/KB_SEARCH/KB_READ)
-           渲染端 → preload window.chatOffice.kb*(typeof 守卫)→ IPC → main → dsh
+           渲染端 → preload window.chaOffice.kb*(typeof 守卫)→ IPC → main → dsh
 L2  渲染端 facade kbApi.ts:桌面走桥、dsh/web 走相对 fetch,自动探测二选一
 L3  UI 与对话:KbPickerButton(popover 多选)+ ChatPanel 集成 + 检索注入管道 + [n] 引用 chips
 ```
 
-**为什么先并入 `@chatoffice/ai-provider`**:该包已在 `package-embedded.mjs` 的 PACKAGES 嵌入清单内,新模块零登记风险;且 harness 触达代码(settings-source、vendor-catalog 的 chatop- 路由)本就聚居于此。若日后长出管理面/上传等重功能再拆独立包,届时**必须同步登记 PACKAGES**(xlsx-gateway 教训:dsh 形态 sidecar 缺包启动即死)。
+**为什么先并入 `@chaoffice/ai-provider`**:该包已在 `package-embedded.mjs` 的 PACKAGES 嵌入清单内,新模块零登记风险;且 harness 触达代码(settings-source、vendor-catalog 的 chatop- 路由)本就聚居于此。若日后长出管理面/上传等重功能再拆独立包,届时**必须同步登记 PACKAGES**(xlsx-gateway 教训:dsh 形态 sidecar 缺包启动即死)。
 
 ---
 
@@ -115,10 +115,10 @@ L3  UI 与对话:KbPickerButton(popover 多选)+ ChatPanel 集成 + 检索注入
 
 ### 5.1 dsh 形态(自动 = 既有机制自然延伸)
 
-- sidecar 已持 dsh origin(`CHATOFFICE_DSH_RPC_ORIGIN` 直值或 origin 文件懒发现,5s 缓存);KB 与 RPC 同在 dsh web,**origin 即 KB origin**,无任何新增发现逻辑。
+- sidecar 已持 dsh origin(`CHAOFFICE_DSH_RPC_ORIGIN` 直值或 origin 文件懒发现,5s 缓存);KB 与 RPC 同在 dsh web,**origin 即 KB origin**,无任何新增发现逻辑。
 - `attachKbProxy` 与 `attachAiProxy` 同参数(harness:{dshHome, rpcOrigin, rpcOriginFile})、同懒解析节奏。
 - 既有制度沿用:**NO_PROXY 必含 127.0.0.1**(代理环境变量劫持回环 fetch 是已踩过的坑)。
-- 渲染端同源:iframe 基址 `/chatoffice-app/`,`fetch('kb/status')` 直达 sidecar,零 CORS。
+- 渲染端同源:iframe 基址 `/chaoffice-app/`,`fetch('kb/status')` 直达 sidecar,零 CORS。
 
 ### 5.2 桌面安装包形态(shell main 四级发现)
 
@@ -126,7 +126,7 @@ L3  UI 与对话:KbPickerButton(popover 多选)+ ChatPanel 集成 + 检索注入
 | ----------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------- |
 | ① 缓存优先  | 上次成功的 origin(存 ai-settings 类本地状态)                                        | 启动即用,后台复验;复验失败降级重探                      |
 | ② 显式覆盖  | 设置项/环境变量手动指定 origin                                                      | 企业部署固定地址;优先级最高(置于①之上判定)              |
-| ③ hint 文件 | `~/.dsh` 目录存在性;`~/.dsh/storages/chatoffice/dsh-rpc-origin`(若装过 office 插件) | 命中则直接取该 origin 复验                              |
+| ③ hint 文件 | `~/.dsh` 目录存在性;`~/.dsh/storages/chaoffice/dsh-rpc-origin`(若装过 office 插件) | 命中则直接取该 origin 复验                              |
 | ④ 端口探测  | `127.0.0.1:3080..3090` **并行** GET `/api/chatop-kb/status`,每端口 ~300ms 超时      | 响应作指纹:`ok===true && Array.isArray(kbs)`;命中即锁定 |
 
 - **状态机**:`未检测到`(全败,图标灰态 + "未检测到察元桌面")/ `已连接`(展示来源 origin)/ `宿主未启用知识库`(404 → "请升级察元桌面")/ `需重建索引`(嵌入指纹 mismatch 透出)。
@@ -137,7 +137,7 @@ L3  UI 与对话:KbPickerButton(popover 多选)+ ChatPanel 集成 + 检索注入
 
 ### 5.3 web/docker 形态
 
-`apps/server` 本就读同一组环境变量,运维把 `CHATOFFICE_DSH_RPC_ORIGIN` 指向可达 harness 即天然点亮;跨机需 harness 侧放开 `CHATOP_ALLOW_NON_LOOPBACK=1`(harness 文档既有共识)。v1 不做 UI 配置入口,P3 再补。
+`apps/server` 本就读同一组环境变量,运维把 `CHAOFFICE_DSH_RPC_ORIGIN` 指向可达 harness 即天然点亮;跨机需 harness 侧放开 `CHATOP_ALLOW_NON_LOOPBACK=1`(harness 文档既有共识)。v1 不做 UI 配置入口,P3 再补。
 
 ---
 
@@ -198,7 +198,7 @@ office 是**只读消费方**:不上传文档、不建库、不管嵌入配置�
 | harness 升级 API 漂移           | status 指纹校验;不匹配按"请升级察元桌面"降级,不崩         |
 | 代理劫持回环                    | NO_PROXY 必含 127.0.0.1(既有制度,网关内再断言)            |
 | 多用户端口串库                  | 首响应者 + picker 明示 origin;文档声明限制                |
-| 渲染端桥缺方法崩应用            | 全部 `window.chatOffice.kb*?.` typeof 守卫(f1dcbd86 教训) |
+| 渲染端桥缺方法崩应用            | 全部 `window.chaOffice.kb*?.` typeof 守卫(f1dcbd86 教训) |
 | dsh 宿主未装 kb 插件            | 404 → 图标灰态文案,不隐藏功能入口(可发现性)               |
 | 大库检索拖慢发送                | topK 上限 + 检索超时竞速 + 失败降级直答                   |
 | KB 内容外流出会话(发给云端模型) | 属 RAG 固有数据流,文档明示;企业部署走本地模型组合         |

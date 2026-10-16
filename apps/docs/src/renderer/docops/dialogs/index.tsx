@@ -2,7 +2,7 @@
 // services set the active kind. Each dialog owns its own state and closes by
 // clearing the kind.
 import type { Editor } from '@tiptap/core'
-import type { StyleInfo } from '@chatoffice/docx-engine'
+import type { StyleInfo } from '@chaoffice/docx-engine'
 import type { DeclassifySidecar } from '../declassify'
 import type { CompleteText } from '../model-complete'
 import { DeleteTextDialog, AppendReplaceTextDialog, ManualColWidthDialog, TableStyleDialog, CaptionDialog } from './TableDialogs'

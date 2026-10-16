@@ -1,4 +1,4 @@
-import { getSystemShortDate } from '@chatoffice/xlsx-gateway/shared/short-date'
+import { getSystemShortDate } from '@chaoffice/xlsx-gateway/shared/short-date'
 import { DEFAULT_NUMFMT_OPTIONS, numfmtPattern, type NumfmtOptions } from './numfmt-dialog'
 import { numberFormatLabel } from './selection-format'
 import type { StringKey } from './i18n/locale'

@@ -1,4 +1,4 @@
-import type { ParaFrame, TextFlowDirection } from '@chatoffice/docx-engine'
+import type { ParaFrame, TextFlowDirection } from '@chaoffice/docx-engine'
 
 /** CSS writing mode for a w:textDirection value (frames and section blocks share it) */
 export function textFlowCss(dir: TextFlowDirection | null | undefined): string[] {

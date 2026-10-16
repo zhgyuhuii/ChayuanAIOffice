@@ -34,7 +34,7 @@ test('slides chrome darkens while the slide canvas stays paper-white', async () 
     await editorPage.waitForSelector('.stage-wrap canvas', { timeout: 20_000 })
 
     await shellPage.evaluate(() =>
-      (window as unknown as { chatOffice: { setTheme(v: string): Promise<void> } }).chatOffice.setTheme(
+      (window as unknown as { chaOffice: { setTheme(v: string): Promise<void> } }).chaOffice.setTheme(
         'dark',
       ),
     )

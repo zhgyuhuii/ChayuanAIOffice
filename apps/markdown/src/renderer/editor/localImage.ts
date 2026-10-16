@@ -102,7 +102,7 @@ async function persistAndInsert(
   }
   const base64 = btoa(binary)
   const alt = file.name.replace(/\.[a-z0-9]+$/i, '')
-  // a configured image host gets the paste first (chatoffice#388); the local
+  // a configured image host gets the paste first (chaoffice#388); the local
   // assets/ copy is the fallback when it is disabled or the upload fails, so
   // the note stays self-contained even offline
   const host = await getImageHostConfig()

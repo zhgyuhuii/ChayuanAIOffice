@@ -6,7 +6,7 @@ import { join, resolve } from 'node:path'
 import { createRequire } from 'node:module'
 
 /**
- * An RTL UI must not re-author a deck that gets exported (chatoffice#1861).
+ * An RTL UI must not re-author a deck that gets exported (chaoffice#1861).
  *
  * The six document surfaces pin `direction: ltr`, but Konva hosts in Slides sit
  * outside the pinned ones: the thumbnail stages in `.slide-list`, the slideshow,
@@ -44,7 +44,7 @@ interface Run {
 
 /** One deck, one language: the PNG bytes a selection copy puts on the clipboard. */
 async function run(lang: string): Promise<Run> {
-  const dir = await mkdtemp(join(tmpdir(), `chatoffice-rtl-png-${lang}-`))
+  const dir = await mkdtemp(join(tmpdir(), `chaoffice-rtl-png-${lang}-`))
   try {
     const fixture = join(dir, 'fixture')
     await cp(resolve('e2e/assets/font-manager-rubik'), fixture, { recursive: true })

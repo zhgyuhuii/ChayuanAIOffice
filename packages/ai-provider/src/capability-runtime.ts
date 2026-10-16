@@ -70,7 +70,7 @@ export function hasMediaCapability(settings: AiSettingsV2, kind: MediaModelKind)
   if (!selection) return false
   const profile = findProfile(settings, selection.profileId)
   if (!profile) return false
-  return !!profile.apiKey || profile.auth === 'chatoffice-login'
+  return !!profile.apiKey || profile.auth === 'chaoffice-login'
 }
 
 /**

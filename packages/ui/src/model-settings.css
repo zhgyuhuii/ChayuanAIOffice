@@ -496,13 +496,13 @@
   flex: 1;
 }
 
-.msp-chatoffice-row {
+.msp-chaoffice-row {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 12px;
 }
-.msp-chatoffice-state {
+.msp-chaoffice-state {
   flex: 1;
   min-width: 0;
 }

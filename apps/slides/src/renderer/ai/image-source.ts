@@ -15,7 +15,7 @@
  * fail). Any source's per-slot failure/zero-results degrades THAT slot to a
  * brief after its chain is exhausted.
  */
-import type { AiImageSource } from '@chatoffice/ai-provider'
+import type { AiImageSource } from '@chaoffice/ai-provider'
 
 export type DeckImageSource = 'web' | 'model' | 'local' | 'svg'
 

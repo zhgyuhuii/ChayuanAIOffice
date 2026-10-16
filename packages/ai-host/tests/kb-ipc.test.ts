@@ -4,8 +4,8 @@ import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const discoverMock = vi.fn()
-vi.mock('@chatoffice/ai-provider', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@chatoffice/ai-provider')>()),
+vi.mock('@chaoffice/ai-provider', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@chaoffice/ai-provider')>()),
   discoverHarnessKb: (...args: unknown[]) => discoverMock(...args),
 }))
 

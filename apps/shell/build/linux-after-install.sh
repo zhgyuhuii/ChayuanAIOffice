@@ -1,6 +1,6 @@
 #!/bin/sh
 # deb/rpm post-install: fix the Electron SUID sandbox permissions and expose
-# the chatoffice command line shipped inside the app.
+# the chaoffice command line shipped inside the app.
 set -e
 app_dir="/opt/ChaAI Office"
 sandbox="$app_dir/chrome-sandbox"
@@ -8,9 +8,9 @@ if [ -f "$sandbox" ]; then
   chown root:root "$sandbox"
   chmod 4755 "$sandbox"
 fi
-# Expose the chatoffice command line shipped inside the app. Only an absent
+# Expose the chaoffice command line shipped inside the app. Only an absent
 # name, a dead link or a link into our own install dir is taken over; anything
-# else at /usr/bin/chaoffice belongs to another program (chatoffice#893 parity).
+# else at /usr/bin/chaoffice belongs to another program (chaoffice#893 parity).
 launcher="$app_dir/resources/cli/chaoffice"
 link="/usr/bin/chaoffice"
 [ -x "$launcher" ] || exit 0

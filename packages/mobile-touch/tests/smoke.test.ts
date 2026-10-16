@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import * as mobileTouch from '../src/index'
 
-describe('@chatoffice/mobile-touch API surface', () => {
+describe('@chaoffice/mobile-touch API surface', () => {
   it('exposes the complete kit (P1+P2, no stubs)', () => {
     expect(typeof mobileTouch.useKeyboardInset).toBe('function')
     expect(typeof mobileTouch.KeyboardSpacer).toBe('function')

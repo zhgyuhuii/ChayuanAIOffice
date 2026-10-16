@@ -1,4 +1,4 @@
-import type { AgentSkill } from '@chatoffice/agent-core'
+import type { AgentSkill } from '@chaoffice/agent-core'
 import { t } from '../i18n/locale'
 
 /**

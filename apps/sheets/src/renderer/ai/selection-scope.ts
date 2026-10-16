@@ -13,7 +13,7 @@
  * labelled from the header row rather than by coordinates.
  */
 
-import { columnLabel, type RangeBounds } from '@chatoffice/xlsx-gateway/domain/cell-address'
+import { columnLabel, type RangeBounds } from '@chaoffice/xlsx-gateway/domain/cell-address'
 import type { FrozenSelection } from './tools'
 
 export interface ScopeChip {

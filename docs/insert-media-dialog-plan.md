@@ -10,14 +10,14 @@
 >     任务 DELETE 取消）、vidu（Token 鉴权、/ent/v2/text2video+creations 轮询、
 >     cover_url 做 poster）、pixverse（API-KEY+Ai-trace-id、ErrCode/Resp.status 映射）、
 >     gemini（veo predictLongRunning+operation 轮询、Files 下载走 downloadHeaders）、
->     openai/chatoffice（OpenAI videos API 共形工厂，sora content 下载带鉴权头）；
+>     openai/chaoffice（OpenAI videos API 共形工厂，sora content 下载带鉴权头）；
 >     runMediaJob 支持 abort 时远端 best-effort 取消（有 cancel 端点的 vendor）；
 >     zhipu/kling/vidu 结果带封面帧 meta.poster。
 >   - `media-params.ts` 的 `videoParamSpec` 按 vendor+modelId 正则细化
 >     （vidu/pixverse/luma 分辨率、kling mode、veo-3.0 锁 8s 不出时长字段、
 >     sora 4/8/12s、seedance --ratio/--dur/--resolution 文本标签等）。
 >   - `settings-v2.ts` 新增 `isVideoGenModel`；`runtime.listMediaModels()` 返回
->     image/video 两类条目（chatoffice 视频数据驱动，仅当模型清单真有视频型才出现）；
+>     image/video 两类条目（chaoffice 视频数据驱动，仅当模型清单真有视频型才出现）；
 >     `runtime.runVideoJob()` 解析模型后驱动 runMediaJob。
 >   - `ai-host` 新增 `video-tasks.ts` 任务注册表：主进程内存态、后台存活、
 >     并发上限 3（超出拒收 code busy）、结果流式落盘 userData/media/videos、
@@ -34,7 +34,7 @@
 >   sheets 对话框内联提示不支持、插入时兜底拒绝。
 > P1 变更清单：
 > - `packages/ai-search`：新增 `bing.ts`（HTML 抓取）+ `openverse.ts`（CC 图库）；
->   `imageSearch` 重排为 chatoffice→Serper→Bing→Openverse 并返回逐层 `attempts` 诊断；
+>   `imageSearch` 重排为 chaoffice→Serper→Bing→Openverse 并返回逐层 `attempts` 诊断；
 >   删除 DuckDuckGo 图片链路（web 文本链路保留）；Serper key 支持设置页注入（env 兜底）。
 > - `packages/ai-provider`：`searchApiKeys.serper` 入 AiSettingsV2；**修复 normalizeV2
 >   丢弃 stockApiKeys/searchApiKeys 的落盘 bug**；新增 `media-params.ts`（ParamSpec
@@ -68,7 +68,7 @@
 
 用户对"插入图片窗口"提出三项完善：
 
-1. **网页搜索无内容**：根因是三后端全灭——chatoffice 要登录+开云工具；Serper 只认
+1. **网页搜索无内容**：根因是三后端全灭——chaoffice 要登录+开云工具；Serper 只认
    环境变量 `SERPER_API_KEY`，设置页无配置入口；DuckDuckGo 国内不可达且图片链路的
    vqd token 两步抓取极脆弱。全灭时 `imageSearch()` 返回空列表，UI 只显示"无结果"。
 2. **Pexels / Pixabay 密钥**：现状点 ⚙ 在搜索 tab 内嵌展开一个面板，两家的 key 输入框
@@ -90,7 +90,7 @@
 - `runtime.generateImage(req)` 签名内不含模型选择（内部 `pickImageModel()`）。
 - 共享主进程逻辑位于 `packages/ai-host`（`ai:web-image-search`、`ai:stock-image-search`
   等 IPC handler 已在此）。
-- chatoffice 图像生成走代理标准化的 `/images/generations`；**无任何视频端点证据**。
+- chaoffice 图像生成走代理标准化的 `/images/generations`；**无任何视频端点证据**。
 
 ## 决策记录（问答链）
 
@@ -104,7 +104,7 @@
 | 6 | 分钟级视频任务的生命周期 | 后台存活+完成通知 |
 | 7 | 后台任务并发语义 | 多任务并发，上限 3 |
 | 8 | 搜索修复方向 | 换 Openverse 兜底 + Serper key 进设置页 + 自建 Bing 抓取源 + 逐层诊断 |
-| 9 | 搜索兜底链顺序 | chatoffice→Serper→Bing→Openverse；删 DuckDuckGo 图片链路 |
+| 9 | 搜索兜底链顺序 | chaoffice→Serper→Bing→Openverse；删 DuckDuckGo 图片链路 |
 | 10 | 图库密钥交互形态 | 每家独立模态小窗+测试连接 |
 | 11 | 模型选择器加载与记忆 | 分组下拉+会话级记忆（不写回全局默认） |
 | 12 | 窗口改名与视频归属 | 改名"插入媒体"；视频放 AI tab 内，不拆 tab |
@@ -113,7 +113,7 @@
 
 ### 1. 网页搜索修复（需求 1）
 
-- **兜底链重排**：`chatoffice → Serper → Bing 抓取（新增） → Openverse（新增）`。
+- **兜底链重排**：`chaoffice → Serper → Bing 抓取（新增） → Openverse（新增）`。
   - 删除 DuckDuckGo **图片**链路（vqd 两步跳脆弱、国内不可达）；web **文本**搜索的
     DuckDuckGo 链路保持不动。
   - Bing 抓取：国内可达、相关性好；解析失败静默降级到下一层。
@@ -154,12 +154,12 @@
 ### 4. 视频生成链路（全新工程）
 
 - **适配器**：13 家一次做完——百炼 / 智谱 / 火山 / minimax / gemini / openai /
-  chatoffice（已有档案）+ kling / runway / luma / vidu / pixverse / fal（新建档案）。
+  chaoffice（已有档案）+ kling / runway / luma / vidu / pixverse / fal（新建档案）。
   统一"提交异步任务+轮询取结果"模式，各家参数走 ParamSpec。
 - **vendor 档案补齐**：6 家新建条目（id、displayName、baseUrl、keyUrl、分组归属），
   设置页新增凭证入口；kling 鉴权为 accessKey+secretKey 签名 JWT，凭证 UI 支持
   双字段形态。
-- **chatoffice 视频通道**：实装时验证——仅当代理模型列表真实返回视频型模型时才在
+- **chaoffice 视频通道**：实装时验证——仅当代理模型列表真实返回视频型模型时才在
   选择器展示，否则隐藏。
 - **后台任务注册表**：
   - 位置：`ai-host` 新增 video-tasks 模块（每 app 主进程一份，内存态，不跨重启）；

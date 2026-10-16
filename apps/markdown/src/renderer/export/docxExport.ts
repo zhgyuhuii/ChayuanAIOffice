@@ -8,7 +8,7 @@ import {
   mathParagraphXml,
   parseDocx,
   saveDocx,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import type {
   GeneratedBlock,
   NewImage,
@@ -19,7 +19,7 @@ import type {
   TableCell,
   TableModel,
   TableParagraph,
-} from '@chatoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { diagramLanguage } from '../editor/diagrams'
 import type { DiagramLanguage } from '../editor/diagrams'
 

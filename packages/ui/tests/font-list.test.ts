@@ -6,7 +6,7 @@
 // spellings literally would hide a font that is really installed — in either
 // direction, so both the localized-named and the English-named candidates are covered.
 import { describe, expect, it } from 'vitest'
-import { CJK_FAMILY_ALIASES, SIMPLIFIED_CJK_FAMILIES } from '@chatoffice/i18n'
+import { CJK_FAMILY_ALIASES, SIMPLIFIED_CJK_FAMILIES } from '@chaoffice/i18n'
 import {
   BUILTIN_FONT_FAMILIES,
   fontFamiliesFor,

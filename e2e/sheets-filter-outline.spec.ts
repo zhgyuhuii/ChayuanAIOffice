@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
 import { launchShell, closeAndSaveVideo, waitForPageWithUrl, screenshotPath } from './helpers'
 
-// the preload exposes window.__chatofficeDebug only under this env var
+// the preload exposes window.__chaofficeDebug only under this env var
 process.env.GENOFFICE_DEBUG_HOOKS = '1'
 
 interface CellRect {
@@ -15,7 +15,7 @@ interface CellRect {
 function cellRect(page: Page, row: number, column: number): Promise<CellRect> {
   return page.evaluate(
     ([r, c]) => {
-      const debug = (window as unknown as Record<string, unknown>).__chatofficeDebug as {
+      const debug = (window as unknown as Record<string, unknown>).__chaofficeDebug as {
         univerAPI: { getActiveWorkbook(): { getActiveSheet(): unknown } }
       }
       const sheet = debug.univerAPI.getActiveWorkbook().getActiveSheet() as {
@@ -117,7 +117,7 @@ test.describe('sheets: no outline around a filtered range', () => {
       await sheets.waitForTimeout(1_500)
 
       await sheets.evaluate(async () => {
-        const debug = (window as unknown as Record<string, unknown>).__chatofficeDebug as {
+        const debug = (window as unknown as Record<string, unknown>).__chaofficeDebug as {
           univerAPI: { getActiveWorkbook(): { getActiveSheet(): unknown } }
         }
         const sheet = debug.univerAPI.getActiveWorkbook().getActiveSheet() as {
@@ -140,7 +140,7 @@ test.describe('sheets: no outline around a filtered range', () => {
       // deselect: park the selection far from the filter range so its own
       // selection border cannot be mistaken for the filter outline
       await sheets.evaluate(() => {
-        const debug = (window as unknown as Record<string, unknown>).__chatofficeDebug as {
+        const debug = (window as unknown as Record<string, unknown>).__chaofficeDebug as {
           univerAPI: { getActiveWorkbook(): { getActiveSheet(): unknown } }
         }
         const sheet = debug.univerAPI.getActiveWorkbook().getActiveSheet() as {
@@ -158,7 +158,7 @@ test.describe('sheets: no outline around a filtered range', () => {
       await sheets.screenshot({ path: screenshotPath('sheets-filter-outline') })
 
       const hasFilter = await sheets.evaluate(() => {
-        const debug = (window as unknown as Record<string, unknown>).__chatofficeDebug as {
+        const debug = (window as unknown as Record<string, unknown>).__chaofficeDebug as {
           univerAPI: { getActiveWorkbook(): { getActiveSheet(): unknown } }
         }
         const sheet = debug.univerAPI.getActiveWorkbook().getActiveSheet() as {

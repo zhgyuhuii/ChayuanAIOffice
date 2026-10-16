@@ -18,7 +18,7 @@ import { dirname, isAbsolute, join, win32 } from 'node:path'
  * launch until it succeeds and `chaoffice install-cli` repeats it on demand.
  * Best effort everywhere: no prompts, no elevation, never an error on the
  * app's startup path. `inspectCliLink` reports the same states without writing
- * anything. A `chatoffice` symlink is kept beside the new name so pre-rename
+ * anything. A `chaoffice` symlink is kept beside the new name so pre-rename
  * terminals keep working.
  */
 export interface InstallOptions {
@@ -125,7 +125,7 @@ export function installCliLink(opts: InstallOptions): InstallOutcome {
     const link = join(dir, 'chaoffice')
     const state = linkState(link, opts.launcher)
     if (state === 'ours' && readlinkSync(link) === opts.launcher) {
-      linkLegacyName(join(dir, 'chatoffice'), opts.launcher)
+      linkLegacyName(join(dir, 'chaoffice'), opts.launcher)
       return withPathHint({ status: 'present', location: link }, dir, userDirs, env)
     }
     if (state === 'file' || state === 'foreign') {
@@ -144,7 +144,7 @@ export function installCliLink(opts: InstallOptions): InstallOutcome {
     try {
       if (state !== 'missing') unlinkSync(link)
       symlinkSync(opts.launcher, link)
-      linkLegacyName(join(dir, 'chatoffice'), opts.launcher)
+      linkLegacyName(join(dir, 'chaoffice'), opts.launcher)
       return withPathHint({ status: 'linked', location: link }, dir, userDirs, env)
     } catch {
       continue
@@ -154,7 +154,7 @@ export function installCliLink(opts: InstallOptions): InstallOutcome {
   return { status: 'unwritable', location: join(dirs[0] ?? '/usr/local/bin', 'chaoffice'), manual }
 }
 
-/** best-effort `chatoffice` alias next to the new name (never clobbers) */
+/** best-effort `chaoffice` alias next to the new name (never clobbers) */
 function linkLegacyName(link: string, launcher: string): void {
   try {
     const state = linkState(link, launcher)
@@ -209,7 +209,7 @@ function linkState(path: string, launcher: string): 'missing' | 'ours' | 'file' 
   }
 }
 
-/** Only launchers we shipped (<app resources>/cli/chaoffice or the legacy chatoffice name, any version or install dir) may be replaced. */
+/** Only launchers we shipped (<app resources>/cli/chaoffice or the legacy chaoffice name, any version or install dir) may be replaced. */
 function isOurLauncher(target: string): boolean {
   return /[\\/]cli[\\/](cha|chat)office$/.test(target)
 }

@@ -11,8 +11,8 @@ import {
   savePptx,
   type OpenedPptx,
   type SlideElement,
-} from '@chatoffice/pptx-engine'
-import { runTxn } from '@chatoffice/pptx-ops'
+} from '@chaoffice/pptx-engine'
+import { runTxn } from '@chaoffice/pptx-ops'
 
 let opened: OpenedPptx
 let a: string

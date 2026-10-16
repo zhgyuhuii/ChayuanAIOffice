@@ -1,4 +1,4 @@
-import type { SectionSettings } from '@chatoffice/docx-engine'
+import type { SectionSettings } from '@chaoffice/docx-engine'
 
 export type SideMargins = Pick<SectionSettings, 'marginLeft' | 'marginRight'>
 

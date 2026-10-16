@@ -1,13 +1,13 @@
-import type { AgentSkill, ToolDisplay } from '@chatoffice/agent-core'
-import type { AiImageSource } from '@chatoffice/ai-provider'
+import type { AgentSkill, ToolDisplay } from '@chaoffice/agent-core'
+import type { AiImageSource } from '@chaoffice/ai-provider'
 import type {
   GroupRenderNode,
   PictureRenderNode,
   RenderNode,
   RenderSlide,
   ShapeRenderNode,
-} from '@chatoffice/pptx-render'
-import { EMU_PER_PX_96, repairSvgEntities, sanitizeSvg } from '@chatoffice/pptx-render'
+} from '@chaoffice/pptx-render'
+import { EMU_PER_PX_96, repairSvgEntities, sanitizeSvg } from '@chaoffice/pptx-render'
 import type {
   AddSmartArtOp,
   AgentToolCall,
@@ -15,12 +15,12 @@ import type {
   EditParagraph,
   SlideComment,
 } from '../../shared/ipc'
-import { OP_GROUPS, opGuide, opGuideCatalog, opSignatureIndex } from '@chatoffice/pptx-ops/op-docs'
+import { OP_GROUPS, opGuide, opGuideCatalog, opSignatureIndex } from '@chaoffice/pptx-ops/op-docs'
 import {
   auditDeckConsistency,
   auditSlideLayout,
   formatAudit,
-} from '@chatoffice/pipelines/slides/layout-audit'
+} from '@chaoffice/pipelines/slides/layout-audit'
 import { runLayoutScript, type LayoutScriptElement } from './layout-script'
 import { allocateImagery, resolveDeckImageSource, sourceKeyword } from './image-source'
 import { rasterizeSvg } from './svg-raster'
@@ -218,12 +218,12 @@ export interface DeckAccess {
   localImagePool?(): string[]
   /** Attached images (logo etc.) auto-registered as brand assets; non-empty forces the local writer (the cloud writer cannot place them) */
   deckImageAssets?(): DeckImageAsset[]
-  /** Whether cloud single-page generation is available (kill switch + chatoffice login state) */
+  /** Whether cloud single-page generation is available (kill switch + chaoffice login state) */
   isCloudPageGenEnabled?(): Promise<boolean>
   /** live predicate: a local image-generation model is configured (Settings → 生图、媒体与搜索); false hides generate_image */
   imageModelAvailable?(): boolean
   /**
-   * Cloud single-page generation (chatoffice slide_generate), used by generate_deck's self-driven
+   * Cloud single-page generation (chaoffice slide_generate), used by generate_deck's self-driven
    * pipeline: given the unified style + this page's brief/layout/images, the cloud service
    * writes the HTML and converts it to a one-slide pptx. Returns a marker string that goes
    * into a landGeneratedPages pageMarkers slot.
@@ -248,7 +248,7 @@ export interface DeckAccess {
     signal?: AbortSignal
   }): Promise<{ ok: boolean; marker?: string; error?: string }>
   /**
-   * Local single-page generation (used when cloud is unavailable, e.g. BYOK without chatoffice):
+   * Local single-page generation (used when cloud is unavailable, e.g. BYOK without chaoffice):
    * same inputs and marker contract as generatePageCloud, but the page is produced entirely
    * locally — one LLM request writes a structured slide spec and the main process builds it
    * directly into a one-slide pptx (no HTML intermediate).
@@ -1612,7 +1612,7 @@ export function createSlidesSkill(access: DeckAccess): AgentSkill {
     },
     executeTool: (call, signal) => executeTool(access, call, state, signal),
     degradedFallback: () => {
-      // Only tools that exist in the current (chatoffice-gated) set are
+      // Only tools that exist in the current (chaoffice-gated) set are
       // advertised, each with a one-line trimmed description — the full
       // 39-tool definitions would blow a no-FC model's context.
       const live = new Set(liveTools().map((t) => t.name))
@@ -2556,7 +2556,7 @@ ${r.text}`,
       // ── Self-driven pipeline:
       //   1) Plan: use pages if passed; with topic, the tool plans the outline via LLM (batched recursion over threshold) — fixes missing pages at the input side.
       //   2) Generate: batched concurrent page generation (one retry per page), **each batch lands immediately → frontend shows pages one by one**.
-      //      Cloud (chatoffice slide_generate) when available; otherwise fully local — the LLM (app AI
+      //      Cloud (chaoffice slide_generate) when available; otherwise fully local — the LLM (app AI
       //      transport, works with BYOK) writes a slide spec that is built directly into a pptx.
       // The imagery source resolves BEFORE the writer pick: 'svg' briefs must be
       // drawn inline by the local spec writer (the cloud HTML writer cannot emit
@@ -2905,7 +2905,7 @@ ${r.text}`,
       const deckName = String(pages[0]?.title ?? '').trim() || topic || coreHook
 
       // ── Step 2: generate page by page + land as we go (frontend shows pages one by one).
-      // Cloud (chatoffice slide_generate) and local (LLM spec → pptx-engine build) both produce a
+      // Cloud (chaoffice slide_generate) and local (LLM spec → pptx-engine build) both produce a
       // one-slide pptx temp file; genOne returns its marker and landing reads the bytes.
       // Land strictly in page order: nextToLand pointer; a page lands only when its marker is ready, keeping page order intact.
       const markerByIndex: (string | null)[] = new Array(total).fill(null)
@@ -3397,9 +3397,9 @@ ${r.text}`,
       if (!option || typeof option !== 'object') {
         return fail(t('aiFailChart'), 'add_echart needs an "option" object (ECharts option format)')
       }
-      const { runOptionCode } = await import('@chatoffice/chart-kit/sandbox')
-      const { stringifyOption } = await import('@chatoffice/chart-kit/serialize')
-      const { renderOptionSnapshot } = await import('@chatoffice/chart-kit/snapshot')
+      const { runOptionCode } = await import('@chaoffice/chart-kit/sandbox')
+      const { stringifyOption } = await import('@chaoffice/chart-kit/serialize')
+      const { renderOptionSnapshot } = await import('@chaoffice/chart-kit/snapshot')
       // 对象 option 经同一段执行模型:源码化→沙箱→复活(函数标记统一)
       const json = JSON.stringify(option, (_k, v) =>
         typeof v === 'function' ? { __chartkit_fn__: String(v) } : v,

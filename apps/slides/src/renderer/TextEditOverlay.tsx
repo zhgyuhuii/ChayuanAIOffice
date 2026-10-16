@@ -6,8 +6,8 @@
  */
 import React, { useEffect, useRef } from 'react'
 import type { EditCaret } from './action-context'
-import { formatAutoNum, DEFAULT_INSETS_EMU, emuToPx, isWideChar } from '@chatoffice/pptx-render'
-import type { GlyphRun, ShapeRenderNode, TextLine } from '@chatoffice/pptx-render'
+import { formatAutoNum, DEFAULT_INSETS_EMU, emuToPx, isWideChar } from '@chaoffice/pptx-render'
+import type { GlyphRun, ShapeRenderNode, TextLine } from '@chaoffice/pptx-render'
 import type { EditParagraph, EditRun, LinkTargetOp } from '../shared/ipc'
 import { decodeLinkTarget, encodeLinkTarget } from '../shared/run-link'
 import { displayFontFamily, konvaBaselineDrop } from './konva-adapter'
@@ -16,7 +16,7 @@ import {
   applyFontSizeStep,
   DEFAULT_FONT_SIZE_PT,
   type FontSizeStep,
-} from '@chatoffice/pptx-ops/font-size'
+} from '@chaoffice/pptx-ops/font-size'
 import { bulletRunText } from './bullet-presets'
 
 interface Props {

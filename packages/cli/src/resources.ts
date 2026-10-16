@@ -30,7 +30,7 @@ export function repoRoot(): string | null {
     const pkg = join(dir, 'package.json')
     if (existsSync(pkg)) {
       try {
-        if (JSON.parse(readFileSync(pkg, 'utf-8')).name === 'chatoffice') {
+        if (JSON.parse(readFileSync(pkg, 'utf-8')).name === 'chaoffice') {
           cachedRepo = dir
           return dir
         }
@@ -125,7 +125,7 @@ function installedAppBinaries(env: NodeJS.ProcessEnv): string[] {
         env.ProgramFiles ? join(env.ProgramFiles, 'ChaAI Office', 'ChaAI Office.exe') : '',
       ].filter(Boolean)
     default:
-      return ['/opt/ChaAI Office/chatoffice', '/usr/bin/chatoffice']
+      return ['/opt/ChaAI Office/chaoffice', '/usr/bin/chaoffice']
   }
 }
 

@@ -1,6 +1,6 @@
 import { clipboard, nativeImage } from 'electron'
 
-export const ELEMENT_CLIPBOARD_FORMAT = 'io.chatoffice.slides.elements'
+export const ELEMENT_CLIPBOARD_FORMAT = 'io.chaoffice.slides.elements'
 
 export type ElementClipboardIdentity = { token: string; senderId: number }
 
@@ -24,7 +24,7 @@ function markerHtmlMatches(token: string): boolean {
     const encodedToken = encodeURIComponent(token)
     const images = clipboard
       .readHTML()
-      .matchAll(/<img\b[^>]*\bdata-chatoffice-slides-elements\s*=\s*"([^"]*)"[^>]*>/gi)
+      .matchAll(/<img\b[^>]*\bdata-chaoffice-slides-elements\s*=\s*"([^"]*)"[^>]*>/gi)
     return [...images].some((match) => match[1] === encodedToken)
   } catch {
     return false
@@ -74,7 +74,7 @@ export function writeElementClipboardImage(token: string, pngBase64: unknown): b
     if (decoded.isEmpty()) return false
     const normalizedPng = decoded.toPNG()
     if (!normalizedPng.length) return false
-    const html = `<img src="data:image/png;base64,${normalizedPng.toString('base64')}" data-chatoffice-slides-elements="${encodeURIComponent(token)}">`
+    const html = `<img src="data:image/png;base64,${normalizedPng.toString('base64')}" data-chaoffice-slides-elements="${encodeURIComponent(token)}">`
     if (!elementClipboardMarkerMatches(token)) return false
     clipboard.write({ image: decoded, html })
     return true

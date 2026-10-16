@@ -1,4 +1,4 @@
-import type { Block, TableModel } from '@chatoffice/docx-engine'
+import type { Block, TableModel } from '@chaoffice/docx-engine'
 import type { RevisionRange } from './revisions'
 
 /**

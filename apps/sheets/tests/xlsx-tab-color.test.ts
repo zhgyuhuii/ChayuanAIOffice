@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { applyTabColor } from '@chatoffice/xlsx-gateway/gateway/xlsx-tab-color'
+import { applyTabColor } from '@chaoffice/xlsx-gateway/gateway/xlsx-tab-color'
 
 const OPEN = '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
 const BARE = `${OPEN}<dimension ref="A1"/><sheetData/></worksheet>`

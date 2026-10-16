@@ -1,8 +1,8 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
-import { createRemoteFilesClient } from '@chatoffice/storage-adapter/remote-ipc'
+import { createRemoteFilesClient } from '@chaoffice/storage-adapter/remote-ipc'
 import type { IpcRendererEvent } from 'electron'
 import { VIEW_IMAGE_CHANNEL, type MarkdownImage, type PdfInternalLink } from '../shared/ipc'
-import type { AiPanelPrefs } from '@chatoffice/ui'
+import type { AiPanelPrefs } from '@chaoffice/ui'
 import type {
   AiModelSelection,
   AiSettingsV2,
@@ -18,8 +18,8 @@ import type {
   UiTheme,
   ZoteroRendererRequest,
 } from '../shared/ipc'
-import type { ProjectApi } from '@chatoffice/project-store'
-import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
+import type { ProjectApi } from '@chaoffice/project-store'
+import { installDropOpenBridge } from '@chaoffice/electron-utils/drop-open'
 
 /** P2 relay command pump: main → renderer. Buffers commands that race the
  *  renderer boot (the dock's first seed) until onRelayCommand subscribes. */
@@ -29,8 +29,8 @@ ipcRenderer.on('docs:relay-command', (_event, command: unknown) => {
   if (relayCommandHandler) relayCommandHandler(command)
   else if (relayCommandQueue.length < 50) relayCommandQueue.push(command)
 })
-import { installFilesPaneBridge } from '@chatoffice/electron-utils/files-pane-bridge'
-import { KB_CHANNELS } from '@chatoffice/ai-host/kb-channels'
+import { installFilesPaneBridge } from '@chaoffice/electron-utils/files-pane-bridge'
+import { KB_CHANNELS } from '@chaoffice/ai-host/kb-channels'
 
 const api: DesktopApi = {
   getLanguage: () => ipcRenderer.invoke('app:get-language'),
@@ -244,8 +244,8 @@ const api: DesktopApi = {
     ipcRenderer.invoke('ai:open-model-settings', section),
   aiStreamCancel: (requestId: string) => ipcRenderer.invoke('ai:stream-cancel', requestId),
   aiChaOfficeStatus: (withEmail?: boolean) =>
-    ipcRenderer.invoke('ai:chatoffice-status', withEmail),
-  aiChaOfficeLogin: () => ipcRenderer.invoke('ai:chatoffice-login'),
+    ipcRenderer.invoke('ai:chaoffice-status', withEmail),
+  aiChaOfficeLogin: () => ipcRenderer.invoke('ai:chaoffice-login'),
   aiLocalToolStatus: (vendorId: string) => ipcRenderer.invoke('ai:local-tool-status', vendorId),
   aiLocalToolInstall: (vendorId: string, onLine?: (line: string) => void) => {
     if (!onLine) return ipcRenderer.invoke('ai:local-tool-install', vendorId)
