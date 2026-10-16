@@ -947,10 +947,10 @@ export const HOME_CHANNELS = {
   chatSessionsSave: 'home:chat-sessions-save',
   systemFileSearch: 'home:system-file-search',
   // knowledge-base ask panel (upstream #1915/#1940; handlers live in the shell main)
-  kbList: 'kb:list',
-  kbSearch: 'kb:search',
-  kbRead: 'kb:read',
-  kbCreateDocument: 'kb:create-document',
+  kbList: 'home:kb-list',
+  kbSearch: 'home:kb-search',
+  kbRead: 'home:kb-read',
+  kbCreateDocument: 'home:kb-create-document',
 } as const
 
 export const PROJECT_CHANNELS = {

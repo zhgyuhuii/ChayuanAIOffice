@@ -5498,9 +5498,12 @@ function registerHomeIpc(): void {
   // files (docs wires these into its panel; see knowledge-base.ts). Path
   // arguments are validated against the starred set — a corpus file is the
   // only thing a knowledge tool may read.
-  ipcMain.handle('kb:list', (): unknown => listKnowledgeFiles(readStarredFiles()))
+  // LOCAL(R24): 上游 #1940 的首页语料问答通道原名 kb:*——与 ai-host 共享 chatop-kb 面
+  // （docs-main registerAiIpc 注册的 kb:discover/list/search/doc，全窗口类型唯一注册）
+  // 撞名会让 registerHomeIpc 在启动时抛 second handler 崩掉主进程（R24 事故），故改名 home:kb-*
+  ipcMain.handle(HOME_CHANNELS.kbList, (): unknown => listKnowledgeFiles(readStarredFiles()))
 
-  ipcMain.handle('kb:search', (_event, raw: unknown): unknown => {
+  ipcMain.handle(HOME_CHANNELS.kbSearch, (_event, raw: unknown): unknown => {
     const query = (raw && typeof raw === 'object' ? raw : {}) as { q?: unknown; limit?: unknown }
     const q = typeof query.q === 'string' ? query.q : ''
     const limitRaw = Number(query.limit)
@@ -5524,7 +5527,7 @@ function registerHomeIpc(): void {
     return hits
   })
 
-  ipcMain.handle('kb:read', async (_event, raw: unknown): Promise<unknown> => {
+  ipcMain.handle(HOME_CHANNELS.kbRead, async (_event, raw: unknown): Promise<unknown> => {
     const req = (raw && typeof raw === 'object' ? raw : {}) as {
       path?: unknown
       offset?: unknown
@@ -5538,7 +5541,7 @@ function registerHomeIpc(): void {
     return readKnowledgeFilePage(path, offset)
   })
 
-  ipcMain.handle('kb:create-document', async (_event, raw: unknown): Promise<unknown> => {
+  ipcMain.handle(HOME_CHANNELS.kbCreateDocument, async (_event, raw: unknown): Promise<unknown> => {
     const req = parseKbCreateRequest(raw)
     return createKnowledgeDocument(
       {

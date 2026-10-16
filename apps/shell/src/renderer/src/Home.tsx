@@ -3385,46 +3385,8 @@ export function Home() {
         {renderSideActions()}
 
         {/* 应用内图文用户手册（上游 help tab）：常驻入口，不随登录态隐藏 */}
-        <nav className="sidebar-nav">
-          <button className="nav-item" onClick={() => void window.chaOffice.openHelp()}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path
-                d="M6.05 6.4a2.06 2.06 0 1 1 2.9 1.88c-.58.29-.95.89-.95 1.54v.28"
-                stroke="currentColor"
-                strokeWidth="1.3"
-                strokeLinecap="round"
-              />
-              <circle cx="8" cy="12.6" r="0.85" fill="currentColor" />
-              <circle cx="8" cy="8" r="6.6" stroke="currentColor" strokeWidth="1.2" />
-            </svg>
-            <span className="nav-label">{t('navUserGuide')}</span>
-          </button>
-          {/* 上游 #1915/#1940 kb-ask 入口：问答面板接管主区，与云端项目互斥 */}
-          <button
-            className={`nav-item${askMode ? ' active' : ''}`}
-            onClick={() => {
-              setAskMode(!askMode)
-              setRowMenu(null)
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path
-                d="M14 10.5c0 .9-.7 1.6-1.6 1.6H5.4L2 14.5V3.6C2 2.7 2.7 2 3.6 2h8.8c.9 0 1.6.7 1.6 1.6z"
-                stroke="currentColor"
-                strokeWidth="1.3"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M5 6.2h6M5 8.6h4"
-                stroke="currentColor"
-                strokeWidth="1.3"
-                strokeLinecap="round"
-              />
-            </svg>
-            <span className="nav-label">{t('navAsk')}</span>
-          </button>
-        </nav>
-
+        {/* LOCAL(R24 用户裁定): 使用手册/AI 问答两个左上入口隐藏——功能保留（F1/openHelp、KbAskPanel 代码在位），
+            入口按需再放；跳转观察：askMode 恒 false，主区接管分支成为死分支 */}
         {loggedIn && (
           <nav className="sidebar-nav">
             <button
