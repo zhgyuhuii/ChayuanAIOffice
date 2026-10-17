@@ -11,9 +11,13 @@ import {
  * Settings sources: the three backends behind one interface.
  * - file: desktop ai-settings.json and the Docker BFF's server-side config
  * - harness: dsh's llm-pi-ai namespace via loopback RPC (true fusion with
- *   chatop — both apps read/write the same providers), with office-side
- *   selection state (currentModel/imageModel/chaoffice toggle) kept in a local
- *   sidecar file so we never touch chatop's own model picker.
+ *   chatop — both apps read/write the same providers), with office-side state
+ *   (currentModel/imageModel/chaoffice toggle) kept in a local sidecar file.
+ *   With rpc present (the dsh plugin form) the current-model pick is linked:
+ *   writes propagate it into dsh's agent-default-model (chatop's own picker
+ *   reads/writes the same ns), and reads honor it as the shared truth —
+ *   whichever side switched last wins on both. Without rpc (the desktop form)
+ *   the fusion is read-only and office selections stay authoritative.
  *
  * Node I/O is injected so this package stays importable from renderers.
  */
@@ -200,14 +204,51 @@ function profileFromHarness(route: string, hp: HarnessProviderProfile): AiProvid
   }
 }
 
+/** an office selection the harness can express — a pick whose backing profile
+ *  is a live chatop-* route in dsh (or the local model service). Anything else
+ *  (custom BYOK profiles also carry a vendorId, but no dsh route backs them)
+ *  is an explicit office-side choice the harness default never stomps. */
+function officePickRepresentable(
+  pick: AiSettingsV2['currentModel'] | undefined,
+  profiles: AiProviderProfile[],
+  harnessRouteIds: Set<string>,
+): boolean {
+  if (!pick) return false
+  const backing = profiles.find((p) => p.id === pick.profileId)
+  if (!backing) return false
+  if (backing.id === CHATOP_LOCAL_PROFILE_ID) return true
+  return backing.auth === 'api-key' && harnessRouteIds.has(backing.vendorId ?? backing.id)
+}
+
+/** dsh's agent-default-model patch for an office selection. Only picks backed
+ *  by a live harness route (or the local service) produce one; the
+ *  chatop-local form stores the bare model id (the read side re-adds the
+ *  local/ prefix), and a vendor pick must be a model the backing route
+ *  actually serves — dsh's agent would otherwise adopt a default its provider
+ *  cannot answer. */
+export function harnessDefaultPatch(
+  pick: AiSettingsV2['currentModel'] | undefined,
+  profiles: AiProviderProfile[],
+  harnessRouteIds: Set<string>,
+): { provider: string; model: string } | null {
+  if (!pick) return null
+  const backing = profiles.find((p) => p.id === pick.profileId)
+  if (!backing) return null
+  if (backing.id === CHATOP_LOCAL_PROFILE_ID)
+    return { provider: 'chatop-local', model: pick.modelId.replace(/^local\//, '') }
+  const vendorId = backing.vendorId ?? backing.id
+  if (backing.auth !== 'api-key' || !harnessRouteIds.has(vendorId)) return null
+  if (!backing.models.some((m) => m.id === pick.modelId)) return null
+  return { provider: harnessRouteFor(vendorId), model: pick.modelId }
+}
+
 export function profileToHarnessMutation(
   profile: AiProviderProfile,
   prevRef?: string,
 ): {
   op: unknown
   keyRef: string
-} {
-  const vendorId = profile.vendorId ?? profile.id
+} {  const vendorId = profile.vendorId ?? profile.id
   // the renderer round-trips profiles without apiKeyRef (secrets are
   // server-side); keep the route's existing reference so a mere settings save
   // never orphans the credential the route points at
@@ -288,39 +329,58 @@ export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
     return { profileId: profile.id, modelId: pick.model }
   }
 
-  /** default-model chain when office has no recorded selection:
-   *  1. a harness default that points at the local service (chatop-local) wins
-   *  2. any running local chat model (the harness prewarmed/loaded it — the
-   *     most likely intent for a desktop that just started one)
-   *  3. a vendor-backed harness default (the original adoption rule)
-   *  4. the first model of the merged list */
+  /** selection chain, split by mode:
+   *  - unlinked (desktop, no rpc): office selections stay authoritative — the
+   *    office side cannot write the harness's own default back, so honoring a
+   *    diverging dsh default would silently revert every office-side switch.
+   *    Order: office pick → local default pick → running local → vendor
+   *    harness default → first model (the historical chain).
+   *  - linked (dsh plugin form, rpc present): dsh's agent-default-model is the
+   *    shared source of truth — write() propagates office picks into it, so
+   *    whichever UI switched last wins on every read. Order: office pick that
+   *    the harness cannot represent (explicit custom choice) → harness default
+   *    pick (local form, then vendor form) → office representable pick →
+   *    running local → first model. */
   const defaultSelection = (
     office: AiSettingsV2,
     local: ChatopLocalSource | null,
     vendorProfiles: AiProviderProfile[],
     defaultPick: { provider: string; model: string } | null,
     profiles: AiProviderProfile[],
+    linked: boolean,
   ): AiSettingsV2['currentModel'] | undefined => {
-    if (office.currentModel) return office.currentModel
+    const harnessRouteIds = new Set(vendorProfiles.map((p) => p.vendorId ?? p.id))
     if (
-      local &&
-      defaultPick &&
-      (defaultPick.provider === CHATOP_LOCAL_PROFILE_ID || defaultPick.provider === 'local')
-    ) {
+      office.currentModel &&
+      !officePickRepresentable(office.currentModel, profiles, harnessRouteIds)
+    )
+      return office.currentModel
+    const localDefaultPick = (): AiSettingsV2['currentModel'] | undefined => {
+      if (
+        !local ||
+        !defaultPick ||
+        (defaultPick.provider !== CHATOP_LOCAL_PROFILE_ID && defaultPick.provider !== 'local')
+      )
+        return undefined
       const want = defaultPick.model.startsWith('local/')
         ? defaultPick.model
         : `local/${defaultPick.model}`
-      if (local.profile.models.some((m) => m.id === want)) {
+      if (local.profile.models.some((m) => m.id === want))
         return { profileId: CHATOP_LOCAL_PROFILE_ID, modelId: want }
-      }
+      return undefined
     }
-    if (local?.runningChatId) {
+    if (!linked && office.currentModel) return office.currentModel
+    const fromLocalDefault = localDefaultPick()
+    if (fromLocalDefault) return fromLocalDefault
+    if (!linked && local?.runningChatId)
       return { profileId: CHATOP_LOCAL_PROFILE_ID, modelId: `local/${local.runningChatId}` }
-    }
     if (defaultPick) {
       const adopted = adoptHarnessDefault(vendorProfiles, defaultPick)
       if (adopted) return adopted
     }
+    if (office.currentModel) return office.currentModel
+    if (local?.runningChatId)
+      return { profileId: CHATOP_LOCAL_PROFILE_ID, modelId: `local/${local.runningChatId}` }
     const first = profiles.find((p) => p.models.length > 0)
     return first ? { profileId: first.id, modelId: first.models[0]!.id } : undefined
   }
@@ -365,7 +425,14 @@ export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
         ...vendorProfiles,
         ...locals,
       ]
-      const currentModel = defaultSelection(office, local, vendorProfiles, defaultPick, profiles)
+      const currentModel = defaultSelection(
+        office,
+        local,
+        vendorProfiles,
+        defaultPick,
+        profiles,
+        !!rpc,
+      )
       return { ...office, profiles, ...(currentModel ? { currentModel } : {}) }
     },
     async write(next) {
@@ -450,6 +517,23 @@ export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
         }
       }
       if (ops.length) await rpc('settings.mutate', { ns: 'llm-pi-ai', ops })
+      // linked default model: propagate a harness-backed office pick into dsh's
+      // agent-default-model (the same ns chatop's own picker and the harness
+      // settings UI write via settings.update) so the harness perceives office
+      // switches; an unchanged value is skipped to avoid churning dsh revisions.
+      // Routes added in this same save count as backing (new provider + pick).
+      const patch = harnessDefaultPatch(
+        next.currentModel,
+        next.profiles,
+        new Set([...harnessVendorIds, ...wantedByVendor.keys()]),
+      )
+      if (patch) {
+        const dshPick = await readDshFile('settings.yaml')
+          .then(parseHarnessDefaultModel)
+          .catch(() => null)
+        if (!dshPick || dshPick.provider !== patch.provider || dshPick.model !== patch.model)
+          await rpc('settings.update', { ns: 'agent-default-model', patch })
+      }
       await officeStateSource.write(office)
     },
   }

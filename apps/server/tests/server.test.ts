@@ -326,8 +326,10 @@ describe('AI harness fusion: chatop-models local models', () => {
       baseUrl: 'http://127.0.0.1:52581/v1',
       models: [{ id: 'local/qwen3-4b', type: 'chat', running: true }],
     })
-    // running local chat model outranks the vendor-backed harness default
-    expect(body.currentModel).toEqual({ profileId: 'chatop-local', modelId: 'local/qwen3-4b' })
+    // linked default model: the recorded harness default (chatop-moonshot)
+    // outranks a merely running local model — office writes propagate into
+    // agent-default-model, so the recorded pick is the shared truth
+    expect(body.currentModel).toEqual({ profileId: 'moonshot', modelId: 'kimi-k3' })
     expect(body.profiles.some((p: { id: string }) => p.id === 'moonshot')).toBe(true)
   })
 })

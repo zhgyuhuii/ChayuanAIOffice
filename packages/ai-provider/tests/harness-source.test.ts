@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   createHarnessSource,
+  harnessDefaultPatch,
   parseHarnessCredentials,
   parseHarnessDefaultModel,
   profileToHarnessMutation,
@@ -46,21 +47,49 @@ const HARNESS_YAML = [
   '  model: glm-5.2',
 ].join('\n')
 
+/** yaml with the agent-default-model block swapped (what the stateful rpc mock
+ *  serves after office propagates a pick via settings.update) */
+function yamlWithDefault(provider: string, model: string): string {
+  const lines = HARNESS_YAML.split('\n')
+  const at = lines.indexOf('agent-default-model:')
+  return [
+    ...(at === -1 ? lines : lines.slice(0, at)),
+    'agent-default-model:',
+    `  provider: ${provider}`,
+    `  model: ${model}`,
+  ].join('\n')
+}
+
 const CREDENTIALS_YAML = ['version: 1', 'refs:', '  CHATOP_ZHIPU_API_KEY: sk-zp-real'].join('\n')
 
-function makeSource(officeYaml?: { currentModel?: AiSettingsV2['currentModel'] }) {
+function makeSource(
+  officeYaml?: { currentModel?: AiSettingsV2['currentModel'] },
+  opts: { rpc?: boolean } = {},
+) {
   const rpcCalls: Array<{ method: string; payload: unknown }> = []
+  // stateful yaml: a propagated agent-default-model write is what the next
+  // read sees in production (dsh persists settings.update immediately)
+  let yaml = HARNESS_YAML
   let officeState: AiSettingsV2 = {
     version: 2,
     profiles: [],
     ...(officeYaml?.currentModel ? { currentModel: officeYaml.currentModel } : {}),
   }
   const source = createHarnessSource({
-    rpc: async (method, payload) => {
-      rpcCalls.push({ method, payload })
-      return {}
-    },
-    readDshFile: async (path) => (path === 'settings.yaml' ? HARNESS_YAML : CREDENTIALS_YAML),
+    ...(opts.rpc === false
+      ? {}
+      : {
+          rpc: async (method: string, payload: unknown) => {
+            rpcCalls.push({ method, payload })
+            if (method === 'settings.update') {
+              const p = payload as { ns?: string; patch?: { provider?: string; model?: string } }
+              if (p.ns === 'agent-default-model' && p.patch?.provider)
+                yaml = yamlWithDefault(p.patch.provider, p.patch.model ?? '')
+            }
+            return {}
+          },
+        }),
+    readDshFile: async (path) => (path === 'settings.yaml' ? yaml : CREDENTIALS_YAML),
     officeStateSource: {
       read: async () => officeState,
       write: async (next) => {
@@ -68,7 +97,7 @@ function makeSource(officeYaml?: { currentModel?: AiSettingsV2['currentModel'] }
       },
     },
   })
-  return { source, rpcCalls, officeStateGetter: () => officeState }
+  return { source, rpcCalls, officeStateGetter: () => officeState, yamlGetter: () => yaml }
 }
 
 describe('parseHarnessDefaultModel', () => {
@@ -108,14 +137,30 @@ describe('createHarnessSource read', () => {
     })
   })
 
-  it('adopts the harness default model on first read, office selection wins later', async () => {
+  it('linked read: the harness default is authoritative over representable office picks', async () => {
     const fresh = makeSource()
     const s1 = await fresh.source.read()
     expect(s1.currentModel).toEqual({ profileId: 'zhipu', modelId: 'glm-5.2' })
 
-    const chosen = makeSource({ currentModel: { profileId: 'ollama', modelId: 'llama3' } })
-    const s2 = await chosen.source.read()
-    expect(s2.currentModel).toEqual({ profileId: 'ollama', modelId: 'llama3' })
+    // a representable office pick (a chatop- route) loses to the harness
+    // default: write() propagates office picks into agent-default-model, so a
+    // divergence means the harness side switched last
+    const representable = makeSource({ currentModel: { profileId: 'ollama', modelId: 'llama3' } })
+    const s2 = await representable.source.read()
+    expect(s2.currentModel).toEqual({ profileId: 'zhipu', modelId: 'glm-5.2' })
+
+    // desktop (no rpc): the office selection stays authoritative
+    const desktop = makeSource({ currentModel: { profileId: 'ollama', modelId: 'llama3' } }, {
+      rpc: false,
+    })
+    const s3 = await desktop.source.read()
+    expect(s3.currentModel).toEqual({ profileId: 'ollama', modelId: 'llama3' })
+  })
+
+  it('linked read: a custom office pick the harness cannot represent still wins', async () => {
+    const custom = makeSource({ currentModel: { profileId: 'custom-x', modelId: 'm' } })
+    const s = await custom.source.read()
+    expect(s.currentModel).toEqual({ profileId: 'custom-x', modelId: 'm' })
   })
 })
 
@@ -210,6 +255,44 @@ describe('createHarnessSource write', () => {
     const cred = rpcCalls.find((c) => c.method === 'credentials.set')!
     expect(cred.payload).toMatchObject({ ref: 'CHATOP_ZHIPU_API_KEY', value: 'sk-fresh' })
   })
+
+  it('propagates a representable selection into agent-default-model; unchanged values are skipped', async () => {
+    const { source, rpcCalls } = makeSource()
+    const current = await source.read()
+    // saving the view unchanged: dsh already carries zhipu/glm-5.2 → no update
+    await source.write(current)
+    expect(rpcCalls.some((c) => c.method === 'settings.update')).toBe(false)
+
+    // switching to ollama/llama3 propagates through the chatop- route form
+    await source.write({ ...current, currentModel: { profileId: 'ollama', modelId: 'llama3' } })
+    const update = rpcCalls.find((c) => c.method === 'settings.update')!
+    expect(update.payload).toEqual({
+      ns: 'agent-default-model',
+      patch: { provider: 'chatop-ollama', model: 'llama3' },
+    })
+  })
+
+  it('a selection the harness cannot represent never touches agent-default-model', async () => {
+    const { source, rpcCalls } = makeSource()
+    const current = await source.read()
+    await source.write({
+      ...current,
+      profiles: [
+        ...current.profiles,
+        {
+          id: 'custom-x',
+          displayName: 'x',
+          protocol: 'openai-completions',
+          baseUrl: 'https://x.example.com',
+          auth: 'api-key',
+          enabled: true,
+          models: [{ id: 'm' }],
+        },
+      ],
+      currentModel: { profileId: 'custom-x', modelId: 'm' },
+    })
+    expect(rpcCalls.some((c) => c.method === 'settings.update')).toBe(false)
+  })
 })
 
 describe('profileToHarnessMutation', () => {
@@ -229,6 +312,72 @@ describe('profileToHarnessMutation', () => {
     )
     expect(profileToHarnessMutation(base, 'PREV_REF').keyRef).toBe('PREV_REF')
     expect(profileToHarnessMutation(base).keyRef).toBe('CHATOP_ZHIPU_API_KEY')
+  })
+})
+
+describe('harnessDefaultPatch', () => {
+  const profiles = [
+    {
+      id: 'zhipu',
+      vendorId: 'zhipu',
+      displayName: '智谱开放平台',
+      protocol: 'openai-completions' as const,
+      baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
+      auth: 'api-key' as const,
+      enabled: true,
+      models: [{ id: 'glm-5.2' }],
+    },
+    {
+      id: 'chatop-local',
+      displayName: '本地模型',
+      protocol: 'openai-completions' as const,
+      baseUrl: 'http://127.0.0.1:52581/v1',
+      auth: 'api-key' as const,
+      enabled: true,
+      models: [{ id: 'local/qwen3-4b' }],
+    },
+    {
+      id: 'custom-x',
+      displayName: '自定义',
+      protocol: 'openai-completions' as const,
+      baseUrl: 'https://x.example.com',
+      auth: 'api-key' as const,
+      enabled: true,
+      models: [{ id: 'm' }],
+    },
+    {
+      // office-local BYOK profiles carry a vendorId too — without a dsh route
+      // behind it the pick is still not harness-expressible
+      id: 'custom-muwpb51k',
+      vendorId: 'custom-muwpb51k',
+      displayName: '察元本地模型',
+      protocol: 'openai-completions' as const,
+      baseUrl: 'http://127.0.0.1:52581/v1',
+      auth: 'api-key' as const,
+      enabled: true,
+      models: [{ id: 'local/qwen3-4b' }],
+    },
+  ]
+  const routes = new Set(['zhipu'])
+  it('maps vendor picks to chatop- routes and local picks to the bare-id local form', () => {
+    expect(harnessDefaultPatch({ profileId: 'zhipu', modelId: 'glm-5.2' }, profiles, routes)).toEqual(
+      {
+        provider: 'chatop-zhipu',
+        model: 'glm-5.2',
+      },
+    )
+    expect(
+      harnessDefaultPatch({ profileId: 'chatop-local', modelId: 'local/qwen3-4b' }, profiles, routes),
+    ).toEqual({ provider: 'chatop-local', model: 'qwen3-4b' })
+  })
+  it('returns null for custom profiles, unknown picks, and models the route does not serve', () => {
+    expect(harnessDefaultPatch({ profileId: 'custom-x', modelId: 'm' }, profiles, routes)).toBeNull()
+    expect(
+      harnessDefaultPatch({ profileId: 'custom-muwpb51k', modelId: 'local/qwen3-4b' }, profiles, routes),
+    ).toBeNull()
+    expect(harnessDefaultPatch({ profileId: 'nope', modelId: 'm' }, profiles, routes)).toBeNull()
+    expect(harnessDefaultPatch(undefined, profiles, routes)).toBeNull()
+    expect(harnessDefaultPatch({ profileId: 'zhipu', modelId: 'not-served' }, profiles, routes)).toBeNull()
   })
 })
 
@@ -351,8 +500,10 @@ function makeLocalSource(
   files: Record<string, string>,
   office: { currentModel?: AiSettingsV2['currentModel'] } = {},
   yaml = HARNESS_YAML,
+  opts: { rpc?: boolean } = {},
 ) {
   const rpcCalls: Array<{ method: string; payload: unknown }> = []
+  let liveYaml = yaml
   let officeState: AiSettingsV2 = {
     version: 2,
     profiles: [],
@@ -360,15 +511,24 @@ function makeLocalSource(
   }
   const read = (path: string): string => {
     if (path in files) return files[path] as string
-    if (path === 'settings.yaml') return yaml
+    if (path === 'settings.yaml') return liveYaml
     if (path === '.credentials.yaml') return CREDENTIALS_YAML
     throw new Error('missing')
   }
   const source = createHarnessSource({
-    rpc: async (method, payload) => {
-      rpcCalls.push({ method, payload })
-      return {}
-    },
+    ...(opts.rpc === false
+      ? {}
+      : {
+          rpc: async (method: string, payload: unknown) => {
+            rpcCalls.push({ method, payload })
+            if (method === 'settings.update') {
+              const p = payload as { ns?: string; patch?: { provider?: string; model?: string } }
+              if (p.ns === 'agent-default-model' && p.patch?.provider)
+                liveYaml = yamlWithDefault(p.patch.provider, p.patch.model ?? '')
+            }
+            return {}
+          },
+        }),
     readDshFile: async (path: string) => read(path),
     officeStateSource: {
       read: async () => officeState,
@@ -381,9 +541,10 @@ function makeLocalSource(
 }
 
 describe('createHarnessSource × chatop-local', () => {
-  it('injects the local group first; running chat model wins the default over a vendor harness default', async () => {
-    // HARNESS_YAML carries agent-default-model chatop-zhipu/glm-5.2 — the
-    // running local model outranks it per the desktop's intent
+  it('local group first; linked: the vendor harness default outranks a merely running local model', async () => {
+    // HARNESS_YAML carries agent-default-model chatop-zhipu/glm-5.2 — linked
+    // mode honors the recorded default; the running local model is only a
+    // cold-start fallback, not an override
     const { source } = makeLocalSource({
       'storages/chatop-models/state.json': LOCAL_STATE_RUNNING,
       'storages/chatop-models/registry.json': LOCAL_REGISTRY,
@@ -394,9 +555,23 @@ describe('createHarnessSource × chatop-local', () => {
       baseUrl: 'http://127.0.0.1:52581/v1',
       models: [{ id: 'local/qwen3-4b', type: 'chat', running: true }],
     })
-    expect(s.currentModel).toEqual({ profileId: 'chatop-local', modelId: 'local/qwen3-4b' })
+    expect(s.currentModel).toEqual({ profileId: 'zhipu', modelId: 'glm-5.2' })
     // vendor groups still follow
     expect(s.profiles.map((p) => p.id).slice(1)).toEqual(['zhipu', 'ollama', 'custom-relay'])
+  })
+
+  it('desktop (no rpc): a running local chat model still wins the vendor default', async () => {
+    const { source } = makeLocalSource(
+      {
+        'storages/chatop-models/state.json': LOCAL_STATE_RUNNING,
+        'storages/chatop-models/registry.json': LOCAL_REGISTRY,
+      },
+      {},
+      HARNESS_YAML,
+      { rpc: false },
+    )
+    const s = await source.read()
+    expect(s.currentModel).toEqual({ profileId: 'chatop-local', modelId: 'local/qwen3-4b' })
   })
 
   it('a harness default pointing at chatop-local maps to the lazy-load entry even when stopped', async () => {
@@ -463,7 +638,13 @@ describe('createHarnessSource × chatop-local', () => {
       profileId: 'chatop-local',
       modelId: 'local/qwen3-4b',
     })
-    // and the next read keeps it (office pick wins over the running default)
+    // and the next read keeps it: the write propagated the pick into dsh's
+    // agent-default-model, which the linked read then honors
+    const propagated = rpcCalls.find((c) => c.method === 'settings.update')!
+    expect(propagated.payload).toEqual({
+      ns: 'agent-default-model',
+      patch: { provider: 'chatop-local', model: 'qwen3-4b' },
+    })
     const again = await source.read()
     expect(again.currentModel).toEqual({ profileId: 'chatop-local', modelId: 'local/qwen3-4b' })
   })

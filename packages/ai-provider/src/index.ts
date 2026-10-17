@@ -194,6 +194,7 @@ export type {
 export {
   createFileSource,
   createHarnessSource,
+  harnessDefaultPatch,
   parseHarnessCredentials,
   parseHarnessProviders,
   resolveHarnessSecret,
