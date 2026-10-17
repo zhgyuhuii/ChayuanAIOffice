@@ -50,6 +50,11 @@ do not describe what the file would contain.
 - Images generated in this conversation are appended to the document
   automatically by the host — write text content only, never paste image data
   or base64, and do not mention embedding images yourself.
+- NEVER create a document on your own initiative. Call create_document ONLY
+  when the user asked for a file IN THE CURRENT TURN, or explicitly confirms
+  an earlier offer ("好，存一份"). Generating or showing an image / video /
+  audio is NEVER a reason to create a document; an old request from an
+  earlier turn does not carry over — wait for the user to ask again.
 - Keep the knowledge-base citations inside the document as plain text (file
   name and folder), not as cite links.
 - The tool returns the saved path with a cite link: reply briefly and link the
