@@ -479,7 +479,7 @@ async function analyzeMediaOpenAi(
   const resp = await aiFetch(endpointUrl(openAiBase(provider, config), '/chat/completions'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...bearer(config) },
-    body: JSON.stringify({ model, messages: [{ role: 'user', content: parts }] }),
+    body: JSON.stringify({ model, messages: [{ role: 'user', content: parts }], stream: false }),
     signal,
   })
   if (!resp.ok) return failFrom('Media analysis failed:', resp)

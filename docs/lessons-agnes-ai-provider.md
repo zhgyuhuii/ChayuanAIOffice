@@ -2,6 +2,25 @@
 
 > 2026-09-15。现象：本项目设置页配置 `https://api.agnes-ai.cn/v1` + Key 后无法获取模型列表/调用模型，而隔壁 chayuan-harness 一切正常。本文记录根因、修复与可复用的排查方法。
 
+## 续记（2026-10-17）：`stream: null` 整单 400（bool_type）复发与本仓库加固
+
+现象：agnes 报 `HTTP 400`，内层 `litellm.BadRequestError: OpenAIException - 1 validation error for ChatCompletionRequest / stream / Input should be a valid boolean [type=bool_type, input_value=None]`，外层 `upstream_error`。
+
+1. **因果链（历史实锤，2026-10-10 chatop-dev-data 剪贴板/room 留档）**：部分客户端把未设的 bool/str 槽序列化成 JSON `null`（Go `*bool` 空槽），agnes（new-api 型网关）把 `stream: null` 原样转发给 LiteLLM/pydantic 严格上游 → 整单 400。同批留档还有「9 validation errors」变体：Responses 形态部件（`output_text`）混进 chat messages。chayuan-harness 的 chatop-models 代理已于 10-11（ad1f5bf）修复：**顶层 null 视同未传剥掉 + `stream: chatBody.stream === true` 恒收布尔 + toWireMessages 归一消息部件**——三条口径即「历史处理方法」。
+2. **本仓库缺口**：office 侧四个 one-shot 直连 chat/completions 的 body 不带 `stream` 字段（`chatOpenAiCompatible`、`understand.ts` 媒体理解、`media-protocols.ts` 媒体分析、`asr.ts` qwen3-asr）。显式流式路径一直发 `stream: true` 没事；one-shot 缺省会中转网关「缺失布尔 → null」的二次序列化雷。已按历史方法全部补 `stream: false`，dsh-plugin/embedded 旧拷贝同步打补丁（正式重打走 `npm run package:embedded`）。
+3. **回归测试**：`tests/chat.test.ts`（one-shot body `stream:false`）、`tests/understand.test.ts`（新文件，同断言 + image_url 部件形状）、`tests/minimax-capabilities.test.ts`（期望 body 补字段）。
+4. **排查备忘**：报错前缀能定位来源——office ai-provider 是 `HTTP <status>: <body>`（原文透传），harness 代理是 `vendor <id> <status>: ...`（重包装）；本机留档位置 `chatop-dev-data/.../os-data/clipboard_history.json` 与 `chatop-share/room.json`（用户复制的报错都会留在这里，带时间戳）。另：生产实例插件与仓库构建 MD5 一致（修复已在位），agnes 各 live 模型 10-17 实测 chat 面对缺失/null stream 均宽容（pro 系无渠道），但 pro 等通道仍可能是严格 pydantic 上游——显式布尔是不变量，不赌网关宽容。
+5. **门禁**：ai-provider 582 用例全绿 + tsc 0。
+
+## 续记（2026-10-17 下午）：打包后「仍报 stream 400」真凶——档案协议误配 openai-responses，agnes `/v1/responses` 转换器恒发 `stream:null`
+
+现象：1.0.6 全平台包（asar/模块/cli 字节级验证均带上述 `stream:false` 修复）装上后，agnes-3.0-flash 仍报同一 400。用户给 key 实弹排查：
+
+1. **排除仓库**：直连 `POST /v1/chat/completions` 五种形态全 200——`stream:false`、缺省、`stream:true`+`stream_options`、显式 `stream:null`、带 tools。网关当前对 null 都宽容，本仓库不可能产出该错。
+2. **复现**：`POST /v1/responses`（Responses 形态）→ 逐字节复现用户报错；显式 `stream:true` 也 400 同错。即 agnes 的 Responses→Chat 转换器**无条件丢弃 stream**，客户端无解；该端点对 chat 模型是死的。
+3. **根因**：`ai-settings.json` 里用户自建 agnes 档案 `protocol: "openai-responses"`（设置页默认本是 `openai-completions`，ModelSettingsPage.tsx:193，系手改或配置接管带入）。应用因此打 `/responses`。**修复**：档案协议改回 OpenAI Chat Completions，或直接用内置「爱思 Agnes AI」厂商条目（catalog `api:'openai-completions'` + 预设）。
+4. **方法论**：`HTTP <status>:` 前缀只证明「office ai-provider 传的话」，不证明「office 造的错」——先看档案的 protocol/baseUrl 实际指向哪条端点路径，再谈网关行为；报错签名（`ChatCompletionRequest`+`stream bool_type`）与端点路径是两个独立维度。本仓库 `stream` 显式布尔修复仍是不变量，保留。
+
 ## 续记（2026-10-09）：视频模型「服务不可用」误判——videojob.ts 三处契约错配
 
 现象：用户侧实测生图/视频模型都能用，但走本仓库 `generateVideoWithModel` 的视频生成必然失败，曾被误判为「视频生成模型服务不可用」。根因是 `packages/ai-provider/src/videojob.ts` 与 Agnes 网关的三处契约错配：

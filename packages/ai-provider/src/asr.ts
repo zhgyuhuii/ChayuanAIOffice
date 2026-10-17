@@ -212,6 +212,7 @@ async function transcribeDashscope(
         { role: 'system', content: [{ type: 'text', text: input.prompt ?? '' }] },
         { role: 'user', content: [{ type: 'audio', audio: input.sourceUrl }] },
       ],
+      stream: false,
     }),
     signal: withTimeout(signal, ASR_TIMEOUT_MS),
   })

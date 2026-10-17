@@ -1,5 +1,5 @@
 /**
- * chatoffice — client 半：向察元桌面（chatop-shell）注册「ChatOffice」应用。
+ * chaoffice — client 半：向察元桌面（chatop-shell）注册「察元AI Office」应用。
  *
  * chrome:'self'（WPS 式一行窗口，共识 v2.3）：应用自绘窗口控制——TabBar 在
  * 应用 iframe 顶部一行，窗口按钮叠加在该行两端的空白处，与标签同行：
@@ -27,9 +27,9 @@ const appLabel = () => {
 }
 
 const STATUS_TEXT = {
-  starting: 'ChatOffice 引擎启动中…',
-  missing: 'ChatOffice sidecar 未打包（在 chatoffice 仓库运行 npm run package:plugin）',
-  failed: 'ChatOffice 引擎启动失败（详见 dsh 日志）',
+  starting: '察元AI Office 引擎启动中…',
+  missing: '察元AI Office sidecar 未打包（在源仓运行 npm run package:plugin）',
+  failed: '察元AI Office 引擎启动失败（详见 dsh 日志）',
 }
 
 const isMac = () => /mac/i.test(navigator.platform || '')
@@ -99,7 +99,7 @@ function ChatOfficeApp({ windowId, maximized }) {
     let cancelled = false
     const poll = async () => {
       try {
-        const res = await fetch('/api/chatoffice/status')
+        const res = await fetch('/api/chaoffice/status')
         const doc = await res.json()
         if (cancelled) return
         if (doc.appOrigin) {
@@ -180,7 +180,7 @@ function tryRegister() {
   const shell = typeof window !== 'undefined' ? window.__chatop_shell__ : null
   if (shell && typeof shell.registerDesktopApp === 'function') {
     shell.registerDesktopApp({
-      id: 'chatoffice',
+      id: 'chaoffice',
       label: appLabel(),
       icon: ICON_URI,
       order: 52,

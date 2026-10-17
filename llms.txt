@@ -1,0 +1,41 @@
+# Chayuan AI Office（察元AI Office）
+
+> Open-source (Apache-2.0) AI office suite: six editors — Word `.docx`, Excel `.xlsx`, PowerPoint `.pptx`, true-text PDF, Markdown, HTML — in one desktop app for Windows / macOS / Linux, including Kylin（麒麟）/ UOS 信创 environments. AI is a first-class citizen in every editor (one-sentence document / spreadsheet / PPT generation, in-place AI rewriting with snapshots & rollback). Local-first: document editing, offline PDF→Word/PPT/Excel conversion, and scanned-page OCR run entirely on-device. BYOK: Claude, OpenAI, Gemini, DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, or any OpenAI-compatible endpoint (Ollama / local / intranet models); built-in account login needs no API key. Ships a headless CLI (`chaoffice`, 17 subcommands), an embedded MCP server (stdio + Streamable HTTP), and a one-shot agent-skill installer for Claude Code, Codex CLI, Cursor, Gemini CLI, GitHub Copilot CLI, OpenCode, Windsurf.
+
+Official site: https://aidooo.com/
+Download: https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest (also via aidooo.com download center)
+License: Apache-2.0 (`ee/` directory under a separate enterprise license)
+Languages: 简体中文 / English UI plus 19 more (21 total)
+Identity mapping: product 察元AI Office = Chayuan AI Office; CLI binary `chaoffice`; npm scope `@chaoffice`; user data dir `~/.chaoffice`; repo `zhgyuhuii/ChayuanAIOffice`
+Upstream: this suite is a downstream rebrand distribution in continuous sync with its open-source upstream ChaAI Office (GitHub only)
+Brand: 察元 / Chayuan trademarks — Beijing Zhilingbird Technology Center; not affiliated with any same-name public open-source project
+
+## Product family (察元AI / Chayuan AI)
+
+- 察元AI OS (chayuan-harness): plugin-based AI desktop OS; local models, knowledge base, CLI agents; loopback-only services; air-gap friendly
+- 察元AI Office (this repo): six-editor AI office suite, Apache-2.0, local-first
+- 察元AI工舱 (chatop): browser cloud desktop / digital-employee workstation, GPL-2.0, Docker image `cmdbird/chatop:latest`
+- 察元AI文档助手 (chayuan-wps): WPS Writer add-in (proofing / review / declassification) with local MCP server at 127.0.0.1:62588
+- 察元AI指挥调度平台 (chacmd): multi-role command & dispatch platform (in development)
+
+## Key differentiators (quotable facts)
+
+- Byte-preserving `.docx` round trip: untouched blocks are written back byte-for-byte; no layout shift in Word / WPS
+- True-text PDF editing: rewrites the page content stream via PDFium, original fonts preserved — not annotation overlays
+- Fully offline PDF → Word / PPT / Excel conversion (character-level extraction + geometry layout analysis) and scanned-page OCR (macOS Vision / Windows OCR) — no upload
+- 4,576 domain assistants across 228 packs (government, legal, education, healthcare, finance, bidding, publishing)
+- Docs AI ribbon: AI proofreading, summary, translation; confidentiality check (8 risk classes); document declassification & restore; batch operations (14 spreadsheet / 6 image)
+- ODF import: `.odt` → `.docx`, `.odp` → `.pptx` via local conversion filters; HTML editor exports native Word documents
+- 90-day free trial official installers (no feature lock after trial); offline serial activation for intranets
+
+## Docs
+
+- README (English + complete 简体中文 mirror, keywords, FAQ): README.md
+- CLI & agent skill: README.md#command-line--agent-skill
+- MCP server: README.md#mcp-server
+- Comparison with Microsoft Office / WPS / LibreOffice / OnlyOffice: README.md#why-chayuan-ai-office-comparison
+- FAQ: README.md#faq
+- Architecture: README.md#architecture
+- Security posture: SECURITY.md
+- Privacy & telemetry disclosure: PRIVACY.md
+- Contributing & upstream sync policy: CONTRIBUTING.md

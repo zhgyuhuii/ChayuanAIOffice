@@ -66,6 +66,7 @@ describe('MiniMax input capabilities', () => {
             ],
           },
         ],
+        stream: false,
       })
     },
   )

@@ -103,6 +103,24 @@ describe('chatForProvider', () => {
     )
   })
 
+  it('one-shot wire body states stream:false — strict gateways 400 on null stream', async () => {
+    // Agnes's LiteLLM upstream rejects "stream": null with a pydantic 400, and
+    // relaying gateways re-serialize an absent bool as null — the one-shot body
+    // must carry an explicit boolean (same invariant the harness proxy applies).
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(jsonResponse({ choices: [{ message: { content: 'ok' } }] }))
+    vi.stubGlobal('fetch', fetchMock)
+    await chatForProvider(
+      'custom',
+      { apiKey: 'k', model: 'm', baseUrl: 'https://my-endpoint.example.com/v1' },
+      'sys',
+      'hi',
+    )
+    const body = JSON.parse(fetchMock.mock.calls[0]![1].body as string)
+    expect(body.stream).toBe(false)
+  })
+
   it('custom: rejects without a base URL, without calling fetch', async () => {
     const fetchMock = vi.fn()
     vi.stubGlobal('fetch', fetchMock)

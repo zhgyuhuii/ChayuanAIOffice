@@ -63,6 +63,9 @@ async function understandOpenAiCompatible(
     body: JSON.stringify({
       model: call.model,
       messages: [{ role: 'user', content: parts }],
+      // strict pydantic gateways 400 on a null stream; relays re-serialize an
+      // absent bool as null — the one-shot analysis states false explicitly.
+      stream: false,
     }),
     signal: withTimeout(signal, UNDERSTAND_TIMEOUT_MS),
   })

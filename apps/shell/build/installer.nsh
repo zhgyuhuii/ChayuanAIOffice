@@ -10,7 +10,7 @@
 !include "StrFunc.nsh"
 !include "nsProcess.nsh"
 
-!macro ChaAI OfficeKillHelper NAME
+!macro ChaAIOfficeKillHelper NAME
   ${nsProcess::FindProcess} "${NAME}" $R0
   ${if} $R0 == 0
     ${nsProcess::KillProcess} "${NAME}" $R0
@@ -65,8 +65,8 @@
   ${endIf}
   ; the stock macro closed every process under $INSTDIR; a killed app can
   ; orphan its helpers, which keep their binaries locked
-  !insertmacro ChaAI OfficeKillHelper "xlsx-sidecar.exe"
-  !insertmacro ChaAI OfficeKillHelper "win-ocr.exe"
+  !insertmacro ChaAIOfficeKillHelper "xlsx-sidecar.exe"
+  !insertmacro ChaAIOfficeKillHelper "win-ocr.exe"
   ${nsProcess::Unload}
 !macroend
 
@@ -75,11 +75,11 @@
 ; Scope templates to our ProgIDs (electron-builder uses fileAssociations.name).
 ; A shared .ext\ShellNew would overwrite Office/WPS templates. OOXML files
 ; must be copied from valid packages, never created with NullFile.
-!macro ChaAI OfficeRegisterShellNew EXT PROGID
+!macro ChaAIOfficeRegisterShellNew EXT PROGID
   WriteRegStr SHELL_CONTEXT "Software\Classes\.${EXT}\${PROGID}\ShellNew" "FileName" "$INSTDIR\resources\shell-new\blank.${EXT}"
 !macroend
 
-!macro ChaAI OfficeUnregisterShellNew EXT PROGID
+!macro ChaAIOfficeUnregisterShellNew EXT PROGID
   ; Only remove our own registration, including when uninstalling for an update.
   ReadRegStr $0 SHELL_CONTEXT "Software\Classes\.${EXT}\${PROGID}\ShellNew" "FileName"
   ${If} $0 == "$INSTDIR\resources\shell-new\blank.${EXT}"
@@ -90,20 +90,20 @@
 
 !macro customInstall
   Push "$INSTDIR\resources\cli"
-  Call ChaAI OfficeAddToUserPath
-  !insertmacro ChaAI OfficeRegisterShellNew "docx" "Word Document"
-  !insertmacro ChaAI OfficeRegisterShellNew "xlsx" "Excel Workbook"
-  !insertmacro ChaAI OfficeRegisterShellNew "pptx" "PowerPoint Presentation"
+  Call ChaAIOfficeAddToUserPath
+  !insertmacro ChaAIOfficeRegisterShellNew "docx" "Word Document"
+  !insertmacro ChaAIOfficeRegisterShellNew "xlsx" "Excel Workbook"
+  !insertmacro ChaAIOfficeRegisterShellNew "pptx" "PowerPoint Presentation"
   !insertmacro UPDATEFILEASSOC
 !macroend
 
 !macro customUnInstall
   Push "$INSTDIR\resources\cli"
-  Call un.ChaAI OfficeRemoveFromUserPath
+  Call un.ChaAIOfficeRemoveFromUserPath
   Push $0
-  !insertmacro ChaAI OfficeUnregisterShellNew "docx" "Word Document"
-  !insertmacro ChaAI OfficeUnregisterShellNew "xlsx" "Excel Workbook"
-  !insertmacro ChaAI OfficeUnregisterShellNew "pptx" "PowerPoint Presentation"
+  !insertmacro ChaAIOfficeUnregisterShellNew "docx" "Word Document"
+  !insertmacro ChaAIOfficeUnregisterShellNew "xlsx" "Excel Workbook"
+  !insertmacro ChaAIOfficeUnregisterShellNew "pptx" "PowerPoint Presentation"
   Pop $0
   !insertmacro UPDATEFILEASSOC
 !macroend
@@ -111,7 +111,7 @@
 !ifndef BUILD_UNINSTALLER
 ${StrStr}
 
-Function ChaAI OfficeAddToUserPath
+Function ChaAIOfficeAddToUserPath
   Exch $0 ; directory
   Push $1
   Push $2
@@ -141,7 +141,7 @@ FunctionEnd
 ${UnStrStr}
 ${UnStrRep}
 
-Function un.ChaAI OfficeRemoveFromUserPath
+Function un.ChaAIOfficeRemoveFromUserPath
   Exch $0 ; directory
   Push $1
   Push $2

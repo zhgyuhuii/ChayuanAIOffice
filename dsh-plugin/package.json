@@ -1,7 +1,7 @@
 {
-  "name": "chatoffice",
+  "name": "chaoffice",
   "version": "1.0.6",
-  "description": "ChaOffice 办公套件 — 全离线 BFF sidecar（文档/表格/幻灯/PDF/Markdown 五编辑器）以桌面应用形式运行在察元桌面：harness 形态与 Electron 形态点击 Dock 图标即用。",
+  "description": "察元AI Office 办公套件 — 全离线 BFF sidecar（文档/表格/幻灯/PDF/Markdown 五编辑器）以桌面应用形式运行在察元桌面：harness 形态与 Electron 形态点击 Dock 图标即用。",
   "type": "module",
   "main": "./dist/host.js",
   "exports": {

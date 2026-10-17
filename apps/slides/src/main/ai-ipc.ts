@@ -18,7 +18,6 @@ import {
   writeFileSync,
 } from 'node:fs'
 import { mkdir, readFile, stat } from 'node:fs/promises'
-import { homedir } from 'node:os'
 import { join } from 'node:path'
 import {
   inferModelType,
@@ -129,15 +128,10 @@ export function registerAiIpc(): void {
     mediaDir: () => join(app.getPath('userData'), 'media', 'files'),
   })
 
-function resolveDshHome(): string | undefined {
-  // LOCAL(8b6e6e88 桌面补齐): 察元 dsh home 约定位置(与 chatop-local 的读取一致);
-  // 缺席时 undefined → ai-host 维持旧的空 secret 行为
-  const home = process.env.CHATOP_DSH_HOME ?? join(homedir(), '.chatop')
-  return existsSync(home) ? home : undefined
-}
-
   aiRuntime = registerSharedAiIpc({
-    dshHome: resolveDshHome(),
+    // dshHome 缺省 → ai-host 自动发现 dsh home(env 钉定 → ~/.chatop/~/.dsh/chatop-data
+    // 每用户根,活模型代理优先);勿在此钉死路径——目录存在但为空会短路发现,
+    // 感知不到 harness 配置的模型(8b6e6e88 的内联 ~/.chatop 钉定即此问题,已删)
     ipcMain,
     settingsPath: AI_SETTINGS_PATH(),
     fs: {

@@ -471,6 +471,10 @@ export async function chatOpenAiCompatible(
       ],
       ...(options.omitTemperature ? {} : { temperature: 0.3 }),
       ...options.bodyExtras,
+      // strict pydantic gateways (Agnes's LiteLLM upstream) 400 on a null
+      // stream, and relaying gateways re-serialize an absent bool as null —
+      // the one-shot call states its non-streaming explicitly.
+      stream: false,
     }),
   })
   wd.touch()
