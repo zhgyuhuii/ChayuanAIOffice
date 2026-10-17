@@ -92,6 +92,17 @@ const langListeners = new Set<(l: string) => void>()
 
 // home chat stream fan-out (see aiStream in installShellShims)
 const CHAT_SESSIONS_KEY = 'chaoffice.home-chat-sessions'
+
+/** 附件扩展名单与上限对齐桌面 files:pick/files:read 契约（docs-main） */
+const WEB_TEXT_EXTS = ['txt','md','markdown','csv','tsv','json','yaml','yml','xml','html','htm','log']
+const WEB_IMAGE_EXTS = ['png','jpg','jpeg','gif','webp']
+const WEB_IMAGE_MIME: Record<string, string> = {
+  png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp',
+}
+const WEB_ATTACHMENT_EXTS = [...WEB_TEXT_EXTS, 'doc','docx','pdf','pptx','ppt','xlsx','xlsm','xls', ...WEB_IMAGE_EXTS]
+const WEB_ATTACHMENT_MAX_BYTES = 50 * 1024 * 1024
+const WEB_ATTACHMENT_IMAGE_MAX_BYTES = 5 * 1024 * 1024
+const webfsId = (path: string): string | null => /^webfs:([^:]+):/.exec(path)?.[1] ?? null
 // AI endpoints are root-relative in the plain web form, but the dsh plugin
 // form serves this host under /chaoffice-app/ — derive the prefix from the
 // document URL so both forms hit the BFF through the same origin.
@@ -654,9 +665,85 @@ export function installShellShims(): void {
     openGenTeam: () => undefined,
     // attachment pickers/readers need real file access (FS-Access landing TBD);
     // null = user cancelled, ok:false = unreadable, matching the desktop shapes
-    pickAttachments: async () => null,
-    readAttachment: async () => ({ ok: false, error: '网页版暂不支持读取附件' }),
-    readAttachmentImage: async () => ({ ok: false, error: '网页版暂不支持读取图片附件' }),
+    // attachments over FS Access (multi-select picker with <input multiple>
+    // fallback); the webfs:<id>:<name> path rides the message and resolves
+    // back through the file store on read
+    pickAttachments: async () => {
+      try {
+        const picked = await fileStore.openPickerMulti()
+        if (!picked || !picked.length) return null
+        const accepted: Array<{ path: string; name: string; ext: string; sizeBytes: number }> = []
+        const rejected: string[] = []
+        for (const f of picked) {
+          const ext = (f.name.split('.').pop() ?? '').toLowerCase()
+          if (!WEB_ATTACHMENT_EXTS.includes(ext)) {
+            rejected.push(`${f.name}: 不支持的附件类型 .${ext}`)
+            continue
+          }
+          if (f.size > WEB_ATTACHMENT_MAX_BYTES) {
+            rejected.push(`${f.name}: 超过 50MB`)
+            continue
+          }
+          if (WEB_IMAGE_EXTS.includes(ext) && f.size > WEB_ATTACHMENT_IMAGE_MAX_BYTES) {
+            rejected.push(`${f.name}: 图片超过 5MB`)
+            continue
+          }
+          accepted.push({ path: `webfs:${f.id}:${f.name}`, name: f.name, ext, sizeBytes: f.size })
+        }
+        return { accepted, rejected }
+      } catch {
+        return null
+      }
+    },
+    validateAttachments: async (paths: string[]) => ({
+      accepted: [],
+      rejected: (paths ?? []).map((p) => `网页版暂不支持拖入本地文件路径：${p}`),
+    }),
+    readAttachment: async (
+      path: string,
+      offset = 0,
+      maxChars = 12_000,
+    ): Promise<{
+      ok: boolean
+      error?: string
+      name?: string
+      totalChars?: number
+      text?: string
+      offset?: number
+    }> => {
+      const id = webfsId(path)
+      if (!id) return { ok: false, error: '附件已失效（网页版仅支持本次会话中添加的附件），请重新添加' }
+      try {
+        const r = await fileStore.read(id)
+        const ext = (r.name.split('.').pop() ?? '').toLowerCase()
+        if (WEB_IMAGE_EXTS.includes(ext)) {
+          return { ok: false, error: '图片附件没有可提取的文本（模型可直接查看图片）' }
+        }
+        if (!WEB_TEXT_EXTS.includes(ext)) {
+          return { ok: false, error: `网页版暂不支持解析 .${ext} 附件的内容（文本类与图片附件可直接使用）` }
+        }
+        const full =
+          r.text ?? new TextDecoder().decode(Uint8Array.from(atob(r.base64), (c) => c.charCodeAt(0)))
+        const start = Math.max(0, Math.floor(offset) || 0)
+        const size = Math.min(Math.max(1, Math.floor(maxChars) || 1), 48_000)
+        return { ok: true, name: r.name, totalChars: full.length, text: full.slice(start, start + size), offset: start }
+      } catch (e) {
+        return { ok: false, error: e instanceof Error ? e.message : String(e) }
+      }
+    },
+    readAttachmentImage: async (path: string): Promise<{ ok: boolean; base64?: string; mime?: string; error?: string }> => {
+      const id = webfsId(path)
+      if (!id) return { ok: false, error: '附件已失效，请重新添加' }
+      try {
+        const r = await fileStore.read(id)
+        const ext = (r.name.split('.').pop() ?? '').toLowerCase()
+        const mime = WEB_IMAGE_MIME[ext]
+        if (!mime) return { ok: false, error: '不是图片附件' }
+        return { ok: true, base64: r.base64, mime }
+      } catch (e) {
+        return { ok: false, error: e instanceof Error ? e.message : String(e) }
+      }
+    },
   }
 
   w.chaOfficeProject = {

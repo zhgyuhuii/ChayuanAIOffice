@@ -137,6 +137,61 @@ export class FileHandleStore {
     return { name: entry.name, size: bytes.byteLength }
   }
 
+  /** 多选打开（附件按钮）：FS Access multiple；手势/iframe SecurityError
+   *  回落 <input type=file multiple>（同 openPicker 的降级语义）。取消返回 null。 */
+  async openPickerMulti(): Promise<OpenedFile[] | null> {
+    const w = window as FsWindow
+    if (typeof w.showOpenFilePicker === 'function') {
+      try {
+        const handles = await w.showOpenFilePicker({ multiple: true })
+        if (!handles.length) return null
+        const out: OpenedFile[] = []
+        for (const handle of handles) {
+          const file = await handle.getFile()
+          const id = `f${this.seq++}`
+          this.live.set(id, { kind: 'handle', handle, name: file.name })
+          await withStore('readwrite', (s) => s.put(handle, id) as unknown as IDBRequest<IDBValidKey>)
+          out.push({ id, name: file.name, size: file.size, type: file.type })
+        }
+        return out
+      } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') return null
+        if (!(err instanceof DOMException && (err.name === 'SecurityError' || err.name === 'NotAllowedError'))) throw err
+      }
+    }
+    return this.openInputFallbackMulti()
+  }
+
+  private openInputFallbackMulti(): Promise<OpenedFile[] | null> {
+    return new Promise((resolve) => {
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.multiple = true
+      input.style.display = 'none'
+      let settled = false
+      const finish = (value: OpenedFile[] | null) => {
+        if (settled) return
+        settled = true
+        input.remove()
+        resolve(value)
+      }
+      input.addEventListener('change', () => {
+        const files = [...(input.files ?? [])]
+        if (!files.length) return finish(null)
+        const out: OpenedFile[] = files.map((file) => {
+          const id = `f${this.seq++}`
+          this.live.set(id, { kind: 'file', file, name: file.name })
+          return { id, name: file.name, size: file.size, type: file.type }
+        })
+        finish(out)
+      })
+      input.addEventListener('cancel', () => finish(null))
+      document.body.appendChild(input)
+      input.click()
+      setTimeout(() => finish(null), 300000)
+    })
+  }
+
   /** Save As: new picker, becomes the file's new identity (returned id). */
   async saveAsPicker(suggestedName: string, bytes: Uint8Array): Promise<{ id: string; name: string } | null> {
     const w = window as FsWindow
