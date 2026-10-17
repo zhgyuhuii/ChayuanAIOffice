@@ -28,6 +28,15 @@ export interface AiHttpBridge {
     prompt: string
     aspectRatio?: string
   }): Promise<{ url?: string; error?: string }>
+  /** home-chat media channel (desktop ai:media-generate parity): images come
+   *  back materialized as data URLs; keys stay server-side */
+  mediaGenerate(req: {
+    profileId?: string
+    modelId?: string
+    prompt: string
+    params?: Record<string, unknown>
+  }): Promise<{ images?: { dataUrl: string }[]; error?: string }>
+  mediaCapabilities(): Promise<{ flags?: Record<string, boolean>; models?: Record<string, string> }>
 }
 
 async function jsonPost<T>(url: string, body?: unknown, method = 'POST'): Promise<T> {
@@ -161,6 +170,19 @@ export function createAiHttpBridge(baseUrl = defaultAiBase()): AiHttpBridge {
     },
     async aiGenerateImage(op) {
       return jsonPost<{ url?: string; error?: string }>(`${baseUrl}/ai/generate-image`, op)
+    },
+    async mediaGenerate(req) {
+      return jsonPost<{ images?: { dataUrl: string }[]; error?: string }>(
+        `${baseUrl}/ai/media/generate`,
+        req,
+      )
+    },
+    async mediaCapabilities() {
+      return retryGet<{ flags?: Record<string, boolean>; models?: Record<string, string> }>(
+        `${baseUrl}/ai/media/capabilities`,
+        3,
+        800,
+      )
     },
   }
 }

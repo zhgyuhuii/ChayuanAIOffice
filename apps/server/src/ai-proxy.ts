@@ -24,7 +24,9 @@ import {
   createHarnessSource,
   parseChatopProxyKey,
   resolveHarnessSecret,
+  resolveMediaCapability,
   type AiModelSelection,
+  type AiProviderProfile,
   type AiRuntime,
   type AiSettingsV2,
   type DiscoveryTarget,
@@ -69,7 +71,10 @@ const ERR = {
   errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
 }
 
-function buildRuntime(options: AiProxyOptions): AiRuntime {
+/** harness-fused secret resolution shared by the runtime and the capability probe */
+type SecretResolver = (profile: AiProviderProfile) => Promise<string>
+
+function buildRuntime(options: AiProxyOptions): { runtime: AiRuntime; mediaResolveSecret?: SecretResolver } {
   const dataDir = options.dataDir ?? './data'
   const settingsFile = resolve(dataDir, 'ai-settings.json')
   const fileFs = {
@@ -172,20 +177,19 @@ function buildRuntime(options: AiProxyOptions): AiRuntime {
         officeStateSource: officeState,
       })
     : officeState
-  return createAiRuntime({
+  // harness form: profiles carry apiKeyRef only — resolve the referenced
+  // credential at call time (rotations apply on the next request; the secret
+  // never enters settings views). The synthetic chatop-local profile
+  // resolves to a model-proxy virtual key instead of the credentials file.
+  const mediaResolveSecret: SecretResolver | undefined = options.harness
+    ? (profile) =>
+        profile.id === CHATOP_LOCAL_PROFILE_ID
+          ? chatopLocalKey(options.harness!)
+          : resolveHarnessSecret(profile, readDshFile)
+    : undefined
+  const runtime = createAiRuntime({
     source,
-    // harness form: profiles carry apiKeyRef only — resolve the referenced
-    // credential at call time (rotations apply on the next request; the secret
-    // never enters settings views). The synthetic chatop-local profile
-    // resolves to a model-proxy virtual key instead of the credentials file.
-    ...(options.harness
-      ? {
-          resolveSecret: (profile) =>
-            profile.id === CHATOP_LOCAL_PROFILE_ID
-              ? chatopLocalKey(options.harness!)
-              : resolveHarnessSecret(profile, readDshFile),
-        }
-      : {}),
+    ...(mediaResolveSecret ? { resolveSecret: mediaResolveSecret } : {}),
     // chaoffice login is desktop-only; the web form is pure BYOK
     chaoffice: {
       apiKey: () => '',
@@ -197,6 +201,7 @@ function buildRuntime(options: AiProxyOptions): AiRuntime {
         String(params?.[k] ?? ''),
       ) ?? key,
   })
+  return { runtime, ...(mediaResolveSecret ? { mediaResolveSecret } : {}) }
 }
 
 /** harness loopback origin: direct value or lazily-read file (written by the dsh plugin host) */
@@ -221,6 +226,28 @@ async function resolveRpcOrigin(harness: {
  *  connection.authenticatedUrl) which never belongs on an /api/ URL */
 export function rpcOriginBase(origin: string): string {
   return origin.split('?')[0]!.replace(/\/$/, '')
+}
+
+/** vendor image answers are data: URLs or remote links — one retry rides out
+ *  transient OSS hiccups, misses return null so the caller can try the rest */
+async function urlAsDataUrl(url: string): Promise<{ base64: string; mime: string } | null> {
+  if (url.startsWith('data:')) {
+    const match = /^data:([^;,]+);base64,(.*)$/s.exec(url)
+    return match ? { base64: match[2]!, mime: match[1]! } : null
+  }
+  if (!/^https?:\/\//i.test(url)) return null
+  let resp = await fetch(url)
+  if (!resp.ok) resp = await fetch(url)
+  if (!resp.ok) return null
+  const bytes = new Uint8Array(await resp.arrayBuffer())
+  const ct = resp.headers.get('content-type')?.split(';')[0]?.trim().toLowerCase()
+  const sniff =
+    bytes.length > 3 && bytes[0] === 0xff && bytes[1] === 0xd8
+      ? 'image/jpeg'
+      : bytes.length > 12 && bytes[0] === 0x89 && bytes[1] === 0x50
+        ? 'image/png'
+        : 'image/png'
+  return { base64: Buffer.from(bytes).toString('base64'), mime: ct ?? sniff }
 }
 
 let cachedDshCookie = ''
@@ -262,7 +289,7 @@ async function dshRpcHeaders(origin: string, fresh = false): Promise<Record<stri
 const activeStreams = new Map<string, AbortController>()
 
 export function attachAiProxy(app: FastifyInstance, options: AiProxyOptions): void {
-  const runtime = buildRuntime(options)
+  const { runtime, mediaResolveSecret } = buildRuntime(options)
   const records: AiCallRecord[] = []
   const record = (r: AiCallRecord) => {
     records.push(r)
@@ -292,6 +319,65 @@ export function attachAiProxy(app: FastifyInstance, options: AiProxyOptions): vo
     }
     await runtime.saveSettings(view)
     return { ok: true }
+  })
+
+  // ── media channels (web/dsh form parity with the desktop ai:media-* IPC) ──
+  // image generation rides runtime.generateImage (settings defaults → chain
+  // fallback, harness apiKeyRef resolved server-side); vendor answers data:
+  // URLs or remote links, materialized to data URLs so the renderer history
+  // and the generated-image pipelines see one shape
+  app.post<{
+    Body: { profileId?: string; modelId?: string; prompt?: string; params?: Record<string, unknown> }
+  }>('/ai/media/generate', async (request) => {
+    const req = request.body ?? {}
+    const prompt = String(req.prompt ?? '').trim()
+    if (!prompt) return { error: 'prompt must not be empty' }
+    try {
+      const model =
+        req.profileId && req.modelId
+          ? { profileId: String(req.profileId), modelId: String(req.modelId) }
+          : undefined
+      const r = await runtime.generateImage({
+        prompt,
+        ...(req.params ? { params: req.params } : {}),
+        ...(model ? { model } : {}),
+      })
+      if (r.error) return { error: r.error }
+      const urls = r.urls ?? (r.url ? [r.url] : [])
+      const images: { dataUrl: string }[] = []
+      for (const url of urls) {
+        const media = await urlAsDataUrl(url)
+        if (media) images.push({ dataUrl: `data:${media.mime};base64,${media.base64}` })
+      }
+      return images.length ? { images } : { error: 'image download failed' }
+    } catch (e) {
+      return { error: e instanceof Error ? e.message : String(e) }
+    }
+  })
+
+  app.get('/ai/media/capabilities', async () => {
+    try {
+      const settings = await runtime.readRawSettings()
+      const kinds = ['image', 'video', 'imageUnderstanding', 'videoUnderstanding', 'tts', 'asr'] as const
+      const flags: Record<string, boolean> = {}
+      const models: Record<string, string> = {}
+      for (const kind of kinds) {
+        const call = await resolveMediaCapability(settings, kind, {
+          resolveSecret: mediaResolveSecret
+            ? async (profileId: string): Promise<string | null> => {
+                const profile = settings.profiles.find((p) => p.id === profileId)
+                if (!profile) return null
+                return mediaResolveSecret(profile)
+              }
+            : async () => null,
+        })
+        flags[kind] = !!call
+        if (call) models[kind] = call.model
+      }
+      return { flags, models }
+    } catch (e) {
+      return { flags: {}, models: {}, error: e instanceof Error ? e.message : String(e) }
+    }
   })
 
   app.post<{ Body: AiModelSelection }>('/ai/set-current-model', async (request, reply) => {

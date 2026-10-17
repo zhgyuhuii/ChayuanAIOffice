@@ -373,6 +373,24 @@ export function installShellShims(): void {
     openMcpLogFile: async () => degraded('chaOffice.openMcpLogFile'),
     searchCapabilities: async () => ({ search: false }),
 
+    // media channels over the BFF (parity with the desktop ai:media-* IPC):
+    // generation + capability probing run server-side, keys never reach the page
+    mediaGenerate: async (req: {
+      profileId?: string
+      modelId?: string
+      prompt: string
+      params?: Record<string, unknown>
+    }) =>
+      (
+        await fetch(aiUrl('ai/media/generate'), {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(req),
+        })
+      ).json() as unknown,
+    mediaCapabilities: async () =>
+      (await fetch(aiUrl('ai/media/capabilities'))).json() as unknown,
+
     // ── account / cloud / AI: awaiting the BFF channels ──
     accountStatus: async () => null,
     accountLogin: async () => degraded('chaOffice.accountLogin'),

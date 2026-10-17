@@ -519,3 +519,55 @@ describe('kb-proxy × token-bearing rpc-origin file', () => {
     }
   })
 })
+
+describe('media channels (web/dsh form parity)', () => {
+  it('capabilities reports per-kind flags from the settings view', async () => {
+    const dataDir = mkdtempSync(join(tmpdir(), 'chaoffice-ai-'))
+    writeFileSync(
+      join(dataDir, 'ai-settings.json'),
+      JSON.stringify({
+        version: 2,
+        profiles: [
+          {
+            id: 'agnes',
+            vendorId: 'agnes',
+            displayName: '爱思',
+            protocol: 'openai-completions',
+            baseUrl: 'https://api.agnes-ai.cn/v1',
+            apiKey: 'k',
+            auth: 'api-key',
+            enabled: true,
+            models: [
+              { id: 'agnes-3.0-flash' },
+              { id: 'agnes-image-2.5-flash' },
+            ],
+          },
+        ],
+      }),
+    )
+    try {
+      const { app } = buildServer({ area: tempArea(), ai: { dataDir } })
+      const res = await app.inject({ method: 'GET', url: '/ai/media/capabilities' })
+      expect(res.statusCode).toBe(200)
+      const body = res.json()
+      expect(body.flags.image).toBe(true)
+      expect(body.models.image).toBe('agnes-image-2.5-flash')
+      expect(body.flags.video).toBe(false)
+    } finally {
+      rmSync(dataDir, { recursive: true, force: true })
+    }
+  })
+
+  it('generate rejects an empty prompt before any vendor call', async () => {
+    const dataDir = mkdtempSync(join(tmpdir(), 'chaoffice-ai-'))
+    const { app } = buildServer({ area: tempArea(), ai: { dataDir } })
+    const res = await app.inject({
+      method: 'POST',
+      url: '/ai/media/generate',
+      payload: { prompt: '   ' },
+    })
+    expect(res.statusCode).toBe(200)
+    expect(res.json().error).toBe('prompt must not be empty')
+    rmSync(dataDir, { recursive: true, force: true })
+  })
+})
