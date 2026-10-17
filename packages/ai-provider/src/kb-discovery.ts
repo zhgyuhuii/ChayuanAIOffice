@@ -5,15 +5,16 @@
  * （chayuan-harness docs/port-registry.md）：主实例 52584，多用户会话段
  * 52601+；旧段 3080..3090 保留为兼容尾巴（老装机渐进升级）。so "discovery"
  * means: find a loopback origin whose /status carries the KB fingerprint.
- * Four levels, first hit wins:
+ * Five levels, first hit wins:
  *
- *   manual override → cached last-good → hint file → parallel port probe
+ *   manual override → KB service.json direct port (fence-free) → cached
+ *   last-good → hint file → parallel port probe
  *
  * Requires no harness-side changes and no secrets (the KB API is loopback
  * trust, keys live harness-side).
  */
 
-import { readFile, stat } from 'node:fs/promises'
+import { readFile, readdir, stat } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { createKbHttpClient, type KbStatus } from './kb-client'
@@ -25,6 +26,8 @@ export interface KbDiscoveryOptions {
   cachedOrigin?: string
   /** hint file written by the chaoffice dsh plugin host (default under ~/.dsh) */
   hintFile?: string
+  /** explicit dsh homes for the service.json level (tests); default = managed roots + ~/.dsh */
+  dshHomes?: string[]
   /** probe ports; default = 注册表 52584 + 会话段 52601.. +10，旧段 3080..3090 兜底 */
   probePorts?: number[]
   /** per-candidate request budget (ms) */
@@ -32,7 +35,7 @@ export interface KbDiscoveryOptions {
   fetchImpl?: typeof fetch
 }
 
-export type KbDiscoverySource = 'manual' | 'cached' | 'hint' | 'probe'
+export type KbDiscoverySource = 'manual' | 'service' | 'cached' | 'hint' | 'probe'
 
 export interface KbDiscoveryResult {
   origin: string
@@ -51,6 +54,62 @@ const DEFAULT_PORTS = [
 
 function defaultHintFile(): string {
   return join(homedir(), '.dsh', 'storages', 'chaoffice', 'dsh-rpc-origin')
+}
+
+/**
+ * Direct service-origin candidates from chatop-kb's own service.json
+ * (`<dshHome>/storages/chatop-kb/service.json`, written by the KB service at
+ * boot). The KB service hosts the /api/chatop-kb/* routes itself on a
+ * loopback-only port with no auth — going straight there sidesteps the dsh
+ * web origin entirely (its port churns across desktop restarts and its /api/
+ * face carries the browser-cookie fence), so this level outranks cache/hint/
+ * probe. Candidate homes: the chatop managed roots (every user profile, incl.
+ * a CHATOP_DATA_ROOT override) plus the default ~/.dsh.
+ */
+async function serviceFileOrigins(explicitHomes?: string[]): Promise<string[]> {
+  if (explicitHomes) {
+    const direct: string[] = []
+    for (const home of explicitHomes) {
+      try {
+        const doc = JSON.parse(await readFile(join(home, 'storages', 'chatop-kb', 'service.json'), 'utf8')) as {
+          port?: unknown
+        }
+        if (typeof doc.port === 'number' && doc.port > 0) direct.push(`http://127.0.0.1:${doc.port}`)
+      } catch {
+        /* home without a KB service */
+      }
+    }
+    return direct
+  }
+  const roots = [
+    process.env.CHATOP_DATA_ROOT,
+    join(homedir(), 'Documents', 'chatop-data'),
+    join(homedir(), '.dsh'),
+  ].filter((v): v is string => !!v)
+  const homes: string[] = []
+  for (const root of roots) {
+    const usersDir = join(root, 'users')
+    let entries: string[] = []
+    try {
+      entries = await readdir(usersDir)
+    } catch {
+      /* not a managed root */
+    }
+    for (const user of entries) homes.push(join(usersDir, user, 'profile', 'dsh-home'))
+    if (root.endsWith('.dsh')) homes.push(root)
+  }
+  const origins: string[] = []
+  for (const home of homes) {
+    try {
+      const doc = JSON.parse(await readFile(join(home, 'storages', 'chatop-kb', 'service.json'), 'utf8')) as {
+        port?: unknown
+      }
+      if (typeof doc.port === 'number' && doc.port > 0) origins.push(`http://127.0.0.1:${doc.port}`)
+    } catch {
+      /* home without a KB service */
+    }
+  }
+  return origins
 }
 
 async function verify(
@@ -87,6 +146,11 @@ export async function discoverHarnessKb(
     {
       source: 'manual',
       origins: Promise.resolve(options.explicitOrigin ? [options.explicitOrigin] : []),
+    },
+    {
+      // direct, fence-free, always-current port: outranks every heuristic
+      source: 'service',
+      origins: serviceFileOrigins(options.dshHomes),
     },
     {
       source: 'cached',

@@ -1,4 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import {
   buildKbContext,
   createKbHttpClient,
@@ -199,5 +202,38 @@ describe('kb-discovery', () => {
       }) as typeof fetch,
     })
     expect(result).toBeNull()
+  })
+})
+
+describe('kb-discovery service.json direct level', () => {
+  it('resolves the KB service port from a dsh home and outranks the cache', async () => {
+    const home = mkdtempSync(join(tmpdir(), 'chaoffice-dsh-'))
+    mkdirSync(join(home, 'storages', 'chatop-kb'), { recursive: true })
+    writeFileSync(join(home, 'storages', 'chatop-kb', 'service.json'), '{"port":45555}')
+    const result = await discoverHarnessKb({
+      dshHomes: [home],
+      cachedOrigin: 'http://127.0.0.1:45777',
+      probePorts: [3080],
+      fetchImpl: (async (input: RequestInfo | URL) => {
+        const url = String(input)
+        if (url.includes(':45555/')) return jsonResponse(status)
+        throw new Error('refused')
+      }) as typeof fetch,
+    })
+    expect(result).toMatchObject({ origin: 'http://127.0.0.1:45555', source: 'service' })
+  })
+
+  it('skips homes whose service.json is missing and falls through', async () => {
+    const home = mkdtempSync(join(tmpdir(), 'chaoffice-dsh-empty-'))
+    const result = await discoverHarnessKb({
+      dshHomes: [home],
+      probePorts: [41000],
+      timeoutMs: 200,
+      fetchImpl: (async (input: RequestInfo | URL) => {
+        if (String(input).includes(':41000')) return jsonResponse(status)
+        throw new Error('refused')
+      }) as typeof fetch,
+    })
+    expect(result).toMatchObject({ origin: 'http://127.0.0.1:41000', source: 'probe' })
   })
 })

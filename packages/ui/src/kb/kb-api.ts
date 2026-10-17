@@ -29,7 +29,7 @@ export interface KbDiscoverPayload {
   ok: boolean
   reason?: 'kb-unavailable'
   origin?: string
-  source?: 'manual' | 'cached' | 'hint' | 'probe'
+  source?: 'manual' | 'service' | 'cached' | 'hint' | 'probe'
   status?: KbStatus
 }
 
