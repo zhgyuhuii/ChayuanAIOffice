@@ -30,6 +30,7 @@ import {
   type KbCitation,
   useChatRunQueue,
 } from '@chaoffice/ui'
+import { MessageActions } from '@chaoffice/ui'
 import { defaultSettingsV2, pickImageModel } from '@chaoffice/ai-provider/browser'
 import { markdownModelBridge } from './model-bridge'
 import type { DockChrome } from '@chaoffice/ui'
@@ -1097,6 +1098,9 @@ function AiConversationBody({
                     />
                   </div>
                 )
+              )}
+              {entry.role === 'assistant' && !entry.streaming && entry.text && (
+                <MessageActions text={entry.text} fileNameStem="ai-reply" />
               )}
               {hasTools && <ToolChipList tools={entry.tools!} />}
               {entry.mindmap && (

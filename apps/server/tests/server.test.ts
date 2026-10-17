@@ -628,3 +628,32 @@ describe('create-document (web/dsh form)', () => {
     expect(empty.json().error).toContain('empty')
   })
 })
+
+describe('create-document image embedding', () => {
+  it('markdown images become real docx media parts', async () => {
+    const pngB64 = require('node:fs').readFileSync('/tmp/spring-festival.png').toString('base64')
+    const { app } = buildServer({ area: tempArea() })
+    const res = await app.inject({
+      method: 'POST',
+      url: '/ai/create-document',
+      payload: {
+        title: '带图文档',
+        format: 'docx',
+        content: `# 春节插画方案\n\n文字段落。\n\n![生成图片 1](data:image/png;base64,${pngB64})\n\n结束。`,
+      },
+    })
+    expect(res.statusCode).toBe(200)
+    const body = res.json()
+    expect(body.ok).toBe(true)
+    const bytes = Buffer.from(body.bytesB64, 'base64')
+    const JSZipMod = await import('jszip')
+    const zip = await JSZipMod.default.loadAsync(bytes)
+    expect(zip.file('word/media/image1.png')).toBeTruthy()
+    const rels = await zip.file('word/_rels/document.xml.rels')!.async('string')
+    expect(rels).toContain('relationships/image')
+    const xml = await zip.file('word/document.xml')!.async('string')
+    expect(xml).toContain('<w:drawing>')
+    expect(xml).toContain('r:embed=')
+    expect(xml).toContain('春节插画方案')
+  })
+})

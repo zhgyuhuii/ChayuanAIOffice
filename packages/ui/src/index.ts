@@ -98,6 +98,7 @@ export { AI_CONTINUE_INSTRUCTION } from './aiContinuation'
 export { AiPanelToggle, type AiPanelToggleProps } from './AiPanelToggle'
 export { IconSend, IconStop, type IconProps } from './icons'
 export { Markdown, type MarkdownNav } from './Markdown'
+export { MessageActions } from './MessageActions'
 export { FILE_NAV_SCHEME, createFileNav, fileNavHref, parseFileNavHref } from './file-nav'
 export { isSymbolFontFamily } from './symbol-fonts'
 export {

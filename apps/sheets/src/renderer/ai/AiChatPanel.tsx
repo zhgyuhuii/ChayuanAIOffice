@@ -17,6 +17,7 @@ import {
   type AiScopeQuoteData,
   AiScopeQuote,
 } from '@chaoffice/ui'
+import { MessageActions } from '@chaoffice/ui'
 import {
   DockChrome,
   KbCitePreview,
@@ -610,6 +611,9 @@ export function AiChatPanel({
                       insertImageLabel={lang.startsWith('zh') ? '插入表格' : 'Insert'}
                     />
                   </div>
+                )}
+                {entry.role === 'assistant' && !entry.streaming && entry.text && (
+                  <MessageActions text={entry.text} fileNameStem="ai-reply" />
                 )}
               </div>
             ))}

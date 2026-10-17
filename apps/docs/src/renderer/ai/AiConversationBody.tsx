@@ -53,6 +53,7 @@ import {
   type AiScopeQuoteData,
   type KbCitation,
 } from '@chaoffice/ui'
+import { MessageActions } from '@chaoffice/ui'
 import { redactTextBetween, type RedactableNode } from './redact-view'
 import { MindMapCard } from './MindMapCard'
 import { enabledChatModels } from '@chaoffice/ai-provider/browser'
@@ -1119,6 +1120,9 @@ export function AiConversationBody({
                 )}
                 {entry.interrupted && (
                   <span className="ai-msg-interrupted-badge">{t('aiTurnInterrupted')}</span>
+                )}
+                {entry.role === 'assistant' && !entry.streaming && (
+                  <MessageActions text={entry.text} fileNameStem="ai-reply" />
                 )}
               </div>
             ))}

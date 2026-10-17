@@ -85,6 +85,7 @@ import {
   useChatRunQueue,
   type AiTokenUsageView,
 } from '@chaoffice/ui'
+import { MessageActions } from '@chaoffice/ui'
 import {
   defaultSettingsV2,
   enabledChatModels,
@@ -2642,6 +2643,9 @@ function AiConversationBody({
                   <div dir="auto">
                     <Markdown text={entry.text} />
                   </div>
+                )}
+                {entry.role === 'assistant' && !entry.streaming && entry.text && (
+                  <MessageActions text={entry.text} fileNameStem="ai-reply" />
                 )}
                 {entry.interrupted && (
                   <span className="ai-msg-interrupted-badge">{t('aiTurnInterrupted')}</span>

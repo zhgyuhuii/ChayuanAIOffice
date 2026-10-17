@@ -48,9 +48,20 @@ const err = (e: unknown): string => (e instanceof Error ? e.message : String(e))
 const esc = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
-/** inline markdown → w:r runs (bold / italic / code / links as text + url) */
-function inlineRuns(text: string): string {
-  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*\s][^*]*\*|`[^`]+`|\[[^\]]+\]\([^)\s]+\))/g)
+/** one markdown image collected during body build; the marker run is
+ *  replaced by markdownToDocx with a real w:drawing media part */
+interface MdImageRef {
+  marker: string
+  alt: string
+  src: string
+}
+
+/** inline markdown → w:r runs (bold / italic / code / links as text + url);
+ *  markdown images become marker runs resolved by markdownToDocx */
+function inlineRuns(text: string, images?: MdImageRef[]): string {
+  const parts = text.split(
+    /(\*\*[^*]+\*\*|\*[^*\s][^*]*\*|`[^`]+`|\[[^\]]+\]\([^)\s]+\)|!\[[^\]]*\]\([^)\s]+\))/g,
+  )
   let out = ''
   for (const part of parts) {
     if (!part) continue
@@ -60,6 +71,15 @@ function inlineRuns(text: string): string {
       out += `<w:r><w:rPr><w:i/></w:rPr><w:t xml:space="preserve">${esc(part.slice(1, -1))}</w:t></w:r>`
     } else if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
       out += `<w:r><w:rPr><w:rFonts w:ascii="Courier New" w:hAnsi="Courier New"/></w:rPr><w:t xml:space="preserve">${esc(part.slice(1, -1))}</w:t></w:r>`
+    } else if (part.startsWith('![') && images) {
+      const m = /^!\[([^\]]*)\]\(([^)\s]+)\)$/.exec(part)
+      if (m) {
+        images.push({ marker: `MDIMGMARKER${images.length}`, alt: m[1]!, src: m[2]! })
+        const idx = images.length - 1
+        out += `<w:r><w:t xml:space="preserve">${images[idx]!.marker}</w:t></w:r>`
+        continue
+      }
+      out += `<w:r><w:t xml:space="preserve">${esc(part)}</w:t></w:r>`
     } else {
       const link = /^\[([^\]]+)\]\(([^)\s]+)\)$/.exec(part)
       const body = link ? `${link[1]} (${link[2]})` : part
@@ -73,12 +93,12 @@ function paragraph(runs: string, pPr = ''): string {
   return `<w:p>${pPr ? `<w:pPr>${pPr}</w:pPr>` : ''}${runs}</w:p>`
 }
 
-function tableXml(rows: string[][]): string {
+function tableXml(rows: string[][], images?: MdImageRef[]): string {
   const cols = Math.max(...rows.map((r) => r.length))
   const cell = (text: string, bold: boolean): string => {
     const runs = bold
       ? `<w:r><w:rPr><w:b/></w:rPr><w:t xml:space="preserve">${esc(text)}</w:t></w:r>`
-      : inlineRuns(text)
+      : inlineRuns(text, images)
     return `<w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr>${paragraph(runs)}</w:tc>`
   }
   const body = rows
@@ -98,7 +118,7 @@ function tableXml(rows: string[][]): string {
 }
 
 /** markdown body → OOXML block sequence (blank-docx style/numbering ids only) */
-export function markdownBodyXml(md: string): string {
+export function markdownBodyXml(md: string, images: MdImageRef[] = []): string {
   const lines = md.replace(/\r\n?/g, '\n').split('\n')
   const blocks: string[] = []
   let i = 0
@@ -122,22 +142,22 @@ export function markdownBodyXml(md: string): string {
     }
     const heading = /^(#{1,6})\s+(.*)$/.exec(line)
     if (heading) {
-      blocks.push(paragraph(inlineRuns(heading[2]!), `<w:pStyle w:val="Heading${heading[1]!.length}"/>`))
+      blocks.push(paragraph(inlineRuns(heading[2]!, images), `<w:pStyle w:val="Heading${heading[1]!.length}"/>`))
       i++
       continue
     }
     if (/^\s*[-*+]\s+/.test(line)) {
-      blocks.push(paragraph(inlineRuns(line.replace(/^\s*[-*+]\s+/, '')), listPara(BLANK_BULLET_NUM_ID)))
+      blocks.push(paragraph(inlineRuns(line.replace(/^\s*[-*+]\s+/, ''), images), listPara(BLANK_BULLET_NUM_ID)))
       i++
       continue
     }
     if (/^\s*\d+[.)]\s+/.test(line)) {
-      blocks.push(paragraph(inlineRuns(line.replace(/^\s*\d+[.)]\s+/, '')), listPara(BLANK_ORDERED_NUM_ID)))
+      blocks.push(paragraph(inlineRuns(line.replace(/^\s*\d+[.)]\s+/, ''), images), listPara(BLANK_ORDERED_NUM_ID)))
       i++
       continue
     }
     if (/^\s*>\s?/.test(line)) {
-      blocks.push(paragraph(inlineRuns(line.replace(/^\s*>\s?/, '')), '<w:pStyle w:val="Quote"/>'))
+      blocks.push(paragraph(inlineRuns(line.replace(/^\s*>\s?/, ''), images), '<w:pStyle w:val="Quote"/>'))
       i++
       continue
     }
@@ -154,7 +174,7 @@ export function markdownBodyXml(md: string): string {
         if (!cells.every((c) => /^:?-{2,}:?$/.test(c) || c === '')) rows.push(cells)
         i++
       }
-      if (rows.length) blocks.push(tableXml(rows))
+      if (rows.length) blocks.push(tableXml(rows, images))
       continue
     }
     if (/^\s*(---|\*\*\*|___)\s*$/.test(line)) {
@@ -166,24 +186,137 @@ export function markdownBodyXml(md: string): string {
       i++
       continue
     }
-    blocks.push(paragraph(inlineRuns(line)))
+    blocks.push(paragraph(inlineRuns(line, images)))
     i++
   }
   return blocks.join('')
 }
 
-/** markdown → a real .docx over the blank-docx zip skeleton */
+/** PNG IHDR / JPEG SOF pixel dimensions; null = unknown (fixed fallback) */
+function sniffImageSize(bytes: Uint8Array, mime: string): { w: number; h: number } | null {
+  if (mime.includes('png') && bytes.length > 24 && bytes[0] === 0x89 && bytes[1] === 0x50) {
+    const w = (bytes[16]! << 24) | (bytes[17]! << 16) | (bytes[18]! << 8) | bytes[19]!
+    const h = (bytes[20]! << 24) | (bytes[21]! << 16) | (bytes[22]! << 8) | bytes[23]!
+    if (w > 0 && h > 0) return { w, h }
+  }
+  if (mime.includes('jpeg') || mime.includes('jpg')) {
+    let i = 2
+    while (i + 9 < bytes.length) {
+      if (bytes[i] !== 0xff) {
+        i++
+        continue
+      }
+      const marker = bytes[i + 1]!
+      const len = (bytes[i + 2]! << 8) | bytes[i + 3]!
+      if (marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker)) {
+        const h = (bytes[i + 5]! << 8) | bytes[i + 6]!
+        const w = (bytes[i + 7]! << 8) | bytes[i + 8]!
+        if (w > 0 && h > 0) return { w, h }
+      }
+      i += 2 + len
+    }
+  }
+  return null
+}
+
+const EMU_PER_PX = 9525
+const MAX_IMG_EMU = 5486400 // 6 inch body width
+
+/** markdown → a real .docx over the blank-docx zip skeleton; markdown images
+ *  (data URLs / http links) become embedded media parts */
 export async function markdownToDocx(md: string, eastAsiaFont?: string): Promise<Uint8Array> {
   const blank = await buildBlankDocx(eastAsiaFont ? { eastAsiaFont } : undefined)
   const zip = await JSZip.loadAsync(blank)
   const docXml = await zip.file('word/document.xml')!.async('string')
   const sectPr = /<w:sectPr>[\s\S]*?<\/w:sectPr>/.exec(docXml)?.[0] ?? ''
+  const images: MdImageRef[] = []
+  let body = markdownBodyXml(md, images)
+
+  if (images.length) {
+    const relsXml = await zip.file('word/_rels/document.xml.rels')!.async('string')
+    const ctXml = await zip.file('[Content_Types].xml')!.async('string')
+    const maxRid = Math.max(0, ...[...relsXml.matchAll(/Id="rId(\d+)"/g)].map((m) => Number(m[1])))
+    let rels = relsXml
+    let contentTypes = ctXml
+    let rid = maxRid
+    for (let i = 0; i < images.length; i++) {
+      const img = images[i]!
+      let bytes: Uint8Array | null = null
+      let mime = ''
+      try {
+        if (img.src.startsWith('data:')) {
+          const m = /^data:([^;,]+);base64,(.*)$/s.exec(img.src)
+          if (m && m[2]!.length <= (8 * 1024 * 1024 * 4) / 3) {
+            bytes = new Uint8Array(Buffer.from(m[2]!, 'base64'))
+            mime = m[1]!
+          }
+        } else if (/^https?:\/\//i.test(img.src)) {
+          const resp = await fetch(img.src)
+          if (resp.ok) {
+            const declared = Number(resp.headers.get('content-length') ?? 0)
+            if (declared <= 8 * 1024 * 1024) {
+              bytes = new Uint8Array(await resp.arrayBuffer())
+              if (bytes.byteLength > 8 * 1024 * 1024) bytes = null
+              else mime = resp.headers.get('content-type')?.split(';')[0]?.trim() ?? ''
+            }
+          }
+        }
+      } catch {
+        bytes = null
+      }
+      if (!bytes) {
+        body = body.replace(
+          `<w:r><w:t xml:space="preserve">${img.marker}</w:t></w:r>`,
+          `<w:r><w:rPr><w:i/></w:rPr><w:t xml:space="preserve">[图片：${esc(img.alt || img.src.slice(0, 60))}]</w:t></w:r>`,
+        )
+        continue
+      }
+      const ext = mime.includes('jpeg') || mime.includes('jpg')
+        ? 'jpeg'
+        : mime.includes('gif')
+          ? 'gif'
+          : mime.includes('webp')
+            ? 'webp'
+            : 'png'
+      const sniffed = sniffImageSize(bytes, mime)
+      let cx = (sniffed?.w ?? 960) * EMU_PER_PX
+      let cy = (sniffed?.h ?? 640) * EMU_PER_PX
+      if (cx > MAX_IMG_EMU) {
+        cy = Math.round((cy * MAX_IMG_EMU) / cx)
+        cx = MAX_IMG_EMU
+      }
+      rid += 1
+      const docId = 100 + i
+      const name = `image${i + 1}.${ext}`
+      zip.file(`word/media/${name}`, bytes)
+      rels = rels.replace(
+        '</Relationships>',
+        `<Relationship Id="rId${rid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/${name}"/></Relationships>`,
+      )
+      if (!contentTypes.includes(`Extension="${ext}"`)) {
+        contentTypes = contentTypes.replace(
+          '</Types>',
+          `<Default Extension="${ext}" ContentType="${mime || 'image/png'}"/></Types>`,
+        )
+      }
+      const drawing =
+        `<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0">` +
+        `<wp:extent cx="${cx}" cy="${cy}"/><wp:docPr id="${docId}" name="Picture ${docId}"/>` +
+        `<a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">` +
+        `<pic:pic><pic:nvPicPr><pic:cNvPr id="${docId}" name="${name}"/><pic:cNvPicPr/></pic:nvPicPr>` +
+        `<pic:blipFill><a:blip r:embed="rId${rid}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>` +
+        `<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm>` +
+        `<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic>` +
+        `</wp:inline></w:drawing></w:r>`
+      body = body.replace(`<w:r><w:t xml:space="preserve">${img.marker}</w:t></w:r>`, drawing)
+    }
+    zip.file('word/_rels/document.xml.rels', rels)
+    zip.file('[Content_Types].xml', contentTypes)
+  }
+
   zip.file(
     'word/document.xml',
-    docXml.replace(
-      /<w:body>[\s\S]*<\/w:body>/,
-      `<w:body>${markdownBodyXml(md)}${sectPr}</w:body>`,
-    ),
+    docXml.replace(/<w:body>[\s\S]*<\/w:body>/, `<w:body>${body}${sectPr}</w:body>`),
   )
   return zip.generateAsync({ type: 'uint8array', compression: 'DEFLATE' })
 }

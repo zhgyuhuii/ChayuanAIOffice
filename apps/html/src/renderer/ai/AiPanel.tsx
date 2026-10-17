@@ -35,6 +35,7 @@ import {
   type DockChrome,
   type KbCitation,
 } from '@chaoffice/ui'
+import { MessageActions } from '@chaoffice/ui'
 import { aiLangDirective, t as tGlobal, useI18n, type StringKey } from '../i18n/locale'
 import { htmlModelBridge } from './model-bridge'
 import { AssistantTab } from './AssistantTab'
@@ -1493,6 +1494,9 @@ function AiConversationBody({
                     />
                   </div>
                 )
+              )}
+              {entry.role === 'assistant' && !entry.streaming && entry.text && (
+                <MessageActions text={entry.text} fileNameStem="ai-reply" />
               )}
               {hasTools && <ToolChipList tools={entry.tools!} />}
               {entry.interrupted && (

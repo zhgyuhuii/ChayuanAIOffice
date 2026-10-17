@@ -28,6 +28,7 @@ import {
   type AiTokenUsageView,
   type KbCitation,
 } from '@chaoffice/ui'
+import { MessageActions } from '@chaoffice/ui'
 import type { DockChrome } from '@chaoffice/ui'
 import { AssistantTab, IconAiKeyPoints, IconAiSummarize } from './AssistantTab'
 import { AssistantLibraryBrowser } from '@chaoffice/ui/assistant-library'
@@ -881,6 +882,9 @@ function AiConversationBody({
                   />
                 </div>
               )}
+                {entry.role === 'assistant' && !entry.streaming && entry.text && (
+                  <MessageActions text={entry.text} fileNameStem="ai-reply" />
+                )}
             </div>
           )
         })}

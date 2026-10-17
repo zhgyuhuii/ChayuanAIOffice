@@ -5,6 +5,7 @@ import {
   AiTypingIndicator,
   KbCitePreview,
   KbPickerButton,
+  MessageActions,
   ModelPickerButton,
   kbRetrieve,
   kbStrings,
@@ -488,7 +489,12 @@ function ChatMessageView({
         {m.error && <div className="chat-err">{m.text}</div>}
         {m.relayConfirm && <RelayConfirmCard m={m} onConfirm={onRelayConfirm} />}
         {m.card && <ChatCard card={m.card} onOpenSettings={onOpenSettings} />}
-        <div className="chat-msg-time">{chatTime(m.ts, dateLocale)}</div>
+        <div className="chat-msg-time">
+          {chatTime(m.ts, dateLocale)}
+          {!typing && (prose || m.text) && (
+            <MessageActions text={prose || m.text} fileNameStem={m.id} />
+          )}
+        </div>
       </div>
     </div>
   )

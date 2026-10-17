@@ -501,6 +501,9 @@ function homeSkill(
     mediaFlags: () => MediaCapabilityFlags | null
     /** generated image display channel (tool timeline card) */
     onGeneratedImage(dataUrl: string): void
+    /** images generated in this conversation (newest last) — the host stitches
+     *  them into create_document output so the model never carries the bytes */
+    sessionImages(): string[]
   },
   texts: HomeAgentTexts,
 ): AgentSkill {
@@ -593,7 +596,16 @@ function homeSkill(
           const isBlank = docType === 'xlsx' || docType === 'pptx'
           // 正文来源:当前轮文本,不够格时回溯本次运行的助手历史(倒序),
           // 承接「先空调工具被拒、下一轮才补写正文」的拆轮写法
-          const body = resolveDocBody(docType, state.turnText(), state.transcript())
+          const resolved = resolveDocBody(docType, state.turnText(), state.transcript())
+          // host-side image stitching: the conversation's generated images
+          // ride into the document (data URLs stay in .md; the .docx builder
+          // embeds them as real image parts) — the model never carries bytes
+          const genImages = state.sessionImages()
+          const body = genImages.length
+            ? `${resolved.replace(/\s+$/, '')}\n\n${genImages
+                .map((u, i) => `![生成图片 ${i + 1}](${u})`)
+                .join('\n\n')}\n`
+            : resolved
           if (!isBlank && body.replace(/\s/g, '').length < MIN_DOC_BODY_CHARS) {
             return {
               output: `${texts.docBodyMissing}\n${DOC_BODY_CONTRACT_HINT}`,
@@ -1001,6 +1013,7 @@ export class HomeAgent {
   private mcpRefresh: Promise<void> | null = null
   /** the last generate_image result (display-only; drained into the tool card) */
   private pendingGenImage: string | null = null
+  private sessionGenImages: string[] = []
   /** cached capability probe: a default image-gen model resolves from settings */
   private imageGenReady = false
   /** cached search-backend probe (web_search tool gate); true until a probe says otherwise */
@@ -1046,7 +1059,9 @@ export class HomeAgent {
         mediaFlags: () => this.mediaFlags,
         onGeneratedImage: (dataUrl) => {
           this.pendingGenImage = dataUrl
+          this.sessionGenImages.push(dataUrl)
         },
+        sessionImages: () => this.sessionGenImages,
       },
       texts,
     )
