@@ -110,9 +110,12 @@ function buildRuntime(options: AiProxyOptions): AiRuntime {
     if (live) return live
     if (cachedLocalKey && Date.now() - cachedLocalKeyAt < 10_000) return cachedLocalKey
     const origin = await resolveRpcOrigin(harness)
-    const response = await fetch(`${origin}/api/chatop-models/proxy/keys/issue`, {
+    const response = await fetch(`${rpcOriginBase(origin)}/api/chatop-models/proxy/keys/issue`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: {
+        'content-type': 'application/json',
+        ...(await dshRpcHeaders(origin)),
+      },
       body: JSON.stringify({ agentId: CHATOP_LOCAL_AGENT_ID }),
     })
     if (!response.ok) throw new Error(`chatop-models key issue failed: HTTP ${response.status}`)
@@ -126,16 +129,34 @@ function buildRuntime(options: AiProxyOptions): AiRuntime {
     ? createHarnessSource({
         rpc: async (method, payload) => {
           const origin = await resolveRpcOrigin(options.harness!)
-          const response = await fetch(`${origin}/api/${method}`, {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({
-              type: 'client-request',
-              rpcId: crypto.randomUUID(),
-              method,
-              payload,
-            }),
-          })
+          // dsh 0.1.5+/rc 网关协议：端点与信封 method 用斜杠形式
+          // （settings.mutate → settings/mutate，点形式 404），payload 必须
+          // {args: {...}} 单字段包裹 —— 与 chatop web 客户端 harness-rpc.js
+          // 的适配同款。the web face authenticates /api/ by browser cookie; a
+          // 401 invalidates the cached exchange (process restart rotates the
+          // launch token) and the call retries once with a fresh cookie
+          const wire = method.replace('.', '/')
+          const call = async (fresh = false): Promise<Response> => {
+            const response = await fetch(`${rpcOriginBase(origin)}/api/${wire}`, {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json',
+                ...(await dshRpcHeaders(origin, fresh)),
+              },
+              body: JSON.stringify({
+                type: 'client-request',
+                rpcId: crypto.randomUUID(),
+                method: wire,
+                payload: { args: payload ?? {} },
+              }),
+            })
+            if (response.status === 401) {
+              invalidateDshRpcCookie()
+              return call(true)
+            }
+            return response
+          }
+          const response = await call()
           if (!response.ok)
             throw new Error(`transport failure for ${method}: HTTP ${response.status}`)
           const envelope = (await response.json()) as {
@@ -193,6 +214,49 @@ async function resolveRpcOrigin(harness: {
   if (!cachedRpcOrigin)
     throw new Error('harness rpc origin not discovered yet (dsh has served no request)')
   return cachedRpcOrigin
+}
+
+/** the API base of a resolved rpc origin — the file may carry the process
+ *  launch token as a query (?token=…, minted by the plugin host via
+ *  connection.authenticatedUrl) which never belongs on an /api/ URL */
+function rpcOriginBase(origin: string): string {
+  return origin.split('?')[0]!.replace(/\/$/, '')
+}
+
+let cachedDshCookie = ''
+let cachedDshCookieAt = 0
+
+export function invalidateDshRpcCookie(): void {
+  cachedDshCookie = ''
+  cachedDshCookieAt = 0
+}
+
+/**
+ * dsh's web face authenticates /api/ through a browser cookie; the launch
+ * token carried in the origin file is exchanged once at `GET /?token=…`
+ * (dsh answers 303 + Set-Cookie dsh-auth-<authority>). Server-side callers
+ * keep the exchanged cookie cached; a stale cookie (rotated process) is
+ * dropped by invalidateDshRpcCookie and re-exchanged on demand.
+ */
+async function dshRpcHeaders(origin: string, fresh = false): Promise<Record<string, string>> {
+  const token = new URL(origin).searchParams.get('token')
+  if (!token) return {}
+  if (
+    !fresh &&
+    cachedDshCookie &&
+    Date.now() - cachedDshCookieAt < 10 * 60_000
+  )
+    return { cookie: cachedDshCookie }
+  const response = await fetch(`${rpcOriginBase(origin)}/?token=${encodeURIComponent(token)}`, {
+    redirect: 'manual',
+    signal: AbortSignal.timeout(5_000),
+  })
+  const setCookie = response.headers.get('set-cookie')
+  const pair = setCookie?.split(';')[0]
+  if (!pair) throw new Error('dsh token exchange returned no session cookie')
+  cachedDshCookie = pair
+  cachedDshCookieAt = Date.now()
+  return { cookie: cachedDshCookie }
 }
 
 const activeStreams = new Map<string, AbortController>()

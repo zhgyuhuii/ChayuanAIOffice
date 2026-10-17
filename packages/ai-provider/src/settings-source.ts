@@ -300,14 +300,42 @@ export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
   const { rpc, readDshFile, officeStateSource } = deps
 
   const readProfiles = async (): Promise<AiProviderProfile[]> => {
-    const yaml = await readDshFile('settings.yaml')
-    const parsed = parseHarnessProviders(yaml)
     const profiles: AiProviderProfile[] = []
-    for (const [route, hp] of Object.entries(parsed)) {
+    // current dsh persists config in the profile's Cordis patch — the legacy
+    // settings.yaml is imported once at boot and removed. File first (older
+    // dsh keeps it live), then settings.describe over rpc (new dsh).
+    const yaml = await readDshFile('settings.yaml').catch(() => '')
+    if (yaml.trim()) {
+      const parsed = parseHarnessProviders(yaml)
+      for (const [route, hp] of Object.entries(parsed)) {
+        const profile = profileFromHarness(route, hp)
+        if (profile) profiles.push(profile)
+      }
+      return profiles
+    }
+    if (!rpc) return []
+    const described = (await rpc('settings.describe', {})) as {
+      namespaces?: Array<{ ns?: string; value?: { providers?: Record<string, HarnessProviderProfile> } }>
+    } | null
+    const providers =
+      described?.namespaces?.find((n) => n.ns === 'llm-pi-ai')?.value?.providers ?? {}
+    for (const [route, hp] of Object.entries(providers)) {
       const profile = profileFromHarness(route, hp)
       if (profile) profiles.push(profile)
     }
     return profiles
+  }
+
+  /** dsh's current default-model pick — same file-first, describe-fallback order */
+  const readDefaultPick = async (): Promise<{ provider: string; model: string } | null> => {
+    const yaml = await readDshFile('settings.yaml').catch(() => '')
+    if (yaml.trim()) return parseHarnessDefaultModel(yaml)
+    if (!rpc) return null
+    const described = (await rpc('settings.describe', {})) as {
+      namespaces?: Array<{ ns?: string; value?: { provider?: string; model?: string } }>
+    } | null
+    const value = described?.namespaces?.find((n) => n.ns === 'agent-default-model')?.value
+    return value?.provider && value?.model ? { provider: value.provider, model: value.model } : null
   }
 
   /** the harness's local model service as a synthetic profile (chatop-local):
@@ -413,9 +441,7 @@ export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
         officeStateSource.read(),
         readProfiles().catch(() => [] as AiProviderProfile[]),
         readLocal(),
-        readDshFile('settings.yaml')
-          .then((yaml) => parseHarnessDefaultModel(yaml))
-          .catch(() => null),
+        readDefaultPick().catch(() => null),
       ])
       // local group first so the picker lists it above the vendor groups, then
       // the harness vendor routes, then office-local custom profiles
@@ -528,9 +554,7 @@ export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
         new Set([...harnessVendorIds, ...wantedByVendor.keys()]),
       )
       if (patch) {
-        const dshPick = await readDshFile('settings.yaml')
-          .then(parseHarnessDefaultModel)
-          .catch(() => null)
+        const dshPick = await readDefaultPick().catch(() => null)
         if (!dshPick || dshPick.provider !== patch.provider || dshPick.model !== patch.model)
           await rpc('settings.update', { ns: 'agent-default-model', patch })
       }

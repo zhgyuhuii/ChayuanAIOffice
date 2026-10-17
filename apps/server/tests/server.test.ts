@@ -1,7 +1,9 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
+import { createServer, type Server } from 'node:http'
+import type { AddressInfo } from 'node:net'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import { openLocalArea } from '@chaoffice/storage-adapter'
 import { buildServer } from '../src/app.ts'
@@ -387,5 +389,94 @@ describe('POST /rpc/remoteStorage/*', () => {
     })
     expect(unknown.statusCode).toBe(404)
     expect(unknown.json().code).toBe('UnknownStorageConfig')
+  })
+})
+
+describe('AI harness fusion: authenticated rpc writes (dsh web cookie fence)', () => {
+  it('exchanges the launch token for a session cookie and propagates settings writes', async () => {
+    const dataDir = mkdtempSync(join(tmpdir(), 'chaoffice-ai-'))
+    const dshHome = mkdtempSync(join(tmpdir(), 'chaoffice-dsh-'))
+    writeFileSync(
+      join(dshHome, 'settings.yaml'),
+      [
+        'llm-pi-ai:',
+        '  providers:',
+        '    chatop-zhipu:',
+        '      displayName: 智谱开放平台',
+        '      apiKeyEnv: CHATOP_ZHIPU_API_KEY',
+        '      api: openai-completions',
+        '      baseURL: https://open.bigmodel.cn/api/paas/v4',
+        '      models:',
+        '        - id: glm-5.3',
+        '        - id: glm-5.2',
+      ].join('\n'),
+    )
+    writeFileSync(
+      join(dshHome, '.credentials.yaml'),
+      ['version: 1', 'refs:', '  CHATOP_ZHIPU_API_KEY: sk-zp'].join('\n'),
+    )
+    // a mock dsh web: GET /?token=<launch> exchanges for the signed cookie,
+    // every /api/ call must present it (the rc.3 browser-cookie fence)
+    const seen: Array<{ method: string; cookie?: string; payload: unknown }> = []
+    let exchanges = 0
+    const dsh: Server = createServer((req, res) => {
+      const url = new URL(req.url ?? '/', 'http://dsh.mock')
+      if (req.method === 'GET' && url.pathname === '/' && url.searchParams.get('token') === 'launch-tok') {
+        exchanges += 1
+        res.writeHead(303, {
+          'set-cookie': 'dsh-auth-mock=sig; Path=/; HttpOnly; SameSite=Lax',
+          location: './',
+        })
+        res.end()
+        return
+      }
+      const cookie = req.headers.cookie
+      if (cookie !== 'dsh-auth-mock=sig') {
+        res.writeHead(401)
+        res.end('unauthorized')
+        return
+      }
+      let body = ''
+      req.on('data', (c) => (body += c))
+      req.on('end', () => {
+        const envelope = JSON.parse(body) as { method: string; payload: unknown }
+        seen.push({ method: envelope.method, cookie, payload: envelope.payload })
+        res.writeHead(200, { 'content-type': 'application/json' })
+        res.end(JSON.stringify({ result: { ok: true, value: {} } }))
+      })
+    })
+    await new Promise<void>((resolve) => dsh.listen(0, '127.0.0.1', resolve))
+    const port = (dsh.address() as AddressInfo).port
+    // the plugin host's rpc-origin file carrying the minted launch token
+    const rpcFile = join(dshHome, 'storages', 'chaoffice', 'dsh-rpc-origin')
+    mkdirSync(dirname(rpcFile), { recursive: true })
+    writeFileSync(rpcFile, `http://127.0.0.1:${port}/?token=launch-tok`)
+
+    try {
+      const { app } = buildServer({
+        area: tempArea(),
+        ai: { dataDir, harness: { dshHome, rpcOrigin: '', rpcOriginFile: rpcFile } },
+      })
+      const view = (await app.inject({ method: 'GET', url: '/ai/settings' })).json()
+      expect(view.profiles.some((p: { id: string }) => p.id === 'zhipu')).toBe(true)
+      // switch the model through the office view — the write must ride the
+      // cookie-authenticated rpc face and propagate the default model
+      view.currentModel = { profileId: 'zhipu', modelId: 'glm-5.2' }
+      const put = await app.inject({ method: 'PUT', url: '/ai/settings', payload: view })
+            expect(put.statusCode).toBe(200)
+
+      expect(exchanges).toBe(1) // cached after the first exchange
+      expect(seen.length).toBeGreaterThan(0)
+      expect(seen.every((s) => s.cookie === 'dsh-auth-mock=sig')).toBe(true)
+      expect(seen.map((s) => s.method)).toContain('settings/mutate')
+      const update = seen.find((s) => s.method === 'settings/update')
+      expect(update?.payload).toEqual({
+        args: { ns: 'agent-default-model', patch: { provider: 'chatop-zhipu', model: 'glm-5.2' } },
+      })
+    } finally {
+      dsh.close()
+      rmSync(dataDir, { recursive: true, force: true })
+      rmSync(dshHome, { recursive: true, force: true })
+    }
   })
 })

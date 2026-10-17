@@ -767,3 +767,108 @@ describe('createHarnessSource read-only (desktop) mode', () => {
     expect(office.maxOutputTokens).toBe(4096)
   })
 })
+
+// ── 新版 dsh：settings.yaml 已迁移为 profile Cordis patch（文件被导入后移除）──
+// 读侧走 settings.describe RPC 兜底 ─────────────────────────────────────────
+
+describe('createHarnessSource × settings.describe fallback (post-migration dsh)', () => {
+  function makeDescribeSource(describe: unknown) {
+    let officeState: AiSettingsV2 = { version: 2, profiles: [] }
+    const rpcCalls: Array<{ method: string; payload: unknown }> = []
+    const source = createHarnessSource({
+      rpc: async (method, payload) => {
+        rpcCalls.push({ method, payload })
+        if (method === 'settings.describe') return describe
+        return {}
+      },
+      // settings.yaml gone: dsh imported and removed it at boot
+      readDshFile: async () => {
+        throw new Error('ENOENT')
+      },
+      officeStateSource: {
+        read: async () => officeState,
+        write: async (next) => {
+          officeState = next
+        },
+      },
+    })
+    return { source, rpcCalls, officeStateGetter: () => officeState }
+  }
+
+  const DESCRIBE = {
+    namespaces: [
+      {
+        ns: 'ui-theme',
+        value: { preference: 'dark' },
+      },
+      {
+        ns: 'llm-pi-ai',
+        value: {
+          providers: {
+            'chatop-zhipu': {
+              displayName: '智谱开放平台',
+              apiKeyEnv: 'CHATOP_ZHIPU_API_KEY',
+              api: 'openai-completions',
+              baseURL: 'https://open.bigmodel.cn/api/paas/v4',
+              models: [{ id: 'glm-5.2' }],
+            },
+          },
+        },
+      },
+      {
+        ns: 'agent-default-model',
+        value: { provider: 'chatop-zhipu', model: 'glm-5.2' },
+      },
+    ],
+  }
+
+  it('reads profiles and the default pick from settings.describe when the yaml is gone', async () => {
+    const { source, rpcCalls } = makeDescribeSource(DESCRIBE)
+    const s = await source.read()
+    expect(s.profiles.map((p) => p.id)).toEqual(['zhipu'])
+    expect(s.profiles[0]).toMatchObject({
+      vendorId: 'zhipu',
+      baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
+      apiKeyRef: 'CHATOP_ZHIPU_API_KEY',
+    })
+    // linked read: the described default model wins
+    expect(s.currentModel).toEqual({ profileId: 'zhipu', modelId: 'glm-5.2' })
+    expect(rpcCalls.some((c) => c.method === 'settings.describe')).toBe(true)
+  })
+
+  it('write propagates through describe-read routes and skips an unchanged default', async () => {
+    const { source, rpcCalls } = makeDescribeSource(DESCRIBE)
+    const current = await source.read()
+    await source.write({ ...current, currentModel: { profileId: 'zhipu', modelId: 'glm-5.2' } })
+    // same pick as the described default → no settings.update, only route rewrite
+    expect(rpcCalls.some((c) => c.method === 'settings.update')).toBe(false)
+    // add glm-5.3 to the route, then switch to it → propagates through describe
+    const withModel = {
+      ...current,
+      profiles: [{ ...current.profiles[0]!, models: [{ id: 'glm-5.2' }, { id: 'glm-5.3' }] }],
+    }
+    await source.write({ ...withModel, currentModel: { profileId: 'zhipu', modelId: 'glm-5.3' } })
+    const update = rpcCalls.find((c) => c.method === 'settings.update')
+    expect(update?.payload).toEqual({
+      ns: 'agent-default-model',
+      patch: { provider: 'chatop-zhipu', model: 'glm-5.3' },
+    })
+  })
+
+  it('desktop (no rpc) with no yaml → no vendor groups, office state only', async () => {
+    let officeState: AiSettingsV2 = { version: 2, profiles: [] }
+    const source = createHarnessSource({
+      readDshFile: async () => {
+        throw new Error('ENOENT')
+      },
+      officeStateSource: {
+        read: async () => officeState,
+        write: async (next) => {
+          officeState = next
+        },
+      },
+    })
+    const s = await source.read()
+    expect(s.profiles).toEqual([])
+  })
+})

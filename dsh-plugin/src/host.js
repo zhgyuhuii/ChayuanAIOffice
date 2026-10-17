@@ -143,9 +143,13 @@ export function apply(ctx) {
   /**
    * 模型设置真融合（共识 #8）：sidecar 的 AI 设置源指向 harness 的
    * llm-pi-ai（与 chatop 同一份）。写操作走 harness loopback RPC
-   * （settings.mutate / credentials.set），其 origin 在首个请求到达时才能
-   * 从 Host 头确认 —— 记到 dataDir/dsh-rpc-origin，sidecar 每次 RPC 调用
-   * 前读取（带缓存），避免与启动顺序耦合。
+   * （settings.mutate / credentials.set / settings.update），其 origin 在首个
+   * 请求到达时才能从 Host 头确认 —— 记到 dataDir/dsh-rpc-origin，sidecar
+   * 每次 RPC 调用前读取（带缓存），避免与启动顺序耦合。
+   * dsh web 的 /api/ 有浏览器 cookie 围栏：裸 origin 打过去恒 401。这里用
+   * 本进程的 launch token（connection.authenticatedUrl 铸 ?token=）写进
+   * origin 文件，sidecar 侧在 `/` 换 dsh-auth cookie 后携带调用（与
+   * chatop-shell 云通道同款令牌通道）。
    */
   const rpcOriginFile = join(dataDir(), 'dsh-rpc-origin')
   let rpcOriginWritten = false
@@ -157,6 +161,21 @@ export function apply(ctx) {
     try {
       writeFileSync(rpcOriginFile, `http://${host}`)
       console.log(`[chaoffice] harness rpc origin: http://${host}`)
+      try {
+        ctx.inject(['connection'], (c) => {
+          try {
+            const authed = c.connection?.authenticatedUrl?.(`http://${host}/`)
+            if (authed) {
+              writeFileSync(rpcOriginFile, authed)
+              console.log('[chaoffice] harness rpc origin carries launch token (cookie exchange enabled)')
+            }
+          } catch {
+            /* 老版本无 authenticatedUrl：sidecar 沿用裸 origin（读侧不受影响） */
+          }
+        })
+      } catch {
+        /* 老版本 dsh 无 connection 服务：融合退化为只读 */
+      }
     } catch {
       /* 融合退化为本地文件模式（读侧不受影响） */
     }
