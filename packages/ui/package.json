@@ -54,6 +54,7 @@
     "@chaoffice/agent-core": "*",
     "@chaoffice/ai-provider": "*",
     "@chaoffice/i18n": "*",
-    "@chaoffice/pptx-render": "*"
+    "@chaoffice/pptx-render": "*",
+    "react-dom": "^19.0.0"
   }
 }

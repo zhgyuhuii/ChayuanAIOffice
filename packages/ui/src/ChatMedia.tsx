@@ -1,11 +1,14 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 /**
  * Inline media result card for AI chat surfaces (Doubao/DeepSeek-style): the
  * generated image / video / audio renders directly in the conversation and a
- * hover download button saves it (另存为). Works with data:, blob:, http(s)
- * and desktop file: sources — anything fetchable goes through a Blob anchor;
- * file:// falls back to a direct download anchor (Electron save dialog).
+ * hover download button saves it (另存为). Double-click zooms images and
+ * videos into a full-screen lightbox (click-away / Esc closes; the enlarged
+ * video keeps its controls). Works with data:, blob:, http(s) and desktop
+ * file: sources — anything fetchable goes through a Blob anchor; file://
+ * falls back to a direct download anchor (Electron save dialog).
  */
 export interface ChatMediaPayload {
   kind: 'image' | 'video' | 'audio'
@@ -32,7 +35,16 @@ async function saveMedia(src: string, name: string): Promise<void> {
 
 export function ChatMedia({ media, lang }: { media: ChatMediaPayload; lang?: string }): React.JSX.Element {
   const [saved, setSaved] = useState(false)
+  const [zoomed, setZoomed] = useState(false)
   const zh = !(lang ?? 'zh').startsWith('en')
+  useEffect(() => {
+    if (!zoomed) return
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') setZoomed(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [zoomed])
   const ext =
     media.kind === 'image'
       ? /data:image\/(png|jpeg|jpg|webp|gif)/.exec(media.url)?.[1]?.replace('jpeg', 'jpg') ?? 'png'
@@ -49,6 +61,7 @@ export function ChatMedia({ media, lang }: { media: ChatMediaPayload; lang?: str
       /* transient fetch failure: the anchor path already ran */
     }
   }
+  const zoomable = media.kind === 'image' || media.kind === 'video'
   const btn: React.CSSProperties = {
     position: 'absolute',
     top: 8,
@@ -85,7 +98,11 @@ export function ChatMedia({ media, lang }: { media: ChatMediaPayload; lang?: str
         <img
           src={media.url}
           alt={name}
-          style={{ maxWidth: 380, maxHeight: 380, borderRadius: 8, display: 'block' }}
+          style={{ maxWidth: 380, maxHeight: 380, borderRadius: 8, display: 'block', cursor: zoomable ? 'zoom-in' : 'default' }}
+          onDoubleClick={(e) => {
+            e.stopPropagation()
+            if (zoomable) setZoomed(true)
+          }}
         />
       )}
       {media.kind === 'video' && (
@@ -93,13 +110,65 @@ export function ChatMedia({ media, lang }: { media: ChatMediaPayload; lang?: str
           src={media.url}
           controls
           preload="metadata"
-          style={{ maxWidth: 380, maxHeight: 380, borderRadius: 8, display: 'block', background: '#000' }}
+          style={{ maxWidth: 380, maxHeight: 380, borderRadius: 8, display: 'block', background: '#000', cursor: 'zoom-in' }}
+          onDoubleClick={(e) => {
+            e.stopPropagation()
+            setZoomed(true)
+          }}
         />
       )}
       {media.kind === 'audio' && <audio src={media.url} controls style={{ maxWidth: 330, display: 'block' }} />}
       <button type="button" style={btn} onClick={download} title={zh ? '另存为' : 'Save as'}>
         {saved ? (zh ? '✓ 已保存' : '✓ Saved') : `⤓ ${zh ? '另存为' : 'Save'}`}
       </button>
+      {zoomed &&
+        createPortal(
+          <div
+            role="dialog"
+            aria-modal="true"
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(10,10,12,0.88)',
+              display: 'grid',
+              placeItems: 'center',
+              zIndex: 2147483000,
+              cursor: 'zoom-out',
+            }}
+            onClick={() => setZoomed(false)}
+          >
+            {media.kind === 'image' ? (
+              // eslint-disable-next-line @next/next/no-img-element -- lightbox zoom
+              <img
+                src={media.url}
+                alt={name}
+                style={{ maxWidth: '94vw', maxHeight: '94vh', borderRadius: 10, boxShadow: '0 18px 60px rgba(0,0,0,0.55)' }}
+                onClick={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <video
+                src={media.url}
+                controls
+                autoPlay
+                style={{ maxWidth: '94vw', maxHeight: '94vh', borderRadius: 10, boxShadow: '0 18px 60px rgba(0,0,0,0.55)', background: '#000' }}
+                onClick={(e) => e.stopPropagation()}
+              />
+            )}
+            <span
+              style={{
+                position: 'fixed',
+                top: 18,
+                right: 22,
+                color: 'rgba(255,255,255,0.85)',
+                font: '13px/1 system-ui, sans-serif',
+                pointerEvents: 'none',
+              }}
+            >
+              {zh ? '双击打开 · 点击空白或 Esc 关闭' : 'Double-click opened · click-away or Esc closes'}
+            </span>
+          </div>,
+          document.body,
+        )}
     </span>
   )
 }
