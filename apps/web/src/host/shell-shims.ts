@@ -574,19 +574,55 @@ export function installShellShims(): void {
       aiListeners.add(handler)
       return () => aiListeners.delete(handler)
     },
-    // home chat sessions persist in localStorage (the desktop stores them in
-    // userData/home-chat-sessions.json)
+    // home chat sessions persist server-side (disk under the BFF data dir,
+    // like the desktop's userData/home-chat-sessions.json) — localStorage caps
+    // at ~5-10MB per origin and one generated-video data URL killed the whole
+    // save, losing history media. localStorage stays as fallback + migrates up.
     chatSessionsLoad: async () => {
       try {
+        const fromServer = (await fetch(aiUrl('ai/chat-sessions')).then((r) => r.json())) as unknown
+        if (Array.isArray(fromServer) && fromServer.length > 0) return fromServer
         const raw = localStorage.getItem(CHAT_SESSIONS_KEY)
         const parsed: unknown = raw ? JSON.parse(raw) : []
-        return Array.isArray(parsed) ? parsed : []
-      } catch {
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // one-time migration: push legacy local sessions up, then drop the
+          // key so stale local copies never shadow server state
+          void fetch(aiUrl('ai/chat-sessions'), {
+            method: 'PUT',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(parsed),
+          })
+            .then(() => localStorage.removeItem(CHAT_SESSIONS_KEY))
+            .catch(() => undefined)
+          return parsed
+        }
         return []
+      } catch {
+        try {
+          const raw = localStorage.getItem(CHAT_SESSIONS_KEY)
+          const parsed: unknown = raw ? JSON.parse(raw) : []
+          return Array.isArray(parsed) ? parsed : []
+        } catch {
+          return []
+        }
       }
     },
     chatSessionsSave: async (sessions: unknown) => {
-      localStorage.setItem(CHAT_SESSIONS_KEY, JSON.stringify(sessions))
+      try {
+        const resp = await fetch(aiUrl('ai/chat-sessions'), {
+          method: 'PUT',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(sessions),
+        })
+        if (resp.ok) return
+      } catch {
+        /* server unreachable: legacy localStorage below (may quota-fail) */
+      }
+      try {
+        localStorage.setItem(CHAT_SESSIONS_KEY, JSON.stringify(sessions))
+      } catch {
+        /* quota exceeded: the server retry on the next change recovers */
+      }
     },
     chaofficeStatus: async () => ({ loggedIn: false }),
     chaofficeLogin: async () => undefined,

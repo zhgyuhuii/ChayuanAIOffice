@@ -657,3 +657,34 @@ describe('create-document image embedding', () => {
     expect(xml).toContain('春节插画方案')
   })
 })
+
+describe('home-chat session persistence (web/dsh form)', () => {
+  it('round-trips sessions with media-bearing history through disk', async () => {
+    const dataDir = mkdtempSync(join(tmpdir(), 'chaoffice-ai-'))
+    try {
+      const { app } = buildServer({ area: tempArea(), ai: { dataDir } })
+      expect(await (await app.inject({ method: 'GET', url: '/ai/chat-sessions' })).json()).toEqual([])
+      const sessions = [
+        {
+          id: 's1',
+          messages: [
+            { id: 'm1', role: 'assistant', text: 'ok', relayTools: [{ callId: 'c1', name: 'generate_video', media: { kind: 'video', url: 'data:video/mp4;base64,AAAA' } }] },
+          ],
+        },
+      ]
+      const put = await app.inject({
+        method: 'PUT',
+        url: '/ai/chat-sessions',
+        payload: sessions,
+      })
+      expect(put.statusCode).toBe(200)
+      expect(put.json().ok).toBe(true)
+      const back = await (await app.inject({ method: 'GET', url: '/ai/chat-sessions' })).json()
+      expect(back[0].messages[0].relayTools[0].media.url).toContain('data:video/mp4')
+      const bad = await app.inject({ method: 'PUT', url: '/ai/chat-sessions', payload: { nope: 1 } })
+      expect(bad.statusCode).toBe(400)
+    } finally {
+      rmSync(dataDir, { recursive: true, force: true })
+    }
+  })
+})

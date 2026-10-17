@@ -296,6 +296,7 @@ export function attachAiProxy(
   mediaResolveSecret?: (profile: import('@chaoffice/ai-provider').AiProviderProfile) => Promise<string>
 } {
   const { runtime, mediaResolveSecret } = buildRuntime(options)
+  const dataDir = options.dataDir ?? './data'
   const records: AiCallRecord[] = []
   const record = (r: AiCallRecord) => {
     records.push(r)
@@ -532,6 +533,28 @@ export function attachAiProxy(
 
   // Metering read-back (ops/debug until the usage dashboard exists)
   app.get('/ai/usage', async () => ({ calls: records.length, records }))
+
+  // ── home-chat session persistence (web/dsh form) ─────────────────────────
+  // localStorage caps at ~5-10MB per origin — one generated-video data URL
+  // alone exceeds it, so the whole sessions array failed to persist and
+  // history lost its media. Disk under the data dir, like the desktop form.
+  const sessionsFile = resolve(dataDir, 'home-chat-sessions.json')
+  app.get('/ai/chat-sessions', async () => {
+    try {
+      return JSON.parse(await readFile(sessionsFile, 'utf8')) as unknown
+    } catch {
+      return []
+    }
+  })
+  app.put<{ Body: unknown }>('/ai/chat-sessions', async (request, reply) => {
+    const sessions = request.body
+    if (!Array.isArray(sessions)) {
+      return reply.code(400).send({ error: 'sessions must be an array' })
+    }
+    await mkdir(dirname(sessionsFile), { recursive: true })
+    await writeFile(sessionsFile, JSON.stringify(sessions), 'utf8')
+    return { ok: true }
+  })
 
   return { runtime, ...(mediaResolveSecret ? { mediaResolveSecret } : {}) }
 }
