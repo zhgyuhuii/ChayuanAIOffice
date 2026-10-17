@@ -24,7 +24,8 @@
     "@chaoffice/service-core": "*",
     "@chaoffice/storage-adapter": "*",
     "fastify": "^5.2.1",
-    "tsx": "^4.19.2"
+    "tsx": "^4.19.2",
+    "@chaoffice/docx-engine": "*"
   },
   "devDependencies": {
     "@types/ws": "^8.5.10",

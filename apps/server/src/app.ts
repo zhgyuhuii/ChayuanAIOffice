@@ -23,6 +23,7 @@ import { attachAuthHooks, type AuthOptions } from './auth.js'
 import { attachWsGateway } from './ws-gateway.js'
 import { attachAiProxy, type AiProxyOptions } from './ai-proxy.js'
 import { attachKbProxy, type KbProxyOptions } from './kb-proxy.js'
+import { attachMediaRoutes } from './ai-media.js'
 import { attachStatic } from './static.js'
 import { createPptxService } from './services/pptx.js'
 import { createSheetsSaveService } from './services/sheets-save.js'
@@ -149,7 +150,7 @@ export function buildServer(options: ServerOptions = {}): BuiltServer {
   const dshHome = process.env.CHAOFFICE_DSH_HOME
   const dshRpc = process.env.CHAOFFICE_DSH_RPC_ORIGIN
   const dshRpcFile = process.env.CHAOFFICE_DSH_RPC_ORIGIN_FILE
-  attachAiProxy(app, {
+  const ai = attachAiProxy(app, {
     ...options.ai,
     dataDir: options.ai?.dataDir ?? dataDir,
     // dsh plugin form: provider profiles + keys live in the harness settings.
@@ -164,6 +165,9 @@ export function buildServer(options: ServerOptions = {}): BuiltServer {
         }
       : {}),
   })
+  // media + document channels (the web/dsh port of the desktop ai:media-* IPC
+  // and create_document's host write) ride the same runtime and secrets
+  attachMediaRoutes(app, ai)
   // knowledge-base read proxy (dsh plugin form: harness origin; web form: absent → degrades)
   attachKbProxy(app, {
     harness:

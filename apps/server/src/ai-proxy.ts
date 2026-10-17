@@ -288,7 +288,13 @@ async function dshRpcHeaders(origin: string, fresh = false): Promise<Record<stri
 
 const activeStreams = new Map<string, AbortController>()
 
-export function attachAiProxy(app: FastifyInstance, options: AiProxyOptions): void {
+export function attachAiProxy(
+  app: FastifyInstance,
+  options: AiProxyOptions,
+): {
+  runtime: AiRuntime
+  mediaResolveSecret?: (profile: import('@chaoffice/ai-provider').AiProviderProfile) => Promise<string>
+} {
   const { runtime, mediaResolveSecret } = buildRuntime(options)
   const records: AiCallRecord[] = []
   const record = (r: AiCallRecord) => {
@@ -526,6 +532,8 @@ export function attachAiProxy(app: FastifyInstance, options: AiProxyOptions): vo
 
   // Metering read-back (ops/debug until the usage dashboard exists)
   app.get('/ai/usage', async () => ({ calls: records.length, records }))
+
+  return { runtime, ...(mediaResolveSecret ? { mediaResolveSecret } : {}) }
 }
 
 export { KEEP_KEY }

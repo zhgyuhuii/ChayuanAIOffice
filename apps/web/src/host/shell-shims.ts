@@ -20,7 +20,7 @@ import {
   toggleStar,
   type RecentEntry,
 } from './recents.js'
-import { openEditorFor, openPickedFile } from './file-open.js'
+import { fileStore, extToKind, openEditorFor, openPickedFile } from './file-open.js'
 
 type RecentEntryShell = {
   path: string
@@ -371,10 +371,13 @@ export function installShellShims(): void {
     getMcpLogs: async () => [],
     clearMcpLogs: async () => undefined,
     openMcpLogFile: async () => degraded('chaOffice.openMcpLogFile'),
-    searchCapabilities: async () => ({ search: false }),
+    searchCapabilities: async () =>
+      (await fetch(aiUrl('ai/search-capabilities')).then((r) => r.json())) as unknown,
 
-    // media channels over the BFF (parity with the desktop ai:media-* IPC):
-    // generation + capability probing run server-side, keys never reach the page
+    // media + document channels over the BFF (parity with the desktop
+    // ai:media-* IPC): generation and probing run server-side, keys never
+    // reach the page; binaries land through the FS Access save picker, which
+    // degrades to a browser download outside user-gesture windows
     mediaGenerate: async (req: {
       profileId?: string
       modelId?: string
@@ -390,6 +393,97 @@ export function installShellShims(): void {
       ).json() as unknown,
     mediaCapabilities: async () =>
       (await fetch(aiUrl('ai/media/capabilities'))).json() as unknown,
+    // web search rides the BFF's /ai/web-search (free DuckDuckGo tier included)
+    webSearch: async (query: string, maxResults?: number) =>
+      (
+        await fetch(aiUrl('ai/web-search'), {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ query, maxResults }),
+        })
+      ).json() as unknown,
+    mediaVideo: async (req: {
+      prompt: string
+      aspectRatio?: string
+      durationSeconds?: number
+    }) => {
+      const r = (await fetch(aiUrl('ai/media/video'), {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(req),
+      }).then((x) => x.json())) as {
+        url?: string
+        bytesB64?: string
+        mime?: string
+        model?: string
+        error?: string
+      }
+      if (r.bytesB64) {
+        const bytes = Uint8Array.from(atob(r.bytesB64), (c) => c.charCodeAt(0))
+        const saved = await fileStore.saveAsPicker(`generated-video-${Date.now()}.mp4`, bytes)
+        if (saved) return { url: r.url, filePath: `webfs:${saved.id}:${saved.name}`, model: r.model }
+      }
+      return r
+    },
+    mediaUnderstand: async (req: {
+      kind: 'image' | 'video' | 'auto'
+      sources: string[]
+      requirements: string
+    }) =>
+      (
+        await fetch(aiUrl('ai/media/understand'), {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(req),
+        })
+      ).json() as unknown,
+    mediaAsr: async (req: { source: string; language?: string }) =>
+      (
+        await fetch(aiUrl('ai/media/asr'), {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(req),
+        })
+      ).json() as unknown,
+    mediaTts: async (req: { text: string; voice?: string }) => {
+      const r = (await fetch(aiUrl('ai/media/tts'), {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(req),
+      }).then((x) => x.json())) as {
+        bytesB64?: string
+        mime?: string
+        remoteUrl?: string
+        model?: string
+        error?: string
+      }
+      if (r.bytesB64) {
+        const ext = (r.mime ?? '').includes('wav') ? 'wav' : (r.mime ?? '').includes('mpeg') ? 'mp3' : 'audio'
+        const bytes = Uint8Array.from(atob(r.bytesB64), (c) => c.charCodeAt(0))
+        const saved = await fileStore.saveAsPicker(`media-speech-${Date.now()}.${ext}`, bytes)
+        if (saved) return { url: `webfs:${saved.id}:${saved.name}`, mime: r.mime, model: r.model }
+      }
+      return r.remoteUrl ? { url: r.remoteUrl, mime: r.mime, model: r.model } : r
+    },
+    createDocument: async (req: {
+      type: string
+      title: string
+      content: string
+    }): Promise<{ ok: boolean; path?: string; error?: string }> => {
+      const format = req.type === 'docx' ? 'docx' : 'md'
+      const r = (await fetch(aiUrl('ai/create-document'), {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ title: req.title, format, content: req.content }),
+      }).then((x) => x.json())) as { ok?: boolean; bytesB64?: string; filename?: string; error?: string }
+      if (!r.ok || !r.bytesB64 || !r.filename) return { ok: false, error: r.error ?? 'build failed' }
+      const bytes = Uint8Array.from(atob(r.bytesB64), (c) => c.charCodeAt(0))
+      const saved = await fileStore.saveAsPicker(r.filename, bytes)
+      if (!saved) return { ok: false, error: 'save canceled' }
+      const kind = extToKind(saved.name)
+      if (kind) await openEditorFor(kind, saved.id, saved.name)
+      return { ok: true, path: saved.name }
+    },
 
     // ── account / cloud / AI: awaiting the BFF channels ──
     accountStatus: async () => null,
@@ -523,8 +617,6 @@ export function installShellShims(): void {
     feedbackSubmit: async () => degraded('chaOffice.feedbackSubmit'),
     openExternal: async () => degraded('chaOffice.openExternal'),
     openGenTeam: () => undefined,
-    // AI-authored standalone file: needs the desktop FS pipeline
-    createDocument: async () => degraded('chaOffice.createDocument'),
     // attachment pickers/readers need real file access (FS-Access landing TBD);
     // null = user cancelled, ok:false = unreadable, matching the desktop shapes
     pickAttachments: async () => null,

@@ -571,3 +571,60 @@ describe('media channels (web/dsh form parity)', () => {
     rmSync(dataDir, { recursive: true, force: true })
   })
 })
+
+describe('create-document (web/dsh form)', () => {
+  it('md passthrough and a real docx from markdown', async () => {
+    const { app } = buildServer({ area: tempArea() })
+    const md = await app.inject({
+      method: 'POST',
+      url: '/ai/create-document',
+      payload: { title: '欢乐中国年', format: 'md', content: '# 标题\n\n正文 **加粗**' },
+    })
+    expect(md.statusCode).toBe(200)
+    const mdBody = md.json()
+    expect(mdBody.ok).toBe(true)
+    expect(mdBody.filename).toBe('欢乐中国年.md')
+    expect(Buffer.from(mdBody.bytesB64, 'base64').toString('utf8')).toContain('# 标题')
+
+    const docx = await app.inject({
+      method: 'POST',
+      url: '/ai/create-document',
+      payload: {
+        title: '欢乐中国年',
+        format: 'docx',
+        content: '# 春节方案\n\n- 中国结\n- 炮竹\n\n| 元素 | 说明 |\n| --- | --- |\n| 剪纸 | 窗花 |\n\n> 引用一行',
+      },
+    })
+    expect(docx.statusCode).toBe(200)
+    const body = docx.json()
+    expect(body.ok).toBe(true)
+    const bytes = Buffer.from(body.bytesB64, 'base64')
+    expect(bytes.length).toBeGreaterThan(2000)
+    expect(bytes[0]).toBe(0x50) // PK zip 头
+    // the OOXML body carries our content
+    const JSZipMod = await import('jszip')
+    const zip = await JSZipMod.default.loadAsync(bytes)
+    const xml = await zip.file('word/document.xml')!.async('string')
+    expect(xml).toContain('Heading1')
+    expect(xml).toContain('春节方案')
+    expect(xml).toContain('中国结')
+    expect(xml).toContain('剪纸')
+    expect(xml).toContain('<w:tbl>')
+  })
+
+  it('validates format, empty content and the size cap', async () => {
+    const { app } = buildServer({ area: tempArea() })
+    const bad = await app.inject({
+      method: 'POST',
+      url: '/ai/create-document',
+      payload: { title: 'x', format: 'pdf', content: 'y' },
+    })
+    expect(bad.json().error).toContain('format')
+    const empty = await app.inject({
+      method: 'POST',
+      url: '/ai/create-document',
+      payload: { title: 'x', format: 'md', content: '  ' },
+    })
+    expect(empty.json().error).toContain('empty')
+  })
+})

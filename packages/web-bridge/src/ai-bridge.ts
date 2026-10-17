@@ -37,6 +37,21 @@ export interface AiHttpBridge {
     params?: Record<string, unknown>
   }): Promise<{ images?: { dataUrl: string }[]; error?: string }>
   mediaCapabilities(): Promise<{ flags?: Record<string, boolean>; models?: Record<string, string> }>
+  mediaVideo(req: {
+    prompt: string
+    aspectRatio?: string
+    durationSeconds?: number
+  }): Promise<{ url?: string; bytesB64?: string; mime?: string; model?: string; error?: string }>
+  mediaUnderstand(req: {
+    kind: 'image' | 'video' | 'auto'
+    sources: string[]
+    requirements: string
+  }): Promise<{ text?: string; model?: string; error?: string }>
+  mediaAsr(req: { source: string; language?: string }): Promise<{ text?: string; error?: string }>
+  mediaTts(req: {
+    text: string
+    voice?: string
+  }): Promise<{ url?: string; bytesB64?: string; mime?: string; error?: string }>
 }
 
 async function jsonPost<T>(url: string, body?: unknown, method = 'POST'): Promise<T> {
@@ -182,6 +197,26 @@ export function createAiHttpBridge(baseUrl = defaultAiBase()): AiHttpBridge {
         `${baseUrl}/ai/media/capabilities`,
         3,
         800,
+      )
+    },
+    async mediaVideo(req) {
+      return jsonPost<
+        { url?: string; bytesB64?: string; mime?: string; model?: string; error?: string }
+      >(`${baseUrl}/ai/media/video`, req)
+    },
+    async mediaUnderstand(req) {
+      return jsonPost<{ text?: string; model?: string; error?: string }>(
+        `${baseUrl}/ai/media/understand`,
+        req,
+      )
+    },
+    async mediaAsr(req) {
+      return jsonPost<{ text?: string; error?: string }>(`${baseUrl}/ai/media/asr`, req)
+    },
+    async mediaTts(req) {
+      return jsonPost<{ url?: string; bytesB64?: string; mime?: string; error?: string }>(
+        `${baseUrl}/ai/media/tts`,
+        req,
       )
     },
   }
