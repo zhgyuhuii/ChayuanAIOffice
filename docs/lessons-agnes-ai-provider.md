@@ -121,3 +121,37 @@ chaoffice 有**两套**供应商定义，新接供应商时极易加错位置：
 7. **同一机器双实例**：chatop 桌面的受管 dsh 硬绑 3080 端口，dev 实例与打包实例并存时
    互相抢端口 → 双方 dsh web 各自 ~24s 崩溃重启循环。排障时表现为 sidecar 反复 ready 换
    端口；先 `pgrep -af dsh` 查共存实例再看 chaoffice 本身。
+
+## 续记（2026-10-17 傍晚）：dsh 形态融合真机联调——四个连环坑与模型联动打通
+
+背景：office dsh 形态 ↔ harness 的默认模型联动（agent-default-model 双向同步）在真机
+（察元AI OS dev 桌面 + 受管 dsh profile）端到端联调，连环踩掉四个坑，全部修复并有回归：
+
+1. **401 cookie 围栏**：dsh web 的 /api/ 用浏览器签名 cookie 鉴权（client-connection 的
+   BrowserAuth：进程 launch token 在 `GET /?token=` 换 `dsh-auth-<authority>` cookie，
+   有效期按天）。服务端直调恒 401。修复：host.js 经 `ctx.inject(['connection'])` 拿
+   `authenticatedUrl()` 铸带 token 的 URL 写进 rpc-origin 文件（chatop-shell 云通道同款），
+   sidecar 侧换票缓存、401 失效重换。
+2. **rc 网关线协议**：dsh 0.1.5+/rc 端点与信封 method 是**斜杠**形式（`settings/mutate`，
+   点形式 404 not found）、payload 必须 `{args:{...}}` 单字段包裹。chatop web 客户端
+   `harness-rpc.js` 头注有真机实证，office rpc 闭包照抄适配。
+3. **settings.yaml 已废弃**：现行 dsh 配置持久化在 profile 的 **Cordis patch**
+   （`profiles/web/cordis.patch.yml`），开机把遗留 settings.yaml 一次性导入后改名
+   `.imported`（dsh-settings 包 README 明文）。手工播种 settings.yaml 会被开机吃掉。
+   office 融合读侧改为文件优先、`settings/describe` RPC 兜底（llm-pi-ai providers +
+   agent-default-model 双 ns；describe 响应 value.namespaces[]）。
+4. **harness stage 签名盲区**：桌面开机按内容签名重铺 bundled 插件，chaoffice 的签名只
+   覆盖 `dist`——但 sidecar 运行面是 tsx 直跑的 **src**，同版本源码修复永远铺不进
+   staged（bundled-plugin.ts 自己的注释就警告过同款事故）。修复：signatureDirs 补
+   `vendor/chaoffice-sidecar/{apps,packages}`。真机验证时 `rm -rf` staged 目录可强制重铺。
+
+真机验证链路（全部通过）：office 视图融合 agnes 路由（describe 兜底）→ office 切模型
+→ cordis.patch.yml 的 agent-default-model 实时翻转 → `/ai/stream` 真实调 agnes
+（apiKeyEnv → .credentials.yaml 凭据解析）→ harness 通道 `settings/update` 改默认 →
+office 视图即时跟随。触发 origin 文件写入的条件：office 应用窗口打开（client 半边轮询
+`/api/chaoffice/status`）；CDP `window.__chatop_shell__.openApp('chaoffice')` 可无人值守
+驱动（Electron `--remote-debugging-port=9222`）。
+
+排障口诀：dsh 侧问题先分清「鉴权（401/换票）→ 协议（404/斜杠+args）→ 存储层
+（settings.yaml vs cordis.patch.yml）→ 铺货（staged 副本是否真的换新）」四层，逐层 curl
+/页面上下文 fetch 隔离。
