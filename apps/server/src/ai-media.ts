@@ -567,8 +567,52 @@ export function attachMediaRoutes(app: FastifyInstance, deps: MediaRouteDeps): v
     },
   )
 
-  app.get('/ai/search-capabilities', async () => {
-    // the BFF's web-search route always carries the free DuckDuckGo tier
-    return { search: true }
-  })
+  // honest search gate (mirrors the desktop searchBackendReady): a keyed
+  // provider wins outright; the keyless DuckDuckGo tier gets a reachability
+  // probe with a 10-minute cache — on networks where DDG is blocked the tool
+  // folds away instead of failing every call and inviting fabrication
+  let searchProbeCache: { at: number; ok: boolean } | null = null
+  let searchProbeInFlight: Promise<boolean> | null = null
+  const SEARCH_PROBE_TTL_MS = 10 * 60_000
+  const searchBackendReady = async (): Promise<boolean> => {
+    try {
+      const settings = await runtime.readRawSettings()
+      const providers = settings.search?.providers as
+        | Record<string, { apiKey?: string } | undefined>
+        | undefined
+      const keyed =
+        providers?.serper?.apiKey ||
+        settings.searchApiKeys?.serper ||
+        providers?.tavily?.apiKey ||
+        settings.searchApiKeys?.tavily ||
+        providers?.linkup?.apiKey ||
+        providers?.searxng?.apiKey ||
+        providers?.parallel?.apiKey
+      if (keyed) return true
+    } catch {
+      /* settings read failed: fall through to the probe */
+    }
+    if (searchProbeCache && Date.now() - searchProbeCache.at < SEARCH_PROBE_TTL_MS)
+      return searchProbeCache.ok
+    searchProbeInFlight ??= (async () => {
+      try {
+        const resp = await fetch('https://duckduckgo.com/', {
+          method: 'HEAD',
+          signal: AbortSignal.timeout(4_000),
+        })
+        return resp.ok
+      } catch {
+        return false
+      } finally {
+        setTimeout(() => {
+          searchProbeInFlight = null
+        }, 0)
+      }
+    })().then((ok) => {
+      searchProbeCache = { at: Date.now(), ok }
+      return ok
+    })
+    return searchProbeInFlight
+  }
+  app.get('/ai/search-capabilities', async () => ({ search: await searchBackendReady() }))
 }
