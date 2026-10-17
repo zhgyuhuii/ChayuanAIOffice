@@ -17,8 +17,8 @@ import { readFile } from 'node:fs/promises'
 import JSZip from 'jszip'
 import type { FastifyInstance } from 'fastify'
 import {
+  isVideoGenModel,
   resolveMediaCapabilityChain,
-  runMediaJob,
   understandMediaWithModel,
   transcribeWithModel,
   synthesizeSpeechWithModel,
@@ -258,31 +258,42 @@ export function attachMediaRoutes(app: FastifyInstance, deps: MediaRouteDeps): v
     const prompt = String(request.body?.prompt ?? '').trim()
     if (!prompt) return { error: 'prompt must not be empty' }
     try {
-      const vr = await tryChain(
-        await chain('video'),
-        (call) =>
-          runMediaJob({
-            kind: 'video',
-            vendorId: call.vendorId ?? 'openai',
-            model: call.model,
-            apiKey: call.apiKey,
-            ...(call.baseUrl ? { baseUrl: call.baseUrl } : {}),
-            prompt,
-            ...(request.body?.aspectRatio ? { aspectRatio: String(request.body.aspectRatio) } : {}),
-            ...(Number(request.body?.durationSeconds) || undefined
-              ? { durationSeconds: Number(request.body!.durationSeconds) }
-              : {}),
-          }),
-        'video',
-      )
-      if (!vr.ok) return { error: vr.error }
-      const result = vr.result
-      const dl = await fetch(result.url)
-      if (!dl.ok) return { error: `video download failed: HTTP ${dl.status}`, url: result.url, model: vr.model }
+      // runtime.runVideoJob resolves the video-model chain itself — including
+      // the vendor→adapter mapping (agnes & other protocol-generic vendors go
+      // through the profile's own wire protocol, which raw runMediaJob cannot)
+      const settings = await runtime.readRawSettings()
+      // the runtime's own model-kind predicate keeps the pick in step with
+      // runVideoJob's validation (never a chat/image model by name accident)
+      let pick: { profileId: string; modelId: string } | null = null
+      for (const profile of settings.profiles) {
+        if (!profile.enabled) continue
+        const entry = profile.models.find((m) => isVideoGenModel(m))
+        if (entry) {
+          pick = { profileId: profile.id, modelId: entry.id }
+          break
+        }
+      }
+      if (!pick) return { error: 'no video model configured (Settings → 生图、媒体与搜索)' }
+      const result = await runtime.runVideoJob({
+        ...pick,
+        prompt,
+        params: {
+          ...(request.body?.aspectRatio ? { aspectRatio: String(request.body.aspectRatio) } : {}),
+          ...(Number(request.body?.durationSeconds) || undefined
+            ? { durationSeconds: Number(request.body!.durationSeconds) }
+            : {}),
+        },
+      })
+      // vendor content endpoints (agnes /videos/{id}/content) need the same
+      // bearer the poll used — the adapter returns it as downloadHeaders
+      const dl = await fetch(result.url, {
+        headers: (result as { downloadHeaders?: Record<string, string> }).downloadHeaders ?? {},
+      })
+      if (!dl.ok) return { error: `video download failed: HTTP ${dl.status}`, url: result.url, model: pick.modelId }
       const bytes = new Uint8Array(await dl.arrayBuffer())
       if (bytes.byteLength > MAX_VIDEO_FILE_BYTES)
-        return { url: result.url, model: vr.model, error: `the generated video is too large to inline (${Math.round(bytes.byteLength / 1048576)}MB)` }
-      return { url: result.url, bytesB64: Buffer.from(bytes).toString('base64'), mime: 'video/mp4', model: vr.model }
+        return { url: result.url, model: pick.modelId, error: `the generated video is too large to inline (${Math.round(bytes.byteLength / 1048576)}MB)` }
+      return { url: result.url, bytesB64: Buffer.from(bytes).toString('base64'), mime: result.mime ?? 'video/mp4', model: pick.modelId }
     } catch (e) {
       return { error: err(e) }
     }

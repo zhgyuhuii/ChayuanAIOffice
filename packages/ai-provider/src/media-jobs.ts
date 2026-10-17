@@ -847,17 +847,31 @@ function openAiVideosAdapter(vendorId: string, defaultBase: string, defaultModel
     pollIntervalMs: 6_000,
     timeoutMs: 15 * 60_000,
     async submit(req) {
-      const res = await aiFetch(`${apiBase(req.baseUrl)}/videos`, {
-        method: 'POST',
-        ...(req.signal ? { signal: req.signal } : {}),
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${req.apiKey}` },
-        body: JSON.stringify({
-          model: req.model || defaultModel,
-          prompt: req.prompt,
-          ...(sizeFrom(req.aspectRatio) ? { size: sizeFrom(req.aspectRatio) } : {}),
-          ...(req.durationSeconds ? { seconds: String(req.durationSeconds) } : {}),
-        }),
-      })
+      const send = (extra: Record<string, unknown>): Promise<Response> =>
+        aiFetch(`${apiBase(req.baseUrl)}/videos`, {
+          method: 'POST',
+          ...(req.signal ? { signal: req.signal } : {}),
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${req.apiKey}` },
+          body: JSON.stringify({
+            model: req.model || defaultModel,
+            prompt: req.prompt,
+            ...(sizeFrom(req.aspectRatio) ? { size: sizeFrom(req.aspectRatio) } : {}),
+            ...(req.durationSeconds ? { seconds: String(req.durationSeconds) } : {}),
+            ...extra,
+          }),
+        })
+      const forced = (req.params as Record<string, unknown> | undefined)?.mode
+      const extra: Record<string, unknown> =
+        typeof forced === 'string' && forced.trim() ? { mode: forced.trim() } : {}
+      let res = await send(extra)
+      if (!res.ok && res.status === 400 && !extra.mode) {
+        const text = await res.clone().text().catch(() => '')
+        // relaying gateways (agnes /v1/videos) require an engine `mode` the
+        // OpenAI wire never carries — retry once with the bare-runnable text
+        // mode when the validator names it (error-driven probe, 2026-10-09
+        // lessons; vendors that never ask are untouched)
+        if (/mode/.test(text)) res = await send({ mode: 'text' })
+      }
       const body = await readJson(res)
       const id = firstString(body, ['id'])
       if (!id) throw new Error(`${vendorId}: no video id in ${JSON.stringify(body).slice(0, 200)}`)
