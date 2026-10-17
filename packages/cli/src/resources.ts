@@ -30,7 +30,9 @@ export function repoRoot(): string | null {
     const pkg = join(dir, 'package.json')
     if (existsSync(pkg)) {
       try {
-        if (JSON.parse(readFileSync(pkg, 'utf-8')).name === 'chaoffice') {
+        // the rename left old checkouts (and this repo's own root name) on
+        // either spelling — accept both so jsdom resolution never breaks
+        if (['chaoffice', 'chatoffice'].includes(JSON.parse(readFileSync(pkg, 'utf-8')).name)) {
           cachedRepo = dir
           return dir
         }

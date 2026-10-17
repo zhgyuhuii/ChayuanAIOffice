@@ -3,6 +3,7 @@ import type { ReactElement } from 'react'
 import {
   AiComposer,
   AiTypingIndicator,
+  ChatMedia,
   KbCitePreview,
   KbPickerButton,
   MessageActions,
@@ -454,15 +455,24 @@ function ChatMessageView({
               >
                 <span className="chat-tool-dot" aria-hidden="true" />
                 <span className="chat-tool-name">{tool.name.replace(/_/g, ' ')}</span>
-                {tool.image && (
-                  <img
-                    className="chat-tool-image"
-                    src={tool.image}
-                    alt={tool.summary || tool.name}
-                  />
-                )}
               </span>
             ))}
+          </div>
+        )}
+        {(m.relayTools ?? []).some((t) => t.media || t.image) && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {(m.relayTools ?? [])
+              .filter((t) => t.media || t.image)
+              .map((t) => (
+                <ChatMedia
+                  key={`media-${t.callId}`}
+                  media={
+                    t.media
+                      ? { kind: t.media.kind, url: t.media.url }
+                      : { kind: 'image', url: t.image! }
+                  }
+                />
+              ))}
           </div>
         )}
         {foundFiles.length > 0 && <FoundFilesList files={foundFiles} />}

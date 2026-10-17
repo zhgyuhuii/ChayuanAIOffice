@@ -589,6 +589,8 @@ export interface HomeChatMessage {
         files?: Array<{ name: string; path: string }>
         /** generate_image 的生成结果(data: URL,工具卡内嵌展示) */
         image?: string
+        /** 生成的视频/音频(data: URL / file://,内嵌展示 + 另存为) */
+        media?: { kind: 'video' | 'audio'; url: string; mime?: string }
       }>
     | undefined
   /** ZCode 式任务清单:update_task_list 工具维护的全量快照(最新一次覆盖) */

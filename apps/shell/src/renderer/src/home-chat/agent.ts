@@ -104,6 +104,8 @@ export interface HomeAgentEvents {
     tasks?: Array<{ title: string; status: 'pending' | 'in_progress' | 'done' }>
     /** generate_image 的生成结果(data: URL);phase=end 时携带 */
     image?: string
+    /** 生成的视频/音频（内嵌展示 + 另存为）;phase=end 时携带 */
+    media?: { kind: 'video' | 'audio'; url: string; mime?: string }
   }): void
   onBusy(busy: boolean): void
   onDone(result: {
@@ -500,7 +502,10 @@ function homeSkill(
     /** live per-kind media capability flags (unified ai:media-capabilities probe) */
     mediaFlags: () => MediaCapabilityFlags | null
     /** generated image display channel (tool timeline card) */
-    onGeneratedImage(dataUrl: string): void
+    onGeneratedImage?(dataUrl: string): void
+    /** generated video/audio shown inline in the conversation (url may be a
+     *  data: URL on web or a file:// URL on desktop) */
+    onGeneratedMedia?(media: { kind: 'video' | 'audio'; url: string; mime?: string }): void
     /** images generated in this conversation (newest last) — the host stitches
      *  them into create_document output so the model never carries the bytes */
     sessionImages(): string[]
@@ -779,7 +784,7 @@ function homeSkill(
           }
           // the image rides the tool-timeline event (display-only); the tool
           // output stays compact so the transcript never duplicates the bytes
-          state.onGeneratedImage(dataUrl)
+          state.onGeneratedImage?.(dataUrl)
           return {
             output: 'image generated successfully (shown to the user in the tool card)',
             summary: `generate_image · ${prompt.slice(0, 40)}`,
@@ -800,9 +805,9 @@ function homeSkill(
           })
           if (!r.url && !r.filePath)
             return { output: `video generation failed: ${r.error ?? 'unknown error'}`, isError: true, summary: 'generate_video' }
-          const where = r.filePath ?? r.url
+          state.onGeneratedMedia?.({ kind: 'video', url: r.filePath ?? r.url! })
           return {
-            output: `Video generated (${r.model ?? 'configured model'}): ${where}\nThe file is saved on this machine; report the path to the user (video cannot be shown inline here).`,
+            output: `Video generated (${r.model ?? 'configured model'}) — it is shown to the user inline above this note; the user saves it with the ⤓ button. Do not repeat the file path unless asked.`,
             summary: `generate_video · ${prompt.slice(0, 40)}`,
           }
         }
@@ -850,8 +855,9 @@ function homeSkill(
           const r = await bridge.mediaTts({ text, ...(voice ? { voice } : {}) })
           if (!r.url)
             return { output: `speech synthesis failed: ${r.error ?? 'unknown error'}`, isError: true, summary: 'generate_speech' }
+          state.onGeneratedMedia?.({ kind: 'audio', url: r.url, ...(r.mime ? { mime: r.mime } : {}) })
           return {
-            output: `Audio generated: ${r.url}\nThe audio file is saved on this machine; report the path to the user.`,
+            output: 'Audio generated — it plays inline above this note; the user saves it with the ⤓ button. Do not repeat the file path unless asked.',
             summary: 'generate_speech',
           }
         }
@@ -1014,6 +1020,7 @@ export class HomeAgent {
   /** the last generate_image result (display-only; drained into the tool card) */
   private pendingGenImage: string | null = null
   private sessionGenImages: string[] = []
+  private pendingGenMedia: { kind: 'video' | 'audio'; url: string; mime?: string } | null = null
   /** cached capability probe: a default image-gen model resolves from settings */
   private imageGenReady = false
   /** cached search-backend probe (web_search tool gate); true until a probe says otherwise */
@@ -1061,6 +1068,9 @@ export class HomeAgent {
           this.pendingGenImage = dataUrl
           this.sessionGenImages.push(dataUrl)
         },
+        onGeneratedMedia: (media) => {
+          this.pendingGenMedia = media
+        },
         sessionImages: () => this.sessionGenImages,
       },
       texts,
@@ -1097,6 +1107,11 @@ export class HomeAgent {
             call.name === 'update_task_list' ? normalizeTasks(call.input.tasks) : undefined
           const image = call.name === 'generate_image' ? this.pendingGenImage : undefined
           if (call.name === 'generate_image') this.pendingGenImage = null
+          const media =
+            call.name === 'generate_video' || call.name === 'generate_speech'
+              ? this.pendingGenMedia
+              : undefined
+          if (media) this.pendingGenMedia = null
           this.events.onToolActivity?.({
             callId: call.id,
             name: call.name,
@@ -1107,6 +1122,7 @@ export class HomeAgent {
             ...(files && files.length > 0 ? { files } : {}),
             ...(tasks && tasks.length > 0 ? { tasks } : {}),
             ...(image ? { image } : {}),
+            ...(media ? { media } : {}),
           })
         },
         onDone: () => {

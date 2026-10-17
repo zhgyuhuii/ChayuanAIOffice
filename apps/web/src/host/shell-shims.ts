@@ -418,10 +418,13 @@ export function installShellShims(): void {
         model?: string
         error?: string
       }
+      // inline-first (Doubao-style): hand the player a data URL; the chat
+      // media card's ⤓ button is the save-as path — no picker at generation
       if (r.bytesB64) {
-        const bytes = Uint8Array.from(atob(r.bytesB64), (c) => c.charCodeAt(0))
-        const saved = await fileStore.saveAsPicker(`generated-video-${Date.now()}.mp4`, bytes)
-        if (saved) return { url: r.url, filePath: `webfs:${saved.id}:${saved.name}`, model: r.model }
+        return {
+          url: `data:${r.mime ?? 'video/mp4'};base64,${r.bytesB64}`,
+          model: r.model,
+        }
       }
       return r
     },
@@ -457,12 +460,8 @@ export function installShellShims(): void {
         model?: string
         error?: string
       }
-      if (r.bytesB64) {
-        const ext = (r.mime ?? '').includes('wav') ? 'wav' : (r.mime ?? '').includes('mpeg') ? 'mp3' : 'audio'
-        const bytes = Uint8Array.from(atob(r.bytesB64), (c) => c.charCodeAt(0))
-        const saved = await fileStore.saveAsPicker(`media-speech-${Date.now()}.${ext}`, bytes)
-        if (saved) return { url: `webfs:${saved.id}:${saved.name}`, mime: r.mime, model: r.model }
-      }
+      // inline-first: the chat media card plays it and ⤓ saves it
+      if (r.bytesB64) return { url: `data:${r.mime ?? 'audio/mpeg'};base64,${r.bytesB64}`, mime: r.mime, model: r.model }
       return r.remoteUrl ? { url: r.remoteUrl, mime: r.mime, model: r.model } : r
     },
     createDocument: async (req: {

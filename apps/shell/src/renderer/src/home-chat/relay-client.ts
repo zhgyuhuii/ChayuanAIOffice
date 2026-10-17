@@ -143,6 +143,7 @@ export function upsertToolActivity(
     outputPreview?: string
     files?: Array<{ name: string; path: string }>
     image?: string
+    media?: { kind: 'video' | 'audio'; url: string; mime?: string }
   },
 ): HomeChatMessage[] {
   const last = messages[messages.length - 1]
@@ -157,6 +158,7 @@ export function upsertToolActivity(
       outputPreview: activity.outputPreview ?? tools[idx]!.outputPreview,
       files: activity.files ?? tools[idx]!.files,
       image: activity.image ?? tools[idx]!.image,
+      media: activity.media ?? tools[idx]!.media,
     }
   } else {
     tools.push({
@@ -168,6 +170,7 @@ export function upsertToolActivity(
       outputPreview: activity.outputPreview,
       ...(activity.files ? { files: activity.files } : {}),
       ...(activity.image ? { image: activity.image } : {}),
+      ...(activity.media ? { media: activity.media } : {}),
     })
   }
   const next = [...messages]

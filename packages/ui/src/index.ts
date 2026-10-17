@@ -99,6 +99,7 @@ export { AiPanelToggle, type AiPanelToggleProps } from './AiPanelToggle'
 export { IconSend, IconStop, type IconProps } from './icons'
 export { Markdown, type MarkdownNav } from './Markdown'
 export { MessageActions } from './MessageActions'
+export { ChatMedia, type ChatMediaPayload } from './ChatMedia'
 export { FILE_NAV_SCHEME, createFileNav, fileNavHref, parseFileNavHref } from './file-nav'
 export { isSymbolFontFamily } from './symbol-fonts'
 export {
