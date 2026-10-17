@@ -13,7 +13,10 @@
  * yet; the produced file is a real .docx that opens in Word/WPS and the docs
  * editor unchanged.
  */
-import { readFile } from 'node:fs/promises'
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { parseFileToText } from '@chaoffice/file-parse'
 import JSZip from 'jszip'
 import type { FastifyInstance } from 'fastify'
 import {
@@ -534,6 +537,35 @@ export function attachMediaRoutes(app: FastifyInstance, deps: MediaRouteDeps): v
       return { ok: false, error: err(e) }
     }
   })
+
+  // office/pdf attachment text extraction (the web form's FS-Access files
+  // never touch the disk the engines expect — bytes come up, get parsed by
+  // the same @chaoffice/file-parse the desktop uses, temp file removed after)
+  app.post<{ Body: { bytesB64?: string; name?: string } }>(
+    '/ai/attachment-text',
+    async (request) => {
+      const name = String(request.body?.name ?? '').trim()
+      const bytesB64 = String(request.body?.bytesB64 ?? '')
+      if (!name || !bytesB64) return { ok: false, error: 'name and bytesB64 are required' }
+      if (bytesB64.length > (MAX_MEDIA_BYTES / 3) * 4)
+        return { ok: false, error: 'attachment too large' }
+      let dir: string | null = null
+      try {
+        dir = await mkdtemp(join(tmpdir(), 'chaoffice-attach-'))
+        const safe = name.replace(/[\\/:*?"<>|]/g, '_')
+        const filePath = join(dir, safe)
+        await writeFile(filePath, Buffer.from(bytesB64, 'base64'))
+        const parsed = await parseFileToText(filePath)
+        if (!parsed.ok || parsed.kind !== 'text' || parsed.text == null)
+          return { ok: false, error: parsed.error ?? 'parse failed' }
+        return { ok: true, text: parsed.text }
+      } catch (e) {
+        return { ok: false, error: e instanceof Error ? e.message : String(e) }
+      } finally {
+        if (dir) await rm(dir, { recursive: true, force: true }).catch(() => undefined)
+      }
+    },
+  )
 
   app.get('/ai/search-capabilities', async () => {
     // the BFF's web-search route always carries the free DuckDuckGo tier

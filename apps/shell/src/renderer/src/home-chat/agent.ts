@@ -1287,6 +1287,12 @@ export class HomeAgent {
                 ? '\n[…truncated; read more with read_document]'
                 : ''
             textBlocks.push(`[Attached file: ${a.name}]\n${r.text}${more}`)
+          } else {
+            // never drop the attachment silently — the model must know the file
+            // exists and why its content is missing, or it denies receiving one
+            textBlocks.push(
+              `[Attached file: ${a.name} — 内容读取失败：${r.error ?? '未知错误'}；请如实告知用户该附件未能解析]`,
+            )
           }
         }
       }

@@ -688,3 +688,26 @@ describe('home-chat session persistence (web/dsh form)', () => {
     }
   })
 })
+
+describe('attachment-text extraction (web/dsh form)', () => {
+  it('parses a real docx through the same engine the desktop uses', async () => {
+    const docxB64 = require('node:fs').readFileSync('/tmp/happy-new-year.docx').toString('base64')
+    const { app } = buildServer({ area: tempArea() })
+    const res = await app.inject({
+      method: 'POST',
+      url: '/ai/attachment-text',
+      payload: { name: '欢乐中国年.docx', bytesB64: docxB64 },
+    })
+    expect(res.statusCode).toBe(200)
+    const body = res.json()
+    expect(body.ok).toBe(true)
+    expect(body.text).toContain('欢乐中国年')
+    expect(body.text).toContain('中国结')
+    const bad = await app.inject({
+      method: 'POST',
+      url: '/ai/attachment-text',
+      payload: { name: '' },
+    })
+    expect(bad.json().ok).toBe(false)
+  })
+})

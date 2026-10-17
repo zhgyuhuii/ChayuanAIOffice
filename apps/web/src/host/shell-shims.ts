@@ -720,7 +720,17 @@ export function installShellShims(): void {
           return { ok: false, error: '图片附件没有可提取的文本（模型可直接查看图片）' }
         }
         if (!WEB_TEXT_EXTS.includes(ext)) {
-          return { ok: false, error: `网页版暂不支持解析 .${ext} 附件的内容（文本类与图片附件可直接使用）` }
+          // office/pdf formats ride the BFF's engines (same @chaoffice/file-parse
+          // the desktop uses) — bytes go up, extracted text comes back
+          const up = (await fetch(aiUrl('ai/attachment-text'), {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ name: r.name, bytesB64: r.base64 }),
+          }).then((x) => x.json())) as { ok?: boolean; text?: string; error?: string }
+          if (!up.ok || !up.text) return { ok: false, error: up.error ?? 'parse failed' }
+          const start2 = Math.max(0, Math.floor(offset) || 0)
+          const size2 = Math.min(Math.max(1, Math.floor(maxChars) || 1), 48_000)
+          return { ok: true, name: r.name, totalChars: up.text.length, text: up.text.slice(start2, start2 + size2), offset: start2 }
         }
         const full =
           r.text ?? new TextDecoder().decode(Uint8Array.from(atob(r.base64), (c) => c.charCodeAt(0)))
