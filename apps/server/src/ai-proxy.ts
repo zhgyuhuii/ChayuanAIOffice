@@ -219,7 +219,7 @@ async function resolveRpcOrigin(harness: {
 /** the API base of a resolved rpc origin — the file may carry the process
  *  launch token as a query (?token=…, minted by the plugin host via
  *  connection.authenticatedUrl) which never belongs on an /api/ URL */
-function rpcOriginBase(origin: string): string {
+export function rpcOriginBase(origin: string): string {
   return origin.split('?')[0]!.replace(/\/$/, '')
 }
 

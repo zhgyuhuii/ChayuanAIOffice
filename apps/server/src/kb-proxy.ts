@@ -17,6 +17,7 @@ import {
   KbError,
   type KbHttpClient,
 } from '@chaoffice/ai-provider'
+import { rpcOriginBase } from './ai-proxy'
 
 export interface KbProxyOptions {
   /** same harness block attachAiProxy receives; absent = KB routes degrade */
@@ -36,11 +37,14 @@ let cachedOriginAt = 0
 async function resolveHarnessOrigin(options: KbProxyOptions): Promise<string | null> {
   const harness = options.harness
   if (!harness) return null
-  if (harness.rpcOrigin) return harness.rpcOrigin
+  if (harness.rpcOrigin) return rpcOriginBase(harness.rpcOrigin)
   if (harness.rpcOriginFile) {
     if (cachedOrigin && Date.now() - cachedOriginAt < 5000) return cachedOrigin
     try {
-      cachedOrigin = (await readFile(harness.rpcOriginFile, 'utf8')).trim()
+      // the host mints the dsh launch token into this file (?token=…, for the
+      // rpc face's cookie exchange) — as a KB base the query must be stripped
+      // or every /api/chatop-kb/* URL is malformed
+      cachedOrigin = rpcOriginBase((await readFile(harness.rpcOriginFile, 'utf8')).trim())
       cachedOriginAt = Date.now()
     } catch {
       cachedOrigin = ''

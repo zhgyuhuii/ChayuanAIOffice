@@ -480,3 +480,42 @@ describe('AI harness fusion: authenticated rpc writes (dsh web cookie fence)', (
     }
   })
 })
+
+describe('kb-proxy × token-bearing rpc-origin file', () => {
+  it('strips the launch-token query so /kb/* keeps working', async () => {
+    const dataDir = mkdtempSync(join(tmpdir(), 'chaoffice-ai-'))
+    const dshHome = mkdtempSync(join(tmpdir(), 'chaoffice-dsh-'))
+    // mock chatop-kb service answering /api/chatop-kb/status on a loopback port
+    const kb: Server = createServer((req, res) => {
+      if (req.url === '/api/chatop-kb/status') {
+        res.writeHead(200, { 'content-type': 'application/json' })
+        res.end(JSON.stringify({ ok: true, kbs: [{ kbId: 'default', docs: [] }] }))
+        return
+      }
+      res.writeHead(404)
+      res.end('not found')
+    })
+    await new Promise<void>((resolve) => kb.listen(0, '127.0.0.1', resolve))
+    const port = (kb.address() as AddressInfo).port
+    // the origin file carries the minted launch token — the KB base must not
+    const rpcFile = join(dshHome, 'storages', 'chaoffice', 'dsh-rpc-origin')
+    mkdirSync(dirname(rpcFile), { recursive: true })
+    writeFileSync(rpcFile, `http://127.0.0.1:${port}/?token=DO-NOT-LEAK-INTO-PATH`)
+    try {
+      const { app } = buildServer({
+        area: tempArea(),
+        ai: { dataDir, harness: { dshHome, rpcOrigin: '', rpcOriginFile: rpcFile } },
+        kbHarness: { dshHome, rpcOrigin: '', rpcOriginFile: rpcFile },
+      })
+      const res = await app.inject({ method: 'GET', url: '/kb/discover' })
+      expect(res.statusCode).toBe(200)
+      const body = res.json()
+      expect(body.ok).toBe(true)
+      expect(body.origin).toBe(`http://127.0.0.1:${port}`)
+    } finally {
+      kb.close()
+      rmSync(dataDir, { recursive: true, force: true })
+      rmSync(dshHome, { recursive: true, force: true })
+    }
+  })
+})

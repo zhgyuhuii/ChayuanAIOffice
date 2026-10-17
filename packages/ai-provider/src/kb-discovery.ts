@@ -81,11 +81,8 @@ async function serviceFileOrigins(explicitHomes?: string[]): Promise<string[]> {
     }
     return direct
   }
-  const roots = [
-    process.env.CHATOP_DATA_ROOT,
-    join(homedir(), 'Documents', 'chatop-data'),
-    join(homedir(), '.dsh'),
-  ].filter((v): v is string => !!v)
+  const roots = [process.env.CHATOP_DATA_ROOT, join(homedir(), 'Documents', 'chatop-data')]
+    .filter((v): v is string => !!v)
   const homes: string[] = []
   for (const root of roots) {
     const usersDir = join(root, 'users')
@@ -96,8 +93,11 @@ async function serviceFileOrigins(explicitHomes?: string[]): Promise<string[]> {
       /* not a managed root */
     }
     for (const user of entries) homes.push(join(usersDir, user, 'profile', 'dsh-home'))
-    if (root.endsWith('.dsh')) homes.push(root)
   }
+  // the sidecar's own dsh home (CHAOFFICE_DSH_HOME env, passed by the plugin
+  // host) covers dev data roots the managed-path guesses cannot reach
+  if (process.env.CHAOFFICE_DSH_HOME) homes.push(process.env.CHAOFFICE_DSH_HOME)
+  homes.push(join(homedir(), '.dsh'))
   const origins: string[] = []
   for (const home of homes) {
     try {
