@@ -9,15 +9,12 @@ import {
   type ControlReply,
   type ControlRequest,
 } from './control-protocol'
-import { chaofficeUserDataDir } from './gui'
+import { chaofficeUserDataDirs } from './gui'
 import { CliError, EXIT, type ErrorReason } from './result'
 
 /** The running shell's control endpoint, or null when no live shell published one. */
 export function controlEndpoint(env: NodeJS.ProcessEnv): ControlEndpoint | null {
-  const dirs = env.GENOFFICE_USER_DATA
-    ? [env.GENOFFICE_USER_DATA]
-    : [chaofficeUserDataDir(env), `${chaofficeUserDataDir(env)} Dev`]
-  for (const dir of dirs) {
+  for (const dir of chaofficeUserDataDirs(env)) {
     const file = join(dir, CONTROL_FILE)
     if (!existsSync(file)) continue
     try {

@@ -130,6 +130,11 @@ describe('vision capability fallback', () => {
     expect(settingsSupportVision(withModel('text-embedding-v3'))).toBe(false)
   })
 
+  it('sends MiniMax-M3 screenshots while keeping MiniMax-M2.7 text-only (upstream #2056-era heuristics, profile-based)', () => {
+    expect(settingsSupportVision(withModel('MiniMax-M3'))).toBe(true)
+    expect(settingsSupportVision(withModel('MiniMax-M2.7'))).toBe(false)
+  })
+
   it('does not send screenshots to text-only models under a vision-capable profile', () => {
     expect(settingsSupportVision(withModel('deep-seek-v4-flash'))).toBe(false)
     expect(settingsSupportVision(withModel('claude-opus-4-7'))).toBe(true)

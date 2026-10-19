@@ -16,6 +16,7 @@ import {
   screen,
   session as electronSession,
   shell,
+  systemPreferences,
   webContents,
   WebContentsView,
 } from 'electron'
@@ -123,6 +124,7 @@ import {
   writeShowLoop,
   getSlideAdvanceTime,
   elementSpid,
+  narrationSpids,
   getSlideAnimations,
   listEmbeddedFonts,
   openPptx,
@@ -245,7 +247,9 @@ import type {
   SetTableCellAnchorOp,
   TableStructureIpcOp,
   ReorderElementOp,
+  SaveRecordingOp,
   SetAdvanceTimesOp,
+  ShowTiming,
   SetAnimationsOp,
   SetNotesOp,
   SetSlideHiddenOp,
@@ -4431,7 +4435,6 @@ export function registerSlidesIpc(): void {
     return { ...getSlideTransitionSpec(slide), sound: getSlideTransitionSound(slide) }
   })
 
-  // Transitions tab 声音 playback: synthesized wav bytes of the current page's preset
   // Transitions tab 声音 playback: bytes of the embedded media part (presets
   // AND custom imports); synthesized fallback covers legacy pre-embed presets
   // 放映设置 (presProps p:showPr): 循环放映
@@ -4472,6 +4475,19 @@ export function registerSlidesIpc(): void {
     }
   })
 
+  // Slide Show > Record echo: per-slide auto-advance time + narration element ids
+  ipcMain.handle('slides:get-show-timing', (e, slideIndex: number): ShowTiming => {
+    const slide = sessions.get(e.sender.id)?.opened.deck.slides[slideIndex]
+    if (!slide) return { advanceMs: null, narrationIds: [] }
+    const narration = new Set(narrationSpids(slide))
+    return {
+      advanceMs: getSlideAdvanceTime(slide),
+      narrationIds: slide.elements
+        .filter((el) => narration.has(elementSpid(el) ?? -1))
+        .map((el) => el.id),
+    }
+  })
+
   // Rehearsal timing save: batch-write each page's auto-advance time (<p:transition advTm>, ms)
   ipcMain.handle('slides:set-advance-times', (e, op: SetAdvanceTimesOp) => {
     const session = sessions.get(e.sender.id)
@@ -4494,6 +4510,46 @@ export function registerSlidesIpc(): void {
     const session = sessions.get(e.sender.id)
     const slide = session?.opened.deck.slides[slideIndex]
     return slide ? getSlideAdvanceTime(slide) : null
+  })
+
+  // ── Slide Show > Record: narration per slide plus its advance time, one undo step ──
+  ipcMain.handle('slides:save-recording', (e, op: SaveRecordingOp) => {
+    const session = sessions.get(e.sender.id)
+    if (!session) return null
+    const slides = session.opened.deck.slides
+    const recorded = op.slides.filter((s) => slides[s.slideIndex])
+    if (recorded.length === 0) return null
+    const r = sessionTxn(session, {
+      ops: recorded.flatMap((s) => [
+        {
+          op: 'addNarration',
+          target: { slide: s.slideIndex },
+          bytes: s.wavBase64,
+          ext: 'wav',
+          durationMs: s.durationMs,
+        },
+        { op: 'setAdvanceTime', target: { slide: s.slideIndex }, ms: s.advanceMs },
+      ]),
+    })
+    return r ? slides.map((_, i) => rebuildSlide(session, i)) : null
+  })
+
+  ipcMain.handle('slides:clear-narration', (e, slideIndexes: number[]) => {
+    const session = sessions.get(e.sender.id)
+    if (!session) return null
+    const slides = session.opened.deck.slides
+    const targets = slideIndexes.filter((i) => slides[i] && narrationSpids(slides[i]).length > 0)
+    if (targets.length === 0) return null
+    const r = sessionTxn(session, {
+      ops: targets.map((i) => ({ op: 'clearNarration', target: { slide: i } })),
+    })
+    return r ? slides.map((_, i) => rebuildSlide(session, i)) : null
+  })
+
+  ipcMain.handle('slides:microphone-access', async () => {
+    if (process.platform !== 'darwin') return true
+    if (systemPreferences.getMediaAccessStatus('microphone') === 'granted') return true
+    return systemPreferences.askForMediaAccess('microphone')
   })
 
   // ── Shape animations (<p:timing>; the spid <-> temporary element id mapping happens here) ──

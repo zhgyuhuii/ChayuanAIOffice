@@ -5,6 +5,7 @@
  * exposes each extracted action as a stable `useCallback(() => impl(ctxRef.current, ...))`
  * wrapper, so module functions always see the latest state without stale closures.
  */
+import type { NarrationTake } from './narration/use-recording'
 import type { PathCmd } from './edit-points'
 import type React from 'react'
 import type { GroupRenderNode, RenderNode, RenderSlide } from '@chaoffice/pptx-render'
@@ -56,6 +57,8 @@ export interface SlideShowState {
   rehearse?: boolean
   /** WPS 倒计时: corner countdown during the show (start timestamp + total duration) */
   countdown?: { start: number; totalMs: number }
+  /** Slide Show > Record: the show records the narration of each slide */
+  record?: boolean
 }
 
 export type CtxMenuState =
@@ -208,6 +211,9 @@ export interface ActionCtx {
   setCustomShowDlgOpen: Set<boolean>
   pendingRehearse: number[] | null
   setPendingRehearse: Set<number[] | null>
+  /** A recorded show awaiting "keep the recording?" */
+  pendingRecording: NarrationTake | null
+  setPendingRecording: Set<NarrationTake | null>
 
   // Sections
   sections: SectionInfo[]

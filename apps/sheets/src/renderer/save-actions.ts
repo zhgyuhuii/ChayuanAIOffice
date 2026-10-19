@@ -25,6 +25,7 @@ import {
   toSaveTableEdits,
   toSaveVisualAdds,
   toSaveVisualEdits,
+  toSaveCellImageAdds,
 } from './edit-journal'
 import { activeCsvSheet, handleExportCsv, serializeActiveSheetCsv } from './csv-export'
 import type { CellState } from '@chaoffice/xlsx-gateway/domain/workbook.types'
@@ -150,6 +151,7 @@ export async function handleSave(
   const chartEdits = toSaveChartEdits(state.editJournal)
   const visualEdits = toSaveVisualEdits(state.editJournal)
   const visualAdditions = toSaveVisualAdds(state.editJournal)
+  const cellImageAdditions = toSaveCellImageAdds(state.editJournal)
   const tableAdditions = toSaveTableAdds(state.editJournal)
   const tableEdits = toSaveTableEdits(state.editJournal)
   const pivotAdditions = toSavePivotAdds(state.editJournal)
@@ -294,6 +296,7 @@ export async function handleSave(
     (themeState === null ? 0 : 1) +
     protectedRangeStates.length +
     visualAdditions.length +
+    cellImageAdditions.length +
     visualEdits.length +
     tableAdditions.length +
     tableEdits.length +
@@ -392,6 +395,7 @@ export async function handleSave(
     chartEdits,
     visualEdits,
     visualAdditions,
+    cellImageAdditions,
     tableAdditions,
     tableEdits,
     pivotAdditions,
@@ -445,6 +449,7 @@ export async function handleSave(
       chartEdits,
       visualEdits,
       visualAdditions,
+      cellImageAdditions,
       tableAdditions: splitSave && heldTables.length > 0 ? [] : tableAdditions,
       tableEdits: phaseOneTableEdits,
       pivotAdditions: splitSave && heldPivots.length > 0 ? [] : pivotAdditions,
@@ -521,6 +526,7 @@ export async function handleSave(
         chartEdits: [],
         visualEdits: [],
         visualAdditions: [],
+        cellImageAdditions: [],
         tableAdditions: heldTables,
         tableEdits: heldTableEdits,
         pivotAdditions: heldPivots,

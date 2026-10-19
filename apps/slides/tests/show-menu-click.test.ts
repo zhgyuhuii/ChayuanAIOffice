@@ -29,6 +29,8 @@ const resolved =
   // LOCAL(2026-09-22): 本地换场音效引擎(SlideShowView 转录规格预取)需要该桩——上游无此调用
   getTransitionSpec: resolved([]),
   getTransitionSound: resolved(null),
+  // upstream Slide Show > Record: per-slide advance time + narration ids
+  getShowTiming: resolved({ advanceMs: null, narrationIds: [] }),
   getAnimations: resolved([]),
   getShapeKeys: resolved([]),
   getSlideLinks: resolved([]),
