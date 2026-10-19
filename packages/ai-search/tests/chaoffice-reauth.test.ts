@@ -14,6 +14,7 @@ vi.mock('node:os', async (importOriginal) => {
 import {
   chaofficeApiKey,
   FRESH_AUTH_REQUIRED,
+packages/ai-search/tests/chaoffice-reauth.test.ts
   resetChaofficeAuthCache,
   setChaOfficeLoginOpener,
 } from '../src/chaoffice-auth'
@@ -28,7 +29,6 @@ import {
   noteChaofficeKeyRejected,
   resetChaofficeRejectedKeys,
 } from '../src/chaoffice'
-
 const AUTH_URL = `https://www.genspark.ai/api/office_addin_auth/verify?code=${'a'.repeat(64)}`
 
 let dir: string
@@ -80,7 +80,6 @@ function stubServer(create: () => Response) {
       const key = (init?.headers as Record<string, string>)['X-Api-Key']!
       toolKeys.push(key)
       if (key === 'gsk-expired') return response('{"detail":"invalid api key"}', 401)
-      if (url.endsWith('/slide_generate')) return ndjsonOk({ pptx_url: 'https://x/api/files/1' })
       return ndjsonOk({ download_url: 'https://93.184.216.34/deck.pptx' })
     }
     if (url.includes('/office_addin_auth/session')) {
@@ -92,7 +91,6 @@ function stubServer(create: () => Response) {
     }
     if (url.includes('/office_addin_auth/token')) return response({ status: 'pending' })
     if (url.includes('/api_tokens/revoke')) return response({ status: 0 })
-    if (url.endsWith('/deck.pptx')) return response('PK')
     throw new Error(`unexpected fetch: ${url}`)
   })
   vi.stubGlobal('fetch', fetchMock)
@@ -109,6 +107,7 @@ describe('isChaofficeUnauthorizedText', () => {
   })
 })
 
+packages/ai-search/tests/chaoffice-reauth.test.ts
 describe('tool_cli 401 recovery', () => {
   it('drops the key, re-mints with the stored session and retries once', async () => {
     const { toolKeys } = stubServer(() =>
@@ -150,7 +149,7 @@ describe('tool_cli 401 recovery', () => {
 })
 
 describe('chaoffice CLI 401 recovery', () => {
-  /** fake CLI: a 401 for the expired key (printed on stdout like the real CLI), results otherwise */
+ /** fake CLI: a 401 for the expired key (printed on stdout like the real CLI), results otherwise */
   function fakeCli(): string {
     const log = join(dir, 'cli-keys.log')
     const script = join(dir, 'fake-chaoffice.mjs')

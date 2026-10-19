@@ -21,8 +21,7 @@ export const he = {
   aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: 'פתיחת עוזר ה-AI',
   aiFactCheckBtn: 'בדיקת עובדות AI',
-  aiFactCheckPrompt:
-    'בדוק את העובדות במצגת זו: אמת מספרים, תאריכים, שמות וטענות, ואז הצבע על שגיאות ותקן אותן',
+  aiFactCheckPrompt: 'בדוק את העובדות במצגת זו: אמת מספרים, תאריכים, שמות וטענות, ואז הצבע על שגיאות ותקן אותן',
   aiImageBtn: 'תמונת AI',
   aiImagePrompt: 'צור תמונה שמתאימה לתוכן השקופית הזו והוסף אותה במקום מתאים בשקופית',
   aiBeautifyBtn: 'עיצוב AI',
@@ -95,8 +94,7 @@ export const he = {
   aiStarterPolishTitle: 'שפר את הכותרת והטקסט של שקופית זו',
   aiStarterTighten: 'הפוך את הנקודות בשקופית זו לתמציתיות יותר',
   aiStarterProofread: 'בדוק שגיאות הקלדה בכל המצגת ותקן אותן',
-  aiTurnLimit:
-    '(הגעת למגבלת סבבי קריאות הכלים עבור בקשה זו; התשובה שלמעלה מבוססת על השלבים שהושלמו עד כה ועשויה להיות חלקית.)',
+  aiTurnLimit: '(הגעת למגבלת סבבי קריאות הכלים עבור בקשה זו; התשובה שלמעלה מבוססת על השלבים שהושלמו עד כה ועשויה להיות חלקית.)',
   aiStoppedNote: '(נעצר)',
   aiTruncatedNote: '(התשובה נחתכה בגלל מגבלת האורך וייתכן שאינה שלמה.)',
   aiNoResponse: 'ה-AI לא החזיר תוכן.',
@@ -107,6 +105,7 @@ export const he = {
   aiErrEmptyOutput: 'פלט ריק',
   aiErrUnknown: 'שגיאה לא ידועה',
   aiErrStreamTimeout: 'תם הזמן לבקשת ה-AI: אין תגובה מהרשת וההרצה הופסקה. בדוק את החיבור ונסה שוב',
+  aiErrRegion: 'ספק המודל הזה אינו פועל באזור הנוכחי שלך — בחרו מודל אחר או החליפו רשת',
   aiErrOverloaded: 'שירות ה-AI עמוס כרגע — נסו שוב בעוד רגע',
   aiErrNetwork: 'בעיית רשת: לא ניתן להתחבר לשירות ה-AI. בדוק את החיבור ונסה שוב',
   aiCreditsExhausted: 'קרדיטי ChaAI Office שלך אזלו. טען מחדש ב-genspark.ai/pricing ונסה שוב',
@@ -218,6 +217,7 @@ export const he = {
   aiSumSaveTemplate: 'תבנית הסגנון "{name}" נשמרה',
   aiSumTemplatesEmpty: 'תבניות סגנון (ריק)',
   aiSumListTemplates: 'הוצגו {count} תבניות סגנון',
+  aiErrRegion: 'ספק המודל הזה אינו פועל באזור הנוכחי שלך — בחרו מודל אחר או החליפו רשת',
   aiFailReadComments: 'קריאת הערות',
   aiFailAddComment: 'הוספת הערה',
   aiSumReadComments: 'קריאת הערות שקופית {n}',
@@ -316,7 +316,6 @@ export const he = {
   aiNoteSvgMode: "תמונות: גרפיקה וקטורית (מצוירת על ידי המודל, ניתנת לעריכה)",
   aiNoteImgFail: "עמוד {page}: לא נמצאה תמונה עבור „{kw}”; צוירה כגרפיקה וקטורית",
   aiNoteImgWebFallback: "יצירת התמונה בבינה מלאכותית עבור \"{kw}\" נכשלה; הוחלפה בתמונה מהאינטרנט",
-
   aiToolRunDeck: 'המצגת נוצרת…',
   aiToolRunRegenSlide: 'השקופית נוצרת מחדש…',
   aiToolRunPlanDeck: 'מתכנן את המתאר…',
@@ -328,5 +327,4 @@ export const he = {
   aiToolRunWebSearch: 'מחפש באינטרנט…',
   aiToolRunImageSearch: 'מחפש תמונות…',
   aiToolRunReadUrl: 'העמוד נקרא…',
-  aiPageCloudToLocal: 'הענן לא זמין — נוצר מקומית',
-} satisfies Record<keyof typeof zh, string>
+}

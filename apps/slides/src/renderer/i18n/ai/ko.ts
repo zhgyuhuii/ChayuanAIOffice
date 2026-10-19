@@ -21,14 +21,11 @@ export const ko = {
   aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: 'AI 도우미 열기',
   aiFactCheckBtn: 'AI 팩트체크',
-  aiFactCheckPrompt:
-    '이 슬라이드의 내용을 팩트체크해 주세요: 수치, 날짜, 이름, 주장을 확인하고 오류를 지적하여 수정해 주세요',
+  aiFactCheckPrompt: '이 슬라이드의 내용을 팩트체크해 주세요: 수치, 날짜, 이름, 주장을 확인하고 오류를 지적하여 수정해 주세요',
   aiImageBtn: 'AI 이미지',
-  aiImagePrompt:
-    '이 슬라이드의 내용에 어울리는 이미지를 생성해 슬라이드의 적절한 위치에 삽입해 주세요',
+  aiImagePrompt: '이 슬라이드의 내용에 어울리는 이미지를 생성해 슬라이드의 적절한 위치에 삽입해 주세요',
   aiBeautifyBtn: 'AI 꾸미기',
-  aiBeautifyPrompt:
-    '이 슬라이드를 보기 좋게 다듬어 주세요: 레이아웃, 색상, 글자 위계를 개선해 더 전문적으로 만들어 주세요',
+  aiBeautifyPrompt: '이 슬라이드를 보기 좋게 다듬어 주세요: 레이아웃, 색상, 글자 위계를 개선해 더 전문적으로 만들어 주세요',
   aiSwitchModel: 'AI 모델 전환',
   aiNewChat: '새 대화',
   aiCollapsePanel: '패널 접기',
@@ -97,8 +94,7 @@ export const ko = {
   aiStarterPolishTitle: '이 슬라이드의 제목과 문구를 개선해 줘',
   aiStarterTighten: '이 슬라이드의 요점을 더 간결하게 만들어 줘',
   aiStarterProofread: '전체 슬라이드의 오타를 검사하고 수정해 줘',
-  aiTurnLimit:
-    '(요청당 도구 호출 한도에 도달하여, 지금까지 완료한 내용을 기반으로 한 답변입니다. 불완전할 수 있습니다.)',
+  aiTurnLimit: '(요청당 도구 호출 한도에 도달하여, 지금까지 완료한 내용을 기반으로 한 답변입니다. 불완전할 수 있습니다.)',
   aiStoppedNote: '(중지됨)',
   aiTruncatedNote: '(응답이 길이 제한으로 잘려 내용이 불완전할 수 있습니다.)',
   aiNoResponse: 'AI가 아무 내용도 반환하지 않았습니다.',
@@ -108,13 +104,11 @@ export const ko = {
   aiErrTimeout: '시간 초과({ms}ms)',
   aiErrEmptyOutput: '출력이 비어 있음',
   aiErrUnknown: '알 수 없는 오류',
-  aiErrStreamTimeout:
-    'AI 요청 시간 초과: 네트워크 응답이 없어 중단되었습니다. 연결을 확인한 후 다시 시도해 주세요',
+  aiErrStreamTimeout: 'AI 요청 시간 초과: 네트워크 응답이 없어 중단되었습니다. 연결을 확인한 후 다시 시도해 주세요',
+  aiErrRegion: '이 모델의 제공업체는 현재 지역에서 서비스를 제공하지 않습니다. 다른 모델을 선택하거나 네트워크를 변경하세요',
   aiErrOverloaded: 'AI 서비스가 혼잡합니다. 잠시 후 다시 시도해 주세요',
-  aiErrNetwork:
-    '네트워크에 문제가 있어 AI 서비스에 연결할 수 없습니다. 연결을 확인한 후 다시 시도해 주세요',
-  aiCreditsExhausted:
-    'ChaAI Office 크레딧을 모두 사용했습니다. genspark.ai/pricing에서 충전한 후 다시 시도해 주세요',
+  aiErrNetwork: '네트워크에 문제가 있어 AI 서비스에 연결할 수 없습니다. 연결을 확인한 후 다시 시도해 주세요',
+  aiCreditsExhausted: 'ChaAI Office 크레딧을 모두 사용했습니다. genspark.ai/pricing에서 충전한 후 다시 시도해 주세요',
   aiErrRequestFailed: '요청 전송 실패: {msg}',
   aiErrGenerateFailed: '생성 실패',
   aiErrRegenFailed: '페이지 다시 생성 실패',
@@ -223,6 +217,7 @@ export const ko = {
   aiSumSaveTemplate: '스타일 템플릿 "{name}" 저장',
   aiSumTemplatesEmpty: '스타일 템플릿 목록(비어 있음)',
   aiSumListTemplates: '스타일 템플릿 {count}개 나열',
+  aiErrRegion: '이 모델의 제공업체는 현재 지역에서 서비스를 제공하지 않습니다. 다른 모델을 선택하거나 네트워크를 변경하세요',
   aiFailReadComments: '메모 읽기',
   aiFailAddComment: '메모 추가',
   aiSumReadComments: '第 {n} 페이지 메모 읽기',
@@ -321,7 +316,6 @@ export const ko = {
   aiNoteSvgMode: "이미지: 벡터 그래픽(모델이 인라인으로 그림, 편집 가능)",
   aiNoteImgFail: "{page}페이지: \"{kw}\" 이미지를 가져오지 못해 벡터 그래픽으로 그렸습니다",
   aiNoteImgWebFallback: "「{kw}」 AI 이미지 생성에 실패하여 웹 이미지를 사용했습니다",
-
   aiToolRunDeck: '프레젠테이션 생성 중…',
   aiToolRunRegenSlide: '슬라이드 다시 생성 중…',
   aiToolRunPlanDeck: '개요 계획 중…',
@@ -333,5 +327,4 @@ export const ko = {
   aiToolRunWebSearch: '웹 검색 중…',
   aiToolRunImageSearch: '이미지 검색 중…',
   aiToolRunReadUrl: '페이지 읽는 중…',
-  aiPageCloudToLocal: '클라우드 생성 불가 — 로컬로 생성',
-} satisfies Record<keyof typeof zh, string>
+}

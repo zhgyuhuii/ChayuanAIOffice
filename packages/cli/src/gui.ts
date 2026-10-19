@@ -31,7 +31,7 @@ export function chaofficeUserDataDir(env: NodeJS.ProcessEnv): string {
  * to be reachable: a custom `GENOFFICE_USER_DATA`, a checkout whose shell has
  * not run since the rename, or a migration that could not move a busy
  * directory.
- *
+*
  * Both readers used to spell this list out on their own, and chaoffice#1879
  * changed the shell without either of them, so the CLI went on looking for a
  * directory nothing wrote to any more (upstream #2054).

@@ -74,6 +74,7 @@ import { ConversationStore, bindConversationsIpc } from '@chaoffice/project-stor
 
 import {
   isAiOverloadedError,
+  isAiRegionBlockedError,
   setAiUserAgent,
   setRescueFetch,
   type AiRuntime,
@@ -200,6 +201,7 @@ const tMain = createI18n({
     errNotImage: '不是支持的图片类型',
     errChaOfficeNotLoggedIn: '未登录 察元AIOffice:请点击下方「登录」完成登录后重试',
     errNoApiKey: '未配置 {provider} 的 API Key',
+    errAiRegion: '该模型的厂商不向当前地区提供服务，请换一个模型或切换网络',
     errAiBusy: 'AI 服务当前繁忙，请稍后重试',
     errNoModel: '未配置模型名称',
     errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
@@ -265,6 +267,8 @@ const tMain = createI18n({
     errChaOfficeNotLoggedIn:
       'Not signed in to ChaAI Office: click “Sign in” below, sign in, then retry',
     errNoApiKey: 'No API key configured for {provider}',
+    errAiRegion:
+      "This model's provider does not serve your current region — pick another model or change your network",
     errAiBusy: 'The AI service is busy right now — please try again in a moment',
     errNoModel: 'No model name configured',
     errNoImageModel:
@@ -336,6 +340,8 @@ const tMain = createI18n({
     errChaOfficeNotLoggedIn:
       'ChaAI Office にサインインしていません。下の「サインイン」からサインインして再試行してください',
     errNoApiKey: '{provider} の API キーが設定されていません',
+    errAiRegion:
+      'このモデルの提供元は現在の地域ではサービスを提供していません。別のモデルを選ぶか、ネットワークを切り替えてください',
     errAiBusy: 'AI サービスが混み合っています。しばらくしてからもう一度お試しください',
     errNoModel: 'モデル名が設定されていません',
     errNoImageModel: '画像生成モデルが未設定です。モデル設定で画像生成モデルを有効にしてください',
@@ -408,6 +414,8 @@ const tMain = createI18n({
     errChaOfficeNotLoggedIn:
       'ChaAI Office에 로그인되어 있지 않습니다. 아래 "로그인"을 눌러 로그인한 뒤 다시 시도하세요',
     errNoApiKey: '{provider}의 API 키가 설정되지 않았습니다',
+    errAiRegion:
+      '이 모델의 제공업체는 현재 지역에서 서비스를 제공하지 않습니다. 다른 모델을 선택하거나 네트워크를 변경하세요',
     errAiBusy: 'AI 서비스가 혼잡합니다. 잠시 후 다시 시도해 주세요',
     errNoModel: '모델 이름이 설정되지 않았습니다',
     errNoImageModel:
@@ -481,6 +489,8 @@ const tMain = createI18n({
     errChaOfficeNotLoggedIn:
       'Non connecté à ChaAI Office : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez',
     errNoApiKey: 'Aucune clé API configurée pour {provider}',
+    errAiRegion:
+      'Le fournisseur de ce modèle ne dessert pas votre région actuelle — choisissez un autre modèle ou changez de réseau',
     errAiBusy: "Le service d'IA est actuellement surchargé — réessayez dans un instant",
     errNoModel: 'Aucun nom de modèle configuré',
     errNoImageModel:
@@ -555,6 +565,8 @@ const tMain = createI18n({
     errChaOfficeNotLoggedIn:
       'Nicht bei ChaAI Office angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut',
     errNoApiKey: 'Kein API-Schlüssel für {provider} konfiguriert',
+    errAiRegion:
+      'Der Anbieter dieses Modells bedient Ihre aktuelle Region nicht — wählen Sie ein anderes Modell oder wechseln Sie das Netzwerk',
     errAiBusy: 'Der KI-Dienst ist derzeit überlastet — bitte gleich erneut versuchen',
     errNoModel: 'Kein Modellname konfiguriert',
     errNoImageModel:
@@ -628,6 +640,8 @@ const tMain = createI18n({
     errChaOfficeNotLoggedIn:
       'No has iniciado sesión en ChaAI Office: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo',
     errNoApiKey: 'No hay clave de API configurada para {provider}',
+    errAiRegion:
+      'El proveedor de este modelo no da servicio en tu región actual — elige otro modelo o cambia de red',
     errAiBusy:
       'El servicio de IA está saturado en este momento; inténtalo de nuevo en unos instantes',
     errNoModel: 'No hay nombre de modelo configurado',
@@ -701,6 +715,8 @@ const tMain = createI18n({
     errChaOfficeNotLoggedIn:
       'ยังไม่ได้ลงชื่อเข้าใช้ ChaAI Office: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง',
     errNoApiKey: 'ยังไม่ได้ตั้งค่า API Key ของ {provider}',
+    errAiRegion:
+      'ผู้ให้บริการของโมเดลนี้ไม่ให้บริการในภูมิภาคปัจจุบันของคุณ — โปรดเลือกโมเดลอื่นหรือเปลี่ยนเครือข่าย',
     errAiBusy: 'บริการ AI มีผู้ใช้งานจำนวนมากในขณะนี้ โปรดลองอีกครั้งในอีกสักครู่',
     errNoModel: 'ยังไม่ได้กำหนดชื่อโมเดล',
     errNoImageModel: 'ยังไม่ได้ตั้งค่าโมเดลสร้างภาพ: เปิดใช้โมเดลสร้างภาพในการตั้งค่าโมเดล',
@@ -770,6 +786,8 @@ const tMain = createI18n({
     errNotImage: 'bukan jenis gambar yang didukung',
     errChaOfficeNotLoggedIn: 'Belum masuk ke ChaAI Office: klik “Masuk” di bawah, lalu coba lagi',
     errNoApiKey: 'API Key untuk {provider} belum dikonfigurasi',
+    errAiRegion:
+      'Penyedia model ini tidak melayani wilayah Anda saat ini — pilih model lain atau ganti jaringan',
     errAiBusy: 'Layanan AI sedang sibuk — silakan coba lagi sebentar lagi',
     errNoModel: 'Nama model belum dikonfigurasi',
     errNoImageModel:
@@ -842,6 +860,8 @@ const tMain = createI18n({
     errChaOfficeNotLoggedIn:
       'Вы не вошли в ChaAI Office: нажмите «Войти» ниже, войдите и повторите попытку',
     errNoApiKey: 'API-ключ для {provider} не настроен',
+    errAiRegion:
+      'Поставщик этой модели не обслуживает ваш текущий регион — выберите другую модель или смените сеть',
     errAiBusy: 'Сервис ИИ сейчас перегружен — повторите попытку чуть позже',
     errNoModel: 'Имя модели не настроено',
     errNoImageModel: 'Модель генерации изображений не настроена: включите её в настройках моделей',
@@ -912,6 +932,8 @@ const tMain = createI18n({
     errChaOfficeNotLoggedIn:
       'لم تسجّل الدخول إلى ChaAI Office: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة',
     errNoApiKey: 'لم يتم تكوين مفتاح API لـ {provider}',
+    errAiRegion:
+      'مزوّد هذا النموذج لا يقدم الخدمة في منطقتك الحالية — اختر نموذجًا آخر أو غيّر الشبكة',
     errAiBusy: 'خدمة الذكاء الاصطناعي مشغولة حاليًا — يرجى المحاولة مرة أخرى بعد قليل',
     errNoModel: 'لم يتم تكوين اسم النموذج',
     errNoImageModel: 'لم يتم تهيئة نموذج توليد الصور: فعّل نموذجًا لتوليد الصور في إعدادات النماذج',
@@ -981,6 +1003,8 @@ const tMain = createI18n({
     errChaOfficeNotLoggedIn:
       'Não conectado ao ChaAI Office: clique em “Entrar” abaixo, entre e tente novamente',
     errNoApiKey: 'Nenhuma chave de API configurada para {provider}',
+    errAiRegion:
+      'O fornecedor deste modelo não atende à sua região atual — escolha outro modelo ou mude de rede',
     errAiBusy: 'O serviço de IA está sobrecarregado no momento — tente novamente em instantes',
     errNoModel: 'Nenhum nome de modelo configurado',
     errNoImageModel:
@@ -1053,6 +1077,8 @@ const tMain = createI18n({
     errChaOfficeNotLoggedIn:
       'Accesso a ChaAI Office non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova',
     errNoApiKey: 'Nessuna chiave API configurata per {provider}',
+    errAiRegion:
+      'Il fornitore di questo modello non serve la tua regione attuale — scegli un altro modello o cambia rete',
     errAiBusy: 'Il servizio IA è momentaneamente sovraccarico — riprova tra poco',
     errNoModel: 'Nessun nome di modello configurato',
     errNoImageModel:
@@ -1126,6 +1152,8 @@ const tMain = createI18n({
     errChaOfficeNotLoggedIn:
       'Nie zalogowano do ChaAI Office: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie',
     errNoApiKey: 'Nie skonfigurowano klucza API dla {provider}',
+    errAiRegion:
+      'Dostawca tego modelu nie obsługuje Twojego obecnego regionu — wybierz inny model lub zmień sieć',
     errAiBusy: 'Usługa AI jest obecnie przeciążona — spróbuj ponownie za chwilę',
     errNoModel: 'Nie skonfigurowano nazwy modelu',
     errNoImageModel:
@@ -1198,6 +1226,8 @@ const tMain = createI18n({
     errChaOfficeNotLoggedIn:
       'Nejste přihlášeni ke ChaAI Office: klikněte níže na „Přihlásit se ke ChaAI Office“, přihlaste se a zkuste to znovu',
     errNoApiKey: 'Pro {provider} není nakonfigurován žádný klíč API',
+    errAiRegion:
+      'Poskytovatel tohoto modelu neposkytuje služby ve vaší aktuální oblasti — vyberte jiný model nebo změňte síť',
     errAiBusy: 'Služba AI je momentálně zaneprázdněna — zkuste to prosím za chvíli znovu',
     errNoModel: 'Není nakonfigurován název modelu',
     errImgAbsPath: 'Cesta k obrázku musí být absolutní.',
@@ -1270,6 +1300,8 @@ const tMain = createI18n({
     errChaOfficeNotLoggedIn:
       'Niet aangemeld bij ChaAI Office: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw',
     errNoApiKey: 'Geen API-sleutel geconfigureerd voor {provider}',
+    errAiRegion:
+      'De aanbieder van dit model bedient uw huidige regio niet — kies een ander model of wissel van netwerk',
     errAiBusy: 'De AI-service is momenteel overbelast — probeer het zo opnieuw',
     errNoModel: 'Geen modelnaam geconfigureerd',
     errNoImageModel:
@@ -1342,6 +1374,8 @@ const tMain = createI18n({
     errChaOfficeNotLoggedIn:
       'Belum log masuk ke ChaAI Office: klik “Log masuk” di bawah, kemudian cuba lagi',
     errNoApiKey: 'Kunci API untuk {provider} belum dikonfigurasikan',
+    errAiRegion:
+      'Penyedia model ini tidak memberi perkhidmatan di rantau semasa anda — pilih model lain atau tukar rangkaian',
     errAiBusy: 'Perkhidmatan AI sedang sibuk — sila cuba lagi sebentar lagi',
     errNoModel: 'Nama model belum dikonfigurasikan',
     errNoImageModel:
@@ -1413,6 +1447,7 @@ const tMain = createI18n({
     errNotImage: 'סוג תמונה שאינו נתמך',
     errChaOfficeNotLoggedIn: 'לא מחובר ל-ChaAI Office: לחץ על "התחבר" למטה, התחבר ונסה שוב',
     errNoApiKey: 'לא הוגדר מפתח API עבור {provider}',
+    errAiRegion: 'ספק המודל הזה אינו פועל באזור הנוכחי שלך — בחרו מודל אחר או החליפו רשת',
     errAiBusy: 'שירות ה-AI עמוס כרגע — נסו שוב בעוד רגע',
     errNoModel: 'לא הוגדר שם מודל',
     errNoImageModel: 'לא הוגדר מודל ליצירת תמונות: הפעל מודל יצירת תמונות בהגדרות המודלים',
@@ -1481,6 +1516,8 @@ const tMain = createI18n({
     errChaOfficeNotLoggedIn:
       'ChaAI Office में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें',
     errNoApiKey: '{provider} के लिए कोई API कुंजी कॉन्फ़िगर नहीं है',
+    errAiRegion:
+      'इस मॉडल का प्रदाता आपके वर्तमान क्षेत्र में सेवा नहीं देता — कोई दूसरा मॉडल चुनें या नेटवर्क बदलें',
     errAiBusy: 'AI सेवा अभी व्यस्त है — कृपया थोड़ी देर बाद फिर से प्रयास करें',
     errNoModel: 'कोई मॉडल नाम कॉन्फ़िगर नहीं है',
     errNoImageModel:
@@ -1556,6 +1593,8 @@ const tMain = createI18n({
     errChaOfficeNotLoggedIn:
       'Chưa đăng nhập vào ChaAI Office: nhấp vào “Đăng nhập vào ChaAI Office” bên dưới, đăng nhập, sau đó thử lại',
     errNoApiKey: 'Chưa cấu hình khóa API cho {provider}',
+    errAiRegion:
+      'Nhà cung cấp của mô hình này không phục vụ khu vực hiện tại của bạn — hãy chọn mô hình khác hoặc đổi mạng',
     errAiBusy: 'Dịch vụ AI hiện đang bận — vui lòng thử lại sau giây lát',
     errNoModel: 'Chưa cấu hình tên mô hình',
     errImgAbsPath: 'Đường dẫn hình ảnh phải là đường dẫn tuyệt đối.',
@@ -1622,6 +1661,7 @@ const tMain = createI18n({
     errNotImage: '不是支援的圖片類型',
     errChaOfficeNotLoggedIn: '未登入 察元AIOffice:請點擊下方「登入」完成登入後重試',
     errNoApiKey: '未設定 {provider} 的 API Key',
+    errAiRegion: '該模型的廠商不向目前地區提供服務，請換一個模型或切換網路',
     errAiBusy: 'AI 服務目前繁忙，請稍後重試',
     errNoModel: '未設定模型名稱',
     errNoImageModel: '未配置生圖模型：請在模型設定中啟用生圖模型',
@@ -3867,6 +3907,9 @@ export function registerSheetsAiIpc(): void {
     // replace capacity/rate-limit dumps with the localized "busy" message
     if (!result.ok && isAiOverloadedError(result.error)) {
       return { ok: false, error: tm('errAiBusy') }
+    }
+    if (!result.ok && isAiRegionBlockedError(result.error)) {
+      return { ok: false, error: tm('errAiRegion') }
     }
     return result
   })

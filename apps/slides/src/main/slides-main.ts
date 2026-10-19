@@ -322,10 +322,10 @@ let slideClipboard: { bundles: SlideBundle[]; pngs?: string[] } | null = null
 /** The immediately preceding slide paste per webContents, so the paste-options floater can redo it with another mode. */
 const lastSlidePaste = new Map<number, { afterIndex: number; undoLen: number }>()
 
-// Cloud-generated single-page pptx: marker strings travel in pageMarkers slots; only paths issued
-// by slides:cloud-page-generate are readable (the renderer can't point the reader at arbitrary files)
-const CLOUD_PAGE_PREFIX = 'cloudpptx:'
-const issuedCloudPages = new Set<string>()
+// Generated single-page pptx: marker strings travel in pageMarkers slots; only paths issued
+// by slides:local-page-generate are readable (the renderer can't point the reader at arbitrary files)
+const GENERATED_PAGE_PREFIX = 'genpptx:'
+const issuedGeneratedPages = new Set<string>()
 import { registerPresenterIpc } from './presenter-show'
 import { registerAttachmentIpc } from './attachments-ipc'
 
@@ -2046,10 +2046,10 @@ export function registerSlidesIpc(): void {
         mkdirSync(dir, { recursive: true })
         const path = join(dir, `${randomUUID()}.pptx`)
         await writeFile(path, bytes)
-        issuedCloudPages.add(path)
+        issuedGeneratedPages.add(path)
         return {
           ok: true,
-          marker: CLOUD_PAGE_PREFIX + path,
+          marker: GENERATED_PAGE_PREFIX + path,
           ...(imageFailures.length ? { imageFailures } : {}),
         }
       } catch (err) {
@@ -2077,16 +2077,17 @@ export function registerSlidesIpc(): void {
         })
       | { error: string }
     > => {
-      // Every page arrives as a cloud marker (cloudpptx:<path> written by
-      // slides:cloud-page-generate, pointing at a one-slide pptx temp file); this handler only
+      // Every page arrives as a marker (genpptx:<path> written by
+      // slides:local-page-generate, pointing at a one-slide pptx temp file); this handler only
       // reads and lands the bytes.
       // replace: assemble the whole batch into one multi-page pptx as the new deck base.
       // append/replace_at/insert_at: land the extracted pages as insertSlidePptx ops
       // (earlier pages are untouched; landing shows up in the op journal like any edit).
       const readCloudPage = async (marker: string): Promise<{ bytes: Uint8Array }> => {
-        if (!marker.startsWith(CLOUD_PAGE_PREFIX)) throw new Error('expected a cloud page marker')
-        const path = marker.slice(CLOUD_PAGE_PREFIX.length)
-        if (!issuedCloudPages.has(path)) throw new Error('unknown cloud page marker')
+        if (!marker.startsWith(GENERATED_PAGE_PREFIX))
+          throw new Error('expected a generated page marker')
+        const path = marker.slice(GENERATED_PAGE_PREFIX.length)
+        if (!issuedGeneratedPages.has(path)) throw new Error('unknown generated page marker')
         return { bytes: new Uint8Array(await readFile(path)) }
       }
       const assembleDeck = async (): Promise<{ bytes: Uint8Array }> => {

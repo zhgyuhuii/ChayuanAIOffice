@@ -1,6 +1,6 @@
 import type { zh } from './zh'
 
-export const zhTW = {
+export const zh-TW = {
   aiInputPlaceholderGen: '描述要生成的簡報,或直接提問',
   aiEmptyGenTitle: '讓 AI 為你生成簡報',
   aiEmptyGenBody1: '描述主題、場合和大致頁數,',
@@ -105,6 +105,7 @@ export const zhTW = {
   aiErrEmptyOutput: '空輸出',
   aiErrUnknown: '未知錯誤',
   aiErrStreamTimeout: 'AI 請求逾時：網路長時間無回應，已停止。請檢查網路後重試',
+  aiErrRegion: '該模型的廠商不向目前地區提供服務，請換一個模型或切換網路',
   aiErrOverloaded: 'AI 服務目前繁忙，請稍後重試',
   aiErrNetwork: '網路有問題，無法連接 AI 服務。請檢查網路後重試',
   aiCreditsExhausted: '察元AIOffice 點數已用完，請前往 genspark.ai/pricing 儲值後重試',
@@ -216,6 +217,7 @@ export const zhTW = {
   aiSumSaveTemplate: '儲存風格範本"{name}"',
   aiSumTemplatesEmpty: '風格範本清單（空）',
   aiSumListTemplates: '列出 {count} 個風格範本',
+  aiErrRegion: '該模型的廠商不向目前地區提供服務，請換一個模型或切換網路',
   aiFailReadComments: '讀取註解',
   aiFailAddComment: '新增註解',
   aiSumReadComments: '讀取第 {n} 頁註解',
@@ -314,7 +316,6 @@ export const zhTW = {
   aiNoteSvgMode: "配圖來源：向量圖形（模型內聯繪製，元素可編輯）",
   aiNoteImgFail: "第 {page} 頁：「{kw}」未能配圖，已用向量圖形繪製",
   aiNoteImgWebFallback: "「{kw}」AI 生圖失敗，已改用網路圖片",
-
   aiToolRunDeck: '正在產生簡報…',
   aiToolRunRegenSlide: '正在重做頁面…',
   aiToolRunPlanDeck: '正在規劃大綱…',
@@ -326,5 +327,4 @@ export const zhTW = {
   aiToolRunWebSearch: '正在搜尋網頁…',
   aiToolRunImageSearch: '正在搜尋圖片…',
   aiToolRunReadUrl: '正在讀取網頁…',
-  aiPageCloudToLocal: '雲端不可用,已本地生成',
-} satisfies Record<keyof typeof zh, string>
+}

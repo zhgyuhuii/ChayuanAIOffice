@@ -57,6 +57,7 @@ export const it = {
   aiSave: 'Salva',
   aiUnknownError: 'Errore sconosciuto',
   aiTimeoutError: 'Richiesta IA scaduta: nessuna risposta dalla rete, esecuzione interrotta. Controlla la connessione e riprova',
+  aiRegionError: 'Il fornitore di questo modello non serve la tua regione attuale — scegli un altro modello o cambia rete',
   aiOverloadedError: 'Il servizio IA è momentaneamente sovraccarico — riprova tra poco',
   aiNetworkError: 'Problema di rete: impossibile raggiungere il servizio IA. Controlla la connessione e riprova',
   aiCreditsExhausted: 'Crediti esauriti — ricarica sulla pagina dei prezzi',

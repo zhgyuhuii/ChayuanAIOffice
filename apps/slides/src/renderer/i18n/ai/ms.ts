@@ -21,14 +21,11 @@ export const ms = {
   aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: 'Buka pembantu AI',
   aiFactCheckBtn: 'Semak Fakta AI',
-  aiFactCheckPrompt:
-    'Semak fakta dek ini: sahkan angka, tarikh, nama dan dakwaan, kemudian nyatakan dan betulkan kesilapan',
+  aiFactCheckPrompt: 'Semak fakta dek ini: sahkan angka, tarikh, nama dan dakwaan, kemudian nyatakan dan betulkan kesilapan',
   aiImageBtn: 'Imej AI',
-  aiImagePrompt:
-    'Jana imej yang sepadan dengan kandungan slaid ini dan sisipkannya di kedudukan yang sesuai pada slaid',
+  aiImagePrompt: 'Jana imej yang sepadan dengan kandungan slaid ini dan sisipkannya di kedudukan yang sesuai pada slaid',
   aiBeautifyBtn: 'Percantik AI',
-  aiBeautifyPrompt:
-    'Percantik slaid ini: perbaiki susun atur, warna dan tipografi supaya kelihatan lebih profesional',
+  aiBeautifyPrompt: 'Percantik slaid ini: perbaiki susun atur, warna dan tipografi supaya kelihatan lebih profesional',
   aiSwitchModel: 'Tukar model AI',
   aiNewChat: 'Sembang baharu',
   aiCollapsePanel: 'Runtuhkan panel',
@@ -97,8 +94,7 @@ export const ms = {
   aiStarterPolishTitle: 'Perbaik tajuk dan teks slaid ini',
   aiStarterTighten: 'Jadikan isi penting slaid ini lebih ringkas',
   aiStarterProofread: 'Semak kesilapan taip dalam keseluruhan persembahan dan betulkan',
-  aiTurnLimit:
-    '(Had pusingan panggilan alat untuk permintaan ini telah dicapai; jawapan di atas berdasarkan langkah yang telah selesai dan mungkin tidak lengkap.)',
+  aiTurnLimit: '(Had pusingan panggilan alat untuk permintaan ini telah dicapai; jawapan di atas berdasarkan langkah yang telah selesai dan mungkin tidak lengkap.)',
   aiStoppedNote: '(dihentikan)',
   aiTruncatedNote: '(Balasan terpotong kerana had panjang dan mungkin tidak lengkap.)',
   aiNoResponse: 'AI tidak mengembalikan sebarang kandungan.',
@@ -108,13 +104,11 @@ export const ms = {
   aiErrTimeout: 'Tamat masa ({ms}ms)',
   aiErrEmptyOutput: 'Output kosong',
   aiErrUnknown: 'Ralat tidak diketahui',
-  aiErrStreamTimeout:
-    'Permintaan AI tamat masa: rangkaian tidak memberi respons, proses dihentikan. Semak sambungan anda dan cuba lagi',
+  aiErrStreamTimeout: 'Permintaan AI tamat masa: rangkaian tidak memberi respons, proses dihentikan. Semak sambungan anda dan cuba lagi',
+  aiErrRegion: 'Penyedia model ini tidak memberi perkhidmatan di rantau semasa anda — pilih model lain atau tukar rangkaian',
   aiErrOverloaded: 'Perkhidmatan AI sedang sibuk — sila cuba lagi sebentar lagi',
-  aiErrNetwork:
-    'Masalah rangkaian: tidak dapat menghubungi perkhidmatan AI. Semak sambungan anda dan cuba lagi',
-  aiCreditsExhausted:
-    'Kredit ChaAI Office anda telah habis. Tambah nilai di genspark.ai/pricing dan cuba lagi',
+  aiErrNetwork: 'Masalah rangkaian: tidak dapat menghubungi perkhidmatan AI. Semak sambungan anda dan cuba lagi',
+  aiCreditsExhausted: 'Kredit ChaAI Office anda telah habis. Tambah nilai di genspark.ai/pricing dan cuba lagi',
   aiErrRequestFailed: 'Gagal menghantar permintaan: {msg}',
   aiErrGenerateFailed: 'Penjanaan gagal',
   aiErrRegenFailed: 'Gagal membuat semula slaid',
@@ -223,6 +217,7 @@ export const ms = {
   aiSumSaveTemplate: 'Menyimpan templat gaya "{name}"',
   aiSumTemplatesEmpty: 'Templat gaya (kosong)',
   aiSumListTemplates: 'Menyenaraikan {count} templat gaya',
+  aiErrRegion: 'Penyedia model ini tidak memberi perkhidmatan di rantau semasa anda — pilih model lain atau tukar rangkaian',
   aiFailReadComments: 'Membaca komen',
   aiFailAddComment: 'Menambah komen',
   aiSumReadComments: 'Membaca komen slaid {n}',
@@ -321,7 +316,6 @@ export const ms = {
   aiNoteSvgMode: "Imej: grafik vektor (dilukis oleh model, boleh disunting)",
   aiNoteImgFail: "Halaman {page}: tiada imej untuk \"{kw}\"; dilukis sebagai vektor",
   aiNoteImgWebFallback: "Penjanaan imej AI untuk \"{kw}\" gagal; imej web digunakan sebagai gantinya",
-
   aiToolRunDeck: 'Menjana pembentangan…',
   aiToolRunRegenSlide: 'Menjana semula slaid…',
   aiToolRunPlanDeck: 'Merancang rangka…',
@@ -333,5 +327,4 @@ export const ms = {
   aiToolRunWebSearch: 'Mencari di web…',
   aiToolRunImageSearch: 'Mencari imej…',
   aiToolRunReadUrl: 'Membaca halaman…',
-  aiPageCloudToLocal: 'Awan tidak tersedia — dijana secara setempat',
-} satisfies Record<keyof typeof zh, string>
+}

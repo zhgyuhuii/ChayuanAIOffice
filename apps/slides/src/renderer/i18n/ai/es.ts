@@ -21,22 +21,18 @@ export const es = {
   aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: 'Abrir el asistente de IA',
   aiFactCheckBtn: 'Verificación IA',
-  aiFactCheckPrompt:
-    'Verifica los datos de esta presentación: comprueba cifras, fechas, nombres y afirmaciones, y señala y corrige los errores',
+  aiFactCheckPrompt: 'Verifica los datos de esta presentación: comprueba cifras, fechas, nombres y afirmaciones, y señala y corrige los errores',
   aiImageBtn: 'Imagen IA',
-  aiImagePrompt:
-    'Genera una imagen acorde con el contenido de esta diapositiva e insértala en un lugar adecuado',
+  aiImagePrompt: 'Genera una imagen acorde con el contenido de esta diapositiva e insértala en un lugar adecuado',
   aiBeautifyBtn: 'Diseño IA',
-  aiBeautifyPrompt:
-    'Embellece esta diapositiva: mejora el diseño, los colores y la tipografía para que luzca más profesional',
+  aiBeautifyPrompt: 'Embellece esta diapositiva: mejora el diseño, los colores y la tipografía para que luzca más profesional',
   aiSwitchModel: 'Cambiar de modelo de IA',
   aiNewChat: 'Nueva conversación',
   aiCollapsePanel: 'Contraer panel',
   aiHistorySep: '—— conversación anterior ——',
   aiEmptyTitle: 'Deja que la IA pula tus diapositivas',
   aiEmptyBody1: 'Da instrucciones o simplemente haz preguntas;',
-  aiEmptyBody2:
-    'con elementos seleccionados, los comandos de reescritura se aplican a la selección.',
+  aiEmptyBody2: 'con elementos seleccionados, los comandos de reescritura se aplican a la selección.',
   aiThinking: 'Pensando',
   aiWorkedSteps: 'Completado · {n} pasos',
   aiGroupWorking: 'En curso…',
@@ -98,26 +94,21 @@ export const es = {
   aiStarterPolishTitle: 'Mejorar el título y el texto de esta diapositiva',
   aiStarterTighten: 'Hacer más concisas las viñetas de esta diapositiva',
   aiStarterProofread: 'Revisar y corregir las erratas de toda la presentación',
-  aiTurnLimit:
-    '(Se alcanzó el límite de llamadas a herramientas de esta solicitud; la respuesta anterior refleja los pasos completados hasta ahora y puede estar incompleta.)',
+  aiTurnLimit: '(Se alcanzó el límite de llamadas a herramientas de esta solicitud; la respuesta anterior refleja los pasos completados hasta ahora y puede estar incompleta.)',
   aiStoppedNote: '(detenido)',
   aiTruncatedNote: '(La respuesta fue cortada por el límite de longitud y puede estar incompleta.)',
   aiNoResponse: 'La IA no devolvió ningún contenido.',
   aiReadFailed: '{name}: error de lectura',
-  aiTooManyImages:
-    'Se pueden enviar como máximo {max} imágenes por mensaje; las sobrantes se ignoraron',
+  aiTooManyImages: 'Se pueden enviar como máximo {max} imágenes por mensaje; las sobrantes se ignoraron',
   aiErrStopped: 'Detenido',
   aiErrTimeout: 'Tiempo agotado ({ms}ms)',
   aiErrEmptyOutput: 'Salida vacía',
   aiErrUnknown: 'Error desconocido',
-  aiErrStreamTimeout:
-    'La solicitud de IA agotó el tiempo de espera: no hubo respuesta de la red y se detuvo. Comprueba tu conexión e inténtalo de nuevo',
-  aiErrOverloaded:
-    'El servicio de IA está saturado en este momento; inténtalo de nuevo en unos instantes',
-  aiErrNetwork:
-    'Problema de red: no se pudo conectar con el servicio de IA. Comprueba tu conexión e inténtalo de nuevo',
-  aiCreditsExhausted:
-    'Tus créditos de ChaAI Office se han agotado. Recarga en genspark.ai/pricing e inténtalo de nuevo',
+  aiErrStreamTimeout: 'La solicitud de IA agotó el tiempo de espera: no hubo respuesta de la red y se detuvo. Comprueba tu conexión e inténtalo de nuevo',
+  aiErrRegion: 'El proveedor de este modelo no da servicio en tu región actual — elige otro modelo o cambia de red',
+  aiErrOverloaded: 'El servicio de IA está saturado en este momento; inténtalo de nuevo en unos instantes',
+  aiErrNetwork: 'Problema de red: no se pudo conectar con el servicio de IA. Comprueba tu conexión e inténtalo de nuevo',
+  aiCreditsExhausted: 'Tus créditos de ChaAI Office se han agotado. Recarga en genspark.ai/pricing e inténtalo de nuevo',
   aiErrRequestFailed: 'No se pudo enviar la solicitud: {msg}',
   aiErrGenerateFailed: 'Error de generación',
   aiErrRegenFailed: 'No se pudo rehacer la diapositiva',
@@ -226,6 +217,7 @@ export const es = {
   aiSumSaveTemplate: 'Plantilla de estilo "{name}" guardada',
   aiSumTemplatesEmpty: 'Plantillas de estilo (vacío)',
   aiSumListTemplates: 'Se enumeraron {count} plantillas de estilo',
+  aiErrRegion: 'El proveedor de este modelo no da servicio en tu región actual — elige otro modelo o cambia de red',
   aiFailReadComments: 'Leer comentarios',
   aiFailAddComment: 'Añadir comentario',
   aiSumReadComments: 'Leer comentarios de la diapositiva {n}',
@@ -324,7 +316,6 @@ export const es = {
   aiNoteSvgMode: "Imágenes: gráficos vectoriales (dibujados por el modelo, editables)",
   aiNoteImgFail: "Página {page}: sin imagen para «{kw}»; dibujada como gráfico vectorial",
   aiNoteImgWebFallback: "La generación de imágenes con IA falló para «{kw}»; se usó una imagen web en su lugar",
-
   aiToolRunDeck: 'Generando la presentación…',
   aiToolRunRegenSlide: 'Rehaciendo la diapositiva…',
   aiToolRunPlanDeck: 'Planificando el esquema…',
@@ -336,5 +327,4 @@ export const es = {
   aiToolRunWebSearch: 'Buscando en la web…',
   aiToolRunImageSearch: 'Buscando imágenes…',
   aiToolRunReadUrl: 'Leyendo la página…',
-  aiPageCloudToLocal: 'Nube no disponible — generado localmente',
-} satisfies Record<keyof typeof zh, string>
+}

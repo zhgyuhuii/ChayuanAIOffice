@@ -12,8 +12,7 @@ export const de = {
   aiQcPageOk: 'Seite {n}: Layout in Ordnung',
   aiQcPageFixed: 'Seite {n}: {summary}',
   aiQcPageFixedDefault: 'Layoutprobleme behoben',
-  aiQcPageReverted:
-    'Seite {n}: automatische Korrektur verschlechterte das Ergebnis — zurückgesetzt',
+  aiQcPageReverted: 'Seite {n}: automatische Korrektur verschlechterte das Ergebnis — zurückgesetzt',
   aiQcPageFailed: 'Seite {n}: Prüfung fehlgeschlagen ({error})',
   aiQcPageSkipped: 'Seite {n}: automatische Layoutprüfung übersprungen',
   aiQcStopped: 'Layoutprüfung gestoppt',
@@ -22,14 +21,11 @@ export const de = {
   aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: 'KI-Assistenten öffnen',
   aiFactCheckBtn: 'KI-Faktencheck',
-  aiFactCheckPrompt:
-    'Überprüfe die Fakten in dieser Präsentation: Kontrolliere Zahlen, Daten, Namen und Aussagen, weise auf Fehler hin und korrigiere sie',
+  aiFactCheckPrompt: 'Überprüfe die Fakten in dieser Präsentation: Kontrolliere Zahlen, Daten, Namen und Aussagen, weise auf Fehler hin und korrigiere sie',
   aiImageBtn: 'KI-Bild',
-  aiImagePrompt:
-    'Erzeuge ein zum Inhalt dieser Folie passendes Bild und füge es an einer passenden Stelle der Folie ein',
+  aiImagePrompt: 'Erzeuge ein zum Inhalt dieser Folie passendes Bild und füge es an einer passenden Stelle der Folie ein',
   aiBeautifyBtn: 'KI-Design',
-  aiBeautifyPrompt:
-    'Gestalte diese Folie ansprechender: Verbessere Layout, Farben und Typografie für einen professionelleren Look',
+  aiBeautifyPrompt: 'Gestalte diese Folie ansprechender: Verbessere Layout, Farben und Typografie für einen professionelleren Look',
   aiSwitchModel: 'KI-Modell wechseln',
   aiNewChat: 'Neuer Chat',
   aiCollapsePanel: 'Bereich einklappen',
@@ -73,8 +69,7 @@ export const de = {
   aiChipUnify: 'Stil vereinheitlichen',
   aiQueueTitle: 'Bearbeitungsliste',
   aiQueueCount: 'Änderungen: {count}',
-  aiQueueHint:
-    'Markieren Sie auf allen Folien, was geändert werden soll, und senden Sie alles auf einmal.',
+  aiQueueHint: 'Markieren Sie auf allen Folien, was geändert werden soll, und senden Sie alles auf einmal.',
   aiQueueSend: 'Änderungen senden ({count})',
   aiQueueDiscard: 'Verwerfen',
   aiQueueDiscardConfirm: 'Alle vorgemerkten Änderungen verwerfen ({count})?',
@@ -99,26 +94,21 @@ export const de = {
   aiStarterPolishTitle: 'Titel und Text dieser Folie verbessern',
   aiStarterTighten: 'Aufzählungspunkte dieser Folie prägnanter formulieren',
   aiStarterProofread: 'Die gesamte Präsentation auf Tippfehler prüfen und korrigieren',
-  aiTurnLimit:
-    '(Das Limit für Toolaufrufe pro Anfrage wurde erreicht; die obige Antwort basiert auf den bereits abgeschlossenen Schritten und ist möglicherweise unvollständig.)',
+  aiTurnLimit: '(Das Limit für Toolaufrufe pro Anfrage wurde erreicht; die obige Antwort basiert auf den bereits abgeschlossenen Schritten und ist möglicherweise unvollständig.)',
   aiStoppedNote: '(gestoppt)',
-  aiTruncatedNote:
-    '(Die Antwort wurde durch das Längenlimit abgeschnitten und ist möglicherweise unvollständig.)',
+  aiTruncatedNote: '(Die Antwort wurde durch das Längenlimit abgeschnitten und ist möglicherweise unvollständig.)',
   aiNoResponse: 'Die KI hat keinen Inhalt zurückgegeben.',
   aiReadFailed: '{name}: Lesen fehlgeschlagen',
-  aiTooManyImages:
-    'Pro Nachricht können höchstens {max} Bilder gesendet werden; überzählige wurden ignoriert',
+  aiTooManyImages: 'Pro Nachricht können höchstens {max} Bilder gesendet werden; überzählige wurden ignoriert',
   aiErrStopped: 'Gestoppt',
   aiErrTimeout: 'Zeitüberschreitung ({ms}ms)',
   aiErrEmptyOutput: 'Leere Ausgabe',
   aiErrUnknown: 'Unbekannter Fehler',
-  aiErrStreamTimeout:
-    'Zeitüberschreitung der KI-Anfrage: keine Antwort vom Netzwerk, der Vorgang wurde abgebrochen. Prüfe deine Verbindung und versuche es erneut',
+  aiErrStreamTimeout: 'Zeitüberschreitung der KI-Anfrage: keine Antwort vom Netzwerk, der Vorgang wurde abgebrochen. Prüfe deine Verbindung und versuche es erneut',
+  aiErrRegion: 'Der Anbieter dieses Modells bedient Ihre aktuelle Region nicht — wählen Sie ein anderes Modell oder wechseln Sie das Netzwerk',
   aiErrOverloaded: 'Der KI-Dienst ist derzeit überlastet — bitte gleich erneut versuchen',
-  aiErrNetwork:
-    'Netzwerkproblem: Der KI-Dienst ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut',
-  aiCreditsExhausted:
-    'Deine ChaAI Office-Credits sind aufgebraucht. Lade unter genspark.ai/pricing auf und versuche es erneut',
+  aiErrNetwork: 'Netzwerkproblem: Der KI-Dienst ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut',
+  aiCreditsExhausted: 'Deine ChaAI Office-Credits sind aufgebraucht. Lade unter genspark.ai/pricing auf und versuche es erneut',
   aiErrRequestFailed: 'Senden der Anfrage fehlgeschlagen: {msg}',
   aiErrGenerateFailed: 'Generierung fehlgeschlagen',
   aiErrRegenFailed: 'Neuerstellung der Folie fehlgeschlagen',
@@ -227,6 +217,7 @@ export const de = {
   aiSumSaveTemplate: 'Stilvorlage „{name}“ gespeichert',
   aiSumTemplatesEmpty: 'Stilvorlagen (leer)',
   aiSumListTemplates: '{count} Stilvorlagen aufgelistet',
+  aiErrRegion: 'Der Anbieter dieses Modells bedient Ihre aktuelle Region nicht — wählen Sie ein anderes Modell oder wechseln Sie das Netzwerk',
   aiFailReadComments: 'Kommentare lesen',
   aiFailAddComment: 'Kommentar hinzufügen',
   aiSumReadComments: 'Kommentare auf Folie {n} lesen',
@@ -325,7 +316,6 @@ export const de = {
   aiNoteSvgMode: "Bildmaterial: Vektorgrafiken (vom Modell gezeichnet, editierbar)",
   aiNoteImgFail: "Seite {page}: kein Bild für „{kw}“ gefunden; als Vektorgrafik gezeichnet",
   aiNoteImgWebFallback: "KI-Bildgenerierung für „{kw}“ fehlgeschlagen; stattdessen wurde ein Webbild verwendet",
-
   aiToolRunDeck: 'Präsentation wird erstellt…',
   aiToolRunRegenSlide: 'Folie wird neu erstellt…',
   aiToolRunPlanDeck: 'Gliederung wird geplant…',
@@ -337,5 +327,4 @@ export const de = {
   aiToolRunWebSearch: 'Websuche läuft…',
   aiToolRunImageSearch: 'Bildersuche läuft…',
   aiToolRunReadUrl: 'Seite wird gelesen…',
-  aiPageCloudToLocal: 'Cloud nicht verfügbar — lokal generiert',
-} satisfies Record<keyof typeof zh, string>
+}

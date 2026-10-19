@@ -21,8 +21,7 @@ export const th = {
   aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: 'เปิดผู้ช่วย AI',
   aiFactCheckBtn: 'ตรวจสอบข้อเท็จจริง AI',
-  aiFactCheckPrompt:
-    'ตรวจสอบข้อเท็จจริงของสไลด์ชุดนี้: ตรวจตัวเลข วันที่ ชื่อ และข้อกล่าวอ้าง แล้วชี้และแก้ไขข้อผิดพลาด',
+  aiFactCheckPrompt: 'ตรวจสอบข้อเท็จจริงของสไลด์ชุดนี้: ตรวจตัวเลข วันที่ ชื่อ และข้อกล่าวอ้าง แล้วชี้และแก้ไขข้อผิดพลาด',
   aiImageBtn: 'ภาพ AI',
   aiImagePrompt: 'สร้างภาพที่สอดคล้องกับเนื้อหาของสไลด์นี้ และแทรกลงในตำแหน่งที่เหมาะสมบนสไลด์',
   aiBeautifyBtn: 'ตกแต่งด้วย AI',
@@ -95,8 +94,7 @@ export const th = {
   aiStarterPolishTitle: 'ปรับปรุงชื่อเรื่องและข้อความของสไลด์นี้',
   aiStarterTighten: 'ทำให้ประเด็นในสไลด์นี้กระชับขึ้น',
   aiStarterProofread: 'ตรวจคำผิดทั้งงานนำเสนอและแก้ไขให้',
-  aiTurnLimit:
-    '(ถึงขีดจำกัดรอบการเรียกใช้เครื่องมือของคำขอนี้แล้ว คำตอบด้านบนอิงจากขั้นตอนที่ทำเสร็จแล้วและอาจไม่สมบูรณ์)',
+  aiTurnLimit: '(ถึงขีดจำกัดรอบการเรียกใช้เครื่องมือของคำขอนี้แล้ว คำตอบด้านบนอิงจากขั้นตอนที่ทำเสร็จแล้วและอาจไม่สมบูรณ์)',
   aiStoppedNote: '(หยุดแล้ว)',
   aiTruncatedNote: '(คำตอบถูกตัดเนื่องจากถึงขีดจำกัดความยาว เนื้อหาอาจไม่สมบูรณ์)',
   aiNoResponse: 'AI ไม่ได้ส่งเนื้อหากลับมา',
@@ -106,13 +104,11 @@ export const th = {
   aiErrTimeout: 'หมดเวลา ({ms}ms)',
   aiErrEmptyOutput: 'ผลลัพธ์ว่างเปล่า',
   aiErrUnknown: 'ข้อผิดพลาดที่ไม่รู้จัก',
-  aiErrStreamTimeout:
-    'คำขอ AI หมดเวลา: เครือข่ายไม่ตอบสนอง จึงหยุดการทำงาน โปรดตรวจสอบการเชื่อมต่อแล้วลองใหม่',
+  aiErrStreamTimeout: 'คำขอ AI หมดเวลา: เครือข่ายไม่ตอบสนอง จึงหยุดการทำงาน โปรดตรวจสอบการเชื่อมต่อแล้วลองใหม่',
+  aiErrRegion: 'ผู้ให้บริการของโมเดลนี้ไม่ให้บริการในภูมิภาคปัจจุบันของคุณ — โปรดเลือกโมเดลอื่นหรือเปลี่ยนเครือข่าย',
   aiErrOverloaded: 'บริการ AI มีผู้ใช้งานจำนวนมากในขณะนี้ โปรดลองอีกครั้งในอีกสักครู่',
-  aiErrNetwork:
-    'เครือข่ายมีปัญหา ไม่สามารถเชื่อมต่อบริการ AI ได้ โปรดตรวจสอบการเชื่อมต่อแล้วลองใหม่',
-  aiCreditsExhausted:
-    'เครดิต ChaAI Office ของคุณหมดแล้ว โปรดเติมเครดิตที่ genspark.ai/pricing แล้วลองใหม่',
+  aiErrNetwork: 'เครือข่ายมีปัญหา ไม่สามารถเชื่อมต่อบริการ AI ได้ โปรดตรวจสอบการเชื่อมต่อแล้วลองใหม่',
+  aiCreditsExhausted: 'เครดิต ChaAI Office ของคุณหมดแล้ว โปรดเติมเครดิตที่ genspark.ai/pricing แล้วลองใหม่',
   aiErrRequestFailed: 'ส่งคำขอไม่สำเร็จ: {msg}',
   aiErrGenerateFailed: 'สร้างไม่สำเร็จ',
   aiErrRegenFailed: 'ทำหน้าใหม่ไม่สำเร็จ',
@@ -221,6 +217,7 @@ export const th = {
   aiSumSaveTemplate: 'บันทึกเทมเพลตสไตล์ "{name}"',
   aiSumTemplatesEmpty: 'รายการเทมเพลตสไตล์ (ว่าง)',
   aiSumListTemplates: 'แสดงเทมเพลตสไตล์ {count} รายการ',
+  aiErrRegion: 'ผู้ให้บริการของโมเดลนี้ไม่ให้บริการในภูมิภาคปัจจุบันของคุณ — โปรดเลือกโมเดลอื่นหรือเปลี่ยนเครือข่าย',
   aiFailReadComments: 'อ่านข้อคิดเห็น',
   aiFailAddComment: 'เพิ่มข้อคิดเห็น',
   aiSumReadComments: 'อ่านข้อคิดเห็นในสไลด์ {n}',
@@ -319,7 +316,6 @@ export const th = {
   aiNoteSvgMode: "รูปภาพ: เวกเตอร์ (โมเดลวาดแบบอินไลน์ แก้ไขได้)",
   aiNoteImgFail: "หน้า {page}: ไม่มีรูปสำหรับ \"{kw}\" วาดเป็นเวกเตอร์แทน",
   aiNoteImgWebFallback: "การสร้างภาพด้วย AI สำหรับ \"{kw}\" ล้มเหลว จึงใช้ภาพจากเว็บแทน",
-
   aiToolRunDeck: 'กำลังสร้างงานนำเสนอ…',
   aiToolRunRegenSlide: 'กำลังทำสไลด์ใหม่…',
   aiToolRunPlanDeck: 'กำลังวางโครงเรื่อง…',
@@ -331,5 +327,4 @@ export const th = {
   aiToolRunWebSearch: 'กำลังค้นเว็บ…',
   aiToolRunImageSearch: 'กำลังค้นหารูปภาพ…',
   aiToolRunReadUrl: 'กำลังอ่านหน้าเว็บ…',
-  aiPageCloudToLocal: 'คลาวด์ไม่พร้อมใช้ — สร้างในเครื่อง',
-} satisfies Record<keyof typeof zh, string>
+}

@@ -28,13 +28,13 @@ import {
 // LOCAL(2026-09-22, f5247d3..476e5023): 上游 #657 watch 函数重放为 chaoffice 命名
 // LOCAL(2026-10-15, sync/24): 上游 #1950 拒键(401)恢复流并入,recoverFromRejectedGskKey→recoverFromRejectedChaofficeKey
 import {
+packages/ai-search/src/chaoffice.ts
   chaofficeApiKey as chaofficeAuthApiKey,
   chaofficeAuthPath,
   recoverFromRejectedChaofficeKey,
   reloadChaofficeAuth,
   type ChaOfficeRecoveryOutcome,
 } from './chaoffice-auth'
-
 const SEARCH_TIMEOUT_MS = 60_000
 const GENERATE_TIMEOUT_MS = 600_000
 const MAX_BUFFER = 32 * 1024 * 1024
@@ -508,6 +508,7 @@ export async function chaofficeResolveDownloadUrl(url: string): Promise<string> 
   }
 }
 
+packages/ai-search/src/chaoffice.ts
 // ── Cloud single-slide generation (ChaOffice slide_generate) ─────────
 
 /**
@@ -663,7 +664,7 @@ export async function chaofficeConvertPdfToDocx(
   return new Uint8Array(await resp.arrayBuffer())
 }
 
-// ── Media analysis / transcription ──────────────────────────────────
+/ ── Media analysis / transcription ──────────────────────────────────
 
 /** Best-effort text extraction from chaoffice analysis-type command output (shape varies by task, so be lenient; exported for tests) */
 export function extractChaOfficeText(raw: unknown): string {

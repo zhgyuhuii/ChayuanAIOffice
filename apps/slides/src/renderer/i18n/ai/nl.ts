@@ -21,22 +21,18 @@ export const nl = {
   aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: 'AI-assistent openen',
   aiFactCheckBtn: 'AI-factcheck',
-  aiFactCheckPrompt:
-    'Factcheck deze presentatie: controleer cijfers, datums, namen en beweringen, en wijs fouten aan en corrigeer ze',
+  aiFactCheckPrompt: 'Factcheck deze presentatie: controleer cijfers, datums, namen en beweringen, en wijs fouten aan en corrigeer ze',
   aiImageBtn: 'AI-afbeelding',
-  aiImagePrompt:
-    'Genereer een afbeelding die past bij de inhoud van deze dia en voeg deze op een geschikte plek in',
+  aiImagePrompt: 'Genereer een afbeelding die past bij de inhoud van deze dia en voeg deze op een geschikte plek in',
   aiBeautifyBtn: 'AI-opmaak',
-  aiBeautifyPrompt:
-    'Maak deze dia mooier: verbeter de lay-out, kleuren en typografie voor een professionelere uitstraling',
+  aiBeautifyPrompt: 'Maak deze dia mooier: verbeter de lay-out, kleuren en typografie voor een professionelere uitstraling',
   aiSwitchModel: 'AI-model wisselen',
   aiNewChat: 'Nieuwe chat',
   aiCollapsePanel: 'Paneel samenvouwen',
   aiHistorySep: '—— eerder gesprek ——',
   aiEmptyTitle: "Laat AI uw dia's verfijnen",
   aiEmptyBody1: 'Geef instructies of stel gewoon vragen;',
-  aiEmptyBody2:
-    'met geselecteerde elementen zijn herschrijfopdrachten van toepassing op de selectie.',
+  aiEmptyBody2: 'met geselecteerde elementen zijn herschrijfopdrachten van toepassing op de selectie.',
   aiThinking: 'Aan het denken',
   aiWorkedSteps: 'Klaar · {n} stappen',
   aiGroupWorking: 'Bezig…',
@@ -98,25 +94,21 @@ export const nl = {
   aiStarterPolishTitle: 'De titel en tekst van deze dia verbeteren',
   aiStarterTighten: 'De opsommingen van deze dia beknopter maken',
   aiStarterProofread: 'De hele presentatie op typefouten controleren en deze corrigeren',
-  aiTurnLimit:
-    '(De limiet voor toolaanroepen voor dit verzoek is bereikt; het bovenstaande antwoord is gebaseerd op de tot nu toe voltooide stappen en kan onvolledig zijn.)',
+  aiTurnLimit: '(De limiet voor toolaanroepen voor dit verzoek is bereikt; het bovenstaande antwoord is gebaseerd op de tot nu toe voltooide stappen en kan onvolledig zijn.)',
   aiStoppedNote: '(gestopt)',
   aiTruncatedNote: '(Het antwoord is afgekapt door de lengtelimiet en is mogelijk onvolledig.)',
   aiNoResponse: 'De AI heeft geen inhoud geretourneerd.',
   aiReadFailed: '{name}: lezen mislukt',
-  aiTooManyImages:
-    'Er kunnen maximaal {max} afbeeldingen per bericht worden verzonden; de extra afbeeldingen zijn genegeerd',
+  aiTooManyImages: 'Er kunnen maximaal {max} afbeeldingen per bericht worden verzonden; de extra afbeeldingen zijn genegeerd',
   aiErrStopped: 'Gestopt',
   aiErrTimeout: 'Time-out ({ms}ms)',
   aiErrEmptyOutput: 'Lege uitvoer',
   aiErrUnknown: 'Onbekende fout',
-  aiErrStreamTimeout:
-    'AI-verzoek verlopen: geen reactie van het netwerk, uitvoering gestopt. Controleer je verbinding en probeer het opnieuw',
+  aiErrStreamTimeout: 'AI-verzoek verlopen: geen reactie van het netwerk, uitvoering gestopt. Controleer je verbinding en probeer het opnieuw',
+  aiErrRegion: 'De aanbieder van dit model bedient uw huidige regio niet — kies een ander model of wissel van netwerk',
   aiErrOverloaded: 'De AI-service is momenteel overbelast — probeer het zo opnieuw',
-  aiErrNetwork:
-    'Netwerkprobleem: kan de AI-service niet bereiken. Controleer je verbinding en probeer het opnieuw',
-  aiCreditsExhausted:
-    'Je ChaAI Office-credits zijn op. Waardeer op via genspark.ai/pricing en probeer het opnieuw',
+  aiErrNetwork: 'Netwerkprobleem: kan de AI-service niet bereiken. Controleer je verbinding en probeer het opnieuw',
+  aiCreditsExhausted: 'Je ChaAI Office-credits zijn op. Waardeer op via genspark.ai/pricing en probeer het opnieuw',
   aiErrRequestFailed: 'Verzenden van verzoek mislukt: {msg}',
   aiErrGenerateFailed: 'Genereren mislukt',
   aiErrRegenFailed: 'Dia opnieuw genereren mislukt',
@@ -225,6 +217,7 @@ export const nl = {
   aiSumSaveTemplate: 'Stijlsjabloon "{name}" opgeslagen',
   aiSumTemplatesEmpty: 'Stijlsjablonen (leeg)',
   aiSumListTemplates: '{count} stijlsjablonen weergegeven',
+  aiErrRegion: 'De aanbieder van dit model bedient uw huidige regio niet — kies een ander model of wissel van netwerk',
   aiFailReadComments: 'Opmerkingen lezen',
   aiFailAddComment: 'Opmerking toevoegen',
   aiSumReadComments: 'Opmerkingen van dia {n} lezen',
@@ -323,7 +316,6 @@ export const nl = {
   aiNoteSvgMode: "Beelden: vectorafbeeldingen (door het model getekend, bewerkbaar)",
   aiNoteImgFail: "Pagina {page}: geen afbeelding voor \"{kw}\"; als vector getekend",
   aiNoteImgWebFallback: "AI-beeldgeneratie voor \"{kw}\" mislukt; in plaats daarvan is een webafbeelding gebruikt",
-
   aiToolRunDeck: 'Presentatie wordt gegenereerd…',
   aiToolRunRegenSlide: 'Dia wordt opnieuw gemaakt…',
   aiToolRunPlanDeck: 'Overzicht wordt gepland…',
@@ -335,5 +327,4 @@ export const nl = {
   aiToolRunWebSearch: 'Zoeken op het web…',
   aiToolRunImageSearch: 'Afbeeldingen worden gezocht…',
   aiToolRunReadUrl: 'Pagina wordt gelezen…',
-  aiPageCloudToLocal: 'Cloud niet beschikbaar — lokaal gegenereerd',
-} satisfies Record<keyof typeof zh, string>
+}

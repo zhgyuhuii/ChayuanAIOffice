@@ -3526,6 +3526,10 @@ export function Home() {
         <KbAskPanel
           onOpenPath={(path) => void window.chaOffice.openPath(path)}
           onGoToRecents={() => setAskMode(false)}
+          onOpenModelSettings={() => {
+            setSettingsSection(coerceSectionId('aiModel'))
+            handleSettingsOpenChange(true)
+          }}
         />
       ) : cloudMode ? (
         <CloudProjectsView />

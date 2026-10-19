@@ -15,6 +15,7 @@ import { createRequire } from 'node:module'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { asRecord, chaofficeProxyUrl } from './shared'
+import { nativeWaf } from './native-waf'
 
 /** Progress event for the browser login flow. */
 export interface ChaOfficeLoginProgress {
@@ -149,6 +150,7 @@ export function chaofficeApiKey(): string {
 
 /** Drop the cache so the next read sees a key written by another process. */
 export function reloadChaofficeAuth(): void {
+  // File watchers reread API keys during remint; only session teardown invalidates cookie admission.
   cachedAuth = undefined
 }
 
@@ -168,6 +170,7 @@ function saveAuth(auth: ChaofficeAuth): void {
 }
 
 function clearAuth(): void {
+  nativeWaf.clear()
   try {
     if (existsSync(chaofficeAuthPath())) unlinkSync(chaofficeAuthPath())
   } catch {
@@ -196,10 +199,12 @@ async function httpJson(
   const channels = await loginFetchChannels()
   for (const [i, impl] of channels.entries()) {
     try {
+      const attempt =
+        process.env.GENOFFICE_NATIVE_WAF === '1' ? await nativeWaf.prepare(url, init, impl) : init
       // per-attempt timeout: a blackholed direct connection would otherwise
       // hang for the OS TCP timeout before the fallback ever runs
       resp = await impl(url, {
-        ...init,
+        ...attempt,
         signal: AbortSignal.any([flowSignal, AbortSignal.timeout(HTTP_TIMEOUT_MS)]),
       })
     } catch (e) {
@@ -251,12 +256,18 @@ function sleep(ms: number, signal: AbortSignal): Promise<void> {
 // ── Device-code login ────────────────────────────────────────────────
 
 async function revokeKey(cookie: string, keyId: string, signal: AbortSignal): Promise<void> {
-  await resolveFetch()(`${baseUrl()}/api/api_tokens/revoke`, {
+  const url = `${baseUrl()}/api/api_tokens/revoke`
+  const init: RequestInit = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Cookie: cookie },
     body: JSON.stringify({ key_id: keyId }),
     signal,
-  })
+  }
+  const fetcher = resolveFetch()
+  await fetcher(
+    url,
+    process.env.GENOFFICE_NATIVE_WAF === '1' ? await nativeWaf.prepare(url, init, fetcher) : init,
+  )
 }
 
 /** Bearer token → session cookie. Shared by login (key create) and logout (key revoke). */
