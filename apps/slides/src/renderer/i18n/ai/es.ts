@@ -217,7 +217,6 @@ export const es = {
   aiSumSaveTemplate: 'Plantilla de estilo "{name}" guardada',
   aiSumTemplatesEmpty: 'Plantillas de estilo (vacío)',
   aiSumListTemplates: 'Se enumeraron {count} plantillas de estilo',
-  aiErrRegion: 'El proveedor de este modelo no da servicio en tu región actual — elige otro modelo o cambia de red',
   aiFailReadComments: 'Leer comentarios',
   aiFailAddComment: 'Añadir comentario',
   aiSumReadComments: 'Leer comentarios de la diapositiva {n}',
@@ -327,4 +326,6 @@ export const es = {
   aiToolRunWebSearch: 'Buscando en la web…',
   aiToolRunImageSearch: 'Buscando imágenes…',
   aiToolRunReadUrl: 'Leyendo la página…',
+  aiPageCloudToLocal: 'Nube no disponible — generado localmente',
+
 }

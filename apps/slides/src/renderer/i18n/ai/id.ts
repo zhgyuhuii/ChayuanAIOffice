@@ -217,7 +217,6 @@ export const id = {
   aiSumSaveTemplate: 'Menyimpan templat gaya "{name}"',
   aiSumTemplatesEmpty: 'Daftar templat gaya (kosong)',
   aiSumListTemplates: 'Menampilkan {count} templat gaya',
-  aiErrRegion: 'Penyedia model ini tidak melayani wilayah Anda saat ini — pilih model lain atau ganti jaringan',
   aiFailReadComments: 'Membaca komentar',
   aiFailAddComment: 'Menambahkan komentar',
   aiSumReadComments: 'Membaca komentar slide {n}',
@@ -327,4 +326,6 @@ export const id = {
   aiToolRunWebSearch: 'Mencari di web…',
   aiToolRunImageSearch: 'Mencari gambar…',
   aiToolRunReadUrl: 'Membaca halaman…',
+  aiPageCloudToLocal: 'Awan tidak tersedia — dibuat secara lokal',
+
 }

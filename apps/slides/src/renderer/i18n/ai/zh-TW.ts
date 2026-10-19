@@ -1,6 +1,6 @@
 import type { zh } from './zh'
 
-export const zh-TW = {
+export const zhTW = {
   aiInputPlaceholderGen: '描述要生成的簡報,或直接提問',
   aiEmptyGenTitle: '讓 AI 為你生成簡報',
   aiEmptyGenBody1: '描述主題、場合和大致頁數,',
@@ -217,7 +217,6 @@ export const zh-TW = {
   aiSumSaveTemplate: '儲存風格範本"{name}"',
   aiSumTemplatesEmpty: '風格範本清單（空）',
   aiSumListTemplates: '列出 {count} 個風格範本',
-  aiErrRegion: '該模型的廠商不向目前地區提供服務，請換一個模型或切換網路',
   aiFailReadComments: '讀取註解',
   aiFailAddComment: '新增註解',
   aiSumReadComments: '讀取第 {n} 頁註解',
@@ -327,4 +326,6 @@ export const zh-TW = {
   aiToolRunWebSearch: '正在搜尋網頁…',
   aiToolRunImageSearch: '正在搜尋圖片…',
   aiToolRunReadUrl: '正在讀取網頁…',
+  aiPageCloudToLocal: '雲端不可用,已本地生成',
+
 }

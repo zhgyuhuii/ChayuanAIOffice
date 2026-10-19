@@ -217,7 +217,6 @@ export const ar = {
   aiSumSaveTemplate: 'حفظ قالب النمط "{name}"',
   aiSumTemplatesEmpty: 'قوالب الأنماط (فارغ)',
   aiSumListTemplates: 'سرد {count} من قوالب الأنماط',
-  aiErrRegion: 'مزوّد هذا النموذج لا يقدم الخدمة في منطقتك الحالية — اختر نموذجًا آخر أو غيّر الشبكة',
   aiFailReadComments: 'قراءة التعليقات',
   aiFailAddComment: 'إضافة تعليق',
   aiSumReadComments: 'قراءة تعليقات الشريحة {n}',
@@ -327,4 +326,6 @@ export const ar = {
   aiToolRunWebSearch: 'جارٍ البحث في الويب…',
   aiToolRunImageSearch: 'جارٍ البحث عن صور…',
   aiToolRunReadUrl: 'جارٍ قراءة الصفحة…',
+  aiPageCloudToLocal: 'السحابة غير متاحة — تم التوليد محليًا',
+
 }

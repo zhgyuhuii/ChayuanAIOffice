@@ -779,7 +779,7 @@ const TOOLS: AgentToolDef[] = [
     name: 'generate_deck',
     description:
       '[First choice for creating a whole new deck — self-driven pipeline: auto image search, page-by-page generation with live display, no missing pages]' +
-      ' Recommended usage (especially with many pages): pass only topic + approx_pages (+ optional style/context); the system plans the outline internally (auto-batched beyond 12 pages), **auto-searches images** (no advance image_search — the system searches from the planned image_queries keywords internally and fills real URLs back before designing pages), designs pages one by one, and lands them onto the canvas as they finish.' +
+      ' Recommended usage (especially with many pages): pass only topic + approx_pages (+ optional style/context); the system plans the outline internally (auto-batched beyond 12 pages), **auto-searches images** (no advance image_search — the system searches from the planned image_queries keywords internally and fills real URLs back before writing HTML), writes HTML page by page, and lands pages onto the canvas one by one.' +
       ' You don\'t hand-write dozens of pages, and neither "only page 1 got generated" nor "arguments were truncated" can happen — the page count is guaranteed by the system loop.' +
       ' (If you already know each page you may pass core_hook+style+pages directly; pages[].image_queries takes English image-search keywords, searched internally; if you already know real http(s) URLs pass them directly — the system respects existing URLs and does not re-search.)' +
       ' To add a few pages to an existing deck, pass pages (briefs for just the new pages) + insert_mode:"append".',
@@ -1666,7 +1666,7 @@ function blockScratchBuild(
     output:
       "For blank/from-scratch scenarios don't hand-assemble pages element by element with insert ops (addElement, addPicture, addTable, addChart, addSmartArt, addMedia, addWordArt) — crude layout. " +
       'Use the generation pipeline instead: new whole deck → generate_deck; new pages for an existing deck → generate_deck(pages, insert_mode:"append"). ' +
-      'The pipeline designs each page and builds it into editable elements. Use insert ops only when the deck already has polished content and one element needs refining.',
+      'Write it beautifully in HTML/CSS and the system converts it into editable elements. Use insert ops only when the deck already has polished content and one element needs refining.',
     isError: true,
     mutated: false,
     summary: t('aiSumFromScratchGuard', { label }),
@@ -2477,7 +2477,8 @@ ${r.text}`,
       const regenImages = Array.isArray(call.input.image_urls)
         ? (call.input.image_urls as unknown[]).map(String).filter((u) => /^https?:\/\//.test(u))
         : []
-      // One retry then give up (same semantics as generate_deck pages).
+      // One retry then give up (same semantics as generate_deck pages). Both paths return a
+      // marker pointing at a one-slide pptx temp file; landing is shared.
       const backoff = access.retryBackoffMs ?? 2000
       let marker: string | null = null
       let genImageFails: string[] = []
@@ -2495,13 +2496,24 @@ ${r.text}`,
         canvasW: 1280,
         canvasH: 720,
       }
-      for (let attempt = 0; attempt < 2 && !marker; attempt++) {
-        if (attempt > 0 && backoff > 0) await new Promise((r) => setTimeout(r, backoff))
-        const res = await access.generatePageLocal(regenArgs)
-        if (res.ok && res.marker) {
-          marker = res.marker
-          if (Array.isArray(res.imageFailures)) genImageFails = res.imageFailures
-        } else lastErr = res.error ?? t('aiErrUnknown')
+      const runRegen = async (gen: NonNullable<DeckAccess['generatePageLocal']>) => {
+        for (let attempt = 0; attempt < 2 && !marker; attempt++) {
+          if (attempt > 0 && backoff > 0) await new Promise((r) => setTimeout(r, backoff))
+          const res = await gen(regenArgs)
+          if (res.ok && res.marker) {
+            marker = res.marker
+            if ('imageFailures' in res && Array.isArray(res.imageFailures))
+              genImageFails = res.imageFailures
+          } else lastErr = res.error ?? t('aiErrUnknown')
+        }
+      }
+      // Cloud first when enabled; a cloud failure (free plan / credits / outage) falls back
+      // to the local BYOK pipeline instead of failing the redo outright.
+      if (regenUseCloud && access.generatePageCloud) {
+        await runRegen(access.generatePageCloud)
+        if (!marker && access.generatePageLocal) await runRegen(access.generatePageLocal)
+      } else {
+        await runRegen(access.generatePageLocal!)
       }
       if (!marker)
         return fail(
@@ -2888,10 +2900,11 @@ ${r.text}`,
       // Per-page completion flags (aligned with pages; same reference as state.pageDone, used by buildContext progress injection)
       const doneFlags: boolean[] = state?.pageDone ?? new Array(total).fill(false)
       const genFailed: number[] = [] // Page indexes (0-based) whose page generation failed
-      const landFailed: number[] = [] // Page indexes (0-based) whose page generated but landing failed
+      const landFailed: number[] = [] // Page indexes (0-based) whose HTML generated but conversion/landing failed
       const degraded: number[] = [] // Page indexes (0-based) that "landed" via the plain-text fallback — must be reported, otherwise dead pages appear silently
       const deckImageFails: { page: number; url: string }[] = [] // Image download/conversion failures (page numbers are deck-global 1-based)
       const pageErrors: (string | undefined)[] = new Array(total).fill(undefined) // Last failure reason per page
+      let cloudFallbackReason: string | null = null // First cloud failure that switched the run to the local pipeline
       let landedPages = 0
       let firstDone = false
       let baseOffset = 0 // Number of existing pages before generated page 0 in the deck (>0 in append mode); used to re-insert retries at their original position
@@ -2915,8 +2928,9 @@ ${r.text}`,
       })
 
       type PageGen = NonNullable<DeckAccess['generatePageLocal']>
-      // Up to two attempts; returns the marker or the last error.
+      // Up to two attempts on one pipeline; returns the marker or the last error.
       const tryGenerate = async (
+        gen: PageGen,
         pageArgs: Parameters<PageGen>[0],
         pageIndex: number,
       ): Promise<{ marker: string | null; err: string }> => {
@@ -2924,9 +2938,9 @@ ${r.text}`,
         for (let attempt = 0; attempt < 2; attempt++) {
           if (cancelled()) return { marker: null, err: lastErr }
           if (attempt > 0 && BACKOFF_MS > 0) await new Promise((r) => setTimeout(r, BACKOFF_MS))
-          const res = await access.generatePageLocal!(pageArgs)
+          const res = await gen(pageArgs)
           if (res.ok && res.marker) {
-            if (Array.isArray(res.imageFailures))
+            if ('imageFailures' in res && Array.isArray(res.imageFailures))
               deckImageFails.push(...res.imageFailures.map((url) => ({ page: pageIndex, url })))
             return { marker: res.marker, err: '' }
           }
@@ -2975,9 +2989,34 @@ ${r.text}`,
           canvasH,
           ...(signal ? { signal } : {}),
         }
-        const res = await tryGenerate(pageArgs, pageIndex)
-        pageErrors[pageIndex - 1] = res.marker ? undefined : res.err
-        return res.marker
+        // Cloud first when enabled; on failure fall back to the local BYOK pipeline and stay
+        // there — a cloud failure is normally account-wide (free plan / exhausted credits /
+        // expired key / outage), so retrying the cloud for every remaining page only wastes
+        // time. Both paths return a marker for the same one-slide pptx landing contract.
+        if (cloudActive && access.generatePageCloud) {
+          const cloud = await tryGenerate(access.generatePageCloud, pageArgs, pageIndex)
+          if (cloud.marker) {
+            pageErrors[pageIndex - 1] = undefined
+            return cloud.marker
+          }
+          if (access.generatePageLocal) {
+            if (!cloudFallbackReason) {
+              cloudFallbackReason = cloud.err
+              // surface the downgrade where the user is looking: the switching page's item
+              pageProgressItems[pageIndex - 1] = {
+                ...pageProgressItems[pageIndex - 1]!,
+                title: `${pageProgressItems[pageIndex - 1]!.title} · ${t('aiPageCloudToLocal')}`,
+              }
+            }
+            cloudActive = false
+          } else {
+            pageErrors[pageIndex - 1] = cloud.err
+            return null
+          }
+        }
+        const local = await tryGenerate(access.generatePageLocal!, pageArgs, pageIndex)
+        pageErrors[pageIndex - 1] = local.marker ? undefined : local.err
+        return local.marker
       }
 
       // Land in page order: starting from nextToLand, land as many as possible (stop at a gap and wait for it to generate).
@@ -3054,13 +3093,17 @@ ${r.text}`,
       // ── One retry round for failed pages, re-inserted at their original page position with
       //   insert_at (target position = existing-page offset + pages completed before this one).
       //   Landing-failed pages re-land (cheap: the one-slide pptx already exists). Pages whose
-      //   generation failed get one more attempt here (a JSON spec retry is cheap).
+      //   generation failed get one more local attempt here when the run ended on the local
+      //   pipeline (LLM calls are the user's own quota, and a JSON spec retry is cheap) — that
+      //   includes pages that failed during a mid-run cloud→local switch.
       if (!cancelled()) {
-        const retryIdxs = [...new Set([...genFailed, ...landFailed])].sort((a, b) => a - b)
+        const retryIdxs = [...new Set([...(cloudActive ? [] : genFailed), ...landFailed])].sort(
+          (a, b) => a - b,
+        )
         for (const idx of retryIdxs) {
           if (cancelled()) break
           let marker = markerByIndex[idx]
-          if (!marker) marker = await genOne(pages[idx]!, idx + 1)
+          if (!marker && !cloudActive) marker = await genOne(pages[idx]!, idx + 1)
           if (!marker) {
             pageProgressItems[idx] = {
               ...pageProgressItems[idx]!,
@@ -3164,7 +3207,7 @@ ${r.text}`,
 
       const note = buildProgressNote(state)
       const progressTail = note ? `\n${note}` : ''
-      // Faithfully report all unfinished pages (generation and landing failures; all already retried once)
+      // Faithfully report all unfinished pages (both HTML generation failures and conversion/landing failures; all already retried once)
       const stillFailed: number[] = []
       for (let i = 0; i < total; i++) if (!doneFlags[i]) stillFailed.push(i + 1)
       const briefErr = (s?: string) => (s ? (s.length > 80 ? `${s.slice(0, 80)}…` : s) : '')

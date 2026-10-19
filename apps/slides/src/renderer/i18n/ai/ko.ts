@@ -217,7 +217,6 @@ export const ko = {
   aiSumSaveTemplate: '스타일 템플릿 "{name}" 저장',
   aiSumTemplatesEmpty: '스타일 템플릿 목록(비어 있음)',
   aiSumListTemplates: '스타일 템플릿 {count}개 나열',
-  aiErrRegion: '이 모델의 제공업체는 현재 지역에서 서비스를 제공하지 않습니다. 다른 모델을 선택하거나 네트워크를 변경하세요',
   aiFailReadComments: '메모 읽기',
   aiFailAddComment: '메모 추가',
   aiSumReadComments: '第 {n} 페이지 메모 읽기',
@@ -327,4 +326,6 @@ export const ko = {
   aiToolRunWebSearch: '웹 검색 중…',
   aiToolRunImageSearch: '이미지 검색 중…',
   aiToolRunReadUrl: '페이지 읽는 중…',
+  aiPageCloudToLocal: '클라우드 생성 불가 — 로컬로 생성',
+
 }

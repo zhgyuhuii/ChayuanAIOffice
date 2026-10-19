@@ -217,7 +217,6 @@ export const he = {
   aiSumSaveTemplate: 'תבנית הסגנון "{name}" נשמרה',
   aiSumTemplatesEmpty: 'תבניות סגנון (ריק)',
   aiSumListTemplates: 'הוצגו {count} תבניות סגנון',
-  aiErrRegion: 'ספק המודל הזה אינו פועל באזור הנוכחי שלך — בחרו מודל אחר או החליפו רשת',
   aiFailReadComments: 'קריאת הערות',
   aiFailAddComment: 'הוספת הערה',
   aiSumReadComments: 'קריאת הערות שקופית {n}',
@@ -327,4 +326,6 @@ export const he = {
   aiToolRunWebSearch: 'מחפש באינטרנט…',
   aiToolRunImageSearch: 'מחפש תמונות…',
   aiToolRunReadUrl: 'העמוד נקרא…',
+  aiPageCloudToLocal: 'הענן לא זמין — נוצר מקומית',
+
 }

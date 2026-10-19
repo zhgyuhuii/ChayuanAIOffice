@@ -217,7 +217,6 @@ export const cs = {
   aiSumSaveTemplate: 'Uložena šablona stylu „{name}“',
   aiSumTemplatesEmpty: 'Šablony stylu (prázdné)',
   aiSumListTemplates: 'Vypsáno šablon stylu: {count}',
-  aiErrRegion: 'Poskytovatel tohoto modelu neposkytuje služby ve vaší aktuální oblasti — vyberte jiný model nebo změňte síť',
   aiChaOfficeLoginBtn: "Sign in",
   aiFailReadComments: 'Číst komentáře',
   aiFailAddComment: 'Přidat komentář',
@@ -327,4 +326,6 @@ export const cs = {
   aiToolRunWebSearch: 'Prohledávám web…',
   aiToolRunImageSearch: 'Hledám obrázky…',
   aiToolRunReadUrl: 'Čtu stránku…',
+  aiPageCloudToLocal: 'Cloud není dostupný — vygenerováno lokálně',
+
 }

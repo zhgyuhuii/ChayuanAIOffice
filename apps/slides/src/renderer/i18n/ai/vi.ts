@@ -217,7 +217,6 @@ export const vi = {
   aiSumSaveTemplate: 'Đã lưu mẫu phong cách "{name}"',
   aiSumTemplatesEmpty: 'Mẫu phong cách (trống)',
   aiSumListTemplates: 'Đã liệt kê {count} mẫu phong cách',
-  aiErrRegion: 'Nhà cung cấp của mô hình này không phục vụ khu vực hiện tại của bạn — hãy chọn mô hình khác hoặc đổi mạng',
   aiFailReadComments: '读取批注',
   aiFailAddComment: '添加批注',
   aiSumReadComments: '读取第 {n} 页批注',
@@ -327,4 +326,6 @@ export const vi = {
   aiToolRunWebSearch: '正在搜索网页…',
   aiToolRunImageSearch: '正在搜索图片…',
   aiToolRunReadUrl: '正在读取网页…',
+  aiPageCloudToLocal: 'đám mây không khả dụng — đã tạo cục bộ',
+
 }

@@ -217,7 +217,6 @@ export const de = {
   aiSumSaveTemplate: 'Stilvorlage „{name}“ gespeichert',
   aiSumTemplatesEmpty: 'Stilvorlagen (leer)',
   aiSumListTemplates: '{count} Stilvorlagen aufgelistet',
-  aiErrRegion: 'Der Anbieter dieses Modells bedient Ihre aktuelle Region nicht — wählen Sie ein anderes Modell oder wechseln Sie das Netzwerk',
   aiFailReadComments: 'Kommentare lesen',
   aiFailAddComment: 'Kommentar hinzufügen',
   aiSumReadComments: 'Kommentare auf Folie {n} lesen',
@@ -327,4 +326,6 @@ export const de = {
   aiToolRunWebSearch: 'Websuche läuft…',
   aiToolRunImageSearch: 'Bildersuche läuft…',
   aiToolRunReadUrl: 'Seite wird gelesen…',
+  aiPageCloudToLocal: 'Cloud nicht verfügbar — lokal generiert',
+
 }

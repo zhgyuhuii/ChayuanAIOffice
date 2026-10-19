@@ -14,7 +14,6 @@ vi.mock('node:os', async (importOriginal) => {
 import {
   chaofficeApiKey,
   FRESH_AUTH_REQUIRED,
-packages/ai-search/tests/chaoffice-reauth.test.ts
   resetChaofficeAuthCache,
   setChaOfficeLoginOpener,
 } from '../src/chaoffice-auth'
@@ -107,7 +106,6 @@ describe('isChaofficeUnauthorizedText', () => {
   })
 })
 
-packages/ai-search/tests/chaoffice-reauth.test.ts
 describe('tool_cli 401 recovery', () => {
   it('drops the key, re-mints with the stored session and retries once', async () => {
     const { toolKeys } = stubServer(() =>

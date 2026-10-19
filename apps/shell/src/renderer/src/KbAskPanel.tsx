@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   AgentLoop,
   composeSkills,
@@ -11,8 +11,6 @@ import {
 } from '@chaoffice/agent-core'
 import {
   AiComposer,
-  AiModelPicker,
-  type AiModelPickerBridge,
   AiTypingIndicator,
   AiUsageChip,
   addTokenUsage,
@@ -21,10 +19,9 @@ import {
   type AiTokenUsageView,
 } from '@chaoffice/ui'
 // LOCAL wire shape: the stream request carries only the model selection — the
-// main process owns the full settings and resolves profile + secret. The model
-// chip reads/writes the full settings through the preload bridge.
-import { activeProvider, resolveCurrentModel, type AiModelSelection } from '@chaoffice/ai-provider/browser'
-import type { AiSettings } from '@chaoffice/ai-provider'
+// main process owns the full settings and resolves profile + secret. (Upstream's
+// AiModelPicker chip speaks the upstream AiSettings shape; V2 bridge 挂账 R28.)
+import { resolveCurrentModel, type AiModelSelection } from '@chaoffice/ai-provider/browser'
 // upstream #2068: the thread persists through project-store; types come from
 // the local (rebranded) package, the bridge is the preload's projectApi.
 import type { ChatMessage, ProjectApi } from '@chaoffice/project-store'
@@ -116,12 +113,9 @@ export function restoreAskMessages(stored: ChatMessage[]): AskMessage[] {
 export function KbAskPanel({
   onOpenPath,
   onGoToRecents,
-  onOpenModelSettings,
 }: {
   onOpenPath: (path: string) => void
   onGoToRecents: () => void
-  /** Settings › AI Model, the model chip's last row */
-  onOpenModelSettings: () => void
 }): React.JSX.Element {
   const { t, lang } = useI18n()
   const [messages, setMessages] = useState<AskMessage[]>([])
@@ -129,11 +123,8 @@ export function KbAskPanel({
   const [busy, setBusy] = useState(false)
   const [corpusCount, setCorpusCount] = useState<number | null>(null)
   const [gskEmail, setGskEmail] = useState<string | null>(null)
-  const [provider, setProvider] = useState<string | null>(null)
   const corpusRef = useRef<KbFileInfo[]>([])
   const selectionRef = useRef<AiModelSelection | null>(null)
-  /** full settings snapshot for the model chip (provider display + picker bridge) */
-  const settingsRef = useRef<AiSettings | null>(null)
   const loopRef = useRef<AgentLoop<unknown> | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   /** bumped by Stop: an ask still refreshing the corpus must not start its run */
@@ -188,27 +179,12 @@ export function KbAskPanel({
     void window.chaOffice
       .getAiSettings()
       .then((settings) => {
-        settingsRef.current = settings
-        setProvider(activeProvider(settings))
         // LOCAL wire shape: the stream request carries only the model selection —
         // the main process owns the full settings and resolves profile + secret.
         selectionRef.current = resolveCurrentModel(settings) ?? null
       })
       .catch(() => undefined)
   }
-
-  useEffect(() => window.chaOffice.onAiSettingsChanged?.(refreshSettings), [])
-
-  const modelBridge = useMemo<AiModelPickerBridge>(
-    () => ({
-      getSettings: () => window.chaOffice.getAiSettings(),
-      setSettings: (settings) => window.chaOffice.setAiSettings(settings),
-      onSettingsChanged: (handler) => window.chaOffice.onAiSettingsChanged(handler),
-      chaofficeLoggedIn: () => window.chaOffice.accountStatus().then((s) => !!s.loggedIn),
-      openModelSettings: onOpenModelSettings,
-    }),
-    [onOpenModelSettings],
-  )
 
   useEffect(() => {
     // one corpus snapshot per mount; sends refresh it again (see ask()).
@@ -509,7 +485,7 @@ export function KbAskPanel({
           {t('askNoSave')}
         </p>
       )}
-      {gskEmail === null && provider === 'chaoffice' && (
+      {gskEmail === null && (
         <p className="kb-ask-login">{t('askNeedsLogin')}</p>
       )}
       <AiComposer
@@ -525,12 +501,7 @@ export function KbAskPanel({
         sendIconEnabled={<img src={sendEnterOn} alt="" aria-hidden />}
         sendIconDisabled={<img src={sendEnterOff} alt="" aria-hidden />}
         stopIcon={<img src={sendStop} alt="" aria-hidden />}
-        footerStart={
-          <>
-            <AiModelPicker bridge={modelBridge} lang={lang} />
-            {sessionUsage && <AiUsageChip usage={sessionUsage} session lang={lang} />}
-          </>
-        }
+        footerStart={sessionUsage ? <AiUsageChip usage={sessionUsage} session lang={lang} /> : undefined}
         onChange={setDraft}
         onSend={() => void ask()}
         onStop={() => {

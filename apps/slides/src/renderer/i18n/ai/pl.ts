@@ -217,7 +217,6 @@ export const pl = {
   aiSumSaveTemplate: 'Zapisano szablon stylu „{name}”',
   aiSumTemplatesEmpty: 'Szablony stylu (pusto)',
   aiSumListTemplates: 'Wyświetlono szablony stylu: {count}',
-  aiErrRegion: 'Dostawca tego modelu nie obsługuje Twojego obecnego regionu — wybierz inny model lub zmień sieć',
   aiFailReadComments: 'Czytaj komentarze',
   aiFailAddComment: 'Dodaj komentarz',
   aiSumReadComments: 'Czytaj komentarze slajdu {n}',
@@ -327,4 +326,6 @@ export const pl = {
   aiToolRunWebSearch: 'Wyszukiwanie w sieci…',
   aiToolRunImageSearch: 'Wyszukiwanie obrazów…',
   aiToolRunReadUrl: 'Czytanie strony…',
+  aiPageCloudToLocal: 'Chmura niedostępna — wygenerowano lokalnie',
+
 }

@@ -217,7 +217,6 @@ export const nl = {
   aiSumSaveTemplate: 'Stijlsjabloon "{name}" opgeslagen',
   aiSumTemplatesEmpty: 'Stijlsjablonen (leeg)',
   aiSumListTemplates: '{count} stijlsjablonen weergegeven',
-  aiErrRegion: 'De aanbieder van dit model bedient uw huidige regio niet — kies een ander model of wissel van netwerk',
   aiFailReadComments: 'Opmerkingen lezen',
   aiFailAddComment: 'Opmerking toevoegen',
   aiSumReadComments: 'Opmerkingen van dia {n} lezen',
@@ -327,4 +326,6 @@ export const nl = {
   aiToolRunWebSearch: 'Zoeken op het web…',
   aiToolRunImageSearch: 'Afbeeldingen worden gezocht…',
   aiToolRunReadUrl: 'Pagina wordt gelezen…',
+  aiPageCloudToLocal: 'Cloud niet beschikbaar — lokaal gegenereerd',
+
 }

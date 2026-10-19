@@ -37,24 +37,22 @@ const deviceCodeOk = {
 let dir: string
 
 beforeEach(() => {
-packages/ai-search/tests/chaoffice-auth.test.ts
   dir = mkdtempSync(join(tmpdir(), 'chaoffice-auth-'))
   process.env.CHAOFFICE_AUTH_DIR = dir
   delete process.env.CHAOFFICE_API_KEY
   delete process.env.GENOFFICE_NATIVE_WAF
   resetChaofficeAuthCache()
-)
+})
 
 afterEach(() => {
   vi.unstubAllGlobals()
   rmSync(dir, { recursive: true, force: true })
-packages/ai-search/tests/chaoffice-auth.test.ts
   delete process.env.CHAOFFICE_AUTH_DIR
   delete process.env.CHAOFFICE_API_KEY
   delete process.env.GENOFFICE_NATIVE_WAF
   setChaOfficeProxyUrl('')
   resetChaofficeAuthCache()
-)
+})
 
 function jsonResponse(json: unknown, opts: { status?: number; setCookie?: string } = {}): Response {
   const headers = new Headers()
@@ -128,7 +126,6 @@ async function loginAndCollect(): Promise<ChaOfficeLoginProgress[]> {
   return events
 }
 
-packages/ai-search/tests/chaoffice-auth.test.ts
 describe('startChaofficeLogin', () => {
   it('opt-in signs the cookie mint only and preserves Bearer session exchange', async () => {
     process.env.GENOFFICE_NATIVE_WAF = '1'

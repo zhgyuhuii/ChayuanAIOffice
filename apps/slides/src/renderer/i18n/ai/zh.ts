@@ -216,7 +216,6 @@ export const zh = {
   aiSumSaveTemplate: '保存风格模板"{name}"',
   aiSumTemplatesEmpty: '风格模板列表（空）',
   aiSumListTemplates: '列出 {count} 个风格模板',
-  aiErrRegion: '该模型的厂商不向当前地区提供服务，请换一个模型或切换网络',
   aiFailReadComments: '读取批注',
   aiFailAddComment: '添加批注',
   aiSumReadComments: '读取第 {n} 页批注',
@@ -326,4 +325,6 @@ export const zh = {
   aiToolRunWebSearch: '正在搜索网页…',
   aiToolRunImageSearch: '正在搜索图片…',
   aiToolRunReadUrl: '正在读取网页…',
+  aiPageCloudToLocal: '云端不可用,已本地生成',
+
 }

@@ -217,7 +217,6 @@ export const hi = {
   aiSumSaveTemplate: 'स्टाइल टेम्पलेट "{name}" सहेजा गया',
   aiSumTemplatesEmpty: 'स्टाइल टेम्पलेट (खाली)',
   aiSumListTemplates: '{count} स्टाइल टेम्पलेट सूचीबद्ध किए गए',
-  aiErrRegion: 'इस मॉडल का प्रदाता आपके वर्तमान क्षेत्र में सेवा नहीं देता — कोई दूसरा मॉडल चुनें या नेटवर्क बदलें',
   aiFailReadComments: 'टिप्पणियाँ पढ़ें',
   aiFailAddComment: 'टिप्पणी जोड़ें',
   aiSumReadComments: 'स्लाइड {n} की टिप्पणियाँ पढ़ें',
@@ -327,4 +326,6 @@ export const hi = {
   aiToolRunWebSearch: 'वेब खोजा जा रहा है…',
   aiToolRunImageSearch: 'इमेज खोजी जा रही है…',
   aiToolRunReadUrl: 'पेज पढ़ा जा रहा है…',
+  aiPageCloudToLocal: 'क्लाउड अनुपलब्ध — स्थानीय रूप से जनरेट',
+
 }

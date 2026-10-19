@@ -217,7 +217,6 @@ export const th = {
   aiSumSaveTemplate: 'บันทึกเทมเพลตสไตล์ "{name}"',
   aiSumTemplatesEmpty: 'รายการเทมเพลตสไตล์ (ว่าง)',
   aiSumListTemplates: 'แสดงเทมเพลตสไตล์ {count} รายการ',
-  aiErrRegion: 'ผู้ให้บริการของโมเดลนี้ไม่ให้บริการในภูมิภาคปัจจุบันของคุณ — โปรดเลือกโมเดลอื่นหรือเปลี่ยนเครือข่าย',
   aiFailReadComments: 'อ่านข้อคิดเห็น',
   aiFailAddComment: 'เพิ่มข้อคิดเห็น',
   aiSumReadComments: 'อ่านข้อคิดเห็นในสไลด์ {n}',
@@ -327,4 +326,6 @@ export const th = {
   aiToolRunWebSearch: 'กำลังค้นเว็บ…',
   aiToolRunImageSearch: 'กำลังค้นหารูปภาพ…',
   aiToolRunReadUrl: 'กำลังอ่านหน้าเว็บ…',
+  aiPageCloudToLocal: 'คลาวด์ไม่พร้อมใช้ — สร้างในเครื่อง',
+
 }

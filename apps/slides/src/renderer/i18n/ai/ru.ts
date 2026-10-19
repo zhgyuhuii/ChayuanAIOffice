@@ -217,7 +217,6 @@ export const ru = {
   aiSumSaveTemplate: 'Сохранён шаблон стиля «{name}»',
   aiSumTemplatesEmpty: 'Шаблоны стиля (пусто)',
   aiSumListTemplates: 'Показано шаблонов стиля: {count}',
-  aiErrRegion: 'Поставщик этой модели не обслуживает ваш текущий регион — выберите другую модель или смените сеть',
   aiFailReadComments: 'Чтение примечаний',
   aiFailAddComment: 'Добавление примечания',
   aiSumReadComments: 'Чтение примечаний слайда {n}',
@@ -327,4 +326,6 @@ export const ru = {
   aiToolRunWebSearch: 'Поиск в интернете…',
   aiToolRunImageSearch: 'Поиск изображений…',
   aiToolRunReadUrl: 'Чтение страницы…',
+  aiPageCloudToLocal: 'Облако недоступно — создано локально',
+
 }

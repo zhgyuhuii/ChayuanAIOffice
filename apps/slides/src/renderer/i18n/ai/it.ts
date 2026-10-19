@@ -217,7 +217,6 @@ export const it = {
   aiSumSaveTemplate: 'Modello di stile "{name}" salvato',
   aiSumTemplatesEmpty: 'Modelli di stile (vuoto)',
   aiSumListTemplates: '{count} modelli di stile elencati',
-  aiErrRegion: 'Il fornitore di questo modello non serve la tua regione attuale — scegli un altro modello o cambia rete',
   aiFailReadComments: 'Leggi commenti',
   aiFailAddComment: 'Aggiungi commento',
   aiSumReadComments: 'Leggi commenti della diapositiva {n}',
@@ -327,4 +326,6 @@ export const it = {
   aiToolRunWebSearch: 'Ricerca sul web…',
   aiToolRunImageSearch: 'Ricerca di immagini…',
   aiToolRunReadUrl: 'Lettura della pagina…',
+  aiPageCloudToLocal: 'Cloud non disponibile — generato localmente',
+
 }

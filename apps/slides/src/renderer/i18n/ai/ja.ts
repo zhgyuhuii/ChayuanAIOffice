@@ -217,7 +217,6 @@ export const ja = {
   aiSumSaveTemplate: 'スタイル テンプレート「{name}」を保存',
   aiSumTemplatesEmpty: 'スタイル テンプレート一覧（空）',
   aiSumListTemplates: '{count} 個のスタイル テンプレートを一覧表示',
-  aiErrRegion: 'このモデルの提供元は現在の地域ではサービスを提供していません。別のモデルを選ぶか、ネットワークを切り替えてください',
   aiFailReadComments: 'コメントを読む',
   aiFailAddComment: 'コメントを追加',
   aiSumReadComments: '第 {n} ページのコメントを読む',
@@ -327,4 +326,6 @@ export const ja = {
   aiToolRunWebSearch: 'ウェブを検索中…',
   aiToolRunImageSearch: '画像を検索中…',
   aiToolRunReadUrl: 'ページを読み込み中…',
+  aiPageCloudToLocal: 'クラウド生成不可効 — ローカルで生成',
+
 }

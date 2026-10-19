@@ -754,7 +754,7 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | i18n | ai shard 37 文件 AST 三方合并（本地 aiChaOfficeAccount 等改名键经值等值配对自动跟随+21 本地独有键保全）；pdf strings A/B 架构完好（upstreamStrings+localStrings spread） |
 | 版本 | 1.0.6→1.0.7（root/shell/dsh-plugin）；**修复存量 bug**：去品牌提交 d735f29ed 把 display-version.ts 读取侧改成 chaofficeUpstreamVersion 而 apps/shell/package.json 字段仍是旧拼写 chatofficeUpstreamVersion（值亦过期 0.11.829）——六段显示版本自此静默失效退化纯 semver；本轮字段改名+值更新 0.11.0（上游 shell 版本至此仍 0.11.0） |
 
-**裁定记录**：①上游删云 slide 生成/本地保留（A 区 generate_deck 云双路径为察元云特性，收敛条件=察元云服务退役时跟随删除）；②X-Genspark-Native-Pass 线协议头与 GENOFFICE_NATIVE_WAF 环境变量按豁免清单保留；③gsk.test.ts（DU，本地删上游改）维持删除——R24 已改名融合为 chaoffice 系测试；④docs-main vi 全表（上游位）不采、本地尾置精简 vi+新键补译（沿 R24 先例，en 兜底）。
+**裁定记录**：①上游删云 slide 生成/本地保留（A 区 generate_deck 云双路径为察元云特性，收敛条件=察元云服务退役时跟随删除）；②X-Genspark-Native-Pass 线协议头与 GENOFFICE_NATIVE_WAF 环境变量按豁免清单保留；③gsk.test.ts（DU，本地删上游改）维持删除——R24 已改名融合为 chaoffice 系测试；④docs-main vi 全表（上游位）不采、本地尾置精简 vi+新键补译（沿 R24 先例，en 兜底）；⑤KbAskPanel 上游 AiModelPicker 模型 chip 不采（bridge 契约是上游 AiSettings 形状，本地为 V2 profiles 架构）——线程恢复顺序/queued 清排/messagesRef 同步照采；挂账=ui 桥改说 V2 后再上 chip；⑥slides ai shard 的 aiErrRegion 上游本轮新增、本地 R27 已有同名键——AST 合并去重保骨架位（22 shard 修复）；aiPageCloudToLocal 上游随云删除而删键、本地沿用——21 shard 补回。
 
 **门禁**：typecheck 全仓 0；vitest 全工作区绿（终态数字见合入提交信息）；品牌 grep 豁免外零残留（豁免命中：genspark.ai URL/host、GENOFFICE_* env、X-Genspark-Native-Pass 线头、@genspark/cli、本台账自身）。
 

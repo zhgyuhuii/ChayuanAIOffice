@@ -217,7 +217,6 @@ export const en = {
   aiSumSaveTemplate: 'Saved style template "{name}"',
   aiSumTemplatesEmpty: 'Style templates (empty)',
   aiSumListTemplates: 'Listed {count} style templates',
-  aiErrRegion: "This model's provider does not serve your current region — pick another model or change your network",
   aiFailReadComments: 'Read comments',
   aiFailAddComment: 'Add comment',
   aiSumReadComments: 'Read comments on slide {n}',
@@ -327,4 +326,6 @@ export const en = {
   aiToolRunWebSearch: 'Searching the web…',
   aiToolRunImageSearch: 'Searching for images…',
   aiToolRunReadUrl: 'Reading the page…',
+  aiPageCloudToLocal: 'cloud unavailable — generated locally',
+
 }

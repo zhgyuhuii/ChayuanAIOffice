@@ -217,7 +217,6 @@ export const ms = {
   aiSumSaveTemplate: 'Menyimpan templat gaya "{name}"',
   aiSumTemplatesEmpty: 'Templat gaya (kosong)',
   aiSumListTemplates: 'Menyenaraikan {count} templat gaya',
-  aiErrRegion: 'Penyedia model ini tidak memberi perkhidmatan di rantau semasa anda — pilih model lain atau tukar rangkaian',
   aiFailReadComments: 'Membaca komen',
   aiFailAddComment: 'Menambah komen',
   aiSumReadComments: 'Membaca komen slaid {n}',
@@ -327,4 +326,6 @@ export const ms = {
   aiToolRunWebSearch: 'Mencari di web…',
   aiToolRunImageSearch: 'Mencari imej…',
   aiToolRunReadUrl: 'Membaca halaman…',
+  aiPageCloudToLocal: 'Awan tidak tersedia — dijana secara setempat',
+
 }
