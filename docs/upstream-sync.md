@@ -736,6 +736,32 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 挂账 | sheets i18n dialogs vi.ts 少 9 个 fork 本地键（HEAD 继承欠账，en 回退兜底，补译即销）；ai-host 若原生支持 settings-changed 推送可移除 sheets-main 的 fs.watch 包装广播 |
 | 门禁 | typecheck 全仓 0；vitest 全绿：docs 3152/sheets 3437/ai-provider 494/agent-core 176/xlsx-gateway 248/pptx-engine 1294/shell 931/slides 1475/md 1047/pdf 868/html 319/ui 250/docx-engine 1717/pdf2docx 822/cli 313/electron-utils 257…；cargo test 228 全绿；lint 0；品牌 grep 豁免外零残留；check:help-langs 21 语言全齐 |
 
+## 第二十八轮（2026-10-20，上游 dd3a9046..2cd8d48e 1 提交 238 文件 +5083/−1648，全吸收；自有版本 1.0.7，六段 1.0.7.0.11.0）
+
+> 上游单一 Sync snapshot (#2094)。冲突 65 文件：源码 24 逐 hunk 三档裁决 + ai shard 37 个 TS AST 三方合并（theirs 骨架+本地键保全+品牌重放，audit 0 both-changed）+ pdf strings.ts 整体重建（合并过程工作树被搅乱——含 zh 块混入越文行的错位——弃用之，以干净 HEAD blob 为底+21 语言 aiRegionError 插入重建）。
+
+| 域 | 落位 |
+|---|---|
+| docs | 表格行拖拽（table-row-drag 新）+ 角落缩放；tab stops ops（tab-stops.ts 新+set_paragraph tabs+校验）；修订 moves（revision-xml 新，moved text 留位+页眉脚注覆盖）；段落标记颜色保存；AI 文字样式可见性；替换保图；multi-select 重构；aiRegionError ×21 语言+两处错误映射（ai:chat one-shot tm('errAiRegion')；monolithic stream 链属上游架构本地不经此路） |
+| ai-provider | region-error 模块（region-error.ts+测试，isAiRegionBlockedError）；providers liveModels 注释（OpenRouter 聚合器 shipped 列表回退） |
+| ai-search | native-waf.ts 新（opt-in GENOFFICE_NATIVE_WAF=1：cookie 铸造签名 X-Genspark-Native-Pass——genspark.ai 线协议头豁免保留；session Bearer 交换不签名；clearAuth 清 admission）+auth/reauth 测试扩展（nativePass 桩+opt-in 用例）；gsk.ts 上游删 cloud slide_generate（−142 行）——**本地 ChaOffice 云双路径为自有特性，保留**（chaoffice.ts 同段全保） |
+| agent-core | 冗余读检测（readOutputs 指纹+nudge 注记 REDUNDANT_READ_NUDGE_TURNS=4+MAX=12）与本地降级模式（degraded/probe 折叠 tool 结果为 user 文本）融合：bookkeeping 只在非降级分支跑 |
+| ui | Dropdown 过滤搜索框（filterOptions+searchPlaceholder+role=option 键盘导航）与本地 icon+text 行渲染融合 |
+| shell | 窗口几何记忆（window-bounds.ts 新，#2049）；KbAskPanel 模型 chip（AiModelPicker bridge：getAiSettings/setAiSettings/onAiSettingsChanged/accountStatus 本地桥名+chaofficeLoggedIn 字段）+线程恢复顺序修复（stored 先显、queued splice 清排）；SettingsModal：liveModels 聚合器默认地址+模型搜索框（setAiModelSearch）+**cloudflareAccountId 行重实现进本地 FileSearchPane**（主链 decider/rerank 已在）；shell strings ko 串 genoffice→chaoffice |
+| slides | 上游删云单页生成（cloud→local 单管道+genpptx: 改名）——本地 cloudpptx:+localpptx: 双路径体系（chaoffice slide_generate）**A 区裁定保留**（slides-main/ai-ipc/slides-skill/AiPanel/shared-ipc/generated-page-temp 全取 ours）；generate-deck.test 保本地云+降级用例 |
+| sheets | aiRegionError ×21+ai:chat region 映射；sheets-main vi 全表上游位（en 后）弃、本地尾置 vi 块+errAiRegion vi 补译 |
+| cli | 修订 moves 帮助文本（headers/footnotes/endnotes 覆盖说明）+gui 注释重排 |
+| i18n | ai shard 37 文件 AST 三方合并（本地 aiChaOfficeAccount 等改名键经值等值配对自动跟随+21 本地独有键保全）；pdf strings A/B 架构完好（upstreamStrings+localStrings spread） |
+| 版本 | 1.0.6→1.0.7（root/shell/dsh-plugin）；**修复存量 bug**：去品牌提交 d735f29ed 把 display-version.ts 读取侧改成 chaofficeUpstreamVersion 而 apps/shell/package.json 字段仍是旧拼写 chatofficeUpstreamVersion（值亦过期 0.11.829）——六段显示版本自此静默失效退化纯 semver；本轮字段改名+值更新 0.11.0（上游 shell 版本至此仍 0.11.0） |
+
+**裁定记录**：①上游删云 slide 生成/本地保留（A 区 generate_deck 云双路径为察元云特性，收敛条件=察元云服务退役时跟随删除）；②X-Genspark-Native-Pass 线协议头与 GENOFFICE_NATIVE_WAF 环境变量按豁免清单保留；③gsk.test.ts（DU，本地删上游改）维持删除——R24 已改名融合为 chaoffice 系测试；④docs-main vi 全表（上游位）不采、本地尾置精简 vi+新键补译（沿 R24 先例，en 兜底）；⑤KbAskPanel 上游 AiModelPicker 模型 chip 不采（bridge 契约是上游 AiSettings 形状，本地为 V2 profiles 架构）——线程恢复顺序/queued 清排/messagesRef 同步照采；挂账=ui 桥改说 V2 后再上 chip；⑥slides ai shard 的 aiErrRegion 上游本轮新增、本地 R27 已有同名键——AST 合并去重保骨架位（22 shard 修复）；aiPageCloudToLocal 上游随云删除而删键、本地沿用——21 shard 补回。
+
+**门禁终态**：typecheck 全仓 0 新增错误（存量挂账=pdf 32 StringKey，R27 基线原样）；vitest 全工作区 EXIT 0 零 FAIL（369 文件 ≈4500 用例）；lint 0 error；品牌 grep 豁免外零残留。
+
+**门禁期间修复（后续提交）**：①ai-search hunk 拼接残行清理+reauth stub 三行恢复（自动合并删了 ours 匹配基线的 stub 行）；②slides ai shard aiErrRegion 同名键去重（22 shard）+aiPageCloudToLocal 补回（21 shard）+zh-TW 导出名 zhTW；③slides-main 生成页常量恢复 CLOUD_PAGE_PREFIX/issuedCloudPages、preload 三云方法恢复、slides-skill/generate-deck.test 整取 main（上游净新增语义 main 已含）；④KbAskPanel 模型 chip 摘除（V2 桥挂账）；⑤**cli LEGACY_SKILL_NAME 恢复 'genoffice'**——去品牌 d735f29ed 误改与现名相同，致 removeLegacySkillDir 装完即删（`chaoffice skill install` 自该提交起实际损坏，测试基线红即此因，真 bug 修复）；⑥**agent-docs SEL 硬编码偏移随品牌长度修正**（ChaOffice 比上游 GenSpark 长 1 字符，R24 品牌替换漏改测试常量，存量基线红）；⑦**pdf draw 工具组 rb-big 标签补 span 包裹**（紧凑密度形状契约，存量基线红——R27 门禁未列 pdf 漏网）；⑧gothic-kr 字体生成脚本去品牌（ChaOffice Gothic KR name 表重写）。
+
+**挂账（新增/继承）**：①kb-ask AiModelPicker 模型 chip——ui 桥契约是上游 AiSettings 形状，本地 V2 profiles 架构，等桥改说 V2 再上 chip；②fonts 命名债：fonts.css 存在带空格的 `ChaAI Office*.woff2` 引用（去品牌 sed 误伤，运行时字体回退静默）、字体构建脚本默认输出 ChatOffice* 旧名而测试/部分引用要 ChaOffice*、树内二进制仍 ChatOffice* 名——需专门轮次统一（本轮以本机 ChaOffice* 同字节副本供测试，已入 .git/info/exclude 勿提交）；③pdf 32 StringKey（R27 继承）。
+
 ## 9. 品牌改名映射表（施工中维护，后续同步机械重放）
 
 | 上游 | 本地 | 说明 |

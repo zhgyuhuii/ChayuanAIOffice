@@ -21,8 +21,7 @@ export const ar = {
   aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: 'فتح مساعد الذكاء الاصطناعي',
   aiFactCheckBtn: 'تدقيق حقائق AI',
-  aiFactCheckPrompt:
-    'تحقق من حقائق هذا العرض: راجع الأرقام والتواريخ والأسماء والادعاءات، ثم أشر إلى الأخطاء وصححها',
+  aiFactCheckPrompt: 'تحقق من حقائق هذا العرض: راجع الأرقام والتواريخ والأسماء والادعاءات، ثم أشر إلى الأخطاء وصححها',
   aiImageBtn: 'صورة AI',
   aiImagePrompt: 'أنشئ صورة تتناسب مع محتوى هذه الشريحة وأدرجها في موضع مناسب على الشريحة',
   aiBeautifyBtn: 'تجميل AI',
@@ -95,8 +94,7 @@ export const ar = {
   aiStarterPolishTitle: 'حسِّن عنوان هذه الشريحة ونصها',
   aiStarterTighten: 'اجعل نقاط هذه الشريحة أكثر إيجازًا',
   aiStarterProofread: 'تحقق من الأخطاء الإملائية في العرض بأكمله وصحّحها',
-  aiTurnLimit:
-    '(تم بلوغ الحد الأقصى لجولات استدعاء الأدوات لهذا الطلب؛ الإجابة أعلاه مبنية على الخطوات المكتملة وقد تكون غير كاملة.)',
+  aiTurnLimit: '(تم بلوغ الحد الأقصى لجولات استدعاء الأدوات لهذا الطلب؛ الإجابة أعلاه مبنية على الخطوات المكتملة وقد تكون غير كاملة.)',
   aiStoppedNote: '(تم الإيقاف)',
   aiTruncatedNote: '(تم اقتطاع الرد بسبب حد الطول وقد يكون غير مكتمل.)',
   aiNoResponse: 'لم يُرجع الذكاء الاصطناعي أي محتوى.',
@@ -106,13 +104,11 @@ export const ar = {
   aiErrTimeout: 'انتهت المهلة ({ms}ms)',
   aiErrEmptyOutput: 'إخراج فارغ',
   aiErrUnknown: 'خطأ غير معروف',
-  aiErrStreamTimeout:
-    'انتهت مهلة طلب الذكاء الاصطناعي: لا توجد استجابة من الشبكة وتم الإيقاف. تحقق من الاتصال وحاول مجددًا',
+  aiErrStreamTimeout: 'انتهت مهلة طلب الذكاء الاصطناعي: لا توجد استجابة من الشبكة وتم الإيقاف. تحقق من الاتصال وحاول مجددًا',
+  aiErrRegion: 'مزوّد هذا النموذج لا يقدم الخدمة في منطقتك الحالية — اختر نموذجًا آخر أو غيّر الشبكة',
   aiErrOverloaded: 'خدمة الذكاء الاصطناعي مشغولة حاليًا — يرجى المحاولة مرة أخرى بعد قليل',
-  aiErrNetwork:
-    'مشكلة في الشبكة: تعذّر الوصول إلى خدمة الذكاء الاصطناعي. تحقق من الاتصال وحاول مجددًا',
-  aiCreditsExhausted:
-    'نفدت أرصدة ChaAI Office لديك. يرجى إعادة الشحن عبر genspark.ai/pricing ثم المحاولة مجددًا',
+  aiErrNetwork: 'مشكلة في الشبكة: تعذّر الوصول إلى خدمة الذكاء الاصطناعي. تحقق من الاتصال وحاول مجددًا',
+  aiCreditsExhausted: 'نفدت أرصدة ChaAI Office لديك. يرجى إعادة الشحن عبر genspark.ai/pricing ثم المحاولة مجددًا',
   aiErrRequestFailed: 'فشل إرسال الطلب: {msg}',
   aiErrGenerateFailed: 'فشل الإنشاء',
   aiErrRegenFailed: 'فشلت إعادة إنشاء الصفحة',
@@ -319,7 +315,6 @@ export const ar = {
   aiNoteSvgMode: "الصور: رسومات متجهية (يرسمها النموذج، قابلة للتعديل)",
   aiNoteImgFail: "الصفحة {page}: لم يتم العثور على صورة لـ «{kw}»؛ رُسمت كرسومات متجهية",
   aiNoteImgWebFallback: "فشل توليد الصورة بالذكاء الاصطناعي لـ «{kw}»؛ استُخدمت صورة من الويب بدلاً منها",
-
   aiToolRunDeck: 'جارٍ إنشاء العرض التقديمي…',
   aiToolRunRegenSlide: 'جارٍ إعادة إنشاء الشريحة…',
   aiToolRunPlanDeck: 'جارٍ تخطيط المخطط…',
@@ -332,4 +327,5 @@ export const ar = {
   aiToolRunImageSearch: 'جارٍ البحث عن صور…',
   aiToolRunReadUrl: 'جارٍ قراءة الصفحة…',
   aiPageCloudToLocal: 'السحابة غير متاحة — تم التوليد محليًا',
-} satisfies Record<keyof typeof zh, string>
+
+}

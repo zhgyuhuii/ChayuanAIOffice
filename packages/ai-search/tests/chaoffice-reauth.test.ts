@@ -28,7 +28,6 @@ import {
   noteChaofficeKeyRejected,
   resetChaofficeRejectedKeys,
 } from '../src/chaoffice'
-
 const AUTH_URL = `https://www.genspark.ai/api/office_addin_auth/verify?code=${'a'.repeat(64)}`
 
 let dir: string
@@ -150,7 +149,7 @@ describe('tool_cli 401 recovery', () => {
 })
 
 describe('chaoffice CLI 401 recovery', () => {
-  /** fake CLI: a 401 for the expired key (printed on stdout like the real CLI), results otherwise */
+ /** fake CLI: a 401 for the expired key (printed on stdout like the real CLI), results otherwise */
   function fakeCli(): string {
     const log = join(dir, 'cli-keys.log')
     const script = join(dir, 'fake-chaoffice.mjs')

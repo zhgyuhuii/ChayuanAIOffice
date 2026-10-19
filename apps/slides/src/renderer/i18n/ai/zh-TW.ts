@@ -105,6 +105,7 @@ export const zhTW = {
   aiErrEmptyOutput: '空輸出',
   aiErrUnknown: '未知錯誤',
   aiErrStreamTimeout: 'AI 請求逾時：網路長時間無回應，已停止。請檢查網路後重試',
+  aiErrRegion: '該模型的廠商不向目前地區提供服務，請換一個模型或切換網路',
   aiErrOverloaded: 'AI 服務目前繁忙，請稍後重試',
   aiErrNetwork: '網路有問題，無法連接 AI 服務。請檢查網路後重試',
   aiCreditsExhausted: '察元AIOffice 點數已用完，請前往 genspark.ai/pricing 儲值後重試',
@@ -314,7 +315,6 @@ export const zhTW = {
   aiNoteSvgMode: "配圖來源：向量圖形（模型內聯繪製，元素可編輯）",
   aiNoteImgFail: "第 {page} 頁：「{kw}」未能配圖，已用向量圖形繪製",
   aiNoteImgWebFallback: "「{kw}」AI 生圖失敗，已改用網路圖片",
-
   aiToolRunDeck: '正在產生簡報…',
   aiToolRunRegenSlide: '正在重做頁面…',
   aiToolRunPlanDeck: '正在規劃大綱…',
@@ -327,4 +327,5 @@ export const zhTW = {
   aiToolRunImageSearch: '正在搜尋圖片…',
   aiToolRunReadUrl: '正在讀取網頁…',
   aiPageCloudToLocal: '雲端不可用,已本地生成',
-} satisfies Record<keyof typeof zh, string>
+
+}

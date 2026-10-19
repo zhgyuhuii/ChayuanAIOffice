@@ -21,13 +21,11 @@ export const pl = {
   aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: 'Otwórz asystenta AI',
   aiFactCheckBtn: 'Weryfikacja AI',
-  aiFactCheckPrompt:
-    'Zweryfikuj fakty w tej prezentacji: sprawdź liczby, daty, nazwy i twierdzenia, wskaż i popraw błędy',
+  aiFactCheckPrompt: 'Zweryfikuj fakty w tej prezentacji: sprawdź liczby, daty, nazwy i twierdzenia, wskaż i popraw błędy',
   aiImageBtn: 'Obraz AI',
   aiImagePrompt: 'Wygeneruj obraz pasujący do treści tego slajdu i wstaw go w odpowiednim miejscu',
   aiBeautifyBtn: 'Upiększanie AI',
-  aiBeautifyPrompt:
-    'Upiększ ten slajd: popraw układ, kolory i typografię, aby wyglądał bardziej profesjonalnie',
+  aiBeautifyPrompt: 'Upiększ ten slajd: popraw układ, kolory i typografię, aby wyglądał bardziej profesjonalnie',
   aiSwitchModel: 'Zmień model AI',
   aiNewChat: 'Nowy czat',
   aiCollapsePanel: 'Zwiń panel',
@@ -96,25 +94,21 @@ export const pl = {
   aiStarterPolishTitle: 'Popraw tytuł i tekst tego slajdu',
   aiStarterTighten: 'Skróć punkty tego slajdu, aby były zwięźlejsze',
   aiStarterProofread: 'Sprawdź literówki w całej prezentacji i popraw je',
-  aiTurnLimit:
-    '(Osiągnięto limit wywołań narzędzi dla tego żądania; powyższa odpowiedź opiera się na dotychczas ukończonych krokach i może być niepełna.)',
+  aiTurnLimit: '(Osiągnięto limit wywołań narzędzi dla tego żądania; powyższa odpowiedź opiera się na dotychczas ukończonych krokach i może być niepełna.)',
   aiStoppedNote: '(zatrzymano)',
   aiTruncatedNote: '(Odpowiedź została ucięta przez limit długości i może być niepełna.)',
   aiNoResponse: 'AI nie zwróciła żadnej treści.',
   aiReadFailed: '{name}: odczyt nie powiódł się',
-  aiTooManyImages:
-    'W jednej wiadomości można wysłać najwyżej {max} obrazów; nadmiarowe zostały zignorowane',
+  aiTooManyImages: 'W jednej wiadomości można wysłać najwyżej {max} obrazów; nadmiarowe zostały zignorowane',
   aiErrStopped: 'Zatrzymano',
   aiErrTimeout: 'Przekroczono limit czasu ({ms}ms)',
   aiErrEmptyOutput: 'Pusty wynik',
   aiErrUnknown: 'Nieznany błąd',
-  aiErrStreamTimeout:
-    'Przekroczono limit czasu żądania AI: brak odpowiedzi sieci, przerwano. Sprawdź połączenie i spróbuj ponownie',
+  aiErrStreamTimeout: 'Przekroczono limit czasu żądania AI: brak odpowiedzi sieci, przerwano. Sprawdź połączenie i spróbuj ponownie',
+  aiErrRegion: 'Dostawca tego modelu nie obsługuje Twojego obecnego regionu — wybierz inny model lub zmień sieć',
   aiErrOverloaded: 'Usługa AI jest obecnie przeciążona — spróbuj ponownie za chwilę',
-  aiErrNetwork:
-    'Problem z siecią: nie można połączyć się z usługą AI. Sprawdź połączenie i spróbuj ponownie',
-  aiCreditsExhausted:
-    'Twoje kredyty ChaAI Office wyczerpały się. Doładuj konto na genspark.ai/pricing i spróbuj ponownie',
+  aiErrNetwork: 'Problem z siecią: nie można połączyć się z usługą AI. Sprawdź połączenie i spróbuj ponownie',
+  aiCreditsExhausted: 'Twoje kredyty ChaAI Office wyczerpały się. Doładuj konto na genspark.ai/pricing i spróbuj ponownie',
   aiErrRequestFailed: 'Wysłanie żądania nie powiodło się: {msg}',
   aiErrGenerateFailed: 'Generowanie nie powiodło się',
   aiErrRegenFailed: 'Ponowne wygenerowanie slajdu nie powiodło się',
@@ -321,7 +315,6 @@ export const pl = {
   aiNoteSvgMode: "Obrazy: grafika wektorowa (rysowana przez model, edytowalna)",
   aiNoteImgFail: "Strona {page}: brak obrazu dla „{kw}”; narysowano jako grafika wektorowa",
   aiNoteImgWebFallback: "Generowanie obrazu AI dla „{kw}” nie powiodło się; użyto zamiast tego obrazu z sieci",
-
   aiToolRunDeck: 'Generowanie prezentacji…',
   aiToolRunRegenSlide: 'Ponowne tworzenie slajdu…',
   aiToolRunPlanDeck: 'Planowanie konspektu…',
@@ -334,4 +327,5 @@ export const pl = {
   aiToolRunImageSearch: 'Wyszukiwanie obrazów…',
   aiToolRunReadUrl: 'Czytanie strony…',
   aiPageCloudToLocal: 'Chmura niedostępna — wygenerowano lokalnie',
-} satisfies Record<keyof typeof zh, string>
+
+}

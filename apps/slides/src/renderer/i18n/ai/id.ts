@@ -21,22 +21,18 @@ export const id = {
   aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: 'Buka asisten AI',
   aiFactCheckBtn: 'Cek Fakta AI',
-  aiFactCheckPrompt:
-    'Periksa fakta dek ini: verifikasi angka, tanggal, nama, dan klaim, lalu tunjukkan dan perbaiki kesalahannya',
+  aiFactCheckPrompt: 'Periksa fakta dek ini: verifikasi angka, tanggal, nama, dan klaim, lalu tunjukkan dan perbaiki kesalahannya',
   aiImageBtn: 'Gambar AI',
-  aiImagePrompt:
-    'Buat gambar yang sesuai dengan isi slide ini dan sisipkan di posisi yang tepat pada slide',
+  aiImagePrompt: 'Buat gambar yang sesuai dengan isi slide ini dan sisipkan di posisi yang tepat pada slide',
   aiBeautifyBtn: 'Percantik AI',
-  aiBeautifyPrompt:
-    'Percantik slide ini: perbaiki tata letak, warna, dan tipografi agar tampak lebih profesional',
+  aiBeautifyPrompt: 'Percantik slide ini: perbaiki tata letak, warna, dan tipografi agar tampak lebih profesional',
   aiSwitchModel: 'Ganti model AI',
   aiNewChat: 'Obrolan baru',
   aiCollapsePanel: 'Ciutkan panel',
   aiHistorySep: '—— percakapan sebelumnya ——',
   aiEmptyTitle: 'Biarkan AI menyempurnakan slide Anda',
   aiEmptyBody1: 'Berikan instruksi atau langsung ajukan pertanyaan;',
-  aiEmptyBody2:
-    'jika ada elemen yang dipilih, perintah penulisan ulang diterapkan pada pilihan tersebut.',
+  aiEmptyBody2: 'jika ada elemen yang dipilih, perintah penulisan ulang diterapkan pada pilihan tersebut.',
   aiThinking: 'Berpikir',
   aiWorkedSteps: 'Selesai · {n} langkah',
   aiGroupWorking: 'Sedang bekerja…',
@@ -98,8 +94,7 @@ export const id = {
   aiStarterPolishTitle: 'Perbaiki judul dan teks slide ini',
   aiStarterTighten: 'Buat poin-poin slide ini lebih ringkas',
   aiStarterProofread: 'Periksa salah ketik di seluruh presentasi dan perbaiki',
-  aiTurnLimit:
-    '(Batas putaran pemanggilan alat untuk permintaan ini tercapai; jawaban di atas berdasarkan langkah yang telah selesai dan mungkin belum lengkap.)',
+  aiTurnLimit: '(Batas putaran pemanggilan alat untuk permintaan ini tercapai; jawaban di atas berdasarkan langkah yang telah selesai dan mungkin belum lengkap.)',
   aiStoppedNote: '(dihentikan)',
   aiTruncatedNote: '(Balasan terpotong karena batas panjang dan mungkin tidak lengkap.)',
   aiNoResponse: 'AI tidak mengembalikan konten apa pun.',
@@ -109,13 +104,11 @@ export const id = {
   aiErrTimeout: 'Waktu habis ({ms}ms)',
   aiErrEmptyOutput: 'Keluaran kosong',
   aiErrUnknown: 'Kesalahan tidak dikenal',
-  aiErrStreamTimeout:
-    'Permintaan AI habis waktu: jaringan tidak merespons sehingga proses dihentikan. Periksa koneksi Anda lalu coba lagi',
+  aiErrStreamTimeout: 'Permintaan AI habis waktu: jaringan tidak merespons sehingga proses dihentikan. Periksa koneksi Anda lalu coba lagi',
+  aiErrRegion: 'Penyedia model ini tidak melayani wilayah Anda saat ini — pilih model lain atau ganti jaringan',
   aiErrOverloaded: 'Layanan AI sedang sibuk — silakan coba lagi sebentar lagi',
-  aiErrNetwork:
-    'Masalah jaringan: tidak dapat terhubung ke layanan AI. Periksa koneksi Anda lalu coba lagi',
-  aiCreditsExhausted:
-    'Kredit ChaAI Office Anda telah habis. Isi ulang di genspark.ai/pricing lalu coba lagi',
+  aiErrNetwork: 'Masalah jaringan: tidak dapat terhubung ke layanan AI. Periksa koneksi Anda lalu coba lagi',
+  aiCreditsExhausted: 'Kredit ChaAI Office Anda telah habis. Isi ulang di genspark.ai/pricing lalu coba lagi',
   aiErrRequestFailed: 'Gagal mengirim permintaan: {msg}',
   aiErrGenerateFailed: 'Pembuatan gagal',
   aiErrRegenFailed: 'Gagal membuat ulang halaman',
@@ -322,7 +315,6 @@ export const id = {
   aiNoteSvgMode: "Gambar: grafik vektor (digambar model, dapat disunting)",
   aiNoteImgFail: "Halaman {page}: tidak ada gambar untuk \"{kw}\"; digambar sebagai vektor",
   aiNoteImgWebFallback: "Pembuatan gambar AI untuk \"{kw}\" gagal; gambar web digunakan sebagai gantinya",
-
   aiToolRunDeck: 'Membuat presentasi…',
   aiToolRunRegenSlide: 'Membuat ulang slide…',
   aiToolRunPlanDeck: 'Menyusun kerangka…',
@@ -335,4 +327,5 @@ export const id = {
   aiToolRunImageSearch: 'Mencari gambar…',
   aiToolRunReadUrl: 'Membaca halaman…',
   aiPageCloudToLocal: 'Awan tidak tersedia — dibuat secara lokal',
-} satisfies Record<keyof typeof zh, string>
+
+}

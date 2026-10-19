@@ -104,6 +104,7 @@ export const zh = {
   aiErrEmptyOutput: '空输出',
   aiErrUnknown: '未知错误',
   aiErrStreamTimeout: 'AI 请求超时：网络长时间无响应，已停止。请检查网络后重试',
+  aiErrRegion: '该模型的厂商不向当前地区提供服务，请换一个模型或切换网络',
   aiErrOverloaded: 'AI 服务当前繁忙，请稍后重试',
   aiErrNetwork: '网络有问题，无法连接 AI 服务。请检查网络后重试',
   aiCreditsExhausted: '察元AIOffice 积分已用完，请前往 genspark.ai/pricing 充值后重试',
@@ -313,7 +314,6 @@ export const zh = {
   aiNoteSvgMode: "配图来源：矢量图形（模型内联绘制，元素可编辑）",
   aiNoteImgFail: "第 {page} 页：「{kw}」未能配图，已用矢量图形绘制",
   aiNoteImgWebFallback: "「{kw}」AI 生图失败，已改用网络图片",
-
   aiToolRunDeck: '正在生成演示文稿…',
   aiToolRunRegenSlide: '正在重做页面…',
   aiToolRunPlanDeck: '正在规划大纲…',
@@ -326,4 +326,5 @@ export const zh = {
   aiToolRunImageSearch: '正在搜索图片…',
   aiToolRunReadUrl: '正在读取网页…',
   aiPageCloudToLocal: '云端不可用,已本地生成',
+
 }

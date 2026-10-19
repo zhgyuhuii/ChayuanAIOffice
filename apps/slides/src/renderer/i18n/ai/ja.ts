@@ -21,13 +21,11 @@ export const ja = {
   aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: 'AI アシスタントを開く',
   aiFactCheckBtn: 'AI ファクトチェック',
-  aiFactCheckPrompt:
-    'このスライドの内容をファクトチェックしてください:数値・日付・名称・主張を確認し、誤りを指摘して修正してください',
+  aiFactCheckPrompt: 'このスライドの内容をファクトチェックしてください:数値・日付・名称・主張を確認し、誤りを指摘して修正してください',
   aiImageBtn: 'AI 画像',
   aiImagePrompt: 'このスライドの内容に合った画像を生成し、スライドの適切な位置に挿入してください',
   aiBeautifyBtn: 'AI デザイン',
-  aiBeautifyPrompt:
-    'このスライドを美しく整えてください:レイアウト・配色・文字の階層を改善し、より洗練されたページにしてください',
+  aiBeautifyPrompt: 'このスライドを美しく整えてください:レイアウト・配色・文字の階層を改善し、より洗練されたページにしてください',
   aiSwitchModel: 'AI モデルを切り替え',
   aiNewChat: '新しいチャット',
   aiCollapsePanel: 'パネルを折りたたむ',
@@ -96,8 +94,7 @@ export const ja = {
   aiStarterPolishTitle: 'このスライドのタイトルと文章を改善して',
   aiStarterTighten: 'このスライドの箇条書きをより簡潔にして',
   aiStarterProofread: '全スライドの誤字をチェックして修正して',
-  aiTurnLimit:
-    '（1 回のリクエストのツール呼び出し上限に達したため、ここまでに完了した内容に基づく回答です。不完全な場合があります。）',
+  aiTurnLimit: '（1 回のリクエストのツール呼び出し上限に達したため、ここまでに完了した内容に基づく回答です。不完全な場合があります。）',
   aiStoppedNote: '（停止しました）',
   aiTruncatedNote: '（返信は長さ制限により途中で打ち切られ、不完全な可能性があります。）',
   aiNoResponse: 'AI から応答が返されませんでした。',
@@ -107,13 +104,11 @@ export const ja = {
   aiErrTimeout: 'タイムアウト（{ms}ms）',
   aiErrEmptyOutput: '出力が空です',
   aiErrUnknown: '不明なエラー',
-  aiErrStreamTimeout:
-    'AIリクエストがタイムアウトしました：ネットワークからの応答がないため中断しました。接続を確認して再試行してください',
+  aiErrStreamTimeout: 'AIリクエストがタイムアウトしました：ネットワークからの応答がないため中断しました。接続を確認して再試行してください',
+  aiErrRegion: 'このモデルの提供元は現在の地域ではサービスを提供していません。別のモデルを選ぶか、ネットワークを切り替えてください',
   aiErrOverloaded: 'AI サービスが混み合っています。しばらくしてからもう一度お試しください',
-  aiErrNetwork:
-    'ネットワークに問題があり、AI サービスに接続できません。接続を確認して再試行してください',
-  aiCreditsExhausted:
-    'ChaAI Officeクレジットを使い切りました。genspark.ai/pricing でチャージしてから再試行してください',
+  aiErrNetwork: 'ネットワークに問題があり、AI サービスに接続できません。接続を確認して再試行してください',
+  aiCreditsExhausted: 'ChaAI Officeクレジットを使い切りました。genspark.ai/pricing でチャージしてから再試行してください',
   aiErrRequestFailed: 'リクエストの送信に失敗しました: {msg}',
   aiErrGenerateFailed: '生成に失敗しました',
   aiErrRegenFailed: 'ページの再生成に失敗しました',
@@ -320,7 +315,6 @@ export const ja = {
   aiNoteSvgMode: "画像：ベクターグラフィック（モデルがインライン描画、編集可）",
   aiNoteImgFail: "{page}ページ：「{kw}」の画像を取得できず、ベクターグラフィックで描画しました",
   aiNoteImgWebFallback: "「{kw}」のAI画像生成に失敗したため、Web画像を使用しました",
-
   aiToolRunDeck: 'プレゼンテーションを生成中…',
   aiToolRunRegenSlide: 'スライドを再生成中…',
   aiToolRunPlanDeck: 'アウトラインを計画中…',
@@ -333,4 +327,5 @@ export const ja = {
   aiToolRunImageSearch: '画像を検索中…',
   aiToolRunReadUrl: 'ページを読み込み中…',
   aiPageCloudToLocal: 'クラウド生成不可効 — ローカルで生成',
-} satisfies Record<keyof typeof zh, string>
+
+}

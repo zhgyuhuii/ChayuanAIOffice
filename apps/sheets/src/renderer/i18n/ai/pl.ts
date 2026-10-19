@@ -57,6 +57,7 @@ export const pl = {
   aiSave: 'Zapisz',
   aiUnknownError: 'Nieznany błąd',
   aiTimeoutError: 'Przekroczono limit czasu żądania AI: brak odpowiedzi sieci, przerwano. Sprawdź połączenie i spróbuj ponownie',
+  aiRegionError: 'Dostawca tego modelu nie obsługuje Twojego obecnego regionu — wybierz inny model lub zmień sieć',
   aiOverloadedError: 'Usługa AI jest obecnie przeciążona — spróbuj ponownie za chwilę',
   aiNetworkError: 'Problem z siecią: nie można połączyć się z usługą AI. Sprawdź połączenie i spróbuj ponownie',
   aiCreditsExhausted: 'Brak kredytów — doładuj na stronie cen',

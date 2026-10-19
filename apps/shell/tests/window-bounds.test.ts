@@ -15,7 +15,7 @@ import {
 } from '../src/main/window-bounds'
 
 /**
- * The shell window's geometry across sessions (genoffice#2049): what is stored,
+ * The shell window's geometry across sessions (chaoffice#2049): what is stored,
  * what is trusted back, and the debounced/close save policy.
  *
  * The settings file is a plain JSON file a user can hand-edit, so reading it
@@ -108,6 +108,13 @@ describe('isShellWindowVisible', () => {
   it('rejects a window saved on a monitor that is gone', () => {
     expect(isShellWindowVisible({ x: 2600, y: 100, width: 1200, height: 800 }, [primary])).toBe(
       false,
+    )
+  })
+
+  it('accepts a window flush with the top, a few strip rows under the menu bar', () => {
+    const belowMenuBar = { ...primary, y: 25, height: primary.height - 25 }
+    expect(isShellWindowVisible({ x: 100, y: 0, width: 1200, height: 800 }, [belowMenuBar])).toBe(
+      true,
     )
   })
 

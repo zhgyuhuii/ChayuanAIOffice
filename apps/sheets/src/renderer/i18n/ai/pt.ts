@@ -57,6 +57,7 @@ export const pt = {
   aiSave: 'Salvar',
   aiUnknownError: 'Erro desconhecido',
   aiTimeoutError: 'A solicitação de IA expirou: sem resposta da rede, a execução foi interrompida. Verifique sua conexão e tente novamente',
+  aiRegionError: 'O fornecedor deste modelo não atende à sua região atual — escolha outro modelo ou mude de rede',
   aiOverloadedError: 'O serviço de IA está sobrecarregado no momento — tente novamente em instantes',
   aiNetworkError: 'Problema de rede: não foi possível conectar ao serviço de IA. Verifique sua conexão e tente novamente',
   aiCreditsExhausted: 'Créditos esgotados — recarregue na página de preços',

@@ -21,14 +21,11 @@ export const en = {
   aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: 'Open AI assistant',
   aiFactCheckBtn: 'AI Fact Check',
-  aiFactCheckPrompt:
-    'Fact-check this deck: verify the figures, dates, names, and claims, then point out and correct any errors',
+  aiFactCheckPrompt: 'Fact-check this deck: verify the figures, dates, names, and claims, then point out and correct any errors',
   aiImageBtn: 'AI Image',
-  aiImagePrompt:
-    "Generate an image that matches this slide's content and insert it in a suitable spot on the slide",
+  aiImagePrompt: "Generate an image that matches this slide's content and insert it in a suitable spot on the slide",
   aiBeautifyBtn: 'AI Beautify',
-  aiBeautifyPrompt:
-    'Beautify this slide: improve the layout, colors, and typography to make it look more professional',
+  aiBeautifyPrompt: 'Beautify this slide: improve the layout, colors, and typography to make it look more professional',
   aiSwitchModel: 'Switch AI model',
   aiNewChat: 'New chat',
   aiCollapsePanel: 'Collapse panel',
@@ -97,8 +94,7 @@ export const en = {
   aiStarterPolishTitle: "Improve this slide's title and copy",
   aiStarterTighten: "Make this slide's bullets more concise",
   aiStarterProofread: 'Check the whole deck for typos and fix them',
-  aiTurnLimit:
-    '(Reached the tool-call turn limit for this request; the answer above reflects the steps completed so far and may be incomplete.)',
+  aiTurnLimit: '(Reached the tool-call turn limit for this request; the answer above reflects the steps completed so far and may be incomplete.)',
   aiStoppedNote: '(stopped)',
   aiTruncatedNote: '(The reply was cut off by the length limit and may be incomplete.)',
   aiNoResponse: 'The AI returned no content.',
@@ -108,13 +104,11 @@ export const en = {
   aiErrTimeout: 'Timed out ({ms}ms)',
   aiErrEmptyOutput: 'Empty output',
   aiErrUnknown: 'Unknown error',
-  aiErrStreamTimeout:
-    'AI request timed out: no response from the network, so the run was stopped. Check your connection and try again',
+  aiErrStreamTimeout: 'AI request timed out: no response from the network, so the run was stopped. Check your connection and try again',
+  aiErrRegion: "This model's provider does not serve your current region — pick another model or change your network",
   aiErrOverloaded: 'The AI service is busy right now — please try again in a moment',
-  aiErrNetwork:
-    'Network problem: could not reach the AI service. Check your connection and try again',
-  aiCreditsExhausted:
-    'Your ChaAI Office credits have run out. Visit genspark.ai/pricing to top up, then try again',
+  aiErrNetwork: 'Network problem: could not reach the AI service. Check your connection and try again',
+  aiCreditsExhausted: 'Your ChaAI Office credits have run out. Visit genspark.ai/pricing to top up, then try again',
   aiErrRequestFailed: 'Failed to send request: {msg}',
   aiErrGenerateFailed: 'Generation failed',
   aiErrRegenFailed: 'Slide redo failed',
@@ -321,7 +315,6 @@ export const en = {
   aiNoteSvgMode: "Imagery: vector graphics (drawn inline by the model, editable elements)",
   aiNoteImgFail: "Page {page}: no image sourced for \"{kw}\"; drawn as vector graphics instead",
   aiNoteImgWebFallback: "AI image generation failed for \"{kw}\"; a web image was used instead",
-
   aiToolRunDeck: 'Generating presentation…',
   aiToolRunRegenSlide: 'Redoing the slide…',
   aiToolRunPlanDeck: 'Planning the outline…',
@@ -334,4 +327,5 @@ export const en = {
   aiToolRunImageSearch: 'Searching for images…',
   aiToolRunReadUrl: 'Reading the page…',
   aiPageCloudToLocal: 'cloud unavailable — generated locally',
-} satisfies Record<keyof typeof zh, string>
+
+}

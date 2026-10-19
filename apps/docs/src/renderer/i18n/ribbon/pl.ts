@@ -215,6 +215,7 @@ export const pl = {
   ribbonTableColsLabel: 'Liczba kolumn',
   ribbonTableRowsLabel: 'Liczba wierszy',
   ribbonTableHandleTip: 'Zaznacz tabelę; przeciągnij, aby przenieść',
+  ribbonTableResizeTip: 'Przeciągnij, aby zmienić rozmiar tabeli',
   ribbonTableDeleteMenu: 'Usuń',
   ribbonSelectRow: 'Zaznacz wiersz',
   ribbonSelectColumn: 'Zaznacz kolumnę',

@@ -21,14 +21,11 @@ export const it = {
   aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: "Apri l'assistente IA",
   aiFactCheckBtn: 'Fact-check IA',
-  aiFactCheckPrompt:
-    'Verifica i fatti di questa presentazione: controlla numeri, date, nomi e affermazioni, poi segnala e correggi gli errori',
+  aiFactCheckPrompt: 'Verifica i fatti di questa presentazione: controlla numeri, date, nomi e affermazioni, poi segnala e correggi gli errori',
   aiImageBtn: 'Immagine IA',
-  aiImagePrompt:
-    "Genera un'immagine adatta al contenuto di questa diapositiva e inseriscila in una posizione appropriata",
+  aiImagePrompt: "Genera un'immagine adatta al contenuto di questa diapositiva e inseriscila in una posizione appropriata",
   aiBeautifyBtn: 'Design IA',
-  aiBeautifyPrompt:
-    "Migliora l'aspetto di questa diapositiva: perfeziona layout, colori e tipografia per un look più professionale",
+  aiBeautifyPrompt: "Migliora l'aspetto di questa diapositiva: perfeziona layout, colori e tipografia per un look più professionale",
   aiSwitchModel: 'Cambia modello di IA',
   aiNewChat: 'Nuova conversazione',
   aiCollapsePanel: 'Comprimi il pannello',
@@ -97,26 +94,21 @@ export const it = {
   aiStarterPolishTitle: 'Migliora il titolo e il testo di questa diapositiva',
   aiStarterTighten: 'Rendi più concisi i punti elenco di questa diapositiva',
   aiStarterProofread: 'Controlla i refusi in tutta la presentazione e correggili',
-  aiTurnLimit:
-    '(Raggiunto il limite di chiamate agli strumenti per questa richiesta; la risposta sopra riflette i passaggi completati finora e potrebbe essere incompleta.)',
+  aiTurnLimit: '(Raggiunto il limite di chiamate agli strumenti per questa richiesta; la risposta sopra riflette i passaggi completati finora e potrebbe essere incompleta.)',
   aiStoppedNote: '(interrotto)',
-  aiTruncatedNote:
-    '(La risposta è stata troncata dal limite di lunghezza e potrebbe essere incompleta.)',
+  aiTruncatedNote: '(La risposta è stata troncata dal limite di lunghezza e potrebbe essere incompleta.)',
   aiNoResponse: "L'IA non ha restituito alcun contenuto.",
   aiReadFailed: '{name}: lettura non riuscita',
-  aiTooManyImages:
-    'È possibile inviare al massimo {max} immagini per messaggio; quelle in eccesso sono state ignorate',
+  aiTooManyImages: 'È possibile inviare al massimo {max} immagini per messaggio; quelle in eccesso sono state ignorate',
   aiErrStopped: 'Interrotto',
   aiErrTimeout: 'Timeout ({ms}ms)',
   aiErrEmptyOutput: 'Output vuoto',
   aiErrUnknown: 'Errore sconosciuto',
-  aiErrStreamTimeout:
-    'Richiesta IA scaduta: nessuna risposta dalla rete, esecuzione interrotta. Controlla la connessione e riprova',
+  aiErrStreamTimeout: 'Richiesta IA scaduta: nessuna risposta dalla rete, esecuzione interrotta. Controlla la connessione e riprova',
+  aiErrRegion: 'Il fornitore di questo modello non serve la tua regione attuale — scegli un altro modello o cambia rete',
   aiErrOverloaded: 'Il servizio IA è momentaneamente sovraccarico — riprova tra poco',
-  aiErrNetwork:
-    'Problema di rete: impossibile raggiungere il servizio IA. Controlla la connessione e riprova',
-  aiCreditsExhausted:
-    'I tuoi crediti ChaAI Office sono esauriti. Ricarica su genspark.ai/pricing e riprova',
+  aiErrNetwork: 'Problema di rete: impossibile raggiungere il servizio IA. Controlla la connessione e riprova',
+  aiCreditsExhausted: 'I tuoi crediti ChaAI Office sono esauriti. Ricarica su genspark.ai/pricing e riprova',
   aiErrRequestFailed: 'Invio della richiesta non riuscito: {msg}',
   aiErrGenerateFailed: 'Generazione non riuscita',
   aiErrRegenFailed: 'Rigenerazione della diapositiva non riuscita',
@@ -323,7 +315,6 @@ export const it = {
   aiNoteSvgMode: "Immagini: grafica vettoriale (disegnata dal modello, modificabile)",
   aiNoteImgFail: "Pagina {page}: nessuna immagine per «{kw}»; disegnata come grafica vettoriale",
   aiNoteImgWebFallback: "Generazione immagini IA non riuscita per «{kw}»; è stata usata un'immagine web in alternativa",
-
   aiToolRunDeck: 'Generazione della presentazione…',
   aiToolRunRegenSlide: 'Rifacimento della diapositiva…',
   aiToolRunPlanDeck: 'Pianificazione della struttura…',
@@ -336,4 +327,5 @@ export const it = {
   aiToolRunImageSearch: 'Ricerca di immagini…',
   aiToolRunReadUrl: 'Lettura della pagina…',
   aiPageCloudToLocal: 'Cloud non disponibile — generato localmente',
-} satisfies Record<keyof typeof zh, string>
+
+}

@@ -1,8 +1,7 @@
 import type { zh } from './zh'
 
 export const cs = {
-  aiInputPlaceholderGen:
-    'Popište prezentaci, kterou chcete vygenerovat, nebo se na cokoli zeptejte',
+  aiInputPlaceholderGen: 'Popište prezentaci, kterou chcete vygenerovat, nebo se na cokoli zeptejte',
   aiEmptyGenTitle: 'Nechte AI vygenerovat vaši prezentaci',
   aiEmptyGenBody1: 'Popište téma, publikum a přibližný počet stránek;',
   aiEmptyGenBody2: 'AI vygeneruje celou prezentaci na plátno.',
@@ -18,18 +17,15 @@ export const cs = {
   aiQcPageSkipped: 'Stránka {n}: automatická kontrola rozložení přeskočena',
   aiQcStopped: 'Kontrola rozložení zastavena',
   aiQcCapped: 'Dalších {count} stránek nebylo zkontrolováno (limit na jedno spuštění)',
-  aiGskLoginBtn: 'Přihlásit se ke Genspark',
+  aiGskLoginBtn: 'Přihlásit se ke ChaAI Office',
   aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: 'Otevřít asistenta AI',
   aiFactCheckBtn: 'Ověření faktů AI',
-  aiFactCheckPrompt:
-    'Ověř fakta v této prezentaci: zkontroluj čísla, data, jména a tvrzení, poté upozorni na chyby a oprav je',
+  aiFactCheckPrompt: 'Ověř fakta v této prezentaci: zkontroluj čísla, data, jména a tvrzení, poté upozorni na chyby a oprav je',
   aiImageBtn: 'Obrázek AI',
-  aiImagePrompt:
-    'Vygeneruj obrázek odpovídající obsahu tohoto snímku a vlož ho na vhodné místo na snímku',
+  aiImagePrompt: 'Vygeneruj obrázek odpovídající obsahu tohoto snímku a vlož ho na vhodné místo na snímku',
   aiBeautifyBtn: 'Zkrášlit pomocí AI',
-  aiBeautifyPrompt:
-    'Zkrášli tento snímek: vylepši rozložení, barvy a typografii, aby vypadal profesionálněji',
+  aiBeautifyPrompt: 'Zkrášli tento snímek: vylepši rozložení, barvy a typografii, aby vypadal profesionálněji',
   aiSwitchModel: 'Přepnout model AI',
   aiNewChat: 'Nový chat',
   aiCollapsePanel: 'Sbalit panel',
@@ -98,8 +94,7 @@ export const cs = {
   aiStarterPolishTitle: 'Vylepši nadpis a text tohoto snímku',
   aiStarterTighten: 'Zestručni odrážky na tomto snímku',
   aiStarterProofread: 'Zkontroluj celou prezentaci na překlepy a oprav je',
-  aiTurnLimit:
-    '(Dosažen limit počtu volání nástrojů pro tento požadavek; odpověď výše odráží dosud dokončené kroky a může být neúplná.)',
+  aiTurnLimit: '(Dosažen limit počtu volání nástrojů pro tento požadavek; odpověď výše odráží dosud dokončené kroky a může být neúplná.)',
   aiStoppedNote: '(zastaveno)',
   aiTruncatedNote: '(Odpověď byla zkrácena limitem délky a může být neúplná.)',
   aiNoResponse: 'AI nevrátila žádný obsah.',
@@ -109,13 +104,11 @@ export const cs = {
   aiErrTimeout: 'Vypršel časový limit ({ms} ms)',
   aiErrEmptyOutput: 'Prázdný výstup',
   aiErrUnknown: 'Neznámá chyba',
-  aiErrStreamTimeout:
-    'Požadavek na AI vypršel: ze sítě nepřišla žádná odpověď, běh byl zastaven. Zkontrolujte připojení a zkuste to znovu',
+  aiErrStreamTimeout: 'Požadavek na AI vypršel: ze sítě nepřišla žádná odpověď, běh byl zastaven. Zkontrolujte připojení a zkuste to znovu',
+  aiErrRegion: 'Poskytovatel tohoto modelu neposkytuje služby ve vaší aktuální oblasti — vyberte jiný model nebo změňte síť',
   aiErrOverloaded: 'Služba AI je momentálně zaneprázdněná — zkuste to prosím za chvíli znovu',
-  aiErrNetwork:
-    'Problém se sítí: službu AI se nepodařilo kontaktovat. Zkontrolujte připojení a zkuste to znovu',
-  aiCreditsExhausted:
-    'Vaše kredity Genspark byly vyčerpány. Navštivte genspark.ai/pricing, dobijte je a zkuste to znovu',
+  aiErrNetwork: 'Problém se sítí: službu AI se nepodařilo kontaktovat. Zkontrolujte připojení a zkuste to znovu',
+  aiCreditsExhausted: 'Vaše kredity ChaAI Office byly vyčerpány. Navštivte genspark.ai/pricing, dobijte je a zkuste to znovu',
   aiErrRequestFailed: 'Odeslání požadavku se nezdařilo: {msg}',
   aiErrGenerateFailed: 'Generování se nezdařilo',
   aiErrRegenFailed: 'Přepracování snímku se nezdařilo',
@@ -334,4 +327,5 @@ export const cs = {
   aiToolRunImageSearch: 'Hledám obrázky…',
   aiToolRunReadUrl: 'Čtu stránku…',
   aiPageCloudToLocal: 'Cloud není dostupný — vygenerováno lokálně',
-} satisfies Record<keyof typeof zh, string>
+
+}

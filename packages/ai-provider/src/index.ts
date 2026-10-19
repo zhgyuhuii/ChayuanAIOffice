@@ -109,6 +109,7 @@ export {
 export type { ModelCapabilities, ModelCapabilityQuery, CapabilityVerdict } from './capabilities'
 export { isAiNetworkError } from './network-error'
 export { isAiOverloadedError } from './overload-error'
+export { isAiRegionBlockedError } from './region-error'
 export { parseOutputCapRejection } from './output-cap'
 export { AiCreditsError, sseLines, streamForProvider, streamResolved } from './stream'
 export type { StreamCallbacks } from './stream'

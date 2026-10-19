@@ -18,5 +18,6 @@ export function createElectronTransport(getSelection: () => AiModelSelection): A
     creditsErrorText: () => t('aiCreditsExhausted'),
     networkErrorText: () => t('aiErrNetwork'),
     overloadedErrorText: () => t('aiErrOverloaded'),
+    regionErrorText: () => t('aiErrRegion'),
   })
 }

@@ -21,14 +21,11 @@ export const pt = {
   aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: 'Abrir assistente de IA',
   aiFactCheckBtn: 'Checagem IA',
-  aiFactCheckPrompt:
-    'Cheque os fatos desta apresentação: verifique números, datas, nomes e afirmações, aponte e corrija os erros',
+  aiFactCheckPrompt: 'Cheque os fatos desta apresentação: verifique números, datas, nomes e afirmações, aponte e corrija os erros',
   aiImageBtn: 'Imagem IA',
-  aiImagePrompt:
-    'Gere uma imagem condizente com o conteúdo deste slide e insira-a em um local adequado',
+  aiImagePrompt: 'Gere uma imagem condizente com o conteúdo deste slide e insira-a em um local adequado',
   aiBeautifyBtn: 'Design IA',
-  aiBeautifyPrompt:
-    'Deixe este slide mais bonito: melhore o layout, as cores e a tipografia para um visual mais profissional',
+  aiBeautifyPrompt: 'Deixe este slide mais bonito: melhore o layout, as cores e a tipografia para um visual mais profissional',
   aiSwitchModel: 'Trocar modelo de IA',
   aiNewChat: 'Nova conversa',
   aiCollapsePanel: 'Recolher painel',
@@ -97,25 +94,21 @@ export const pt = {
   aiStarterPolishTitle: 'Melhorar o título e o texto deste slide',
   aiStarterTighten: 'Tornar os tópicos deste slide mais concisos',
   aiStarterProofread: 'Verificar erros de digitação em toda a apresentação e corrigi-los',
-  aiTurnLimit:
-    '(Limite de chamadas de ferramentas atingido para esta solicitação; a resposta acima reflete as etapas concluídas até agora e pode estar incompleta.)',
+  aiTurnLimit: '(Limite de chamadas de ferramentas atingido para esta solicitação; a resposta acima reflete as etapas concluídas até agora e pode estar incompleta.)',
   aiStoppedNote: '(interrompido)',
   aiTruncatedNote: '(A resposta foi cortada pelo limite de comprimento e pode estar incompleta.)',
   aiNoResponse: 'A IA não retornou nenhum conteúdo.',
   aiReadFailed: '{name}: falha na leitura',
-  aiTooManyImages:
-    'No máximo {max} imagens podem ser enviadas por mensagem; as excedentes foram ignoradas',
+  aiTooManyImages: 'No máximo {max} imagens podem ser enviadas por mensagem; as excedentes foram ignoradas',
   aiErrStopped: 'Interrompido',
   aiErrTimeout: 'Tempo esgotado ({ms}ms)',
   aiErrEmptyOutput: 'Saída vazia',
   aiErrUnknown: 'Erro desconhecido',
-  aiErrStreamTimeout:
-    'A solicitação de IA expirou: sem resposta da rede, a execução foi interrompida. Verifique sua conexão e tente novamente',
+  aiErrStreamTimeout: 'A solicitação de IA expirou: sem resposta da rede, a execução foi interrompida. Verifique sua conexão e tente novamente',
+  aiErrRegion: 'O fornecedor deste modelo não atende à sua região atual — escolha outro modelo ou mude de rede',
   aiErrOverloaded: 'O serviço de IA está sobrecarregado no momento — tente novamente em instantes',
-  aiErrNetwork:
-    'Problema de rede: não foi possível conectar ao serviço de IA. Verifique sua conexão e tente novamente',
-  aiCreditsExhausted:
-    'Seus créditos ChaAI Office acabaram. Recarregue em genspark.ai/pricing e tente novamente',
+  aiErrNetwork: 'Problema de rede: não foi possível conectar ao serviço de IA. Verifique sua conexão e tente novamente',
+  aiCreditsExhausted: 'Seus créditos ChaAI Office acabaram. Recarregue em genspark.ai/pricing e tente novamente',
   aiErrRequestFailed: 'Falha ao enviar a solicitação: {msg}',
   aiErrGenerateFailed: 'Falha na geração',
   aiErrRegenFailed: 'Falha ao refazer o slide',
@@ -322,7 +315,6 @@ export const pt = {
   aiNoteSvgMode: "Imagens: gráficos vetoriais (desenhados pelo modelo, editáveis)",
   aiNoteImgFail: "Página {page}: sem imagem para \"{kw}\"; desenhada como gráfico vetorial",
   aiNoteImgWebFallback: "A geração de imagem por IA falhou para \"{kw}\"; foi usada uma imagem da web em vez dela",
-
   aiToolRunDeck: 'Gerando a apresentação…',
   aiToolRunRegenSlide: 'Refazendo o slide…',
   aiToolRunPlanDeck: 'Planejando a estrutura…',
@@ -335,4 +327,5 @@ export const pt = {
   aiToolRunImageSearch: 'Pesquisando imagens…',
   aiToolRunReadUrl: 'Lendo a página…',
   aiPageCloudToLocal: 'Nuvem indisponível — gerado localmente',
-} satisfies Record<keyof typeof zh, string>
+
+}

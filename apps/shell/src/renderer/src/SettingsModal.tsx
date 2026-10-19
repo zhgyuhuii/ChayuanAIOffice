@@ -7,7 +7,7 @@ import {
   AI_CUSTOM_FONT_MIN_PX,
   AI_CUSTOM_FONT_MAX_PX,
 } from '@chaoffice/ui/ai-panel-prefs'
-import { AUTHOR_NAME_MAX } from '../../shared/home-api'
+import { AUTHOR_NAME_MAX, isCloudflareEndpoint } from '../../shared/home-api'
 import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { ModelSettingsPage } from '@chaoffice/ui/ModelSettingsPage'
@@ -406,6 +406,25 @@ function FileSearchPane() {
                   onPick={(v) => patch({ endpoint: v })}
                 />
               </div>
+              {isCloudflareEndpoint(settings.endpoint) && (
+                <div className="set-field">
+                  <div className="set-field-text">
+                    <label className="set-field-label" htmlFor="set-search-jev-account">
+                      {t('setSearchRerankAccount')}
+                    </label>
+                  </div>
+                  <input
+                    id="set-search-jev-account"
+                    className="set-input"
+                    type="text"
+                    value={settings.cloudflareAccountId ?? ''}
+                    placeholder=""
+                    spellCheck={false}
+                    autoComplete="off"
+                    onChange={(e) => patch({ cloudflareAccountId: e.target.value })}
+                  />
+                </div>
+              )}
               <div className="set-field">
                 <div className="set-field-text">
                   <label className="set-field-label" htmlFor="set-search-jev-key">
