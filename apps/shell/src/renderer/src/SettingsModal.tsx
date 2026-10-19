@@ -314,12 +314,20 @@ function SectionIcon({ id }: { id: SectionId }) {
 /** 本机文件搜索（Jev 重排）设置——上游 #757 的设置 UI 按本地 V2 结构重建
  *  （LOCAL 2026-09-23 挂账 #1 落地）：开关/端点/密钥即时持久化，测试按钮
  *  走 testFileSearchRerank 做一次双文档判定并回显结果。 */
-const JEV_ENDPOINTS: { value: DecisionEndpoint; label: string }[] = [
+/** Jev 路由在前（OpenRouter 默认），其后是各家决策模型服务器。名称随上游
+ *  DECISION_ENDPOINTS：tests/decision-endpoints.test.ts 按此名对表，保证
+ *  下拉项与 rerank.ts 的 ENDPOINT_IDS 一一对应、不悄悄同缩。 */
+const DECISION_ENDPOINTS: { value: DecisionEndpoint; label: string }[] = [
   { value: 'openrouter', label: 'OpenRouter' },
   { value: 'direct', label: 'TypeSafe' },
-  { value: 'perplexity', label: 'Perplexity' },
+  { value: 'perplexity', label: 'Perplexity (v1 27B)' },
+  // 上游 #2073：Perplexity/Liquid/Cloudflare 各自多发一代同 URL 模型，逐项列出
+  { value: 'perplexity-v12', label: 'Perplexity (v1.2)' },
+  { value: 'perplexity-flash', label: 'Perplexity (Flash v1.2)' },
   { value: 'liquid', label: 'Liquid AI (d1)' },
-  { value: 'cloudflare', label: 'Cloudflare' },
+  { value: 'liquid-ultra', label: 'Liquid AI (d1-ultra)' },
+  { value: 'cloudflare', label: 'Cloudflare (Clef)' },
+  { value: 'cloudflare-flash', label: 'Cloudflare (Clef-flash)' },
   { value: 'kev', label: 'Kev (local)' },
   { value: 'rizzo', label: 'Rizzo Flow (local)' },
   { value: 'custom', label: 'Custom' },
@@ -394,7 +402,7 @@ function FileSearchPane() {
                   className="set-dd"
                   value={settings.endpoint}
                   ariaLabel={t('setSearchRerankEndpoint')}
-                  options={JEV_ENDPOINTS}
+                  options={DECISION_ENDPOINTS}
                   onPick={(v) => patch({ endpoint: v })}
                 />
               </div>

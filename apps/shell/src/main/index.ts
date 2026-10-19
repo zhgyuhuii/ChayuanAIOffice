@@ -388,6 +388,14 @@ import { tabMenuTemplate, type TabMenuActions, isProgramFile } from './tab-menu'
 import { runTabDocumentAction, type TabDocumentAction } from './tab-document-actions'
 import { duplicateDocumentFile } from './tab-duplicate'
 import { closeTabsInOrder, createRecentlyClosedTracker } from './tab-lifecycle'
+// 上游 #2066：窗口位置大小跨会话记忆。close-guard 不随取——本地 index.ts 已内联
+// 同源的全窗口脏标签保存确认（见 createShellWindow 尾部 win.on('close')），重复安装会双弹窗。
+import {
+  installShellWindowBoundsPersistence,
+  readShellWindowState,
+  SHELL_WINDOW_DEFAULT_HEIGHT,
+  SHELL_WINDOW_DEFAULT_WIDTH,
+} from './window-bounds'
 import {
   activateDetached,
   closeDetachedWithoutPrompt,
@@ -4351,9 +4359,22 @@ function withViewMenu(): void {
 }
 
 function createShellWindow(): void {
+  // Last session's geometry, when a display can still show it (issue #2049).
+  // A saved position on an unplugged monitor falls back to the default
+  // placement rather than opening where it cannot be grabbed.
+  const restored = readShellWindowState(
+    APP_SETTINGS_PATH(),
+    screen.getAllDisplays().map((display) => display.workArea),
+  )
   const win = new BrowserWindow({
-    width: 1360,
-    height: 900,
+    // 上游 #2066：上次会话的窗口几何（显示器仍能显示时）；保存在拔掉的显示器上
+    // 则回落默认摆放，而不是开在抓不到的位置。
+    width: restored?.width ?? SHELL_WINDOW_DEFAULT_WIDTH,
+    height: restored?.height ?? SHELL_WINDOW_DEFAULT_HEIGHT,
+    // x/y only when a saved position survived validation; omitting them keeps
+    // Electron's default placement on a first run
+    ...(restored ? { x: restored.x, y: restored.y } : {}),
+    // LOCAL：自绘标题栏（最小化/最大化/关闭在 tab 条内）需要更大的最小尺寸，保留本地值
     minWidth: 980,
     minHeight: 600,
     title: '察元AIOffice',
@@ -4371,6 +4392,9 @@ function createShellWindow(): void {
       sandbox: true,
     },
   })
+  // the stored rectangle is the normal-state one, so a maximized session
+  // reopens maximized instead of as a screen-sized ordinary window
+  if (restored?.maximized) win.maximize()
   shellWindow = win
   // The app-wide navigation guard denies window.open on every webContents; the
   // home renderer (settings modal 获取密钥/申请 Key, footer links) uses plain
@@ -4387,6 +4411,8 @@ function createShellWindow(): void {
   // dragging the window by the tab strip's blank (draggable) area produces no
   // DOM event anywhere — will-move is the only signal to dismiss popovers
   win.on('will-move', () => broadcastChromePressed())
+  // remember the window's position and size for the next launch (issue #2049)
+  installShellWindowBoundsPersistence(APP_SETTINGS_PATH(), win)
   // A detached editor window claims the process-global menu/active-editor targets
   // while focused; take them back when the shell window regains focus. Keyboard
   // focus must land back on the active tab's view too — regaining window focus

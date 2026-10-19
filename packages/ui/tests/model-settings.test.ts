@@ -174,6 +174,28 @@ describe('ModelSettingsPage local tools (本地与自建 一键安装)', () => {
     expect(document.body.querySelector('[data-local-tool]')).toBeNull()
   })
 
+  // 旧 preload 缺 aiLocalToolStatus 时，壳里的包装桥会在调用瞬间同步抛
+  // TypeError——异常冲出 effect 曾让 React 卸载整棵树（点击本地厂商整窗白屏）
+  it('survives a bridge whose localToolStatus throws synchronously (stale preload)', async () => {
+    const throwing = (() => {
+      throw new TypeError('window.chaOffice.aiLocalToolStatus is not a function')
+    }) as unknown as ModelSettingsBridge['localToolStatus']
+    await renderLocal({ status: throwing })
+    // 页面仍在：表单没被整树卸载，探测按失败收场（状态卡无内容）
+    expect(document.body.querySelector('[data-model-pane]')).toBeTruthy()
+    expect(document.body.querySelector('[data-local-tool-missing]')).toBeNull()
+    expect(document.body.querySelector('[data-local-tool-install]')).toBeNull()
+  })
+
+  it('survives a bridge whose localToolStatus returns a non-promise', async () => {
+    await renderLocal({
+      status: (() => undefined) as unknown as ModelSettingsBridge['localToolStatus'],
+    })
+    expect(document.body.querySelector('[data-model-pane]')).toBeTruthy()
+    expect(document.body.querySelector('[data-local-tool-missing]')).toBeNull()
+    expect(document.body.querySelector('[data-local-tool-install]')).toBeNull()
+  })
+
   it('missing binary → one-click install card', async () => {
     await renderLocal({ status: baseStatus, install: vi.fn(async () => ({ ok: true })) })
     expect(document.body.querySelector('[data-local-tool="ollama"]')).toBeTruthy()

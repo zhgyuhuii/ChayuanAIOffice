@@ -31,6 +31,7 @@
     "@chaoffice/pipelines": "*",
     "@chaoffice/pptx-engine": "*",
     "@chaoffice/pptx-render": "*",
+    "@chaoffice/project-store": "*",
     "@chaoffice/sheets": "*",
     "@chaoffice/slides": "*",
     "@chaoffice/storage-adapter": "*",

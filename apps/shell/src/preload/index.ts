@@ -30,6 +30,10 @@ import type {
 
 import { PROJECT_CHANNELS } from '../shared/home-api'
 import type { ProjectHomeApi, ProjectSummaryEntry, TimelineEntryItem } from '../shared/home-api'
+// upstream #2068: the kb-ask panel keeps its thread through the project:* chat
+// channels; the type comes from the local (rebranded) project-store package —
+// narrowed to the four chat methods, the same surface the editor preloads use.
+import type { ProjectApi } from '@chaoffice/project-store'
 import { HOME_CHANNELS } from '../shared/home-api'
 import { INTEGRATIONS_CHANNELS } from '../shared/integrations-api'
 import type {
@@ -784,6 +788,23 @@ const projectApi: ProjectHomeApi = {
 }
 
 contextBridge.exposeInMainWorld('chaOfficeProject', projectApi)
+
+// The same project:* channels the editor preloads use; the home screen's
+// knowledge-base ask panel keeps its thread through them. The handlers are
+// registered once by the docs main process in shell mode (registerProjectIpc).
+// Named projectChatApi here: the project-management bridge above already owns
+// the `projectApi` const (exposed as chaOfficeProject).
+const projectChatApi: Pick<
+  ProjectApi,
+  'resolveChat' | 'appendChat' | 'loadChat' | 'rebindChat'
+> = {
+  resolveChat: (args) => ipcRenderer.invoke('project:resolveChat', args),
+  appendChat: (args) => ipcRenderer.invoke('project:appendChat', args),
+  loadChat: (args) => ipcRenderer.invoke('project:loadChat', args),
+  rebindChat: (args) => ipcRenderer.invoke('project:rebindChat', args),
+}
+
+contextBridge.exposeInMainWorld('projectApi', projectChatApi)
 
 const integrationsApi: IntegrationsApi = {
   async status() {

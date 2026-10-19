@@ -750,6 +750,18 @@ export interface SetAdvanceTimesOp {
   times: Array<{ slideIndex: number; ms: number | null }>
 }
 
+/** What the show needs to play a slide by itself: its saved advance time and its narration. */
+export interface ShowTiming {
+  advanceMs: number | null
+  /** Element ids of the slide's recorded narration pictures, hidden during the show */
+  narrationIds: string[]
+}
+
+/** Slide Show > Record: each recorded slide's narration (16-bit WAV) and time on screen. */
+export interface SaveRecordingOp {
+  slides: Array<{ slideIndex: number; wavBase64: string; durationMs: number; advanceMs: number }>
+}
+
 // ── Section management ────────────────────────────────────────────────
 
 /** Add a section before slide atSlideIndex (the section covers this page to the end of its containing section). */
@@ -1772,6 +1784,7 @@ export interface SlidesApi {
   setTransition: (op: SetTransitionOp) => Promise<boolean>
   /** The current page's transition effect (echoed on page switch) */
   getTransition: (slideIndex: number) => Promise<TransitionKind>
+  getShowTiming: (slideIndex: number) => Promise<ShowTiming>
   /** Batch-write each page's auto-advance time (rehearsal timing save; the saved pptx auto-advances in PowerPoint shows); returns success */
   setAdvanceTimes: (op: SetAdvanceTimesOp) => Promise<boolean>
   /** The current page's auto-advance time (<p:transition advTm> ms; null = advance on click only) */
@@ -1784,6 +1797,12 @@ export interface SlidesApi {
   getShowSettings: () => Promise<{ loop: boolean }>
   /** Write 放映设置 to presProps (document-level; marks the session dirty) */
   setShowSettings: (settings: { loop: boolean }) => Promise<boolean>
+  /** Slide Show > Record: replaces the recorded slides' narration and advance time in one undo step; the whole deck back. */
+  saveRecording: (op: SaveRecordingOp) => Promise<RenderSlide[] | null>
+  /** Slide Show > Record: removes narration media from the given pages; whole deck back. */
+  clearNarration: (slideIndexes: number[]) => Promise<RenderSlide[] | null>
+  /** Asks the OS for the microphone where it gates it (macOS); false when refused. */
+  microphoneAccess: () => Promise<boolean>
   /** The current page's animation list (read by the Animations tab / during shows) */
   getAnimations: (slideIndex: number) => Promise<AnimationItem[]>
   /** Morph pairing keys of the current page's elements (matched against same-name/same-id elements on the previous page during morph tweening) */

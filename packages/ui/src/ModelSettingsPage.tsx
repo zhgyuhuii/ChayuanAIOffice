@@ -346,25 +346,31 @@ export function ModelSettingsPage({
 
   // 本地工具探测：切到本地厂商（或点「重新检测」）时查安装/运行状态
   useEffect(() => {
-    if (!localToolVendor || typeof bridge.localToolStatus !== 'function') {
+    const probe = bridge.localToolStatus
+    if (!localToolVendor || typeof probe !== 'function') {
       setTool(null)
       setToolProbing(false)
       return
     }
     let alive = true
     setToolProbing(true)
-    bridge.localToolStatus(localToolVendor).then(
-      (s) => {
-        if (!alive) return
-        setTool(s)
-        setToolProbing(false)
-      },
-      () => {
-        if (!alive) return
-        setTool(null)
-        setToolProbing(false)
-      },
-    )
+    // 调用永不冲出 effect：包装桥在旧 preload 上可能同步抛错（底层方法缺失）
+    // 或返回非 Promise，异常一冒泡 React 就卸载整棵树（整窗白屏）。失败一律
+    // 按「探测不到」处理，表单仍可用。
+    void Promise.resolve()
+      .then(() => probe(localToolVendor))
+      .then(
+        (s) => {
+          if (!alive) return
+          setTool(s)
+          setToolProbing(false)
+        },
+        () => {
+          if (!alive) return
+          setTool(null)
+          setToolProbing(false)
+        },
+      )
     return () => {
       alive = false
     }

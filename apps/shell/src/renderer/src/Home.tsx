@@ -47,12 +47,16 @@ import { SettingsModal, coerceSectionId, type SectionId } from './SettingsModal'
 import { FeedbackModal, FeedbackQrCard } from './FeedbackModal'
 import { onFilesChanged } from './file-events'
 
+import type { ProjectApi } from '@chaoffice/project-store'
+
 declare global {
   interface Window {
     chaOffice: HomeApi
     chaOfficeProject?: ProjectHomeApi
     chaOfficeIntegrations?: IntegrationsApi
     chaOfficeMcp?: McpClientApi
+    /** upstream #2068: kb-ask panel thread persistence (project:* channels) */
+    projectApi?: ProjectApi
   }
 }
 
