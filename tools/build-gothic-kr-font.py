@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build ChatOffice Gothic KR from upstream NanumGothic, with metrics untouched.
+"""Build ChaOffice Gothic KR from upstream NanumGothic, with metrics untouched.
 
 Documents declaring NanumGothic hit Word's macOS *downloadable* source face
 (a FontServices subset Chromium cannot see), so Word lays out with its real
@@ -25,10 +25,10 @@ from fontTools.subset import Options, Subsetter
 from fontTools.ttLib import TTFont
 from fontTools.ttLib.woff2 import WOFF2FlavorData
 
-DEFAULT_OUT = "apps/docs/src/renderer/fonts/ChatOfficeGothicKR-Regular-subset.woff2"
-FAMILY = "ChatOffice Gothic KR"
-PS_NAME = "ChatOfficeGothicKR-Regular"
-PS_PREFIX = "ChatOfficeGothicKR"
+DEFAULT_OUT = "apps/docs/src/renderer/fonts/ChaOfficeGothicKR-Regular-subset.woff2"
+FAMILY = "ChaOffice Gothic KR"
+PS_NAME = "ChaOfficeGothicKR-Regular"
+PS_PREFIX = "ChaOfficeGothicKR"
 PRIMARY_NAME_IDS = {1, 2, 3, 4, 6, 16, 17, 18, 20, 21, 22, 25}
 
 

@@ -645,8 +645,9 @@ describe('docs skill: global default image source directive (image-source-plan #
 })
 
 describe('partial selection: context markers and replace_selection', () => {
-  // block 1 'ChaOffice is an AI office suite.' starts at pos 20, content at 21; 'AI office' = offsets 15..24
-  const SEL = { from: 38, to: 47 }
+  // block 1 'ChaOffice is an AI office suite.' starts at pos 20, content at 21; 'AI office' = offsets 16..25
+  // (adapted: brand 'ChaOffice' is one char longer than upstream's 'GenSpark' — SEL follows the local fixture)
+  const SEL = { from: 37, to: 46 }
 
   it('the context marks the selected span with <sel> and repeats it as "Selected text"', () => {
     const editor = createEditor(fixture())
