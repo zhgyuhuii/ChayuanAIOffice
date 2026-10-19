@@ -79,6 +79,7 @@ function stubServer(create: () => Response) {
       const key = (init?.headers as Record<string, string>)['X-Api-Key']!
       toolKeys.push(key)
       if (key === 'gsk-expired') return response('{"detail":"invalid api key"}', 401)
+      if (url.endsWith('/slide_generate')) return ndjsonOk({ pptx_url: 'https://x/api/files/1' })
       return ndjsonOk({ download_url: 'https://93.184.216.34/deck.pptx' })
     }
     if (url.includes('/office_addin_auth/session')) {
@@ -90,6 +91,7 @@ function stubServer(create: () => Response) {
     }
     if (url.includes('/office_addin_auth/token')) return response({ status: 'pending' })
     if (url.includes('/api_tokens/revoke')) return response({ status: 0 })
+    if (url.endsWith('/deck.pptx')) return response('PK')
     throw new Error(`unexpected fetch: ${url}`)
   })
   vi.stubGlobal('fetch', fetchMock)
