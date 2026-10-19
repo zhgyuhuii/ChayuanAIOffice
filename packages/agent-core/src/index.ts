@@ -15,8 +15,9 @@ export type {
   ToolDisplay,
   ToolExecution,
 } from './types'
-export { composeSkills } from './skill'
+export { composeSkills, DEGRADED_PROTOCOL_SUFFIX, degradedToolLines } from './skill'
 export type { AgentSkill, DegradedFallback, ExecutedToolCall } from './skill'
+export { isUpstreamHardError } from './loop'
 export { createMediaSkill } from './media-skill'
 export type { MediaCapabilityFlags, MediaSkillBridge } from './media-skill'
 export { createKnowledgeBaseSkill, formatKbSize } from './knowledge-base-skill'

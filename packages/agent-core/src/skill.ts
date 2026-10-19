@@ -20,6 +20,32 @@ export interface DegradedFallback {
 }
 
 /**
+ * The JSON-text tool protocol every degradedFallback systemSuffix must teach.
+ * Single source so the loop's parseDegradedToolCalls and the prompt the model
+ * reads cannot drift apart (skills append their tool subset below it).
+ */
+export const DEGRADED_PROTOCOL_SUFFIX = `## Compatibility mode (no native tool calling)
+
+Your API does not support function calling, so tools work over text. To act, output ONLY a JSON object (or a JSON array of several) with no other prose:
+{"tool": "<tool name>", "input": { ...arguments... }}
+The system executes it and sends back a "[Tool result: ...]" message. Then either output the next tool call, or answer the user in plain text (a plain-text reply with no JSON ends the run). Never invent tool names.`
+
+/** `- name: one-line description` list for a degradedFallback suffix; defs missing from the list are skipped. */
+export function degradedToolLines(
+  names: readonly string[],
+  defs: Array<{ name: string; description: string }>,
+): string[] {
+  const lines: string[] = []
+  for (const name of names) {
+    const def = defs.find((t) => t.name === name)
+    if (!def) continue
+    const desc = def.description.replace(/\s+/g, ' ').trim()
+    lines.push(`- ${name}: ${desc.length > 220 ? `${desc.slice(0, 220)}…` : desc}`)
+  }
+  return lines
+}
+
+/**
  * A skill packages one capability domain for the agent loop: its system
  * prompt section, its tools, per-turn context, and the tool executor.
  * AI Docs ships a docx skill; Excel / PPT skills plug in the same way.

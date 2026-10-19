@@ -1,6 +1,7 @@
 import { placeholderInstruction } from './redact'
 import { redactLabelsOf } from './redact-view'
 import type { Editor } from '@tiptap/core'
+import { DEGRADED_PROTOCOL_SUFFIX, degradedToolLines } from '@chaoffice/agent-core'
 import type { AgentSkill } from '@chaoffice/agent-core'
 import type { AiImageSource } from '../../shared/ipc'
 import {
@@ -44,6 +45,22 @@ const IMAGE_SOURCE_DIRECTIVE: Record<AiImageSource, string> = {
 
 const MEDIA_ANALYSIS_OFF_NOTE =
   '\n\nNote: analyze_media is currently unavailable (no media provider: signed out of Genspark or cloud tools off, and no media API key in Settings). You cannot see what a picture inside the document shows — tell the user that instead of guessing at its content.'
+
+/**
+ * The tool subset advertised in degraded (no-FC) mode: the reader plus the main
+ * writers — enough to read context and land expanded/rewritten text. Ops-level
+ * batch editing (apply_ops) and media/chart tools are withheld: a model
+ * without native tool calling fumbles them, and small lists keep the suffix
+ * inside a weak model's context budget.
+ */
+const DEGRADED_DOC_TOOL_NAMES = [
+  'get_document_context',
+  'read_blocks',
+  'insert_content',
+  'write_document',
+  'replace_blocks',
+  'replace_selection',
+]
 
 /**
  * The docx capability as an AgentSkill: document skeleton context, the five
@@ -128,5 +145,16 @@ export function createDocsSkill(
         getExtras?.(),
         getNotes?.(),
       ),
+    degradedFallback: () => {
+      const hidden = mediaToolsOff()
+      const lines = degradedToolLines(
+        DEGRADED_DOC_TOOL_NAMES,
+        AGENT_TOOLS.filter((t) => !hidden.has(t.name)),
+      )
+      if (lines.length === 0) return null
+      return {
+        systemSuffix: `${DEGRADED_PROTOCOL_SUFFIX}\n\nAvailable tools:\n${lines.join('\n')}`,
+      }
+    },
   }
 }

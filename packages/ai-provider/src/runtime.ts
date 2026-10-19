@@ -4,6 +4,7 @@ import { generateImageWithModel, type ImageGenRequest } from './imagegen'
 import { generateVideoWithModel } from './videojob'
 import { isAiNetworkError } from './network-error'
 import { isAiOverloadedError } from './overload-error'
+import { describeAiServerCrash, isUpstreamHardError } from './server-crash-error'
 import {
   runMediaJob,
   resolveVideoAdapterVendor,
@@ -402,10 +403,11 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
         send({ requestId, type: 'done' })
         return
       }
+      const rawError = err instanceof Error ? err.message : String(err)
       send({
         requestId,
         type: 'error',
-        error: err instanceof Error ? err.message : String(err),
+        error: isUpstreamHardError(rawError) ? describeAiServerCrash(rawError) : rawError,
         ...(err instanceof AiTimeoutError
           ? { errorCode: 'timeout' as const }
           : err instanceof AiCreditsError

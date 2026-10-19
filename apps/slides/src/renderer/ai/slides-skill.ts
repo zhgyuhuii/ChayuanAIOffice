@@ -1,3 +1,4 @@
+import { DEGRADED_PROTOCOL_SUFFIX, degradedToolLines } from '@chaoffice/agent-core'
 import type { AgentSkill, ToolDisplay } from '@chaoffice/agent-core'
 import type { AiImageSource } from '@chaoffice/ai-provider'
 import type {
@@ -459,7 +460,6 @@ const TOOLS: AgentToolDef[] = [
       properties: {
         slideIndex: { type: 'integer', description: 'Page number (0-based)' },
       },
-      
     },
   },
   {
@@ -1234,7 +1234,6 @@ const TOOLS: AgentToolDef[] = [
       properties: {
         slideIndex: { type: 'integer', description: 'Page number (0-based)' },
       },
-      
     },
   },
   {
@@ -1453,9 +1452,8 @@ function preview(text: string, max = 50): string {
 function buildDeckOutline(slides: RenderSlide[], current: number, selectedIds: string[]): string {
   const canvas = slides[0] ? `Canvas ${slides[0].widthPx}×${slides[0].heightPx}px.` : ''
   const lines: string[] = [
-    `The presentation has ${slides.length} pages; page ${current + 1} is currently shown. ${canvas}`
-        +
-        ' Tools taking slideIndex use the currently shown page when slideIndex is omitted.',
+    `The presentation has ${slides.length} pages; page ${current + 1} is currently shown. ${canvas}` +
+      ' Tools taking slideIndex use the currently shown page when slideIndex is omitted.',
     `(Page order is the current actual order and may differ from generation time or earlier conversation; the user's "page N" refers to this outline)`,
   ]
   if (selectedIds.length > 0) {
@@ -1554,12 +1552,6 @@ const DEGRADED_TOOL_NAMES = [
   'read_url',
 ]
 
-const DEGRADED_PROTOCOL_SUFFIX = `## Compatibility mode (no native tool calling)
-
-Your API does not support function calling, so tools work over text. To act, output ONLY a JSON object (or a JSON array of several) with no other prose:
-{"tool": "<tool name>", "input": { ...arguments... }}
-The system executes it and sends back a "[Tool result: ...]" message. Then either output the next tool call, or answer the user in plain text (a plain-text reply with no JSON ends the run). Never invent tool names.`
-
 export function createSlidesSkill(access: DeckAccess): AgentSkill {
   // The HTML pipeline was already used in this conversation → later calls without an explicit mode default to append.
   /**
@@ -1616,14 +1608,10 @@ export function createSlidesSkill(access: DeckAccess): AgentSkill {
       // advertised, each with a one-line trimmed description — the full
       // 39-tool definitions would blow a no-FC model's context.
       const live = new Set(liveTools().map((t) => t.name))
-      const lines: string[] = []
-      for (const name of DEGRADED_TOOL_NAMES) {
-        if (!live.has(name)) continue
-        const def = TOOLS.find((t) => t.name === name)
-        if (!def) continue
-        const desc = def.description.replace(/\s+/g, ' ').trim()
-        lines.push(`- ${name}: ${desc.length > 220 ? `${desc.slice(0, 220)}…` : desc}`)
-      }
+      const lines = degradedToolLines(
+        DEGRADED_TOOL_NAMES,
+        TOOLS.filter((t) => live.has(t.name)),
+      )
       if (lines.length === 0) return null
       return {
         systemSuffix: `${DEGRADED_PROTOCOL_SUFFIX}\n\nAvailable tools:\n${lines.join('\n')}`,

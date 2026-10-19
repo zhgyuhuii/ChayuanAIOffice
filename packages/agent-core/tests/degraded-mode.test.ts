@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   AgentLoop,
+  isUpstreamHardError,
   parseDegradedToolCalls,
   type AgentSkill,
   type AgentStreamCallbacks,
@@ -267,5 +268,114 @@ describe('degraded mode', () => {
     skill.degradedFallback = undefined
     const loop = new AgentLoop({ transport, skill })
     expect(loop.degrade()).toBe(false)
+  })
+})
+
+describe('isUpstreamHardError', () => {
+  it('matches worker crash wrappers, 5xx, and Python exceptions; not soft failures', () => {
+    expect(isUpstreamHardError("[address=0.0.0.0:41471, pid=1411] 'id'")).toBe(true)
+    expect(isUpstreamHardError('HTTP 500: Internal Server Error')).toBe(true)
+    expect(isUpstreamHardError("HTTP 502: [address=0.0.0:41471] KeyError('id')")).toBe(true)
+    expect(isUpstreamHardError('The model returned no content (empty stream)')).toBe(false)
+    expect(isUpstreamHardError("I'll get right on that")).toBe(false)
+  })
+})
+
+describe('hard-error degraded retry', () => {
+  it('a native-tools run killed by a server crash reruns once in degraded mode and completes', async () => {
+    const transport = scriptedTransport([
+      // run 1 turn 1 (native tools on the wire): the model server's worker crashes
+      (cb) => cb.onError("[address=0.0.0.0:41471, pid=1411] 'id'"),
+      // degraded rerun turn 1: JSON tool call in plain text
+      (cb) => {
+        cb.onDelta('{"tool":"do_thing","input":{"n":1}}')
+        cb.onDone()
+      },
+      // degraded turn 2: final answer
+      (cb) => {
+        cb.onDelta('All done!')
+        cb.onDone()
+      },
+    ])
+    const executions: string[] = []
+    const errors: string[] = []
+    let lastResult: { text?: string; degraded?: boolean } | undefined
+    const loop = new AgentLoop({
+      transport,
+      skill: makeSkill((call) => {
+        executions.push(call.name)
+        return { output: 'done-ok', summary: 'done', mutated: true }
+      }),
+      events: {
+        onDone: (res) => (lastResult = res),
+        onError: (e) => errors.push(e),
+      },
+    })
+    loop.run('make a deck')
+    await flushAll()
+    // the crash never reached the user, the rerun went out without wire tools
+    expect(errors).toEqual([])
+    expect(transport.requests[0]!.toolCount).toBe(1)
+    expect(transport.requests[1]!.toolCount).toBe(0)
+    expect(transport.requests[1]!.system).toContain('DEGRADED MODE')
+    expect(executions).toEqual(['do_thing'])
+    expect(lastResult?.degraded).toBe(true)
+    expect(lastResult?.text).toBe('All done!')
+    expect(loop.isDegraded).toBe(true)
+  })
+
+  it('a second hard error from the degraded run surfaces (retry happens once)', async () => {
+    const crash = "[address=0.0.0.0:41471, pid=1411] 'id'"
+    const transport = scriptedTransport([
+      (cb) => cb.onError(crash), // native run dies → degraded rerun
+      (cb) => cb.onError(crash), // degraded run dies too → surface
+    ])
+    const errors: string[] = []
+    const loop = new AgentLoop({
+      transport,
+      skill: makeSkill(),
+      events: { onError: (e) => errors.push(e) },
+    })
+    loop.run('go')
+    await flushAll()
+    expect(transport.requests).toHaveLength(2)
+    expect(errors).toHaveLength(1)
+    expect(errors[0]).toContain('address=0.0.0.0:41471')
+    expect(loop.isDegraded).toBe(true)
+  })
+
+  it('no degradedFallback → a hard error surfaces without a retry', async () => {
+    const transport = scriptedTransport([(cb) => cb.onError('HTTP 500: boom')])
+    const skill = makeSkill()
+    skill.degradedFallback = undefined
+    const errors: string[] = []
+    const loop = new AgentLoop({
+      transport,
+      skill,
+      events: { onError: (e) => errors.push(e) },
+    })
+    loop.run('go')
+    await flushAll()
+    expect(transport.requests).toHaveLength(1)
+    expect(errors).toEqual(['HTTP 500: boom'])
+  })
+
+  it('a hard error after text already streamed surfaces without a rerun (no double render)', async () => {
+    const transport = scriptedTransport([
+      (cb) => {
+        cb.onDelta('partial answer ')
+        cb.onError('HTTP 500: the worker died mid-stream')
+      },
+    ])
+    const errors: string[] = []
+    const loop = new AgentLoop({
+      transport,
+      skill: makeSkill(),
+      events: { onError: (e) => errors.push(e) },
+    })
+    loop.run('go')
+    await flushAll()
+    expect(transport.requests).toHaveLength(1)
+    expect(errors).toHaveLength(1)
   })
 })

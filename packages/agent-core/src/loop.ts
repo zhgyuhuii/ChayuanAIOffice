@@ -351,6 +351,19 @@ const EMPTY_STREAM_RETRY_DELAYS_MS = [1_000, 3_000]
 const TOOL_ARGS_DROP_MARK = 'while sending tool arguments'
 const TOOL_ARGS_DROP_RETRIES = 1
 
+/**
+ * A model server dying mid-turn on the request itself: HTTP 5xx from the
+ * gateway, a worker crash wrapped by the serving framework (Xinference's
+ * `[address=host:port, pid=N] <exception>`), a bare Python KeyError/TypeError
+ * leaking into the message, or an "internal error" body. Unlike network
+ * failures (translated + classified before they get here), these are
+ * request-shaped: a wire-tools request can itself provoke them on engines
+ * without tool-call support, which is what the degraded retry below is for.
+ */
+export function isUpstreamHardError(error: string): boolean {
+  return /\[address=[^\]]+\]|HTTP 5\d\d:|\bKeyError\b|internal error/i.test(error)
+}
+
 const TURN_LIMIT_NOTE =
   '[System] The tool-call turn limit for this request has been reached; no more tools may be called this turn. ' +
   'Answer directly from the information already gathered; if the task is unfinished, briefly state what is done and what remains.'
@@ -581,6 +594,8 @@ export class AgentLoop<TSnapshot = unknown> {
   private degradedProbe = false
   /** the probe ran once for this loop instance; a failed probe is never retried (model just talks) */
   private probeUsed = false
+  /** the hard-error degraded retry ran once for this loop instance; a second hard error surfaces */
+  private fcDegradeRetried = false
   /** consecutive zero-tool turns within the current run */
   private silentTurns = 0
 
@@ -605,6 +620,51 @@ export class AgentLoop<TSnapshot = unknown> {
   degrade(): boolean {
     if (this.options.skill.degradedFallback?.() == null) return false
     this.degraded = true
+    return true
+  }
+
+  /**
+   * Hard-error degraded retry, once per loop instance: a native-tools run that
+   * died with a server-side hard error (isUpstreamHardError) gets the same
+   * instruction re-run in the degraded JSON-text protocol. A serving stack
+   * that crashes on wire tool calls (tool parser missing, engine too old) then
+   * still completes the task instead of surfacing a bare `[address=…] 'id'`.
+   * Guards mirror the empty-stream retry: nothing may have streamed yet (the
+   * rerun replays the user message from clean history), and a loop whose
+   * silent-turn probe already ruled out degradation is never retried. A hard
+   * error from the degraded run itself surfaces — the server is really down.
+   */
+  private retryDegradeOnHardError(error: string): boolean {
+    if (
+      this.cancelled ||
+      this.degraded ||
+      this.degradedProbe ||
+      this.probeUsed ||
+      this.fcDegradeRetried ||
+      this.turnText.length > 0 ||
+      this.toolCalls.length > 0 ||
+      !isUpstreamHardError(error)
+    ) {
+      return false
+    }
+    if (!this.degrade()) return false
+    this.fcDegradeRetried = true
+    const userMsg = this.runUserMsg
+    this.runUserMsg = null
+    this.rollbackFailedRun()
+    if (!userMsg) return false
+    this.turns = 0
+    this.finalizing = false
+    this.mutationSeen = false
+    this.inputParseFails = 0
+    this.lastTurnSig = ''
+    this.identicalTurns = 0
+    this.allErrorTurns = 0
+    this.executedCalls = []
+    this.verifyRetryUsed = false
+    this.runUsage = null
+    this.abortController = new AbortController()
+    void this.beginRun(userMsg)
     return true
   }
 
@@ -1136,6 +1196,9 @@ export class AgentLoop<TSnapshot = unknown> {
               error.includes(TOOL_ARGS_DROP_MARK) &&
               this.toolCalls.length === 0
             const delay = retryEmpty ? emptyDelay : EMPTY_STREAM_RETRY_DELAYS_MS[0]
+            // Hard server errors get one degraded rerun before they surface
+            // (see retryDegradeOnHardError); the empty-stream/drop retries
+            // above stay same-turn because their failures are transient.
             if ((retryEmpty || retryDrop) && !this.cancelled) {
               this.retryTimer = setTimeout(() => {
                 this.retryTimer = null
@@ -1144,6 +1207,10 @@ export class AgentLoop<TSnapshot = unknown> {
               }, delay)
               return
             }
+            // A hard server-side error gets one degraded rerun before it
+            // surfaces (see retryDegradeOnHardError); the retries above stay
+            // same-turn because their failures are transient.
+            if (!this.cancelled && this.retryDegradeOnHardError(error)) return
             this.running = false
             this.rollbackFailedRun()
             this.options.events?.onError?.(error)
