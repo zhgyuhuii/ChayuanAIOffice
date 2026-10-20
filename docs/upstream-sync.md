@@ -753,6 +753,10 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 
 **本轮纪律验证**：①R29 坑③「上游自身 latent 编译破损，引擎侧 pick 后 tsc 必跑」得到正面印证——上游 #2102 正是在修自己 #2091 的 latent 破损，而本地 R29 已靠 tsc 兜住并先行补齐，本轮因此只需空对账；②根 `npm run typecheck` 为 `&&` 链，遇基线挂账工作区（cli→ui 4 错）即停，**其后 12 工作区不会被检查**——门禁必须对链停点之后的工作区逐个补跑（本轮补跑 12/12），否则「全链 exit 0」之外的任何结论都是假象。
 
+**R30 随轮发版（2026-10-21，六段 1.0.8.0.11.919）**：①版本铁律 Z+1：1.0.7→1.0.8（三处 package.json+lock 顶层/packages['']/apps/shell 三项，提交 a35d1d67d）——1.0.7 从未发布（GitHub Releases 与 aidooo 更新源最新均为 1.0.6），其本地陈旧产物已清理；②xlsx-sidecar 4 平台新鲜重编（R29 动 Rust 后旧交叉产物全部作废：mingw win-x64、zig cc linux x64/aarch64 glibc 2.28、native:build:universal）；③九件安装包（dmg/zip/exe/2×deb/2×rpm/2×AppImage）架构逐件直验（deb/rpm 解包 file 实证 ELF aarch64/x86-64，exe 为 NSIS i386 引导头属设计）；④git tag `1.0.8` 推 origin+pubmirror；⑤GitHub Release `zhgyuhuii/ChayuanAIOffice` 1.0.8 九资产全上传（token 来自服务器 /root/.github_token，public_repo）；⑥aidooo.com 发布（installer-release 技能全流程：rsync 4 文件+字节数核对 → 容器内 finalizeEntry×5+published=true+publishManifest → 六项验收全过）；⑦官网历史版本清理（用户明令）：1.0.2/1.0.5/1.0.6 文件 15 个删除 + DB 条目删除（备份 office-entries-backup-20261021.json 在服务器脚本目录），manifest 五平台仅剩 1.0.8，老客户端升级链 1.0.2/1.0.5/1.0.6→1.0.8 实测全通；⑧发版真机测试 PASS（docs/release-test-report-1.0.8.md：typecheck 34 工作区零新增、全量 vitest 32 绿、装机六段版本、单实例锁、Xinference 真实流式对话、docx 落盘 roundtrip、xlsx 公式求值、pptx 3×3 表格+3D 模型入口、语言切换零缺键）。
+
+**本轮新坑（发版施工）**：①`npx asar extract-file <asar> package.json <目标>` 的第三参数被忽略、**解到 cwd 同名文件**——在 apps/shell 里跑会把源码 package.json 覆盖成 asar 精简版（scripts/devDependencies 全没），症状是 `npm run test -w shell` 报 Missing script——asar 提取必须先 cd 到 /tmp；②zsh 任一 glob 无匹配会**整条命令中止**（`rm -rf a b *.rpm` 因 *.rpm 无匹配导致删除全没执行），批量 rm 用 `setopt null_glob` 或逐个 -f；③macOS openrsync 不认 `--info=progress2`（打印 usage 后退出 0 假成功），发版脚本用裸 `-a --partial`；④后台构建脚本里相对路径必须锚定绝对 ROOT（本轮首版链 B 在仓库根执行，sidecar cp 路径少 `apps/sheets/` 前缀全部落空，靠 cp_stage 架构断言守卫拦下，坏包 deb 内 Mach-O sidecar 已证伪并删除重打）；⑤发行平台矩阵：GitHub Releases=九件全家桶，aidooo 更新源=四平台五条目（windows-arm64 条目复用 windows-amd64 同一 exe，不重复上传）。
+
 
 
 ## 第二十九轮（2026-10-20，上游 2cd8d48e3..04f145717 9 提交全吸收，施工于 sync/29-upstream；六段 1.0.7.0.11.919——终点无新 tag，取最新已含 tag v0.11.919）
