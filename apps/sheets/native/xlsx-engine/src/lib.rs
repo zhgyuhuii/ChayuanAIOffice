@@ -288,6 +288,7 @@ impl WorkbookSessions {
         )?;
         let custom_table_styles = read_custom_table_styles(&mut archive, &dxf_styles);
         let rich_value_images = richdata::read_rich_value_images(&mut archive);
+        let wps_cell_images = read_wps_cell_images(&mut archive);
         let mut cell_image_count = 0usize;
         let mut note_image_count = 0usize;
         let mut sheets = Vec::with_capacity(declarations.len());
@@ -356,6 +357,7 @@ impl WorkbookSessions {
                 &mut archive,
                 &worksheet_path,
                 &rich_value_images,
+                &wps_cell_images,
                 &mut cell_image_count,
             )?;
             let pivot_infos = visuals::read_pivot_tables(&mut archive, &worksheet_path)?;
@@ -479,6 +481,9 @@ impl WorkbookSessions {
 
         // Last boundary before the open touches the filesystem; past here the
         // only way to stop it is create_cache_directory's own poll.
+        if cancelled.load(Ordering::Acquire) {
+            return Err(SidecarError::cancelled());
+        }
         let session_id = Uuid::new_v4().to_string();
         let mut cache_directory = create_cache_directory(&session_id, cancelled)?;
         let name = canonical_path

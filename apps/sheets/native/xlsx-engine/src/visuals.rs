@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::Read;
-use std::path::{Component, Path, PathBuf};
+use std::path::Path;
 
 use base64::Engine;
 use roxmltree::{Document, Node};
@@ -1975,37 +1975,7 @@ pub(crate) fn read_relationships(
 }
 
 pub(crate) fn resolve_part_target(source_path: &str, target: &str) -> Result<String, SidecarError> {
-    let candidate = if target.starts_with('/') {
-        PathBuf::from(target.trim_start_matches('/'))
-    } else {
-        Path::new(source_path)
-            .parent()
-            .unwrap_or_else(|| Path::new(""))
-            .join(target)
-    };
-    let mut normalized = PathBuf::new();
-    for component in candidate.components() {
-        match component {
-            Component::Normal(value) => normalized.push(value),
-            Component::ParentDir => {
-                if !normalized.pop() {
-                    return Err(SidecarError::Workbook(
-                        "OOXML relationship escapes the package.".into(),
-                    ));
-                }
-            }
-            Component::CurDir => {}
-            _ => {
-                return Err(SidecarError::Workbook(
-                    "OOXML relationship has an unsafe path.".into(),
-                ));
-            }
-        }
-    }
-    normalized
-        .to_str()
-        .map(|value| value.replace('\\', "/"))
-        .ok_or_else(|| SidecarError::Workbook("OOXML part path is invalid UTF-8.".into()))
+    crate::archive::resolve_relationship_target(source_path, target)
 }
 
 fn read_xml(archive: &mut ZipArchive<File>, path: &str) -> Result<String, SidecarError> {
