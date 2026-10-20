@@ -756,6 +756,8 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 
 **挂账（新增/继承）**：①WPS DISPIMG 单元格图片（上游 #1082）Rust 侧历史漏收（本轮复核发现，台账此前无记录）——下轮按 A 区整件补收；②ui ai-model-picker 4 错误+4 红测试（R28 V2 桥挂账继承：上游 AiSettings 形状 vs 本地 AiProviderMeta 无 models/defaultModel）；③kb-ask AiModelPicker chip（R28 继承）；④server 测试 /tmp 夹具（spring-festival.png/happy-new-year.docx）环境性缺失，需夹具自生成改造。
 
+**本轮新坑（施工纪律）**：①「基线对比 checkout main」流程中 `git stash push`（无脏文件时静默失败）+回切后的 `git stash pop` 会**误弹并部分应用多年前的旧 stash**（本轮弹入 R19 时代并行会话的 AiModelPicker 删除 WIP，靠 git status 异变发现、`git restore .` 恢复、stash 本体因冲突未丢）——pop 前必须先 `git stash list` 核对 @{0} 是否为本轮 push 的那个，或干脆改用 `git worktree` 做基线对比；②zsh 不做单词拆分：`git diff A B -- $files`（多行变量）静默变成单路径查询得到空 diff（本轮对账脚本一度因此全绿假象），多行文件列表必须 `| xargs`；③上游自身也会有 latent 编译破损（#2091 的 media-int 用 crc32 不导入），不能默认「上游必绿」，引擎侧 pick 后 tsc 必跑；④两份同意图实现撞车时（#2090）先 `git log --follow` 考古本地实现的提交说明再裁决，能直接对上「P3 收割」类记录。
+
 
 ## 第二十八轮（2026-10-20，上游 dd3a9046..2cd8d48e 1 提交 238 文件 +5083/−1648，全吸收；自有版本 1.0.7，六段 1.0.7.0.11.0）
 
