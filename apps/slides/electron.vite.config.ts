@@ -27,6 +27,10 @@ const workspaceAlias = {
     here,
     '../../packages/pptx-engine/src/chart-workbook.ts',
   ),
+  '@chaoffice/pptx-engine/model3d': resolve(
+    here,
+    '../../packages/pptx-engine/src/model3d.ts',
+  ),
   '@chaoffice/pptx-engine': resolve(here, '../../packages/pptx-engine/src/index.ts'),
   '@chaoffice/pptx-ops/op-docs': resolve(here, '../../packages/pptx-ops/src/op-docs.ts'),
   '@chaoffice/pptx-ops/font-size': resolve(here, '../../packages/pptx-ops/src/font-size.ts'),
