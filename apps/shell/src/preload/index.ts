@@ -49,6 +49,7 @@ import type {
   McpClientApi,
 } from '../shared/mcp-client-api'
 import { MCP_CLIENT_CHANNELS } from '../shared/mcp-client-api'
+import type { FoundSkill } from '../shared/found-skill'
 import type { TabsApi, TabSummary } from '../shared/tabs-api'
 import { TABS_CHANNELS, WINDOW_CHANNELS } from '../shared/tabs-api'
 // LOCAL(purchase): offline purchase / license bridge (B-zone)
@@ -834,6 +835,15 @@ const integrationsApi: IntegrationsApi = {
   },
   async copyText(text) {
     await ipcRenderer.invoke(INTEGRATIONS_CHANNELS.copyText, text)
+  },
+  async listSkills() {
+    return (await ipcRenderer.invoke(INTEGRATIONS_CHANNELS.listSkills)) as FoundSkill[]
+  },
+  async skillBody(path) {
+    return (await ipcRenderer.invoke(INTEGRATIONS_CHANNELS.skillBody, path)) as string
+  },
+  async importSkill(path) {
+    return (await ipcRenderer.invoke(INTEGRATIONS_CHANNELS.importSkill, path)) as FoundSkill
   },
 }
 contextBridge.exposeInMainWorld('chaOfficeIntegrations', integrationsApi)

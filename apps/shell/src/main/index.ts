@@ -104,6 +104,7 @@ import { createDefaultAppService, execFileRunner } from './default-app'
 import { registerIntegrationsIpc } from './integrations-ipc'
 import { createExternalMcpManager } from './mcp/external-client'
 import { registerMcpClientIpc } from './mcp/external-client-ipc'
+import { makeUserCliRunner, registerUserSkillsIpc } from './user-cli'
 import {
   ANALYTICS_ENABLED_KEY,
   analyticsEnabledFrom,
@@ -8319,6 +8320,7 @@ installRelayEventForwarder()
 registerWindowControlsIpc()
 registerDroppedFilesIpc()
 registerRemoteFilesIpc()
+registerUserSkillsIpc({ cliRunner: makeUserCliRunner })
 
 // sheets' project:resolveChat goes through the handler registered by docs-main; the sessionId reverse lookup hooks in here
 setSessionPathResolver(resolveSheetsSessionPath)

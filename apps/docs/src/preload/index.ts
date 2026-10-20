@@ -242,6 +242,9 @@ const api: DesktopApi = {
   },
   openAiModelSettings: (section?: string) =>
     ipcRenderer.invoke('ai:open-model-settings', section),
+  skillsList: () => ipcRenderer.invoke('ai:skills-list'),
+  skillText: (name: string) => ipcRenderer.invoke('ai:skill-text', name),
+  runCli: (args: string[]) => ipcRenderer.invoke('ai:run-cli', args),
   aiStreamCancel: (requestId: string) => ipcRenderer.invoke('ai:stream-cancel', requestId),
   aiChaOfficeStatus: (withEmail?: boolean) =>
     ipcRenderer.invoke('ai:chaoffice-status', withEmail),
