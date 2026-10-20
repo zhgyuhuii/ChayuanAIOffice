@@ -102,6 +102,8 @@ export interface ChatMeta {
   updatedAt: string
   /** Approximate line count (estimated from file bytes, not exact) */
   approxCount: number
+  /** The first thing asked in the thread, read from the file's head */
+  firstQuestion?: string
 }
 
 // ────────────────────────────────────────────────────────────

@@ -242,6 +242,9 @@ const api: DesktopApi = {
   },
   openAiModelSettings: (section?: string) =>
     ipcRenderer.invoke('ai:open-model-settings', section),
+  skillsList: () => ipcRenderer.invoke('ai:skills-list'),
+  skillText: (name: string) => ipcRenderer.invoke('ai:skill-text', name),
+  runCli: (args: string[]) => ipcRenderer.invoke('ai:run-cli', args),
   aiStreamCancel: (requestId: string) => ipcRenderer.invoke('ai:stream-cancel', requestId),
   aiChaOfficeStatus: (withEmail?: boolean) =>
     ipcRenderer.invoke('ai:chaoffice-status', withEmail),
@@ -396,6 +399,8 @@ const projectApi: ProjectApi = {
   conversationDelete: (args) => ipcRenderer.invoke('project:conversationDelete', args),
   conversationsDeleteAll: (args) => ipcRenderer.invoke('project:conversationsDeleteAll', args),
   conversationsRebind: (args) => ipcRenderer.invoke('project:conversationsRebind', args),
+  listChats: (args) => ipcRenderer.invoke('project:listChats', args),
+  deleteChat: (args) => ipcRenderer.invoke('project:deleteChat', args),
 }
 
 

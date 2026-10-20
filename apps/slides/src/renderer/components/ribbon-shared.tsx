@@ -25,7 +25,8 @@ import type { ZoomMode } from '../zoom-actions'
 import type { SlideThemePreset } from '../themes'
 import type { ChartStyleInfo } from '@chaoffice/pptx-render'
 import { BUILTIN_FONT_FAMILIES } from '@chaoffice/ui'
-import type { ContextTabRequest } from './context-tabs'
+import type { Model3dRotation } from '@chaoffice/pptx-engine/model3d'
+import type { ContextElementType, ContextTabRequest } from './context-tabs'
 import { useI18n } from '../i18n/locale'
 import { layoutLabel } from '../layout-names'
 
@@ -569,7 +570,9 @@ export interface Props {
   onToggleScreenRecord: () => void
   // ── Contextual tabs: table design / chart design / picture format ────────────────
   /** Current selection category used to expose and activate contextual tabs */
-  contextElementType?: 'table' | 'chart' | 'picture' | 'shape' | 'textShape' | 'mixed' | null
+  contextElementType?: ContextElementType
+  /** Turn the selected 3D model to one of the 3D Model Views */
+  onModel3dView?: (rot: Model3dRotation) => void
   /** Double-click on the canvas asks for the object's tools tab */
   tabRequest?: ContextTabRequest | null
   /** Currently selected element sourceId (for contextual tab operation callbacks) */

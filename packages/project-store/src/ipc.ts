@@ -167,4 +167,8 @@ export interface ProjectApi {
   conversationsDeleteAll(args: ConversationsDeleteAllArgs): Promise<void>
   /** 未保存文档首次保存 / 文件重命名时迁移索引键(打开集合与标题跟随文件) */
   conversationsRebind(args: ConversationsRebindArgs): Promise<void>
+  /** Every conversation in a project, so a host can list what it kept. */
+  listChats(args: { projectId: string }): Promise<ChatMeta[]>
+  /** Removes one conversation's transcript. */
+  deleteChat(args: { projectId: string; chatId: string }): Promise<void>
 }

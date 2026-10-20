@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/chaoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第二十四轮完成（2026-10-16，终点 4dc4b7b3，分支 sync/24-upstream）**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第二十九轮完成（2026-10-20，终点 04f145717，分支 sync/29-upstream）**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -735,6 +735,29 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 五轮对比审核 | ①文件级覆盖对账：1279 文件分类，19 可疑项逐一排除，零真实遗漏；②特性符号级：14 提交新增符号 2 个 ❌（e2e 命名空间已修、ci help-langs 步骤已补）；③ours 丢失审计：117 冲突文件本地独有标识符存活核查，全部定性（等价承接/测试网验证）；④删除反向审计：8/9 ✅；⑤语义回归：全部门禁（见下）。审核追加修复：xlsx-gateway refine 补 lineColor、edit-schemas 补锚点级 rotation/flipH/flipV |
 | 挂账 | sheets i18n dialogs vi.ts 少 9 个 fork 本地键（HEAD 继承欠账，en 回退兜底，补译即销）；ai-host 若原生支持 settings-changed 推送可移除 sheets-main 的 fs.watch 包装广播 |
 | 门禁 | typecheck 全仓 0；vitest 全绿：docs 3152/sheets 3437/ai-provider 494/agent-core 176/xlsx-gateway 248/pptx-engine 1294/shell 931/slides 1475/md 1047/pdf 868/html 319/ui 250/docx-engine 1717/pdf2docx 822/cli 313/electron-utils 257…；cargo test 228 全绿；lint 0；品牌 grep 豁免外零残留；check:help-langs 21 语言全齐 |
+
+## 第二十九轮（2026-10-20，上游 2cd8d48e3..04f145717 9 提交全吸收，施工于 sync/29-upstream；六段 1.0.7.0.11.919——终点无新 tag，取最新已含 tag v0.11.919）
+
+> 上游 9 提交=3 修复+6 特性。前会话已 pick #2092/#2093/#2095（三件与其上游触及文件**逐字节一致**，本轮复核 0 差异）；本轮完成剩余 6 件（#2090/#2044/#2069/#2053/#2091/#1895），约 35 冲突文件逐 hunk 三档裁决。对账 9/9。
+
+| # | 域 | 落位与裁决 |
+|---|---|---|
+| #2090 | 图表内嵌工作簿 | **D 区撞车**：本地 65fb3a4ff 已独立实现同意图（P3 收割 buildChartWorkbookXlsxBase64+miniZipSync）。裁决=取上游共享模块结构（chart-workbook.ts storedZip 浏览器安全无 node:zlib、crc32.ts、colLetter/CHART_WORKBOOK_REL_TYPE，pptx 同步+docx 异步双引擎统一）；本地超集重放=smooth（平滑折线 c:smooth）进 NewChartOptions+serXml；echart-insert 导出面保全；三 vite/vitest 别名并集 @chaoffice 域。docx-engine chart.ts 本地 parseChartExDetail（chartEx 数据明细）保结构 |
+| #2044 | sheets 旧名 XML 表格 | 干净 pick（Rust：convert.rs −241 拆 spreadsheetml.rs+xlsx_package.rs 新件）；cargo 265 绿。⚠️ 复核发现**历史漏点挂账**：上游 #1082（WPS DISPIMG 单元格图片，ccd231003，早于 R28 终点）的 Rust 侧从未落地本地、台账亦无裁定记录——rich_value_images 链在，wps_cell_images 链缺，登记挂账下轮（非本轮范围） |
+| #2069 | kb-ask 会话列表 | KbAskPanel 保本地 chaOffice 桥+V2 selection 线形，收上游线程 chips（refreshThreads/panelThreads/listThreads/startThread/removeThread+ChatMeta 首问标注+确认删除）；project-store 加 listChats/deleteChat（ipc.ts/三端 preload 并集，shell 具名 projectChatApi 的 Pick 补两键）；store.ts firstQuestionInFile 8KB 头读；**service-core chatHistoryService 补 server 形态实现**（链式 typecheck 兜出）；strings askThread* ×21 入 upstreamStrings 区（A/B 架构完好） |
+| #2053 | 表格批注图片 | gateway xlsx-notes.ts 整取上游（v:fill relid 保留读写）；WorkbookVisuals 抽取三函数入 workbook-media.ts（上游件+品牌；本地 metafile 栅格化逻辑随迁同构）；App.tsx 保 FindReplacePanel+visualFrameSizePx 并集；**找回 planNotes fixture 参数**（本地测试桩在某轮被削，上游新用例静默测错 fixture——恢复二参形态）；xlsx-notes 测试补 JSZip/buildKitchenSinkFixture 导入 |
+| #2091 | slides 真 3D 模型 | pptx-engine model3d.ts/glb-bounds.ts 新件+am3d.xsd 校验+three@0.186 依赖（Q5：lock 还原本地→npm install 重生成 +73/−4；postinstall install-electron 网络失败但 Electron.app 二进制在位不影响）；本地旧「slides:insert-model3d 一步式」被上游两步式（pick-model3d+add-model3d）整体替换，base-name.ts 新件+导入补齐；App.tsx 两块大冲突保本地结构（DockShell/ruler-bubble），净增量嫁接=onModel3dView prop+Model3dTurnHandle 画布覆盖层+Icon3d；**上游 media-insert 自身缺 crc32 导入（上游 latent 编译破损），本地补 `import { crc32 } from './crc32'`**；CSP connect-src 收上游 blob:（three worker）；stage-ai-bar（Genspark AI 品牌条）不采——本地 DockShell+A 区裁定延续 |
+| #1895 | 导入既有文档技能 | shell 主进程 imported-skills.ts/user-cli.ts/FoundSkills.tsx 新件全收+品牌（source 判别值 'genoffice'→'chaoffice' 全链一致：主进程/渲染层/四测试；桥名 aiOfficeIntegrations→chaOfficeIntegrations 含测试桩）；IntegrationsPane 保本地 KbSourceSection+收 FoundSkills；agent-core imported-skill.ts（classifySkill/parseSkillFrontmatter）+去重导出；**skills 挂载移植进本地多会话体 AiConversationBody**（composeSkills 'docs+files+skills'+createSkillsSkill()；AiPanel 保 PanelTabs 架构，上游单会话 loop 构造块不采，未用导入清理）；docs ipc/preload 保 relay/P2 钩+收 skillsList/skillText/runCli 三方法（aiChat/aiStream 防双写弃）；strings intg* 新键 ×21 语言品牌化（zh 察元AIOffice/其余 ChaAI Office，70 处值映射） |
+| 版本 | 存量 bug 修复 | **d9eaa2d95 回补版本字段时误用旧拼写 chatofficeUpstreamVersion 且未删 R24 残留的同名旧行（JSON 重复键后者胜→六段显示静默退化 0.11.0）**；统一 chaofficeUpstreamVersion=0.11.919（display-version.ts 读取侧从 R24 起就没变过，拼写对齐即恢复） |
+
+**对账与核对**：9/9 上游提交逐字匹配（3 件前会话 pick 与上游触及文件 0 差异；6 件本轮 file-scoped 差异均为 A/D 区架构差+品牌映射）；特性符号级核对 22/22 在位（writeChartWorkbook/chartWorkbookParts/colLetter/listThreads/panelThreads/NotePicturesPane/Model3dTurnHandle/glbBounds/storeModel3dView/registerUserSkillsIpc/classifySkill/createSkillsSkill 等）。
+
+**门禁终态**：typecheck 与 main 同基线零新增（main 链同红于 ui ai-model-picker 4 错=R28 V2 桥挂账；本轮触及 15 工作区 tsc 全干浄）；vitest 全绿（docs 3589/sheets 3571/slides 1515/shell 1139/pdf 967/markdown 1273/pptx-engine 1315/docx-engine 1796/agent-core 231/project-store 144/service-core 16/ribbon 111…；ui 4 红=main 同款挂账、server 2 红=main 同款 /tmp 夹具环境缺失）；cargo test 265 全绿；lint 230 problems(206 error)**低于 main 基线 231(207)**；品牌 grep 上游品牌词文件清单 vs main **零新增**。
+
+**挂账（新增/继承）**：①WPS DISPIMG 单元格图片（上游 #1082）Rust 侧历史漏收（本轮复核发现，台账此前无记录）——下轮按 A 区整件补收；②ui ai-model-picker 4 错误+4 红测试（R28 V2 桥挂账继承：上游 AiSettings 形状 vs 本地 AiProviderMeta 无 models/defaultModel）；③kb-ask AiModelPicker chip（R28 继承）；④server 测试 /tmp 夹具（spring-festival.png/happy-new-year.docx）环境性缺失，需夹具自生成改造。
+
+**本轮新坑（施工纪律）**：①「基线对比 checkout main」流程中 `git stash push`（无脏文件时静默失败）+回切后的 `git stash pop` 会**误弹并部分应用多年前的旧 stash**（本轮弹入 R19 时代并行会话的 AiModelPicker 删除 WIP，靠 git status 异变发现、`git restore .` 恢复、stash 本体因冲突未丢）——pop 前必须先 `git stash list` 核对 @{0} 是否为本轮 push 的那个，或干脆改用 `git worktree` 做基线对比；②zsh 不做单词拆分：`git diff A B -- $files`（多行变量）静默变成单路径查询得到空 diff（本轮对账脚本一度因此全绿假象），多行文件列表必须 `| xargs`；③上游自身也会有 latent 编译破损（#2091 的 media-int 用 crc32 不导入），不能默认「上游必绿」，引擎侧 pick 后 tsc 必跑；④两份同意图实现撞车时（#2090）先 `git log --follow` 考古本地实现的提交说明再裁决，能直接对上「P3 收割」类记录。
+
 
 ## 第二十八轮（2026-10-20，上游 dd3a9046..2cd8d48e 1 提交 238 文件 +5083/−1648，全吸收；自有版本 1.0.7，六段 1.0.7.0.11.0）
 

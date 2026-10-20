@@ -1,23 +1,46 @@
 /**
- * 内嵌图表工作簿(P3 标准引擎收割):与 @chaoffice/docx-engine 的
- * buildChartWorkbookXlsxBase64 同源复刻——PowerPoint/WPS 打开图表
- * "编辑数据"时解包此 xlsx。数据引用形状(Sheet1!$B$1 等)与 chart XML 的
- * strCache/numCache cx:f 保持一致。
+ * The workbook embedded beside a chart part, which PowerPoint and Word open for
+ * "Edit Data": one Sheet1 with the categories in column A and one column per
+ * series from B, the cells the chart's c:f references point at.
+ *
+ *   A1        | B1 (ser 0 name) | C1 (ser 1 name) ...
+ *   A2 (cat0) | B2 (val 0,0)    | C2 (val 1,0)   ...
  */
-import { deflateRawSync } from 'node:zlib'
+import { crc32 } from './crc32'
 import { escapeXmlText } from './xml-utils'
 
+export const CHART_WORKBOOK_REL_TYPE =
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/package'
+export const XLSX_CONTENT_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+// Series data columns start at B (column A holds the categories):
+// 0 → B … 24 → Z, 25 → AA, 26 → AB, … (plain charCode arithmetic breaks past Z).
+export const colLetter = (i: number): string => {
+  let n = i + 2 // 1-based column number: A = 1, B = 2
+  let label = ''
+  while (n > 0) {
+    const rem = (n - 1) % 26
+    label = String.fromCharCode(65 + rem) + label
+    n = Math.floor((n - 1) / 26)
+  }
+  return label
+}
+
+export interface ChartWorkbookData {
+  categories: string[]
+  series: Array<{ name: string; values: (number | null | undefined)[] }>
+  /** column A as numbers instead of category names: a scatter chart's x values */
+  xValues?: number[]
+}
+
 const XML_DECL = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
-const xlsxColLetter = (i: number) => String.fromCharCode(65 + i)
 
-export function buildChartWorkbookXlsxBase64(
-  categories: string[],
-  series: Array<{ name: string; values: (number | null)[] }>,
-): string {
-  const rows = categories.length
-  const serCount = series.length
-
-  // shared strings: all text cells collected in order
+/** The workbook's parts, by path inside the xlsx package. */
+export function chartWorkbookParts({
+  categories,
+  series,
+  xValues,
+}: ChartWorkbookData): Record<string, string> {
   const strings: string[] = []
   const si = (s: string): number => {
     const idx = strings.indexOf(s)
@@ -26,164 +49,119 @@ export function buildChartWorkbookXlsxBase64(
     return strings.length - 1
   }
 
-  // Build sheetData rows
-  const headerCells: string[] = []
-  // A1: empty label cell
-  headerCells.push(`<c r="A1" t="s"><v>${si('')}</v></c>`)
-  for (let j = 0; j < serCount; j++) {
-    headerCells.push(`<c r="${xlsxColLetter(j + 1)}1" t="s"><v>${si(series[j].name)}</v></c>`)
-  }
-  const dataRows: string[] = []
-  for (let i = 0; i < rows; i++) {
+  const headerCells = [`<c r="A1" t="s"><v>${si('')}</v></c>`]
+  series.forEach((ser, j) => {
+    headerCells.push(`<c r="${colLetter(j)}1" t="s"><v>${si(ser.name)}</v></c>`)
+  })
+  const dataRows = categories.map((category, i) => {
     const rowNum = i + 2
-    const cells: string[] = []
-    cells.push(`<c r="A${rowNum}" t="s"><v>${si(categories[i])}</v></c>`)
-    for (let j = 0; j < serCount; j++) {
-      const val = series[j].values[i]
-      if (val !== null && val !== undefined) {
-        cells.push(`<c r="${xlsxColLetter(j + 1)}${rowNum}"><v>${val}</v></c>`)
+    const x = xValues?.[i]
+    const cells = [
+      x !== undefined
+        ? `<c r="A${rowNum}"><v>${x}</v></c>`
+        : `<c r="A${rowNum}" t="s"><v>${si(category)}</v></c>`,
+    ]
+    series.forEach((ser, j) => {
+      const val = ser.values[i]
+      if (val != null && Number.isFinite(val)) {
+        cells.push(`<c r="${colLetter(j)}${rowNum}"><v>${val}</v></c>`)
       }
-    }
-    dataRows.push(`<row r="${rowNum}">${cells.join('')}</row>`)
+    })
+    return `<row r="${rowNum}">${cells.join('')}</row>`
+  })
+
+  return {
+    '[Content_Types].xml':
+      XML_DECL +
+      '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+      '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+      '<Default Extension="xml" ContentType="application/xml"/>' +
+      '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+      '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' +
+      '<Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/>' +
+      '</Types>',
+    '_rels/.rels':
+      XML_DECL +
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>' +
+      '</Relationships>',
+    'xl/workbook.xml':
+      XML_DECL +
+      '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" ' +
+      'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
+      '<sheets><sheet name="Sheet1" sheetId="1" r:id="rId1"/></sheets>' +
+      '</workbook>',
+    'xl/_rels/workbook.xml.rels':
+      XML_DECL +
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>' +
+      '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/>' +
+      '</Relationships>',
+    'xl/worksheets/sheet1.xml':
+      XML_DECL +
+      '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+      `<sheetData><row r="1">${headerCells.join('')}</row>${dataRows.join('')}</sheetData>` +
+      '</worksheet>',
+    'xl/sharedStrings.xml':
+      XML_DECL +
+      `<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="${strings.length}" uniqueCount="${strings.length}">` +
+      strings.map((s) => `<si><t xml:space="preserve">${escapeXmlText(s)}</t></si>`).join('') +
+      '</sst>',
   }
-
-  const sheetXml =
-    XML_DECL +
-    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
-    '<sheetData>' +
-    `<row r="1">${headerCells.join('')}</row>` +
-    dataRows.join('') +
-    '</sheetData>' +
-    '</worksheet>'
-
-  const sharedStringsXml =
-    XML_DECL +
-    `<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="${strings.length}" uniqueCount="${strings.length}">` +
-    strings.map((s) => `<si><t>${escapeXmlText(s)}</t></si>`).join('') +
-    '</sst>'
-
-  const workbookXml =
-    XML_DECL +
-    '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" ' +
-    'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
-    '<sheets><sheet name="Sheet1" sheetId="1" r:id="rId1"/></sheets>' +
-    '</workbook>'
-
-  const workbookRels =
-    XML_DECL +
-    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
-    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>' +
-    '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/>' +
-    '</Relationships>'
-
-  const topRels =
-    XML_DECL +
-    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
-    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>' +
-    '</Relationships>'
-
-  const contentTypes =
-    XML_DECL +
-    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
-    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
-    '<Default Extension="xml" ContentType="application/xml"/>' +
-    '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
-    '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' +
-    '<Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/>' +
-    '</Types>'
-
-  return zipToBase64([
-    { path: '[Content_Types].xml', data: Buffer.from(contentTypes, 'utf8') },
-    { path: '_rels/.rels', data: Buffer.from(topRels, 'utf8') },
-    { path: 'xl/workbook.xml', data: Buffer.from(workbookXml, 'utf8') },
-    { path: 'xl/_rels/workbook.xml.rels', data: Buffer.from(workbookRels, 'utf8') },
-    { path: 'xl/worksheets/sheet1.xml', data: Buffer.from(sheetXml, 'utf8') },
-    { path: 'xl/sharedStrings.xml', data: Buffer.from(sharedStringsXml, 'utf8') },
-  ])
 }
 
 /**
- * 同步 ZIP writer(deflate):op 执行器是同步语义,JSZip 只有 generateAsync,
- * 故手写最小实现——local header + central directory + EOCD,CRC32 查表。
+ * A zip of `files`, stored without compression: the chart engines insert charts
+ * synchronously, and a chart's workbook is a few hundred bytes.
  */
-const CRC_TABLE = (() => {
-  const t = new Uint32Array(256)
-  for (let n = 0; n < 256; n++) {
-    let c = n
-    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1
-    t[n] = c >>> 0
-  }
-  return t
-})()
+export function storedZip(files: Record<string, string>): Uint8Array {
+  const utf8 = new TextEncoder()
+  const entries = Object.entries(files).map(([path, text]) => {
+    const name = utf8.encode(path)
+    const data = utf8.encode(text)
+    return { name, data, crc: crc32(data) }
+  })
+  const localSize = entries.reduce((n, e) => n + 30 + e.name.length + e.data.length, 0)
+  const centralSize = entries.reduce((n, e) => n + 46 + e.name.length, 0)
+  const out = new Uint8Array(localSize + centralSize + 22)
+  const view = new DataView(out.buffer)
+  let local = 0
+  let central = localSize
+  for (const { name, data, crc } of entries) {
+    view.setUint32(local, 0x04034b50, true)
+    view.setUint16(local + 4, 10, true)
+    view.setUint16(local + 6, 0x0800, true)
+    view.setUint16(local + 12, 0x21, true) // 1980-01-01, the DOS epoch
+    view.setUint32(local + 14, crc, true)
+    view.setUint32(local + 18, data.length, true)
+    view.setUint32(local + 22, data.length, true)
+    view.setUint16(local + 26, name.length, true)
+    out.set(name, local + 30)
+    out.set(data, local + 30 + name.length)
 
-function crc32(bytes: Uint8Array): number {
-  let c = 0xffffffff
-  for (let i = 0; i < bytes.length; i++) c = CRC_TABLE[(c ^ bytes[i])!]! ^ (c >>> 8)
-  return (c ^ 0xffffffff) >>> 0
+    view.setUint32(central, 0x02014b50, true)
+    view.setUint16(central + 4, 20, true)
+    view.setUint16(central + 6, 10, true)
+    view.setUint16(central + 8, 0x0800, true)
+    view.setUint16(central + 14, 0x21, true)
+    view.setUint32(central + 16, crc, true)
+    view.setUint32(central + 20, data.length, true)
+    view.setUint32(central + 24, data.length, true)
+    view.setUint16(central + 28, name.length, true)
+    view.setUint32(central + 42, local, true)
+    out.set(name, central + 46)
+
+    local += 30 + name.length + data.length
+    central += 46 + name.length
+  }
+  view.setUint32(central, 0x06054b50, true)
+  view.setUint16(central + 8, entries.length, true)
+  view.setUint16(central + 10, entries.length, true)
+  view.setUint32(central + 12, centralSize, true)
+  view.setUint32(central + 16, localSize, true)
+  return out
 }
 
-export function miniZipSync(files: Array<{ path: string; data: Uint8Array }>): Buffer {
-  const chunks: Buffer[] = []
-  const central: Buffer[] = []
-  let offset = 0
-  const dosTime = 0
-  const dosDate = 0x21 // 1980-01-01(zip 最低合法日期)
-  for (const f of files) {
-    const name = Buffer.from(f.path, 'utf8')
-    const crc = crc32(f.data)
-    const deflated = deflateRawSync(f.data, { level: 6 })
-    const useDeflate = deflated.length < f.data.length
-    const payload = useDeflate ? deflated : f.data
-    const method = useDeflate ? 8 : 0
-    const local = Buffer.alloc(30)
-    local.writeUInt32LE(0x04034b50, 0)
-    local.writeUInt16LE(20, 4) // version needed
-    local.writeUInt16LE(0, 6) // flags
-    local.writeUInt16LE(method, 8)
-    local.writeUInt16LE(dosTime, 10)
-    local.writeUInt16LE(dosDate, 12)
-    local.writeUInt32LE(crc, 14)
-    local.writeUInt32LE(payload.length, 18)
-    local.writeUInt32LE(f.data.length, 22)
-    local.writeUInt16LE(name.length, 26)
-    local.writeUInt16LE(0, 28)
-    chunks.push(local, name, Buffer.from(payload))
-
-    const cen = Buffer.alloc(46)
-    cen.writeUInt32LE(0x02014b50, 0)
-    cen.writeUInt16LE(20, 4) // version made by
-    cen.writeUInt16LE(20, 6) // version needed
-    cen.writeUInt16LE(0, 8)
-    cen.writeUInt16LE(method, 10)
-    cen.writeUInt16LE(dosTime, 12)
-    cen.writeUInt16LE(dosDate, 14)
-    cen.writeUInt32LE(crc, 16)
-    cen.writeUInt32LE(payload.length, 20)
-    cen.writeUInt32LE(f.data.length, 24)
-    cen.writeUInt16LE(name.length, 28)
-    cen.writeUInt16LE(0, 30) // extra len
-    cen.writeUInt16LE(0, 32) // comment len
-    cen.writeUInt16LE(0, 34) // disk
-    cen.writeUInt16LE(0, 36) // internal attrs
-    cen.writeUInt32LE(0, 38) // external attrs
-    cen.writeUInt32LE(offset, 42)
-    central.push(cen, name)
-
-    offset += 30 + name.length + payload.length
-  }
-  const centralBuf = Buffer.concat(central)
-  const eocd = Buffer.alloc(22)
-  eocd.writeUInt32LE(0x06054b50, 0)
-  eocd.writeUInt16LE(0, 4)
-  eocd.writeUInt16LE(0, 6)
-  eocd.writeUInt16LE(files.length, 8)
-  eocd.writeUInt16LE(files.length, 10)
-  eocd.writeUInt32LE(centralBuf.length, 12)
-  eocd.writeUInt32LE(offset, 16)
-  eocd.writeUInt16LE(0, 20)
-  return Buffer.concat([...chunks, centralBuf, eocd])
-}
-
-function zipToBase64(files: Array<{ path: string; data: Uint8Array }>): string {
-  return miniZipSync(files).toString('base64')
+export function chartWorkbookXlsx(data: ChartWorkbookData): Uint8Array {
+  return storedZip(chartWorkbookParts(data))
 }

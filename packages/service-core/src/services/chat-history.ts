@@ -119,6 +119,13 @@ export function chatHistoryService(deps: ChatHistoryDeps = {}) {
         async loadChat(args) {
           return store.loadChat(args.projectId, args.chatId, args.limit)
         },
+        // upstream #2069: transcript listing/removal for the kb-ask thread chips
+        async listChats(args) {
+          return store.listChats(args.projectId)
+        },
+        async deleteChat(args) {
+          store.deleteChat(args.projectId, args.chatId)
+        },
         async rebindChat(args) {
           let filePath = args.newFilePath ?? null
           if (filePath === null && args.sessionId) {

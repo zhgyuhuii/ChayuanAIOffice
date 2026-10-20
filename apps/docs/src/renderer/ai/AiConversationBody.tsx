@@ -81,6 +81,7 @@ import {
   type DocsEditQueueItem,
 } from './edit-queue'
 import { createFilesSkill } from './files-skill'
+import { createSkillsSkill } from './skills-skill'
 import { createDocsSkill } from './docs-skill'
 import { createDocsMediaSkill } from './media-skill'
 import { insertImageFromDataUrl } from '../components/ribbon-tabs'
@@ -483,7 +484,7 @@ export function AiConversationBody({
     const loop = new AgentLoop<PmNode>({
       transport,
       systemSuffix: aiLangDirective,
-      skill: composeSkills('docs+files', '', [
+      skill: composeSkills('docs+files+skills', '', [
         createDocsMediaSkill(),
         createDocsSkill(
           () => editorRef.current,
@@ -506,6 +507,9 @@ export function AiConversationBody({
           () => instructionRef.current,
         ),
         createFilesSkill(availableAttachments),
+        // upstream #1895: the skills skill — the AI can read the document
+        // skills the user already installed (userData/skills) and follow them
+        createSkillsSkill(),
       ]),
       captureSnapshot: () => editorRef.current.getJSON() as PmNode,
       events: {
