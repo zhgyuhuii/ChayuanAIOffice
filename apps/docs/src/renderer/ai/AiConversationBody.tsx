@@ -21,7 +21,13 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Editor } from '@tiptap/core'
 import type { Block } from '@chaoffice/docx-engine'
-import { AgentLoop, composeSkills, streamText, type AgentImage, type AgentTransport } from '@chaoffice/agent-core'
+import {
+  AgentLoop,
+  composeSkills,
+  streamText,
+  type AgentImage,
+  type AgentTransport,
+} from '@chaoffice/agent-core'
 import type { AiSettingsV2, AttachmentAddResult, AttachmentMeta } from '../../shared/ipc'
 import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
 import type { PmNode } from '../editor/convert'
@@ -58,7 +64,12 @@ import { redactTextBetween, type RedactableNode } from './redact-view'
 import { MindMapCard } from './MindMapCard'
 import { enabledChatModels } from '@chaoffice/ai-provider/browser'
 import { AI_REVISION_AUTHOR } from './AiPanel'
-import { markDocSeen, type AiCommentsAccess, type AiDocExtras, type AiHeaderFooterAccess } from './tools'
+import {
+  markDocSeen,
+  type AiCommentsAccess,
+  type AiDocExtras,
+  type AiHeaderFooterAccess,
+} from './tools'
 import type { AiPageSetupAccess } from './page-setup'
 import type { AiNotesAccess } from './note-ops'
 import { EditQueueCard } from './EditQueueCard'
@@ -225,7 +236,9 @@ export function AiConversationBody({
   const [historicChat, setHistoricChat] = useState<(ChatEntry & { interrupted?: boolean })[]>([])
   /** messages buffered for the loop: history loads at mount, the loop is built on
       the first runWith — the buffer is restored into the loop at construction (D10/D11) */
-  const bufferedRestoreRef = useRef<Array<{ role: 'user' | 'assistant'; text: string }> | null>(null)
+  const bufferedRestoreRef = useRef<Array<{ role: 'user' | 'assistant'; text: string }> | null>(
+    null,
+  )
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null)
   const [attachments, setAttachments] = useState<AttachmentMeta[]>([])
   const [attachNotice, setAttachNotice] = useState<string | null>(null)
@@ -275,10 +288,12 @@ export function AiConversationBody({
     let alive = true
     const refresh = () => {
       // tests render the body without a preload bridge
-      void (window as unknown as {
-        desktop?: { mediaCapabilities?: () => Promise<{ flags?: Record<string, boolean> }> }
-      })
-        .desktop?.mediaCapabilities?.()
+      void (
+        window as unknown as {
+          desktop?: { mediaCapabilities?: () => Promise<{ flags?: Record<string, boolean> }> }
+        }
+      ).desktop
+        ?.mediaCapabilities?.()
         .then((caps) => {
           if (!alive || !caps?.flags) return
           mediaCapsRef.current = {
@@ -353,7 +368,9 @@ export function AiConversationBody({
   /** R24 上游 #1944 织入: tokens billed so far in the in-flight run (summed across turns) */
   const runUsageRef = useRef<import('@chaoffice/ui').AiTokenUsageView | undefined>(undefined)
   /** tokens billed across this conversation's session (the composer chip) */
-  const [sessionUsage, setSessionUsage] = useState<import('@chaoffice/ui').AiTokenUsageView | undefined>(undefined)
+  const [sessionUsage, setSessionUsage] = useState<
+    import('@chaoffice/ui').AiTokenUsageView | undefined
+  >(undefined)
   /** the loop's streamed text so far — the interrupted persist keeps this half turn (D10) */
   const halfTextRef = useRef('')
 
@@ -485,6 +502,8 @@ export function AiConversationBody({
           // LOCAL(2026-09-22, f5247d3..476e5023): 上游 #544——analyze_media 按媒体分析能力
           // 隐藏(本地门=统一媒体通道能力旗标,替代上游 gskLoggedIn+BYOK 判定)
           () => mediaCapsRef.current.imageUnderstanding || mediaCapsRef.current.videoUnderstanding,
+          // LOCAL(assistant-tool-scope): 本轮指令文本 → 纯写作意图只挂核心读写工具
+          () => instructionRef.current,
         ),
         createFilesSkill(availableAttachments),
       ]),
@@ -1316,7 +1335,10 @@ export function AiConversationBody({
                     <>
                       {/* hairline between reply actions (icons) and the document action (icon+label) */}
                       <span className="ai-rollback-sep" aria-hidden />
-                      <RollbackButton disabled={busy} onClick={() => rollback(i, entry.snapshot!)} />
+                      <RollbackButton
+                        disabled={busy}
+                        onClick={() => rollback(i, entry.snapshot!)}
+                      />
                     </>
                   )}
                 </div>
@@ -1505,7 +1527,11 @@ export function AiConversationBody({
           footerStart={
             <>
               <KbPickerButton lang={lang} selected={kb.selected} onToggle={kb.toggle} />
-              <ModelPickerButton settings={settings} onPick={onPickModel} onOpenSettings={onOpenModelSettings} />
+              <ModelPickerButton
+                settings={settings}
+                onPick={onPickModel}
+                onOpenSettings={onOpenModelSettings}
+              />
               {/* R24 上游 #1944 织入: session-total token chip */}
               {sessionUsage && <AiUsageChip usage={sessionUsage} session lang={lang} />}
               <button

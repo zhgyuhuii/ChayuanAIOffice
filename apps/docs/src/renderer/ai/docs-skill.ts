@@ -3,14 +3,10 @@ import { redactLabelsOf } from './redact-view'
 import type { Editor } from '@tiptap/core'
 import { DEGRADED_PROTOCOL_SUFFIX, degradedToolLines } from '@chaoffice/agent-core'
 import type { AgentSkill } from '@chaoffice/agent-core'
+import { DOCS_SYSTEM_PROMPT_SLIM } from './docs-system-prompt-slim'
+import { scopeToolsForIntent, slimToolDefs } from './assistant-tool-scope'
 import type { AiImageSource } from '../../shared/ipc'
-import {
-  AGENT_SYSTEM_PROMPT,
-  buildDocContext,
-  getSelectionScope,
-  type AiTrack,
-  type NumIds,
-} from './protocol'
+import { buildDocContext, getSelectionScope, type AiTrack, type NumIds } from './protocol'
 import type { AiDocWriter } from './doc-writer'
 import type { AiPageSetupAccess } from './page-setup'
 import {
@@ -82,6 +78,10 @@ export function createDocsSkill(
   getNotes?: () => AiNotesAccess | undefined,
   /** same as imageGenAvailable, for analyze_media (seeing pictures that are in the document) */
   mediaAnalysisAvailable?: () => boolean,
+  /** the run's instruction text, for intent-scoped wire toolsets (see
+   *  assistant-tool-scope.ts): a pure writing pass carries only the core
+   *  read/write tools. Optional — absent keeps the full toolset (relay-server). */
+  getInstruction?: () => string | undefined,
 ): AgentSkill {
   // Selection frozen per run: tools act on the range the prompt described,
   // not on wherever the user's live selection has wandered mid-run. The doc
@@ -109,13 +109,16 @@ export function createDocsSkill(
         : []
       const redact = labels.length > 0 ? `\n\n${placeholderInstruction(labels)}` : ''
       const line = getImageSource ? IMAGE_SOURCE_DIRECTIVE[getImageSource()] : ''
-      const base = line ? `${AGENT_SYSTEM_PROMPT}\n${line}` : AGENT_SYSTEM_PROMPT
+      const base = line ? `${DOCS_SYSTEM_PROMPT_SLIM}\n${line}` : DOCS_SYSTEM_PROMPT_SLIM
       return base + mediaOffNote() + redact
     },
     get tools() {
       // 上游 #544: generate_image/analyze_media 按可用性过滤(替代静态 tools 列表)
       const hidden = mediaToolsOff()
-      return hidden.size === 0 ? AGENT_TOOLS : AGENT_TOOLS.filter((t) => !hidden.has(t.name))
+      const base = hidden.size === 0 ? AGENT_TOOLS : AGENT_TOOLS.filter((t) => !hidden.has(t.name))
+      // LOCAL(assistant-tool-scope): B 描述/schema 瘦身(纯后处理) + A 纯写作意图
+      // 只挂核心读写工具(按本轮指令文本识别;无指令访问方=全量,行为同上游)
+      return slimToolDefs(scopeToolsForIntent(getInstruction?.() ?? '', base))
     },
     buildContext: () => {
       const editor = getEditor()

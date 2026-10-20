@@ -44,6 +44,10 @@ export async function streamResolved(
         omitTemperature: call.omitTemperature,
         useMaxCompletionTokens: call.useMaxCompletionTokens,
         bodyExtras: call.bodyExtras,
+        // LOCAL: the resolved call's idle budget must reach the stream watchdog
+        // (slow local engines take minutes to first token; the shipped default
+        // is 180s and kills a healthy prefill)
+        ...(call.idleTimeoutMs !== undefined ? { idleTimeoutMs: call.idleTimeoutMs } : {}),
       })
   }
 }

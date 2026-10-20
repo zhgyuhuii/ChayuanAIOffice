@@ -204,9 +204,13 @@ export async function streamOpenAiCompatible(
   // system prompt 实测 >60s 才出响应头）——connect 预算放宽到 5 分钟；
   // 云端网关响应头秒回，维持默认。
   const localEngine = /\/\/(127\.0\.0\.1|localhost|\[::1\])(:|\/)/.test(baseUrl)
+  // connect budget: a loopback engine gets 5min (CPU prefill before the
+  // response headers); a profile that declares an idle budget also declares
+  // its connect patience (model load holds the headers on hosted local
+  // engines too). Everything else keeps the shipped 60s.
   const wd = createStreamWatchdog(
     cb.signal,
-    localEngine ? 300_000 : undefined,
+    localEngine ? 300_000 : options.idleTimeoutMs,
     options.idleTimeoutMs,
   )
   return wd.guard(() =>

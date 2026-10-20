@@ -73,6 +73,12 @@ export interface AiProviderProfile {
   auth: 'api-key' | 'chaoffice-login'
   /** endpoint accepts an empty key (ollama-like local runtimes) */
   ollamaLike?: boolean
+  /**
+   * Stream idle budget for slow local servers (quantized models can take
+   * minutes to first token); absent = the shipped default. Resolved through
+   * resolveModelCall into the protocol layer's stream watchdog.
+   */
+  idleTimeoutMs?: number
   enabled: boolean
   models: AiModelEntry[]
   updatedAt?: string

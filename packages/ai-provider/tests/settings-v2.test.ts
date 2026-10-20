@@ -120,6 +120,31 @@ describe('resolveModelCall', () => {
     expect(gpt.protocol).toBe('openai-compatible')
   })
 
+  it('carries the profile idle budget through to the resolved call', () => {
+    const s = defaultSettingsV2()
+    s.profiles.push({
+      id: 'slow-local',
+      displayName: 'slow local',
+      protocol: 'openai-completions',
+      baseUrl: 'http://192.168.2.130:9997/v1',
+      apiKey: 'local',
+      auth: 'api-key',
+      idleTimeoutMs: 600000,
+      enabled: true,
+      models: [{ id: 'qwen3-4b-repro' }],
+    })
+    const resolved = resolveModelCall(
+      s,
+      { profileId: 'slow-local', modelId: 'qwen3-4b-repro' },
+      'local',
+    )
+    expect(resolved.idleTimeoutMs).toBe(600000)
+    // a profile that says nothing keeps the shipped default (no field at all)
+    const s2 = defaultSettingsV2()
+    const plain = resolveModelCall(s2, { profileId: 'chaoffice', modelId: 'gpt-5.6' }, 'x')
+    expect(plain.idleTimeoutMs).toBeUndefined()
+  })
+
   it('maps wire protocols and vendor quirks onto the internal call', () => {
     const s = defaultSettingsV2()
     s.profiles.push({

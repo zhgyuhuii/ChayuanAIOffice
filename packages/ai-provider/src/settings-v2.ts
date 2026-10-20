@@ -182,6 +182,8 @@ export interface ResolvedModelCall {
   omitTemperature?: boolean
   useMaxCompletionTokens?: boolean
   bodyExtras?: Record<string, unknown>
+  /** stream idle budget for slow local servers (absent = the shipped default) */
+  idleTimeoutMs?: number
 }
 
 function normalizeGeminiBase(baseUrl: string): string {
@@ -244,6 +246,7 @@ export function resolveModelCall(
     ...(entry.notes ? { notes: entry.notes } : {}),
     ...(modelHasFixedSampling(selection.modelId) || isMoonshot ? { omitTemperature: true } : {}),
     ...(isOpenAiOfficial && protocol !== 'anthropic' ? { useMaxCompletionTokens: true } : {}),
+    ...(profile.idleTimeoutMs !== undefined ? { idleTimeoutMs: profile.idleTimeoutMs } : {}),
     ...(isDeepSeek && protocol === 'openai-compatible'
       ? { bodyExtras: { thinking: { type: 'disabled' } } }
       : {}),

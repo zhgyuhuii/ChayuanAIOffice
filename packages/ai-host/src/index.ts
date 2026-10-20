@@ -23,13 +23,19 @@ import {
 } from '@chaoffice/ai-search'
 import { fetchRemoteImage } from '@chaoffice/electron-utils/remote-image'
 import { abortOnDestroyed } from '@chaoffice/electron-utils'
-import { CHATOP_LOCAL_AGENT_ID, CHATOP_LOCAL_PROFILE_ID, parseChatopProxyKey } from '@chaoffice/ai-provider'
+import {
+  CHATOP_LOCAL_AGENT_ID,
+  CHATOP_LOCAL_PROFILE_ID,
+  parseChatopProxyKey,
+} from '@chaoffice/ai-provider'
 import {
   createVideoTaskRegistry,
   type VideoTaskRegistry,
   type VideoTaskRegistryDeps,
 } from './video-tasks'
 import { localToolInstall, localToolStart, localToolStatus } from './local-tools'
+import { attachStreamHeartbeat } from './stream-heartbeat'
+import { relaxFetchBodyTimeout } from './fetch-body-timeout'
 import { persistGeneratedImage } from './media-ipc'
 import { discoverDshHome, type DiscoveredDshHome } from './dsh-home'
 
@@ -222,6 +228,11 @@ export function getSharedAiRuntime(): AiRuntime | null {
 export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   const { ipcMain, chaoffice, translate } = deps
 
+  // LOCAL(fetch-body-timeout): undici 默认 bodyTimeout 300s 会在慢引擎 prefill
+  // 期间掐断 SSE（错误面为 terminated），先于所有 watchdog 生效——进程内关掉，
+  // 回合存活由主进程档案预算 + 渲染层心跳负责
+  relaxFetchBodyTimeout()
+
   const fileSource = createFileSource(deps.settingsPath, deps.fs)
 
   // ── 察元 harness 自动识别（自动发现 dsh home → 只读融合 + 托管代理 key）────
@@ -301,7 +312,8 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   }
   const chatopLocalSecret = async (home: string, proxyOrigin: string): Promise<string> => {
     const keysPath = join(home, 'storages', 'chatop-models', 'proxy-keys.json')
-    const live = await (deps.fs.readFile(keysPath))
+    const live = await deps.fs
+      .readFile(keysPath)
       .then(parseChatopProxyKey)
       .catch(() => null)
     if (live) {
@@ -324,7 +336,9 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
       .readFile(join(home, 'storages', 'chatop-models', 'state.json'))
       .then((t) => JSON.parse(t) as { managementPort?: number })
       .catch(() => null)
-    const origin = state?.managementPort ? `http://127.0.0.1:${state.managementPort}` : 'http://127.0.0.1:52601'
+    const origin = state?.managementPort
+      ? `http://127.0.0.1:${state.managementPort}`
+      : 'http://127.0.0.1:52601'
     const response = await fetch(`${origin}/api/chatop-models/proxy/keys/issue`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -371,10 +385,7 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
       if (proxyOrigin) return chatopLocalSecret(info.home, proxyOrigin)
       // harness vendor routes keep their credential-ref resolution
       if (profile.apiKeyRef && profile.id !== CHATOP_LOCAL_PROFILE_ID) {
-        return resolveHarnessSecret(
-          profile,
-          (rel) => deps.fs.readFile(join(info.home, rel)),
-        )
+        return resolveHarnessSecret(profile, (rel) => deps.fs.readFile(join(info.home, rel)))
       }
       return ''
     },
@@ -449,6 +460,9 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
         streamEvent.sender.send('ai:stream-chunk', chunk)
       }
     }
+    // LOCAL(stream-heartbeat): 慢 prefill 期间合成 ping 帧——渲染层静默计时器
+    // (固定 240s)不再先于主进程预算(档案 idleTimeoutMs)杀掉健康回合
+    const stopHeartbeat = attachStreamHeartbeat(send, requestId)
     try {
       await runtime.runStream(
         {
@@ -463,6 +477,7 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
         send,
       )
     } finally {
+      stopHeartbeat()
       unwatchSender()
       activeStreams.delete(requestId)
     }

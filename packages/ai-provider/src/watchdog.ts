@@ -23,9 +23,13 @@ export const AI_WATCHDOG_MIN_TIMEOUT_MS = 1_000
 /**
  * Cap for watchdog timeouts. Infinite or huge values are lowered to the cap so
  * the watchdog still fires instead of going dead. Kept well below the
- * platform setTimeout overflow limit (2^31-1 ms).
+ * platform setTimeout overflow limit (2^31-1 ms). LOCAL: raised 600s → 30min —
+ * a quantized model on a CPU-only box can take 10–20+ minutes of silent
+ * prefill before the first token (observed live on a 4B q3_k_s over a LAN);
+ * profiles declare their own budget via idleTimeoutMs and this cap must not
+ * clamp it back under the engine's real cold-start time.
  */
-export const AI_WATCHDOG_MAX_TIMEOUT_MS = 600_000
+export const AI_WATCHDOG_MAX_TIMEOUT_MS = 1_800_000
 
 /**
  * Normalize a watchdog timeout to a sane finite positive value.
