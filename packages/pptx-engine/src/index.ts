@@ -87,7 +87,12 @@ import type {
   ReflectionEffect,
 } from './types'
 import { patchTableStyleXml, ensureTableStyleXml, type TableStyleEdit } from './table-edit'
-import { buildChartSpaceXml, type NewChartKind, type NewChartOptions } from './chart-insert'
+import {
+  buildChartSpaceXml,
+  writeChartWorkbook,
+  type NewChartKind,
+  type NewChartOptions,
+} from './chart-insert'
 import { parseLayoutPlaceholders, placeholderSpXml, prepareInsertSlideWithLayout } from './layout'
 import {
   chooseLayout,
@@ -325,6 +330,7 @@ export { NAMED_ACTIONS, namedActionOf, type NamedAction } from './named-action'
 export {
   addChart,
   buildChartSpaceXml,
+  writeChartWorkbook,
   type NewChartKind,
   type NewChartOptions,
 } from './chart-insert'
@@ -337,6 +343,12 @@ export {
   type NewSlideEchart,
   type EchartSidecar,
 } from './echart-insert'
+export {
+  CHART_WORKBOOK_REL_TYPE,
+  chartWorkbookParts,
+  chartWorkbookXlsx,
+  type ChartWorkbookData,
+} from './chart-workbook'
 export {
   addSmartArt,
   buildSmartArtXml,
@@ -3126,8 +3138,8 @@ export function editChartElement(
     ...(colorScheme ? { colorScheme } : {}),
     ...(holeSizePct != null ? { holeSizePct } : {}),
   }
-  const newXml = buildChartSpaceXml(opts)
-  archive.entries.set(chartPath, Buffer.from(newXml, 'utf8'))
+  const workbookRId = writeChartWorkbook(opened, chartPath, opts)
+  archive.entries.set(chartPath, Buffer.from(buildChartSpaceXml(opts, workbookRId), 'utf8'))
   slide.structureDirty = true
   return true
 }

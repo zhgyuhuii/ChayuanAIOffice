@@ -3,9 +3,9 @@
  * Override + slide rels + graphicFrame fragment, going through appendRawElements to
  * reuse the existing chart parsing/rendering.
  *
- * The chartSpace template mirrors docx-engine's buildChartPartXml (data goes through
- * strCache/numCache caches, no embedded workbook attached; PowerPoint renders it
- * fine, but "Edit Data" is unavailable).
+ * The chartSpace template mirrors docx-engine's buildChartPartXml: the data goes through
+ * strCache/numCache caches, and the embedded workbook (chart-workbook.ts) holds the same
+ * data for PowerPoint's "Edit Data".
  */
 import type { EmuRect, Slide } from './types'
 import {
@@ -15,10 +15,18 @@ import {
   hasContentTypeOverride,
   maxRelationshipIdNumber,
 } from './xml-utils'
-import { relsPathFor } from './zip'
+import { relsPathFor, resolveTarget } from './zip'
 import { appendRawElements, type OpenedPptx } from './index'
 import { nextCNvPrId } from './insert'
-import { buildChartWorkbookXlsxBase64 } from './chart-workbook'
+import {
+  CHART_WORKBOOK_REL_TYPE,
+  XLSX_CONTENT_TYPE,
+  chartWorkbookXlsx,
+  colLetter,
+} from './chart-workbook'
+import { ensureDefaultContentType } from './media-insert'
+import { appendRelationship } from './notes'
+import { removeRelationshipAndCollectOwnedTarget } from './resource-cleanup'
 
 export type NewChartKind =
   | 'bar'
@@ -76,17 +84,6 @@ const C_NS = 'http://schemas.openxmlformats.org/drawingml/2006/chart'
 const A_NS = 'http://schemas.openxmlformats.org/drawingml/2006/main'
 const R_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
 
-const colLetter = (i: number): string => {
-  let n = i + 2
-  let label = ''
-  while (n > 0) {
-    const rem = (n - 1) % 26
-    label = String.fromCharCode(65 + rem) + label
-    n = Math.floor((n - 1) / 26)
-  }
-  return label
-}
-
 function strCacheXml(values: string[], f: string): string {
   return (
     `<c:strRef><c:f>${escapeXmlText(f)}</c:f><c:strCache><c:ptCount val="${values.length}"/>` +
@@ -125,8 +122,18 @@ function axTitleXml(text: string, vertical: boolean): string {
   )
 }
 
-/** Full c:chartSpace part XML. */
-export function buildChartSpaceXml(opts: NewChartOptions, externalDataRid?: string): string {
+function scatterXValues(categories: string[]): number[] {
+  return categories.map((c, i) => {
+    const v = Number(c)
+    return c.trim() !== '' && Number.isFinite(v) ? v : i + 1
+  })
+}
+
+/**
+ * Full c:chartSpace part XML. `externalDataRId` names the chart's relationship to its
+ * embedded workbook, which PowerPoint opens for "Edit Data".
+ */
+export function buildChartSpaceXml(opts: NewChartOptions, externalDataRId?: string): string {
   const rows = opts.categories.length
   const dLbls = opts.dataLabels ? DLBLS_XML : ''
   const grid = opts.gridlines ? '<c:majorGridlines/>' : ''
@@ -226,10 +233,7 @@ export function buildChartSpaceXml(opts: NewChartOptions, externalDataRid?: stri
     // Scatter (XY): x values come from categories (numeric strings use their value,
     // otherwise ordinals 1..n), y values from the series values;
     // series data uses c:xVal/c:yVal, with dual value axes (x axis axPos=b, y axis axPos=l)
-    const xs = opts.categories.map((c, i) => {
-      const v = Number(c)
-      return c.trim() !== '' && Number.isFinite(v) ? v : i + 1
-    })
+    const xs = scatterXValues(opts.categories)
     const scatterSers = opts.series
       .map((ser, i) => {
         const col = colLetter(i)
@@ -309,8 +313,8 @@ export function buildChartSpaceXml(opts: NewChartOptions, externalDataRid?: stri
     `<c:chart>${title}${view3D}<c:plotArea><c:layout/>${plot}</c:plotArea>` +
     legend +
     '<c:plotVisOnly val="1"/><c:dispBlanksAs val="gap"/></c:chart>' +
-    (externalDataRid
-      ? `<c:externalData r:id="${externalDataRid}"><c:autoUpdate val="0"/></c:externalData>`
+    (externalDataRId
+      ? `<c:externalData r:id="${externalDataRId}"><c:autoUpdate val="0"/></c:externalData>`
       : '') +
     '</c:chartSpace>'
   return injectSeriesColors(xml, opts)
@@ -343,6 +347,44 @@ function injectSeriesColors(xml: string, opts: NewChartOptions): string {
 }
 
 /**
+ * Writes the chart's embedded workbook from the data in `opts` and returns the relationship
+ * id c:externalData names. The workbook the chart part already points at is overwritten in
+ * place; another data source (a linked file, an OLE object) is dropped, since the chart is
+ * rebuilt from this data.
+ */
+export function writeChartWorkbook(
+  opened: OpenedPptx,
+  chartPath: string,
+  opts: Pick<NewChartOptions, 'kind' | 'categories' | 'series'>,
+): string {
+  const { archive } = opened
+  const bytes = chartWorkbookXlsx({
+    categories: opts.categories,
+    series: opts.series,
+    ...(opts.kind === 'scatter' ? { xValues: scatterXValues(opts.categories) } : {}),
+  })
+  const current = archive.readText(chartPath) ?? ''
+  const linkedId = /<c:externalData\b[^>]*\br:id="([^"]+)"/.exec(current)?.[1]
+  const linked = linkedId ? archive.readRels(chartPath).get(linkedId) : undefined
+  if (linked?.type === CHART_WORKBOOK_REL_TYPE && linked.targetMode !== 'External') {
+    archive.entries.set(resolveTarget(chartPath, linked.target), bytes)
+    return linked.id
+  }
+  if (linkedId) removeRelationshipAndCollectOwnedTarget(archive, chartPath, linkedId)
+
+  let n = 1
+  while (archive.entries.has(`ppt/embeddings/Microsoft_Excel_Worksheet${n}.xlsx`)) n++
+  archive.entries.set(`ppt/embeddings/Microsoft_Excel_Worksheet${n}.xlsx`, bytes)
+  ensureDefaultContentType(opened, 'xlsx', XLSX_CONTENT_TYPE)
+  return appendRelationship(
+    archive,
+    chartPath,
+    CHART_WORKBOOK_REL_TYPE,
+    `../embeddings/Microsoft_Excel_Worksheet${n}.xlsx`,
+  )
+}
+
+/**
  * Insert a chart: part surgery + graphicFrame fragment append + reparse.
  * Returns the new slide and element id (all ids on the slide refreshed).
  */
@@ -362,22 +404,8 @@ export function addChart(
     if (m) maxNum = Math.max(maxNum, Number(m[1]))
   }
   const chartPath = `ppt/charts/chart${maxNum + 1}.xml`
-  // 内嵌工作簿:PowerPoint/WPS "编辑数据"的数据源(P3;rel 类型同 docx)
-  const wbBase64 = buildChartWorkbookXlsxBase64(opts.categories, opts.series)
-  const wbPath = `ppt/charts/embeddings/Microsoft_Excel_Worksheet${maxNum + 1}.xlsx`
-  archive.entries.set(wbPath, Buffer.from(wbBase64, 'base64'))
-  const chartRelsPath = `ppt/charts/_rels/chart${maxNum + 1}.xml.rels`
-  archive.entries.set(
-    chartRelsPath,
-    Buffer.from(
-      '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n' +
-        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
-        `<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/package" Target="embeddings/Microsoft_Excel_Worksheet${maxNum + 1}.xlsx"/>` +
-        '</Relationships>',
-      'utf8',
-    ),
-  )
-  archive.entries.set(chartPath, Buffer.from(buildChartSpaceXml(opts, 'rId1'), 'utf8'))
+  const workbookRId = writeChartWorkbook(opened, chartPath, opts)
+  archive.entries.set(chartPath, Buffer.from(buildChartSpaceXml(opts, workbookRId), 'utf8'))
 
   // 2) [Content_Types].xml Override
   const ctPath = '[Content_Types].xml'
