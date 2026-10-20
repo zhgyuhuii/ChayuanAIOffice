@@ -632,6 +632,8 @@ const projectApi: ProjectApi = {
   conversationDelete: (args) => ipcRenderer.invoke('project:conversationDelete', args),
   conversationsDeleteAll: (args) => ipcRenderer.invoke('project:conversationsDeleteAll', args),
   conversationsRebind: (args) => ipcRenderer.invoke('project:conversationsRebind', args),
+  listChats: (args) => ipcRenderer.invoke('project:listChats', args),
+  deleteChat: (args) => ipcRenderer.invoke('project:deleteChat', args),
 }
 contextBridge.exposeInMainWorld('projectApi', projectApi)
 

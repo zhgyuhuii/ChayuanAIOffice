@@ -796,12 +796,14 @@ contextBridge.exposeInMainWorld('chaOfficeProject', projectApi)
 // the `projectApi` const (exposed as chaOfficeProject).
 const projectChatApi: Pick<
   ProjectApi,
-  'resolveChat' | 'appendChat' | 'loadChat' | 'rebindChat'
+  'resolveChat' | 'appendChat' | 'loadChat' | 'rebindChat' | 'listChats' | 'deleteChat'
 > = {
   resolveChat: (args) => ipcRenderer.invoke('project:resolveChat', args),
   appendChat: (args) => ipcRenderer.invoke('project:appendChat', args),
   loadChat: (args) => ipcRenderer.invoke('project:loadChat', args),
   rebindChat: (args) => ipcRenderer.invoke('project:rebindChat', args),
+  listChats: (args) => ipcRenderer.invoke('project:listChats', args),
+  deleteChat: (args) => ipcRenderer.invoke('project:deleteChat', args),
 }
 
 contextBridge.exposeInMainWorld('projectApi', projectChatApi)
