@@ -196,12 +196,29 @@ describe('resolveModelCall', () => {
     expect(gem.baseUrl).toBe('https://generativelanguage.googleapis.com/v1beta')
   })
 
-  it('throws on unknown profiles and unlisted models', () => {
+  it('throws on unknown profiles and unlisted models (api-key profiles only)', () => {
     const s = defaultSettingsV2()
     expect(() => resolveModelCall(s, { profileId: 'nope', modelId: 'x' }, 'k')).toThrow()
+    // api-key profiles still require the model to sit in the profile's list…
+    s.profiles.push({
+      id: 'openai',
+      vendorId: 'openai',
+      displayName: 'OpenAI',
+      protocol: 'openai-completions',
+      baseUrl: 'https://api.openai.com/v1',
+      apiKey: 'sk',
+      auth: 'api-key',
+      enabled: true,
+      models: [{ id: 'gpt-5.6' }],
+    })
     expect(() =>
-      resolveModelCall(s, { profileId: 'chaoffice', modelId: 'not-a-model' }, 'k'),
+      resolveModelCall(s, { profileId: 'openai', modelId: 'not-a-model' }, 'k'),
     ).toThrow()
+    // …while the login-backed profile routes whatever the proxy serves: the
+    // fetched list is a UI filter, never a local allowlist
+    const routed = resolveModelCall(s, { profileId: 'chaoffice', modelId: 'pool-only-id' }, 'k')
+    expect(routed.vendorId).toBe('chaoffice')
+    expect(routed.model).toBe('pool-only-id')
   })
 })
 

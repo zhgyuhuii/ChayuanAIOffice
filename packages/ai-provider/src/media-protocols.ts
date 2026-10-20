@@ -686,11 +686,12 @@ function modelOf(
   config: AiMediaProviderConfig,
   field: 'imageModel' | 'analysisModel',
 ): string {
-  const model =
-    config[field] || (field === 'imageModel' ? meta.defaultImageModel : meta.defaultAnalysisModel)
+  // the user's pinned model only — no vendor default exists (model lists are
+  // fetched live in the settings UI; whatever the endpoint serves is what runs)
+  const model = config[field]
   if (!model) {
     throw new Error(
-      `No ${field === 'imageModel' ? 'image' : 'analysis'} model configured for the ${meta.label} media provider`,
+      `No ${field === 'imageModel' ? 'image' : 'analysis'} model configured for the ${meta.label} media provider (Settings → 生图、媒体与搜索)`,
     )
   }
   return model

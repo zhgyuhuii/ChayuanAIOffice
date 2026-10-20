@@ -30,6 +30,7 @@ export type { AiDefaultKind } from './settings-v2'
 export type { VendorCatalogEntry } from './vendor-catalog'
 export {
   AI_PROVIDERS,
+  CHAOFFICE_LLM_BASE_URLS,
   DEFAULT_MAX_OUTPUT_TOKENS,
   MAX_MAX_OUTPUT_TOKENS,
   MIN_MAX_OUTPUT_TOKENS,
@@ -51,7 +52,6 @@ export type { AiModelType } from './model-type'
 export { modelAcceptsImages } from './settings-v2'
 export { functionCallingVerdict, resolveModelCapabilities } from './capabilities'
 export {
-  CHAOFFICE_PRESET_MODELS,
   NO_MODELS_API,
   VENDORS,
   VENDOR_BY_ID,

@@ -320,6 +320,22 @@ describe('ModelSettingsPage model checklist + save validation', () => {
     expect(document.body.querySelectorAll('[data-model-toggle]').length).toBe(2)
   })
 
+  it('fetch failure shows the error and never substitutes a built-in list', async () => {
+    await renderInteractive(async () => {
+      throw new Error('HTTP 429: rate limited')
+    })
+    await act(async () => {
+      ;(document.body.querySelector('[data-model-fetch]') as HTMLButtonElement).dispatchEvent(
+        new MouseEvent('click', { bubbles: true }),
+      )
+    })
+    // the list shown is exactly what the endpoint answered (nothing) — no
+    // preset masquerading as a successful fetch
+    expect(document.body.querySelector('[data-model-msg]')?.textContent).toContain('429')
+    expect(document.body.querySelector('[data-model-list-empty]')).toBeTruthy()
+    expect(document.body.querySelectorAll('[data-model-toggle]').length).toBe(0)
+  })
+
   it('blocks saving when the protocol check fails; saves when it passes', async () => {
     // the list fetch succeeds first; only the save-time probe is made to fail
     // (wrong protocol / unreachable endpoint over the chosen protocol)

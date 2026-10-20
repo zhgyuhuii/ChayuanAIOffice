@@ -165,8 +165,9 @@ export function capabilityVendorRows(
         ...(vendor?.keyUrl ? { keyUrl: vendor.keyUrl } : {}),
       }
     })
-  // Custom/OpenAI-compatible profiles (no catalog vendor, e.g. agnes-ai) join
-  // the group whenever at least one of their models qualifies — qualification
+  // Profiles whose vendor is not in the capability's vendor list (e.g.
+  // agnes-ai, a first-party vendor outside the media-gen adapters) join the
+  // group whenever at least one of their models qualifies — qualification
   // is model-driven (modelHasCapability), never vendor-list membership.
   for (const profile of settings.profiles) {
     const vendorId = profile.vendorId ?? profile.id

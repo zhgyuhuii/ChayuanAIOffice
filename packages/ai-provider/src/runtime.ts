@@ -465,8 +465,16 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
       const settings = await readRaw()
       const profile = findProfile(settings, target.profileId)
       if (profile) {
-        const key = await profileKey(profile)
-        if (key && key !== 'local') target = { ...target, apiKey: key }
+        // the login-backed profile carries no stored key — discovery speaks to
+        // the proxy with the session token, same as the stream path
+        if (profile.auth === 'chaoffice-login') {
+          if (!chaoffice.hasAuth() || !chaoffice.apiKey())
+            throw new Error(translate('errChaOfficeNotLoggedIn'))
+          target = { ...target, apiKey: chaoffice.apiKey() }
+        } else {
+          const key = await profileKey(profile)
+          if (key && key !== 'local') target = { ...target, apiKey: key }
+        }
       }
     }
     const models = await discoverModels(target)

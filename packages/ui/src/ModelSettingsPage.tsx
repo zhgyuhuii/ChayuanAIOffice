@@ -18,7 +18,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
-  CHAOFFICE_PRESET_MODELS,
+  CHAOFFICE_LLM_BASE_URLS,
   KEEP_KEY,
   NO_MODELS_API,
   VENDORS,
@@ -198,11 +198,12 @@ export function ModelSettingsPage({
   const [keyConfigured, setKeyConfigured] = useState(false)
   const [showKey, setShowKey] = useState(false)
   const [models, setModels] = useState<DraftModel[]>([])
-  const [modelsFromPreset, setModelsFromPreset] = useState(false)
   /** model-type groups the user collapsed in the checklist */
   const [collapsedTypes, setCollapsedTypes] = useState<Set<string>>(new Set())
   const [busy, setBusy] = useState<'fetch' | 'test' | 'save' | ''>('')
   const [msg, setMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null)
+  /** ChaOffice pane: the proxy's live model list — fetched, never pre-seeded */
+  const [chaofficeCatalog, setChaofficeCatalog] = useState<AiModelEntry[]>([])
 
   const flash = (kind: 'ok' | 'err', text: string) => {
     setMsg({ kind, text })
@@ -320,12 +321,11 @@ export function ModelSettingsPage({
       setProtocol(stored?.protocol ?? vendor?.api ?? 'openai-completions')
       setDisplayNameInput(selected === 'openai-compatible' ? (stored?.displayName ?? '') : '')
       setModels(
-        (stored?.models ?? ((vendor?.presets ?? []) as AiModelEntry[])).map((m) => ({
+        (stored?.models ?? []).map((m) => ({
           ...m,
           enabled: true,
         })),
       )
-      setModelsFromPreset(!!vendor?.presets?.length && !stored?.models.length)
       setApiKeyInput('')
       setKeyFieldValues({})
       setKeyConfigured(!!stored?.apiKey || !!stored?.apiKeyRef)
@@ -335,7 +335,6 @@ export function ModelSettingsPage({
     setProtocol(selectedProfile.protocol)
     setDisplayNameInput(selected === 'openai-compatible' ? (selectedProfile.displayName ?? '') : '')
     setModels(selectedProfile.models.map((m) => ({ ...m, enabled: true })))
-    setModelsFromPreset(false)
     setApiKeyInput('')
     setKeyFieldValues({})
     // harness-managed profiles carry only a key reference (the secret lives in
@@ -343,6 +342,17 @@ export function ModelSettingsPage({
     setKeyConfigured(!!selectedProfile.apiKey || !!selectedProfile.apiKeyRef)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- rebuild only on vendor switch
   }, [selected])
+
+  // ChaOffice 面板：登录态下首次进入自动拉取一次平台模型列表
+  //（列表只来自接口，没有内置名单；失败可在面板里手动重试）
+  const chaofficeAutoFetch = useRef(false)
+  useEffect(() => {
+    if (selected !== 'chaoffice' || !chaofficeUsable || !chaoffice?.loggedIn) return
+    if (chaofficeAutoFetch.current) return
+    chaofficeAutoFetch.current = true
+    void fetchChaofficeModels()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per pane entry
+  }, [selected, chaofficeUsable, chaoffice?.loggedIn])
 
   // 本地工具探测：切到本地厂商（或点「重新检测」）时查安装/运行状态
   useEffect(() => {
@@ -460,17 +470,32 @@ export function ModelSettingsPage({
       if (!found.models.length) throw new Error(t.errNoModelsParsed)
       const previous = new Map(models.map((m) => [m.id, m.enabled]))
       setModels(found.models.map((m) => ({ ...m, enabled: previous.get(m.id) ?? false })))
-      setModelsFromPreset(false)
       flash('ok', fmt(t.modelsFound, { n: found.models.length }))
     } catch (error) {
-      const vendor = selectedVendor
-      if (vendor?.presets?.length) {
-        setModels(vendor.presets.map((m) => ({ ...m, enabled: false })))
-        setModelsFromPreset(true)
-        flash('ok', fmt(t.modelsFound, { n: vendor.presets.length }))
-      } else {
-        flash('err', fmt(t.fetchFailed, { message: errorText(error) }))
-      }
+      // no built-in fallback: the list shown is exactly what the endpoint answered
+      flash('err', fmt(t.fetchFailed, { message: errorText(error) }))
+    } finally {
+      setBusy('')
+    }
+  }
+
+  /** ChaOffice pane: the login-backed proxy answers GET /api/llm_proxy/v1/models;
+   * the session token rides profileId 'chaoffice' (resolved main-side) */
+  const fetchChaofficeModels = async () => {
+    setBusy('fetch')
+    try {
+      const found = await bridge.discoverModels({
+        protocol: 'openai-completions',
+        baseUrl: CHAOFFICE_LLM_BASE_URLS.openai,
+        apiKey: '',
+        profileId: 'chaoffice',
+      })
+      if (found.error) throw new Error(found.error)
+      if (!found.models.length) throw new Error(t.errNoModelsParsed)
+      setChaofficeCatalog(found.models)
+      flash('ok', fmt(t.modelsFound, { n: found.models.length }))
+    } catch (error) {
+      flash('err', fmt(t.fetchFailed, { message: errorText(error) }))
     } finally {
       setBusy('')
     }
@@ -603,11 +628,10 @@ export function ModelSettingsPage({
   const toggleChaOfficeModel = async (modelId: string, on: boolean) => {
     const profile = profiles.find((p) => p.id === 'chaoffice')
     if (!profile) return
-    const currentIds = new Set(profile.models.map((m) => m.id))
     const nextModels = on
-      ? CHAOFFICE_PRESET_MODELS.filter((id) => currentIds.has(id) || id === modelId).map((id) => ({
-          id,
-        }))
+      ? profile.models.some((m) => m.id === modelId)
+        ? profile.models
+        : [...profile.models, { id: modelId }]
       : profile.models.filter((m) => m.id !== modelId)
     // picking a model is the explicit act that enables the login-backed profile
     const nextProfiles = profiles.map((p) =>
@@ -761,7 +785,6 @@ export function ModelSettingsPage({
     }
     return (
       <div className="msp-list" data-model-list>
-        {modelsFromPreset && <div className="msp-note">{t.presetModelsHint}</div>}
         {groupByType(entries).map((group) => {
           const allOn = group.models.every((m) => m.enabled)
           const collapsed = collapsedTypes.has(group.type)
@@ -1030,13 +1053,28 @@ export function ModelSettingsPage({
                   </button>
                 )}
               </div>
-              <ModelList
-                entries={CHAOFFICE_PRESET_MODELS.map((id) => ({
-                  id,
-                  enabled: selectedProfile?.models.some((m) => m.id === id) ?? false,
-                }))}
-                onToggle={(id, on) => void toggleChaOfficeModel(id, on)}
-              />
+              {chaofficeCatalog.length === 0 ? (
+                <div className="msp-list is-empty" data-chaoffice-model-empty>
+                  <button
+                    type="button"
+                    className="msp-btn"
+                    data-chaoffice-model-fetch
+                    onClick={() => void fetchChaofficeModels()}
+                    disabled={busy !== '' || !chaoffice?.loggedIn}
+                  >
+                    {busy === 'fetch' ? t.fetching : t.fetchModels}
+                  </button>
+                  <p className="msp-note">{t.chaofficeModelsHint}</p>
+                </div>
+              ) : (
+                <ModelList
+                  entries={chaofficeCatalog.map((m) => ({
+                    ...m,
+                    enabled: selectedProfile?.models.some((e) => e.id === m.id) ?? false,
+                  }))}
+                  onToggle={(id, on) => void toggleChaOfficeModel(id, on)}
+                />
+              )}
             </>
           ) : (
             <>

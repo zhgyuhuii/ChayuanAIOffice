@@ -147,40 +147,21 @@ describe('provider registry', () => {
     }
   })
 
-  it('pins the Spark host, model id and key prefix to the iFlytek product guide', () => {
+  it('pins the Spark host and key prefix to the iFlytek product guide', () => {
     const spark = AI_PROVIDERS.find((p) => p.id === 'spark')!
-    expect(spark.models).toEqual(['spark-x2.5'])
-    expect(spark.defaultModel).toBe('spark-x2.5')
     expect(spark.keyPlaceholder).toBe('ak-...')
     const endpoint = AI_PROVIDER_ADAPTERS.spark.resolveEndpoint(config('spark-x2.5'))
     expect(endpoint.baseUrl).toBe('https://maas-api.cn-huabei-1.xf-yun.com/v2')
     expect(endpointUrl(endpoint.baseUrl, 'chat/completions')).toBe(
       'https://maas-api.cn-huabei-1.xf-yun.com/v2/chat/completions',
     )
-    for (const wrong of ['Spark-X2.5', 'spark-api-open.xf-yun.com']) {
-      expect(spark.models.join(' ')).not.toContain(wrong)
-      expect(spark.defaultModel).not.toContain(wrong)
-      expect(endpoint.baseUrl).not.toContain(wrong)
-    }
   })
 
-  it('pins the LongCat model ids to the official pricing pages', () => {
-    const longcat = AI_PROVIDERS.find((p) => p.id === 'longcat')!
-    expect(longcat.models).toEqual(['LongCat-2.5-Preview', 'LongCat-2.0'])
-    for (const model of longcat.models) {
-      expect(AI_PROVIDER_ADAPTERS.longcat.resolveEndpoint(config(model))).toEqual({
-        protocol: 'openai-compatible',
-        baseUrl: 'https://api.longcat.chat/openai/v1',
-      })
-    }
-    expect(longcat.models).not.toContain('longcat-2.0')
-    expect(longcat.models).not.toContain('longcat-2.5-preview')
-  })
-
-  it('keeps Ling-3.1-flash off the first-party endpoint and lists the VL member', () => {
-    const ling = AI_PROVIDERS.find((p) => p.id === 'ling')!
-    expect(ling.models).not.toContain('Ling-3.1-flash')
-    expect(ling.models).toContain('Ling-3.0-flash-VL')
+  it('routes the documented LongCat id onto the official endpoint', () => {
+    expect(AI_PROVIDER_ADAPTERS.longcat.resolveEndpoint(config('LongCat-2.0'))).toEqual({
+      protocol: 'openai-compatible',
+      baseUrl: 'https://api.longcat.chat/openai/v1',
+    })
   })
 
   it('marks Kimi as fixed-sampling (K3 rejects any temperature but 1)', () => {

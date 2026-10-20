@@ -22,11 +22,12 @@ describe('MiniMax input capabilities', () => {
     expect(modelLacksVision('minimax/MiniMax-M3')).toBe(false)
   })
 
-  it('defaults media analysis to M3 without offering the text-only M2.7 model', () => {
+  it('keeps video analysis on MiniMax; fresh configs pin no analysis model', () => {
     const meta = getMediaProviderMeta('minimax')!
-    expect(meta.analysisModels).toEqual(['MiniMax-M3'])
     expect(meta.videoAnalysis).toBe(true)
-    expect(defaultAiMediaSettings().providers.minimax.analysisModel).toBe('MiniMax-M3')
+    // no built-in model list: M3 reads images/video (M2.7 does not) and the
+    // user pins whatever the vendor's live /models call serves
+    expect(defaultAiMediaSettings().providers.minimax.analysisModel).toBe('')
   })
 
   it.each([undefined, 'https://api.minimaxi.com/v1'])(
@@ -40,7 +41,7 @@ describe('MiniMax input capabilities', () => {
           ),
       )
       vi.stubGlobal('fetch', fetchMock)
-      const config = { apiKey: 'test-key', imageModel: '', analysisModel: '', baseUrl }
+      const config = { apiKey: 'test-key', imageModel: '', analysisModel: 'MiniMax-M3', baseUrl }
       const media = [
         { bytes: new Uint8Array([1, 2, 3]), mime: 'image/png' },
         { bytes: new Uint8Array([4, 5, 6]), mime: 'video/mp4' },

@@ -17,8 +17,10 @@ export const MINIMAX_BASE_URL = 'https://api.minimax.io/v1'
 /** DeepSeek's OpenAI-compatible root; the Vision + Files API live at https://api.deepseek.com */
 export const DEEPSEEK_MEDIA_BASE_URL = 'https://api.deepseek.com/v1'
 
-// Model ids verified against vendor docs 2026-09; keep chat-capable analysis
-// models in step with the chat catalog in providers.ts.
+// No built-in model lists: every model in the UI comes from a live fetch (the
+// settings page and the media capabilities channel drive discoverModels), and
+// the user pins what the endpoint actually serves. Meta carries only the wire
+// capability — which protocols this vendor can serve — never model ids.
 export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
   {
     id: 'openai',
@@ -27,11 +29,7 @@ export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
     keyPlaceholder: 'sk-...',
     defaultBaseUrl: OPENAI_IMAGES_BASE_URL,
     imageProtocol: 'openai-images',
-    imageModels: ['gpt-image-2', 'gpt-image-1.5', 'gpt-image-1', 'gpt-image-1-mini'],
-    defaultImageModel: 'gpt-image-2',
     analysisProtocol: 'openai-chat',
-    analysisModels: ['gpt-5.6-sol', 'gpt-5.6-terra', 'gpt-5.6-luna', 'gpt-5.5', 'gpt-5.4-mini'],
-    defaultAnalysisModel: 'gpt-5.6-luna',
     videoAnalysis: false,
   },
   {
@@ -42,16 +40,7 @@ export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
     keyPlaceholder: 'AIza...',
     defaultBaseUrl: GEMINI_MEDIA_BASE_URL,
     imageProtocol: 'gemini',
-    imageModels: [
-      'gemini-3.1-flash-image',
-      'gemini-3-pro-image',
-      'gemini-3.1-flash-lite-image',
-      'gemini-2.5-flash-image',
-    ],
-    defaultImageModel: 'gemini-3.1-flash-image',
     analysisProtocol: 'gemini',
-    analysisModels: ['gemini-3.7-flash', 'gemini-3.1-pro-preview', 'gemini-3.6-flash'],
-    defaultAnalysisModel: 'gemini-3.7-flash',
     videoAnalysis: true,
   },
   {
@@ -61,20 +50,7 @@ export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
     keyPlaceholder: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
     defaultBaseUrl: ARK_BASE_URL,
     imageProtocol: 'openai-images',
-    // per the Ark model list 2026-10-12: Seedream 5.0 split into a pro cut
-    // (layer split, interactive editing, 14-language text) and a flash cut
-    // (same feature set, cheaper and faster), so 5.0 is no longer one model.
-    // The 4.5 and 4.0 IDs are both flagged for retirement there and come out.
-    // 5-0-260128 stays — only its lite alias is on the way out.
-    imageModels: [
-      'doubao-seedream-5-0-pro-260628',
-      'doubao-seedream-5-0-flash-260915',
-      'doubao-seedream-5-0-260128',
-    ],
-    defaultImageModel: 'doubao-seedream-5-0-pro-260628',
     analysisProtocol: 'openai-chat',
-    analysisModels: ['doubao-seed-2-1-pro-260628', 'doubao-seed-2-1-turbo-260628'],
-    defaultAnalysisModel: 'doubao-seed-2-1-pro-260628',
     videoAnalysis: true,
   },
   {
@@ -84,11 +60,7 @@ export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
     keyPlaceholder: 'xxxxxxxx.xxxxxxxx',
     defaultBaseUrl: ZHIPU_BASE_URL,
     imageProtocol: 'openai-images',
-    imageModels: ['cogview-4-250304', 'cogview-3-flash'],
-    defaultImageModel: 'cogview-4-250304',
     analysisProtocol: 'openai-chat',
-    analysisModels: ['glm-4.6v', 'glm-4.6v-flash'],
-    defaultAnalysisModel: 'glm-4.6v',
     videoAnalysis: true,
   },
   {
@@ -98,11 +70,7 @@ export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
     keyPlaceholder: 'xai-...',
     defaultBaseUrl: XAI_BASE_URL,
     imageProtocol: 'openai-images',
-    imageModels: ['grok-imagine-image-2.0', 'grok-2-image-1212'],
-    defaultImageModel: 'grok-imagine-image-2.0',
     analysisProtocol: 'openai-chat',
-    analysisModels: ['grok-4.6', 'grok-4.5'],
-    defaultAnalysisModel: 'grok-4.6',
     videoAnalysis: false,
   },
   {
@@ -112,11 +80,7 @@ export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
     keyPlaceholder: 'sk-...',
     defaultBaseUrl: DASHSCOPE_BASE_URL,
     imageProtocol: 'dashscope',
-    imageModels: ['qwen-image-plus', 'qwen-image'],
-    defaultImageModel: 'qwen-image-plus',
     analysisProtocol: 'openai-chat',
-    analysisModels: ['qwen3-vl-plus', 'qwen3-vl-flash', 'qwen3.8-max', 'qwen3.7-plus'],
-    defaultAnalysisModel: 'qwen3-vl-plus',
     videoAnalysis: true,
   },
   {
@@ -127,11 +91,7 @@ export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
     keyPlaceholder: 'eyJ...',
     defaultBaseUrl: MINIMAX_BASE_URL,
     imageProtocol: 'minimax',
-    imageModels: ['image-01'],
-    defaultImageModel: 'image-01',
     analysisProtocol: 'openai-chat',
-    analysisModels: ['MiniMax-M3'],
-    defaultAnalysisModel: 'MiniMax-M3',
     videoAnalysis: true,
   },
   {
@@ -142,10 +102,6 @@ export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
     needsKey: false,
     defaultBaseUrl: 'https://image.pollinations.ai',
     imageProtocol: 'pollinations',
-    imageModels: ['flux', 'flux-realism', 'flux-anime', 'flux-3d', 'turbo'],
-    defaultImageModel: 'flux',
-    analysisModels: [],
-    defaultAnalysisModel: '',
     videoAnalysis: false,
   },
   {
@@ -156,10 +112,6 @@ export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
     needsKey: false,
     defaultBaseUrl: 'https://agnes.ai',
     imageProtocol: 'pollinations',
-    imageModels: ['agnes-v1'],
-    defaultImageModel: 'agnes-v1',
-    analysisModels: [],
-    defaultAnalysisModel: '',
     videoAnalysis: false,
   },
   {
@@ -169,10 +121,6 @@ export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
     keyPlaceholder: 'hf_...',
     defaultBaseUrl: 'https://api-inference.huggingface.co',
     imageProtocol: 'openai-images',
-    imageModels: ['stabilityai/stable-diffusion-xl-base-1.0', 'black-forest-labs/FLUX.1-schnell'],
-    defaultImageModel: 'black-forest-labs/FLUX.1-schnell',
-    analysisModels: [],
-    defaultAnalysisModel: '',
     videoAnalysis: false,
   },
   {
@@ -183,11 +131,7 @@ export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
     description: 'DeepSeek V4.1 Flash reads images (native multimodal); no image generation',
     keyPlaceholder: 'sk-...',
     defaultBaseUrl: DEEPSEEK_MEDIA_BASE_URL,
-    imageModels: [],
-    defaultImageModel: '',
     analysisProtocol: 'openai-chat',
-    analysisModels: ['deepseek-flash'],
-    defaultAnalysisModel: 'deepseek-flash',
     videoAnalysis: false,
   },
   {
@@ -198,11 +142,7 @@ export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
     needsBaseUrl: true,
     defaultBaseUrl: '',
     imageProtocol: 'openai-images',
-    imageModels: [],
-    defaultImageModel: '',
     analysisProtocol: 'openai-chat',
-    analysisModels: [],
-    defaultAnalysisModel: '',
     videoAnalysis: false,
   },
 ]
@@ -227,8 +167,8 @@ export function defaultAiMediaSettings(): AiMediaSettings {
   for (const meta of AI_MEDIA_PROVIDERS) {
     providers[meta.id] = {
       apiKey: '',
-      imageModel: meta.defaultImageModel,
-      analysisModel: meta.defaultAnalysisModel,
+      imageModel: '',
+      analysisModel: '',
       baseUrl: meta.needsBaseUrl ? '' : undefined,
     }
   }
@@ -326,51 +266,45 @@ export function activeMediaConfig(
   return { provider, config: settings.media!.providers[provider] }
 }
 
-function byokModel(
+/** the model the user pinned for one capability; '' when none — no vendor default exists */
+export function pinnedMediaModel(
   settings: Pick<AiSettings, 'media'>,
   capability: MediaCapability,
-): string | null {
+): string {
   const active = activeMediaConfig(settings, capability)
-  if (!active) return null
-  const meta = getMediaProviderMeta(active.provider)!
-  return capability === 'image'
-    ? active.config.imageModel || meta.defaultImageModel
-    : active.config.analysisModel || meta.defaultAnalysisModel
+  if (!active) return ''
+  return capability === 'image' ? active.config.imageModel : active.config.analysisModel
 }
 
 function capabilityAvailable(
   settings: Pick<AiSettings, 'media'> | null | undefined,
-  _gskLoggedIn: boolean,
   capability: MediaCapability,
 ): boolean {
-  if (!settings) return false
-  const model = byokModel(settings, capability)
-  if (model !== null) return model !== ''
-  return false
+  return pinnedMediaModel(settings ?? {}, capability) !== ''
 }
 
-/** live predicate for the generate_image tool: BYOK image model configured */
+/** live predicate for the generate_image tool: a BYOK image model is pinned */
 export function imageGenerationAvailable(
   settings: Pick<AiSettings, 'media'> | null | undefined,
-  gskLoggedIn: boolean,
+  _gskLoggedIn: boolean,
 ): boolean {
-  return capabilityAvailable(settings, gskLoggedIn, 'image')
+  return capabilityAvailable(settings, 'image')
 }
 
 /** live predicate for the analyze_media tool: image analysis or video analysis reachable */
 export function mediaAnalysisAvailable(
   settings: Pick<AiSettings, 'media'> | null | undefined,
-  gskLoggedIn: boolean,
+  _gskLoggedIn: boolean,
 ): boolean {
   return (
-    capabilityAvailable(settings, gskLoggedIn, 'analysis') ||
-    capabilityAvailable(settings, gskLoggedIn, 'video')
+    capabilityAvailable(settings, 'analysis') ||
+    capabilityAvailable(settings, 'video')
   )
 }
 
 export function videoAnalysisAvailable(
   settings: Pick<AiSettings, 'media'> | null | undefined,
-  gskLoggedIn: boolean,
+  _gskLoggedIn: boolean,
 ): boolean {
-  return capabilityAvailable(settings, gskLoggedIn, 'video')
+  return capabilityAvailable(settings, 'video')
 }

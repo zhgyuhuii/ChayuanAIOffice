@@ -261,13 +261,9 @@ export interface CodexModelCatalog {
 export interface AiProviderMeta {
   id: AiProviderId
   label: string
-  models: string[]
-  defaultModel: string
   keyPlaceholder: string
   needsBaseUrl?: boolean
   needsCliPath?: boolean
-  /** the settings page refreshes `models` from the vendor's own /models route; the shipped list is the offline fallback */
-  liveModels?: boolean
 }
 
 /** Image generation / media analysis backends (separate from the chat provider) */
@@ -314,12 +310,8 @@ export interface AiMediaProviderMeta {
   defaultBaseUrl: string
   /** absent = the provider does not generate images */
   imageProtocol?: AiImageProtocol
-  imageModels: string[]
-  defaultImageModel: string
   /** absent = the provider does not analyze media */
   analysisProtocol?: AiAnalysisProtocol
-  analysisModels: string[]
-  defaultAnalysisModel: string
   /** the analysis model accepts video input (Gemini natively; OpenAI-compatible vendors via a video_url part) */
   videoAnalysis: boolean
 }

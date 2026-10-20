@@ -36,8 +36,6 @@ export interface VendorCatalogEntry {
   /** free = 'nokey' (usable keyless) | 'freekey' (free key on signup) | 'tier' (free quota) */
   free?: 'nokey' | 'freekey' | 'tier'
   freeNote?: string
-  /** fallback model list when the vendor exposes no /models endpoint */
-  presets?: Array<{ id: string; name?: string }>
 }
 
 export const VENDOR_GROUPS: Array<{
@@ -51,27 +49,15 @@ export const VENDOR_GROUPS: Array<{
   { id: 'agg', label: 'API aggregators', labelZh: 'API 聚合' },
 ]
 
-/** This suite's login-backed default profile; protocol is model-dependent (claude→anthropic, gemini→gemini, rest→openai). */
-export const CHAOFFICE_PRESET_MODELS = [
-  'claude-opus-4-7',
-  'claude-opus-4-8',
-  'claude-sonnet-4-6',
-  'gpt-5.6',
-  'gpt-5.6-terra',
-  'gpt-5.6-luna',
-  'gemini-3.1-pro-preview',
-  'gemini-3-flash-preview',
-  'gemini-3.7-flash',
-]
-
 export const VENDORS: VendorCatalogEntry[] = [
   {
+    // This suite's login-backed default profile; protocol is model-dependent
+    // (claude→anthropic, gemini→gemini, rest→openai).
     id: 'chaoffice',
     name: 'ChaAI Office',
     group: 'agg',
     defaultUrl: '',
     api: 'openai-completions',
-    presets: CHAOFFICE_PRESET_MODELS.map((id) => ({ id })),
   },
   {
     id: 'deepseek',
@@ -771,17 +757,14 @@ export const VENDORS: VendorCatalogEntry[] = [
     api: 'openai-completions',
   },
   {
+    // 美团第一方模型厂商（LongCat-Flash 自研系列）——不是聚合网关，归国内平台。
     id: 'longcat',
     name: 'LongCat',
-    nameZh: '龙猫 LongCat',
-    group: 'agg',
+    nameZh: '美团 LongCat',
+    group: 'cn',
     defaultUrl: 'https://api.longcat.chat/openai',
     api: 'openai-completions',
     keyUrl: 'https://longcat.chat/platform/api_keys',
-    presets: [
-      { id: 'longcat-flash', name: 'LongCat-Flash-Chat' },
-      { id: 'longcat-flash-thinking', name: 'LongCat-Flash-Thinking' },
-    ],
   },
   {
     id: 'kilo-gateway',
@@ -816,25 +799,20 @@ export const VENDORS: VendorCatalogEntry[] = [
     free: 'freekey',
   },
   {
-    // 爱思 Agnes AI（T6）：Flash 系文本免费、Pro/高清视频收费。GET /v1/models
-    // works live, but the free tier rate-limits bursts — the curated preset list
-    // doubles as the fetch-fallback so the vendor stays configurable at 429.
+    // 爱思 Agnes AI：第一方国产模型厂商（自有 Agnes 2.5/3.0 系列，agnes-ai.cn）
+    // ——不是聚合网关，归国内平台。文本 Flash 系免费、Pro/高清视频收费。
+    // GET /v1/models 可用但免费档有突发限流；模型列表只动态获取，
+    // 获取失败如实报错（获取到什么就显示什么，不再内置名单兜底）。
     id: 'agnes-ai',
     name: 'Agnes AI',
     nameZh: '爱思 Agnes AI',
-    group: 'agg',
+    group: 'cn',
     defaultUrl: 'https://api.agnes-ai.cn/v1',
     api: 'openai-completions',
     keyUrl: 'https://www.agnes-ai.cn',
     docsUrl: 'https://wiki.agnes-ai.cn/zh-Hans/docs/overview',
     free: 'freekey',
     freeNote: '注册即得免费Key：文本 Flash 与图像生成免费，Pro/高清视频收费',
-    presets: [
-      { id: 'agnes-2.5-flash', name: 'Agnes 2.5 Flash（免费）' },
-      { id: 'agnes-3.0-flash', name: 'Agnes 3.0 Flash（免费）' },
-      { id: 'agnes-2.5-pro-beta', name: 'Agnes 2.5 Pro Beta' },
-      { id: 'agnes-2.5-pro', name: 'Agnes 2.5 Pro' },
-    ],
   },
   {
     id: 'routeway',
@@ -904,7 +882,14 @@ export const VENDORS: VendorCatalogEntry[] = [
 
 export const VENDOR_BY_ID = new Map(VENDORS.map((v) => [v.id, v]))
 
-/** Vendors without a usable /models endpoint; their presets are offered instead. */
+/**
+ * Save-time probe bypass: vendors whose model list cannot be re-fetched by the
+ * generic discovery call, so requiring a live /models answer before saving
+ * would block configuration. chaoffice is login-backed with a dedicated pane
+ * (its proxy list is fetched by that pane, not by the generic form); longcat
+ * guards /models behind auth quirks. Not a model source — every model list in
+ * the UI comes from a live fetch, never a built-in list.
+ */
 export const NO_MODELS_API = new Set(['longcat', 'chaoffice'])
 
 /** llm-pi-ai route key (harness settings source): the chatop-<id> prefix avoids collisions with hand-written profiles. */

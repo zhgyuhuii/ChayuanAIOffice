@@ -13,16 +13,17 @@ import {
 import type { AiProviderId } from '../src/types'
 
 describe('defaultAiSettings', () => {
-  it('gives every provider its default model and an empty key by default', () => {
+  it('gives every provider an empty key and an empty model by default', () => {
     const settings = defaultAiSettings()
     expect(settings.provider).toBe('chaoffice')
     for (const meta of AI_PROVIDERS) {
       expect(settings.providers[meta.id].apiKey).toBe('')
-      expect(settings.providers[meta.id].model).toBe(meta.defaultModel)
+      // no built-in model: the model id comes from a live fetch in the
+      // settings page, so a fresh config ships none
+      expect(settings.providers[meta.id].model).toBe('')
     }
     expect(settings.providers.custom.baseUrl).toBe('')
     expect(settings.providers.codex.cliPath).toBe('')
-    expect(settings.providers.codex.model).toBe('')
     expect(settings.providers.anthropic.baseUrl).toBeUndefined()
   })
 
@@ -33,84 +34,11 @@ describe('defaultAiSettings', () => {
   })
 })
 
-describe('provider model catalog', () => {
-  it("offers the vendor's own DeepSeek ids, not the proxy pool spelling", () => {
-    const chaoffice = AI_PROVIDERS.find((provider) => provider.id === 'chaoffice')!
-    const deepseek = AI_PROVIDERS.find((provider) => provider.id === 'deepseek')!
-
-    expect(deepseek.models).toContain('deepseek-flash')
-    expect(deepseek.models).not.toContain('deep-seek-v4.1-flash')
-    expect(deepseek.models).not.toContain('deepseek-v4-flash')
-    expect(deepseek.models).not.toContain('deepseek-v4-flash-vision-exp')
-    expect(chaoffice.models).not.toContain('deep-seek-v4-flash')
-    expect(chaoffice.models).not.toContain('deep-seek-v4-flash-vision-exp-openrouter')
-  })
-
-  it('serves DeepSeek V4.1 Flash through the proxy under its hyphenated pool id', () => {
-    const chaoffice = AI_PROVIDERS.find((provider) => provider.id === 'chaoffice')!
-    expect(chaoffice.models).toContain('deep-seek-v4.1-flash')
-    expect(chaoffice.models).not.toContain('deep-seek-v4-pro')
-  })
-
-  it('keeps Responses-only models out of the OpenCode tiers (no such protocol yet)', () => {
-    for (const id of ['opencode-zen', 'opencode-go'] as const) {
-      const meta = AI_PROVIDERS.find((provider) => provider.id === id)!
-      expect(meta.models).toContain(meta.defaultModel)
-      expect(meta.needsBaseUrl).toBeUndefined()
-      for (const model of meta.models) {
-        expect(model).not.toMatch(/^(gpt-|grok-|muse-spark-)/)
-      }
-    }
-  })
-
-  it('seeds Requesty with managed policy ids (short names, no vendor prefix)', () => {
-    const requesty = AI_PROVIDERS.find((provider) => provider.id === 'requesty')!
-    expect(requesty.models).toContain(requesty.defaultModel)
-    expect(requesty.needsBaseUrl).toBeUndefined()
-    for (const model of requesty.models) {
-      expect(model).not.toContain('/')
-    }
-  })
-
-  it('seeds Agnes AI with its self-owned tiers (checked 2026-09-13, wiki.agnes-ai.cn)', () => {
-    const agnes = AI_PROVIDERS.find((provider) => provider.id === 'agnes')!
-    expect(agnes.label).toBe('Agnes AI（爱思）')
-    expect(agnes.models).toEqual([
-      'agnes-2.5-flash',
-      'agnes-3.0-flash',
-      'agnes-2.5-pro-beta',
-      'agnes-2.5-pro',
-    ])
-    expect(agnes.defaultModel).toBe('agnes-2.5-flash')
-    expect(agnes.models).toContain(agnes.defaultModel)
-    expect(agnes.needsBaseUrl).toBeUndefined()
-    expect(agnes.keyPlaceholder).toContain('agnes-ai.cn')
-  })
-
-  it('seeds Opper with pool ids (bare names, no vendor prefix)', () => {
-    const opper = AI_PROVIDERS.find((provider) => provider.id === 'opper')!
-    expect(opper.models).toContain(opper.defaultModel)
-    expect(opper.needsBaseUrl).toBeUndefined()
-    for (const model of opper.models) {
-      expect(model).not.toContain('/')
-    }
-  })
-  // adapted: 上游 36747fca 新增 Atlas Cloud / Cheaper Inference 供应商种子断言，直接收
-  it('seeds Atlas Cloud with lab-namespaced model ids', () => {
-    const atlas = AI_PROVIDERS.find((provider) => provider.id === 'atlascloud')!
-    expect(atlas.models).toContain(atlas.defaultModel)
-    expect(atlas.needsBaseUrl).toBeUndefined()
-    for (const model of atlas.models) {
-      expect(model).toMatch(/^[a-z0-9-]+\/[A-Za-z0-9._-]+$/)
-    }
-  })
-
-  it('seeds Cheaper Inference with bare model ids (no vendor prefix)', () => {
-    const ci = AI_PROVIDERS.find((provider) => provider.id === 'cheaperinference')!
-    expect(ci.models).toContain(ci.defaultModel)
-    expect(ci.needsBaseUrl).toBeUndefined()
-    for (const model of ci.models) {
-      expect(model).not.toContain('/')
+describe('provider catalog hygiene', () => {
+  it('carries display metadata only — no built-in model lists', () => {
+    for (const meta of AI_PROVIDERS) {
+      expect(Object.hasOwn(meta, 'models'), `${meta.id} ships built-in models`).toBe(false)
+      expect(Object.hasOwn(meta, 'defaultModel'), `${meta.id} ships a default model`).toBe(false)
     }
   })
 })
@@ -176,7 +104,7 @@ describe('resolveAiSettings', () => {
     })
   })
 
-  it('rewrites retired DeepSeek ids and the old pool spelling to the listed id', () => {
+  it('rewrites retired DeepSeek ids and the old pool spelling to the vendor id', () => {
     for (const model of [
       'deepseek-v4-flash',
       'deepseek-v4-flash-vision-exp',
@@ -330,6 +258,7 @@ describe('activeProvider', () => {
     settings.provider = 'kimi'
     expect(activeProvider(settings)).toBe('chaoffice') // no key yet
     settings.providers.kimi.apiKey = 'sk-user'
+    settings.providers.kimi.model = 'kimi-k3'
     expect(activeProvider(settings)).toBe('kimi')
   })
 
@@ -339,7 +268,7 @@ describe('activeProvider', () => {
     settings.providers.custom.apiKey = 'k'
     expect(activeProvider(settings)).toBe('chaoffice')
     settings.providers.custom.baseUrl = 'http://localhost:1234/v1'
-    expect(activeProvider(settings)).toBe('chaoffice') // custom's default model is empty
+    expect(activeProvider(settings)).toBe('chaoffice') // custom's model is empty
     settings.providers.custom.model = 'my-model'
     expect(activeProvider(settings)).toBe('custom')
   })
@@ -376,7 +305,7 @@ describe('activeProvider', () => {
     settings.providers.kimi.apiKey = 'sk-user'
     settings.providers.kimi.model = '  '
     expect(activeProvider(settings)).toBe('chaoffice')
-    settings.providers.kimi.model = 'kimi-k2'
+    settings.providers.kimi.model = 'kimi-k3'
     expect(activeProvider(settings)).toBe('kimi')
 
     const custom = defaultAiSettings()

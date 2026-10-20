@@ -38,37 +38,29 @@ function openaiSettings(apiKey = 'sk-test', imageModel = 'gpt-image-2'): AiSetti
 }
 
 describe('media settings', () => {
-  // Ark model list 2026-10-12: Seedream 5.0 is a pro/flash pair, and both
-  // 4.5 and 4.0 are flagged for retirement there. Pinned so a future edit
-  // cannot quietly put a retired ID back or drop a live one.
-  it('offers only Seedream IDs the Ark list still serves', () => {
-    const doubao = AI_MEDIA_PROVIDERS.find((p) => p.id === 'doubao')!
-    expect(doubao.imageModels).toEqual([
-      'doubao-seedream-5-0-pro-260628',
-      'doubao-seedream-5-0-flash-260915',
-      'doubao-seedream-5-0-260128',
-    ])
-    expect(doubao.defaultImageModel).toBe('doubao-seedream-5-0-pro-260628')
-  })
-
-  // the settings UI seeds imageModel from defaultImageModel and offers
-  // imageModels; a default outside its own list is a value the user cannot
-  // pick back
-  it('never defaults a provider to a model its own list does not offer', () => {
+  it('carries wire capability only — no built-in model lists', () => {
     for (const meta of AI_MEDIA_PROVIDERS) {
-      if (!meta.imageModels.length) continue
-      expect(meta.imageModels).toContain(meta.defaultImageModel)
+      expect(Object.hasOwn(meta, 'imageModels'), `${meta.id} ships image models`).toBe(false)
+      expect(Object.hasOwn(meta, 'analysisModels'), `${meta.id} ships analysis models`).toBe(false)
+      expect(Object.hasOwn(meta, 'defaultImageModel'), `${meta.id} ships a default image model`).toBe(false)
+      expect(
+        Object.hasOwn(meta, 'defaultAnalysisModel'),
+        `${meta.id} ships a default analysis model`,
+      ).toBe(false)
     }
   })
 
   // adapted: 上游 genspark 供应商本地改名 chaoffice
-  it('defaults every provider to its default models and chaoffice as the active one', () => {
+  it('defaults every provider to empty models and chaoffice as the active one', () => {
     const media = defaultAiMediaSettings()
     expect(media.imageProvider).toBe('chaoffice')
     expect(media.analysisProvider).toBe('chaoffice')
     expect(media.videoAnalysisProvider).toBe('chaoffice')
     for (const meta of AI_MEDIA_PROVIDERS) {
-      expect(media.providers[meta.id].imageModel).toBe(meta.defaultImageModel)
+      // no built-in model: the model id comes from a live fetch, so a fresh
+      // config pins none
+      expect(media.providers[meta.id].imageModel).toBe('')
+      expect(media.providers[meta.id].analysisModel).toBe('')
       expect(media.providers[meta.id].apiKey).toBe('')
     }
     expect(media.providers.custom.baseUrl).toBe('')
@@ -113,7 +105,8 @@ describe('media settings', () => {
       imageModel: 'gemini-3-pro-image',
       analysisModel: '',
     })
-    expect(media.providers.openai.imageModel).toBe('gpt-image-2')
+    // an untouched provider pins no model
+    expect(media.providers.openai.imageModel).toBe('')
   })
 
   it('tolerates non-string values in a hand-edited settings file', () => {
@@ -124,7 +117,7 @@ describe('media settings', () => {
     } as never)
     expect(media.providers.openai.apiKey).toBe('')
     expect(media.providers.openai.baseUrl).toBe('')
-    expect(media.providers.openai.imageModel).toBe('gpt-image-2')
+    expect(media.providers.openai.imageModel).toBe('')
   })
 
   it('activates a BYOK media provider per capability, only when usable and capable', () => {
@@ -166,7 +159,7 @@ describe('media settings', () => {
     ).toBe('chaoffice')
   })
 
-  it('gates the tools on BYOK model presence (no ChaOffice backend)', () => {
+  it('gates the tools on a pinned BYOK model (no ChaOffice backend)', () => {
     const chaoffice = defaultAiSettings()
     expect(imageGenerationAvailable(chaoffice, true)).toBe(false)
     expect(imageGenerationAvailable(chaoffice, false)).toBe(false)
@@ -175,11 +168,17 @@ describe('media settings', () => {
     expect(imageGenerationAvailable(byok, false)).toBe(true)
     expect(imageGenerationAvailable(byok, true)).toBe(true)
     expect(mediaAnalysisAvailable(byok, false)).toBe(true)
-    // built-in vendors fall back to their default model; a custom endpoint
-    // without a model for one capability disables that tool alone
+    // the model must be pinned by the user: a key alone does not light the tool
+    // up when the vendor serves no default (model lists are fetched, not built in)
+    const keyOnly = openaiSettings()
+    keyOnly.media!.providers.openai.imageModel = ''
+    keyOnly.media!.providers.openai.analysisModel = ''
+    expect(imageGenerationAvailable(keyOnly, false)).toBe(false)
+    expect(mediaAnalysisAvailable(keyOnly, false)).toBe(false)
+    // a custom endpoint without a model for one capability disables that tool alone
     const noAnalysis = openaiSettings()
     noAnalysis.media!.providers.openai.analysisModel = ''
-    expect(mediaAnalysisAvailable(noAnalysis, false)).toBe(true)
+    expect(mediaAnalysisAvailable(noAnalysis, false)).toBe(false)
     const custom = defaultAiMediaSettings()
     custom.imageProvider = 'custom'
     custom.analysisProvider = 'custom'

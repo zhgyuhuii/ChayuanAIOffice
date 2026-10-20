@@ -155,7 +155,6 @@ export {
 export type { AiCapabilityKind, SearchPlatformKind, SearchPlatformMeta } from './capability-tree'
 export type { VendorCatalogEntry } from './vendor-catalog'
 export {
-  CHAOFFICE_PRESET_MODELS,
   NO_MODELS_API,
   VENDORS,
   VENDOR_BY_ID,

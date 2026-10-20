@@ -11,7 +11,7 @@ import type {
   AiSettingsV2,
   AiWireProtocol,
 } from './types'
-import { CHAOFFICE_PRESET_MODELS, VENDOR_BY_ID } from './vendor-catalog'
+import { VENDOR_BY_ID } from './vendor-catalog'
 
 /**
  * Settings v2 core: migration from v1, and the profile+model → wire-call
@@ -70,7 +70,9 @@ export function chaofficeProfile(): AiProviderProfile {
     baseUrl: '',
     auth: 'chaoffice-login',
     enabled: true,
-    models: CHAOFFICE_PRESET_MODELS.map((id) => ({ id })),
+    // no built-in model list: the settings pane fetches the proxy's live
+    // /models answer and the user opts picks in — nothing is pre-seeded
+    models: [],
   }
 }
 
@@ -203,9 +205,10 @@ export function resolveModelCall(
 ): ResolvedModelCall {
   const profile = findProfile(settings, selection.profileId)
   if (!profile) throw new Error(`Unknown model profile: ${selection.profileId}`)
-  const entry = profile.models.find((m) => m.id === selection.modelId)
-  if (!entry) throw new Error(`Model ${selection.modelId} is not enabled on ${profile.displayName}`)
 
+  // the login-backed profile's model set is whatever the proxy serves (the
+  // settings pane's fetched list is a UI filter, not an allowlist) — route by
+  // prefix without requiring the id to sit in profile.models
   if (profile.auth === 'chaoffice-login') {
     const ep = chaofficeEndpointFor(selection.modelId)
     return {
@@ -217,6 +220,9 @@ export function resolveModelCall(
       ...(modelHasFixedSampling(selection.modelId) ? { omitTemperature: true } : {}),
     }
   }
+
+  const entry = profile.models.find((m) => m.id === selection.modelId)
+  if (!entry) throw new Error(`Model ${selection.modelId} is not enabled on ${profile.displayName}`)
 
   if (profile.vendorId === 'codex' || profile.id === 'codex') {
     // Codex endpoints are the locally spawned app-server; no base URL exists.
