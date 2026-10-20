@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/chaoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第二十九轮完成（2026-10-20，终点 04f145717，分支 sync/29-upstream）**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第三十轮完成（2026-10-21，终点 1cb2925af，分支 sync/30-upstream）**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -735,6 +735,25 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 五轮对比审核 | ①文件级覆盖对账：1279 文件分类，19 可疑项逐一排除，零真实遗漏；②特性符号级：14 提交新增符号 2 个 ❌（e2e 命名空间已修、ci help-langs 步骤已补）；③ours 丢失审计：117 冲突文件本地独有标识符存活核查，全部定性（等价承接/测试网验证）；④删除反向审计：8/9 ✅；⑤语义回归：全部门禁（见下）。审核追加修复：xlsx-gateway refine 补 lineColor、edit-schemas 补锚点级 rotation/flipH/flipV |
 | 挂账 | sheets i18n dialogs vi.ts 少 9 个 fork 本地键（HEAD 继承欠账，en 回退兜底，补译即销）；ai-host 若原生支持 settings-changed 推送可移除 sheets-main 的 fs.watch 包装广播 |
 | 门禁 | typecheck 全仓 0；vitest 全绿：docs 3152/sheets 3437/ai-provider 494/agent-core 176/xlsx-gateway 248/pptx-engine 1294/shell 931/slides 1475/md 1047/pdf 868/html 319/ui 250/docx-engine 1717/pdf2docx 822/cli 313/electron-utils 257…；cargo test 228 全绿；lint 0；品牌 grep 豁免外零残留；check:help-langs 21 语言全齐 |
+
+## 第三十轮（2026-10-21，上游 04f145717..1cb2925af 2 提交全吸收，施工于 sync/30-upstream；六段 1.0.7.0.11.919——终点无新 tag（`v0.11.919-11-g1cb2925a`），上游 shell package.json 仍 0.11.0，后三位维持 0.11.919）
+
+> 上游 2 提交皆为 pptx-engine 修复，均为 R29 收割 #2090/#2091 的收尾件。对账 2/2。本轮零冲突裁决（唯二冲突为品牌别名 keep-ours，净 diff 0）。
+
+| # | 域 | 落位与裁决 |
+|---|---|---|
+| #2102 | pptx-engine/slides 配置 | **空 pick 对账**（6ca650d7d）：上游修「#2091 合并吞掉 #2090 的四行」——pptx-engine `./chart-workbook` export、media-insert `crc32` 导入、slides electron-vite/vitest 的 chart-workbook 别名。四处本地已于 R29 先行补齐（台账 R29 #2090 行「三 vite/vitest 别名并集 @chaoffice 域」、#2091 行「本地补 `import { crc32 } from './crc32'`」）；pick 时 package.json/media-insert 自动合并净零，两 config 冲突=本地 `@chaoffice` 别名 vs 上游 `@genoffice` 别名 → keep-ours，净 diff 0 → 按 R2/R4 先例落空提交（上游 subject 逐字+方括号注记） |
+| #2103 | pptx-engine materializeSlide | **干净 pick**（ff1db84a9，2 文件 +47）：`materializeSlide` 重解析后 `fresh.structureDirty` 继承原 slide 脏标（`if (slideIsDirty(slide)) fresh.structureDirty = true`）——修「插入表格/图表/媒体/3D 模型（appendRawElements 路径）后 deck 不报未保存：无关窗提示、无 AutoSave、另存无内容」真 bug；新测试 materialize-dirty.test.ts（表格/图表插入后 unsaved=true→save+commitSaved 后 false；干净页保持干净）3/3 绿。本地 materializeSlide 结构与上游 pre-change 逐字一致、`slideIsDirty` 在位，零改编 |
+
+**对账与核对**：2/2 上游提交逐字匹配；#2102 四文件 vs upstream/main 差异仅品牌域（`@genoffice`→`@chaoffice`）与别名行序（本地 chart-workbook 在 model3d 之前，功能等价）；#2103 两文件与上游逐字节一致。
+
+**门禁终态**：pptx-engine vitest 1318 绿（128 文件，新增 3）；slides 1515 绿（145 文件）；pptx-ops 85 绿；typecheck 全仓零新增——引擎链 pptx-engine/docx-engine/pptx-ops/pptx-render/pipelines 全干净，残留=ui ai-model-picker-options 4 错（R28 V2 桥挂账，透传至 docs/sheets/shell/slides/markdown/web）+ pdf 32 StringKey（R27 继承：SignaturesDialog 15/CertSignDialog 14/App 3）= main 同基线；lint 改动文件 0；品牌 grep 改动文件零命中。未触及 Rust，cargo 门禁与 Rust 函数级两向审计（R29 新增终检项）本轮不适用。
+
+**挂账（继承，本轮无新增）**：①ui ai-model-picker 4 错+4 红测试（R28 V2 桥）；②pdf 32 StringKey（R27）；③kb-ask AiModelPicker chip（R28）；④server 测试 /tmp 夹具环境缺失（R29）；⑤fonts 命名债（R28）。
+
+**本轮纪律验证**：①R29 坑③「上游自身 latent 编译破损，引擎侧 pick 后 tsc 必跑」得到正面印证——上游 #2102 正是在修自己 #2091 的 latent 破损，而本地 R29 已靠 tsc 兜住并先行补齐，本轮因此只需空对账；②根 `npm run typecheck` 为 `&&` 链，遇基线挂账工作区（cli→ui 4 错）即停，**其后 12 工作区不会被检查**——门禁必须对链停点之后的工作区逐个补跑（本轮补跑 12/12），否则「全链 exit 0」之外的任何结论都是假象。
+
+
 
 ## 第二十九轮（2026-10-20，上游 2cd8d48e3..04f145717 9 提交全吸收，施工于 sync/29-upstream；六段 1.0.7.0.11.919——终点无新 tag，取最新已含 tag v0.11.919）
 
