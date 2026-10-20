@@ -4632,3 +4632,23 @@ fn reads_xml_entry_that_matches_its_declaration() {
     let value = crate::xml_util::read_zip_string(&mut archive, "xl/worksheets/sheet1.xml").unwrap();
     assert!(value.contains("sheetData"));
 }
+
+/// A password-encrypted .xlsx is an OLE2 compound container, not a ZIP
+/// package: the open must explain that instead of surfacing the zip
+/// reader's "invalid Zip archive: Could not find EOCD" (#2076).
+#[test]
+fn encrypted_workbook_reports_password_protection() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("encrypted.xlsx");
+    let mut bytes = vec![0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1];
+    bytes.extend_from_slice(&[0u8; 512]);
+    std::fs::write(&path, &bytes).unwrap();
+
+    let mut sessions = WorkbookSessions::new();
+    let error = sessions.open(&path).unwrap_err();
+    let message = error.to_string();
+    assert!(
+        message.contains("password-protected"),
+        "expected a password-protection explanation, got: {message}"
+    );
+}

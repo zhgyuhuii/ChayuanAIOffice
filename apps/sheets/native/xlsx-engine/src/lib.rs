@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use std::fs::{self, File};
-use std::io::{BufReader, BufWriter, Read, Write};
+use std::io::{BufReader, BufWriter, Read, Seek, Write};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Condvar, Mutex};
@@ -205,6 +205,19 @@ pub struct WorkbookSessions {
     sessions: HashMap<String, WorkbookSession>,
 }
 
+/// Excel wraps password-encrypted workbooks in an OLE2 compound container
+/// rather than a ZIP package. Detect that signature before the zip reader
+/// runs so the open fails with an explanation instead of "invalid Zip
+/// archive: Could not find EOCD" (#2076). The file cursor is rewound so the
+/// caller can keep reading from the start.
+fn is_ole2_container(file: &mut File) -> std::io::Result<bool> {
+    const OLE2_MAGIC: [u8; 8] = [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1];
+    let mut magic = [0u8; 8];
+    let read = file.read(&mut magic)?;
+    file.rewind()?;
+    Ok(read == OLE2_MAGIC.len() && magic == OLE2_MAGIC)
+}
+
 impl WorkbookSessions {
     pub fn new() -> Self {
         Self {
@@ -240,7 +253,14 @@ impl WorkbookSessions {
             return Err(SidecarError::cancelled());
         }
         let canonical_path = canonicalize(path)?;
-        let file = File::open(&canonical_path)?;
+        let mut file = File::open(&canonical_path)?;
+        if is_ole2_container(&mut file)? {
+            return Err(SidecarError::Workbook(
+                "This workbook is password-protected. GenOffice Sheets cannot open \
+                 encrypted workbooks yet."
+                    .into(),
+            ));
+        }
         let mut archive = ZipArchive::new(file)?;
         archive::validate_entries(&mut archive)?;
         // The archive is open and validated and nothing has been written to
