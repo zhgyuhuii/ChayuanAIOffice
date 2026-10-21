@@ -2,6 +2,7 @@ import type { AgentMessage, AgentToolCall, AgentToolDef } from '@chaoffice/agent
 import { aiFetch } from '../fetch'
 import { httpBodyDetail } from '../http-error'
 import { chaofficeAttributionHeaders, opencodeSessionHeaders } from '../providers'
+import { createThinkRouter, splitThinkContent } from './think-routing'
 import { modelEchoesReasoning } from '../registry'
 import { inferModelType } from '../model-type'
 import type { AiChatResponse, AiProviderConfig } from '../types'
@@ -128,12 +129,17 @@ function emitOpenAiJsonMessage(bodyText: string, cb: StreamCallbacks): void {
   if (choice?.message?.reasoning_content) cb.onReasoningDelta?.(choice.message.reasoning_content)
   const rawContent = choice?.message?.content
   // image models may answer with a part list ({text: '![…](url)'}) — flatten it
-  const content =
+  const flat =
     typeof rawContent === 'string'
       ? rawContent
       : Array.isArray(rawContent)
         ? rawContent.map((part) => part?.text ?? '').join('')
         : ''
+  // LOCAL(think-routing): a leaked <think> block belongs to the reasoning
+  // channel, not the answer
+  const { reasoning: thinkReasoning, content: thinkContent } = splitThinkContent(flat)
+  if (thinkReasoning) cb.onReasoningDelta?.(thinkReasoning)
+  const content = thinkContent
   if (content) {
     emitted = true
     cb.onDelta(content)
@@ -387,6 +393,9 @@ async function openAiCompatibleTurn(
     throwIfCreditsNotice(jsonBody)
     return emitOpenAiJsonMessage(jsonBody, cb)
   }
+  // LOCAL(think-routing): engines that leak <think>…</think> into content get
+  // it routed to the reasoning channel instead of the answer
+  const thinkRouter = createThinkRouter()
   // tool call arguments stream in fragments keyed by index
   const pendingTools = new Map<number, { id: string; name: string; json: string }>()
   let stopReason: string | undefined
@@ -459,8 +468,17 @@ async function openAiCompatibleTurn(
     const reasoning = choice.delta?.reasoning_content ?? choice.delta?.reasoning
     if (typeof reasoning === 'string' && reasoning) cb.onReasoningDelta?.(reasoning)
     if (choice.delta?.content) {
-      emitted = true
-      cb.onDelta(choice.delta.content)
+      // think-tag routing: some engines (xinference llama.cpp + custom GGUF
+      // registrations) do not parse the model's <think>…</think> reasoning
+      // into reasoning_content — it arrives inside content. Route it to the
+      // reasoning channel so the answer stays clean.
+      for (const piece of thinkRouter.route(choice.delta.content)) {
+        if (piece.kind === 'reasoning') cb.onReasoningDelta?.(piece.text)
+        else if (piece.text) {
+          emitted = true
+          cb.onDelta(piece.text)
+        }
+      }
     }
     for (const tc of choice.delta?.tool_calls ?? []) {
       if (!pendingTools.has(tc.index)) {
@@ -495,6 +513,13 @@ async function openAiCompatibleTurn(
         abnormalFinish = choice.finish_reason
       }
       flushTools()
+    }
+  }
+  for (const piece of thinkRouter.flush()) {
+    if (piece.kind === 'reasoning') cb.onReasoningDelta?.(piece.text)
+    else {
+      emitted = true
+      cb.onDelta(piece.text)
     }
   }
   // No finish and no [DONE] with half-received arguments: the connection dropped

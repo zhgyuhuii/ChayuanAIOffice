@@ -1310,8 +1310,10 @@ export class AgentLoop<TSnapshot = unknown> {
       this.turnText &&
       this.options.skill.tools.length > 0
     ) {
+      // the leaked call may sit inside the model's <think> block (routed to
+      // the reasoning channel) — scan both channels
       const salvaged = salvageLeakedToolCalls(
-        this.turnText,
+        `${this.turnText}\n${this.turnReasoning}`,
         this.options.skill.tools.map((t) => t.name),
       )
       if (salvaged.length > 0) {
