@@ -37,7 +37,7 @@ export const WRITING_CORE_TOOL_NAMES = [
  * asks for pictures/charts/cover/… needs the general toolset.
  */
 const WRITING_INTENT_RE =
-  /扩写|润色|润饰|续写|改写|重写|缩写|校对|纠错|改写语气|润色一下|翻译|polish|proofread|expand on|continue writing|rewrite this|translate/i
+  /扩写|润色|润饰|续写|改写|重写|缩写|校对|纠错|翻译|写一篇|写一段|写一个|写份|写个|起草|撰写|拟定|写作|polish|proofread|expand|draft|write (a|an|the|up)|continue writing|rewrite|translate/i
 const NON_WRITING_INTENT_RE =
   /生成图|配图|插图|图片|画一|画个|画张|图表|表格|页眉|页脚|水印|封面|目录|思维导图|公式|脚注|尾注|批注|修订|新建(一个)?文档|单独文件|image|chart|header|footer|watermark|cover page|table of contents|mind ?map|footnote|comment on/i
 

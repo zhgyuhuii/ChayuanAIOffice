@@ -24,6 +24,8 @@ describe('isWritingIntent', () => {
     expect(isWritingIntent('续写这句话')).toBe(true)
     expect(isWritingIntent('polish this paragraph')).toBe(true)
     expect(isWritingIntent('翻译成英文')).toBe(true)
+    expect(isWritingIntent('写一篇大美江山')).toBe(true)
+    expect(isWritingIntent('帮我起草一份项目周报')).toBe(true)
   })
 
   it('a media/structure ask is never scoped, even when it contains a writing verb', () => {

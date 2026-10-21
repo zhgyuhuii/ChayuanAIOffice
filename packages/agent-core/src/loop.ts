@@ -1,4 +1,5 @@
 import { sanitizeHistoryForDegraded } from './degraded-history'
+import { salvageLeakedToolCalls } from './leaked-call-salvage'
 import type { AgentSkill, ExecutedToolCall } from './skill'
 import type {
   AgentAudio,
@@ -1293,6 +1294,29 @@ export class AgentLoop<TSnapshot = unknown> {
         this.degradedProbe = false
         this.probeUsed = true
         this.silentTurns = 0
+      }
+    }
+
+    // Salvage: engines with partial tool-call support leak the model's native
+    // call markup (Qwen <tool_call>{…}</tool_call>) into content instead of
+    // protocol tool_calls — on such a server nothing would ever execute and
+    // the document would never change. Convert explicit, known-tool blocks
+    // into real calls; gated to turns that actually had wire tools so plain
+    // prose that resembles JSON cannot misfire.
+    if (
+      toolCalls.length === 0 &&
+      !this.cancelled &&
+      !this.finalizing &&
+      this.turnText &&
+      this.options.skill.tools.length > 0
+    ) {
+      const salvaged = salvageLeakedToolCalls(
+        this.turnText,
+        this.options.skill.tools.map((t) => t.name),
+      )
+      if (salvaged.length > 0) {
+        toolCalls = salvaged
+        this.toolCalls = salvaged
       }
     }
 
