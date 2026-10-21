@@ -217,19 +217,92 @@ export async function streamOpenAiCompatible(
     openAiCompatibleTurn(baseUrl, config, system, messages, tools, maxTokens, cb, wd, {
       ...options,
       requestUsage: !usageRejectedGateways.has(baseUrl),
-    }).catch((e) => {
-      // Some gateways reject the (spec) stream_options field outright; a 400 that
-      // names it is retried once without it, and the gateway is remembered so
-      // later turns skip the extra round trip — those providers never report usage.
-      if (!/HTTP 4\d\d:[\s\S]*stream_options/i.test(e instanceof Error ? e.message : String(e)))
-        throw e
-      usageRejectedGateways.add(baseUrl)
-      return openAiCompatibleTurn(baseUrl, config, system, messages, tools, maxTokens, cb, wd, {
-        ...options,
-        requestUsage: false,
+    })
+      .catch((e) => {
+        // Some gateways reject the (spec) stream_options field outright; a 400 that
+        // names it is retried once without it, and the gateway is remembered so
+        // later turns skip the extra round trip — those providers never report usage.
+        if (!/HTTP 4\d\d:[\s\S]*stream_options/i.test(e instanceof Error ? e.message : String(e)))
+          throw e
+        usageRejectedGateways.add(baseUrl)
+        return openAiCompatibleTurn(baseUrl, config, system, messages, tools, maxTokens, cb, wd, {
+          ...options,
+          requestUsage: false,
+        })
       })
-    }),
+      .catch((e) => {
+        // LOCAL: engines like xinference's llama.cpp drop stream+tools requests
+        // entirely (the SSE carries only [DONE]) while answering the identical
+        // request non-stream just fine — one silent non-stream salvage per turn
+        // before the empty-stream error is allowed to surface
+        const msg = e instanceof Error ? e.message : String(e)
+        if (!msg.includes('(empty stream)')) throw e
+        return nonStreamSalvageTurn(
+          baseUrl,
+          config,
+          system,
+          messages,
+          tools,
+          maxTokens,
+          cb,
+          wd,
+          options,
+        )
+      }),
   )
+}
+
+/** One non-stream attempt with the exact same wire shape; results are emitted
+ *  through the same callbacks so the caller cannot tell the difference. */
+async function nonStreamSalvageTurn(
+  baseUrl: string,
+  config: AiProviderConfig,
+  system: string,
+  messages: AgentMessage[],
+  tools: AgentToolDef[],
+  maxTokens: number,
+  cb: StreamCallbacks,
+  wd: StreamWatchdog,
+  options: OpenAiRequestOptions,
+): Promise<void> {
+  const response = await aiFetch(endpointUrl(baseUrl, 'chat/completions'), {
+    method: 'POST',
+    signal: wd.signal,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {}),
+      ...chaofficeAttributionHeaders(baseUrl),
+      ...opencodeSessionHeaders(baseUrl, cb.sessionId),
+      ...options.headers,
+    },
+    body: JSON.stringify({
+      model: config.model,
+      max_tokens: maxTokens,
+      messages: openAiMessages(
+        system,
+        messages,
+        options.echoReasoning ?? modelEchoesReasoning(config.model),
+        baseUrl,
+      ),
+      ...(tools.length > 0
+        ? {
+            tools: tools.map((t) => ({
+              type: 'function',
+              function: { name: t.name, description: t.description, parameters: t.inputSchema },
+            })),
+          }
+        : {}),
+      ...(options.omitTemperature ? {} : { temperature: 0.3 }),
+      ...options.bodyExtras,
+    }),
+  })
+  wd.touch()
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${httpBodyDetail(await response.text())}`)
+  }
+  const bodyText = await response.text()
+  throwIfCreditsNotice(bodyText)
+  emitOpenAiJsonMessage(bodyText, cb)
 }
 
 async function openAiCompatibleTurn(
