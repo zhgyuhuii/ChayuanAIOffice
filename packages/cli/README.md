@@ -36,8 +36,8 @@ chaoffice capabilities --json                        # which cloud features ChaO
 chaoffice search "electron headless export" [--images] [--max 6] --json
 chaoffice image "isometric office, soft light" --aspect 16:9 --out hero.png
 chaoffice media photo.jpg --ask "What text is in this picture?" --json
-chaoffice docs read report.docx [--range 0-9] [--html] [--full] [--comments] [--revisions] [--header-footer] --json   # blocks (--full: whole text), comment threads, tracked changes, header/footer text
-chaoffice docs apply report.docx --ops ops.json [--dry-run]           # apply_ops entries + insert_content / replace_blocks / insert_image / insert_chart / edit_chart / set_header_footer / reply_comment / resolve_comment
+chaoffice docs read report.docx [--range 0-9] [--html] [--full] [--comments] [--revisions] [--header-footer] [--properties] --json   # blocks (--full: whole text), comment threads, tracked changes, header/footer text, document properties
+chaoffice docs apply report.docx --ops ops.json [--dry-run]           # apply_ops entries + insert_content / replace_blocks / insert_image / insert_chart / edit_chart / set_header_footer / reply_comment / resolve_comment / set_properties (document metadata)
 chaoffice guide docs                                                   # op signatures + restricted-HTML rules
 chaoffice selection report.docx --json   # what the user has selected in the editor showing the file
 chaoffice skill list   # coding agents found on this machine and the skill version each has

@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/chaoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第三十轮完成（2026-10-21，终点 1cb2925af，分支 sync/30-upstream）**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第三十一轮完成（2026-10-22，终点 285540a4f，分支 sync/31-upstream）**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -735,6 +735,26 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 五轮对比审核 | ①文件级覆盖对账：1279 文件分类，19 可疑项逐一排除，零真实遗漏；②特性符号级：14 提交新增符号 2 个 ❌（e2e 命名空间已修、ci help-langs 步骤已补）；③ours 丢失审计：117 冲突文件本地独有标识符存活核查，全部定性（等价承接/测试网验证）；④删除反向审计：8/9 ✅；⑤语义回归：全部门禁（见下）。审核追加修复：xlsx-gateway refine 补 lineColor、edit-schemas 补锚点级 rotation/flipH/flipV |
 | 挂账 | sheets i18n dialogs vi.ts 少 9 个 fork 本地键（HEAD 继承欠账，en 回退兜底，补译即销）；ai-host 若原生支持 settings-changed 推送可移除 sheets-main 的 fs.watch 包装广播 |
 | 门禁 | typecheck 全仓 0；vitest 全绿：docs 3152/sheets 3437/ai-provider 494/agent-core 176/xlsx-gateway 248/pptx-engine 1294/shell 931/slides 1475/md 1047/pdf 868/html 319/ui 250/docx-engine 1717/pdf2docx 822/cli 313/electron-utils 257…；cargo test 228 全绿；lint 0；品牌 grep 豁免外零残留；check:help-langs 21 语言全齐 |
+
+## 第三十一轮（2026-10-22，上游 1cb2925af..285540a4f 5 提交全吸收，施工于 sync/31-upstream；六段 1.0.9.0.11.919——终点无新 tag，上游 shell package.json 仍 0.11.0，后三位维持 0.11.919；打包 Z+1：1.0.8→1.0.9）
+
+> 上游 5 提交=2 feat+3 fix。冲突 7 文件（docs-main 2 块/shell index 1 块/providers 5 块/SettingsModal 2 块/两 tsconfig/cli README/mcp.test）+1 modify/delete（skills/genoffice/SKILL.md）。1 件空对账（#2100）。随轮发版 1.0.9。
+
+| # | 域 | 落位与裁决 |
+|---|---|---|
+| #2107 | markdown 主题菜单 | **干净 pick**（b1ef523ed，2 文件 +72）：纸质主题菜单从 `position: absolute` 改锚定 fixed+position-anchor+flip-inline（逃出 ribbon overflow 裁剪、不再被页面画布截断），随附 e2e/markdown-theme-picker.spec.ts。styles.css 为上游自有文件本地零改动，自动合并 |
+| #2108 | docs 粘贴字段保指令 | **干净 pick**（b65d112d7，2 文件 +107）：marks parseHTML 补 getAttrs 从 data-instr-field 读回指令（修 Zotero 引文粘贴后 w:instrText 清空→整段被分类为保护 passthrough 蓝框锁死）；DATE/PAGE/NUMPAGES 等全部行内字段同链受益。随附 zotero-paste-field.test.ts（品牌重放 @chaoffice/docx-engine + chaoffice#2099） |
+| #2110 | 全 app 菜单 Settings 入口 ⌘, | **adapted pick**（874f5d8f1，10 文件 +343/−30）：electron-utils 新件 appMenuTemplate/settingsMenuItem/setSettingsInvoker（app-menu.ts +74，default appLabel 品牌化）；shell index.ts 冲突 1 块=import 并集（本地 displayVersion+上游 setSettingsInvoker 双保），openSettingsView() 用本地 shellWindow/tabManager/HOME_CHANNELS.openSettings 自动合入（该通道+preload onOpenSettings+Home.tsx 订阅本地已在）；docs-main 冲突 2 块：①macOS app 菜单内联 spell-out→appMenuTemplate 采上游（本地旧内联无 Preferences 项属历史漂移非有意删除，台账无裁定记录）②Tools 菜单采上游侧=恢复 AutoCorrect/non-mac Settings/分隔线/AI 校对（同上，本地菜单历史性缺项）；**连带补 menuAutoCorrect StringKey×21 语言**（本地 docs-main 语言表无此键，typecheck 兜出，译文逐语言取上游同键；zh-TW 引号键名正则漏配手动补）；sheets/slides main +10/+10 自动合入；sheets/slides tsconfig 冲突=`@genoffice`→`@chaoffice` 别名 keep-ours+采上游 electron-utils paths 映射；e2e/menu-settings.spec.ts 新件品牌化（tmpdir 前缀） |
+| #2100 | ai-provider MiniMax M3.1 Flash | **空 pick 对账**（896c73c6a，零 diff）：上游修「静态 models 列表过期——M3.1 已发布列表仍 M3 默认」；**本地 live-discovery 架构从根上无此类**：AI_PROVIDERS 注释明示「Provider display metadata only — no model ids. Every model list fetched live from vendor /models（discoverModels）」，本地 AiProviderMeta 类型无 models/defaultModel/liveModels 字段，M3.1-Flash 由厂商端点实时提供、文本默认=用户启用+currentModel 显式选择而非静态默认；上游新增 providerPickerModels（openrouter 活目录 minimax 前置+保已选）本地**无调用点不引入**（V2 模型面=能力组+profile 勾选，无平铺厂商 picker）；上游两新测试（minimax-text.test 216 行/settings-custom-models.test 592 行整文件）测的是本地不存在的上游结构（静态 models 字段+旧版 SettingsModal custom-endpoint catalog 面板——本地 main SettingsModal 1111 行零 custom-endpoint 命中），Q6 结构差异裁定不采纳，意图随本条目挂账覆盖。已存 MiniMax-M3/M2.7 保存 id 上游亦明示不迁移，本地 RETIRED_MODELS 无需动 |
+| #2111 | docs 文档属性读写 | **adapted pick**（b5ee89378，14 文件 +1066/−39）：docx-engine 新模块 doc-properties.ts（+530，core/app/custom 三 part 读+set_properties 增量写+clear:all+无 docProps 文档照常开关）+parse/patch/types/index 接线+zotero-doc-props 适配；cli `docs read --properties`/`info --json` properties/set_properties op（formats/docx.ts +111 含帮助文本品牌化 chaoffice docs read --properties）/mcp tools 注册；两测试新件干净落地；**skills/genoffice/SKILL.md modify/delete**：保本地删除，properties 文档（read 旗标/set_properties/info json）移植进本地 skills/chaoffice/SKILL.md（精简版风格），**版本 2.7.2→2.7.3**（上游因 check-skill-version 门 bump 2.67.1→2.67.2，本地同机制需增长才刷新已安装副本）；cli README 冲突=本地品牌版 keep-ours+移植 properties 两行（chaoffice 品牌）；mcp.test.ts 冲突=上游 175 行测试块（OPS_TOOLS 变体/pdf_read 注解/90KB 尺寸帽）本地 mcp.ts 为本地版无对应结构，全保本地（本提交对该文件唯一实质改动 90→92KB 帽即作用于该上游独有测试，无需移植） |
+
+**对账与核对**：5/5 上游提交全落位（4 实 pick+1 空对账）；#2111 特性符号核对 readDocProperties/applyPropertyChanges/set_properties/listProperties/PropertyChanges 全在位；#2110 符号核对 appMenuTemplate/settingsMenuItem/setSettingsInvoker/openSettingsView×4 菜单接线+8642 注册在位；品牌 grep 本轮改动文件零命中。
+
+**门禁终态**：链停纪律——根 `npm run test` 在 ui 停（R28 挂账 ai-model-picker 4 红），停前 22 工作区全绿，停后逐个补跑全绿：ribbon 111/mobile-touch 28/sheets 3576+/slides 1515+/pdf 967/markdown 1274/web-bridge/server 2 红（R29 /tmp 夹具基线）/web；docs 3593（+4 新测试）/shell 1139/electron-utils 304（含新 app-menu.test 78 行）/docx-engine 1800（含新 doc-properties.test）/cli 341（含新 docs-properties.test）/ai-provider 596。typecheck：docs 4 错+shell 4+markdown 4+slides 4（皆 R28 ui ai-model-picker 挂账透传）+sheets 7（4 挂账+3 agent-core leaked-call-salvage 经 sheets 严格选项暴露=d6a4a0d2f main 基线，本轮 agent-core/sheets 源码零改动佐证）——**零新增**。lint 改动文件 4 error 皆 main 基线（app-menu aboutMenuItem app 未用=本地 displayVersion 改造遗留、shell atomicCopyFile/withViewMenu、sheets csvToXlsxBuffer、docx-engine patch.ts mergeStyleXml/chartDocPrId）。
+
+**R31 随轮发版（2026-10-22，六段 1.0.9.0.11.919）**：①版本铁律 Z+1：1.0.8→1.0.9（root/shell/dsh-plugin 三处 package.json+lock）；②xlsx-sidecar 4 平台产物复用 R30 新鲜重编件（本轮零 Rust 改动）；③九件安装包重打+架构逐件直验；④git tag `1.0.9` 推 origin+pubmirror；⑤GitHub Release 九资产上传；⑥aidooo.com 发布（rsync+finalizeEntry×5+publishManifest+验收）；⑦官网历史产物清理；⑧发版真机测试（docs/release-test-report-1.0.9.md）。
+
+**本轮新坑**：①cherry-pick 冲突 re.sub 保 HEAD 时，**引号键名语言块（'zh-TW'）不被 `\w` 匹配**——21 语言表补键先数块数（21 块 vs 上游 20 个无引号键），typecheck TS2741 兜底；②上游 commit 只改 3 行的文件也可能整块大冲突（mcp.test.ts：冲突块=历史累积的上游独有测试 vs 本地版），**必须回看本提交的 `git show <sha> -- <file>` 真实 delta** 再裁决，勿按冲突块大小判断工作量；③worktree 做 main 基线 typecheck 对比必须先确认 node_modules 存在——空 worktree 的 npx tsc 是假件（"This is not the tsc command you are looking for" exit 0 假绿）；④自动合并会在无冲突 hunk 静默带入不想要的代码（providerPickerModels 函数体），空对账后必须 `git diff main` 复核净 diff=0。
 
 ## 第三十轮（2026-10-21，上游 04f145717..1cb2925af 2 提交全吸收，施工于 sync/30-upstream；六段 1.0.7.0.11.919——终点无新 tag（`v0.11.919-11-g1cb2925a`），上游 shell package.json 仍 0.11.0，后三位维持 0.11.919）
 
