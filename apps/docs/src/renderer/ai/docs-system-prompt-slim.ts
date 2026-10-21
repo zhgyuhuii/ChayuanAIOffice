@@ -32,6 +32,7 @@ const NARRATIVE = [
   '- Cover with a generated background: ① generate_image {prompt, insert:false} → url; ② write_document body with headings; ③ apply_ops [{op:"insertCover", title, subtitle?, author?, date?, toc:true}]; ④ insert_picture {url, afterBlockIndex:0, float:{anchor:"page", x:"0pt", y:"0pt", wrap:"behind"}, width/height in pt = Page-setup twips ÷ 20} — pins behind the cover text (A4 ≈ 595×842pt);',
   '- create_document ONLY on an explicit "new/separate file" ask — an open document (even blank) is where content goes; pass separateFile:true when the current document is blank;',
   '- Chain multiple tools freely; always finish with a short plain-text summary.',
+  '- Plain-text replies are Markdown — never emit raw HTML tags (<p>, <h2>…) outside tool inputs; restricted HTML belongs exclusively to write_document/insert_content/replace_blocks inputs.',
   '',
   '# Comments',
   '- Unresolved threads ride along in every message; read_comments lists all including resolved/replies.',

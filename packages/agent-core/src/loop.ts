@@ -1,3 +1,4 @@
+import { sanitizeHistoryForDegraded } from './degraded-history'
 import type { AgentSkill, ExecutedToolCall } from './skill'
 import type {
   AgentAudio,
@@ -677,7 +678,6 @@ export class AgentLoop<TSnapshot = unknown> {
     if (!this.degrade()) return false
     this.fcDegradeRetried = true
     const userMsg = this.runUserMsg
-    this.runUserMsg = null
     this.rollbackFailedRun()
     if (!userMsg) return false
     this.turns = 0
@@ -1156,7 +1156,11 @@ export class AgentLoop<TSnapshot = unknown> {
             this.options.skill.systemPrompt +
             (this.options.systemSuffix?.() ?? '') +
             (degradedFallback ? `\n\n${degradedFallback.systemSuffix}` : ''),
-          messages: [...this.history],
+          // degraded turns must not replay native history: a server that
+          // crashes on tool_calls (the reason for the degrade) would crash
+          // again on the replayed ones — rewrite them into the JSON-text
+          // protocol's own convention instead
+          messages: degradedTurn ? sanitizeHistoryForDegraded(this.history) : [...this.history],
           tools: this.finalizing || degradedTurn ? [] : this.options.skill.tools,
         },
         {

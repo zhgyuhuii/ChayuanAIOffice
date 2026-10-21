@@ -379,3 +379,73 @@ describe('hard-error degraded retry', () => {
     expect(errors).toHaveLength(1)
   })
 })
+
+describe('degraded history sanitization (hard-error degrade mid-conversation)', () => {
+  it('rewrites native tool_calls/tool history into the JSON-text protocol on the degraded rerun', async () => {
+    const transport = scriptedTransport([
+      // run 1 turn 1 (native tools): model issues a real tool call, it executes…
+      (cb) => {
+        cb.onToolCall({ id: 't1', name: 'do_thing', input: { a: 1 } })
+        cb.onDone()
+      },
+      // …run 1 turn 2 (the replay turn): server crashes on the tool_calls replay
+      (cb) => cb.onError("[address=0.0.0.0:41471, pid=1411] 'id'"),
+      // degraded rerun turn 1: history rewritten — model re-issues via JSON text
+      (cb) => {
+        cb.onDelta('{"tool":"do_thing","input":{"n":2}}')
+        cb.onDone()
+      },
+      // degraded turn 2: final answer
+      (cb) => {
+        cb.onDelta('All done!')
+        cb.onDone()
+      },
+      // a follow-up degraded run keeps working on the same history
+      (cb) => {
+        cb.onDelta('Follow-up answer.')
+        cb.onDone()
+      },
+    ])
+    const executions: string[] = []
+    const errors: string[] = []
+    let lastResult: { degraded?: boolean; text?: string } | undefined
+    const loop = new AgentLoop({
+      transport,
+      skill: makeSkill((call) => {
+        executions.push(call.name)
+        return { output: 'done-ok', summary: 'done', mutated: true }
+      }),
+      events: { onDone: (res) => (lastResult = res), onError: (e) => errors.push(e) },
+    })
+    loop.run('first ask')
+    await flushAll()
+    // the crash never surfaced; the degraded rerun completed the run
+    expect(errors).toEqual([])
+    expect(executions).toEqual(['do_thing', 'do_thing'])
+    expect(lastResult?.degraded).toBe(true)
+    expect(lastResult?.text).toBe('All done!')
+    // wire shapes: native request carried tools, both degraded ones none
+    expect(transport.requests[0]!.toolCount).toBe(1)
+    expect(transport.requests[1]!.toolCount).toBe(1)
+    expect(transport.requests[2]!.toolCount).toBe(0)
+    expect(transport.requests[2]!.system).toContain('DEGRADED MODE')
+    expect(transport.requests[3]!.toolCount).toBe(0)
+    // the replayed history is protocol-clean: no role:'tool', no assistant
+    // tool_calls — prior calls appear as JSON text, results as [Tool result:]
+    for (const req of transport.requests.slice(2)) {
+      expect(req.system).toContain('DEGRADED MODE')
+    }
+    const msgs = loop.messages as Array<{ role: string; text?: string; toolCalls?: unknown }>
+    expect(msgs.some((m) => m.role === 'tool')).toBe(false)
+    for (const m of msgs) {
+      if (m.role === 'assistant') expect(m.toolCalls).toBeUndefined()
+    }
+    const historyText = msgs.map((m) => m.text ?? '').join('\n')
+    expect(historyText).toContain('[Tool result: do_thing]')
+    expect(historyText).toContain('"tool":"do_thing"')
+    // a follow-up degraded run keeps working
+    loop.run('second ask')
+    await flushAll()
+    expect(transport.requests.length).toBeGreaterThanOrEqual(5)
+  })
+})

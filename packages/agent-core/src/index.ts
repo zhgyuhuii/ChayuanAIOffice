@@ -18,6 +18,7 @@ export type {
 export { composeSkills, DEGRADED_PROTOCOL_SUFFIX, degradedToolLines } from './skill'
 export type { AgentSkill, DegradedFallback, ExecutedToolCall } from './skill'
 export { isUpstreamHardError } from './loop'
+export { sanitizeHistoryForDegraded } from './degraded-history'
 export { createMediaSkill } from './media-skill'
 export type { MediaCapabilityFlags, MediaSkillBridge } from './media-skill'
 export { createKnowledgeBaseSkill, formatKbSize } from './knowledge-base-skill'
