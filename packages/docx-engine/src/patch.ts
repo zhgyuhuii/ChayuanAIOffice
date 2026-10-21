@@ -105,6 +105,7 @@ import {
   CUSTOM_PROPERTIES_REL_TYPE,
   patchZoteroDocumentDataXml,
 } from './zotero-doc-props'
+import { applyPropertyChanges, type PropertyChanges } from './doc-properties'
 
 /**
  * Relationship attributes are read quote-agnostically and with any spacing
@@ -516,6 +517,12 @@ export interface SaveOptions {
   themeFonts?: ThemeFonts
   /** theme color scheme; patches (or creates) word/theme/theme1.xml */
   themeColors?: ThemeColors
+  /**
+   * Document properties to write into the docProps parts: a string sets a
+   * property, null removes it, clear: "all" empties all three parts. undefined
+   * keeps every property as it is.
+   */
+  properties?: PropertyChanges
 }
 
 const HYPERLINK_REL_TYPE =
@@ -711,6 +718,7 @@ export async function saveDocx(
     options.sources === undefined &&
     options.themeFonts === undefined &&
     options.themeColors === undefined &&
+    options.properties === undefined &&
     (options.partXml === undefined || Object.keys(options.partXml).length === 0) &&
     (options.partBinary === undefined || Object.keys(options.partBinary).length === 0)
   if (isUnchanged && !scrubPersonalInfo) return originalBytes
@@ -2096,6 +2104,8 @@ export async function saveDocx(
   }
   await cleanupDocxOwnedResources(out, docPath)
   if (scrubPersonalInfo) await scrubPersonalMetadata(out)
+  // the property write comes last: what the caller asked for wins over the scrub
+  if (options.properties) await applyPropertyChanges(out, options.properties)
   return out.generateAsync({
     type: 'uint8array',
     compression: 'DEFLATE',
