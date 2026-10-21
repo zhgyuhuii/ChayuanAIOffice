@@ -1356,7 +1356,7 @@ const CONTENT_NOTES: Record<(typeof CONTENT_OPS)[number], string> = {
   delete_comment:
     'removes the comment and its anchor; a thread root with replies needs withReplies: true, a reply id removes just that reply',
   set_properties:
-    'the document properties of the file: core (title, subject, creator, keywords, description, lastModifiedBy, revision, created, modified, category, contentStatus, identifier, language, version), app (template, totalTime, pages, words, characters, application, docSecurity, lines, paragraphs, scaleCrop, company, linksUpToDate, charactersWithSpaces, sharedDoc, hyperlinksChanged, appVersion, manager) and custom (by name); a string sets the value, null removes the property, clear: "all" empties all three parts; `genoffice docs read --properties` lists the current ones',
+    'the document properties of the file: core (title, subject, creator, keywords, description, lastModifiedBy, revision, created, modified, category, contentStatus, identifier, language, version), app (template, totalTime, pages, words, characters, application, docSecurity, lines, paragraphs, scaleCrop, company, linksUpToDate, charactersWithSpaces, sharedDoc, hyperlinksChanged, appVersion, manager) and custom (by name); a string sets the value, null removes the property, clear: "all" empties all three parts; `chaoffice docs read --properties` lists the current ones',
 }
 
 const AFTER_BLOCK_INDEX =

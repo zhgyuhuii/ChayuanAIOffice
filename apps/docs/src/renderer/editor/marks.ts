@@ -410,7 +410,7 @@ export const InstrFieldMark = Mark.create({
         // getAttrs the mark falls back to its defaults, so a pasted citation
         // loses its instruction and saves as an empty w:instrText — which the
         // next parse turns into a protected passthrough, locking the whole
-        // paragraph (genoffice#2099).
+        // paragraph (chaoffice#2099).
         getAttrs: (el) => ({ instr: el.getAttribute('data-instr-field') ?? '' }),
       },
     ]
