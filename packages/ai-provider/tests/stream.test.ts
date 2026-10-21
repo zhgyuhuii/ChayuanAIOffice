@@ -281,7 +281,23 @@ describe('streamForProvider: empty SSE streams surface as errors', () => {
     ['gemini', 'gemini-2.5-flash', /Gemini returned no content/],
     ['openai', 'gpt-4.1-mini', /The model returned no content/],
   ] as const)('%s: rejects on an empty stream', async (provider, model, message) => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(okResponse(sseStream([]))))
+    // LOCAL: the openai-compatible path salvages an empty stream by retrying
+    // non-stream once — the mock answers that with an empty completion, whose
+    // own "no content" error matches the same message
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockImplementation(async (_url: string, init?: { body?: string }) => {
+        const body = JSON.parse((init?.body as string) ?? '{}') as { stream?: boolean }
+        if (provider === 'openai' && body.stream === true) return okResponse(sseStream([]))
+        if (provider === 'openai')
+          return jsonResponse({
+            choices: [
+              { finish_reason: 'stop', index: 0, message: { role: 'assistant', content: '' } },
+            ],
+          })
+        return okResponse(sseStream([]))
+      }),
+    )
     const { cb } = collector()
     await expect(
       streamForProvider(provider, { apiKey: 'k', model }, 'sys', [], [], 100, cb),

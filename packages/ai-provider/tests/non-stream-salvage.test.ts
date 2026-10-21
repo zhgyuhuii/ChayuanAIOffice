@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { AgentMessage } from '@chaoffice/agent-core'
 import { streamForProvider } from '../src/stream'
-import { okResponse, sseStream } from './test-utils'
+import { jsonResponse, okResponse, sseStream } from './test-utils'
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -34,27 +34,25 @@ describe('non-stream salvage for empty-stream engines', () => {
         // the xinference llama.cpp disease: SSE opens and closes with nothing
         return okResponse(sseStream(['data: [DONE]']))
       }
-      return okResponse(
-        JSON.stringify({
-          choices: [
-            {
-              finish_reason: 'tool_calls',
-              index: 0,
-              message: {
-                role: 'assistant',
-                content: '',
-                tool_calls: [
-                  {
-                    id: 'c1',
-                    type: 'function',
-                    function: { name: 'do_thing', arguments: '{"a":1}' },
-                  },
-                ],
-              },
+      return jsonResponse({
+        choices: [
+          {
+            finish_reason: 'tool_calls',
+            index: 0,
+            message: {
+              role: 'assistant',
+              content: '',
+              tool_calls: [
+                {
+                  id: 'c1',
+                  type: 'function',
+                  function: { name: 'do_thing', arguments: '{"a":1}' },
+                },
+              ],
             },
-          ],
-        }),
-      )
+          },
+        ],
+      })
     })
     vi.stubGlobal('fetch', fetchMock)
     const history: AgentMessage[] = [{ role: 'user', text: 'do the thing' }]
@@ -83,13 +81,11 @@ describe('non-stream salvage for empty-stream engines', () => {
       const body = JSON.parse(init?.body ?? '{}') as Record<string, unknown>
       bodies.push(body)
       if (body.stream === true) return okResponse(sseStream(['data: [DONE]']))
-      return okResponse(
-        JSON.stringify({
-          choices: [
-            { finish_reason: 'stop', index: 0, message: { role: 'assistant', content: '成功' } },
-          ],
-        }),
-      )
+      return jsonResponse({
+        choices: [
+          { finish_reason: 'stop', index: 0, message: { role: 'assistant', content: '成功' } },
+        ],
+      })
     })
     vi.stubGlobal('fetch', fetchMock)
     const deltas: string[] = []
