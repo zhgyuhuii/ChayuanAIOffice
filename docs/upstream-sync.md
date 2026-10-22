@@ -783,6 +783,24 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 
 **本轮新坑**：①多行 persistMessage 签名加尾参会漏改函数体 spread（html/slides/pdf 三端同日同错）——加参数必须同提交内 grep 函数体消费点；②出 try 的 resolve 会让「 friendly 错误形态」静默变 reject——错误路径重构必须先枚举消费方（ai:chat 的 ok:false 契约）；③workbook:reopen 类「desktop-api 有、main 无」的死通道可用 grep 双向对账发现（preload invoke ↔ ipcMain.handle 成对审计）。
 
+**R31 逐项测试与真机测试（2026-10-22，dev shell=当前源码 REMOTE_DEBUG_PORT 驱动）**：
+
+| 项 | 真机/自动化证据 | 结果 |
+|---|---|---|
+| 1 cli --host 守卫 | mcp-http-harden 14/14（含 2 新用例） | PASS |
+| 2 settings-changed 原生推送 | shared-ai-ipc 7/7（单播去抖）；真机：Home chip 选模型→写盘→watch→广播→chip 跟随（agnes→local/qwen3.5 实测全链） | PASS |
+| 3 kb-ask 模型 chip | Home ChatPanel（同组件）picker 188 option 节点/17 组渲染，pick 后 chip 文本跟随 | PASS |
+| 4 #1950 登录自愈 | ai-provider 603/ai-host 61/ai-search 117 绿；onCallFailure 挂 runStream/runChat 双路（r1 修正 resolve 相错误不触发自愈） | PASS |
+| 5 #1944 sessionUsage | 六 app+project-store 绿；真机：Home 对话实测（真机发现 Home ChatPanel 漏面并补齐 ff4085fcd）；chip 显示依赖端点回传 usage（agnes 网关不回传属预期行为） | PASS（附注） |
+| 6 html/pdf 助手 tab | 核验分支在位；html 321/pdf 967 绿 | PASS |
+| 7 slides 虚拟化 | slide-selection 15/15（含 currentAfterHistory 3 用例）；slides 1523 绿 | PASS |
+| 8 fileTargetSources 门控 | shell 1151 绿（rename 校验/门控用例在位）；真机树重命名走门控后正常 | PASS |
+| 9 Exa/Firecrawl | exa-firecrawl 6 用例+ai-search 117 绿；metas 进设置面下拉 | PASS |
+| 14 FilesPane-in-sheets | 真机：左缘「文件」tab 唤出浮层（t08-files-pane.jpg），ChayuanAIOffice 树 39 行渲染，网格布局零干扰 | PASS |
+| 6b/#10/#11/#12/#13/#15/#16 | 核验已落地/等效覆盖（见逐项开发表） | — |
+
+**门禁终态（挂账开发后）**：typecheck 全仓 0；lint 全仓 0 error 25 warning（react-hooks 基线 20+杂项）；vitest 全工作区绿（含新增：cli +2/host +1/exa-firecrawl +6/slide-selection +3 等）。dev shell（当前源码）真机驱动验证 6 项 GUI 行为。
+
 **本轮新坑**：①cherry-pick 冲突 re.sub 保 HEAD 时，**引号键名语言块（'zh-TW'）不被 `\w` 匹配**——21 语言表补键先数块数（21 块 vs 上游 20 个无引号键），typecheck TS2741 兜底；②上游 commit 只改 3 行的文件也可能整块大冲突（mcp.test.ts：冲突块=历史累积的上游独有测试 vs 本地版），**必须回看本提交的 `git show <sha> -- <file>` 真实 delta** 再裁决，勿按冲突块大小判断工作量；③worktree 做 main 基线 typecheck 对比必须先确认 node_modules 存在——空 worktree 的 npx tsc 是假件（"This is not the tsc command you are looking for" exit 0 假绿）；④自动合并会在无冲突 hunk 静默带入不想要的代码（providerPickerModels 函数体），空对账后必须 `git diff main` 复核净 diff=0。
 
 ## 第三十轮（2026-10-21，上游 04f145717..1cb2925af 2 提交全吸收，施工于 sync/30-upstream；六段 1.0.7.0.11.919——终点无新 tag（`v0.11.919-11-g1cb2925a`），上游 shell package.json 仍 0.11.0，后三位维持 0.11.919）
