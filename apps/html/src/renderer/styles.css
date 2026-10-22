@@ -404,6 +404,7 @@ html.chaoffice-popover-open .ribbon-tabs {
 }
 .disk-notice button:hover {
   background: var(--hover);
+}
 /* ribbon + content stacked inside the dock body — a left/right docked AI panel
    spans the full window height, level with the ribbon's top edge */
 .editor-col {
