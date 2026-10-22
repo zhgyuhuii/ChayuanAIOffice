@@ -259,3 +259,49 @@ export function markdownToRestrictedHtml(md: string): string {
   flushPara()
   return out.join('\n')
 }
+
+// ── 纯散文正文兜底(无 HTML/Markdown 块级信号的自然段) ──
+// 「写一篇大美江山 800字以上」类作文指令的正文就是纯自然段：块级信号一行
+// 都没有时 extract/markdown 双双返回空，create_document 被误判「正文缺失」
+// 拒绝——确定性模型原样重试，逐字节相同的轮次撞上 agent-core 的
+// identical-turn 守卫(3 次)整个运行中止，文档永远创建不出来。兜底：剥掉
+// 开头的对话性开场白段后，非空白字符 ≥ PROSE_MIN_CHARS 即按自然段转受限
+// HTML(每段一个 <p>)。开场白闸门留在短文一侧：真实开场白百来字远够不到
+// 200，够得到 200 的「开场白」必是正文。
+
+/** 纯散文正文最小非空白字符数(开场白拦在门外，真实作文放行) */
+const PROSE_MIN_CHARS = 200
+
+/** 助手口吻开场白信号(只用于剥开头的短段落，不扫全文——散文里的「希望」是文学语气) */
+const PROSE_PREAMBLE_RE =
+  /(?:我来|我将|我这就|为您|帮你|帮您|我会|以下|下面开始|下面是|希望这篇|希望这份|请查收|如果需要|还需要我|好的[，,！!。]|当然[，,！!。]|没问题|收到|明白了|抱歉|sure\b|of course|certainly|here is|here's|i'll|i've|let me)/i
+
+function isProsePreamblePara(p: string): boolean {
+  const t = p.trim()
+  if (!t) return true
+  return t.replace(/\s/g, '').length <= 60 && PROSE_PREAMBLE_RE.test(t)
+}
+
+/**
+ * 纯散文(自然段)正文 → 受限 HTML。段落以空行分隔；全文无空行的模型输出
+ * 逐行成段。段内软换行按 CJK 邻接规则拼接；行内标记复用 Markdown 转换。
+ * 不达 PROSE_MIN_CHARS 返回 ''——短文仍走「正文缺失」提示让模型重写。
+ */
+export function proseToRestrictedHtml(text: string): string {
+  const normalized = text.replace(/\r\n?/g, '\n').trim()
+  if (!normalized) return ''
+  const rawParas = /\n\s*\n/.test(normalized) ? normalized.split(/\n\s*\n/) : normalized.split('\n')
+  let start = 0
+  while (start < rawParas.length - 1 && isProsePreamblePara(rawParas[start]!)) start++
+  const kept = rawParas.slice(start)
+  if (kept.join('').replace(/\s/g, '').length < PROSE_MIN_CHARS) return ''
+  return kept
+    .map((p) => {
+      const lines = p
+        .split('\n')
+        .map((l) => l.trim())
+        .filter(Boolean)
+      return `<p>${markdownInline(joinFlowLines(lines))}</p>`
+    })
+    .join('\n')
+}

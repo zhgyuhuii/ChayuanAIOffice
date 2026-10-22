@@ -281,4 +281,59 @@ describe('create_document body contract (开场白不得落盘)', () => {
     // 按 docx/pdf 的块级标签提取会把 <head>/<style> 砍掉 — html 类型必须整体直传
     expect(created[0]!.content).toBe(html)
   })
+
+  it('creates a docx from a pure-prose essay in one turn (大美江山 事故回归)', async () => {
+    // 事故现场:作文类指令的正文是纯自然段(无任何块级信号),旧逻辑判「正文
+    // 缺失」拒绝;确定性模型原样重试,逐字节相同的轮次撞上 identical-turn
+    // 守卫 → 「The model kept repeating the exact same turn」→ 文档创建失败。
+    // 新行为:纯散文兜底按自然段转受限 HTML,一轮建成。
+    const essay = [
+      '大美江山，锦绣中华。北国千里冰封，万里雪飘，长城蜿蜒于崇山峻岭之间，尽显雄浑气魄。',
+      '江南水乡则又是另一番韵味，小桥流水，烟雨朦胧，乌篷船划过碧波，两岸粉墙黛瓦倒映成画。',
+      '西部大漠孤烟直，长河落日圆，戈壁滩上的胡杨千年不倒，诉说着生命的顽强与苍凉的岁月长歌。',
+      '黄河九曲奔流入海，壶口瀑布浊浪排空，涛声如雷，这是母亲河的脉搏，也是民族精神的悠远回响。',
+      '江山如此多娇，从雪山之巅到南海之滨，从草原牧歌到渔舟唱晚，处处皆是画卷，步步俱为诗行。',
+      '愿山河无恙，岁月安澜，这锦绣河山的每一寸土地，都值得我们从心底去热爱，去守护，去传唱。',
+    ].join('\n\n')
+    const { bridge, created } = makeBridge([
+      {
+        text: essay,
+        toolCall: { id: 'c1', name: 'create_document', input: { title: '大美江山', type: 'docx' } },
+      },
+      { text: '文档已生成。' },
+    ])
+    const { events, dones, errors } = makeEvents()
+    await run(bridge, events)
+    expect(errors).toEqual([])
+    expect(created).toHaveLength(1)
+    expect(created[0]!.type).toBe('docx')
+    expect(created[0]!.content.startsWith('<p>大美江山，锦绣中华。')).toBe(true)
+    expect(created[0]!.content).toContain('</p>')
+    expect(dones.at(-1)?.createdDoc).toEqual({ title: '大美江山', docType: 'docx' })
+  })
+
+  it('recovers a split-turn prose essay via the history walk (prose body written before the tool call)', async () => {
+    // 拆轮写法的散文版:轮1空调工具被拒,轮2补写纯散文正文却不再调工具
+    // (verifyResponse 强制补调),轮3正文从历史回溯取得——散文兜底同样生效。
+    const essay = [
+      '大美江山，锦绣中华。北国千里冰封，万里雪飘，长城蜿蜒于崇山峻岭之间，尽显雄浑气魄。',
+      '江南水乡则又是另一番韵味，小桥流水，烟雨朦胧，乌篷船划过碧波，两岸粉墙黛瓦倒映成画。',
+      '西部大漠孤烟直，长河落日圆，戈壁滩上的胡杨千年不倒，诉说着生命的顽强与苍凉的岁月长歌。',
+      '黄河九曲奔流入海，壶口瀑布浊浪排空，涛声如雷，这是母亲河的脉搏，也是民族精神的悠远回响。',
+      '江山如此多娇，从雪山之巅到南海之滨，从草原牧歌到渔舟唱晚，处处皆是画卷，步步俱为诗行。',
+      '愿山河无恙，岁月安澜，这锦绣河山的每一寸土地，都值得我们从心底去热爱，去守护，去传唱。',
+    ].join('\n\n')
+    const { bridge, created } = makeBridge([
+      { toolCall: { id: 'c1', name: 'create_document', input: { title: '大美江山', type: 'docx' } } },
+      { text: essay },
+      { toolCall: { id: 'c2', name: 'create_document', input: { title: '大美江山', type: 'docx' } } },
+      { text: '文档已生成。' },
+    ])
+    const { events, errors } = makeEvents()
+    await run(bridge, events)
+    expect(errors).toEqual([])
+    expect(created).toHaveLength(1)
+    expect(created[0]!.type).toBe('docx')
+    expect(created[0]!.content.startsWith('<p>大美江山，锦绣中华。')).toBe(true)
+  })
 })

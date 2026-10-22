@@ -6649,9 +6649,14 @@ export function App({
         onCommand={handleRibbonCommand}
         onIsCellEditing={isCellEditing}
         zoomPercent={zoomPercent}
-        canSave={pendingEdits > 0}
+        // Blank-draft sessions (new workbook, converted import) keep the Save
+        // and Save-As entries alive: Save routes to the naming dialog via
+        // save-actions (needsSaveAs branch), Save-As is always meaningful.
+        canSave={pendingEdits > 0 || Boolean(lazyWorkbookRef.current?.file.needsSaveAs)}
         onSave={() => void handleSave('save')}
-        canSaveAs={workbookFile !== null}
+        canSaveAs={
+          workbookFile !== null || Boolean(lazyWorkbookRef.current?.file.needsSaveAs)
+        }
         onSaveAs={() => void handleSave('save-as')}
         onOpen={() => void handleInspectWorkbook()}
         onExportPdf={() => void handleExportPdfImpl(pageLayoutContext())}

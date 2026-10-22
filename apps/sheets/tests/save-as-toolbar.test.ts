@@ -17,8 +17,12 @@ describe('Save As quick-access command', () => {
     )
   })
 
-  it('is available for clean file-backed workbooks and invokes save-as mode', () => {
-    expect(appSrc).toContain('canSaveAs={workbookFile !== null}')
+  it('is available for clean file-backed workbooks and blank-draft sessions, and invokes save-as mode', () => {
+    // a new workbook (needsSaveAs blank draft) has no file path yet — Save As
+    // must still be reachable there (R30 observation ①: it used to be disabled)
+    expect(appSrc).toContain(
+      'workbookFile !== null || Boolean(lazyWorkbookRef.current?.file.needsSaveAs)',
+    )
     expect(appSrc).toContain("onSaveAs={() => void handleSave('save-as')}")
   })
 

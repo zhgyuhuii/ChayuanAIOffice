@@ -7,7 +7,7 @@ import { kbDoc, kbSelectedIds, kbSearchGroups } from '@chaoffice/ui'
 import type { MediaCapabilityFlags } from '@chaoffice/agent-core'
 import { buildMcpToolDefs, mcpSystemSection } from './mcp-tools'
 import type { McpToolBinding } from './mcp-tools'
-import { extractDocumentBody, markdownToRestrictedHtml } from './doc-body'
+import { extractDocumentBody, markdownToRestrictedHtml, proseToRestrictedHtml } from './doc-body'
 
 /** everything the home agent needs from the host (window.chaOffice on desktop, shims on web) */
 export interface HomeAgentBridge {
@@ -373,7 +373,10 @@ const MIN_DOC_BODY_CHARS = 50
  * ①回复里有块级 HTML 标签 → 提取,剥掉正文前的开场白;
  * ②没有标签但有 Markdown 块级信号 → 就地转受限 HTML(用户要 word 时模型
  *   常无视契约按 Markdown 写——拒绝会把类型逼成 md,转换保住类型与产物);
- * ③两者皆无(纯对话文本) → 拒绝并让模型先写正文再重试。
+ * ③两者皆无但够得上纯散文(剥开场白段后非空白 ≥ 200) → 按自然段转受限
+ *   HTML——「写一篇大美江山 800字以上」的正文就是纯自然段,拒了会让确定性
+ *   模型原样重试撞死 identical-turn 守卫,文档永远创建不出来;
+ * ④够不上散文(纯对话文本) → 拒绝并让模型先写正文再重试。
  */
 const DOC_BODY_CONTRACT_HINT =
   'Your reply so far is conversational preamble, not a document body — nothing was written into the file. ' +
@@ -384,7 +387,7 @@ const DOC_BODY_CONTRACT_HINT =
 function normalizeDocBody(docType: DocType, text: string): string {
   const trimmed = text.trim()
   if (docType === 'docx' || docType === 'pdf') {
-    return extractDocumentBody(trimmed) || markdownToRestrictedHtml(trimmed)
+    return extractDocumentBody(trimmed) || markdownToRestrictedHtml(trimmed) || proseToRestrictedHtml(trimmed)
   }
   // md/html 契约为全文直传;回溯历史时必须有块级信号,否则任意一段
   // 聊天回复(>50 字)都会被误当 md 正文
@@ -409,7 +412,9 @@ function resolveDocBody(
   const trimmed = turnText.trim()
   const current =
     docType === 'docx' || docType === 'pdf'
-      ? extractDocumentBody(trimmed) || markdownToRestrictedHtml(trimmed)
+      ? extractDocumentBody(trimmed) ||
+        markdownToRestrictedHtml(trimmed) ||
+        proseToRestrictedHtml(trimmed)
       : trimmed
   if (current.replace(/\s/g, '').length >= MIN_DOC_BODY_CHARS) return current
   const history = [...transcript]

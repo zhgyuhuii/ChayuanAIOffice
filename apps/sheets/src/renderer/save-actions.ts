@@ -307,6 +307,14 @@ export async function handleSave(
   // still write back to the original file (and clear the recovery copy).
   const restoreWriteBack = mode === 'save' && state.file.restoredFromRecovery === true
   if (total === 0 && mode !== 'save-as' && !restoreWriteBack) {
+    // A blank-draft session (新建延迟落盘: new workbook, converted import)
+    // keeps its hidden temp backing file until first save — Save must offer
+    // the naming dialog, not dead-end on an empty journal (the journal
+    // intentionally stays cold for these sessions; the draft chain holds the
+    // content). Mirrors the docs app's first-save flow.
+    if (state.file.needsSaveAs) {
+      return await handleSave(ctx, 'save-as', quiet, explicitTarget)
+    }
     if (mode !== 'recovery') ctx.setMessage(t('appNoEditsToSave'))
     return { ok: false }
   }
