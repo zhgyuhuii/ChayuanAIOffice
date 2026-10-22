@@ -3,6 +3,7 @@ import {
   clickSelection,
   movedBlockPositions,
   normalizeSelection,
+  currentAfterHistory,
   planSlideDuplicates,
   planSlideMoves,
   rangeSelection,
@@ -126,5 +127,22 @@ describe('duplicate plan', () => {
   it('a single slide duplicates in place', () => {
     expect(planSlideDuplicates([2])).toEqual([{ duplicate: 2 }])
     expect(planSlideDuplicates([])).toEqual([])
+  })
+})
+
+describe('currentAfterHistory', () => {
+  it('follows the slide that was current when its partPath still exists', () => {
+    const slides = [{ partPath: 'a' }, { partPath: 'b' }, { partPath: 'c' }]
+    expect(currentAfterHistory(slides, 2, 'a')).toBe(0)
+    expect(currentAfterHistory(slides, 0, 'c')).toBe(2)
+  })
+
+  it('clamps to the end when the old current fell off (undo of an add)', () => {
+    const two = [{ partPath: 'a' }, { partPath: 'b' }]
+    expect(currentAfterHistory(two, 2)).toBe(1)
+  })
+
+  it('falls back to the clamp when no partPath is known', () => {
+    expect(currentAfterHistory([{}, {}, {}], 5)).toBe(2)
   })
 })

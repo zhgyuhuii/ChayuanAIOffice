@@ -42,6 +42,7 @@ import { ZOOM_MAX, ZOOM_MIN, clampZoom, nextPreset, notchStep, prevPreset } from
 import type { DrawRect } from './draw-shape'
 import { paragraphsBlank } from './textbox-insert'
 import { SlideThumb } from './SlideThumb'
+import { useVisibleThumbs } from './use-visible-thumbs'
 import { MasterView } from './MasterView'
 import {
   TextEditOverlay,
@@ -177,7 +178,7 @@ import * as arrangeActions from './arrange-actions'
 import * as tableActions from './table-actions'
 import * as styleActions from './style-actions'
 import { handleGlobalKeydown, slideRailHasFocus } from './keyboard-actions'
-import { clickSelection, normalizeSelection } from '../shared/slide-selection'
+import { clickSelection, currentAfterHistory, normalizeSelection } from '../shared/slide-selection'
 import {
   notesBaselineAfterFlush,
   notesDraftIndex,
@@ -391,6 +392,11 @@ function collectRtls(node: RenderNode, out: Set<boolean>) {
   else if (node.type === 'group') for (const child of node.children) collectRtls(child, out)
 }
 
+/** Same box a SlideThumb Stage would occupy, so an unmounted thumbnail keeps the list's scroll geometry */
+function thumbBox(slide: RenderSlide, width: number) {
+  return { width, height: (slide.heightPx * width) / slide.widthPx }
+}
+
 export function App() {
   const { lang } = useI18n()
   const [slides, setSlides] = useState<RenderSlide[]>([])
@@ -475,6 +481,7 @@ export function App() {
   // ── Thumbnail sidebar width (drag the divider to resize; persisted) ─────────
   const [thumbsW, setThumbsW] = useState(loadThumbsW)
   const thumbsListRef = useRef<HTMLDivElement | null>(null)
+  const sorterViewRef = useRef<HTMLDivElement | null>(null)
   // Re-clamp when the window shrinks (max is 40% of the window), like the AI panel
   useEffect(() => {
     const onResize = () => setThumbsW((w) => clampThumbsW(w))
@@ -1039,7 +1046,8 @@ export function App() {
     () =>
       window.slidesApi.onDeckChanged?.(({ slides: all }) => {
         setSlides(all)
-        setCurrent((c) => Math.min(c, Math.max(0, all.length - 1)))
+        const wasCurrent = slides[current]?.partPath
+        setCurrent(currentAfterHistory(all, current, wasCurrent))
         // The broadcast also fires for undo back to a clean state — ask the
         // session instead of assuming the change dirtied it
         void window.slidesApi.isDirty?.().then((d) => setDirty(!!d))
@@ -1136,8 +1144,10 @@ export function App() {
   /** Apply the full slides set after undo/redo: page count may change (undoing a new page), clamp current */
   const applyHistoryResult = useCallback((r: RenderSlide[] | null) => {
     if (!r) return
+    // 撤销/重做后当前页跟随原页（partPath 仍在则保持，否则夹到末页）
+    const wasCurrent = slides[current]?.partPath
     setSlides(r)
-    setCurrent((c) => Math.min(c, r.length - 1))
+    setCurrent(currentAfterHistory(r, current, wasCurrent))
     setSelectedSlides([])
     setSelectedIds([])
     setEditing(null)
@@ -2762,6 +2772,19 @@ export function App() {
     () => groupSections(sections, slides.length),
     [sections, slides.length],
   )
+
+  // 视口虚拟化：视口外的缩略图渲染同尺寸占位（滚动几何不跳变，重负载页不渲染 Stage）
+  const visibleThumbs = useVisibleThumbs(thumbsListRef, '.thumb', [
+    slides.length,
+    sectionGroups,
+    collapsedSecs,
+    showThumbs,
+    viewMode,
+  ])
+  const visibleSorterItems = useVisibleThumbs(sorterViewRef, '.sorter-item', [
+    slides.length,
+    viewMode,
+  ])
 
   /** Canvas right-click: select the hit element first (replace the selection if it isn't in it), clear selection on blank */
   const onCanvasContextMenu = useCallback(
@@ -4442,7 +4465,11 @@ export function App() {
                       }}
                       onContextMenu={(e) => openThumbMenu(i, e)}
                     >
-                      <SlideThumb slide={s} images={images} width={208} />
+                      {visibleSorterItems.has(i) ? (
+                        <SlideThumb slide={s} images={images} width={208} />
+                      ) : (
+                        <div className="thumb-placeholder" style={thumbBox(s, 208)} />
+                      )}
                       <span className="sorter-num">{i + 1}</span>
                       {pasteFloater?.index === i && (
                         <PasteOptionsFloater
@@ -4510,7 +4537,11 @@ export function App() {
                                 onClick={(e) => selectThumb(i, e)}
                                 onContextMenu={(e) => openThumbMenu(i, e)}
                               >
-                                <SlideThumb slide={s} images={images} width={thumbW} />
+                                {visibleThumbs.has(i) ? (
+                                  <SlideThumb slide={s} images={images} width={thumbW} />
+                                ) : (
+                                  <div className="thumb-placeholder" style={thumbBox(s, thumbW)} />
+                                )}
                                 <span className="thumb-num">{i + 1}</span>
                                 {pasteFloater?.index === i && (
                                   <PasteOptionsFloater

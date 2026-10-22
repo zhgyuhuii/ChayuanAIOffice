@@ -53,6 +53,20 @@ export function normalizeSelection(selected: number[], current: number, count: n
 }
 
 /** Where the moved slides sit after landing as a block at insertAt (a gap 0..count in the pre-move order). */
+/** After an undo/redo the deck may have changed under the selection: follow the
+ *  slide that was current when its partPath still exists, else clamp to the end. */
+export function currentAfterHistory(
+  slides: readonly { partPath?: string }[],
+  current: number,
+  partPath?: string,
+): number {
+  if (partPath) {
+    const index = slides.findIndex((slide) => slide.partPath === partPath)
+    if (index >= 0) return index
+  }
+  return Math.min(current, slides.length - 1)
+}
+
 export function movedBlockPositions(selected: number[], insertAt: number): number[] {
   const first = insertAt - selected.filter((i) => i < insertAt).length
   return selected.map((_, k) => first + k)
