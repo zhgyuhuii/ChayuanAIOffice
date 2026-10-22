@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/chaoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第三十一轮完成（2026-10-22，终点 285540a4f，分支 sync/31-upstream）**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第三十二轮完成（2026-10-23，终点 58dfd0b5b=tag v0.12.29，分支 sync/32-upstream）**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -736,7 +736,38 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 挂账 | sheets i18n dialogs vi.ts 少 9 个 fork 本地键（HEAD 继承欠账，en 回退兜底，补译即销）；ai-host 若原生支持 settings-changed 推送可移除 sheets-main 的 fs.watch 包装广播 |
 | 门禁 | typecheck 全仓 0；vitest 全绿：docs 3152/sheets 3437/ai-provider 494/agent-core 176/xlsx-gateway 248/pptx-engine 1294/shell 931/slides 1475/md 1047/pdf 868/html 319/ui 250/docx-engine 1717/pdf2docx 822/cli 313/electron-utils 257…；cargo test 228 全绿；lint 0；品牌 grep 豁免外零残留；check:help-langs 21 语言全齐 |
 
+## 第三十二轮（2026-10-23，上游 285540a4f..58dfd0b5b 3 提交全吸收，施工于 sync/32-upstream；六段 1.0.9.0.12.29——终点含新 tag v0.12.29（上游 shell package.json 0.12.0，取 tag 口径）；打包 Z+1：1.0.9→1.0.10）
+
+> 上游 3 提交=2 特性+1 快照巨件（#2129：705 文件 +50k/−4k，352 增 353 改 0 删）。施工法=两小件 cherry-pick（#2115 干净+#2124 adapted）+巨件全量 3-way 确定性重建（base=285540a4f）：直取 93+干净 3-way 155+新件 359+真冲突 103+元文件跳 2。冲突 103 文件分域裁决，其中 strings.ts 42 块用键级合并器（ours 保全+theirs 新键追加+共享续行 ours 胜）。
+
+| # | 域 | 落位与裁决 |
+|---|---|---|
+| #2115 | sheets View tab 五开关两列 | **干净 pick**（ExcelShell check-column-view 类+styles.css 两列 grid+e2e sheets-view-toggles 新件，genoffice#2081→chaoffice#2081） |
+| #2124 | Keenable 免钥搜索后端 | **adapted pick**：本地 ai-search 函数 API 架构（exa.ts/firecrawl.ts 同款）——keenable.ts 新件（/v1/search+免钥 /v1/search/public，X-Keenable-Title='ChaAI Office' 品牌重放，snippet 500 帽）+index.ts tier（keyless 仅 prefer==='keenable'）+SearchKeys.keenable+search-tools 传递 prefer（activeSearchProvider 驱动，CLI 路径首获 prefer 能力）+ai-provider search-settings 元数据（needsKey:false 与 parallel 同列，resolve 不持久化与 parallel 先例一致）+三端 main keys 装配；shell SettingsModal 本地无 AiMediaPane 提示面（strings 21 语言 hint 词条自动合入待 UI 消费）；测试按本地五参签名与免钥默认 duckduckgo 语义改编（ai-search 4 用例+ai-provider 3 用例） |
+| #2129 | Sync snapshot 2026-10-22 | 见下表 |
+
+| 域 | 快照落位 |
+|---|---|
+| docs 字体解析域 | font-resolve.ts/effective-css.ts 新件+fonts.css 整体重写（+3715 行：Bengali/Tamil/DM Sans 等新 face+word-faces 体系）+font-metrics resolve/word-faces.json 子路径；**GenOfficeBengali 两二进制 git mv→ChaOfficeBengali**；字体族名口径统一 **'ChaAI Office X'**（与 R31 fonts.css 主口径一致；'ChaOffice Sans KR' 保留），marks.ts 内部别名跳过正则放宽 `^cha(ai)? ?office /i` |
+| docs 引擎 | line-metrics 整取上游演进（R18-C 八 graft 导出全存活核对）+grid strut/DFKai-SB 别名/autospace/hangul space（styles.css 'ChaAI Office Hangul Space' 对齐）；doc-style-css 列表间距 liCollapse 重构+上下文间距；convert EffectivePPr/RPr 类型；表格浮动 v-shift（leaf docProtected 分支）+canvasZoomOf；mind-map/extensions/wrap-obstacles/wrap-group 新件 |
+| 六端 composer skills 挂载（上游特性，adapted 全链） | AiSkillsMenu/AiSkillChips（ui 新件+strings-ai-skills）+withAttachedSkills（agent-core 新件）全端织入：sheets=ExcelShell props 链+会话池视图/句柄（SheetsConversationView.attachedSkills+handle.toggleSkill）+AiSheetsConversation 状态/发送/runAgent 三参；docs=AiConversationBody（状态/发送/组合/菜单/回显 chips，ChatEntry.skills）+Ribbon pictureFormat theirs 包装×ours 组体融合+flip 按钮组织入；slides/pdf/markdown=各自 runWith attachSkills 参数+kb 前置组合；四端 Api 类型+preload 三方法（skillsList/skillText/openSkillsSettings）补齐（防「desktop-api 有 main 无」死链，与 R31 坑③对账） |
+| markdown/html 磁盘监视器 | 外部文件变更全链（markdown-main/html-main watcher+channels+preload+App 状态机）：diskTextRef/overwriteRef/diskNotice 三态+reloadFromDisk（caret/scroll 保全+undo 隔离）+changed/conflict 通知条（keepMine/overwriteNow/reloadNow）+save conflict 拒绝；markdown App 保 ours 基底定向织入（无 source-mode 分支），html App 保 DockShell 结构织入通知条 |
+| shell tab 休眠 | tab-hibernation 新件（pickTabsToSleep/SleepPolicy）+TabRecord lastActiveAt/pinned/dormant 全链（activate 记账/serialize/openDocuments/attachTab）+sleepTab/reviveTab/ensureLive/sleepIdleTabs/startSleepSweeper+createViewFor/destroyView+findTabByPath/webContentsForTab/findTabOfKindByPath dormant 感知+setPinned+右键菜单固定项 21 语言；**docs 冻结 workaround 保留**（destroyView docs 分支只 teardown 不 close，两测试断言 adapted 注记）+home-cli 新件（Ask AI CLI 沙箱上下文）+kb:cli-context/kb:run-cli handler+watchdog/renderer-watchdog 新件 |
+| shell skills 面板重设计 | FoundSkills 整取上游新版（recommended 目录分类+zip/folder 导入）+found-skill RecommendedSkill+imported-skills JSZip+integrations-api 扩展；**IntegrationsPane 保 KbSourceSection**、FoundSkills 随上游移入 SettingsModal 新 skills 分区（SectionId+SECTIONS+render 三处补齐）；shell strings intgSkills* 新键 21 语言+四键值语义同步（intgSkillsImportFailed {reason} 占位符+fr 修复）；六 svg 图标资产补齐（file-badge 用）；ask-artifacts/ask-tool-notes/AskAttachments 新件（kb-ask 任务卡/工具注记）+KbAskPanel 大改融合（cliSkill/filesSkill/attachments，保 chaOffice 桥+ModelPickerButton+AiSkillsMenu 并列） |
+| sheets 其余 | View 两列外：createSheetsView openingWorkbook 选项（休眠唤醒 loading 遮罩）+focusSheetGrid 织入（ILayoutService）+incompleteRuns 过滤（save-actions 重算未完模型不落缓存）+csv cellPatternLookup（日期/CF 模式写入 csv）+AiChatPanel skills UI（本地已有）接线补全 |
+| linux/打包 | #2126 MIME 图标修复（after-install 删 x-office-document icon 行+after-remove 重建 mime db，chaoffice.xml 品牌路径）+electron-builder recommended skills 拷贝项 |
+| 裁定删除 | ai-provider minimax-text.test（R31 #2100 同款上游静态 models 结构）+shell settings-custom-models.test（同 #2100 旧版 catalog 面板结构，快照复活再删） |
+
+**对账与核对**：3/3 上游提交全落位；Rust 函数级两向审计（6 改动文件除 tests 外）零缺失（lib.rs 8 行=品牌、visuals 56 行=本地 PictureSrcRect/Lum/shadow 超集+edit_as 位置差）；cargo 273 全绿。
+
+**门禁终态**：typecheck 全工作区 0 错误（docs/sheets/slides/pdf/markdown/html/shell/server/ui/cli/agent-core/ai-provider/ai-search/ai-host/project-store/service-core/electron-utils/docx-engine/pptx-engine/pdf2docx/html2docx/pipelines/file-parse/xlsx-gateway/pptx-render/zip-gate/odf2ooxml/i18n）；vitest 全工作区绿——docs 389 文件 4206/sheets 3615/slides 1523/shell 124 文件 1236/markdown 1318/pdf 967/html 321/ui 321/electron-utils 310/docx-engine 1894/pptx-engine 1332/cli 345/project-store 144/ai-host 61/ai-provider/ai-search 121/agent-core 249/server 34/xlsx-gateway 251/pptx-render 420/pdf2docx 827…；cargo 273 绿；lint 改动文件 0 error；品牌 grep 豁免外零残留（豁免：GENOFFICE_*/genspark.ai/RUN_GENOFFICE_TOOL/'genoffice' LEGACY/genoffice. 点分功能 id）。
+
+**本轮新坑**：①3-way 分类脚本的冲突块解决后必须 `git diff HEAD -- <file>` 复核净增量——「保 ours」会把 auto-merge 已带入的非冲突 theirs hunk 误判为丢失、也可能让 theirs 新代码引用 ours 侧没有的符号（四端 AiPanel 半合并态）；②strings.ts 键级合并器的多行词条边界：键行在冲突外、续行在块内时，两侧块首续行按「ours 胜」丢弃 theirs；③vitest resolve.alias 对象形态是前缀替换——裸名必须在子路径之后，且 ui 子路径别名不能省（node exports 不参与 alias 拦截）；④上游一个特性跨「主进程 watcher+shared 类型+preload+渲染状态机+strings」五层，3-way 后各层落点不同（main 干净并入、渲染层全冲突），必须逐层对账（grep 双向：通道名↔handler、Api 方法↔preload 实现↔main 注册）；⑤shell strings 的 intgSkills* 键值 R29 引入后上游有语义更新（{name}→{reason} 占位符），「both-changed 保本地」对上游 lineage 键不成立——需按 en 值语义 diff 逐键判定。
+
+**R32 随轮发版（2026-10-23，六段 1.0.10.0.12.29）**：①版本铁律：合并提交 chaofficeUpstreamVersion 0.11.919→0.12.29；打包 Z+1：1.0.9→1.0.10（三处 package.json+lock）；②九件安装包清理重建+架构直验；③dsh 产物重建（dist:chatop+package:plugin）；④tag `1.0.10` 推三仓；⑤GitHub Release 十资产；⑥aidooo.com 发布+历史清理+升级链验证；⑦发版真机测试（docs/release-test-report-1.0.10.md）。
+
 ## 第三十一轮（2026-10-22，上游 1cb2925af..285540a4f 5 提交全吸收，施工于 sync/31-upstream；六段 1.0.9.0.11.919——终点无新 tag，上游 shell package.json 仍 0.11.0，后三位维持 0.11.919；打包 Z+1：1.0.8→1.0.9）
+
 
 > 上游 5 提交=2 feat+3 fix。冲突 7 文件（docs-main 2 块/shell index 1 块/providers 5 块/SettingsModal 2 块/两 tsconfig/cli README/mcp.test）+1 modify/delete（skills/genoffice/SKILL.md）。1 件空对账（#2100）。随轮发版 1.0.9。
 
