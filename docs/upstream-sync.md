@@ -758,6 +758,31 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 
 **R31 用户指令「先把缺陷全部修复，暂时不打包」执行记录（2026-10-22）**：①**R30 观察项①根治**（431acd31）：sheets 新建工作簿 ⌘S/保存对 needsSaveAs 会话不再因 journal 冷死路——save-actions 空日志分支路由 Save-As（主进程 3490 行本就以 suggestSaveAs 弹命名框，缺渲染层提前返回）；文件菜单保存/另存为对 blank-draft 保持可用；契约测试钉新语义 + 3 新用例（save-blank-draft.test）；持久化本就走隐藏草稿链，保存入口是唯一断点。②**R30 观察项②定案为已修**：Ribbon 插表 dirty 链真机实证 `slidesApi.isDirty()=true`（sessionTxn→addTable op→appendRawElements→structureDirty 即 #2103 修复链；R30 时误判「应用层走另一条链」）；引擎 materialize-dirty 单测在位，无需新代码。③**lint 存量债清零**（204 error→0，历史首次全仓 0 error）：171 no-unused-vars（codemod 四类：整行 import 88/多行块成员 20/死函数 7/参数下划线 16 + 两 Ribbon 死代码手工）、16 no-undef（gui-smoke 补 /* global */；**extract-local-i18n.mjs secRe 未定义变量系真 bug 修复**）、no-useless-assignment ×5（feedbackClient 的 appVersion 改 .catch 链/logJson-chatop-local/FeedbackModal 声明去初值/docops-suite 改 IIFE 表达式+async 化）、no-regex-spaces ×4（ast-pdf/extract 工具 {2}{4} 量化）、prefer-const ×2、no-useless-escape ×2、@next/next/no-img-element ×2（ChatMedia 陈旧 disable 注释删除，插件未安装）、preserve-caught-error ×1（workbook-ops cause 挂链）、no-require-imports ×1（ai-host 双规则 disable 收敛）；**附带安全修复**：feedback.ts 明文 DEFAULT_SIGN_SECRET 删除（与 _SK 混淆串同值，未用且破坏混淆目的）。附带发现修复：AiPanel 内层组件死 panelSettings 状态（R28 遗留镜像，broadcast 时代冗余）。**门禁**：typecheck 全仓 0；lint 全仓 0 error 24 warning（20 react-hooks 基线）；vitest 全仓复跑见发版前验证。新坑：e2e codemod 参数替换多补右括号（((_ext))）——替换模式须含边界非捕获；含 JSX 的死函数删除不能裸数花括号（先回退改手工定界）。
 
+**R31 全部挂账逐项开发（2026-10-22 用户令「完成全部挂账内容 全部列出 逐项开发 开发完成后做3次审核 完成后逐项测试 测试完成后真机测试」）**——挂账总清单 16 项，处置如下：
+
+| # | 挂账项 | 处置 | 测试 |
+|---|---|---|---|
+| 1 | cli --host 空串守卫独立测试（R18G） | ✅ 开发：mcp-http-harden 增空 --host fail-closed + 程序化空 host 回环默认两用例 | 14/14 绿 |
+| 2 | ai-host 原生 settings-changed 推送（R30） | ✅ 开发（39c62012b）：SharedAiIpcDeps.broadcast 缝隙+source.subscribe watch 驱动 50ms 去抖单播；sheets/docs fs 缝内嵌广播退役；slides 补实时同步 | shared-ai-ipc 7/7 |
+| 3 | kb-ask AiModelPicker chip（R28） | ✅ 开发（e2f9deb3b）：五端同款 ModelPickerButton 上 composer footerStart，getAiSettings/setAiCurrentModel 桥+原生推送驱动 | shell 1151 绿 |
+| 4 | #1950 登录钮门控应用端接线（R24） | ✅ 开发（e467a9ce3）：AiRuntimeChaOffice.onCallFailure（=noteChaofficeCallFailure）挂 runStream/runChat；ai-host 注册 setChaOfficeLoginOpener；三端接线 | ai-provider 603 绿 |
+| 5 | #1944 sessionUsage 宿主回调（R24） | ✅ 开发（43045ea14）：ChatMessage/AppendChatArgs 增 usage（store 白名单裁剪），docs-main handler 透传，六端面板落盘+loadChat 求和恢复，sheets host onUsage 上报 | 六 app+project-store 绿 |
+| 6 | html/pdf conversations 助手 tab（R20） | ✅ 核验已落地：html AiPanel:2207 / pdf AiPanel:1427 会话模式 AssistantLibraryBrowser 分支在位 | html 321/pdf 967 绿 |
+| 7 | slides currentAfterHistory/thumbBox 微精化（R18） | ✅ 开发（a197aa9e6）：currentAfterHistory+3 用例；useVisibleThumbs 首次接线+sorterViewRef+双视图占位虚拟化 | slide-selection 15/15，slides 1523 绿 |
+| 8 | #1848 fileTargetSources/rename 接线（R20） | ✅ 开发（d8c5b1c8c）：fileTargetSources() 集齐六源；rename/duplicate/delete/movePaths 四 handler 门控；renameStaysInApp+errBadExtension×21 | shell 1151 绿 |
+| 9 | Exa/Firecrawl 接线（R18G） | ✅ 开发（6fe90ffc8）：exa.ts/firecrawl.ts 函数 API 移植+分发双 tier+SearchKeys 容 undefined+metas 双条目+三端 keys 装配 | exa-firecrawl 6+5，ai-search 117 绿 |
+| 10 | #1978 profiles 设置面 UI（R24/R27） | ✅ 等效覆盖裁定：V2 ModelSettingsPage「＋新增厂商」流已含名称/三协议探测/模型发现/KEEP_KEY；富特性字段（apiKeyEnv/headers/idleTimeoutMs/compat）属 legacy customEndpoints 桥（V2 运行路径不读），不建平行冗余 UI；收敛条件：V2 runtime 消费富字段时再进设置面 | —（核验） |
+| 11 | pdf/slides 搜索标题（R18-C） | ✅ 核验除名：renderSearchHeading 系上游 shell Home 特性且本地 Home 已同步实现；pdf/slides 上游从未有此特性（挂账措辞混淆） | —（核验） |
+| 12 | 上游 indent-ruler（R18-D） | ✅ 核验除名：Ruler.tsx 两侧仅品牌 import 差异（后续轮次 3-way 已落地） | —（核验） |
+| 13 | 跨应用 aiPanel helpers 统一（R18） | ✅ 核验除名：aiPanelInitiallyOpen/rememberAiPanelOpen 四端（docs/slides/markdown/html）已共享 ui 包 helpers；sheets（会话池）与 pdf（DockShell storage）差异属有意架构 | —（核验） |
+| 14 | FilesPane-in-sheets（R24） | ✅ 开发（b7b000bc5）：sheets preload 装 files-pane 桥+css；ExcelShell 左缘 FilesEdgeTab+浮层 FilesPane（覆盖层不触网格布局，尊重 R24 裁定实质）；**附带死链修复**：workbook:reopen 通道从未有 main 侧 handler（univer-sync 崩溃恢复死亡链），补 handler | sheets 3579 绿 |
+| 15 | Codex app-server 设置面（二轮裁定 B） | ✅ 核验除名：vendor catalog codex 条目+codexLike 保存流+ai:codex-models 发现通道+runtime 路由全通；cliPath 覆盖为可选增强（auto-detect 为文档化默认） | —（核验） |
+| 16 | THIRD-PARTY notices（R18-C） | ✅ 核验已落地：ensureThirdPartyNotices() beforePack 生成+PDFium 条款校验在位 | —（核验） |
+
+**三轮审核**：R1 代码走查——**修复 runChat 解析错误回归**（resolveForRun 曾移出 try，未登录/无模型错误会 raw reject 丢登录钮路径；已移回 try 内 call 可空+仅 wire 失败进自愈）；R2 全仓门禁——**修 5 lint error**（html/slides/pdf persistMessage 主体漏 usage spread；ExcelShell 死 prop 裁剪；ai-host 测试 require 改 import），typecheck 全仓 0、lint 0 error、全工作区测试绿；R3 安全/边界——reopen 门控沿用 prepareWorkbookForOpen 扩展名/恢复链校验、exa/firecrawl 固定 https 端点无 SSRF 面、settings-changed 50ms 去抖防风暴、store 层 usage typeof-number 白名单、sheets preload import 提顶。
+
+**本轮新坑**：①多行 persistMessage 签名加尾参会漏改函数体 spread（html/slides/pdf 三端同日同错）——加参数必须同提交内 grep 函数体消费点；②出 try 的 resolve 会让「 friendly 错误形态」静默变 reject——错误路径重构必须先枚举消费方（ai:chat 的 ok:false 契约）；③workbook:reopen 类「desktop-api 有、main 无」的死通道可用 grep 双向对账发现（preload invoke ↔ ipcMain.handle 成对审计）。
+
 **本轮新坑**：①cherry-pick 冲突 re.sub 保 HEAD 时，**引号键名语言块（'zh-TW'）不被 `\w` 匹配**——21 语言表补键先数块数（21 块 vs 上游 20 个无引号键），typecheck TS2741 兜底；②上游 commit 只改 3 行的文件也可能整块大冲突（mcp.test.ts：冲突块=历史累积的上游独有测试 vs 本地版），**必须回看本提交的 `git show <sha> -- <file>` 真实 delta** 再裁决，勿按冲突块大小判断工作量；③worktree 做 main 基线 typecheck 对比必须先确认 node_modules 存在——空 worktree 的 npx tsc 是假件（"This is not the tsc command you are looking for" exit 0 假绿）；④自动合并会在无冲突 hunk 静默带入不想要的代码（providerPickerModels 函数体），空对账后必须 `git diff main` 复核净 diff=0。
 
 ## 第三十轮（2026-10-21，上游 04f145717..1cb2925af 2 提交全吸收，施工于 sync/30-upstream；六段 1.0.7.0.11.919——终点无新 tag（`v0.11.919-11-g1cb2925a`），上游 shell package.json 仍 0.11.0，后三位维持 0.11.919）
