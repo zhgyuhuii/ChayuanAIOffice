@@ -869,6 +869,12 @@ export type ExportImagesResult =
   | { ok: false; error: string }
 
 /** AI channels are app-wide shared ipcMain handlers (shell registers via docs-main registerAiIpc); pass-through only */
+export interface UserSkillEntry {
+  name: string
+  description: string
+  relevant: boolean
+}
+
 export const AI_CHANNELS = {
   getSettings: 'ai:get-settings',
   setSettings: 'ai:set-settings',

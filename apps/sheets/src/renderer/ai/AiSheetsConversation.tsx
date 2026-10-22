@@ -19,6 +19,7 @@ import {
   AgentLoop,
   composeSkills,
   COMPLETED_VIA_TOOLS_TEXT,
+  withAttachedSkills,
   type AgentImage,
 } from '@chaoffice/agent-core'
 import { enabledChatModels, pickImageModel, type AiSettingsV2 } from '@chaoffice/ai-provider/browser'
@@ -53,6 +54,7 @@ export interface SheetsConversationView {
   prompt: string
   busy: boolean
   attachments: readonly AttachmentMeta[]
+  attachedSkills: readonly string[]
   attachNotice: string | null
 }
 
@@ -64,6 +66,8 @@ export interface SheetsConversationHandle {
   addAttachmentPaths(paths: readonly string[]): Promise<void>
   addPastedImage(data: ArrayBuffer, ext: string): Promise<void>
   removeAttachment(path: string): void
+  /** composer skills menu toggle (chips clear with the next send, like attachments) */
+  toggleSkill(name: string): void
 }
 
 export interface AiSheetsConversationProps {
@@ -139,6 +143,13 @@ export function AiSheetsConversation({
   const [attachNotice, setAttachNotice] = useState<string | null>(null)
   const attachmentsRef = useRef(attachments)
   attachmentsRef.current = attachments
+  const [attachedSkills, setAttachedSkills] = useState<readonly string[]>([])
+  const attachedSkillsRef = useRef(attachedSkills)
+  attachedSkillsRef.current = attachedSkills
+  const toggleSkill = (name: string) =>
+    setAttachedSkills((prev) =>
+      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
+    )
   /** Attachments consumed by earlier sends this session */
   const sentAttachmentsRef = useRef<readonly AttachmentMeta[]>([])
   /** Synchronous re-entrancy guard between runAgent trigger and loop.run */
@@ -507,7 +518,29 @@ export function AiSheetsConversation({
     return images
   }
 
-  function runAgent(instruction: string, sentAttachments: readonly AttachmentMeta[]): void {
+  /** the attached skills' full text in front of the request; a skill that vanished is skipped */
+  const withSkillBodies = async (instruction: string, names: readonly string[]) => {
+    if (names.length === 0) return instruction
+    const bodies = await Promise.all(
+      names.map(async (name) => {
+        try {
+          return { name, body: await window.desktopApi.skillText(name) }
+        } catch {
+          return null
+        }
+      }),
+    )
+    return withAttachedSkills(
+      instruction,
+      bodies.filter((b): b is { name: string; body: string } => b !== null),
+    )
+  }
+
+  function runAgent(
+    instruction: string,
+    sentAttachments: readonly AttachmentMeta[],
+    sentSkills: readonly string[] = [],
+  ): void {
     const loop = ensureLoop()
     if (loop.busy || runStartingRef.current) return
     runStartingRef.current = true
@@ -530,13 +563,16 @@ export function AiSheetsConversation({
     void collectImageAttachments(sentAttachments)
       .then(async (images) => {
         runStartingRef.current = false
-        const kbInstruction = kb.augment(instruction)
+        // skill bodies prefix the instruction; KB citations ride after it
+        const kbInstruction = kb.augment(await withSkillBodies(instruction, sentSkills))
         void kbInstruction.then(attachKbCitations)
         loop.run(await kbInstruction, images)
       })
       .catch(async () => {
+        // an unreadable image must not strand the run, nor drop the skills the user attached
         runStartingRef.current = false
-        const kbInstruction = kb.augment(instruction)
+        const kbInstruction = kb
+          .augment(await withSkillBodies(instruction, sentSkills).catch(() => instruction))
         void kbInstruction.then(attachKbCitations)
         loop.run(await kbInstruction)
       })
@@ -551,6 +587,9 @@ export function AiSheetsConversation({
     if (!instruction || busy || runStartingRef.current) return
     runToolsRef.current = []
     const sentAtts = overrideAttachments ?? attachmentsRef.current
+    // skills ride with this one message only: the chips clear like attachments do
+    const sentSkills = overrideInstruction ? [] : attachedSkillsRef.current
+    if (sentSkills.length > 0) setAttachedSkills([])
     const agentConfigured = enabledChatModels(getSettings()).length > 0
     const alreadyPersisted = retryIndex !== undefined && chat[retryIndex]?.persisted === true
     if (retryIndex !== undefined) {
@@ -567,6 +606,7 @@ export function AiSheetsConversation({
       tools: [],
       persisted,
       ...(sentAtts.length > 0 ? { attachments: sentAtts } : {}),
+      ...(sentSkills.length > 0 ? { skills: sentSkills } : {}),
       ...(scope ? { scope } : {}),
     })
     if (!overrideInstruction) setPrompt('')
@@ -580,7 +620,7 @@ export function AiSheetsConversation({
     }
     onFirstMessage(instruction)
     if (agentConfigured) {
-      runAgent(instruction, sentAtts)
+      runAgent(instruction, sentAtts, sentSkills)
       return
     }
     const outcome = runDeterministicPlan(instruction)
@@ -629,8 +669,11 @@ export function AiSheetsConversation({
       addPastedImage: async (data, ext) =>
         mergeRef.current(await window.desktopApi.addPastedImage(data, ext)),
       removeAttachment: (path) => setAttachments((prev) => prev.filter((a) => a.path !== path)),
+      toggleSkill: (name) => toggleSkillRef.current(name),
     }
   }
+  const toggleSkillRef = useRef(toggleSkill)
+  toggleSkillRef.current = toggleSkill
   const stopRef = useRef(stop)
   stopRef.current = stop
   useEffect(() => {
@@ -641,9 +684,9 @@ export function AiSheetsConversation({
 
   // report the view state up (App renders the active conversation through AiChatPanel)
   useEffect(() => {
-    onState({ chat, historic, prompt, busy, attachments, attachNotice })
+    onState({ chat, historic, prompt, busy, attachments, attachedSkills, attachNotice })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chat, historic, prompt, busy, attachments, attachNotice])
+  }, [chat, historic, prompt, busy, attachments, attachedSkills, attachNotice])
 
   // instance-private cleanup on unmount (§4.5): abort in-flight work; the loop's
   // onDone still persists the interrupted half turn. Shared workbook/preview

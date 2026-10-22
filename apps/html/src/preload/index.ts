@@ -46,6 +46,12 @@ const api: HtmlApi = {
     ipcRenderer.on(HTML_CHANNELS.fileRenamed, listener)
     return () => ipcRenderer.removeListener(HTML_CHANNELS.fileRenamed, listener)
   },
+  onFileChangedOnDisk: (handler) => {
+    const listener = (_e: Electron.IpcRendererEvent, path: string) => handler(path)
+    ipcRenderer.on(HTML_CHANNELS.fileChangedOnDisk, listener)
+    return () => ipcRenderer.removeListener(HTML_CHANNELS.fileChangedOnDisk, listener)
+  },
+  ackFileChangedOnDisk: () => ipcRenderer.send(HTML_CHANNELS.ackFileChangedOnDisk),
   setProvisionalTitle: (title) => ipcRenderer.send(HTML_CHANNELS.provisionalTitle, title),
   pickImage: () => ipcRenderer.invoke(HTML_CHANNELS.pickImage),
   saveImage: (data) => ipcRenderer.invoke(HTML_CHANNELS.saveImage, data),
@@ -114,6 +120,9 @@ const api: HtmlApi = {
   aiDiscoverModels: (target) => ipcRenderer.invoke(AI_CHANNELS.discoverModels, target),
   aiChaOfficeStatus: (withEmail) => ipcRenderer.invoke(AI_CHANNELS.chaofficeStatus, withEmail),
   aiChaOfficeLogin: () => ipcRenderer.invoke(AI_CHANNELS.chaofficeLogin),
+  openSkillsSettings: () => ipcRenderer.invoke('ai:open-skills-settings'),
+  skillsList: () => ipcRenderer.invoke('ai:skills-list'),
+  skillText: (name: string) => ipcRenderer.invoke('ai:skill-text', name),
   aiLocalToolStatus: (vendorId) => ipcRenderer.invoke(AI_CHANNELS.localToolStatus, vendorId),
   aiLocalToolInstall: (vendorId, onLine) => {
     if (!onLine) return ipcRenderer.invoke(AI_CHANNELS.localToolInstall, vendorId)

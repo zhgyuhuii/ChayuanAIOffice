@@ -2206,3 +2206,9 @@ declare global {
     desktop: DesktopFilesApi
   }
 }
+
+export interface UserSkillEntry {
+  name: string
+  description: string
+  relevant: boolean
+}

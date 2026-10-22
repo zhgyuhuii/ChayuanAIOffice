@@ -241,6 +241,7 @@ const api: DesktopApi = {
   },
   openAiModelSettings: (section?: string) =>
     ipcRenderer.invoke('ai:open-model-settings', section),
+  openSkillsSettings: () => ipcRenderer.invoke('ai:open-skills-settings'),
   skillsList: () => ipcRenderer.invoke('ai:skills-list'),
   skillText: (name: string) => ipcRenderer.invoke('ai:skill-text', name),
   runCli: (args: string[]) => ipcRenderer.invoke('ai:run-cli', args),

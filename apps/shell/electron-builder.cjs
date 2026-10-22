@@ -616,7 +616,18 @@ const config = {
       from: '../../skills/chaoffice/SKILL.md',
       to: 'cli/skills/chaoffice/SKILL.md',
     },
+    {
+      from: '../../skills/recommended',
+      to: 'cli/skills/recommended',
+    },
     // runtime deps the chaoffice bundle leaves external (jsdom for the Word/Markdown
+=======
+    {
+      from: '../../skills/recommended',
+      to: 'cli/skills/recommended',
+    },
+    // runtime deps the genoffice bundle leaves external (jsdom for the Word/Markdown
+>>>>>>> theirs
     // paths); collected by packages/cli/collect-deps.mjs during its build
     {
       from: '../../packages/cli/dist/node_modules',
@@ -661,7 +672,7 @@ const config = {
     // audio-input entitlement, and macOS asks for it with this text
     extendInfo: {
       NSMicrophoneUsageDescription:
-        'GenOffice records your narration when you record a slide show.',
+        'ChaAI Office records your narration when you record a slide show.',
     },
     notarize: true,
     artifactName: 'ChaAIOffice-${version}-${arch}.${ext}',

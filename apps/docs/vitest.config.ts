@@ -7,71 +7,48 @@ import { defineConfig } from 'vitest/config'
 const local = (rel: string) => fileURLToPath(new URL(rel, import.meta.url))
 
 export default defineConfig({
-  server: {
-    fs: {
-      // chart-kit 的 gl-frame.html 等资源位于 app 根之外——放行仓库根
-      allow: [fileURLToPath(new URL('../../../', import.meta.url))],
+  resolve: {
+    alias: {
+      '@chaoffice/docx-engine/lazy-media': local('../../packages/docx-engine/src/lazy-media.ts'),
+      '@chaoffice/docx-engine': local('../../packages/docx-engine/src/index.ts'),
+      '@chaoffice/font-metrics/resolve': local('../../packages/font-metrics/src/resolve.ts'),
+      '@chaoffice/font-metrics/word-faces.json': local(
+        '../../packages/font-metrics/word-faces.json',
+      ),
+      '@chaoffice/font-metrics': local('../../packages/font-metrics/src/index.ts'),
+      // subpath before the bare name: string aliases are prefix replacements
+      '@chaoffice/electron-utils/headless-export': local(
+        '../../packages/electron-utils/src/headless-export.ts',
+      ),
+      '@chaoffice/electron-utils/atomic-write': local(
+        '../../packages/electron-utils/src/atomic-write.ts',
+      ),
+      '@chaoffice/electron-utils/safe-external-url': local(
+        '../../packages/electron-utils/src/safe-external-url.ts',
+      ),
+      '@chaoffice/electron-utils/print-job': local(
+        '../../packages/electron-utils/src/print-job.ts',
+      ),
+      '@chaoffice/electron-utils': local('../../packages/electron-utils/src/index.ts'),
+      '@chaoffice/ai-provider/browser': local('../../packages/ai-provider/src/browser.ts'),
+      '@chaoffice/ai-provider': local('../../packages/ai-provider/src/index.ts'),
+      '@chaoffice/i18n': local('../../packages/i18n/src/index.ts'),
+      '@chaoffice/ui': local('../../packages/ui/src/index.ts'),
+      '@chaoffice/ui/popover-dismiss': local('../../packages/ui/src/popover-dismiss.ts'),
+      '@chaoffice/ui/shape-gallery': local('../../packages/ui/src/shape-gallery.tsx'),
+      '@chaoffice/ui/InsertImageDialog': local('../../packages/ui/src/InsertImageDialog.tsx'),
+      '@chaoffice/ui/image-transcode': local('../../packages/ui/src/image-transcode.ts'),
+      '@chaoffice/ui/image-dialogs': local('../../packages/ui/src/image-dialogs.tsx'),
+      '@chaoffice/ui/ModelSettingsPage': local('../../packages/ui/src/ModelSettingsPage.tsx'),
+      '@chaoffice/ui/ModelSettingsPageLazy': local('../../packages/ui/src/ModelSettingsPageLazy.ts'),
+      '@chaoffice/ui/ModelDefaultsPage': local('../../packages/ui/src/ModelDefaultsPage.tsx'),
     },
   },
-  resolve: {
-    alias: [
-      {
-        find: '@chaoffice/ui/popover-dismiss',
-        replacement: local('../../packages/ui/src/popover-dismiss.ts'),
-      },
-      {
-        find: '@chaoffice/docx-engine/lazy-media',
-        replacement: local('../../packages/docx-engine/src/lazy-media.ts'),
-      },
-      {
-        find: '@chaoffice/docx-engine',
-        replacement: local('../../packages/docx-engine/src/index.ts'),
-      },
-      {
-        find: '@chaoffice/font-metrics',
-        replacement: local('../../packages/font-metrics/src/index.ts'),
-      },
-      {
-        find: '@chaoffice/electron-utils/print-job',
-        replacement: local('../../packages/electron-utils/src/print-job.ts'),
-      },
-      {
-        find: '@chaoffice/electron-utils/atomic-write',
-        replacement: local('../../packages/electron-utils/src/atomic-write.ts'),
-      },
-      {
-        find: '@chaoffice/electron-utils/safe-external-url',
-        replacement: local('../../packages/electron-utils/src/safe-external-url.ts'),
-      },
-      {
-        find: '@chaoffice/electron-utils/headless-export',
-        replacement: local('../../packages/electron-utils/src/headless-export.ts'),
-      },
-      {
-        find: '@chaoffice/electron-utils',
-        replacement: local('../../packages/electron-utils/src/index.ts'),
-      },
-      {
-        find: '@chaoffice/ai-provider/browser',
-        replacement: local('../../packages/ai-provider/src/browser.ts'),
-      },
-      {
-        find: '@chaoffice/ai-provider',
-        replacement: local('../../packages/ai-provider/src/index.ts'),
-      },
-      { find: '@chaoffice/i18n', replacement: local('../../packages/i18n/src/index.ts') },
-      { find: '@chaoffice/ui/shape-gallery', replacement: local('../../packages/ui/src/shape-gallery.tsx') },
-      { find: '@chaoffice/ui/InsertImageDialog', replacement: local('../../packages/ui/src/InsertImageDialog.tsx') },
-      { find: '@chaoffice/ui/image-transcode', replacement: local('../../packages/ui/src/image-transcode.ts') },
-      { find: '@chaoffice/ui/image-dialogs', replacement: local('../../packages/ui/src/image-dialogs.tsx') },
-      { find: '@chaoffice/ui/ModelSettingsPage', replacement: local('../../packages/ui/src/ModelSettingsPage.tsx') },
-      { find: '@chaoffice/ui/ModelSettingsPageLazy', replacement: local('../../packages/ui/src/ModelSettingsPageLazy.ts') },
-      { find: '@chaoffice/ui/ModelDefaultsPage', replacement: local('../../packages/ui/src/ModelDefaultsPage.tsx') },
-      { find: '@chaoffice/ui', replacement: local('../../packages/ui/src/index.ts') },
-    ],
-  },
+
   test: {
-    include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx'],
+    include: ['tests/**/*.test.ts'],
+    // the engine's display-only `effective` keys stay out of saved-model toEqual
+    setupFiles: [local('../../packages/docx-engine/tests/setup-equality.ts')],
     environment: 'jsdom',
     testTimeout: 20000,
   },

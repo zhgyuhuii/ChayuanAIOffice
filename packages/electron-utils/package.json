@@ -8,6 +8,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./atomic-write": "./src/atomic-write.ts",
+    "./disk-watch": "./src/disk-watch.ts",
     "./drop-open": "./src/drop-open.ts",
     "./files-pane-bridge": "./src/files-pane-bridge.ts",
     "./generated-images": "./src/generated-images.ts",
@@ -30,7 +31,7 @@
   },
   "devDependencies": {
     "typescript": "^5.9.3",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.12"
   },
   "dependencies": {
     "parse5": "^8.0.1",

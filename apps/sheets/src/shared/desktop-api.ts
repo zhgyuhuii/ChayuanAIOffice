@@ -3338,3 +3338,9 @@ export interface GenerateImageResult {
   url?: string
   error?: string
 }
+
+export interface UserSkillEntry {
+  name: string
+  description: string
+  relevant: boolean
+}

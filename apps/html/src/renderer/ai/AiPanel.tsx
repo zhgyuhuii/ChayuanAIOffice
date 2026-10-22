@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, lazy, Suspense } from 'react'
 import { createHtmlMediaSkill } from './media-skill'
 import type { ReactElement, ReactNode } from 'react'
-import { AgentLoop, composeSkills } from '@chaoffice/agent-core'
+import { AgentLoop, composeSkills, withAttachedSkills } from '@chaoffice/agent-core'
 import type { AgentImage } from '@chaoffice/agent-core'
 import type { AiSettingsV2 } from '@chaoffice/ai-provider'
 import { defaultSettingsV2 } from '@chaoffice/ai-provider/browser'
@@ -32,6 +32,8 @@ import {
   useChatRunQueue,
   type AiScopeQuoteData,
   type AiTokenUsageView,
+  AiSkillChips,
+  AiSkillsMenu,
   type DockChrome,
   type KbCitation,
 } from '@chaoffice/ui'
@@ -223,6 +225,8 @@ interface ChatEntry {
   queueRun?: boolean
   /** attachments consumed from the composer by this message (echoed read-only; retries resend them) */
   attachments?: AttachmentMeta[]
+  /** skills the user attached to this message from the composer menu */
+  skills?: string[]
   tools?: ToolActivity[]
   /** the element this user message targeted, frozen at send */
   scope?: AiScopeQuoteData
@@ -375,6 +379,9 @@ function AiConversationBody({
   const [attachments, setAttachments] = useState<AttachmentMeta[]>([])
   const attachmentsRef = useRef(attachments)
   attachmentsRef.current = attachments
+  const [attachedSkills, setAttachedSkills] = useState<string[]>([])
+  const attachedSkillsRef = useRef(attachedSkills)
+  attachedSkillsRef.current = attachedSkills
   const sendSeqRef = useRef(0)
   const [attachNotice, setAttachNotice] = useState<string | null>(null)
   const [dragOver, setDragOver] = useState(false)
@@ -437,6 +444,31 @@ function AiConversationBody({
     showAttachNotice(result.rejected)
   }
   const pickAttachments = async () => mergeAttachments(await window.htmlApi.pickAttachments())
+
+  /** the attached skills' full text in front of the request; a skill that vanished is skipped */
+  const withSkillBodies = async (instruction: string, names: readonly string[]) => {
+    if (names.length === 0) return instruction
+    const bodies = await Promise.all(
+      names.map(async (name) => {
+        try {
+          return { name, body: await window.htmlApi.skillText(name) }
+        } catch {
+          return null
+        }
+      }),
+    )
+    return withAttachedSkills(
+      instruction,
+      bodies.filter((b): b is { name: string; body: string } => b !== null),
+    )
+  }
+
+  const listSkillsForMenu = async () =>
+    (await window.htmlApi.skillsList()).map(({ name, description }) => ({ name, description }))
+  const toggleSkill = (name: string) =>
+    setAttachedSkills((prev) =>
+      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
+    )
   const onDrop = async (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
@@ -1041,6 +1073,8 @@ function AiConversationBody({
     queueRun = false,
     attachmentsOverride?: AttachmentMeta[],
     scope?: AiScopeQuoteData,
+    /** only the composer's own send takes the attached skills along */
+    attachSkills = false,
   ): boolean => {
     const instruction = text.trim()
     const loop = ensureLoop()
@@ -1055,6 +1089,9 @@ function AiConversationBody({
       ]
       if (!attachmentsOverride) setAttachments([])
     }
+    // skills ride with this one message only: the chips clear like attachments do
+    const sentSkills = attachSkills ? attachedSkillsRef.current : []
+    if (sentSkills.length > 0) setAttachedSkills([])
     stickToBottomRef.current = true
     queueRunRef.current = queueRun
     lastQueueRunRef.current = queueRun
@@ -1073,6 +1110,7 @@ function AiConversationBody({
         instruction: displayText ? instruction : undefined,
         queueRun: queueRun || undefined,
         attachments: sentAtts.length > 0 ? sentAtts : undefined,
+        skills: sentSkills.length > 0 ? sentSkills : undefined,
         scope,
       },
       { role: 'assistant', text: '', streaming: true },
@@ -1090,7 +1128,8 @@ function AiConversationBody({
         settingsRef.current = await window.htmlApi.getAiSettings()
         const images = sentAtts.length > 0 ? await collectImages(sentAtts) : []
         if (!mountedRef.current || seq !== sendSeqRef.current) return
-        const kbInstruction = await kb.augment(instruction)
+        // skill bodies prefix the instruction; KB citations ride after it
+        const kbInstruction = await kb.augment(await withSkillBodies(instruction, sentSkills))
         if (kb.lastCitations.current.length > 0)
           patchLast({ kbCitations: kb.lastCitations.current })
         await loop.run(kbInstruction, images.length > 0 ? images : undefined)
@@ -1419,6 +1458,7 @@ function AiConversationBody({
                     <AttachmentList atts={entry.attachments} previews={attachmentPreviews} />
                   </div>
                 )}
+                {entry.skills && <AiSkillChips lang={lang} names={entry.skills} />}
                 <span dir="auto">{entry.text}</span>
                 {own.map((r, k) =>
                   r.qa ? (
@@ -1732,6 +1772,7 @@ function AiConversationBody({
             onSend={sendQueue}
           />
         )}
+        <AiSkillChips lang={lang} names={attachedSkills} onRemove={toggleSkill} />
         {attachments.length > 0 && (
           <div className="ai-attachments">
             <AttachmentList
@@ -1768,7 +1809,7 @@ function AiConversationBody({
           iconOnly
           textareaRef={inputRef}
           onChange={setPrompt}
-          onSend={() => send(prompt)}
+          onSend={() => send(prompt, undefined, false, undefined, undefined, true)}
           onStop={stop}
           onPasteFiles={(files) => void onPasteFiles(files)}
           onPasteText={onPasteText}
@@ -1784,15 +1825,14 @@ function AiConversationBody({
               />
               {/* #1944: per-session token usage chip */}
               {sessionUsage && <AiUsageChip usage={sessionUsage} session lang={lang} />}
-              <button
-                type="button"
-                className="ai-attach-btn"
-                onClick={() => void pickAttachments()}
-                data-tip={t('aiAttachTitle')}
-                aria-label={t('aiAttachTitle')}
-              >
-                <img src={attachIcon} alt="" aria-hidden />
-              </button>
+              <AiSkillsMenu
+                lang={lang}
+                listSkills={listSkillsForMenu}
+                selected={attachedSkills}
+                onToggle={toggleSkill}
+                onAddFile={() => void pickAttachments()}
+                onManage={() => void window.htmlApi.openSkillsSettings?.()}
+              />
             </>
           }
         />

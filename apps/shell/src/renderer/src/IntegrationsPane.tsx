@@ -8,7 +8,6 @@ import {
 } from '@chaoffice/ui'
 import type { TFunc } from './locale'
 import { McpServerSection } from './McpServerSection'
-import { FoundSkills } from './FoundSkills'
 import type {
   AgentId,
   AgentTarget,
@@ -477,7 +476,6 @@ export function IntegrationsPane({
       </section>
 
       <KbSourceSection />
-      <FoundSkills t={t} />
     </>
   )
 }

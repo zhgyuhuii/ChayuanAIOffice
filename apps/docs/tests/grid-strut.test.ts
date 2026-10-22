@@ -39,6 +39,10 @@ describe('blockAttrs .doc-grid-strut class', () => {
     })
     expect(pOf(editor).classList.contains('doc-grid-strut')).toBe(true)
     expect(pOf(editor).style.fontFamily).toBe('')
+    const run = pOf(editor).querySelector('span[style*="font-family"]') as HTMLElement
+    expect(run.style.getPropertyValue('--doc-run-ff').replace(/'/g, '"').replace(/,/g, ', ')).toBe(
+      run.style.fontFamily,
+    )
     editor.destroy()
   })
 
@@ -68,10 +72,18 @@ const GRID_SECT =
   '<w:sectPr><w:pgSz w:w="11900" w:h="16840"/>' +
   '<w:docGrid w:type="linesAndChars" w:linePitch="329" w:charSpace="-820"/></w:sectPr>'
 
-function parsedWith(sectPrXml: string | null, eastAsiaFont?: string): ParsedDocFull {
+function parsedWith(
+  sectPrXml: string | null,
+  eastAsiaFont?: string,
+  slot?: { eaSlotEmpty?: boolean; eaFromLang?: boolean },
+  normal?: Record<string, unknown>,
+): ParsedDocFull {
+  const styles = new Map()
+  if (normal)
+    styles.set('Normal', { id: 'Normal', type: 'paragraph', isDefault: true, display: normal })
   return {
-    styles: new Map(),
-    docDefaults: eastAsiaFont ? { asciiFont: 'Century', eastAsiaFont } : {},
+    styles,
+    docDefaults: eastAsiaFont ? { asciiFont: 'Century', eastAsiaFont, ...slot } : {},
     blocks: sectPrXml ? [{ docxIndex: 0, originalXml: `<w:p>${sectPrXml}</w:p>` }] : [],
   } as unknown as ParsedDocFull
 }
@@ -113,6 +125,63 @@ describe('docStyleCss grid strut face', () => {
     mountBlankFace()
     expect(docStyleCss(parsedWith(null, 'ＭＳ 明朝'))).not.toContain('Grid Strut')
     expect(docStyleCss(parsedWith(GRID_SECT))).not.toContain('Grid Strut')
+    expect(docStyleCss(parsedWith(null, 'Century'))).not.toContain('Grid Strut')
+  })
+
+  it('a missing EA face rendered by a stand-in gets the strut without a grid', () => {
+    // Yu Mincho body on a Latin strut: every CJK line unioned ~0.17em past its
+    // 1.44 x 1.08 line-height (18.9pt for Word's 17.0 at 11pt, +4 pages)
+    stubMetricsCanvas(880, 120)
+    mountBlankFace()
+    const css = docStyleCss(parsedWith(null, '\u6e38\u660e\u671d'))
+    expect(css).toContain("@font-face { font-family:'ChaAI Office Grid Strut'")
+    expect(css).toContain('ascent-override:88%')
+    expect(css).toContain('.doc-page :is(.doc-grid-strut,.doc-ea-strut) {')
+    // the CJK spans lead with the strut face too: their loaded range alias is
+    // not the face the strut measured, and offset boxes union past the grid
+    expect(css).toContain(
+      ".doc-page :is(.doc-grid-strut,.doc-ea-strut) .doc-east-asian-font { font-family:'ChaAI Office Grid Strut',",
+    )
+    expect(docStyleCss(parsedWith(null, '\uff2d\uff33 \u660e\u671d'))).toContain('.doc-ea-strut')
+  })
+
+  it('an empty theme slot resolved by the language still drives the grid strut', () => {
+    stubMetricsCanvas(952, 351)
+    mountBlankFace()
+    const resolved = parsedWith(GRID_SECT, 'PMingLiU', { eaSlotEmpty: true, eaFromLang: true })
+    expect(docStyleCss(resolved)).toContain('ascent-override:95.2%')
+    const unresolved = parsedWith(GRID_SECT, 'Yu Gothic', { eaSlotEmpty: true })
+    expect(docStyleCss(unresolved)).not.toContain('Grid Strut')
+  })
+
+  it('Office-private faces under a metric alias get the strut without a grid', () => {
+    stubMetricsCanvas(969, 391)
+    mountBlankFace()
+    const css = docStyleCss(parsedWith(null, 'DengXian'))
+    expect(css).toContain("@font-face { font-family:'ChaAI Office Grid Strut'")
+    expect(css).toContain('ascent-override:96.9%')
+    expect(css).toContain('descent-override:39.1%')
+    expect(css).toContain('.doc-page :is(.doc-grid-strut,.doc-ea-strut) {')
+  })
+
+  it('takes the face the CJK spans render with, not the w:lang backfill', () => {
+    stubMetricsCanvas(969, 391)
+    mountBlankFace()
+    // zh-CN empty theme slot: Normal resolves to DengXian, docDefaults backfills SimSun
+    const css = docStyleCss(
+      parsedWith(
+        null,
+        'SimSun',
+        { eaSlotEmpty: true, eaFromLang: true },
+        {
+          font: 'DengXian',
+          fontAscii: 'Calibri',
+          eaSlotEmpty: true,
+        },
+      ),
+    )
+    expect(css).toContain("@font-face { font-family:'ChaAI Office Grid Strut'")
+    expect(css).toContain('.doc-ea-strut')
   })
 
   it('degrades silently when canvas metrics are unavailable', () => {

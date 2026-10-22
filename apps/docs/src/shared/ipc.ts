@@ -825,6 +825,8 @@ export interface DesktopApi {
     cancelled: boolean
   }): void
   /** the skills the user installed (userData/skills), for the AI panel's skills skill */
+  /** shell only: switch to Home and open Settings › Integrations (the skills list) */
+  openSkillsSettings(): Promise<void>
   skillsList(): Promise<UserSkillEntry[]>
   /** the body of one installed skill, by name — the main process resolves the path */
   skillText(name: string): Promise<string>
@@ -847,10 +849,15 @@ export interface UserCliRun {
     command: string | null
     code?: number
     summary?: string
+    output_path?: string
     message?: string
   }
   stdout: string
   stderr: string
+  /** where relative paths resolved; absent in a window with no document and no save folder */
+  cwd?: string
+  /** the folders the CLI may read and write */
+  allowedRoots?: string[]
 }
 
 /** mirrors VIEW_IMAGE_CHANNEL in @chaoffice/electron-utils (kept literal so the preload stays free of main-only deps) */

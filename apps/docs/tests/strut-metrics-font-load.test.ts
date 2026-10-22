@@ -59,6 +59,21 @@ describe('unloadedBundledPrimary', () => {
   })
 })
 
+describe('unloadedBundledPrimary with range aliases', () => {
+  const JA_CHAIN =
+    '"\uff2d\uff33 \u660e\u671d", "MS Mincho GO", "Yu Mincho", "ChaAI Office Hiragino Mincho", "ChaAI Office MS Mincho", serif'
+
+  it('names the alias leading the chain, then the bundled face behind it', () => {
+    stubFonts(new Set())
+    stubCanvas({ ascent: 900, descent: 300 })
+    expect(unloadedBundledPrimary(JA_CHAIN)).toBe('MS Mincho GO')
+    stubFonts(new Set(['MS Mincho GO']))
+    expect(unloadedBundledPrimary(JA_CHAIN)).toBe('ChaAI Office Hiragino Mincho')
+    stubFonts(new Set(['MS Mincho GO', 'ChaAI Office Hiragino Mincho', 'ChaAI Office MS Mincho']))
+    expect(unloadedBundledPrimary(JA_CHAIN)).toBeNull()
+  })
+})
+
 describe('fontChainMetricsPct with a pending bundled face', () => {
   it('requests the face, returns the fallback geometry uncached, then re-measures once loaded', () => {
     const loaded = new Set<string>()

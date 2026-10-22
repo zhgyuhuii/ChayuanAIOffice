@@ -104,9 +104,20 @@ function renderInline(
     if (i > last) pushText(text.slice(last, i))
     const tok = m[0] ?? ''
     if (tok.startsWith('`')) out.push(<code key={key++}>{tok.slice(1, -1)}</code>)
-    else if (tok.startsWith('**')) out.push(<strong key={key++}>{tok.slice(2, -2)}</strong>)
-    else if (tok.startsWith('!')) {
-      // adapted: 上游 resolver 优先（图床/manual 资产），未提供 resolver 时按本地 IMAGE_SRC_RE 白名单直渲染
+    else if (tok.startsWith('**'))
+      // emphasis wraps inline content, so a cite link inside it still navigates
+      out.push(
+        <strong key={key++}>
+          {renderInline(tok.slice(2, -2), navs, cite, onZoomOpen, insert, images)}
+        </strong>,
+      )
+    else if (tok.startsWith('![')) {
+      // An image sharing a line with prose, a list step or a table cell — not
+      // just a line of its own. parseBlocks only ever made a *whole* line an
+      // image block, so anything with text around it reached this pass, and
+      // this pass had no image case and printed the source.
+      // adapted: resolver 优先（图床/manual 资产），未提供 resolver 时按本地
+      // IMAGE_SRC_RE 白名单直渲染（无 resolver 的聊天面板不渲染任意外链图）
       const img = IMAGE_RE.exec(tok)
       const raw = img?.[2] ?? ''
       const src = img
@@ -165,7 +176,7 @@ function renderInline(
       } else {
         pushText(tok) // non-nav links keep today's literal rendering
       }
-    } else out.push(<em key={key++}>{tok.slice(1, -1)}</em>)
+    } else out.push(<em key={key++}>{renderInline(tok.slice(1, -1), navs, cite, onZoomOpen, insert, images)}</em>)
     last = i + tok.length
   }
   if (last < text.length) pushText(text.slice(last))
