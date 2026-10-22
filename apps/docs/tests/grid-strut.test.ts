@@ -57,6 +57,28 @@ describe('blockAttrs .doc-grid-strut class', () => {
     editor.destroy()
   })
 
+  it('inheriting paragraphs with CJK text get .doc-ea-strut instead', () => {
+    const editor = new Editor({
+      element: document.createElement('div'),
+      extensions: editorExtensions,
+      content: para([text('\u53cd\u6b3a\u8bc8 AntiFraud')]),
+    })
+    expect(pOf(editor).classList.contains('doc-ea-strut')).toBe(true)
+    expect(pOf(editor).classList.contains('doc-grid-strut')).toBe(false)
+    editor.destroy()
+  })
+
+  it('inheriting Latin-only paragraphs stay unmarked', () => {
+    const editor = new Editor({
+      element: document.createElement('div'),
+      extensions: editorExtensions,
+      content: para([text('plain Latin')]),
+    })
+    expect(pOf(editor).classList.contains('doc-grid-strut')).toBe(false)
+    expect(pOf(editor).classList.contains('doc-ea-strut')).toBe(false)
+    editor.destroy()
+  })
+
   it('Latin-declared mixes stay unmarked (an EA-geometry strut would add slop)', () => {
     const editor = new Editor({
       element: document.createElement('div'),
@@ -101,7 +123,7 @@ function stubMetricsCanvas(ascent: number, descent: number) {
 function mountBlankFace() {
   const style = document.createElement('style')
   style.textContent =
-    "@font-face { font-family: 'ChaOffice PUA Blank'; src: url('./ChaOfficePUABlank.woff2') format('woff2'); }"
+    "@font-face { font-family: 'ChaAI Office PUA Blank'; src: url('./GenOfficePUABlank.woff2') format('woff2'); }"
   document.head.appendChild(style)
 }
 
@@ -110,20 +132,21 @@ describe('docStyleCss grid strut face', () => {
     stubMetricsCanvas(1143, 286)
     mountBlankFace()
     const css = docStyleCss(parsedWith(GRID_SECT, 'ＭＳ 明朝'))
-    expect(css).toContain("@font-face { font-family:'ChaOffice Grid Strut'")
+    expect(css).toContain("@font-face { font-family:'ChaAI Office Grid Strut'")
     expect(css).toContain('ascent-override:114.3%')
     expect(css).toContain('descent-override:28.6%')
-    expect(css).toContain('ChaOfficePUABlank.woff2')
+    expect(css).toContain('GenOfficePUABlank.woff2')
+    // the Office-private MS Mincho renders through a stand-in, so the
+    // inheriting .doc-ea-strut paragraphs share the strut too
     expect(css).toContain(
-      ".doc-page .doc-grid-strut { font-family:'ChaOffice Grid Strut',var(--doc-grid-strut-tail,serif) }",
+      ".doc-page :is(.doc-grid-strut,.doc-ea-strut) { font-family:'ChaAI Office Grid Strut',var(--doc-grid-strut-tail,serif) }",
     )
     expect(css).toContain('--doc-grid-strut-tail:')
   })
 
-  it('emits nothing without a typed grid or without an EA face', () => {
+  it('emits nothing without an EA face or with a Latin one', () => {
     stubMetricsCanvas(1143, 286)
     mountBlankFace()
-    expect(docStyleCss(parsedWith(null, 'ＭＳ 明朝'))).not.toContain('Grid Strut')
     expect(docStyleCss(parsedWith(GRID_SECT))).not.toContain('Grid Strut')
     expect(docStyleCss(parsedWith(null, 'Century'))).not.toContain('Grid Strut')
   })

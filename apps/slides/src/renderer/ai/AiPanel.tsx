@@ -80,6 +80,8 @@ import {
   AiQueueStrip,
   AI_QUEUE_LABELS,
   AiUsageChip,
+  AiSkillChips,
+  AiSkillsMenu,
   addTokenUsage,
   useChatRunQueue,
   type AiTokenUsageView,
@@ -96,7 +98,6 @@ import {
 } from '@chaoffice/ai-provider/browser'
 import { slidesModelBridge } from './model-bridge'
 import { hydrateSpecSvg } from './spec-svg-hydrate'
-import attachIcon from '../assets/attach-icon.png'
 import filePdfIcon from '../assets/file-pdf.png'
 import fileWordIcon from '../assets/file-word.png'
 import fileExcelIcon from '../assets/file-excel.png'
@@ -2097,6 +2098,9 @@ function AiConversationBody({
     // The message consumes the composer attachments: they ride along (echoed on the
     // bubble, images multimodal, files via the files skill) and the composer clears.
     const sentAtts = opts?.attachments ?? attachmentsRef.current
+    // skills ride with this one message only: the chips clear like attachments do
+    const sentSkills = opts?.attachments ? [] : attachedSkillsRef.current
+    if (sentSkills.length > 0) setAttachedSkills([])
     if (!opts?.attachments && sentAtts.length > 0) {
       const seen = new Set(sentAttachmentsRef.current.map((a) => a.path))
       sentAttachmentsRef.current = [
@@ -2126,7 +2130,12 @@ function AiConversationBody({
     setChat((prev) => [
       // Fallback: clear leftover streaming flags on history entries, avoiding orphan "thinking" placeholders
       ...prev.map((e) => (e.role === 'assistant' && e.streaming ? { ...e, streaming: false } : e)),
-      { role: 'user', text: shown, ...(sentAtts.length > 0 ? { attachments: sentAtts } : {}) },
+      {
+        role: 'user',
+        text: shown,
+        ...(sentAtts.length > 0 ? { attachments: sentAtts } : {}),
+        ...(sentSkills.length > 0 ? { skills: sentSkills } : {}),
+      },
       { role: 'assistant', text: '', streaming: true, model: runModelRef.current },
     ])
     runStartedAtRef.current = Date.now()

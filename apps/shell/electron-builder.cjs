@@ -620,14 +620,6 @@ const config = {
       from: '../../skills/recommended',
       to: 'cli/skills/recommended',
     },
-    // runtime deps the chaoffice bundle leaves external (jsdom for the Word/Markdown
-=======
-    {
-      from: '../../skills/recommended',
-      to: 'cli/skills/recommended',
-    },
-    // runtime deps the genoffice bundle leaves external (jsdom for the Word/Markdown
->>>>>>> theirs
     // paths); collected by packages/cli/collect-deps.mjs during its build
     {
       from: '../../packages/cli/dist/node_modules',

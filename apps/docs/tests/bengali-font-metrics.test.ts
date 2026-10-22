@@ -9,8 +9,8 @@ import { describe, expect, it } from 'vitest'
 import { advanceEm, readWoff2 } from './helpers/woff2-metrics'
 
 const FONTS = join(__dirname, '../src/renderer/fonts')
-const regular = readWoff2(join(FONTS, 'GenOfficeBengali-Regular.woff2'))
-const bold = readWoff2(join(FONTS, 'GenOfficeBengali-Bold.woff2'))
+const regular = readWoff2(join(FONTS, 'ChaOfficeBengali-Regular.woff2'))
+const bold = readWoff2(join(FONTS, 'ChaOfficeBengali-Bold.woff2'))
 
 describe('ChaAI Office Bengali (Nirmala UI-normalized)', () => {
   it('space, danda and Bengali digits match Nirmala UI', () => {

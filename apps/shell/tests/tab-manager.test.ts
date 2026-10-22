@@ -704,7 +704,8 @@ describe('closing tabs', () => {
     await manager.closeTab(id)
     expect(shellWindow.contentView.removeChildView).toHaveBeenCalledWith(view)
     expect(teardownDocsRenderer).toHaveBeenCalledWith(view.webContents)
-    expect(view.webContents.close).toHaveBeenCalledTimes(1)
+    // adapted: 本地 docs 冻结 workaround——teardown 后不 close（view 由退出回收）
+    expect(view.webContents.close).not.toHaveBeenCalled()
   })
 
   it('closes a clean docs tab after the async dirty query says clean', async () => {
@@ -1293,6 +1294,8 @@ describe('Home right-pane docking (P1 契约)', () => {
     manager.activateDocumentTab(fullId)
     expect(manager.list().find((t) => t.id === fullId)?.active).toBe(true)
     expect(manager.list().find((t) => t.id === dockId)?.docked).toBe(true)
+  })
+
   it('a re-attached docs tab closes through the docs teardown path like any docs tab', async () => {
     const record = manager.detachTab(manager.openDocsTab('/tmp/a.docx'))!
     const newId = manager.attachTab(record)
@@ -1321,7 +1324,8 @@ describe('tab sleep (background renderers released to free memory)', () => {
     expect(slept).toEqual([a])
     expect(shellWindow.contentView.removeChildView).toHaveBeenCalledWith(viewA)
     expect(teardownDocsRenderer).toHaveBeenCalledWith(viewA.webContents)
-    expect(viewA.webContents.close).toHaveBeenCalledTimes(1)
+    // adapted: 本地 docs 冻结 workaround（同上）
+    expect(viewA.webContents.close).not.toHaveBeenCalled()
     const list = manager.list()
     expect(list.find((t) => t.id === a)?.dormant).toBe(true)
     expect(list.find((t) => t.id === b)?.dormant).toBeUndefined()

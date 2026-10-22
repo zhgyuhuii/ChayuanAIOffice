@@ -2555,6 +2555,42 @@ function RibbonInner({
                     <span>{t('ribbonRotateLeft')}</span>
                   </button>
                   </div>
+                    <div className="rb-col">
+                      <button
+                        className="rb-small"
+                        disabled={!canEdit}
+                        onClick={() => rotatePicture(90)}
+                      >
+                        <IconRotateRight size={18} />
+                        <span>{t('ribbonRotateRight')}</span>
+                      </button>
+                      <button
+                        className="rb-small"
+                        disabled={!canEdit}
+                        onClick={() => rotatePicture(-90)}
+                      >
+                        <IconRotateLeft size={18} />
+                        <span>{t('ribbonRotateLeft')}</span>
+                      </button>
+                    </div>
+                    <div className="rb-col">
+                      <button
+                        className={fs.imageFlipH ? 'rb-small active' : 'rb-small'}
+                        disabled={!canEdit}
+                        onClick={() => flipPicture('h')}
+                      >
+                        <IconFlipH size={18} />
+                        <span>{t('ribbonFlipH')}</span>
+                      </button>
+                      <button
+                        className={fs.imageFlipV ? 'rb-small active' : 'rb-small'}
+                        disabled={!canEdit}
+                        onClick={() => flipPicture('v')}
+                      >
+                        <IconFlipV size={18} />
+                        <span>{t('ribbonFlipV')}</span>
+                      </button>
+                    </div>
                 </div>
                 <div className="ribbon-group-label">{t('ribbonGroupAdjust')}</div>
                 </div>

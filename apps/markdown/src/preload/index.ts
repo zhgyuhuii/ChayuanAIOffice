@@ -11,6 +11,9 @@ import type { AutoSaveDefault, DocTheme, ExportFormat, MarkdownApi, SaveMode, Ui
 import { KB_CHANNELS } from '@chaoffice/ai-host/kb-channels'
 
 const api: MarkdownApi = {
+  openSkillsSettings: () => ipcRenderer.invoke('ai:open-skills-settings'),
+  skillsList: () => ipcRenderer.invoke('ai:skills-list'),
+  skillText: (name: string) => ipcRenderer.invoke('ai:skill-text', name),
   consumePending: () => ipcRenderer.invoke(MARKDOWN_CHANNELS.consumePending),
   consumeAiContent: () => ipcRenderer.invoke(MARKDOWN_CHANNELS.consumeAiContent),
   openSourcePath: (path: string) => ipcRenderer.invoke('home:open-path', path),

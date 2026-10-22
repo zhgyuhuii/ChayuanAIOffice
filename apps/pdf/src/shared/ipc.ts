@@ -908,6 +908,12 @@ export interface ImageSearchResponse {
 
 /** API exposed by preload to the renderer (window.pdfApi) */
 export interface PdfApi {
+  /** shell only: switch to Home and open Settings › Integrations (the skills list) */
+  openSkillsSettings?(): Promise<void>
+  /** the skills installed into ChaAI Office's own folder */
+  skillsList(): Promise<UserSkillEntry[]>
+  /** one installed skill's body, by name — the main process resolves the path */
+  skillText(name: string): Promise<string>
   /** Take the pdf path pending for this view (queued at tab creation); null if none */
   consumePending(): Promise<string | null>
   /** open any shell-routed document path (an AI answer's filenav citation) */

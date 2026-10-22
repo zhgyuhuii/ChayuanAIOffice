@@ -7,6 +7,8 @@ import {
   AiUsageChip,
   type AiTokenUsageView,
   useChatRunQueue,
+  AiSkillChips,
+  AiSkillsMenu,
   Markdown,
   PanelTabs,
   usePanelTab,
@@ -38,7 +40,6 @@ import type { ChangePlan } from '@chaoffice/xlsx-gateway/domain/workbook.types'
 import { ATTACHMENT_IMAGE_EXTS, type AttachmentMeta } from '../../shared/desktop-api'
 import { useI18n, type TFunc } from '../i18n/locale'
 import { SHEET_NAV_SCHEME } from './sheet-nav'
-import attachIcon from '../assets/attach-icon.png'
 import filePdfIcon from '../assets/file-pdf.png'
 import fileWordIcon from '../assets/file-word.png'
 import fileExcelIcon from '../assets/file-excel.png'

@@ -20,7 +20,7 @@ import type { TabManager } from './tab-manager'
  * macOS window-all-closed does not quit, so once the prompts have all been
  * confirmed a close that began as a quit must be finished with app.quit()
  * rather than win.close(): the latter closes the only window and leaves the
- * app running with none (genoffice#2098, ⌘Q needing two presses whenever a
+ * app running with none (chaoffice#2098, ⌘Q needing two presses whenever a
  * Docs tab is open).
  *
  * Installed separately from index.ts (same helpers as the detached-window

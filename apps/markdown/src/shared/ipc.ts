@@ -291,6 +291,12 @@ export interface ImageData {
 /** API exposed by preload to the renderer (window.markdownApi) */
 import type { MarkdownTheme } from './markdown-theme'
 export interface MarkdownApi {
+  /** shell only: switch to Home and open Settings › Integrations (the skills list) */
+  openSkillsSettings?(): Promise<void>
+  /** the skills installed into ChaAI Office's own folder */
+  skillsList(): Promise<UserSkillEntry[]>
+  /** one installed skill's body, by name — the main process resolves the path */
+  skillText(name: string): Promise<string>
   /** Take the md path pending for this view (queued at tab creation); null = new untitled document */
   consumePending(): Promise<string | null>
   /** Take AI-authored content queued for this untitled view (create_document); null = none */

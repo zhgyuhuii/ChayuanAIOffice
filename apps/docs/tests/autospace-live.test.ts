@@ -6,8 +6,6 @@
  */
 import { readFileSync } from 'node:fs'
 import { Editor } from '@tiptap/core'
-// adapted: 上游新增 hangul-space 用例(7f80cf80/c91066db 同期 docs 渲染增量),按本地
-// runSpanSpecs(支持 neighbours)原样收录;品牌映射 @genoffice→@chaoffice
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import type { Run } from '@chaoffice/docx-engine'
 import { autospaceRanges, editorExtensions } from '../src/renderer/editor/extensions'
@@ -261,8 +259,8 @@ describe('hangul-space advance', () => {
     const face = /font-family: 'ChaAI Office Hangul Space';([^}]*)\}/.exec(
       read('../src/renderer/fonts/fonts.css'),
     )
-    // GenOfficeCheLatinKR advances every glyph 0.5em (tools/build-kr-che-latin-font.py)
-    expect(face?.[1]).toContain('GenOfficeCheLatinKR.woff2')
+    // ChaOfficeCheLatinKR advances every glyph 0.5em (tools/build-kr-che-latin-font.py)
+    expect(face?.[1]).toContain('ChaOfficeCheLatinKR.woff2')
     expect(face?.[1]).toContain('unicode-range: U+0020;')
   })
 })

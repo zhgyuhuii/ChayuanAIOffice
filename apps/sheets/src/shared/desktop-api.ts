@@ -3184,6 +3184,12 @@ export interface DesktopApi {
   /// shell only: open the shell's settings modal, landing on `section` (e.g.
   /// 'aiMedia' from the insert-image dialog's ⚙; rejects in standalone)
   openAiModelSettings(section?: string): Promise<void>
+  /// shell only: switch to Home and open Settings › Integrations (the skills list)
+  openSkillsSettings(): Promise<void>
+  /// the skills installed into ChaAI Office's own folder
+  skillsList(): Promise<UserSkillEntry[]>
+  /// one installed skill's body, by name; the main process resolves the path
+  skillText(name: string): Promise<string>
   aiChat(request: {
     selection: AiModelSelection
     system: string

@@ -5252,6 +5252,32 @@ export function App({
   /// dies until the user clicks the grid — Excel hands the keyboard straight
   /// back. Only the button that issued the command is sent back: text fields
   /// commit on blur (focus is already moving on, e.g. Tab to the next box) and
+  // <main inert> that guarded the load is still in the DOM until React commits,
+  // and an inert subtree refuses focus. The shell also hands webContents focus
+  // to an adopted spare asynchronously, so the document may not have focus yet.
+  function focusSheetGrid(framesLeft = 10): void {
+    const runtime = univerRef.current
+    if (!runtime) return
+    if (!document.hasFocus()) {
+      window.addEventListener('focus', () => focusSheetGrid(), { once: true })
+      return
+    }
+    const active = document.activeElement
+    const chromeHoldsFocus =
+      active !== null &&
+      active !== document.body &&
+      active.isConnected &&
+      !active.closest('#univer-container')
+    if (chromeHoldsFocus) return
+    const editor = document.querySelector<HTMLElement>('#univer-container [contenteditable="true"]')
+    if (editor?.closest('[inert]') && framesLeft > 0) {
+      requestAnimationFrame(() => focusSheetGrid(framesLeft - 1))
+      return
+    }
+    runtime.univer.__getInjector().get(ILayoutService).focus()
+    if (editor && document.activeElement !== editor) editor.focus()
+  }
+
   /// the More Colors native input applies live while its picker stays open.
   /// Two frames let a dialog or panel the command opened claim focus first.
   function handleRibbonCommandFromRibbon(command: string): void {

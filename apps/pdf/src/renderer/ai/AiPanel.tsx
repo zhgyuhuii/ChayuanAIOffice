@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState, lazy, Suspense } from 'react'
 import type { ReactElement } from 'react'
-import { AgentLoop } from '@chaoffice/agent-core'
+import { AgentLoop, withAttachedSkills } from '@chaoffice/agent-core'
 import type { AiSettingsV2 } from '@chaoffice/ai-provider'
 import {
+  AiSkillsMenu,
+  AiSkillChips,
   AiComposer,
   AiTypingIndicator,
   AiQueueStrip,
@@ -72,6 +74,8 @@ export interface PdfConversationHandle {
 }
 
 interface ChatEntry {
+  /** skills the user attached to this message from the composer menu */
+  skills?: string[]
   role: 'user' | 'assistant'
   text: string
   /** LOCAL(2026-09-21, d8201ad0): D10 —— 恢复的被中断轮次 */
@@ -680,7 +684,8 @@ function AiConversationBody({
     void (async () => {
       try {
         settingsRef.current = await window.pdfApi.getAiSettings()
-        const kbInstruction = await kb.augment(instruction)
+        // skill bodies prefix the instruction; KB citations ride after it
+        const kbInstruction = await kb.augment(await withSkillBodies(instruction, sentSkills))
         if (kb.lastCitations.current.length > 0)
           patchLast({ kbCitations: kb.lastCitations.current })
         await loop.run(kbInstruction)

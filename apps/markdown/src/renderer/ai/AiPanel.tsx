@@ -1,9 +1,17 @@
 import { useEffect, useRef, useState, lazy, Suspense } from 'react'
 import { createMarkdownMediaSkill } from './media-skill'
 import type { ReactElement, ReactNode } from 'react'
-import { AgentLoop, composeSkills, streamText, type MindMapTreeNode } from '@chaoffice/agent-core'
+import {
+  AgentLoop,
+  composeSkills,
+  streamText,
+  withAttachedSkills,
+  type MindMapTreeNode,
+} from '@chaoffice/agent-core'
 import type { AiSettingsV2 } from '@chaoffice/ai-provider'
 import {
+  AiSkillsMenu,
+  AiSkillChips,
   AiComposer,
   AiQueueStrip,
   AI_QUEUE_LABELS,
@@ -91,6 +99,8 @@ interface ToolActivity {
 }
 
 interface ChatEntry {
+  /** skills the user attached to this message from the composer menu */
+  skills?: string[]
   role: 'user' | 'assistant'
   text: string
   /** LOCAL(2026-09-21, d8201ad0): D10 —— 恢复的被中断轮次(半截文本保留,渲染角标) */
@@ -731,6 +741,9 @@ function AiConversationBody({
     )
   }
 
+  const [attachedSkills, setAttachedSkills] = useState<string[]>([])
+  const attachedSkillsRef = useRef(attachedSkills)
+  attachedSkillsRef.current = attachedSkills
   const listSkillsForMenu = async () =>
     (await window.markdownApi.skillsList()).map(({ name, description }) => ({ name, description }))
   const toggleSkill = (name: string) =>
@@ -783,7 +796,7 @@ function AiConversationBody({
         settingsRef.current = await window.markdownApi.getAiSettings()
         const withSkills = await withSkillBodies(instruction, sentSkills)
         if (!mountedRef.current) return
-        const kbInstruction = await kb.augment(instruction)
+        const kbInstruction = await kb.augment(withSkills)
         if (kb.lastCitations.current.length > 0)
           patchLast({ kbCitations: kb.lastCitations.current })
         await loop.run(kbInstruction)

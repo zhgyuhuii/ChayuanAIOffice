@@ -107,6 +107,9 @@ import type {
 } from '../shared/ipc'
 
 const api: SlidesApi = {
+  openSkillsSettings: () => ipcRenderer.invoke('ai:open-skills-settings'),
+  skillsList: () => ipcRenderer.invoke('ai:skills-list'),
+  skillText: (name: string) => ipcRenderer.invoke('ai:skill-text', name),
   getLanguage: () => ipcRenderer.invoke('app:get-language'),
   onLanguageChanged: (handler) => {
     const listener = (

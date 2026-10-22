@@ -405,6 +405,8 @@ export class TabManager {
       active: t.id === this.activeId,
       ...(t.filePath ? { filePath: t.filePath } : {}),
       ...(t.docked ? { docked: true } : {}),
+      ...(t.dormant ? { dormant: true } : {}),
+      ...(t.pinned ? { pinned: true } : {}),
     }))
   }
 
@@ -1003,13 +1005,16 @@ export class TabManager {
     newPath: string,
   ): Array<{ kind: TabKind; webContents: WebContents }> {
     const affected: Array<{ kind: TabKind; webContents: WebContents }> = []
+    let renamed = 0
     for (const tab of this.tabs) {
       if (tab.filePath !== oldPath) continue
       tab.filePath = newPath
       tab.title = basename(newPath)
+      renamed++
       if (tab.view) affected.push({ kind: tab.kind, webContents: tab.view.webContents })
     }
-    if (affected.length > 0) this.onChanged()
+    // dormant (sleeping) tabs rename too: the strip entry must follow the file
+    if (renamed > 0) this.onChanged()
     return affected
   }
 

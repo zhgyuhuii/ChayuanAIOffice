@@ -1164,6 +1164,9 @@ export function AiConversationBody({
                 {entry.role === 'user' && entry.attachments && entry.attachments.length > 0 && (
                   <SentAttachments atts={entry.attachments} previews={attachmentPreviews} />
                 )}
+                {entry.role === 'user' && entry.skills && (
+                  <AiSkillChips lang={lang} names={entry.skills} />
+                )}
                 {entry.tools && entry.tools.length > 0 && <ToolChipList tools={entry.tools} />}
                 {entry.role === 'assistant' && entry.model && !entry.streaming && (
                   <div className="ai-msg-model" title={entry.model}>
