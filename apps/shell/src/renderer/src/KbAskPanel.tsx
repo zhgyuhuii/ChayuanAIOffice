@@ -16,11 +16,13 @@ import {
   addTokenUsage,
   createFileNav,
   Markdown,
+  ModelPickerButton,
   type AiTokenUsageView,
 } from '@chaoffice/ui'
+import type { AiSettingsV2 } from '@chaoffice/ai-provider'
 // LOCAL wire shape: the stream request carries only the model selection — the
-// main process owns the full settings and resolves profile + secret. (Upstream's
-// AiModelPicker chip speaks the upstream AiSettings shape; V2 bridge 挂账 R28.)
+// main process owns the full settings and resolves profile + secret. The
+// composer chip speaks the same V2 shape (ModelPickerButton, R28 挂账销账).)
 import { resolveCurrentModel, type AiModelSelection } from '@chaoffice/ai-provider/browser'
 // upstream #2068: the thread persists through project-store; types come from
 // the local (rebranded) package, the bridge is the preload's projectApi.
@@ -162,9 +164,11 @@ export function restoreAskMessages(stored: ChatMessage[]): AskMessage[] {
 export function KbAskPanel({
   onOpenPath,
   onGoToRecents,
+  onOpenSettings,
 }: {
   onOpenPath: (path: string) => void
   onGoToRecents: () => void
+  onOpenSettings: () => void
 }): React.JSX.Element {
   const { t, lang } = useI18n()
   const [messages, setMessages] = useState<AskMessage[]>([])
@@ -276,6 +280,7 @@ export function KbAskPanel({
     }
   }
 
+  const [aiSettings, setAiSettingsState] = useState<AiSettingsV2 | null>(null)
   const refreshSettings = (): void => {
     void window.chaOffice
       .getAiSettings()
@@ -283,8 +288,17 @@ export function KbAskPanel({
         // LOCAL wire shape: the stream request carries only the model selection —
         // the main process owns the full settings and resolves profile + secret.
         selectionRef.current = resolveCurrentModel(settings) ?? null
+        setAiSettingsState(settings)
       })
       .catch(() => undefined)
+  }
+  // ai-host 原生 settings-changed 推送（R30）：设置页/其他端改模型，chip 即时跟随
+  useEffect(() => window.chaOffice.onAiSettingsChanged?.(refreshSettings), [])
+
+  /** chip 切换即 setCurrentModel：主进程合并存储，广播回流刷新本面板 */
+  const applyModel = (selection: AiModelSelection): void => {
+    setAiSettingsState((s) => (s ? { ...s, currentModel: selection } : s))
+    void window.chaOffice.setAiCurrentModel(selection).catch(() => refreshSettings())
   }
 
   useEffect(() => {
@@ -639,7 +653,21 @@ export function KbAskPanel({
         sendIconEnabled={<img src={sendEnterOn} alt="" aria-hidden />}
         sendIconDisabled={<img src={sendEnterOff} alt="" aria-hidden />}
         stopIcon={<img src={sendStop} alt="" aria-hidden />}
-        footerStart={sessionUsage ? <AiUsageChip usage={sessionUsage} session lang={lang} /> : undefined}
+        footerStart={
+          <>
+            {aiSettings && (
+              <span className="chat-model-slot">
+                <ModelPickerButton
+                  settings={aiSettings}
+                  onPick={applyModel}
+                  onOpenSettings={onOpenSettings}
+                  lang={lang}
+                />
+              </span>
+            )}
+            {sessionUsage ? <AiUsageChip usage={sessionUsage} session lang={lang} /> : null}
+          </>
+        }
         onChange={setDraft}
         onSend={() => void ask()}
         onStop={() => {

@@ -3498,6 +3498,7 @@ export function Home() {
         <KbAskPanel
           onOpenPath={(path) => void window.chaOffice.openPath(path)}
           onGoToRecents={() => setAskMode(false)}
+          onOpenSettings={() => handleSettingsOpenChange(true)}
         />
       ) : cloudMode ? (
         <CloudProjectsView />
