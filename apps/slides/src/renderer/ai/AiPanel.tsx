@@ -779,6 +779,10 @@ function AiConversationBody({
         })
         .then((msgs) => {
           if (!disposed) applyHistory(msgs)
+          // #1944: 会话 chip 从落盘的逐消息用量求和恢复
+          let restoredUsage: import('@chaoffice/ui').AiTokenUsageView | undefined
+          for (const m of msgs) if (m.usage) restoredUsage = addTokenUsage(restoredUsage, m.usage)
+          if (restoredUsage) setSessionUsage(restoredUsage)
         })
         .catch(() => {
           /* History load failures are silent */
@@ -843,6 +847,7 @@ function AiConversationBody({
     attachments?: AttachmentMeta[],
     scope?: AiScopeQuoteData,
     interrupted?: boolean,
+    usage?: { inputTokens?: number; outputTokens?: number },
   ) => {
     const ids = conversation
       ? { projectId: conversation.projectId, chatId: conversation.chatId }
@@ -1747,14 +1752,14 @@ function AiConversationBody({
           // Persist the assistant message (deckProgress not stored; tools store the whole run's full activity) —
           // side effects outside the updater (StrictMode double-invokes updaters, duplicating history writes)
           if (!cancelled && (finalText || runToolsRef.current.length > 0)) {
-            persistMessage('assistant', finalText, runToolsRef.current)
+            persistMessage('assistant', finalText, runToolsRef.current, undefined, undefined, undefined, runUsageRef.current)
           }
           // LOCAL(2026-09-21, d8201ad0): D10 — 取消的轮次照常落盘(半截文本 + 工具活动)
           // 打 interrupted 标记;全空不落盘(断点 = 任务起点)
           if (cancelled) {
             const half = streamedTextRef.current
             if ((half && half.trim()) || runToolsRef.current.length > 0) {
-              persistMessage('assistant', half, runToolsRef.current, undefined, undefined, true)
+              persistMessage('assistant', half, runToolsRef.current, undefined, undefined, true, runUsageRef.current)
             }
           }
           // A stop with nothing streamed is just the user changing their mind; a stop
@@ -2366,7 +2371,7 @@ function AiConversationBody({
         text: finalText,
         snapshotId: runSnapshotIdRef.current ?? qcSnapshotId ?? undefined,
       })
-      persistMessage('assistant', finalText)
+      persistMessage('assistant', finalText, undefined, undefined, undefined, undefined, runUsageRef.current)
       setBusyTracked(false)
     }
   }

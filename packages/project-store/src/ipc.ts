@@ -34,6 +34,8 @@ export interface AppendChatArgs {
   scope?: ChatScope
   /** LOCAL(2026-09-21, d8201ad0): D10 中断标记——半截轮次照常落盘 */
   interrupted?: boolean
+  /** LOCAL(#1944 挂账销账): 该轮计费用量（assistant） */
+  usage?: { inputTokens?: number; outputTokens?: number }
 }
 
 export interface LoadChatArgs {

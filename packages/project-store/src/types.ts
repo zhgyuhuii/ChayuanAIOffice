@@ -52,6 +52,8 @@ export interface ChatMessage {
   scope?: ChatScope
   /** LOCAL(2026-09-21, d8201ad0): D10 断点续作——被中断的半截轮次照常落盘并打此标记;旧记录无此字段视为 false */
   interrupted?: boolean
+  /** LOCAL(#1944 挂账销账): 该轮计费用量（assistant 消息）；会话 chip 由各消息求和恢复 */
+  usage?: { inputTokens?: number; outputTokens?: number }
 }
 
 /** What a user message was scoped to: a caption plus an excerpt of the selected content */

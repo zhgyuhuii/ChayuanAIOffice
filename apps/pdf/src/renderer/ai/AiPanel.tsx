@@ -197,6 +197,7 @@ function AiConversationBody({
               text: string
               tools?: Array<{ name: string; summary: string; isError?: boolean; output?: string }>
               scope?: AiScopeQuoteData
+              usage?: { inputTokens?: number; outputTokens?: number }
             }>
           >
           rebindChat(args: {
@@ -213,6 +214,7 @@ function AiConversationBody({
     tools?: ToolActivity[],
     scope?: AiScopeQuoteData,
     interrupted?: boolean,
+    usage?: { inputTokens?: number; outputTokens?: number },
   ): void => {
     // LOCAL(2026-09-21, d8201ad0): 会话实例持久化走 conversation.chatId(immutable)
     const ids = conversation
@@ -250,11 +252,12 @@ function AiConversationBody({
   const persistRun = (interrupted?: boolean): void => {
     const texts = [...runTextsRef.current, segTextRef.current].filter(Boolean)
     const tools = runToolsRef.current
+    const usage = runUsageRef.current
     segTextRef.current = ''
     runTextsRef.current = []
     runToolsRef.current = []
     if (texts.length > 0 || tools.length > 0) {
-      persistMessage('assistant', texts.join('\n\n'), tools, undefined, interrupted)
+      persistMessage('assistant', texts.join('\n\n'), tools, undefined, interrupted, usage)
     }
   }
   // LOCAL(2026-09-21, d8201ad0): 会话实例 loadChat limit 10_000 全量装载(D11)→
@@ -276,6 +279,10 @@ function AiConversationBody({
           if (disposed || msgs.length === 0) return
           if (historyLoadedRef.current) return
           historyLoadedRef.current = true
+          // #1944: 会话 chip 从落盘的逐消息用量求和恢复
+          let restoredUsage: import('@chaoffice/ui').AiTokenUsageView | undefined
+          for (const m of msgs) if (m.usage) restoredUsage = addTokenUsage(restoredUsage, m.usage)
+          if (restoredUsage) setSessionUsage(restoredUsage)
           setChat((prev) => [
             ...msgs.map((m) => ({
               role: m.role,

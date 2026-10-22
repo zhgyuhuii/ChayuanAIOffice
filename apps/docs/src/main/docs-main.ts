@@ -4299,6 +4299,7 @@ export function registerProjectIpc(): void {
         attachments?: Array<{ name: string; path?: string; ext?: string; sizeBytes?: number }>
         scope?: { label: string; text?: string }
         interrupted?: boolean
+        usage?: { inputTokens?: number; outputTokens?: number }
       },
     ) => {
       if (args.role !== 'user' && args.role !== 'assistant') {
@@ -4321,6 +4322,8 @@ export function registerProjectIpc(): void {
       if (args.scope) msg.scope = args.scope
       // LOCAL(2026-09-21, d8201ad0): D10 中断标记透传
       if (args.interrupted === true) msg.interrupted = true
+      // #1944: 该轮计费用量随消息落盘（会话 chip 由各消息求和恢复）
+      if (args.usage && typeof args.usage === 'object') msg.usage = args.usage
 
       store.appendChatMessage(args.projectId, args.chatId, msg)
     },

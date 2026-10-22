@@ -119,7 +119,7 @@ import {
 } from './cell-font-fallback'
 import { isNumericIdentifierText } from './cell-warning'
 import { consumePendingUndoCarry, undoStackDepth } from './undo-carry'
-import { useAutoSavePref, useKbAugment, ImageViewer, type AiTokenUsageView } from '@chaoffice/ui'
+import { addTokenUsage, useAutoSavePref, useKbAugment, ImageViewer, type AiTokenUsageView } from '@chaoffice/ui'
 import { createSaveGate } from './save-scheduler'
 // ILayoutService lives in the UI layer, not core (upstream: @univerjs/ui;
 // local convention re-exports it via the core preset).
@@ -1431,9 +1431,8 @@ export function App({
     activeRunPatchRef.current?.(fn)
   }
   // upstream #1944 (usage per reply/session): the session total the composer chip
-  // shows. The conversation hosts own the runs; their per-reply reports land here
-  // once the host module grows a usage callback (this round: panel surface only).
-  const [sessionUsage] = useState<AiTokenUsageView | undefined>(undefined)
+  // shows — conversation hosts report each run's usage (#1944 挂账销账)
+  const [sessionUsage, setSessionUsage] = useState<AiTokenUsageView | undefined>(undefined)
   /** App-level auto-save of a completed run; entries patched via activeRunPatchRef */
   async function autoSaveCompletedAiRun(): Promise<void> {
     const applies = aiApplyPromisesRef.current
@@ -6462,6 +6461,7 @@ export function App({
           key={c.chatId}
           chatId={c.chatId}
           projectId={conv.projectId}
+          onUsage={(usage) => setSessionUsage((prev) => addTokenUsage(prev, usage))}
           getSettings={() => aiSettingsRef.current ?? ({} as AiSettingsV2)}
           getSkillDeps={sheetsSkillDeps}
           mergePaths={(paths) => {

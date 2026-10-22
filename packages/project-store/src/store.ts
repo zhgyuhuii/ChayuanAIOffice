@@ -781,6 +781,13 @@ export class ProjectStore {
           : msg.text
       const record: ChatMessage = { seq, ts, role: msg.role, text }
       if (msg.fileRef !== undefined) record.fileRef = msg.fileRef
+      if (msg.usage !== undefined) {
+        const u = msg.usage
+        record.usage = {
+          ...(typeof u.inputTokens === 'number' ? { inputTokens: u.inputTokens } : {}),
+          ...(typeof u.outputTokens === 'number' ? { outputTokens: u.outputTokens } : {}),
+        }
+      }
       if (msg.tools && msg.tools.length > 0) {
         // Truncate tool inputs/outputs so one JSONL line can't blow up on a huge payload
         record.tools = msg.tools.slice(0, MAX_TOOLS_PER_MESSAGE).map((t) => ({

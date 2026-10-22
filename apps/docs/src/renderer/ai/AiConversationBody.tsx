@@ -382,6 +382,7 @@ export function AiConversationBody({
     attachments?: AttachmentMeta[],
     scope?: AiScopeQuoteData,
     interrupted?: boolean,
+    usage?: { inputTokens?: number; outputTokens?: number },
   ) => {
     const api = (window as Window & { projectApi?: typeof window.projectApi }).projectApi
     if (!projectId || !api) return
@@ -392,6 +393,7 @@ export function AiConversationBody({
         role,
         text,
         ...(interrupted ? { interrupted: true } : {}),
+        ...(usage ? { usage } : {}),
         ...(tools && tools.length > 0 ? { tools } : {}),
         ...(attachments && attachments.length > 0
           ? {
@@ -419,6 +421,12 @@ export function AiConversationBody({
       .loadChat({ projectId, chatId, limit: 10_000 })
       .then((msgs) => {
         if (disposed || msgs.length === 0) return
+        // #1944: 会话 chip 从落盘的逐消息用量求和恢复（切换会话/重启不丢）
+        let restored: import('@chaoffice/ui').AiTokenUsageView | undefined
+        for (const m of msgs) {
+          if (m.usage) restored = addTokenUsage(restored, m.usage)
+        }
+        if (restored) setSessionUsage(restored)
         setHistoricChat(
           msgs.map((m) => ({
             role: m.role,
@@ -602,11 +610,11 @@ export function AiConversationBody({
           if (cancelled) {
             const half = text
             if ((half && half.trim()) || runToolsRef.current.length > 0) {
-              persistMessage('assistant', half, runToolsRef.current, undefined, undefined, true)
+              persistMessage('assistant', half, runToolsRef.current, undefined, undefined, true, runUsageRef.current)
             }
           } else if (finalText || runToolsRef.current.length > 0) {
             // Edits-only runs (tools ran, no text) persist too, or the whole turn vanishes
-            persistMessage('assistant', finalText, runToolsRef.current)
+            persistMessage('assistant', finalText, runToolsRef.current, undefined, undefined, undefined, runUsageRef.current)
           }
           onTurnCompleted?.({
             userText: runUserTextRef.current,

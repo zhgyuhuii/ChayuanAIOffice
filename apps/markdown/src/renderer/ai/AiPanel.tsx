@@ -318,6 +318,7 @@ function AiConversationBody({
     tools?: ToolActivity[],
     scope?: AiScopeQuoteData,
     interrupted?: boolean,
+    usage?: { inputTokens?: number; outputTokens?: number },
   ) => {
     // LOCAL(2026-09-21, d8201ad0): 会话实例持久化走 conversation.chatId(immutable);
     // 单会话旧路径(独立使用)保留 resolveChat 的 ids
@@ -336,6 +337,7 @@ function AiConversationBody({
         role,
         text,
         ...(interrupted ? { interrupted: true } : {}),
+        ...(usage ? { usage } : {}),
         ...(tools && tools.length > 0 ? { tools } : {}),
         ...(scope ? { scope } : {}),
       })
@@ -531,12 +533,12 @@ function AiConversationBody({
             // A stop mid-tool can leave a running placeholder behind — drop it
             tools: last.tools?.filter((tl) => !tl.running),
           }))
-          persistMessage('assistant', final, runToolsRef.current)
+          persistMessage('assistant', final, runToolsRef.current, undefined, undefined, runUsageRef.current)
           // LOCAL(2026-09-21, d8201ad0): D10 —— 取消的轮次照常落盘(半截文本+工具活动)
           if (cancelled) {
             const half = halfTextRef.current
             if ((half && half.trim()) || runToolsRef.current.length > 0) {
-              persistMessage('assistant', half, runToolsRef.current, undefined, true)
+              persistMessage('assistant', half, runToolsRef.current, undefined, true, runUsageRef.current)
             }
           }
           if (conversation) conversation.onTurnEnd()
@@ -612,6 +614,10 @@ function AiConversationBody({
           if (disposed || msgs.length === 0) return
           if (historyLoadedRef.current) return
           historyLoadedRef.current = true
+          // #1944: 会话 chip 从落盘的逐消息用量求和恢复
+          let restoredUsage: import('@chaoffice/ui').AiTokenUsageView | undefined
+          for (const m of msgs) if (m.usage) restoredUsage = addTokenUsage(restoredUsage, m.usage)
+          if (restoredUsage) setSessionUsage(restoredUsage)
           setChat(
             msgs.map((m) => ({
               role: m.role,

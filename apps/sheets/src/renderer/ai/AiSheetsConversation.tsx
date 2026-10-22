@@ -23,6 +23,7 @@ import {
 } from '@chaoffice/agent-core'
 import { enabledChatModels, pickImageModel, type AiSettingsV2 } from '@chaoffice/ai-provider/browser'
 import {
+  addTokenUsage,
   type AiScopeQuoteData,
   useKbAugment,
 } from '@chaoffice/ui'
@@ -68,6 +69,8 @@ export interface SheetsConversationHandle {
 export interface AiSheetsConversationProps {
   chatId: string
   projectId: string | null
+  /** #1944: 该轮计费用量上报（App 会话 chip 求和） */
+  onUsage?: (usage: import('@chaoffice/ui').AiTokenUsageView) => void
   /** latest v2 settings (refs read at loop construction) */
   getSettings: () => AiSettingsV2
   /** App-level skill deps bundle (workbook runtime, lazy loader, status bar …) */
@@ -121,6 +124,7 @@ export function AiSheetsConversation({
   onRegister,
   onUnregister,
   onState,
+  onUsage,
 }: AiSheetsConversationProps) {
   const { t } = useI18n()
   const [chat, setChat] = useState<readonly AiChatMessage[]>([])
@@ -139,6 +143,8 @@ export function AiSheetsConversation({
   const sentAttachmentsRef = useRef<readonly AttachmentMeta[]>([])
   /** Synchronous re-entrancy guard between runAgent trigger and loop.run */
   const runStartingRef = useRef(false)
+  /** #1944: 该轮计费用量累计（persist 随 assistant 消息落盘） */
+  const runUsageRef = useRef<import('@chaoffice/ui').AiTokenUsageView | undefined>(undefined)
   /** Tool activity for the whole run */
   const runToolsRef = useRef<
     Array<{ name: string; summary: string; isError?: boolean; input?: string; output?: string }>
@@ -188,6 +194,7 @@ export function AiSheetsConversation({
     attachments?: readonly AttachmentMeta[],
     scope?: AiScopeQuoteData,
     interrupted?: boolean,
+    usage?: { inputTokens?: number; outputTokens?: number },
   ): boolean => {
     const api = (window as Window & { projectApi?: typeof window.projectApi }).projectApi
     if (!projectId || !api) return false
@@ -198,6 +205,7 @@ export function AiSheetsConversation({
         role,
         text,
         ...(interrupted ? { interrupted: true } : {}),
+        ...(usage ? { usage } : {}),
         ...(tools && tools.length > 0
           ? { tools: tools.map((tl) => ({ ...tl, name: tl.name ?? '' })) }
           : {}),
@@ -228,6 +236,10 @@ export function AiSheetsConversation({
       .loadChat({ projectId, chatId, limit: 10_000 })
       .then((msgs) => {
         if (disposed || msgs.length === 0) return
+        // #1944: 会话 chip 从落盘的逐消息用量求和恢复
+        let restoredUsage: import('@chaoffice/ui').AiTokenUsageView | undefined
+        for (const m of msgs) if (m.usage) restoredUsage = addTokenUsage(restoredUsage, m.usage)
+        if (restoredUsage) onUsage?.(restoredUsage)
         setHistoric(
           msgs.map((m) => ({
             role: m.role,
@@ -289,6 +301,10 @@ export function AiSheetsConversation({
         ),
       ]),
       events: {
+        onUsage: (usage) => {
+          runUsageRef.current = addTokenUsage(runUsageRef.current, usage)
+          onUsage?.(usage)
+        },
         onText: (text) => {
           if (text) {
             runLastTextRef.current = text
@@ -385,10 +401,10 @@ export function AiSheetsConversation({
           if (cancelled) {
             const half = halfTextRef.current
             if ((half && half.trim()) || runToolsRef.current.length > 0) {
-              persistChatMessage('assistant', half, runToolsRef.current, undefined, undefined, true)
+              persistChatMessage('assistant', half, runToolsRef.current, undefined, undefined, true, runUsageRef.current)
             }
           } else if (finalText) {
-            persistChatMessage('assistant', finalText, runToolsRef.current)
+            persistChatMessage('assistant', finalText, runToolsRef.current, undefined, undefined, undefined, runUsageRef.current)
           }
           endRun()
           void autoSave().finally(() => {
