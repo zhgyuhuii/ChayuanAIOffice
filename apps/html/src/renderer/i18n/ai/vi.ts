@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const vi = {
   aiCollapsePanel: 'Thu gọn bảng điều khiển',

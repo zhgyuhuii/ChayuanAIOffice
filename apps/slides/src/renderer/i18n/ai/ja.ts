@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const ja = {
   aiInputPlaceholderGen: '作りたいプレゼンを説明するか、質問を入力',

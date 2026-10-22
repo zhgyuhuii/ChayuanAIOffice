@@ -9,7 +9,6 @@ import {
   mergeLocalKeywordHits,
   generateReplacementToken,
   ensureUniqueReplacementTokens,
-  buildNormalizedStream,
   buildReplacementPlan,
   applyDocumentDeclassify,
   restoreDeclassifyByTokens,
@@ -257,23 +256,24 @@ describe('form-mode', () => {
     expect(fields[1]!.label).toBe('年龄')
   })
 
-  it('表单模式 restricts edits to blanks and fillFormFields writes back', () => {
+  it('表单模式 restricts edits to blanks and fillFormFields writes back', async () => {
     const ed = makeEditor([paraStyled('Normal', '姓名：______ 备注：______')]) // FormModeExtension rides in editorExtensions
     setFormMode(ed, true)
     expect(isFormModeActive()).toBe(true)
     // an edit outside a blank is rejected…
     const hostile = ed.state.tr.insertText('X', 0)
     expect(ed.state.tr && hostile).toBeTruthy()
-    let rejected = false
-    try {
-      const result = ed.view.state.tr.insertText('X', 0)
-      // run through the plugin filter by dispatching
-      const before = ed.state.doc.textContent
-      ed.view.dispatch(result)
-      rejected = ed.state.doc.textContent === before
-    } catch {
-      rejected = true
-    }
+    const rejected = await (async () => {
+      try {
+        const result = ed.view.state.tr.insertText('X', 0)
+        // run through the plugin filter by dispatching
+        const before = ed.state.doc.textContent
+        ed.view.dispatch(result)
+        return ed.state.doc.textContent === before
+      } catch {
+        return true
+      }
+    })()
     expect(rejected).toBe(true)
     // filling blanks through the service works (bypasses the filter)
     const fields = scanFormFields(ed.state.doc)

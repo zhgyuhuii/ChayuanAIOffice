@@ -4,11 +4,6 @@ import { defineConfig } from 'vitest/config'
 
 const here = dirname(fileURLToPath(import.meta.url))
 
-// pdf-main imports nativeImage for the app icon; jsdom/happy-dom has no electron
-const electronMock = {
-  nativeImage: { createFromPath: () => ({}) },
-}
-
 export default defineConfig({
   server: {
     fs: {

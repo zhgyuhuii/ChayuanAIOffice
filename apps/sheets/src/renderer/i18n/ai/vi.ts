@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const vi = {
   aiComposerPlaceholderBuild: 'Mô tả bảng, dữ liệu hoặc biểu đồ cần tạo…',

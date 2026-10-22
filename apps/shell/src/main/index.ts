@@ -33,7 +33,7 @@ import {
   webContents,
 } from 'electron'
 import type { MenuItemConstructorOptions, NativeImage, WebContents } from 'electron'
-import { atomicCopyFile, atomicWriteFile } from './atomic-write'
+import {  atomicWriteFile } from './atomic-write'
 import { tabStripOverlay } from './title-bar-overlay'
 import { createFeedbackClient } from './feedback'
 import {
@@ -4340,29 +4340,6 @@ function viewMenuTemplate(): MenuItemConstructorOptions {
  * separator; the rest get a fresh View menu inserted before the Help menu that
  * withUserGuide has just guaranteed.
  */
-function withViewMenu(): void {
-  const menu = Menu.getApplicationMenu()
-  if (!menu) return
-  const hasScale = menu.items.some((item) =>
-    item.submenu?.items.some((i) => i.accelerator === 'CmdOrCtrl+Alt+='),
-  )
-  if (hasScale) return
-  const view = menu.items.find((item) => item.label === tm('menuView'))
-  if (view?.submenu) {
-    // build the separator together with the items: Electron drops a separator
-    // that sits alone in a template
-    for (const item of Menu.buildFromTemplate([{ type: 'separator' }, ...uiScaleMenuItems()])
-      .items) {
-      view.submenu.append(item)
-    }
-    return
-  }
-  const viewItem = Menu.buildFromTemplate([viewMenuTemplate()]).items[0]!
-  const helpIdx = menu.items.findIndex((item) => item.role === 'help')
-  if (helpIdx === -1) menu.append(viewItem)
-  else menu.insert(helpIdx, viewItem)
-}
-
 function createShellWindow(): void {
   // Last session's geometry, when a display can still show it (issue #2049).
   // A saved position on an unplugged monitor falls back to the default

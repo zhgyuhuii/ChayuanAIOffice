@@ -1,6 +1,7 @@
 // GUI smoke: 察元 AI tab renders with its 5 groups, dropdown menus hold the
 // wps contracts (14/6), a docops dialog opens, and the context menu shows the
 // AI 文本助手 submenu. Headless Chrome over the built web bundle (port 5180).
+/* global document, window */
 import { chromium } from 'playwright-core'
 
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'

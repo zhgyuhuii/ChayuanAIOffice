@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const ms = {
   aiCollapsePanel: 'Runtuhkan panel',

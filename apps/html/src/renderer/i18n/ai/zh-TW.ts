@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const zhTW = {
   aiCollapsePanel: '收合面板',

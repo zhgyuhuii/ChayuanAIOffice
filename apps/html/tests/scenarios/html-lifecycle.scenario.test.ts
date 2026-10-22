@@ -3,7 +3,7 @@
  * 覆盖：新建/预览打开 / Inspector 消息协议 / 图片改写 / 保存 roundtrip / 安全外链
  * 通过真实 html 引擎与协议模块执行。
  */
-import { expect, describe, it, vi } from 'vitest'
+import { expect, describe, it} from 'vitest'
 import { isFromInspector } from '../../src/renderer/preview/inspector-protocol'
 
 describe('html 场景 · 新建与预览', () => {

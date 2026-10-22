@@ -236,7 +236,6 @@ import {
 } from './outline-actions'
 import { moveOutlineEntries, shiftOutlineEntries } from './outline-model'
 import type { ApplyOutcome, ChangePlan } from '@chaoffice/xlsx-gateway/domain/workbook.types'
-import { createElectronTransport } from './ai/transport'
 import {
   MAX_READ_RANGE_CELLS,
   type ActiveSheetInfo,
@@ -644,7 +643,7 @@ export function App({
   /// Univer undo/redo stack occupancy (subscribed at mount): drives the QAT button gray states
   const [univerHist, setUniverHist] = useState({ canUndo: false, canRedo: false })
   /// Set once Univer boots; mounts the app's Excel-style Find & Replace panel.
-  const [findReplaceService, setFindReplaceService] = useState<IFindReplaceService | null>(null)
+  const [findReplaceService] = useState<IFindReplaceService | null>(null)
   const [threadHover, setThreadHover] = useState<ThreadHover | null>(null)
   const getRuntime = useCallback(() => univerRef.current, [])
   /// True while Univer's in-cell editor is open (AutoSave must not save-reload then).
@@ -794,7 +793,7 @@ export function App({
     () => createSheetTabActions({ univerRef, lazyWorkbookRef, notify: setMessage }),
     [],
   )
-  const [openingWorkbook, setOpeningWorkbook] = useState(
+  const [openingWorkbook] = useState(
     () =>
       queuedWorkbookAtBoot ||
       new URLSearchParams(window.location.search).get('openingWorkbook') === '1',
@@ -5765,36 +5764,6 @@ export function App({
       })
     }
     return true
-  }
-
-  // A workbook loaded into an already-mounted view (the prewarmed spare) can
-  // leave document focus on a node Univer no longer reads keys from; hand it
-  // back to the cell editor unless chrome (AI composer, dialogs) holds it.
-  // Runs from finishOpening, in the same tick that clears openingWorkbook: the
-  // <main inert> that guarded the load is still in the DOM until React commits,
-  // and an inert subtree refuses focus. The shell also hands webContents focus
-  // to an adopted spare asynchronously, so the document may not have focus yet.
-  function focusSheetGrid(framesLeft = 10): void {
-    const runtime = univerRef.current
-    if (!runtime) return
-    if (!document.hasFocus()) {
-      window.addEventListener('focus', () => focusSheetGrid(), { once: true })
-      return
-    }
-    const active = document.activeElement
-    const chromeHoldsFocus =
-      active !== null &&
-      active !== document.body &&
-      active.isConnected &&
-      !active.closest('#univer-container')
-    if (chromeHoldsFocus) return
-    const editor = document.querySelector<HTMLElement>('#univer-container [contenteditable="true"]')
-    if (editor?.closest('[inert]') && framesLeft > 0) {
-      requestAnimationFrame(() => focusSheetGrid(framesLeft - 1))
-      return
-    }
-    runtime.univer.__getInjector().get(ILayoutService).focus()
-    if (editor && document.activeElement !== editor) editor.focus()
   }
 
   async function handleInspectWorkbook(): Promise<void> {

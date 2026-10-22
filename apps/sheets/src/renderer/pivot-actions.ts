@@ -114,13 +114,6 @@ export type PivotHit =
     }
   | { readonly kind: 'session'; readonly sheetId: string; readonly add: WorkbookPivotAdd }
 
-function pivotSourceValueFields(definition: WorkbookPivotDefinition): string[] {
-  return definition.dataFields.flatMap(({ field }) => {
-    const source = definition.fields[field]
-    return source && source.formula === undefined ? [source.name] : []
-  })
-}
-
 function activeSelection(ctx: PivotActionContext): {
   sheetId: string
   startRow: number

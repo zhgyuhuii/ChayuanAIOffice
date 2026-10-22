@@ -40,12 +40,7 @@ export interface FeedbackDiagnostics {
 
 /** Version (IPC) + UA-derived os/arch + MCP log tail, packed as logJson. */
 export async function collectFeedbackDiagnostics(): Promise<FeedbackDiagnostics> {
-  let appVersion = ''
-  try {
-    appVersion = await window.chaOffice.getAppVersion()
-  } catch {
-    appVersion = ''
-  }
+  const appVersion = await window.chaOffice.getAppVersion().catch(() => '')
 
   let os = 'unknown'
   let osVer = ''
@@ -75,7 +70,7 @@ export async function collectFeedbackDiagnostics(): Promise<FeedbackDiagnostics>
   }
 
   const logObj = { version: appVersion, ua, ts: Date.now(), recentLog }
-  let logJson = ''
+  let logJson: string
   try {
     logJson = JSON.stringify(logObj)
     if (logJson.length > 8000) {

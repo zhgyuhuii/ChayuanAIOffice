@@ -639,7 +639,7 @@ export function aboutMenuItem(labels: AppMenuLabels): MenuItemConstructorOptions
   return {
     label: labels.about,
     click: async () => {
-      const { app, dialog, clipboard } = await import('electron')
+      const { dialog, clipboard } = await import('electron')
       const { displayVersion } = await import('./display-version')
       const version = displayVersion()
       const canCheck = updateCheckInvoker !== null

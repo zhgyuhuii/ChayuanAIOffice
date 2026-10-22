@@ -19,7 +19,6 @@ vi.mock('electron', () => ({
   dialog: {},
 }))
 
-const here = join(__dirname)
 
 async function makePdf(pages: number): Promise<Uint8Array> {
   const doc = await PDFDocument.create()

@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const th = {
   aiInputPlaceholderGen: 'อธิบายงานนำเสนอที่จะสร้าง หรือถามได้เลย',

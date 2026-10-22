@@ -18,7 +18,7 @@ test('the View tab toggles the sheet grid direction', async () => {
   try {
           // adapted (LOCAL R24): 磁贴等价（第1卡 → .xlsx）
       launched.page.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => undefined)
-      launched.page.evaluate((ext) => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === `.xlsx`)?.dispatchEvent(new MouseEvent('click', { bubbles: true })), 'xlsx')
+      launched.page.evaluate((_ext) => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === `.xlsx`)?.dispatchEvent(new MouseEvent('click', { bubbles: true })), 'xlsx')
 
     const page = await waitForPageWithUrl(launched.app, '://sheets/')
     // the sheet tab strip is DOM; a blank workbook's sheet must exist before

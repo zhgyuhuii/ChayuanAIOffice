@@ -3,13 +3,9 @@
  * 覆盖：新建版式 / 文本与形状生成 / 多元素编排 / 图片嵌入 / 多轮 roundtrip / 页管理
  * 全部走真实 pptx-engine。
  */
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
 import { expect, describe, it } from 'vitest'
 import { addElement, createBlankPptx, openPptx, savePptx } from '@chaoffice/pptx-engine'
 
-const DIR = mkdtempSync(join(tmpdir(), 'slides-scen2-'))
 
 async function freshDeck() {
   return openPptx(await createBlankPptx())

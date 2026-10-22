@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const en = {
   redactMenuLabel: 'Hide the selection from AI',

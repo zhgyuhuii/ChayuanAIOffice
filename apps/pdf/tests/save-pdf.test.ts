@@ -5,7 +5,6 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import {
   PDFArray,
-  PDFContentStream,
   PDFDict,
   PDFDocument,
   PDFHexString,
@@ -13,9 +12,7 @@ import {
   PDFString,
   PDFRawStream,
   PDFRef,
-  decodePDFRawStream,
   degrees,
-  rgb,
 } from 'pdf-lib'
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import {

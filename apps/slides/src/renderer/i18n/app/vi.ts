@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const vi = {
   redactMenuLabel: 'Ẩn phần đã chọn khỏi AI',

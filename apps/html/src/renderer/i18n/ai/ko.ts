@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const ko = {
   aiCollapsePanel: '패널 접기',

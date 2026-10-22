@@ -52,7 +52,7 @@ const IMG_LINE_RE = new RegExp(`^\\s*!\\[([^\\]]*)\\]\\((${HREF})\\)$`)
 /** images render as <img> only for safe sources: editor CSPs allow data:
  * images everywhere, and generated images ride in as data: URLs; remote
  * https: is allowed, everything else stays literal text */
-const IMAGE_SRC_RE = /^(data:image\/[a-z0-9+.-]+;base64,[A-Za-z0-9+\/=]+|https:\/\/\S+)$/i
+const IMAGE_SRC_RE = /^(data:image\/[a-z0-9+.-]+;base64,[A-Za-z0-9/=]+|https:\/\/\S+)$/i
 const CITE_TEXT_RE = /\[(\d{1,2})\]/g
 
 interface CiteContext {

@@ -48,7 +48,6 @@ import {
 } from '@chaoffice/electron-utils'
 import { createI18n, getUiLang } from '@chaoffice/i18n'
 import { parseFileToText } from '@chaoffice/file-parse'
-import { generateImageTool } from '@chaoffice/ai-search'
 import { convertHtmlToDocx } from '../../../../packages/html2docx/src'
 import { atomicWriteFile } from './atomic-write'
 import { ElectronBrowserDriver } from '../../../../packages/html2docx/src/drivers/electron'

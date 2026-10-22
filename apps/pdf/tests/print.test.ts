@@ -4,7 +4,6 @@ import {
   filterPageParity,
   printPdf,
   printScaleForAreas,
-  PRINT_DIALOG_TIMEOUT_MS,
 } from '../src/renderer/print'
 
 function fakeDoc(numPages: number, render = vi.fn(() => ({ promise: Promise.resolve() }))) {

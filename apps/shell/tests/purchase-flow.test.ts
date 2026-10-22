@@ -41,8 +41,6 @@ const {
   machineFingerprint,
   purchaseSnapshot,
   registerPurchaseIpc,
-  readOsSideEntitlement,
-  isEntitledEffective,
 } = await import('../src/main/purchase')
 
 const DAY = 86400_000

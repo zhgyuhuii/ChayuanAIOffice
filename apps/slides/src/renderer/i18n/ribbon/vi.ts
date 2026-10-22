@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const vi = {
   ribbonAiCreditNote: 'Sử dụng AI và tiêu tốn tín dụng',

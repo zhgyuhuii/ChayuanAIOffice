@@ -1,4 +1,3 @@
-import type { AgentToolDef } from '@chaoffice/agent-core'
 
 /**
  * Intent-scoped wire toolsets + description/schema slimming for the docs

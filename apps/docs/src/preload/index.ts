@@ -29,7 +29,6 @@ ipcRenderer.on('docs:relay-command', (_event, command: unknown) => {
   if (relayCommandHandler) relayCommandHandler(command)
   else if (relayCommandQueue.length < 50) relayCommandQueue.push(command)
 })
-import { installFilesPaneBridge } from '@chaoffice/electron-utils/files-pane-bridge'
 import { KB_CHANNELS } from '@chaoffice/ai-host/kb-channels'
 
 const api: DesktopApi = {

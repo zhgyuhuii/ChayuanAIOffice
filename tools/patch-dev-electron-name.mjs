@@ -162,7 +162,6 @@ const bundleIcon = join(contents, 'Resources', 'electron.icns')
 const exeStock = join(contents, 'MacOS', 'Electron')
 const exeBrand = join(contents, 'MacOS', APP_NAME)
 const pathTxt = join(distDir, '..', 'path.txt')
-const stockRelPath = `${STOCK_APP}/Contents/MacOS/Electron`
 const brandRelPath = `${BRAND_APP}/Contents/MacOS/${APP_NAME}`
 const sameBytes = (a, b) => readFileSync(a).equals(readFileSync(b))
 

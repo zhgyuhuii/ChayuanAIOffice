@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const ms = {
   aiInputPlaceholderGen: 'Terangkan pembentangan untuk dijana, atau tanya apa sahaja',

@@ -9,7 +9,6 @@ import {
   MessageActions,
   ModelPickerButton,
   kbRetrieve,
-  kbStrings,
   renderCitationChips,
   useDismissablePopover,
   useKbSelection,

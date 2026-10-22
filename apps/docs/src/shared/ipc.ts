@@ -62,7 +62,6 @@ import type {
   AiModelSelection,
   AiSettingsV2,
   AiStreamChunk,
-  AiStreamRequest,
   DiscoveryTarget,
   ChaOfficeAccountStatus,
   LocalToolOpResult,

@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const cs = {
   aiInputPlaceholderGen: 'Popište prezentaci, kterou chcete vygenerovat, nebo se na cokoli zeptejte',

@@ -82,11 +82,6 @@ function readJson<T>(path: string, fallback: T): T {
   return fallback
 }
 
-function writeJson(path: string, value: unknown): void {
-  mkdirSync(join(path, '..'), { recursive: true })
-  writeFileSync(path, JSON.stringify(value, null, 2))
-}
-
 // ---- Post-mortem log for runs that produced no usable reply ----
 
 const AI_RUN_FAILURES_PATH = () => join(app.getPath('userData'), 'ai-run-failures.jsonl')

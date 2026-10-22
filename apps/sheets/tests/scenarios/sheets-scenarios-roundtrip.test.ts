@@ -6,7 +6,6 @@
 import { expect, describe, it } from 'vitest'
 import {
   columnLabel,
-  columnIndex,
   parseRange,
   rangeCellCount,
 } from '@chaoffice/xlsx-gateway/domain/cell-address'
@@ -96,7 +95,6 @@ describe('sheets roundtrip · 公式边界', () => {
 
 describe('sheets roundtrip · 1900 日期序列（pivot）', () => {
   it('SR-13 1900 闰年 bug 序列兼容（上游 #1810）', async () => {
-    const { execFileSync } = await import('node:child_process')
     // 纯函数级验证：pivot date serials 遵循 1900 leap-year bug
     // Excel serial 60 = 不存在的 1900-02-29
     const serial60 = 60

@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const hi = {
   redactMenuLabel: 'चयन को AI से छिपाएँ',

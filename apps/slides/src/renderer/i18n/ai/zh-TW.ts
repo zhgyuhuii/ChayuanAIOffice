@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const zhTW = {
   aiInputPlaceholderGen: '描述要生成的簡報,或直接提問',

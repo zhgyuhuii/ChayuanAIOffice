@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const ko = {
   redactMenuLabel: '선택한 부분을 AI에서 숨기기',

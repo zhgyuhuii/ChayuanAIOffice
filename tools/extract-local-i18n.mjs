@@ -28,15 +28,14 @@ if (!stringsPath || !upstreamPath || !outPath) {
 }
 const LANGS = (langsArg ?? 'zh,en,ja,ko,fr,de,es,th,id,ru,ar,pt,it,pl,cs,nl,ms,he,hi,zh-TW').split(',')
 
-const sec = /^  '?([a-z]{2}(?:-[A-Za-z]+)?)'?: \{$/
-const keyline = /^    ([A-Za-z][A-Za-z0-9]*):(?: |$)/
-const keyRe = keyline
+const sec = /^ {2}'?([a-z]{2}(?:-[A-Za-z]+)?)'?: \{$/
+const keyRe = /^ {4}([A-Za-z][A-Za-z0-9]*):(?: |$)/
 
 function sections(text) {
   const lines = text.split('\n')
   const marks = []
   lines.forEach((l, i) => {
-    const m = secRe.exec(l)
+    const m = sec.exec(l)
     if (m) marks.push([m[1], i])
   })
   const spans = {}

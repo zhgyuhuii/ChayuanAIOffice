@@ -22,7 +22,7 @@ export function relaxFetchBodyTimeout(): void {
   try {
     // require (not import) so bundlers keep this as a runtime resolution and
     // the app still boots if undici is absent from the dependency graph
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const undici = require('undici') as {
       Agent: new (options: { bodyTimeout: number; headersTimeout: number }) => unknown
       setGlobalDispatcher: (dispatcher: unknown) => void

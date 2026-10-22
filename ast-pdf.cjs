@@ -1,7 +1,5 @@
 const ts = require('typescript')
 const fs = require('fs')
-const sec = /^  '?([a-z]{2}(?:-[A-Za-z]+)?)'?: \{$/
-const keyline = /^    ([A-Za-z][A-Za-z0-9]*):(?: |$)/
 function clean(t){return t.replace(/^\s*\n/, '').replace(/\s*$/, '') + ','}
 function extractStrings(path) {
   const sf = ts.createSourceFile(path, fs.readFileSync(path, 'utf8'), ts.ScriptTarget.Latest, true)

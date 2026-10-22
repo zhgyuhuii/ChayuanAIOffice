@@ -24,7 +24,6 @@ import type { Block } from '@chaoffice/docx-engine'
 import {
   AgentLoop,
   composeSkills,
-  streamText,
   type AgentImage,
   type AgentTransport,
 } from '@chaoffice/agent-core'

@@ -256,7 +256,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
         ...(request.signal ? { signal: request.signal } : {}),
       })
       const alt = prompt
-        .replace(/[\[\]\n\r]+/g, ' ')
+        .replace(/[[\]\n\r]+/g, ' ')
         .trim()
         .slice(0, 80)
       send({

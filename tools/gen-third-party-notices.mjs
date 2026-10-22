@@ -65,7 +65,6 @@ function extraResourceSeeds() {
 }
 
 /** license file lives somewhere non-obvious */
-const LICENSE_PATH = { electron: 'dist/LICENSE' }
 
 /** license text is not published to npm; supply the notice by hand */
 const NOTE = {

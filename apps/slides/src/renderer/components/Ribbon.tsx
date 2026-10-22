@@ -773,16 +773,6 @@ function TableToggleBtn({
   )
 }
 
-function DisabledBig({ icon, label }: { icon: ReactNode; label: string }) {
-  const { t } = useI18n()
-  return (
-    <button className="rb-big" disabled data-tip={t('ribbonNotSupported', { name: label })}>
-      <span className="rb-big-icon">{icon}</span>
-      <span>{label}</span>
-    </button>
-  )
-}
-
 /** per-tab priority for responsive collapse: when the ribbon
  * body overflows, these groups (in order) fold into a single dropdown button.
  * The effect galleries (.rb-gallery) are fixed ~2-row WPS-style grids that

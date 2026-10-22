@@ -94,7 +94,6 @@ export function ChatMedia({ media, lang }: { media: ChatMediaPayload; lang?: str
       }}
     >
       {media.kind === 'image' && (
-        // eslint-disable-next-line @next/next/no-img-element -- data-url chat media
         <img
           src={media.url}
           alt={name}
@@ -138,7 +137,6 @@ export function ChatMedia({ media, lang }: { media: ChatMediaPayload; lang?: str
             onClick={() => setZoomed(false)}
           >
             {media.kind === 'image' ? (
-              // eslint-disable-next-line @next/next/no-img-element -- lightbox zoom
               <img
                 src={media.url}
                 alt={name}

@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const ar = {
   aiInputPlaceholderGen: 'صف العرض المطلوب إنشاؤه أو اطرح أي سؤال',

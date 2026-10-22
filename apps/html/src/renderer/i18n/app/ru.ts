@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const ru = {
   redactMenuLabel: 'Скрыть выделение от ИИ',

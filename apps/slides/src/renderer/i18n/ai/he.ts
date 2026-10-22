@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const he = {
   aiInputPlaceholderGen: 'תארו את המצגת ליצירה, או שאלו כל דבר',

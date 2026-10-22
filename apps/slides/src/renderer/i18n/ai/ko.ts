@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const ko = {
   aiInputPlaceholderGen: '만들 프레젠테이션을 설명하거나 질문하세요',

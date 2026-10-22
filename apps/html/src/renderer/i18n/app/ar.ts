@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const ar = {
   redactMenuLabel: 'إخفاء التحديد عن الذكاء الاصطناعي',

@@ -125,7 +125,7 @@ export async function readChatopLocalSource(
     readDshFile('storages/chatop-models/registry.json').catch(() => null),
   ])
   if (stateText === null) return null
-  let state: Parameters<typeof parseChatopLocalSource>[0] = null
+  let state: Parameters<typeof parseChatopLocalSource>[0]
   try {
     state = JSON.parse(stateText)
   } catch {

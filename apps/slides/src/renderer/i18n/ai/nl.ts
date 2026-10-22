@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const nl = {
   aiInputPlaceholderGen: 'Beschrijf de presentatie om te genereren, of stel een vraag',

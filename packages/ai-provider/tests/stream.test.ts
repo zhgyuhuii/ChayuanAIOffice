@@ -4,7 +4,6 @@ import { AiCreditsError, sseLines, streamForProvider } from '../src/stream'
 import {
   MAX_RESPONSE_BODY_BYTES,
   jsonBodyInsteadOfSse,
-  parseToolInput,
   sseDataEvents,
 } from '../src/protocols/shared'
 import { jsonResponse, okResponse, sseStream } from './test-utils'

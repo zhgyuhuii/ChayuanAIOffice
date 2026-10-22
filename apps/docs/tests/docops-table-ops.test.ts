@@ -8,7 +8,6 @@ import {
   appendReplaceCellText,
   autoFitByContent,
   autoFitByWindow,
-  collectTableMatrices,
   deleteAllTables,
   deleteHitRowsColumns,
   deleteTableCaptions,

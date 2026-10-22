@@ -3,7 +3,6 @@
  * Reuses SettingsModal's .modal-backdrop/.modal styles.
  */
 import React, { useState } from 'react'
-import { useEscOverlay } from '../esc-overlay'
 import { Dropdown } from '@chaoffice/ui'
 import { useModalDialog } from './modal-dialog'
 import type { LinkTargetOp } from '../../shared/ipc'

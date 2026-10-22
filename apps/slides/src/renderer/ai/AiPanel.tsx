@@ -11,8 +11,6 @@ import {
 } from '@chaoffice/agent-core'
 import type { RenderSlide } from '@chaoffice/pptx-render'
 import {
-  imageGenerationAvailable,
-  mediaAnalysisAvailable,
 } from '@chaoffice/ai-provider/browser'
 import type {
   AiModelSelection,
@@ -115,7 +113,6 @@ import {
   IconAiFactCheck,
   IconAiImage,
 } from './AssistantTab'
-import { AssistantLibraryBrowser } from '@chaoffice/ui/assistant-library'
 import type { DockChrome } from '@chaoffice/ui'
 
 // 惰性加载:模型设置页(含厂商 logo 组)只在打开时拉取,不进启动图
@@ -652,7 +649,7 @@ function AiConversationBody({
   const settingsRef = useRef(panelSettings)
   settingsRef.current = panelSettings
   /** confirmed local image pool (data URIs) for the deck 'local' imagery source */
-  const [localPool, setLocalPool] = useState<string[]>([])
+  const [localPool] = useState<string[]>([])
   const localPoolRef = useRef<string[]>([])
   /** Attached images (company logo etc.) registered as deck brand assets — the
    * writer references them by `deck:<n>` handle; entries persist across runs
@@ -3712,11 +3709,8 @@ export function AiPanel(props: AiPanelProps) {
     current,
     selectedIds,
     deckEmpty,
-    settings,
     preset,
-    open = true,
     dockChrome,
-    onUndo,
     onAskSelection,
     currentFilePath,
   } = props
@@ -3875,15 +3869,12 @@ export function AiPanel(props: AiPanelProps) {
     { id: 'assistant', label: t('aiTabAssistant') },
   ]
 
-  // 面板级设置:模型设置页(内部惰性加载)沿用原逻辑
+  // 面板级设置:模型设置页(内部惰性加载)自取设置；关闭后的回拉经
+  // ai:settings-changed 广播回流父级，这里仅触发一次读取确保网关缓存就绪
   const [modelSettingsOpen, setModelSettingsOpen] = useState(false)
-  const [panelSettings, setPanelSettings] = useState(settings)
-  useEffect(() => {
-    setPanelSettings(settings)
-  }, [settings])
   const refreshSettings = async () => {
     try {
-      setPanelSettings(await slidesModelBridge.getSettings())
+      await slidesModelBridge.getSettings()
     } catch {
       /* keep the last known settings */
     }

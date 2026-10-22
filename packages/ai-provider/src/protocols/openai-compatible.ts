@@ -6,7 +6,7 @@ import { createThinkRouter, splitThinkContent } from './think-routing'
 import { modelEchoesReasoning } from '../registry'
 import { inferModelType } from '../model-type'
 import type { AiChatResponse, AiProviderConfig } from '../types'
-import { AI_CONNECT_TIMEOUT_MS, createStreamWatchdog, type StreamWatchdog } from '../watchdog'
+import {  createStreamWatchdog, type StreamWatchdog } from '../watchdog'
 import {
   endpointUrl,
   jsonBodyInsteadOfSse,

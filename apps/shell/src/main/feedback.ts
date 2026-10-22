@@ -15,7 +15,6 @@ import { createHash, createHmac } from 'node:crypto'
 export const FEEDBACK_APP = 'office'
 export const FEEDBACK_APP_NAME = '察元AIOffice'
 
-const DEFAULT_SIGN_SECRET = 'cy-fb-sign-2026-7Qx9Kp2Vw8Lm4Zr'
 const FETCH_TIMEOUT_MS = 15_000
 const PROBE_TIMEOUT_MS = 5_000
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024

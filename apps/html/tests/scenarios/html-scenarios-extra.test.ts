@@ -2,7 +2,6 @@
  * HTML 扩展场景补充包
  */
 import { expect, describe, it } from 'vitest'
-import { isFromInspector } from '../../src/renderer/preview/inspector-protocol'
 
 describe('html 扩展 · 场景补充包', () => {
   const protocols: Array<[string, boolean]> = [

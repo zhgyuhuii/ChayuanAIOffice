@@ -158,11 +158,10 @@ describe('degraded mode', () => {
         cb.onDone()
       },
     ])
-    let lastResult: { degraded?: boolean } | undefined
     const loop = new AgentLoop({
       transport,
       skill: makeSkill(() => ({ output: 'done-ok', summary: 'done', mutated: true })),
-      events: { onDone: (res) => (lastResult = res) },
+      events: { onDone: () => {} },
     })
     loop.run('make a deck')
     await flushAll()

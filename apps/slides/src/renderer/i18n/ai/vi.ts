@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const vi = {
   aiInputPlaceholderGen: 'Mô tả bài thuyết trình cần tạo, hoặc hỏi bất kỳ điều gì',

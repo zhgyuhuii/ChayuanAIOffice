@@ -11,7 +11,7 @@ test.describe('markdown editor', () => {
     try {
             // adapted (LOCAL R24): 磁贴等价（AI Markdown → .md）
       page.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => undefined)
-      const card = page.evaluateHandle((ext) => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === `.md`), 'md')
+      const card = page.evaluateHandle((_ext) => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === `.md`), 'md')
 
       await expect(card).toHaveCount(1)
       await card.click()

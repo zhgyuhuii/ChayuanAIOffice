@@ -230,7 +230,6 @@ async function geminiTurn(
   let abnormalFinish: string | undefined
   let sawFinish = false
   let emitted = false
-  let toolCallCount = 0
   const turnUsage: AiTokenUsage = {}
   for await (const sse of sseDataEvents(response.body, onBytes)) {
     // A truncated frame or a non-JSON keep-alive from a proxy skips that event

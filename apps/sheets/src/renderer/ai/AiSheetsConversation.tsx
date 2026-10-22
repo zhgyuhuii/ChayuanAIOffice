@@ -23,9 +23,7 @@ import {
 } from '@chaoffice/agent-core'
 import { enabledChatModels, pickImageModel, type AiSettingsV2 } from '@chaoffice/ai-provider/browser'
 import {
-  AiScopeQuote,
   type AiScopeQuoteData,
-  type KbCitation,
   useKbAugment,
 } from '@chaoffice/ui'
 import { aiLangDirective, useI18n } from '../i18n/locale'
@@ -42,7 +40,6 @@ import { createFilesSkill } from './files-skill'
 import { createMergeSkill } from './merge-skill'
 import { createSearchSkill } from './search-skill'
 import { createImageSkill } from './image-skill'
-import { scopeLabel } from './AiChatPanel'
 import type { AiChatMessage } from './AiChatPanel'
 
 /** Max characters of tool output echoed in the chat UI */

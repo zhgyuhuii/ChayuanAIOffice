@@ -8,7 +8,6 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { expect, describe, it } from 'vitest'
 
-const here = join(__dirname)
 
 describe('sheets 场景 · 新建与打开', () => {
   it('S-XLS-01 新建空工作簿：zip-gate 可读取 xlsx 容器', async () => {

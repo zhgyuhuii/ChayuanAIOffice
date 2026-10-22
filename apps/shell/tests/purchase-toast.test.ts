@@ -15,7 +15,7 @@ import { LocaleProvider } from '../src/renderer/src/locale'
 
 type EventListener = (payload: { kind: 'open-page' } | { kind: 'reminder' }) => void
 
-function mountWithBridge(onEvent: EventListener) {
+function mountWithBridge(_onEvent: EventListener) {
   let listener: EventListener | null = null
   Object.defineProperty(window, 'chaOfficePurchase', {
     configurable: true,

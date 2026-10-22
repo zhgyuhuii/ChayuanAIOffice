@@ -40,7 +40,7 @@ test('paste special: transpose, add operation, paste link, undo', async () => {
     }, scratch)
           // adapted (LOCAL R24): 磁贴等价（AI Sheets → .xlsx）
       page.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => undefined)
-      page.evaluate((ext) => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === `.xlsx`)?.dispatchEvent(new MouseEvent('click', { bubbles: true })), 'xlsx')
+      page.evaluate((_ext) => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === `.xlsx`)?.dispatchEvent(new MouseEvent('click', { bubbles: true })), 'xlsx')
 
     const sheets = await waitForPageWithUrl(app, '://sheets/')
     await sheets.waitForFunction(() => document.body.textContent?.includes('Sheet1'), null, {

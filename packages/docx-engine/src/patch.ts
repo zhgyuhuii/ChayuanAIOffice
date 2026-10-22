@@ -87,7 +87,6 @@ import {
   upsertStyleXml,
   type DefaultFonts,
   type StyleUpsert,
-  mergeStyleXml,
 } from './style-upsert'
 import {
   WATERMARK_NS,
@@ -901,7 +900,7 @@ export async function saveDocx(
     relsXml: string
     base64: string
   }> = []
-  let chartDocPrId = 8000
+  const chartDocPrId = 8000
   const embedChart = async (
     chart: NewChart,
     extentPx?: { w: number; h: number },

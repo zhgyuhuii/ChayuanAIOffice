@@ -11,7 +11,7 @@ import type {
   TimelineEntry,
   ToolActivity,
 } from './types.js'
-import type { ConversationMeta, ConversationsState } from './conversations.js'
+import type {  ConversationsState } from './conversations.js'
 
 export type {
   ChatAttachment,

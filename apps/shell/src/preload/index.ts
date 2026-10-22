@@ -9,7 +9,6 @@ import type {
   AccountLoginEvent,
   AccountStatus,
   CloudProjectsSnapshot,
-  FeedbackSubmitPayload,
   FeedbackSubmitResult,
   FeedbackUploadResult,
   DefaultAppStatus,

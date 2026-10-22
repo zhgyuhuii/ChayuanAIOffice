@@ -27,7 +27,7 @@ beforeEach(() => {
   host = document.createElement('div')
   document.body.append(host)
   root = createRoot(host)
-  feedbackSubmit = vi.fn(async (payload: FeedbackSubmitPayload): Promise<FeedbackSubmitResult> => ({
+  feedbackSubmit = vi.fn(async (_payload: FeedbackSubmitPayload): Promise<FeedbackSubmitResult> => ({
     ok: true,
     id: 'fb-1',
     status: 'new',

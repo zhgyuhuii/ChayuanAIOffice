@@ -21,9 +21,8 @@ import type {
   RecentEntry,
 } from '../../shared/home-api'
 import { useDismissablePopover, USER_LOGIN_READY } from '@chaoffice/ui'
-import { fileCountKey, fileCountLabel, visiblePageCount, chatCountKey } from './counts'
+import { fileCountKey,  chatCountKey } from './counts'
 import { MonoFileIcon } from './file-icons'
-import { markText } from '../../shared/text-marks'
 import { useI18n } from './locale'
 import type { I18n, StringKey } from './locale'
 import { skillUpdateDue } from './IntegrationsPane'
@@ -189,34 +188,7 @@ const RECENT_FILTERS: { key: string; label: string }[] = [
 ]
 
 /** sidebar filter keys that stand for a family of extensions (mirrors recent-files.ts) */
-const FILTER_FAMILY: Record<string, readonly string[]> = {
-  docx: ['docx', 'doc', 'odt', 'ott'],
-  xlsx: ['xlsx', 'xlsm', 'xls', 'csv', 'tsv', 'ods', 'ots'],
-  pptx: ['pptx', 'ppt', 'odp', 'otp'],
-  md: ['md', 'markdown', 'txt', 'json'],
-  html: ['html', 'htm'],
-}
-
-function matchesFilter(entry: RecentEntry, filter: string): boolean {
-  if (filter === 'all') return true
-  return (FILTER_FAMILY[filter] ?? [filter]).includes(entry.ext)
-}
-
 /** wrap every matched fragment of a name or folder label in the shared search-hit mark */
-function highlightText(text: string, needles: readonly string[]): ReactElement[] | string {
-  const marks = markText(text, needles)
-  if (!marks.some((m) => m.hit)) return text
-  return marks.map((m, i) =>
-    m.hit ? (
-      <mark key={i} className="search-hit">
-        {m.text}
-      </mark>
-    ) : (
-      <span key={i}>{m.text}</span>
-    ),
-  )
-}
-
 /** Check glyph marking the selected sort option; invisible on the others so labels stay aligned */
 function SortCheck({ visible }: { visible: boolean }): ReactElement {
   return (

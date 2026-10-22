@@ -29,7 +29,7 @@ test('slides chrome darkens while the slide canvas stays paper-white', async () 
           // adapted (LOCAL R24): 磁贴等价（AI Slides → .pptx）
       shellPage.waitForFunction(() => document.querySelectorAll('.side-new-tile').length > 0, undefined, { timeout: 20_000 }).catch(() => undefined)
 
-      shellPage.evaluate((ext) => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === `.pptx`)?.dispatchEvent(new MouseEvent('click', { bubbles: true })), 'pptx')
+      shellPage.evaluate((_ext) => [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === `.pptx`)?.dispatchEvent(new MouseEvent('click', { bubbles: true })), 'pptx')
     const editorPage = await waitForPageWithUrl(launched.app, '://slides/')
     await editorPage.waitForSelector('.stage-wrap canvas', { timeout: 20_000 })
 

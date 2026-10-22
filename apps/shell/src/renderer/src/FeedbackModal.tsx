@@ -90,7 +90,7 @@ export function FeedbackModal({ onClose }: { onClose: () => void }) {
   // 运行日志：MCP 日志（唯一落盘日志）最近 200 行打包 txt 上传；重复点击替换
   const attachLog = async () => {
     if (logUploading) return
-    let lines: string[] = []
+    let lines: string[]
     try {
       lines = await window.chaOffice.getMcpLogs()
     } catch {

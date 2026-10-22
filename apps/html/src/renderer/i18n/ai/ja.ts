@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const ja = {
   aiCollapsePanel: 'パネルを折りたたむ',

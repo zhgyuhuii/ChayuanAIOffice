@@ -2,7 +2,7 @@
  * Markdown 扩展场景补充包
  */
 import { expect, describe, it } from 'vitest'
-import { containsMathSyntax, matchInlineMath } from '../../src/renderer/editor/mathSyntax'
+import {  matchInlineMath } from '../../src/renderer/editor/mathSyntax'
 import { exportImageMime } from '../../src/shared/export-image-mime'
 
 describe('markdown 扩展 · 场景补充包', () => {

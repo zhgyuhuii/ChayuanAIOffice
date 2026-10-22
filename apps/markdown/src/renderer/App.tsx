@@ -179,8 +179,8 @@ export default function App() {
   editQueueRef.current = editQueue
   const queueSeqRef = useRef(0)
   const [autoSave, setAutoSave] = useAutoSavePref('mdapp.autoSave', window.markdownApi)
-  const [showFind, setShowFind] = useState(false)
-  const [findFocus, setFindFocus] = useState<FindFocusRequest>({ field: 'find', nonce: 0 })
+  const [, setShowFind] = useState(false)
+  const [, setFindFocus] = useState<FindFocusRequest>({ field: 'find', nonce: 0 })
   const [backlinksOpen, setBacklinksOpen] = useState(false)
   const [graphOpen, setGraphOpen] = useState(false)
   const [sourceViewOpen, setSourceViewOpen] = useState(false)

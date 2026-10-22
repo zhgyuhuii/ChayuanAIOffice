@@ -1,4 +1,3 @@
-import { dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { analyzeMediaTool } from '@chaoffice/ai-search'
 import { flagString } from '../args'

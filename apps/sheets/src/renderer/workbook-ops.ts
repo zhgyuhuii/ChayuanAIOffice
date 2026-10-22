@@ -30,8 +30,6 @@ import { groupValue, type PivotFieldGrouping } from '@chaoffice/xlsx-gateway/dom
 import {
   areasOverlap,
   buildPivotLayout,
-  PIVOT_SOURCE_COL_LIMIT,
-  PIVOT_SOURCE_ROW_LIMIT,
   PivotLayoutError,
   pivotOutputArea,
   type PivotArea,
@@ -466,14 +464,11 @@ export function applyAiPivotAdd(
   // expansion order is the same under every parent group,
   // rather than first-seen within each parent.
   const levelItems: string[][] = rowFieldIndices.map(() => [])
-  const comboKeys = new Set<string>()
   const colLevelItems: string[][] = columnFieldIndices.map(() => [])
-  const colComboKeys = new Set<string>()
   // Sort keys for grouped-field labels (label → bucket order; pass-through
   // values are null and keep first-seen order).
   const levelSortKeys: Map<string, number | null>[] = rowFieldIndices.map(() => new Map())
   const colLevelSortKeys: Map<string, number | null>[] = columnFieldIndices.map(() => new Map())
-  const joinPath = (path: readonly string[]): string => path.join('\u0000')
   // The first pass only collects members (all data rows, including ones later
   // filtered out — they must enter sharedItems and be marked hidden); the
   // combination set is enumerated over rows visible after filtering.
@@ -634,7 +629,9 @@ export function applyAiPivotAdd(
     layout = buildPivotLayout(grid, op, { subtotal: t('appPivotSubtotal'), grandTotal: 'Grand Total' })
   } catch (err) {
     if (err instanceof PivotLayoutError) {
-      throw new Error(t(LAYOUT_ERROR_KEYS[err.code], err.params as Record<string, string>))
+      throw new Error(t(LAYOUT_ERROR_KEYS[err.code], err.params as Record<string, string>), {
+        cause: err,
+      })
     }
     throw err
   }

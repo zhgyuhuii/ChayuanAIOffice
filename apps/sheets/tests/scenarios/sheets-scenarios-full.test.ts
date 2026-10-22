@@ -7,7 +7,7 @@
 import { mkdtempSync, writeFileSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { expect, describe, it, beforeEach } from 'vitest'
+import { expect, describe, it} from 'vitest'
 import {
   expandToPrimitiveOps,
   workbookOperationSchema,

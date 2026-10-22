@@ -1,4 +1,3 @@
-import type { zh } from './zh'
 
 export const hi = {
   aiCollapsePanel: 'पैनल संक्षिप्त करें',
