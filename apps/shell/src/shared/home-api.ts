@@ -581,6 +581,8 @@ export interface HomeChatMessage {
   id: string
   role: 'user' | 'assistant'
   text: string
+  /** LOCAL(#1944 挂账销账): 该轮计费用量（assistant）；会话 chip 由逐消息求和恢复 */
+  usage?: { inputTokens?: number; outputTokens?: number }
   /** assistant text is a document body: restricted HTML for docx, Markdown for md */
   bodyFormat?: 'html' | 'markdown' | undefined
   attachments?: HomeChatAttachment[] | undefined

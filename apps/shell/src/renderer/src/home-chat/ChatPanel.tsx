@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
 import {
+  addTokenUsage,
   AiComposer,
   AiTypingIndicator,
+  AiUsageChip,
   ChatMedia,
   KbCitePreview,
   KbPickerButton,
@@ -12,6 +14,7 @@ import {
   renderCitationChips,
   useDismissablePopover,
   useKbSelection,
+  type AiTokenUsageView,
 } from '@chaoffice/ui'
 import attachIcon from '../assets/attach-icon.png'
 import qrCodeIcon from '../assets/qrcode.png'
@@ -398,7 +401,7 @@ function ChatMessageView({
   /** KB 引用 chip 点击(无选库的宿主不传) */
   onOpenCitation?: (citation: KbCitation) => void
 }): ReactElement {
-  const { t, dateLocale } = useI18n()
+  const { t, lang, dateLocale } = useI18n()
   if (m.role === 'user') {
     return (
       <div className="chat-msg user" data-mid={m.id}>
@@ -498,6 +501,11 @@ function ChatMessageView({
         {m.error && <div className="chat-err">{m.text}</div>}
         {m.relayConfirm && <RelayConfirmCard m={m} onConfirm={onRelayConfirm} />}
         {m.card && <ChatCard card={m.card} onOpenSettings={onOpenSettings} />}
+        {m.usage && !typing && (
+          <div className="ai-message-usage">
+            <AiUsageChip usage={m.usage} lang={dateLocale ? lang : lang} />
+          </div>
+        )}
         <div className="chat-msg-time">
           {chatTime(m.ts, dateLocale)}
           {!typing && (prose || m.text) && (
@@ -625,6 +633,21 @@ export function ChatPanel({
         (id, isBusy) => {
           if (id === activeIdRef.current) setBusy(isBusy)
         },
+        // #1944: 活跃会话的每轮用量上报 → 会话 chip 累计 + 尾消息挂账
+        (sessionId, usage) => {
+          storeRef.current?.updateSession(sessionId, (s) => {
+            const messages = [...s.messages]
+            for (let i = messages.length - 1; i >= 0; i--) {
+              if (messages[i].role === 'assistant') {
+                messages[i] = { ...messages[i], usage }
+                break
+              }
+            }
+            return { ...s, messages }
+          })
+          if (sessionId === activeIdRef.current)
+            setSessionUsage((prev) => addTokenUsage(prev, usage))
+        },
       ),
     [],
   )
@@ -673,6 +696,8 @@ export function ChatPanel({
   const [draftModel, setDraftModel] = useState<AiModelSelection | null>(null)
   const [draftAssistant, setDraftAssistant] = useState<HomeChatSession['assistant'] | null>(null)
   const [aiSettings, setAiSettings] = useState<AiSettingsV2 | null>(null)
+  /** #1944: 活跃会话累计用量（composer chip） */
+  const [sessionUsage, setSessionUsage] = useState<AiTokenUsageView | undefined>(undefined)
   const [modeOpen, setModeOpen] = useState(false)
   const modeWrapRef = useRef<HTMLSpanElement>(null)
   useDismissablePopover(modeOpen, () => setModeOpen(false), {

@@ -108,6 +108,8 @@ export interface HomeAgentEvents {
     media?: { kind: 'video' | 'audio'; url: string; mime?: string }
   }): void
   onBusy(busy: boolean): void
+  /** #1944: 该轮计费用量（stream usage 事件透传；端点不支持时缺省不触发） */
+  onUsage?(usage: { inputTokens?: number; outputTokens?: number }): void
   onDone(result: {
     text: string
     createdDoc?: { title: string; docType: DocType }
@@ -1097,6 +1099,7 @@ export class HomeAgent {
           this.turnTextValue = text
           this.events.onText(text)
         },
+        onUsage: (usage) => this.events.onUsage?.(usage),
         onToolStart: (call) => {
           // 任务清单不是时间线工具:start 不出 chip,只在 end 携带快照
           if (call.name === 'update_task_list') return

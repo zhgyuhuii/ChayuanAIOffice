@@ -62,6 +62,8 @@ export class HomeChatController {
     private readonly systemSuffix?: () => string,
     /** busy flips of a session's in-flight turn (drives the composer's stop state) */
     private readonly onBusyChange?: (sessionId: string, busy: boolean) => void,
+    /** #1944: 每轮计费用量上报（App 会话 chip 求和） */
+    private readonly onUsage?: (sessionId: string, usage: { inputTokens?: number; outputTokens?: number }) => void,
   ) {}
 
   private agentFor(sessionId: string, history: HomeChatMessage[]): HomeAgent {
@@ -101,6 +103,7 @@ export class HomeChatController {
           })
         },
         onBusy: (busy) => this.onBusyChange?.(sessionId, busy),
+        onUsage: (usage) => this.onUsage?.(sessionId, usage),
         onDone: ({ createdDoc, openedDoc }) => {
           this.finishOneShotPersona(sessionId)
           this.updateSession(sessionId, (s) => {
