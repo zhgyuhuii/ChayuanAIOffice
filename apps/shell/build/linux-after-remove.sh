@@ -8,6 +8,10 @@ case "$1" in
   *) exit 0 ;;
 esac
 link="/usr/bin/chaoffice"
+# fpm already removed our MIME file; rebuild the database so the icons we
+# overrode come back without a relogin.
+command -v update-mime-database >/dev/null 2>&1 && update-mime-database /usr/share/mime >/dev/null 2>&1 || true
+link="/usr/bin/chaoffice"
 # same ownership rule as the post-install: only a link into our install dir is ours
 if [ -L "$link" ]; then
   case "$(readlink "$link")" in

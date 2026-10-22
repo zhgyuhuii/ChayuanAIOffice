@@ -9,6 +9,9 @@ import type { PdfApi, UiTheme } from '../shared/ipc'
 import { KB_CHANNELS } from '@chaoffice/ai-host/kb-channels'
 
 const api: PdfApi = {
+  openSkillsSettings: () => ipcRenderer.invoke('ai:open-skills-settings'),
+  skillsList: () => ipcRenderer.invoke('ai:skills-list'),
+  skillText: (name: string) => ipcRenderer.invoke('ai:skill-text', name),
   consumePending: () => ipcRenderer.invoke(PDF_CHANNELS.consumePending),
   openSourcePath: (path: string) => ipcRenderer.invoke('home:open-path', path),
   readFile: (path) => ipcRenderer.invoke(PDF_CHANNELS.readFile, path),

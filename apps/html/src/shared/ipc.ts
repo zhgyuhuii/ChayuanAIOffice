@@ -30,6 +30,8 @@ export const HTML_CHANNELS = {
   closeSaveRequest: 'html:close-save-request',
   closeSaveResult: 'html:close-save-result',
   fileRenamed: 'html:file-renamed',
+  fileChangedOnDisk: 'html:file-changed-on-disk',
+  ackFileChangedOnDisk: 'html:ack-file-changed-on-disk',
   provisionalTitle: 'html:provisional-title',
   pickImage: 'html:pick-image',
   saveImage: 'html:save-image',
@@ -123,6 +125,8 @@ export interface SaveHtmlRequest {
   suggestedName?: string
   /** Default file name offered by the save dialog of an untitled document */
   defaultName?: string
+  /** write even though the file changed on disk since it was loaded or last saved */
+  overwrite?: boolean
 }
 
 export type SaveHtmlResult =
@@ -133,7 +137,7 @@ export type SaveHtmlResult =
       imageRewrites?: Array<{ from: string; to: string }>
     }
   | { ok: true; canceled: true }
-  | { ok: false; error: string }
+  | { ok: false; error: string; conflict?: true }
 
 /** AI channels are app-wide shared ipcMain handlers (shell registers via docs-main registerAiIpc); pass-through only */
 export const AI_CHANNELS = {
@@ -263,6 +267,10 @@ export interface HtmlApi {
   sendCloseSaveResult(ok: boolean): void
   /** The file was renamed on disk (Home list rename) — renderer syncs its display path */
   onFileRenamed(handler: (newPath: string) => void): () => void
+  /** Another program wrote the open file; the renderer re-reads and decides whether to reload */
+  onFileChangedOnDisk(handler: (path: string) => void): () => void
+  /** the renderer has read the changed file and decided; a later save is checked against this version */
+  ackFileChangedOnDisk(): void
   /** Name an untitled document's tab before its first save (derived from the user's first AI request) */
   setProvisionalTitle(title: string): void
   /**
@@ -337,6 +345,12 @@ export interface HtmlApi {
     tools?: unknown[]
     maxTokens?: number
   }): Promise<void>
+  /** shell only: switch to Home and open Settings › Integrations (the skills list) */
+  openSkillsSettings(): Promise<void>
+  /** the skills the user installed into ChaAI Office (userData/skills) */
+  skillsList(): Promise<UserSkillEntry[]>
+  /** the body of one installed skill, by name — the main process resolves the path */
+  skillText(name: string): Promise<string>
   aiStreamCancel(requestId: string): Promise<void>
   onAiStream(handler: (chunk: AiStreamChunk) => void): () => void
   /** Main-process web search (Serper/DuckDuckGo via the shared ai:web-search handler) */
@@ -345,4 +359,10 @@ export interface HtmlApi {
   imageSearch(query: string, maxResults?: number): Promise<ImageSearchResult>
   /** Download an image URL in the main process (CORS-free, scheme/target validated) */
   fetchImage(url: string): Promise<ImageData | null>
+}
+
+export interface UserSkillEntry {
+  name: string
+  description: string
+  relevant: boolean
 }

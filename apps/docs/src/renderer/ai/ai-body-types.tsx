@@ -61,6 +61,8 @@ export interface ChatEntry {
   snapshot?: PmNode
   /** attachments consumed from the composer by this user message (read-only echo chips) */
   attachments?: AttachmentMeta[]
+  /** skills the user attached to this message from the composer menu */
+  skills?: string[]
   /** model id that produced this assistant turn (display only) */
   model?: string
   scope?: import('@chaoffice/ui').AiScopeQuoteData

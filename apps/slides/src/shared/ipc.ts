@@ -1453,6 +1453,12 @@ export interface VideoTaskInfo {
 }
 
 export interface SlidesApi {
+  /** shell only: switch to Home and open Settings › Integrations (the skills list) */
+  openSkillsSettings?(): Promise<void>
+  /** the skills installed into ChaAI Office's own folder */
+  skillsList(): Promise<UserSkillEntry[]>
+  /** one installed skill's body, by name — the main process resolves the path */
+  skillText(name: string): Promise<string>
   /** current UI language (persisted by the shell in app-settings.json) */
   getLanguage: () => Promise<
     'zh' | 'en' | 'ja' | 'ko' | 'fr' | 'de' | 'es' | 'th' | 'id' | 'ru' | 'ar'
@@ -2205,4 +2211,10 @@ declare global {
     slidesApi: SlidesApi
     desktop: DesktopFilesApi
   }
+}
+
+export interface UserSkillEntry {
+  name: string
+  description: string
+  relevant: boolean
 }

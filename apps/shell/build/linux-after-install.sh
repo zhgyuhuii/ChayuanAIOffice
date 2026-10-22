@@ -2,6 +2,16 @@
 # deb/rpm post-install: fix the Electron SUID sandbox permissions and expose
 # the chaoffice command line shipped inside the app.
 set -e
+# electron-builder stamps every MIME type it registers with
+# <icon name="x-office-document"/>, which overrides the system's per-type
+# icons (spreadsheet, presentation, text, pdf...) for all 21 types we claim
+# (chaoffice#2126 parity). Dropping the line lets each type fall back to its
+# freedesktop generic-icon; the glob/MimeType associations are untouched.
+mime="/usr/share/mime/packages/chaoffice.xml"
+if [ -f "$mime" ] && grep -q '<icon name="x-office-document"' "$mime"; then
+  sed -i '/<icon name="x-office-document"/d' "$mime"
+  command -v update-mime-database >/dev/null 2>&1 && update-mime-database /usr/share/mime >/dev/null 2>&1 || true
+fi
 app_dir="/opt/ChaAI Office"
 sandbox="$app_dir/chrome-sandbox"
 if [ -f "$sandbox" ]; then

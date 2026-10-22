@@ -4,7 +4,7 @@
  * (Serper / Tavily / Linkup / SearxNG / DuckDuckGo / Bing / Openverse).
  */
 
-import { type AiSettings } from '@chaoffice/ai-provider'
+import { activeSearchProvider, type AiSettings } from '@chaoffice/ai-provider'
 import { imageSearch, webSearch } from './index'
 import { readAiSettingsFile } from './media-tools'
 
@@ -18,6 +18,7 @@ function resolveSearchKeys(settings: AiSettings) {
     linkup?: string
     searxngBaseUrl?: string
     parallelKey?: string
+    keenable?: string
   } = {}
   const serper = providers?.serper?.apiKey
   if (serper) keys.serper = serper
@@ -29,13 +30,17 @@ function resolveSearchKeys(settings: AiSettings) {
   if (searxng) keys.searxngBaseUrl = searxng
   const parallel = providers?.parallel?.apiKey
   if (parallel) keys.parallelKey = parallel
-  return Object.keys(keys).length ? keys : undefined
+  const keenable = providers?.keenable?.apiKey
+  if (keenable) keys.keenable = keenable
+  const provider = activeSearchProvider(settings)
+  const prefer = provider !== 'duckduckgo' ? provider : undefined
+  return { keys: Object.keys(keys).length ? keys : undefined, prefer }
 }
 
 export async function webSearchTool(settingsPath: string, query: string, maxResults = 6) {
   const settings = readAiSettingsFile(settingsPath)
-  const keys = resolveSearchKeys(settings)
-  return webSearch(query, maxResults, false, keys)
+  const { keys, prefer } = resolveSearchKeys(settings) ?? { keys: undefined, prefer: undefined }
+  return webSearch(query, maxResults, false, keys, prefer)
 }
 
 export async function imageSearchTool(settingsPath: string, query: string, maxResults = 8) {

@@ -36,6 +36,7 @@
     "./CapabilitySettingsPage": "./src/CapabilitySettingsPage.tsx",
     "./assistant-library": "./src/assistant-library/index.tsx",
     "./ai-model-picker.css": "./src/ai-model-picker.css",
+    "./ai-skills.css": "./src/ai-skills.css",
     "./use-redact-label": "./src/use-redact-label.ts"
   },
   "scripts": {
@@ -48,7 +49,7 @@
   "devDependencies": {
     "@types/react": "^19.2.14",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.12"
   },
   "dependencies": {
     "@chaoffice/agent-core": "*",

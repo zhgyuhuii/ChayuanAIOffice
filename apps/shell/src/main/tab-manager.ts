@@ -1,6 +1,6 @@
 import { realpathSync } from 'node:fs'
 import { basename, join } from 'node:path'
-import { BrowserWindow, shell, WebContentsView } from 'electron'
+import { app, BrowserWindow, shell, WebContentsView } from 'electron'
 import type { Rectangle, WebContents } from 'electron'
 
 import {
@@ -51,6 +51,14 @@ import type { DockEditorOptions, DockKind, DockRect, DockTabSummary } from '../s
 import { rendererUrl, safeExternalUrl } from '@chaoffice/electron-utils'
 import type { DocumentTabKind, OpenDocumentTab, TabKind, TabSummary } from '../shared/tabs-api'
 import { isSettledRect, tabStripHeight } from '../shared/tab-drag-geometry'
+import {
+  DEFAULT_IDLE_MS,
+  defaultMaxLiveTabs,
+  MEMORY_BUDGET_SHARE,
+  pickTabsToSleep,
+  SLEEP_SWEEP_INTERVAL_MS,
+  type SleepPolicy,
+} from './tab-hibernation'
 /** a tab lifted out of the strip with its live view: what "Open in New Window",
  *  tear-off and dock hand back and forth between the shell and a detached window */
 export interface DetachedTab {
@@ -73,6 +81,12 @@ interface TabRecord {
    *  Home is active (P1 契约, apps/shell/src/shared/dock-api.ts); clicking
    *  the tab in the strip pops it out to a full tab */
   docked?: boolean
+  /** when the tab last became or stopped being the active one */
+  lastActiveAt: number
+  /** never put to sleep (tab context menu) */
+  pinned?: boolean
+  /** renderer destroyed to free memory; `view` is null until the tab is shown again */
+  dormant?: boolean
 }
 
 /** default home sidebar width (home.css .sidebar); the renderer mirrors its
@@ -88,7 +102,7 @@ const HOME_ID = 'home'
  */
 export class TabManager {
   private readonly tabs: TabRecord[] = [
-    { id: HOME_ID, kind: 'home', view: null, title: 'ChaAI Office' },
+    { id: HOME_ID, kind: 'home', view: null, title: 'ChaAI Office', lastActiveAt: Date.now() },
   ]
   private activeId: string = HOME_ID
   private nextId = 1
@@ -391,6 +405,8 @@ export class TabManager {
       active: t.id === this.activeId,
       ...(t.filePath ? { filePath: t.filePath } : {}),
       ...(t.docked ? { docked: true } : {}),
+      ...(t.dormant ? { dormant: true } : {}),
+      ...(t.pinned ? { pinned: true } : {}),
     }))
   }
 
@@ -427,6 +443,7 @@ export class TabManager {
         : Math.min(Math.max(Math.trunc(index), 1), this.tabs.length)
     this.tabs.splice(slot, 0, {
       id,
+      lastActiveAt: Date.now(),
       kind: record.kind,
       view,
       title: record.title,
@@ -437,7 +454,7 @@ export class TabManager {
   }
 
   webContentsForTab(id: string): WebContents | undefined {
-    return this.tabs.find((t) => t.id === id)?.view?.webContents
+    return this.ensureLive(this.tabs.find((t) => t.id === id))?.view?.webContents
   }
 
   /** the editor tab showing this file, whichever module owns it (path compared after resolving links) */
@@ -445,14 +462,19 @@ export class TabManager {
     path?: string,
   ): { id: string; kind: TabKind; webContents: WebContents } | undefined {
     const wanted = canonicalPath(path)
-    const tab = this.tabs.find(
-      (t) => t.view && t.filePath && !t.present && canonicalPath(t.filePath) === wanted,
+    const tab = this.ensureLive(
+      this.tabs.find(
+        (t) =>
+          (t.view || t.dormant) && t.filePath && !t.present && canonicalPath(t.filePath) === wanted,
+      ),
     )
     return tab?.view ? { id: tab.id, kind: tab.kind, webContents: tab.view.webContents } : undefined
   }
 
   async openDocuments(): Promise<OpenDocumentTab[]> {
-    const tabs = this.tabs.filter((tab) => tab.kind !== 'home' && !tab.present && tab.view)
+    const tabs = this.tabs.filter(
+      (tab) => tab.kind !== 'home' && !tab.present && (tab.view || tab.dormant),
+    )
     return Promise.all(
       tabs.map(async (tab) => ({
         id: tab.id,
@@ -613,6 +635,7 @@ export class TabManager {
     this.watchViewLifetime(id, view)
     this.tabs.push({
       id,
+      lastActiveAt: Date.now(),
       kind,
       view,
       title,
@@ -650,7 +673,13 @@ export class TabManager {
     this.shellWindow.contentView.addChildView(view)
     view.setVisible(false)
     this.watchViewLifetime(id, view)
-    this.tabs.push({ id, kind: 'help', view, title: this.untitled('help', 'ChaAI Office Help') })
+    this.tabs.push({
+      id,
+      lastActiveAt: Date.now(),
+      kind: 'help',
+      view,
+      title: this.untitled('help', 'ChaAI Office Help'),
+    })
     this.activateTab(id)
     return id
   }
@@ -669,6 +698,7 @@ export class TabManager {
     this.watchViewLifetime(id, view)
     this.tabs.push({
       id,
+      lastActiveAt: Date.now(),
       kind: 'docs',
       view,
       title: openPath ? basename(openPath) : this.untitled('docs', 'ChaAI Office Docs'),
@@ -709,6 +739,7 @@ export class TabManager {
     this.scheduleSpareSheetsView(3000)
     this.tabs.push({
       id,
+      lastActiveAt: Date.now(),
       kind: 'sheets',
       view,
       title: openPath ? basename(openPath) : this.untitled('sheets', 'AI Sheets'),
@@ -727,6 +758,7 @@ export class TabManager {
     this.watchViewLifetime(id, view)
     this.tabs.push({
       id,
+      lastActiveAt: Date.now(),
       kind: 'slides',
       view,
       title: openPath ? basename(openPath) : this.untitled('slides', 'AI Slides'),
@@ -754,6 +786,7 @@ export class TabManager {
     this.watchViewLifetime(id, view)
     this.tabs.push({
       id,
+      lastActiveAt: Date.now(),
       kind: 'pdf',
       view,
       title: options?.untitledTitle ?? basename(openPath),
@@ -791,6 +824,7 @@ export class TabManager {
     this.watchViewLifetime(id, view)
     this.tabs.push({
       id,
+      lastActiveAt: Date.now(),
       kind: 'markdown',
       view,
       title: openPath ? basename(openPath) : this.untitled('markdown', 'AI Markdown'),
@@ -809,6 +843,7 @@ export class TabManager {
     this.watchViewLifetime(id, view)
     this.tabs.push({
       id,
+      lastActiveAt: Date.now(),
       kind: 'html',
       view,
       title: openPath ? basename(openPath) : this.untitled('html', 'AI HTML'),
@@ -839,6 +874,7 @@ export class TabManager {
     this.watchViewLifetime(id, view)
     this.tabs.push({
       id,
+      lastActiveAt: Date.now(),
       kind: 'html',
       view,
       title: title || this.untitled('html', 'AI HTML'),
@@ -851,6 +887,11 @@ export class TabManager {
   activateTab(id: string): void {
     const target = this.tabs.find((t) => t.id === id)
     if (!target) return
+    if (target.dormant) this.reviveTab(target)
+    const now = Date.now()
+    const previous = this.tabs.find((t) => t.id === this.activeId)
+    if (previous) previous.lastActiveAt = now
+    target.lastActiveAt = now
     // activating a docked tab pops it out to a full tab (strip click = undock)
     if (target.docked) {
       target.docked = false
@@ -964,13 +1005,16 @@ export class TabManager {
     newPath: string,
   ): Array<{ kind: TabKind; webContents: WebContents }> {
     const affected: Array<{ kind: TabKind; webContents: WebContents }> = []
+    let renamed = 0
     for (const tab of this.tabs) {
       if (tab.filePath !== oldPath) continue
       tab.filePath = newPath
       tab.title = basename(newPath)
+      renamed++
       if (tab.view) affected.push({ kind: tab.kind, webContents: tab.view.webContents })
     }
-    if (affected.length > 0) this.onChanged()
+    // dormant (sleeping) tabs rename too: the strip entry must follow the file
+    if (renamed > 0) this.onChanged()
     return affected
   }
 
@@ -1112,18 +1156,131 @@ export class TabManager {
     if (removed.view) {
       removed.view.setVisible(false)
       this.shellWindow.contentView.removeChildView(removed.view)
-      if (removed.kind === 'docs') {
-        // webContents.close()/.destroy() on a closed docs tab wedges Electron's whole
-        // UI thread in a native modal run loop (reproduced consistently; survives
-        // close() vs destroy(), teardown ordering, deferring, and disabling
-        // accessibility support — looks like an upstream WebContentsView/Chromium
-        // issue, not something fixable from here). Detaching without destroying
-        // avoids the freeze; the orphaned webContents is reclaimed when the app quits.
-        teardownDocsRenderer(removed.view.webContents)
-      } else {
-        removed.view.webContents.close()
-      }
+      destroyView(removed.kind, removed.view)
     }
+  }
+
+  /** a tab with a renderer; dormant and Home tabs have none */
+  private isLive(tab: TabRecord): boolean {
+    return !!tab.view
+  }
+
+  setPinned(id: string, pinned: boolean): void {
+    const tab = this.tabs.find((t) => t.id === id)
+    if (!tab || tab.kind === 'home') return
+    tab.pinned = pinned
+    this.onChanged()
+  }
+
+  /**
+   * Destroy the renderer of a background tab and keep only what is needed to
+   * reopen it: kind, path, title, position. Refuses the active tab, pinned
+   * tabs, untitled documents, Present tabs, the manual, a tab mid-prompt or in
+   * HTML fullscreen, and anything with unsaved changes. Resolves true when the
+   * tab went to sleep.
+   */
+  async sleepTab(id: string): Promise<boolean> {
+    const tab = this.tabs.find((t) => t.id === id)
+    if (!tab?.view || !this.canSleep(tab)) return false
+    if (await this.tabIsDirty(tab)) return false
+    // re-check: the dirty query yielded, and the user may have switched here meanwhile
+    if (!tab.view || !this.canSleep(tab)) return false
+    const view = tab.view
+    tab.view = null
+    tab.dormant = true
+    view.setVisible(false)
+    this.shellWindow.contentView.removeChildView(view)
+    destroyView(tab.kind, view)
+    this.onChanged()
+    return true
+  }
+
+  private canSleep(tab: TabRecord): boolean {
+    return (
+      tab.id !== this.activeId &&
+      !tab.pinned &&
+      !tab.present &&
+      !!tab.filePath &&
+      tab.kind !== 'home' &&
+      tab.kind !== 'help' &&
+      !this.closingIds.has(tab.id) &&
+      this.htmlFullScreenId !== tab.id
+    )
+  }
+
+  /** rebuild a sleeping tab's view from its file, in place; the caller shows it */
+  private reviveTab(tab: TabRecord): void {
+    const view = createViewFor(tab.kind, tab.filePath)
+    if (!view) return
+    this.shellWindow.contentView.addChildView(view)
+    view.setVisible(false)
+    this.trackHtmlFullScreen(tab.id, view)
+    this.watchViewLifetime(tab.id, view)
+    tab.view = view
+    tab.dormant = false
+    tab.lastActiveAt = Date.now()
+  }
+
+  /** a sleeping tab asked for by its webContents (agents, CLI, menus) wakes in the background */
+  private ensureLive(tab: TabRecord | undefined): TabRecord | undefined {
+    if (tab?.dormant) {
+      this.reviveTab(tab)
+      this.onChanged()
+    }
+    return tab
+  }
+
+  /**
+   * One pass of the sleep policy: background tabs idle past `policy.idleMs`
+   * sleep while more than `policy.maxLiveTabs` renderers are alive; over the
+   * memory budget the oldest sleeps regardless. Returns the ids put to sleep.
+   */
+  async sleepIdleTabs(
+    policy: SleepPolicy,
+    now = Date.now(),
+    overBudget = false,
+  ): Promise<string[]> {
+    const live = this.tabs.filter((t) => this.isLive(t))
+    const candidates: { id: string; lastActiveAt: number }[] = []
+    // dirtiness is resolved here, not in canSleep: it is async for docs, and a
+    // dirty tab left among the candidates would be picked (and refused) on
+    // every sweep, starving the clean tabs behind it
+    for (const t of live) {
+      if (this.canSleep(t) && !(await this.tabIsDirty(t)))
+        candidates.push({ id: t.id, lastActiveAt: t.lastActiveAt })
+    }
+    const slept: string[] = []
+    for (const id of pickTabsToSleep(candidates, live.length, policy, now, overBudget)) {
+      if (await this.sleepTab(id)) slept.push(id)
+    }
+    return slept
+  }
+
+  /**
+   * Run the sleep policy every minute while `enabled()` holds. The live-tab
+   * cap follows the machine's memory; the budget check sums every process of
+   * the app against a share of physical memory.
+   */
+  startSleepSweeper(enabled: () => boolean): () => void {
+    const policy: SleepPolicy = {
+      maxLiveTabs:
+        envNumber('GENOFFICE_TAB_SLEEP_MAX_LIVE') ??
+        defaultMaxLiveTabs(process.getSystemMemoryInfo().total * 1024),
+      idleMs: envNumber('GENOFFICE_TAB_SLEEP_IDLE_MS') ?? DEFAULT_IDLE_MS,
+    }
+    let running = false
+    const timer = setInterval(
+      () => {
+        if (!enabled() || running || this.shellWindow.isDestroyed()) return
+        running = true
+        void this.sleepIdleTabs(policy, Date.now(), appOverMemoryBudget()).finally(() => {
+          running = false
+        })
+      },
+      envNumber('GENOFFICE_TAB_SLEEP_SWEEP_MS') ?? SLEEP_SWEEP_INTERVAL_MS,
+    )
+    timer.unref?.()
+    return () => clearInterval(timer)
   }
 
   /** close every other closable tab except Home and the given tab */
@@ -1192,7 +1349,7 @@ export class TabManager {
     return this.tabs.find(
       (t) =>
         t.kind === kind &&
-        t.view &&
+        (t.view || t.dormant) &&
         t.filePath &&
         !t.present &&
         canonicalPath(t.filePath) === wanted,
@@ -1249,6 +1406,59 @@ export class TabManager {
     return tab?.kind === 'pdf' && tab.view
       ? { id: tab.id, webContents: tab.view.webContents, filePath: tab.filePath }
       : undefined
+  }
+}
+
+
+/** the editor view for a tab rebuilt from its file (sleep/wake); null for kinds that cannot be */
+function createViewFor(kind: TabKind, filePath: string | undefined): WebContentsView | null {
+  if (!filePath) return null
+  switch (kind) {
+    case 'docs':
+      return createDocsView(filePath)
+    case 'sheets': {
+      const view = createSheetsView({ includeAiHandlers: false, openingWorkbook: true })
+      queueWorkbookForView(view.webContents, filePath)
+      return view
+    }
+    case 'slides':
+      return createSlidesView(filePath)
+    case 'pdf':
+      return createPdfView(filePath)
+    case 'markdown':
+      return createMarkdownView(filePath)
+    case 'html':
+      return createHtmlView(filePath)
+    default:
+      return null
+  }
+}
+
+/** release a view's renderer. A closed docs renderer wedges Electron's whole UI
+ *  thread in a native modal run loop (reproduced consistently on this fork;
+ *  upstream closes anyway after its teardown — we keep the freeze workaround:
+ *  the docs view detaches without destroying, reclaimed at quit). */
+function destroyView(kind: TabKind, view: WebContentsView): void {
+  if (view.webContents.isDestroyed()) return
+  if (kind === 'docs') {
+    teardownDocsRenderer(view.webContents)
+    return
+  }
+  view.webContents.close()
+}
+
+/** test hooks: the sweep is minutes-scale by design, too slow for an e2e run */
+function envNumber(name: string): number | undefined {
+  const value = Number(process.env[name])
+  return Number.isFinite(value) && value > 0 ? value : undefined
+}
+
+function appOverMemoryBudget(): boolean {
+  try {
+    const usedKB = app.getAppMetrics().reduce((sum, m) => sum + m.memory.workingSetSize, 0)
+    return usedKB > process.getSystemMemoryInfo().total * MEMORY_BUDGET_SHARE
+  } catch {
+    return false
   }
 }
 

@@ -17,8 +17,7 @@ function facesOf(family: string): string[] {
 }
 
 describe('JP Mincho fallback aliases synthesize bold', () => {
-  // family names as line-metrics.ts looks them up (ChaOffice prefix, no space)
-  for (const family of ['ChaOffice Hiragino Mincho', 'ChaOffice MS Mincho']) {
+  for (const family of ['ChaAI Office Hiragino Mincho', 'ChaAI Office MS Mincho']) {
     it(`${family} registers weight-normal faces only`, () => {
       const faces = facesOf(family)
       expect(faces.length).toBeGreaterThan(0)

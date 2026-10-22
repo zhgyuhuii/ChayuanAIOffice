@@ -3675,6 +3675,8 @@ export function registerAiIpc(): void {
           exa: providers?.exa?.apiKey || process.env.EXA_API_KEY || undefined,
           firecrawl:
             providers?.firecrawl?.apiKey || process.env.FIRECRAWL_API_KEY || undefined,
+          keenable:
+            providers?.keenable?.apiKey || process.env.KEENABLE_API_KEY || undefined,
           searxngBaseUrl: providers?.searxng?.apiKey || undefined,
         },
         settings.search?.provider,

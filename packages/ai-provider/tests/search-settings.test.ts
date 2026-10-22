@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { defaultAiSettings, resolveAiSettings } from '../src/providers'
 import {
+  AI_SEARCH_PROVIDERS,
   activeSearchProvider,
   defaultAiSearchSettings,
   resolveAiSearchSettings,
@@ -67,3 +68,32 @@ describe('search settings', () => {
     ).toBe('duckduckgo')
   })
 })
+
+// adapted: 上游 #2124 Keenable 用例按本地免钥默认 duckduckgo + needsKey 元数据语义改编
+// （上游默认 genspark、keenable key 经 resolve 恢复；本地 resolve 只持久化 KEYED_PROVIDERS，
+// keenable key 走 raw settings 直读，与 parallel 先例一致）
+describe('Keenable search settings', () => {
+  it('is in the catalog without image search and keyless like parallel', () => {
+    const meta = AI_SEARCH_PROVIDERS.find((m) => m.id === 'keenable')
+    expect(meta?.imageSearch).toBe(false)
+    expect(meta?.needsKey).toBe(false)
+    expect(defaultAiSearchSettings().providers.keenable).toBeUndefined()
+  })
+
+  it('keeps Keenable selected for free search even with a blank key', () => {
+    expect(
+      activeSearchProvider({
+        search: { provider: 'keenable', providers: { keenable: { apiKey: '   ' } } },
+      }),
+    ).toBe('keenable')
+    expect(
+      activeSearchProvider({ search: { provider: 'keenable', providers: {} } }),
+    ).toBe('keenable')
+  })
+
+  it('leaves the default provider on duckduckgo', () => {
+    expect(defaultAiSearchSettings().provider).toBe('duckduckgo')
+    expect(activeSearchProvider({ search: defaultAiSearchSettings() })).toBe('duckduckgo')
+  })
+})
+

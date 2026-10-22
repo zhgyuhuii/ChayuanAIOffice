@@ -11,6 +11,9 @@ import type { AutoSaveDefault, DocTheme, ExportFormat, MarkdownApi, SaveMode, Ui
 import { KB_CHANNELS } from '@chaoffice/ai-host/kb-channels'
 
 const api: MarkdownApi = {
+  openSkillsSettings: () => ipcRenderer.invoke('ai:open-skills-settings'),
+  skillsList: () => ipcRenderer.invoke('ai:skills-list'),
+  skillText: (name: string) => ipcRenderer.invoke('ai:skill-text', name),
   consumePending: () => ipcRenderer.invoke(MARKDOWN_CHANNELS.consumePending),
   consumeAiContent: () => ipcRenderer.invoke(MARKDOWN_CHANNELS.consumeAiContent),
   openSourcePath: (path: string) => ipcRenderer.invoke('home:open-path', path),
@@ -50,6 +53,12 @@ const api: MarkdownApi = {
     ipcRenderer.on(MARKDOWN_CHANNELS.fileRenamed, listener)
     return () => ipcRenderer.removeListener(MARKDOWN_CHANNELS.fileRenamed, listener)
   },
+  onFileChangedOnDisk: (handler) => {
+    const listener = (_e: Electron.IpcRendererEvent, path: string) => handler(path)
+    ipcRenderer.on(MARKDOWN_CHANNELS.fileChangedOnDisk, listener)
+    return () => ipcRenderer.removeListener(MARKDOWN_CHANNELS.fileChangedOnDisk, listener)
+  },
+  ackFileChangedOnDisk: () => ipcRenderer.send(MARKDOWN_CHANNELS.ackFileChangedOnDisk),
   pickImage: () => ipcRenderer.invoke(MARKDOWN_CHANNELS.pickImage),
   saveImage: (data) => ipcRenderer.invoke(MARKDOWN_CHANNELS.saveImage, data),
   readImage: (src) => ipcRenderer.invoke(MARKDOWN_CHANNELS.readImage, src),

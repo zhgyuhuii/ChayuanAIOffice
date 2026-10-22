@@ -2523,7 +2523,7 @@ export async function exportSheetsPdfHeadless(
 
 /** tab-mode equivalent of createSheetsWindow: same runtime/IPC wiring, no BrowserWindow of its own. */
 export function createSheetsView(
-  options: { includeAiHandlers?: boolean; hidePanel?: boolean } = {},
+  options: { includeAiHandlers?: boolean; hidePanel?: boolean; openingWorkbook?: boolean } = {},
 ): WebContentsView {
   const client = sidecar ?? new XlsxSidecarClient(resolveSidecarPath())
   sidecar = client
@@ -2553,6 +2553,9 @@ export function createSheetsView(
   // the Home conversation is the chat surface for docked editors.
   const query: Record<string, string> = { mode: 'tab' }
   if (options.hidePanel) query.panel = '0'
+  // a revived (sleep/wake) workbook opens mid-restore: the loading overlay stays
+  // up until the workbook actually arrives (no blank-grid flash)
+  if (options.openingWorkbook) query.openingWorkbook = '1'
   void view.webContents.loadURL(rendererUrl(runtime.rendererUrl, 'sheets', query))
   return view
 }
@@ -3965,6 +3968,8 @@ export function registerSheetsAiIpc(): void {
           exa: searchProviders?.exa?.apiKey || process.env.EXA_API_KEY || undefined,
           firecrawl:
             searchProviders?.firecrawl?.apiKey || process.env.FIRECRAWL_API_KEY || undefined,
+          keenable:
+            searchProviders?.keenable?.apiKey || process.env.KEENABLE_API_KEY || undefined,
           searxngBaseUrl: searchProviders?.searxng?.apiKey || undefined,
         },
         searchSettings?.search?.provider,
@@ -4847,7 +4852,7 @@ async function applyMainProcessProxy(): Promise<void> {
     try {
       const { setGlobalDispatcher } = await import('undici')
       // loopback stays direct: a Custom provider on 127.0.0.1 must not ride
-      // the proxy as an absolute-form request (#2084)
+      // the proxy as an absolute-form request (chaoffice#2084)
       setGlobalDispatcher(await createMainProcessProxyDispatcher(proxyUrl))
       // strip user:pass credentials before logging
       console.log('[proxy] main-process fetch via', proxyUrl.replace(/\/\/[^@/]*@/, '//***@'))

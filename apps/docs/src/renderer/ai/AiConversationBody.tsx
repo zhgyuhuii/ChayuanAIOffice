@@ -26,6 +26,7 @@ import {
   composeSkills,
   type AgentImage,
   type AgentTransport,
+  withAttachedSkills,
 } from '@chaoffice/agent-core'
 import type { AiSettingsV2, AttachmentAddResult, AttachmentMeta } from '../../shared/ipc'
 import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
@@ -55,6 +56,8 @@ import {
   useKbAugment,
   USER_LOGIN_READY,
   AI_CONTINUE_INSTRUCTION,
+  AiSkillsMenu,
+  AiSkillChips,
   type AiScopeQuoteData,
   type KbCitation,
 } from '@chaoffice/ui'
@@ -279,6 +282,15 @@ export function AiConversationBody({
   numIdFallbackRef.current = numIdFallback
   const attachmentsRef = useRef(attachments)
   attachmentsRef.current = attachments
+  const [attachedSkills, setAttachedSkills] = useState<string[]>([])
+  const attachedSkillsRef = useRef(attachedSkills)
+  attachedSkillsRef.current = attachedSkills
+  const toggleSkill = (name: string) =>
+    setAttachedSkills((prev) =>
+      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
+    )
+  const listSkillsForMenu = async () =>
+    (await window.desktop.skillsList()).map(({ name, description }) => ({ name, description }))
   const lastAttachmentsRef = useRef<AttachmentMeta[]>([])
   // LOCAL(2026-09-22, f5247d3..476e5023): 上游 #544 analyze_media 门控重放为本地能力旗标
   // (统一媒体通道的 imageUnderstanding/videoUnderstanding;mount+focus 刷新,照上游
@@ -754,7 +766,7 @@ export function AiConversationBody({
     stickToBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48
   }
 
-  const run = () => runWith(input.trim())
+  const run = () => runWith(input.trim(), input.trim(), undefined, undefined, true)
 
   /** Image attachments are read as base64 and go multimodal with this user message (≤5MB per image, max 20) */
   const MAX_IMAGES_PER_MESSAGE = 20
@@ -780,12 +792,32 @@ export function AiConversationBody({
     return images
   }
 
+  /** the attached skills' full text in front of the request; a skill that vanished is skipped */
+  const withSkillBodies = async (instruction: string, names: readonly string[]) => {
+    if (names.length === 0) return instruction
+    const bodies = await Promise.all(
+      names.map(async (name) => {
+        try {
+          return { name, body: await window.desktop.skillText(name) }
+        } catch {
+          return null
+        }
+      }),
+    )
+    return withAttachedSkills(
+      instruction,
+      bodies.filter((b): b is { name: string; body: string } => b !== null),
+    )
+  }
+
   const runWith = (
     instruction: string,
     displayInstruction = instruction,
     attachmentsOverride?: AttachmentMeta[],
     /** null = a retry that had no scope; undefined = capture the live selection */
     retryScope?: AiScopeQuoteData | null,
+    /** only the composer's own send takes the attached skills along */
+    attachSkills = false,
   ) => {
     if (!instruction) return
     const loop = ensureLoop()
@@ -802,6 +834,9 @@ export function AiConversationBody({
       setAttachments([])
     }
     lastAttachmentsRef.current = sentAtts
+    // skills ride with this one message only: the chips clear like attachments do
+    const sentSkills = attachSkills ? attachedSkillsRef.current : []
+    if (sentSkills.length > 0) setAttachedSkills([])
     // the queue batch and the continue action carry their own display text: no selection quote
     const scope =
       retryScope !== undefined
@@ -826,6 +861,7 @@ export function AiConversationBody({
         role: 'user',
         text: displayInstruction,
         ...(sentAtts.length > 0 ? { attachments: sentAtts } : {}),
+        ...(sentSkills.length > 0 ? { skills: sentSkills } : {}),
         ...(scope ? { scope } : {}),
       },
       { role: 'assistant', text: '', streaming: true, model: runModelRef.current },
@@ -863,7 +899,9 @@ export function AiConversationBody({
           return
         }
         runUserTextRef.current = instruction
-        const kbInstruction = await kb.augment(instruction)
+        // skill bodies prefix the instruction; KB citations ride after it
+        const withSkills = await withSkillBodies(instruction, sentSkills)
+        const kbInstruction = await kb.augment(withSkills)
         const kbCitations = kb.lastCitations.current
         if (kbCitations.length > 0) {
           setChat((prev) =>
@@ -1125,6 +1163,9 @@ export function AiConversationBody({
                 {entry.role === 'user' && entry.scope && <AiScopeQuote scope={entry.scope} />}
                 {entry.role === 'user' && entry.attachments && entry.attachments.length > 0 && (
                   <SentAttachments atts={entry.attachments} previews={attachmentPreviews} />
+                )}
+                {entry.role === 'user' && entry.skills && (
+                  <AiSkillChips lang={lang} names={entry.skills} />
                 )}
                 {entry.tools && entry.tools.length > 0 && <ToolChipList tools={entry.tools} />}
                 {entry.role === 'assistant' && entry.model && !entry.streaming && (
@@ -1545,6 +1586,14 @@ export function AiConversationBody({
               />
               {/* R24 上游 #1944 织入: session-total token chip */}
               {sessionUsage && <AiUsageChip usage={sessionUsage} session lang={lang} />}
+              <AiSkillsMenu
+                lang={lang}
+                listSkills={listSkillsForMenu}
+                selected={attachedSkills}
+                onToggle={toggleSkill}
+                onAddFile={() => void pickAttachments()}
+                onManage={() => void window.desktop.openSkillsSettings?.().catch(() => {})}
+              />
               <button
                 className="ai-attach-btn"
                 onClick={pickAttachments}
