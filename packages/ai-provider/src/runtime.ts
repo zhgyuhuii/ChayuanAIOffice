@@ -56,6 +56,10 @@ export interface AiRuntimeChaOffice {
   apiKey(): string
   hasAuth(): boolean
   status(withEmail: boolean): Promise<ChaOfficeAccountStatus>
+  /** #1950: a proxy call made with the session key came back unauthorized —
+   * drop the key and start the background recovery (main process wires
+   * noteChaofficeCallFailure here). Absent = errors surface as-is. */
+  onCallFailure?: (key: string, error: unknown) => void
 }
 
 export interface AiRuntimeDeps {
@@ -193,6 +197,14 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
   const setCurrentModel = async (selection: AiModelSelection): Promise<void> => {
     const settings = await readRaw()
     await source.write({ ...settings, currentModel: selection })
+  }
+
+  /** #1950: a wire failure on the ChaOffice session key drops the key and
+   * starts the background re-login/recovery (main wires noteChaofficeCallFailure). */
+  const noteSessionKeyFailure = (call: ResolvedModelCall, err: unknown): void => {
+    if (!chaoffice.onCallFailure) return
+    if (!call.apiKey || !chaoffice.hasAuth()) return
+    if (call.apiKey === chaoffice.apiKey()) chaoffice.onCallFailure(call.apiKey, err)
   }
 
   /** resolve one run: profile + secret (chaoffice session for chaoffice) → wire call */
@@ -399,6 +411,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
       })
       send({ requestId, type: 'done', ...(stopReason !== undefined ? { stopReason } : {}) })
     } catch (err) {
+      noteSessionKeyFailure(call, err)
       if (cb.signal.aborted) {
         send({ requestId, type: 'done' })
         return
@@ -427,8 +440,8 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     system: string,
     user: string,
   ): Promise<AiChatResponse> => {
+    const call = await resolveForRun(selection)
     try {
-      const call = await resolveForRun(selection)
       // one-shot utilities (titles, summaries) need text out; a non-chat
       // current model would just bounce off the gateway's chat endpoint
       const kind = inferModelType(call.model)
@@ -445,6 +458,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
       }
       return await chatResolved(call, system, user)
     } catch (err) {
+      noteSessionKeyFailure(call, err)
       return { ok: false, error: err instanceof Error ? err.message : String(err) }
     }
   }

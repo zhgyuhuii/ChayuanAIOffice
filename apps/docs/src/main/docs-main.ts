@@ -127,6 +127,7 @@ import { listCodexModels, shutdownCodexAppServers } from '@chaoffice/ai-provider
 import {
   ensureChaofficeLogin,
   chaofficeApiKey,
+  noteChaofficeCallFailure,
   chaofficeLoginInfo,
   hasChaOfficeAuth,
   webSearch,
@@ -3614,6 +3615,8 @@ export function registerAiIpc(): void {
     chaoffice: {
       apiKey: () => chaofficeApiKey(),
       hasAuth: () => hasChaOfficeAuth(),
+      // #1950: 代理 401 掉 key + 后台自愈重登（浏览器 opener 已由 ai-host 注册）
+      onCallFailure: noteChaofficeCallFailure,
       status: async (withEmail) => {
         if (!hasChaOfficeAuth()) return { loggedIn: false }
         if (!withEmail) return { loggedIn: true }

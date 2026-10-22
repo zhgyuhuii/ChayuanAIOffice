@@ -17,6 +17,7 @@ import {
 import {
   imageSearch,
   searchStockImages,
+  setChaOfficeLoginOpener,
   StockSearchError,
   webSearch,
   type StockSource,
@@ -237,6 +238,10 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   // 期间掐断 SSE（错误面为 terminated），先于所有 watchdog 生效——进程内关掉，
   // 回合存活由主进程档案预算 + 渲染层心跳负责
   relaxFetchBodyTimeout()
+
+  // #1950: register the module-level browser opener for automatic re-login
+  // recovery — the app's chaofficeLogin flow opens its own windows
+  setChaOfficeLoginOpener((_url) => deps.chaofficeLogin())
 
   const fileSource = createFileSource(deps.settingsPath, deps.fs)
   // LOCAL(R30 挂账): settings-changed 原生推送——上游在 ai:set-settings handler
