@@ -144,6 +144,13 @@ export function registerAiIpc(): void {
         }
       },
     },
+    // ai-host 原生 settings-changed 推送（R30 挂账销账）——slides 此前无实时同步，
+    // 模型选择器/设置改动现与其他端同拍
+    broadcast: (channel) => {
+      for (const w of BrowserWindow.getAllWindows()) {
+        if (!w.isDestroyed() && !w.webContents.isDestroyed()) w.webContents.send(channel)
+      }
+    },
     chaoffice: {
       apiKey: () => chaofficeApiKey(),
       hasAuth: () => hasChaOfficeAuth(),

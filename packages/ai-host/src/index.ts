@@ -175,6 +175,11 @@ export interface SharedAiIpcDeps {
   settingsPath: string
   /** injected Node fs (atomic write + watch live in the app) */
   fs: FileSourceFs
+  /** push a channel to every renderer window. ai-host owns the
+   * ai:settings-changed notification natively (watch-driven, covering local
+   * AND external settings writes) so apps stop re-implementing it inside
+   * their fs seams; absent = no push (tests, headless tools). */
+  broadcast?: (channel: string) => void
   chaoffice: AiRuntimeChaOffice
   /** opens the chaoffice device-code login flow (app closes over shell.openExternal) */
   chaofficeLogin: () => void
@@ -234,6 +239,18 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   relaxFetchBodyTimeout()
 
   const fileSource = createFileSource(deps.settingsPath, deps.fs)
+  // LOCAL(R30 挂账): settings-changed 原生推送——上游在 ai:set-settings handler
+  // 尾部广播；本地 V2 写盘统一经 fs 注入（含外部/harness 改写），故以文件
+  // watch 驱动单点广播覆盖本地+外部两种写，各 app 不再在 fs 缝隙里自行广播。
+  // 去抖：macOS 一次原子写（rename+change）会连发多个 fs 事件，收敛为一条
+  let pushTimer: NodeJS.Timeout | null = null
+  fileSource.subscribe?.(() => {
+    if (pushTimer) return
+    pushTimer = setTimeout(() => {
+      pushTimer = null
+      deps.broadcast?.('ai:settings-changed')
+    }, 50)
+  })
 
   // ── 察元 harness 自动识别（自动发现 dsh home → 只读融合 + 托管代理 key）────
   // 桌面端与 harness 共居一机:发现 home 后 (1) 模型列表融合 harness 的本地

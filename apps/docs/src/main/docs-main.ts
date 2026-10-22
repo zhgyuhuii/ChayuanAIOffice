@@ -3598,10 +3598,6 @@ export function registerAiIpc(): void {
       readFile: (p) => readFile(p, 'utf8'),
       writeFile: async (p, contents) => {
         await atomicWriteFile(p, Buffer.from(contents, 'utf8'))
-        // LOCAL(R24): #1951 侧栏开关/模型选择器实时同步——本地 V2 设置统一经
-        // ai-host 的 fs 注入写盘,写后广播 ai:settings-changed(上游在
-        // ai:set-settings handler 末尾广播,本地等价点在此)
-        broadcastAiSettingsChanged()
       },
       watch: (p, cb) => {
         try {
@@ -3612,6 +3608,9 @@ export function registerAiIpc(): void {
         }
       },
     },
+    // ai-host 原生 settings-changed 推送（watch 驱动，覆盖本地+外部写）——
+    // fs.writeFile 注入的写后广播退役（R30 挂账销账）
+    broadcast: broadcastAiSettingsChanged,
     chaoffice: {
       apiKey: () => chaofficeApiKey(),
       hasAuth: () => hasChaOfficeAuth(),

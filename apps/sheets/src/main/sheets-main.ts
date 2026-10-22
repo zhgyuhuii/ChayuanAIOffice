@@ -3852,19 +3852,18 @@ export function registerSheetsAiIpc(): void {
       },
       watch: (p, cb) => {
         try {
-          const w = watch(p, () => {
-            cb()
-            // ai-settings.json was rewritten (any renderer or externally):
-            // tell every renderer to re-read, mirroring upstream's
-            // ai:set-settings → ai:settings-changed broadcast
-            for (const wc of webContents.getAllWebContents())
-              if (!wc.isDestroyed()) wc.send(IPC_CHANNELS.aiSettingsChanged)
-          })
+          const w = watch(p, () => cb())
           return () => w.close()
         } catch {
           return () => {}
         }
       },
+    },
+    // ai-host 原生 settings-changed 推送（watch 驱动，覆盖本地+外部写）——
+    // 各 app 的 fs 缝隙不再自行广播（R30 挂账销账）
+    broadcast: (channel) => {
+      for (const wc of webContents.getAllWebContents())
+        if (!wc.isDestroyed()) wc.send(channel)
     },
     chaoffice: {
       apiKey: () => chaofficeApiKey(),

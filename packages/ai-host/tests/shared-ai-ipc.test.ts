@@ -30,6 +30,11 @@ const realFs: FileSourceFs = {
     const { writeFile } = await import('node:fs/promises')
     await writeFile(p, contents, 'utf8')
   },
+  watch: (p, cb) => {
+    const { watch } = require('node:fs') as typeof import('node:fs')
+    const w = watch(p, () => cb())
+    return () => w.close()
+  },
 }
 
 /** the incident-shaped office file: a custom profile at the model proxy with a
@@ -80,6 +85,8 @@ function makeRegistrar(root: string, home: string, officeSettings: unknown) {
   const handlers = new Map<string, (event: unknown, ...args: unknown[]) => unknown>()
   const officeFile = join(root, 'ai-settings.json')
   writeFileSync(officeFile, JSON.stringify(officeSettings))
+  /** channels pushed by the native settings-changed notification */
+  const broadcasts: string[] = []
   const runtime = registerSharedAiIpc({
     ipcMain: {
       handle: (channel, listener) => {
@@ -89,6 +96,7 @@ function makeRegistrar(root: string, home: string, officeSettings: unknown) {
     settingsPath: officeFile,
     fs: realFs,
     dshHome: home,
+    broadcast: (channel) => broadcasts.push(channel),
     chaoffice: {
       apiKey: () => '',
       hasAuth: () => false,
@@ -98,7 +106,7 @@ function makeRegistrar(root: string, home: string, officeSettings: unknown) {
     translate: (key, params) =>
       params && typeof params.provider === 'string' ? `${key}:${params.provider}` : key,
   })
-  return { runtime, handlers }
+  return { runtime, handlers, broadcasts }
 }
 
 describe('registerSharedAiIpc × harness 自动识别', () => {
@@ -234,5 +242,18 @@ describe('getSharedAiRuntime (aggregate fallback mirror)', () => {
     const second = makeRegistrar(tempRoot(), makeHarnessHome(tempRoot()), OFFICE_SETTINGS)
     expect(getSharedAiRuntime()).toBe(second.runtime)
     expect(getSharedAiRuntime()).not.toBe(first.runtime)
+  })
+})
+
+describe('原生 settings-changed 推送（R30 挂账）', () => {
+  it('ai:set-settings 落盘后经 watch 单点广播一次', async () => {
+    const root = tempRoot()
+    const { handlers, broadcasts } = makeRegistrar(root, join(root, 'unused-home'), OFFICE_SETTINGS)
+    const view = (await handlers.get('ai:get-settings')!(null)) as { version: number }
+    broadcasts.length = 0
+    await handlers.get('ai:set-settings')!(null, view)
+    // atomic write → fs watch 事件异步触发；给事件循环两拍
+    await new Promise((r) => setTimeout(r, 120))
+    expect(broadcasts).toEqual(['ai:settings-changed'])
   })
 })
