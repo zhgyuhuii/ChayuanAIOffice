@@ -1,5 +1,7 @@
 export { AiPanelSideButton } from './AiPanelSideButton'
 export { FilesPane, FilesEdgeTab, type FilesPaneProps } from './files-pane/FilesPane'
+export { tFilesPane } from './files-pane/strings'
+export type { FilesPaneApi } from './files-pane/types'
 export { AiComposer } from './AiComposer'
 export { AiQueueStrip } from './AiQueueStrip'
 export { useChatRunQueue, type ChatRunQueue, type QueuedChatMessage } from './chat-run-queue'

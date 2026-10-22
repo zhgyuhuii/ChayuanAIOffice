@@ -5461,6 +5461,18 @@ export function App({
   // adapted: upstream's `continueChat` keyed on the legacy single-conversation
   // chatContinuesRef, which this fork's conversation pool replaced — the pool
   // keeps the session's conversation via sessionId, so nothing to flag here.
+  /** FilesPane 树内打开：按路径重开为本 tab 会话（workbook:reopen 已接通） */
+  async function routeOpenPath(path: string): Promise<void> {
+    try {
+      const opened = await window.desktopApi.reopenWorkbook(path)
+      if (!opened) return
+      await openLazyWorkbook(opened)
+      setMessage(opened.emptyCsv ? '' : t('appOpened', { name: opened.name }))
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : t('appOpenFailed'))
+    }
+  }
+
   async function openLazyWorkbook(
     opened: WorkbookFile,
     opts?: { continueChat?: boolean; onInitialRangeLoaded?: () => void },
@@ -6504,6 +6516,8 @@ export function App({
         />
       ))}
 <ExcelShell
+        workbookPath={workbookFile?.path ?? null}
+        onOpenTreePath={(path) => void routeOpenPath(path)}
         aiSettings={aiSettings}
         onAiSettingsRefresh={async () => {
           setAiSettingsState(await window.desktopApi.getAiSettings())

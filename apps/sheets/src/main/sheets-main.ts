@@ -2988,6 +2988,34 @@ export function registerSheetsIpc(): void {
     return result
   }
 
+  // LOCAL(#14 附带缺陷修复): workbook:reopen 通道自 desktop-api 暴露以来从未有
+  // main 侧 handler——univer-sync 崩溃恢复的「重开工作簿」路径一直是死链。按
+  // openSelectedWorkbook 的同一管线按路径开簿（无对话框、无 queued 消费）。
+  ipcMain.handle(IPC_CHANNELS.reopenWorkbook, async (event, path: unknown) => {
+    if (typeof path !== 'string' || !path || !existsSync(path)) return null
+    const entry = sessionFor(event)
+    const prepared = await prepareWorkbookForOpen(
+      entry.client,
+      path,
+      event.sender,
+      dialogParent(event),
+    )
+    if (!prepared) return null
+    if (event.sender.isDestroyed()) {
+      if (prepared.importTempDir !== undefined) {
+        await cleanupImportTempDirectory(app.getPath('temp'), prepared.importTempDir)
+      }
+      return null
+    }
+    return openWorkbookSession(entry.client, prepared.openPath, entry.sessions, {
+      csvImport: prepared.csvImport,
+      csvSourcePath: prepared.csvSourcePath,
+      emptyCsv: prepared.emptyCsv,
+      importTempDir: prepared.importTempDir,
+      restoreTarget: prepared.restoreTarget,
+    })
+  })
+
   ipcMain.handle(IPC_CHANNELS.selectWorkbook, async (event) => {
     try {
       return await openSelectedWorkbook(event)
