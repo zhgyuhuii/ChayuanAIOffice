@@ -229,6 +229,7 @@ function AiConversationBody({
         role,
         text,
         ...(interrupted ? { interrupted: true } : {}),
+        ...(usage ? { usage } : {}),
         ...(tools && tools.length > 0
           ? {
               tools: tools.map((tool) => ({

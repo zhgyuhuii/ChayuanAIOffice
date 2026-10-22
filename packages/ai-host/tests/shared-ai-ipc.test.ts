@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync, writeFileSync, mkdirSync } from 'node:fs'
+import { mkdtempSync, rmSync, watch as fsWatch, writeFileSync, mkdirSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest'
@@ -31,8 +31,7 @@ const realFs: FileSourceFs = {
     await writeFile(p, contents, 'utf8')
   },
   watch: (p, cb) => {
-    const { watch } = require('node:fs') as typeof import('node:fs')
-    const w = watch(p, () => cb())
+    const w = fsWatch(p, () => cb())
     return () => w.close()
   },
 }

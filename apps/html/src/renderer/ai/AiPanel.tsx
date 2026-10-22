@@ -603,6 +603,7 @@ function AiConversationBody({
         role,
         text,
         ...(interrupted ? { interrupted: true } : {}),
+        ...(usage ? { usage } : {}),
         ...(tools && tools.length > 0 ? { tools } : {}),
         ...(attachments && attachments.length > 0 ? { attachments } : {}),
         ...(scope ? { scope } : {}),

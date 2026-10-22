@@ -289,8 +289,6 @@ function ToolSymbol({ symbol }: { readonly symbol: string }): React.JSX.Element 
 interface ExcelShellProps {
   /** open document path (FilesPane highlights + reveals it in the tree) */
   readonly workbookPath: string | null
-  /** FilesPane tree: open a file from the tree in this editor's tab */
-  readonly onOpenTreePath: (path: string) => void
   aiSettings?: AiSettingsV2 | null | undefined
   onAiSettingsRefresh?: (() => void | Promise<void>) | undefined
   readonly prompt: string
@@ -671,7 +669,6 @@ export function ExcelShell({
   onFillSeries,
   onGetFillSeriesContext,
   workbookPath,
-  onOpenTreePath,
 }: ExcelShellProps): React.JSX.Element {
   const { t, lang } = useI18n()
   // LOCAL(R24 挂账销账): FilesPane-in-sheets——edge tab 唤出文件树浮层（不触网格布局）
