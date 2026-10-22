@@ -63,7 +63,6 @@ import {
 } from './paste-special'
 import { COLOR_SCHEMES, FONT_SCHEMES, THEME_PRESETS } from './themes'
 import { useI18n, type StringKey } from './i18n/locale'
-import { FilesEdgeTab, FilesPane, tFilesPane as filesPaneStrings, type FilesPaneApi } from '@chaoffice/ui'
 import { NameManagerDialog, type DefinedNameAction, type DefinedNameRow } from './NameManagerDialog'
 import {
   NUMBER_FORMAT_LABEL,
@@ -287,8 +286,6 @@ function ToolSymbol({ symbol }: { readonly symbol: string }): React.JSX.Element 
 }
 
 interface ExcelShellProps {
-  /** open document path (FilesPane highlights + reveals it in the tree) */
-  readonly workbookPath: string | null
   aiSettings?: AiSettingsV2 | null | undefined
   onAiSettingsRefresh?: (() => void | Promise<void>) | undefined
   readonly prompt: string
@@ -668,11 +665,8 @@ export function ExcelShell({
   onGoalSeek,
   onFillSeries,
   onGetFillSeriesContext,
-  workbookPath,
 }: ExcelShellProps): React.JSX.Element {
   const { t, lang } = useI18n()
-  // LOCAL(R24 挂账销账): FilesPane-in-sheets——edge tab 唤出文件树浮层（不触网格布局）
-  const [filesPaneOpen, setFilesPaneOpen] = useState(false)
   // tab row clips instead of wrapping when narrow; wheel + edge arrows page it
   const tabStrip = useTabStripOverflow()
   const [activeTab, setActiveTab] = useState<RibbonTab>('Home')
@@ -1136,19 +1130,6 @@ export function ExcelShell({
       inert={openingWorkbook}
       aria-busy={openingWorkbook}
     >
-      {/* LOCAL(R24 挂账销账): FilesPane-in-sheets——左缘 tab 唤出文件树浮层。
-          覆盖层不触网格/DockShell 布局（沿 R24「本地布局胜」裁定实质） */}
-      <FilesEdgeTab lang={lang} onOpen={() => setFilesPaneOpen(true)} />
-      {filesPaneOpen && (
-        <div className="files-pane-overlay" role="dialog" aria-label={filesPaneStrings(lang, 'title')}>
-          <FilesPane
-            api={(window as Window & { filesPaneApi?: FilesPaneApi }).filesPaneApi as FilesPaneApi}
-            lang={lang}
-            currentPath={workbookPath}
-            onClose={() => setFilesPaneOpen(false)}
-          />
-        </div>
-      )}
       {/* AI panel docks around the whole editor column (ribbon included) in any
           of 4 layouts (shared DockShell) — a left/right dock runs level with the
           ribbon's top edge instead of below it */}

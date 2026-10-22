@@ -309,38 +309,3 @@
   background: var(--bg-hover);
 }
 
-/* FilesPane-in-sheets: 左缘 tab + 浮层容器（编辑器嵌入形态；md/html/pdf 未挂载） */
-.files-edge-tab {
-  position: fixed;
-  left: 0;
-  top: 96px;
-  z-index: 40;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: center;
-  padding: 8px 4px;
-  border: 1px solid var(--border);
-  border-left: none;
-  border-radius: 0 8px 8px 0;
-  background: var(--surface);
-  color: var(--text);
-  cursor: pointer;
-  font: inherit;
-  font-size: 11px;
-}
-.files-edge-tab:hover {
-  background: var(--hover);
-}
-.files-pane-overlay {
-  position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  z-index: 60;
-  width: min(360px, 40vw);
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  box-shadow: 8px 0 24px rgba(0, 0, 0, 0.18);
-  overflow: auto;
-}

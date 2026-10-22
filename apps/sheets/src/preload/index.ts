@@ -1,4 +1,3 @@
-import { installFilesPaneBridge } from '@chaoffice/electron-utils/files-pane-bridge'
 import type { AiPanelPrefs } from '@chaoffice/ui'
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 
@@ -4183,6 +4182,3 @@ contextBridge.exposeInMainWorld('chaOfficeKb', {
   getSource: () => ipcRenderer.invoke(KB_CHANNELS.getSource),
   setOrigin: (origin: string | null) => ipcRenderer.invoke(KB_CHANNELS.setOrigin, origin),
 })
-
-// LOCAL(R24 挂账销账): FilesPane-in-sheets——编辑器侧文件树窗格桥（与 md/html/pdf 同款）
-installFilesPaneBridge()

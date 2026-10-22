@@ -923,4 +923,5 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 
 | 日期 | 基点 commit | 弃用项 | 理由 | 同步检查动作 |
 |---|---|---|---|---|
+| 2026-10-22 | b7b000bc5（实现）→ 撤除提交 | sheets 编辑器内 FilesPane/FilesEdgeTab 文件树浮层（#14 FilesPane-in-sheets） | **用户明令（2026-10-22）**：表格编辑器左侧「文件」按钮展开的文件树面板不需要——主页左侧已有同一棵树结构，编辑器内重复。撤除 sheets 侧全部接线（ExcelShell UI/preload 桥/css），保留 workbook:reopen main handler（独立死链修复，供 univer-sync 崩溃恢复）。此裁定恢复并最终确认了 R24「ExcelShell 本地布局胜」原判：编辑器内不再引入文件树入口 | 每轮同步检查：上游若在 sheets 编辑器内原生加文件树入口，先问用户裁定再跟随；FilesPane 组件/桥/ui 导出保留（休眠基建，他端未来可用） |
 | 2026-09-21 | d8201ad0 | 六端「销毁式 newChat」（docs/slides `newChat()`、sheets `handleNewChat`、markdown/html/pdf 内联清空按钮） | 语义被多会话模型替换：关闭 ✕=会话进历史（数据保留），「+」=无破坏新开 tab；上游的清空式 newChat 与「运行中会话可后台续跑」互斥 | 每轮同步检查上游是否把 newChat 接进新代码；若上游原生实现多会话/会话列表，触发收敛评估（取上游、删本地会话池）；单会话清空语义不回收 |

@@ -6504,7 +6504,6 @@ export function App({
         />
       ))}
 <ExcelShell
-        workbookPath={workbookFile?.path ?? null}
         aiSettings={aiSettings}
         onAiSettingsRefresh={async () => {
           setAiSettingsState(await window.desktopApi.getAiSettings())
