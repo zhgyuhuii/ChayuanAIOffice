@@ -440,8 +440,9 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     system: string,
     user: string,
   ): Promise<AiChatResponse> => {
-    const call = await resolveForRun(selection)
+    let call: ResolvedModelCall | null = null
     try {
+      call = await resolveForRun(selection)
       // one-shot utilities (titles, summaries) need text out; a non-chat
       // current model would just bounce off the gateway's chat endpoint
       const kind = inferModelType(call.model)
@@ -458,7 +459,9 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
       }
       return await chatResolved(call, system, user)
     } catch (err) {
-      noteSessionKeyFailure(call, err)
+      // resolve-phase failures (no model / not logged in) keep their friendly
+      // shape; only a wire failure on the session key drops into recovery
+      if (call) noteSessionKeyFailure(call, err)
       return { ok: false, error: err instanceof Error ? err.message : String(err) }
     }
   }
