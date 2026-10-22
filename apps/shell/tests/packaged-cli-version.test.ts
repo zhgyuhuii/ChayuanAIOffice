@@ -64,6 +64,7 @@ function loadConfig(opts: {
           },
         }
       }
+      if (id.startsWith('./')) return require(resolve(import.meta.dirname, '..', id))
       return require(id)
     },
   })
