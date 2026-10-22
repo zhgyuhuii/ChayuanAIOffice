@@ -354,6 +354,8 @@ import {
   statPathEntries,
 } from './recent-files'
 import { isSameFile, pdfSaveAsTarget, isValidRawRenameName } from './rename-validation'
+import { renameStaysInApp } from './app-routing'
+import { isMoveSource, isUserVisibleFile, type FileTargetSources } from './file-targets'
 import {
   FolderWatcher,
   createFolder,
@@ -912,6 +914,7 @@ const tMain = createI18n({
     filterPdf: 'PDF 文档',
     errBadArgs: '参数无效',
     errBadName: '文件名不合法',
+    errBadExtension: '重命名不能改变文件类型',
     errMissing: '文件不存在',
     errExists: '同名文件已存在',
     errRenameFailed: '重命名失败',
@@ -1049,6 +1052,7 @@ const tMain = createI18n({
     filterPdf: 'PDF Documents',
     errBadArgs: 'Invalid arguments',
     errBadName: 'Invalid file name',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: 'File not found',
     errExists: 'A file with that name already exists',
     errRenameFailed: 'Rename failed',
@@ -1199,6 +1203,7 @@ const tMain = createI18n({
     filterPdf: 'Tài liệu PDF',
     errBadArgs: 'Đối số không hợp lệ',
     errBadName: 'Tên tệp không hợp lệ',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: 'Không tìm thấy tệp',
     errExists: 'Một tệp có tên đó đã tồn tại',
     errRenameFailed: 'Đổi tên thất bại',
@@ -1346,6 +1351,7 @@ const tMain = createI18n({
     filterPdf: 'PDF ドキュメント',
     errBadArgs: '引数が無効です',
     errBadName: 'ファイル名が無効です',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: 'ファイルが見つかりません',
     errExists: '同名のファイルが既に存在します',
     errRenameFailed: '名前の変更に失敗しました',
@@ -1496,6 +1502,7 @@ const tMain = createI18n({
     filterPdf: 'PDF 문서',
     errBadArgs: '잘못된 인수입니다',
     errBadName: '파일 이름이 잘못되었습니다',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: '파일을 찾을 수 없습니다',
     errExists: '같은 이름의 파일이 이미 있습니다',
     errRenameFailed: '이름 바꾸기에 실패했습니다',
@@ -1645,6 +1652,7 @@ const tMain = createI18n({
     filterPdf: 'Documents PDF',
     errBadArgs: 'Arguments non valides',
     errBadName: 'Nom de fichier non valide',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: 'Fichier introuvable',
     errExists: 'Un fichier du même nom existe déjà',
     errRenameFailed: 'Échec du renommage',
@@ -1796,6 +1804,7 @@ const tMain = createI18n({
     filterPdf: 'PDF-Dokumente',
     errBadArgs: 'Ungültige Argumente',
     errBadName: 'Ungültiger Dateiname',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: 'Datei nicht gefunden',
     errExists: 'Eine Datei mit diesem Namen existiert bereits',
     errRenameFailed: 'Umbenennen fehlgeschlagen',
@@ -1947,6 +1956,7 @@ const tMain = createI18n({
     filterPdf: 'Documentos PDF',
     errBadArgs: 'Argumentos no válidos',
     errBadName: 'Nombre de archivo no válido',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: 'Archivo no encontrado',
     errExists: 'Ya existe un archivo con ese nombre',
     errRenameFailed: 'No se pudo cambiar el nombre',
@@ -2098,6 +2108,7 @@ const tMain = createI18n({
     filterPdf: 'เอกสาร PDF',
     errBadArgs: 'อาร์กิวเมนต์ไม่ถูกต้อง',
     errBadName: 'ชื่อไฟล์ไม่ถูกต้อง',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: 'ไม่พบไฟล์',
     errExists: 'มีไฟล์ชื่อเดียวกันอยู่แล้ว',
     errRenameFailed: 'เปลี่ยนชื่อไม่สำเร็จ',
@@ -2244,6 +2255,7 @@ const tMain = createI18n({
     filterPdf: 'Dokumen PDF',
     errBadArgs: 'Argumen tidak valid',
     errBadName: 'Nama file tidak valid',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: 'File tidak ditemukan',
     errExists: 'File dengan nama tersebut sudah ada',
     errRenameFailed: 'Gagal mengganti nama',
@@ -2395,6 +2407,7 @@ const tMain = createI18n({
     filterPdf: 'Документы PDF',
     errBadArgs: 'Недопустимые аргументы',
     errBadName: 'Недопустимое имя файла',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: 'Файл не найден',
     errExists: 'Файл с таким именем уже существует',
     errRenameFailed: 'Не удалось переименовать',
@@ -2546,6 +2559,7 @@ const tMain = createI18n({
     filterPdf: 'مستندات PDF',
     errBadArgs: 'وسيطات غير صالحة',
     errBadName: 'اسم ملف غير صالح',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: 'الملف غير موجود',
     errExists: 'يوجد ملف بالاسم نفسه بالفعل',
     errRenameFailed: 'فشلت إعادة التسمية',
@@ -2692,6 +2706,7 @@ const tMain = createI18n({
     filterPdf: 'Documentos PDF',
     errBadArgs: 'Argumentos inválidos',
     errBadName: 'Nome de arquivo inválido',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: 'Arquivo não encontrado',
     errExists: 'Já existe um arquivo com esse nome',
     errRenameFailed: 'Falha ao renomear',
@@ -2843,6 +2858,7 @@ const tMain = createI18n({
     filterPdf: 'Documenti PDF',
     errBadArgs: 'Argomenti non validi',
     errBadName: 'Nome file non valido',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: 'File non trovato',
     errExists: 'Esiste già un file con questo nome',
     errRenameFailed: 'Impossibile rinominare',
@@ -2994,6 +3010,7 @@ const tMain = createI18n({
     filterPdf: 'Dokumenty PDF',
     errBadArgs: 'Nieprawidłowe argumenty',
     errBadName: 'Nieprawidłowa nazwa pliku',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: 'Nie znaleziono pliku',
     errExists: 'Plik o tej nazwie już istnieje',
     errRenameFailed: 'Nie udało się zmienić nazwy',
@@ -3145,6 +3162,7 @@ const tMain = createI18n({
     filterPdf: 'Dokumenty PDF',
     errBadArgs: 'Neplatné argumenty',
     errBadName: 'Neplatný název souboru',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: 'Soubor nebyl nalezen',
     errExists: 'Soubor s tímto názvem už existuje',
     errRenameFailed: 'Přejmenování se nezdařilo',
@@ -3291,6 +3309,7 @@ const tMain = createI18n({
     filterPdf: 'PDF-documenten',
     errBadArgs: 'Ongeldige argumenten',
     errBadName: 'Ongeldige bestandsnaam',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: 'Bestand niet gevonden',
     errExists: 'Er bestaat al een bestand met die naam',
     errRenameFailed: 'Naam wijzigen mislukt',
@@ -3442,6 +3461,7 @@ const tMain = createI18n({
     filterPdf: 'Dokumen PDF',
     errBadArgs: 'Argumen tidak sah',
     errBadName: 'Nama fail tidak sah',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: 'Fail tidak ditemui',
     errExists: 'Fail dengan nama yang sama sudah wujud',
     errRenameFailed: 'Gagal menamakan semula',
@@ -3592,6 +3612,7 @@ const tMain = createI18n({
     filterPdf: 'מסמכי PDF',
     errBadArgs: 'ארגומנטים לא חוקיים',
     errBadName: 'שם קובץ לא חוקי',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: 'הקובץ לא נמצא',
     errExists: 'כבר קיים קובץ באותו שם',
     errRenameFailed: 'שינוי השם נכשל',
@@ -3737,6 +3758,7 @@ const tMain = createI18n({
     filterPdf: 'PDF दस्तावेज़',
     errBadArgs: 'अमान्य आर्ग्युमेंट',
     errBadName: 'अमान्य फ़ाइल नाम',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: 'फ़ाइल नहीं मिली',
     errExists: 'इस नाम की फ़ाइल पहले से मौजूद है',
     errRenameFailed: 'नाम बदलने में विफल',
@@ -3888,6 +3910,7 @@ const tMain = createI18n({
     filterPdf: 'PDF 文件',
     errBadArgs: '參數無效',
     errBadName: '檔案名稱不合法',
+    errBadExtension: 'Renaming cannot change the file type',
     errMissing: '檔案不存在',
     errExists: '同名檔案已存在',
     errRenameFailed: '重新命名失敗',
@@ -3984,6 +4007,20 @@ function extraFolderRoots(): string[] {
 
 function folderRootPaths(): string[] {
   return [defaultSaveDir(), ...extraFolderRoots()]
+}
+
+function fileTargetSources(): FileTargetSources {
+  return {
+    insideAnyRoot: (p) => insideAnyRoot(p),
+    trackedPaths: [
+      ...readRecentFiles(),
+      ...readStarredFiles(),
+      ...projectFilePaths(),
+      ...readSlidesRecentFiles(),
+      ...(tabManager?.openFilePaths() ?? []),
+      ...detachedFilePaths(),
+    ],
+  }
 }
 
 function insideAnyRoot(path: string): boolean {
@@ -5848,6 +5885,11 @@ function registerHomeIpc(): void {
         }
       }
 
+      if (!renameStaysInApp(path, name))
+        return { ok: false, error: tm('errBadExtension') }
+      // #1642/#1848: 只允许改 UI 展示得到的文件（根内或 tracked 列表）
+      if (!isUserVisibleFile(path, fileTargetSources()))
+        return { ok: false, error: tm('errBadArgs') }
       if (!existsSync(path)) return { ok: false, error: tm('errMissing') }
       const target = join(dirname(path), name)
       if (target === path) return { ok: true, path }
@@ -5870,11 +5912,18 @@ function registerHomeIpc(): void {
     // R18C 契约（home-duplicate-atomic）：handler 委托共享 duplicateFile——
     // 原子复制（tab-duplicate.ts atomicCopyFile）+ 最近列表 + 错误弹窗全在共享路径
     if (typeof path !== 'string' || !existsSync(path)) return
+    // #1642/#1848: UI 展示得到的文件才可复制
+    if (!isUserVisibleFile(path, fileTargetSources())) return
     await duplicateFile(path)
   })
 
   ipcMain.handle(HOME_CHANNELS.deleteFiles, async (_event, paths: unknown) => {
-    const list = stringPaths(paths)
+    const targets = fileTargetSources()
+    // #1642/#1848: 本地路径仅限 UI 展示得到的文件；远端 URI 走自身校验流。
+    // 缺失路径放行——幽灵 recent/star 条目仍要清理
+    const list = stringPaths(paths).filter(
+      (p) => isRemoteUri(p) || isUserVisibleFile(p, targets),
+    )
     const failed = new Set<string>()
     for (const p of list) {
       if (isRemoteUri(p)) {
@@ -6221,8 +6270,10 @@ function registerHomeIpc(): void {
           return false
         }
       }
-      // files may come from anywhere (the Recent list); folders only from inside the tree, never a root itself
-      const sources = list.filter((p) => !isDir(p) || (insideAnyRoot(p) && !isAnyRoot(p)))
+      // files may come from anywhere the UI can show (the Recent list); folders only from inside the tree, never a root itself
+      // #1642/#1848: the file half is gated on tracked/visible sources, not "anywhere"
+      const moveSources = { ...fileTargetSources(), isDirectory: isDir, isAnyRoot }
+      const sources = list.filter((p) => isMoveSource(p, moveSources))
       const dirFiles = new Map(sources.filter(isDir).map((p) => [p, trackedFilesUnder(p)]))
       // 'replace' must not destroy data: the displaced target goes to the trash,
       // and everything keyed on its path (recents, stars, chat history) leaves
