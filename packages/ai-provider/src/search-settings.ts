@@ -57,6 +57,14 @@ export const AI_SEARCH_PROVIDERS: AiSearchProviderMeta[] = [
     needsKey: false,
   },
   {
+    id: 'keenable',
+    // keyless like Parallel; a key only raises the rate limits (KEENABLE_API_KEY)
+    label: 'Keenable',
+    keyPlaceholder: 'KEENABLE_API_KEY (optional)',
+    imageSearch: false,
+    needsKey: false,
+  },
+  {
     id: 'duckduckgo',
     label: 'DuckDuckGo',
     keyPlaceholder: '',

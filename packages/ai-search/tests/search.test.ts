@@ -11,6 +11,7 @@ afterEach(() => {
   globalThis.fetch = realFetch
   delete process.env.SERPER_API_KEY
   delete process.env.TAVILY_API_KEY
+  delete process.env.KEENABLE_API_KEY
 })
 
 function mockFetch(
@@ -286,6 +287,65 @@ describe('webSearch (Parallel)', () => {
     mockFetch((url) => (url.includes('duckduckgo') ? { ok: true, json: [] } : { ok: false, json: {} }))
     const r = await webSearch('no key', 3)
     expect(r.method).toBe('duckduckgo')
+  })
+})
+
+// adapted: 上游 #2124 Keenable 用例按本地 webSearch(query,max,_useChaOffice,keys,prefer)
+// 函数 API 与 tiers 结构改编（无 useGsk 对象参数）。
+describe('webSearch (Keenable)', () => {
+  it('calls the free endpoint with the app title when selected without a key', async () => {
+    const urls: string[] = []
+    let init: RequestInit | undefined
+    mockFetch((url, i) => {
+      urls.push(url)
+      init = i
+      return {
+        ok: true,
+        json: {
+          results: [
+            { title: 'A', url: 'https://a.com', description: '', snippet: 'page text '.repeat(80) },
+            { title: '', url: 'https://b.com', description: '', snippet: 'short' },
+            { title: 'C', url: 'javascript:alert(1)', snippet: 'dropped' },
+          ],
+        },
+      }
+    })
+    const r = await webSearch('q', 5, false, { keenable: '' }, 'keenable')
+    expect(urls).toEqual(['https://api.keenable.ai/v1/search/public'])
+    expect(init?.headers).toMatchObject({
+      'X-Keenable-Title': 'ChaAI Office',
+    })
+    expect(JSON.parse(String(init?.body))).toEqual({ query: 'q', max_results: 5 })
+    expect(r.method).toBe('keenable')
+    expect(r.results).toHaveLength(2)
+    expect(r.results[0]?.snippet).toHaveLength(500)
+    expect(r.results[1]).toEqual({ title: 'https://b.com', url: 'https://b.com', snippet: 'short' })
+  })
+
+  it('sends the key to the keyed endpoint when one is set', async () => {
+    const urls: string[] = []
+    const keys: string[] = []
+    mockFetch((url, init) => {
+      urls.push(url)
+      keys.push(String((init?.headers as Record<string, string>)['X-API-Key']))
+      return { ok: true, json: { results: [{ title: 'A', url: 'https://a.com', snippet: 's' }] } }
+    })
+    const r = await webSearch('q', 3, false, { keenable: 'kn-1' }, 'keenable')
+    expect(r.method).toBe('keenable')
+    expect(urls).toEqual(['https://api.keenable.ai/v1/search'])
+    expect(keys).toEqual(['kn-1'])
+  })
+
+  it('stays out of the default chain without a key', async () => {
+    mockFetch((url) => (url.includes('duckduckgo') ? { ok: true, json: [] } : { ok: false, json: {} }))
+    const r = await webSearch('q', 3)
+    expect(r.method).toBe('duckduckgo')
+  })
+
+  it('a keenable failure falls through to the next backend', async () => {
+    mockFetch(() => ({ ok: false, json: {} }))
+    const r = await webSearch('q', 2, false, { keenable: '' }, 'keenable')
+    expect(r.method).not.toBe('keenable')
   })
 })
 

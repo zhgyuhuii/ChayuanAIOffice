@@ -328,7 +328,7 @@ export interface AiMediaSettings {
   provider?: AiMediaProviderId | undefined
 }
 
-/** web/image search backends; Parallel supports both a user key and free keyless search */
+/** web/image search backends; Parallel and Keenable take a user key or run free and keyless */
 export type AiSearchProviderId =
   | 'genspark'
   | 'serper'
@@ -337,6 +337,7 @@ export type AiSearchProviderId =
   | 'parallel'
   | 'exa'
   | 'firecrawl'
+  | 'keenable'
   | 'linkup'
   | 'searxng'
   | 'duckduckgo'

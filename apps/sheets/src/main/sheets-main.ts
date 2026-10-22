@@ -3965,6 +3965,8 @@ export function registerSheetsAiIpc(): void {
           exa: searchProviders?.exa?.apiKey || process.env.EXA_API_KEY || undefined,
           firecrawl:
             searchProviders?.firecrawl?.apiKey || process.env.FIRECRAWL_API_KEY || undefined,
+          keenable:
+            searchProviders?.keenable?.apiKey || process.env.KEENABLE_API_KEY || undefined,
           searxngBaseUrl: searchProviders?.searxng?.apiKey || undefined,
         },
         searchSettings?.search?.provider,
