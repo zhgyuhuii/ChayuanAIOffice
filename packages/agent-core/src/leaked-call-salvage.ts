@@ -25,7 +25,7 @@ export function salvageLeakedToolCalls(
   // paired blocks first; then degenerate emissions where the opening
   // <tool_call> was swallowed — the JSON sits at the end of the content
   const blocks = [
-    ...[...text.matchAll(/<tool_call>\s*([\s\S]*?)\s*<\/tool_call>/g)].map((m) => m[1]),
+    ...[...text.matchAll(/<tool_call>\s*([\s\S]*?)\s*<\/tool_call>/g)].map((m) => m[1] ?? ''),
   ]
   if (blocks.length === 0 && text.includes('</tool_call>')) {
     const head = text.slice(0, text.lastIndexOf('</tool_call>'))

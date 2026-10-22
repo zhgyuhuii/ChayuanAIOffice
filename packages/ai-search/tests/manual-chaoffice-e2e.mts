@@ -1,4 +1,4 @@
-// Manual e2e verification script (calls ChatOffice for real, requires login; not in CI): npx tsx tests/manual-gsk-e2e.mts
+// Manual e2e verification script (calls ChaAI Office cloud for real, requires login; not in CI): npx tsx tests/manual-gsk-e2e.mts
 import { webSearch, imageSearch, chaofficeGenerateImage } from '../src/index'
 
 const w = await webSearch('PowerPoint design trends 2026', 3)

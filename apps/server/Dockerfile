@@ -1,4 +1,4 @@
-# ChatOffice BFF + Web — single artifact for the SaaS and private deployments
+# ChaAI Office BFF + Web — single artifact for the SaaS and private deployments
 # alike (plan v2.1, decision #9). One image serves the API, the web host and
 # the five editor bundles on one port.
 #

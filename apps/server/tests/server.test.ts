@@ -631,7 +631,10 @@ describe('create-document (web/dsh form)', () => {
 
 describe('create-document image embedding', () => {
   it('markdown images become real docx media parts', async () => {
-    const pngB64 = require('node:fs').readFileSync('/tmp/spring-festival.png').toString('base64')
+    // self-generated fixture: a 1×1 red PNG, so the test never depends on
+    // files hand-placed in /tmp
+    const pngB64 =
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
     const { app } = buildServer({ area: tempArea() })
     const res = await app.inject({
       method: 'POST',
@@ -691,7 +694,24 @@ describe('home-chat session persistence (web/dsh form)', () => {
 
 describe('attachment-text extraction (web/dsh form)', () => {
   it('parses a real docx through the same engine the desktop uses', async () => {
-    const docxB64 = require('node:fs').readFileSync('/tmp/happy-new-year.docx').toString('base64')
+    // self-generated fixture: engine-built blank docx with the two probe
+    // strings injected, so the test never depends on files in /tmp
+    const { buildBlankDocx } = await import('@chaoffice/docx-engine')
+    const JSZipMod = await import('jszip')
+    const blank = await buildBlankDocx()
+    const zip = await JSZipMod.default.loadAsync(blank)
+    const docXml = await zip.file('word/document.xml')!.async('string')
+    zip.file(
+      'word/document.xml',
+      docXml.replace(
+        '<w:p/>',
+        '<w:p><w:r><w:t>欢乐中国年</w:t></w:r></w:p><w:p><w:r><w:t>窗上贴着中国结</w:t></w:r></w:p>',
+      ),
+    )
+    const bytes = await zip.generateAsync({ type: 'uint8array' })
+    // Buffer, not Uint8Array#toString: the typed-array method ignores the
+    // encoding argument and emits decimal numbers
+    const docxB64 = Buffer.from(bytes).toString('base64')
     const { app } = buildServer({ area: tempArea() })
     const res = await app.inject({
       method: 'POST',

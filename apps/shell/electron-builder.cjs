@@ -49,6 +49,7 @@ function hasRpmbuild() {
 }
 const { copyFileSync, existsSync, rmSync, writeFileSync, readFileSync } = require('node:fs')
 const { join } = require('node:path')
+const { stageCrossSidecar, restoreHostSidecar } = require('./build/linux-sidecar-staging.cjs')
 
 function normalizeHttpsBaseUrl(name, value) {
   if (!value || !value.trim()) return null
@@ -826,16 +827,9 @@ const config = {
           throw new Error(`linux sidecar missing: ${staged} (cargo build --release first on this host)`)
         }
       } else {
-        const cross = join(
-          __dirname,
-          `../sheets/native/xlsx-engine/target/${triple}/release/xlsx-sidecar`,
-        )
-        if (!existsSync(cross)) {
-          throw new Error(
-            `linux sidecar missing for ${triple}: ${cross} (cargo zigbuild --release --target ${triple}.2.28 first)`,
-          )
-        }
-        copyFileSync(cross, staged)
+        // 交叉产物就位 + 宿主二进制备份；afterPack 还原（否则 linux-x64 打包
+        // 会把宿主 dev/test 用的二进制永久换成外平台 ELF）
+        stageCrossSidecar(__dirname, triple)
       }
     }
     writeLicenseKeyMaterial()
@@ -852,6 +846,10 @@ const config = {
   },
   dmg: {
     sign: true,
+  },
+  afterPack: async (context) => {
+    // 交叉打包结束即还原宿主二进制（见 beforePack 内 stageCrossSidecar 注释）
+    if (context.electronPlatformName === 'linux') restoreHostSidecar(__dirname)
   },
   afterAllArtifactBuild: 'build/notarize-dmg.js',
 }

@@ -1,29 +1,30 @@
 import { describe, expect, it } from 'vitest'
-import { AI_PROVIDERS, defaultAiSettings } from '@chaoffice/ai-provider'
+import { defaultAiSettings } from '@chaoffice/ai-provider'
 import {
   aiModelPickerGroups,
   aiModelPickerSelection,
   withAiModelSelection,
 } from '../src/ai-model-picker-options'
 
-const anthropicModels = AI_PROVIDERS.find((m) => m.id === 'anthropic')!.models
-
 describe('aiModelPickerGroups', () => {
   it('lists nothing while signed out with no keys', () => {
     expect(aiModelPickerGroups(defaultAiSettings(), false)).toEqual([])
   })
 
-  it('lists ChaAI Office only when signed in', () => {
-    const ids = aiModelPickerGroups(defaultAiSettings(), true).map((g) => g.id)
-    expect(ids).toEqual(['chaoffice'])
+  it('lists ChaAI Office only when signed in, pickable without a stored model', () => {
+    const groups = aiModelPickerGroups(defaultAiSettings(), true)
+    expect(groups.map((g) => g.id)).toEqual(['chaoffice'])
+    // live-catalog architecture: the vendor catalog is a settings-page concern,
+    // so an empty stored model leaves the group pickable with no rows
+    expect(groups[0]!.models).toEqual([])
   })
 
-  it('adds a vendor once its key is set and puts an off-catalog model first', () => {
+  it('adds a vendor once its key is set and lists only the stored model', () => {
     const settings = defaultAiSettings()
     settings.providers.anthropic = { apiKey: 'k', model: 'claude-next' }
     const groups = aiModelPickerGroups(settings, false)
     expect(groups.map((g) => g.id)).toEqual(['anthropic'])
-    expect(groups[0]!.models).toEqual(['claude-next', ...anthropicModels])
+    expect(groups[0]!.models).toEqual(['claude-next'])
   })
 
   it('needs a base URL for custom endpoints', () => {
@@ -38,18 +39,12 @@ describe('aiModelPickerGroups', () => {
 describe('selection round trip', () => {
   it('switches provider and model in one write and reads back', () => {
     const settings = defaultAiSettings()
-    settings.providers.anthropic = { apiKey: 'k', model: anthropicModels[0]! }
-    const next = withAiModelSelection(settings, {
-      provider: 'anthropic',
-      model: anthropicModels[1]!,
-    })
+    settings.providers.anthropic = { apiKey: 'k', model: 'claude-a' }
+    const next = withAiModelSelection(settings, { provider: 'anthropic', model: 'claude-b' })
     expect(next.provider).toBe('anthropic')
     expect(next.providers.anthropic.apiKey).toBe('k')
-    expect(aiModelPickerSelection(next)).toEqual({
-      provider: 'anthropic',
-      model: anthropicModels[1],
-    })
-    expect(settings.providers.anthropic.model).toBe(anthropicModels[0])
+    expect(aiModelPickerSelection(next)).toEqual({ provider: 'anthropic', model: 'claude-b' })
+    expect(settings.providers.anthropic.model).toBe('claude-a')
   })
 
   it('falls back to ChaAI Office when the stored provider is unusable', () => {

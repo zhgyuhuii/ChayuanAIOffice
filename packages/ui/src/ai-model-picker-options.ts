@@ -25,8 +25,10 @@ export interface AiModelPickerSelection {
 /**
  * Providers the composer chip may switch to: ChaAI Office while signed in, every
  * other vendor once its settings pass the same usability test the chat path
- * applies (`activeProvider`), so picking a row never lands on a 401. A model
- * typed into the settings page that is not in the catalog is listed first.
+ * applies (`activeProvider`), so picking a row never lands on a 401. The
+ * vendor catalog is a settings-page concern (fetched live via discoverModels) —
+ * the picker knows only the model stored in settings and lists it first, so a
+ * typed, off-catalog id stays selectable.
  */
 export function aiModelPickerGroups(
   input: AiSettings,
@@ -69,8 +71,12 @@ export function aiModelPickerGroups(
           ? Boolean(stored || config?.cliPath?.trim())
           : activeProvider({ ...settings, provider: meta.id }) === meta.id
     if (!usable) continue
-    const models = stored && !meta.models.includes(stored) ? [stored, ...meta.models] : meta.models
-    if (models.length === 0 && !meta.needsCliPath) continue
+    const models = stored ? [stored] : []
+    // The signed-in cloud provider and CLI vendors are usable without a stored
+    // model (server-side / binary default), so the group stays pickable empty;
+    // a key vendor with no stored model has nothing to switch to yet.
+    const usableWithoutModel = meta.id === 'chaoffice' || meta.needsCliPath
+    if (models.length === 0 && !usableWithoutModel) continue
     groups.push({ id: meta.id, label: meta.label, models })
   }
   return groups
@@ -79,8 +85,7 @@ export function aiModelPickerGroups(
 export function aiModelPickerSelection(input: AiSettings): AiModelPickerSelection {
   const settings = resolveCustomEndpoints(input)
   const provider = activeProvider(settings)
-  const meta = AI_PROVIDERS.find((m) => m.id === provider)
-  const model = settings.providers?.[provider]?.model?.trim() || meta?.defaultModel || ''
+  const model = settings.providers?.[provider]?.model?.trim() || ''
   if (provider === 'custom' && settings.customEndpoint) {
     return { provider, endpoint: settings.customEndpoint, model }
   }

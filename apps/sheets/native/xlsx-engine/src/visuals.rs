@@ -591,7 +591,7 @@ pub struct CropRect {
 }
 
 /// a:blipFill/a:srcRect — 1/100000 fractions trimmed off each side
-/// (ChatOffice-local model: kept alongside the 0..1 `crop` summary so the
+/// (ChaOffice-local model: kept alongside the 0..1 `crop` summary so the
 /// non-destructive image tools round-trip exact OOXML values).
 #[derive(Clone, Copy, Debug, PartialEq, Serialize)]
 pub struct PictureSrcRect {

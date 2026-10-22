@@ -311,6 +311,16 @@ export const vi = {
   dlgConsBadRef: 'Tham chiếu không hợp lệ: {ref} — sử dụng dạng A1:C5 hoặc Sheet2!A1:C5.',
   dlgConsNeedOneRef: 'Vui lòng thêm ít nhất một tham chiếu nguồn.',
 
+  dlgFnParams: 'Tham số hàm',
+  dlgFnPickRange: 'Chọn một vùng từ bảng tính',
+  dlgFnPickCell: 'Chọn một ô từ bảng tính',
+  dlgFnAddParam: 'Thêm tham số',
+  dlgFnRemoveParam: 'Xóa tham số này',
+  dlgFnResult: 'Kết quả công thức: ',
+  dlgFnNeedRequired: 'Tham số bắt buộc "{name}" đang trống.',
+  dlgRangePickTitle: 'Chọn vùng',
+  dlgRangePickHint: 'Kéo trên các ô, hàng hoặc cột của bảng tính rồi xác nhận',
+
   dlgSubtotalTitle: 'Tính tổng phụ (Subtotal)',
   dlgSubtotalNoFields:
     'Trước tiên hãy chọn dữ liệu nguồn — vùng có dòng tiêu đề và ít nhất một dòng dữ liệu (đã được sắp xếp theo cột phân nhóm) — sau đó mở lại Tính tổng phụ.',
