@@ -3922,10 +3922,24 @@ export function registerSheetsAiIpc(): void {
   // (same source as slides/docs)
   ipcMain.handle('ai:web-search', async (_event, query: unknown, maxResults?: unknown) => {
     try {
+      const searchSettings = await getAiRuntime().readRawSettings().catch(() => null)
+      const searchProviders = searchSettings?.search?.providers as
+        | Record<string, { apiKey?: string } | undefined>
+        | undefined
       return await webSearch(
         z.string().parse(query),
         typeof maxResults === 'number' ? maxResults : 6,
         chaofficeCloudToolsOn(),
+        {
+          serper: searchProviders?.serper?.apiKey || process.env.SERPER_API_KEY || undefined,
+          tavily: searchProviders?.tavily?.apiKey || process.env.TAVILY_API_KEY || undefined,
+          linkup: searchProviders?.linkup?.apiKey || process.env.LINKUP_API_KEY || undefined,
+          exa: searchProviders?.exa?.apiKey || process.env.EXA_API_KEY || undefined,
+          firecrawl:
+            searchProviders?.firecrawl?.apiKey || process.env.FIRECRAWL_API_KEY || undefined,
+          searxngBaseUrl: searchProviders?.searxng?.apiKey || undefined,
+        },
+        searchSettings?.search?.provider,
       )
     } catch (err) {
       return { results: [], method: 'error', error: String(err) }

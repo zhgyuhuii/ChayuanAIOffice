@@ -15,6 +15,8 @@ import {
 } from './shared'
 import { bingImageSearch } from './bing'
 import { openverseImageSearch } from './openverse'
+import { exaWebSearch } from './exa'
+import { firecrawlWebSearch } from './firecrawl'
 import { linkupWebSearch } from './linkup'
 import { searxngWebSearch } from './searxng'
 import { parallelMcpSearch } from './parallel-mcp'
@@ -32,15 +34,19 @@ export * from './chaoffice-auth'
 const SERPER_KEY = () => process.env.SERPER_API_KEY ?? ''
 const TAVILY_KEY = () => process.env.TAVILY_API_KEY ?? ''
 const LINKUP_KEY = () => process.env.LINKUP_API_KEY ?? ''
+const EXA_KEY = () => process.env.EXA_API_KEY ?? ''
+const FIRECRAWL_KEY = () => process.env.FIRECRAWL_API_KEY ?? ''
 const PARALLEL_KEY = () => process.env.PARALLEL_API_KEY ?? ''
 
 /** API keys resolved from settings (preferred) then env vars (fallback) */
 interface SearchKeys {
-  serper?: string
-  tavily?: string
-  linkup?: string
-  searxngBaseUrl?: string
-  parallelKey?: string
+  serper?: string | undefined
+  tavily?: string | undefined
+  linkup?: string | undefined
+  searxngBaseUrl?: string | undefined
+  parallelKey?: string | undefined
+  exa?: string | undefined
+  firecrawl?: string | undefined
 }
 
 
@@ -191,6 +197,34 @@ export async function webSearch(
                 : { results, method: 'tavily' }
             }
           }
+        } catch {
+          /* fall through to the next tier */
+        }
+        return null
+      },
+    },
+    {
+      id: 'exa',
+      run: async () => {
+        const exaKey = keys?.exa ?? EXA_KEY()
+        if (!exaKey) return null
+        try {
+          const r = await exaWebSearch(exaKey, q, max)
+          if (r && r.results.length) return r
+        } catch {
+          /* fall through to the next tier */
+        }
+        return null
+      },
+    },
+    {
+      id: 'firecrawl',
+      run: async () => {
+        const firecrawlKey = keys?.firecrawl ?? FIRECRAWL_KEY()
+        if (!firecrawlKey) return null
+        try {
+          const r = await firecrawlWebSearch(firecrawlKey, q, max)
+          if (r && r.results.length) return r
         } catch {
           /* fall through to the next tier */
         }

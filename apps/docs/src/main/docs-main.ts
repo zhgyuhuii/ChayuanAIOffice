@@ -3672,6 +3672,9 @@ export function registerAiIpc(): void {
             undefined,
           tavily: providers?.tavily?.apiKey || process.env.TAVILY_API_KEY || undefined,
           linkup: providers?.linkup?.apiKey || process.env.LINKUP_API_KEY || undefined,
+          exa: providers?.exa?.apiKey || process.env.EXA_API_KEY || undefined,
+          firecrawl:
+            providers?.firecrawl?.apiKey || process.env.FIRECRAWL_API_KEY || undefined,
           searxngBaseUrl: providers?.searxng?.apiKey || undefined,
         },
         settings.search?.provider,

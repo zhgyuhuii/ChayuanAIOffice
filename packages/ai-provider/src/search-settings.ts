@@ -21,6 +21,20 @@ export const AI_SEARCH_PROVIDERS: AiSearchProviderMeta[] = [
     needsKey: true,
   },
   {
+    id: 'exa',
+    label: 'Exa',
+    keyPlaceholder: 'Exa API key',
+    imageSearch: false,
+    needsKey: true,
+  },
+  {
+    id: 'firecrawl',
+    label: 'Firecrawl',
+    keyPlaceholder: 'Firecrawl API key',
+    imageSearch: false,
+    needsKey: true,
+  },
+  {
     id: 'linkup',
     label: 'Linkup',
     keyPlaceholder: 'Linkup API key',
