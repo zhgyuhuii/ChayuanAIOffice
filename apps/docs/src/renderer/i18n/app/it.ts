@@ -697,4 +697,7 @@ export const it = {
   docopsPwLabel: 'Password',
   appAiGenTitle: 'Genera titoli',
   docopsSearch: 'Trova',
+  appMergeSourceLoaded: '{name} caricato ({n} record)',
+  appMergeWritten: '{n} documenti scritti',
+  appMergeNothingToWrite: "Non c'è nulla da scrivere",
 } satisfies Record<keyof typeof zh, string>

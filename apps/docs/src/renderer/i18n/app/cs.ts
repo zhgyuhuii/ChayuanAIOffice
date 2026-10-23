@@ -691,4 +691,7 @@ export const cs = {
   docopsPwLabel: 'Heslo',
   appAiGenTitle: 'Vygenerovat názvy',
   docopsSearch: 'Najít',
+  appMergeSourceLoaded: 'Načteno {name} ({n} záznamů)',
+  appMergeWritten: 'Zapsáno dokumentů: {n}',
+  appMergeNothingToWrite: 'Není co zapsat',
 } satisfies Record<keyof typeof zh, string>

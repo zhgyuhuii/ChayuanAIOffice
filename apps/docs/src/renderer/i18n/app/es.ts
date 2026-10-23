@@ -698,4 +698,7 @@ export const es = {
   docopsPwLabel: 'Contraseña',
   appAiGenTitle: 'Generar títulos',
   docopsSearch: 'Buscar',
+  appMergeSourceLoaded: '{name} cargado ({n} registros)',
+  appMergeWritten: '{n} documentos escritos',
+  appMergeNothingToWrite: 'No hay nada que escribir',
 } satisfies Record<keyof typeof zh, string>

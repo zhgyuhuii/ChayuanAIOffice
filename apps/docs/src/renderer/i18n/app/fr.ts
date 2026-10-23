@@ -702,4 +702,7 @@ export const fr = {
   docopsPwLabel: 'Mot de passe',
   appAiGenTitle: 'Générer des titres',
   docopsSearch: 'Rechercher',
+  appMergeSourceLoaded: '{name} chargé ({n} enregistrements)',
+  appMergeWritten: '{n} documents écrits',
+  appMergeNothingToWrite: "Il n'y a rien à écrire",
 } satisfies Record<keyof typeof zh, string>

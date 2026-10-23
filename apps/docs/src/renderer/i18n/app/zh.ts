@@ -677,4 +677,7 @@ export const zh = {
   docopsPwLabel: '密码',
   appAiGenTitle: '生成标题',
   docopsSearch: '查找',
+  appMergeSourceLoaded: '已加载数据源 {name}（{n} 条记录）',
+  appMergeWritten: '已写出 {n} 个文档',
+  appMergeNothingToWrite: '没有可写出的文档',
 }

@@ -695,4 +695,7 @@ export const ms = {
   docopsPwLabel: 'Kata laluan',
   appAiGenTitle: 'Hasilkan tajuk',
   docopsSearch: 'Cari',
+  appMergeSourceLoaded: '{name} dimuatkan ({n} rekod)',
+  appMergeWritten: '{n} dokumen ditulis',
+  appMergeNothingToWrite: 'Tiada untuk ditulis',
 } satisfies Record<keyof typeof zh, string>

@@ -684,4 +684,7 @@ export const he = {
   docopsPwLabel: 'סיסמה',
   appAiGenTitle: 'יצירת כותרות',
   docopsSearch: 'חיפוש',
+  appMergeSourceLoaded: '{name} נטען ({n} רשומות)',
+  appMergeWritten: 'נכתבו {n} מסמכים',
+  appMergeNothingToWrite: 'אין מה לכתוב',
 } satisfies Record<keyof typeof zh, string>

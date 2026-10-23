@@ -697,4 +697,7 @@ export const ru = {
   docopsPwLabel: 'Пароль',
   appAiGenTitle: 'Сгенерировать заголовки',
   docopsSearch: 'Найти',
+  appMergeSourceLoaded: 'Загружено {name} (записей: {n})',
+  appMergeWritten: 'Записано документов: {n}',
+  appMergeNothingToWrite: 'Нечего записывать',
 } satisfies Record<keyof typeof zh, string>

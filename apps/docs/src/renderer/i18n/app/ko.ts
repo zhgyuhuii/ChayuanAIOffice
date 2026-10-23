@@ -690,4 +690,7 @@ export const ko = {
   docopsPwLabel: '비밀번호',
   appAiGenTitle: '제목 생성',
   docopsSearch: '찾기',
+  appMergeSourceLoaded: '{name}({n}개 레코드)을 불러왔습니다',
+  appMergeWritten: '문서 {n}개를 저장했습니다',
+  appMergeNothingToWrite: '저장할 문서가 없습니다',
 } satisfies Record<keyof typeof zh, string>

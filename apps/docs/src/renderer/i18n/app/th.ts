@@ -689,4 +689,7 @@ export const th = {
   docopsPwLabel: 'รหัสผ่าน',
   appAiGenTitle: 'สร้างหัวเรื่อง',
   docopsSearch: 'ค้นหา',
+  appMergeSourceLoaded: 'โหลด {name} แล้ว ({n} ระเบียน)',
+  appMergeWritten: 'เขียนเอกสารแล้ว {n} ฉบับ',
+  appMergeNothingToWrite: 'ไม่มีเอกสารให้เขียน',
 } satisfies Record<keyof typeof zh, string>

@@ -689,3 +689,7 @@ export const vi = {
   docopsSearch: '查找',
 appParaUnitChars: 'ký tự',
 }
+  appMergeSourceLoaded: 'Đã tải {name} ({n} bản ghi)',
+  appMergeWritten: 'Đã ghi {n} tài liệu',
+  appMergeNothingToWrite: 'Không có gì để ghi',
+} satisfies Record<keyof typeof zh, string>

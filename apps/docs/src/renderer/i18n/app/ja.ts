@@ -690,4 +690,7 @@ export const ja = {
   docopsPwLabel: 'パスワード',
   appAiGenTitle: 'タイトル案を作成',
   docopsSearch: '検索',
+  appMergeSourceLoaded: '{name}（{n} 件）を読み込みました',
+  appMergeWritten: '{n} 個のドキュメントを書き出しました',
+  appMergeNothingToWrite: '書き出すものがありません',
 } satisfies Record<keyof typeof zh, string>

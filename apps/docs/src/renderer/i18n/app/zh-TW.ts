@@ -678,4 +678,7 @@ export const zhTW = {
   docopsPwLabel: '密碼',
   appAiGenTitle: '產生標題',
   docopsSearch: '尋找',
+  appMergeSourceLoaded: '已載入資料來源 {name}（{n} 筆記錄）',
+  appMergeWritten: '已寫出 {n} 個文件',
+  appMergeNothingToWrite: '沒有可寫出的文件',
 } satisfies Record<keyof typeof zh, string>

@@ -692,4 +692,7 @@ export const pt = {
   docopsPwLabel: 'Senha',
   appAiGenTitle: 'Gerar títulos',
   docopsSearch: 'Localizar',
+  appMergeSourceLoaded: '{name} carregado ({n} registros)',
+  appMergeWritten: '{n} documentos gravados',
+  appMergeNothingToWrite: 'Não há nada a gravar',
 } satisfies Record<keyof typeof zh, string>

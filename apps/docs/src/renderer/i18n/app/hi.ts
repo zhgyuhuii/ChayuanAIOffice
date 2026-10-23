@@ -691,4 +691,7 @@ export const hi = {
   docopsPwLabel: 'पासवर्ड',
   appAiGenTitle: 'शीर्षक बनाएँ',
   docopsSearch: 'खोजें',
+  appMergeSourceLoaded: '{name} लोड हुई ({n} रिकॉर्ड)',
+  appMergeWritten: '{n} दस्तावेज़ लिखे गए',
+  appMergeNothingToWrite: 'लिखने के लिए कुछ नहीं है',
 } satisfies Record<keyof typeof zh, string>

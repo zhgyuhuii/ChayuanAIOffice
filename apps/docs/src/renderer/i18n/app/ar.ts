@@ -686,4 +686,7 @@ export const ar = {
   docopsPwLabel: 'كلمة المرور',
   appAiGenTitle: 'اقتراح عناوين',
   docopsSearch: 'بحث',
+  appMergeSourceLoaded: 'تم تحميل {name} ({n} سجلًا)',
+  appMergeWritten: 'تمت كتابة {n} مستندًا',
+  appMergeNothingToWrite: 'لا يوجد ما يكتب',
 } satisfies Record<keyof typeof zh, string>
