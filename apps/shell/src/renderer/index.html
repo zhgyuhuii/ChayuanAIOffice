@@ -9,7 +9,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="./app-icon-64.png" />
     <title>ChaAI Office</title>
+    <!-- First paint, before the bundle loads: prefers-color-scheme already resolves
+         to the right surface instead of a white flash (upstream #2130, adapted onto
+         the local boot splash). Values mirror --surface in packages/ui tokens. -->
     <style>
+      :root {
+        --boot-bg: #ffffff;
+        color-scheme: light dark;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --boot-bg: #1e1e1e;
+        }
+      }
+      html,
+      body {
+        margin: 0;
+        background: var(--boot-bg);
+      }
       #boot {
         position: fixed;
         inset: 0;
@@ -19,7 +36,7 @@
         align-items: center;
         justify-content: center;
         gap: 12px;
-        background: #fafafa;
+        background: var(--boot-bg);
       }
       #boot img {
         width: 64px;
@@ -54,6 +71,11 @@
         opacity: 0;
         visibility: hidden;
         transition: opacity 0.25s ease;
+      @media (prefers-color-scheme: dark) {
+        .boot-title {
+          color: #d4d4d4;
+        }
+      }
       }
     </style>
   </head>

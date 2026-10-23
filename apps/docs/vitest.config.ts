@@ -32,6 +32,7 @@ export default defineConfig({
       '@chaoffice/ui/ModelSettingsPageLazy': local('../../packages/ui/src/ModelSettingsPageLazy.ts'),
       '@chaoffice/ui/ModelDefaultsPage': local('../../packages/ui/src/ModelDefaultsPage.tsx'),
       '@chaoffice/ui': local('../../packages/ui/src/index.ts'),
+      '@chaoffice/xlsx-gateway/*': local('../../packages/xlsx-gateway/src/*'),
     },
   },
 

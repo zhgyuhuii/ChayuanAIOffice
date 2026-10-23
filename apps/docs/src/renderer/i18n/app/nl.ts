@@ -702,4 +702,7 @@ export const nl = {
   docopsPwLabel: 'Wachtwoord',
   appAiGenTitle: 'Titels genereren',
   docopsSearch: 'Zoeken',
+  appMergeSourceLoaded: '{name} geladen ({n} records)',
+  appMergeWritten: '{n} documenten geschreven',
+  appMergeNothingToWrite: 'Er is niets te schrijven',
 } satisfies Record<keyof typeof zh, string>

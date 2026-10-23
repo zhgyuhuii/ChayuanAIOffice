@@ -1,4 +1,6 @@
 
+import type { zh } from './zh'
+
 export const vi = {
   appScTitle: 'Phím tắt bàn phím',
   appScFilter: 'Tìm kiếm phím tắt',
@@ -687,5 +689,8 @@ export const vi = {
   docopsPwLabel: '密码',
   appAiGenTitle: '生成标题',
   docopsSearch: '查找',
-appParaUnitChars: 'ký tự',
-}
+  appParaUnitChars: 'ký tự',
+  appMergeSourceLoaded: 'Đã tải {name} ({n} bản ghi)',
+  appMergeWritten: 'Đã ghi {n} tài liệu',
+  appMergeNothingToWrite: 'Không có gì để ghi',
+} satisfies Record<keyof typeof zh, string>

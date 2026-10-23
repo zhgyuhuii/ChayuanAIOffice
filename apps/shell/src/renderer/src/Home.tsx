@@ -2396,7 +2396,8 @@ export function Home() {
     const vw = fixedViewportWidth()
     const clampedY =
       y + estHeight > window.innerHeight ? Math.max(8, window.innerHeight - estHeight - 8) : y
-    const clampedX = x + estWidth > vw ? Math.max(8, vw - estWidth - 8) : x
+    // 上游 #2131 意图重实现：菜单开在指针右侧（+2px）而非以指针为左缘，贴近视口左缘时不再被截断
+    const clampedX = x + 2 + estWidth > vw ? Math.max(8, vw - estWidth - 8) : x + 2
     setCtxMenu({ ...spec, x: clampedX, y: clampedY })
   }
 

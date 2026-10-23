@@ -36,6 +36,7 @@ import type { MenuItemConstructorOptions, NativeImage, WebContents } from 'elect
 import {  atomicWriteFile } from './atomic-write'
 import { tabStripOverlay } from './title-bar-overlay'
 import { createFeedbackClient } from './feedback'
+import { shellWindowBackground } from './window-background'
 import {
   applyUiScaleTo,
   applyUiScaleToAll,
@@ -4475,6 +4476,11 @@ function createShellWindow(): void {
     // 全平台隐藏系统标题栏（自绘最小化/最大化/关闭：mac 左侧、win 右侧，位于 tab 条内）
     titleBarStyle: 'hidden' as const,
     autoHideMenuBar: true,
+    // 上游 #2130 意图重实现：渲染层首帧前先刷主题表面色，暗色模式不再白闪。
+    // nativeTheme.themeSource 在 app.whenReady 已按保存主题设置；mac 用下方 vibrancy 必须保持透明。
+    ...(process.platform === 'darwin'
+      ? {}
+      : { backgroundColor: shellWindowBackground(nativeTheme.shouldUseDarkColors) }),
     // vibrancy: editor modules punch translucent regions (e.g. the slides
     // thumbnail pane) through to the desktop
     ...(process.platform === 'darwin' ? { vibrancy: 'sidebar' as const } : {}),
