@@ -95,6 +95,13 @@ if (winArm64 && !process.env.ELECTRON_BUILDER_7Z_FILTER) {
   process.env.ELECTRON_BUILDER_7Z_FILTER = 'BCJ'
 }
 const winArch = winArm64 ? 'arm64' : 'x64'
+
+// CHAOFFICE_LINUX_X64=1 — package the linux deb/rpm/AppImage for x86_64 on a
+// second electron-builder pass (cross sidecar staged from the zigbuild
+// target dir). Default follows the host arch like before; the mac-host
+// release pipeline runs the arm64 pass plain and this one for x64.
+const linuxArch =
+  process.env.CHAOFFICE_LINUX_X64 === '1' ? 'x64' : process.arch === 'arm64' ? 'arm64' : 'x64'
 const winSidecarTarget = winArm64 ? 'aarch64-pc-windows-msvc' : 'x86_64-pc-windows-gnu'
 // Where the release pipeline puts the sidecar: an explicit cross-compilation
 // triple (CI builds it that way). A Windows contributor's plain
@@ -717,9 +724,9 @@ const config = {
     // README download links and the already-published linux-v0.5.149 release
     // use them.
     target: [
-      { target: 'AppImage', arch: [process.arch === 'arm64' ? 'arm64' : 'x64'] },
-      { target: 'deb', arch: [process.arch === 'arm64' ? 'arm64' : 'x64'] },
-      ...(hasRpmbuild() ? [{ target: 'rpm', arch: [process.arch === 'arm64' ? 'arm64' : 'x64'] }] : []),
+      { target: 'AppImage', arch: [linuxArch] },
+      { target: 'deb', arch: [linuxArch] },
+      ...(hasRpmbuild() ? [{ target: 'rpm', arch: [linuxArch] }] : []),
     ],
     // deb control metadata; values match the manually published 0.5.149 deb
     // so apt sees the new packages as the same lineage. Homepage comes from
@@ -825,9 +832,27 @@ const config = {
       )
       const native = process.arch === archName
       if (native) {
-        // 原生构建（linux 宿主）：cargo build --release 的产物已在此路径
-        if (!existsSync(staged)) {
-          throw new Error(`linux sidecar missing: ${staged} (cargo build --release first on this host)`)
+        // 原生构建（linux 宿主）：cargo build --release 的产物已在此路径。
+        // mac 宿主（arm64）上这个分支同样成立，但 target/release 常驻的是
+        // dist:mac 的 universal Mach-O——混进 deb 就是 R30 坏包事故。 ELF
+        // 且架构匹配才放行；否则要求先就位 zigbuild 产物（发版脚本负责）。
+        const sidecarElf = readFileSync(staged)
+        const isElf =
+          sidecarElf.length > 18 &&
+          sidecarElf[0] === 0x7f &&
+          sidecarElf[1] === 0x45 &&
+          sidecarElf[2] === 0x4c &&
+          sidecarElf[3] === 0x46
+        const elfMachineOk =
+          !isElf ||
+          (archName === 'arm64'
+            ? sidecarElf[18] === 0xb7 // EM_AARCH64
+            : sidecarElf[18] === 0x3e) // EM_X86_64
+        if (!existsSync(staged) || !isElf || !elfMachineOk) {
+          throw new Error(
+            `linux sidecar at ${staged} is not an ${archName} ELF ` +
+              `(mac hosts: cp the zigbuild output over it, or run the linux pass with the cross sidecar staged)`,
+          )
         }
       } else {
         // 交叉产物就位 + 宿主二进制备份；afterPack 还原（否则 linux-x64 打包
