@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/chaoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第三十二轮完成（2026-10-23，终点 58dfd0b5b=tag v0.12.29，分支 sync/32-upstream）**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第三十三轮完成（2026-10-24，终点 8ab58a514，分支 sync/33-upstream；无新 tag，后三位维持 0.12.29）**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -735,6 +735,37 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 五轮对比审核 | ①文件级覆盖对账：1279 文件分类，19 可疑项逐一排除，零真实遗漏；②特性符号级：14 提交新增符号 2 个 ❌（e2e 命名空间已修、ci help-langs 步骤已补）；③ours 丢失审计：117 冲突文件本地独有标识符存活核查，全部定性（等价承接/测试网验证）；④删除反向审计：8/9 ✅；⑤语义回归：全部门禁（见下）。审核追加修复：xlsx-gateway refine 补 lineColor、edit-schemas 补锚点级 rotation/flipH/flipV |
 | 挂账 | sheets i18n dialogs vi.ts 少 9 个 fork 本地键（HEAD 继承欠账，en 回退兜底，补译即销）；ai-host 若原生支持 settings-changed 推送可移除 sheets-main 的 fs.watch 包装广播 |
 | 门禁 | typecheck 全仓 0；vitest 全绿：docs 3152/sheets 3437/ai-provider 494/agent-core 176/xlsx-gateway 248/pptx-engine 1294/shell 931/slides 1475/md 1047/pdf 868/html 319/ui 250/docx-engine 1717/pdf2docx 822/cli 313/electron-utils 257…；cargo test 228 全绿；lint 0；品牌 grep 豁免外零残留；check:help-langs 21 语言全齐 |
+
+## 第三十三轮（2026-10-24，上游 58dfd0b5b..8ab58a514 14 提交全吸收，施工于 sync/33-upstream；六段 1.0.11.0.12.29——终点无新 tag（最新仍 v0.12.29，上游 shell package.json 仍 0.12.0），后三位维持 0.12.29；打包 Z+1：1.0.10→1.0.11）
+
+> 上游 14 提交=4 特性+10 小修（48 增 124 改，+11921/−171），无巨件快照。施工法=逐个 cherry-pick（Q2 默认）。零 Rust 改动（sidecar 产物沿用 R32 四平台重编件）；零依赖变更（apps/docs package.json/lock 终态与起点一致，xlsx-gateway 引用走既有 dep+tsconfig/vitest 别名新增 `@chaoffice/xlsx-gateway/*`）。
+
+### 《冲突与裁决清单》（合并门禁规则 v2 三栏，供事后审计）
+
+| # | 上游提交 | 上游意图 | 本地状态与裁决 |
+|---|---|---|---|
+| 1 | dbeb7d8b #2130 | 渲染层首帧前刷主题表面色防暗色白闪（window-background.ts 新件+backgroundColor 选项+index.html boot 样式） | **adapted**：本地 `#boot` 品牌启动屏（A 区）保留，上游意图重实现——boot 背景改 `var(--boot-bg)`（值=本地 tokens.css --surface #ffffff/#1e1e1e，与上游一致故 window-background.test 原样过）+深色 boot 标题色；main/index.ts 两冲突=import 并集+本地自绘标题栏选项块保留+backgroundColor 展开项接入（darwin 豁免保 vibrancy 透明） |
+| 2 | 7f03be38 #2135 | 首页导航仅高亮当前项（activeNav 单值+aria-current） | **空对账**：本地首页为树形内联改版（P1 契约），无 nav-item 三按钮结构；本地 sidebar-seg-item 由单一 `layout.activeTab` 驱动，结构性互斥不存在该 bug；home-navigation.test.ts（测上游 nav-item DOM）不适用不采；空提交保对账 |
+| 3 | e416f9ba #2138 | graph 关闭钮可点击 | 干净 |
+| 4 | 24b6cdfb #2140 | nudgeFontSizePt 非有限值守卫 | 干净 |
+| 5 | f8ad31b7 #2141 | cli 摘录预算钳制防负切片 | 干净 |
+| 6 | 74230057 #2142 | xlsx 十六进制色校验前 trim | 干净 |
+| 7 | d5cf6c2a #2143 | omml 线性化 m:bar 独立属性路径 | 干净 |
+| 8 | 37092ddf #2144 | 封面裁剪匹配容差对称化 | 干净 |
+| 9 | 8bac8ddc #2148 | 行内公式与段落缩进隔离 | 干净 |
+| 10 | cd87fa66 #2118 | docs 块级内容控件读写（wrap/unwrap_content_control 两 op+docx-engine content-control.ts 新件） | **adapted**：cli help 文案=本地品牌行+上游新 op 追加；docx-engine/cli 源码与测试全落（@chaoffice 域） |
+| 11 | 4525025e #2119 | docs compare 两文档对比出 tracked-changes redline（docx-engine compare.ts 646 行新件） | **adapted**：skills/genoffice/SKILL.md 系 DU 冲突（本地已改名 chaoffice）→保本地删除，compare 文档移植进本地 skills/chaoffice/SKILL.md（版本 2.7.3→2.7.4 本地递增惯例）；README 按 Q5-② 还原+compare 命令行摘抄进 chaoffice 段；⚠️事故：index.ts 自动合并把 main 的 resolve-props 导出块（EffectivePPr/RPr 等 13 符号）顶换成 compare 块，typecheck 兜出后在修复提交回补（两块并集） |
+| 12 | 9fc113cd #2131 | 文件树右键菜单开在指针右侧防左缘截断（folder-menu-position.ts 新件+folderMenu 状态形改+useLayoutEffect） | **adapted**：本地 Home 无 folderMenu 机制（ctxMenu/openTreeMenu 架构）——意图重实现进 openTreeMenu：`x+2` 开在指针右侧+既有视口钳制保留；上游 folder-menu-position.ts/.test 与 e2e 新用例（测 .folder-menu DOM）不适用删除；home.css 冲突=注释行取本地 |
+| 13 | 1c2fccb6 #2122 | docs Mailings 邮件合并 tab（读本地 xlsx/csv 收件人列表→模板字段合并→单件/逐记录导出；73 文件 +2474） | **adapted**：32 冲突文件——i18n app×20+ribbon×4 shard 键级并集（ours 全保+theirs 新键追加，零重复键）；App.tsx=本地 AiSettingsV2/trailingActions 保留+MergeDataSource 类型+buildMailMergeFiles import+Ribbon `mergeSource` prop 并入（'mailings' tab 插入references 后、'chayuan' tab 保留）；ipc.ts=本地 VideoTaskInfo+上游 mail-merge 类型两块并存；docs-main.ts=en 块冲突取本地+21 语言 dlgMergeDataSource/filterMergeDataSource 逐语言补齐（值取上游）；tsconfig/vitest 别名 @chaoffice 域化；package.json 依赖终态零变更（xlsx-gateway 本就有）；⚠️坑：vi.ts 两文件合并锚点歧义致键块落在字典闭括号外+重复块（R17 多行词条坑变体），手工归位+zh import 回补 |
+| 14 | 8ab58a51 #1884 | sheets 单元格脱敏（hide cells from the model）：xlsx-redaction.ts 584 行 mirror part+reader 扣留+trace 工具不打印+写入前置拒绝（69 文件 +7215） | **adapted**：5 冲突——save-actions/sheets-main/workbook-search=import 并集（@chaoffice 域+新模块）；ai/tools.ts=本地 zod-parse 架构保留+redactGuardForOps 批处理前置拒绝接入（本地 operations 变量直用）；App.tsx 四冲突=import 并集+status-bar-stats（本地无调用点不采）+hideFromAiLocale 并入+两处 save tick 改走 shouldRunSaveTick（本地 save-scheduler 已有该函数+redactionsPendingSave 新字段自动并入）并注入本地共识语义：AutoSave tick `needsSaveAsNotUnsavedNew: Boolean(needsSaveAs)`（延迟落盘共识：全部 needsSaveAs 不静默 AutoSave）、recovery tick `Boolean(needsSaveAs) && !blankDraft`（隐藏草稿像已打开文件一样参与崩溃恢复） |
+
+### 门禁与事故记录
+
+- **门禁**：typecheck 全仓 0 错误；vitest 全工作区 0 失败（34 工作区：docs 394 文件 4232/shell 125 文件 1238——packaged-cli-version 3 用例需 linux x64 sidecar 暂存 target/release 后过、跑完即还原宿主 Mach-O/slides 146 文件/pdf 69 文件 967/markdown 62 文件 1319/其余包全绿，合计零 FAIL）；lint 改动文件 0 error（react-hooks warning 基线）；品牌 grep 豁免外零新增（基线 147 处键名豁免与 main 一致；本轮 GenOffice 用户可见串 5 处→ChaAI Office）。
+- **施工事故三件（均同轮修复）**：①4525025e pick 自动合并导出块顶换（compare 块替换 resolve-props 块）——大文件自动合并后必须 `git diff main -- <file>` 复核净变化；②1c2fccb6 的 vi shard 键块落到闭括号外+重复（多语言 shard「both-added 同锚」时 theirs 块含闭括号，并集后锚点歧义）——union 合并器须检查 theirs 块是否含 `}`；③修复提交 amend 时误 pop 第 19 轮旧 stash 并 `git add -A` 混入 44 文件——软重置拆分重提交+原样重建 stash（原 stash 未被 drop，冗余副本已删）。纪律：**amend 前必须 `git status` 确认工作树只含预期文件**。
+- **stash 纪律补记**：`git stash pop` 不保证 drop（apply 后 drop 可能静默跳过）——pop 后必须 `git stash list` 核对。
+
+
 
 ## 第三十二轮（2026-10-23，上游 285540a4f..58dfd0b5b 3 提交全吸收，施工于 sync/32-upstream；六段 1.0.9.0.12.29——终点含新 tag v0.12.29（上游 shell package.json 0.12.0，取 tag 口径）；打包 Z+1：1.0.9→1.0.10）
 
