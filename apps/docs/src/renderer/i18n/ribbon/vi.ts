@@ -1,4 +1,6 @@
 
+import type { zh } from './zh'
+
 export const vi = {
   ribbonAiCreditNote: 'Sử dụng AI và tiêu tốn tín dụng',
   ribbonAiRewriteConfirm:
@@ -1048,7 +1050,6 @@ export const vi = {
   ribbonIbClearFormat: '清除图像格式',
   ribbonIbAddCaption: '添加图像题注',
   ribbonIbDeleteCaption: '删除图像题注',
-}
   ribbonTabMailings: 'Trộn thư',
   ribbonGroupMailMerge: 'Trộn thư',
   ribbonMailingsStart: 'Bắt đầu trộn thư',

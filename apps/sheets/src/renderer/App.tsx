@@ -120,7 +120,7 @@ import {
 import { isNumericIdentifierText } from './cell-warning'
 import { consumePendingUndoCarry, undoStackDepth } from './undo-carry'
 import { addTokenUsage, useAutoSavePref, useKbAugment, ImageViewer, type AiTokenUsageView } from '@chaoffice/ui'
-import { createSaveGate } from './save-scheduler'
+import { createSaveGate, shouldRunSaveTick } from './save-scheduler'
 // ILayoutService lives in the UI layer, not core (upstream: @univerjs/ui;
 // local convention re-exports it via the core preset).
 import { ILayoutService } from '@univerjs/preset-sheets-core'

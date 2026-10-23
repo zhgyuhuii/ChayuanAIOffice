@@ -261,3 +261,17 @@ export {
   type CompareResult,
   type CompareSummary,
 } from './compare'
+export {
+  resolveParagraphProps,
+  resolveCtxOf,
+  resolveParagraphPropsXml,
+  resolveRunProps,
+  shadowCompare,
+  type EffectivePPr,
+  type EffectiveRPr,
+  type PropSource,
+  type ResolveCompat,
+  type ResolveCtx,
+  type ResolveDiff,
+  type TableCond,
+} from './resolve-props'

@@ -452,8 +452,6 @@ const tMain = createI18n({
     menuHelp: 'Help',
     menuShortcuts: 'Keyboard Shortcuts',
     menuDocsHelp: 'ChaAI Office Docs Help',
-    dlgMergeDataSource: 'Select Recipient List',
-    filterMergeDataSource: 'Excel or CSV',
   },
   ja: {
     dlgOpenDoc: '文書を開く',
