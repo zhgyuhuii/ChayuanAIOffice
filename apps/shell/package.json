@@ -1,7 +1,7 @@
 {
   "name": "@chaoffice/shell",
   "productName": "ChaAI Office",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "chaofficeUpstreamVersion": "0.12.29",
   "license": "Apache-2.0",
   "homepage": "https://github.com/zhgyuhuii/ChayuanAIOffice",
