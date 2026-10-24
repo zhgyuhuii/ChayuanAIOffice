@@ -1,0 +1,5 @@
+#!/bin/sh
+# compatibility shim: the CLI binary is `chaoffice` now; legacy PATH symlinks
+# named chatoffice keep working by forwarding to the sibling launcher.
+here=$(cd "$(dirname "$0")" && pwd)
+exec "$here/chaoffice" "$@"
