@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/chaoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第三十三轮完成（2026-10-24，终点 8ab58a514，分支 sync/33-upstream；无新 tag，后三位维持 0.12.29）**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第三十四轮完成（2026-10-25，终点 28cee5ca8，分支 sync/34-upstream；无新 tag，后三位维持 0.12.29）**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -735,6 +735,22 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 五轮对比审核 | ①文件级覆盖对账：1279 文件分类，19 可疑项逐一排除，零真实遗漏；②特性符号级：14 提交新增符号 2 个 ❌（e2e 命名空间已修、ci help-langs 步骤已补）；③ours 丢失审计：117 冲突文件本地独有标识符存活核查，全部定性（等价承接/测试网验证）；④删除反向审计：8/9 ✅；⑤语义回归：全部门禁（见下）。审核追加修复：xlsx-gateway refine 补 lineColor、edit-schemas 补锚点级 rotation/flipH/flipV |
 | 挂账 | sheets i18n dialogs vi.ts 少 9 个 fork 本地键（HEAD 继承欠账，en 回退兜底，补译即销）；ai-host 若原生支持 settings-changed 推送可移除 sheets-main 的 fs.watch 包装广播 |
 | 门禁 | typecheck 全仓 0；vitest 全绿：docs 3152/sheets 3437/ai-provider 494/agent-core 176/xlsx-gateway 248/pptx-engine 1294/shell 931/slides 1475/md 1047/pdf 868/html 319/ui 250/docx-engine 1717/pdf2docx 822/cli 313/electron-utils 257…；cargo test 228 全绿；lint 0；品牌 grep 豁免外零残留；check:help-langs 21 语言全齐 |
+
+## 第三十四轮（2026-10-25，上游 8ab58a514..28cee5ca8 2 提交全吸收，施工于 sync/34-upstream；六段 1.0.12.0.12.29——终点无新 tag（最新仍 v0.12.29，上游 shell package.json 仍 0.12.0），后三位维持 0.12.29；打包 Z+1：1.0.11→1.0.12）
+
+> 上游 2 提交=2 小修（243 增 2 改，+243/−2），无巨件快照。施工法=逐个 cherry-pick（Q2 默认）。零 Rust 改动（sidecar 沿用 R32 四平台重编件）；零依赖变更；零 i18n 改动。
+
+### 《冲突与裁决清单》（合并门禁规则 v2 三栏，供事后审计）
+
+| # | 上游提交 | 上游意图 | 本地状态与裁决 |
+|---|---|---|---|
+| 1 | 79ecbc97 #2155 | docx-engine index.ts 回补 #2122 合并顶掉的 resolve-props 再导出块（14 行：5 函数+7 类型） | **空对账**：与 R33 施工事故①同款问题，上游自己也在修——本地 R33 修复提交已回补两块并集，逐符号一致；cherry-pick 自动合并不报冲突而是**重复插入同块**（R33 坑①复刻，`git diff main` 复核纪律兜住），去重后空提交保对账（ca0d8cf，diff vs main 为空） |
+| 2 | 28cee5ca #2164 | sheets Home 画廊「套用表格样式」对已选中表格改为重样式（selectedTableEcho 判定→handleTableDesignCommand `table-style:*`），无选中表才走新建 handleFormatAsTable；+217 行测试 | **干净 pick**（ce25e46e）：import 块+format-as-table 分支两 hunk 原样落位；本地 `format-as-table-custom:` 独有分支紧随其后不受影响；ctx.tableDesignContext/selectedTableEcho 本地齐备；测试仅 `@genoffice/`→`@chaoffice/` xlsx-gateway 别名适配（planCellEditsToXlsx 本地 29 参对上游 27 参尾部默认值兼容），5 用例绿 |
+
+### 门禁与事故记录
+
+- **门禁**：typecheck 全仓 0 错误（34 工作区 EXIT 0）；vitest 全工作区 0 失败（34 工作区：docs 394 文件 4232+4 skipped／sheets 361 文件 3797+1 skipped／shell 125 文件（packaged-cli-version 3 用例按 ELF 暂存法全过，跑后宿主 Mach-O 已还原）／slides 146／pdf 69／markdown 62／web-bridge 4／server 4／web 1／其余包全绿，合计零 FAIL）；lint 改动文件 0 error；品牌 grep 豁免外零新增（3 处命中均 main 基线存量）。
+- **本轮坑（测试基建，非代码）**：docs `docops-table-ops` 的 prosemirror DOMObserver 卸载后定时器泄漏——root 链式全量跑时在 docs 段收尾抛 1 个 unhandled error（`ReferenceError: document is not defined`）令 vitest 退 1（394 文件 4232 用例本身全过）；docs 单工作区复测 EXIT 0 全绿=负载序偶发，与本轮改动无关。**链式全量跑 34 工作区耗时超 10 分钟级，建议分 workspace 跑或加长超时**。
 
 ## 第三十三轮（2026-10-24，上游 58dfd0b5b..8ab58a514 14 提交全吸收，施工于 sync/33-upstream；六段 1.0.11.0.12.29——终点无新 tag（最新仍 v0.12.29，上游 shell package.json 仍 0.12.0），后三位维持 0.12.29；打包 Z+1：1.0.10→1.0.11）
 
