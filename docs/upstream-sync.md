@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/chaoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第三十四轮完成（2026-10-25，终点 28cee5ca8，分支 sync/34-upstream；无新 tag，后三位维持 0.12.29）**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第三十五轮完成（2026-10-27，终点 c8bfff60=tag v0.12.115，分支 sync/35-upstream；六段 1.0.13.0.12.115，已随轮发版 1.0.13：tag 三仓+GitHub 424722804 九资产+aidooo 发布验收全过）**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -735,6 +735,61 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 五轮对比审核 | ①文件级覆盖对账：1279 文件分类，19 可疑项逐一排除，零真实遗漏；②特性符号级：14 提交新增符号 2 个 ❌（e2e 命名空间已修、ci help-langs 步骤已补）；③ours 丢失审计：117 冲突文件本地独有标识符存活核查，全部定性（等价承接/测试网验证）；④删除反向审计：8/9 ✅；⑤语义回归：全部门禁（见下）。审核追加修复：xlsx-gateway refine 补 lineColor、edit-schemas 补锚点级 rotation/flipH/flipV |
 | 挂账 | sheets i18n dialogs vi.ts 少 9 个 fork 本地键（HEAD 继承欠账，en 回退兜底，补译即销）；ai-host 若原生支持 settings-changed 推送可移除 sheets-main 的 fs.watch 包装广播 |
 | 门禁 | typecheck 全仓 0；vitest 全绿：docs 3152/sheets 3437/ai-provider 494/agent-core 176/xlsx-gateway 248/pptx-engine 1294/shell 931/slides 1475/md 1047/pdf 868/html 319/ui 250/docx-engine 1717/pdf2docx 822/cli 313/electron-utils 257…；cargo test 228 全绿；lint 0；品牌 grep 豁免外零残留；check:help-langs 21 语言全齐 |
+
+## 第三十五轮（2026-10-27，上游 28cee5ca8..c8bfff60（tag v0.12.115）37 提交全吸收，施工于 sync/35-upstream；六段 1.0.13.0.12.115——终点含新 tag v0.12.115，后三位取 tag 口径 0.12.115；打包 Z+1：1.0.12→1.0.13）
+
+> 上游 37 提交=36 独立修/特性+1 快照巨件（#2222：310 文件 +14.6k/−649）。施工法=36 个逐个 cherry-pick + 快照全量 3-way（base=11051a91 ours=HEAD theirs=c8bfff60：直取 45+干净 3-way 167+真冲突 58+本地缺失 40）。本轮 Rust 有改动（calamine 0.37 #2210 + #2136 加密钩子 lib.rs/protocol.rs）→ sidecar 四平台新鲜重编；依赖变更=electron 43.7.6→43.8.3（七 app）+ zod 4.3.6→4.6.7（sheets）+ officecrypto-tool docs→electron-utils 迁移（#2136），lock 重生成。
+
+### 《冲突与裁决清单》（合并门禁规则 v2 三栏，供事后审计）
+
+| # | 上游提交 | 上游意图 | 本地状态与裁决 |
+|---|---|---|---|
+| 1 | ec85e4dc #2165 | xlsx-gateway 批注可携带图片（mirror part 写入） | 干净 pick |
+| 2 | 6d031eb8 #2166 | sheets 批注图片全链（NotePicturesPane/insert op/21 语言） | adapted：ribbon-actions.ts import 冲突=本地品牌导入并集+新增 handleInsertNotePicture；note-picture-actions.ts 等新件 @genoffice→@chaoffice 重放 |
+| 3 | 32fac8a7 #2194 | pivot Summarize By 增 StdDev/StdDevp/Var/Varp | adapted：AGG_CAPTIONS 键集/workbook-ops aggregate switch 补四 case（无总体/样本方差分型注释） |
+| 4 | c5c9e9a6 #2214 | 上标/下标按选区（in-cell editor 判定） | adapted：imports 并集+保留本地流式加载闸（requireLoadedSelection/guardTargetRowLoaded）+新增 cellEditorHoldsText |
+| 5 | 917f7656 #2210 | calamine 0.37（xls 公式列修正） | 干净 pick（Cargo.toml/lock）——触发 sidecar 重编 |
+| 6 | 9db19550 #2183 | docs 大纲折叠可折叠 | 干净 pick（outline-view.ts 新件） |
+| 7 | 72a78d4e #2182 | 浮动图片保存保位 | 干净 pick |
+| 8 | 64667ad4 #2185 | slides 保存中断保全（atomicWriteVia） | adapted：slides-main/测试 import 行 take-theirs+品牌重放（atomicWriteVia 由同 pick 带入 electron-utils） |
+| 9 | adeae736 #2178 | slides 母版编辑 ribbon（master-add-element） | adapted：slides-main 同位置双 handler（edit-picture-lum 本地+master-add-element 上游）union，closer 补齐；tsc 驱动 |
+| 10 | be34ed14 #2180 | html AI 搜图生图+独立窗口搜索 IPC | adapted：本地 html 此前无 image 工具——tools.ts/html-skill.ts 干净合入；ai-search-ipc.ts 新件按本地 ai-search 函数 API 重写（webSearch/imageSearch 直调+SearchKeys 本地形状，非上游 *Tool 包装器）；AiPanel 三块保 ours（A 区多会话面板）；补本地缺的 html:ai-generate-image IPC 链（AI_CHANNELS+byokGenerateImage+preload+HtmlApi，markdown/pdf 同款 createByokImageHandler）；off-note 改本地术语 |
+| 11 | f82e6916 #2196 | html 两端对齐接对齐控件 | 干净 pick |
+| 12 | 74c94821 #2190 | OpenAI GA Decisions API 决策路由 | adapted：SettingsModal 冲突=删除自动并入的重复 DECISION_ENDPOINTS 块+本地表追加 openai 行；decider/home-api/测试干净合入（34 用例绿） |
+| 13 | 6c6ffc81 #2189 | Kimi K3.1 Pro 旗舰 | 空对账（R21 #2100 裁定延续：本地 live-discovery 无静态 models 字段；providers.ts 自动并入的两块静态清单删除；registry.test 的 modelLacksVision k3.1-pro 断言保留） |
+| 14 | b59216e6 #2197 | 删 16 死键 | adapted：15 键删（含 accountGenspark/setAiImageModel 等×21 语言；navTrashTip 有多行格式——R17 坑复刻）、**setMcpConn 保留**（本地 McpServerSettings.tsx 在用，上游死因是它们 UI 不用）；sheets appComingSoon×21 删；shell strings.ts 块解析器曾误删 2772 行——回滚 HEAD 版改「键级直删」配方 |
+| 15 | d95315c9 #2167 | README×21 能力文档 | 空对账（Q5-②：README 体系本地自有） |
+| 16-18 | 174ffd06/efbd5f91/8c345f1a | md-asset 守卫/data:URL null/SEQ 转义 | 干净 pick |
+| 19 | c5baaf79 #2207 | 100% DPI 菜单图标（重绘 png） | adapted：PNG 二进制保本地品牌版（本地已是高清无缺陷），menu-icon-alpha 测试 3 用例对本地资产即绿（意图=修复缺陷，本地无缺陷） |
+| 20-22 | 7030bc7c/97a7fc66/5977c745 | md 脚注/docs 文本框列表/合并组行高 | 干净 pick |
+| 23 | 95a8df5e #2193 | pdf 全文批注面板 | adapted：App.tsx pdf-body 结构 union（outline 完整分支从 HEAD 重建+comments 分支插入）；strings 21 块 ours+4 新键（vi 块取上游真越南语） |
+| 24 | 7d067d4c #2192 | pdf 超链接（Edit>Link） | adapted：ribbon Link 按钮 union 嫁接、LinkDialog 渲染点接线、strings 21 块同配方；.LinkDialog.tsx 新件干净 |
+| 25 | 8cd5de9f #2181 | pdf 搜索大小写/全字匹配 | adapted：App.tsx 大冲突保 ours+5 增量 hunk 手工重放（状态/搜索调用/deps/按钮）；search.ts import 并集 |
+| 26-28 | fe0810ba/ee576433/6eb8e8aa | docx 标题保存/md wiki 建笔记/md 状态栏字数 | 干净/手动重放：#2198 App.tsx 从 HEAD 恢复+7 hunk 重放（本地无 sourceTextRef，4/5 两 hunk 不适用记账）；#2179 wiki-create 快照后补 target 契约（见 #2222 行） |
+| 29-30 | 36b26138/cac6681f | pptx/xlsx 颜色 trim | 干净 pick |
+| 31 | 7f58e4ab #2186 | 首页侧栏拖拽调宽 | 空对账（本地首页改版已有 sidebar-resizer+homeLayout 持久化，RTL 强化随快照挂账） |
+| 32 | 591b4186 #2187 | 启动恢复上次会话 | adapted：SettingsModal 冲突=新增 restoreSession effect（chaOffice 桥）；last-session.ts/preload/home-api/测试干净；window.aiOffice→chaOffice 重放 |
+| 33 | 5c1c41ea #2199 | slides A4/A3/自定义纸张 | adapted：App.tsx 大冲突保 ours+SlideSizeDialog/slide-size 新件干净；Ribbon 调用点补 onSlideSize=getSlideSize=onCustomSlideSize 三 prop、slideSizeKey 删（本地 Ribbon 无此 prop）；deck-save-atomic 测试品牌行修正 |
+| 34 | 13cd6ea8 #2200 | ==高亮== | 干净 pick |
+| 35 | e038aaaa #2188 | 自动更新检查开关 | adapted：SettingsModal/home-api 冲突=union（chaOffice 桥）+getAutoUpdateCheck 入 home-api |
+| 36 | 11051a91 #2136 | sheets 加密工作簿+改密（Rust CFB 嗅探+TS Electron 主解密） | adapted：lib.rs take-theirs（宿主解密文案）；sheets-main 8 块逐块 union——本地惰性打开架构保留（blankDraft 流）+password/密码重加密/PASSWORD_REQUIRED 409 链接入；reopenWorkbook 本地死链修复版升级为携 priorSession.password 走 openSelectedWorkbook；App.tsx handleInspectWorkbook 重建（本地 shape+解密循环）；ExcelShell passwordProtected prop 补第二 Ribbon 调用点；desktop-api/preload/ooxml-encryption.ts 干净合入；snapshotWorkbook take-theirs（bytes 参数+getSessionSnapshotDirectory） |
+| 37 | c8bfff60 #2222 | 10-26 快照（310 文件） | 全量 3-way：直取 45+干净 3-way 167+真冲突 58+本地缺失 40。**tr 土耳其语第 22 语言全量接线**（Lang/LANGS/HTML_LANGS/home-api/preload UI_LANGUAGES/各端 locale 指令+DATE_LOCALES/13 聚合器 tr 行/12 tr shard 本地键 zh 回填/19 篇 tr 帮助手册+README.tr/check-help-langs 22 语言）；native-admission.ts 新件（线协议头豁免保留）；update-feed-utils.cjs semver 预发布序；wiki-create target 契约；form-text/image-edit 等 pdf 新件。58 冲突=i18n 聚合器/进程字典 tr+vi 行、excel-shortcuts 批2（从上游整文件重建+chaoffice.command 重放）、Home 保 ours（本地 resizer）、pdf formMenu 从 HEAD 重建+两处真增量（comments 按钮去 disabled/LinkDialog destPage 重映射）、linux 脚本 #2150 AppArmor 品牌重放（空格路径 case glob 加引号） |
+
+### 施工事故与修复（均同轮闭环）
+
+1. **快照 take-theirs 组 43 文件静默漏落（严重）**：3-way 分类脚本 take-theirs 分支只 append 未 write——parse-props fieldsNested/empty-instruction 豁免、docx compare.ts、wiki-create 全文、image-edit、global-shortcuts、i18n index tr 等 43 文件未落，docx-engine empty-instruction-field 测试红兜出；逐文件取上游补齐+品牌重放（0f6a0b171）。**防线：全量 3-way 脚本的每个分类分支必须真写盘并 diff 自检**。
+2. **shell strings.ts 块解析器误删 2772 行**（#2197）：ours/theirs 正则解块在大文件上吞并冲突块——回滚 HEAD 改「键级直删」配方（R17 多行格式坑再次出现：navTrashTip×8 为键名独立行）。
+3. **tr 字典上游残留**：new*/menuNew* AI 前缀+Genspark 值随快照并入——按本地钉名纪律归一（main-locale-tables/strings 测试兜出）。
+4. **R31 #1944 回归**：快照 3-way 洗掉 ChatPanel sessionUsage 读点（本地独有文件无上游接替），composer 用量 chip 渲染恢复。
+5. **cli help 品牌漏网（R33 引入，发版直验兜出）**：docs compare 帮助行 "compare default: GenOffice"→ChaAI Office，九件包重打。
+
+### 门禁终态
+
+- typecheck 全仓 0（tr 22 语言接线后全量表 parity）；vitest 全工作区 0 FAIL（shell 1275 含 packaged-cli ELF 暂存法、slides 1534、pdf 1001、markdown 1393、docx-engine 含新 empty-instruction-field、ai-provider native-admission 9）；lint 0 error；cargo 273；Rust fn 两向审计零缺失；品牌 grep 豁免外零新增。
+
+**R35 随轮发版（2026-10-27，六段 1.0.13.0.12.115）**：①版本铁律：chaofficeUpstreamVersion 0.12.29→0.12.115（终点=tag v0.12.115）+打包 Z+1 1.0.12→1.0.13（root/shell/dsh-plugin 三处+lock；dsh-plugin lock 构建回写补提交）；②sidecar 四平台新鲜重编（zigbuild linux x64/aarch64 glibc 2.28+mingw win-x64+mac universal）；③九件安装包两轮（首构建后 cli 品牌修复重打）+架构逐件直验全过（deb/rpm 双 ELF、AppImage ELF 头、exe PE32、dmg UDZO）；④dsh 产物（chatop-chaoffice-1.0.13 409M+chaoffice-1.0.13.tgz 168M）；⑤tag `1.0.13` 推 origin+gitee+pubmirror 三仓；⑥GitHub Release **424722804** 九资产服务器中继全 201 uploaded（scp /data/installers/chaoffice-1.0.13→nohup node fetch stream；sha256 前 16 位本地↔服务器逐件对齐）；⑦aidooo.com：宿主硬链接十槽位入库→容器 finalizeEntry×10（**坑：同平台第二文件用『默认版』variant 会 409 duplicate_variant，须沿 1.0.12 惯例『zip 包/rpm 包/AppImage 免安装版』**；容器内路径用挂载别名 /app/public/downloads）+published=true+publishManifest→清理 1.0.12（DB 条目+卷内 10 文件，备份 office-entries-backup-20261027.json，旧 URL 404）→验收全过（DB 十条目 sha256/size 磁盘一致、升级链 1.0.12→1.0.13 五平台 updateAvailable=true https 公网、Range 206、1MB 区段下载字节级一致、公网 manifest 仅 1.0.13）；⑧发版真机测试（docs/release-test-report-1.0.13.md）：dev 真机（版本六段桥/三新特性桥/CDP 流式对话 chatop-local 出字）+重打包 mac 装机（察元AIOffice 品牌截图/单实例锁/asar 版本实证/重打包 CLI compare 词粒度 redline 闭环 author=ChaAI Office）；飞腾真机延续不可达附注降级（ping 100% 丢包）。
+
+**R35 发版新坑**：①全量 3-way 分类脚本「take-theirs 只登记不写盘」型事故——分类脚本每个分支必须真写盘+写后 diff 自检；②`open` 启动打包版 Electron 窗口可能不上屏（CGWindowList 全空、AX windows=0），**终端直启** `.app/Contents/MacOS/ChaAI Office` 稳定上屏——装机验证统一终端直启；③electron-builder linux arm64 pass（宿主 arm64 mac）在 R32 ELF 守卫下需手工暂存 aarch64 zigbuild 产物再跑，x64 pass 则 beforePack 自动就位（CHAOFFICE_LINUX_X64=1）；④aidooo finalizeEntry 同平台多文件必须异 variant 标签（409 duplicate_variant），variant 命名沿 1.0.12 惯例；⑤上游删除的 i18n 键在本地可能在用（setMcpConn）——删键前全库 grep 消费点；⑥Lang 联合加语言是全仓连锁（Record<Lang> 20 处+各端进程字典+locale 指令+DATE_LOCALES+帮助手册 check），快照级新增语言接线的剩余 10% 工作量在全量 3-way 之后。
 
 ## 第三十四轮（2026-10-25，上游 8ab58a514..28cee5ca8 2 提交全吸收，施工于 sync/34-upstream；六段 1.0.12.0.12.29——终点无新 tag（最新仍 v0.12.29，上游 shell package.json 仍 0.12.0），后三位维持 0.12.29；打包 Z+1：1.0.11→1.0.12）
 
