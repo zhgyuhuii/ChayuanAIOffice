@@ -67,6 +67,7 @@ test('Jev reranking lives in its own settings section, saves instantly, and repo
           'perplexity-flash': '',
           liquid: '',
           'liquid-ultra': '',
+          openai: '',
           cloudflare: '',
           'cloudflare-flash': '',
           kev: '',
