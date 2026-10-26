@@ -58,9 +58,9 @@ const TYPE_OF: Record<RevisionRange['kind'], RevisionType> = {
   cellDel: 'deletion',
   paraMarkIns: 'insertion',
   paraMarkDel: 'deletion',
-  paraMarkRPrChange: 'formatting',
   pPrChange: 'formatting',
   rPrChange: 'formatting',
+  paraMarkRPrChange: 'formatting',
   moveFrom: 'move',
   moveTo: 'move',
 }

@@ -388,7 +388,7 @@ export const zoteroStrings = defineStrings({
       'Zotero ile bağlantı kurulamadı. Zotero uygulamasını başlatın ve açık tutun.',
     zoteroOperationError: 'Zotero işlemi başarısız oldu.',
     zoteroNoteFieldsUnsupported:
-      'Bu belgenin dipnotlarında veya son notlarında GenOffice tarafından henüz güncellenemeyen Zotero alıntıları var. Kaynakçanın bozulmaması için Zotero komutları burada kapatıldı.',
+      'Bu belgenin dipnotlarında veya son notlarında ChaAI Office tarafından henüz güncellenemeyen Zotero alıntıları var. Kaynakçanın bozulmaması için Zotero komutları burada kapatıldı.',
     zoteroGroup: 'Zotero',
   },
 })

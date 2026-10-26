@@ -410,7 +410,7 @@ export const tMain = createI18n({
     legacyPptTitle: 'Eski .ppt dosyası açılamıyor',
     odpImportMsg: 'Bu .{ext} sunusu dönüştürülsün mü?',
     odpImportDetail:
-      'GenOffice ODF değil .pptx düzenler. Her sayfa, metin kutuları ve resimleri özgün konumlarına yerleştirilmiş bir slayt olur; asıl slaytlar, yer tutucu düzenleri, tablolar ve şekil stilleri korunmaz. Özgün dosya hiçbir zaman değiştirilmez; dönüştürülen .pptx, sonraki kayıtların yazıldığı ayrı bir kopyadır.',
+      'ChaAI Office ODF değil .pptx düzenler. Her sayfa, metin kutuları ve resimleri özgün konumlarına yerleştirilmiş bir slayt olur; asıl slaytlar, yer tutucu düzenleri, tablolar ve şekil stilleri korunmaz. Özgün dosya hiçbir zaman değiştirilmez; dönüştürülen .pptx, sonraki kayıtların yazıldığı ayrı bir kopyadır.',
     odpImportConvertBtn: 'Dönüştür ve aç',
     odpImportFailedTitle: 'Bu .odp dönüştürülemiyor',
     odpImportFailedBody: 'Dosya hasarlı olabilir veya geçerli bir ODF sunusu olmayabilir.',

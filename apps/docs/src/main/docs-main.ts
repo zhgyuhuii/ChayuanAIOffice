@@ -458,7 +458,7 @@ const tMain = createI18n({
     filterWord: 'Word Belgeleri',
     odtImportMsg: 'Bu .{ext} belgesi dönüştürülsün mü?',
     odtImportDetail:
-      'GenOffice ODF değil .docx düzenler. Gövde metni, başlıklar, listeler, tablolar ve resimler aktarılır; dipnotlar, açıklamalar ve metin kutuları tam olarak korunmaz. Özgün dosya hiçbir zaman değiştirilmez; dönüştürülen .docx, sonraki kaydetmelerin yazıldığı ayrı bir kopyadır.',
+      'ChaAI Office ODF değil .docx düzenler. Gövde metni, başlıklar, listeler, tablolar ve resimler aktarılır; dipnotlar, açıklamalar ve metin kutuları tam olarak korunmaz. Özgün dosya hiçbir zaman değiştirilmez; dönüştürülen .docx, sonraki kaydetmelerin yazıldığı ayrı bir kopyadır.',
     odtImportConvertBtn: 'Dönüştür ve aç',
     dlgSaveAs: 'Farklı Kaydet',
     closeUnsavedMsg: 'Bu belgede kaydedilmemiş değişiklikler var.',

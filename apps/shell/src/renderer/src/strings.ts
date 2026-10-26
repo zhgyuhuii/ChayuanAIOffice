@@ -200,7 +200,7 @@ const upstreamStrings = {
     docThemeFollowApp: '跟随应用主题',
     saveLocation: '默认保存位置',
     setRestoreSession: '启动时重新打开上次的文档',
-    setRestoreSessionDesc: '关闭 GenOffice 时打开的文档会在下次启动时自动重新打开。',
+    setRestoreSessionDesc: '关闭 ChaAI Office 时打开的文档会在下次启动时自动重新打开。',
     setTabSleep: '休眠不活跃的标签页',
     setTabSleepDesc:
       '标签页多到一定数量后，长时间没有查看的会释放内存；回到它时会重新打开文件。有未保存修改或已固定的标签页不会休眠。',
@@ -695,7 +695,7 @@ const upstreamStrings = {
     setUpdateRestart: 'Restart & install',
     setAutoUpdateCheck: 'Check for updates automatically',
     setAutoUpdateCheckDesc:
-      'When off, GenOffice no longer checks for new versions at launch or in the background. You can still check from Help › Check for Updates.',
+      'When off, ChaAI Office no longer checks for new versions at launch or in the background. You can still check from Help › Check for Updates.',
     updateChannel: 'Update Channel',
     channelStable: 'Stable',
     channelBeta: 'Beta',
@@ -708,7 +708,7 @@ const upstreamStrings = {
     saveLocation: 'Save Location',
     setRestoreSession: 'Reopen documents from last time',
     setRestoreSessionDesc:
-      'Documents open when GenOffice closes reopen automatically the next time it starts.',
+      'Documents open when ChaAI Office closes reopen automatically the next time it starts.',
     setTabSleep: 'Sleep inactive tabs',
     setTabSleepDesc:
       'Once many tabs are open, ones you have not looked at for a while release their memory and reopen their file when you return. Tabs with unsaved changes or pinned tabs never sleep.',
@@ -1222,7 +1222,7 @@ const upstreamStrings = {
     setUpdateRestart: 'Khởi động lại và cài đặt',
     setAutoUpdateCheck: 'Tự động kiểm tra cập nhật',
     setAutoUpdateCheckDesc:
-      'Khi tắt, GenOffice không còn kiểm tra phiên bản mới khi khởi động hoặc chạy nền. Bạn vẫn có thể kiểm tra trong Trợ giúp › Kiểm tra bản cập nhật.',
+      'Khi tắt, ChaAI Office không còn kiểm tra phiên bản mới khi khởi động hoặc chạy nền. Bạn vẫn có thể kiểm tra trong Trợ giúp › Kiểm tra bản cập nhật.',
     updateChannel: 'Kênh cập nhật',
     channelStable: 'Ổn định',
     channelBeta: 'Beta',
@@ -1235,7 +1235,7 @@ const upstreamStrings = {
     saveLocation: 'Vị trí lưu',
     setRestoreSession: 'Mở lại tài liệu của lần trước',
     setRestoreSessionDesc:
-      'Các tài liệu đang mở khi đóng GenOffice sẽ tự động mở lại vào lần khởi động tiếp theo.',
+      'Các tài liệu đang mở khi đóng ChaAI Office sẽ tự động mở lại vào lần khởi động tiếp theo.',
     setTabSleep: 'Tạm ngủ các thẻ không hoạt động',
     setTabSleepDesc:
       'Khi mở nhiều thẻ, những thẻ lâu không xem sẽ giải phóng bộ nhớ và mở lại tệp khi bạn quay lại. Thẻ có thay đổi chưa lưu hoặc đã ghim sẽ không ngủ.',
@@ -1754,7 +1754,7 @@ const upstreamStrings = {
     setUpdateRestart: 'Yeniden başlat ve yükle',
     setAutoUpdateCheck: 'Güncellemeleri otomatik denetle',
     setAutoUpdateCheckDesc:
-      'Kapalıyken GenOffice açılışta veya arka planda yeni sürümleri denetlemez. Yardım › Güncellemeleri Denetle üzerinden yine de denetleyebilirsiniz.',
+      'Kapalıyken ChaAI Office açılışta veya arka planda yeni sürümleri denetlemez. Yardım › Güncellemeleri Denetle üzerinden yine de denetleyebilirsiniz.',
     updateChannel: 'Güncelleme Kanalı',
     channelStable: 'Kararlı',
     channelBeta: 'Beta',
@@ -1767,7 +1767,7 @@ const upstreamStrings = {
     saveLocation: 'Kayıt Konumu',
     setRestoreSession: 'Son oturumdaki belgeleri yeniden aç',
     setRestoreSessionDesc:
-      'GenOffice kapatılırken açık olan belgeler bir sonraki başlatmada otomatik olarak yeniden açılır.',
+      'ChaAI Office kapatılırken açık olan belgeler bir sonraki başlatmada otomatik olarak yeniden açılır.',
     setTabSleep: 'Etkin olmayan sekmeleri uyut',
     setTabSleepDesc:
       'Çok sayıda sekme açıkken bir süredir bakmadıklarınız belleklerini serbest bırakır ve geri döndüğünüzde dosyalarını yeniden açar. Kaydedilmemiş değişiklikleri olan veya sabitlenmiş sekmeler hiçbir zaman uyumaz.',
@@ -1797,8 +1797,8 @@ const upstreamStrings = {
     aiFontSizeCustom: 'Özel',
     setAiSpellcheck: 'AI sohbetinde yazım denetimi',
     setDefaultApp: 'Office belgeleri için varsayılan uygulama',
-    setDefaultAppDesc: '.docx, .xlsx ve .pptx dosyalarını çift tıklandığında GenOffice ile açar.',
-    setDefaultAppIs: 'GenOffice zaten varsayılan.',
+    setDefaultAppDesc: '.docx, .xlsx ve .pptx dosyalarını çift tıklandığında ChaAI Office ile açar.',
+    setDefaultAppIs: 'ChaAI Office zaten varsayılan.',
     setDefaultAppOther: 'Geçerli varsayılan: {app}',
     setDefaultAppSet: 'Varsayılan yap',
     setDefaultAppOpenSettings: 'Sistem ayarlarını aç',
@@ -1843,7 +1843,7 @@ const upstreamStrings = {
     setSecAbout: 'Hakkında',
     setSecIntegrations: 'Tümleştirmeler',
     setSecSkills: 'Beceriler',
-    intgHeroTitle: 'GenOffice’i AI asistanınızdan kullanın',
+    intgHeroTitle: 'ChaAI Office’i AI asistanınızdan kullanın',
     intgHeroDesc:
       'Bağlandıktan sonra Claude Code, Codex, Cursor, Claude Desktop ve benzeri asistanlar sizin için Word, Excel, PowerPoint, PDF ve Markdown dosyaları oluşturabilir, dönüştürebilir, okuyabilir ve düzenleyebilir. Her şey bu bilgisayarda çalışır; hiçbir şey yüklenmez.',
     intgHeroStep1:
@@ -1854,7 +1854,7 @@ const upstreamStrings = {
     intgStep1Desc:
       'Yalnızca bu bilgisayarda bulunan asistanlar listelenir. Gerçekten kullandığınıza yükleyin; hepsine gerek yok.',
     intgStep1Update:
-      'Bir GenOffice güncellemesi daha yeni bir beceri getirdiğinde o asistanın yanında bir Güncelle düğmesi görünür.',
+      'Bir ChaAI Office güncellemesi daha yeni bir beceri getirdiğinde o asistanın yanında bir Güncelle düğmesi görünür.',
     intgSkillVersion: 'beceri {v}',
     intgStateMissing: 'Beceri yüklü değil',
     intgStateInstalled: 'Beceri {v} yüklü · bir sonraki sohbetinizde hazır',
@@ -1862,7 +1862,7 @@ const upstreamStrings = {
     intgOtherDesc:
       'Bu üç yoldan herhangi birini seçin. Hepsi aynı beceriyi yükler, bu yüzden birden fazlasını yapmanıza gerek yok.',
     intgOtherFolderTitle: 'SKILL.md klasörlerini okuyan herhangi bir asistan',
-    intgOtherFolderDesc: 'Beceri klasörünü seçin, GenOffice dosyayı oraya yazsın.',
+    intgOtherFolderDesc: 'Beceri klasörünü seçin, ChaAI Office dosyayı oraya yazsın.',
     intgOtherZipTitle: 'Dosyayı asistana verin',
     intgOtherZipDesc: 'Beceriyi zip olarak kaydedin, sonra asistandan yüklemesini isteyin.',
     intgOtherNpxTitle: 'skills komutuyla (Node.js gerekir)',
@@ -1874,7 +1874,7 @@ const upstreamStrings = {
       'Yükledikten sonra asistanınızda yeni bir sohbet açın ve düz sözcüklerle isteyin, örneğin:',
     intgExample1: '~/Downloads/report.md dosyasını Word belgesine dönüştür',
     intgExample2: '3. çeyrek sonuçlarımız hakkında 6 slaytlık bir sunu hazırla',
-    intgExample3: 'budget.xlsx dosyasını PDF’e dönüştür ve GenOffice’te aç',
+    intgExample3: 'budget.xlsx dosyasını PDF’e dönüştür ve ChaAI Office’te aç',
     intgStep2Note:
       'genoffice komut satırını asistan kendisi çalıştırır; sizin yazmanız hiç gerekmez.',
     intgCliPartTitle: 'CLI · komut satırı + beceri',
@@ -1882,15 +1882,15 @@ const upstreamStrings = {
       'Terminal komutları çalıştırabilen asistanlar için (Claude Code, Codex, Cursor ve diğerleri). Beceri yüklendikten sonra asistan, dosya oluşturmak, dönüştürmek, okumak ve düzenlemek için genoffice komut satırını kendisi çağırır; siz hiç komut yazmazsınız.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP, AI asistanlarının harici araçları çağırmak için kullandığı ortak protokoldür. Asistanınız komut çalıştıramıyorsa (örneğin Claude Desktop) ya da GenOffice penceresini doğrudan yönetmesini istiyorsanız kullanın. Aşağıdaki iki yoldan birini seçin.',
+      'MCP, AI asistanlarının harici araçları çağırmak için kullandığı ortak protokoldür. Asistanınız komut çalıştıramıyorsa (örneğin Claude Desktop) ya da ChaAI Office penceresini doğrudan yönetmesini istiyorsanız kullanın. Aşağıdaki iki yoldan birini seçin.',
     intgMcpStdioTitle: 'Asistan tarafından başlatılır (önerilen)',
     intgMcpStdioDesc:
-      'Asistan genoffice mcp’yi kendisi başlatır: burada açılacak bir şey yoktur ve GenOffice’in açık olması gerekmez. CLI ile aynı özellikler.',
+      'Asistan chaoffice mcp’yi kendisi başlatır: burada açılacak bir şey yoktur ve ChaAI Office’in açık olması gerekmez. CLI ile aynı özellikler.',
     intgMcpHttpTitle: 'Yerel HTTP sunucusu',
     intgMcpHttpDesc:
-      'GenOffice içinde çalışır; asistan bir URL’ye bağlanır ve belgeyi Word düzenleyicisinde adım adım oluşturmasını izleyebilirsiniz. GenOffice açık kalmalıdır; şimdilik yalnızca Word belgeleri.',
+      'ChaAI Office içinde çalışır; asistan bir URL’ye bağlanır ve belgeyi Word düzenleyicisinde adım adım oluşturmasını izleyebilirsiniz. ChaAI Office açık kalmalıdır; şimdilik yalnızca Word belgeleri.',
     intgMcpHttpAdvanced: 'Gelişmiş: diğer uç noktalar ve günlük',
-    intgMcpTryNote: 'Asistan GenOffice’i MCP üzerinden çağırır; siz hiç komut yazmazsınız.',
+    intgMcpTryNote: 'Asistan ChaAI Office’i MCP üzerinden çağırır; siz hiç komut yazmazsınız.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Bunu bir terminalde bir kez çalıştırın:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop veya MCP destekli başka bir asistan',
@@ -1926,10 +1926,10 @@ const upstreamStrings = {
     intgSavedTo: '{path} konumuna kaydedildi',
     intgCopied: 'Kopyalandı',
     intgCliEphemeral:
-      'Önce GenOffice’i Uygulamalar klasörüne sürükleyin, sonra komut satırını kullanın.',
+      'Önce ChaAI Office’i Uygulamalar klasörüne sürükleyin, sonra komut satırını kullanın.',
     intgCopyPath: 'Yolu kopyala',
     intgCliNeedsUpdate:
-      'Bu beceri komut satırı {v} veya daha yenisini gerektirir; GenOffice’i güncelleyin.',
+      'Bu beceri komut satırı {v} veya daha yenisini gerektirir; ChaAI Office’i güncelleyin.',
     intgLoading: 'Denetleniyor…',
     intgUpdateDue: 'Beceri güncellemesi mevcut',
     setSecAiModel: 'AI Modeli',
@@ -1989,14 +1989,14 @@ const upstreamStrings = {
       'Sağlayıcıları Genspark olarak ayarlıyken web araması, görüntü oluşturma ve medya analizi Genspark üzerinden çalışır ve kredi kullanır; kapalıyken arama ücretsiz kaynakları kullanır ve Genspark görüntü araçları kullanılamaz.',
     setGithub: 'Açık Kaynak',
     starOnGitHub: 'GitHub’da yıldızla',
-    starPromptTitle: 'GenOffice’i beğeniyor musunuz?',
-    starPromptTitleN: 'GenOffice ile {n} belge açtınız',
+    starPromptTitle: 'ChaAI Office’i beğeniyor musunuz?',
+    starPromptTitleN: 'ChaAI Office ile {n} belge açtınız',
     starPromptBody:
-      'GenOffice ücretsiz ve açık kaynaklıdır. GitHub’da bir yıldız, ekibi desteklemenin en iyi yoludur.',
+      'ChaAI Office ücretsiz ve açık kaynaklıdır. GitHub’da bir yıldız, ekibi desteklemenin en iyi yoludur.',
     starPromptGo: 'GitHub’da yıldızla',
     starPromptDone: 'Zaten yıldızladım',
     starPromptLater: 'Belki daha sonra',
-    onbStarHint: 'GenOffice’i beğendiyseniz GitHub’da bize bir yıldız verin.',
+    onbStarHint: 'ChaAI Office’i beğendiyseniz GitHub’da bize bir yıldız verin.',
     setEmail: 'E-posta',
     setNotLoggedIn: 'Giriş yapılmadı',
     setViewUsage: 'Kullanımı görüntüle',
@@ -2009,13 +2009,13 @@ const upstreamStrings = {
     appMenu: 'Menü',
     newTab: 'Yeni sekme',
     // First-run onboarding
-    onbTitle1: 'GenOffice’e hoş geldiniz',
+    onbTitle1: 'ChaAI Office’e hoş geldiniz',
     onbSubtitle1: 'İlk açık kaynaklı, AI yerlisi ofis paketi',
     onbBody1:
       'Belgeler oluşturun, tablolar hazırlayın, sunular yapın ve PDF’leri inceleyin. AI her adıma yerleşiktir.',
     onbTitle2: 'Bu daha başlangıç',
     onbBody2:
-      'GenOffice hâlâ alfa aşamasında. Geri bildirim paylaşmak ve sıradakileri şekillendirmeye yardım etmek için GenTeam’deki grup sohbetine katılın.',
+      'ChaAI Office hâlâ alfa aşamasında. Geri bildirim paylaşmak ve sıradakileri şekillendirmeye yardım etmek için GenTeam’deki grup sohbetine katılın.',
     onbCredits: 'Etkin katkıda bulunanlar **1.000+ Genspark kredisi** kazanır',
     onbJoinGenTeam: 'GenTeam’e katıl',
     onbSkip: 'Atla',
@@ -2027,7 +2027,7 @@ const upstreamStrings = {
     onbNote3: 'AI özellikleri Genspark kredisi tüketebilir.',
     onbBack: 'Geri',
     intgSkillsDesc:
-      'GenOffice yalnızca kendi beceri klasöründeki becerileri kullanır. Bir klasör veya zip içe aktarıldığında becerinin tamamı kopyalanır; içe aktarma sırasında hiçbir şey çalıştırılmaz.',
+      'ChaAI Office yalnızca kendi beceri klasöründeki becerileri kullanır. Bir klasör veya zip içe aktarıldığında becerinin tamamı kopyalanır; içe aktarma sırasında hiçbir şey çalıştırılmaz.',
     intgSkillsEmpty: 'Henüz beceri yüklenmedi.',
     intgSkillsImportFolder: 'Klasörü içe aktar…',
     intgSkillsImportZip: 'Beceri paketini içe aktar (zip / .md)…',
@@ -2036,7 +2036,7 @@ const upstreamStrings = {
     intgSkillsImportDone: '{name} içe aktarıldı',
     intgSkillsImportFailed: 'İçe aktarma başarısız oldu: {reason}',
     intgSkillsRemove: 'Kaldır',
-    intgSkillsRemoveConfirm: '"{name}" becerisi kaldırılsın mı? Klasörü GenOffice’ten silinir.',
+    intgSkillsRemoveConfirm: '"{name}" becerisi kaldırılsın mı? Klasörü ChaAI Office’ten silinir.',
     intgSkillsRemoved: '{name} kaldırıldı',
     intgSkillsRead: 'Ayrıntılar',
     intgSkillsMine: 'Becerilerim',
@@ -2305,7 +2305,7 @@ const upstreamStrings = {
     saveLocation: '保存先',
     setRestoreSession: '前回のドキュメントを再度開く',
     setRestoreSessionDesc:
-      'GenOffice を閉じたときに開いていたドキュメントを、次回起動時に自動で開き直します。',
+      'ChaAI Office を閉じたときに開いていたドキュメントを、次回起動時に自動で開き直します。',
     setTabSleep: '非アクティブなタブをスリープ',
     setTabSleepDesc:
       '多くのタブを開いているとき、しばらく見ていないタブはメモリを解放し、戻ったときにファイルを再度開きます。未保存の変更があるタブやピン留めしたタブはスリープしません。',
@@ -2835,7 +2835,7 @@ const upstreamStrings = {
     saveLocation: '저장 위치',
     setRestoreSession: '지난번 문서 다시 열기',
     setRestoreSessionDesc:
-      'GenOffice를 닫을 때 열려 있던 문서를 다음 실행 시 자동으로 다시 엽니다.',
+      'ChaAI Office를 닫을 때 열려 있던 문서를 다음 실행 시 자동으로 다시 엽니다.',
     setTabSleep: '비활성 탭 절전',
     setTabSleepDesc:
       '탭이 많이 열려 있으면 한동안 보지 않은 탭은 메모리를 해제하고 돌아올 때 파일을 다시 엽니다. 저장하지 않은 변경이 있거나 고정된 탭은 절전되지 않습니다.',
@@ -3353,7 +3353,7 @@ const upstreamStrings = {
     setUpdateRestart: 'Redémarrer et installer',
     setAutoUpdateCheck: 'Rechercher automatiquement les mises à jour',
     setAutoUpdateCheckDesc:
-      'Désactivé, GenOffice ne recherche plus de nouvelle version au démarrage ni en arrière-plan. Vous pouvez toujours vérifier via Aide › Rechercher des mises à jour.',
+      'Désactivé, ChaAI Office ne recherche plus de nouvelle version au démarrage ni en arrière-plan. Vous pouvez toujours vérifier via Aide › Rechercher des mises à jour.',
     updateChannel: 'Canal de mise à jour',
     channelStable: 'Stable',
     channelBeta: 'Bêta',
@@ -3366,7 +3366,7 @@ const upstreamStrings = {
     saveLocation: "Emplacement d'enregistrement",
     setRestoreSession: 'Rouvrir les documents de la dernière fois',
     setRestoreSessionDesc:
-      'Les documents ouverts à la fermeture de GenOffice se rouvrent automatiquement au prochain démarrage.',
+      'Les documents ouverts à la fermeture de ChaAI Office se rouvrent automatiquement au prochain démarrage.',
     setTabSleep: 'Mettre en veille les onglets inactifs',
     setTabSleepDesc:
       'Lorsque de nombreux onglets sont ouverts, ceux que vous n’avez pas consultés depuis un moment libèrent leur mémoire et rouvrent leur fichier à votre retour. Les onglets avec des modifications non enregistrées ou épinglés ne sont jamais mis en veille.',
@@ -3898,7 +3898,7 @@ const upstreamStrings = {
     setUpdateRestart: 'Neustarten & installieren',
     setAutoUpdateCheck: 'Automatisch nach Updates suchen',
     setAutoUpdateCheckDesc:
-      'Wenn aus, sucht GenOffice weder beim Start noch im Hintergrund nach neuen Versionen. Über Hilfe › Nach Updates suchen können Sie weiterhin selbst prüfen.',
+      'Wenn aus, sucht ChaAI Office weder beim Start noch im Hintergrund nach neuen Versionen. Über Hilfe › Nach Updates suchen können Sie weiterhin selbst prüfen.',
     updateChannel: 'Update-Kanal',
     channelStable: 'Stabil',
     channelBeta: 'Beta',
@@ -3911,7 +3911,7 @@ const upstreamStrings = {
     saveLocation: 'Speicherort',
     setRestoreSession: 'Dokumente vom letzten Mal wieder öffnen',
     setRestoreSessionDesc:
-      'Dokumente, die beim Schließen von GenOffice geöffnet waren, werden beim nächsten Start automatisch wieder geöffnet.',
+      'Dokumente, die beim Schließen von ChaAI Office geöffnet waren, werden beim nächsten Start automatisch wieder geöffnet.',
     setTabSleep: 'Inaktive Tabs schlafen legen',
     setTabSleepDesc:
       'Sind viele Tabs offen, geben länger nicht angesehene ihren Speicher frei und öffnen ihre Datei bei der Rückkehr neu. Tabs mit ungespeicherten Änderungen oder angeheftete Tabs schlafen nie.',
@@ -4438,7 +4438,7 @@ const upstreamStrings = {
     setUpdateRestart: 'Reiniciar e instalar',
     setAutoUpdateCheck: 'Buscar actualizaciones automáticamente',
     setAutoUpdateCheckDesc:
-      'Si está desactivado, GenOffice deja de buscar nuevas versiones al iniciar y en segundo plano. Puede seguir comprobándolo en Ayuda › Buscar actualizaciones.',
+      'Si está desactivado, ChaAI Office deja de buscar nuevas versiones al iniciar y en segundo plano. Puede seguir comprobándolo en Ayuda › Buscar actualizaciones.',
     updateChannel: 'Canal de actualización',
     channelStable: 'Estable',
     channelBeta: 'Beta',
@@ -4451,7 +4451,7 @@ const upstreamStrings = {
     saveLocation: 'Ubicación de guardado',
     setRestoreSession: 'Volver a abrir los documentos de la última vez',
     setRestoreSessionDesc:
-      'Los documentos abiertos al cerrar GenOffice se vuelven a abrir automáticamente la próxima vez que se inicie.',
+      'Los documentos abiertos al cerrar ChaAI Office se vuelven a abrir automáticamente la próxima vez que se inicie.',
     setTabSleep: 'Suspender pestañas inactivas',
     setTabSleepDesc:
       'Con muchas pestañas abiertas, las que no has mirado durante un tiempo liberan su memoria y vuelven a abrir el archivo al regresar. Las pestañas con cambios sin guardar o fijadas nunca se suspenden.',
@@ -4970,7 +4970,7 @@ const upstreamStrings = {
     setUpdateRestart: 'รีสตาร์ตและติดตั้ง',
     setAutoUpdateCheck: 'ตรวจหาอัปเดตโดยอัตโนมัติ',
     setAutoUpdateCheckDesc:
-      'เมื่อปิด GenOffice จะไม่ตรวจหาเวอร์ชันใหม่ตอนเปิดโปรแกรมหรือในเบื้องหลัง คุณยังตรวจเองได้จาก วิธีใช้ › ตรวจหาการอัปเดต',
+      'เมื่อปิด ChaAI Office จะไม่ตรวจหาเวอร์ชันใหม่ตอนเปิดโปรแกรมหรือในเบื้องหลัง คุณยังตรวจเองได้จาก วิธีใช้ › ตรวจหาการอัปเดต',
     updateChannel: 'ช่องทางอัปเดต',
     channelStable: 'เสถียร',
     channelBeta: 'เบต้า',
@@ -4983,7 +4983,7 @@ const upstreamStrings = {
     saveLocation: 'ตำแหน่งบันทึก',
     setRestoreSession: 'เปิดเอกสารจากครั้งที่แล้วอีกครั้ง',
     setRestoreSessionDesc:
-      'เอกสารที่เปิดอยู่ตอนปิด GenOffice จะเปิดขึ้นอีกครั้งโดยอัตโนมัติเมื่อเริ่มโปรแกรมครั้งถัดไป',
+      'เอกสารที่เปิดอยู่ตอนปิด ChaAI Office จะเปิดขึ้นอีกครั้งโดยอัตโนมัติเมื่อเริ่มโปรแกรมครั้งถัดไป',
     setTabSleep: 'พักแท็บที่ไม่ได้ใช้งาน',
     setTabSleepDesc:
       'เมื่อเปิดแท็บจำนวนมาก แท็บที่ไม่ได้ดูสักพักจะคืนหน่วยความจำและเปิดไฟล์ใหม่เมื่อคุณกลับมา แท็บที่มีการเปลี่ยนแปลงที่ยังไม่บันทึกหรือปักหมุดไว้จะไม่พัก',
@@ -5493,7 +5493,7 @@ const upstreamStrings = {
     setUpdateRestart: 'Mulai ulang & instal',
     setAutoUpdateCheck: 'Periksa pembaruan secara otomatis',
     setAutoUpdateCheckDesc:
-      'Jika dimatikan, GenOffice tidak lagi memeriksa versi baru saat dijalankan atau di latar belakang. Anda tetap bisa memeriksa dari Bantuan › Periksa Pembaruan.',
+      'Jika dimatikan, ChaAI Office tidak lagi memeriksa versi baru saat dijalankan atau di latar belakang. Anda tetap bisa memeriksa dari Bantuan › Periksa Pembaruan.',
     updateChannel: 'Saluran Pembaruan',
     channelStable: 'Stabil',
     channelBeta: 'Beta',
@@ -5506,7 +5506,7 @@ const upstreamStrings = {
     saveLocation: 'Lokasi penyimpanan',
     setRestoreSession: 'Buka kembali dokumen dari sesi terakhir',
     setRestoreSessionDesc:
-      'Dokumen yang terbuka saat GenOffice ditutup akan dibuka kembali secara otomatis saat dijalankan berikutnya.',
+      'Dokumen yang terbuka saat ChaAI Office ditutup akan dibuka kembali secara otomatis saat dijalankan berikutnya.',
     setTabSleep: 'Tidurkan tab tidak aktif',
     setTabSleepDesc:
       'Saat banyak tab terbuka, tab yang lama tidak dilihat melepaskan memorinya dan membuka kembali berkasnya saat Anda kembali. Tab dengan perubahan belum disimpan atau yang disematkan tidak pernah tidur.',
@@ -6023,7 +6023,7 @@ const upstreamStrings = {
     setUpdateRestart: 'Перезапустить и установить',
     setAutoUpdateCheck: 'Автоматически проверять обновления',
     setAutoUpdateCheckDesc:
-      'Если выключено, GenOffice не проверяет новые версии при запуске и в фоне. Проверить вручную можно через Справка › Проверить обновления.',
+      'Если выключено, ChaAI Office не проверяет новые версии при запуске и в фоне. Проверить вручную можно через Справка › Проверить обновления.',
     updateChannel: 'Канал обновлений',
     channelStable: 'Стабильный',
     channelBeta: 'Бета',
@@ -6036,7 +6036,7 @@ const upstreamStrings = {
     saveLocation: 'Папка сохранения',
     setRestoreSession: 'Открывать документы прошлого сеанса',
     setRestoreSessionDesc:
-      'Документы, открытые при закрытии GenOffice, автоматически откроются при следующем запуске.',
+      'Документы, открытые при закрытии ChaAI Office, автоматически откроются при следующем запуске.',
     setTabSleep: 'Усыплять неактивные вкладки',
     setTabSleepDesc:
       'Когда открыто много вкладок, давно не просматриваемые освобождают память и заново открывают файл при возврате. Вкладки с несохранёнными изменениями и закреплённые не усыпляются.',
@@ -6553,7 +6553,7 @@ const upstreamStrings = {
     setUpdateRestart: 'إعادة التشغيل والتثبيت',
     setAutoUpdateCheck: 'التحقق من التحديثات تلقائيًا',
     setAutoUpdateCheckDesc:
-      'عند الإيقاف، لن يتحقق GenOffice من الإصدارات الجديدة عند التشغيل أو في الخلفية. يمكنك التحقق يدويًا من تعليمات › التحقق من التحديثات.',
+      'عند الإيقاف، لن يتحقق ChaAI Office من الإصدارات الجديدة عند التشغيل أو في الخلفية. يمكنك التحقق يدويًا من تعليمات › التحقق من التحديثات.',
     updateChannel: 'قناة التحديث',
     channelStable: 'مستقر',
     channelBeta: 'تجريبي',
@@ -6566,7 +6566,7 @@ const upstreamStrings = {
     saveLocation: 'موقع الحفظ',
     setRestoreSession: 'إعادة فتح مستندات المرة السابقة',
     setRestoreSessionDesc:
-      'تُعاد فتح المستندات المفتوحة عند إغلاق GenOffice تلقائيًا في المرة التالية التي يبدأ فيها.',
+      'تُعاد فتح المستندات المفتوحة عند إغلاق ChaAI Office تلقائيًا في المرة التالية التي يبدأ فيها.',
     setTabSleep: 'إسبات علامات التبويب غير النشطة',
     setTabSleepDesc:
       'عند فتح علامات تبويب كثيرة، تحرّر التي لم تطّلع عليها منذ فترة ذاكرتها وتعيد فتح ملفها عند عودتك. علامات التبويب ذات التغييرات غير المحفوظة أو المثبّتة لا تُسبَت أبدًا.',
@@ -7079,7 +7079,7 @@ const upstreamStrings = {
     setUpdateRestart: 'Reiniciar e instalar',
     setAutoUpdateCheck: 'Verificar atualizações automaticamente',
     setAutoUpdateCheckDesc:
-      'Desligado, o GenOffice deixa de procurar novas versões ao iniciar e em segundo plano. Você ainda pode verificar em Ajuda › Procurar atualizações.',
+      'Desligado, o ChaAI Office deixa de procurar novas versões ao iniciar e em segundo plano. Você ainda pode verificar em Ajuda › Procurar atualizações.',
     updateChannel: 'Canal de atualização',
     channelStable: 'Estável',
     channelBeta: 'Beta',
@@ -7092,7 +7092,7 @@ const upstreamStrings = {
     saveLocation: 'Local de salvamento',
     setRestoreSession: 'Reabrir os documentos da última vez',
     setRestoreSessionDesc:
-      'Os documentos abertos ao fechar o GenOffice são reabertos automaticamente na próxima vez que ele for iniciado.',
+      'Os documentos abertos ao fechar o ChaAI Office são reabertos automaticamente na próxima vez que ele for iniciado.',
     setTabSleep: 'Suspender separadores inativos',
     setTabSleepDesc:
       'Com muitos separadores abertos, os que não vê há algum tempo libertam a memória e reabrem o ficheiro quando regressa. Separadores com alterações por guardar ou fixados nunca são suspensos.',
@@ -7617,7 +7617,7 @@ const upstreamStrings = {
     setUpdateRestart: 'Riavvia e installa',
     setAutoUpdateCheck: 'Controlla automaticamente gli aggiornamenti',
     setAutoUpdateCheckDesc:
-      "Se disattivato, GenOffice non cerca più nuove versioni all'avvio o in background. Puoi comunque controllare da Aiuto › Controlla aggiornamenti.",
+      "Se disattivato, ChaAI Office non cerca più nuove versioni all'avvio o in background. Puoi comunque controllare da Aiuto › Controlla aggiornamenti.",
     updateChannel: 'Canale di aggiornamento',
     channelStable: 'Stabile',
     channelBeta: 'Beta',
@@ -7630,7 +7630,7 @@ const upstreamStrings = {
     saveLocation: 'Posizione di salvataggio',
     setRestoreSession: "Riapri i documenti dell'ultima volta",
     setRestoreSessionDesc:
-      'I documenti aperti alla chiusura di GenOffice si riaprono automaticamente al successivo avvio.',
+      'I documenti aperti alla chiusura di ChaAI Office si riaprono automaticamente al successivo avvio.',
     setTabSleep: 'Sospendi le schede inattive',
     setTabSleepDesc:
       'Con molte schede aperte, quelle che non guardi da un po’ liberano la memoria e riaprono il file al tuo ritorno. Le schede con modifiche non salvate o fissate non vengono mai sospese.',
@@ -8153,7 +8153,7 @@ const upstreamStrings = {
     setUpdateRestart: 'Uruchom ponownie i zainstaluj',
     setAutoUpdateCheck: 'Automatycznie sprawdzaj aktualizacje',
     setAutoUpdateCheckDesc:
-      'Po wyłączeniu GenOffice nie sprawdza nowych wersji przy uruchomieniu ani w tle. Nadal możesz sprawdzić ręcznie w Pomoc › Sprawdź aktualizacje.',
+      'Po wyłączeniu ChaAI Office nie sprawdza nowych wersji przy uruchomieniu ani w tle. Nadal możesz sprawdzić ręcznie w Pomoc › Sprawdź aktualizacje.',
     updateChannel: 'Kanał aktualizacji',
     channelStable: 'Stabilny',
     channelBeta: 'Beta',
@@ -8166,7 +8166,7 @@ const upstreamStrings = {
     saveLocation: 'Lokalizacja zapisu',
     setRestoreSession: 'Otwieraj ponownie dokumenty z ostatniej sesji',
     setRestoreSessionDesc:
-      'Dokumenty otwarte w chwili zamknięcia GenOffice zostaną automatycznie otwarte przy następnym uruchomieniu.',
+      'Dokumenty otwarte w chwili zamknięcia ChaAI Office zostaną automatycznie otwarte przy następnym uruchomieniu.',
     setTabSleep: 'Usypiaj nieaktywne karty',
     setTabSleepDesc:
       'Gdy otwartych jest wiele kart, te dawno nieoglądane zwalniają pamięć i ponownie otwierają plik po powrocie. Karty z niezapisanymi zmianami lub przypięte nigdy nie są usypiane.',
@@ -8684,7 +8684,7 @@ const upstreamStrings = {
     setUpdateRestart: 'Restartovat a nainstalovat',
     setAutoUpdateCheck: 'Automaticky kontrolovat aktualizace',
     setAutoUpdateCheckDesc:
-      'Po vypnutí GenOffice nekontroluje nové verze při spuštění ani na pozadí. Ručně můžete zkontrolovat v Nápověda › Zkontrolovat aktualizace.',
+      'Po vypnutí ChaAI Office nekontroluje nové verze při spuštění ani na pozadí. Ručně můžete zkontrolovat v Nápověda › Zkontrolovat aktualizace.',
     updateChannel: 'Kanál aktualizací',
     channelStable: 'Stabilní',
     channelBeta: 'Beta',
@@ -8909,7 +8909,7 @@ const upstreamStrings = {
     onbBack: 'Zpět',
     setRestoreSession: 'Znovu otevřít dokumenty z minula',
     setRestoreSessionDesc:
-      'Dokumenty otevřené při zavření GenOffice se při příštím spuštění automaticky znovu otevřou.',
+      'Dokumenty otevřené při zavření ChaAI Office se při příštím spuštění automaticky znovu otevřou.',
     setTabSleep: 'Uspávat neaktivní karty',
     setTabSleepDesc:
       'Když je otevřeno mnoho karet, ty dlouho nezobrazené uvolní paměť a při návratu znovu otevřou soubor. Karty s neuloženými změnami nebo připnuté se nikdy neuspí.',
@@ -9213,7 +9213,7 @@ const upstreamStrings = {
     setUpdateRestart: 'Herstarten en installeren',
     setAutoUpdateCheck: 'Automatisch controleren op updates',
     setAutoUpdateCheckDesc:
-      'Uitgeschakeld controleert GenOffice niet meer op nieuwe versies bij het starten of op de achtergrond. Je kunt nog steeds controleren via Help › Controleren op updates.',
+      'Uitgeschakeld controleert ChaAI Office niet meer op nieuwe versies bij het starten of op de achtergrond. Je kunt nog steeds controleren via Help › Controleren op updates.',
     updateChannel: 'Updatekanaal',
     channelStable: 'Stabiel',
     channelBeta: 'Bèta',
@@ -9226,7 +9226,7 @@ const upstreamStrings = {
     saveLocation: 'Opslaglocatie',
     setRestoreSession: 'Documenten van de vorige keer opnieuw openen',
     setRestoreSessionDesc:
-      'Documenten die open waren toen GenOffice werd gesloten, worden bij de volgende start automatisch opnieuw geopend.',
+      'Documenten die open waren toen ChaAI Office werd gesloten, worden bij de volgende start automatisch opnieuw geopend.',
     setTabSleep: 'Inactieve tabbladen laten slapen',
     setTabSleepDesc:
       'Als er veel tabbladen open zijn, geven tabbladen die u een tijd niet hebt bekeken hun geheugen vrij en openen ze het bestand opnieuw als u terugkeert. Tabbladen met niet-opgeslagen wijzigingen of vastgemaakte tabbladen slapen nooit.',
@@ -9747,7 +9747,7 @@ const upstreamStrings = {
     setUpdateRestart: 'Mulakan semula dan pasang',
     setAutoUpdateCheck: 'Semak kemas kini secara automatik',
     setAutoUpdateCheckDesc:
-      'Apabila dimatikan, GenOffice tidak lagi menyemak versi baharu semasa dimulakan atau di latar belakang. Anda masih boleh menyemak melalui Bantuan › Semak Kemas Kini.',
+      'Apabila dimatikan, ChaAI Office tidak lagi menyemak versi baharu semasa dimulakan atau di latar belakang. Anda masih boleh menyemak melalui Bantuan › Semak Kemas Kini.',
     updateChannel: 'Saluran Kemas Kini',
     channelStable: 'Stabil',
     channelBeta: 'Beta',
@@ -9760,7 +9760,7 @@ const upstreamStrings = {
     saveLocation: 'Lokasi simpanan',
     setRestoreSession: 'Buka semula dokumen dari kali terakhir',
     setRestoreSessionDesc:
-      'Dokumen yang dibuka semasa GenOffice ditutup akan dibuka semula secara automatik apabila ia dimulakan seterusnya.',
+      'Dokumen yang dibuka semasa ChaAI Office ditutup akan dibuka semula secara automatik apabila ia dimulakan seterusnya.',
     setTabSleep: 'Tidurkan tab tidak aktif',
     setTabSleepDesc:
       'Apabila banyak tab dibuka, tab yang lama tidak dilihat melepaskan memorinya dan membuka semula failnya apabila anda kembali. Tab dengan perubahan belum disimpan atau yang disemat tidak akan tidur.',
@@ -10280,7 +10280,7 @@ const upstreamStrings = {
     setUpdateRestart: 'הפעל מחדש והתקן',
     setAutoUpdateCheck: 'בדיקת עדכונים אוטומטית',
     setAutoUpdateCheckDesc:
-      'כשהאפשרות כבויה, GenOffice לא בודקת גרסאות חדשות בהפעלה או ברקע. עדיין אפשר לבדוק ידנית דרך עזרה › בדוק עדכונים.',
+      'כשהאפשרות כבויה, ChaAI Office לא בודקת גרסאות חדשות בהפעלה או ברקע. עדיין אפשר לבדוק ידנית דרך עזרה › בדוק עדכונים.',
     updateChannel: 'ערוץ עדכונים',
     channelStable: 'יציב',
     channelBeta: 'בטא',
@@ -10293,7 +10293,7 @@ const upstreamStrings = {
     saveLocation: 'מיקום שמירה',
     setRestoreSession: 'פתיחה מחדש של המסמכים מהפעם הקודמת',
     setRestoreSessionDesc:
-      'מסמכים שהיו פתוחים כש-GenOffice נסגרה ייפתחו מחדש אוטומטית בהפעלה הבאה.',
+      'מסמכים שהיו פתוחים כש-ChaAI Office נסגרה ייפתחו מחדש אוטומטית בהפעלה הבאה.',
     setTabSleep: 'השהה כרטיסיות לא פעילות',
     setTabSleepDesc:
       'כשפתוחות כרטיסיות רבות, כרטיסיות שלא נצפו זמן מה משחררות את הזיכרון ופותחות מחדש את הקובץ כשחוזרים אליהן. כרטיסיות עם שינויים שלא נשמרו או מוצמדות לעולם לא מושהות.',
@@ -10800,7 +10800,7 @@ const upstreamStrings = {
     setUpdateRestart: 'रीस्टार्ट कर इंस्टॉल करें',
     setAutoUpdateCheck: 'अपडेट अपने-आप जाँचें',
     setAutoUpdateCheckDesc:
-      'बंद होने पर GenOffice शुरू होते समय या बैकग्राउंड में नए संस्करण नहीं जाँचता। आप फिर भी सहायता › अपडेट जांचें से जाँच सकते हैं।',
+      'बंद होने पर ChaAI Office शुरू होते समय या बैकग्राउंड में नए संस्करण नहीं जाँचता। आप फिर भी सहायता › अपडेट जांचें से जाँच सकते हैं।',
     updateChannel: 'अपडेट चैनल',
     channelStable: 'स्थिर',
     channelBeta: 'बीटा',
@@ -10813,7 +10813,7 @@ const upstreamStrings = {
     saveLocation: 'सहेजने का स्थान',
     setRestoreSession: 'पिछली बार के दस्तावेज़ फिर से खोलें',
     setRestoreSessionDesc:
-      'GenOffice बंद करते समय खुले दस्तावेज़ अगली बार शुरू होने पर अपने-आप फिर से खुल जाते हैं।',
+      'ChaAI Office बंद करते समय खुले दस्तावेज़ अगली बार शुरू होने पर अपने-आप फिर से खुल जाते हैं।',
     setTabSleep: 'निष्क्रिय टैब को सुलाएँ',
     setTabSleepDesc:
       'कई टैब खुले होने पर, जिन्हें आपने कुछ समय से नहीं देखा वे मेमोरी छोड़ देते हैं और लौटने पर फ़ाइल फिर खोलते हैं। बिना सहेजे बदलाव वाले या पिन किए गए टैब कभी नहीं सोते।',
@@ -11335,7 +11335,7 @@ const upstreamStrings = {
     docThemeFollowApp: '跟隨應用程式主題',
     saveLocation: '預設儲存位置',
     setRestoreSession: '啟動時重新開啟上次的文件',
-    setRestoreSessionDesc: '關閉 GenOffice 時開啟的文件會在下次啟動時自動重新開啟。',
+    setRestoreSessionDesc: '關閉 ChaAI Office 時開啟的文件會在下次啟動時自動重新開啟。',
     setTabSleep: '休眠閒置的標籤頁',
     setTabSleepDesc:
       '開啟的標籤頁多到一定數量後，長時間未查看的會釋放記憶體；回到它時會重新開啟檔案。有未儲存變更或已釘選的標籤頁不會休眠。',

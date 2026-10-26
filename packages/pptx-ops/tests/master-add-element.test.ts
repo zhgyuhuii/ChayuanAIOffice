@@ -5,7 +5,7 @@
  * the archive entry is re-serialized with the new shape at transaction end.
  */
 import { describe, it, expect } from 'vitest'
-import { createBlankPptx, openPptx, parseMasterPart } from '@genoffice/pptx-engine'
+import { createBlankPptx, openPptx, parseMasterPart } from '@chaoffice/pptx-engine'
 import { runTxn } from '../src/ops/executor'
 import '../src/ops/index'
 

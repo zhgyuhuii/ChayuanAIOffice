@@ -18,7 +18,7 @@ export const tr = {
   aiQcStopped: 'Düzen denetimi durduruldu',
   aiQcCapped: '{count} sayfa daha denetlenmedi (çalıştırma başına sınır)',
   aiGskLoginBtn: 'ChaAI Office’a giriş yap',
-  aiPanelTitle: ​'ChaAI Office',
+  aiPanelTitle:  'ChaAI Office',
   aiOpenAssistant: 'AI asistanı aç',
   aiFactCheckBtn: 'AI Doğruluk Denetimi',
   aiFactCheckPrompt:

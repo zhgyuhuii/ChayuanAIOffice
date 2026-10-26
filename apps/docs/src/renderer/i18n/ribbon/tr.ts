@@ -190,7 +190,7 @@ export const tr = {
   ribbonReplaceTip: 'Metin bul ve değiştir',
   ribbonSelectAll: 'Tümünü Seç',
   ribbonSelectAllTip: 'Belgenin tamamını seç',
-  ribbonAiAssistant: ​'ChaAI Office',
+  ribbonAiAssistant:  'ChaAI Office',
   ribbonAiAssistantTip: 'Yapay zeka asistanını aç',
   ribbonRemoveTableStyleTip: 'Tablo stilini kaldır',
   ribbonNoStyle: 'Stil Yok',

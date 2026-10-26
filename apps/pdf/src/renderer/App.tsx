@@ -301,7 +301,6 @@ import {
   IconConvertPdf,
   IconInsertImage,
   IconEditImage,
-  IconLink,
   IconNight,
   IconSpread,
   IconSinglePage,

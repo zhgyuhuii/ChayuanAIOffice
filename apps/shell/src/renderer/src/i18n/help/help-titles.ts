@@ -523,7 +523,7 @@ const TOPIC_TITLES: Record<string, Record<HelpTitleLang, string>> = {
     he: 'התקנת ChaOffice',
     hi: 'ChaOffice इंस्टॉल करना',
     vi: 'Cài đặt ChaOffice',
-    tr: 'GenOffice kurulumu',  },
+    tr: 'ChaAI Office kurulumu',  },
   cli: {
     zh: '命令行与智能体',
     'zh-TW': '命令列與智慧代理',

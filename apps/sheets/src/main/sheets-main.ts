@@ -342,7 +342,7 @@ const tMain = createI18n({
     filterXlsm: 'Excel Makro İçerebilen Çalışma Kitapları',
     odsImportMsg: 'Bu .{ext} çalışma kitabı dönüştürülsün mü?',
     odsImportDetail:
-      'GenOffice ODF değil, .xlsx düzenler. Değerler, formüller ve tarihler aktarılır (formüller Excel söz dizimine yeniden yazılır; güvenle yeniden yazılamayanlar mevcut sonucunu korur). Stiller, sütun genişlikleri ve grafikler aktarılmaz. Özgün dosya asla değiştirilmez; dönüştürülen kopya ilk kaydettiğinizde .xlsx olarak kaydedilir.',
+      'ChaAI Office ODF değil, .xlsx düzenler. Değerler, formüller ve tarihler aktarılır (formüller Excel söz dizimine yeniden yazılır; güvenle yeniden yazılamayanlar mevcut sonucunu korur). Stiller, sütun genişlikleri ve grafikler aktarılmaz. Özgün dosya asla değiştirilmez; dönüştürülen kopya ilk kaydettiğinizde .xlsx olarak kaydedilir.',
     odsImportConvertBtn: 'Dönüştür ve aç',
     dlgAddAttachment: 'Ek Ekle',
     filterSupported: 'Desteklenen Dosyalar',
@@ -357,7 +357,7 @@ const tMain = createI18n({
     errImageNoText: 'Görsel eklerin metni yoktur; görsel kullanıcı mesajıyla birlikte gönderilir',
     errNotImage: 'desteklenen bir görsel türü değil',
     errChaOfficeNotLoggedIn:
-      'Genspark oturumu açılmamış: aşağıdaki “Genspark’ta oturum aç” düğmesine tıklayın, oturum açın ve yeniden deneyin',
+      'ChaAI Office oturumu açılmamış: aşağıdaki “ChaAI Office’ta oturum aç” düğmesine tıklayın, oturum açın ve yeniden deneyin',
     errNoApiKey: '{provider} için API anahtarı yapılandırılmamış',
     errAiRegion:
       'Bu modelin sağlayıcısı bulunduğunuz bölgeye hizmet vermiyor — başka bir model seçin veya ağınızı değiştirin',

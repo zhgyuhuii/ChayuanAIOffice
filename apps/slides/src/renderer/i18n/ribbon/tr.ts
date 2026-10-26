@@ -191,7 +191,7 @@ export const tr = {
   ribbonFlipH: 'Yatay Çevir',
   ribbonFlipV: 'Dikey Çevir',
   ribbonDistributeHint: '{title} (3 veya daha fazla öğe seçin)',
-  ribbonAiAssistant: ​'ChaAI Office',
+  ribbonAiAssistant:  'ChaAI Office',
   ribbonAiAssistantTip: 'AI Asistanı panelini göster veya gizle',
   ribbonGroupTable: 'Tablo',
   ribbonInsertTableTip: 'Tablo ekle (varsayılan stil; satır ve sütun seçin)',
