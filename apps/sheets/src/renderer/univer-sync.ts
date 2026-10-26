@@ -342,7 +342,17 @@ function loadSnapshotIntoUniverInner(
 /// product/countNums aggregations (Count Numbers shares "Count of" with
 /// Count, as Excel does).
 export const AGG_CAPTIONS: Record<
-  'sum' | 'count' | 'average' | 'max' | 'min' | 'product' | 'countNums',
+  | 'sum'
+  | 'count'
+  | 'average'
+  | 'max'
+  | 'min'
+  | 'product'
+  | 'countNums'
+  | 'stdDev'
+  | 'stdDevp'
+  | 'var'
+  | 'varp',
   string
 > = {
   sum: 'Sum',
@@ -352,6 +362,10 @@ export const AGG_CAPTIONS: Record<
   min: 'Min',
   product: 'Product',
   countNums: 'Count',
+  stdDev: 'StdDev',
+  stdDevp: 'StdDevp',
+  var: 'Var',
+  varp: 'Varp',
 }
 
 /// Default session pivot names, mirroring nextSessionTableName.

@@ -570,6 +570,8 @@ import { lastSurvivingScreenLine, netAxisDelta, screenToFile } from './view-tran
 import { selectionFormatEquals, toSelectionFormat, type SelectionFormat } from './selection-format'
 import { ExcelShell, type SelectedShapeRibbon } from './ExcelShell'
 import { RecoveryDialog } from './RecoveryDialog'
+import { EncryptedWorkbookPasswordDialog } from './EncryptedWorkbookPasswordDialog'
+import { ChangeWorkbookPasswordDialog } from './ChangeWorkbookPasswordDialog'
 import { ToastHost } from './toast'
 import { showToast } from './toast-bus'
 import { AdvancedFilterDialog, type AdvancedFilterColumn } from './AdvancedFilterDialog'
@@ -860,6 +862,18 @@ export function App({
   /// cancelled, so instead of a silent no-op the user gets an explicit offer
   /// to fully load the workbook first.
   const [fullLoadPrompt, setFullLoadPrompt] = useState<'ask' | 'tooLarge' | null>(null)
+  const [encryptedPasswordPrompt, setEncryptedPasswordPrompt] = useState<{
+    readonly error: string | null
+    readonly resolve: (password: string | null) => void
+  } | null>(null)
+  const requestEncryptedWorkbookPassword = (error: string | null): Promise<string | null> =>
+    new Promise((resolve) => setEncryptedPasswordPrompt({ error, resolve }))
+  const answerEncryptedWorkbookPassword = (password: string | null): void => {
+    const prompt = encryptedPasswordPrompt
+    setEncryptedPasswordPrompt(null)
+    prompt?.resolve(password)
+  }
+  const [changeWorkbookPasswordOpen, setChangeWorkbookPasswordOpen] = useState(false)
   const [message, setMessage] = useState(t('appReadyInitial'))
   const sheetTabActions = useMemo(
     () => createSheetTabActions({ univerRef, lazyWorkbookRef, notify: setMessage }),
@@ -5593,6 +5607,12 @@ export function App({
   }
 
   function handleRibbonCommand(command: string): void {
+    if (command === 'workbook-change-password') {
+      if (lazyWorkbookRef.current?.file.passwordProtected) {
+        setChangeWorkbookPasswordOpen(true)
+      }
+      return
+    }
     if (command === 'watch-window') {
       setWatchOpen((open) => !open)
       return
@@ -6160,10 +6180,32 @@ export function App({
       if (!window.desktopApi) {
         throw new Error(t('appBridgeUnavailable'))
       }
-      const selected = await window.desktopApi.selectWorkbook()
+      let selected = await window.desktopApi.selectWorkbook()
       if (!selected) {
         setMessage(t('appOpenCanceled'))
         return
+      }
+      if ('passwordRequired' in selected) {
+        const encryptedPath = selected.path
+        let passwordError: string | null = null
+        let decryptedWorkbook: WorkbookFile | null = null
+        while (decryptedWorkbook === null) {
+          const password = await requestEncryptedWorkbookPassword(passwordError)
+          if (password === null) break
+          try {
+            decryptedWorkbook = await window.desktopApi.openEncryptedWorkbook(
+              encryptedPath,
+              password,
+            )
+          } catch (error: unknown) {
+            passwordError = error instanceof Error ? error.message : t('appOpenFailed')
+          }
+        }
+        selected = decryptedWorkbook
+        if (!selected) {
+          setMessage(t('appOpenCanceled'))
+          return
+        }
       }
       openLazyWorkbook(selected)
       setEmptyCsvNotice(selected.emptyCsv === true)
@@ -6205,6 +6247,42 @@ export function App({
       if (!(await commitActiveEditor())) return { ok: false }
       return handleSaveImpl(saveContext(), mode, quiet, explicitTarget)
     })
+  }
+  async function updateWorkbookPassword(newPassword: string): Promise<string | null> {
+    try {
+      return await saveGateRef.current.run(async () => {
+        if (!(await commitActiveEditor())) return t('appSaveFailed')
+        const beforeSave = lazyWorkbookRef.current
+        if (!beforeSave?.file.passwordProtected) {
+          return t('appWorkbookNotPasswordProtected')
+        }
+
+        // Commit all current sheet edits before changing the package password.
+        // The sidecar snapshot stays plaintext for this session, while the
+        // main process updates the encrypted file atomically on disk.
+        const saved = await handleSaveImpl(saveContext(), 'save', true)
+        const current = lazyWorkbookRef.current
+        if (!current) return t('appWorkbookNotReady')
+        if (!saved.ok && journalSize(current.editJournal) > 0) {
+          return saved.error ?? t('appSaveFailed')
+        }
+        if (!current.file.passwordProtected) {
+          return t('appWorkbookNotPasswordProtected')
+        }
+
+        const result = await window.desktopApi.updateWorkbookPassword(
+          current.file.sessionId,
+          newPassword,
+        )
+        const file: WorkbookFile = { ...current.file, ...result }
+        lazyWorkbookRef.current = { ...current, file }
+        setWorkbookFile(file)
+        setMessage(t('appWorkbookPasswordChanged'))
+        return null
+      })
+    } catch (error: unknown) {
+      return error instanceof Error ? error.message : t('appSaveFailed')
+    }
   }
   closeSaveRef.current = async () => {
     const state = lazyWorkbookRef.current
@@ -7067,6 +7145,7 @@ export function App({
         onUnprotectSheet={unprotectActiveSheet}
         sheetTabActions={sheetTabActions}
         onGetWorkbookProtection={workbookProtectionEcho}
+        passwordProtected={workbookFile?.passwordProtected === true}
         formulaBarVisible={formulaBarVisible}
         crossHighlightVisible={crossHighlightVisible}
         onGetProtectedRanges={protectedRangesSnapshot}
@@ -7108,6 +7187,19 @@ export function App({
         <div className="workbook-opening-screen" role="status" aria-live="polite">
           {t('appOpeningWorkbook')}
         </div>
+      )}
+      {encryptedPasswordPrompt && (
+        <EncryptedWorkbookPasswordDialog
+          error={encryptedPasswordPrompt.error}
+          onSubmit={(password) => answerEncryptedWorkbookPassword(password)}
+          onClose={() => answerEncryptedWorkbookPassword(null)}
+        />
+      )}
+      {changeWorkbookPasswordOpen && (
+        <ChangeWorkbookPasswordDialog
+          onSubmit={updateWorkbookPassword}
+          onClose={() => setChangeWorkbookPasswordOpen(false)}
+        />
       )}
       <ThreadedCommentsPane getRuntime={getRuntime} />
       <NotePicturesPane
