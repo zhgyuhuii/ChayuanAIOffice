@@ -6,7 +6,7 @@
  */
 import { describe, expect, it } from 'vitest'
 import { textboxParaSignature } from '../src/renderer/editor/convert'
-import type { TextboxDisplay } from '@genoffice/docx-engine'
+import type { TextboxDisplay } from '@chaoffice/docx-engine'
 
 type Para = TextboxDisplay['paras'][number]
 

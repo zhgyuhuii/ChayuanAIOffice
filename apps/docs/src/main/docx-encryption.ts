@@ -16,7 +16,7 @@ import {
   isEncryptedOoxml as isEncryptedDocx,
   OoxmlDecryptError as DocxDecryptError,
   type OoxmlDecryptFailReason as DecryptFailReason,
-} from '@genoffice/electron-utils'
+} from '@chaoffice/electron-utils'
 
 export { decryptDocx, encryptDocx, isEncryptedDocx, DocxDecryptError, type DecryptFailReason }
 

@@ -61,6 +61,7 @@ export type UiLanguage =
   | 'hi'
   | 'zh-TW'
   | 'vi'
+  | 'tr'
 
 /** UI theme preference */
 export type UiTheme = 'light' | 'dark' | 'system'

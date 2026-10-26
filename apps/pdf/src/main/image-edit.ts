@@ -419,7 +419,7 @@ export function renderPagePreviewPng(
         }
         const textErased =
           excludeText && excludeText.length > 0
-            ? await eraseTextRuns(m, doc, page, excludeText)
+            ? await eraseTextRuns(m, doc, page, pageIndex, bytes, excludeText)
             : []
         // Page size in display orientation (pdfium already applies /Rotate; the
         // unsaved delta passed as quarter turns swaps the axes again when odd)

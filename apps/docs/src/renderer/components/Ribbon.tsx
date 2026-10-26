@@ -1681,7 +1681,10 @@ function RibbonInner({
         chain().updateAttributes('docParagraph', { listMarker: null }).run()
         return
       }
-      const numId = findNumIdOfKind(blocks, kind) ?? allocateNumId?.(kind) ?? null
+      const numId =
+        kind === 'ordered'
+          ? (allocateNumId?.(kind) ?? null)
+          : (findNumIdOfKind(blocks, kind) ?? allocateNumId?.(kind) ?? null)
       if (!numId) return
       const text = kind === 'bullet' ? '•' : '1.'
       chain()

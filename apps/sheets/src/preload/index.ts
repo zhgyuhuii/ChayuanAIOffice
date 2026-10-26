@@ -188,7 +188,11 @@ const desktopApi: DesktopApi = {
       throw new Error('Invalid reopen path.')
     }
     const result: unknown = await ipcRenderer.invoke(IPC_CHANNELS.reopenWorkbook, path)
-    return result === null ? null : parseWorkbookFile(result)
+    if (result === null) return null
+    // the password of a session that is already gone cannot be replayed; the
+    // recovery gives up cleanly and the user re-opens the file by hand
+    if (isRecord(result) && result.passwordRequired === true) return null
+    return parseWorkbookFile(result)
   },
   onSidecarCrashed(callback) {
     const listener = (): void => {
@@ -2270,9 +2274,9 @@ function parseSaveRequest(input: WorkbookSaveRequest): WorkbookSaveRequest {
     )
   )
     invalid('protected-range states: malformed entry')
-  cappedArray('redaction states', input.redactionStates, 1_000)
+  if (input.redactionStates !== null) cappedArray('redaction states', input.redactionStates, 1_000)
   if (
-    input.redactionStates.some(
+    (input.redactionStates ?? []).some(
       (state) =>
         !isRecord(state) ||
         typeof state.sheetName !== 'string' ||
@@ -2320,7 +2324,7 @@ function parseSaveRequest(input: WorkbookSaveRequest): WorkbookSaveRequest {
     input.themeState === null &&
     input.workbookProtectionState === null &&
     input.protectedRangeStates.length === 0 &&
-    input.redactionStates.length === 0
+    (input.redactionStates?.length ?? 0) === 0
   )
     invalid('no changes to save')
   if (input.sheetOps.length > 0 && input.sheetOrder.length === 0)

@@ -7297,7 +7297,6 @@ export default function App() {
         </button>
         <button
           className={`rb-big${sidebar === 'comments' ? ' active' : ''}`}
-          disabled={readOnly}
           onClick={() => setSidebar((v) => (v === 'comments' ? null : 'comments'))}
         >
           <span className="rb-big-icon">

@@ -32,6 +32,7 @@ export interface RevisionRange {
     | 'pPrChange'
     | 'paraMarkDel'
     | 'paraMarkIns'
+    | 'paraMarkRPrChange'
     | 'moveFrom'
     | 'moveTo'
     | 'rPrChange'

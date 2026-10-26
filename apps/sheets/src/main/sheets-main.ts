@@ -336,6 +336,78 @@ const tMain = createI18n({
     csvKeepFormatDetail:
       'CSV keeps plain values of a single sheet only — formulas, formatting, and any additional sheets are not saved to the .csv file.',
   },
+  tr: {
+    filterSpreadsheets: 'Elektronik Tablolar',
+    filterXlsx: 'Excel Çalışma Kitapları',
+    filterXlsm: 'Excel Makro İçerebilen Çalışma Kitapları',
+    odsImportMsg: 'Bu .{ext} çalışma kitabı dönüştürülsün mü?',
+    odsImportDetail:
+      'GenOffice ODF değil, .xlsx düzenler. Değerler, formüller ve tarihler aktarılır (formüller Excel söz dizimine yeniden yazılır; güvenle yeniden yazılamayanlar mevcut sonucunu korur). Stiller, sütun genişlikleri ve grafikler aktarılmaz. Özgün dosya asla değiştirilmez; dönüştürülen kopya ilk kaydettiğinizde .xlsx olarak kaydedilir.',
+    odsImportConvertBtn: 'Dönüştür ve aç',
+    dlgAddAttachment: 'Ek Ekle',
+    filterSupported: 'Desteklenen Dosyalar',
+    filterAll: 'Tüm Dosyalar',
+    errUnsupportedExt: '.{ext} dosyaları desteklenmiyor',
+    errNotFile: 'bir dosya değil',
+    errTooLarge: '{mb}MB sınırını aşıyor',
+    errImageTooLarge: 'görsel 5MB sınırını aşıyor',
+    errUnreadable: 'okunamıyor',
+    errFileTooLarge: 'Dosya boyut sınırını aşıyor',
+    errParseFailed: 'Dosya ayrıştırılamadı',
+    errImageNoText: 'Görsel eklerin metni yoktur; görsel kullanıcı mesajıyla birlikte gönderilir',
+    errNotImage: 'desteklenen bir görsel türü değil',
+    errChaOfficeNotLoggedIn:
+      'Genspark oturumu açılmamış: aşağıdaki “Genspark’ta oturum aç” düğmesine tıklayın, oturum açın ve yeniden deneyin',
+    errNoApiKey: '{provider} için API anahtarı yapılandırılmamış',
+    errAiRegion:
+      'Bu modelin sağlayıcısı bulunduğunuz bölgeye hizmet vermiyor — başka bir model seçin veya ağınızı değiştirin',
+    errAiBusy: 'AI hizmeti şu anda meşgul — lütfen birazdan yeniden deneyin',
+    errNoModel: 'Model adı yapılandırılmamış',
+    errImgAbsPath: 'Görsel yolu mutlak olmalıdır.',
+    errImgNotFound: 'Görsel dosyası bulunamadı: {path}',
+    errImgTooLarge20: 'Görsel 20MB’ı aşıyor ve eklenemez.',
+    errImgBadType: 'Dosya bir PNG/JPEG/GIF görseli değil.',
+    errDiskChanged:
+      'Çalışma kitabı açıldıktan sonra diskte değişti — bunun yerine Farklı Kaydet kullanın.',
+    autosaveFoundTitle: 'Kurtarılan sürüm bulundu',
+    autosaveDiskNewer:
+      'Not: diskteki dosya bu kurtarma kopyası kaydedildikten sonra değiştirilmiş. Geri yüklemek bu yeni değişikliklerin yerini alır.',
+    autosaveFoundBody:
+      'Son oturumunuzdan kaydedilmemiş değişiklikler var. Otomatik kaydedilen sürüm geri yüklensin mi? Geri yüklemeden sonra kaydetmek özgün dosyanın üzerine yazar.',
+    autosaveRestore: 'Geri Yükle',
+    autosaveDiscard: 'Vazgeç',
+    menuFile: 'Dosya',
+    menuOpenWorkbook: 'Çalışma Kitabı Aç…',
+    menuSave: 'Kaydet',
+    menuSaveAs: 'Farklı Kaydet…',
+    menuExportPdf: 'PDF Olarak Dışa Aktar…',
+    menuPrint: 'Yazdır…',
+    menuClose: 'Kapat',
+    menuQuit: 'Çık',
+    menuEdit: 'Düzenle',
+    menuUndo: 'Geri Al',
+    menuRedo: 'Yinele',
+    closeUnsavedMsg: '{count} kaydedilmemiş değişiklik',
+    closeUnsavedDetail: 'Kaydetmeden kapatırsanız değişiklikleriniz kaybolur.',
+    btnDontSave: 'Kaydetme',
+    btnCancel: 'İptal',
+    csvSaveAsNotice:
+      'CSV dosyaları biçimlendirmeyi koruyamaz — .xlsx olarak kaydetmek tüm değişikliklerinizi korur.',
+    menuExportCsv: 'CSV Olarak Dışa Aktar…',
+    filterCsv: 'CSV (Virgülle ayrılmış)',
+    csvFormulaLossMsg: 'Bu sayfa, CSV’nin koruyamayacağı formüller içeriyor.',
+    csvFormulaLossDetail:
+      'CSV yalnızca düz değerleri korur — formüller mevcut sonuçlarına indirgenir ve biçimlendirme kaybolur.',
+    csvKeepXlsxBtn: '.xlsx olarak kaydet',
+    csvContinueBtn: 'CSV olarak devam et',
+    csvActiveSheetOnlyNotice:
+      'CSV dosyaları tek bir sayfa tutar — yalnızca etkin sayfa "{name}" dışa aktarılacak.',
+    csvKeepFormatMsg: 'CSV biçiminde kaydetmeye devam edilsin mi?',
+    csvKeepFormatDetail:
+      'CSV yalnızca tek bir sayfanın düz değerlerini korur — formüller, biçimlendirme ve ek sayfalar .csv dosyasına kaydedilmez.',
+      errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+},
   ja: {
     filterSpreadsheets: 'スプレッドシート',
     filterXlsx: 'Excel ブック',
@@ -2959,6 +3031,16 @@ export function registerSheetsIpc(): void {
       if (selection.canceled || !selection.filePaths[0]) return null
       path = selection.filePaths[0]
     }
+    // Password first, recovery prompt second: the prompt's Restore/Discard
+    // choice is consumed by prepareWorkbookForOpen, so asking for the
+    // password (or rejecting a wrong one) must happen before it runs.
+    if (await isCfbWorkbookFile(path)) {
+      const bytes = await readFile(path)
+      if (isEncryptedOoxml(bytes)) {
+        if (password === undefined) return { passwordRequired: true as const, path }
+        await decryptOoxml(bytes, password)
+      }
+    }
     const prepared = await prepareWorkbookForOpen(
       entry.client,
       path,
@@ -3044,14 +3126,18 @@ export function registerSheetsIpc(): void {
     // LOCAL(#14 附带缺陷修复, R35 随 #2136 升级): workbook:reopen 死链修复沿用
     // openSelectedWorkbook 同一管线（无对话框、不消费 queued），加密簿携会话密码重开
     const priorSession = [...sessionFor(event).sessions.values()].find(
-      (session) => session.path === validated,
+      (session) => session.path === validated || session.restoreTarget === validated,
     )
     return openSelectedWorkbook(event, validated, priorSession?.password)
   })
 
   ipcMain.handle(IPC_CHANNELS.selectWorkbook, async (event) => {
     try {
-      return await openSelectedWorkbook(event)
+      const result = await openSelectedWorkbook(event)
+      if (result !== null && 'passwordRequired' in result) {
+        failHeadlessExport(event.sender.id, 'the input workbook is password-protected')
+      }
+      return result
     } catch (err) {
       // A headless export has no dialog to report a failed open through, and
       // its renderer would poll to the deadline waiting for a workbook that
@@ -4496,20 +4582,29 @@ async function writeWorkbookTo(
     sheetName,
     cells,
   }))
-  // Preserve redaction marks across this save, including optional fill data.
-  const redactionStates = request.redactionStates.map((state) => ({
-    sheetName: state.sheetName,
-    marks: state.marks.map((mark) => ({
-      startRow: mark.startRow,
-      endRow: mark.endRow,
-      startColumn: mark.startColumn,
-      endColumn: mark.endColumn,
-      label: mark.label,
-      ...('previousFill' in mark ? { previousFill: mark.previousFill ?? null } : {}),
-    })),
-  }))
+  // The redaction part is keyed by sheet NAME, so there is nothing to resolve
+  // here: the marks arrive under the names the session loaded, which is what
+  // the gateway's re-keying against this save's renames and removals expects.
+  const redactionStates =
+    (request.redactionStates ?? null)?.map((state) => ({
+      sheetName: state.sheetName,
+      marks: state.marks.map((mark) => ({
+        startRow: mark.startRow,
+        endRow: mark.endRow,
+        startColumn: mark.startColumn,
+        endColumn: mark.endColumn,
+        label: mark.label,
+        // Carried through, not rebuilt from the known fields: this mapping is
+        // the third place a mark passes through (the zod schema, the preload's
+        // hand-rolled check, and here), and only the zod one refuses an unknown
+        // key. The other two drop it silently, which is how a field added to the
+        // mark can vanish between the renderer and the file with nothing failing.
+        // Omitted when absent so an older part's bytes stay identical.
+        ...('previousFill' in mark ? { previousFill: mark.previousFill ?? null } : {}),
+      })),
+    })) ?? undefined
   const encryptedSaveTempDir = session.password
-    ? await mkdtemp(join(app.getPath('temp'), 'genoffice-encrypted-save-'))
+    ? await mkdtemp(join(app.getPath('temp'), 'chaoffice-encrypted-save-'))
     : undefined
   const plainTargetPath = encryptedSaveTempDir
     ? join(encryptedSaveTempDir, 'workbook.xlsx')

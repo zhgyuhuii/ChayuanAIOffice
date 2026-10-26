@@ -624,6 +624,7 @@ export const th = {
   ribbonLangHindi: 'ภาษาฮินดี',
   ribbonLangTraditionalChinese: 'ภาษาจีนตัวเต็ม',
   ribbonLangVietnamese: 'ภาษาเวียดนาม',
+  ribbonLangTurkish: 'ภาษาตุรกี',
   ribbonGroupLanguage: 'ภาษา',
   ribbonNewComment: 'ข้อคิดเห็นใหม่',
   ribbonNewCommentTip: 'เพิ่มข้อคิดเห็นให้ส่วนที่เลือก',

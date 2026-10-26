@@ -1,7 +1,21 @@
 #!/bin/sh
-# deb/rpm post-install: fix the Electron SUID sandbox permissions and expose
-# the chaoffice command line shipped inside the app.
+# deb/rpm post-install. Replaces electron-builder's default template, so its
+# chrome-sandbox and AppArmor steps are repeated here (chaoffice#2150 parity).
 set -e
+app="/opt/ChaAI Office"
+# Chromium aborts when the SUID helper exists without 4755; Chrome's deb sets it unconditionally.
+[ -f "$app/chrome-sandbox" ] && { chown root:root "$app/chrome-sandbox" 2>/dev/null || true; chmod 4755 "$app/chrome-sandbox" 2>/dev/null || true; }
+# Ubuntu 24.04+ restricts unprivileged userns; --skip-kernel-load doubles as the abi/4.0 check.
+profile_src="$app/resources/apparmor-profile"
+profile_dst="/etc/apparmor.d/chaoffice"
+if [ -f "$profile_src" ] && apparmor_status --enabled >/dev/null 2>&1; then
+  if apparmor_parser --skip-kernel-load --debug "$profile_src" >/dev/null 2>&1; then
+    cp -f "$profile_src" "$profile_dst"
+    if ! { [ -x /usr/bin/ischroot ] && /usr/bin/ischroot; } && command -v apparmor_parser >/dev/null 2>&1; then
+      apparmor_parser --replace --write-cache --skip-read-cache "$profile_dst" || true
+    fi
+  fi
+fi
 # electron-builder stamps every MIME type it registers with
 # <icon name="x-office-document"/>, which overrides the system's per-type
 # icons (spreadsheet, presentation, text, pdf...) for all 21 types we claim
@@ -10,18 +24,13 @@ set -e
 mime="/usr/share/mime/packages/chaoffice.xml"
 if [ -f "$mime" ] && grep -q '<icon name="x-office-document"' "$mime"; then
   sed -i '/<icon name="x-office-document"/d' "$mime"
-  command -v update-mime-database >/dev/null 2>&1 && update-mime-database /usr/share/mime >/dev/null 2>&1 || true
 fi
-app_dir="/opt/ChaAI Office"
-sandbox="$app_dir/chrome-sandbox"
-if [ -f "$sandbox" ]; then
-  chown root:root "$sandbox"
-  chmod 4755 "$sandbox"
-fi
+command -v update-mime-database >/dev/null 2>&1 && update-mime-database /usr/share/mime >/dev/null 2>&1 || true
+command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database /usr/share/applications >/dev/null 2>&1 || true
 # Expose the chaoffice command line shipped inside the app. Only an absent
 # name, a dead link or a link into our own install dir is taken over; anything
 # else at /usr/bin/chaoffice belongs to another program (chaoffice#893 parity).
-launcher="$app_dir/resources/cli/chaoffice"
+launcher="$app/resources/cli/chaoffice"
 link="/usr/bin/chaoffice"
 [ -x "$launcher" ] || exit 0
 if [ -L "$link" ]; then
@@ -34,3 +43,4 @@ elif [ -e "$link" ]; then
   exit 0
 fi
 ln -sfn "$launcher" "$link"
+exit 0

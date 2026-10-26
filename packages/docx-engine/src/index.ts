@@ -104,6 +104,7 @@ export {
   setPPrChange,
   stripPPrChange,
   stripParaMarkRevision,
+  resolveParaMarkRPrChange,
   paraMarkColor,
   stripParaMarkColor,
   patchFieldParagraphXml,

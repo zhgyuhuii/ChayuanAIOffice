@@ -626,6 +626,7 @@ export const ar = {
   ribbonLangHindi: 'الهندية',
   ribbonLangTraditionalChinese: 'الصينية التقليدية',
   ribbonLangVietnamese: 'الفيتنامية',
+  ribbonLangTurkish: 'التركية',
   ribbonGroupLanguage: 'اللغة',
   ribbonNewComment: 'تعليق جديد',
   ribbonNewCommentTip: 'إضافة تعليق على التحديد',

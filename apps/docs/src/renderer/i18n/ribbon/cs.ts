@@ -601,6 +601,7 @@ export const cs = {
   ribbonLangHindi: 'hindi',
   ribbonLangTraditionalChinese: 'tradiční čínština',
   ribbonLangVietnamese: 'vietnamština',
+  ribbonLangTurkish: 'turečtina',
   ribbonGroupLanguage: 'Jazyk',
   ribbonNewComment: 'Nový komentář',
   ribbonNewCommentTip: 'Přidat komentář k výběru',

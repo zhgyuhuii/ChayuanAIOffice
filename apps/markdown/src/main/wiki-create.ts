@@ -40,6 +40,8 @@ export interface CreateNoteOptions {
 export interface CreatedNote {
   /** absolute path of the note, created or already there */
   path: string
+  /** the spelling a wiki link resolves by: sanitized stem, directories kept */
+  target: string
   /** the `#Heading` part of the target, for the caller to open on */
   fragment: string
   /** false when a file already occupied the path and nothing was written */
@@ -77,6 +79,8 @@ export async function createWikiNote(
   // resolution's own candidate rule, mirrored exactly: an extension is the
   // file as written, a bare stem stands for `<stem>.md`
   const fileName = extname(base) ? base : `${base}.md`
+  // the spelling a wiki link resolves by: sanitized segments kept as written
+  const linkTarget = [...segments.slice(0, -1), base].join('/')
   const dir =
     segments.length > 1
       ? options.root
@@ -86,8 +90,8 @@ export async function createWikiNote(
   if (!dir) return null
   const path = join(dir, fileName)
   // already there: opening it is the whole job, a second write would clobber it
-  if (await fileExists(path)) return { path, fragment, created: false }
+  if (await fileExists(path)) return { path, target: linkTarget, fragment, created: false }
   await mkdir(dirname(path), { recursive: true })
   await atomicWriteFile(path, Buffer.alloc(0))
-  return { path, fragment, created: true }
+  return { path, target: linkTarget, fragment, created: true }
 }
