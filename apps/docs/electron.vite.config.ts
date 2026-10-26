@@ -38,8 +38,7 @@ export default defineConfig({
   main: {
     plugins: [
       externalizeDepsPlugin({
-        exclude: ['@chaoffice/docx-engine', '@chaoffice/electron-utils', '@chaoffice/font-metrics'],
-      }),
+        exclude: ['@chaoffice/docx-engine', '@chaoffice/electron-utils', '@chaoffice/font-metrics', '@chaoffice/xlsx-gateway'],      }),
     ],
     resolve: { alias: localAlias },
   },

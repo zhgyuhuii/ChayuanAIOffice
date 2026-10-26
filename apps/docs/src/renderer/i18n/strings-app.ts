@@ -20,6 +20,7 @@ import { he } from './app/he'
 import { hi } from './app/hi'
 import { zhTW } from './app/zh-TW'
 import { vi } from './app/vi'
+import { tr } from './app/tr'
 
 /** Strings for App.tsx / SettingsModal / non-Ribbon components (keys use the app prefix to mark the area) */
 export const appStrings = defineStrings({
@@ -43,5 +44,6 @@ export const appStrings = defineStrings({
   he,
   hi,
   vi,
+  tr,
   'zh-TW': zhTW,
 })

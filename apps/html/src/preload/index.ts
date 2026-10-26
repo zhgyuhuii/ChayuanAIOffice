@@ -145,6 +145,7 @@ const api: HtmlApi = {
   webSearch: (query, maxResults) => ipcRenderer.invoke(AI_CHANNELS.webSearch, query, maxResults),
   imageSearch: (query, maxResults) =>
     ipcRenderer.invoke(AI_CHANNELS.imageSearch, query, maxResults),
+  aiGenerateImage: (op) => ipcRenderer.invoke(AI_CHANNELS.aiGenerateImage, op),
   fetchImage: (url) => ipcRenderer.invoke(HTML_CHANNELS.fetchImage, url),
 }
 

@@ -8,7 +8,7 @@ import { run, tempDir } from './helpers'
 /**
  * Block-level content controls (w:sdt): a law firm wraps the parts of a
  * filing that must not be reflowed in one, with a tag and a lock, and finds
- * them again by tag (genoffice#2062).
+ * them again by tag (chaoffice#2062).
  */
 const SDT =
   '<w:sdt><w:sdtPr><w:alias w:val="Caption"/><w:tag w:val="example:caption"/>' +
@@ -148,4 +148,31 @@ it('rejects a wrap without a usable block range', async () => {
 
   const result = await run(['docs', 'apply', input, '--ops', ops, '--json'])
   expect(result.code).not.toBe(0)
+})
+
+it('rejects a wrap that cuts through an existing control', async () => {
+  const dir = tempDir()
+  const input = join(dir, 'in.docx')
+  const ops = join(dir, 'ops.json')
+  writeFileSync(input, await buildDocx({ bodyXml: BODY }))
+  writeFileSync(
+    ops,
+    JSON.stringify([{ op: 'wrap_content_control', startBlockIndex: 0, endBlockIndex: 1 }]),
+  )
+
+  const result = await run(['docs', 'apply', input, '--ops', ops, '--json'])
+  expect(result.code).not.toBe(0)
+  expect(result.stdout + result.stderr).toMatch(/cut through/)
+})
+
+it('rejects an unwrap of a tag no control carries', async () => {
+  const dir = tempDir()
+  const input = join(dir, 'in.docx')
+  const ops = join(dir, 'ops.json')
+  writeFileSync(input, await buildDocx({ bodyXml: BODY }))
+  writeFileSync(ops, JSON.stringify([{ op: 'unwrap_content_control', tag: 'example:missing' }]))
+
+  const result = await run(['docs', 'apply', input, '--ops', ops, '--json'])
+  expect(result.code).not.toBe(0)
+  expect(result.stdout + result.stderr).toMatch(/no content control is tagged/)
 })

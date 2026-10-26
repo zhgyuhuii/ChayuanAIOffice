@@ -10,7 +10,17 @@ import {
   watch,
   writeFileSync,
 } from 'node:fs'
-import { copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
+import {
+  copyFile,
+  mkdir,
+  mkdtemp,
+  open,
+  readFile,
+  readdir,
+  rm,
+  stat,
+  writeFile,
+} from 'node:fs/promises'
 import { refreshCsvDigest } from './csv-digest'
 import { createServer } from 'node:http'
 import { basename, dirname, isAbsolute, join } from 'node:path'
@@ -46,6 +56,10 @@ import appIconPath from '../../../shell/src/main/assets/app-icon.png?asset'
 const APP_ICON = nativeImage.createFromPath(appIconPath)
 import { z } from 'zod'
 import {
+  decryptOoxml,
+  encryptOoxml,
+  isCfbFile,
+  isEncryptedOoxml,
   appMenuLabels,
   appMenuTemplate,
   buildPrintableHtml,
@@ -322,6 +336,78 @@ const tMain = createI18n({
     csvKeepFormatDetail:
       'CSV keeps plain values of a single sheet only — formulas, formatting, and any additional sheets are not saved to the .csv file.',
   },
+  tr: {
+    filterSpreadsheets: 'Elektronik Tablolar',
+    filterXlsx: 'Excel Çalışma Kitapları',
+    filterXlsm: 'Excel Makro İçerebilen Çalışma Kitapları',
+    odsImportMsg: 'Bu .{ext} çalışma kitabı dönüştürülsün mü?',
+    odsImportDetail:
+      'ChaAI Office ODF değil, .xlsx düzenler. Değerler, formüller ve tarihler aktarılır (formüller Excel söz dizimine yeniden yazılır; güvenle yeniden yazılamayanlar mevcut sonucunu korur). Stiller, sütun genişlikleri ve grafikler aktarılmaz. Özgün dosya asla değiştirilmez; dönüştürülen kopya ilk kaydettiğinizde .xlsx olarak kaydedilir.',
+    odsImportConvertBtn: 'Dönüştür ve aç',
+    dlgAddAttachment: 'Ek Ekle',
+    filterSupported: 'Desteklenen Dosyalar',
+    filterAll: 'Tüm Dosyalar',
+    errUnsupportedExt: '.{ext} dosyaları desteklenmiyor',
+    errNotFile: 'bir dosya değil',
+    errTooLarge: '{mb}MB sınırını aşıyor',
+    errImageTooLarge: 'görsel 5MB sınırını aşıyor',
+    errUnreadable: 'okunamıyor',
+    errFileTooLarge: 'Dosya boyut sınırını aşıyor',
+    errParseFailed: 'Dosya ayrıştırılamadı',
+    errImageNoText: 'Görsel eklerin metni yoktur; görsel kullanıcı mesajıyla birlikte gönderilir',
+    errNotImage: 'desteklenen bir görsel türü değil',
+    errChaOfficeNotLoggedIn:
+      'ChaAI Office oturumu açılmamış: aşağıdaki “ChaAI Office’ta oturum aç” düğmesine tıklayın, oturum açın ve yeniden deneyin',
+    errNoApiKey: '{provider} için API anahtarı yapılandırılmamış',
+    errAiRegion:
+      'Bu modelin sağlayıcısı bulunduğunuz bölgeye hizmet vermiyor — başka bir model seçin veya ağınızı değiştirin',
+    errAiBusy: 'AI hizmeti şu anda meşgul — lütfen birazdan yeniden deneyin',
+    errNoModel: 'Model adı yapılandırılmamış',
+    errImgAbsPath: 'Görsel yolu mutlak olmalıdır.',
+    errImgNotFound: 'Görsel dosyası bulunamadı: {path}',
+    errImgTooLarge20: 'Görsel 20MB’ı aşıyor ve eklenemez.',
+    errImgBadType: 'Dosya bir PNG/JPEG/GIF görseli değil.',
+    errDiskChanged:
+      'Çalışma kitabı açıldıktan sonra diskte değişti — bunun yerine Farklı Kaydet kullanın.',
+    autosaveFoundTitle: 'Kurtarılan sürüm bulundu',
+    autosaveDiskNewer:
+      'Not: diskteki dosya bu kurtarma kopyası kaydedildikten sonra değiştirilmiş. Geri yüklemek bu yeni değişikliklerin yerini alır.',
+    autosaveFoundBody:
+      'Son oturumunuzdan kaydedilmemiş değişiklikler var. Otomatik kaydedilen sürüm geri yüklensin mi? Geri yüklemeden sonra kaydetmek özgün dosyanın üzerine yazar.',
+    autosaveRestore: 'Geri Yükle',
+    autosaveDiscard: 'Vazgeç',
+    menuFile: 'Dosya',
+    menuOpenWorkbook: 'Çalışma Kitabı Aç…',
+    menuSave: 'Kaydet',
+    menuSaveAs: 'Farklı Kaydet…',
+    menuExportPdf: 'PDF Olarak Dışa Aktar…',
+    menuPrint: 'Yazdır…',
+    menuClose: 'Kapat',
+    menuQuit: 'Çık',
+    menuEdit: 'Düzenle',
+    menuUndo: 'Geri Al',
+    menuRedo: 'Yinele',
+    closeUnsavedMsg: '{count} kaydedilmemiş değişiklik',
+    closeUnsavedDetail: 'Kaydetmeden kapatırsanız değişiklikleriniz kaybolur.',
+    btnDontSave: 'Kaydetme',
+    btnCancel: 'İptal',
+    csvSaveAsNotice:
+      'CSV dosyaları biçimlendirmeyi koruyamaz — .xlsx olarak kaydetmek tüm değişikliklerinizi korur.',
+    menuExportCsv: 'CSV Olarak Dışa Aktar…',
+    filterCsv: 'CSV (Virgülle ayrılmış)',
+    csvFormulaLossMsg: 'Bu sayfa, CSV’nin koruyamayacağı formüller içeriyor.',
+    csvFormulaLossDetail:
+      'CSV yalnızca düz değerleri korur — formüller mevcut sonuçlarına indirgenir ve biçimlendirme kaybolur.',
+    csvKeepXlsxBtn: '.xlsx olarak kaydet',
+    csvContinueBtn: 'CSV olarak devam et',
+    csvActiveSheetOnlyNotice:
+      'CSV dosyaları tek bir sayfa tutar — yalnızca etkin sayfa "{name}" dışa aktarılacak.',
+    csvKeepFormatMsg: 'CSV biçiminde kaydetmeye devam edilsin mi?',
+    csvKeepFormatDetail:
+      'CSV yalnızca tek bir sayfanın düz değerlerini korur — formüller, biçimlendirme ve ek sayfalar .csv dosyasına kaydedilmez.',
+      errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+},
   ja: {
     filterSpreadsheets: 'スプレッドシート',
     filterXlsx: 'Excel ブック',
@@ -1720,6 +1806,9 @@ interface SessionInfo {
   /// overwrite of the file can never corrupt the save base — and Save As
   /// stays usable after one. Removed when the session closes.
   readonly snapshotPath: string
+  /// Present only for an Office-encrypted workbook; saves re-encrypt the
+  /// patched OOXML package with this password before replacing the source.
+  readonly password?: string
   /// Digest of the snapshot (== the file at open time).
   readonly sha256: string
   readonly sheetNames: ReadonlyMap<string, string>
@@ -2397,6 +2486,7 @@ const sidecarOpenResultSchema = workbookFileSchema.omit({
 export async function createSheetsWindow(
   options: { includeAiHandlers?: boolean } = {},
 ): Promise<BrowserWindow> {
+  await getSessionSnapshotDirectory()
   const client = sidecar ?? new XlsxSidecarClient(resolveSidecarPath())
   sidecar = client
   client.start()
@@ -2899,8 +2989,16 @@ export function registerSheetsIpc(): void {
     })
   })
 
-  const openSelectedWorkbook = async (event: IpcMainInvokeEvent) => {
-    const entry = sessionFor(event)
+  /// `explicitPath` re-opens a known file without the picker or the shell
+  /// queue — the crash-recovery entry point. It runs the SAME pipeline
+  /// (prepareWorkbookForOpen + openWorkbookSession + the opened hook) as a
+  /// user-picked or shell-queued open, so a recovered workbook is a normal
+  /// session rather than a merge source.
+  const openSelectedWorkbook = async (
+    event: IpcMainInvokeEvent,
+    explicitPath?: string,
+    password?: string,
+  ) => {    const entry = sessionFor(event)
     let path = queuedWorkbookPaths.get(event.sender.id) ?? forcedWorkbookPath
     // consume immediately (before the slow session open) so the shell's
     // retry loop stops re-sending 'open' for the same file
@@ -2933,6 +3031,16 @@ export function registerSheetsIpc(): void {
       if (selection.canceled || !selection.filePaths[0]) return null
       path = selection.filePaths[0]
     }
+    // Password first, recovery prompt second: the prompt's Restore/Discard
+    // choice is consumed by prepareWorkbookForOpen, so asking for the
+    // password (or rejecting a wrong one) must happen before it runs.
+    if (await isCfbWorkbookFile(path)) {
+      const bytes = await readFile(path)
+      if (isEncryptedOoxml(bytes)) {
+        if (password === undefined) return { passwordRequired: true as const, path }
+        await decryptOoxml(bytes, password)
+      }
+    }
     const prepared = await prepareWorkbookForOpen(
       entry.client,
       path,
@@ -2953,22 +3061,35 @@ export function registerSheetsIpc(): void {
       return null
     }
     const saveDir = blankRequest?.saveDir
-    const result = await openWorkbookSession(entry.client, prepared.openPath, entry.sessions, {
-      suggestSaveAs:
-        prepared.suggestSaveAs ??
-        (blankDraft
-          ? join(
-              saveDir ?? configuredDefaultSaveDir(app),
-              `${blankRequest?.name ?? 'Untitled'}.xlsx`,
-            )
-          : undefined),
-      csvImport: prepared.csvImport,
-      csvSourcePath: prepared.csvSourcePath,
-      emptyCsv: prepared.emptyCsv,
-      importTempDir: prepared.importTempDir,
-      restoreTarget: prepared.restoreTarget,
-      blankDraft,
-    })
+    let result: WorkbookFile
+    try {
+      result = await openWorkbookSession(entry.client, prepared.openPath, entry.sessions, {
+        suggestSaveAs:
+          prepared.suggestSaveAs ??
+          (blankDraft
+            ? join(
+                saveDir ?? configuredDefaultSaveDir(app),
+                `${blankRequest?.name ?? 'Untitled'}.xlsx`,
+              )
+            : undefined),
+        csvImport: prepared.csvImport,
+        csvSourcePath: prepared.csvSourcePath,
+        emptyCsv: prepared.emptyCsv,
+        importTempDir: prepared.importTempDir,
+        restoreTarget: prepared.restoreTarget,
+        blankDraft,
+        password,
+      })
+    } catch (error) {
+      if (prepared.importTempDir !== undefined) {
+        await cleanupImportTempDirectory(app.getPath('temp'), prepared.importTempDir)
+      }
+      const message = error instanceof Error ? error.message : String(error)
+      if (message.includes('PASSWORD_REQUIRED') && password === undefined) {
+        return { passwordRequired: true as const, path }
+      }
+      throw error
+    }
     // The sidecar open itself can also outlive the tab after the pre-open
     // check. Close the newly registered session instead of stranding it in
     // the detached entry map.
@@ -2998,33 +3119,25 @@ export function registerSheetsIpc(): void {
   // main 侧 handler——univer-sync 崩溃恢复的「重开工作簿」路径一直是死链。按
   // openSelectedWorkbook 的同一管线按路径开簿（无对话框、无 queued 消费）。
   ipcMain.handle(IPC_CHANNELS.reopenWorkbook, async (event, path: unknown) => {
-    if (typeof path !== 'string' || !path || !existsSync(path)) return null
-    const entry = sessionFor(event)
-    const prepared = await prepareWorkbookForOpen(
-      entry.client,
-      path,
-      event.sender,
-      dialogParent(event),
+    const validated = z.string().min(1).parse(path)
+    if (!existsSync(validated)) return null
+    const ext = validated.slice(validated.lastIndexOf('.') + 1).toLowerCase()
+    if (!WORKBOOK_EXTS.has(ext)) return null
+    // LOCAL(#14 附带缺陷修复, R35 随 #2136 升级): workbook:reopen 死链修复沿用
+    // openSelectedWorkbook 同一管线（无对话框、不消费 queued），加密簿携会话密码重开
+    const priorSession = [...sessionFor(event).sessions.values()].find(
+      (session) => session.path === validated || session.restoreTarget === validated,
     )
-    if (!prepared) return null
-    if (event.sender.isDestroyed()) {
-      if (prepared.importTempDir !== undefined) {
-        await cleanupImportTempDirectory(app.getPath('temp'), prepared.importTempDir)
-      }
-      return null
-    }
-    return openWorkbookSession(entry.client, prepared.openPath, entry.sessions, {
-      csvImport: prepared.csvImport,
-      csvSourcePath: prepared.csvSourcePath,
-      emptyCsv: prepared.emptyCsv,
-      importTempDir: prepared.importTempDir,
-      restoreTarget: prepared.restoreTarget,
-    })
+    return openSelectedWorkbook(event, validated, priorSession?.password)
   })
 
   ipcMain.handle(IPC_CHANNELS.selectWorkbook, async (event) => {
     try {
-      return await openSelectedWorkbook(event)
+      const result = await openSelectedWorkbook(event)
+      if (result !== null && 'passwordRequired' in result) {
+        failHeadlessExport(event.sender.id, 'the input workbook is password-protected')
+      }
+      return result
     } catch (err) {
       // A headless export has no dialog to report a failed open through, and
       // its renderer would poll to the deadline waiting for a workbook that
@@ -3034,6 +3147,41 @@ export function registerSheetsIpc(): void {
     }
   })
 
+  ipcMain.handle(IPC_CHANNELS.openEncryptedWorkbook, async (event, input: unknown) => {
+    const { path, password } = z
+      .object({ path: z.string().min(1), password: z.string().min(1) })
+      .parse(input)
+    if (!existsSync(path)) throw new Error('Workbook file not found.')
+    return openSelectedWorkbook(event, path, password)
+  })
+
+  ipcMain.handle(IPC_CHANNELS.updateWorkbookPassword, async (event, input: unknown) => {
+    const { sessionId, newPassword } = z
+      .object({
+        sessionId: z.string().uuid(),
+        newPassword: z.string().min(1).max(1024),
+      })
+      .strict()
+      .parse(input)
+    const entry = sessionFor(event)
+    const session = entry.sessions.get(sessionId)
+    if (!session) throw new Error('Unknown workbook session.')
+    if (session.password === undefined) {
+      throw new Error('This workbook is not protected by an open password.')
+    }
+
+    const currentSha = await sha256File(session.path).catch(() => undefined)
+    if (currentSha !== undefined && currentSha !== session.sha256) {
+      throw new Error(tm('errDiskChanged'))
+    }
+
+    const encryptedBytes = encryptOoxml(await readFile(session.snapshotPath), newPassword)
+    await atomicWriteFile(session.path, encryptedBytes)
+    const sha256 = createHash('sha256').update(encryptedBytes).digest('hex')
+    entry.sessions.set(sessionId, { ...session, password: newPassword, sha256 })
+    clearWorkbookRecovery(session.path)
+    return { sha256, fileBytes: encryptedBytes.byteLength, passwordProtected: true as const }
+  })
   // Merge sources: same open pipeline as selectWorkbook, but multi-select,
   // never consuming the shell's queued open path and never retitling the tab
   // (workbookOpenedHook) — these sessions exist only to be read from and
@@ -3625,18 +3773,16 @@ export function registerSheetsIpc(): void {
       importTempDir: csvInPlace ? undefined : session.importTempDir,
       closeSidecar: () => client.close(request.sessionId),
     })
-    const file = await openWorkbookSession(
-      client,
-      targetPath,
-      entry.sessions,
-      csvInPlace
+    const file = await openWorkbookSession(client, targetPath, entry.sessions, {
+      ...(csvInPlace
         ? {
             csvImport: true,
             csvSourcePath: session.csvSourcePath,
             importTempDir: session.importTempDir,
           }
-        : undefined,
-    )
+        : undefined),
+      ...(session.password === undefined ? {} : { password: session.password }),
+    })
     // Notify shell (if running) so it can update the tab title and record the
     // saved path in recent files (mirrors the open hook; covers Save As + first
     // save after converting an .xls/.csv import). A CSV session's user-visible
@@ -4439,86 +4585,154 @@ async function writeWorkbookTo(
   // The redaction part is keyed by sheet NAME, so there is nothing to resolve
   // here: the marks arrive under the names the session loaded, which is what
   // the gateway's re-keying against this save's renames and removals expects.
-  const redactionStates = request.redactionStates.map((state) => ({
-    sheetName: state.sheetName,
-    marks: state.marks.map((mark) => ({
-      startRow: mark.startRow,
-      endRow: mark.endRow,
-      startColumn: mark.startColumn,
-      endColumn: mark.endColumn,
-      label: mark.label,
-      // Carried through, not rebuilt from the known fields: this mapping is
-      // the third place a mark passes through (the zod schema, the preload's
-      // hand-rolled check, and here), and only the zod one refuses an unknown
-      // key. The other two drop it silently, which is how a field added to the
-      // mark can vanish between the renderer and the file with nothing failing.
-      // Omitted when absent so an older part's bytes stay identical.
-      ...('previousFill' in mark ? { previousFill: mark.previousFill ?? null } : {}),
-    })),
-  }))
-  const mutation = await saveWorkbookViaSidecar({
-    client,
-    // The snapshot, not the live path: the save base must be the bytes this
-    // session's pending edits were made against, regardless of what other
-    // programs did to the file since.
-    sourcePath: session.snapshotPath,
-    targetPath,
-    edits,
-    bulkConstantFills,
-    structuralOps,
-    chartEdits: request.chartEdits,
-    // Located by package-absolute drawingPath, so no sheet-name mapping.
-    visualEdits: request.visualEdits,
-    sheetPlan,
-    filterStates,
-    hyperlinkEdits,
-    cfStates,
-    dvStates,
-    sheetProtections,
-    tabColorStates,
-    definedNamesState: request.definedNamesState,
-    themeState: request.themeState,
-    workbookProtectionState: request.workbookProtectionState,
-    protectedRangeStates,
-    visualAdditions,
-    cellImageAdditions,
-    pageSetupStates,
-    noteStates,
-    tableAdditions,
-    tableEdits,
-    pivotAdditions,
-    sparklineAdditions,
-    formulaValues,
-    pivotCacheRefreshPaths: request.pivotCacheRefreshPaths,
-    // Output-area expansion from layout growth: sheetId → sheet name; the part
-    // path is resolved by the gateway.
-    pivotRefreshUpdates: request.pivotRefreshUpdates.map((update) => ({
-      cachePath: update.cachePath,
-      sheetName: resolveSheetName(update.sheetId),
-      newOutputRef: update.newOutputRef,
-      ...(update.relayout === undefined
-        ? {}
-        : {
-            relayout: (({ sheetId: _sheetId, sourceSheetId, ...rest }) => ({
-              ...rest,
-              sourceSheetName: resolveSheetName(sourceSheetId),
-            }))(update.relayout),
-          }),
-    })),
-    // The marks ride in a package part of their own; the gateway re-keys them
-    // for the renames and removals `sheetPlan` carries.
-    redactionStates,
-  })
+  const redactionStates =
+    (request.redactionStates ?? null)?.map((state) => ({
+      sheetName: state.sheetName,
+      marks: state.marks.map((mark) => ({
+        startRow: mark.startRow,
+        endRow: mark.endRow,
+        startColumn: mark.startColumn,
+        endColumn: mark.endColumn,
+        label: mark.label,
+        // Carried through, not rebuilt from the known fields: this mapping is
+        // the third place a mark passes through (the zod schema, the preload's
+        // hand-rolled check, and here), and only the zod one refuses an unknown
+        // key. The other two drop it silently, which is how a field added to the
+        // mark can vanish between the renderer and the file with nothing failing.
+        // Omitted when absent so an older part's bytes stay identical.
+        ...('previousFill' in mark ? { previousFill: mark.previousFill ?? null } : {}),
+      })),
+    })) ?? undefined
+  const encryptedSaveTempDir = session.password
+    ? await mkdtemp(join(app.getPath('temp'), 'chaoffice-encrypted-save-'))
+    : undefined
+  const plainTargetPath = encryptedSaveTempDir
+    ? join(encryptedSaveTempDir, 'workbook.xlsx')
+    : targetPath
+  let mutation: Awaited<ReturnType<typeof saveWorkbookViaSidecar>>
+  try {
+    mutation = await saveWorkbookViaSidecar({
+      client,
+      // The snapshot, not the live path: the save base must be the bytes this
+      // session's pending edits were made against, regardless of what other
+      // programs did to the file since.
+      sourcePath: session.snapshotPath,
+      targetPath: plainTargetPath,
+      edits,
+      bulkConstantFills,
+      structuralOps,
+      chartEdits: request.chartEdits,
+      // Located by package-absolute drawingPath, so no sheet-name mapping.
+      visualEdits: request.visualEdits,
+      sheetPlan,
+      filterStates,
+      hyperlinkEdits,
+      cfStates,
+      dvStates,
+      sheetProtections,
+      tabColorStates,
+      definedNamesState: request.definedNamesState,
+      themeState: request.themeState,
+      workbookProtectionState: request.workbookProtectionState,
+      protectedRangeStates,
+      visualAdditions,
+      cellImageAdditions,
+      pageSetupStates,
+      noteStates,
+      tableAdditions,
+      tableEdits,
+      pivotAdditions,
+      sparklineAdditions,
+      formulaValues,
+      pivotCacheRefreshPaths: request.pivotCacheRefreshPaths,
+      // Output-area expansion from layout growth: sheetId → sheet name; the part
+      // path is resolved by the gateway.
+      pivotRefreshUpdates: request.pivotRefreshUpdates.map((update) => ({
+        cachePath: update.cachePath,
+        sheetName: resolveSheetName(update.sheetId),
+        newOutputRef: update.newOutputRef,
+        ...(update.relayout === undefined
+          ? {}
+          : {
+              relayout: (({ sheetId: _sheetId, sourceSheetId, ...rest }) => ({
+                ...rest,
+                sourceSheetName: resolveSheetName(sourceSheetId),
+              }))(update.relayout),
+            }),
+      })),
+      redactionStates,
+    })
+    if (session.password) {
+      const encryptedBytes = encryptOoxml(await readFile(plainTargetPath), session.password)
+      await atomicWriteFile(targetPath, encryptedBytes)
+    }
+  } finally {
+    if (encryptedSaveTempDir) {
+      await rm(encryptedSaveTempDir, { recursive: true, force: true }).catch(() => undefined)
+    }
+  }
   return mutation
 }
 
-/** Copies the workbook into the temp snapshot dir; the copy is the session's
+let sessionSnapshotDirectoryPromise: Promise<string> | undefined
+
+/** Create a private per-process snapshot directory and sweep abandoned sessions. */
+async function createSessionSnapshotDirectory(): Promise<string> {
+  const root = join(app.getPath('temp'), 'genoffice-sheets-sessions')
+  await mkdir(root, { recursive: true, mode: 0o700 })
+  const directory = join(root, `${process.pid}-${randomUUID()}`)
+  await mkdir(directory, { mode: 0o700 })
+
+  const previousDirectories = await readdir(root, { withFileTypes: true })
+  await Promise.all(
+    previousDirectories.map(async (entry) => {
+      if (!entry.isDirectory() || entry.name === directory.slice(root.length + 1)) return
+      const match = /^(\d+)-/.exec(entry.name)
+      if (!match) return
+      const pid = Number(match[1])
+      if (pid !== process.pid) {
+        try {
+          process.kill(pid, 0)
+          return
+        } catch (error) {
+          if ((error as NodeJS.ErrnoException).code !== 'ESRCH') return
+        }
+      }
+      await rm(join(root, entry.name), { recursive: true, force: true }).catch(() => undefined)
+    }),
+  )
+  return directory
+}
+
+async function getSessionSnapshotDirectory(): Promise<string> {
+  if (!sessionSnapshotDirectoryPromise) {
+    sessionSnapshotDirectoryPromise = createSessionSnapshotDirectory().catch((error: unknown) => {
+      sessionSnapshotDirectoryPromise = undefined
+      throw error
+    })
+  }
+  return sessionSnapshotDirectoryPromise
+}
+
+/** Header sniff only: an encrypted workbook is a CFB container, a plain one a zip. */
+async function isCfbWorkbookFile(path: string): Promise<boolean> {
+  const handle = await open(path, 'r')
+  try {
+    const header = Buffer.alloc(8)
+    const { bytesRead } = await handle.read(header, 0, header.length, 0)
+    return isCfbFile(header.subarray(0, bytesRead))
+  } finally {
+    await handle.close()
+  }
+}
+
+/** Snapshot bytes in a private temporary directory; this is the session's
  * save base (see SessionInfo.snapshotPath). */
-async function snapshotWorkbook(path: string): Promise<string> {
-  const dir = join(app.getPath('temp'), 'chaoffice-sheets-sessions')
-  await mkdir(dir, { recursive: true })
+async function snapshotWorkbook(path: string, bytes?: Buffer): Promise<string> {
+  const dir = await getSessionSnapshotDirectory()
   const snapshotPath = join(dir, `${randomUUID()}.xlsx`)
-  await copyFile(path, snapshotPath)
+  if (bytes) await writeFile(snapshotPath, bytes, { mode: 0o600 })
+  else await copyFile(path, snapshotPath)
   return snapshotPath
 }
 
@@ -4546,22 +4760,33 @@ async function openWorkbookSession(
     importTempDir?: string | undefined
     restoreTarget?: string | undefined
     blankDraft?: boolean | undefined
+    password?: string | undefined
   },
 ): Promise<WorkbookFile> {
-  const { suggestSaveAs, csvImport, csvSourcePath, emptyCsv, importTempDir, restoreTarget, blankDraft } =
+  const { suggestSaveAs, csvImport, csvSourcePath, emptyCsv, importTempDir, restoreTarget, blankDraft, password } =
     options ?? {}
+  // Only a CFB container (the encrypted wrapper) is read into memory; a plain
+  // zip package keeps the streamed copy + file digest so large workbooks do
+  // not double their footprint at open.
+  const sourceBytes = (await isCfbWorkbookFile(path)) ? await readFile(path) : undefined
+  const encryptedBytes = sourceBytes && isEncryptedOoxml(sourceBytes) ? sourceBytes : undefined
+  const encrypted = encryptedBytes !== undefined
+  if (encryptedBytes && password === undefined) {
+    throw new Error('This workbook is password-protected. PASSWORD_REQUIRED')
+  }
+  const snapshotBytes = encryptedBytes ? await decryptOoxml(encryptedBytes, password!) : undefined
   // Snapshot first, then the sidecar opens the snapshot (not the live path):
   // everything the session serves — cell reads, media, recalc, saves — comes
   // from the same bytes, even if the file on disk changes right after the
   // copy. The digest also describes exactly those bytes.
-  const snapshotPath = await snapshotWorkbook(path)
+  const snapshotPath = await snapshotWorkbook(path, snapshotBytes)
   try {
-    const [opened, digest, snapshotStat, restoreTargetSha, csvSourceSha] = await Promise.all([
-      client
-        .open(snapshotPath, getUiLang(), systemShortDate())
-        .then((result) => sidecarOpenResultSchema.parse(result)),
-      sha256File(snapshotPath),
-      stat(snapshotPath),
+    const [rawOpened, digest, fileBytes, restoreTargetSha, csvSourceSha] = await Promise.all([
+      client.open(snapshotPath, getUiLang(), systemShortDate()),
+      sourceBytes
+        ? createHash('sha256').update(sourceBytes).digest('hex')
+        : sha256File(snapshotPath),
+      sourceBytes ? sourceBytes.byteLength : stat(snapshotPath).then((s) => s.size),
       // Missing original (deleted since the crash) is fine: the write-back recreates it.
       restoreTarget === undefined
         ? Promise.resolve(undefined)
@@ -4570,12 +4795,14 @@ async function openWorkbookSession(
         ? Promise.resolve(undefined)
         : sha256File(csvSourcePath).catch(() => undefined),
     ])
+    const opened = sidecarOpenResultSchema.parse(rawOpened)
     sessions.set(opened.sessionId, {
       path,
       snapshotPath,
       sha256: digest,
       sheetNames: new Map(opened.sheets.map((sheet) => [sheet.id, sheet.name])),
       automaticRecoveryDisabled: !allowsAutomaticWorkbookRecovery(opened.sheets),
+      ...(encrypted ? { password: password! } : {}),
       ...(suggestSaveAs === undefined ? {} : { suggestSaveAs }),
       ...(blankDraft ? { blankDraft: true } : {}),
       ...(csvImport ? { csvImport } : {}),
@@ -4592,10 +4819,11 @@ async function openWorkbookSession(
       // recovery copy that is the original file, not the copy under userData.
       path: restoreTarget ?? path,
       sha256: digest,
-      fileBytes: snapshotStat.size,
+      fileBytes,
       readOnly: false,
       needsSaveAs: suggestSaveAs !== undefined,
       ...(blankDraft ? { blankDraft: true } : {}),
+      passwordProtected: encrypted,
       ...(csvSourcePath === undefined ? {} : { csvPath: csvSourcePath }),
       ...(emptyCsv ? { emptyCsv: true } : {}),
       restoredFromRecovery: restoreTarget !== undefined,

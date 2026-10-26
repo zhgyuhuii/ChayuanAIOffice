@@ -5,15 +5,24 @@
  * as callbacks.
  */
 import {
+  BaselineOffset,
   BooleanNumber,
   BorderStyleTypes,
   BorderType,
   CellValueType,
+  EDITOR_ACTIVATED,
+  FOCUSING_EDITOR_INPUT_FORMULA,
+  FOCUSING_EDITOR_STANDALONE,
+  IContextService,
   IUniverInstanceService,
   WrapStrategy,
   type ICellData,
   type IStyleData,
 } from '@univerjs/core'
+import {
+  SetInlineFormatSubscriptCommand,
+  SetInlineFormatSuperscriptCommand,
+} from '@univerjs/docs-ui'
 import { IRenderManagerService, SHEET_VIEWPORT_KEY } from '@univerjs/engine-render'
 import { ISheetClipboardService, SheetSkeletonManagerService } from '@univerjs/preset-sheets-core'
 import { CFNumberOperator, CFValueType } from '@univerjs/preset-sheets-conditional-formatting'
@@ -25,6 +34,7 @@ import { SET_ROW_IS_AUTO_HEIGHT_COMMAND } from './autofit-multi-row'
 import { CELL_HIDDEN_KEY, CELL_LOCKED_KEY, effectiveSheetProtection } from './sheet-protection'
 import { fullColumnSpans, fullRowSpans } from './autofit-selection'
 import { nextSheetName } from './op-executor'
+import { handleInsertNotePicture } from './note-picture-actions'
 import { transposeChartSeries, type ChartSeriesVisualState } from '@chaoffice/xlsx-gateway/domain/chart-visual'
 import { applyFlashFillTemplate, inferFlashFillTemplate } from '@chaoffice/xlsx-gateway/domain/flash-fill'
 import { csvSheetById, serializeActiveSheetCsv } from './csv-export'
@@ -96,6 +106,7 @@ import { applyShowFormulasView, formulaViewSheets } from './formula-view'
 import { t } from './i18n/locale'
 import { applyRightToLeftView, sheetIsRightToLeft } from './sheet-rtl-view'
 import { mergeWorkbooksIntoCurrent } from './merge-workbooks'
+import { openActiveDataValidationDropdown } from './data-validation-dropdown'
 import {
   handleOpenSlicerPicker,
   handleOpenTimelinePicker,
@@ -325,6 +336,22 @@ function addStyledCfRule(
   if (preset.fill) styled = styled.setBackground(preset.fill)
   if (preset.ink) styled = styled.setFontColor(preset.ink)
   worksheet.addConditionalFormattingRule(styled.setRanges([range]).build())
+}
+
+
+/// The in-cell editor holds a text edit (not a formula, and not the formula
+/// bar's standalone editor): a font button then formats the selected
+/// characters — or arms the typing style at a caret — as Excel does, instead
+/// of restyling the whole cell behind the editor. EDITOR_ACTIVATED tracks the
+/// edit session itself; the FOCUSING_* bits follow DOM focus, which the
+/// clicked ribbon button holds at this point.
+function cellEditorHoldsText(runtime: UniverRuntime): boolean {
+  const context = runtime.univer.__getInjector().get(IContextService)
+  return (
+    context.getContextValue(EDITOR_ACTIVATED) &&
+    !context.getContextValue(FOCUSING_EDITOR_INPUT_FORMULA) &&
+    !context.getContextValue(FOCUSING_EDITOR_STANDALONE)
+  )
 }
 
 /// Commands whose wire format is `name:argument:extra` (three segments).
@@ -1532,6 +1559,15 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
         },
       })
       ctx.setMessage(t('appObjectLocated', { n: found.length }))
+
+      return
+    }
+    case 'dv-dropdown-open':
+      openActiveDataValidationDropdown(runtime)
+      return
+    case 'scroll-to-active': {
+      const active = runtime.univerAPI.getActiveWorkbook()?.getActiveCell()
+      if (worksheet && active) worksheet.scrollToCell(active.getRow(), active.getColumn())
       return
     }
     case 'copy':
@@ -1910,6 +1946,10 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
     case 'notes-convert':
       handleThreadedCommentCommand(ctx, command, (fallback) => handleRibbonCommand(ctx, fallback))
       return
+    case 'note-insert-picture': {
+      handleInsertNotePicture(ctx, runtime)
+      return
+    }
     case 'note-open': {
       // A cell holds either a thread or a note (Excel); the save keeps the thread.
       const active = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
@@ -3069,9 +3109,21 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
       }
       case 'superscript':
       case 'subscript': {
+        // Inside the cell editor the buttons work on the selected characters
+        // ("1st" with a raised "st"); Univer's inline command toggles the run
+        // style and arms the typing style when the caret is collapsed.
+        if (cellEditorHoldsText(runtime)) {
+          void runtime.univerAPI.executeCommand(
+            name === 'superscript'
+              ? SetInlineFormatSuperscriptCommand.id
+              : SetInlineFormatSubscriptCommand.id,
+          )
+          break
+        }
         // Whole-cell font vertAlign; the two are mutually exclusive, and
         // pressing the active one returns the cell to the baseline.
-        const offset = name === 'superscript' ? 3 : 2
+        const offset =
+          name === 'superscript' ? BaselineOffset.SUPERSCRIPT : BaselineOffset.SUBSCRIPT
         range.setValue({
           s: { va: style.va === offset ? null : offset },
         } as unknown as ICellData)
@@ -3435,6 +3487,25 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
           const dayShift = ctx.lazyWorkbookRef.current?.file.date1904 === true ? 1462 : 0
           cell.setValue(Math.floor(serial) - dayShift)
           cell.setNumberFormat('yyyy/m/d')
+        }
+        return
+      }
+      case 'copy-above': {
+        // Excel's Ctrl+' / Ctrl+Shift+": the cell above's formula text verbatim
+        // (no reference shift) or its value only, into the ACTIVE cell.
+        if (!worksheet) return
+        const active = runtime.univerAPI.getActiveWorkbook()?.getActiveCell()
+        const row = active?.getRow() ?? range.getRow()
+        const column = active?.getColumn() ?? range.getColumn()
+        if (row <= 0) return
+        const above = worksheet.getRange(row - 1, column).getCellData()
+        const target = worksheet.getRange(row, column)
+        if (argument === 'formula') {
+          const formula = above?.f
+          if (typeof formula === 'string' && formula.length > 0) target.setValue({ f: formula })
+          else if (above?.v !== undefined && above.v !== null) target.setValue(above.v)
+        } else if (above?.v !== undefined && above.v !== null) {
+          target.setValue(above.v)
         }
         return
       }

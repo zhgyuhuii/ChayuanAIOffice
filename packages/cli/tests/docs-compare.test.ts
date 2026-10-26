@@ -60,7 +60,7 @@ async function fixtures(): Promise<{ dir: string; original: string; revised: str
   return { dir, original, revised }
 }
 
-describe('genoffice docs compare', () => {
+describe('chaoffice docs compare', () => {
   it('writes a redline with the differences marked as tracked changes', async () => {
     const { dir, original, revised } = await fixtures()
     const out = join(dir, 'redline.docx')
@@ -83,7 +83,7 @@ describe('genoffice docs compare', () => {
     ).toContain('red fox jumps.')
     const revisions = read.json().detail.revisions as { author: string }[]
     expect(revisions.length).toBeGreaterThan(0)
-    expect(revisions.every((r) => r.author === 'GenOffice')).toBe(true)
+    expect(revisions.every((r) => r.author === 'ChaAI Office')).toBe(true)
   })
 
   it('reports the counts and the output path as JSON', async () => {

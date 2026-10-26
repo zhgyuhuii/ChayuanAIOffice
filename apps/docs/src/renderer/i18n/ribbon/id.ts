@@ -631,6 +631,7 @@ export const id = {
   ribbonLangHindi: 'Hindi',
   ribbonLangTraditionalChinese: 'Tionghoa Tradisional',
   ribbonLangVietnamese: 'Vietnam',
+  ribbonLangTurkish: 'Turki',
   ribbonGroupLanguage: 'Bahasa',
   ribbonNewComment: 'Komentar Baru',
   ribbonNewCommentTip: 'Tambahkan komentar pada pilihan',

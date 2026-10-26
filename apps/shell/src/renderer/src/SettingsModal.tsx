@@ -58,6 +58,7 @@ const LANG_OPTIONS = [
   { value: 'pt', label: 'Português' },
   { value: 'ru', label: 'Русский' },
   { value: 'th', label: 'ไทย' },
+  { value: 'tr', label: 'Türkçe' },
   { value: 'vi', label: 'Tiếng Việt' },
   { value: 'zh', label: '简体中文' },
   { value: 'zh-TW', label: '繁體中文' },
@@ -342,6 +343,7 @@ const DECISION_ENDPOINTS: { value: DecisionEndpoint; label: string }[] = [
   { value: 'perplexity-flash', label: 'Perplexity (Flash v1.2)' },
   { value: 'liquid', label: 'Liquid AI (d1)' },
   { value: 'liquid-ultra', label: 'Liquid AI (d1-ultra)' },
+  { value: 'openai', label: 'OpenAI (gpt-6-luna)' },
   { value: 'cloudflare', label: 'Cloudflare (Clef)' },
   { value: 'cloudflare-flash', label: 'Cloudflare (Clef-flash)' },
   { value: 'kev', label: 'Kev (local)' },
@@ -629,6 +631,8 @@ export function SettingsModal({
   const [analyticsSaving, setAnalyticsSaving] = useState(false)
   const [autoSaveOn, setAutoSaveOn] = useState(false)
   const [tabSleepOn, setTabSleepOn] = useState(true)
+  const [restoreSessionOn, setRestoreSessionOn] = useState(false)
+  const [autoUpdateCheckOn, setAutoUpdateCheckOn] = useState(true)
   const [defaultApp, setDefaultApp] = useState<DefaultAppStatus | null>(null)
   const [defaultAppBusy, setDefaultAppBusy] = useState(false)
   const [defaultAppFailed, setDefaultAppFailed] = useState(false)
@@ -655,6 +659,9 @@ export function SettingsModal({
     void window.chaOffice.getAutoSaveDefault?.().then((v) => {
       if (alive) setAutoSaveOn(v.on)
     })
+    void window.chaOffice.getRestoreLastSession?.().then((on) => {
+      if (alive) setRestoreSessionOn(on)
+    })
     void window.chaOffice.getDefaultAppStatus?.().then((st) => {
       if (alive) setDefaultApp(st)
     })
@@ -666,6 +673,9 @@ export function SettingsModal({
     })
     void window.chaOffice.getUpdateChannel?.().then((ch) => {
       if (alive) setChannel(ch)
+    })
+    void window.chaOffice.getAutoUpdateCheck?.().then((on) => {
+      if (alive) setAutoUpdateCheckOn(on)
     })
     void window.chaOffice.getAppVersion?.().then((v) => {
       if (alive && v) setAppVersion(v)
@@ -1026,6 +1036,25 @@ export function SettingsModal({
                 <div className="set-field">
                   <div className="set-field-text">
                     <div className="set-field-stack">
+                      <div className="set-field-label">{t('setRestoreSession')}</div>
+                      <div className="set-field-desc">{t('setRestoreSessionDesc')}</div>
+                    </div>
+                  </div>
+                  <button
+                    className="set-switch"
+                    role="switch"
+                    aria-checked={restoreSessionOn}
+                    aria-label={t('setRestoreSession')}
+                    onClick={() => {
+                      const next = !restoreSessionOn
+                      setRestoreSessionOn(next)
+                      void window.chaOffice.setRestoreLastSession?.(next).catch(() => {})
+                    }}
+                  />
+                </div>
+                <div className="set-field">
+                  <div className="set-field-text">
+                    <div className="set-field-stack">
                       <div className="set-field-label">{t('setTabSleep')}</div>
                       <div className="set-field-desc">{t('setTabSleepDesc')}</div>
                     </div>
@@ -1118,6 +1147,25 @@ export function SettingsModal({
                       const next = v === 'beta' ? 'beta' : 'stable'
                       setChannel(next)
                       void window.chaOffice.setUpdateChannel(next)
+                    }}
+                  />
+                </div>
+                <div className="set-field">
+                  <div className="set-field-text">
+                    <div className="set-field-stack">
+                      <div className="set-field-label">{t('setAutoUpdateCheck')}</div>
+                      <div className="set-field-desc">{t('setAutoUpdateCheckDesc')}</div>
+                    </div>
+                  </div>
+                  <button
+                    className="set-switch"
+                    role="switch"
+                    aria-checked={autoUpdateCheckOn}
+                    aria-label={t('setAutoUpdateCheck')}
+                    onClick={() => {
+                      const next = !autoUpdateCheckOn
+                      setAutoUpdateCheckOn(next)
+                      void window.chaOffice.setAutoUpdateCheck?.(next).catch(() => {})
                     }}
                   />
                 </div>

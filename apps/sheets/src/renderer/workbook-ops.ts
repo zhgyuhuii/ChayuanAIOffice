@@ -557,6 +557,19 @@ export function applyAiPivotAdd(
         return Math.min(...numbers)
       case 'product':
         return numbers.reduce((total, value) => total * value, 1)
+      case 'stdDev':
+      case 'stdDevp':
+      case 'var':
+      case 'varp': {
+        const n = numbers.length
+        const mean = numbers.reduce((total, value) => total + value, 0) / n
+        const variance =
+          numbers.reduce((total, value) => total + (value - mean) ** 2, 0) /
+          (spec.agg === 'stdDevp' || spec.agg === 'varp' ? n : n - 1)
+        if (spec.agg === 'var') return variance
+        if (spec.agg === 'varp') return variance
+        return Math.sqrt(variance)
+      }
     }
   }
 

@@ -897,6 +897,8 @@ export const workbookFileSchema = z
     /// string-based patcher to rewrite safely every 30 seconds. Manual Save
     /// remains available; only the background crash-recovery copy is disabled.
     automaticRecoveryDisabled: z.boolean().optional(),
+    /// True when the OOXML package is encrypted with an Office open password.
+    passwordProtected: z.boolean().optional(),
     /// Theme palette as #RRGGBB in theme index order [lt1, dk1, lt2, dk2,
     /// accent1-6, hlink, folHlink]; absent without a readable theme.
     themeColors: z.array(z.string()).length(12).optional(),
@@ -1830,6 +1832,25 @@ export const workbookNoteStateSchema = z
             author: z.string().max(255),
             text: z.string().max(32_767),
             thread: sheetThreadSchema.nullable().optional(),
+            /**
+             * The picture this note shows. Absent keeps whatever the note was
+             * already carrying; `null` takes the picture away.
+             */
+            picture: z
+              .object({
+                mediaType: z.enum(['image/png', 'image/jpeg', 'image/gif']),
+                /// ~20MB decoded
+                base64: z.string().min(1).max(28_000_000),
+                /// The picture's pixel size: the note's shape is given it, so a
+                /// photograph is shown at its own proportions.
+                widthPx: z.number().int().positive().max(200_000),
+                heightPx: z.number().int().positive().max(200_000),
+                /// The file name, carried into the picture's title.
+                name: z.string().max(255).optional(),
+              })
+              .strict()
+              .nullable()
+              .optional(),
           })
           .strict(),
       )
@@ -2337,7 +2358,7 @@ export const workbookSaveRequestSchema = z
      * session loaded onto the name the file ends up with. Main passes them
      * through without a translation step.
      */
-    redactionStates: redactionStatesSchema.default([]),
+    redactionStates: redactionStatesSchema.nullable().default(null),
   })
   .strict()
   .refine(
@@ -2372,7 +2393,7 @@ export const workbookSaveRequestSchema = z
       (request.tableEdits?.length ?? 0) > 0 ||
       request.pivotAdditions.length > 0 ||
       request.sparklineAdditions.length > 0 ||
-      request.redactionStates.length > 0,
+      (request.redactionStates?.length ?? 0) > 0,
     { message: 'A save needs at least one edit.' },
   )
   .refine((request) => request.sheetOps.length === 0 || request.sheetOrder.length > 0, {
@@ -3173,7 +3194,12 @@ export interface DesktopApi {
    * press for dismissing open popovers
    */
   onChromePressed(handler: () => void): () => void
-  selectWorkbook(): Promise<WorkbookFile | null>
+  selectWorkbook(): Promise<WorkbookFile | { passwordRequired: true; path: string } | null>
+  openEncryptedWorkbook(path: string, password: string): Promise<WorkbookFile | null>
+  updateWorkbookPassword(
+    sessionId: string,
+    newPassword: string,
+  ): Promise<{ sha256: string; fileBytes: number; passwordProtected: true }>
   /** multi-select xlsx picker; each file opens a secondary sidecar session for merge reads */
   selectWorkbooksForMerge(): Promise<WorkbookFile[] | null>
   /** open explicit spreadsheet paths (chat attachments) as merge-source sessions */

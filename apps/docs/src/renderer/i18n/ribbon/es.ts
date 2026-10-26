@@ -636,6 +636,7 @@ export const es = {
   ribbonLangHindi: 'hindi',
   ribbonLangTraditionalChinese: 'chino tradicional',
   ribbonLangVietnamese: 'vietnamita',
+  ribbonLangTurkish: 'turco',
   ribbonGroupLanguage: 'Idioma',
   ribbonNewComment: 'Nuevo comentario',
   ribbonNewCommentTip: 'Agregar un comentario a la selección',

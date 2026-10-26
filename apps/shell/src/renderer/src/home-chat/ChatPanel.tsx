@@ -1164,6 +1164,7 @@ export function ChatPanel({
               <img src={attachIcon} alt="" aria-hidden />
             </button>
             <KbPickerButton lang={lang} selected={kbSelected} onToggle={kbToggle} />
+            {sessionUsage && <AiUsageChip usage={sessionUsage} lang={lang} />}
             {aiSettings && (
               <span className="chat-model-slot">
                 <ModelPickerButton

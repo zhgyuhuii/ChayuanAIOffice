@@ -5,6 +5,7 @@ import {
   readdirSync,
   statSync,
   unlinkSync,
+  watch,
   writeFileSync,
 } from 'node:fs'
 import { mkdtemp, open, readFile, rm, writeFile } from 'node:fs/promises'
@@ -24,9 +25,11 @@ import {
 } from 'electron'
 import type { WebContents } from 'electron'
 import {
+  createByokImageHandler,
   registerMediaIpc,
   registerSharedKbIpc
 } from '@chaoffice/ai-host'
+import { hasChaOfficeAuth } from '@chaoffice/ai-search'
 import {
   configuredDefaultSaveDir,
   contextMenuLabels,
@@ -77,13 +80,14 @@ import {
 } from './asset-mime'
 import { buildPreviewDocument } from './preview-document'
 import { inlineImagesForSingleFile, singleFileExportBaseName } from './single-file-html'
+import { registerHtmlAiSearchIpc } from './ai-search-ipc'
 import {
   assetBaseHref,
   previewUrlFor,
   registerPrivilegedSchemes,
   registerPreviewProtocol,
 } from './preview-protocol'
-import { ATTACHMENT_IMAGE_EXTS, HTML_CHANNELS } from '../shared/ipc'
+import { AI_CHANNELS, ATTACHMENT_IMAGE_EXTS, HTML_CHANNELS } from '../shared/ipc'
 import type {
   AttachmentAddResult,
   AttachmentImageResult,
@@ -151,6 +155,31 @@ const tDlg = createI18n({
     errParseFailed: 'Failed to parse file',
     errImageNoText: 'Image attachments have no text; the image is sent along with the user message',
     errNotImage: 'not a supported image type',
+  },
+  tr: {
+    dlgSaveTitle: 'HTML belgesini kaydet',
+    filterHtml: 'HTML belgeleri',
+    dlgPickImage: 'Bir görsel seçin',
+    filterImages: 'Görseller',
+    untitledFile: 'Adsız',
+    closeUnsavedMsg: 'Bu belge kaydedilmemiş değişiklikler içeriyor.',
+    closeUnsavedDetail: 'Kapatmadan önce değişiklikleri kaydetmek istiyor musunuz?',
+    btnSave: 'Kaydet',
+    btnDontSave: 'Kaydetme',
+    btnCancel: 'İptal',
+    dlgAddAttachment: 'Ek dosya ekle',
+    filterSupported: 'Desteklenen dosyalar',
+    filterAll: 'Tüm dosyalar',
+    errUnsupportedExt: '.{ext} dosyaları desteklenmiyor',
+    errNotFile: 'bir dosya değil',
+    errTooLarge: '{mb}MB sınırını aşıyor',
+    errImageTooLarge: 'görsel 5MB sınırını aşıyor',
+    errUnreadable: 'okunamıyor',
+    errFileTooLarge: 'Dosya boyut sınırını aşıyor',
+    errParseFailed: 'Dosya ayrıştırılamadı',
+    errImageNoText:
+      'Görsel ekleri metin sağlamaz; görsel kullanıcının mesajıyla birlikte gönderilir',
+    errNotImage: 'desteklenmeyen görsel türü',
   },
   ja: {
     dlgSaveTitle: 'HTML ドキュメントを保存',
@@ -1307,6 +1336,46 @@ function registerHtmlIpc(): void {
     mediaDir: () => join(app.getPath('userData'), 'media', 'files'),
   })
 
+  // BYOK-first image generation over ai-settings.json (markdown/pdf parity:
+  // 设置 → 生图、媒体与搜索 default model; lazy, constructed after app warm)
+  let byokImageSingleton: ReturnType<typeof createByokImageHandler> | null = null
+  const byokGenerateImage = (req: { prompt: string; aspectRatio?: string }) => {
+    byokImageSingleton ??= createByokImageHandler({
+      settingsPath: () => join(app.getPath('userData'), 'ai-settings.json'),
+      fs: {
+        readFile: (path) => readFile(path, 'utf8'),
+        writeFile: async (path, contents) => {
+          await writeFile(path, contents, 'utf8')
+        },
+        watch: (path, cb) => {
+          try {
+            const w = watch(path, () => cb())
+            return () => w.close()
+          } catch {
+            return () => {}
+          }
+        },
+      },
+      chaoffice: {
+        apiKey: () => '',
+        hasAuth: () => hasChaOfficeAuth(),
+        status: async () => ({ loggedIn: hasChaOfficeAuth() }),
+      },
+    })
+    return byokImageSingleton(req)
+  }
+  ipcMain.handle(
+    AI_CHANNELS.aiGenerateImage,
+    async (_e, op: { prompt?: unknown; aspectRatio?: unknown }) => {
+      const prompt = String(op?.prompt ?? '').trim()
+      if (!prompt) return { error: 'prompt must not be empty' }
+      return byokGenerateImage({
+        prompt,
+        aspectRatio: op?.aspectRatio ? String(op.aspectRatio) : undefined,
+      })
+    },
+  )
+
   registerImageProtocol()
   registerPreviewProtocol((wcId) => {
     const text = previewTextByWc.get(wcId)
@@ -2015,6 +2084,8 @@ export function startHtmlStandalone(): void {
   void app.whenReady().then(() => {
     installRendererProtocol({ html: join(__dirname, '../renderer') })
     registerHtmlIpc()
+    // shell mode leaves the shared ai:* search channels to docs-main registerAiIpc
+    registerHtmlAiSearchIpc()
     const win = new BrowserWindow({
       width: 1200,
       height: 850,

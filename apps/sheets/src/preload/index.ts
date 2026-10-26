@@ -117,7 +117,56 @@ const desktopApi: DesktopApi = {
   },
   async selectWorkbook() {
     const result: unknown = await ipcRenderer.invoke(IPC_CHANNELS.selectWorkbook)
+    if (result === null) return null
+    if (
+      typeof result === 'object' &&
+      result !== null &&
+      (result as { passwordRequired?: unknown }).passwordRequired === true &&
+      typeof (result as { path?: unknown }).path === 'string'
+    ) {
+      return { passwordRequired: true, path: (result as { path: string }).path }
+    }
+    return parseWorkbookFile(result)
+  },
+  async openEncryptedWorkbook(path, password) {
+    if (
+      typeof path !== 'string' ||
+      path.length === 0 ||
+      typeof password !== 'string' ||
+      password.length === 0
+    ) {
+      throw new Error('Invalid encrypted workbook request.')
+    }
+    const result: unknown = await ipcRenderer.invoke(IPC_CHANNELS.openEncryptedWorkbook, {
+      path,
+      password,
+    })
     return result === null ? null : parseWorkbookFile(result)
+  },
+  async updateWorkbookPassword(sessionId, newPassword) {
+    if (!isUuid(sessionId) || typeof newPassword !== 'string' || newPassword.length === 0) {
+      throw new Error('Invalid workbook password update request.')
+    }
+    const result: unknown = await ipcRenderer.invoke(IPC_CHANNELS.updateWorkbookPassword, {
+      sessionId,
+      newPassword,
+    })
+    if (
+      !isRecord(result) ||
+      typeof result.sha256 !== 'string' ||
+      !/^[a-f0-9]{64}$/i.test(result.sha256) ||
+      typeof result.fileBytes !== 'number' ||
+      !Number.isSafeInteger(result.fileBytes) ||
+      result.fileBytes < 0 ||
+      result.passwordProtected !== true
+    ) {
+      throw new Error('Invalid workbook password update response.')
+    }
+    return {
+      sha256: result.sha256,
+      fileBytes: result.fileBytes,
+      passwordProtected: true as const,
+    }
   },
   async selectWorkbooksForMerge() {
     const result: unknown = await ipcRenderer.invoke(IPC_CHANNELS.selectWorkbooksForMerge)
@@ -139,7 +188,11 @@ const desktopApi: DesktopApi = {
       throw new Error('Invalid reopen path.')
     }
     const result: unknown = await ipcRenderer.invoke(IPC_CHANNELS.reopenWorkbook, path)
-    return result === null ? null : parseWorkbookFile(result)
+    if (result === null) return null
+    // the password of a session that is already gone cannot be replayed; the
+    // recovery gives up cleanly and the user re-opens the file by hand
+    if (isRecord(result) && result.passwordRequired === true) return null
+    return parseWorkbookFile(result)
   },
   onSidecarCrashed(callback) {
     const listener = (): void => {
@@ -2221,9 +2274,9 @@ function parseSaveRequest(input: WorkbookSaveRequest): WorkbookSaveRequest {
     )
   )
     invalid('protected-range states: malformed entry')
-  cappedArray('redaction states', input.redactionStates, 1_000)
+  if (input.redactionStates !== null) cappedArray('redaction states', input.redactionStates, 1_000)
   if (
-    input.redactionStates.some(
+    (input.redactionStates ?? []).some(
       (state) =>
         !isRecord(state) ||
         typeof state.sheetName !== 'string' ||
@@ -2271,7 +2324,7 @@ function parseSaveRequest(input: WorkbookSaveRequest): WorkbookSaveRequest {
     input.themeState === null &&
     input.workbookProtectionState === null &&
     input.protectedRangeStates.length === 0 &&
-    input.redactionStates.length === 0
+    (input.redactionStates?.length ?? 0) === 0
   )
     invalid('no changes to save')
   if (input.sheetOps.length > 0 && input.sheetOrder.length === 0)

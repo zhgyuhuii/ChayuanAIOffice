@@ -156,6 +156,7 @@ export const AI_CHANNELS = {
   streamCancel: 'ai:stream-cancel',
   webSearch: 'ai:web-search',
   imageSearch: 'ai:image-search',
+  aiGenerateImage: 'html:ai-generate-image',
 } as const
 
 export interface WebSearchResult {
@@ -357,6 +358,8 @@ export interface HtmlApi {
   webSearch(query: string, maxResults?: number): Promise<WebSearchResult>
   /** Main-process image search (shared ai:image-search handler) */
   imageSearch(query: string, maxResults?: number): Promise<ImageSearchResult>
+  /** BYOK image generation (设置 → 生图、媒体与搜索 default model, markdown/pdf parity) */
+  aiGenerateImage(op: { prompt: string; aspectRatio?: string }): Promise<{ url?: string; model?: string; error?: string }>
   /** Download an image URL in the main process (CORS-free, scheme/target validated) */
   fetchImage(url: string): Promise<ImageData | null>
 }

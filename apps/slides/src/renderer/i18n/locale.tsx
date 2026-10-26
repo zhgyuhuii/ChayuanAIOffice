@@ -39,6 +39,7 @@ const AI_LANG_DIRECTIVES: Record<Lang, string> = {
   he: '\n\nהשב באותה שפה של הודעת המשתמש; אם לא ניתן לקבוע אותה, השב בעברית.',
   hi: '\n\nउपयोगकर्ता के संदेश की भाषा में ही उत्तर दें; यदि भाषा निर्धारित न हो सके, तो हिंदी में उत्तर दें।',
   vi: '\n\nTrả lời bằng ngôn ngữ của tin nhắn người dùng; nếu không xác định được, hãy trả lời bằng tiếng Việt.',
+  tr: '\n\nKullanıcı mesajıyla aynı dilde yanıt ver; dil belirlenemiyorsa Türkçe yanıt ver.',
   'zh-TW': '\n\n用與使用者訊息相同的語言回覆；無法判斷使用者訊息的語言時，用繁體中文回覆。',
 }
 
@@ -70,6 +71,7 @@ export const DATE_LOCALES: Record<Lang, string> = {
   hi: 'hi-IN',
   'zh-TW': 'zh-TW',
   vi: 'vi-VN',
+  tr: 'tr-TR',
 }
 
 const LocaleContext = createContext<Lang>('zh')

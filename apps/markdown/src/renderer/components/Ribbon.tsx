@@ -262,6 +262,7 @@ export function Ribbon({
         bold: e.isActive('bold'),
         italic: e.isActive('italic'),
         strike: e.isActive('strike'),
+        highlight: e.isActive('highlight'),
         code: e.isActive('code'),
         link: e.isActive('link'),
         bullet: e.isActive('bulletList'),
@@ -424,6 +425,14 @@ export function Ribbon({
                 onClick={() => toggleStyle(editor, 'strike')}
               >
                 <s>ab</s>
+              </IconBtn>
+              <IconBtn
+                title={t('highlight')}
+                active={state?.highlight}
+                disabled={off}
+                onClick={() => toggleStyle(editor, 'highlight')}
+              >
+                <mark>ab</mark>
               </IconBtn>
               <IconBtn
                 title={t('inlineCode')}
