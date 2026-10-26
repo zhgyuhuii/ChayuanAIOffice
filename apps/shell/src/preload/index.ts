@@ -341,6 +341,14 @@ const homeApi: HomeApi = {
     if (channel !== 'stable' && channel !== 'beta') throw new Error('Invalid update channel.')
     await ipcRenderer.invoke(HOME_CHANNELS.setUpdateChannel, channel)
   },
+  async getAutoUpdateCheck() {
+    const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.getAutoUpdateCheck)
+    return result !== false
+  },
+  async setAutoUpdateCheck(on) {
+    if (typeof on !== 'boolean') throw new Error('Invalid update check setting.')
+    await ipcRenderer.invoke(HOME_CHANNELS.setAutoUpdateCheck, on)
+  },
   async accountStatus() {
     const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.accountStatus)
     return (result ?? { loggedIn: false }) as AccountStatus

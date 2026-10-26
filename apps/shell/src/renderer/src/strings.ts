@@ -186,6 +186,9 @@ const upstreamStrings = {
     setUpdateTo: '更新到 {version}',
     setUpdateDownloading: '正在下载更新（{percent}%）',
     setUpdateRestart: '重启并安装',
+    setAutoUpdateCheck: '自动检查更新',
+    setAutoUpdateCheckDesc:
+      '关闭后，启动时和后台都不再检查新版本；仍可在“帮助 › 检查更新”中手动检查。',
     updateChannel: '更新通道',
     channelStable: '稳定版',
     channelBeta: 'Beta 版',
@@ -690,6 +693,9 @@ const upstreamStrings = {
     setUpdateTo: 'Update to {version}',
     setUpdateDownloading: 'Downloading update ({percent}%)',
     setUpdateRestart: 'Restart & install',
+    setAutoUpdateCheck: 'Check for updates automatically',
+    setAutoUpdateCheckDesc:
+      'When off, GenOffice no longer checks for new versions at launch or in the background. You can still check from Help › Check for Updates.',
     updateChannel: 'Update Channel',
     channelStable: 'Stable',
     channelBeta: 'Beta',
@@ -1214,6 +1220,9 @@ const upstreamStrings = {
     setUpdateTo: 'Cập nhật lên {version}',
     setUpdateDownloading: 'Đang tải bản cập nhật ({percent}%)',
     setUpdateRestart: 'Khởi động lại và cài đặt',
+    setAutoUpdateCheck: 'Tự động kiểm tra cập nhật',
+    setAutoUpdateCheckDesc:
+      'Khi tắt, GenOffice không còn kiểm tra phiên bản mới khi khởi động hoặc chạy nền. Bạn vẫn có thể kiểm tra trong Trợ giúp › Kiểm tra bản cập nhật.',
     updateChannel: 'Kênh cập nhật',
     channelStable: 'Ổn định',
     channelBeta: 'Beta',
@@ -1745,6 +1754,9 @@ const upstreamStrings = {
     setUpdateTo: '{version} に更新する',
     setUpdateDownloading: '更新をダウンロード中（{percent}%）',
     setUpdateRestart: '再起動してインストール',
+    setAutoUpdateCheck: 'アップデートを自動で確認',
+    setAutoUpdateCheckDesc:
+      'オフにすると、起動時やバックグラウンドで新しいバージョンを確認しなくなります。「ヘルプ › 更新を確認」から手動で確認できます。',
     updateChannel: '更新チャネル',
     channelStable: '安定版',
     channelBeta: 'ベータ版',
@@ -2272,6 +2284,9 @@ const upstreamStrings = {
     setUpdateTo: '{version}(으)로 업데이트',
     setUpdateDownloading: '업데이트 다운로드 중({percent}%)',
     setUpdateRestart: '재시작 후 설치',
+    setAutoUpdateCheck: '자동으로 업데이트 확인',
+    setAutoUpdateCheckDesc:
+      '끄면 실행 시나 백그라운드에서 새 버전을 확인하지 않습니다. 도움말 › 업데이트 확인에서 직접 확인할 수 있습니다.',
     updateChannel: '업데이트 채널',
     channelStable: '안정 버전',
     channelBeta: '베타 버전',
@@ -2800,6 +2815,9 @@ const upstreamStrings = {
     setUpdateTo: 'Mettre à jour vers {version}',
     setUpdateDownloading: 'Téléchargement ({percent} %)',
     setUpdateRestart: 'Redémarrer et installer',
+    setAutoUpdateCheck: 'Rechercher automatiquement les mises à jour',
+    setAutoUpdateCheckDesc:
+      'Désactivé, GenOffice ne recherche plus de nouvelle version au démarrage ni en arrière-plan. Vous pouvez toujours vérifier via Aide › Rechercher des mises à jour.',
     updateChannel: 'Canal de mise à jour',
     channelStable: 'Stable',
     channelBeta: 'Bêta',
@@ -3342,6 +3360,9 @@ const upstreamStrings = {
     setUpdateTo: 'Auf {version} aktualisieren',
     setUpdateDownloading: 'Update wird geladen ({percent} %)',
     setUpdateRestart: 'Neustarten & installieren',
+    setAutoUpdateCheck: 'Automatisch nach Updates suchen',
+    setAutoUpdateCheckDesc:
+      'Wenn aus, sucht GenOffice weder beim Start noch im Hintergrund nach neuen Versionen. Über Hilfe › Nach Updates suchen können Sie weiterhin selbst prüfen.',
     updateChannel: 'Update-Kanal',
     channelStable: 'Stabil',
     channelBeta: 'Beta',
@@ -3879,6 +3900,9 @@ const upstreamStrings = {
     setUpdateTo: 'Actualizar a {version}',
     setUpdateDownloading: 'Descargando actualización ({percent} %)',
     setUpdateRestart: 'Reiniciar e instalar',
+    setAutoUpdateCheck: 'Buscar actualizaciones automáticamente',
+    setAutoUpdateCheckDesc:
+      'Si está desactivado, GenOffice deja de buscar nuevas versiones al iniciar y en segundo plano. Puede seguir comprobándolo en Ayuda › Buscar actualizaciones.',
     updateChannel: 'Canal de actualización',
     channelStable: 'Estable',
     channelBeta: 'Beta',
@@ -4408,6 +4432,9 @@ const upstreamStrings = {
     setUpdateTo: 'อัปเดตเป็น {version}',
     setUpdateDownloading: 'กำลังดาวน์โหลด ({percent}%)',
     setUpdateRestart: 'รีสตาร์ตและติดตั้ง',
+    setAutoUpdateCheck: 'ตรวจหาอัปเดตโดยอัตโนมัติ',
+    setAutoUpdateCheckDesc:
+      'เมื่อปิด GenOffice จะไม่ตรวจหาเวอร์ชันใหม่ตอนเปิดโปรแกรมหรือในเบื้องหลัง คุณยังตรวจเองได้จาก วิธีใช้ › ตรวจหาการอัปเดต',
     updateChannel: 'ช่องทางอัปเดต',
     channelStable: 'เสถียร',
     channelBeta: 'เบต้า',
@@ -4928,6 +4955,9 @@ const upstreamStrings = {
     setUpdateTo: 'Perbarui ke {version}',
     setUpdateDownloading: 'Mengunduh pembaruan ({percent}%)',
     setUpdateRestart: 'Mulai ulang & instal',
+    setAutoUpdateCheck: 'Periksa pembaruan secara otomatis',
+    setAutoUpdateCheckDesc:
+      'Jika dimatikan, GenOffice tidak lagi memeriksa versi baru saat dijalankan atau di latar belakang. Anda tetap bisa memeriksa dari Bantuan › Periksa Pembaruan.',
     updateChannel: 'Saluran Pembaruan',
     channelStable: 'Stabil',
     channelBeta: 'Beta',
@@ -5455,6 +5485,9 @@ const upstreamStrings = {
     setUpdateTo: 'Обновить до {version}',
     setUpdateDownloading: 'Загрузка обновления ({percent}%)',
     setUpdateRestart: 'Перезапустить и установить',
+    setAutoUpdateCheck: 'Автоматически проверять обновления',
+    setAutoUpdateCheckDesc:
+      'Если выключено, GenOffice не проверяет новые версии при запуске и в фоне. Проверить вручную можно через Справка › Проверить обновления.',
     updateChannel: 'Канал обновлений',
     channelStable: 'Стабильный',
     channelBeta: 'Бета',
@@ -5982,6 +6015,9 @@ const upstreamStrings = {
     setUpdateTo: 'تحديث إلى {version}',
     setUpdateDownloading: 'جارٍ تنزيل التحديث ({percent}%)',
     setUpdateRestart: 'إعادة التشغيل والتثبيت',
+    setAutoUpdateCheck: 'التحقق من التحديثات تلقائيًا',
+    setAutoUpdateCheckDesc:
+      'عند الإيقاف، لن يتحقق GenOffice من الإصدارات الجديدة عند التشغيل أو في الخلفية. يمكنك التحقق يدويًا من تعليمات › التحقق من التحديثات.',
     updateChannel: 'قناة التحديث',
     channelStable: 'مستقر',
     channelBeta: 'تجريبي',
@@ -6505,6 +6541,9 @@ const upstreamStrings = {
     setUpdateTo: 'Atualizar para {version}',
     setUpdateDownloading: 'Baixando atualização ({percent}%)',
     setUpdateRestart: 'Reiniciar e instalar',
+    setAutoUpdateCheck: 'Verificar atualizações automaticamente',
+    setAutoUpdateCheckDesc:
+      'Desligado, o GenOffice deixa de procurar novas versões ao iniciar e em segundo plano. Você ainda pode verificar em Ajuda › Procurar atualizações.',
     updateChannel: 'Canal de atualização',
     channelStable: 'Estável',
     channelBeta: 'Beta',
@@ -7040,6 +7079,9 @@ const upstreamStrings = {
     setUpdateTo: 'Aggiorna alla versione {version}',
     setUpdateDownloading: 'Download aggiornamento ({percent}%)',
     setUpdateRestart: 'Riavvia e installa',
+    setAutoUpdateCheck: 'Controlla automaticamente gli aggiornamenti',
+    setAutoUpdateCheckDesc:
+      "Se disattivato, GenOffice non cerca più nuove versioni all'avvio o in background. Puoi comunque controllare da Aiuto › Controlla aggiornamenti.",
     updateChannel: 'Canale di aggiornamento',
     channelStable: 'Stabile',
     channelBeta: 'Beta',
@@ -7573,6 +7615,9 @@ const upstreamStrings = {
     setUpdateTo: 'Zaktualizuj do {version}',
     setUpdateDownloading: 'Pobieranie aktualizacji ({percent}%)',
     setUpdateRestart: 'Uruchom ponownie i zainstaluj',
+    setAutoUpdateCheck: 'Automatycznie sprawdzaj aktualizacje',
+    setAutoUpdateCheckDesc:
+      'Po wyłączeniu GenOffice nie sprawdza nowych wersji przy uruchomieniu ani w tle. Nadal możesz sprawdzić ręcznie w Pomoc › Sprawdź aktualizacje.',
     updateChannel: 'Kanał aktualizacji',
     channelStable: 'Stabilny',
     channelBeta: 'Beta',
@@ -8101,6 +8146,9 @@ const upstreamStrings = {
     setUpdateTo: 'Aktualizovat na {version}',
     setUpdateDownloading: 'Stahování aktualizace ({percent} %)',
     setUpdateRestart: 'Restartovat a nainstalovat',
+    setAutoUpdateCheck: 'Automaticky kontrolovat aktualizace',
+    setAutoUpdateCheckDesc:
+      'Po vypnutí GenOffice nekontroluje nové verze při spuštění ani na pozadí. Ručně můžete zkontrolovat v Nápověda › Zkontrolovat aktualizace.',
     updateChannel: 'Kanál aktualizací',
     channelStable: 'Stabilní',
     channelBeta: 'Beta',
@@ -8627,6 +8675,9 @@ const upstreamStrings = {
     setUpdateTo: 'Bijwerken naar {version}',
     setUpdateDownloading: 'Update downloaden ({percent}%)',
     setUpdateRestart: 'Herstarten en installeren',
+    setAutoUpdateCheck: 'Automatisch controleren op updates',
+    setAutoUpdateCheckDesc:
+      'Uitgeschakeld controleert GenOffice niet meer op nieuwe versies bij het starten of op de achtergrond. Je kunt nog steeds controleren via Help › Controleren op updates.',
     updateChannel: 'Updatekanaal',
     channelStable: 'Stabiel',
     channelBeta: 'Bèta',
@@ -9158,6 +9209,9 @@ const upstreamStrings = {
     setUpdateTo: 'Kemas kini ke {version}',
     setUpdateDownloading: 'Memuat turun kemas kini ({percent}%)',
     setUpdateRestart: 'Mulakan semula dan pasang',
+    setAutoUpdateCheck: 'Semak kemas kini secara automatik',
+    setAutoUpdateCheckDesc:
+      'Apabila dimatikan, GenOffice tidak lagi menyemak versi baharu semasa dimulakan atau di latar belakang. Anda masih boleh menyemak melalui Bantuan › Semak Kemas Kini.',
     updateChannel: 'Saluran Kemas Kini',
     channelStable: 'Stabil',
     channelBeta: 'Beta',
@@ -9688,6 +9742,9 @@ const upstreamStrings = {
     setUpdateTo: 'עדכן ל-{version}',
     setUpdateDownloading: 'מוריד עדכון ({percent}%)',
     setUpdateRestart: 'הפעל מחדש והתקן',
+    setAutoUpdateCheck: 'בדיקת עדכונים אוטומטית',
+    setAutoUpdateCheckDesc:
+      'כשהאפשרות כבויה, GenOffice לא בודקת גרסאות חדשות בהפעלה או ברקע. עדיין אפשר לבדוק ידנית דרך עזרה › בדוק עדכונים.',
     updateChannel: 'ערוץ עדכונים',
     channelStable: 'יציב',
     channelBeta: 'בטא',
@@ -10205,6 +10262,9 @@ const upstreamStrings = {
     setUpdateTo: '{version} पर अपडेट करें',
     setUpdateDownloading: 'अपडेट डाउनलोड हो रहा है ({percent}%)',
     setUpdateRestart: 'रीस्टार्ट कर इंस्टॉल करें',
+    setAutoUpdateCheck: 'अपडेट अपने-आप जाँचें',
+    setAutoUpdateCheckDesc:
+      'बंद होने पर GenOffice शुरू होते समय या बैकग्राउंड में नए संस्करण नहीं जाँचता। आप फिर भी सहायता › अपडेट जांचें से जाँच सकते हैं।',
     updateChannel: 'अपडेट चैनल',
     channelStable: 'स्थिर',
     channelBeta: 'बीटा',
@@ -10725,6 +10785,9 @@ const upstreamStrings = {
     setUpdateTo: '更新到 {version}',
     setUpdateDownloading: '正在下載更新（{percent}%）',
     setUpdateRestart: '重新啟動並安裝',
+    setAutoUpdateCheck: '自動檢查更新',
+    setAutoUpdateCheckDesc:
+      '關閉後，啟動時與背景都不再檢查新版本；仍可在「說明 › 檢查更新」中手動檢查。',
     updateChannel: '更新通道',
     channelStable: '穩定版',
     channelBeta: 'Beta 版',
