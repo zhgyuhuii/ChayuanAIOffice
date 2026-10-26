@@ -724,7 +724,7 @@ export const ko = {
   appLinkPlaceholder: '예: https://example.com 또는 Sheet1!A1',
   appRemoveLink: '링크 제거',
   appNotAvailableYet: '아직 사용할 수 없음',
-  appComingSoon: '곧 제공 예정',
+
   appGroupChartLayouts: '차트 레이아웃',
   appAddChartElement: '차트 요소 추가',
   appAddChartElementTitle: '제목, 데이터 레이블, 범례',

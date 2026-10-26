@@ -640,7 +640,7 @@ export const zh = {
   appLinkPlaceholder: '如 https://example.com 或 Sheet1!A1',
   appRemoveLink: '删除链接',
   appNotAvailableYet: '暂不可用',
-  appComingSoon: '即将推出',
+
   appGroupChartLayouts: '图表布局',
   appAddChartElement: '添加图表元素',
   appAddChartElementTitle: '标题、数据标签、图例',

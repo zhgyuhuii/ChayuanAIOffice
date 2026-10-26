@@ -750,7 +750,7 @@ export const ja = {
   appLinkPlaceholder: '例: https://example.com または Sheet1!A1',
   appRemoveLink: 'リンクの削除',
   appNotAvailableYet: '現在利用できません',
-  appComingSoon: '近日提供予定',
+
   appGroupChartLayouts: 'グラフのレイアウト',
   appAddChartElement: 'グラフ要素を追加',
   appAddChartElementTitle: 'タイトル、データラベル、凡例',
