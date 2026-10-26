@@ -25,6 +25,7 @@ import { SET_ROW_IS_AUTO_HEIGHT_COMMAND } from './autofit-multi-row'
 import { CELL_HIDDEN_KEY, CELL_LOCKED_KEY, effectiveSheetProtection } from './sheet-protection'
 import { fullColumnSpans, fullRowSpans } from './autofit-selection'
 import { nextSheetName } from './op-executor'
+import { handleInsertNotePicture } from './note-picture-actions'
 import { transposeChartSeries, type ChartSeriesVisualState } from '@chaoffice/xlsx-gateway/domain/chart-visual'
 import { applyFlashFillTemplate, inferFlashFillTemplate } from '@chaoffice/xlsx-gateway/domain/flash-fill'
 import { csvSheetById, serializeActiveSheetCsv } from './csv-export'
@@ -1910,6 +1911,10 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
     case 'notes-convert':
       handleThreadedCommentCommand(ctx, command, (fallback) => handleRibbonCommand(ctx, fallback))
       return
+    case 'note-insert-picture': {
+      handleInsertNotePicture(ctx, runtime)
+      return
+    }
     case 'note-open': {
       // A cell holds either a thread or a note (Excel); the save keeps the thread.
       const active = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
