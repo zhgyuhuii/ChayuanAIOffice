@@ -80,6 +80,7 @@ import type {
   SdtShell,
   SectionSettings,
   SourceInfo,
+  StyleInfo,
   ThemeColors,
   ThemeFonts,
 } from './types'
@@ -87,6 +88,7 @@ import { PAGE_MARK, TOTAL_PAGES_MARK } from './types'
 import { patchParagraphTexts } from './text-patch'
 import { balanceFieldChars } from './field-balance'
 import {
+  builtInHeadingStyleUpsert,
   mergeDefaultFontsXml,
   upsertStyleXml,
   type DefaultFonts,
@@ -683,13 +685,41 @@ function patchCoreProps(xml: string, savedAt?: string): string | null {
   return out === xml ? null : out
 }
 
+/** the paragraph style unstyled paragraphs resolve to (w:default), by id */
+function defaultParagraphStyleId(styles: ReadonlyMap<string, StyleInfo>): string | undefined {
+  for (const info of styles.values())
+    if (info.type === 'paragraph' && info.isDefault) return info.styleId
+  return undefined
+}
+
+/**
+ * Heading levels the generated body uses that the document has no heading
+ * style for. An explicit styleId (a custom heading style) and an outline-only
+ * heading (written as w:outlineLvl) carry themselves.
+ */
+export function missingHeadingLevels(
+  blocks: readonly SaveBlock[],
+  headingStyleIds: ReadonlyMap<number, string>,
+): number[] {
+  const missing = new Set<number>()
+  for (const fb of blocks) {
+    if (fb.kind !== 'generated') continue
+    const { block } = fb
+    if (block.type !== 'heading' || block.outlineOnly || block.styleId) continue
+    const level = Math.min(Math.max(block.level ?? 1, 1), 9)
+    if (!headingStyleIds.has(level)) missing.add(level)
+  }
+  return [...missing].sort((a, b) => a - b)
+}
+
 /**
  * Paragraph-patch save.
  *
  * - Blocks marked 'original' are copied as the exact substring of the original
  *   word/document.xml (byte-for-byte after UTF-8 re-encode).
  * - Blocks marked 'generated' become fresh OOXML fragments referencing only
- *   styles that already exist in the document.
+ *   styles that exist in the document — a heading level the document has no
+ *   style for gets Word's built-in definition added to word/styles.xml.
  * - 'xml' blocks are self-contained fragments inserted verbatim; 'image' blocks
  *   additionally add media entries and relationships.
  * - Every other zip entry is copied without modification.
@@ -800,8 +830,23 @@ export async function saveDocx(
     return rId
   }
 
+  // A heading the editor made in a document whose styles.xml has no heading
+  // style for that level (converter output, lean generators) would otherwise
+  // save as a bare paragraph and reopen as body text: the generator writes a
+  // heading as its level's style reference, and the gallery/AI leave styleId
+  // empty for a level the document does not define. Create Word's built-in
+  // definition for each such level so the paragraph carries it.
+  const headingStyleIds = new Map(parsed.headingStyleIds)
+  const headingUpserts: StyleUpsert[] = []
+  for (const level of missingHeadingLevels(finalBlocks, headingStyleIds)) {
+    const up = builtInHeadingStyleUpsert(level, defaultParagraphStyleId(parsed.styles))
+    headingUpserts.push(up)
+    headingStyleIds.set(level, up.styleId)
+  }
+  const styleUpserts = [...(options.styleUpserts ?? []), ...headingUpserts]
+
   const genCtx = {
-    headingStyleIds: parsed.headingStyleIds,
+    headingStyleIds,
     listParagraphStyleId: parsed.listParagraphStyleId,
     allocateHyperlinkRel,
     allocateBookmarkId: nextBookmarkIdAllocator(documentXml),
@@ -1417,7 +1462,7 @@ export async function saveDocx(
   const stylesPath = 'word/styles.xml'
   let stylesXmlOut: string | null = null
   if (
-    (options.styleUpserts?.length ?? 0) > 0 ||
+    styleUpserts.length > 0 ||
     (options.styleDeletes?.length ?? 0) > 0 ||
     options.defaultFonts !== undefined
   ) {
@@ -1434,8 +1479,7 @@ export async function saveDocx(
       )
       xml = xml.replace(block, '')
     }
-    for (const up of options.styleUpserts ?? []) xml = upsertStyleXml(xml, up)
-    for (const up of options.styleUpserts ?? []) xml = upsertStyleXml(xml, up)
+    for (const up of styleUpserts) xml = upsertStyleXml(xml, up)
     stylesXmlOut = options.defaultFonts ? mergeDefaultFontsXml(xml, options.defaultFonts) : xml
   }
 
