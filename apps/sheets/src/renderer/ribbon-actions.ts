@@ -5,15 +5,24 @@
  * as callbacks.
  */
 import {
+  BaselineOffset,
   BooleanNumber,
   BorderStyleTypes,
   BorderType,
   CellValueType,
+  EDITOR_ACTIVATED,
+  FOCUSING_EDITOR_INPUT_FORMULA,
+  FOCUSING_EDITOR_STANDALONE,
+  IContextService,
   IUniverInstanceService,
   WrapStrategy,
   type ICellData,
   type IStyleData,
 } from '@univerjs/core'
+import {
+  SetInlineFormatSubscriptCommand,
+  SetInlineFormatSuperscriptCommand,
+} from '@univerjs/docs-ui'
 import { IRenderManagerService, SHEET_VIEWPORT_KEY } from '@univerjs/engine-render'
 import { ISheetClipboardService, SheetSkeletonManagerService } from '@univerjs/preset-sheets-core'
 import { CFNumberOperator, CFValueType } from '@univerjs/preset-sheets-conditional-formatting'
@@ -326,6 +335,22 @@ function addStyledCfRule(
   if (preset.fill) styled = styled.setBackground(preset.fill)
   if (preset.ink) styled = styled.setFontColor(preset.ink)
   worksheet.addConditionalFormattingRule(styled.setRanges([range]).build())
+}
+
+
+/// The in-cell editor holds a text edit (not a formula, and not the formula
+/// bar's standalone editor): a font button then formats the selected
+/// characters — or arms the typing style at a caret — as Excel does, instead
+/// of restyling the whole cell behind the editor. EDITOR_ACTIVATED tracks the
+/// edit session itself; the FOCUSING_* bits follow DOM focus, which the
+/// clicked ribbon button holds at this point.
+function cellEditorHoldsText(runtime: UniverRuntime): boolean {
+  const context = runtime.univer.__getInjector().get(IContextService)
+  return (
+    context.getContextValue(EDITOR_ACTIVATED) &&
+    !context.getContextValue(FOCUSING_EDITOR_INPUT_FORMULA) &&
+    !context.getContextValue(FOCUSING_EDITOR_STANDALONE)
+  )
 }
 
 /// Commands whose wire format is `name:argument:extra` (three segments).
@@ -3074,9 +3099,21 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
       }
       case 'superscript':
       case 'subscript': {
+        // Inside the cell editor the buttons work on the selected characters
+        // ("1st" with a raised "st"); Univer's inline command toggles the run
+        // style and arms the typing style when the caret is collapsed.
+        if (cellEditorHoldsText(runtime)) {
+          void runtime.univerAPI.executeCommand(
+            name === 'superscript'
+              ? SetInlineFormatSuperscriptCommand.id
+              : SetInlineFormatSubscriptCommand.id,
+          )
+          break
+        }
         // Whole-cell font vertAlign; the two are mutually exclusive, and
         // pressing the active one returns the cell to the baseline.
-        const offset = name === 'superscript' ? 3 : 2
+        const offset =
+          name === 'superscript' ? BaselineOffset.SUPERSCRIPT : BaselineOffset.SUBSCRIPT
         range.setValue({
           s: { va: style.va === offset ? null : offset },
         } as unknown as ICellData)
