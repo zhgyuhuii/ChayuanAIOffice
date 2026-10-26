@@ -125,6 +125,7 @@ import { filterPageParity, printPdf, type PageParity } from './print'
 import type { PrintDuplex, PrinterInfo } from '../shared/ipc'
 import { PasswordDialog } from './PasswordDialog'
 import { PropertiesDialog } from './PropertiesDialog'
+import { LinkDialog, type LinkDraft } from './LinkDialog'
 import { CertSignDialog } from './CertSignDialog'
 import { SignaturesDialog, overallSignatureStatus } from './SignaturesDialog'
 import { SignatureDialog, fileToCanvas } from './SignatureDialog'
@@ -300,6 +301,7 @@ import {
   IconConvertPdf,
   IconInsertImage,
   IconEditImage,
+  IconLink,
   IconNight,
   IconSpread,
   IconSinglePage,
@@ -4635,7 +4637,16 @@ export default function App() {
 
   // ── Drawing annotations ──
 
+  /** Drawn link box waiting for its target (URL or page) in the dialog */
+  const [linkDraft, setLinkDraft] = useState<LinkDraft | null>(null)
+
   const commitDrawing = (origIdx: number, input: DrawingInput) => {
+    // A link needs its target before it can join the edit ops (validate requires
+    // exactly one of url/destPage); the drawn box waits in the dialog
+    if (input.kind === 'link') {
+      setLinkDraft({ pageIndex: origIdx, rect: input.rect })
+      return
+    }
     applyEditOps([{ op: 'addDrawing', drawing: { ...input, pageIndex: origIdx } }])
   }
 
@@ -10260,6 +10271,29 @@ export default function App() {
               )}
               {stampDlg && (
                 <StampDialog t={t} onCancel={() => setStampDlg(false)} onApply={applyStamps} />
+              )}
+              {linkDraft && (
+                <LinkDialog
+                  t={t}
+                  pageCount={pageCount}
+                  onCancel={() => setLinkDraft(null)}
+                  onApply={(target) => {
+                    const draft = linkDraft
+                    setLinkDraft(null)
+                    if (!draft) return
+                    applyEditOps([
+                      {
+                        op: 'addDrawing',
+                        drawing: {
+                          kind: 'link',
+                          pageIndex: draft.pageIndex,
+                          rect: draft.rect,
+                          ...target,
+                        },
+                      },
+                    ])
+                  }}
+                />
               )}
               {imageDialog?.kind === 'crop' && (
                 <CropDialog
