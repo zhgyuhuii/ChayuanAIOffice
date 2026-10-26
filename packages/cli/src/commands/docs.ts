@@ -98,7 +98,7 @@ export const docsCommand: CommandDef = {
       name: 'author',
       value: 'name',
       description:
-        'apply --track / compare: author of the tracked changes (compare default: GenOffice)',
+        'apply --track / compare: author of the tracked changes (compare default: ChaAI Office)',
     },
     {
       name: 'date',
