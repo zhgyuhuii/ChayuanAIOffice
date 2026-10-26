@@ -196,6 +196,8 @@ const upstreamStrings = {
     documentTheme: '文档页面主题',
     docThemeFollowApp: '跟随应用主题',
     saveLocation: '默认保存位置',
+    setRestoreSession: '启动时重新打开上次的文档',
+    setRestoreSessionDesc: '关闭 GenOffice 时打开的文档会在下次启动时自动重新打开。',
     setTabSleep: '休眠不活跃的标签页',
     setTabSleepDesc:
       '标签页多到一定数量后，长时间没有查看的会释放内存；回到它时会重新打开文件。有未保存修改或已固定的标签页不会休眠。',
@@ -698,6 +700,9 @@ const upstreamStrings = {
     documentTheme: 'Document page theme',
     docThemeFollowApp: 'Follow app theme',
     saveLocation: 'Save Location',
+    setRestoreSession: 'Reopen documents from last time',
+    setRestoreSessionDesc:
+      'Documents open when GenOffice closes reopen automatically the next time it starts.',
     setTabSleep: 'Sleep inactive tabs',
     setTabSleepDesc:
       'Once many tabs are open, ones you have not looked at for a while release their memory and reopen their file when you return. Tabs with unsaved changes or pinned tabs never sleep.',
@@ -1219,6 +1224,9 @@ const upstreamStrings = {
     documentTheme: 'Chủ đề trang tài liệu',
     docThemeFollowApp: 'Theo chủ đề ứng dụng',
     saveLocation: 'Vị trí lưu',
+    setRestoreSession: 'Mở lại tài liệu của lần trước',
+    setRestoreSessionDesc:
+      'Các tài liệu đang mở khi đóng GenOffice sẽ tự động mở lại vào lần khởi động tiếp theo.',
     setTabSleep: 'Tạm ngủ các thẻ không hoạt động',
     setTabSleepDesc:
       'Khi mở nhiều thẻ, những thẻ lâu không xem sẽ giải phóng bộ nhớ và mở lại tệp khi bạn quay lại. Thẻ có thay đổi chưa lưu hoặc đã ghim sẽ không ngủ.',
@@ -1747,6 +1755,9 @@ const upstreamStrings = {
     documentTheme: 'ドキュメントページのテーマ',
     docThemeFollowApp: 'アプリのテーマに従う',
     saveLocation: '保存先',
+    setRestoreSession: '前回のドキュメントを再度開く',
+    setRestoreSessionDesc:
+      'GenOffice を閉じたときに開いていたドキュメントを、次回起動時に自動で開き直します。',
     setTabSleep: '非アクティブなタブをスリープ',
     setTabSleepDesc:
       '多くのタブを開いているとき、しばらく見ていないタブはメモリを解放し、戻ったときにファイルを再度開きます。未保存の変更があるタブやピン留めしたタブはスリープしません。',
@@ -2271,6 +2282,9 @@ const upstreamStrings = {
     documentTheme: '문서 페이지 테마',
     docThemeFollowApp: '앱 테마 따르기',
     saveLocation: '저장 위치',
+    setRestoreSession: '지난번 문서 다시 열기',
+    setRestoreSessionDesc:
+      'GenOffice를 닫을 때 열려 있던 문서를 다음 실행 시 자동으로 다시 엽니다.',
     setTabSleep: '비활성 탭 절전',
     setTabSleepDesc:
       '탭이 많이 열려 있으면 한동안 보지 않은 탭은 메모리를 해제하고 돌아올 때 파일을 다시 엽니다. 저장하지 않은 변경이 있거나 고정된 탭은 절전되지 않습니다.',
@@ -2796,6 +2810,9 @@ const upstreamStrings = {
     documentTheme: 'Thème de la page de document',
     docThemeFollowApp: 'Suivre le thème de l’application',
     saveLocation: "Emplacement d'enregistrement",
+    setRestoreSession: 'Rouvrir les documents de la dernière fois',
+    setRestoreSessionDesc:
+      'Les documents ouverts à la fermeture de GenOffice se rouvrent automatiquement au prochain démarrage.',
     setTabSleep: 'Mettre en veille les onglets inactifs',
     setTabSleepDesc:
       'Lorsque de nombreux onglets sont ouverts, ceux que vous n’avez pas consultés depuis un moment libèrent leur mémoire et rouvrent leur fichier à votre retour. Les onglets avec des modifications non enregistrées ou épinglés ne sont jamais mis en veille.',
@@ -3335,6 +3352,9 @@ const upstreamStrings = {
     documentTheme: 'Dokumentseitenthema',
     docThemeFollowApp: 'App-Thema übernehmen',
     saveLocation: 'Speicherort',
+    setRestoreSession: 'Dokumente vom letzten Mal wieder öffnen',
+    setRestoreSessionDesc:
+      'Dokumente, die beim Schließen von GenOffice geöffnet waren, werden beim nächsten Start automatisch wieder geöffnet.',
     setTabSleep: 'Inaktive Tabs schlafen legen',
     setTabSleepDesc:
       'Sind viele Tabs offen, geben länger nicht angesehene ihren Speicher frei und öffnen ihre Datei bei der Rückkehr neu. Tabs mit ungespeicherten Änderungen oder angeheftete Tabs schlafen nie.',
@@ -3869,6 +3889,9 @@ const upstreamStrings = {
     documentTheme: 'Tema de la página del documento',
     docThemeFollowApp: 'Seguir el tema de la aplicación',
     saveLocation: 'Ubicación de guardado',
+    setRestoreSession: 'Volver a abrir los documentos de la última vez',
+    setRestoreSessionDesc:
+      'Los documentos abiertos al cerrar GenOffice se vuelven a abrir automáticamente la próxima vez que se inicie.',
     setTabSleep: 'Suspender pestañas inactivas',
     setTabSleepDesc:
       'Con muchas pestañas abiertas, las que no has mirado durante un tiempo liberan su memoria y vuelven a abrir el archivo al regresar. Las pestañas con cambios sin guardar o fijadas nunca se suspenden.',
@@ -4395,6 +4418,9 @@ const upstreamStrings = {
     documentTheme: 'ธีมหน้าเอกสาร',
     docThemeFollowApp: 'ตามธีมของแอป',
     saveLocation: 'ตำแหน่งบันทึก',
+    setRestoreSession: 'เปิดเอกสารจากครั้งที่แล้วอีกครั้ง',
+    setRestoreSessionDesc:
+      'เอกสารที่เปิดอยู่ตอนปิด GenOffice จะเปิดขึ้นอีกครั้งโดยอัตโนมัติเมื่อเริ่มโปรแกรมครั้งถัดไป',
     setTabSleep: 'พักแท็บที่ไม่ได้ใช้งาน',
     setTabSleepDesc:
       'เมื่อเปิดแท็บจำนวนมาก แท็บที่ไม่ได้ดูสักพักจะคืนหน่วยความจำและเปิดไฟล์ใหม่เมื่อคุณกลับมา แท็บที่มีการเปลี่ยนแปลงที่ยังไม่บันทึกหรือปักหมุดไว้จะไม่พัก',
@@ -4912,6 +4938,9 @@ const upstreamStrings = {
     documentTheme: 'Tema halaman dokumen',
     docThemeFollowApp: 'Ikuti tema aplikasi',
     saveLocation: 'Lokasi penyimpanan',
+    setRestoreSession: 'Buka kembali dokumen dari sesi terakhir',
+    setRestoreSessionDesc:
+      'Dokumen yang terbuka saat GenOffice ditutup akan dibuka kembali secara otomatis saat dijalankan berikutnya.',
     setTabSleep: 'Tidurkan tab tidak aktif',
     setTabSleepDesc:
       'Saat banyak tab terbuka, tab yang lama tidak dilihat melepaskan memorinya dan membuka kembali berkasnya saat Anda kembali. Tab dengan perubahan belum disimpan atau yang disematkan tidak pernah tidur.',
@@ -5436,6 +5465,9 @@ const upstreamStrings = {
     documentTheme: 'Тема страницы документа',
     docThemeFollowApp: 'Как в теме приложения',
     saveLocation: 'Папка сохранения',
+    setRestoreSession: 'Открывать документы прошлого сеанса',
+    setRestoreSessionDesc:
+      'Документы, открытые при закрытии GenOffice, автоматически откроются при следующем запуске.',
     setTabSleep: 'Усыплять неактивные вкладки',
     setTabSleepDesc:
       'Когда открыто много вкладок, давно не просматриваемые освобождают память и заново открывают файл при возврате. Вкладки с несохранёнными изменениями и закреплённые не усыпляются.',
@@ -5960,6 +5992,9 @@ const upstreamStrings = {
     documentTheme: 'سمة صفحة المستند',
     docThemeFollowApp: 'اتباع سمة التطبيق',
     saveLocation: 'موقع الحفظ',
+    setRestoreSession: 'إعادة فتح مستندات المرة السابقة',
+    setRestoreSessionDesc:
+      'تُعاد فتح المستندات المفتوحة عند إغلاق GenOffice تلقائيًا في المرة التالية التي يبدأ فيها.',
     setTabSleep: 'إسبات علامات التبويب غير النشطة',
     setTabSleepDesc:
       'عند فتح علامات تبويب كثيرة، تحرّر التي لم تطّلع عليها منذ فترة ذاكرتها وتعيد فتح ملفها عند عودتك. علامات التبويب ذات التغييرات غير المحفوظة أو المثبّتة لا تُسبَت أبدًا.',
@@ -6480,6 +6515,9 @@ const upstreamStrings = {
     documentTheme: 'Tema da página do documento',
     docThemeFollowApp: 'Seguir o tema do aplicativo',
     saveLocation: 'Local de salvamento',
+    setRestoreSession: 'Reabrir os documentos da última vez',
+    setRestoreSessionDesc:
+      'Os documentos abertos ao fechar o GenOffice são reabertos automaticamente na próxima vez que ele for iniciado.',
     setTabSleep: 'Suspender separadores inativos',
     setTabSleepDesc:
       'Com muitos separadores abertos, os que não vê há algum tempo libertam a memória e reabrem o ficheiro quando regressa. Separadores com alterações por guardar ou fixados nunca são suspensos.',
@@ -7012,6 +7050,9 @@ const upstreamStrings = {
     documentTheme: 'Tema della pagina del documento',
     docThemeFollowApp: 'Segui il tema dell’applicazione',
     saveLocation: 'Posizione di salvataggio',
+    setRestoreSession: "Riapri i documenti dell'ultima volta",
+    setRestoreSessionDesc:
+      'I documenti aperti alla chiusura di GenOffice si riaprono automaticamente al successivo avvio.',
     setTabSleep: 'Sospendi le schede inattive',
     setTabSleepDesc:
       'Con molte schede aperte, quelle che non guardi da un po’ liberano la memoria e riaprono il file al tuo ritorno. Le schede con modifiche non salvate o fissate non vengono mai sospese.',
@@ -7542,6 +7583,9 @@ const upstreamStrings = {
     documentTheme: 'Motyw strony dokumentu',
     docThemeFollowApp: 'Zgodnie z motywem aplikacji',
     saveLocation: 'Lokalizacja zapisu',
+    setRestoreSession: 'Otwieraj ponownie dokumenty z ostatniej sesji',
+    setRestoreSessionDesc:
+      'Dokumenty otwarte w chwili zamknięcia GenOffice zostaną automatycznie otwarte przy następnym uruchomieniu.',
     setTabSleep: 'Usypiaj nieaktywne karty',
     setTabSleepDesc:
       'Gdy otwartych jest wiele kart, te dawno nieoglądane zwalniają pamięć i ponownie otwierają plik po powrocie. Karty z niezapisanymi zmianami lub przypięte nigdy nie są usypiane.',
@@ -8279,6 +8323,9 @@ const upstreamStrings = {
     onbBody3: 'Žádné licenční poplatky. Žádné reklamy. Žádné vodoznaky.',
     onbNote3: 'Funkce AI mohou čerpat kredity ChaAI Office.',
     onbBack: 'Zpět',
+    setRestoreSession: 'Znovu otevřít dokumenty z minula',
+    setRestoreSessionDesc:
+      'Dokumenty otevřené při zavření GenOffice se při příštím spuštění automaticky znovu otevřou.',
     setTabSleep: 'Uspávat neaktivní karty',
     setTabSleepDesc:
       'Když je otevřeno mnoho karet, ty dlouho nezobrazené uvolní paměť a při návratu znovu otevřou soubor. Karty s neuloženými změnami nebo připnuté se nikdy neuspí.',
@@ -8590,6 +8637,9 @@ const upstreamStrings = {
     documentTheme: 'Documentpaginathema',
     docThemeFollowApp: 'App-thema volgen',
     saveLocation: 'Opslaglocatie',
+    setRestoreSession: 'Documenten van de vorige keer opnieuw openen',
+    setRestoreSessionDesc:
+      'Documenten die open waren toen GenOffice werd gesloten, worden bij de volgende start automatisch opnieuw geopend.',
     setTabSleep: 'Inactieve tabbladen laten slapen',
     setTabSleepDesc:
       'Als er veel tabbladen open zijn, geven tabbladen die u een tijd niet hebt bekeken hun geheugen vrij en openen ze het bestand opnieuw als u terugkeert. Tabbladen met niet-opgeslagen wijzigingen of vastgemaakte tabbladen slapen nooit.',
@@ -9118,6 +9168,9 @@ const upstreamStrings = {
     documentTheme: 'Tema halaman dokumen',
     docThemeFollowApp: 'Ikut tema aplikasi',
     saveLocation: 'Lokasi simpanan',
+    setRestoreSession: 'Buka semula dokumen dari kali terakhir',
+    setRestoreSessionDesc:
+      'Dokumen yang dibuka semasa GenOffice ditutup akan dibuka semula secara automatik apabila ia dimulakan seterusnya.',
     setTabSleep: 'Tidurkan tab tidak aktif',
     setTabSleepDesc:
       'Apabila banyak tab dibuka, tab yang lama tidak dilihat melepaskan memorinya dan membuka semula failnya apabila anda kembali. Tab dengan perubahan belum disimpan atau yang disemat tidak akan tidur.',
@@ -9645,6 +9698,9 @@ const upstreamStrings = {
     documentTheme: 'ערכת נושא של דף המסמך',
     docThemeFollowApp: 'לפי ערכת הנושא של האפליקציה',
     saveLocation: 'מיקום שמירה',
+    setRestoreSession: 'פתיחה מחדש של המסמכים מהפעם הקודמת',
+    setRestoreSessionDesc:
+      'מסמכים שהיו פתוחים כש-GenOffice נסגרה ייפתחו מחדש אוטומטית בהפעלה הבאה.',
     setTabSleep: 'השהה כרטיסיות לא פעילות',
     setTabSleepDesc:
       'כשפתוחות כרטיסיות רבות, כרטיסיות שלא נצפו זמן מה משחררות את הזיכרון ופותחות מחדש את הקובץ כשחוזרים אליהן. כרטיסיות עם שינויים שלא נשמרו או מוצמדות לעולם לא מושהות.',
@@ -10159,6 +10215,9 @@ const upstreamStrings = {
     documentTheme: 'दस्तावेज़ पृष्ठ थीम',
     docThemeFollowApp: 'ऐप थीम के अनुसार',
     saveLocation: 'सहेजने का स्थान',
+    setRestoreSession: 'पिछली बार के दस्तावेज़ फिर से खोलें',
+    setRestoreSessionDesc:
+      'GenOffice बंद करते समय खुले दस्तावेज़ अगली बार शुरू होने पर अपने-आप फिर से खुल जाते हैं।',
     setTabSleep: 'निष्क्रिय टैब को सुलाएँ',
     setTabSleepDesc:
       'कई टैब खुले होने पर, जिन्हें आपने कुछ समय से नहीं देखा वे मेमोरी छोड़ देते हैं और लौटने पर फ़ाइल फिर खोलते हैं। बिना सहेजे बदलाव वाले या पिन किए गए टैब कभी नहीं सोते।',
@@ -10676,6 +10735,8 @@ const upstreamStrings = {
     documentTheme: '文件頁面主題',
     docThemeFollowApp: '跟隨應用程式主題',
     saveLocation: '預設儲存位置',
+    setRestoreSession: '啟動時重新開啟上次的文件',
+    setRestoreSessionDesc: '關閉 GenOffice 時開啟的文件會在下次啟動時自動重新開啟。',
     setTabSleep: '休眠閒置的標籤頁',
     setTabSleepDesc:
       '開啟的標籤頁多到一定數量後，長時間未查看的會釋放記憶體；回到它時會重新開啟檔案。有未儲存變更或已釘選的標籤頁不會休眠。',

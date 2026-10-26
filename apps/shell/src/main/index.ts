@@ -101,6 +101,12 @@ import {
 import { createMainProcessProxyDispatcher } from '@chaoffice/electron-utils/main-proxy'
 import { readAppSettings, writeAppSetting, writeAppSettings, writeAppSettingThen } from './app-settings'
 import { OPEN_DOCUMENTS_FILE, clearOpenDocuments, publishOpenDocuments } from './open-documents'
+import {
+  LAST_SESSION_DOCUMENTS_KEY,
+  RESTORE_LAST_SESSION_KEY,
+  launchPathsWithLastSession,
+  restoreLastSessionEnabled,
+} from './last-session'
 import { startControlServer, type ControlServer } from './control-server'
 import { controlHandler } from './control-handlers'
 import { installCliLinkBestEffort } from './cli-link'
@@ -4860,6 +4866,16 @@ function createShellWindow(): void {
   win.on('closed', () => {
     if (shellWindow === win) shellWindow = null
     if (tabManager === manager) {
+      // the close guard has already settled every unsaved tab, so the tabs left are the session
+      if (restoreLastSessionEnabled(readAppSettings(APP_SETTINGS_PATH()))) {
+        try {
+          writeAppSettings(APP_SETTINGS_PATH(), {
+            [LAST_SESSION_DOCUMENTS_KEY]: [...new Set(manager.openFilePaths())],
+          })
+        } catch (err) {
+          console.warn('[shell] could not save the session documents:', err)
+        }
+      }
       tabManager = null
       setDockHost(null)
       publishAllOpenDocuments()
@@ -6174,6 +6190,18 @@ function registerHomeIpc(): void {
     if (typeof on !== 'boolean') return
     cachedTabSleepEnabled = on
     writeAppSettings(APP_SETTINGS_PATH(), { tabSleepEnabled: on })
+  })
+
+  ipcMain.handle(HOME_CHANNELS.getRestoreLastSession, () =>
+    restoreLastSessionEnabled(readAppSettings(APP_SETTINGS_PATH())),
+  )
+  ipcMain.handle(HOME_CHANNELS.setRestoreLastSession, (_event, on: unknown) => {
+    if (typeof on !== 'boolean') return
+    // turning it off forgets the stored paths instead of keeping them around
+    writeAppSettings(APP_SETTINGS_PATH(), {
+      [RESTORE_LAST_SESSION_KEY]: on,
+      ...(on ? {} : { [LAST_SESSION_DOCUMENTS_KEY]: undefined }),
+    })
   })
 
   ipcMain.handle(HOME_CHANNELS.getMcpStatus, () => mcpStatus())
@@ -8809,7 +8837,9 @@ app.whenReady().then(async () => {
     })
   }
 
-  openLaunchPaths(pendingLaunchPaths)
+  openLaunchPaths(
+    launchPathsWithLastSession(readAppSettings(APP_SETTINGS_PATH()), pendingLaunchPaths),
+  )
   pendingLaunchPaths = []
 
   startControlServer(

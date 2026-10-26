@@ -630,6 +630,7 @@ export function SettingsModal({
   const [analyticsSaving, setAnalyticsSaving] = useState(false)
   const [autoSaveOn, setAutoSaveOn] = useState(false)
   const [tabSleepOn, setTabSleepOn] = useState(true)
+  const [restoreSessionOn, setRestoreSessionOn] = useState(false)
   const [defaultApp, setDefaultApp] = useState<DefaultAppStatus | null>(null)
   const [defaultAppBusy, setDefaultAppBusy] = useState(false)
   const [defaultAppFailed, setDefaultAppFailed] = useState(false)
@@ -655,6 +656,9 @@ export function SettingsModal({
     })
     void window.chaOffice.getAutoSaveDefault?.().then((v) => {
       if (alive) setAutoSaveOn(v.on)
+    })
+    void window.chaOffice.getRestoreLastSession?.().then((on) => {
+      if (alive) setRestoreSessionOn(on)
     })
     void window.chaOffice.getDefaultAppStatus?.().then((st) => {
       if (alive) setDefaultApp(st)
@@ -1021,6 +1025,25 @@ export function SettingsModal({
                       const next = !autoSaveOn
                       setAutoSaveOn(next)
                       void window.chaOffice.setAutoSaveDefault?.(next).catch(() => {})
+                    }}
+                  />
+                </div>
+                <div className="set-field">
+                  <div className="set-field-text">
+                    <div className="set-field-stack">
+                      <div className="set-field-label">{t('setRestoreSession')}</div>
+                      <div className="set-field-desc">{t('setRestoreSessionDesc')}</div>
+                    </div>
+                  </div>
+                  <button
+                    className="set-switch"
+                    role="switch"
+                    aria-checked={restoreSessionOn}
+                    aria-label={t('setRestoreSession')}
+                    onClick={() => {
+                      const next = !restoreSessionOn
+                      setRestoreSessionOn(next)
+                      void window.chaOffice.setRestoreLastSession?.(next).catch(() => {})
                     }}
                   />
                 </div>
