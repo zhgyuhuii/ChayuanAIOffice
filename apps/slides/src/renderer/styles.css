@@ -7715,6 +7715,13 @@ body.show-curtain::after {
   min-width: 0;
 }
 
+/* a validation hint under a dialog's fields (Custom Slide Size) */
+.modal .dlg-note {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--danger);
+}
+
 /* Override .modal label / .modal input full-row styles: checkbox/radio rows lay out inline */
 .modal label.dlg-radio,
 .modal label.dlg-check {

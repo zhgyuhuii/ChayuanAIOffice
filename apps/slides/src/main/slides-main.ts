@@ -105,6 +105,7 @@ import {
   getRunLinks,
   readHeaderFooter,
   createBlankPptx,
+  setSlideSize,
   copySlide,
   type SlideBundle,
   listSlideLayouts,
@@ -2307,17 +2308,25 @@ export function registerSlidesIpc(): void {
     },
   )
 
-  ipcMain.handle('slides:new-blank', async (e, fitWidthPx: number): Promise<OpenResult> => {
-    const opened = await openPptx(await createBlankPptx())
-    sessions.set(e.sender.id, { path: '', opened, fitWidthPx, undoStack: [], redoStack: [] })
-    scheduleHistoryNotify(sessions.get(e.sender.id)!)
-    return {
-      path: '',
-      slides: buildAllRenderSlides(opened, fitWidthPx),
-      size: { cx: opened.deck.size.cx, cy: opened.deck.size.cy },
-      defaultFont: deckDefaultFont(opened),
-    }
-  })
+  ipcMain.handle(
+    'slides:new-blank',
+    async (e, fitWidthPx: number, size?: unknown): Promise<OpenResult> => {
+      const opened = await openPptx(await createBlankPptx())
+      // the renderer's saved default size; anything a .pptx cannot store keeps the template
+      const side = (v: unknown): v is number =>
+        typeof v === 'number' && Number.isInteger(v) && v >= 914400 && v <= 51206400
+      const s = size as { cx?: unknown; cy?: unknown } | undefined
+      if (s && side(s.cx) && side(s.cy)) setSlideSize(opened, s.cx, s.cy)
+      sessions.set(e.sender.id, { path: '', opened, fitWidthPx, undoStack: [], redoStack: [] })
+      scheduleHistoryNotify(sessions.get(e.sender.id)!)
+      return {
+        path: '',
+        slides: buildAllRenderSlides(opened, fitWidthPx),
+        size: { cx: opened.deck.size.cx, cy: opened.deck.size.cy },
+        defaultFont: deckDefaultFont(opened),
+      }
+    },
+  )
 
   ipcMain.handle('slides:add-element', (e, op: AddElementOp) => {
     const session = sessions.get(e.sender.id)

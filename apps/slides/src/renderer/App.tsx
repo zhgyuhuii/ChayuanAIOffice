@@ -106,6 +106,8 @@ import { AnimPreviewOverlay } from './components/AnimatedSlide'
 import { EquationDialog, HeaderFooterDialog, LinkDialog } from './components/InsertDialogs'
 import { RedactDialog } from './components/RedactDialog'
 import { ZoomDialog } from './components/ZoomDialog'
+import { SlideSizeDialog } from './components/SlideSizeDialog'
+import { defaultNewSlideSize } from './slide-size'
 import { CutoutDialog } from './components/CutoutDialog'
 import type { WordArtPreset } from '@chaoffice/ui'
 import {
@@ -687,6 +689,8 @@ export function App() {
   const [hfDialog, setHfDialog] = useState<HfDialogState | null>(null)
   const [eqDialogOpen, setEqDialogOpen] = useState(false)
   const [zoomDialog, setZoomDialog] = useState<zoomActions.ZoomMode | null>(null)
+  /** Design › Slide Size › Custom Size… open, with the deck size it opened on */
+  const [slideSizeDialog, setSlideSizeDialog] = useState<{ cx: number; cy: number } | null>(null)
   const recorderRef = useRef<{ rec: MediaRecorder; stream: MediaStream } | null>(null)
   const [recording, setRecording] = useState(false)
   // ── Layout picking: layout list + slide size (loaded after the file opens) ─────────────────
@@ -1308,7 +1312,7 @@ export function App() {
   }, [hasDoc, viewMode, previewZoom, slides.length])
 
   const newBlank = useCallback(async () => {
-    const r = await window.slidesApi.newBlank(FIT_WIDTH)
+    const r = await window.slidesApi.newBlank(FIT_WIDTH, defaultNewSlideSize() ?? undefined)
     applyOpen(r)
     return r
   }, [applyOpen])
@@ -3751,6 +3755,17 @@ export function App() {
       })
   })
 
+  const applySlideSize = (cx: number, cy: number) =>
+    void window.slidesApi.setSlideSize({ cx, cy }).then((all) => {
+      if (all) {
+        setSlides(all)
+        // Every slide re-materializes with fresh element ids
+        setSelectedIds([])
+        setEditing(null)
+        setDirty(true)
+      }
+    })
+
   return (
     <div className="app">
       {insertImageOpen && (
@@ -3998,25 +4013,12 @@ export function App() {
                 .setSlideLayout({ slideIndex: current })
                 .then((r) => r && applySlide(current, r))
             }
-            onSlideSize={(cx, cy) =>
-              void window.slidesApi.setSlideSize({ cx, cy }).then((all) => {
-                if (all) {
-                  setSlides(all)
-                  // Every slide re-materializes with fresh element ids
-                  setSelectedIds([])
-                  setEditing(null)
-                  setDirty(true)
-                }
+            onSlideSize={applySlideSize}
+            getSlideSize={() => window.slidesApi.getSlideSize()}
+            onCustomSlideSize={() =>
+              void window.slidesApi.getSlideSize().then((size) => {
+                if (size) setSlideSizeDialog(size)
               })
-            }
-            slideSizeKey={
-              slide
-                ? Math.abs(slide.widthPx / slide.heightPx - 16 / 9) < 0.02
-                  ? '16:9'
-                  : Math.abs(slide.widthPx / slide.heightPx - 4 / 3) < 0.02
-                    ? '4:3'
-                    : null
-                : null
             }
             onParagraphFormat={onParagraphFormat}
             onDirection={onDirection}
@@ -5351,6 +5353,18 @@ export function App() {
           currentSlide={current}
           onInsert={(keys) => void insertZooms(zoomDialog, keys)}
           onClose={() => setZoomDialog(null)}
+        />
+      )}
+
+      {slideSizeDialog && (
+        <SlideSizeDialog
+          initial={slideSizeDialog}
+          defaultUnit={rulerUnit}
+          onApply={(cx, cy) => {
+            setSlideSizeDialog(null)
+            applySlideSize(cx, cy)
+          }}
+          onClose={() => setSlideSizeDialog(null)}
         />
       )}
 
