@@ -19,6 +19,7 @@ import {
 import { EditorContent, useEditor } from '@tiptap/react'
 import { type FindFocusRequest, type FindPanelStrings } from '@chaoffice/ui'
 import type { Editor } from '@tiptap/core'
+import { countWords } from '../../../docs/src/renderer/word-count'
 import { TextSelection } from '@tiptap/pm/state'
 import { exportImages } from './export/imageExport'
 import { decodeImageDataUrl, toDocxImage } from './export/exportImage'
@@ -146,6 +147,13 @@ export default function App() {
   const [slashState, setSlashState] = useState<SlashMenuState | null>(null)
   const [wikiSuggestState, setWikiSuggestState] = useState<WikiSuggestState | null>(null)
   const [fmOpen, setFmOpen] = useState(false)
+  // status-bar text statistics: Word's CJK counting rule (asian chars count
+  // one by one, non-asian words by whitespace) shared with the docs status bar
+  const [docStats, setDocStats] = useState<{ words: number; chars: number } | null>(null)
+  const statsOf = (text: string) => ({
+    words: countWords(text),
+    chars: Array.from(text).length,
+  })
   const [fmText, setFmText] = useState('')
   // Persisted so a closed AI panel stays closed on next launch (docs/slides parity)
   // panel=0 (docked boot, P1 契约): the Home conversation is the chat surface
@@ -366,6 +374,7 @@ export default function App() {
     onUpdate: ({ editor: updated, transaction }) => {
       if (!transaction.getMeta('uiOnly')) markDirty()
       setOutlineItems(collectOutline(updated))
+      setDocStats(statsOf(updated.getText()))
     },
   })
   editorRef.current = editor
@@ -1226,6 +1235,14 @@ export default function App() {
                     </span>
                   )}
                   {fileName && <span className="status-item status-file">{fileName}</span>}
+                  {fileName && docStats && (
+                    <span className="status-item status-stats">
+                      {t('statusWords', { n: docStats.words })} ·{' '}
+                      {t('statusChars', {
+                        n: docStats.chars,
+                      })}
+                    </span>
+                  )}
                 </div>
                 <div className="status-right">
                   {statusText && (
