@@ -765,7 +765,7 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 23 | 95a8df5e #2193 | pdf 全文批注面板 | adapted：App.tsx pdf-body 结构 union（outline 完整分支从 HEAD 重建+comments 分支插入）；strings 21 块 ours+4 新键（vi 块取上游真越南语） |
 | 24 | 7d067d4c #2192 | pdf 超链接（Edit>Link） | adapted：ribbon Link 按钮 union 嫁接、LinkDialog 渲染点接线、strings 21 块同配方；.LinkDialog.tsx 新件干净 |
 | 25 | 8cd5de9f #2181 | pdf 搜索大小写/全字匹配 | adapted：App.tsx 大冲突保 ours+5 增量 hunk 手工重放（状态/搜索调用/deps/按钮）；search.ts import 并集 |
-| 26-28 | fe0810ba/ee576433/6eb8e8aa | docx 标题保存/md wiki 建笔记/md 状态栏字数 | 干净/手动重放：#2198 App.tsx 从 HEAD 恢复+7 hunk 重放（本地无 sourceTextRef，4/5 两 hunk 不适用记账）；#2179 wiki-create 快照后补 target 契约（见 #2222 行） |
+| 26-28 | fe0810ba/ee576433/6eb8e8aa | docx 标题保存/md wiki 建笔记/md 状态栏字数 | **#2215 当时实为漏 pick（本行原记「干净 pick」与事实不符）**：实现+测试同缺致 vitest 无红可兜，2026-10-27 patch-id 审计兜出，ac02282d8 补落（patch.ts 一处冲突=本地 styleDeletes 并集裁决+顺带消除 HEAD 既有 upsert 双循环冗余）；#2198 App.tsx 从 HEAD 恢复+7 hunk 重放（本地无 sourceTextRef，4/5 两 hunk 不适用记账）；#2179 wiki-create 快照后补 target 契约（见 #2222 行） |
 | 29-30 | 36b26138/cac6681f | pptx/xlsx 颜色 trim | 干净 pick |
 | 31 | 7f58e4ab #2186 | 首页侧栏拖拽调宽 | 空对账（本地首页改版已有 sidebar-resizer+homeLayout 持久化，RTL 强化随快照挂账） |
 | 32 | 591b4186 #2187 | 启动恢复上次会话 | adapted：SettingsModal 冲突=新增 restoreSession effect（chaOffice 桥）；last-session.ts/preload/home-api/测试干净；window.aiOffice→chaOffice 重放 |
@@ -775,13 +775,14 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 36 | 11051a91 #2136 | sheets 加密工作簿+改密（Rust CFB 嗅探+TS Electron 主解密） | adapted：lib.rs take-theirs（宿主解密文案）；sheets-main 8 块逐块 union——本地惰性打开架构保留（blankDraft 流）+password/密码重加密/PASSWORD_REQUIRED 409 链接入；reopenWorkbook 本地死链修复版升级为携 priorSession.password 走 openSelectedWorkbook；App.tsx handleInspectWorkbook 重建（本地 shape+解密循环）；ExcelShell passwordProtected prop 补第二 Ribbon 调用点；desktop-api/preload/ooxml-encryption.ts 干净合入；snapshotWorkbook take-theirs（bytes 参数+getSessionSnapshotDirectory） |
 | 37 | c8bfff60 #2222 | 10-26 快照（310 文件） | 全量 3-way：直取 45+干净 3-way 167+真冲突 58+本地缺失 40。**tr 土耳其语第 22 语言全量接线**（Lang/LANGS/HTML_LANGS/home-api/preload UI_LANGUAGES/各端 locale 指令+DATE_LOCALES/13 聚合器 tr 行/12 tr shard 本地键 zh 回填/19 篇 tr 帮助手册+README.tr/check-help-langs 22 语言）；native-admission.ts 新件（线协议头豁免保留）；update-feed-utils.cjs semver 预发布序；wiki-create target 契约；form-text/image-edit 等 pdf 新件。58 冲突=i18n 聚合器/进程字典 tr+vi 行、excel-shortcuts 批2（从上游整文件重建+chaoffice.command 重放）、Home 保 ours（本地 resizer）、pdf formMenu 从 HEAD 重建+两处真增量（comments 按钮去 disabled/LinkDialog destPage 重映射）、linux 脚本 #2150 AppArmor 品牌重放（空格路径 case glob 加引号） |
 
-### 施工事故与修复（均同轮闭环）
+### 施工事故与修复（1-5 同轮闭环；6 为事后审计兜出）
 
 1. **快照 take-theirs 组 43 文件静默漏落（严重）**：3-way 分类脚本 take-theirs 分支只 append 未 write——parse-props fieldsNested/empty-instruction 豁免、docx compare.ts、wiki-create 全文、image-edit、global-shortcuts、i18n index tr 等 43 文件未落，docx-engine empty-instruction-field 测试红兜出；逐文件取上游补齐+品牌重放（0f6a0b171）。**防线：全量 3-way 脚本的每个分类分支必须真写盘并 diff 自检**。
 2. **shell strings.ts 块解析器误删 2772 行**（#2197）：ours/theirs 正则解块在大文件上吞并冲突块——回滚 HEAD 改「键级直删」配方（R17 多行格式坑再次出现：navTrashTip×8 为键名独立行）。
 3. **tr 字典上游残留**：new*/menuNew* AI 前缀+Genspark 值随快照并入——按本地钉名纪律归一（main-locale-tables/strings 测试兜出）。
 4. **R31 #1944 回归**：快照 3-way 洗掉 ChatPanel sessionUsage 读点（本地独有文件无上游接替），composer 用量 chip 渲染恢复。
 5. **cli help 品牌漏网（R33 引入，发版直验兜出）**：docs compare 帮助行 "compare default: GenOffice"→ChaAI Office，九件包重打。
+6. **#2215 整提交漏 pick（发版后审计兜出，2026-10-27 补落）**：台账误记「干净 pick」，实际 main/sync/35 分支均无该提交——实现与测试四文件同缺，vitest 无红可兜；`git cherry` patch-id 逐个+内容四重核查定位，ac02282d8 补落（docx-engine 1947 测试绿；patch.ts 冲突=本地 styleDeletes 并集，顺带消除 HEAD 既有 upsert 双循环）。**防线：每轮吸收除 vitest/门禁外，须对上游区间做 `git cherry` 全量对账并对 `+` 项逐一内容核实（pick 提交在≠内容在，符号/测试文件落位才算数）**。
 
 ### 门禁终态
 
