@@ -1206,6 +1206,7 @@ export const ms = {
   appGroupForecast: 'Ramalan',
   appWhatIfAnalysis: 'Analisis Bagaimana-Jika',
   appGoalSeek: 'Cari Matlamat',
+  appDataTable: 'Jadual Data',
   appWhatIfTitle: 'Cari input untuk nilai sasaran',
   appGoalSeekNeedsFormula: 'Sel mesti mengandungi formula.',
   appGoalSeekByCellNotNumber: 'Sel yang diubah mesti mengandungi nombor atau kosong.',

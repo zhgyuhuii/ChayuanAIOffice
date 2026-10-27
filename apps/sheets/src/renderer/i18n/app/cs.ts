@@ -1110,6 +1110,7 @@ export const cs = {
   appGroupForecast: 'Prognóza',
   appWhatIfAnalysis: 'Citlivostní analýza',
   appGoalSeek: 'Hledání řešení',
+  appDataTable: 'Datová tabulka',
   appWhatIfTitle: 'Najít vstup pro cílovou hodnotu',
   appGoalSeekNeedsFormula: 'Nastavená buňka musí obsahovat vzorec.',
   appGoalSeekByCellNotNumber: 'Měněná buňka musí obsahovat prosté číslo nebo být prázdná.',

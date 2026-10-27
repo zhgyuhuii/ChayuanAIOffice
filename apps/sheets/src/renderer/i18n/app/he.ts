@@ -1148,6 +1148,7 @@ export const he = {
   appGroupForecast: 'חיזוי',
   appWhatIfAnalysis: 'ניתוח מה-אם',
   appGoalSeek: 'חתירה למטרה',
+  appDataTable: 'טבלת נתונים',
   appWhatIfTitle: 'מציאת קלט לערך יעד',
   appGoalSeekNeedsFormula: 'התא חייב להכיל נוסחה.',
   appGoalSeekByCellNotNumber: 'התא המשתנה חייב להכיל מספר או להיות ריק.',

@@ -115,6 +115,8 @@ import {
 } from './pivot-field-model'
 import type { GoalSeekResult } from './goal-seek'
 import { GoalSeekDialog } from './GoalSeekDialog'
+import type { DataTableInput, DataTableOutcome } from './data-table'
+import { DataTableDialog } from './DataTableDialog'
 import type { FillSeriesOptions, FillSeriesType } from './fill-series'
 import type { FillSeriesContext } from './fill-series-apply'
 import { FillSeriesDialog } from './FillSeriesDialog'
@@ -511,6 +513,10 @@ interface ExcelShellProps {
   readonly calcManual: boolean
   /// Goal Seek solve; rejects with a user-facing Error message.
   readonly onGoalSeek: (setCell: string, toValue: number, byCell: string) => Promise<GoalSeekResult>
+  /// Data Table (What-If) run; rejects with a user-facing Error message.
+  readonly onDataTable: (input: DataTableInput) => Promise<DataTableOutcome>
+  /// Prefill for the Data Table range field (the multi-cell selection).
+  readonly onGetDataTableRange: () => string
   /// Fill > Series… OK; returns an error message, or null on success.
   readonly onFillSeries: (options: FillSeriesOptions) => string | null
   /// Series dialog defaults (selection shape, workbook date system).
@@ -671,6 +677,8 @@ export function ExcelShell({
   pageLayout,
   calcManual,
   onGoalSeek,
+  onDataTable,
+  onGetDataTableRange,
   onFillSeries,
   onGetFillSeriesContext,
 }: ExcelShellProps): React.JSX.Element {
@@ -830,6 +838,7 @@ export function ExcelShell({
   }
   const [showSubtotalDialog, setShowSubtotalDialog] = useState(false)
   const [showGoalSeek, setShowGoalSeek] = useState(false)
+  const [showDataTable, setShowDataTable] = useState(false)
   const [showFillSeries, setShowFillSeries] = useState(false)
   const [showConsolidateDialog, setShowConsolidateDialog] = useState(false)
   const [showGoTo, setShowGoTo] = useState(false)
@@ -930,6 +939,7 @@ export function ExcelShell({
     else if (command.startsWith('insert-function-open:'))
       openInsertFunction(command.slice('insert-function-open:'.length))
     else if (command === 'goal-seek-open') setShowGoalSeek(true)
+    else if (command === 'data-table-open') setShowDataTable(true)
     else if (command === 'fill-series-open') setShowFillSeries(true)
     else if (command === 'subtotal-open') setShowSubtotalDialog(true)
     else if (command === 'consolidate-open') setShowConsolidateDialog(true)
@@ -1914,6 +1924,13 @@ export function ExcelShell({
           onSolve={onGoalSeek}
           onPickRange={onPickRange}
           onClose={() => setShowGoalSeek(false)}
+        />
+      )}
+      {showDataTable && (
+        <DataTableDialog
+          initialRange={onGetDataTableRange()}
+          onApply={onDataTable}
+          onClose={() => setShowDataTable(false)}
         />
       )}
       {insertFunction !== null && (
@@ -4534,6 +4551,7 @@ function Ribbon({
         <RibbonGroup label={t('appGroupForecast')}>
           {largeMenu(t('appWhatIfAnalysis'), '❔', t('appWhatIfTitle'), [
             { value: 'goal-seek-open', label: t('appGoalSeek'), icon: <OptSample>?</OptSample> },
+            { value: 'data-table-open', label: t('appDataTable') },
           ])}
         </RibbonGroup>
         <RibbonGroup label={t('appGroupOutline')}>
