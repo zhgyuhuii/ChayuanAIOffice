@@ -527,6 +527,13 @@ html.chaoffice-popover-open .ribbon-tabs {
   -webkit-app-region: no-drag;
 }
 
+/* Same for the wiki graph: its header (close button included) covers the
+   strip, so while the overlay is up the row has to yield or the press is
+   taken for a window drag and the graph cannot be closed */
+html.markdown-graph-open .ribbon-tabs {
+  -webkit-app-region: no-drag;
+}
+
 .ribbon-tabs button,
 .ribbon-tabs .autosave-toggle {
   -webkit-app-region: no-drag;
