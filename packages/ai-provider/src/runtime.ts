@@ -28,7 +28,7 @@ import type { AiSettingsSource } from './settings-source'
 import { streamResolved, AiCreditsError, type StreamCallbacks } from './stream'
 import { AiTimeoutError } from './watchdog'
 import { VIDEO_GEN_VENDOR_IDS, maxOutputTokensFor } from './capabilities'
-import { clampMaxOutputTokens } from './providers'
+import { DEFAULT_MAX_OUTPUT_TOKENS, clampMaxOutputTokens } from './providers'
 import { inferModelType } from './model-type'
 import { imageParamSpec, videoParamSpec, type MediaParamSpec } from './media-params'
 import type {
@@ -344,7 +344,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     const { requestId, system, messages } = request
     const tools = request.tools ?? []
     // per-vendor cap resolved after the call is known; a blanket 8192 truncates long tool arguments on vendors with higher limits
-    let maxTokens: number = request.maxTokens ?? 8192
+    let maxTokens: number = request.maxTokens ?? DEFAULT_MAX_OUTPUT_TOKENS
     let call: ResolvedModelCall
     try {
       call = await resolveForRun(request.selection)
@@ -380,12 +380,18 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
       return
     }
     if (request.maxTokens === undefined) {
-      // user's global per-turn cap (f105f36) wins over the per-vendor default
+      // user's global per-turn cap (f105f36) wins over the shipped default. The
+      // shipped default (32768) is the floor: reasoning models bill their
+      // thinking against this same budget, and the historic per-vendor 8192
+      // left ~3.5k chars of prose after thinking — the "output stops mid-way"
+      // symptom. The per-vendor value only ever RAISES it (deepseek v3+ 65536);
+      // models with a lower ceiling 400 and are retried at their real cap
+      // (output-cap.ts), so a bigger ask costs one round trip at worst.
       const stored = await readRaw()
       maxTokens =
         stored?.maxOutputTokens !== undefined
           ? clampMaxOutputTokens(stored.maxOutputTokens)
-          : maxOutputTokensFor(call.vendorId, call.model)
+          : Math.max(DEFAULT_MAX_OUTPUT_TOKENS, maxOutputTokensFor(call.vendorId, call.model))
     }
     // wire-activity keepalive: lets the renderer's silence watchdog tell a slow turn from a dead one
     let lastPing = 0

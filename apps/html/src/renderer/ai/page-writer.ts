@@ -1,4 +1,4 @@
-import { streamText, type AgentTransport } from '@chaoffice/agent-core'
+import { streamText, ARTIFACT_STREAM_MAX_TOKENS, type AgentTransport } from '@chaoffice/agent-core'
 import type { Brief } from '../document/brief'
 
 /**
@@ -117,6 +117,7 @@ export async function streamPage(opts: StreamPageOptions): Promise<StreamPageOut
     user: opts.user,
     signal: opts.signal,
     maxChars: PAGE_MAX_CHARS,
+    maxTokens: ARTIFACT_STREAM_MAX_TOKENS,
     extract: (raw) => {
       const { html, complete } = extractPageHtml(raw)
       return { text: html, complete }

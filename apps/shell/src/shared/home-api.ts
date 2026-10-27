@@ -634,6 +634,9 @@ export interface HomeChatMessage {
   card?: HomeChatCard | undefined
   /** model/IPC failure — the text holds the error description */
   error?: boolean | undefined
+  /** the turn was cut off by the output-token limit (stop_reason max_tokens):
+   *  the reply ends mid-way; the timeline offers an explicit 继续 action */
+  truncated?: boolean | undefined
   ts: number
   /** P2 中继轮次: this assistant message is the mirror of one relayed turn
    *  into a docked editor's loop; local agent runs feed the same timeline */

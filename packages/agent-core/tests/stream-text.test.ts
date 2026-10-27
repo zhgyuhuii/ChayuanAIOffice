@@ -238,3 +238,52 @@ describe('streamText', () => {
     expect(cancelled).toBe(true)
   })
 })
+
+describe('streamText maxTokens passthrough', () => {
+  it('forwards the artifact budget on the transport request when given', async () => {
+    let maxTokens: number | undefined
+    let sawMaxTokensKey = false
+    const outcome = await streamText({
+      transport: {
+        stream: (req, cb) => {
+          maxTokens = req.maxTokens
+          sawMaxTokensKey = 'maxTokens' in req
+          queueMicrotask(() => {
+            cb.onDelta('body')
+            cb.onDone()
+          })
+          return { cancel: () => undefined }
+        },
+      },
+      system: 's',
+      user: 'u',
+      maxChars: 1000,
+      maxTokens: 65_536,
+      extract: passthrough,
+    })
+    expect(maxTokens).toBe(65_536)
+    expect(sawMaxTokensKey).toBe(true)
+    expect(outcome.status).toBe('complete')
+  })
+
+  it('omits the field entirely when no budget is passed (main side picks)', async () => {
+    let sawMaxTokensKey = true
+    await streamText({
+      transport: {
+        stream: (req, cb) => {
+          sawMaxTokensKey = 'maxTokens' in req
+          queueMicrotask(() => {
+            cb.onDelta('body')
+            cb.onDone()
+          })
+          return { cancel: () => undefined }
+        },
+      },
+      system: 's',
+      user: 'u',
+      maxChars: 1000,
+      extract: passthrough,
+    })
+    expect(sawMaxTokensKey).toBe(false)
+  })
+})

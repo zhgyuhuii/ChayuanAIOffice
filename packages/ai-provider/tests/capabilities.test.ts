@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   capabilityBlockers,
   functionCallingVerdict,
+  geminiThinkingBudget,
   resolveModelCapabilities,
 } from '../src/capabilities'
 
@@ -75,5 +76,24 @@ describe('recraft vendor (SVG-line image generation)', () => {
   it('recraft model ids infer as image-generation and are wired to the image channel', () => {
     expect(resolveModelCapabilities(q('recraft', 'openai-compatible', 'recraftv3')).imageGeneration).toBe(true)
     expect(resolveModelCapabilities(q('recraft', 'openai-compatible', 'recraftv3')).videoGeneration).toBe(false)
+  })
+})
+
+describe('geminiThinkingBudget', () => {
+  it('caps the default-on 2.5 thinking at a quarter of the turn budget', () => {
+    expect(geminiThinkingBudget('gemini-2.5-pro', 32768)).toBe(8192)
+    expect(geminiThinkingBudget('gemini-2.5-flash', 32768)).toBe(8192)
+    expect(geminiThinkingBudget('gemini-2.5-flash', 4096)).toBe(1024)
+    expect(geminiThinkingBudget('gemini-2.5-flash-preview', 65536)).toBe(8192)
+  })
+
+  it('stays out of the small-budget and unverified-model ranges', () => {
+    // per-model minimums (512 flash-lite) get risky when every token counts
+    expect(geminiThinkingBudget('gemini-2.5-flash', 4095)).toBeUndefined()
+    expect(geminiThinkingBudget('gemini-2.5-flash-lite', 2048)).toBeUndefined()
+    // 1.x/2.0 reject the field; 3.x moved to thinking_level
+    expect(geminiThinkingBudget('gemini-1.5-flash', 32768)).toBeUndefined()
+    expect(geminiThinkingBudget('gemini-2.0-flash', 32768)).toBeUndefined()
+    expect(geminiThinkingBudget('gemini-3-pro', 32768)).toBeUndefined()
   })
 })

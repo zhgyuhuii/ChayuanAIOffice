@@ -208,12 +208,13 @@ export function capabilityBlockers(
 }
 
 /**
- * Per-vendor maximum output tokens for tool-driving turns. The runtime's
- * historical blanket 8192 fallback sits below several vendors' real caps and
- * truncates long tool arguments (generate_deck page briefs) mid-JSON. Only
- * vendors with verified higher caps are listed; everything else keeps 8192.
- * Values per official API references as of 2026-09; DeepSeek raised its cap
- * 4K -> 8K -> 64K across V3 -> V3.1+ (api-docs.deepseek.com).
+ * Per-vendor maximum output tokens for tool-driving turns. Callers take
+ * max(DEFAULT_MAX_OUTPUT_TOKENS, this) — the shipped default is the floor and
+ * this map only raises it (deepseek v3+ 65536); everything unlisted stays at
+ * the default. Models whose real ceiling is lower reject the ask and are
+ * retried at that ceiling (see output-cap.ts). Values per official API
+ * references as of 2026-09; DeepSeek raised its cap 4K -> 8K -> 64K across
+ * V3 -> V3.1+ (api-docs.deepseek.com).
  */
 export const MAX_OUTPUT_TOKENS: Record<string, number> = {
   deepseek: 65536,
@@ -228,4 +229,22 @@ export function maxOutputTokensFor(vendorId: string | undefined, modelId: string
   // only ever pay off on models that actually write that much).
   if (vendorId === 'deepseek' && !/^deep-?seek-(chat|reasoner|v[3-9])/i.test(modelId)) return 8192
   return cap
+}
+
+/**
+ * Thinking-token budget for Gemini 2.5 — the one family here that thinks BY
+ * DEFAULT and bills that thinking against the same maxOutputTokens budget as
+ * the prose (Anthropic thinks only when the request asks; openai-compatible
+ * vendors expose an on/off `thinking` switch but no numeric budget, so their
+ * fix is a large total budget, not a split). Capping the thinking share keeps
+ * long-form prose from being crowded out: 1/4 of the turn budget, clamped to
+ * the documented 2.5 range (0-24576 flash, 128-32768 pro). Below 4096 every
+ * token counts and the per-model minimums (512 flash-lite) get risky, so the
+ * field is omitted there. Undefined for models where the field is unverified
+ * (1.x/2.0/3.x — 3.x moved to thinking_level) — sending it there is a 400.
+ */
+export function geminiThinkingBudget(modelId: string, maxTokens: number): number | undefined {
+  if (!/gemini-2\.5/i.test(modelId)) return undefined
+  if (maxTokens < 4096) return undefined
+  return Math.min(8192, Math.floor(maxTokens / 4))
 }

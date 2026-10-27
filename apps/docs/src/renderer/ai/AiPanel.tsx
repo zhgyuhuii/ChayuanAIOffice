@@ -4,7 +4,7 @@ import type { Editor } from '@tiptap/core'
 // AiPanel,本地为「外壳+AiConversationBody」架构——保本地 import;mediaAnalysisAvailable
 // 接线重放至 AiConversationBody(该提交的 docs-skill/tools/main 侧已并集落地)
 import type { Block } from '@chaoffice/docx-engine'
-import { streamText } from '@chaoffice/agent-core'
+import { streamText, ARTIFACT_STREAM_MAX_TOKENS } from '@chaoffice/agent-core'
 import type { AiSettingsV2 } from '../../shared/ipc'
 
 import { buildAssistantInstruction, findCoreAssistant } from './assistants'
@@ -225,6 +225,7 @@ export function AiPanel({
         user,
         signal,
         maxChars: DOC_MAX_CHARS,
+        maxTokens: ARTIFACT_STREAM_MAX_TOKENS,
         extract: (raw) => ({ text: extractFragment(raw) }),
         onProgress: (html) => {
           if (closed) return

@@ -148,6 +148,13 @@ export interface AgentStreamRequest {
   system: string
   messages: AgentMessage[]
   tools: AgentToolDef[]
+  /**
+   * Output-token cap for this turn; omit to let the main side pick (user
+   * setting, else the shipped default). Artifact streams whose reply IS the
+   * document body (stream-text writers) pass a large value here — the default
+   * that fits conversational turns truncates long bodies mid-way.
+   */
+  maxTokens?: number
 }
 
 export interface AgentStreamCallbacks {

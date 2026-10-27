@@ -6,6 +6,7 @@ import {
   composeSkills,
   streamText,
   withAttachedSkills,
+  ARTIFACT_STREAM_MAX_TOKENS,
   type MindMapTreeNode,
 } from '@chaoffice/agent-core'
 import type { AiSettingsV2 } from '@chaoffice/ai-provider'
@@ -407,6 +408,7 @@ function AiConversationBody({
         user,
         signal,
         maxChars: DOC_MAX_CHARS,
+        maxTokens: ARTIFACT_STREAM_MAX_TOKENS,
         extract: (raw) => ({ text: extractMarkdown(raw) }),
         onProgress: (markdown) => {
           if (closed) return

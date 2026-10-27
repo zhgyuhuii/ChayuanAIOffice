@@ -1,6 +1,16 @@
 import type { AgentStreamHandle, AgentTransport } from './types'
 
 /**
+ * Output-token budget for artifact streams (stream-text writers: the reply IS
+ * the document body). Sized for the largest bodies the writers reasonably
+ * produce — roughly 60k+ Chinese chars — well above the conversational default
+ * whose thinking-plus-prose split cut bodies off around ~3.5k chars. Models
+ * with a lower ceiling reject and are retried at their real cap (output-cap.ts
+ * on the provider side), so an oversized ask costs one round trip at worst.
+ */
+export const ARTIFACT_STREAM_MAX_TOKENS = 65_536
+
+/**
  * One tool-less streaming request whose reply body IS the artifact (a page, a
  * document fragment). Text deltas arrive immediately, so the caller can mirror
  * the draft as it grows and no gateway sees a silent connection — tool
@@ -14,6 +24,13 @@ export interface StreamTextOptions {
   signal?: AbortSignal
   /** the stream is cancelled and reported as partial once the raw reply exceeds this */
   maxChars: number
+  /**
+   * Output-token budget requested for the artifact stream. The reply here IS
+   * the document body, so it passes a large budget (ARTIFACT_STREAM_MAX_TOKENS)
+   * instead of the conversational default that cut bodies off mid-way; models
+   * with a lower ceiling reject and are retried there (output-cap.ts).
+   */
+  maxTokens?: number
   /**
    * Maps the raw reply so far to the artifact. `complete` says the format's own
    * terminator arrived (e.g. `</html>`); omit it for formats without one, and
@@ -81,7 +98,12 @@ export function streamText(opts: StreamTextOptions): Promise<StreamTextOutcome> 
       return
     }
     handle = opts.transport.stream(
-      { system: opts.system, messages: [{ role: 'user', text: opts.user }], tools: [] },
+      {
+        system: opts.system,
+        messages: [{ role: 'user', text: opts.user }],
+        tools: [],
+        ...(opts.maxTokens !== undefined ? { maxTokens: opts.maxTokens } : {}),
+      },
       {
         onDelta: (delta) => {
           if (settled) return

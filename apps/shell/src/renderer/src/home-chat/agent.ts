@@ -114,6 +114,9 @@ export interface HomeAgentEvents {
     text: string
     createdDoc?: { title: string; docType: DocType }
     openedDoc?: { title: string; filePath: string }
+    /** the turn was cut off by the output-token limit (stop_reason max_tokens):
+     *  the reply ends mid-way; the timeline offers an explicit 继续 action */
+    truncated?: boolean
   }): void
   onError(error: string): void
 }
@@ -1133,13 +1136,14 @@ export class HomeAgent {
             ...(media ? { media } : {}),
           })
         },
-        onDone: () => {
+        onDone: ({ truncated }) => {
           this.busyFlag = false
           this.events.onBusy(false)
           this.events.onDone({
             text: this.turnTextValue,
             ...(this.createdDoc ? { createdDoc: this.createdDoc } : {}),
             ...(this.openedDoc ? { openedDoc: this.openedDoc } : {}),
+            ...(truncated ? { truncated: true } : {}),
           })
           this.flushQueue()
         },

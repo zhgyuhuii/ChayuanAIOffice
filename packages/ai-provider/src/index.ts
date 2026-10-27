@@ -102,6 +102,7 @@ export {
   capabilityBlockers,
   functionCallingVerdict,
   maxOutputTokensFor,
+  geminiThinkingBudget,
   resolveModelCapabilities,
   IMAGE_GEN_VENDOR_IDS,
   VIDEO_GEN_VENDOR_IDS,

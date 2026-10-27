@@ -608,6 +608,7 @@ export function AiConversationBody({
           patchLastAssistant((last) => ({
             streaming: false,
             turnLimit,
+            ...(truncated ? { truncated: true } : {}),
             text: finalText || (last.tools?.length ? last.text : tModule('aiNoReply')),
             // A stop mid-tool can leave a running placeholder behind — drop it
             tools: last.tools?.filter((tl) => !tl.running),
@@ -1395,7 +1396,7 @@ export function AiConversationBody({
                   )}
                 </div>
               )}
-              {entry.turnLimit && isLast && !busy && (
+              {(entry.turnLimit || entry.truncated) && isLast && !busy && (
                 <button className="ai-continue-btn" onClick={continueRun}>
                   {t('aiContinue')}
                 </button>

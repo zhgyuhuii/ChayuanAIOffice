@@ -3431,6 +3431,35 @@ body.sidebar-resizing {
   color: var(--text-tertiary);
 }
 
+/* max_tokens 截断的显式续作行：说明 + 继续按钮（仅最后一条助手消息下方出现） */
+.chat-continue-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 10px;
+  padding-left: 24px;
+}
+
+.chat-truncated-note {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.chat-continue-btn {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  padding: 3px 12px;
+  cursor: pointer;
+}
+
+.chat-continue-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--text-tertiary);
+}
+
 /* assistant markdown / restricted-HTML bodies */
 
 .chat-md {

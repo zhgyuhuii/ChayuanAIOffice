@@ -51,6 +51,9 @@ export interface ChatEntry {
   error?: string
   streaming?: boolean
   turnLimit?: boolean
+  /** the turn was cut off by the output-token limit (stop_reason max_tokens):
+   *  the reply text ends mid-way and the 继续 action offers an explicit resume */
+  truncated?: boolean
   /** D10: restored interrupted turn (half text kept, rendered with the badge) */
   interrupted?: boolean
   /** the run failed because ChaOffice is signed out — render an inline sign-in button */

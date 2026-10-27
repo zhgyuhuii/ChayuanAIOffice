@@ -1,4 +1,5 @@
 import type { AgentMessage, AgentToolDef } from '@chaoffice/agent-core'
+import { geminiThinkingBudget } from '../capabilities'
 import { aiFetch } from '../fetch'
 import { httpBodyDetail } from '../http-error'
 import { chaofficeAttributionHeaders, opencodeSessionHeaders } from '../providers'
@@ -213,6 +214,15 @@ async function geminiTurn(
       generationConfig: {
         ...(options.omitTemperature ? {} : { temperature: 0.3 }),
         maxOutputTokens: maxTokens,
+        // 2.5 thinks by default and bills it against maxOutputTokens; without
+        // a cap deep thinking crowds the actual prose out of a big budget
+        ...(geminiThinkingBudget(config.model, maxTokens) !== undefined
+          ? {
+              thinkingConfig: {
+                thinkingBudget: geminiThinkingBudget(config.model, maxTokens),
+              },
+            }
+          : {}),
       },
     }),
   })

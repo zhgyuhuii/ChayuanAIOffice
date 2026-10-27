@@ -38,6 +38,8 @@ export interface IpcStreamStart<S> {
   system: string
   messages: AgentMessage[]
   tools: AgentToolDef[]
+  /** output-token cap for the turn; absent = the main side picks its default */
+  maxTokens?: number
 }
 
 /**
@@ -151,6 +153,7 @@ export function createIpcTransport<S>(options: IpcTransportOptions<S>): AgentTra
             system: request.system,
             messages: request.messages,
             tools: request.tools,
+            ...(request.maxTokens !== undefined ? { maxTokens: request.maxTokens } : {}),
           }),
         ).catch((err: unknown) => {
           fail(err instanceof Error ? err.message : options.unknownErrorText())

@@ -104,7 +104,7 @@ export class HomeChatController {
         },
         onBusy: (busy) => this.onBusyChange?.(sessionId, busy),
         onUsage: (usage) => this.onUsage?.(sessionId, usage),
-        onDone: ({ createdDoc, openedDoc }) => {
+        onDone: ({ createdDoc, openedDoc, truncated }) => {
           this.finishOneShotPersona(sessionId)
           this.updateSession(sessionId, (s) => {
             const messages = settleRunningTools(s.messages)
@@ -117,6 +117,11 @@ export class HomeChatController {
                 card = { kind: 'doc-opened', title: openedDoc.title, filePath: openedDoc.filePath }
               }
               if (card) messages[messages.length - 1] = { ...last, card }
+              // a truncated doc turn cut the FILE body mid-way too — 继续 resumes
+              // it just the same, so the flag lands regardless of the card
+              if (truncated) {
+                messages[messages.length - 1] = { ...messages[messages.length - 1], truncated: true }
+              }
             }
             // P1 停靠契约: documents dock beside the conversation — it does
             // NOT move into an editor tab's panel, so handedOff stays as-is

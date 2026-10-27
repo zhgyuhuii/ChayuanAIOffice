@@ -1717,7 +1717,7 @@ async function writeDocument(
   }
   markDocSeen(editor)
   const note = result.truncated
-    ? ' The stream ended early, so the content is INCOMPLETE (the user chose to keep it): the tail is missing. Say so and offer to finish the missing sections with write_document (afterBlockIndex at the end) or insert_content.'
+    ? ' The stream ended early, so the content is INCOMPLETE (the user chose to keep it): the tail is missing. Tell the user the content is incomplete and STOP — do not start writing the missing sections on your own (an unprompted rewrite burns the turn budget again and truncates the same way). Wait until the user explicitly asks to continue, then append the missing parts with write_document (afterBlockIndex at the end) or insert_content.'
     : ''
   return {
     output: `Content written by the system (${nodes.length} block(s), ${result.html.length} chars). Block indexes have changed; use get_document_context if needed.${note}\nReply with one or two sentences describing what was written; do not paste the content.`,

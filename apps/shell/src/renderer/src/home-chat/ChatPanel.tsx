@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import type { ReactElement } from 'react'
 import {
   addTokenUsage,
+  AI_CONTINUE_INSTRUCTION,
   AiComposer,
   AiTypingIndicator,
   AiUsageChip,
@@ -976,6 +977,14 @@ export function ChatPanel({
     else controller.stop(active.id)
   }
 
+  // truncated 回复的显式续作：只走本地 agent（truncated 仅本地轮会置位，
+  // 中继轮的时间线不产出该标记），措辞复用六端统一的续作指令
+  const continueTruncated = () => {
+    if (!active || busy) return
+    controller.send(active.id, active.messages, AI_CONTINUE_INSTRUCTION, [])
+    setBusy(true)
+  }
+
   const pickAttachments = async () => {
     try {
       const result = await window.chaOffice.pickAttachments?.()
@@ -1460,6 +1469,19 @@ export function ChatPanel({
                 onOpenCitation={setKbCiteView}
               />
             ))}
+            {(() => {
+              const msgs = active!.messages
+              const last = msgs[msgs.length - 1]
+              if (!last || last.role !== 'assistant' || !last.truncated || busy) return null
+              return (
+                <div className="chat-continue-row">
+                  <span className="chat-truncated-note">{t('chatTruncatedNote')}</span>
+                  <button className="chat-continue-btn" onClick={continueTruncated}>
+                    {t('chatContinue')}
+                  </button>
+                </div>
+              )
+            })()}
           </div>
           <TurnNavigator entries={navEntries} listEl={listEl} />
         </div>
