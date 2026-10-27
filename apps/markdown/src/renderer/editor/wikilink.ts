@@ -134,18 +134,40 @@ export function collectWikiTargets(doc: PmNode): string[] {
 
 /**
  * Where a `#fragment` lands in a note: inside the heading it names, or null
- * when the note has no such heading. A `#^block` ref needs block ids, which
- * this schema does not carry yet, so it opens the note without a position.
+ * when the note has no such heading. A `#^block` ref resolves to the block
+ * whose last line ends with the `^blockid` marker as Obsidian writes it — the
+ * marker is plain text at the line end, so ids authored by other tools land
+ * without this schema carrying them.
  */
 export function wikiFragmentPosition(doc: PmNode, fragment: string): number | null {
   const want = fragment.trim().replace(/\s+/g, ' ').toLowerCase()
   if (!want) return null
+  if (want.startsWith('^')) return blockRefPosition(doc, want.slice(1))
   let found: number | null = null
   doc.descendants((node, pos) => {
     if (found !== null || node.type.name !== 'heading') return
     if (node.textContent.replace(/\s+/g, ' ').trim().toLowerCase() === want) found = pos + 1
   })
   return found
+}
+
+/** The textblock whose text ends with `^blockid`, as Obsidian writes it.
+ *  `descendants`, not `forEach`: a list item's marker sits inside the item's
+ *  paragraph, and resolving to the list would land the reader on the wrong
+ *  line. Case-insensitive because the fragment was lower-cased above. */
+function blockRefPosition(doc: PmNode, id: string): number | null {
+  let found: number | null = null
+  const re = new RegExp(`(?:^|\\s)\\^${escapeRegex(id)}\\s*$`, 'i')
+  doc.descendants((node, pos) => {
+    if (found !== null) return false
+    if (node.isTextblock && re.test(node.textContent)) found = pos + 1
+    return true
+  })
+  return found
+}
+
+function escapeRegex(text: string): string {
+  return text.replace(/[.*+?${}()|[\]\\]/g, '\\$&')
 }
 
 export interface WikiLinkOptions {
