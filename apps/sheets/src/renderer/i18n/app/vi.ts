@@ -292,8 +292,8 @@ export const vi = {
     'Vùng này quá lớn để sắp xếp hoặc di chuyển trong một lần — hãy chọn ít ô hơn.',
   appDialogCancel: 'Hủy',
   appPivotSheetNoMove: 'Trang tính này chứa PivotTable — chưa hỗ trợ di chuyển vùng.',
-  appMergeOverTable: '所选区域位于 Excel 表格内——暂不支持合并表格中的单元格。',
-  appTableFilterNoEdit: '该工作表的筛选属于 Excel 表格——编辑后暂时无法保存。',
+  appMergeOverTable:
+    'Vùng chọn chồng chéo với một bảng Excel — chưa hỗ trợ hợp nhất các ô bên trong bảng.',
   appAutofillStreaming: 'Chưa cho phép tự động điền vào khu vực vẫn đang tải theo luồng.',
   appDvNeedsIndexed: '编辑数据验证需要该工作表先完成索引——稍后再试。',
   appPivotSheetNoDuplicate: 'Trang tính này chứa PivotTable — chưa hỗ trợ nhân bản trang tính.',

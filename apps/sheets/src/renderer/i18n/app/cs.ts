@@ -286,9 +286,10 @@ export const cs = {
   appSortRangeTooLarge:
     'Tato oblast je příliš velká na seřazení nebo přesun najednou — vyberte méně buněk.',
   appDialogCancel: 'Zrušit',
-  appPivotSheetNoMove: "该工作表含数据透视表——暂不支持移动区域。",
-  appMergeOverTable: "所选区域位于 Excel 表格内——暂不支持合并表格中的单元格。",
-  appTableFilterNoEdit: 'Filtr tohoto listu patří tabulce Excelu — jeho úpravu zatím nelze uložit.',
+  appPivotSheetNoMove:
+    'Tento list obsahuje kontingenční tabulku — přesouvání oblastí zatím není podporováno.',
+  appMergeOverTable:
+    'Výběr se překrývá s tabulkou Excelu — slučování buněk v tabulce zatím není podporováno.',
   appAutofillStreaming:
     'Automatické vyplnění do oblasti, která se stále načítá, zatím není povoleno.',
   appDvNeedsIndexed:
