@@ -33,7 +33,8 @@ import {
   webContents,
 } from 'electron'
 import type { MenuItemConstructorOptions, NativeImage, WebContents } from 'electron'
-import {  atomicWriteFile } from './atomic-write'
+import { atomicWriteFile } from './atomic-write'
+import { registerAiNamingIpc } from './ai-naming-service'
 import { tabStripOverlay } from './title-bar-overlay'
 import { createFeedbackClient } from './feedback'
 import { shellWindowBackground } from './window-background'
@@ -8673,6 +8674,9 @@ ipcMain.handle('ai:open-model-settings', (_event, section?: string) => {
   // 插入图片对话框的「⚙ 设置」传 'aiMedia'（生图、媒体与搜索分组）。
   win.webContents.send(HOME_CHANNELS.openSettings, { section: section ?? 'modelSettings' })
 })
+// Model file naming. Registered here beside the other AI wiring so every
+// window type can reach it.
+registerAiNamingIpc(() => currentLang())
 registerProjectIpc()
 registerDocsIpc()
 // External MCP client (Settings → MCP 管理): the app dials OUT to user-registered
