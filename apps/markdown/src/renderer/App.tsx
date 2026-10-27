@@ -49,6 +49,7 @@ import { OutlinePane } from './components/OutlinePane'
 import { SlashMenu, type SlashMenuHandle } from './components/SlashMenu'
 import { WikiSuggestMenu, type WikiSuggestMenuHandle } from './components/WikiSuggestMenu'
 import { BacklinksPane } from './components/BacklinksPane'
+import { TagsPane } from './components/TagsPane'
 import { GraphView } from './components/GraphView'
 import { ToastHost } from './components/toast'
 import { showToast } from './components/toast-bus'
@@ -190,6 +191,7 @@ export default function App() {
   const [, setShowFind] = useState(false)
   const [, setFindFocus] = useState<FindFocusRequest>({ field: 'find', nonce: 0 })
   const [backlinksOpen, setBacklinksOpen] = useState(false)
+  const [tagsOpen, setTagsOpen] = useState(false)
   const [graphOpen, setGraphOpen] = useState(false)
   const [sourceViewOpen, setSourceViewOpen] = useState(false)
   const [outlineOpen, setOutlineOpen] = useState(false)
@@ -1175,7 +1177,9 @@ export default function App() {
             onToggleOutline={() => setOutlineOpen((v) => !v)}
             hasOutline={outlineItems.length > 0}
             backlinksOpen={backlinksOpen}
+            tagsOpen={tagsOpen}
             onToggleBacklinks={() => setBacklinksOpen((v) => !v)}
+            onToggleTags={() => setTagsOpen((v) => !v)}
             onOpenGraph={() => setGraphOpen(true)}
             spellcheck={spellcheck}
             onToggleSpellcheck={() => setSpellcheck((v) => !v)}
@@ -1208,6 +1212,9 @@ export default function App() {
                 path={filePath}
                 onOpen={(path) => void window.markdownApi.openSourcePath(path)}
               />
+            )}
+            {tagsOpen && !sourceMode && (
+              <TagsPane onOpen={(path) => void window.markdownApi.openSourcePath(path)} />
             )}
             <div className="app-content">
               {diskNotice && (

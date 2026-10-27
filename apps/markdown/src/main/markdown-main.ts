@@ -80,7 +80,7 @@ import type {
 import { nodeFs, resolveWikiLinks } from './wiki-resolve'
 import { listWikiNotes } from './wiki-notes'
 import { createWikiNote } from './wiki-create'
-import { nodeVaultFs, warmWikiIndex, wikiBacklinks, wikiGraph } from './wiki-index'
+import { nodeVaultFs, warmWikiIndex, wikiBacklinks, wikiGraph, wikiTags } from './wiki-index'
 import { rememberWikiFragment, takeWikiFragment } from './wiki-fragment'
 import { isImageHostUsable, normalizeImageHostConfig, uploadImageToHost } from './image-host'
 import { EXPORT_IMAGE_EXTS } from '../shared/export-image-mime'
@@ -902,6 +902,10 @@ function registerMarkdownIpc(): void {
 
   ipcMain.handle(MARKDOWN_CHANNELS.wikiGraph, (): Promise<WikiGraph> =>
     wikiGraph(configuredDefaultSaveDir(app), nodeVaultFs()),
+  )
+
+  ipcMain.handle(MARKDOWN_CHANNELS.wikiTags, (): Promise<{ tag: string; files: string[] }[]> =>
+    wikiTags(configuredDefaultSaveDir(app), nodeVaultFs()),
   )
 
   ipcMain.handle(
