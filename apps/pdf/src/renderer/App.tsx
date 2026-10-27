@@ -127,6 +127,8 @@ import { PasswordDialog } from './PasswordDialog'
 import { PropertiesDialog } from './PropertiesDialog'
 import { LinkDialog, type LinkDraft } from './LinkDialog'
 import { CertSignDialog } from './CertSignDialog'
+import { BatesDialog } from './BatesDialog'
+import { buildBatesInserts, type BatesConfig } from './bates'
 import { SignaturesDialog, overallSignatureStatus } from './SignaturesDialog'
 import { SignatureDialog, fileToCanvas } from './SignatureDialog'
 import type { SignatureData } from './SignatureDialog'
@@ -281,6 +283,7 @@ import {
   IconSign,
   IconCertSign,
   IconSignatures,
+  IconBates,
   IconPreviousField,
   IconNextField,
   IconCompleteForm,
@@ -848,6 +851,7 @@ export default function App() {
   /** Certificate (digital) signatures found in the file on disk, verified by the main process */
   const [digitalSignatures, setDigitalSignatures] = useState<PdfSignatureInfo[]>([])
   const [certSignDlg, setCertSignDlg] = useState(false)
+  const [batesDlg, setBatesDlg] = useState(false)
   const [signaturesDlg, setSignaturesDlg] = useState(false)
   /** Confirmed signature awaiting placement; when non-null the page enters click-to-place mode */
   const [pendingSign, setPendingSign] = useState<SignatureData | null>(null)
@@ -4881,6 +4885,34 @@ export default function App() {
     prepareStaticFormFill('text', image)
   }
 
+  const applyBates = (config: BatesConfig): void => {
+    const fontOf = (size: number) => `${size}px ${getComputedStyle(document.body).fontFamily}`
+    // Visible order, not the original file order: a reordered page takes the
+    // number of the position it now occupies, deleted pages get none, and
+    // inserted blank pages are numbered with everyone else. The page index is
+    // mapped back so the insert lands on the page the reader sees there.
+    const inserts = buildBatesInserts(
+      visList.map((origIdx) => {
+        const geom = pageGeom(origIdx)
+        return { width: geom.pw, height: geom.ph, rotate: geom.rot, x0: geom.x0, y0: geom.y0 }
+      }),
+      config,
+      (text, size) => measureTextWidth(text, fontOf(size)),
+    ).map((input) => ({ ...input, pageIndex: visList[input.pageIndex] ?? input.pageIndex }))
+    if (inserts.length === 0) {
+      setBatesDlg(false)
+      return
+    }
+    const plan = applyEditOps(inserts.map((input) => ({ op: 'addTextInsert' as const, input })))
+    setBatesDlg(false)
+    if (plan.failures.length > 0) {
+      // say what went wrong instead of "applied N pages" over an empty plan
+      showNotice(plan.failures[0]!.error)
+      return
+    }
+    showNotice(t('batesApplied', { count: inserts.length }))
+  }
+
   const placeTextInsert = (origIdx: number, vx: number, vy: number) => {
     const pending = pendingTextInsert
     if (!pending) return
@@ -8123,6 +8155,17 @@ export default function App() {
                     <IconInsertBlank />
                   </span>
                   <span>{t('insertBlankPage')}</span>
+                </button>
+                <button
+                  className="rb-big"
+                  disabled={readOnly || sizes.length === 0}
+                  data-tip={t('batesHint')}
+                  onClick={() => setBatesDlg(true)}
+                >
+                  <span className="rb-big-icon">
+                    <IconBates />
+                  </span>
+                  <span>{t('bates')}</span>
                 </button>
                 <button
                   className="rb-big"
