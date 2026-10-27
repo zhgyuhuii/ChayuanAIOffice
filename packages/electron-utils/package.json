@@ -22,7 +22,8 @@
     "./safe-external-url": "./src/safe-external-url.ts",
     "./safe-remote-url": "./src/safe-remote-url.ts",
     "./font-store": "./src/font-store.ts",
-    "./font-catalog": "./src/font-catalog.ts"
+    "./font-catalog": "./src/font-catalog.ts",
+    "./github-menu": "./src/github-menu.ts"
   },
   "scripts": {
     "test": "vitest run",

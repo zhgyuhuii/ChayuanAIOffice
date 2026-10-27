@@ -21,6 +21,7 @@
     "vitest": "^4.1.0"
   },
   "dependencies": {
+    "@chaoffice/electron-utils": "*",
     "@chaoffice/i18n": "*",
     "@chaoffice/ui": "*",
     "@chaoffice/web-bridge": "*",

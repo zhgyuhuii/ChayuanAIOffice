@@ -9,6 +9,8 @@
 
 import { degradeInfo } from '@chaoffice/web-bridge'
 import { installKbFetchBridge } from '@chaoffice/web-bridge'
+import { GITHUB_REPO_URL } from '@chaoffice/electron-utils/github-menu'
+import { openExternalUrl } from './open-external.js'
 import { tabManager, type TabKind } from './tab-manager.js'
 import { dockHost } from './dock.js'
 import {
@@ -201,6 +203,11 @@ const NEW_MENU: Array<{ label: string; kind: TabKind }> = [
   { label: '新建 PDF', kind: 'pdf' },
   { label: '新建 Markdown', kind: 'markdown' },
 ]
+
+// ── 统一外链出口：实现在 ./open-external.ts，四个「打开浏览器」通道都汇过去 ──
+// 与 shell main 的 GENTEAM_URL / CREDIT_USAGE_URL 同值（main 侧未导出共享常量）
+const GENTEAM_URL = 'https://genspark.ai/join'
+const CREDIT_USAGE_URL = 'https://www.genspark.ai/credit-usage'
 
 // ── install ─────────────────────────────────────────────────────────────────
 
@@ -642,7 +649,7 @@ export function installShellShims(): void {
     getAnalyticsEnabled: async () => false,
     setAnalyticsEnabled: async () => undefined,
     githubStars: async () => null,
-    openGitHubRepo: () => undefined,
+    openGitHubRepo: () => openExternalUrl(GITHUB_REPO_URL),
     starPromptShouldShow: async () => ({ show: false as const, docOpens: 0 }),
     starPromptAction: async () => undefined,
     // ── surfaces the web can't back yet. These MUST exist: the shell calls
@@ -661,8 +668,9 @@ export function installShellShims(): void {
     feedbackProbe: async () => false,
     feedbackUpload: async () => degraded('chaOffice.feedbackUpload'),
     feedbackSubmit: async () => degraded('chaOffice.feedbackSubmit'),
-    openExternal: async () => degraded('chaOffice.openExternal'),
-    openGenTeam: () => undefined,
+    openExternal: (url: string) => openExternalUrl(url),
+    openGenTeam: () => openExternalUrl(GENTEAM_URL),
+    openCreditUsage: () => openExternalUrl(CREDIT_USAGE_URL),
     // attachment pickers/readers need real file access (FS-Access landing TBD);
     // null = user cancelled, ok:false = unreadable, matching the desktop shapes
     // attachments over FS Access (multi-select picker with <input multiple>
