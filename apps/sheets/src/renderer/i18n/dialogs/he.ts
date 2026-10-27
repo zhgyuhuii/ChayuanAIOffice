@@ -148,6 +148,11 @@ export const he = {
   dlgPivotErrLabelFilterText: 'מסנני תוויות דורשים טקסט סינון.',
   dlgPivotErrOneValueFilter: 'ניתן להגדיר לכל היותר מסנן ערכים אחד (חל על שדה השורה ברמה 1).',
   dlgPivotErrFilterConflict: 'לא ניתן להגדיר גם מסנן תוויות וגם מסנן ערכים על שדה השורה ברמה 1.',
+
+  dlgPivotBaseField: 'שדה בסיס',
+  dlgPivotBaseItem: 'פריט בסיס',
+
+feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'הוספת כלי פריסה',
   dlgSlicerPickNote: 'בחרו את השדה לכלי הפריסה; לחיצה על חברים בכלי הפריסה מסננת את טבלת הציר.',
   dlgSlicerAria: 'כלי פריסה {name}',

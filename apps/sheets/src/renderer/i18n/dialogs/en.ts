@@ -153,6 +153,12 @@ export const en = {
     'At most one value filter can be set (it applies to the level-1 row field).',
   dlgPivotErrFilterConflict:
     'A label filter and a value filter cannot both be set on the level-1 row field.',
+
+  dlgPivotBaseField: 'Base field',
+  dlgPivotBaseItem: 'Base item',
+    'The PivotTable starts with a default layout; adjust its fields in the PivotTable Fields pane.',
+
+feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Insert Slicer',
   dlgSlicerPickNote:
     'Pick the field for the slicer; clicking members in the slicer filters the PivotTable.',

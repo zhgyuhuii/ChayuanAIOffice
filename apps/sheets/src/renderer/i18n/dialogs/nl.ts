@@ -154,6 +154,12 @@ export const nl = {
     'Er kan maximaal één waardefilter worden ingesteld (van toepassing op het rijveld van niveau 1).',
   dlgPivotErrFilterConflict:
     'Een labelfilter en een waardefilter kunnen niet allebei op het rijveld van niveau 1 worden ingesteld.',
+
+  dlgPivotBaseField: 'Basisveld',
+  dlgPivotBaseItem: 'Basisitem',
+    'De draaitabel begint met een standaardindeling; pas de velden aan in het deelvenster Draaitabelvelden.',
+
+feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Slicer invoegen',
   dlgSlicerPickNote:
     'Kies het veld voor de slicer; klikken op leden in de slicer filtert de draaitabel.',

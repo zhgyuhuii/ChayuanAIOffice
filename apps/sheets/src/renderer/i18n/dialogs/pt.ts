@@ -155,6 +155,12 @@ export const pt = {
     'No máximo um filtro de valor pode ser definido (aplica-se ao campo de linha de nível 1).',
   dlgPivotErrFilterConflict:
     'Um filtro de rótulo e um filtro de valor não podem ser definidos ao mesmo tempo no campo de linha de nível 1.',
+
+  dlgPivotBaseField: 'Campo base',
+  dlgPivotBaseItem: 'Item base',
+    'A Tabela Dinâmica começa com um layout padrão; ajuste os campos no painel Campos da Tabela Dinâmica.',
+
+feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Inserir Segmentação de Dados',
   dlgSlicerPickNote:
     'Escolha o campo para a segmentação; clicar nos membros da segmentação filtra a Tabela Dinâmica.',

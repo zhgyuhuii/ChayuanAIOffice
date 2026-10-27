@@ -156,6 +156,12 @@ export const pl = {
     'Można ustawić najwyżej jeden filtr wartości (dotyczy pola wiersza poziomu 1).',
   dlgPivotErrFilterConflict:
     'Filtr etykiet i filtr wartości nie mogą być ustawione jednocześnie dla pola wiersza poziomu 1.',
+
+  dlgPivotBaseField: 'Pole podstawowe',
+  dlgPivotBaseItem: 'Element podstawowy',
+    'Tabela przestawna powstaje z domyślnym układem; dostosuj pola w okienku Pola tabeli przestawnej.',
+
+feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Wstaw fragmentator',
   dlgSlicerPickNote:
     'Wybierz pole dla fragmentatora; klikanie elementów we fragmentatorze filtruje tabelę przestawną.',

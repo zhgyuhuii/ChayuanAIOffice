@@ -163,6 +163,11 @@ export const vi = {
   dlgPivotErrFilterConflict:
     'Không thể đặt đồng thời cả bộ lọc nhãn và bộ lọc giá trị trên trường hàng cấp 1.',
 
+  dlgPivotBaseField: 'Trường cơ sở',
+  dlgPivotBaseItem: 'Mục cơ sở',
+    'PivotTable được tạo với bố trí mặc định; điều chỉnh các trường trong ngăn Trường PivotTable.',
+
+feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Chèn Slicer',
   dlgSlicerPickNote: 'Chọn trường cho slicer; nhấp vào các mục trong slicer để lọc PivotTable.',
   dlgSlicerAria: 'Slicer {name}',

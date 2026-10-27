@@ -159,6 +159,12 @@ export const fr = {
     "Un seul filtre de valeurs au maximum peut être défini (il s'applique au champ de ligne de niveau 1).",
   dlgPivotErrFilterConflict:
     "Un filtre d'étiquettes et un filtre de valeurs ne peuvent pas être définis en même temps sur le champ de ligne de niveau 1.",
+
+  dlgPivotBaseField: 'Champ de base',
+  dlgPivotBaseItem: 'Élément de base',
+    'Le tableau croisé dynamique est créé avec une disposition par défaut ; ajustez ses champs dans le volet Champs de tableau croisé dynamique.',
+
+feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Insérer un segment',
   dlgSlicerPickNote:
     'Choisissez le champ du segment ; cliquer sur les membres du segment filtre le tableau croisé dynamique.',

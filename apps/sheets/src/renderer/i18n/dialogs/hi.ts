@@ -151,6 +151,12 @@ export const hi = {
     'अधिकतम एक मान फ़िल्टर सेट किया जा सकता है (यह स्तर-1 पंक्ति फ़ील्ड पर लागू होता है)।',
   dlgPivotErrFilterConflict:
     'स्तर-1 पंक्ति फ़ील्ड पर लेबल फ़िल्टर और मान फ़िल्टर एक साथ सेट नहीं किए जा सकते।',
+
+  dlgPivotBaseField: 'आधार फ़ील्ड',
+  dlgPivotBaseItem: 'आधार आइटम',
+    'PivotTable डिफ़ॉल्ट लेआउट से शुरू होता है; PivotTable फ़ील्ड फलक में इसके फ़ील्ड समायोजित करें।',
+
+feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'स्लाइसर सम्मिलित करें',
   dlgSlicerPickNote:
     'स्लाइसर के लिए फ़ील्ड चुनें; स्लाइसर में सदस्यों पर क्लिक करने से पिवट तालिका फ़िल्टर होती है।',

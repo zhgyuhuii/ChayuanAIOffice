@@ -157,6 +157,12 @@ export const it = {
     'È possibile impostare al massimo un filtro per valori (si applica al campo riga di livello 1).',
   dlgPivotErrFilterConflict:
     'Un filtro per etichetta e un filtro per valori non possono essere impostati entrambi sul campo riga di livello 1.',
+
+  dlgPivotBaseField: 'Campo base',
+  dlgPivotBaseItem: 'Elemento base',
+    'La tabella pivot viene creata con un layout predefinito; regolare i campi nel riquadro Campi tabella pivot.',
+
+feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Inserisci filtro dati',
   dlgSlicerPickNote:
     'Scegli il campo per il filtro dati; facendo clic sui membri nel filtro dati si filtra la tabella pivot.',

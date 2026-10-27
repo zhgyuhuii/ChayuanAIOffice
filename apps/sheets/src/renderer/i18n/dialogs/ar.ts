@@ -152,6 +152,11 @@ export const ar = {
     'يمكن تعيين عامل تصفية قيمة واحد على الأكثر (يُطبق على حقل الصف من المستوى 1).',
   dlgPivotErrFilterConflict:
     'لا يمكن تعيين عامل تصفية تسمية وعامل تصفية قيمة معًا على حقل الصف من المستوى 1.',
+
+  dlgPivotBaseField: 'الحقل الأساسي',
+  dlgPivotBaseItem: 'العنصر الأساسي',
+
+feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'إدراج مقسم طريقة عرض',
   dlgSlicerPickNote:
     'اختر الحقل الخاص بمقسم طريقة العرض؛ يؤدي النقر على عناصره إلى تصفية PivotTable.',

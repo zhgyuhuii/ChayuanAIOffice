@@ -158,6 +158,12 @@ export const de = {
     'Es kann höchstens ein Wertefilter festgelegt werden (gilt für das Zeilenfeld der Ebene 1).',
   dlgPivotErrFilterConflict:
     'Beschriftungs- und Wertefilter können nicht gleichzeitig für das Zeilenfeld der Ebene 1 festgelegt werden.',
+
+  dlgPivotBaseField: 'Basisfeld',
+  dlgPivotBaseItem: 'Basiselement',
+    'Die PivotTable beginnt mit einem Standardlayout; passen Sie die Felder im Bereich PivotTable-Felder an.',
+
+feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Datenschnitt einfügen',
   dlgSlicerPickNote:
     'Wählen Sie das Feld für den Datenschnitt; das Klicken auf Elemente im Datenschnitt filtert die PivotTable.',

@@ -154,6 +154,12 @@ export const id = {
     'Paling banyak satu filter nilai dapat ditetapkan (berlaku untuk bidang baris tingkat 1).',
   dlgPivotErrFilterConflict:
     'Filter label dan filter nilai tidak dapat ditetapkan bersamaan pada bidang baris tingkat 1.',
+
+  dlgPivotBaseField: 'Bidang dasar',
+  dlgPivotBaseItem: 'Item dasar',
+    'PivotTable dimulai dengan tata letak default; sesuaikan bidangnya di panel Bidang PivotTable.',
+
+feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Sisipkan Pemotong',
   dlgSlicerPickNote:
     'Pilih bidang untuk pemotong; mengklik anggota di dalam pemotong akan memfilter PivotTable.',

@@ -144,6 +144,11 @@ export const zh = {
   dlgPivotErrLabelFilterText: '标签筛选需要填写筛选文本。',
   dlgPivotErrOneValueFilter: '值筛选最多设置一条(作用于第1级行字段)。',
   dlgPivotErrFilterConflict: '第1级行字段的标签筛选与值筛选不能同时设置。',
+
+  dlgPivotBaseField: '基字段',
+  dlgPivotBaseItem: '基项',
+
+feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: '插入切片器',
   dlgSlicerPickNote: '选择要作为切片器的字段，点选切片器里的成员即可筛选透视表。',
   dlgSlicerAria: '切片器 {name}',

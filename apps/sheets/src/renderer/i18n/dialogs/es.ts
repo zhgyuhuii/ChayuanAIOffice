@@ -156,6 +156,12 @@ export const es = {
     'Como máximo se puede establecer un filtro de valor (se aplica al campo de fila de nivel 1).',
   dlgPivotErrFilterConflict:
     'No se pueden establecer a la vez un filtro de etiqueta y un filtro de valor en el campo de fila de nivel 1.',
+
+  dlgPivotBaseField: 'Campo base',
+  dlgPivotBaseItem: 'Elemento base',
+    'La tabla dinámica se crea con un diseño predeterminado; ajuste sus campos en el panel Campos de tabla dinámica.',
+
+feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Insertar segmentación de datos',
   dlgSlicerPickNote:
     'Elige el campo para la segmentación; al hacer clic en sus elementos se filtra la tabla dinámica.',

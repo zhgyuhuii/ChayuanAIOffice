@@ -159,6 +159,11 @@ export const cs = {
   dlgPivotErrFilterConflict:
     'Na poli řádků 1. úrovně nelze nastavit filtr popisků i filtr hodnot zároveň.',
 
+  dlgPivotBaseField: 'Základní pole',
+  dlgPivotBaseItem: 'Základní položka',
+    'Kontingenční tabulka se vytvoří s výchozím rozložením; pole upravíte v podokně Pole kontingenční tabulky.',
+
+feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Vložit průřez',
   dlgSlicerPickNote:
     'Vyberte pole pro průřez; kliknutím na členy v průřezu filtrujete kontingenční tabulku.',

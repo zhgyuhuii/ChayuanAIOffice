@@ -150,6 +150,12 @@ export const ko = {
   dlgPivotErrLabelFilterText: '레이블 필터에는 필터 텍스트가 필요합니다.',
   dlgPivotErrOneValueFilter: '값 필터는 최대 1개까지 설정할 수 있습니다(1수준 행 필드에 적용).',
   dlgPivotErrFilterConflict: '1수준 행 필드에 레이블 필터와 값 필터를 동시에 설정할 수 없습니다.',
+
+  dlgPivotBaseField: '기준 필드',
+  dlgPivotBaseItem: '기준 항목',
+    "피벗 테이블은 기본 레이아웃으로 만들어지며 '피벗 테이블 필드' 창에서 필드를 조정할 수 있습니다.",
+
+feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: '슬라이서 삽입',
   dlgSlicerPickNote:
     '슬라이서로 사용할 필드를 선택하세요. 슬라이서의 구성원을 클릭하면 피벗 테이블이 필터링됩니다.',

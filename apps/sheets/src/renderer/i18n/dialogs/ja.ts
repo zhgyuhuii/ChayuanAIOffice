@@ -153,6 +153,12 @@ export const ja = {
     '値フィルターは 1 件まで設定できます（レベル 1 の行フィールドに適用）。',
   dlgPivotErrFilterConflict:
     'レベル 1 の行フィールドにラベル フィルターと値フィルターを同時に設定することはできません。',
+
+  dlgPivotBaseField: '基準フィールド',
+  dlgPivotBaseItem: '基準アイテム',
+    'ピボットテーブルは既定のレイアウトで作成され、「ピボットテーブルのフィールド」ウィンドウでフィールドを調整できます。',
+
+feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'スライサーの挿入',
   dlgSlicerPickNote:
     'スライサーにするフィールドを選択します。スライサー内のメンバーをクリックするとピボットテーブルを絞り込めます。',
