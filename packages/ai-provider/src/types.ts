@@ -26,6 +26,7 @@ export type AiProviderId =
   | 'opper'
   | 'cheaperinference'
   | 'atlascloud'
+  | 'runcrate'
   | 'opencode-zen'
   | 'opencode-go'
   | 'custom'
