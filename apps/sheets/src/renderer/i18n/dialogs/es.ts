@@ -162,9 +162,7 @@ export const es = {
 
   dlgPivotBaseField: 'Campo base',
   dlgPivotBaseItem: 'Elemento base',
-    'La tabla dinámica se crea con un diseño predeterminado; ajuste sus campos en el panel Campos de tabla dinámica.',
 
-feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Insertar segmentación de datos',
   dlgSlicerPickNote:
     'Elige el campo para la segmentación; al hacer clic en sus elementos se filtra la tabla dinámica.',

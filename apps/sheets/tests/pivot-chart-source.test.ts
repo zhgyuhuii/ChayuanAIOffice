@@ -16,13 +16,13 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import JSZip from 'jszip'
 
-import { applyChartEdit } from '@genoffice/xlsx-gateway/gateway/xlsx-chart'
+import { applyChartEdit } from '@chaoffice/xlsx-gateway/gateway/xlsx-chart'
 import {
   assembleWithJsZip,
   createBufferEntrySource,
   planCellEditsToXlsx,
-} from '@genoffice/xlsx-gateway/gateway/xlsx-gateway'
-import type { SheetVisualAddition } from '@genoffice/xlsx-gateway/gateway/xlsx-gateway'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
+import type { SheetVisualAddition } from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
 import { workbookFileSchema } from '../src/shared/desktop-api'
 import { XlsxSidecarClient } from '../src/main/xlsx-sidecar-client'
 import { buildEditFixture } from './fixture-builder'

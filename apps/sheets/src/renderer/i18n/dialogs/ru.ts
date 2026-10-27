@@ -160,9 +160,7 @@ export const ru = {
 
   dlgPivotBaseField: 'Базовое поле',
   dlgPivotBaseItem: 'Базовый элемент',
-    'Сводная таблица создаётся с макетом по умолчанию; настройте поля в области «Поля сводной таблицы».',
 
-feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Вставить срез',
   dlgSlicerPickNote:
     'Выберите поле для среза; щелчки по элементам среза фильтруют сводную таблицу.',

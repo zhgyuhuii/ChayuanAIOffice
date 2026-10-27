@@ -154,7 +154,6 @@ export const he = {
   dlgPivotBaseField: 'שדה בסיס',
   dlgPivotBaseItem: 'פריט בסיס',
 
-feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'הוספת כלי פריסה',
   dlgSlicerPickNote: 'בחרו את השדה לכלי הפריסה; לחיצה על חברים בכלי הפריסה מסננת את טבלת הציר.',
   dlgSlicerAria: 'כלי פריסה {name}',

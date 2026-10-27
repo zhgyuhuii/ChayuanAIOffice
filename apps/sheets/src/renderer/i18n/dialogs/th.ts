@@ -155,9 +155,7 @@ export const th = {
 
   dlgPivotBaseField: 'ฟิลด์ฐาน',
   dlgPivotBaseItem: 'รายการฐาน',
-    'PivotTable จะเริ่มด้วยเค้าโครงเริ่มต้น ปรับเขตข้อมูลได้ในบานหน้าต่างเขตข้อมูล PivotTable',
 
-feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'แทรกตัวแบ่งส่วนข้อมูล',
   dlgSlicerPickNote:
     'เลือกฟิลด์ที่จะใช้เป็นตัวแบ่งส่วนข้อมูล คลิกสมาชิกในตัวแบ่งส่วนข้อมูลเพื่อกรอง PivotTable',

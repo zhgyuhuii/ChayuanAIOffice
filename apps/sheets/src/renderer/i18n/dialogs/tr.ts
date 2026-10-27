@@ -695,4 +695,6 @@ export const tr = {
   dlgRangePickTitle: '选取区域',
   dlgRangePickHint: '在表格中拖选单元格、行或列后确定',
   dlgPasteSpecialTitle: '选择性粘贴',
+  dlgRangeLocked: '该区域在文件中带有密码，无法在此修改或删除。',
+  dlgRangePassword: '密码（可选）',
 } satisfies Record<keyof typeof zh, string>

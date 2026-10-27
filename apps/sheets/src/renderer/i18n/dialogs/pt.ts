@@ -161,9 +161,7 @@ export const pt = {
 
   dlgPivotBaseField: 'Campo base',
   dlgPivotBaseItem: 'Item base',
-    'A Tabela Dinâmica começa com um layout padrão; ajuste os campos no painel Campos da Tabela Dinâmica.',
 
-feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Inserir Segmentação de Dados',
   dlgSlicerPickNote:
     'Escolha o campo para a segmentação; clicar nos membros da segmentação filtra a Tabela Dinâmica.',

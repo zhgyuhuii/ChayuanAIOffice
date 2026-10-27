@@ -89,10 +89,6 @@ import {
   type UniverWorksheet,
   aiBulkUndoGate,
 } from './univer-state'
-import {
-  hashSheetPassword,
-  type SheetPasswordHash,
-} from '@chaoffice/xlsx-gateway/gateway/xlsx-protection-hash'
 import { applyChangePlan, planFromOps, type OpExecutorContext, richCellText } from './op-executor'
 import { installSheetsMcpBridge, type McpSheetHandlers } from './mcp-bridge'
 import {
@@ -429,6 +425,7 @@ import {
 import {
   hashSheetPassword,
   verifySheetPassword,
+  type SheetPasswordHash,
 } from '@chaoffice/xlsx-gateway/gateway/xlsx-protection-hash'
 import type { SheetProtectionAllow } from '@chaoffice/xlsx-gateway/gateway/xlsx-protection'
 import { installCtrlDragFill } from './ctrl-drag-fill'

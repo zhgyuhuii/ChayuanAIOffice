@@ -158,7 +158,6 @@ export const ar = {
   dlgPivotBaseField: 'الحقل الأساسي',
   dlgPivotBaseItem: 'العنصر الأساسي',
 
-feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'إدراج مقسم طريقة عرض',
   dlgSlicerPickNote:
     'اختر الحقل الخاص بمقسم طريقة العرض؛ يؤدي النقر على عناصره إلى تصفية PivotTable.',

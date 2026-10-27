@@ -159,9 +159,7 @@ export const ja = {
 
   dlgPivotBaseField: '基準フィールド',
   dlgPivotBaseItem: '基準アイテム',
-    'ピボットテーブルは既定のレイアウトで作成され、「ピボットテーブルのフィールド」ウィンドウでフィールドを調整できます。',
 
-feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'スライサーの挿入',
   dlgSlicerPickNote:
     'スライサーにするフィールドを選択します。スライサー内のメンバーをクリックするとピボットテーブルを絞り込めます。',

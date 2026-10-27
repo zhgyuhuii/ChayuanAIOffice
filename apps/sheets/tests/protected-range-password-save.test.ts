@@ -6,11 +6,11 @@
  * a writer-only test skips — and the step that rejected `password` outright.
  */
 import { describe, expect, it } from 'vitest'
-import { applyProtectedRanges } from '@genoffice/xlsx-gateway/gateway/xlsx-protection'
+import { applyProtectedRanges } from '@chaoffice/xlsx-gateway/gateway/xlsx-protection'
 import {
   hashSheetPassword,
   legacySheetPasswordHash,
-} from '@genoffice/xlsx-gateway/gateway/xlsx-protection-hash'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-protection-hash'
 import { workbookSaveRequestSchema } from '../src/shared/desktop-api'
 
 type RangeInput = Record<string, unknown>

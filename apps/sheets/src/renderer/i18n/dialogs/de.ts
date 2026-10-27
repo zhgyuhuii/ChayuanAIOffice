@@ -164,9 +164,7 @@ export const de = {
 
   dlgPivotBaseField: 'Basisfeld',
   dlgPivotBaseItem: 'Basiselement',
-    'Die PivotTable beginnt mit einem Standardlayout; passen Sie die Felder im Bereich PivotTable-Felder an.',
 
-feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Datenschnitt einfügen',
   dlgSlicerPickNote:
     'Wählen Sie das Feld für den Datenschnitt; das Klicken auf Elemente im Datenschnitt filtert die PivotTable.',

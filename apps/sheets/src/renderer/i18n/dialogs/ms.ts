@@ -160,9 +160,7 @@ export const ms = {
 
   dlgPivotBaseField: 'Medan asas',
   dlgPivotBaseItem: 'Item asas',
-    'Jadual Pangsi bermula dengan tataletak lalai; laraskan medannya dalam anak tetingkap Medan Jadual Pangsi.',
 
-feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Selitkan Penghiris',
   dlgSlicerPickNote:
     'Pilih medan untuk penghiris; klik ahli dalam penghiris untuk menapis Jadual Pangsi.',

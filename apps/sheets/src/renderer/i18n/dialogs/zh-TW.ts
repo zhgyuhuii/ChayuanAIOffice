@@ -152,7 +152,6 @@ export const zhTW = {
   dlgPivotBaseField: '基準欄位',
   dlgPivotBaseItem: '基準項目',
 
-feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: '插入交叉分析篩選器',
   dlgSlicerPickNote: '選擇要作為交叉分析篩選器的欄位，點選篩選器裡的成員即可篩選樞紐分析表。',
   dlgSlicerAria: '交叉分析篩選器 {name}',

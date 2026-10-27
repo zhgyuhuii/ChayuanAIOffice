@@ -513,9 +513,10 @@ export const vi = {
   appSaveCanceled: 'Đã hủy lưu.',
   appSaved: 'Đã lưu.',
   appSaveFailed: 'Không thể lưu sổ làm việc.',
-  appCfRuleUnsaveable: '这种条件格式规则无法保存到 xlsx——请换用其他规则类型。',
-  appSaveErrX14Dv: '这个工作表带有扩展(x14)数据验证，暂不支持编辑它的验证规则。',
-  appSaveErrMultiSelectList: '多选列表验证无法保存到 xlsx——请先删除该规则再保存。',
+  appCfRuleUnsaveable:
+    'Quy tắc định dạng có điều kiện này không thể lưu vào xlsx — hãy chuyển sang loại quy tắc khác.',
+  appSaveErrMultiSelectList:
+    'Xác thực danh sách đa lựa chọn không thể lưu vào xlsx — hãy xóa quy tắc trước khi lưu.',
   appSaveErrX14Cf: 'Vùng này có định dạng có điều kiện mở rộng (x14) và chưa thể sửa đổi.',
   appSaveErrPivotWithSheetOps: '新建的透视表不能和工作表管理改动一起保存——请先保存透视表。',
   appSaveErrPivotWithRowCol: '新建的透视表不能和所在工作表的行列改动一起保存——请先保存透视表。',

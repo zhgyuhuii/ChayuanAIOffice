@@ -163,9 +163,7 @@ export const it = {
 
   dlgPivotBaseField: 'Campo base',
   dlgPivotBaseItem: 'Elemento base',
-    'La tabella pivot viene creata con un layout predefinito; regolare i campi nel riquadro Campi tabella pivot.',
 
-feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Inserisci filtro dati',
   dlgSlicerPickNote:
     'Scegli il campo per il filtro dati; facendo clic sui membri nel filtro dati si filtra la tabella pivot.',

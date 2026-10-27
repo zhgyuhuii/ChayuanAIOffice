@@ -20,7 +20,7 @@ import {
   parseRange,
   type CellCoordinates,
   type RangeBounds,
-} from '@genoffice/xlsx-gateway/domain/cell-address'
+} from '@chaoffice/xlsx-gateway/domain/cell-address'
 
 import { calculateNow, isManualCalculation } from './calc-options'
 import { t } from './i18n/locale'

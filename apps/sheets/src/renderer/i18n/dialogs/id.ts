@@ -160,9 +160,7 @@ export const id = {
 
   dlgPivotBaseField: 'Bidang dasar',
   dlgPivotBaseItem: 'Item dasar',
-    'PivotTable dimulai dengan tata letak default; sesuaikan bidangnya di panel Bidang PivotTable.',
 
-feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Sisipkan Pemotong',
   dlgSlicerPickNote:
     'Pilih bidang untuk pemotong; mengklik anggota di dalam pemotong akan memfilter PivotTable.',

@@ -155,9 +155,7 @@ export const ko = {
 
   dlgPivotBaseField: '기준 필드',
   dlgPivotBaseItem: '기준 항목',
-    "피벗 테이블은 기본 레이아웃으로 만들어지며 '피벗 테이블 필드' 창에서 필드를 조정할 수 있습니다.",
 
-feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: '슬라이서 삽입',
   dlgSlicerPickNote:
     '슬라이서로 사용할 필드를 선택하세요. 슬라이서의 구성원을 클릭하면 피벗 테이블이 필터링됩니다.',

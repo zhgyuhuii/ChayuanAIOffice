@@ -161,9 +161,7 @@ export const pl = {
 
   dlgPivotBaseField: 'Pole podstawowe',
   dlgPivotBaseItem: 'Element podstawowy',
-    'Tabela przestawna powstaje z domyślnym układem; dostosuj pola w okienku Pola tabeli przestawnej.',
 
-feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: 'Wstaw fragmentator',
   dlgSlicerPickNote:
     'Wybierz pole dla fragmentatora; klikanie elementów we fragmentatorze filtruje tabelę przestawną.',

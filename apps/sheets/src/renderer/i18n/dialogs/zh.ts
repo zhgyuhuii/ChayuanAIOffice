@@ -151,7 +151,6 @@ export const zh = {
   dlgPivotBaseField: '基字段',
   dlgPivotBaseItem: '基项',
 
-feat(sheets): the remaining eight Show Values As modes (#2225))
   dlgSlicerInsertTitle: '插入切片器',
   dlgSlicerPickNote: '选择要作为切片器的字段，点选切片器里的成员即可筛选透视表。',
   dlgSlicerAria: '切片器 {name}',
