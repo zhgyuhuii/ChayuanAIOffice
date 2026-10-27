@@ -29,6 +29,7 @@ import {
   IconEyeOff,
   IconSourceCode,
   IconBacklinks,
+  IconBlockLink,
   IconTag,
   IconGraph,
   IconSpellcheck,
@@ -64,6 +65,8 @@ interface Props {
   onToggleTags: () => void
   onToggleBacklinks: () => void
   onOpenGraph: () => void
+  /** put a `[[Note#^id]]` for the block at the caret on the clipboard */
+  onCopyBlockLink: () => void
   spellcheck: boolean
   onToggleSpellcheck: () => void
   mdTheme: MarkdownTheme
@@ -231,6 +234,7 @@ export function Ribbon({
   onToggleTags,
   onToggleBacklinks,
   onOpenGraph,
+  onCopyBlockLink,
   spellcheck,
   onToggleSpellcheck,
   mdTheme,
@@ -469,6 +473,9 @@ export function Ribbon({
                   </span>
                 )}
               </span>
+              <IconBtn title={t('blockLink')} disabled={off} onClick={onCopyBlockLink}>
+                <IconBlockLink size={ICON} />
+              </IconBtn>
             </div>
           </div>
         )}
