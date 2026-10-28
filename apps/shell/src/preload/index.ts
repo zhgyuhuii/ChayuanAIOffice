@@ -847,7 +847,7 @@ contextBridge.exposeInMainWorld('chaOfficeProject', projectApi)
  * Model file naming.
  *
  * The same channel the editor apps expose under this name, so the shared
- * client (`@genoffice/ui`) finds one bridge wherever it runs.
+ * client (`@chaoffice/ui`) finds one bridge wherever it runs.
  *
  * A global of its own rather than part of `aiOffice`: `aiOffice` is the
  * shell's home API, and an editor window that reused the name would shadow it

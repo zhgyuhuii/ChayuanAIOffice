@@ -4,12 +4,12 @@
  * The naming service used to carry its own list of provider ids and read the
  * key out of the settings file. That was the wrong answer twice over: the list
  * did not know every provider the build can talk to, and it never saw the
- * Genspark key, which lives in the login state rather than in the file — so
+ * login-backed key, which lives in the login state rather than in the file — so
  * for the default account the call failed and the feature quietly did nothing.
  *
  * This module resolves the provider the way the rest of the app does: the
  * shared `resolveAiSettings` + `activeProvider` from `@chaoffice/ai-provider`,
- * the Genspark key from the gsk login state, and a custom endpoint's
+ * the login-backed key from the login state, and a custom endpoint's
  * credential reference resolved from the environment.
  */
 import type { AiProviderConfig, AiProviderId } from '@chaoffice/ai-provider'

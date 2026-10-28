@@ -2297,7 +2297,7 @@ sigValidTo: '失效时间',
     aiNetworkError:
       'Ağ sorunu: AI hizmetine ulaşılamadı. Bağlantınızı kontrol edip yeniden deneyin',
     aiCreditsExhausted:
-      'Genspark krediniz bitti. Yüklemek için genspark.ai/pricing adresini ziyaret edin, sonra yeniden deneyin',
+      'ChaAI Office krediniz bitti. Yüklemek için ödeme sayfasını ziyaret edin, sonra yeniden deneyin',
     aiToolReadPages: '{start}-{end}. sayfaları oku',
     aiToolSearch: '"{query}" ara ({count} eşleşme)',
     aiToolGoto: '{page}. sayfaya git',

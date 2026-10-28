@@ -4,7 +4,7 @@ import { resolveNamingProvider } from '../src/main/ai-naming-provider'
 /**
  * The naming service used to resolve its provider on its own: a hardcoded list
  * of three ids, and the key read out of the settings file. That list did not
- * know every provider the build can talk to, and it never saw the Genspark
+ * know every provider the build can talk to, and it never saw the login-backed
  * key — which lives in the login state, not in the file — so for the default
  * account the call failed and the feature quietly did nothing.
  *
@@ -19,7 +19,7 @@ describe('resolveNamingProvider', () => {
     expect(resolved?.config.apiKey).toBe('chaoffice-live-key')
   })
 
-  it('declines when Genspark is selected and nobody is signed in', () => {
+  it('declines when the login-backed provider is selected and nobody is signed in', () => {
     expect(resolveNamingProvider({}, '')).toBeNull()
   })
 
