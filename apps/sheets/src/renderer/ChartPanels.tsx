@@ -492,6 +492,7 @@ export function SelectDataDialog({
     onClose()
   }
 
+  const modal = useModalDialog(onClose)
   return (
     <div className="dialog-backdrop" onClick={onClose}>
       <div
@@ -501,6 +502,7 @@ export function SelectDataDialog({
             : 'format-cells-dialog select-data-dialog'
         }
         role="dialog"
+        {...modal}
         aria-label={t('appSelectDataSource')}
         onClick={(event) => event.stopPropagation()}
       >

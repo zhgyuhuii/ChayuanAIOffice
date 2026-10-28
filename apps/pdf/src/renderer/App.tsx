@@ -10633,6 +10633,15 @@ export default function App() {
                   }}
                 />
               )}
+              {batesDlg && (
+                <BatesDialog
+                  t={t}
+                  pageCount={sizes.length}
+                  onApply={applyBates}
+                  onClose={() => setBatesDlg(false)}
+                />
+              )}
+
               {certSignDlg && (
                 <CertSignDialog
                   t={t}
