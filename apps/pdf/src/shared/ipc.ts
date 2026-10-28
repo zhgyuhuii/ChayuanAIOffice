@@ -21,6 +21,8 @@ export const PDF_CHANNELS = {
   pagePreviewPng: 'pdf:page-preview-png',
   extractPages: 'pdf:extract-pages',
   insertPdf: 'pdf:insert-pdf',
+  compareReadPdf: 'pdf:compare-read-pdf',
+  compareReadOpen: 'pdf:compare-read-open',
   insertBlankPage: 'pdf:insert-blank-page',
   splitPdf: 'pdf:split-pdf',
   mergePdf: 'pdf:merge-pdf',
@@ -965,6 +967,21 @@ export interface PdfApi {
   openSourcePath(path: string): Promise<void>
   /** Read pdf bytes. Only paths granted to this view are allowed */
   readFile(path: string): Promise<ArrayBuffer>
+  /** Pick a second document for Compare and read its per-page text (the pick is
+      main-side; no grant and no bytes travel to the render side) */
+  compareReadPdf(): Promise<
+    | { ok: true; name: string; pageCount: number; pages: string[] }
+    | { ok: false; canceled: true }
+    | { ok: false; reason: string }
+  >
+  /** The open document's own per-page text, extracted main-side by the same
+      pdfium engine as the picked side — two engines break lines differently,
+      and the diff would report phantom changes on identical files */
+  compareReadOpen(
+    path: string,
+  ): Promise<
+    { ok: true; name: string; pageCount: number; pages: string[] } | { ok: false; reason: string }
+  >
   /** Write markups/form values/page ops back to the original file (pdf-lib, content streams untouched); path grants same as readFile. With targetPath set (Save As), the original is only read and the result goes to targetPath. An untitled document's plain Save routes through the first-save Save As dialog (savedTo set on success) */
   save(request: SavePdfRequest): Promise<SavePdfResult>
   /** Crash-recovery copy of an untitled document's pending edits, written under
