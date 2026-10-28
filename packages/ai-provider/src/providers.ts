@@ -178,6 +178,15 @@ export const AI_PROVIDERS: AiProviderMeta[] = [
     keyPlaceholder: 'apikey-...',
   },
   {
+    id: 'runcrate',
+    label: 'Runcrate',
+    // Lab-namespaced ids exactly as GET api.runcrate.ai/v1/models lists them;
+    // the catalog works as-is when typed in. Chat, streaming and tool calls
+    // are live-verified; the text-only ids (Qwen3.8 Flash, gpt-oss 120B) are
+    // covered by modelLacksVision().
+    keyPlaceholder: 'rc_live_...',
+  },
+  {
     id: 'opencode-zen',
     label: 'OpenCode Zen',
     keyPlaceholder: 'API Key',

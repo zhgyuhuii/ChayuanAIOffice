@@ -112,6 +112,11 @@ const opencodeLogo = (
 )
 
 const LOGOS: Record<AiProviderId, ReactNode> = {
+  runcrate: (
+    <svg viewBox="0 0 24 24" fill="currentColor" fillRule="evenodd" aria-hidden="true">
+      <path d="M7 1h10a6 6 0 0 1 6 6v10a6 6 0 0 1-6 6H7a6 6 0 0 1-6-6V7a6 6 0 0 1 6-6ZM5.793 9.207A1 1 0 0 1 7.207 7.793L11.414 12 7.207 16.207A1 1 0 0 1 5.793 14.793L8.586 12ZM13 14.5h4.5a1 1 0 0 1 0 2H13a1 1 0 0 1 0-2Z" />
+    </svg>
+  ),
   chaoffice: (
     <svg viewBox="0 0 24 24" fill="currentColor" fillRule="evenodd" aria-hidden="true">
       <path d="M12 0a12 12 0 100 24 12 12 0 000-24zM7.8 4.4Q8.6 8.5 12.7 9.3 8.6 10.1 7.8 14.2 7 10.1 2.9 9.3 7 8.5 7.8 4.4zM16.1 3.8Q16.6 6.4 19.2 6.9 16.6 7.4 16.1 10 15.6 7.4 13 6.9 15.6 6.4 16.1 3.8zm.5 6.8q.3 1.7 2 2-1.7.3-2 2-.3-1.7-2-2 1.7-.3 2-2zM6.1 16.8h11.8a1.1 1.1 0 010 2.2H6.1a1.1 1.1 0 010-2.2z" />

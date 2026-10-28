@@ -3,11 +3,13 @@ import type { zh } from './zh'
 export const pl = {
   dlgAllowEditRangesTitle: 'Zezwalaj na edytowanie zakresów',
   dlgAllowEditRangesHint:
-    'Te zakresy pozostają edytowalne, gdy arkusz jest chroniony. Zapisywane przy zapisie; hasła nie są obsługiwane.',
+    'Te zakresy pozostają edytowalne, gdy arkusz jest chroniony. Zapisywane przy zapisie. Zakres, który ma już hasło, nie może być tutaj zmieniony ani usunięty.',
   dlgRangeName: 'Tytuł',
   dlgRangeRef: 'Zakres',
   dlgRangeAdd: 'Dodaj',
   dlgRangeDelete: 'Usuń',
+  dlgRangeLocked: 'Ten zakres ma hasło w pliku; nie można go tutaj zmienić ani usunąć.',
+  dlgRangePassword: 'Hasło (opcjonalnie)',
   dlgRangeNameTaken: 'Wprowadź unikatowy, niepusty tytuł.',
   dlgRangeRefInvalid: 'Wprowadź zakres, np. A1:B4.',
   dlgCancel: 'Anuluj',
@@ -23,6 +25,27 @@ export const pl = {
   dlgGoalSeekNotFound: 'Brak rozwiązania; przywrócono pierwotną wartość (ostatnio {reached}).',
   dlgGoalSeekSolve: 'Rozwiąż',
   dlgGoalSeekSolving: 'Rozwiązywanie…',
+  dlgDataTableTitle: 'Tabela danych',
+  dlgDataTableRange: 'Zakres tabeli',
+  dlgDataTableRowInput: 'Komórka wejściowa wiersza',
+  dlgDataTableColumnInput: 'Komórka wejściowa kolumny',
+  dlgDataTableNote:
+    'Wyniki są zapisywane jako zwykłe wartości i nie odświeżają się przy przeliczaniu (w przeciwieństwie do tabel z formułą tablicową w Excelu); całą tabelę można cofnąć jednym krokiem.',
+  dlgDataTableNeedInput:
+    'Wypełnij co najmniej jedną komórkę wejściową: jedna to jedna zmienna, obie to dwie zmienne.',
+  dlgDataTableBadRange: 'Zakres tabeli musi być odwołaniem w stylu A1 lub A1:B4.',
+  dlgDataTableBadShape:
+    'Zły kształt zakresu: jedna zmienna w kolumnie wymaga 2 kolumn i 2+ wierszy, w wierszu 2 wierszy i 2+ kolumn, dwie zmienne co najmniej 2×2.',
+  dlgDataTableTooManyCells: 'Tabela przekracza limit {limit} komórek wynikowych.',
+  dlgDataTableInputInside: 'Komórki wejściowe nie mogą znajdować się w zakresie tabeli.',
+  dlgDataTableSameInput: 'Komórki wejściowe wiersza i kolumny muszą być różne.',
+  dlgDataTableNeedsFormula: 'Komórka formuły musi zawierać formułę.',
+  dlgDataTableInputNotNumber: 'Komórki wejściowe muszą zawierać zwykłą liczbę lub być puste.',
+  dlgDataTableValuesNotNumber: 'Wartości podstawiane muszą być liczbami.',
+  dlgDataTableRunning: 'Obliczanie… {done}/{total}',
+  dlgDataTableRunningShort: 'Obliczanie…',
+  dlgDataTableDone:
+    'Zapisano {count} wyników (zwykłe wartości; nie odświeżają się przy przeliczaniu).',
   dlgApply: 'Zastosuj',
   dlgCreate: 'Utwórz',
   dlgAdvFilterTitle: 'Filtr zaawansowany',
@@ -135,6 +158,10 @@ export const pl = {
     'Można ustawić najwyżej jeden filtr wartości (dotyczy pola wiersza poziomu 1).',
   dlgPivotErrFilterConflict:
     'Filtr etykiet i filtr wartości nie mogą być ustawione jednocześnie dla pola wiersza poziomu 1.',
+
+  dlgPivotBaseField: 'Pole podstawowe',
+  dlgPivotBaseItem: 'Element podstawowy',
+
   dlgSlicerInsertTitle: 'Wstaw fragmentator',
   dlgSlicerPickNote:
     'Wybierz pole dla fragmentatora; klikanie elementów we fragmentatorze filtruje tabelę przestawną.',

@@ -341,6 +341,7 @@ import { showToast } from './components/toast-bus'
 import { setTableAutoFit, toggleRepeatHeaderRows } from './editor/table-properties'
 import { distributeSelectedColumns } from './editor/table-sizing'
 import {
+  deleteTableColumn,
   distributeRowsEvenly,
   editableOrToast,
   ensureCaretInTable,
@@ -348,7 +349,7 @@ import {
   selectTablePart,
   splitTableAtSelection,
 } from './editor/table-ops'
-import { deleteColumn, deleteRow, deleteTable, mergeCells } from '@tiptap/pm/tables'
+import { deleteRow, deleteTable, mergeCells } from '@tiptap/pm/tables'
 import { PromptModal } from './components/PromptModal'
 import { ShortcutsDialog } from './components/ShortcutsDialog'
 import { WordCountDialog, type DocStats } from './components/WordCountDialog'
@@ -778,7 +779,7 @@ const TABLE_MENU_COMMANDS: Partial<Record<MenuCommand, (widthPx: number) => Comm
   'table-insert-cols-left': (w) => insertRowsOrColumns(1, 'left', w),
   'table-insert-cols-right': (w) => insertRowsOrColumns(1, 'right', w),
   'table-delete-table': () => deleteTable,
-  'table-delete-columns': () => deleteColumn,
+  'table-delete-columns': () => deleteTableColumn,
   'table-delete-rows': () => deleteRow,
   'table-select-table': () => selectTablePart('table'),
   'table-select-column': () => selectTablePart('column'),

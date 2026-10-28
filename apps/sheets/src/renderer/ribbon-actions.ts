@@ -35,7 +35,11 @@ import { CELL_HIDDEN_KEY, CELL_LOCKED_KEY, effectiveSheetProtection } from './sh
 import { fullColumnSpans, fullRowSpans } from './autofit-selection'
 import { nextSheetName } from './op-executor'
 import { handleInsertNotePicture } from './note-picture-actions'
-import { transposeChartSeries, type ChartSeriesVisualState } from '@chaoffice/xlsx-gateway/domain/chart-visual'
+import {
+  comboSeriesSetDefaults,
+  transposeChartSeries,
+  type ChartSeriesVisualState,
+} from '@chaoffice/xlsx-gateway/domain/chart-visual'
 import { applyFlashFillTemplate, inferFlashFillTemplate } from '@chaoffice/xlsx-gateway/domain/flash-fill'
 import { csvSheetById, serializeActiveSheetCsv } from './csv-export'
 import { parseTsv, plainTextFromCells } from './clipboard-tsv'
@@ -171,6 +175,9 @@ export interface RibbonCommandContext {
     readonly canLabel: boolean
     readonly seriesCount: number
     readonly categoryCount: number
+    /// Current chart type echo ('combo' for a bar+line combo) — drives the
+    /// combo tagging of Switch Row/Column.
+    readonly currentType: string | null
     /// Current series (pending edits applied) for Switch Row/Column.
     readonly series: readonly ChartSeriesVisualState[]
   } | null
@@ -870,8 +877,18 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
       const seriesSet = transposeChartSeries(ctx.selectedChart?.series ?? [], (n) =>
         t('appSeriesN', { n }),
       )
-      if (seriesSet) ctx.chartEditRef.current(editKey, { seriesSet })
-      else ctx.setMessage(t('appNoCategoriesToSwitch'))
+      if (!seriesSet) {
+        ctx.setMessage(t('appNoCategoriesToSwitch'))
+      } else {
+        // A transposed combo keeps Insert Chart's shape; an untagged set
+        // would collapse it into plain bars.
+        ctx.chartEditRef.current(editKey, {
+          seriesSet:
+            ctx.selectedChart?.currentType === 'combo'
+              ? comboSeriesSetDefaults(seriesSet)
+              : seriesSet,
+        })
+      }
     }
     return
   }

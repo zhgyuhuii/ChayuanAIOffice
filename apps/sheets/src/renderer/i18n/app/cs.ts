@@ -111,8 +111,10 @@ export const cs = {
   appChartNoRepoint: 'Tento graf nepodporuje změnu svých datových oblastí.',
   appKeepOneSeries: 'Ponechte alespoň jednu řadu.',
   appNoCategoriesToSwitch: 'Žádné kategorie k přepnutí.',
-  appComboNoSelectData: 'Změna zdroje dat kombinovaného grafu zatím není podporována.',
+  appSelectDataUnsupported: 'Změna zdroje dat tohoto typu grafu není podporována.',
   appSeriesName: 'Název řady',
+  appSeriesType: 'Typ řady',
+  appSecondaryAxis: 'Sekundární osa',
   appValuesRange: 'Oblast hodnot',
   appCategoriesRange: 'Oblast kategorií',
   appKeepUnchanged: 'Ponechat beze změny',
@@ -180,6 +182,12 @@ export const cs = {
   appInvalidGroupField: 'Neplatné pole seskupení.',
   appInvalidPageField: 'Neplatné pole filtru sestavy.',
   appPivotPageItemMissing: 'Položka filtru „{item}“ není členem pole „{label}“.',
+  appInvalidPivotBaseField:
+    'Základní pole režimu „Zobrazit hodnoty jako“ musí být v řádcích nebo sloupcích.',
+  appPivotBaseFieldMissing: 'Režim „Zobrazit hodnoty jako“ pole hodnot vyžaduje základní pole.',
+  appPivotBaseFieldNotAxis:
+    'Základní pole „{label}“ musí být v řádcích nebo sloupcích kontingenční tabulky.',
+  appPivotBaseItemMissing: 'Základní položka „{item}“ není členem pole „{label}“.',
   appInvalidLabelFilterField: 'Pole filtru popisků je neplatné.',
   appInvalidValueFieldIndex: 'Index pole hodnot {index} je neplatný.',
   appInvalidValueField: 'Neplatné pole hodnot.',
@@ -284,9 +292,10 @@ export const cs = {
   appSortRangeTooLarge:
     'Tato oblast je příliš velká na seřazení nebo přesun najednou — vyberte méně buněk.',
   appDialogCancel: 'Zrušit',
-  appPivotSheetNoMove: "该工作表含数据透视表——暂不支持移动区域。",
-  appMergeOverTable: "所选区域位于 Excel 表格内——暂不支持合并表格中的单元格。",
-  appTableFilterNoEdit: 'Filtr tohoto listu patří tabulce Excelu — jeho úpravu zatím nelze uložit.',
+  appPivotSheetNoMove:
+    'Tento list obsahuje kontingenční tabulku — přesouvání oblastí zatím není podporováno.',
+  appMergeOverTable:
+    'Výběr se překrývá s tabulkou Excelu — slučování buněk v tabulce zatím není podporováno.',
   appAutofillStreaming:
     'Automatické vyplnění do oblasti, která se stále načítá, zatím není povoleno.',
   appDvNeedsIndexed:
@@ -505,9 +514,10 @@ export const cs = {
   appSaveCanceled: 'Ukládání zrušeno.',
   appSaved: 'Uloženo.',
   appSaveFailed: 'Sešit nelze uložit.',
-  appCfRuleUnsaveable: "这种条件格式规则无法保存到 xlsx——请换用其他规则类型。",
-  appSaveErrX14Dv: "这个工作表带有扩展(x14)数据验证，暂不支持编辑它的验证规则。",
-  appSaveErrMultiSelectList: "多选列表验证无法保存到 xlsx——请先删除该规则再保存。",
+  appCfRuleUnsaveable:
+    'Toto pravidlo podmíněného formátování nelze uložit do xlsx — přepněte na jiný typ pravidla.',
+  appSaveErrMultiSelectList:
+    'Ověření seznamem s vícenásobným výběrem nelze uložit do xlsx — před uložením pravidlo odstraňte.',
   appSaveErrX14Cf: 'Tato oblast má rozšířené (x14) podmíněné formátování a zatím ji nelze měnit.',
   appSaveErrPivotWithSheetOps: "新建的透视表不能和工作表管理改动一起保存——请先保存透视表。",
   appSaveErrPivotWithRowCol: "新建的透视表不能和所在工作表的行列改动一起保存——请先保存透视表。",
@@ -1108,6 +1118,7 @@ export const cs = {
   appGroupForecast: 'Prognóza',
   appWhatIfAnalysis: 'Citlivostní analýza',
   appGoalSeek: 'Hledání řešení',
+  appDataTable: 'Datová tabulka',
   appWhatIfTitle: 'Najít vstup pro cílovou hodnotu',
   appGoalSeekNeedsFormula: 'Nastavená buňka musí obsahovat vzorec.',
   appGoalSeekByCellNotNumber: 'Měněná buňka musí obsahovat prosté číslo nebo být prázdná.',

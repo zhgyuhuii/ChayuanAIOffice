@@ -44,6 +44,7 @@ import { sheetsModelBridge } from './ai/model-bridge'
 import { compressImageForDisplay } from '@chaoffice/ui'
 import { ColorDropdown } from './ColorDropdown'
 import { FormatCellsDialog } from './FormatCellsDialog'
+import type { SheetPasswordHash } from '@chaoffice/xlsx-gateway/gateway/xlsx-protection-hash'
 import { InsertDeleteCellsDialog } from './InsertDeleteCellsDialog'
 import { applyTabFontSize } from './ribbon-actions'
 import { BatchRenameSheetDialog, MoveCopySheetDialog } from './SheetMenuDialogs'
@@ -115,6 +116,8 @@ import {
 } from './pivot-field-model'
 import type { GoalSeekResult } from './goal-seek'
 import { GoalSeekDialog } from './GoalSeekDialog'
+import type { DataTableInput, DataTableOutcome } from './data-table'
+import { DataTableDialog } from './DataTableDialog'
 import type { FillSeriesOptions, FillSeriesType } from './fill-series'
 import type { FillSeriesContext } from './fill-series-apply'
 import { FillSeriesDialog } from './FillSeriesDialog'
@@ -443,12 +446,17 @@ interface ExcelShellProps {
   readonly crossHighlightVisible: boolean
   /// Allow-edit ranges of the active sheet, read when the dialog opens.
   readonly onGetProtectedRanges: () => {
-    ranges: readonly { name: string; sqref: string; hasPassword: boolean }[]
+    ranges: readonly {
+      name: string
+      sqref: string
+      hasPassword: boolean
+      password?: SheetPasswordHash
+    }[]
     error: string | null
   }
   readonly onApplyProtectedRanges: (
-    ranges: readonly { name: string; sqref: string }[],
-  ) => string | null
+    ranges: readonly { name: string; sqref: string; password?: string }[],
+  ) => Promise<string | null> | string | null
   /// Name Manager data + actions (actions return an error message or null).
   readonly onGetDefinedNames: () => {
     names: DefinedNameRow[]
@@ -511,6 +519,10 @@ interface ExcelShellProps {
   readonly calcManual: boolean
   /// Goal Seek solve; rejects with a user-facing Error message.
   readonly onGoalSeek: (setCell: string, toValue: number, byCell: string) => Promise<GoalSeekResult>
+  /// Data Table (What-If) run; rejects with a user-facing Error message.
+  readonly onDataTable: (input: DataTableInput) => Promise<DataTableOutcome>
+  /// Prefill for the Data Table range field (the multi-cell selection).
+  readonly onGetDataTableRange: () => string
   /// Fill > Series… OK; returns an error message, or null on success.
   readonly onFillSeries: (options: FillSeriesOptions) => string | null
   /// Series dialog defaults (selection shape, workbook date system).
@@ -671,6 +683,8 @@ export function ExcelShell({
   pageLayout,
   calcManual,
   onGoalSeek,
+  onDataTable,
+  onGetDataTableRange,
   onFillSeries,
   onGetFillSeriesContext,
 }: ExcelShellProps): React.JSX.Element {
@@ -830,6 +844,7 @@ export function ExcelShell({
   }
   const [showSubtotalDialog, setShowSubtotalDialog] = useState(false)
   const [showGoalSeek, setShowGoalSeek] = useState(false)
+  const [showDataTable, setShowDataTable] = useState(false)
   const [showFillSeries, setShowFillSeries] = useState(false)
   const [showConsolidateDialog, setShowConsolidateDialog] = useState(false)
   const [showGoTo, setShowGoTo] = useState(false)
@@ -930,6 +945,7 @@ export function ExcelShell({
     else if (command.startsWith('insert-function-open:'))
       openInsertFunction(command.slice('insert-function-open:'.length))
     else if (command === 'goal-seek-open') setShowGoalSeek(true)
+    else if (command === 'data-table-open') setShowDataTable(true)
     else if (command === 'fill-series-open') setShowFillSeries(true)
     else if (command === 'subtotal-open') setShowSubtotalDialog(true)
     else if (command === 'consolidate-open') setShowConsolidateDialog(true)
@@ -1916,6 +1932,13 @@ export function ExcelShell({
           onClose={() => setShowGoalSeek(false)}
         />
       )}
+      {showDataTable && (
+        <DataTableDialog
+          initialRange={onGetDataTableRange()}
+          onApply={onDataTable}
+          onClose={() => setShowDataTable(false)}
+        />
+      )}
       {insertFunction !== null && (
         <InsertFunctionFlow
           functions={liveFunctions}
@@ -1975,9 +1998,21 @@ export function ExcelShell({
           const snapshot = onGetProtectedRanges()
           return (
             <AllowEditRangesDialog
-              ranges={snapshot.error === null ? snapshot.ranges : []}
+              ranges={
+                snapshot.error === null
+                  ? snapshot.ranges.map((range) => ({
+                      name: range.name,
+                      sqref: range.sqref,
+                      hasPassword: range.hasPassword,
+                      locked: range.hasPassword && range.password === undefined,
+                    }))
+                  : []
+              }
               defaultRef={activeCellA1}
-              onApply={(ranges) => snapshot.error ?? onApplyProtectedRanges(ranges)}
+              onApply={(ranges) => {
+                const failed = snapshot.error ?? onApplyProtectedRanges(ranges)
+                return failed instanceof Promise ? failed : Promise.resolve(failed)
+              }}
               onPickRange={onPickRange}
               onClose={() => setShowAllowEditRanges(false)}
             />
@@ -4534,6 +4569,7 @@ function Ribbon({
         <RibbonGroup label={t('appGroupForecast')}>
           {largeMenu(t('appWhatIfAnalysis'), '❔', t('appWhatIfTitle'), [
             { value: 'goal-seek-open', label: t('appGoalSeek'), icon: <OptSample>?</OptSample> },
+            { value: 'data-table-open', label: t('appDataTable') },
           ])}
         </RibbonGroup>
         <RibbonGroup label={t('appGroupOutline')}>

@@ -4,11 +4,13 @@ export const vi = {
   ...en,
   dlgAllowEditRangesTitle: 'Cho phép chỉnh sửa dải ô',
   dlgAllowEditRangesHint:
-    'Các dải ô này vẫn có thể chỉnh sửa khi trang tính được bảo vệ. Được lưu khi lưu tệp; không hỗ trợ mật khẩu.',
+    'Các dải ô này vẫn có thể chỉnh sửa khi trang tính được bảo vệ. Được lưu khi lưu tệp. Dải ô đã có mật khẩu không thể sửa hoặc xóa ở đây.',
   dlgRangeName: 'Tiêu đề',
   dlgRangeRef: 'Dải ô',
   dlgRangeAdd: 'Thêm',
   dlgRangeDelete: 'Xóa',
+  dlgRangeLocked: 'Dải ô này có mật khẩu trong tệp; không thể sửa hoặc xóa ở đây.',
+  dlgRangePassword: 'Mật khẩu (không bắt buộc)',
   dlgRangeNameTaken: 'Vui lòng nhập tiêu đề duy nhất và không được để trống.',
   dlgRangeRefInvalid: 'Vui lòng nhập dải ô dạng A1:B4.',
   dlgCancel: 'Hủy',
@@ -25,6 +27,25 @@ export const vi = {
     'Không tìm thấy nghiệm; đã khôi phục giá trị ban đầu (kết quả cuối cùng đạt {reached}).',
   dlgGoalSeekSolve: 'Giải',
   dlgGoalSeekSolving: 'Đang giải…',
+  dlgDataTableTitle: 'Bảng dữ liệu',
+  dlgDataTableRange: 'Vùng bảng',
+  dlgDataTableRowInput: 'Ô nhập theo hàng',
+  dlgDataTableColumnInput: 'Ô nhập theo cột',
+  dlgDataTableNote:
+    'Kết quả được ghi dưới dạng giá trị thường và không cập nhật khi tính toán lại (khác với bảng công thức mảng của Excel); cả bảng có thể hoàn tác trong một bước.',
+  dlgDataTableNeedInput: 'Hãy điền ít nhất một ô nhập: chỉ một là một biến, cả hai là hai biến.',
+  dlgDataTableBadRange: 'Vùng bảng phải là tham chiếu dạng A1 hoặc A1:B4.',
+  dlgDataTableBadShape:
+    'Hình dạng vùng không đúng: một biến theo cột cần 2 cột và 2+ hàng, theo hàng cần 2 hàng và 2+ cột, hai biến cần ít nhất 2×2.',
+  dlgDataTableTooManyCells: 'Bảng vượt quá giới hạn {limit} ô kết quả.',
+  dlgDataTableInputInside: 'Ô nhập không được nằm trong vùng bảng.',
+  dlgDataTableSameInput: 'Ô nhập theo hàng và theo cột phải khác nhau.',
+  dlgDataTableNeedsFormula: 'Ô công thức phải chứa công thức.',
+  dlgDataTableInputNotNumber: 'Ô nhập phải chứa số thuần hoặc để trống.',
+  dlgDataTableValuesNotNumber: 'Giá trị thay thế phải là số.',
+  dlgDataTableRunning: 'Đang tính… {done}/{total}',
+  dlgDataTableRunningShort: 'Đang tính…',
+  dlgDataTableDone: 'Đã ghi {count} kết quả (giá trị thường; không cập nhật khi tính lại).',
   dlgApply: 'Áp dụng',
   dlgCreate: 'Tạo',
 
@@ -143,6 +164,9 @@ export const vi = {
     'Chỉ có thể thiết lập tối đa một bộ lọc giá trị (áp dụng cho trường hàng cấp 1).',
   dlgPivotErrFilterConflict:
     'Không thể đặt đồng thời cả bộ lọc nhãn và bộ lọc giá trị trên trường hàng cấp 1.',
+
+  dlgPivotBaseField: 'Trường cơ sở',
+  dlgPivotBaseItem: 'Mục cơ sở',
 
   dlgSlicerInsertTitle: 'Chèn Slicer',
   dlgSlicerPickNote: 'Chọn trường cho slicer; nhấp vào các mục trong slicer để lọc PivotTable.',

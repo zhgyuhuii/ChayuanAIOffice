@@ -3,11 +3,14 @@ import type { zh } from './zh'
 export const fr = {
   dlgAllowEditRangesTitle: 'Permettre la modification des plages',
   dlgAllowEditRangesHint:
-    "Ces plages restent modifiables quand la feuille est protégée. Écrites à l'enregistrement ; les mots de passe ne sont pas pris en charge.",
+    "Ces plages restent modifiables quand la feuille est protégée. Écrites à l'enregistrement. Une plage qui possède déjà un mot de passe ne peut pas être modifiée ni supprimée ici.",
   dlgRangeName: 'Titre',
   dlgRangeRef: 'Plage',
   dlgRangeAdd: 'Ajouter',
   dlgRangeDelete: 'Supprimer',
+  dlgRangeLocked:
+    'Cette plage porte un mot de passe dans le fichier ; elle ne peut pas être modifiée ni supprimée ici.',
+  dlgRangePassword: 'Mot de passe (facultatif)',
   dlgRangeNameTaken: 'Saisissez un titre unique et non vide.',
   dlgRangeRefInvalid: 'Saisissez une plage comme A1:B4.',
   dlgCancel: 'Annuler',
@@ -24,6 +27,28 @@ export const fr = {
   dlgGoalSeekNotFound: 'Pas de solution ; valeur d’origine restaurée (dernier atteint {reached}).',
   dlgGoalSeekSolve: 'Résoudre',
   dlgGoalSeekSolving: 'Résolution…',
+  dlgDataTableTitle: 'Table de données',
+  dlgDataTableRange: 'Plage du tableau',
+  dlgDataTableRowInput: "Cellule d'entrée en ligne",
+  dlgDataTableColumnInput: "Cellule d'entrée en colonne",
+  dlgDataTableNote:
+    "Les résultats sont écrits en valeurs simples et ne se mettent pas à jour au recalcul (à la différence des tableaux à formule matricielle d'Excel) ; tout le tableau s'annule en une seule fois.",
+  dlgDataTableNeedInput:
+    "Renseignez au moins une cellule d'entrée : une seule pour une variable, les deux pour deux variables.",
+  dlgDataTableBadRange: 'La plage du tableau doit être une référence de type A1 ou A1:B4.',
+  dlgDataTableBadShape:
+    'Forme de plage incorrecte : une variable en colonne exige 2 colonnes et 2 lignes ou plus, en ligne 2 lignes et 2 colonnes ou plus, deux variables au moins 2×2.',
+  dlgDataTableTooManyCells: 'Le tableau dépasse la limite de {limit} cellules de résultat.',
+  dlgDataTableInputInside:
+    "Les cellules d'entrée ne peuvent pas se trouver dans la plage du tableau.",
+  dlgDataTableSameInput: "Les cellules d'entrée en ligne et en colonne doivent être différentes.",
+  dlgDataTableNeedsFormula: 'La cellule de formule doit contenir une formule.',
+  dlgDataTableInputNotNumber:
+    "Les cellules d'entrée doivent contenir un simple nombre ou être vides.",
+  dlgDataTableValuesNotNumber: 'Les valeurs de substitution doivent être des nombres.',
+  dlgDataTableRunning: 'Calcul… {done}/{total}',
+  dlgDataTableRunningShort: 'Calcul…',
+  dlgDataTableDone: '{count} résultats écrits (valeurs simples ; pas de mise à jour au recalcul).',
   dlgApply: 'Appliquer',
   dlgCreate: 'Créer',
   dlgAdvFilterTitle: 'Filtre avancé',
@@ -137,6 +162,10 @@ export const fr = {
     "Un seul filtre de valeurs au maximum peut être défini (il s'applique au champ de ligne de niveau 1).",
   dlgPivotErrFilterConflict:
     "Un filtre d'étiquettes et un filtre de valeurs ne peuvent pas être définis en même temps sur le champ de ligne de niveau 1.",
+
+  dlgPivotBaseField: 'Champ de base',
+  dlgPivotBaseItem: 'Élément de base',
+
   dlgSlicerInsertTitle: 'Insérer un segment',
   dlgSlicerPickNote:
     'Choisissez le champ du segment ; cliquer sur les membres du segment filtre le tableau croisé dynamique.',
