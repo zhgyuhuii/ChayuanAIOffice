@@ -1664,6 +1664,7 @@ export function Ribbon({
   onUndo,
   onRedo,
   onSaveAs,
+  onNameWithAi,
   onExportPdf,
   onPrint,
   onExportImages,
@@ -2421,6 +2422,15 @@ export function Ribbon({
                 >
                   {t('ribbonFileSaveAs')}{' '}
                   <span className="file-menu-key">{IS_MAC ? '⇧⌘S' : 'Ctrl+Shift+S'}</span>
+                </button>
+                <button
+                  disabled={!hasDoc}
+                  onClick={() => {
+                    setFileOpen(false)
+                    onNameWithAi()
+                  }}
+                >
+                  {t('aiNameFile')}
                 </button>
                 <button
                   disabled={!hasDoc}

@@ -1098,6 +1098,7 @@ export function App() {
   }, [autoSave, path, editing, editingCell, save])
 
   const saveAs = useCallback(() => fileActions.saveAs(() => ctxRef.current), [])
+  const nameWithAi = useCallback(() => fileActions.nameWithAi(() => ctxRef.current), [])
   const exportImages = useCallback(() => fileActions.exportImages(ctxRef.current), [])
   const exportPdf = useCallback(() => void fileActions.exportPdf(ctxRef.current), [])
 
@@ -3950,6 +3951,7 @@ export function App() {
             onUndo={() => void undo()}
             onRedo={() => void redo()}
             onSaveAs={() => void saveAs()}
+            onNameWithAi={() => void nameWithAi()}
             onExportPdf={() => void exportPdf()}
             onPrint={() => setPrintDlgOpen(true)}
             onExportImages={() => void exportImages()}
