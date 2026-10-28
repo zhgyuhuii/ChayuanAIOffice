@@ -300,6 +300,7 @@ export const vi = {
   appPivotSheetNoMove: 'Trang tính này chứa PivotTable — chưa hỗ trợ di chuyển vùng.',
   appMergeOverTable:
     'Vùng chọn chồng chéo với một bảng Excel — chưa hỗ trợ hợp nhất các ô bên trong bảng.',
+  appFilterToggleFailed: 'Bộ lọc chưa được áp dụng — hãy chọn phạm vi chứa dữ liệu trước.',
   appAutofillStreaming: 'Chưa cho phép tự động điền vào khu vực vẫn đang tải theo luồng.',
   appDvNeedsIndexed: '编辑数据验证需要该工作表先完成索引——稍后再试。',
   appPivotSheetNoDuplicate: 'Trang tính này chứa PivotTable — chưa hỗ trợ nhân bản trang tính.',
