@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/chaoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第三十五轮完成（2026-10-27，终点 c8bfff60=tag v0.12.115，分支 sync/35-upstream；六段 1.0.13.0.12.115，已随轮发版 1.0.13：tag 三仓+GitHub 424722804 九资产+aidooo 发布验收全过）**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第三十六轮完成（2026-10-28，终点 28e9c100，分支 sync/36-upstream；终点无新 tag，后三位维持 0.12.115；合并 main=8bbbf07e8 已推；六段 1.0.14.0.12.115 待随轮发版）**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -735,6 +735,48 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 五轮对比审核 | ①文件级覆盖对账：1279 文件分类，19 可疑项逐一排除，零真实遗漏；②特性符号级：14 提交新增符号 2 个 ❌（e2e 命名空间已修、ci help-langs 步骤已补）；③ours 丢失审计：117 冲突文件本地独有标识符存活核查，全部定性（等价承接/测试网验证）；④删除反向审计：8/9 ✅；⑤语义回归：全部门禁（见下）。审核追加修复：xlsx-gateway refine 补 lineColor、edit-schemas 补锚点级 rotation/flipH/flipV |
 | 挂账 | sheets i18n dialogs vi.ts 少 9 个 fork 本地键（HEAD 继承欠账，en 回退兜底，补译即销）；ai-host 若原生支持 settings-changed 推送可移除 sheets-main 的 fs.watch 包装广播 |
 | 门禁 | typecheck 全仓 0；vitest 全绿：docs 3152/sheets 3437/ai-provider 494/agent-core 176/xlsx-gateway 248/pptx-engine 1294/shell 931/slides 1475/md 1047/pdf 868/html 319/ui 250/docx-engine 1717/pdf2docx 822/cli 313/electron-utils 257…；cargo test 228 全绿；lint 0；品牌 grep 豁免外零残留；check:help-langs 21 语言全齐 |
+
+## 第三十六轮（2026-10-28，上游 c8bfff60a..28e9c100 29 提交全吸收，施工于 sync/36-upstream；终点无新 tag（describe=v0.12.115-29-g28e9c100），后三位维持 0.12.115；合并 main=8bbbf07e8）
+
+> 上游 29 提交=9 特性+16 小修+2 测试+2 i18n（+12081/−447，无巨件快照，最大单件 51 文件）。施工法=29 个逐个 cherry-pick（Q2 默认）。**Rust 改动一处**（#2224 x14 DV：worksheet.rs +92/tests.rs +56，无 Cargo.toml 变更）→ sidecar 本地 debug+release 重编、发布用四平台 zigbuild 新鲜重编。零依赖变更（无 package.json/lock 触碰）；上游 shell package.json 仍 0.12.0。施工前置：并行 WIP（web open-external 统一外链出口，6 文件）先行落库保护（547efdc52）。
+
+### 《冲突与裁决清单》（合并门禁规则 v2 三栏，供事后审计）
+
+| # | 上游提交 | 上游意图 | 本地状态与裁决 |
+|---|---|---|---|
+| 1 | 43e09bf14 #2223 | sheets 组合图 Select Data+图表类型切换 | adapted：ChartPanels import 取 theirs 超集；ribbon-actions import=本地 csv/clipboard/range 三件保留+上游 comboSeriesSetDefaults 并入+品牌重放 |
+| 2 | 4573d0ec8 #2230 | 透视绑定图表存为 PivotChart | 干净 pick |
+| 3 | 84821c6a4 #2229 | What-If 单/双变量数据表（51 文件） | adapted：ExcelShell What-If 菜单=本地 goal-seek OptSample 图标保留+上游 data-table-open 项并集 |
+| 4 | a9ed90a0b #2235 | markdown 跨目录 wiki 图片从 vault 根服务 | 干净 pick |
+| 5 | 15aa93ed1 #2248 | 复制框选边框动画无人观看即停 | 干净 pick |
+| 6 | dc406e83d #2232 | 断点续传失败计时器首块后武装 | 干净 pick |
+| 7-9 | 118e5ec70/4ad0abc10/7f376ec46 | html2docx/pdf2docx/docx-engine hex color trim | 干净 pick ×3 |
+| 10 | e267d1b82 #2217 | Runcrate 新厂商 | adapted（沿 R35 #13 Kimi 裁定）：providers.ts 条目保留但**剥静态 models/defaultModel**（本地 live-discovery 无静态字段，本地测试明断言 hasOwn(models)=false）；providers.test 上游新增「seeds ×5 静态断言块」**拒收**；registry/types/model-heuristics（modelLacksVision 补 qwen3.8-flash/gpt-oss-120b）干净；provider-logos 注释并集（本地品牌版） |
+| 11 | a459e2b17 #2221 | Excel 表格筛选持久化 | adapted：cs/vi app shard 冲突=上游真翻译胜+本地 zh 兜底淘汰+**appTableFilterNoEdit 死键删除**（门槛 toast 被特性替代，消费点 grep=0；tr 同步删保 22 语言 parity，上游 tr.ts 漏删是 #2271 存在的背景） |
+| 12 | 29b3eaf20 #2225 | Show Values As 其余八模式（60 文件） | adapted：21 dialogs shard 冲突（ours 空+theirs 大块）=键级并集脚本只插本提交真新增的 dlgPivotBaseField/BaseItem ×22 语言；pivot-field-model import 并集+品牌重放 |
+| 13-15 | 6566d7df9/8ca0a60c8/f5548b455 | docs 删列保宽网格/wiki graph 头部按压/deleteTableColumn 转 Command | 干净 pick ×3 |
+| 16-18 | 04e51f069/daf5eac68/1c2eb43ca | markdown 别名 wiki 链接/block refs 归位/**标签侧栏** | 前两干净；#2256 adapted：App.tsx A 区冲突（DockShell vs 上游平铺）取 ours+四件织入（TagsPane import/state/内层 Ribbon tagsOpen+onToggleTags/BacklinksPane 旁 TagsPane 渲染） |
+| 19 | 8c170596b #2247 | pdf Bates 编号（页序标识盖印） | adapted：App.tsx 两冲突——①3-way 误配（按钮落 formDesign 区）取 ours+按上游真实 hunk 把 Bates 钮织入 pages 组 insertBlankPage 与 replacePages 之间；②大区域错位取 ours 后**补织丢失的 BatesDialog 渲染块**（事后 lint「defined but never used」兜出，教训：大区域取 ours 后必须对上游 diff 逐 hunk 核对织入完整性）；strings.ts 21 冲突=键级并集（25 个 bates* 键 ×21 语言从上游整文件按块提取插 drawInk 锚后；上游自带 zh-TW 真翻译直接采用） |
+| 20 | 028d67ed7 #2268 | markdown block ids 复制块链接 | adapted：App.tsx A 区冲突取 ours+onCopyBlockLink prop 织入内层 Ribbon |
+| 21-24 | d14d57467/c5e36f896/2eaf41e74/44948bb8c | pdf2docx/pptx-render/docx-engine×2 hex trim | 干净 pick ×4 |
+| 25 | db057cccc #2203 | pdf 可编辑书签（大纲面板增删改） | adapted：App.tsx 冲突①state 块取 theirs（去重：outlineGenerated/outlineDocRef 本地已有，删 pick 重复声明）；冲突②取 ours（本地 DockShell 结构）+两件织入（outline 头部✎编辑钮+OutlinePanel pending/editing/labels/onAdd/onRename/onDelete 六 props）；strings.ts 20 冲突=键级并集（5 个 outline* 键 ×21 语言插 outline: 锚后；tr 上游漏译→本地先 zh 兜底，#29 落地真译后去重） |
+| 26 | c21f2fbdd #2202 | 允许编辑区域密码 | adapted：ExcelShell/App import 并集+onApply Promise 化取 theirs+本地 onPickRange 保留；xlsx-protection-hash 导入品牌重放（univer-state/data-table 自动合并件带 @genoffice 需全扫重放——**品牌 grep 必须对 pick 后全工作区跑而非只对冲突文件**） |
+| 27 | f69a32e00 #2224 | x14 扩展数据验证读写（Rust worksheet.rs） | adapted：cs/vi app shard 取 theirs 真翻译+appSaveErrX14Dv 死键删（x14 已支持）；**sidecar 必须 release 重建**——debug 重编后测试仍红，测试读 target/release/xlsx-sidecar 硬路径 |
+| 28 | 91eaac966 #2156 | shell AI 建议文件名（阅读器索名时） | adapted：index.ts 两冲突——import 取 ours+ai-naming-service 并入；openSettings 保留本地 Home 模态架构+嫁接 registerAiNamingIpc；ai-naming-provider 按**本地登录后端口径**重写（genspark→chaoffice、gskApiKey→chaofficeCliApiKey、model 空允许=live-discovery 架构、null stored 守卫）；shell 渲染端 logos 表补 runcrate |
+| 29 | 28e9c1008 #2271 | tr 补译 range-password+bookmark 键 | 干净 pick（本地 tr 的 zh 兜底被真译替换，顺手去重） |
+
+### 施工事故与修复（同轮闭环）
+
+1. **shard 键级并集脚本两型 bug**：①跳过多行键的键行时把续行当独立键保留→孤儿字符串行（pdf strings 173 处+sheets dialogs 17 处，tsc 兜出，修=「上行不以 : 结尾的孤立字符串行删除」扫描）；②键存在性判断只看冲突块 ours 侧而非全文件→zh-TW 块整段误插无 opener 区（结构塌方，回滚该文件用 drawInk/outline 锚点法重做）。**防线：strings 大文件禁用巨型正则 re.S 替换（灾难性回溯挂起 30 分钟），一律行扫描；并集脚本必须含「孤儿续行」与「块外误插」两类自检**。
+2. **冲突标记被提交**（#27 cs/vi）：cherry-pick --continue 前脚本失败但 add -A 已把标记入暂存→提交带标记。tsc 兜出后 amend 修复。
+3. **BatesDialog 渲染块丢失**（#19 大区域取 ours）：lint unused-vars 兜出，织回 certSignDlg 前。同型：#1 Select Data 的 useModalDialog 焦点管理调用点丢失，同样 lint 兜出。**防线照 R20 教训强化：大区域裁决后 diff 上游 hunk 逐个核对**。
+4. **git push 挂起 30 分钟**：网络对 github.com:22 大传输不稳（9KB/s+中途断开）。解法=`ssh -o Hostname=ssh.github.com -o Port=443` 覆盖（host key 先 ssh-keyscan 入 known_hosts）。
+5. **cli mcp-http 测试三红**：ZCODE_HTTP_PROXY 代理拦截 localhost HTTP Tunneling（403）——环境假败，NO_PROXY='*' 复跑 12/12 绿，非代码回归。
+
+### 门禁终态
+
+- typecheck 全仓 0；vitest 全工作区绿（唯一红=cli mcp-http 代理假败已验，docs/sheets 3913+/pdf 1023/markdown 1393+/shell 含 ai-naming 25 新用例…终态全过）；lint 0 error（25 warnings 基线）；cargo test 274（+1 x14）；Rust fn 两向对账零缺失；git cherry（base=c8bfff60a）29 项全 `+` 且内容级核实（29 pick 提交在+24 上游新测试文件全落位）；品牌 grep 本轮改动文件零新增违例（豁免：键名 appGensparkAccount 族内部标识/genspark.ai URL/注释基线存量）。
+
 
 ## 第三十五轮（2026-10-27，上游 28cee5ca8..c8bfff60（tag v0.12.115）37 提交全吸收，施工于 sync/35-upstream；六段 1.0.13.0.12.115——终点含新 tag v0.12.115，后三位取 tag 口径 0.12.115；打包 Z+1：1.0.12→1.0.13）
 
