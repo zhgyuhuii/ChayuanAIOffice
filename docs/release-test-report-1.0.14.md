@@ -30,12 +30,23 @@
 | sidecar 四平台重编 | ✅ | 本轮 Rust 有改动（#2224 x14 DV）：zigbuild linux x64/aarch64（GLIBC 上限 2.28 实测 strings 验证）+ mingw win-x64 exe + mac universal（lipo x86_64+arm64）全部新鲜产出 |
 | 九件安装包 | ✅ 全 EXIT 0 | dmg/zip（mac arm64）、exe（win x64 NSIS）、2×deb（arm64/amd64）、2×rpm（aarch64/x86_64）、2×AppImage（arm64/x86_64）全部 1.0.14 |
 | 架构逐件直验 | ✅ | 见下方打包直验记录（deb/rpm 双 ELF、AppImage ELF 头、exe PE、dmg UDZO） |
-| dsh 产物 | ✅ | dist:chatop → dist/chatop-chaoffice-1.0.14；package:plugin → dist/chaoffice-1.0.14.tgz |
-| mac 装机 | ✅ | dmg 装机 → Info.plist 1.0.14；`open` 启动窗口上屏（终端直启兜底）；察元AIOffice 品牌首页+左树+对话面板零上游品牌 |
-| 单实例锁 | ✅ | 二次 open 无新窗口 |
-| asar 版本实证 | ✅ | asar extract-file → version=1.0.14、chaofficeUpstreamVersion=0.12.115 |
-| 打包版 CLI compare 闭环 | ✅ | create docx ×2 → docs compare → docs read --revisions：insertion+deletion，author=ChaAI Office |
+| dsh 产物 | ✅ | dist:chatop → dist/chatop-chaoffice-1.0.14（410M）；package:plugin → dist/chaoffice-1.0.14.tgz（160M）；历史 1.0.13 dsh 产物已清理 |
+| tag | ✅ | `1.0.14` 推 origin（github zhgyuhuii/chayuan-office，main 494b36bc3+tag）+gitee（cloudshd/chayuan-ai-office，main+tag）+pubmirror（ChayuanAIOffice，tag 5724ca5ed 与本地一致；该仓为独立历史公开镜像沿例只推 tag） |
+| GitHub Release | ✅ | **426250125** 九资产服务器中继全 201 uploaded（scp /data/installers/chaoffice-1.0.14 → nohup node fetch stream；sha256 前 16 位本地↔服务器逐件对齐） |
+| mac 装机 | ✅ | dmg 装机 → /Applications/ChaAI Office.app（Info.plist **1.0.14**）；启动窗口上屏（System Events 进程表实证）；察元AIOffice 品牌首页零上游品牌 |
+| 单实例锁 | ✅ | 二次 `open` 后主进程数仍 1 |
+| asar 版本实证 | ✅ | asar extract-file → version=**1.0.14**、chaofficeUpstreamVersion=**0.12.115**（容器外根目录执行后即 rm，R33 坑②已防：本轮仍误覆盖 root package.json 一次，git checkout 即复） |
+| 打包版 CLI compare 闭环 | ✅ | cli/chaoffice create --from a.md/b.md ×2 → `docs compare` → `docs read --revisions`：r1 insertion(Beta)+r2 deletion(Alpha)，author=**ChaAI Office** |
 | 飞腾真机（Linux/ARM64 deb） | ⚠️ 附注降级 | 沿 R32 起不可达附注（包级直验兜底，恢复后补测） |
+
+### aidooo.com 发布（R34/R35 流程复刻）
+
+- 宿主侧硬链接十槽位入库（exe 同文件双平台槽位）→ 容器内按正确形状写 DB（`office['1.0.14'][platform]`=数组，channel='installer'，variant 沿惯例：默认版/zip 包/rpm 包/AppImage 免安装版）×10 + `publish=true` + `publishManifest()`
+- 自检 OK=10 BAD=0（sha256/size 与磁盘逐件一致）
+- **存量故障发现与顺带修复**：发布前 DB `products.office` 为**空段**（releases-admin.json mtime 停在 9-20，manifest/卷内 1.0.13 文件为残量）——即 1.0.13 客户端升级链此前已静默断裂（update/check latest:null）。本次 1.0.14 入库顺带修复升级链：四发货平台 1.0.13→1.0.14 updateAvailable=true 且 url=https 公网域名（mac-x64 沿例无条目）
+- 验收：Range 请求 **206**；1MB 区段下载 sha256 字节级一致（982a7db0… 双侧同）；旧 1.0.13 卷内文件 10 件清理（staging 目录留底）+旧 URL **404**；公网 manifest office 段仅含 1.0.14 十槽位
+- 备份：office-entries-backup-20261028.json + office-manifest-backup-20261028.json（/data/backups/）
+- 网络附注：当日本地→服务器直连 SSH 出现持续上行限速窗口（实测 21-37KB/s，约 40 分钟后自愈至 1.3MB/s+）——大文件传输遇此形态时先测吞吐再重试，勿僵等
 
 ## 阶段 2-4 · 模型与对话（dev 真机，REMOTE_DEBUG_PORT=9331 CDP 驱动）— PASS
 
