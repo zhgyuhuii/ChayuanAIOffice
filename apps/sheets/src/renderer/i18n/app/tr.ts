@@ -714,6 +714,7 @@ export const tr = {
   appExportPdfTitle: 'PDF olarak dışa aktar',
   appSaveTitle: 'Kaydet (⌘S)',
   appSaveAs: 'Farklı Kaydet',
+  aiNameFile: 'AI ile adlandır',
   appUndo: 'Geri Al',
   appRedo: 'Yinele',
   appUnsavedEditOne: '● {count} kaydedilmemiş düzenleme',

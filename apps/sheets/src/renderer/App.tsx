@@ -322,6 +322,7 @@ import {
   type WorkbookReadContext,
 } from './ai/workbook-readers'
 import { NO_REDACTIONS, sanitizeLabel, type RedactionIndex } from './ai/redact'
+import { modelSaveAsName } from './file-naming'
 import { redactionSessionFor } from './ai/redact-load'
 import { RedactDialog } from './components/RedactDialog'
 import { installRedactMenu, type SelectionRequest } from './redact-menu'
@@ -6238,6 +6239,7 @@ export function App({
     mode: 'save' | 'save-as' | 'recovery',
     quiet = false,
     explicitTarget?: { path: string; overwrite: boolean },
+    defaultName?: string,
   ): Promise<SaveOutcome> {
     // Manual and AI saves take the same gate as the timers (保存串行化):
     // a recovery copy written beside a real save would outlive it as a
@@ -6246,7 +6248,7 @@ export function App({
     if (mode === 'recovery' && gate.busy) return { ok: false }
     return gate.run(async () => {
       if (!(await commitActiveEditor())) return { ok: false }
-      return handleSaveImpl(saveContext(), mode, quiet, explicitTarget)
+      return handleSaveImpl(saveContext(), mode, quiet, explicitTarget, defaultName)
     })
   }
   async function updateWorkbookPassword(newPassword: string): Promise<string | null> {
@@ -6284,6 +6286,22 @@ export function App({
     } catch (error: unknown) {
       return error instanceof Error ? error.message : t('appSaveFailed')
     }
+  }
+
+  /**
+   * Ask the model to name this workbook, on request, then open Save As with its
+   * answer prefilled.
+   *
+   * The stem goes into the dialog rather than renaming the file on disk: a
+   * workbook that may be open in another window, referenced from a note, or
+   * synced is not something to move behind the reader's back. A declined or
+   * empty answer leaves the dialog on the workbook's current name, so this is a
+   * no-op rather than a failure.
+   */
+  async function nameWithAi(): Promise<void> {
+    const stem = await modelSaveAsName(readContext())
+    if (!stem) return
+    await handleSave('save-as', false, undefined, stem)
   }
   closeSaveRef.current = async () => {
     const state = lazyWorkbookRef.current
@@ -7110,6 +7128,7 @@ export function App({
         onOpen={() => void handleInspectWorkbook()}
         onExportPdf={() => void handleExportPdfImpl(pageLayoutContext())}
         onExportCsv={() => void handleExportCsvImpl(csvExportContext())}
+        onNameWithAi={() => void nameWithAi()}
         onRedo={handleRedo}
         autoSave={autoSave}
         onAutoSaveChange={setAutoSave}

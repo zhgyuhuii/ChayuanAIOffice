@@ -16,6 +16,7 @@ import {
 } from '@chaoffice/ui'
 import {
   CaretIcon,
+  GensparkMark,
   RIBBON_GLYPH_ICONS,
   RedoIcon,
   SaveAsIcon,
@@ -373,6 +374,8 @@ interface ExcelShellProps {
   readonly onExportPdf?: () => void
   /** 文件菜单「导出为 CSV」 */
   readonly onExportCsv?: () => void
+  /** Ask the model for a name, then open Save As with it prefilled */
+  readonly onNameWithAi: () => void
   /// QAT redo (workbook history, same path as the app menu's ⇧⌘Z); undo
   /// shares the AI panel's onUndo above.
   readonly onRedo: () => void
@@ -658,6 +661,7 @@ export function ExcelShell({
   onExportCsv,
   canSaveAs,
   onSaveAs,
+  onNameWithAi,
   onRedo,
   canUndo,
   canRedo,
@@ -1303,6 +1307,16 @@ export function ExcelShell({
                 onClick={onSaveAs}
               >
                 <SaveAsIcon />
+              </button>
+              <button
+                type="button"
+                className="qa-btn qa-name-with-ai"
+                data-tip={t('aiNameFile')}
+                aria-label={t('aiNameFile')}
+                disabled={!canSaveAs}
+                onClick={onNameWithAi}
+              >
+                <GensparkMark />
               </button>
               <button
                 type="button"
