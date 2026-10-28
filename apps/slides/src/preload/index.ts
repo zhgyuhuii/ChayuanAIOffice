@@ -7,6 +7,7 @@ import type { ProjectApi } from '@chaoffice/project-store'
 import { installDropOpenBridge } from '@chaoffice/electron-utils/drop-open'
 import { installFilesPaneBridge } from '@chaoffice/electron-utils/files-pane-bridge'
 import type {
+  DeckChange,
   AddChartOp,
   AddElementOp,
   AiRunFailure,
@@ -424,13 +425,8 @@ const api: SlidesApi = {
     ipcRenderer.on('slides:history-changed', listener)
     return () => ipcRenderer.removeListener('slides:history-changed', listener)
   },
-  onDeckChanged: (
-    handler: (state: { slides: RenderSlide[]; size: { cx: number; cy: number } }) => void,
-  ) => {
-    const listener = (
-      _e: IpcRendererEvent,
-      state: { slides: RenderSlide[]; size: { cx: number; cy: number } },
-    ) => handler(state)
+  onDeckChanged: (handler: (state: DeckChange) => void) => {
+    const listener = (_e: IpcRendererEvent, state: DeckChange) => handler(state)
     ipcRenderer.on('slides:deck-changed', listener)
     return () => ipcRenderer.removeListener('slides:deck-changed', listener)
   },

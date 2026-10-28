@@ -7,7 +7,7 @@
  */
 import type { Editor } from '@tiptap/core'
 import { history } from '@tiptap/pm/history'
-import { suggestFileName } from '@genoffice/ui'
+import { suggestFileName } from '@chaoffice/ui'
 import { modelTextOf, type RedactableNode } from './ai/redact-view'
 import {
   applyPageNumType,

@@ -49,6 +49,7 @@ function makeWebContents(): FakeWebContents {
 }
 
 vi.mock('electron', () => ({
+  nativeImage: { createFromPath: () => ({ isEmpty: () => true, toDataURL: () => '' }) },
   app: {
     getPath: vi.fn(() => tmpdir()),
     on: vi.fn(),
@@ -79,7 +80,7 @@ vi.mock('electron', () => ({
   },
 }))
 
-vi.mock('@genoffice/electron-utils', () => ({
+vi.mock('@chaoffice/electron-utils', () => ({
   configuredDefaultSaveDir: vi.fn(() => tmpdir()),
   contextMenuLabels: vi.fn(() => ({})),
   installContextMenu: vi.fn(),
