@@ -69,6 +69,7 @@ export const fr = {
   openExternal: 'Lien ouvert dans le navigateur',
   save: 'Enregistrer (⌘S)',
   saveAs: 'Enregistrer sous…',
+  aiNameFile: "Nommer avec l'IA…",
   ribbonCollapse: 'Réduire le ruban',
   ribbonExpand: 'Développer le ruban',
   ribbonGroupInsert: 'Insertion',
