@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { parseSlide, setRedactExt } from '@genoffice/pptx-engine'
-import { buildRenderSlide, type RenderSlide } from '@genoffice/pptx-render'
+import { parseSlide, setRedactExt } from '@chaoffice/pptx-engine'
+import { buildRenderSlide, type RenderSlide } from '@chaoffice/pptx-render'
 
 // file-actions pulls export-render → pptx-render → konva → native `canvas`
 // (missing in CI). Mock the UI-only modules so this unit test exercises only

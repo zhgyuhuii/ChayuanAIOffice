@@ -225,6 +225,13 @@ export interface SaveMarkdownRequest {
    * nothing is written without the user picking a destination.
    */
   suggestedName?: string
+  /**
+   * Name offered in the Save As dialog for a document that has never been
+   * saved. A plain ⌘S on an untitled document still asks where the file goes —
+   * the model-proposed name (or the first heading) prefills that dialog rather
+   * than replacing it, so the reader still chooses the location.
+   */
+  defaultName?: string
   /** write even though the file changed on disk since it was loaded or last saved */
   overwrite?: boolean
 }
