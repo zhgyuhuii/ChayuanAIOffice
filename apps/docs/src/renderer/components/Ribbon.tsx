@@ -294,6 +294,8 @@ export interface RibbonProps {
   chayuan?: ChayuanServices
   /** Home ▸ Convert：把当前文档导出为 pdf/html/md/images */
   onConvert: (format: ConvertFormat) => void
+  /** File ▸ Name with AI…: ask the model for a name and offer it in the dialog */
+  onNameWithAi: () => void
   showAi: boolean
   onToggleAi: () => void
   section: SectionSettings | null
@@ -766,6 +768,7 @@ function RibbonInner({
   onSaveAs,
   chayuan,
   onConvert,
+  onNameWithAi,
   showAi: _showAi,
   onToggleAi: _onToggleAi,
   section,
@@ -2246,6 +2249,16 @@ function RibbonInner({
                   }}
                 >
                   {t('ribbonSaveAs')} <span className="file-menu-key">Ctrl+Shift+S</span>
+                </button>
+                <button
+                  className="qa-name-with-ai"
+                  disabled={!hasDoc}
+                  onClick={() => {
+                    setDropdown(null)
+                    onNameWithAi()
+                  }}
+                >
+                  {t('ribbonNameWithAi')}
                 </button>
                 <div className="file-menu-sep" />
                 {convertItems}
