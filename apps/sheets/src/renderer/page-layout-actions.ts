@@ -672,9 +672,8 @@ async function settleFormulasBeforePrint(ctx: PageLayoutContext): Promise<void> 
   if (pendingFormulas() === 0) return
   const formula = runtime.univerAPI.getFormula()
   const ended = new Promise<void>((resolve) => {
-    let disposable: IDisposable | undefined
-    disposable = formula.calculationEnd(() => {
-      disposable?.dispose()
+    const disposable = formula.calculationEnd(() => {
+      disposable.dispose()
       resolve()
     })
   })
