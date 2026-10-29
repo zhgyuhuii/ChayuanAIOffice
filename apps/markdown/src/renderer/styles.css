@@ -499,6 +499,9 @@ button {
   padding: 6px 10px;
   vertical-align: top;
   text-align: start;
+  /* break-word does not lower a cell's min-content width, so one long inline
+     code token would pin its column and push the table past the page */
+  overflow-wrap: anywhere;
 }
 
 /* cells hold paragraph nodes — the document paragraph margin would bloat rows */
