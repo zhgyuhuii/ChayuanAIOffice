@@ -8369,6 +8369,17 @@ export default function App() {
                   </span>
                   <span>{t('certSign')}</span>
                 </button>
+                <button
+                  className="rb-big"
+                  disabled={!protectionEditable || status !== 'ready'}
+                  data-tip={t('protectHint')}
+                  onClick={() => setProtectionDlg(true)}
+                >
+                  <span className="rb-big-icon">
+                    <IconProtect />
+                  </span>
+                  <span>{t('protect')}</span>
+                </button>
                 {digitalSignatures.length > 0 && (
                   <button
                     className="rb-big"
@@ -11233,6 +11244,23 @@ export default function App() {
               />
             )}
 
+            {protectionDlg && (
+              <ProtectionDialog
+                t={t}
+                hasPassword={encryption !== null || documentEncrypted}
+                permissions={
+                  encryption?.permissions ?? {
+                    printing: true,
+                    modifying: true,
+                    annotating: true,
+                    copying: true,
+                  }
+                }
+                onApply={applyProtection}
+                onRemove={removeProtection}
+                onClose={() => setProtectionDlg(false)}
+              />
+            )}
               {certSignDlg && (
                 <CertSignDialog
                   t={t}

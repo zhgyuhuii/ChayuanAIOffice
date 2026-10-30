@@ -565,6 +565,8 @@ export default function App() {
         diskTextRef.current = result.writtenText ?? text
         overwriteRef.current = false
         setDiskNotice(null)
+        // what this note offers `[[...#` has just changed on disk
+        invalidateWikiHeads()
         setImageBaseDir(dirOf(result.path))
         setFilePath(result.path)
         if (unchanged) {

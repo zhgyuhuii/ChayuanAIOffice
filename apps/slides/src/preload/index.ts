@@ -1,7 +1,6 @@
 import type { AiPanelPrefs } from '@chaoffice/ui'
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import type { IpcRendererEvent } from 'electron'
-import type { RenderSlide } from '@chaoffice/pptx-render'
 import { KB_CHANNELS } from '@chaoffice/ai-host/kb-channels'
 import type { ProjectApi } from '@chaoffice/project-store'
 import { installDropOpenBridge } from '@chaoffice/electron-utils/drop-open'

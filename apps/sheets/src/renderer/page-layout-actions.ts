@@ -5,7 +5,6 @@
  * per-sheet print settings; nothing renders in the grid (Univer has no
  * page-layout view), everything lands in the saved file.
  */
-import type { IDisposable } from '@univerjs/core'
 import { isMetafileMime, metafileToDataUrl } from '@chaoffice/docx-engine/metafile'
 import type { PrinterInfo, WorkbookExportPdfRequest } from '../shared/desktop-api'
 import type { FWorksheet } from '@univerjs/sheets/facade'
