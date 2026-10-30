@@ -71,3 +71,11 @@
   3. **full-gate 前 sidecar 三态切换**：全仓 vitest 需 mac universal；shell packaged-cli-version 需 linux x64 ELF 暂存；linux arm64 pass 前 build:all 会重编宿主 sidecar 覆盖暂存——**先跑完 build 再暂存 ELF、只重跑 shell 打包步**。
   4. R36「发布后清理旧版」惯例本轮因满盘提前到发布前执行——验收项「旧 URL 404+卷内无残量」在发布前即满足，结果等价但顺序反转需记账。
 - GitHub Release 资产清单（429539064）：ChaAIOffice-1.0.15-arm64.dmg / -arm64.zip / ChaAIOffice-Setup-1.0.15.exe / ChaAIOffice-1.0.15-arm64.deb / -amd64.deb / -aarch64.rpm / -x86_64.rpm / -arm64.AppImage / -x86_64.AppImage。
+
+## 阶段 6 · chayuan-harness 产物更新 — PASS
+
+| 项 | 结果 | 证据 |
+|---|---|---|
+| stageChatoffice 重铺 | ✅ | harness `node scripts/build.mjs` → desktop/resources/chatoffice version=**1.0.15**（471M：dist/host/client + vendor sidecar 全离线面）；content signature（package.json+lock+dist/apps/packages 内容哈希）驱动 needsStage，同版本载荷变更即重铺 |
+| 打包集成 | ✅ | `npm run package:dir` → mac-arm64 察元AI OS.app 内 Resources/chatoffice **1.0.15**（524M）+ ChaAIOS-3.2.10-arm64-lite.dmg（UDZO，Oct 30 15:34）；dev 兜底路径 dsh-plugin 直读兄弟仓 |
+| 载荷溯源 | ✅ | dsh-plugin/dist=package:plugin 产物（chaoffice-1.0.15.tgz 同源）；sidecar 四平台二进制同本轮重编批次 |
