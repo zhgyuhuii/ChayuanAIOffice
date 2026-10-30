@@ -215,6 +215,9 @@ function ctxFor(opened: Opened, fileName: string, filePath: string | null): File
     sectionHfEdits: {},
     hfLinks: {},
     styleUpserts: {},
+    // LOCAL: the local save plan carries live style upserts/deletes (upstream
+    // #2215 adaptation); the harness must provide both bookkeeping fields
+    styleDeletes: [],
     comments: [],
     commentsDirty: false,
     protectionDirty: false,

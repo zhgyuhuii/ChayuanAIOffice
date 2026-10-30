@@ -58,6 +58,7 @@ async function fixture(tracking: boolean) {
     sectionHfEdits: {},
     hfLinks: {},
     styleUpserts: {},
+    styleDeletes: [], // LOCAL save-plan bookkeeping (see file-naming.test.ts)
     pendingNumbering: { newDefs: [], restartNums: [] },
   }
   const noop = () => {}
