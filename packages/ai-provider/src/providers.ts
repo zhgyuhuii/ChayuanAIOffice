@@ -187,6 +187,15 @@ export const AI_PROVIDERS: AiProviderMeta[] = [
     keyPlaceholder: 'rc_live_...',
   },
   {
+    id: 'cloudgpu',
+    label: 'CloudGPU',
+    // LOCAL: static models/defaultModel stripped per live-discovery (R35 Kimi /
+    // R36 Runcrate precedent; catalog arrives via /v1/models). Upstream lists
+    // deepseek-v4.1-flash/deepseek-v4-pro/glm-5.3-flash/kimi-k2.6/minimax-m3
+    // (https://cloudgpu.app/api/docs); vision follows modelLacksVision().
+    keyPlaceholder: 'sk-...',
+  },
+  {
     id: 'opencode-zen',
     label: 'OpenCode Zen',
     keyPlaceholder: 'API Key',
