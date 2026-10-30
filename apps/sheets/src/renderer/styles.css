@@ -8815,3 +8815,4 @@ body:has(.note-pictures-pane) .threaded-comments-pane {
    stable class. */
 body > div:has([data-u-comp='find-replace-dialog']) {
   display: none !important;
+}
