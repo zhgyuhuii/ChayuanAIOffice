@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/chaoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第三十六轮完成（2026-10-28，终点 28e9c100，分支 sync/36-upstream；终点无新 tag，后三位维持 0.12.115；合并 main=8bbbf07e8；已随轮发版 1.0.14：tag 三仓+GitHub 426250125 九资产+aidooo 发布验收全过——并顺带修复 office DB 空段断裂的升级链）**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第三十七轮完成（2026-10-30，终点 df9a64c5，分支 sync/37-upstream；终点无新 tag，后三位维持 0.12.115；随轮发版 1.0.15：sidecar 四平台重编+九件安装包+tag 三仓+GitHub Release+aidooo 入库+发版测试报告+harness 产物更新——详见 §37 小节）**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -736,7 +736,68 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 挂账 | sheets i18n dialogs vi.ts 少 9 个 fork 本地键（HEAD 继承欠账，en 回退兜底，补译即销）；ai-host 若原生支持 settings-changed 推送可移除 sheets-main 的 fs.watch 包装广播 |
 | 门禁 | typecheck 全仓 0；vitest 全绿：docs 3152/sheets 3437/ai-provider 494/agent-core 176/xlsx-gateway 248/pptx-engine 1294/shell 931/slides 1475/md 1047/pdf 868/html 319/ui 250/docx-engine 1717/pdf2docx 822/cli 313/electron-utils 257…；cargo test 228 全绿；lint 0；品牌 grep 豁免外零残留；check:help-langs 21 语言全齐 |
 
-## 第三十六轮（2026-10-28，上游 c8bfff60a..28e9c100 29 提交全吸收，施工于 sync/36-upstream；终点无新 tag（describe=v0.12.115-29-g28e9c100），后三位维持 0.12.115；合并 main=8bbbf07e8）
+## 第三十七轮（2026-10-30，上游 28e9c100..df9a64c5 45 提交全吸收，施工于 sync/37-upstream；终点无新 tag（describe=v0.12.115-74-gdf9a64c5），后三位维持 0.12.115；打包 Z+1：1.0.14→1.0.15）
+
+> 上游 45 提交=五域文件命名族×5（#2156-2161 slides/markdown/docs/html/sheets「用 AI 命名」+首存不问模型）+pdf 六特性（squiggly/caret/polygon 批注 #2245、OCR 烘焙 #2254、文本对比 #2251、测量工具 #2252、减肥 #2255、附件面板 #2250、密码文档 #2228、JPG 导出 #2328）+sheets 三特性（拼写检查 #2227、xls 收割 #2302、What-if 无、绝对 OPC #2311）+skills ~/.agents 共享行 ×2（#2281/#2289）+slides 停发整副牌 #2273+CloudGPU #2310+小修×N。377 文件 +22376/−1294。**Rust 大改 9 文件 +1611**（escher.rs/rels_normalize.rs/xls_biff.rs 新模块+recalc +363）→ sidecar debug/release 重编+四平台待发版重编。零依赖变更。
+
+### 《冲突与裁决清单》（45 项，要点摘录）
+
+| # | 上游提交 | 上游意图 | 本地状态与裁决 |
+|---|---|---|---|
+| 1-2 | f847a29a/8222ec7a | docs tracked save reload / markdown 粘贴 wiki 链接即时生效 | 干净 pick ×2 |
+| 3 | 16d8f235 #2245 | pdf 波浪线/插入符/多边形批注 | adapted：App.tsx 大区域取 ours+selPopup 波浪线钮织入（上游 6 hunk 中 5 干净落）；strings.ts 22 语言键级并集（squiggly/drawPolygon/drawCaret 插 strikeout/drawColor 锚前）；save-pdf T 名品牌 ChaOffice |
+| 4 | 615fb2dc #2158 | slides「用 AI 命名」 | adapted：preload 并集（本地 mediaApi+上游 aiNamingApi）；file-actions 采上游 name-aware saveAsWithName；App.tsx 保本地 InsertImageDialog 结构+onNameWithAi prop 织入本地 Ribbon |
+| 5-6 | 4449b623/ec2ff64a | OCR 烘焙/sheets Filter 拒绝提示 | 干净 pick ×2 |
+| 7 | b1ad6e24 #2159 | markdown 命名 | adapted：markdown-main Q3-③ 融合（保本地「首存必问无静默写」+采上游 fileNameStem/defaultName 预填，defaultName ?? suggestedName 兜底）；App.tsx deriveAutoFileName 移模块（采 theirs）+大区域取 ours+nameWithAi 依本地 suggestedName 通道重写+onNameWithAi 织入+proposedSaveName 织入 doSave |
+| 8 | 061b8caf #2161 | docs 命名 | adapted：preload 并集；Ribbon 解构并集（onNameWithAi+本地 _showAi 别名保留） |
+| 9-10 | 3c2eaf1e/c37892f8 | 密码哈希保持/hex trim | 干净 pick ×2 |
+| 11 | 9efb2cdc #2267 | mcp 插图进可见文档 | adapted：shell mcp 测试列表并集（insert_picture+本地 open_in_chaoffice） |
+| 12 | 15c9a70b #2281 | skills 装 ~/.agents 共享行 | adapted：agent-skills 采 theirs（agentConfigDir/agentLabel/agentPresent 新导出）；**cli mcp.ts 取 ours**（本地 mcp 命令精简版，install/uninstall/list 本地已裁定删除）；skills/genoffice/SKILL.md UD=本地删除维持（品牌版 skills/chaoffice 2.7.4→2.7.6 版本纪律+装机目标行本地化重写）；测试桩品牌（.agents/skills/chaoffice） |
+| 13 | 6f96d3c4 #2157 | html 命名 | adapted：同 #7 配方（preload 并集+App.tsx 保 DockShell+onNameWithAi 织入） |
+| 14 | da7290ca #2160 | sheets 命名 | adapted：preload/ExcelShell prop 并集（本地 onOpen/onExportPdf/onExportCsv 保留+onNameWithAi 增）；ExcelShell 大区域取 ours+QAT 织入 nameWithAi 钮（本地品牌 GensparkMark=察元星形照 docs 惯例补 ribbon-icons）；desktop-api quiet/defaultName 采 theirs；App.tsx 本地三入口保留+onNameWithAi 并入 |
+| 15-16 | 039d7438/ff930f0e | mcp 工具清单钉死/pdf 文本对比 | 前者干净；后者 adapted：App.tsx/ipc 取 ours+compare 侧栏块织入（compare sidebar === 'compare' 块在 thumbs 前）；strings 22 语言 10 键并集（batesErrRange 锚后） |
+| 17 | 7d1ffc4c #2273 | slides 停发内联媒体/整副牌 | adapted 六件：preview-protocol/session-state/preload/style-actions/zoom-actions/image-loader 导入并集+品牌；slides-main 删页×2 采 theirs（markMetaDirty+buildSlideUpdate）；App.tsx onDeckChanged 采 theirs（mergeBroadcastUpdate 增量机制）；**markMetaDirty 四处自动合并丢语义测试兜出**（add-blank-slide 的 if(op.before)→无条件、add-slide-with-layout/performSlidePaste 补织、duplicate-slides if(steps.length>1)→无条件）；insertShapeAt 本地版缺 batched() 织入（上游早有本地 fork 丢，新 undo 测试兜出） |
+| 18-19 | b239d2e5/4865d339 | 对比越界页报告/表格长 token 折行 | 干净 pick ×2 |
+| 20 | 9ddf1f74 #2274 | [[ 建议列标题/block ids | adapted：App.tsx 大区域取 ours（本地无 currentFileText/openSource 区）+invalidateWikiHeads 两 hunk 干净落（后 lint 兜出调用点丢失补织 doSave 成功路径） |
+| 21 | fd8bdfa4 #2297 | add_chart 公式 dataRange | adapted：xlsx-dsl 导入并集+品牌 |
+| 22 | d7a3160b #2305 | docs 浮动形状旋转/描边宽 | 干净 pick |
+| 23-24 | 51c3e2ab/78798a99 | cellXfs xfId 缺省活/大纲沟槽休眠 | 干净 pick ×2 |
+| 25 | c1ee40f6 #2255 | pdf 减小文件大小 | adapted：ipc 并集（本地首存注释保留+reduceFileSize）；App.tsx 取 ours+reduce 钮织入 insertPdf 钮后；strings 22 语言 4 键并集（**多行 reduceHint 提取两型 bug 均踩**：空值终止续行/块外重复插，dedupe+锚点法收口） |
+| 26 | 6e575cbf #2227 | sheets 拼写检查 | adapted：preload 采 theirs（webFrame）；styles.css 取 ours+上游 spell 样式 63 行追加；App.tsx 导入并集+spellDialog/cellsDialog 块采 theirs 后**删 cellsDialog 块**（本地 insert/delete cells 另有架构，状态未落地）+FindReplacePanel 本地已有去重导入；ExcelShell 大区域取 ours+spellcheckOn 第二 Ribbon 调用点补（tsc 兜出）；22 语言 22 键 appSpell* 并集 |
+| 27 | 65dbea74 #2252 | pdf 校准测量工具 | adapted：save-pdf 并集+品牌；App.tsx 双冲突取 ours+**MeasureScaleDialog 渲染块织回**（batesDlg 后，大区域丢接线类） |
+| 28 | dce38087 #2289 | 旧技能副本清扫 | adapted：agent-skills 采 theirs+品牌；skill-command/shell settings-integrations 测试桩品牌（chaoffice 路径） |
+| 29 | d939f30e #2299 | 整段对比修订骑段落符 | 干净 pick |
+| 30 | 075a0272 #2300 | 无头 PDF 打印全部表+公式安定 | adapted：page-layout 导入并集（IDisposable 后清理） |
+| 31 | 0b3f28c5 #2288 | 冒号 PDF 名保干 | 干净 pick |
+| 32 | bac5878b #2302 | xls 收割图片/合并/宽高 | adapted：sheets-main 内联串取 theirs 语义+品牌（ChaAI Office）；Rust xls_biff/escher 新模块落地 |
+| 33 | 6c69b978 #2250 | pdf 附件面板 | adapted：preload/ipc 并集（writeRecovery 本地保留）；pdf-main 采 theirs 后 **isUntitled 本地 untitledPdfMetas 名恢复**（上游 untitledPdfPaths 名 tsc 兜出）；App.tsx 取 ours+attachments 侧栏块织入（compare 后） |
+| 34 | d3b29b1a #2307 | lint/format 收尾 | adapted：page-layout 取 ours+IDisposable |
+| 35 | b613c308 #2293 | docs 图片 Word 式移动/改选/浮动 run 图片可编 | adapted：floating-z-order 导入并集（NodeSelection） |
+| 36-37 | 25482766/a538d042 | 盘符冒号资产名/绝对 OPC 目标 | 干净 pick ×2 |
+| 38 | 6e7a8909 #2228 | pdf 密码文档打开解密 | adapted：pdf-main/ipc 并集；App.tsx 双冲突取 ours（draw-tools 红act 区/selPopup 区——**selPopup 曾被索引法编辑破坏，从分支 HEAD 整块复位**）+protectionDlg 态/handlers 干净落+**ProtectionDialog 渲染块与 Ribbon 钮 lint 兜出后织回**；strings 42 冲突全取 ours+protectStringsFor 22 语言 spread 织入（certSignStringsFor 锚后）+pwCertEncrypted/pwOwnerNeeded 44 键并集（pwHide 锚后） |
+| 39 | ac880810 #2309 | docs 选区铬随形状旋转/页眉框保变换 | 干净 pick |
+| 40 | 7ec2c529 #2327 | 思维导图 SVG 导出 | adapted：**AiPanel 保本地「外壳+AiConversationBody」架构全取 ours**；MindMapCard/mind-map.ts 干净落（SVG 序列化+按钮）；insertSvgAsPng 助手+onInsert 接线重放进 AiConversationBody（本地消费点） |
+| 41 | 04bea7b5 #2321 | docs/slides macOS File 菜单 AI 命名 | 干净 pick |
+| 42 | b1c470ba #2324 | 分页符在旁编辑时不动 | adapted：pagination-gaps Q3-③ 融合（上游 build(as)+ordinal 键控 widget spec 采納+本地 gap 折叠双击 toggle 织入 build 内，去重 el 声明） |
+| 43 | 1e7158ae #2328 | pdf JPG 导出 | adapted：App.tsx 取 ours+JPG 钮织入 exportImages 钮后；strings 44 键并集（exportImagesAll 锚后，含多行 dedupe）；export-images.test 本地曾删→**恢复上游版**（含 jpg 用例+nativeImage 桩+品牌） |
+| 44 | a4b54d00 #2330 | slides JPG 导出 | adapted：i18n-main 22 语言 menuExportImagesJpg 织入（menuExportImages 锚后+dedupe）；App.tsx 取 ours+onExportImagesJpg 织入 |
+| 45 | df9a64c5 #2310 | CloudGPU 厂商 | adapted（沿 R35/R36 裁定）：providers.ts **剥静态 models/defaultModel**（live-discovery）；providers.test 静态 seeds 块拒收；registry endpoint 测试采 theirs；shell/ui provider-logos 补 cloudgpu SVG（typecheck Record 兜出） |
+
+### 施工事故与修复（同轮闭环）
+
+1. **索引法冲突块编辑破坏 selPopup**（#38）：python 按行号切片解冲突时第三个 marker 集漏检，块半开+文本撕裂（data-tip={ 丢失）。修复=从分支 HEAD 整块复位（pdf-sel-popup→pdf-sel-popup-sep 区段）。**防线：解冲突后必须 grep 残留 marker 数+块结构核对，tsc 只是兜底**。
+2. **大区域取 ours 丢接线三连**（R36 教训复刻）：markdown invalidateWikiHeads 调用点、pdf ProtectionDialog 渲染块+Ribbon 钮、pdf MeasureScaleDialog 渲染块——全部 lint unused/tsc 兜出后按上游 hunk 织回。**防线照 R36：大区域取 ours 后逐 hunk 核对上游增量**。
+3. **多行 i18n 值提取两型 bug**（R36 坑①复刻+新坑）：①键行后值空时续行收集立即终止（`v==''` 短路）→ 8 语言 reduceHint 漏提；②以「本轮新增键集」为并集源而不是「本地文件实际缺什么」→ 已落地键二次插入重复。修复=续行收集改「直到值以 , 结尾且下行是键/块尾」+织入前对本地文件做缺键判定+dedupe 扫描。
+4. **markMetaDirty 自动合并丢语义**（#17）：本地早前轮的 `if (op.before)`/`if (steps.length>1)` 条件与上游无条件化合并成「条件保留」——4 个 handler 全错。上游新 dirty 测试（slide-lifecycle-dirty）兜出，逐个对上游源恢复无条件+补 performSlidePaste/add-slide 缺失调用。
+5. **electron mock 桩缺 nativeImage**：本地品牌图标模块级 `nativeImage.createFromPath`（presenter-show/markdown-main/pdf-main 三处）令 6 个新测试套件炸——统一补 `createFromPath: () => ({isEmpty:()=>true, toDataURL:()=>''})` 桩。
+6. **electron-utils main-proxy 测试对 NO_PROXY 敏感**：NO_PROXY='*' 会让代理 dispatcher 拒绝路由→测试红；不设反而绿（与 R36 mcp-http 假败方向相反）。全仓门禁**不设代理覆盖变量**跑。
+7. **本地 buildDocBytes 读 ctx.styleDeletes**（本地 #2215 适配）：上游 file-naming/save-tracked 两测试桩缺该字段→save 静默 false。Q6 桩适配：harness 补 `styleDeletes: []`。
+
+### 门禁终态
+
+- typecheck 全仓 0（shell logos cloudgpu 补齐后）；vitest 全工作区绿（docs 4345/sheets 3951+/slides 1605/markdown 1513/pdf 1110+/html 361/cli/ai-provider 623…，electron-utils 316 干净环境全绿）；lint 0 error（25 warnings 基线）；cargo test 276（+2：rels_normalize/xls_biff 新测试）；sidecar debug+release 已重编（recalc 测试硬路径要求）；品牌 delta 扫描（369 改动文件 新旧计数对比）仅 2 处真违规均修复（shell intgLegacyDesc 22 语言+save-pdf 注记名）；45 提交逐个内容级核验（每 pick 的上游 hunk 落点核对+tsc/测试驱动）。
+
+**R37 随轮发版（六段 1.0.15.0.12.115）**：①版本铁律：打包 Z+1 1.0.14→1.0.15（root/shell/dsh-plugin+embedded 四处+lock；终点 df9a64c5 无新 tag，后三位维持 0.12.115，chaofficeUpstreamVersion 不动）；②sidecar 四平台新鲜重编（本轮 Rust +1611：escher/rels_normalize/xls_biff 新模块）；③九件安装包+架构逐件直验；④dsh 产物（chatop-chaoffice-1.0.15+chaoffice-1.0.15.tgz，历史 1.0.14 清理）；⑤tag `1.0.15` 推 origin+gitee+pubmirror 三仓（pubmirror 只推 tag）；⑥GitHub Release 九资产服务器中继；⑦aidooo.com 十槽位入库+publishManifest+升级链验收（发版前先查 DB 现状与 update/check latest——R36 坑③）；⑧发版测试报告 docs/release-test-report-1.0.15.md（dev CDP 真机+mac 装机+飞腾延续降级附注）；⑨chayuan-harness 产物更新（dist/chatop-chaoffice-1.0.15 部署 desktop app resources）。
 
 > 上游 29 提交=9 特性+16 小修+2 测试+2 i18n（+12081/−447，无巨件快照，最大单件 51 文件）。施工法=29 个逐个 cherry-pick（Q2 默认）。**Rust 改动一处**（#2224 x14 DV：worksheet.rs +92/tests.rs +56，无 Cargo.toml 变更）→ sidecar 本地 debug+release 重编、发布用四平台 zigbuild 新鲜重编。零依赖变更（无 package.json/lock 触碰）；上游 shell package.json 仍 0.12.0。施工前置：并行 WIP（web open-external 统一外链出口，6 文件）先行落库保护（547efdc52）。
 

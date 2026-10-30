@@ -80,6 +80,7 @@ function baseStatus(): IntegrationsStatus {
     },
     skillVersion: '2.1.0',
     skillNeedsCli: '0.4.0',
+    legacy: [],
     agents: [
       {
         id: 'claude-code',
@@ -185,6 +186,33 @@ describe('Settings → Integrations', () => {
       },
     })
     expect(host.textContent).toContain('assistant picks one')
+  })
+
+  it('shows the copies the shared row replaced and removes them on request', async () => {
+    const status = baseStatus()
+    status.legacy = [
+      {
+        agent: 'codex',
+        label: 'Codex',
+        skillsDir: '/home/u/.codex/skills',
+        path: '/home/u/.codex/skills/chaoffice/SKILL.md',
+        ours: true,
+      },
+    ]
+    let swept = 0
+    await openIntegrations({
+      status: async () => status,
+      copyText: async () => {},
+      sweepLegacySkillCopies: async () => {
+        swept += 1
+        return { removed: status.legacy, kept: [] }
+      },
+    })
+    const legacyRow = host.querySelector('.set-intg-row[data-agent="legacy"]')
+    expect(legacyRow).toBeTruthy()
+    expect(legacyRow!.textContent).toContain('/home/u/.codex/skills/chaoffice/SKILL.md')
+    await click(buttonWithText('Remove old copies', legacyRow!))
+    expect(swept).toBe(1)
   })
 
   it('names the bare command once chaoffice is on the PATH and runs the app as Node on Windows', () => {

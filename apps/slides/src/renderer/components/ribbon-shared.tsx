@@ -299,11 +299,15 @@ export interface Props {
   onUndo: () => void
   onRedo: () => void
   onSaveAs: () => void
+  /** Ask the model for a name, then open Save As with it prefilled */
+  onNameWithAi: () => void
   /** Export as PDF (hidden slides skipped) */
   onExportPdf: () => void
   onPrint: () => void
   /** Export as images (one PNG per page, hidden slides skipped) */
   onExportImages: () => void
+  /** Export as images (one JPG per page, hidden slides skipped) */
+  onExportImagesJpg: () => void
   onFormat: (cmd: FormatCmd) => void
   zoom: number
   onZoom: (z: number | ((current: number) => number)) => void

@@ -442,6 +442,7 @@ import {
   newFile as newFileImpl,
   printDoc as printDocImpl,
   save as saveImpl,
+  suggestedSaveAsName,
   writeRecoveryCopy as writeRecoveryCopyImpl,
   type FileActionContext,
   type PendingPdfExport,
@@ -2763,6 +2764,19 @@ export function App() {
     },
     [],
   )
+
+  /**
+   * The reader asked the model for a name on a document that already has one.
+   *
+   * The stem is a proposal for the Save As dialog, never a rename: the dialog
+   * is where the reader confirms, and moving a file that may be open elsewhere
+   * or synced is not ours to do quietly.
+   */
+  const nameWithAi = useCallback(async () => {
+    const proposed = await suggestedSaveAsName(fileCtxRef.current)
+    if (!proposed) return
+    await saveImpl(fileCtxRef.current, true, false, proposed)
+  }, [])
 
   // inserting a section break needs one save for the new section to take effect; the
   // flag is consumed in the render after state commit, guaranteeing the save closure
@@ -6203,6 +6217,9 @@ export function App() {
         case 'save-as':
           void save(true)
           break
+        case 'name-with-ai':
+          void nameWithAi()
+          break
         case 'undo':
           editor?.chain().focus().undo().run()
           break
@@ -6384,6 +6401,7 @@ export function App() {
     openFile,
     openRecent,
     save,
+    nameWithAi,
     exportPdf,
     exportHtml,
     exportMarkdown,
@@ -7256,6 +7274,7 @@ export function App() {
       else if (format === 'md') void exportMarkdown()
       else exportImages()
     },
+    onNameWithAi: () => void nameWithAi(),
     onToggleAi: () => setShowAi((v) => !v),
     onSection: (next: SectionSettings) => {
       // layout applies to the cursor's section; the final section's sectPr goes through SaveOptions.section (also drives canvas geometry)

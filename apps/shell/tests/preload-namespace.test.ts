@@ -4,11 +4,11 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 
 /**
- * `aiOffice` belongs to the shell.
+ * `chaOffice` belongs to the shell.
  *
  * The editor apps expose their own bridge for model file naming, and they must
- * not publish it under the shell's name. A second, partial `aiOffice` in an
- * editor window shadows the real one in that window: `window.aiOffice.setTheme`
+ * not publish it under the shell's name. A second, partial `chaOffice` in an
+ * editor window shadows the real one in that window: `window.chaOffice.setTheme`
  * disappears, and anything that identifies the shell window by that global —
  * the e2e suite included — finds the editor instead.
  *
@@ -38,10 +38,11 @@ function preloads(): Preload[] {
 const exposes = (src: string, name: string): boolean =>
   new RegExp(`exposeInMainWorld\\(\\s*'${name}'`).test(src)
 
-describe('the aiOffice namespace', () => {
+// adapted: upstream names the bridge aiOffice; this app's standing rename is chaOffice
+describe('the chaOffice namespace', () => {
   it('is exposed by the shell and by nobody else', () => {
     const owners = preloads()
-      .filter(({ src }) => exposes(src, 'aiOffice'))
+      .filter(({ src }) => exposes(src, 'chaOffice'))
       .map(({ app }) => app)
     expect(owners).toEqual(['shell'])
   })

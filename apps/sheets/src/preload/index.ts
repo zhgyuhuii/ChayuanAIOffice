@@ -1,5 +1,5 @@
 import type { AiPanelPrefs } from '@chaoffice/ui'
-import { contextBridge, ipcRenderer, webUtils } from 'electron'
+import { contextBridge, ipcRenderer, webFrame, webUtils } from 'electron'
 
 import type {
   AiChatResponse,
@@ -898,7 +898,6 @@ function parseAttachmentAddResult(input: unknown): AttachmentAddResult {
   return { accepted, rejected: input.rejected as string[] }
 }
 
-
   // LOCAL(2026-09-20): unified media capability bridge; upstream: additive-only; converge: never (local feature)
   const mediaApi = {
     mediaCapabilities: () => ipcRenderer.invoke('ai:media-capabilities'),
@@ -915,7 +914,41 @@ function parseAttachmentAddResult(input: unknown): AttachmentAddResult {
     mediaTts: (op: { text: string; voice?: string }) => ipcRenderer.invoke('ai:media-tts', op),
   }
   Object.assign(desktopApi, mediaApi)
+
+/**
+ * Model file naming: the transport half of `suggestFileName`.
+ *
+ * Inlined rather than imported — a preload entry must stay a single-file bundle,
+ * or the sandbox drops every global it exposed. The one `ai:` channel is
+ * registered app-wide by the shell rather than by this app, the same arrangement
+ * the `project:*` bridge below already depends on.
+ *
+ * `content` crosses this bridge verbatim and the main process cannot see what
+ * this editor withheld, so what the caller hands over is exactly what the model
+ * sees. A caller that passed raw document text would undo its own redactions.
+ *
+ * The global is `aiNamingApi`, not `chaOffice`: `chaOffice` is the shell's home
+ * API, and a partial one in an editor window would shadow it there.
+ */
+const aiNamingApi = {
+  suggestFileName: (input: { content: string }) =>
+    ipcRenderer.invoke('ai:suggest-file-name', input),
+}
+
 contextBridge.exposeInMainWorld('desktopApi', desktopApi)
+contextBridge.exposeInMainWorld('aiNamingApi', aiNamingApi)
+
+// The frame's own spell engine (Chromium Hunspell / the OS dictionary): the
+// same checker docs' squiggles run on, batch-driven over sheet cell texts so
+// nothing leaves the machine for the F7 spelling dialog. webFrame consults
+// it only while the webContents' spellcheck is on — the Review ▸ Proofing
+// preference gates the dialog, and comment-box squiggles share the switch.
+contextBridge.exposeInMainWorld('nativeSpell', {
+  isWordMisspelled: (word: unknown): boolean =>
+    typeof word === 'string' ? webFrame.isWordMisspelled(word) : false,
+  getWordSuggestions: (word: unknown): string[] =>
+    typeof word === 'string' ? webFrame.getWordSuggestions(word) : [],
+})
 
 const projectApi: ProjectApi = {
   resolveChat: (args) => ipcRenderer.invoke('project:resolveChat', args),

@@ -148,7 +148,14 @@ describe('provider registry', () => {
     }
   })
 
-  it('pins the Spark host and key prefix to the iFlytek product guide', () => {
+  it('resolves CloudGPU to its chat-completions endpoint', () => {
+    expect(AI_PROVIDER_ADAPTERS.cloudgpu.resolveEndpoint(config('deepseek-v4.1-flash'))).toEqual({
+      protocol: 'openai-compatible',
+      baseUrl: 'https://cloudgpu.app/v1',
+    })
+  })
+
+  it('pins the Spark host, model id and key prefix to the iFlytek product guide', () => {
     const spark = AI_PROVIDERS.find((p) => p.id === 'spark')!
     expect(spark.keyPlaceholder).toBe('ak-...')
     const endpoint = AI_PROVIDER_ADAPTERS.spark.resolveEndpoint(config('spark-x2.5'))
@@ -435,6 +442,14 @@ describe('modelLacksVision', () => {
     expect(modelLacksVision('deepseek-ai/DeepSeek-V4.1-Flash-1017')).toBe(false)
     expect(modelLacksVision('zai-org/GLM-5.3-Flash')).toBe(false)
     expect(modelLacksVision('moonshotai/Kimi-K2.6')).toBe(false)
+  })
+
+  it('records the existing vision heuristics for the CloudGPU ids', () => {
+    expect(modelLacksVision('deepseek-v4.1-flash')).toBe(false)
+    expect(modelLacksVision('deepseek-v4-pro')).toBe(true)
+    expect(modelLacksVision('glm-5.3-flash')).toBe(false)
+    expect(modelLacksVision('kimi-k2.6')).toBe(false)
+    expect(modelLacksVision('minimax-m3')).toBe(false)
   })
 
   it('matches case-insensitively like its sibling matchers', () => {

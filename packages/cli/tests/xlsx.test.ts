@@ -610,7 +610,10 @@ describe('formula cache policy', () => {
       const out = join(dir, 't.xlsx')
       const r = await run(['create', '--type', 'xlsx', '--from', table, '--out', out, '--json'])
       expect(r.code).toBe(0)
-      expect(r.json().warnings[0].message).toContain('A2')
+      // adapted (R37): ironcalc 0.7.1→0.9.1 (#2282) learned FILTER, so A2 now
+      // evaluates and caches instead of warning "does not evaluate (…!A2)".
+      // The unknown-function path moved to the STOCKHISTORY case below.
+      expect(r.json().warnings ?? []).toEqual([])
       const sheet = await part(out, 'xl/worksheets/sheet1.xml')
       expect(sheet).toMatch(
         /<c r="A2"[^>]*\bcm="1"[^>]*><f t="array" ref="A2">_xlfn\._xlws\.FILTER\(/,
@@ -627,6 +630,22 @@ describe('formula cache policy', () => {
       expect(read.code).toBe(0)
     },
   )
+
+  it.skipIf(!sidecar)('never caches a function the engine does not know', async () => {
+    const dir = tempDir()
+    const table = join(dir, 'u.json')
+    writeFileSync(
+      table,
+      JSON.stringify([[1, 2, 3], ['=STOCKHISTORY("MSFT")', '=SUM(A1:C1)']]),
+    )
+    const out = join(dir, 'u.xlsx')
+    const r = await run(['create', '--type', 'xlsx', '--from', table, '--out', out, '--json'])
+    expect(r.code).toBe(0)
+    expect(r.json().warnings[0].message).toContain('A2')
+    const sheet = await part(out, 'xl/worksheets/sheet1.xml')
+    expect(sheet).not.toContain('#NAME?</v>')
+    expect(sheet).toContain('<v>6</v>')
+  })
 })
 
 describe('package validity', () => {

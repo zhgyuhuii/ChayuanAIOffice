@@ -1845,7 +1845,38 @@ export function textboxIsFilled(box: TextboxDisplay): boolean {
   return Boolean(box.fill || box.fillImageDataUrl)
 }
 
-export function textboxBoxStyle(box: TextboxDisplay, opts?: { inCell?: boolean }): string {
+/**
+ * Word-floating placement of a box as inline CSS (position + left/top slot).
+ * Word keeps floating drawing objects on the page: a column-relative X that
+ * would hang past a paper edge is pulled back on (Word-authored files carry
+ * far-negative posOffsets; drawn literally the box leaves the page and cuts
+ * across the body text). The floor is the page left edge (a float may sit in
+ * the margin), the cap the page right edge; a box wider than the page pins at
+ * the left edge like Word. Page-frame offsets (pagePinned / pageRelX) already
+ * measure from the page and stay raw, and the authored offset is never
+ * rewritten — the clamp is display-only. Cell-anchored boxes resolve against
+ * the zero-width .doc-cell-boxes strut (100% = 0px collapses the cap below the
+ * floor, pinning every in-cell float at the page edge) and position from the
+ * cell anyway: no clamp.
+ *
+ * The editor's chrome rotator mirrors this slot (the box itself goes static
+ * inside it), so a turned shape pivots about its own centre.
+ */
+export function textboxFloatPlacement(box: TextboxDisplay, opts?: { inCell?: boolean }): string {
+  if (!box.floating) return ''
+  const rawLeftPx = ((box.offsetXEmu ?? 0) / 9525).toFixed(1)
+  const leftCss =
+    box.widthPx && !box.pagePinned && !box.pageRelX && !opts?.inCell
+      ? `clamp(calc(0px - var(--doc-margin-left,0px)), ${rawLeftPx}px, ` +
+        `calc(var(--doc-content-w,100%) - ${box.widthPx}px + var(--doc-margin-right,0px)))`
+      : `${rawLeftPx}px`
+  return `position:absolute;left:${leftCss};top:${((box.offsetYEmu ?? 0) / 9525).toFixed(1)}px`
+}
+
+export function textboxBoxStyle(
+  box: TextboxDisplay,
+  opts?: { inCell?: boolean; editorChrome?: boolean },
+): string {
   const boxW = box.widthPx ?? 189
   const boxH = box.heightPx ?? 113
   // Word keeps shape text inside the preset's text rectangle (e.g. the
@@ -1867,13 +1898,21 @@ export function textboxBoxStyle(box: TextboxDisplay, opts?: { inCell?: boolean }
   // preset/custom geometry renders as an SVG background so the border follows
   // the outline (a clip-path would clip a CSS outline away with the box corners)
   const geomCss = box.pathData
-    ? custGeomBackgroundCss(box.pathData, boxW, boxH, fill, box.borderColor)
+    ? custGeomBackgroundCss(box.pathData, boxW, boxH, fill, box.borderColor, box.borderWidthPx)
     : box.prst
-      ? shapeBackgroundCss(box.prst, boxW, boxH, fill, box.borderColor, {
-          diag: box.lineDiag,
-          flipH: box.flipH,
-          flipV: box.flipV,
-        })
+      ? shapeBackgroundCss(
+          box.prst,
+          boxW,
+          boxH,
+          fill,
+          box.borderColor,
+          {
+            diag: box.lineDiag,
+            flipH: box.flipH,
+            flipV: box.flipV,
+          },
+          box.borderWidthPx,
+        )
       : null
   const waStyle = box.wordArtId ? WORDART_CSS[box.wordArtId] : undefined
   // picture fill (photo boxes / a:blipFill): tiles repeat at natural size,
@@ -1884,27 +1923,12 @@ export function textboxBoxStyle(box: TextboxDisplay, opts?: { inCell?: boolean }
         ? 'background-repeat:repeat'
         : 'background-repeat:no-repeat;background-size:100% 100%')
     : ''
-  const transforms = [box.rotDeg ? `rotate(${box.rotDeg}deg)` : '']
-  // Word keeps floating drawing objects on the page: a column-relative X that
-  // would hang past a paper edge is pulled back on (Word-authored files carry
-  // far-negative posOffsets; drawn literally the box leaves the page and cuts
-  // across the body text). The floor is the page left edge (a
-  // float may sit in the margin), the cap the page right edge; a box wider
-  // than the page pins at the left edge like Word. Page-frame offsets
-  // (pagePinned / pageRelX) already measure from the page and stay raw, and
-  // the authored offset is never rewritten — the clamp is display-only.
-  // Cell-anchored boxes resolve against the zero-width .doc-cell-boxes strut
-  // (100% = 0px collapses the cap below the floor, pinning every in-cell
-  // float at the page edge) and position from the cell anyway: no clamp.
-  const rawLeftPx = ((box.offsetXEmu ?? 0) / 9525).toFixed(1)
-  const leftCss =
-    box.widthPx && !box.pagePinned && !box.pageRelX && !opts?.inCell
-      ? `clamp(calc(0px - var(--doc-margin-left,0px)), ${rawLeftPx}px, ` +
-        `calc(var(--doc-content-w,100%) - ${box.widthPx}px + var(--doc-margin-right,0px)))`
-      : `${rawLeftPx}px`
-  const floatPos = box.floating
-    ? `position:absolute;left:${leftCss};top:${((box.offsetYEmu ?? 0) / 9525).toFixed(1)}px`
-    : ''
+  // the editor's chrome layer (.box-rotator) carries the rotation so the
+  // selection handles turn with the box; the box itself stays unturned there
+  const transforms = [box.rotDeg && !opts?.editorChrome ? `rotate(${box.rotDeg}deg)` : '']
+  // the float slot normally lives on the box; in the editor's chrome the
+  // rotator mirrors it and the box goes static inside (see textboxFloatPlacement)
+  const floatPos = opts?.editorChrome ? '' : textboxFloatPlacement(box, opts)
   return [
     geomCss ?? '',
     !geomCss && fill ? `background-color:#${fill}` : '',
@@ -2219,7 +2243,10 @@ function textboxRowSpec(para: TextboxParaDisplay): DomSpec {
   return ['div', attrs, ...cells]
 }
 
-export function renderTextboxSpec(box: TextboxDisplay, opts?: { inCell?: boolean }): DomSpec {
+export function renderTextboxSpec(
+  box: TextboxDisplay,
+  opts?: { inCell?: boolean; editorChrome?: boolean },
+): DomSpec {
   const style = textboxBoxStyle(box, opts)
   const boxAttrs: Record<string, string> = {
     class: textboxIsFilled(box) ? 'doc-textbox doc-textbox-filled' : 'doc-textbox',

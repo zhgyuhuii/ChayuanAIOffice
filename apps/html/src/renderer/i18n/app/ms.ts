@@ -66,6 +66,7 @@ export const ms = {
   openExternal: 'Pautan dibuka dalam pelayar',
   save: 'Simpan (⌘S)',
   saveAs: 'Simpan Sebagai…',
+  aiNameFile: 'Namakan dengan AI…',
   ribbonCollapse: 'Runtuhkan Reben',
   ribbonExpand: 'Kembangkan Reben',
   ribbonGroupInsert: 'Sisip',

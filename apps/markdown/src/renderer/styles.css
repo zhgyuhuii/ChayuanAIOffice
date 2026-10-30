@@ -499,6 +499,9 @@ button {
   padding: 6px 10px;
   vertical-align: top;
   text-align: start;
+  /* break-word does not lower a cell's min-content width, so one long inline
+     code token would pin its column and push the table past the page */
+  overflow-wrap: anywhere;
 }
 
 /* cells hold paragraph nodes — the document paragraph margin would bloat rows */
@@ -607,6 +610,13 @@ html.markdown-graph-open .ribbon-tabs {
 }
 
 .qa-save-as {
+  width: auto;
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+/* a labelled button in an icon-only row: wide enough for any locale's text */
+.qa-name-with-ai {
   width: auto;
   padding: 0 8px;
   white-space: nowrap;

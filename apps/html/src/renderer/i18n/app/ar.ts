@@ -66,6 +66,7 @@ export const ar = {
   openExternal: 'تم فتح الرابط في المتصفح',
   save: 'حفظ (⌘S)',
   saveAs: 'حفظ باسم…',
+  aiNameFile: 'التسمية بالذكاء الاصطناعي…',
   ribbonCollapse: 'طي الشريط',
   ribbonExpand: 'توسيع الشريط',
   ribbonGroupInsert: 'إدراج',

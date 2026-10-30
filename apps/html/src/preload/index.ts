@@ -178,7 +178,6 @@ const projectApi: Pick<
   conversationsRebind: (args) => ipcRenderer.invoke('project:conversationsRebind', args),
 }
 
-
   // LOCAL(2026-09-20): unified media capability bridge; upstream: additive-only; converge: never (local feature)
   const mediaApi = {
     mediaCapabilities: () => ipcRenderer.invoke('ai:media-capabilities'),
@@ -195,7 +194,29 @@ const projectApi: Pick<
     mediaTts: (op: { text: string; voice?: string }) => ipcRenderer.invoke('ai:media-tts', op),
   }
   Object.assign(api, mediaApi)
+
+/**
+ * Model file naming: the transport half of `suggestFileName`.
+ *
+ * Inlined rather than imported — a preload entry must stay a single-file bundle,
+ * or the sandbox drops every global it exposed. The one `ai:` channel is
+ * registered app-wide by the shell rather than by this app, the same arrangement
+ * the `project:*` bridge below already depends on.
+ *
+ * `content` crosses this bridge verbatim and the main process cannot see what
+ * this editor withheld, so what the caller hands over is exactly what the model
+ * sees. A caller that passed raw document text would undo its own redactions.
+ *
+ * The global is `aiNamingApi`, not `chaOffice`: `chaOffice` is the shell's home
+ * API, and a partial one in an editor window would shadow it there.
+ */
+const aiNamingApi = {
+  suggestFileName: (input: { content: string }) =>
+    ipcRenderer.invoke('ai:suggest-file-name', input),
+}
+
 contextBridge.exposeInMainWorld('htmlApi', api)
+contextBridge.exposeInMainWorld('aiNamingApi', aiNamingApi)
 contextBridge.exposeInMainWorld('projectApi', projectApi)
 
 // open documents dragged from the OS onto this tab as a new shell tab

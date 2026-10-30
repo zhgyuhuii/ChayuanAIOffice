@@ -40,8 +40,11 @@ import { buildSlashItems } from './editor/slashCommand'
 import type { SlashController, SlashMenuState } from './editor/slashCommand'
 import { wikiFragmentPosition, wikiTargetOf } from './editor/wikilink'
 import type { WikiSuggestController, WikiSuggestState } from './editor/wikiSuggest'
+import { invalidateWikiHeads } from './editor/wikiSuggest'
 import { dirOf, setImageBaseDir, VIEW_IMAGE_EVENT } from './editor/localImage'
 import { Ribbon } from './components/Ribbon'
+import { deriveAutoFileName } from './auto-file-name'
+import { modelSaveAsName, proposedSaveName } from './file-naming'
 import type { MarkdownTheme } from '../shared/markdown-theme'
 import { ImageHostDialog } from './components/ImageHostDialog'
 import { RedactMenu } from './components/RedactMenu'
@@ -121,18 +124,8 @@ function applyImageRewrites(
   editor.view.dispatch(transaction)
 }
 
-/** File name for an AI-generated untitled document: first heading, else first words */
-export function deriveAutoFileName(editor: Editor): string {
-  const doc = editor.state.doc
-  for (let i = 0; i < doc.childCount; i++) {
-    const node = doc.child(i)
-    const text = node.textContent.replace(/\s+/g, ' ').trim()
-    if (!text) continue
-    if (node.type.name === 'heading') return text.slice(0, 60)
-    return text.split(' ').slice(0, 8).join(' ').slice(0, 60)
-  }
-  return ''
-}
+/** Measure a document image via the DOM (the editor already displays it) */
+export { deriveAutoFileName } from './auto-file-name'
 
 export default function App() {
   const { t } = useI18n()
@@ -513,12 +506,21 @@ export default function App() {
         sourceAtSave,
       )
       const imageSources = imageSourcesFromEditor(current)
+      // A never-saved document is offered a name derived from its own content
+      // (first heading, else first words); a name the AI proposed outright wins
+      // over both. It prefills the save dialog rather than replacing it.
+      const defaultName = await proposedSaveName(current, {
+        filePath: filePathRef.current,
+        suggestedName,
+        proposedName: aiSuggestedNameRef.current ?? undefined,
+      })
       const result = await window.markdownApi.save({
         text,
         imageSources,
         mode,
         suggestedName: suggestedName ?? aiSuggestedNameRef.current ?? undefined,
         overwrite: overwriteRef.current,
+        ...(defaultName ? { defaultName } : {}),
       })
       if (result.ok && 'path' in result) {
         aiSuggestedNameRef.current = null
@@ -563,6 +565,8 @@ export default function App() {
         diskTextRef.current = result.writtenText ?? text
         overwriteRef.current = false
         setDiskNotice(null)
+        // what this note offers `[[...#` has just changed on disk
+        invalidateWikiHeads()
         setImageBaseDir(dirOf(result.path))
         setFilePath(result.path)
         if (unchanged) {
@@ -590,6 +594,19 @@ export default function App() {
       savingRef.current = false
     }
   }, [])
+
+  /**
+   * Ask the model to name this document, on request, then open Save As with its
+   * answer prefilled (adapted: the stem rides this app's suggestedName prefill
+   * path — upstream's separate defaultName plumbing lands in doSave above).
+   */
+  const nameWithAi = useCallback(async () => {
+    const current = editorRef.current
+    if (!current || statusRef.current !== 'ready' || savingRef.current) return
+    const stem = await modelSaveAsName(current)
+    if (!stem) return
+    await doSave('saveAs', stem)
+  }, [doSave])
 
   /** `outPath` (headless export only) skips the save dialog; resolves true when a file was written. */
   const runExport = useCallback(async (format: ExportFormat, outPath?: string) => {
@@ -1166,6 +1183,7 @@ export default function App() {
             dirty={dirty}
             onSave={() => void doSave('save')}
             onSaveAs={() => void doSave('saveAs')}
+            onNameWithAi={() => void nameWithAi()}
             onFind={() => openFind(false)}
             autoSave={autoSave}
             onToggleAutoSave={setAutoSave}

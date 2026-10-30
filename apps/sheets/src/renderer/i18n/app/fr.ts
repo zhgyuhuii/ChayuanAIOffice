@@ -376,6 +376,8 @@ export const fr = {
     "Cette feuille contient un tableau croisé dynamique — le déplacement de plages n'est pas encore pris en charge.",
   appMergeOverTable:
     'La sélection chevauche un tableau Excel — la fusion de cellules dans un tableau n’est pas encore prise en charge.',
+  appFilterToggleFailed:
+    'Le filtre n’a pas été appliqué — sélectionnez d’abord la plage qui contient vos données.',
   appAutofillStreaming:
     "La recopie automatique vers une zone encore en cours de chargement en flux n'est pas encore autorisée.",
   appDvNeedsIndexed:
@@ -773,6 +775,7 @@ export const fr = {
   appExportPdfTitle: 'Exporter en PDF',
   appSaveTitle: 'Enregistrer (⌘S)',
   appSaveAs: 'Enregistrer sous',
+  aiNameFile: "Nommer avec l'IA…",
   appUndo: 'Annuler',
   appRedo: 'Rétablir',
   appUnsavedEditOne: '● {count} modification non enregistrée',
@@ -1479,6 +1482,30 @@ export const fr = {
   appClearFormats: 'Effacer les formats',
   appClearContents: 'Effacer le contenu',
   appFind: 'Rechercher',
+  appSpellBtnDetail: 'Vérifier le texte de la feuille (F7)',
+  appSpellChangeFailed: 'Impossible de corriger {address}.',
+  appSpellChanged: '{address} corrigé.',
+  appSpellChangedAll: '{count} cellules de « {word} » corrigées.',
+  appSpellColWord: 'Mot suspect',
+  appSpellFindings: '{count} fautes suspectées. Cliquez une ligne pour la localiser.',
+  appSpellIgnore: 'Ignorer',
+  appSpellIgnoreAll: 'Ignorer tout',
+  appSpellIgnoredAll: '« {word} » ne sera plus signalé pendant cette session.',
+  appSpellLearn: 'Ajouter au dictionnaire',
+  appSpellLearned: '« {word} » a été ajouté au dictionnaire.',
+  appSpellNoSuggestions: 'Aucune suggestion',
+  appSpellNone: "Aucune faute d'orthographe suspectée.",
+  appSpellOff: 
+    'La vérification orthographique est désactivée. Réactivez-la dans Révision ▸ Vérification.',
+  appSpellOn: 'Vérification orthographique activée.',
+  appSpellRecheck: 'Revérifier',
+  appSpellReplaceAll: 'Tout remplacer par « {suggestion} »',
+  appSpellTitle: 'Orthographe',
+  appSpellToggle: "Vérifier l'orthographe",
+  appSpellToggleTip: 
+    "Active la vérification orthographique (F7 et le bouton Révision) ; désactivée, les zones de commentaire n'affichent plus les soulignements",
+  appSpellTruncated: 'Trop de cellules de texte ; seules les premières ont été vérifiées.',
+  appSpellUnavailable: "La correction orthographique n'est pas disponible dans cette fenêtre.",
   appFindTitle: 'Rechercher et sélectionner ⌘F',
   appReplace: 'Remplacer',
   appGoTo: 'Atteindre',
