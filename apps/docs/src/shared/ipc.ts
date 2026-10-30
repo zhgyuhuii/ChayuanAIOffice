@@ -245,6 +245,7 @@ export type MenuCommand =
   | 'open-path'
   | 'save'
   | 'save-as'
+  | 'name-with-ai'
   | 'undo'
   | 'redo'
   | 'zoom-in'

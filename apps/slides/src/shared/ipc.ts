@@ -1450,6 +1450,7 @@ export type MenuCommand =
   | 'open'
   | 'save'
   | 'save-as'
+  | 'name-with-ai'
   | 'export-pdf'
   | 'export-images'
   | 'print'
