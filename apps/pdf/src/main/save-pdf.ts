@@ -622,7 +622,7 @@ const CARET_DEPTH = 6
  *  Polygon); notes get an AP icon so Preview (Quartz) draws them instead of nothing.
  *  The AP is what makes a saved shape visible: pdf.js has no default appearance for
  *  a Caret and pdfium's generator covers neither Caret nor Polygon, so both would
- *  come back blank in GenOffice, Preview, Chrome or Edge. */
+ *  come back blank in ChaAI Office, Preview, Chrome or Edge. */
 function addDrawing(
   pdfDoc: PDFDocument,
   page: PDFPage,
@@ -695,7 +695,7 @@ function addDrawing(
       C: d.color,
       AP: { N: pdfDoc.context.register(ap) },
     })
-    annot.set(PDFName.of('T'), PDFHexString.fromText('GenOffice'))
+    annot.set(PDFName.of('T'), PDFHexString.fromText('ChaOffice'))
     appendAnnot(pdfDoc, page, pdfDoc.context.register(annot))
     return
   }
@@ -727,7 +727,7 @@ function addDrawing(
       BS: { W: d.width },
       AP: { N: pdfDoc.context.register(ap) },
     })
-    annot.set(PDFName.of('T'), PDFHexString.fromText('GenOffice'))
+    annot.set(PDFName.of('T'), PDFHexString.fromText('ChaOffice'))
     appendAnnot(pdfDoc, page, pdfDoc.context.register(annot))
     return
   }

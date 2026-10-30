@@ -287,7 +287,7 @@ const upstreamStrings = {
     intgStateInstalled: '已安装 skill {v} · 下次对话即可使用',
     intgLegacyTitle: '旧版 skill 副本',
     intgLegacyDesc:
-      'GenOffice 以前会把副本写进每个工具自己的目录。现在还有 {n} 份留在那里:工具仍在读取它们,所以永远拿不到当前版本。',
+      '察元AIOffice 以前会把副本写进每个工具自己的目录。现在还有 {n} 份留在那里:工具仍在读取它们,所以永远拿不到当前版本。',
     intgLegacyClean: '删除旧副本',
     intgLegacyCleaned: '已删除 {n} 份旧副本,{k} 份被手动改过的保留未动。',
     intgLegacyFailed: '删除旧副本失败:{msg}',
@@ -808,7 +808,7 @@ const upstreamStrings = {
     intgStateInstalled: 'Skill {v} installed · ready in your next chat',
     intgLegacyTitle: 'Older skill copies',
     intgLegacyDesc:
-      'GenOffice used to write a copy into the folder of each tool. {n} of them are still there: the tool keeps reading them, so they never get the current skill.',
+      'ChaAI Office used to write a copy into the folder of each tool. {n} of them are still there: the tool keeps reading them, so they never get the current skill.',
     intgLegacyClean: 'Remove old copies',
     intgLegacyCleaned: 'Removed {n} old copies, {k} edited by hand left in place.',
     intgLegacyFailed: 'Could not remove the old copies: {msg}',
@@ -1341,7 +1341,7 @@ const upstreamStrings = {
     intgStateInstalled: 'Đã cài đặt kỹ năng {v} · sẵn sàng cho cuộc trò chuyện tiếp theo của bạn',
     intgLegacyTitle: 'Bản sao skill cũ',
     intgLegacyDesc:
-      'Trước đây GenOffice ghi một bản sao vào thư mục riêng của từng công cụ. Còn {n} bản vẫn nằm đó: công cụ vẫn đọc chúng, nên chúng không bao giờ có bản skill hiện hành.',
+      'Trước đây ChaAI Office ghi một bản sao vào thư mục riêng của từng công cụ. Còn {n} bản vẫn nằm đó: công cụ vẫn đọc chúng, nên chúng không bao giờ có bản skill hiện hành.',
     intgLegacyClean: 'Xóa bản sao cũ',
     intgLegacyCleaned: 'Đã xóa {n} bản sao cũ, giữ lại {k} bản đã sửa tay.',
     intgLegacyFailed: 'Không xóa được bản sao cũ: {msg}',
@@ -1878,7 +1878,7 @@ const upstreamStrings = {
     intgStateInstalled: 'Beceri {v} yüklü · bir sonraki sohbetinizde hazır',
     intgLegacyTitle: 'Eski skill kopyaları',
     intgLegacyDesc:
-      'GenOffice eskiden her aracın kendi klasörüne bir kopya yazıyordu. Hâlâ orada {n} tane var: araç bunları okumaya devam ediyor, bu yüzden hiçbir zaman güncel skilli göremiyor.',
+      'ChaAI Office eskiden her aracın kendi klasörüne bir kopya yazıyordu. Hâlâ orada {n} tane var: araç bunları okumaya devam ediyor, bu yüzden hiçbir zaman güncel skilli göremiyor.',
     intgLegacyClean: 'Eski kopyaları kaldır',
     intgLegacyCleaned: '{n} eski kopya kaldırıldı, elle düzenlenen {k} tanesi yerinde bırakıldı.',
     intgLegacyFailed: 'Eski kopyalar kaldırılamadı: {msg}',
@@ -2424,7 +2424,7 @@ const upstreamStrings = {
     intgStateInstalled: 'スキル {v} をインストール済み · 次のチャットから使えます',
     intgLegacyTitle: '古い skill のコピー',
     intgLegacyDesc:
-      'GenOffice はかつて各ツールのフォルダーごとにコピーを書き込んでいました。まだ {n} 個残っています:ツールはそれらを読み続けるため、現在の skill に更新されません。',
+      'ChaAI Office はかつて各ツールのフォルダーごとにコピーを書き込んでいました。まだ {n} 個残っています:ツールはそれらを読み続けるため、現在の skill に更新されません。',
     intgLegacyClean: '古いコピーを削除',
     intgLegacyCleaned:
       '古いコピーを {n} 個削除しました。手動で編集した {k} 個はそのまま残しました。',
@@ -2958,7 +2958,7 @@ const upstreamStrings = {
     intgStateInstalled: '스킬 {v} 설치됨 · 다음 대화부터 사용 가능',
     intgLegacyTitle: '오래된 skill 사본',
     intgLegacyDesc:
-      'GenOffice는 예전에 각 도구 폴더마다 사본을 썼습니다. 아직 {n}개가 남아 있습니다: 도구가 계속 읽기 때문에 현재 skill로 갱신되지 않습니다.',
+      'ChaAI Office는 예전에 각 도구 폴더마다 사본을 썼습니다. 아직 {n}개가 남아 있습니다: 도구가 계속 읽기 때문에 현재 skill로 갱신되지 않습니다.',
     intgLegacyClean: '오래된 사본 삭제',
     intgLegacyCleaned: '오래된 사본 {n}개를 삭제했고, 직접 수정한 {k}개는 그대로 두었습니다.',
     intgLegacyFailed: '오래된 사본을 삭제하지 못했습니다: {msg}',
@@ -3498,7 +3498,7 @@ const upstreamStrings = {
     intgStateInstalled: 'Skill {v} installé · prêt pour votre prochaine discussion',
     intgLegacyTitle: 'Anciennes copies du skill',
     intgLegacyDesc:
-      "GenOffice écrivait autrefois une copie dans le dossier de chaque outil. Il en reste {n} : l'outil continue de les lire, donc elles ne reçoivent jamais le skill actuel.",
+      "ChaAI Office écrivait autrefois une copie dans le dossier de chaque outil. Il en reste {n} : l'outil continue de les lire, donc elles ne reçoivent jamais le skill actuel.",
     intgLegacyClean: 'Supprimer les anciennes copies',
     intgLegacyCleaned:
       '{n} anciennes copies supprimées, {k} modifiées à la main laissées en place.',
@@ -4049,7 +4049,7 @@ const upstreamStrings = {
     intgStateInstalled: 'Skill {v} installiert · ab dem nächsten Chat bereit',
     intgLegacyTitle: 'Alte Skill-Kopien',
     intgLegacyDesc:
-      'GenOffice schrieb früher eine Kopie in den Ordner jedes Werkzeugs. {n} davon liegen noch dort: Das Werkzeug liest sie weiter, sie bekommen also nie den aktuellen Skill.',
+      'ChaAI Office schrieb früher eine Kopie in den Ordner jedes Werkzeugs. {n} davon liegen noch dort: Das Werkzeug liest sie weiter, sie bekommen also nie den aktuellen Skill.',
     intgLegacyClean: 'Alte Kopien entfernen',
     intgLegacyCleaned: '{n} alte Kopien entfernt, {k} von Hand bearbeitete stehen gelassen.',
     intgLegacyFailed: 'Alte Kopien konnten nicht entfernt werden: {msg}',
@@ -4597,7 +4597,7 @@ const upstreamStrings = {
     intgStateInstalled: 'Skill {v} instalado · listo en tu próximo chat',
     intgLegacyTitle: 'Copias antiguas de la skill',
     intgLegacyDesc:
-      'GenOffice escribía antes una copia en la carpeta de cada herramienta. Quedan {n}: la herramienta sigue leyéndolas, así que nunca reciben la skill actual.',
+      'ChaAI Office escribía antes una copia en la carpeta de cada herramienta. Quedan {n}: la herramienta sigue leyéndolas, así que nunca reciben la skill actual.',
     intgLegacyClean: 'Quitar las copias antiguas',
     intgLegacyCleaned:
       'Se quitaron {n} copias antiguas; {k} editadas a mano se dejaron en su sitio.',
@@ -5131,7 +5131,7 @@ const upstreamStrings = {
     intgStateInstalled: 'ติดตั้งสกิล {v} แล้ว · พร้อมใช้ในแชตถัดไป',
     intgLegacyTitle: 'สำเนา skill เก่า',
     intgLegacyDesc:
-      'เมื่อก่อน GenOffice เขียนสำเนาไว้ในโฟลเดอร์ของแต่ละเครื่องมือ ตอนนี้ยังเหลือ {n} ชุด: เครื่องมือยังอ่านไฟล์เหล่านั้น จึงไม่เคยได้ skill ปัจจุบัน',
+      'เมื่อก่อน ChaAI Office เขียนสำเนาไว้ในโฟลเดอร์ของแต่ละเครื่องมือ ตอนนี้ยังเหลือ {n} ชุด: เครื่องมือยังอ่านไฟล์เหล่านั้น จึงไม่เคยได้ skill ปัจจุบัน',
     intgLegacyClean: 'ลบสำเนาเก่า',
     intgLegacyCleaned: 'ลบสำเนาเก่าแล้ว {n} ชุด เก็บไว้ {k} ชุดที่แก้ไขด้วยมือ',
     intgLegacyFailed: 'ลบสำเนาเก่าไม่สำเร็จ: {msg}',
@@ -5663,7 +5663,7 @@ const upstreamStrings = {
     intgStateInstalled: 'Skill {v} terpasang · siap di obrolan berikutnya',
     intgLegacyTitle: 'Salinan skill lama',
     intgLegacyDesc:
-      'Dulu GenOffice menulis satu salinan ke folder tiap alat. Masih ada {n} yang tertinggal: alat itu tetap membacanya, jadi tidak pernah dapat skill yang sekarang.',
+      'Dulu ChaAI Office menulis satu salinan ke folder tiap alat. Masih ada {n} yang tertinggal: alat itu tetap membacanya, jadi tidak pernah dapat skill yang sekarang.',
     intgLegacyClean: 'Hapus salinan lama',
     intgLegacyCleaned: '{n} salinan lama dihapus, {k} yang diedit manual tetap dibiarkan.',
     intgLegacyFailed: 'Gagal menghapus salinan lama: {msg}',
@@ -6199,7 +6199,7 @@ const upstreamStrings = {
     intgStateInstalled: 'Скилл {v} установлен · готов к следующему чату',
     intgLegacyTitle: 'Старые копии skill',
     intgLegacyDesc:
-      'Раньше GenOffice записывал копию в папку каждого инструмента. Их ещё осталось {n}: инструмент продолжает их читать, поэтому они никогда не получают текущий skill.',
+      'Раньше ChaAI Office записывал копию в папку каждого инструмента. Их ещё осталось {n}: инструмент продолжает их читать, поэтому они никогда не получают текущий skill.',
     intgLegacyClean: 'Удалить старые копии',
     intgLegacyCleaned: 'Удалено старых копий: {n}; отредактированных вручную оставлено: {k}.',
     intgLegacyFailed: 'Не удалось удалить старые копии: {msg}',
@@ -6734,7 +6734,7 @@ const upstreamStrings = {
     intgStateInstalled: 'المهارة {v} مثبّتة · جاهزة في محادثتك التالية',
     intgLegacyTitle: 'نسخ skill القديمة',
     intgLegacyDesc:
-      'كان GenOffice يكتب نسخة في مجلد كل أداة. ما زالت هناك {n}: الأداة ما زالت تقرأها، فلا تصل إليها نسخة skill الحالية أبدًا.',
+      'كان ChaAI Office يكتب نسخة في مجلد كل أداة. ما زالت هناك {n}: الأداة ما زالت تقرأها، فلا تصل إليها نسخة skill الحالية أبدًا.',
     intgLegacyClean: 'إزالة النسخ القديمة',
     intgLegacyCleaned: 'أُزيلت {n} نسخة قديمة، وأُبقيت {k} نسخة عدّلها المستخدم يدويًا.',
     intgLegacyFailed: 'تعذّرت إزالة النسخ القديمة: {msg}',
@@ -7269,7 +7269,7 @@ const upstreamStrings = {
     intgStateInstalled: 'Skill {v} instalado · pronto no seu próximo chat',
     intgLegacyTitle: 'Cópias antigas do skill',
     intgLegacyDesc:
-      'O GenOffice antes gravava uma cópia na pasta de cada ferramenta. Ainda há {n} lá: a ferramenta continua a lê-las, por isso nunca recebem o skill atual.',
+      'O ChaAI Office antes gravava uma cópia na pasta de cada ferramenta. Ainda há {n} lá: a ferramenta continua a lê-las, por isso nunca recebem o skill atual.',
     intgLegacyClean: 'Remover cópias antigas',
     intgLegacyCleaned: '{n} cópias antigas removidas, {k} editadas à mão foram mantidas.',
     intgLegacyFailed: 'Não foi possível remover as cópias antigas: {msg}',
@@ -7812,7 +7812,7 @@ const upstreamStrings = {
     intgStateInstalled: 'Skill {v} installato · pronto nella prossima chat',
     intgLegacyTitle: 'Copie obsolete dello skill',
     intgLegacyDesc:
-      'Prima GenOffice scriveva una copia nella cartella di ogni strumento. Ne restano {n}: lo strumento continua a leggerle, quindi non ricevono mai lo skill attuale.',
+      'Prima ChaAI Office scriveva una copia nella cartella di ogni strumento. Ne restano {n}: lo strumento continua a leggerle, quindi non ricevono mai lo skill attuale.',
     intgLegacyClean: 'Rimuovi le copie obsolete',
     intgLegacyCleaned: '{n} copie obsolete rimosse, {k} modificate a mano lasciate al loro posto.',
     intgLegacyFailed: 'Impossibile rimuovere le copie obsolete: {msg}',
@@ -8353,7 +8353,7 @@ const upstreamStrings = {
     intgStateInstalled: 'Skill {v} zainstalowany · gotowy w następnym czacie',
     intgLegacyTitle: 'Stare kopie wtyczki',
     intgLegacyDesc:
-      'GenOffice wcześniej zapisywał kopię w folderze każdego narzędzia. Wciąż jest tam {n}: narzędzie czyta je dalej, więc nigdy nie dostają aktualnej wtyczki.',
+      'ChaAI Office wcześniej zapisywał kopię w folderze każdego narzędzia. Wciąż jest tam {n}: narzędzie czyta je dalej, więc nigdy nie dostają aktualnej wtyczki.',
     intgLegacyClean: 'Usuń stare kopie',
     intgLegacyCleaned: 'Usunięto {n} starych kopii, {k} edytowanych ręcznie zostawiono.',
     intgLegacyFailed: 'Nie udało się usunąć starych kopii: {msg}',
@@ -8844,7 +8844,7 @@ const upstreamStrings = {
     intgStateInstalled: 'Skill {v} nainstalován · připraven v příštím chatu',
     intgLegacyTitle: 'Staré kopie skillu',
     intgLegacyDesc:
-      'GenOffice dříve zapisoval kopii do složky každého nástroje. Pořád jich tam je {n}: nástroj je stále čte, takže se k nim nikdy nedostane aktuální skill.',
+      'ChaAI Office dříve zapisoval kopii do složky každého nástroje. Pořád jich tam je {n}: nástroj je stále čte, takže se k nim nikdy nedostane aktuální skill.',
     intgLegacyClean: 'Odebrat staré kopie',
     intgLegacyCleaned: 'Odebráno {n} starých kopií, {k} ručně upravených ponecháno.',
     intgLegacyFailed: 'Staré kopie se nepodařilo odebrat: {msg}',
@@ -9426,7 +9426,7 @@ const upstreamStrings = {
     intgStateInstalled: 'Skill {v} geïnstalleerd · klaar in uw volgende chat',
     intgLegacyTitle: 'Oude skillkopieën',
     intgLegacyDesc:
-      'GenOffice schreef vroeger een kopie in de map van elke tool. Er staan er nog {n}: de tool leest ze nog, dus ze krijgen nooit de huidige skill.',
+      'ChaAI Office schreef vroeger een kopie in de map van elke tool. Er staan er nog {n}: de tool leest ze nog, dus ze krijgen nooit de huidige skill.',
     intgLegacyClean: 'Oude kopieën verwijderen',
     intgLegacyCleaned: '{n} oude kopieën verwijderd, {k} met de hand bewerkte laten we staan.',
     intgLegacyFailed: 'Kon de oude kopieën niet verwijderen: {msg}',
@@ -9966,7 +9966,7 @@ const upstreamStrings = {
     intgStateInstalled: 'Skill {v} dipasang · sedia dalam sembang seterusnya',
     intgLegacyTitle: 'Salinan skill lama',
     intgLegacyDesc:
-      'GenOffice dahulu menulis salinan ke dalam folder setiap alatan. Masih ada {n} di sana: alatan itu masih membacanya, jadi ia tidak pernah menerima skill semasa.',
+      'ChaAI Office dahulu menulis salinan ke dalam folder setiap alatan. Masih ada {n} di sana: alatan itu masih membacanya, jadi ia tidak pernah menerima skill semasa.',
     intgLegacyClean: 'Buang salinan lama',
     intgLegacyCleaned: '{n} salinan lama dibuang, {k} yang disunting secara manual dikekalkan.',
     intgLegacyFailed: 'Gagal membuang salinan lama: {msg}',
@@ -10501,7 +10501,7 @@ const upstreamStrings = {
     intgStateInstalled: 'skill {v} מותקן · מוכן בשיחה הבאה',
     intgLegacyTitle: 'עותקי skill ישנים',
     intgLegacyDesc:
-      'GenOffice כתב בעבר עותק בתיקייה של כל כלי. עדיין נשארו שם {n}: הכלי ממשיך לקרוא אותם, ולכן הם לעולם לא מקבלים את ה-skill הנוכחי.',
+      'ChaAI Office כתב בעבר עותק בתיקייה של כל כלי. עדיין נשארו שם {n}: הכלי ממשיך לקרוא אותם, ולכן הם לעולם לא מקבלים את ה-skill הנוכחי.',
     intgLegacyClean: 'הסר עותקים ישנים',
     intgLegacyCleaned: 'הוסרו {n} עותקים ישנים, {k} שעורכו ידנית נותרו במקומם.',
     intgLegacyFailed: 'לא ניתן להסיר את העותקים הישנים: {msg}',
@@ -11029,7 +11029,7 @@ const upstreamStrings = {
     intgStateInstalled: 'skill {v} इंस्टॉल हो गया · अगली चैट में तैयार',
     intgLegacyTitle: 'पुरानी skill प्रतियाँ',
     intgLegacyDesc:
-      'GenOffice पहले हर टूल के अपने फ़ोल्डर में एक प्रति लिखता था। अभी भी {n} वहाँ हैं: टूल उन्हें पढ़ता रहता है, इसलिए उन्हें कभी मौजूदा skill नहीं मिलती।',
+      'ChaAI Office पहले हर टूल के अपने फ़ोल्डर में एक प्रति लिखता था। अभी भी {n} वहाँ हैं: टूल उन्हें पढ़ता रहता है, इसलिए उन्हें कभी मौजूदा skill नहीं मिलती।',
     intgLegacyClean: 'पुरानी प्रतियाँ हटाएँ',
     intgLegacyCleaned: '{n} पुरानी प्रतियाँ हटा दी गईं, {k} हाथ से बदली गई प्रतियाँ बनी रखी गईं।',
     intgLegacyFailed: 'पुरानी प्रतियाँ नहीं हटाई जा सकीं: {msg}',
@@ -11552,7 +11552,7 @@ const upstreamStrings = {
     intgStateInstalled: '已安裝 skill {v} · 下次對話即可使用',
     intgLegacyTitle: '舊版 skill 副本',
     intgLegacyDesc:
-      'GenOffice 以前會把副本寫進每個工具自己的目錄。現在還有 {n} 份留在那裡:工具仍在讀取它們,所以永遠拿不到目前版本。',
+      '察元AIOffice 以前會把副本寫進每個工具自己的目錄。現在還有 {n} 份留在那裡:工具仍在讀取它們,所以永遠拿不到目前版本。',
     intgLegacyClean: '刪除舊副本',
     intgLegacyCleaned: '已刪除 {n} 份舊副本,{k} 份被手動改過的保留不動。',
     intgLegacyFailed: '刪除舊副本失敗:{msg}',
