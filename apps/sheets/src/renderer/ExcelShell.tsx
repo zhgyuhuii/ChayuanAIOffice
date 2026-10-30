@@ -93,6 +93,19 @@ import {
   type CfRuleDialogMode,
 } from './data-process-dialogs'
 import type { SheetVisualRef } from './ribbon-actions'
+  isFormulaBarKeyTarget,
+  isGridKeyTarget,
+  shouldInterceptClearSelection,
+  shouldInterceptRedoRepeat,
+} from './clear-selection-keyboard'
+import {
+  accountingStyle,
+  COMMA_STYLE,
+  PERCENT_STYLE,
+  RIBBON_CURRENCY_SYMBOL,
+} from './excel-format-shortcuts'
+import { isModalOpen, resolveGlobalShortcut } from './global-shortcuts'
+import { stepFontSize } from './font-size-ladder'
 
 import type { ChartSeriesVisualState } from '@chaoffice/xlsx-gateway/domain/chart-visual'
 import type { ChangePlan } from '@chaoffice/xlsx-gateway/domain/workbook.types'
@@ -1071,6 +1084,13 @@ export function ExcelShell({
   // mounted once: re-binding after Univer starts would lose capture order.
   useEffect(() => {
     const onKeyDownCapture = (event: KeyboardEvent): void => {
+      if (openingWorkbookRef.current) return
+      if (shouldInterceptRedoRepeat(event, onIsCellEditingRef.current(), isModalOpen())) {
+        event.preventDefault()
+        event.stopImmediatePropagation()
+        dispatchCommandRef.current('redo-or-repeat')
+        return
+      }
       if (!shouldInterceptClearSelection(event, onIsCellEditingRef.current())) return
       event.preventDefault()
       event.stopImmediatePropagation()

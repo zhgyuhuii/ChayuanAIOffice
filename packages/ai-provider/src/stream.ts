@@ -94,9 +94,11 @@ export async function streamForProvider(
           headers: endpoint.headers,
           idleTimeoutMs: endpoint.idleTimeoutMs,
         })
-      default:
-        return streamOpenAiResponses(baseUrl, config, system, messages, tools, cap, cb, {
-          omitTemperature: endpoint.omitTemperature,
+      case 'openai-responses':
+        return streamOpenAiResponses(baseUrl, config, system, messages, tools, tokens, cb, {
+          bodyExtras: endpoint.bodyExtras,
+          headers: endpoint.headers,
+          idleTimeoutMs: endpoint.idleTimeoutMs,
         })
     }
   })

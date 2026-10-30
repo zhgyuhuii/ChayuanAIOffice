@@ -1,7 +1,12 @@
 /** Home tab of the slides ribbon. Extracted from Ribbon.tsx. */
 import { useState } from 'react'
 import { platformShortcuts } from '@chaoffice/i18n'
-import { ColorPicker, isSymbolFontFamily, partitionFontFamilies } from '@chaoffice/ui'
+import {
+  ColorPicker,
+  isSymbolFontFamily,
+  partitionFontFamilies,
+  useScrollWindow,
+} from '@chaoffice/ui'
 import { saveEditSelection } from '../TextEditOverlay'
 import { armColorInput } from '../color-input'
 import { displayFontFamily } from '../konva-adapter'
@@ -184,6 +189,15 @@ export function RibbonHomeTab({ rb }: { rb: RibbonTabCtx }) {
   const uninstalledCatalog = new Set(fontCatalog.filter((c) => !c.installed).map((c) => c.family))
   const matchesFontFilter = (f: string) =>
     !fontFilter.trim() || f.toLowerCase().includes(fontFilter.trim().toLowerCase())
+  const fontMenuWindow = useScrollWindow(fontOpen)
+  let fontRow = 0
+  const previewAt = (f: string) =>
+    fontMenuWindow.inWindow(fontRow++) ? fontPreviewFamily(f) : undefined
+  // a download row has no preview but still occupies a row of the scroller
+  const skipRow = () => {
+    fontRow++
+    return undefined
+  }
   const EMU_PER_PX = 9525
   const commitHangDraft = () => {
     const px = parseFloat(hangDraft.replace(',', '.'))
@@ -527,6 +541,8 @@ export function RibbonHomeTab({ rb }: { rb: RibbonTabCtx }) {
               {fontOpen && (
                 <div
                   className="rb-drop rb-menu rb-menu-scroll rb-font-menu"
+                  ref={fontMenuWindow.ref}
+                  onScroll={fontMenuWindow.onScroll}
                   onMouseDown={(e) => e.stopPropagation()}
                 >
                   {(curFontFamily &&
@@ -543,7 +559,7 @@ export function RibbonHomeTab({ rb }: { rb: RibbonTabCtx }) {
                       <button
                         key={f}
                         className={f === curFontFamily ? 'on' : ''}
-                        style={{ fontFamily: fontPreviewFamily(f) }}
+                        style={{ fontFamily: previewAt(f) }}
                         onMouseDown={(e) => {
                           e.preventDefault()
                           onFontFamily(f)
@@ -560,7 +576,7 @@ export function RibbonHomeTab({ rb }: { rb: RibbonTabCtx }) {
                         <button
                           key={f}
                           className={f === curFontFamily ? 'on' : ''}
-                          style={{ fontFamily: fontPreviewFamily(f) }}
+                          style={{ fontFamily: previewAt(f) }}
                           onMouseDown={(e) => {
                             e.preventDefault()
                             onFontFamily(f)
@@ -582,7 +598,7 @@ export function RibbonHomeTab({ rb }: { rb: RibbonTabCtx }) {
                             <button
                               key={c.family}
                               className={c.family === curFontFamily ? 'on' : ''}
-                              style={{ fontFamily: fontPreviewFamily(c.family) }}
+                              style={{ fontFamily: previewAt(c.family) }}
                               onMouseDown={(e) => {
                                 e.preventDefault()
                                 onFontFamily(c.family)
@@ -595,6 +611,7 @@ export function RibbonHomeTab({ rb }: { rb: RibbonTabCtx }) {
                             <button
                               key={c.family}
                               className="rb-font-download"
+                              style={{ fontFamily: skipRow() }}
                               disabled={fontBusy.has(c.family)}
                               onMouseDown={(e) => {
                                 e.preventDefault()
