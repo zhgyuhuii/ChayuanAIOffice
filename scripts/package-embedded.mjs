@@ -17,6 +17,7 @@
  */
 
 import {
+  chmodSync,
   cpSync,
   mkdirSync,
   rmSync,
@@ -189,6 +190,64 @@ if (existsSync(nativeSrc)) {
   console.log(`native: ${exe} bundled`)
 } else {
   console.warn(`native: ${exe} not found at ${nativeSrc} — xlsx open will degrade`)
+}
+
+// ── 跨平台原生件预置（2026-10-31，Linux dsh「sidecar not ready」根治）──
+// 载荷在打包机（常为 mac）上 npm install，平台可选依赖只落到宿主平台
+// （@esbuild/darwin-*、@napi-rs/canvas-darwin-*）。消费端（chayuan-harness
+// refreshSidecarPlatformDeps）在交叉打包时现场 npm 换装，但构建机网络受限
+// （npmmirror 间歇 5xx / GitHub 阻断）时会静默失败——Linux 载荷留 darwin 版
+// esbuild → tsx 起不来 → 「sidecar not ready」。这里在打包时就把全部目标
+// 平台变体预置进载荷，消费端换装变成纯本地目录修剪，零网络依赖。
+const PLATFORM_VARIANTS = {
+  esbuild: ['darwin-arm64', 'darwin-x64', 'linux-arm64', 'linux-x64', 'win32-x64'],
+  '@napi-rs/canvas': [
+    'darwin-arm64', 'darwin-x64',
+    'linux-arm64-gnu', 'linux-x64-gnu',
+    'win32-x64-msvc',
+  ],
+}
+
+function fetchNpmTarballDir(pkgName, version, intoDir) {
+  const fileName = `${pkgName.split('/')[1]}-${version}.tgz`
+  const scope = pkgName.startsWith('@') ? encodeURIComponent(pkgName) : pkgName
+  const url = `https://registry.npmmirror.com/${scope}/-/${fileName}`
+  const tgz = join(intoDir, '..', `.${pkgName.split('/')[1]}-${version}.tgz`)
+  execSync(`curl -sSL --fail --max-time 120 -o "${tgz}" "${url}"`, { stdio: 'pipe', shell: process.platform === 'win32' })
+  rmSync(intoDir, { recursive: true, force: true })
+  mkdirSync(intoDir, { recursive: true })
+  const tgzArg = process.platform === 'win32' ? join('..', `${pkgName.split('/')[1]}-${version}.tgz`) : tgz
+  execSync(`tar -xzf "${tgzArg}" -C . --strip-components=1`, { cwd: intoDir, stdio: 'pipe', shell: process.platform === 'win32' })
+  rmSync(tgz, { force: true })
+}
+
+if (!process.env.SKIP_PLATFORM_VARIANTS) {
+  const nm = join(out, 'node_modules')
+  for (const [pkg, variants] of Object.entries(PLATFORM_VARIANTS)) {
+    const meta = join(nm, pkg, 'package.json')
+    if (!existsSync(meta)) continue
+    const version = JSON.parse(readFileSync(meta, 'utf8')).version
+    const scopeDir = pkg.startsWith('@') ? join(nm, pkg.split('/')[0]) : null
+    for (const v of variants) {
+      // 包名规则：esbuild 直名（@esbuild/<triple>）；canvas 带 libc/msvc 后缀
+      const dirName = pkg === 'esbuild' ? v : v
+      const targetPkg = pkg === 'esbuild' ? `@esbuild/${v}` : `@napi-rs/canvas-${v.replace('canvas-', '')}`
+      const target = join(nm, targetPkg)
+      if (existsSync(join(target, 'package.json'))) continue
+      try {
+        fetchNpmTarballDir(targetPkg, version, target)
+        if (pkg === 'esbuild') {
+          const bin = join(target, 'bin', v.startsWith('win32') ? 'esbuild.exe' : 'esbuild')
+          if (existsSync(bin)) chmodSync(bin, 0o755)
+        }
+        console.log(`platform-variant: ${targetPkg}@${version} bundled`)
+      } catch (err) {
+        console.warn(`platform-variant: ${targetPkg}@${version} fetch failed (${String(err.message).split('\n')[0]}) — consumer-side refresh remains responsible`)
+        rmSync(target, { recursive: true, force: true })
+      }
+    }
+    if (scopeDir) { /* keep host variant; consumer prunes */ }
+  }
 }
 
 console.log('embedded sidecar ready:')

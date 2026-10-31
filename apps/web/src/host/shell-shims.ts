@@ -24,6 +24,28 @@ import {
 } from './recents.js'
 import { fileStore, extToKind, openEditorFor, openPickedFile } from './file-open.js'
 
+/** 一页空白 PDF 的最小合法文档（PDF 1.4，无字体无对象流——查看器直接可开）。 */
+function blankPdfBytes(): Uint8Array {
+  const objects = [
+    '1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n',
+    '2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n',
+    '3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] >>\nendobj\n',
+  ]
+  const header = '%PDF-1.4\n'
+  let body = header
+  const offsets: number[] = []
+  for (const o of objects) {
+    offsets.push(body.length)
+    body += o
+  }
+  const xrefAt = body.length
+  let xref = `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`
+  for (const off of offsets) xref += `${String(off).padStart(10, '0')} 00000 n \n`
+  xref += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefAt}\n%%EOF\n`
+  body += xref
+  return new TextEncoder().encode(body)
+}
+
 type RecentEntryShell = {
   path: string
   name: string
@@ -309,10 +331,19 @@ export function installShellShims(): void {
     newSheet: async () => tabManager.openEditor('sheets', { newBlank: true }),
     newSlide: async () => tabManager.openEditor('slides', { newBlank: true }),
     newMarkdown: async () => tabManager.openEditor('markdown', { newBlank: true }),
-    newPdf: async () => tabManager.openEditor('pdf', { newBlank: true }),
+    // pdf 没有渲染器内「无文档」模式（Electron 形态由主进程先造草稿盘上文件），
+    // web 形态在这里造一页空白 PDF 的内存句柄再打开——编辑器拿到真文档。
+    newPdf: async () => {
+      const bytes = blankPdfBytes()
+      const saved = fileStore.registerFile(
+        new File([bytes.slice().buffer as ArrayBuffer], '未命名.pdf'),
+        '未命名.pdf',
+      )
+      await openEditorFor('pdf', saved, '未命名.pdf')
+    },
     // html has no dedicated web editor bundle — author it as text in the
     // markdown editor (same surface OPEN of an .html file lands on below)
-    newHtml: async () => tabManager.openEditor('markdown', { newBlank: true, title: '未命名.html' }),
+    newHtml: async () => tabManager.openEditor('html', { newBlank: true }),
 
     // ── home folder tree (upstream 7036122): no local filesystem here — the
     // tree renders empty and the mutating actions degrade. folderRoots MUST

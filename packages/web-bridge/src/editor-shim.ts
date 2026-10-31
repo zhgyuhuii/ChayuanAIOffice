@@ -11,6 +11,7 @@ import { makeShim } from './shim-factory.js'
 import { installKbFetchBridge } from './kb-bridge.js'
 import { installDocsShim } from './editors/docs-shim.js'
 import { installPdfShim } from './editors/pdf-shim.js'
+import { installHtmlShim } from './editors/html-shim.js'
 import { installSheetsShim, installSlidesShim } from './editors/generic-shim.js'
 
 const client = new BridgeClient()
@@ -70,6 +71,12 @@ function installMarkdownShim(): void {
       currentFile = { id: p.fileId, name: p.name }
       return `webfs:${p.fileId}:${p.name}`
     },
+    // untitled (web 新建) 流程的握手位：App 无条件 await 这两个 consume，
+    // 缺席会走 Proxy 的结构化 reject → 「文件打开失败」白屏（docs 的
+    // consumeNewBlankDoc/consumeAiDocContent 同款先例）。应答 null = 无 AI
+    // 内容、无挂起导出，编辑器落到空白文档。
+    consumeAiContent: async () => null,
+    consumeHeadlessExport: async () => null,
     readFile: async (path: string) => {
       const m = /^webfs:([^:]+):(.*)$/.exec(path)
       if (!m) throw new Error(`web shim 只能读取通过宿主打开的文件：${path}`)
@@ -142,6 +149,7 @@ export function installEditorShims(): void {
   if (/\/editors\/markdown\//.test(path)) installMarkdownShim()
   else if (/\/editors\/docs\//.test(path)) installDocsShim(client)
   else if (/\/editors\/pdf\//.test(path)) installPdfShim(client)
+  else if (/\/editors\/html\//.test(path)) installHtmlShim(client)
   else if (/\/editors\/sheets\//.test(path)) installSheetsShim(client)
   else if (/\/editors\/slides\//.test(path)) installSlidesShim(client)
 }

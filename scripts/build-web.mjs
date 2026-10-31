@@ -22,7 +22,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const dist = join(root, 'dist', 'web')
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm'
 
-const EDITORS = ['docs', 'sheets', 'slides', 'pdf', 'markdown']
+const EDITORS = ['docs', 'sheets', 'slides', 'pdf', 'markdown', 'html']
 
 function run(cmd, opts = {}) {
   console.log(`> ${cmd}`)
