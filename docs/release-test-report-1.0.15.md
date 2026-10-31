@@ -79,3 +79,16 @@
 | stageChatoffice 重铺 | ✅ | harness `node scripts/build.mjs` → desktop/resources/chatoffice version=**1.0.15**（471M：dist/host/client + vendor sidecar 全离线面）；content signature（package.json+lock+dist/apps/packages 内容哈希）驱动 needsStage，同版本载荷变更即重铺 |
 | 打包集成 | ✅ | `npm run package:dir` → mac-arm64 察元AI OS.app 内 Resources/chatoffice **1.0.15**（524M）+ ChaAIOS-3.2.10-arm64-lite.dmg（UDZO，Oct 30 15:34）；dev 兜底路径 dsh-plugin 直读兄弟仓 |
 | 载荷溯源 | ✅ | dsh-plugin/dist=package:plugin 产物（chaoffice-1.0.15.tgz 同源）；sidecar 四平台二进制同本轮重编批次 |
+
+## 阶段 7 · dsh 形态三端白屏 + Linux sidecar 修复（2026-10-31 追加，用户报告驱动）— PASS
+
+| 项 | 结果 | 证据 |
+|---|---|---|
+| 根因定位（CDP 复现） | ✅ | 打包版 harness + CDP 驱动 dsh office：md「文件打开失败」（shim 缺 consumeAiContent → 初始化 reject）/html「缺整个编辑器端」（build-web EDITORS 自 1.0.2 固定五端）/pdf「没有要打开的文件」（web 壳 newPdf 不造草稿文件）三症全复现 |
+| md 修复 | ✅ | editor-shim 补 consumeAiContent/consumeHeadlessExport 安全应答（docs consumeNewBlankDoc 先例）；回归 bodyLen 141+editable |
+| html 修复 | ✅ | 新增 editors/html-shim（打开/保存闭环+AI 桥+空 settings）+ build-web 六端 + web index 映射；回归 AI 设计面板 225 字符 |
+| pdf 修复 | ✅ | shell-shims newPdf 造空白一页 PDF（合法最小 PDF 1.4）→ registerFile → 编辑器打开真文档；回归 #gofile=f1 加载成功 |
+| Linux「sidecar not ready」根因 | ✅ | 载荷 node_modules 平台可选依赖只落打包机平台（darwin）；官方 Linux 构建机现场换装遇 npmmirror 5xx/GitHub 阻断静默失败 → tsx 起不来。package-embedded 预置全平台 esbuild×5+canvas×5（linux-x64/arm64-gnu、win-msvc、darwin 双架构）零网络依赖 |
+| 产物刷新 | ✅ | dist/web 六端 + chaoffice-1.0.15.tgz（127M）+ harness resources/chatoffice 重铺（671M，手铺绕开并行 WIP 的 build.mjs CJK guard 红）+ 察元AI OS.app 重打包 |
+| 修复提交 | ✅ | f1ed7aac9（origin+gitee 已推） |
+| 环境坑记账 | ✅ | ①harness 单实例锁键于 userData——测试实例必须带 CHATOP_USER_DATA，否则静默退出（漏配时撞用户真实数据根被锁挡下）；②needsStage 渐进铺装窗口期 stage 可落后于 resources——验证前必须 diff stage/Resources 的 bridge-shim；③并行 1031 加固批 WIP 的 chatop-mail 半成品会崩 dsh 组合（声明 dsh.client 无 client bundle）——测试 userData 以 exports./client 桩绕过（resources+stage 双层），不触碰其源码 |
