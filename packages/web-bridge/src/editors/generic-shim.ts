@@ -58,6 +58,10 @@ export function installSheetsShim(client: BridgeClient): void {
     async consumeNewBlankWorkbook(): Promise<boolean> {
       return !pendingFromHash()
     },
+    // R37 headless-export 握手位（缺席即结构化 reject；仅 headless 导出用）
+    async consumeHeadlessExport(): Promise<null> {
+      return null
+    },
 
     // session commands → sidecar passthrough
     async readWorkbookRange(request: Record<string, unknown>) {
@@ -261,6 +265,10 @@ export function installSlidesShim(client: BridgeClient): void {
       await client.call('local', 'recent.record', created.id, created.name, 'slides')
       await client.call('local', 'tab.setTitle', created.id, created.name)
       return { ok: true, path: `webfs:${created.id}:${created.name}` }
+    },
+    // R37 headless-export 握手位（缺席即结构化 reject；仅 headless 导出用）
+    async consumeHeadlessExport(): Promise<null> {
+      return null
     },
   }
 

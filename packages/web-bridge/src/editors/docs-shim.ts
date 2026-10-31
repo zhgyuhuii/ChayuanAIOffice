@@ -45,6 +45,10 @@ export function installDocsShim(client: BridgeClient): void {
     async consumeNewBlankDoc(): Promise<boolean> {
       return !pendingFromHash()
     },
+    // R37 headless-export 握手位（markdown/html 同款）：缺席即结构化 reject
+    async consumeHeadlessExport(): Promise<null> {
+      return null
+    },
     async consumeAiDocContent(): Promise<null> {
       return null
     },

@@ -92,3 +92,15 @@
 | 产物刷新 | ✅ | dist/web 六端 + chaoffice-1.0.15.tgz（127M）+ harness resources/chatoffice 重铺（671M，手铺绕开并行 WIP 的 build.mjs CJK guard 红）+ 察元AI OS.app 重打包 |
 | 修复提交 | ✅ | f1ed7aac9（origin+gitee 已推） |
 | 环境坑记账 | ✅ | ①harness 单实例锁键于 userData——测试实例必须带 CHATOP_USER_DATA，否则静默退出（漏配时撞用户真实数据根被锁挡下）；②needsStage 渐进铺装窗口期 stage 可落后于 resources——验证前必须 diff stage/Resources 的 bridge-shim；③并行 1031 加固批 WIP 的 chatop-mail 半成品会崩 dsh 组合（声明 dsh.client 无 client bundle）——测试 userData 以 exports./client 桩绕过（resources+stage 双层），不触碰其源码 |
+
+## 阶段 8 · 全产物清理重打 + harness dsh 形态更新（2026-10-31 用户指令）— PASS
+
+| 项 | 结果 | 证据 |
+|---|---|---|
+| 清理 | ✅ | apps/shell/release 九件全清；dist/*（tgz/chatop bundle/web）全清 |
+| dsh 链重打 | ✅ | build:web（六端）→ package:plugin → **chaoffice-1.0.15.tgz 127M**（含五平台 esbuild+canvas 变体）→ dist:chatop **chatop-chaoffice-1.0.15 603M** |
+| 九件重打 | ✅ | mac→win→linux x64（CHAOFFICE_LINUX_X64=1）→aarch64 ELF 暂存→shell-only arm64 全 EXIT 0；直验：dmg UDZO / exe PE32 / deb 双架构字节级 / AppImage ELF 头 x86-64+aarch64 |
+| consume* 家族补齐 | ✅ | 回归暴露 docs/sheets/slides 同类缺口（R37 把 consumeHeadlessExport 握手带进全编辑器）——docs-shim/generic-shim（sheets desktopApi+slides slidesApi）补安全应答，web-bridge 18 测试绿 |
+| harness 更新 | ✅ | 干净树（stash 并行 WIP 18 文件→build.mjs→pop）正规 stageChatoffice 重铺 1.0.15 六端+platform-variants；CJK guard 红为 3.2.11 存量债（Mail.jsx/桌面组件文案，并行批在修）不阻塞 packaging，electron-builder --dir 单独续跑 |
+| 终验 | ✅ | CDP 六端创建全过（docx 364/md 141/html 225/pdf gofile/xlsx 250/pptx 225 全 editable，零白屏）；余 8 个非致命 degrade 动作 EXC（armContextMenu/spellDiag 等右键菜单类，tab 正常渲染）记为已知边界 |
+| 首启注意 | ✅ | 载荷 671M 渐进铺装期间 dsh 可能退出重启一轮——第二次启动收敛（铺装完成后稳定）；特征：dsh.log「dsh web exited (code 0)」后自愈 |
