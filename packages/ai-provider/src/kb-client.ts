@@ -23,6 +23,14 @@ export interface KbDocInfo {
 export interface KbInfo {
   kbId: string
   docs?: KbDocInfo[]
+  /**
+   * Doc total when the payload carries the 2026-10-29 count summary instead of
+   * full rows: harness /status lightened `docs` to a plain number (卡顿收口),
+   * and that shape must never reach the renderer as `docs` — KbPickerButton
+   * renders the array (filter/map) and a number crashed the whole React tree
+   * to a white page. Normalized away in status(); the total rides docCount.
+   */
+  docCount?: number
   vecBackend?: string
   ftsTokenizer?: string
   embedFingerprint?: string | null
@@ -91,6 +99,39 @@ export function isKbStatus(value: unknown): value is KbStatus {
   )
 }
 
+/**
+ * Normalize one /status kbs entry to the renderer contract. The harness ships
+ * two shapes — full doc rows (`docs: KbDocInfo[]`, pre-2026-10-29) and the
+ * lightweight count summary (`docs: number`, plus ready/pending counts). The
+ * count form must not leak through as `docs` (array methods on a number crash
+ * the picker's whole React tree); it becomes docCount. Malformed entries are
+ * dropped, so a junk payload degrades to an empty library list, never a crash.
+ */
+function normalizeKbInfo(raw: unknown): KbInfo | null {
+  if (typeof raw !== 'object' || raw === null) return null
+  const k = raw as Record<string, unknown>
+  if (typeof k.kbId !== 'string' || !k.kbId) return null
+  const info: KbInfo = { kbId: k.kbId }
+  if (Array.isArray(k.docs)) info.docs = k.docs as KbDocInfo[]
+  else if (typeof k.docs === 'number' && Number.isFinite(k.docs)) info.docCount = k.docs
+  if (typeof k.vecBackend === 'string') info.vecBackend = k.vecBackend
+  if (typeof k.ftsTokenizer === 'string') info.ftsTokenizer = k.ftsTokenizer
+  if (typeof k.embedFingerprint === 'string' || k.embedFingerprint === null) {
+    info.embedFingerprint = k.embedFingerprint
+  }
+  return info
+}
+
+/** apply normalizeKbInfo to a status payload (keeps the fingerprint fields) */
+export function normalizeKbStatus<T extends KbStatus>(status: T): KbStatus {
+  const kbs: KbInfo[] = []
+  for (const raw of status.kbs) {
+    const info = normalizeKbInfo(raw)
+    if (info) kbs.push(info)
+  }
+  return { ...status, kbs }
+}
+
 export interface KbHttpClient {
   status(): Promise<KbStatus>
   search(kbId: string, q: string, topK?: number): Promise<KbHit[]>
@@ -156,7 +197,7 @@ export function createKbHttpClient(options: KbHttpOptions): KbHttpClient {
     async status() {
       const doc = await request<unknown>('/status')
       if (!isKbStatus(doc)) throw new KbError('kb status: unexpected payload', 0)
-      return doc
+      return normalizeKbStatus(doc)
     },
     async search(kbId, q, topK = 6) {
       const doc = await request<{ ok: boolean; hits: KbHit[] }>('/search', {

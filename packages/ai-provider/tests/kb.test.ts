@@ -41,6 +41,28 @@ describe('kb-client', () => {
     expect(isKbStatus(null)).toBe(false)
   })
 
+  it('status normalizes the harness count summary: docs never leaves as a number', async () => {
+    // harness 2026-10-29 卡顿收口: /status ships kbs[].docs as a plain count —
+    // a number that reached the picker's .filter() and blanked the whole page
+    const client = createKbHttpClient({
+      baseUrl: 'http://127.0.0.1:52584/',
+      fetchImpl: (async () =>
+        jsonResponse({
+          ok: true,
+          kbs: [
+            { kbId: 'default', docs: 1, ready: 1, pending: 0, vecBackend: 'sqlite-vec' },
+            { kbId: 'legacy', docs: [{ id: 'd1', name: 'a.md', status: 'ready' }] },
+            { kbId: 42 }, // malformed entry: dropped, not crashed on
+          ],
+        })) as typeof fetch,
+    })
+    const doc = await client.status()
+    expect(doc.kbs).toHaveLength(2)
+    expect(doc.kbs[0]).toEqual({ kbId: 'default', docCount: 1, vecBackend: 'sqlite-vec' })
+    expect(Array.isArray(doc.kbs[1]!.docs)).toBe(true)
+    expect(doc.kbs[1]!.docs![0]!.id).toBe('d1')
+  })
+
   it('search passes kbId/q/topK and returns hits', async () => {
     const hits: KbHit[] = [
       { chunkId: 'c1', docId: 'd1', docName: 'a.md', seq: 0, headingPath: ' Intro', text: 'hi' },

@@ -95,8 +95,13 @@ export function KbPickerButton({
             <div className="kb-picker-empty">{t.kbPickerEmpty}</div>
           ) : (
             kbs.map((kb) => {
-              const docs = kb.docs ?? []
-              const failed = docs.filter((d) => d.status === 'failed').length
+              // docs is an array only when the harness shipped full rows; the
+              // 2026-10-29 count summary carries the total in docCount (the
+              // data plane normalizes numbers away from docs — belt and
+              // braces here: a stray non-array must degrade, never crash)
+              const docs = Array.isArray(kb.docs) ? kb.docs : []
+              const docCount = docs.length || kb.docCount || 0
+              const failed = docs.filter((d) => d && d.status === 'failed').length
               const isSelected = selected.includes(kb.kbId)
               return (
                 <button
@@ -120,7 +125,7 @@ export function KbPickerButton({
                   </span>
                   <span className="kb-name">{kb.kbId}</span>
                   <span className="kb-meta">
-                    {fmt(t.kbDocsCount, { n: docs.length })}
+                    {fmt(t.kbDocsCount, { n: docCount })}
                     {failed > 0 ? ` · ${fmt(t.kbDocsFailed, { n: failed })}` : ''}
                   </span>
                 </button>
