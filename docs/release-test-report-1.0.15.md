@@ -114,3 +114,17 @@
 | 九件重打 | ✅ | mac/win/linux×2 四 pass 全 EXIT 0（pdf main 代码内嵌于全部安装包）；直验 dmg UDZO/deb 双架构字节级 |
 | 发布链修复送达 | ✅ | ①服务器 installers 覆盖（硬链接 downloads 侧同步，s=d=d 三侧 sha 一致）②GitHub Release 429539064 九资产 DELETE+UP 全 201（FINAL 9 uploaded=9，dmg size 222131864 与本地一致）③aidooo DB 十槽位 sha/size 重算 updated=10 ok=10 bad=0+publishManifest；公网 Range 206+1MB 区段 sha 双侧一致（ed3b6067） |
 | dsh 形态 | ➖ 不受影响 | dsh 的 pdf 走 web 渲染（无 pdf-main），阶段 8 已验证 |
+
+## 阶段 10 · KB 按钮白屏根治 + 九件重打包原位覆盖发布（2026-10-31 第三次用户报告）— PASS
+
+| 项 | 结果 | 证据 |
+|---|---|---|
+| 根因 | ✅ | harness 10-29 chatop-kb `/status` 卡顿收口把 `kbs[].docs` 从文档行数组改为计数（`docs:1`），KbPickerButton 仍按数组渲染 `kb.docs.filter` → `Uncaught TypeError: _.filter is not a function` → React 整树卸载全白屏（dsh 形态用户报障；桌面形态同雷——同一 kb.status() 载荷） |
+| 实锤 | ✅ | 受控浏览器开 dsh 页 + iframe 内 localStorage 错误采集器 + CUA 坐标点击：点击瞬间捕获 TypeError（main bundle），`#root` 清空；sidecar `/kb/discover` 实测 `"docs":1` |
+| 修复（1410ea35e，origin+gitee 已推） | ✅ | 双保险：①ai-provider `status()` 出口 `normalizeKbStatus`（数字 docs→docCount、数组保留、畸形条目丢弃）+`KbInfo.docCount`；②KbPickerButton `Array.isArray` 防御+计数显示走 docCount；新增归一化回归用例，ai-provider 624 全绿 |
+| 九件重打 | ✅ | build:all→mac→win→linux x64（CHAOFFICE_LINUX_X64=1）→aarch64 ELF 暂存→shell-only arm64 全 EXIT 0；mac universal sidecar 备份/还原（/tmp bak）；直验：dmg UDZO/zip/exe PE32/deb 双架构 ELF 逐件/AppImage 双架构 ELF 头/rpm v4 ×2；打包 asar grep docCount×3 实证修复在包 |
+| dsh 链 | ✅ | build:web + package:plugin（chaoffice-1.0.15.tgz）+ dist:chatop bundle 重打；harness 三处（resources/chatoffice、shared/bundled、user profile）rsync 重铺 main-D0SKHYQy 载荷 |
+| aidooo 送达 | ✅ | 九件 scp 覆盖 /data/installers（inode 保留→硬链接 downloads 侧自动同步）；三侧 sha256 逐件一致；容器 DB 重算 ok=10 bad=0（uploadedBy=r37-kbfix）+ 真实 `publishManifest()` 调用成功 |
+| GitHub 送达 | ✅ | release 429539064（ChayuanAIOffice）九资产 DELETE 9×204 全清→UP 9×201→FINAL 9/9 size-matched；release body 补重打包修复说明 |
+| 验收 | ✅ | 公网 `/api/version/office` latest=1.0.15 五平台；manifest installer 通道 1.0.15 十条目；Range 206×2（dmg/exe）+1MB 段 sha 三方一致（dmg d8c83574/exe 513f2bd4，本地=aidooo=GitHub） |
+| 教训记账 | ✅ | 跨仓形状契约（harness↔office）无联合测试，harness 单侧改载荷形状会炸穿 office 渲染层；渲染层无 error boundary 时未捕获渲染错误=整窗白屏；iframe 内 localStorage 探针（跨文档存活）是 dsh 白屏排查利器 |
