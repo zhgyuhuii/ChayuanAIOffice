@@ -104,3 +104,13 @@
 | harness 更新 | ✅ | 干净树（stash 并行 WIP 18 文件→build.mjs→pop）正规 stageChatoffice 重铺 1.0.15 六端+platform-variants；CJK guard 红为 3.2.11 存量债（Mail.jsx/桌面组件文案，并行批在修）不阻塞 packaging，electron-builder --dir 单独续跑 |
 | 终验 | ✅ | CDP 六端创建全过（docx 364/md 141/html 225/pdf gofile/xlsx 250/pptx 225 全 editable，零白屏）；余 8 个非致命 degrade 动作 EXC（armContextMenu/spellDiag 等右键菜单类，tab 正常渲染）记为已知边界 |
 | 首启注意 | ✅ | 载荷 671M 渐进铺装期间 dsh 可能退出重启一轮——第二次启动收敛（铺装完成后稳定）；特征：dsh.log「dsh web exited (code 0)」后自愈 |
+
+## 阶段 9 · 新建 PDF 失败根治 + 发布链修复送达（2026-10-31 第二次用户报告）— PASS
+
+| 项 | 结果 | 证据 |
+|---|---|---|
+| 根因 | ✅ | `Attempted to register a second handler for 'pdf:is-untitled'`——R37 #2250（附件面板）pick 把上游 isUntitled handler 二次带入 pdf-main（本地 untitledPdfMetas 版已存在），createPdfView→registerPdfIpc 抛错→newPdfTab 静默失败。dev CDP 复现（点击 .pdf 零目标+主进程日志实锤） |
+| 修复 | ✅ | 3c0e2395c 删除无授权校验的第二份；dev CDP 验证新建 PDF「第 1 页」+canvas 渲染+功能区正常 |
+| 九件重打 | ✅ | mac/win/linux×2 四 pass 全 EXIT 0（pdf main 代码内嵌于全部安装包）；直验 dmg UDZO/deb 双架构字节级 |
+| 发布链修复送达 | ✅ | ①服务器 installers 覆盖（硬链接 downloads 侧同步，s=d=d 三侧 sha 一致）②GitHub Release 429539064 九资产 DELETE+UP 全 201（FINAL 9 uploaded=9，dmg size 222131864 与本地一致）③aidooo DB 十槽位 sha/size 重算 updated=10 ok=10 bad=0+publishManifest；公网 Range 206+1MB 区段 sha 双侧一致（ed3b6067） |
+| dsh 形态 | ➖ 不受影响 | dsh 的 pdf 走 web 渲染（无 pdf-main），阶段 8 已验证 |
