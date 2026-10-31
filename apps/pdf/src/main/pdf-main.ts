@@ -1617,10 +1617,6 @@ function registerPdfIpc(): void {
     },
   )
 
-  ipcMain.handle(PDF_CHANNELS.isUntitled, (e, path: unknown): boolean => {
-    return typeof path === 'string' && untitledPdfMetas.has(path)
-  })
-
   ipcMain.handle(PDF_CHANNELS.listPageImages, async (e, path: unknown) => {
     if (typeof path !== 'string' || !allowedByWc.get(e.sender.id)?.has(path)) {
       throw new Error('pdf: path not granted to this view')
