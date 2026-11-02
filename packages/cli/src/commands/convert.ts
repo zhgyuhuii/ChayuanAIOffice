@@ -3,7 +3,8 @@ import { tmpdir } from 'node:os'
 import { basename, dirname, extname, join } from 'node:path'
 import { PdfLoadError } from '@chaoffice/pdf2docx'
 import { flagBool, flagString, type ParsedArgs } from '../args'
-import { csvToXlsx } from '../formats/csv'
+import { csvToXlsx, sheetNameFromStem } from '../formats/csv'
+import { convertHwp } from '../formats/hwp'
 import { convertOdp, convertOdt } from '../formats/odf'
 import { convertPdf, type PdfTarget } from '../formats/pdf'
 import { convertLegacyWorkbook, sheetToCsv } from '../formats/xlsx'
@@ -24,6 +25,8 @@ const NODE_ROUTES: Record<string, readonly string[]> = {
   ots: ['xlsx'],
   odt: ['docx'],
   ott: ['docx'],
+  hwpx: ['docx'],
+  hwp: ['docx'],
   odp: ['pptx'],
   otp: ['pptx'],
   md: ['docx', 'html'],
@@ -181,6 +184,10 @@ async function run(
   // adapted: ODF #1982 odt/ott→docx、odp/otp→pptx 走本地已有 odf2ooxml 包（NODE_ROUTES 已登记路由）
   if (from === 'odt' || from === 'ott') {
     const r = await convertOdt(readInput(input))
+    return { bytes: r.bytes, detail: r.detail }
+  }
+  if (from === 'hwpx' || from === 'hwp') {
+    const r = await convertHwp(readInput(input))
     return { bytes: r.bytes, detail: r.detail }
   }
   if (from === 'odp' || from === 'otp') {

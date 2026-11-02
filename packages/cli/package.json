@@ -13,7 +13,6 @@
     "./control-protocol": "./src/control-protocol.ts"
   },
   "bin": {
-    "chaoffice": "./bin/chaoffice",
     "chaoffice": "./bin/chaoffice"
   },
   "scripts": {
@@ -26,15 +25,7 @@
     "@chaoffice/ai-provider": "*",
     "@chaoffice/ai-search": "*",
     "@chaoffice/docx-engine": "*",
-    "@chaoffice/pdf2docx": "*",
-    "@chaoffice/pipelines": "*",
-    "@chaoffice/pptx-engine": "*",
-    "@chaoffice/pptx-ops": "*",
-    "@chaoffice/pptx-render": "*",
-    "@chaoffice/xlsx-gateway": "*",
-    "@chaoffice/ai-provider": "*",
-    "@chaoffice/ai-search": "*",
-    "@chaoffice/docx-engine": "*",
+    "@chaoffice/hwp2docx": "*",
     "@chaoffice/odf2ooxml": "*",
     "@chaoffice/pdf2docx": "*",
     "@chaoffice/pipelines": "*",
@@ -43,6 +34,7 @@
     "@chaoffice/pptx-render": "*",
     "@chaoffice/xlsx-gateway": "*",
     "@modelcontextprotocol/sdk": "^1.32.1",
+    "@rhwp/core": "0.8.7",
     "@tiptap/core": "3.31.0",
     "jsdom": "^28.0.0",
     "jszip": "^3.10.1",

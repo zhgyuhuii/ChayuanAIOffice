@@ -295,3 +295,14 @@ export {
   type ResolveDiff,
   type TableCond,
 } from './resolve-props'
+export {
+  compareBlocks,
+  compareDocuments,
+  DEFAULT_COMPARE_AUTHOR,
+  type CompareGranularity,
+  type CompareIgnore,
+  type CompareOptions,
+  type CompareResult,
+  type CompareSummary,
+} from './compare'
+export { keepsHangulKanaSingle } from './parse-block-passes'

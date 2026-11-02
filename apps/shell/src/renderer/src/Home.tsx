@@ -105,7 +105,7 @@ const FILE_ICONS: Record<string, string> = {
    width, so it ellipsizes and a hover ScreenTip carries the full list. Keep in
    sync with the main-process open-dialog filter (OPEN_DIALOG_EXTENSIONS). */
 const OPEN_LOCAL_EXTENSIONS =
-  '.docx / .odt / .ott / .xlsx / .xlsm / .xls / .csv / .tsv / .ods / .ots / .pptx / .odp / .otp / .pdf / .md / .html'
+  '.docx / .odt / .ott / .hwpx / .hwp / .xlsx / .xlsm / .xls / .csv / .tsv / .ods / .ots / .pptx / .odp / .otp / .pdf / .md / .html'
 
 /**
  * Width of the viewport that fixed-position menus anchor to. The layout engine
@@ -188,6 +188,19 @@ const RECENT_FILTERS: { key: string; label: string }[] = [
 ]
 
 /** sidebar filter keys that stand for a family of extensions (mirrors recent-files.ts) */
+const FILTER_FAMILY: Record<string, readonly string[]> = {
+  docx: ['docx', 'doc', 'odt', 'ott', 'hwpx', 'hwp'],
+  xlsx: ['xlsx', 'xlsm', 'xls', 'csv', 'tsv', 'ods', 'ots'],
+  pptx: ['pptx', 'ppt', 'odp', 'otp'],
+  md: ['md', 'markdown', 'txt', 'json'],
+  html: ['html', 'htm'],
+}
+
+function matchesFilter(entry: RecentEntry, filter: string): boolean {
+  if (filter === 'all') return true
+  return (FILTER_FAMILY[filter] ?? [filter]).includes(entry.ext)
+}
+
 /** wrap every matched fragment of a name or folder label in the shared search-hit mark */
 /** Check glyph marking the selected sort option; invisible on the others so labels stay aligned */
 function SortCheck({ visible }: { visible: boolean }): ReactElement {

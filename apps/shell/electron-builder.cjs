@@ -448,6 +448,22 @@ const FILE_ASSOCIATIONS = [
     mimeType: 'application/vnd.oasis.opendocument.text-template',
   },
   {
+    // import-only: opens as a converted .docx copy, ChaAI Office never writes HWPX
+    ext: 'hwpx',
+    name: 'Hancom HWPX Document',
+    role: 'Editor',
+    icon: 'docx',
+    mimeType: 'application/hwp+zip',
+  },
+  {
+    // import-only, like .hwpx: HWP binaries are read through rhwp into HWPX first
+    ext: 'hwp',
+    name: 'Hancom HWP Document',
+    role: 'Editor',
+    icon: 'docx',
+    mimeType: 'application/x-hwp',
+  },
+  {
     // import-only: opens as a converted .pptx copy, ChaAI Office never writes ODF
     ext: 'odp',
     name: 'OpenDocument Presentation',
@@ -576,6 +592,11 @@ const config = {
     {
       from: '../pdf/node_modules/harfbuzzjs/hb-subset.wasm',
       to: 'wasm/hb-subset.wasm',
+    },
+    // .hwp import (packages/hwp2docx/src/hwp.ts): rhwp reads HWP binaries into HWPX
+    {
+      from: '../../node_modules/@rhwp/core/rhwp_bg.wasm',
+      to: 'wasm/rhwp_bg.wasm',
     },
     // platform system-OCR helpers for scanned-page recovery (each exists only
     // on its own build platform; electron-builder skips absent sources and the
