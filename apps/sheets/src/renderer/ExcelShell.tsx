@@ -542,6 +542,9 @@ interface ExcelShellProps {
   readonly pageLayout: PageLayoutEcho
   /// Manual-recalc mode echo for the Calculation Options menu.
   readonly calcManual: boolean
+  /// Formula view (sheetView/@showFormulas) of the active sheet: the sheet
+  /// renders formulas instead of their values.
+  readonly showFormulas: boolean
   /// Goal Seek solve; rejects with a user-facing Error message.
   readonly onGoalSeek: (setCell: string, toValue: number, byCell: string) => Promise<GoalSeekResult>
   /// Data Table (What-If) run; rejects with a user-facing Error message.
@@ -710,6 +713,7 @@ export function ExcelShell({
   onGetCreateTableRange,
   pageLayout,
   calcManual,
+  showFormulas,
   onGoalSeek,
   onDataTable,
   onGetDataTableRange,
@@ -1478,6 +1482,7 @@ export function ExcelShell({
                     .map((entry) => entry.name)
                 }}
                 calcManual={calcManual}
+                showFormulas={showFormulas}
                 onRefreshPivot={onRefreshPivot}
                 onIsSelectionInPivot={onIsSelectionInPivot}
                 activeCell={(() => {
@@ -2869,6 +2874,7 @@ function Ribbon({
   onAiRun,
   onListNames,
   calcManual,
+  showFormulas,
   onRefreshPivot,
   onIsSelectionInPivot,
   activeCell,
@@ -2914,6 +2920,8 @@ function Ribbon({
   readonly selectedTable: SelectedTableRibbon | null
   readonly outlineSummary: { below: boolean; right: boolean }
   readonly onCommand: (command: string) => void
+  /// Formula view of the active sheet; the button reads as pressed.
+  readonly showFormulas: boolean
   /** Defined names for the Use in Formula menu. */
   readonly onListNames: () => readonly string[]
   /** Manual-recalc mode echo for the Calculation Options menu. */
@@ -4427,6 +4435,7 @@ function Ribbon({
           </div>
           <RibbonButton
             large
+            active={showFormulas}
             label={t('appShowFormulas')}
             detail={t('appShowFormulasDetail')}
             symbol="ƒ"
