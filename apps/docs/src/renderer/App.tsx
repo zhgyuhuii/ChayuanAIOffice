@@ -103,6 +103,7 @@ import {
   type ThemeFonts,
   type PictureWatermarkSpec,
   type WatermarkSpec,
+  type CommentImage,
 } from '@chaoffice/docx-engine'
 import type { AiDocContent, AiSettingsV2, MenuCommand, MergeDataSource, OpenDocxResult } from '../shared/ipc'
 import {
@@ -3703,7 +3704,7 @@ export function App() {
   }, [editor])
 
   const submitNewComment = useCallback(
-    (text: string) => submitNewCommentImpl(reviewCtxRef.current, text),
+    (text: string, image?: CommentImage) => submitNewCommentImpl(reviewCtxRef.current, text, image),
     [],
   )
   const replyToComment = useCallback(
