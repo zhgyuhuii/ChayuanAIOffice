@@ -234,4 +234,7 @@ export const ko = {
   aiTabChat: '채팅',
   aiSummarizeDesc: '문서의 요점을 정리해 핵심을 빠르게 파악',
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
+  aiMindMapToggleLayout: '레이아웃 전환',
+  aiMindMapLayoutTopDown: '위에서 아래로 레이아웃으로 전환',
+  aiMindMapLayoutLeftRight: '왼쪽에서 오른쪽 레이아웃으로 전환',
 } satisfies Record<keyof typeof zh, string>

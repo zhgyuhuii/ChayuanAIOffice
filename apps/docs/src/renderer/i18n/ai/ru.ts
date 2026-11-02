@@ -238,4 +238,7 @@ export const ru = {
   aiTabChat: 'Чат',
   aiSummarizeDesc: 'Составить краткое резюме документа и выделить главное',
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
+  aiMindMapToggleLayout: 'Сменить макет',
+  aiMindMapLayoutTopDown: 'Переключиться на макет сверху вниз',
+  aiMindMapLayoutLeftRight: 'Переключиться на макет слева направо',
 } satisfies Record<keyof typeof zh, string>

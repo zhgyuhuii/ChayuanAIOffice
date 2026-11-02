@@ -242,4 +242,7 @@ export const it = {
   aiTabChat: 'Chat',
   aiSummarizeDesc: 'Riassumere il documento e coglierne i punti chiave',
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
+  aiMindMapToggleLayout: 'Cambia layout',
+  aiMindMapLayoutTopDown: 'Passa al layout dall’alto verso il basso',
+  aiMindMapLayoutLeftRight: 'Passa al layout da sinistra a destra',
 } satisfies Record<keyof typeof zh, string>

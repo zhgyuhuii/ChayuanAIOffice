@@ -227,4 +227,7 @@ export const zhTW = {
   aiTabChat: 'चैट',
   aiSummarizeDesc: 'दस्तावेज़ का सारांश बनाकर मुख्य बिंदु समझें',
   aiNoModelErrorBody: '設定一個自己的供應商（金鑰即用），或登入 察元AIOffice 使用預設模型。全程無需帳號。',
+  aiMindMapToggleLayout: '切換版面',
+  aiMindMapLayoutTopDown: '切換為由上而下版面',
+  aiMindMapLayoutLeftRight: '切換為左右分欄版面',
 } satisfies Record<keyof typeof zh, string>

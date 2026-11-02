@@ -237,4 +237,7 @@ export const en = {
   aiTabChat: 'Chat',
   aiSummarizeDesc: 'Summarize the document and capture its key points',
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
+  aiMindMapToggleLayout: 'Switch layout',
+  aiMindMapLayoutTopDown: 'Switch to the top-down layout',
+  aiMindMapLayoutLeftRight: 'Switch to the left-right layout',
 } satisfies Record<keyof typeof zh, string>

@@ -236,4 +236,7 @@ export const id = {
   aiTabChat: 'Obrolan',
   aiSummarizeDesc: 'Ringkas dokumen dan tangkap poin-poin pentingnya',
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
+  aiMindMapToggleLayout: 'Ganti tata letak',
+  aiMindMapLayoutTopDown: 'Beralih ke tata letak atas ke bawah',
+  aiMindMapLayoutLeftRight: 'Beralih ke tata letak kiri ke kanan',
 } satisfies Record<keyof typeof zh, string>

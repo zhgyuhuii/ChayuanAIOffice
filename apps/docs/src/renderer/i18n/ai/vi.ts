@@ -237,4 +237,7 @@ export const vi = {
   aiTabChat: '对话',
   aiSummarizeDesc: '总结全文要点，快速把握内容',
   aiNoModelErrorBody: '配置一个自己的供应商（密钥即用），或登录 察元AIOffice 使用默认模型。全程无需账号。',
+  aiMindMapToggleLayout: 'Đổi bố cục',
+  aiMindMapLayoutTopDown: 'Chuyển sang bố cục từ trên xuống dưới',
+  aiMindMapLayoutLeftRight: 'Chuyển sang bố cục từ trái sang phải',
 } satisfies Record<keyof typeof zh, string>

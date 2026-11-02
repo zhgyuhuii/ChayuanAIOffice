@@ -234,4 +234,7 @@ export const th = {
   aiTabChat: 'แชท',
   aiSummarizeDesc: 'สรุปเนื้อหาเอกสารและเข้าใจประเด็นสำคัญได้เร็ว',
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
+  aiMindMapToggleLayout: 'สลับเลย์เอาต์',
+  aiMindMapLayoutTopDown: 'สลับเป็นเลย์เอาต์แบบบนลงล่าง',
+  aiMindMapLayoutLeftRight: 'สลับเป็นเลย์เอาต์แบบซ้ายไปขวา',
 } satisfies Record<keyof typeof zh, string>

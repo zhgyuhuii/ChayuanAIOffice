@@ -225,4 +225,7 @@ export const zh = {
   aiTabChat: '对话',
   aiSummarizeDesc: '总结全文要点，快速把握内容',
   aiNoModelErrorBody: '配置一个自己的供应商（密钥即用），或登录 察元AIOffice 使用默认模型。全程无需账号。',
+  aiMindMapToggleLayout: '切换布局',
+  aiMindMapLayoutTopDown: '切换为从上到下布局',
+  aiMindMapLayoutLeftRight: '切换为左右分栏布局',
 }

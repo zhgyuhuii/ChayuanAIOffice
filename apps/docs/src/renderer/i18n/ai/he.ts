@@ -230,4 +230,7 @@ export const he = {
   aiTabChat: 'צ׳אט',
   aiSummarizeDesc: 'סיכום המסמך ותפיסת הנקודות המרכזיות',
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
+  aiMindMapToggleLayout: 'החלף פריסה',
+  aiMindMapLayoutTopDown: 'החלף לפריסה מלמעלה למטה',
+  aiMindMapLayoutLeftRight: 'החלף לפריסה משמאל לימין',
 } satisfies Record<keyof typeof zh, string>

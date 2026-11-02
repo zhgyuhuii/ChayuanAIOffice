@@ -234,4 +234,7 @@ export const ar = {
   aiTabChat: 'الدردشة',
   aiSummarizeDesc: 'تلخيص المستند واستيعاب نقاطه الرئيسية',
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
+  aiMindMapToggleLayout: 'تبديل التخطيط',
+  aiMindMapLayoutTopDown: 'التبديل إلى التخطيط من أعلى إلى أسفل',
+  aiMindMapLayoutLeftRight: 'التبديل إلى التخطيط من اليسار إلى اليمين',
 } satisfies Record<keyof typeof zh, string>

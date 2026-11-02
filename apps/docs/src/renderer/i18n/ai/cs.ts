@@ -238,4 +238,7 @@ export const cs = {
   aiChaOfficeLoginBtn: "登录",
   aiTabChat: "对话",
   aiSummarizeDesc: "总结全文要点，快速把握内容",
+  aiMindMapToggleLayout: 'Přepnout rozvržení',
+  aiMindMapLayoutTopDown: 'Přepnout na rozvržení shora dolů',
+  aiMindMapLayoutLeftRight: 'Přepnout na rozvržení zleva doprava',
 } satisfies Record<keyof typeof zh, string>

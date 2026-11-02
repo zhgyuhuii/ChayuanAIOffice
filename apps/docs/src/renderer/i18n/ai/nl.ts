@@ -240,4 +240,7 @@ export const nl = {
   aiTabChat: 'Chat',
   aiSummarizeDesc: 'Vat het document samen met de kernpunten',
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
+  aiMindMapToggleLayout: 'Lay-out wisselen',
+  aiMindMapLayoutTopDown: 'Overschakelen naar de lay-out van boven naar beneden',
+  aiMindMapLayoutLeftRight: 'Overschakelen naar de lay-out van links naar rechts',
 } satisfies Record<keyof typeof zh, string>
