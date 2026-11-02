@@ -127,6 +127,7 @@ import {
   saveWorkbookViaSidecar,
 } from '@chaoffice/xlsx-gateway/gateway/xlsx-package-io'
 import { parsePivotDefinition } from '@chaoffice/xlsx-gateway/gateway/xlsx-pivot'
+import { listWorkbookQueries } from '@chaoffice/xlsx-gateway/gateway/xlsx-connections'
 import type { SheetEditPlan } from '@chaoffice/xlsx-gateway/gateway/xlsx-sheets'
 import { readWorkbookRedactionPart } from './workbook-redactions'
 import type {
@@ -152,6 +153,8 @@ import {
   workbookPivotRequestSchema,
   workbookRedactionsRequestSchema,
   workbookRedactionsResultSchema,
+  workbookQueriesRequestSchema,
+  workbookQueriesResultSchema,
   localImageRequestSchema,
   localImageResultSchema,
   screenCaptureRequestSchema,
@@ -3579,6 +3582,25 @@ export function registerSheetsIpc(): void {
     // "nothing is withheld" would hand the model the values it holds.
     return workbookRedactionsResultSchema.parse(
       await readWorkbookRedactionPart(entry.client, session.snapshotPath),
+    )
+  })
+
+  ipcMain.handle(IPC_CHANNELS.readWorkbookQueries, async (event, input: unknown) => {
+    const entry = sessionFor(event)
+    const request = workbookQueriesRequestSchema.parse(input)
+    const session = entry.sessions.get(request.sessionId)
+    if (!session) throw new Error('Unknown workbook session.')
+    // existence from the manifest, so a missing part reads as absent rather than as a sidecar error
+    const manifest = z
+      .object({ entries: z.array(z.object({ name: z.string() })) })
+      .parse(await entry.client.archiveManifest(session.snapshotPath))
+    const names = new Set(manifest.entries.map((e) => e.name))
+    return workbookQueriesResultSchema.parse(
+      await listWorkbookQueries((path) =>
+        names.has(path)
+          ? readArchiveEntryText(entry.client, session.snapshotPath, path)
+          : Promise.resolve(undefined),
+      ),
     )
   })
 

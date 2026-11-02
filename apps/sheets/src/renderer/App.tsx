@@ -7226,6 +7226,10 @@ export function App({
         onListDefinedNames={() => listDefinedNamesImpl(dataToolsContext())}
         onApplyFormula={(formula, target) =>
           handleApplyFormulaImpl(dataToolsContext(), formula, target)
+        onReadWorkbookQueries={() =>
+          workbookFile
+            ? window.desktopApi.readWorkbookQueries({ sessionId: workbookFile.sessionId })
+            : Promise.resolve([])
         }
         onReadPasteSpecialSource={readPasteSpecialSourceFromRuntime}
         onPasteSpecial={handlePasteSpecial}
