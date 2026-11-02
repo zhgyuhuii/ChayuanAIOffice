@@ -1042,7 +1042,7 @@ export async function blankWorkbook(sheetName = 'Sheet1'): Promise<Buffer> {
       'xl/_rels/workbook.xml.rels',
       rels.replace(
         '</Relationships>',
-        `<Relationship Id="rId${maxRelationshipId(rels) + 1}" ` +
+        `<Relationship Id="${nextFreeRelationshipId(rels)}" ` +
           `Type="${STYLES_REL_TYPE}" Target="styles.xml"/></Relationships>`,
       ),
     )
