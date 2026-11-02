@@ -1127,20 +1127,6 @@ export default function App() {
   docFontsRef.current = docFonts
   /** OCR results for scanned pages, keyed by original page index (reset per doc) */
   const [ocrPages, setOcrPages] = useState<Map<number, OcrPageData>>(new Map())
-  /** the auto-OCR's words as white text inserts: baked into every save while the
-      recognition data is in the session (the post-save reload finds a text layer,
-      so the pass never re-runs and the bake never doubles) */
-  const ocrBakeInserts = useMemo(() => {
-    const out: LocalTextInsert[] = []
-    for (const [origIdx, data] of ocrPages) {
-      const geom = pageGeomRef.current(origIdx)
-      if (!geom) continue
-      for (const input of buildOcrBakeInserts(origIdx, data.words, geom)) {
-        out.push({ id: `ocr-bake-${origIdx}-${out.length}`, input })
-      }
-    }
-    return out
-  }, [ocrPages])
   /** One text extraction per loaded document, shared by search, paragraph boxes,
       the AI tools and the auto-OCR pass */
   const [searchIndexCache] = useState(createSearchIndexCache)
@@ -1205,6 +1191,20 @@ export default function App() {
   /** Latest geometry for async pipelines that must not rebind on rotation (OCR) */
   const pageGeomRef = useRef(pageGeom)
   pageGeomRef.current = pageGeom
+  /** the auto-OCR's words as white text inserts: baked into every save while the
+      recognition data is in the session (the post-save reload finds a text layer,
+      so the pass never re-runs and the bake never doubles) */
+  const ocrBakeInserts = useMemo(() => {
+    const out: LocalTextInsert[] = []
+    for (const [origIdx, data] of ocrPages) {
+      const geom = pageGeomRef.current(origIdx)
+      if (!geom) continue
+      for (const input of buildOcrBakeInserts(origIdx, data.words, geom)) {
+        out.push({ id: `ocr-bake-${origIdx}-${out.length}`, input })
+      }
+    }
+    return out
+  }, [ocrPages])
   /** Current original page index, readable without rebinding the OCR pass on scroll */
   const currentOrigIdxRef = useRef(0)
   currentOrigIdxRef.current = visList[currentPage - 1] ?? 0
@@ -9302,7 +9302,6 @@ export default function App() {
                           className="pdf-thumb-box"
                           style={{ aspectRatio: `${size.width} / ${size.height}` }}
                         >
-<<<<<<< HEAD
                           {!isBlankPage(origIdx) && (
                             <PdfThumb
                               doc={doc}
@@ -9313,24 +9312,6 @@ export default function App() {
                             />
                           )}
                           {/* Pending erase ops patch the thumb too, so it tracks the canvas */}
-=======
-                          {!isBlankPage(origIdx) &&
-                            (failedPages.has(origIdx + 1) ? (
-                              <div className="pdf-page-broken">
-                                <span>{t('loadError')}</span>
-                                <span>#{origIdx + 1}</span>
-                              </div>
-                            ) : (
-                              <PdfPage
-                                doc={doc}
-                                pageNo={origIdx + 1}
-                                scale={scale}
-                                rotationDelta={rotDelta(origIdx)}
-                                visible={rowVisible}
-                                onRenderState={pageRenderState}
-                              />
-                            ))}
->>>>>>> c73df0f70 (fix(pdf): one broken page no longer blanks a large document's open (#2368))
                           {livePreview.has(origIdx) &&
                             (() => {
                               const lp = livePreview.get(origIdx)!
@@ -9525,16 +9506,22 @@ export default function App() {
                               }
                             }}
                           >
-                            {!isBlankPage(origIdx) && (
-                              <PdfPage
-                                doc={doc}
-                                pageNo={origIdx + 1}
-                                scale={scale}
-                                rotationDelta={rotDelta(origIdx)}
-                                visible={rowVisible}
-                                onRenderState={pageRenderState}
-                              />
-                            )}
+                            {!isBlankPage(origIdx) &&
+                              (failedPages.has(origIdx + 1) ? (
+                                <div className="pdf-page-broken">
+                                  <span>{t('loadError')}</span>
+                                  <span>#{origIdx + 1}</span>
+                                </div>
+                              ) : (
+                                <PdfPage
+                                  doc={doc}
+                                  pageNo={origIdx + 1}
+                                  scale={scale}
+                                  rotationDelta={rotDelta(origIdx)}
+                                  visible={rowVisible}
+                                  onRenderState={pageRenderState}
+                                />
+                              ))}
                             {livePreview.has(origIdx) &&
                               (() => {
                                 const lp = livePreview.get(origIdx)!

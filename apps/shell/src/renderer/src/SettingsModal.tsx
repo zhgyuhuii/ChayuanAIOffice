@@ -633,11 +633,13 @@ export function SettingsModal({
   const [tabSleepOn, setTabSleepOn] = useState(true)
   const [restoreSessionOn, setRestoreSessionOn] = useState(false)
   const [autoUpdateCheckOn, setAutoUpdateCheckOn] = useState(true)
+  const [silentInstallOn, setSilentInstallOn] = useState(false)
   const [defaultApp, setDefaultApp] = useState<DefaultAppStatus | null>(null)
   const [defaultAppBusy, setDefaultAppBusy] = useState(false)
   const [defaultAppFailed, setDefaultAppFailed] = useState(false)
   const [aiPrefs, setAiPrefs] = useState<AiPanelPrefs>(DEFAULT_AI_PANEL_PREFS)
   const [authorName, setAuthorName] = useState<AuthorNameSetting>({ value: '', fallback: '' })
+  const [legacyImportPrompt, setLegacyImportPrompt] = useState(true)
   const [channel, setChannel] = useState<'stable' | 'beta'>('stable')
   const [appVersion, setAppVersion] = useState('')
   const [githubStars, setGithubStars] = useState<number | null>(null)
@@ -669,6 +671,10 @@ export function SettingsModal({
       if (alive) setAiPrefs(prefs)
     })
     void window.chaOffice.getAuthorName?.().then((v) => {
+    void window.chaOffice.getLegacyImportPrompt?.().then((v) => {
+      if (alive) setLegacyImportPrompt(v)
+    })
+    void window.chaOffice.getAuthorName?.().then((v) => {
       if (alive) setAuthorName(v)
     })
     void window.chaOffice.getUpdateChannel?.().then((ch) => {
@@ -676,6 +682,10 @@ export function SettingsModal({
     })
     void window.chaOffice.getAutoUpdateCheck?.().then((on) => {
       if (alive) setAutoUpdateCheckOn(on)
+    })
+    void window.chaOffice.getAppVersion?.().then((v) => {
+    void window.chaOffice.getSilentInstallUpdate?.().then((on) => {
+      if (alive) setSilentInstallOn(on)
     })
     void window.chaOffice.getAppVersion?.().then((v) => {
       if (alive && v) setAppVersion(v)
@@ -943,6 +953,25 @@ export function SettingsModal({
                 <div className="set-field">
                   <div className="set-field-text">
                     <div className="set-field-stack">
+                      <div className="set-field-label">{t('setLegacyImportPrompt')}</div>
+                      <div className="set-field-desc">{t('setLegacyImportPromptDesc')}</div>
+                    </div>
+                  </div>
+                  <button
+                    className="set-switch"
+                    role="switch"
+                    aria-checked={legacyImportPrompt}
+                    aria-label={t('setLegacyImportPrompt')}
+                    onClick={() => {
+                      const next = !legacyImportPrompt
+                      setLegacyImportPrompt(next)
+                      void window.aiOffice.setLegacyImportPrompt?.(next).then(setLegacyImportPrompt)
+                    }}
+                  />
+                </div>
+                <div className="set-field">
+                  <div className="set-field-text">
+                    <div className="set-field-stack">
                       <div className="set-field-label">{t('setAiSpellcheck')}</div>
                       <div className="set-field-desc">{t('setAiSpellcheckDesc')}</div>
                     </div>
@@ -1168,6 +1197,25 @@ export function SettingsModal({
                       const next = !autoUpdateCheckOn
                       setAutoUpdateCheckOn(next)
                       void window.chaOffice.setAutoUpdateCheck?.(next).catch(() => {})
+                    }}
+                  />
+                </div>
+                <div className="set-field">
+                  <div className="set-field-text">
+                    <div className="set-field-stack">
+                      <div className="set-field-label">{t('setSilentInstall')}</div>
+                      <div className="set-field-desc">{t('setSilentInstallDesc')}</div>
+                    </div>
+                  </div>
+                  <button
+                    className="set-switch"
+                    role="switch"
+                    aria-checked={silentInstallOn}
+                    aria-label={t('setSilentInstall')}
+                    onClick={() => {
+                      const next = !silentInstallOn
+                      setSilentInstallOn(next)
+                      void window.aiOffice.setSilentInstallUpdate?.(next).catch(() => {})
                     }}
                   />
                 </div>
