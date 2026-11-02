@@ -39,6 +39,7 @@ chaoffice convert notes.md --to docx|html
 chaoffice convert report.docx --to html               # the Word editor's standalone-HTML export
 chaoffice convert page.html --to docx                 # html2docx, same as the HTML app's Export as Word
 chaoffice convert report.docx --to md                 # GFM via the markdown editor's serializer
+chaoffice convert letter.doc --to docx                # Word 97-2003 .doc/.dot through the in-process doc2docx importer
 chaoffice convert book.xlsx --to csv [--sheet Data]   # one sheet, cell text as displayed, UTF-8 BOM, CRLF
 chaoffice capabilities --json                        # which cloud features ChaAI Office has configured (no network call)
 chaoffice search "electron headless export" [--images] [--max 6] --json

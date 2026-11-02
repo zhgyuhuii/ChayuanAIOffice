@@ -24,6 +24,7 @@
   "dependencies": {
     "@chaoffice/ai-provider": "*",
     "@chaoffice/ai-search": "*",
+    "@chaoffice/doc2docx": "*",
     "@chaoffice/docx-engine": "*",
     "@chaoffice/hwp2docx": "*",
     "@chaoffice/odf2ooxml": "*",

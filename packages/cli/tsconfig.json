@@ -24,6 +24,24 @@
       "@chaoffice/ai-provider/browser": ["../ai-provider/src/browser.ts"],
       "@chaoffice/i18n": ["../i18n/src/index.ts"],
       "@chaoffice/ui": ["../ui/src/index.ts"]
+      "@chaoffice/doc2docx": ["../doc2docx/src/index.ts"],
+      "@chaoffice/docx-engine": ["../docx-engine/src/index.ts"],
+      "@chaoffice/pptx-engine": ["../pptx-engine/src/index.ts"],
+      "@chaoffice/pdf2docx": ["../pdf2docx/src/index.ts"],
+      "@chaoffice/pptx-ops": ["../pptx-ops/src/index.ts"],
+      "@chaoffice/pptx-render": ["../pptx-render/src/index.ts"],
+      "@chaoffice/pipelines/slides": ["../pipelines/src/slides/index.ts"],
+      "@chaoffice/pptx-ops/op-docs": ["../pptx-ops/src/op-docs.ts"],
+      "@chaoffice/pptx-ops/font-size": ["../pptx-ops/src/font-size.ts"],
+      "@chaoffice/xlsx-gateway/*": ["../xlsx-gateway/src/*"],
+      "@chaoffice/font-metrics": ["../font-metrics/src/index.ts"],
+      "@chaoffice/electron-utils": ["../electron-utils/src/index.ts"],
+      "@chaoffice/electron-utils/*": ["../electron-utils/src/*"],
+      "@chaoffice/ai-search": ["../ai-search/src/index.ts"],
+      "@chaoffice/ai-provider": ["../ai-provider/src/index.ts"],
+      "@chaoffice/ai-provider/browser": ["../ai-provider/src/browser.ts"],
+      "@chaoffice/i18n": ["../i18n/src/index.ts"],
+      "@chaoffice/ui": ["../ui/src/index.ts"]
     }
   },
   // ambient declarations travel with the sources chaoffice reuses: package module shims and the
