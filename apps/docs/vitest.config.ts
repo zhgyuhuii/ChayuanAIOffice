@@ -11,6 +11,7 @@ export default defineConfig({
     alias: {
       // subpath before the bare name: string aliases are prefix replacements
       '@chaoffice/docx-engine/lazy-media': local('../../packages/docx-engine/src/lazy-media.ts'),
+      '@chaoffice/docx-engine/zip-splice': local('../../packages/docx-engine/src/zip-splice.ts'),
       '@chaoffice/font-metrics/resolve': local('../../packages/font-metrics/src/resolve.ts'),
       '@chaoffice/font-metrics/word-faces.json': local('../../packages/font-metrics/word-faces.json'),
       '@chaoffice/electron-utils/headless-export': local('../../packages/electron-utils/src/headless-export.ts'),
