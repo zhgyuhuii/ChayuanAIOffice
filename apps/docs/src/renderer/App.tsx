@@ -6294,7 +6294,9 @@ export function App() {
     commentsUi.panel,
     // display-mode toggles reflow the text (No Markup hides deletions) and gate
     // the change bars, but dispatch no doc change: remeasure must follow them
+    // (revisions-in-balloons lifts deletions out of the flow the same way)
     revisionDisplay,
+    balloonMode,
     delSectBreaks,
     pendingWatermarkImage,
   ])
