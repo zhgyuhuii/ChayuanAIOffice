@@ -14,7 +14,6 @@ import {
 } from '../line-metrics'
 import { isEastAsianFontName } from '../font-list'
 import { t } from '../i18n/locale'
-import {} from '@chaoffice/docx-engine'
 import { dkBackground } from './dark-page'
 import { runBorderDecls } from './run-border'
 import { fillInk } from './shading-ink'
