@@ -775,13 +775,15 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 5. **i18n 双块叠合**（docs-main vi 双块+menuGoTo/menuZoom 31 个 R18 弃用键混入、sheets-main tMain tr 63 键重复+vi 双块、dialogs shard 22 语言 dlgPasteSpecial* 重复）：键级合并脚本（首现保留+缺键并入+缩进规整）。sheets tMain 整区重建=上游 21×59 全量架构+品牌+本地键（errNoImageModel/errChaOfficeToolsOff×22 语言+zh 察元AIOffice）。
 6. **自动合并静默丢语义三连（R37 教训再证）**：AiPanel 上游 review-panes 四 props/trackChanges prop 与本地 state 架构混血（零消费清退+整文件回 main 基线）；App.tsx note 助手五导入丢失（makeGapNotesEl 导入与本地定义冲突二选一）；executeTool 本地多 getImageSource 形参→上游测试 extras 落错槽（Q6 桩对位补 undefined）。
 7. **误 pop 旧 stash**（git stash pop 空栈时弹了 R36 遗留 WIP，pdf strings UU）：reset+checkout 复位，stash 条目无损保留。防线：分支切换对照基线禁带 stash 操作，用 `git show <ref>:<path>` 直接读。
+8. **品牌反噬轮再伤三处**：①linux 安装脚本 `/opt/ChaAI Office`→`/opt/GenOffice`（cli-link 测试兜出）；②`LEGACY_SKILL_NAME='genoffice'`（上游旧名标识必须保留原名，误改后 install 即自删刚装目录，agent-skills 7 例兜出）；③`X-Genspark-Token-Pass` 头与 `www.genspark.ai` 域 72 处（admission 断签兜出）。**根因一：反噬轮从 pick 态 HEAD 提取标识符白名单——HEAD 当时含上游 GenOffice 串，把本地品牌串也当 damaged 恢复**。防线：标识符恢复必须以 main 基线（05efb54a0）为白名单源，绝不用 pick 态 HEAD。
+9. **本地文件被 pick 静默删除**：apps/shell/build/linux-sidecar-staging.cjs（本地挂账轮模块，上游无此路径）在某快照 pick 中消失——「Cannot find module」兜出。防线照铁律：每轮终检跑 `git diff main..HEAD --diff-filter=D` 全量删除清单逐个过目（本轮实际仅 1 件已裁定删除）。
 
 ### 门禁终态
 
 - 对账：79/79 subject 级全过（含 1 空提交 a2075fa6 #2427）；git cherry 本地独有 +1006（品牌/本地功能基线）。
 - typecheck 全仓 0（34 工作区，doc2docx/hwp2docx 新增两工作区）；lint 0 error（28 warnings 基线，比 R37 +3 均为本轮上游件 react-hooks 提示）；cargo test 320 全绿（+36：external_links/stream_patch/zip9 新测试）；sidecar debug+release 重编完成。
 - 品牌终检：改动文件文本面 GenOffice/Genspark/genoffice/genspark 零残留（豁免：GENOFFICE_* env、genspark.ai 域与 X-Genspark-Native-Pass 线协议头、@genspark/cli、上游仓 URL 注释、i18n 驼峰键名、字体二进制名表内部字节）；字体度量族文件改名 chaoffice-{ethiopic,yahei-latin}.json+family 字段品牌化。
-- vitest 全工作区：见下方补记。
+- vitest 全工作区绿：约 19092 用例通过（门禁 g8 轮 + packaged-cli-version linux ELF 暂存单验 5/5——R37 坑③同款环境件，mac 侧 mac-universal sidecar 已还原）。逐文件修复链：agent-skills LEGACY 名还原（7 例）→help-sync sheet links 行补（1 例）→docs 适配批（font-faces/line-factors/para-layout golden 31 件 hash 重算/truths 全形态重放/子路径 alias×5/save-as 阻挡目录对齐/nativeImage+styleDeletes 桩/save-track 4 例，共 23 例）→sheets no-edits reason+指示器重织（2 例）→shell linux 脚本路径还原+kde require 基准（4 例）→ai-provider token-pass 头恢复（3 例）。
 
 
 ## 第三十七轮（2026-10-30，上游 28e9c100..df9a64c5 45 提交全吸收，施工于 sync/37-upstream；终点无新 tag（describe=v0.12.115-74-gdf9a64c5），后三位维持 0.12.115；打包 Z+1：1.0.14→1.0.15）
