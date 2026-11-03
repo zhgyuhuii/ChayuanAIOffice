@@ -42,7 +42,7 @@ export function opencodeSessionHeaders(
 }
 
 /**
- * DeepSeek V4.1 Flash under the Genspark pool spelling. Only the proxy serves
+ * DeepSeek V4.1 Flash under the ChaAI Office pool spelling. Only the proxy serves
  * this id; api.deepseek.com knows the model as `deepseek-flash`, so the direct
  * provider lists the vendor spelling and keeps this one as an accepted alias.
  */
@@ -196,6 +196,27 @@ export const AI_PROVIDERS: AiProviderMeta[] = [
     keyPlaceholder: 'sk-...',
   },
   {
+    id: 'siliconflow',
+    label: 'SiliconFlow',
+    // Lab-namespaced ids exactly as the pricing page and GET
+    // api.siliconflow.cn/v1/models (type=text&sub_type=chat) list them
+    // (2026-11-02); the rest of the catalog works as-is when typed in, and a
+    // Pro/<id> prefix selects the accelerated serving. OpenAI-compatible
+    // /chat/completions; docs: https://api-docs.siliconflow.cn. The CN and
+    // global platforms (api.siliconflow.com) do not share keys or base URLs.
+    keyPlaceholder: 'sk-...',
+  },
+  {
+    id: 'ppio',
+    label: 'PPIO',
+    // Lowercase lab-namespaced ids exactly as GET <base>/models lists them for
+    // the OpenAI-compatible endpoint (2026-11-02); the rest of the catalog
+    // works as-is when typed in. Docs: https://ppio.com/docs/model/llm — the
+    // official SDK base_url is https://api.ppio.com/openai, so the chat
+    // endpoint rides /openai/v1.
+    keyPlaceholder: 'sk-...',
+  },
+  {
     id: 'opencode-zen',
     label: 'OpenCode Zen',
     keyPlaceholder: 'API Key',
@@ -204,6 +225,20 @@ export const AI_PROVIDERS: AiProviderMeta[] = [
     id: 'opencode-go',
     label: 'OpenCode Go',
     keyPlaceholder: 'API Key',
+  },
+  {
+    id: 'commandcode',
+    label: 'Command Code',
+    // Coding-plan gateway (commandcode.ai/docs/provider): one key serves
+    // OpenAI Chat Completions and Anthropic Messages at
+    // api.commandcode.ai/provider/v1; every plan except the $1 Go tier has
+    // API access (GOAT = $10/month). Vendor-prefixed ids exactly as the CLI
+    // model reference lists them (2026-11-03); the rest of the catalog works
+    // as-is when typed in. Claude ids answer only on /v1/messages, so they
+    // ride the Anthropic route. GPT-5.4+/6 call tools only over the Responses
+    // API, which this route does not take, so GPT and Grok stay out as on the
+    // OpenCode tiers.
+    keyPlaceholder: 'CMD API key',
   },
   {
     id: 'custom',
@@ -280,7 +315,7 @@ export function activeProvider(settings: AiSettings): AiProviderId {
 const RETIRED_MODELS: Partial<Record<AiProviderId, Record<string, string>>> = {
   // chat/reasoner retired 2026-07-24 (thinking became a request parameter);
   // V4 Flash and V4 Flash Vision Exp retired 2026-09-10 in favour of V4.1
-  // Flash; every one of them, and the Genspark pool spelling that was the
+  // Flash; every one of them, and the ChaAI Office pool spelling that was the
   // listed id until 0.11, now resolves to the vendor's own `deepseek-flash`.
   deepseek: {
     'deepseek-chat': 'deepseek-flash',

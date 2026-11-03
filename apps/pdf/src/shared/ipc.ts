@@ -7,6 +7,7 @@ export type { PrintDuplex, PrintJobOptions, PrinterInfo }
 export const PDF_CHANNELS = {
   consumePending: 'pdf:consume-pending',
   readFile: 'pdf:read-file',
+  readFileChunk: 'pdf:read-file-chunk',
   decryptPdf: 'pdf:decrypt',
   save: 'pdf:save',
   writeRecovery: 'pdf:write-recovery',
@@ -1032,6 +1033,14 @@ export interface PdfApi {
   openSourcePath(path: string): Promise<void>
   /** Read pdf bytes. Only paths granted to this view are allowed */
   readFile(path: string): Promise<ArrayBuffer>
+  /** one slice of a granted file, with the file's size so the reader loop
+   *  needs no separate stat: a 42 MB one-shot ArrayBuffer over IPC has
+   *  killed renderers before first paint on Windows (chaoffice#2366) */
+  readFileChunk(
+    path: string,
+    start: number,
+    end: number,
+  ): Promise<{ data: Uint8Array; fileSize: number }>
   /** Open a password-protected document for editing: plain bytes, the /P the file
       carried, whether a password was needed at all (false: owner-only file) and
       which password opened it (the owner's ignores the /P limits) */
@@ -1060,6 +1069,7 @@ export interface PdfApi {
       and the diff would report phantom changes on identical files */
   compareReadOpen(
     path: string,
+    password?: string,
   ): Promise<
     { ok: true; name: string; pageCount: number; pages: string[] } | { ok: false; reason: string }
   >

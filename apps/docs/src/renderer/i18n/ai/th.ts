@@ -98,6 +98,11 @@ export const th = {
     'เปิดการติดตามการเปลี่ยนแปลง: การแก้ไขเนื้อหาของ AI จะถูกทำเครื่องหมายเป็นการเปลี่ยนแปลง (แทรกขีดเส้นใต้ ลบขีดทับ) ยอมรับหรือปฏิเสธได้ในรีวิว',
   aiTrackOffTitle:
     'ปิดการติดตามการเปลี่ยนแปลง: การแก้ไขของ AI มีผลทันที (ยังย้อนกลับได้ผ่านสแนปช็อตของเวอร์ชัน)',
+  aiRevisionBarTitle: 'การแก้ไข',
+  aiRevisionCount: 'การเปลี่ยนแปลง {count} รายการ',
+  aiRevisionRejectAll: 'ปฏิเสธทั้งหมด',
+  aiRevisionAcceptAll: 'ยอมรับทั้งหมด',
+  aiRevisionPara: 'ย่อหน้า {n}',
   aiTurnLimit:
     '(ถึงขีดจำกัดรอบการเรียกเครื่องมือของคำขอนี้แล้ว คำตอบด้านบนอิงจากขั้นตอนที่เสร็จสิ้นแล้ว อาจไม่สมบูรณ์)',
   aiStopped: '(หยุดแล้ว)',
@@ -229,4 +234,7 @@ export const th = {
   aiTabChat: 'แชท',
   aiSummarizeDesc: 'สรุปเนื้อหาเอกสารและเข้าใจประเด็นสำคัญได้เร็ว',
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
+  aiMindMapToggleLayout: 'สลับเลย์เอาต์',
+  aiMindMapLayoutTopDown: 'สลับเป็นเลย์เอาต์แบบบนลงล่าง',
+  aiMindMapLayoutLeftRight: 'สลับเป็นเลย์เอาต์แบบซ้ายไปขวา',
 } satisfies Record<keyof typeof zh, string>

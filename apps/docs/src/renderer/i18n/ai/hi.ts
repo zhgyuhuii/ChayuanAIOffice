@@ -100,6 +100,11 @@ export const hi = {
     'परिवर्तन ट्रैकिंग चालू: AI के सामग्री बदलाव संशोधनों के रूप में चिह्नित होते हैं (सम्मिलन रेखांकित, विलोपन कटे हुए); समीक्षा में स्वीकारें या अस्वीकारें',
   aiTrackOffTitle:
     'परिवर्तन ट्रैकिंग बंद: AI के बदलाव तुरंत लागू होते हैं (संस्करण स्नैपशॉट से अब भी रोलबैक किया जा सकता है)',
+  aiRevisionBarTitle: 'संशोधन',
+  aiRevisionCount: '{count} लंबित परिवर्तन',
+  aiRevisionRejectAll: 'सभी अस्वीकारें',
+  aiRevisionAcceptAll: 'सभी स्वीकारें',
+  aiRevisionPara: 'अनुच्छेद {n}',
   aiTurnLimit:
     '(इस अनुरोध के लिए टूल कॉल की सीमा पूरी हो गई; ऊपर का उत्तर अब तक पूर्ण हुए चरणों पर आधारित है और अधूरा हो सकता है।)',
   aiStopped: '(रोका गया)',
@@ -231,4 +236,7 @@ export const hi = {
   aiTabChat: 'चैट',
   aiSummarizeDesc: 'दस्तावेज़ का सारांश बनाकर मुख्य बिंदु समझें',
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
+  aiMindMapToggleLayout: 'लेआउट बदलें',
+  aiMindMapLayoutTopDown: 'ऊपर से नीचे वाले लेआउट पर स्विच करें',
+  aiMindMapLayoutLeftRight: 'बाएँ से दाएँ वाले लेआउट पर स्विच करें',
 } satisfies Record<keyof typeof zh, string>

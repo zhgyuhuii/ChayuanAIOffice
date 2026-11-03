@@ -101,6 +101,11 @@ export const pt = {
     'Controle de alterações ativado: as edições de conteúdo da IA são marcadas como revisões (inserções sublinhadas, exclusões tachadas); aceite ou rejeite em Revisão',
   aiTrackOffTitle:
     'Controle de alterações desativado: as edições da IA são aplicadas imediatamente (ainda é possível reverter pelos instantâneos de versão)',
+  aiRevisionBarTitle: 'Revisões',
+  aiRevisionCount: '{count} alterações pendentes',
+  aiRevisionRejectAll: 'Rejeitar tudo',
+  aiRevisionAcceptAll: 'Aceitar tudo',
+  aiRevisionPara: 'Parágrafo {n}',
   aiTurnLimit:
     '(Limite de chamadas de ferramentas desta solicitação atingido; a resposta acima reflete as etapas concluídas até agora e pode estar incompleta.)',
   aiStopped: '(Interrompido)',
@@ -236,4 +241,7 @@ export const pt = {
   aiTabChat: 'Bate-papo',
   aiSummarizeDesc: 'Resumir o documento e captar os pontos principais',
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
+  aiMindMapToggleLayout: 'Mudar layout',
+  aiMindMapLayoutTopDown: 'Mudar para o layout de cima para baixo',
+  aiMindMapLayoutLeftRight: 'Mudar para o layout da esquerda para a direita',
 } satisfies Record<keyof typeof zh, string>

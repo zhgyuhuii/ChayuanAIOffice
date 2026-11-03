@@ -67,10 +67,6 @@ import appIconPath from './assets/app-icon.png?asset'
 const APP_ICON = nativeImage.createFromPath(appIconPath)
 import { createI18n, isLang, normalizeLang, setUiLang, type Lang } from '@chaoffice/i18n'
 import {
-  AUTHOR_NAME_KEY,
-  readAuthorNameSetting,
-  sanitizeAuthorName,
-  systemAuthorName,
   DEFAULT_SAVE_DIR_KEY,
   DROP_OPEN_CHANNEL,
   GITHUB_REPO_URL,
@@ -98,9 +94,20 @@ import {
   setUpdateCheckInvoker,
   settingsMenuItem,
   installRendererProtocol,
+  AUTHOR_NAME_KEY,
+  readAuthorNameSetting,
+  sanitizeAuthorName,
+  systemAuthorName,
+  readLegacyImportPrompt,
+  writeLegacyImportPrompt,
 } from '@chaoffice/electron-utils'
 import { createMainProcessProxyDispatcher } from '@chaoffice/electron-utils/main-proxy'
-import { readAppSettings, writeAppSetting, writeAppSettings, writeAppSettingThen } from './app-settings'
+import {
+  readAppSettings,
+  writeAppSetting,
+  writeAppSettings,
+  writeAppSettingThen,
+} from './app-settings'
 import { OPEN_DOCUMENTS_FILE, clearOpenDocuments, publishOpenDocuments } from './open-documents'
 import {
   LAST_SESSION_DOCUMENTS_KEY,
@@ -675,6 +682,13 @@ let cachedAutoUpdateCheck: boolean | null = null
 function autoUpdateCheckEnabled(): boolean {
   cachedAutoUpdateCheck ??= readAppSettings(APP_SETTINGS_PATH()).autoUpdateCheck !== false
   return cachedAutoUpdateCheck
+}
+
+let cachedSilentInstallUpdate: boolean | null = null
+
+function silentInstallUpdateEnabled(): boolean {
+  cachedSilentInstallUpdate ??= readAppSettings(APP_SETTINGS_PATH()).silentInstallUpdate === true
+  return cachedSilentInstallUpdate
 }
 
 let cachedTheme: UiTheme | null = null
@@ -4442,7 +4456,7 @@ function ensureFileIndexer(): FileIndexer | null {
 }
 
 const SEARCH_EXT_FAMILY: Record<string, readonly string[]> = {
-  docx: ['docx', 'doc', 'odt', 'ott'],
+  docx: ['docx', 'doc', 'dot', 'odt', 'ott', 'hwpx', 'hwp'],
   xlsx: ['xlsx', 'xlsm', 'xls', 'csv', 'tsv', 'ods', 'ots'],
   pptx: ['pptx', 'ppt', 'odp', 'otp'],
   md: ['md', 'markdown', 'txt', 'json'],
@@ -5086,15 +5100,18 @@ const MD_RE = /\.(md|markdown)$/i
 const HTML_RE = /\.html?$/i
 
 /**
- * Single source of truth for the open-dialog filter. Includes the
- * legacy .doc/.ppt binaries so they are selectable and surface the explicit
- * "not supported" dialog via openDocumentPath instead of being grayed out.
+ * Single source of truth for the open-dialog filter. Includes the still-legacy
+ * .ppt binary so it is selectable and surfaces the explicit "not supported"
+ * dialog via openDocumentPath instead of being grayed out; .doc/.dot route into
+ * the docs import filter.
  */
 const OPEN_DIALOG_EXTENSIONS = [
   'docx',
   'doc',
   // ODF import (upstream #1982): opens as a converted OOXML copy (odf2ooxml);
   // ott/ots/otp templates follow their parent type
+  'doc',
+  'dot',
   'odt',
   'ott',
   'ods',
@@ -5111,6 +5128,11 @@ const OPEN_DIALOG_EXTENSIONS = [
   'json',
   'pptx',
   'ppt',
+  'odt',
+  'hwpx',
+  'hwp',
+  'odp',
+  'otp',
   'pdf',
   'md',
   'markdown',
@@ -5998,7 +6020,7 @@ function registerHomeIpc(): void {
       title: tm('dlgOpenTitle'),
       filters: [
         { name: tm('filterSupported'), extensions: OPEN_DIALOG_EXTENSIONS },
-        { name: tm('filterWord'), extensions: ['docx', 'doc', 'odt', 'ott'] },
+        { name: tm('filterWord'), extensions: ['docx', 'doc', 'dot', 'odt', 'ott', 'hwpx', 'hwp'] },
         {
           name: tm('filterExcel'),
           extensions: ['xlsx', 'xlsm', 'xls', 'csv', 'tsv', 'ods', 'ots'],
@@ -6274,6 +6296,14 @@ function registerHomeIpc(): void {
     cachedAutoUpdateCheck = on
   })
 
+  ipcMain.handle(HOME_CHANNELS.getSilentInstallUpdate, () => silentInstallUpdateEnabled())
+
+  ipcMain.handle(HOME_CHANNELS.setSilentInstallUpdate, (_event, on: unknown) => {
+    if (typeof on !== 'boolean') return
+    writeAppSetting(APP_SETTINGS_PATH(), 'silentInstallUpdate', on)
+    cachedSilentInstallUpdate = on
+  })
+
   ipcMain.handle(
     HOME_CHANNELS.onboardingSeen,
     (): boolean => readAppSettings(APP_SETTINGS_PATH()).onboardingSeen === true,
@@ -6335,6 +6365,14 @@ function registerHomeIpc(): void {
         wc.send('app:author-name-changed', effective)
     }
     return authorNameSetting()
+  })
+
+  ipcMain.handle(HOME_CHANNELS.getLegacyImportPrompt, (): boolean =>
+    readLegacyImportPrompt(APP_SETTINGS_PATH()),
+  )
+  ipcMain.handle(HOME_CHANNELS.setLegacyImportPrompt, (_event, prompt: unknown): boolean => {
+    writeLegacyImportPrompt(APP_SETTINGS_PATH(), prompt !== false)
+    return readLegacyImportPrompt(APP_SETTINGS_PATH())
   })
 
   ipcMain.handle(HOME_CHANNELS.getAutoSaveDefault, (): AutoSaveDefault => currentAutoSaveDefault())
@@ -8990,7 +9028,12 @@ app.whenReady().then(async () => {
   setUpdateCheckInvoker(() => void checkForUpdatesNow())
   // every app's Settings entry (⌘, / Ctrl+,) lands on the shell's Settings view
   setSettingsInvoker(() => openSettingsView())
-  initAutoUpdater(() => shellWindow, currentUpdateChannel(), autoUpdateCheckEnabled)
+  initAutoUpdater(
+    () => shellWindow,
+    currentUpdateChannel(),
+    autoUpdateCheckEnabled,
+    silentInstallUpdateEnabled,
+  )
   // resource watchdog: a renderer that stays hot for minutes gets diagnostics
   // recorded and the user an offer to close the document (headless exports
   // are short-lived and unattended)

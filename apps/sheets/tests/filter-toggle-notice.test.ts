@@ -5,7 +5,7 @@
  * active selection, a range it cannot take — and the ribbon used to drop that
  * answer on the floor. The sheet kept exactly the state it had, no filter
  * arrows appeared, and nothing said why: the button read as dead (user
- * report, genoffice#2243).
+ * report, chaoffice#2243).
  *
  * While the sheet is still loading, the gate in App.tsx has its own answer
  * (a footer note, a "load it all" prompt, or the column-projection path's
@@ -29,6 +29,8 @@ interface Harness {
 function makeFilterHarness(options: {
   ok: boolean
   preloadComplete?: boolean
+  /** no lazy workbook state yet (plain in-memory workbook) */
+  noState?: boolean
   /** the effective protection of the active sheet; `'unknown'` = not indexed yet */
   sheetProtection?: SheetProtectionInfo | 'unknown'
 }): Harness {
@@ -52,7 +54,7 @@ function makeFilterHarness(options: {
         },
       },
     },
-    lazyWorkbookRef: { current: state },
+    lazyWorkbookRef: { current: options.noState ? null : state },
     setMessage: (message: string) => {
       messages.push(message)
     },
@@ -70,6 +72,13 @@ describe('the Filter toggle', () => {
     await settle()
     expect(messages).toHaveLength(1)
     expect(messages[0]).toMatch(/filter|\u7b5b\u9009/i)
+  })
+
+  it('speaks when there is no lazy workbook state at all', async () => {
+    const { ctx, messages } = makeFilterHarness({ ok: false, noState: true })
+    handleRibbonCommand(ctx, 'filter-toggle')
+    await settle()
+    expect(messages).toHaveLength(1)
   })
 
   it('stays quiet when the filter went on', async () => {

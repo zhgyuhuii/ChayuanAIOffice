@@ -1988,6 +1988,20 @@ button.check-item:hover {
   white-space: nowrap;
 }
 
+/* Formula view (sheetView/@showFormulas) is a per-sheet state that a save
+ * persists, so a sheet can open showing formulas instead of values. The flag
+ * keeps saying so for as long as the sheet is in that mode: the one-off toast
+ * that announced the switch is gone long before anyone notices. */
+.status-flag {
+  flex: none;
+  padding: 0 6px;
+  border-radius: var(--radius-small);
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--sheets-chip-bg);
+  white-space: nowrap;
+}
+
 .status-right {
   display: flex;
   align-items: center;
@@ -5992,7 +6006,7 @@ textarea:focus {
  * the two differ — a dark app with the document theme pinned light — the UA
  * system colors inside the popups resolve to their dark variants: the menu
  * item buttons only carry Univer's dark-mode text class, so their labels turn
- * white on the light menu surface and vanish (genoffice#2041). Track Univer's
+ * white on the light menu surface and vanish (chaoffice#2041). Track Univer's
  * own dark flag so its popups get the UA scheme matching what they render. */
 .univer-popup {
   color-scheme: light;

@@ -736,6 +736,56 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 挂账 | sheets i18n dialogs vi.ts 少 9 个 fork 本地键（HEAD 继承欠账，en 回退兜底，补译即销）；ai-host 若原生支持 settings-changed 推送可移除 sheets-main 的 fs.watch 包装广播 |
 | 门禁 | typecheck 全仓 0；vitest 全绿：docs 3152/sheets 3437/ai-provider 494/agent-core 176/xlsx-gateway 248/pptx-engine 1294/shell 931/slides 1475/md 1047/pdf 868/html 319/ui 250/docx-engine 1717/pdf2docx 822/cli 313/electron-utils 257…；cargo test 228 全绿；lint 0；品牌 grep 豁免外零残留；check:help-langs 21 语言全齐 |
 
+## 第三十八轮（2026-11-03，上游 df9a64c5..e1f50e90 79 提交全吸收，施工于 sync/38-upstream；终点 describe=v0.12.600-13-ge1f50e90——区间含新 tag v0.12.600（=1a0fcec9 快照），后三位取 tag 口径 0.12.600；前缀三段维持 1.0.15（本轮未打包））
+
+> 上游 79 提交=两快照巨件（10-30 #2341 921 文件 +81k；11-02 #2437=tag v0.12.600 276 文件 +19k/−12.5k）+doc2docx 新包九阶段（legacy .doc 导入引擎 #2370-2386）+hwp2docx 新包（.hwp/.hwpx #2404）+docs 特性批（批注带图 #2376/嵌套内容控件 #2356/邮件合并标签信封 #2374/DOCX→PDF 四修 #2364/页眉图片 #2322/remove_parts #2351/自定义属性类型化 #2354/结构编辑保版式 #2411/分页符旁编辑 #2441/未触表字节一致 #2405/保存 fuzz 套件 #2445）+sheets 特性批（Queries & Connections #2345/外部链接三连 #2319+2343+2450/公式显示指示器 #2340/功能区滚轮 #2346/x14 DV 收尾）+pdf（8MiB 分片 #2373/坏页不炸开 #2368/worker 字节 #2415）+shell（静默更新 #2399+skills All tab #2438+AI 命名 preamble #2361+KB 徽章 #2401）+ai-provider（SiliconFlow/PPIO/Command Code #2439+openai-responses 成熟版）+mcp（fill_template/read_docx_properties #2409+sheet_links #2408+插图 #2344 系）+file-parse 修复批×9+CUPS 静默打印 #2355+思维导图共享核/左右布局 #2395-2398+KDE 模板 #2403。1416 文件 +127k/−13.7k。**Rust 10 文件**（external_links.rs/stream_patch.rs 新模块+recalc/archive/protocol…）→ sidecar debug+release 重编、cargo 320 绿。**依赖变更**：新 workspace doc2docx/hwp2docx+@rhwp/core 0.8.7+file-parse 增 xlsx-gateway 依赖 → npm install 重生 lock。
+
+### 《冲突与裁决清单》（79 项按域归组，要点摘录）
+
+| # | 域/提交 | 上游意图 | 本地状态与裁决 |
+|---|---|---|---|
+| 快照1 | 36a509e8 #2341 | 921 文件综合快照 | 57 冲突（49UU+1AA+7DU）全清。**openai-responses.ts（AA）取上游成熟版**（reasoning 签名回放/预算/usage）+chaofficeAttributionHeaders 织回两处 fetch；providers/registry/chat/stream 对齐上游（registry OpenAI resolveEndpoint 动态路由 modelUsesResponsesApi 采納+品牌注释）；**media/providers.test 静态 models seeds 剥除/拒收**（live-discovery，沿 R35/R37）；ai-search gsk.ts 语义增量（不再借共享 CLI 登录）重放进 chaoffice.ts+readFileSync import 收口；native-waf 默认开测试语义跟进（chaoffice-auth.test =0 opt-out+by default 用例）；docs AiPanel 七块全取 ours（EditQueue/ToolActivity/skills bodies 均已在本地 AiConversationBody 架构实现）；docs App DockShell 区保 ours+ReviewingPane 织入（自动并入 469/6205/9015）；extensions 浮动表旧内联块取 theirs（上游 anchor-geometry/tableFloatFacts 超集引擎，pushWhole/lift 探针 2026-10-13）；fonts.css 四块本地别名删（生成件覆盖）+fonts.generated.css 新文件品牌重放（ChaOfficeUIKanaJP 二进制/ChaAI Office YaHei Latin 族名）；doc-style-css/grid-strut.test ！important 采纳+本地族名；pdf App 三块全 ours（错位重复，主页 tab 功能本地全有）；sheets-main ODF 提示 20 块取 theirs 文案+ChaAI Office 品牌；R19 快照缺件族 7 件 DU 维持删除（comment-controls/find-replace/simple-markup/lucida/nav-pane/gsk/gsk-reauth）；e2e freeMcpPort 改名采纳+chaoffice tmpdir 前缀保留；SettingsModal 更新区取 theirs 结构+chaOffice 桥 |
+| 5-9 | #2412/#2411/#2344/#2400/#2354 | docs 保版式/cli 尾节修订/软换行/类型化属性 | #2412/#2411 干净；#2344 adapted（merge.test DU 维持删，语义由新 docs-read-softbreak.test 覆盖）；#2354 docx-engine 类型化属性+空模板干净，cli README/docx.ts 取 theirs+品牌 |
+| 10-12 | #2348/#2352/#2353 | 测试卫生/字节圈限/move-range 清理 | #2348 adapted（comment-controls DU 维持删+五测试 afterEach 导入 theirs+品牌）；#2352 干净；#2353 patch.ts 导入并集+品牌 |
+| 13-16 | #2392/#2356/#2357/#2345 | CJK 字体槽/嵌套控件/连接件不动/Queries 面板 | #2392 干净；#2356 cli README theirs+品牌（wrap/unwrap_content_control 文档）；#2357 干净；#2345 adapted：sheets-main/App/ExcelShell 并集（readWorkbookQueries 通道+QueriesDialog）+dialogs shard 22 语言 dlgQueries*/dlgPasteSpecial* 并入（后去重） |
+| 17-19 | #2395/#2397/#2403 | 思维导图共享核/左右布局/KDE 模板 | #2395 adapted：docs/markdown mind-map.ts UD 删（核心进 agent-core/mind-map.ts，本地净化正则加固上游已同款——零重放）；#2397 干净；#2403 README Q5-② 保本地+after-install 并集（chaoffice#2384） |
+| 20-24 | #2346/#2361/#2376/#2409/#2404 | 滚轮/AI 命名 preamble/批注带图/mcp 工具/hwp 打开 | #2346 RibbonHomeTab useScrollWindow 并集；#2361 ai-naming-service 保本地登录口径+NAMING_MAX_TOKENS 并入；#2376 CommentImage 导入并集（submitNewComment 图参自动并入）；#2409 document-tools 并集（read_docx_properties+本地 open_in_chaoffice）；#2404 adapted：docs-main hwpImportDetail 全语系+品牌、shell index doc/dot 扩展名并集、electron-builder rhwp 资源行注入+hwpx/hwp 文件关联块、Home FILTER_FAMILY、README/lock Q5 保本地、cli package.json 历史重复债顺手去重 |
+| 25-27 | #2398/#2340/#2355 | md 思维导图布局/公式指示器/CUPS 打印 | #2398 tools.ts 改共享核导入；#2340 ExcelShell 大区域保 ours+showFormulas 织入本地 Ribbon 调用（状态栏指示器自动并入）；#2355 docs-main/print-args/pdf-main 导入并集（printPdfViaCups） |
+| 28-30 | #2368/#2319/#2312 | pdf 坏页/外部链接活值/cli 重算 | #2368 pdf App boot-logo 保 ours+openError 文案并集；#2319 干净；#2312 xlsx-recalc/xlsx.test 测试取 theirs（引擎行为变更） |
+| 31-33 | #2414/#2322/#2320 | zip9 Result/页眉图片/cli sheet links | #2414 archive.rs 整体取 theirs（resolve_relationship_target/has_uri_scheme 两侧逐字一致，本地无独有内容）+sync_tests 并回；#2322 hf-sections 导入并集+hf-sections.test DU 维持删（R19 族）；#2320 cli README/sheet/xlsx theirs+品牌（maxRelationshipId→nextFreeRelationshipId 调用点随后续提交对齐） |
+| 34-35 | #2399/#2351 | 静默更新/remove_parts | #2399 见快照2 行；#2351 cli theirs+品牌 |
+| 36-38 | #2364/#2413/#2408 | DOCX→PDF 四修/合并跟进/mcp sheet_links | #2364 KR 字体二进制 DU 重命名跟随（GenOffice*→ChaOffice* 本地名承载新内容+fonts README 品牌）；#2413 干净；#2408 skills/genoffice SKILL UD 维持删 |
+| 39 | #2426 | 评审跟进批 | 干净 |
+| 40-48 | #2415+doc2docx 九阶段+#2386 | pdf worker 字节/legacy .doc 引擎 | 全干净（新包 A 区直落）；cli package.json/tsconfig/README 依赖接线 theirs+品牌（tsconfig doc2docx 路径并集） |
+| 49-52 | #2416-2423 file-parse×5+#2418 | XLSX/DOCX 解析修复批 | file-parse package.json 增 xlsx-gateway 依赖+brand；xlsx.ts 导入并集；干净 |
+| 53-55 | #2427（空）/#2429/#2430 | 基线刷新/docx 族清单/打印表格分页 | #2427 **空 pick 对账**（内容已随前件落地，--allow-empty 补空提交）；#2429 干净；#2430 干净 |
+| 快照2 | 1a0fcec9 #2437 | 276 文件快照（=tag v0.12.600） | 25 冲突全清。docs-main/print/line-numbers/margin-annotations/inline-rule/hf-dom 导入 theirs+品牌；App.tsx watermark 调用织入本地 ctx 守卫；pagination-gaps 两块保 ours（本地 gap 折叠双击 toggle，变量域核对有效）+上游 topPushPx 新机制自动并入；Ribbon/ribbon-design-tab watermark 类型并集；vitest zip-splice 别名并集；fonts.generated.css 二次重生成整体取 theirs+品牌重放；strings.ts（shell）18 块本地品牌值+setSilentInstall(Desc) 新键 22 语言并入+品牌；SettingsModal 静默安装 effect 修复后织入；i18n README 族 theirs（基线既有件跟随）；README/lock Q5 保本地 |
+| 56-60 | #2441/#2438/#2405/#2374/#2343 | 气球重排/skills All tab/未触表字节/邮件合并标签/外部链接面板 | #2441 干净；#2438 imported-skills getUiLang 并集；#2405 干净；#2374 MailMergePanel MergeOutputMode 并集+ribbon tr shard 键级并集；#2343 save-actions **保 ours（新建延迟落盘铁律共识，R18 拷问①沿例拒上游 unsavedNew 首存落盘）** |
+| 61-65 | #2373/#2443/#2448/#2439/#2447 | pdf 分片/目录日期/ruby/SiliconFlow 等/资源清扫 | #2373 pdf-main fs 导入并集（mkdir/rm 本地保留+open）；#2443/#2448/#2447 干净；#2439 adapted：providers 三新厂商条目采納+**静态 models/defaultModel 剥除**（siliconflow/ppio/commandcode）+providers.test 静态 seeds 块拒收+shell provider-logos 补三枚 SVG（沿 R37 cloudgpu 型） |
+| 66-67 | #2453/#2450 | cellXf 混合解析/外部链接 host schema | 干净 |
+| 68 | #2445 | 保存管线 fuzz 套件 | 干净 pick（终点） |
+| 收口 | — | — | 品牌全量 pass（独立词边界版，352 文件）；tMain/对话框 shard/tr/vi 双块合并重建；AiPanel 整体回 main 基线+aiRevisionAuthor 再导出；AiConversationBody 引用面修复；docs-main 本地 B 区导入恢复（ConversationStore/storage-adapter） |
+
+### 施工事故与修复（同轮闭环）
+
+1. **re.sub 替换串转义吃源码**：`\0`/`\x00` 类（Rust `decoded.contains('\0')`）被当组引用——archive.rs 曾整块丢失，stage 复位+缝合重做。**防线：替换一律用函数形式（lambda），字符串模板直传必查反斜杠**。
+2. **checkout -m 生成 ours/theirs 风格标记**（非 HEAD/远程格式），正则漏吃→标记入提交（cli README/docx.ts），tsc 前发现 amend 修复。**防线：解冲突只用 git show :2:/:3: 提取，禁用 checkout -m**。
+3. **品牌 pass 两轮自伤**：①一遍 pass 的标识符保护正则把裸词也当标识符恢复→50 文件品牌串反转回 GenOffice；②二遍独立词版又伤连字符豁免串——`X-Genspark-Native-Pass` 线协议头（Headers 非法名炸测试兜出）与 `www.genspark.ai` 域 72 处（admission 断签兜出）。修复=线协议头/域名专项回滚+基线计数对照（markdown strings 22/22、shell index 4/4 核对一致）。**防线：品牌替换必须带豁免清单负向断言（hyphen 连接的 Genspark/genspark.ai 任何子域形态），全量跑完对豁免 token 做基线计数 diff**。
+4. **大区域并集的括号/导入碎裂**（SettingsModal effect 体、sheets App onApplyFormula 箭头、ExcelShell import 开括号、docs Ribbon 孤儿闭括号）：全部 tsc 兜出后逐处缝合。防线照 R37：union 后必跑 tsc 再继续 pick。
+5. **i18n 双块叠合**（docs-main vi 双块+menuGoTo/menuZoom 31 个 R18 弃用键混入、sheets-main tMain tr 63 键重复+vi 双块、dialogs shard 22 语言 dlgPasteSpecial* 重复）：键级合并脚本（首现保留+缺键并入+缩进规整）。sheets tMain 整区重建=上游 21×59 全量架构+品牌+本地键（errNoImageModel/errChaOfficeToolsOff×22 语言+zh 察元AIOffice）。
+6. **自动合并静默丢语义三连（R37 教训再证）**：AiPanel 上游 review-panes 四 props/trackChanges prop 与本地 state 架构混血（零消费清退+整文件回 main 基线）；App.tsx note 助手五导入丢失（makeGapNotesEl 导入与本地定义冲突二选一）；executeTool 本地多 getImageSource 形参→上游测试 extras 落错槽（Q6 桩对位补 undefined）。
+7. **误 pop 旧 stash**（git stash pop 空栈时弹了 R36 遗留 WIP，pdf strings UU）：reset+checkout 复位，stash 条目无损保留。防线：分支切换对照基线禁带 stash 操作，用 `git show <ref>:<path>` 直接读。
+8. **品牌反噬轮再伤三处**：①linux 安装脚本 `/opt/ChaAI Office`→`/opt/GenOffice`（cli-link 测试兜出）；②`LEGACY_SKILL_NAME='genoffice'`（上游旧名标识必须保留原名，误改后 install 即自删刚装目录，agent-skills 7 例兜出）；③`X-Genspark-Token-Pass` 头与 `www.genspark.ai` 域 72 处（admission 断签兜出）。**根因一：反噬轮从 pick 态 HEAD 提取标识符白名单——HEAD 当时含上游 GenOffice 串，把本地品牌串也当 damaged 恢复**。防线：标识符恢复必须以 main 基线（05efb54a0）为白名单源，绝不用 pick 态 HEAD。
+9. **本地文件被 pick 静默删除**：apps/shell/build/linux-sidecar-staging.cjs（本地挂账轮模块，上游无此路径）在某快照 pick 中消失——「Cannot find module」兜出。防线照铁律：每轮终检跑 `git diff main..HEAD --diff-filter=D` 全量删除清单逐个过目（本轮实际仅 1 件已裁定删除）。
+
+### 门禁终态
+
+- 对账：79/79 subject 级全过（含 1 空提交 a2075fa6 #2427）；git cherry 本地独有 +1006（品牌/本地功能基线）。
+- typecheck 全仓 0（34 工作区，doc2docx/hwp2docx 新增两工作区）；lint 0 error（28 warnings 基线，比 R37 +3 均为本轮上游件 react-hooks 提示）；cargo test 320 全绿（+36：external_links/stream_patch/zip9 新测试）；sidecar debug+release 重编完成。
+- 品牌终检：改动文件文本面 GenOffice/Genspark/genoffice/genspark 零残留（豁免：GENOFFICE_* env、genspark.ai 域与 X-Genspark-Native-Pass 线协议头、@genspark/cli、上游仓 URL 注释、i18n 驼峰键名、字体二进制名表内部字节）；字体度量族文件改名 chaoffice-{ethiopic,yahei-latin}.json+family 字段品牌化。
+- vitest 全工作区绿：约 19092 用例通过（门禁 g8 轮 + packaged-cli-version linux ELF 暂存单验 5/5——R37 坑③同款环境件，mac 侧 mac-universal sidecar 已还原）。逐文件修复链：agent-skills LEGACY 名还原（7 例）→help-sync sheet links 行补（1 例）→docs 适配批（font-faces/line-factors/para-layout golden 31 件 hash 重算/truths 全形态重放/子路径 alias×5/save-as 阻挡目录对齐/nativeImage+styleDeletes 桩/save-track 4 例，共 23 例）→sheets no-edits reason+指示器重织（2 例）→shell linux 脚本路径还原+kde require 基准（4 例）→ai-provider token-pass 头恢复（3 例）。
+
+
 ## 第三十七轮（2026-10-30，上游 28e9c100..df9a64c5 45 提交全吸收，施工于 sync/37-upstream；终点无新 tag（describe=v0.12.115-74-gdf9a64c5），后三位维持 0.12.115；打包 Z+1：1.0.14→1.0.15）
 
 > 上游 45 提交=五域文件命名族×5（#2156-2161 slides/markdown/docs/html/sheets「用 AI 命名」+首存不问模型）+pdf 六特性（squiggly/caret/polygon 批注 #2245、OCR 烘焙 #2254、文本对比 #2251、测量工具 #2252、减肥 #2255、附件面板 #2250、密码文档 #2228、JPG 导出 #2328）+sheets 三特性（拼写检查 #2227、xls 收割 #2302、What-if 无、绝对 OPC #2311）+skills ~/.agents 共享行 ×2（#2281/#2289）+slides 停发整副牌 #2273+CloudGPU #2310+小修×N。377 文件 +22376/−1294。**Rust 大改 9 文件 +1611**（escher.rs/rels_normalize.rs/xls_biff.rs 新模块+recalc +363）→ sidecar debug/release 重编+四平台待发版重编。零依赖变更。

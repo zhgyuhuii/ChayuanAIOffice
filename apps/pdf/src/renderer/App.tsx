@@ -130,6 +130,7 @@ import {
   remapOutlineTree,
 } from './heading-outline'
 import { filterPageParity, printPdf, type PageParity } from './print'
+import { readFileBytes } from './file-bytes'
 import type { PdfEncryptionInput, PdfPermissions, PrintDuplex, PrinterInfo } from '../shared/ipc'
 import { mayChangeProtection } from './protection-gate'
 import { PasswordDialog } from './PasswordDialog'
@@ -233,6 +234,8 @@ import {
 } from './view-config'
 import type { PageSize, FitMode } from './view-config'
 import { useVisibleSet, PdfPage, MarkupOverlay } from './PdfPage'
+import { probePageGeometry } from './page-probe'
+import { loadPdfForView } from './open-document'
 import { PdfThumb, ThumbPendingOverlay } from './PdfThumb'
 import type { ThumbMenu } from './PdfThumb'
 import { SignDropOverlay, signPlaceK, imagePlaceK, staticFormFillPlaceK } from './SignDropOverlay'
@@ -412,6 +415,10 @@ export default function App() {
     'loading',
   )
   const [sizes, setSizes] = useState<PageSize[]>([])
+  /** 1-based pages whose probe failed: they render as error tiles instead of canvases */
+  const [failedPages, setFailedPages] = useState<Set<number>>(new Set())
+  /** the message of a failed open, shown with the placeholder's loadError line */
+  const [openError, setOpenError] = useState<string | null>(null)
   // Blank pages added this session live past the document's pages as virtual original
   // indices (see BlankPageInput); allSizes is the page table every index lookup uses
   const [blankPages, setBlankPages] = useState<LocalBlankPage[]>([])
@@ -449,6 +456,7 @@ export default function App() {
   const [compareName, setCompareName] = useState<string | null>(null)
   const [compareBusy, setCompareBusy] = useState(false)
   const [compareSwapped, setCompareSwapped] = useState(false)
+  const compareSidesRef = useRef<{ mine: PageText[]; theirs: PageText[] } | null>(null)
   const [sidebarW, setSidebarW] = useState(loadSidebarW)
   /** raster width for thumbnails — only updated when a drag ends (re-rastering every frame would jank) */
   const [thumbRasterW, setThumbRasterW] = useState(() => loadSidebarW() - SIDEBAR_CHROME)
@@ -925,7 +933,7 @@ export default function App() {
   const [pendingSign, setPendingSign] = useState<SignatureData | null>(null)
   /** A /Sig widget selected from the form layer; confirmed signatures fit this rect directly. */
   const [signatureTarget, setSignatureTarget] = useState<FormWidget | null>(null)
-  const [exporting, setExporting] = useState(false)
+  const [exporting, setExporting] = useState<'png' | 'jpg' | null>(null)
   const [formCatalog, setFormCatalog] = useState<FormCatalog | null>(null)
   const [formHasXfa, setFormHasXfa] = useState(false)
   const [documentEncrypted, setDocumentEncrypted] = useState(false)
@@ -1120,20 +1128,6 @@ export default function App() {
   docFontsRef.current = docFonts
   /** OCR results for scanned pages, keyed by original page index (reset per doc) */
   const [ocrPages, setOcrPages] = useState<Map<number, OcrPageData>>(new Map())
-  /** the auto-OCR's words as white text inserts: baked into every save while the
-      recognition data is in the session (the post-save reload finds a text layer,
-      so the pass never re-runs and the bake never doubles) */
-  const ocrBakeInserts = useMemo(() => {
-    const out: LocalTextInsert[] = []
-    for (const [origIdx, data] of ocrPages) {
-      const geom = pageGeomRef.current(origIdx)
-      if (!geom) continue
-      for (const input of buildOcrBakeInserts(origIdx, data.words, geom)) {
-        out.push({ id: `ocr-bake-${origIdx}-${out.length}`, input })
-      }
-    }
-    return out
-  }, [ocrPages])
   /** One text extraction per loaded document, shared by search, paragraph boxes,
       the AI tools and the auto-OCR pass */
   const [searchIndexCache] = useState(createSearchIndexCache)
@@ -1198,6 +1192,20 @@ export default function App() {
   /** Latest geometry for async pipelines that must not rebind on rotation (OCR) */
   const pageGeomRef = useRef(pageGeom)
   pageGeomRef.current = pageGeom
+  /** the auto-OCR's words as white text inserts: baked into every save while the
+      recognition data is in the session (the post-save reload finds a text layer,
+      so the pass never re-runs and the bake never doubles) */
+  const ocrBakeInserts = useMemo(() => {
+    const out: LocalTextInsert[] = []
+    for (const [origIdx, data] of ocrPages) {
+      const geom = pageGeomRef.current(origIdx)
+      if (!geom) continue
+      for (const input of buildOcrBakeInserts(origIdx, data.words, geom)) {
+        out.push({ id: `ocr-bake-${origIdx}-${out.length}`, input })
+      }
+    }
+    return out
+  }, [ocrPages])
   /** Current original page index, readable without rebinding the OCR pass on scroll */
   const currentOrigIdxRef = useRef(0)
   currentOrigIdxRef.current = visList[currentPage - 1] ?? 0
@@ -1268,8 +1276,7 @@ export default function App() {
       saved?: SavedSnapshot,
       waitForPageNos: number[] = [],
     ) => {
-      const data = await window.pdfApi.readFile(path)
-      const bytes = new Uint8Array(data)
+      const bytes = await readFileBytes(window.pdfApi, path)
       setFormHasXfa(hasXfaMarker(bytes))
       if (!saved) {
         setFormCatalog(null)
@@ -1287,11 +1294,7 @@ export default function App() {
         setSelectedFormFieldId(null)
         setFreshFormFieldId(null)
       }
-      const task = getDocument({
-        data: bytes,
-        password: passwordRef.current,
-        ...DOC_OPTS,
-      })
+      const task = loadPdfForView(bytes, passwordRef.current)
       let loaded: PDFDocumentProxy
       try {
         loaded = await task.promise
@@ -1353,15 +1356,29 @@ export default function App() {
           diskPasswordRef.current = null
         }
         setProtectionDirty(false)
-        for (let i = 1; i <= loaded.numPages; i++) {
-          const page = await loaded.getPage(i)
-          // Unrotated size; display size is derived by geom from the total rotation
-          const vp = page.getViewport({ scale: 1, rotation: 0 })
-          all.push({ width: vp.width, height: vp.height })
-          rots.push(page.rotate ?? 0)
-          origins.push([page.view[0]!, page.view[1]!])
-          userUnits.push(page.userUnit ?? 1)
+        const probe = await probePageGeometry(loaded)
+        for (const geo of probe.pages) {
+          all.push({ width: geo.width, height: geo.height })
+          rots.push(geo.rotate)
+          origins.push(geo.origin)
+          userUnits.push(geo.userUnit)
         }
+        // A page that cannot be probed no longer destroys the document: the
+        // tile renders as an error placeholder and the rest of the book opens
+        // (chaoffice#2366 — one broken page deep in a large file used to blank
+        // the whole viewer with the reason only in the console)
+        if (probe.failures.length > 0) {
+          setFailedPages(new Set(probe.failures.map((f) => f.page)))
+          showNotice(
+            t('pdfPagesFailed', {
+              count: probe.failures.length,
+              detail: probe.failures
+                .slice(0, 3)
+                .map((f) => `#${f.page} ${f.message}`)
+                .join(', '),
+            }),
+          )
+        } else setFailedPages(new Set())
       } catch (err) {
         // getMetadata/page probing failed after the document resolved but before
         // setDoc adopted it: destroy the half-open document (pdfjs-dist 6.x
@@ -1634,7 +1651,7 @@ export default function App() {
           return mapped.every((n, i) => n === i) ? null : mapped
         })
       }
-      setFileSize(data.byteLength)
+      setFileSize(bytes.byteLength)
       setSelected(null)
       setDeleteToast(false)
       setUndoStack([])
@@ -1673,6 +1690,7 @@ export default function App() {
     async (path: string) => {
       try {
         setFilePath(path)
+        setOpenError(null)
         // A newly opened file starts outside the autosave gate
         savedOnceRef.current = false
         await loadDoc(path, null)
@@ -1693,7 +1711,7 @@ export default function App() {
           // reports it like a password failure, and the answer has to name the
           // real reason instead of looping the prompt
           try {
-            const raw = new Uint8Array(await window.pdfApi.readFile(path))
+            const raw = await readFileBytes(window.pdfApi, path)
             const probe = await window.pdfApi.decryptPdf(raw, '')
             if (!probe.ok && probe.reason === 'certificate-encryption') {
               showNotice(t('pwCertEncrypted'))
@@ -1710,6 +1728,7 @@ export default function App() {
           return
         }
         console.error('[pdf] open failed:', err)
+        setOpenError(err instanceof Error ? err.message : String(err))
         setStatus('error')
       }
     },
@@ -4375,8 +4394,10 @@ export default function App() {
     if (!doc || compareBusy) return
     // Both sides must come from the same extraction engine — pdf.js and pdfium
     // break lines differently, and a cross-engine diff reports phantom changes
-    // on identical files. The open document therefore needs a file on disk.
-    if (!filePath) {
+    // on identical files. The open document therefore needs its current state
+    // on disk: no file yet, or pending edits, both mean "save first". Redaction
+    // marks stay out — a save does not apply them, so they could never unblock.
+    if (!filePath || ordinaryDirty) {
       showNotice(t('compareNeedsSaved'))
       return
     }
@@ -4387,22 +4408,25 @@ export default function App() {
         if (!('canceled' in picked)) showNotice(picked.reason)
         return
       }
-      const mine = await window.pdfApi.compareReadOpen(filePath)
+      const mine = await window.pdfApi.compareReadOpen(filePath, passwordRef.current)
       if (!mine.ok) {
         showNotice(mine.reason)
         return
       }
       const mineSide: PageText[] = mine.pages.map((text, pageIndex) => ({ pageIndex, text }))
       const theirs: PageText[] = picked.pages.map((text, pageIndex) => ({ pageIndex, text }))
-      const [oldSide, newSide] = compareSwapped ? [theirs, mineSide] : [mineSide, theirs]
+      compareSidesRef.current = { mine: mineSide, theirs }
       setCompareName(picked.name)
-      setCompareResult(compareDocuments(oldSide, newSide))
+      setCompareResult(compareSides(mineSide, theirs, compareSwapped))
     } catch (err) {
       showNotice(err instanceof Error ? err.message : String(err))
     } finally {
       setCompareBusy(false)
     }
   }
+
+  const compareSides = (mine: PageText[], theirs: PageText[], swapped: boolean): CompareResult =>
+    swapped ? compareDocuments(theirs, mine) : compareDocuments(mine, theirs)
 
   const attachmentRows = (): AttachmentRow[] => {
     const rows: AttachmentRow[] = []
@@ -5272,7 +5296,14 @@ export default function App() {
     const inserts = buildBatesInserts(
       visList.map((origIdx) => {
         const geom = pageGeom(origIdx)
-        return { width: geom.pw, height: geom.ph, rotate: geom.rot, x0: geom.x0, y0: geom.y0 }
+        return {
+          width: geom.pw,
+          height: geom.ph,
+          rotate: geom.rot,
+          x0: geom.x0,
+          y0: geom.y0,
+          userUnit: geom.userUnit,
+        }
       }),
       config,
       (text, size) => measureTextWidth(text, fontOf(size)),
@@ -6153,7 +6184,7 @@ export default function App() {
   const exportImages = (allPages: boolean, format: 'png' | 'jpg' = 'png') =>
     flushThen(async () => {
       if (!doc || exporting) return
-      setExporting(true)
+      setExporting(format)
       try {
         const targets = allPages ? visList : [curOrigIdx].filter((i) => i >= 0)
         const images: string[] = []
@@ -6200,7 +6231,7 @@ export default function App() {
       } catch (err) {
         opFailed(err instanceof Error ? err.message : String(err))
       } finally {
-        setExporting(false)
+        setExporting(null)
       }
     })
 
@@ -6691,8 +6722,8 @@ export default function App() {
       await flushThen(async () => {
         setPrinting(true)
         try {
-          const data = await window.pdfApi.readFile(filePath)
-          const pdoc = await getDocument({ data: new Uint8Array(data), ...DOC_OPTS }).promise
+          const data = await readFileBytes(window.pdfApi, filePath)
+          const pdoc = await getDocument({ data, ...DOC_OPTS }).promise
           try {
             await printPdf(pdoc, pages, job)
           } finally {
@@ -7586,7 +7617,13 @@ export default function App() {
           {status === 'loading' && (
             <img src={bootLogo} className="boot-logo" alt="" aria-hidden="true" />
           )}
-          {status === 'loading' ? t('loading') : status === 'error' ? t('loadError') : t('noFile')}
+          {status === 'loading'
+            ? t('loading')
+            : status === 'error'
+              ? openError
+                ? `${t('loadError')}: ${openError}`
+                : t('loadError')
+              : t('noFile')}
         </div>
       </div>
     )
@@ -8218,7 +8255,7 @@ export default function App() {
                 <button
                   className="rb-big"
                   data-tip={t('exportImagesAll')}
-                  disabled={exporting}
+                  disabled={exporting !== null}
                   onClick={() => void exportImages(true)}
                 >
                   <span className="rb-big-icon">
@@ -8229,7 +8266,7 @@ export default function App() {
                 <button
                   className="rb-big"
                   data-tip={t('exportImagesAllJpg')}
-                  disabled={exporting}
+                  disabled={exporting !== null}
                   onClick={() => void exportImages(true, 'jpg')}
                 >
                   <span className="rb-big-icon">
@@ -9156,8 +9193,10 @@ export default function App() {
                   busy={compareBusy}
                   onPick={() => void runCompare()}
                   onSwap={() => {
-                    setCompareSwapped((v) => !v)
-                    setCompareResult(null)
+                    const swapped = !compareSwapped
+                    setCompareSwapped(swapped)
+                    const sides = compareSidesRef.current
+                    setCompareResult(sides ? compareSides(sides.mine, sides.theirs, swapped) : null)
                   }}
                   onGoToPage={(pageNo) => scrollToPage(pageNo)}
                 />
@@ -9467,16 +9506,22 @@ export default function App() {
                               }
                             }}
                           >
-                            {!isBlankPage(origIdx) && (
-                              <PdfPage
-                                doc={doc}
-                                pageNo={origIdx + 1}
-                                scale={scale}
-                                rotationDelta={rotDelta(origIdx)}
-                                visible={rowVisible}
-                                onRenderState={pageRenderState}
-                              />
-                            )}
+                            {!isBlankPage(origIdx) &&
+                              (failedPages.has(origIdx + 1) ? (
+                                <div className="pdf-page-broken">
+                                  <span>{t('loadError')}</span>
+                                  <span>#{origIdx + 1}</span>
+                                </div>
+                              ) : (
+                                <PdfPage
+                                  doc={doc}
+                                  pageNo={origIdx + 1}
+                                  scale={scale}
+                                  rotationDelta={rotDelta(origIdx)}
+                                  visible={rowVisible}
+                                  onRenderState={pageRenderState}
+                                />
+                              ))}
                             {livePreview.has(origIdx) &&
                               (() => {
                                 const lp = livePreview.get(origIdx)!

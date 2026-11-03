@@ -264,6 +264,7 @@ import { mergeAttachedWorkbooks } from './merge-workbooks'
 import { isSvgRef, resolveSvgDataUrl } from './ai/svg-bank'
 import type {
   AttachmentMeta,
+  ExternalLinkRow,
   MenuAction,
   RecoveryPromptPayload,
   WorkbookFile,
@@ -401,6 +402,7 @@ import { installFormulaBarAutosize } from './formula-bar-autosize'
 import { createFunctionArgumentsHost, installFxButtonHook } from './function-arguments-runtime'
 import {
   applyShowFormulasView,
+  formulaViewSheets,
   installFormulaTextInterceptor,
   installFormulaViewInterceptor,
   indexedFormulaText,
@@ -605,6 +607,9 @@ import {
 } from './formula-values'
 import { SlicerFieldPicker, SlicerPanels, type SlicerUiState } from './SlicerPanel'
 import { WatchWindowPanel, watchKey, type WatchCell, type WatchRowValue } from './WatchWindowPanel'
+import { ExternalLinksPanel } from './ExternalLinksPanel'
+import { updateExternalLinksFlow } from './external-links-flow'
+import { applyExternalLinkValues } from './univer-sync'
 import { TimelineFieldPicker, TimelinePanels, type TimelineUiState } from './TimelinePanel'
 import type { DefinedNameAction, DefinedNameRow } from './NameManagerDialog'
 import { workbookMediaDataUrl } from './workbook-media'
@@ -760,6 +765,7 @@ export function App({
   /// Whether any cell in the workbook has content — the ribbon's one-click AI
   /// action buttons are greyed out on a fully empty sheet.
   const [sheetHasContent, setSheetHasContent] = useState(false)
+  const [activeSheetId, setActiveSheetId] = useState<string | null>(null)
   const recomputeSheetContent = useCallback(() => {
     setSheetHasContent(() => {
       // A file opened from disk always counts as having content.
@@ -1070,6 +1076,37 @@ export function App({
   /// SlicerPanel).
   const [slicers, setSlicers] = useState<readonly SlicerUiState[]>([])
   const [watchOpen, setWatchOpen] = useState(false)
+  const [linksOpen, setLinksOpen] = useState(false)
+  const [linkStatuses, setLinkStatuses] = useState<ExternalLinkRow[]>([])
+  const [linksBusy, setLinksBusy] = useState(false)
+  const [linksNotice, setLinksNotice] = useState<'unsaved' | null>(null)
+  // Load the workbook's links when the panel opens: the listing carries
+  // identity fields only and never probes the sources on disk, so it is cheap
+  // and reachability stays unknown (the panel's "—") until Update answers it.
+  useEffect(() => {
+    if (!linksOpen) return
+    const file = lazyWorkbookRef.current?.file
+    if (file === undefined || file.needsSaveAs) {
+      // a never-saved workbook has no file for the sidecar to list
+      setLinkStatuses([])
+      setLinksNotice('unsaved')
+      return
+    }
+    setLinksNotice(null)
+    let cancelled = false
+    void (async () => {
+      try {
+        const result = await window.desktopApi.listExternalLinks({ sessionId: file.sessionId })
+        if (!cancelled) setLinkStatuses(result.links)
+      } catch {
+        // an unreadable workbook keeps the panel empty instead of throwing
+        if (!cancelled) setLinkStatuses([])
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [linksOpen])
   const [watchCells, setWatchCells] = useState<readonly WatchCell[]>([])
   const [calcManual, setCalcManual] = useState(false)
   /// Non-null while the "Insert Slicer" field picker is open.
@@ -2313,6 +2350,7 @@ export function App({
     const sheetDisposable = runtime.univerAPI.addEvent(
       runtime.univerAPI.Event.ActiveSheetChanged,
       ({ activeSheet }) => {
+        setActiveSheetId(activeSheet.getSheetId())
         setAiSelectionAskAnchor(null)
         void loadVisibleRange(runtime, lazyWorkbookRef, activeSheet, setMessage)
         // formula view is per-sheet (sheetView/@showFormulas)
@@ -5628,6 +5666,10 @@ export function App({
       setWatchOpen((open) => !open)
       return
     }
+    if (command === 'external-links-panel') {
+      setLinksOpen((open) => !open)
+      return
+    }
     if (command === 'toggle-page-break-preview') {
       togglePageBreakPreview()
       return
@@ -5942,6 +5984,7 @@ export function App({
         engineOverBudget: recalcOverBudgetAtOpen(selected.fileBytes, cellCounts.gridCells),
         formulaCells: new Map(),
         overlay: new Map(),
+        externalOverlay: new Map(),
         incompleteRuns: new Set(),
         follow: new Map(),
         running: false,
@@ -6144,6 +6187,7 @@ export function App({
         if (!worksheet) return
         // apply the opening sheet's formula view (sheetView/@showFormulas)
         applyShowFormulasView(runtime, state, worksheet.getSheetId())
+        setActiveSheetId(worksheet.getSheetId())
         queueVisualInstall(
           runtime,
           lazyWorkbookRef,
@@ -6798,6 +6842,19 @@ export function App({
     }
   })()
 
+  // Formula view is per sheet and persisted (sheetView/@showFormulas), so a
+  // sheet can open showing formulas instead of values. The status bar says so;
+  // without it the sheet reads as a broken one. activeSheetId is state so a
+  // sheet switch re-renders this even when nothing else changed.
+  const activeShowFormulas = (() => {
+    const state = lazyWorkbookRef.current
+    const sheetId =
+      activeSheetId ??
+      univerRef.current?.univerAPI.getActiveWorkbook()?.getActiveSheet()?.getSheetId()
+    if (!sheetId || !state) return false
+    return formulaViewSheets(state).has(sheetId)
+  })()
+
   // Chart panels resolve their chart live (pending edits applied), so every
   // control reflects the state the next save would write.
   const visualDialogTarget = (() => {
@@ -7026,6 +7083,7 @@ export function App({
         printHost={printHost}
         onClosePrint={() => setPrintHost(null)}
         calcManual={calcManual}
+        showFormulas={activeShowFormulas}
         onGoalSeek={(setCell, toValue, byCell) => {
           const runtime = univerRef.current
           if (!runtime) return Promise.reject(new Error(t('appWorkbookNotReady')))
@@ -7226,6 +7284,11 @@ export function App({
         onListDefinedNames={() => listDefinedNamesImpl(dataToolsContext())}
         onApplyFormula={(formula, target) =>
           handleApplyFormulaImpl(dataToolsContext(), formula, target)
+        }
+        onReadWorkbookQueries={() =>
+          workbookFile
+            ? window.desktopApi.readWorkbookQueries({ sessionId: workbookFile.sessionId })
+            : Promise.resolve([])
         }
         onReadPasteSpecialSource={readPasteSpecialSourceFromRuntime}
         onPasteSpecial={handlePasteSpecial}
@@ -7464,6 +7527,54 @@ export function App({
           onAddSelection={addWatchSelection}
           onRemove={(key) => setWatchCells(watchCells.filter((cell) => watchKey(cell) !== key))}
           onClose={() => setWatchOpen(false)}
+        />
+      )}
+      {linksOpen && (
+        <ExternalLinksPanel
+          links={linkStatuses}
+          busy={linksBusy}
+          notice={linksNotice}
+          onUpdate={() => {
+            void (async () => {
+              const file = lazyWorkbookRef.current?.file
+              if (!file || file.needsSaveAs || linksBusy) return
+              setLinksBusy(true)
+              try {
+                await updateExternalLinksFlow({
+                  // quiet: a no-op first save is expected here, not a toast.
+                  // Real failures still land in the message bar.
+                  save: () => handleSave('save', true),
+                  update: () => {
+                    // the first save swaps the workbook session, so the id is
+                    // read here rather than captured before the flow ran
+                    const current = lazyWorkbookRef.current?.file
+                    if (!current) return Promise.reject(new Error('Workbook is not open.'))
+                    return window.desktopApi.updateExternalLinks({
+                      sessionId: current.sessionId,
+                    })
+                  },
+                  apply: (report) => {
+                    const linkRuntime = univerRef.current
+                    const linkState = lazyWorkbookRef.current
+                    if (linkRuntime && linkState) {
+                      applyExternalLinkValues(linkState, linkRuntime, report)
+                    }
+                  },
+                  onStatuses: (report) => {
+                    setLinksNotice(null)
+                    setLinkStatuses(report.links)
+                  },
+                })
+              } finally {
+                setLinksBusy(false)
+              }
+            })()
+          }}
+          onReveal={(index) => {
+            const file = lazyWorkbookRef.current?.file
+            if (file) window.desktopApi.revealLinkSource({ sessionId: file.sessionId, index })
+          }}
+          onClose={() => setLinksOpen(false)}
         />
       )}
     </>

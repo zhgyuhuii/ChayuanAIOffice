@@ -40,7 +40,8 @@ beforeEach(() => {
   dir = mkdtempSync(join(tmpdir(), 'chaoffice-auth-'))
   process.env.CHAOFFICE_AUTH_DIR = dir
   delete process.env.CHAOFFICE_API_KEY
-  delete process.env.GENOFFICE_NATIVE_WAF
+  // Legacy-shape cases opt out explicitly; admission is the shipped default.
+  process.env.GENOFFICE_NATIVE_WAF = '0'
   resetChaofficeAuthCache()
 })
 
@@ -49,7 +50,8 @@ afterEach(() => {
   rmSync(dir, { recursive: true, force: true })
   delete process.env.CHAOFFICE_AUTH_DIR
   delete process.env.CHAOFFICE_API_KEY
-  delete process.env.GENOFFICE_NATIVE_WAF
+  // Legacy-shape cases opt out explicitly; admission is the shipped default.
+  process.env.GENOFFICE_NATIVE_WAF = '0'
   setChaOfficeProxyUrl('')
   resetChaofficeAuthCache()
 })
@@ -127,8 +129,8 @@ async function loginAndCollect(): Promise<ChaOfficeLoginProgress[]> {
 }
 
 describe('startChaofficeLogin', () => {
-  it('opt-in signs the cookie mint only and preserves Bearer session exchange', async () => {
-    process.env.GENOFFICE_NATIVE_WAF = '1'
+  it('by default signs the cookie mint only and preserves Bearer session exchange', async () => {
+    delete process.env.GENOFFICE_NATIVE_WAF
     const token = `${Math.floor(Date.now() / 1000)}-${'a'.repeat(43)}`
     const fetchMock = stubFlow({ nativePass: token, pendingPolls: 0 })
     const events = await loginAndCollect()

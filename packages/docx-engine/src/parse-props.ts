@@ -720,7 +720,7 @@ export function emptyParaMarkFont(
     // an East Asian slot alone leaves the inherited Latin face in charge (Word probe
     // 2026-09-05: a DengXian-only mark lays its line with the ascii face)
     const rf = themedRFonts(a, themeFonts)
-    return rf.ascii ?? rf.hAnsi
+    return rf.ascii
   }
   let font = pPr ? pick(findChild(pPr, 'w:rPr')) : undefined
   if (!font && !markOnly) {
@@ -820,7 +820,7 @@ export function rubyPartText(rubyNode: XNode, part: 'w:rubyBase' | 'w:rt'): stri
 }
 
 /** Word's face for an East Asian theme slot whose typeface is empty (<a:ea typeface=""/>) */
-const EMPTY_EA_THEME_FONT = 'DengXian'
+export const EMPTY_EA_THEME_FONT = 'DengXian'
 
 /** empty EA slot faces by settings.xml w:themeFontLang w:eastAsia (zh-CN / missing → DengXian) */
 const EMPTY_EA_SLOT_BY_LANG: Record<string, { major: string; minor: string }> = {

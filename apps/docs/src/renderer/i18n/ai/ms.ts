@@ -100,6 +100,11 @@ export const ms = {
     'Jejak perubahan dihidupkan: suntingan kandungan AI ditandakan sebagai semakan (sisipan bergaris bawah, pemadaman bergaris batal); terima atau tolak dalam Semakan',
   aiTrackOffTitle:
     'Jejak perubahan dimatikan: suntingan AI terus berkuat kuasa (masih boleh dikembalikan melalui snapshot versi)',
+  aiRevisionBarTitle: 'Semakan',
+  aiRevisionCount: '{count} perubahan belum selesai',
+  aiRevisionRejectAll: 'Tolak semua',
+  aiRevisionAcceptAll: 'Terima semua',
+  aiRevisionPara: 'Perenggan {n}',
   aiTurnLimit:
     '(Had pusingan panggilan alat untuk permintaan ini telah dicapai; jawapan di atas berdasarkan langkah yang telah selesai dan mungkin tidak lengkap.)',
   aiStopped: '(Dihentikan)',
@@ -232,4 +237,7 @@ export const ms = {
   aiTabChat: 'Sembang',
   aiSummarizeDesc: 'Ringkaskan dokumen dan fahami poin pentingnya',
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
+  aiMindMapToggleLayout: 'Tukar susun atur',
+  aiMindMapLayoutTopDown: 'Tukar kepada susun atur atas ke bawah',
+  aiMindMapLayoutLeftRight: 'Tukar kepada susun atur kiri ke kanan',
 } satisfies Record<keyof typeof zh, string>

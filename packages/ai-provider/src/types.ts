@@ -28,8 +28,11 @@ export type AiProviderId =
   | 'atlascloud'
   | 'runcrate'
   | 'cloudgpu'
+  | 'siliconflow'
+  | 'ppio'
   | 'opencode-zen'
   | 'opencode-go'
+  | 'commandcode'
   | 'custom'
 
 // ---- settings v2: multi-profile, multi-model, user-chosen wire protocol ----
@@ -332,7 +335,7 @@ export interface AiMediaSettings {
 
 /** web/image search backends; Parallel and Keenable take a user key or run free and keyless */
 export type AiSearchProviderId =
-  | 'genspark'
+  | 'chaoffice'
   | 'serper'
   | 'serply'
   | 'tavily'
@@ -415,7 +418,7 @@ export interface AiStreamRequest {
 }
 
 /** Token usage a provider reported for one model turn. Both fields are best-effort:
- * some providers (and the Genspark proxy) never report usage, and consumers must
+ * some providers (and the ChaAI Office proxy) never report usage, and consumers must
  * treat an absent figure as "unknown", never as zero. */
 export interface AiTokenUsage {
   inputTokens?: number

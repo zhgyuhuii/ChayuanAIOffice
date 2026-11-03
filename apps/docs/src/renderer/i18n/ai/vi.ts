@@ -99,6 +99,11 @@ export const vi = {
     'Bật theo dõi thay đổi: Các nội dung AI chỉnh sửa được đánh dấu là bản sửa đổi (chèn có gạch chân, xóa có gạch ngang); chấp nhận hoặc từ chối trong mục Xem lại',
   aiTrackOffTitle:
     'Tắt theo dõi thay đổi: Các chỉnh sửa của AI được áp dụng ngay lập tức (bạn vẫn có thể khôi phục qua bản chụp nhanh)',
+  aiRevisionBarTitle: 'Sửa đổi',
+  aiRevisionCount: '{count} thay đổi đang chờ',
+  aiRevisionRejectAll: 'Từ chối tất cả',
+  aiRevisionAcceptAll: 'Chấp nhận tất cả',
+  aiRevisionPara: 'Đoạn {n}',
   aiTurnLimit:
     'Tác vụ này đã tạm dừng trước khi hoàn tất tất cả các bước. Các chỉnh sửa đã hoàn thành được giữ nguyên; chọn Tiếp tục để hoàn thành công việc còn lại.',
   aiStopped: '(Đã dừng)',
@@ -232,4 +237,7 @@ export const vi = {
   aiTabChat: '对话',
   aiSummarizeDesc: '总结全文要点，快速把握内容',
   aiNoModelErrorBody: '配置一个自己的供应商（密钥即用），或登录 察元AIOffice 使用默认模型。全程无需账号。',
+  aiMindMapToggleLayout: 'Đổi bố cục',
+  aiMindMapLayoutTopDown: 'Chuyển sang bố cục từ trên xuống dưới',
+  aiMindMapLayoutLeftRight: 'Chuyển sang bố cục từ trái sang phải',
 } satisfies Record<keyof typeof zh, string>

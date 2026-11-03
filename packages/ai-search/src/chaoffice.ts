@@ -12,7 +12,7 @@
  */
 
 import { execFile } from 'node:child_process'
-import { existsSync, mkdirSync, readFileSync, unwatchFile, watchFile, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, unwatchFile, watchFile, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { createRequire } from 'node:module'
@@ -87,31 +87,23 @@ function electronCompatArgs(): string[] {
 
 /**
  * API key for ChaOffice LLM proxy / tool_cli auth; '' when not logged in.
- * Priority: CHAOFFICE_API_KEY env → ChaOffice's own key (bills to us via its
- * key_name) → shared chaoffice CLI login (bills to the Claw bucket).
+ * Priority: explicit CHAOFFICE_API_KEY env → ChaOffice's own login.
+ * Never borrow the shared CLI login: it can belong to another app or account,
+ * and must not silently undo ChaOffice sign-out.
  */
 export function chaofficeCliApiKey(): string {
   const env = process.env.CHAOFFICE_API_KEY
   if (env && !rejectedKeys.has(env)) return env
   const own = chaofficeAuthApiKey()
-  if (own && !rejectedKeys.has(own)) return own
-  try {
-    const configPath = join(homedir(), '.chaoffice-tool-cli', 'config.json')
-    if (!existsSync(configPath)) return ''
-    const config = JSON.parse(readFileSync(configPath, 'utf-8')) as { api_key?: string }
-    const shared = config.api_key ?? ''
-    return rejectedKeys.has(shared) ? '' : shared
-  } catch {
-    return ''
-  }
+  return own && !rejectedKeys.has(own) ? own : ''
 }
 
 // ── Rejected keys (401) ─────────────────────────────────────────────
 
 /**
  * Keys the server answered 401 for (expired / revoked). ChaOffice's own key
- * is also deleted from disk; env and shared chaoffice CLI keys belong to
- * someone else, so they are only skipped for the rest of this process.
+ * is also deleted from disk; env keys are only skipped for the rest of this
+ * process because ChaOffice does not own their source.
  */
 const rejectedKeys = new Set<string>()
 

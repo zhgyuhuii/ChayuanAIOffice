@@ -605,19 +605,23 @@ describe('formula cache policy', () => {
         JSON.stringify([
           [1, 2, 3],
           ['=FILTER(A1:C1,A1:C1>1)', '=1/0', '=SUM(A1:C1)', '="#N/A"'],
+          ['=FOOBAR(A1)'],
         ]),
       )
       const out = join(dir, 't.xlsx')
       const r = await run(['create', '--type', 'xlsx', '--from', table, '--out', out, '--json'])
       expect(r.code).toBe(0)
-      // adapted (R37): ironcalc 0.7.1→0.9.1 (#2282) learned FILTER, so A2 now
-      // evaluates and caches instead of warning "does not evaluate (…!A2)".
-      // The unknown-function path moved to the STOCKHISTORY case below.
-      expect(r.json().warnings ?? []).toEqual([])
+      // the engine evaluates FILTER: blocked by its occupied neighbours, the
+      // anchor caches the typed error instead of an uncached #NAME?, so the
+      // only warning is about the genuinely unknown function
+      const warnings = r.json().warnings ?? []
+      expect(warnings).toHaveLength(1)
+      expect(warnings[0].message).toContain('A3')
       const sheet = await part(out, 'xl/worksheets/sheet1.xml')
       expect(sheet).toMatch(
         /<c r="A2"[^>]*\bcm="1"[^>]*><f t="array" ref="A2">_xlfn\._xlws\.FILTER\(/,
       )
+      expect(sheet).toMatch(/<c r="A2"[^>]*\bt="e"[^>]*>.*?<v>#SPILL!<\/v>/)
       expect(sheet).not.toContain('#NAME?')
       expect(sheet).toMatch(/<c r="B2"[^>]*\bt="e"[^>]*>.*?<v>#DIV\/0!<\/v>/)
       // text that spells an error is still text

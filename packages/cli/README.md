@@ -11,46 +11,55 @@ chaoffice convert scan.pdf --to docx
 chaoffice convert data.csv --to xlsx --out out/data.xlsx
 chaoffice open report.docx
 chaoffice convert scan.pdf --to pptx --json
-chaoffice guide slides                         # op groups; `chaoffice guide slides insert` for one group
-chaoffice slides read deck.pptx [--full] --json # durable ids + geometry an agent targets ops at; --full: whole text, tables, notes
+chaoffice guide slides                         # op groups; `chaoffice guide slides insert` for one group, `chaoffice guide slides setText` for one op
+chaoffice slides read deck.pptx [--full] --json # durable ids + geometry an agent targets ops at; --full: whole text, tables, notes; text elements add `effective` (displayed style of the first run + `src` = the inheritance layer each value comes from)
+chaoffice slides read deck.pptx --units in --json # box and size in inches (or cm, pt, px at 96 dpi) with `unit` named; default emu
 chaoffice create --type pptx --ops deck.json --out deck.pptx
 chaoffice create --type pptx --spec deck/pages --outline deck/outline.json --out deck.pptx   # one page spec file per slide (`chaoffice guide slides design|spec`)
+chaoffice create --type pptx --spec deck.json --out deck.pptx --render deck/previews --audit   # plus one PNG per slide (detail.previews) and the geometry audit (detail.audit) in the same call
 chaoffice slides check deck/outline.json | deck/pages/03.json   # outline rules (exit 1 on errors) / build + audit one page file
 chaoffice slides replace deck.pptx --slide 2 --spec deck/pages/03.json   # rebuild one slide from its page file
 chaoffice slides apply deck.pptx --ops edit.json [--dry-run] [--out copy.pptx]
-chaoffice slides audit deck.pptx [--slide 0] --json            # out-of-bounds / text overflow / overlap per slide, durable ids
+chaoffice slides audit deck.pptx [--slide 0] --json            # out_of_bounds / off_slide / text_overflow / text_overflow_width / overlap / picture_distorted: typed issues with durable ids and a setTransform `suggest` where geometry fixes it
 chaoffice slides render deck.pptx --out shots/ [--scale 2]     # one PNG per slide through the app's PDF export
 chaoffice render report.docx|book.xlsx|page.html|file.pdf --out shots/ [--page 3] [--scale 2]   # one PNG per page of any document, to look at what was made
+chaoffice render deck.pptx --out shots/ --el e_12 [--pad 16]   # plus the page cropped to that element (<stem>-NN-e_12.png)
+chaoffice render deck.pptx --out shots/ --grid [--cols 4] [--tile 320]   # plus <stem>-grid.png: every page on one contact sheet
 chaoffice create --type xlsx --from table.json --out book.xlsx   # 2-D array or {sheets:[{name,rows}]}; "=..." cells are formulas
-chaoffice create --type xlsx --from data.csv --out data.xlsx
+chaoffice create --type xlsx --from data.csv --out data.xlsx [--header] [--decimal ,]   # ISO dates become real dates; sep= lines are honoured
 chaoffice sheet read book.xlsx [--sheet Data] [--range A1:D20] [--formats] --json   # values, formulas, sheet features; --formats adds styles, widths, heights
 chaoffice sheet apply book.xlsx --cells cells.json    # [{cell:"B2", value|formula, style?, sheet?}]
 chaoffice sheet apply book.xlsx --ops ops.json [--dry-run]   # workbook DSL: cells, formats, charts, tables, filters, conditional formats, validation, links, notes, panes, page setup, sheets (`chaoffice guide sheets`)
-chaoffice create --type docx --from report.md --out report.docx      # or --from fragment.html (restricted HTML)
+chaoffice sheet check book.xlsx --json                # formula errors, missing-sheet references, broken defined names, chart ranges off the data, ### columns (suggest: set_col_width), placeholder text, existing rules; exit 0
+chaoffice sheet links book.xlsx                       # external [n] links: stored path, resolved path, reachable, source sheets
+chaoffice sheet links book.xlsx --update              # re-read reachable sources and write the computed values as the formulas' cached <v> (formulas untouched; unreachable links keep their cache)
+chaoffice sheet links book.xlsx --break 1,2           # break links: formulas become their cached values, the links' parts are removed and surviving links renumber
+chaoffice create --type docx --from report.md --out report.docx      # or --from fragment.html (restricted HTML); the new file carries Word-like docProps/core.xml + app.xml
 chaoffice convert notes.md --to docx|html
 chaoffice convert report.docx --to html               # the Word editor's standalone-HTML export
 chaoffice convert page.html --to docx                 # html2docx, same as the HTML app's Export as Word
 chaoffice convert report.docx --to md                 # GFM via the markdown editor's serializer
+chaoffice convert letter.doc --to docx                # Word 97-2003 .doc/.dot through the in-process doc2docx importer
 chaoffice convert book.xlsx --to csv [--sheet Data]   # one sheet, cell text as displayed, UTF-8 BOM, CRLF
-chaoffice capabilities --json                        # which cloud features ChaOffice has configured (no network call)
+chaoffice capabilities --json                        # which cloud features ChaAI Office has configured (no network call)
 chaoffice search "electron headless export" [--images] [--max 6] --json
 chaoffice image "isometric office, soft light" --aspect 16:9 --out hero.png
 chaoffice media photo.jpg --ask "What text is in this picture?" --json
-chaoffice docs read report.docx [--range 0-9] [--html] [--full] [--comments] [--revisions] [--header-footer] [--properties] --json   # blocks (--full: whole text), comment threads, tracked changes, header/footer text, document properties
-chaoffice docs apply report.docx --ops ops.json [--dry-run]           # apply_ops entries + insert_content / replace_blocks / insert_image / insert_chart / edit_chart / set_header_footer / reply_comment / resolve_comment / set_properties (document metadata)
+chaoffice docs read report.docx [--range 0-9] [--html] [--full] [--comments] [--revisions] [--header-footer] [--properties] --json   # blocks (--full: whole text; contentControls chain + inlineContentControls for w:sdt controls), comment threads, tracked changes, header/footer text, document properties (custom values plus their vt customTypes)
+chaoffice docs apply report.docx --ops ops.json [--dry-run]           # apply_ops entries + insert_content / replace_blocks / insert_image / insert_chart / edit_chart / set_header_footer / reply_comment / resolve_comment / set_properties (document metadata; numeric/boolean custom values keep or take a typed vt type) / wrap_content_control / unwrap_content_control (nested tags unwrap level by level) / remove_parts (strip customXml + web-extension parts)
+chaoffice docs check report.docx --json                               # fields without results, broken bookmark references, stale TOC, missing images, empty charts/headings, heading level skips, placeholder text, pending revisions, open comments; exit 0
 chaoffice docs compare original.docx revised.docx --out redline.docx [--author name] [--date iso] [--granularity word|char] [--ignore formatting,case,whitespace]   # redline: the revised document with the differences marked as tracked insertions and deletions; --json reports the counts
-chaoffice guide docs                                                   # op signatures + restricted-HTML rules
+chaoffice merge invoice-template.docx --data values.json --out invoice.docx [--force] [--strict]   # fill {{key}} placeholders in a docx/pptx/xlsx template; reports used, unused and unresolved keys (or --data '{"name":"Ada"}')
+chaoffice pdf read scan.pdf [--page 3 | --range 1-5] [--full] --json     # text layer page by page (pages 1-20 by default, 4000 characters each) with page sizes and metadata; headless pdfium, no app process
+chaoffice guide docs                                                   # op signatures + restricted-HTML rules (`guide <domain> --json` = the catalog with each op's schema and a fingerprint)
 chaoffice selection report.docx --json   # what the user has selected in the editor showing the file
 chaoffice skill list   # coding agents found on this machine and the skill version each has
 chaoffice skill install --dir ./skills --force   # copy the bundled skill into a skills directory
 chaoffice install-cli   # put chaoffice on the PATH
 chaoffice mcp --http 3000 [--host 127.0.0.1] [--token secret]   # Streamable HTTP for clients on other machines; omit --http for stdio
-
-Behind a reverse proxy, set `GENOFFICE_TRUST_PROXY_HEADERS=1` so the download
-URLs the server hands out use the forwarded host and scheme; by default the
-`X-Forwarded-*` headers are ignored.
-chaoffice render page.pdf --out shots/ --grid 3x2 --tile 900 --pad 12   # contact sheet: a grid of page thumbnails (--cols 3: columns); --el <id>: one element per shot (docx/pptx)
-chaoffice create --type xlsx --from data.csv --header --decimal ,   # row 1 = header (AutoFilter + freeze); --decimal: the decimal separator the csv uses
+chaoffice mcp --compact-schemas   # advertise ops/cells/data as plain arrays instead of the per-op schema (smaller tools/list; also GENOFFICE_MCP_COMPACT_SCHEMAS=1)
+chaoffice mcp install all   # register the stdio server with every coding agent found (or one: claude-code, codex, cursor, gemini, copilot, opencode, windsurf)
+chaoffice mcp list          # each agent's MCP config and whether chaoffice is registered; `mcp uninstall <agent>` removes the entry
 ```
 
 Word and Markdown commands run the docs and markdown editors under jsdom (installed once per process, loaded lazily). Those modules are imported from the app renderers by relative path until they move into packages of their own.
@@ -110,7 +119,7 @@ Independently of the PATH, every launch of the packaged app writes the launcher 
 
 ## Cloud commands
 
-`search`, `image` and `media` reuse the editors' provider routing: Genspark
+`search`, `image` and `media` reuse the editors' provider routing: ChaAI Office
 when signed in (`~/.chaoffice/auth.json`) and cloud tools are on, otherwise the
 Serper / Tavily or BYOK image / media provider chosen in the app's AI settings
 (`ChaOffice/ai-settings.json` in the platform config directory, override with

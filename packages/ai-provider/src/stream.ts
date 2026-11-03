@@ -37,7 +37,8 @@ export async function streamResolved(
       return streamGemini(config, system, messages, tools, maxTokens, cb, call.baseUrl)
     case 'openai-responses':
       return streamOpenAiResponses(call.baseUrl, config, system, messages, tools, maxTokens, cb, {
-        omitTemperature: call.omitTemperature,
+        bodyExtras: call.bodyExtras,
+        idleTimeoutMs: call.idleTimeoutMs,
       })
     case 'openai-compatible':
       return streamOpenAiCompatible(call.baseUrl, config, system, messages, tools, maxTokens, cb, {
@@ -94,9 +95,11 @@ export async function streamForProvider(
           headers: endpoint.headers,
           idleTimeoutMs: endpoint.idleTimeoutMs,
         })
-      default:
-        return streamOpenAiResponses(baseUrl, config, system, messages, tools, cap, cb, {
-          omitTemperature: endpoint.omitTemperature,
+      case 'openai-responses':
+        return streamOpenAiResponses(baseUrl, config, system, messages, tools, tokens, cb, {
+          bodyExtras: endpoint.bodyExtras,
+          headers: endpoint.headers,
+          idleTimeoutMs: endpoint.idleTimeoutMs,
         })
     }
   })

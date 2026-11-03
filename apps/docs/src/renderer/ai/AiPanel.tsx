@@ -48,6 +48,7 @@ const ModelSettingsPage = lazy(() =>
 
 /** author name on AI-generated tracked revisions (accept/reject via Review) */
 export const AI_REVISION_AUTHOR = 'AI Assistant'
+export { aiRevisionAuthor } from './revision-author'
 
 /** progress chip refresh while a write streams */
 const CHIP_UPDATE_MS = 400

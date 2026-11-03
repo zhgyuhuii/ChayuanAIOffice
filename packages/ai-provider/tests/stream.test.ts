@@ -245,7 +245,7 @@ describe('streamForProvider: temperature policy', () => {
     vi.stubGlobal('fetch', fetchMock)
     await streamForProvider(
       'openai',
-      { apiKey: 'k', model: 'gpt-5.6-luna' },
+      { apiKey: 'k', model: 'gpt-5.2' },
       'sys',
       [],
       [],
@@ -1498,7 +1498,7 @@ describe('streamForProvider: interleaved-thinking reasoning', () => {
 })
 
 describe('streamForProvider: a connection dropped mid tool arguments is not an empty stream', () => {
-  // Tool arguments are buffered upstream; the Genspark gateway closes the SSE
+  // Tool arguments are buffered upstream; the ChaAI Office gateway closes the SSE
   // after ~125s of that silence. The turn was billed and in progress, so it
   // must not match the "(empty stream)" contract that agent-core replays.
   it('anthropic: open tool_use block with no stop_reason rejects as a dropped connection', async () => {

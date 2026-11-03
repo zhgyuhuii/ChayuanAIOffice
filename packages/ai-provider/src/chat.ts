@@ -51,7 +51,10 @@ export async function chatForProvider(
           headers: endpoint.headers,
         })
       case 'openai-responses':
-        return chatOpenAiResponses(wd, endpoint.baseUrl, config, system, user)
+        return chatOpenAiResponses(wd, endpoint.baseUrl, config, system, user, {
+          bodyExtras: endpoint.bodyExtras,
+          headers: endpoint.headers,
+        })
     }
   })
   return result.catch((e) => {

@@ -23,6 +23,7 @@ from fontTools.ttLib import TTCollection, TTFont
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 FONTS_CSS = os.path.join(ROOT, "apps/docs/src/renderer/fonts/fonts.css")
+GENERATED_CSS = os.path.join(ROOT, "apps/docs/src/renderer/fonts/fonts.generated.css")
 UI_FONTS = os.path.join(ROOT, "packages/ui/src/fonts")
 SYSTEM_DIRS = ["/System/Library/Fonts", "/System/Library/Fonts/Supplemental"]
 REGULARISH = ("regular", "normal", "book", "roman", "w3", "w4", "medium")
@@ -102,7 +103,8 @@ def pct(v, default=1.0):
 def css_blocks():
     """first plain block per family: weight normal / style normal, no unicode-range"""
     blocks = {}
-    for m in BLOCK_RE.finditer(open(FONTS_CSS, encoding="utf8").read()):
+    css = "".join(open(p, encoding="utf8").read() for p in (FONTS_CSS, GENERATED_CSS))
+    for m in BLOCK_RE.finditer(css):
         d = {k: v.strip() for k, v in DECL_RE.findall(m.group(1))}
         fam = d.get("font-family", "").strip("'\"")
         if not fam:
@@ -125,8 +127,8 @@ def src_box(src, system):
         m = re.match(r"url\(\s*['\"]?([^'\")]+)['\"]?\s*\)", part)
         if m:
             url = m.group(1).split("?")[0]
-            if url.startswith("@genoffice/ui/fonts/"):
-                path = os.path.join(UI_FONTS, url[len("@genoffice/ui/fonts/"):])
+            if url.startswith("@chaoffice/ui/fonts/"):
+                path = os.path.join(UI_FONTS, url[len("@chaoffice/ui/fonts/"):])
             else:
                 path = os.path.join(os.path.dirname(FONTS_CSS), url)
             if not os.path.isfile(path):

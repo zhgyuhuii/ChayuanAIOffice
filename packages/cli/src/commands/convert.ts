@@ -3,7 +3,9 @@ import { tmpdir } from 'node:os'
 import { basename, dirname, extname, join } from 'node:path'
 import { PdfLoadError } from '@chaoffice/pdf2docx'
 import { flagBool, flagString, type ParsedArgs } from '../args'
-import { csvToXlsx } from '../formats/csv'
+import { csvToXlsx, sheetNameFromStem } from '../formats/csv'
+import { convertHwp } from '../formats/hwp'
+import { convertLegacyDoc } from '../formats/legacy-doc'
 import { convertOdp, convertOdt } from '../formats/odf'
 import { convertPdf, type PdfTarget } from '../formats/pdf'
 import { convertLegacyWorkbook, sheetToCsv } from '../formats/xlsx'
@@ -24,6 +26,10 @@ const NODE_ROUTES: Record<string, readonly string[]> = {
   ots: ['xlsx'],
   odt: ['docx'],
   ott: ['docx'],
+  hwpx: ['docx'],
+  hwp: ['docx'],
+  doc: ['docx'],
+  dot: ['docx'],
   odp: ['pptx'],
   otp: ['pptx'],
   md: ['docx', 'html'],
@@ -169,7 +175,7 @@ async function run(
     return { bytes: await markdownToDocx(text, { file: input, ctx }), detail: { title } }
   }
   if (from === 'csv') {
-    const sheet = basename(input, extname(input)).slice(0, 31) || 'Sheet1'
+    const sheet = sheetNameFromStem(basename(input, extname(input)))
     return { bytes: await csvToXlsx(readInput(input), sheet), detail: { sheet } }
   }
   if (to === 'csv') {
@@ -183,8 +189,16 @@ async function run(
     const r = await convertOdt(readInput(input))
     return { bytes: r.bytes, detail: r.detail }
   }
+  if (from === 'hwpx' || from === 'hwp') {
+    const r = await convertHwp(readInput(input))
+    return { bytes: r.bytes, detail: r.detail }
+  }
   if (from === 'odp' || from === 'otp') {
     const r = await convertOdp(readInput(input))
+    return { bytes: r.bytes, detail: r.detail }
+  }
+  if (from === 'doc' || from === 'dot') {
+    const r = await convertLegacyDoc(readInput(input))
     return { bytes: r.bytes, detail: r.detail }
   }
   const r = await convertLegacyWorkbook(input, output)

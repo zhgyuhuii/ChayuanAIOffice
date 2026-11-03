@@ -98,6 +98,11 @@ export const ar = {
     'تعقب التغييرات مفعّل: تُوضع علامة على تغييرات محتوى الذكاء الاصطناعي كمراجعات (الإدراجات مسطّرة والحذف مشطوب)؛ اقبلها أو ارفضها في «مراجعة»',
   aiTrackOffTitle:
     'تعقب التغييرات متوقف: تُطبَّق تغييرات الذكاء الاصطناعي فورًا (لا يزال بإمكانك الاسترجاع عبر لقطات الإصدارات)',
+  aiRevisionBarTitle: 'المراجعات',
+  aiRevisionCount: '{count} تغييرات معلقة',
+  aiRevisionRejectAll: 'رفض الكل',
+  aiRevisionAcceptAll: 'قبول الكل',
+  aiRevisionPara: 'الفقرة {n}',
   aiTurnLimit:
     '(تم بلوغ الحد الأقصى لجولات استدعاء الأدوات لهذا الطلب؛ الإجابة أعلاه تستند إلى الخطوات المكتملة وقد تكون غير كاملة.)',
   aiStopped: '(تم الإيقاف)',
@@ -229,4 +234,7 @@ export const ar = {
   aiTabChat: 'الدردشة',
   aiSummarizeDesc: 'تلخيص المستند واستيعاب نقاطه الرئيسية',
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
+  aiMindMapToggleLayout: 'تبديل التخطيط',
+  aiMindMapLayoutTopDown: 'التبديل إلى التخطيط من أعلى إلى أسفل',
+  aiMindMapLayoutLeftRight: 'التبديل إلى التخطيط من اليسار إلى اليمين',
 } satisfies Record<keyof typeof zh, string>

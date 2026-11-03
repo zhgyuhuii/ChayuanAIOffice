@@ -101,6 +101,11 @@ export const nl = {
     'Wijzigingen bijhouden aan: AI-inhoudsbewerkingen worden gemarkeerd als revisies (invoegingen onderstreept, verwijderingen doorgehaald); accepteer of weiger ze in Controleren',
   aiTrackOffTitle:
     'Wijzigingen bijhouden uit: AI-bewerkingen worden direct toegepast (terugdraaien kan nog steeds via versiesnapshots)',
+  aiRevisionBarTitle: 'Revisies',
+  aiRevisionCount: '{count} openstaande wijzigingen',
+  aiRevisionRejectAll: 'Alles weigeren',
+  aiRevisionAcceptAll: 'Alles accepteren',
+  aiRevisionPara: 'Alinea {n}',
   aiTurnLimit:
     '(Limiet voor toolaanroepen voor dit verzoek bereikt; het antwoord hierboven is gebaseerd op de tot nu toe voltooide stappen en is mogelijk onvolledig.)',
   aiStopped: '(Gestopt)',
@@ -235,4 +240,7 @@ export const nl = {
   aiTabChat: 'Chat',
   aiSummarizeDesc: 'Vat het document samen met de kernpunten',
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
+  aiMindMapToggleLayout: 'Lay-out wisselen',
+  aiMindMapLayoutTopDown: 'Overschakelen naar de lay-out van boven naar beneden',
+  aiMindMapLayoutLeftRight: 'Overschakelen naar de lay-out van links naar rechts',
 } satisfies Record<keyof typeof zh, string>

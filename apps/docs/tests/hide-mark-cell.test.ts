@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -28,6 +28,14 @@ const TABLE_XML =
   '<w:tcMar><w:top w:w="120" w:type="dxa"/><w:bottom w:w="120" w:type="dxa"/></w:tcMar>' +
   '<w:hideMark/></w:tcPr><w:p/></w:tc></w:tr></w:tbl>'
 
+/** Editors created during the current test; destroyed in afterEach so ProseMirror's
+ * DOMObserver timers can't fire after the JSDOM environment is torn down. */
+const liveEditors: Editor[] = []
+
+afterEach(() => {
+  for (const editor of liveEditors.splice(0)) editor.destroy()
+})
+
 describe('w:hideMark cells', () => {
   it('marks the editor cell so the empty end-of-cell paragraph collapses', async () => {
     const parsed = await parseDocx(await buildDocx({ bodyXml: TABLE_XML }))
@@ -35,6 +43,7 @@ describe('w:hideMark cells', () => {
       element: document.createElement('div'),
       extensions: editorExtensions,
     })
+    liveEditors.push(editor)
     editor.commands.setContent(blocksToPmDoc(parsed.blocks) as never)
     const td = editor.view.dom.querySelector('td')!
     expect(td.getAttribute('data-hide-mark')).toBe('1')
@@ -58,7 +67,7 @@ describe('w:hideMark cells', () => {
     expect(rule![1]).toContain('margin: 0 !important')
   })
 
-  // spacer-gif rows (genoffice#2117): the picture-only paragraph is textless too,
+  // spacer-gif rows (chaoffice#2117): the picture-only paragraph is textless too,
   // but its line is the picture extent and must not collapse with the cell mark
   it('leaves a picture-only paragraph in a hideMark cell at its picture height', async () => {
     const xml = TABLE_XML.replace('<w:p/>', IMAGE_PARAGRAPH_XML)
@@ -67,6 +76,7 @@ describe('w:hideMark cells', () => {
       element: document.createElement('div'),
       extensions: editorExtensions,
     })
+    liveEditors.push(editor)
     editor.commands.setContent(blocksToPmDoc(parsed.blocks) as never)
     const p = editor.view.dom.querySelector('td[data-hide-mark] > .doc-p-empty')!
     expect(p.classList.contains('doc-p-pic')).toBe(true)

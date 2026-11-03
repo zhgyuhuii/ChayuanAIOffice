@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import JSZip from 'jszip'
@@ -59,7 +59,7 @@ describe('detectAgents', () => {
     expect(agentTarget('gemini', {}, h)).toBeNull()
     expect(agentTarget('copilot', {}, h)).toBeNull()
     expect(agentTarget('opencode', {}, h)).toBeNull()
-    // `genoffice mcp` still reaches the per-tool dotfolders
+    // `chaoffice mcp` still reaches the per-tool dotfolders
     expect(agentConfigDir('codex', {}, h)).toBe(join(h, '.codex'))
     expect(agentConfigDir('cursor', {}, h)).toBe(join(h, '.cursor'))
     expect(agentConfigDir('gemini', {}, h)).toBe(join(h, '.gemini'))
@@ -206,8 +206,8 @@ describe('the legacy per-tool skill copies', () => {
     // a copy this app wrote in the old layout
     installSkill(join(h, '.codex', 'skills'), b, ledger)
     // a copy in a folder the ledger does not know: not ours to touch
-    mkdirSync(join(h, '.gemini', 'skills', 'genoffice'), { recursive: true })
-    writeFileSync(join(h, '.gemini', 'skills', 'genoffice', 'SKILL.md'), 'hand written\n')
+    mkdirSync(join(h, '.gemini', 'skills', 'chaoffice'), { recursive: true })
+    writeFileSync(join(h, '.gemini', 'skills', 'chaoffice', 'SKILL.md'), 'hand written\n')
 
     const found = findLegacySkillCopies(ledger, {}, h)
     expect(found.map((c) => c.agent)).toEqual(['codex'])
@@ -231,7 +231,7 @@ describe('the legacy per-tool skill copies', () => {
     expect(sweep.removed.map((c) => c.agent)).toEqual(['codex'])
     expect(sweep.kept.map((c) => c.agent)).toEqual(['cursor'])
     expect(existsSync(codexPath)).toBe(false)
-    expect(existsSync(join(h, '.codex', 'skills', 'genoffice'))).toBe(false)
+    expect(existsSync(join(h, '.codex', 'skills', 'chaoffice'))).toBe(false)
     expect(existsSync(cursorPath)).toBe(true)
     expect(ledger[codexPath]).toBeUndefined()
     expect(ledger[cursorPath]).toBeDefined()
@@ -259,7 +259,19 @@ describe('the legacy per-tool skill copies', () => {
     installSkill(join(h, '.codex', 'skills'), b, ledger)
     expect(currentSkillInstalled(ledger, {}, h)).toBe(false)
 
-    installSkill(join(h, '.agents', 'skills'), b, ledger)
+    const sharedPath = installSkill(join(h, '.agents', 'skills'), b, ledger)
     expect(currentSkillInstalled(ledger, {}, h)).toBe(true)
+    // a ledger row for a file that is gone must not open the gate
+    rmSync(sharedPath)
+    expect(currentSkillInstalled(ledger, {}, h)).toBe(false)
+  })
+
+  it('a ledger row whose legacy file is already gone is dropped, not kept as edited', () => {
+    const h = home()
+    const ledger: SkillLedger = {}
+    const codexPath = installSkill(join(h, '.codex', 'skills'), bundled(), ledger)
+    rmSync(codexPath)
+    expect(findLegacySkillCopies(ledger, {}, h)).toEqual([])
+    expect(ledger[codexPath]).toBeUndefined()
   })
 })

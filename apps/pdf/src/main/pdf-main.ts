@@ -12,7 +12,7 @@ import {
   writeFileSync,
 } from 'node:fs'
 import { randomUUID } from 'node:crypto'
-import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
+import { mkdir, open, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { userInfo } from 'node:os'
 import { basename, dirname, join, resolve } from 'node:path'
 import { BrowserWindow, WebContentsView, app, dialog, ipcMain, nativeImage, shell } from 'electron'
@@ -45,7 +45,8 @@ import {
   registerSharedKbIpc,
 } from '@chaoffice/ai-host'
 import { PDF_CHANNELS } from '../shared/ipc'
-import { printJobOptions } from '@chaoffice/electron-utils/print-job'
+import { printJobOptions, printOutcome } from '@chaoffice/electron-utils/print-job'
+import { printPdfViaCups, printToPdfOptionsFor } from '@chaoffice/electron-utils/print-cups'
 import { CertificateEncryptionError, WrongPasswordError, decryptDocument } from './pdf-crypt'
 import { buildExportImagePaths, hasValidExportPageNumbers } from './export-images'
 import type {
@@ -122,6 +123,8 @@ import type { ExternalSigner, SignPdfOptions } from './pdf-sign'
 import { readPdfSignatures } from './pdf-signatures'
 import { SystemStoreError, openSystemSigner, listSystemCertificates } from './system-certificates'
 import type { SystemCertificateRef, SystemIdentity } from './system-certificates'
+/** the largest slice readFileChunk hands over IPC (the renderer loops) */
+const PDF_READ_CHUNK_MAX_BYTES = 8 * 1024 * 1024
 
 const tDlg = createI18n({
   zh: {
@@ -1342,15 +1345,27 @@ function registerPdfIpc(): void {
     return printers.map((p) => ({ name: p.name, displayName: p.displayName || p.name }))
   })
 
-  ipcMain.handle(PDF_CHANNELS.print, (e, job: unknown) => {
+  ipcMain.handle(PDF_CHANNELS.print, async (e, job: unknown) => {
     const opts = printJobOptions(job)
     // the renderer's print stylesheet already lays one rasterized page per sheet
+    if (process.platform === 'darwin' && opts.silent) {
+      // Chromium's silent print on macOS can drop the job outright — no queue
+      // entry, no callback error (chaoffice#2347). Route through CUPS:
+      // printToPDF bakes the sheets at the document's own paper size (the
+      // renderer measured it), and lp spools a real, diagnosable job.
+      const printed = await e.sender.printToPDF(
+        printToPdfOptionsFor({
+          marginsIn: { top: 0, bottom: 0, left: 0, right: 0 },
+          ...(opts.pageSizeIn
+            ? { widthIn: opts.pageSizeIn.width, heightIn: opts.pageSizeIn.height }
+            : {}),
+        }),
+      )
+      return printPdfViaCups(printed, opts)
+    }
     return new Promise<{ ok: boolean; error?: string }>((resolve) => {
       e.sender.print({ margins: { marginType: 'none' }, ...opts }, (success, failureReason) => {
-        resolve({
-          ok: success,
-          ...(failureReason && !/cancel/i.test(failureReason) ? { error: failureReason } : {}),
-        })
+        resolve(printOutcome(success, failureReason, opts.silent))
       })
     })
   })
@@ -1362,6 +1377,35 @@ function registerPdfIpc(): void {
     const buf = await readFile(path)
     return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength)
   })
+
+  // Chunked reads for the same grant: one 42 MB ArrayBuffer over IPC has
+  // killed renderers before first paint on Windows (chaoffice#2366), while
+  // small slices deserialize fine. The size rides along so the renderer's
+  // loop needs no separate stat.
+  ipcMain.handle(
+    PDF_CHANNELS.readFileChunk,
+    async (e, path: unknown, start: unknown, end: unknown) => {
+      // the preload hands the grant's path, start and end as positional args
+      if (typeof path !== 'string' || !allowedByWc.get(e.sender.id)?.has(path)) {
+        throw new Error('pdf: path not granted to this view')
+      }
+      const from = typeof start === 'number' && Number.isInteger(start) && start >= 0 ? start : -1
+      const to = typeof end === 'number' && Number.isInteger(end) && end >= from ? end : -1
+      if (from < 0 || to < 0 || to - from > PDF_READ_CHUNK_MAX_BYTES) {
+        throw new Error('pdf: invalid chunk range')
+      }
+      const handle = await open(path, 'r')
+      try {
+        const length = to - from
+        const buf = Buffer.alloc(length)
+        const { bytesRead } = await handle.read(buf, 0, length, from)
+        const fileSize = (await handle.stat()).size
+        return { data: new Uint8Array(buf.subarray(0, bytesRead)), fileSize }
+      } finally {
+        await handle.close()
+      }
+    },
+  )
 
   // pdf.js has already accepted `password` for these bytes on the render side;
   // a failure here therefore means the standard handler refused it
@@ -1817,12 +1861,14 @@ function registerPdfIpc(): void {
   // Compare: the open document's own text through the same pdfium engine as the
   // picked side — pdf.js and pdfium break lines differently, and a diff across
   // engines reports added and removed lines on files that are identical.
-  ipcMain.handle(PDF_CHANNELS.compareReadOpen, async (e, path: unknown) => {
+  ipcMain.handle(PDF_CHANNELS.compareReadOpen, async (e, path: unknown, password: unknown) => {
     if (typeof path !== 'string' || !allowedByWc.get(e.sender.id)?.has(path)) {
       return { ok: false as const, reason: 'pdf: path not granted to this view' }
     }
     try {
-      const text = await readPdfText(new Uint8Array(await readFile(path)))
+      const text = await readPdfText(new Uint8Array(await readFile(path)), {
+        password: typeof password === 'string' ? password : undefined,
+      })
       return {
         ok: true as const,
         name: basename(path),

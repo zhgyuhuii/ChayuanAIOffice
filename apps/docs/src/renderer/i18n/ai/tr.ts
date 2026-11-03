@@ -100,6 +100,11 @@ export const tr = {
     'Değişiklikleri izleme açık: AI içerik düzenlemeleri düzeltme olarak işaretlenir (eklemeler altı çizili, silmeler üstü çizili); Gözden Geçir sekmesinden kabul edin veya reddedin',
   aiTrackOffTitle:
     'Değişiklikleri izleme kapalı: AI düzenlemeleri hemen uygulanır (anlık görüntülerle yine de geri alabilirsiniz)',
+  aiRevisionBarTitle: 'Düzeltmeler',
+  aiRevisionCount: '{count} bekleyen değişiklik',
+  aiRevisionRejectAll: 'Tümünü reddet',
+  aiRevisionAcceptAll: 'Tümünü kabul et',
+  aiRevisionPara: 'Paragraf {n}',
   aiTurnLimit:
     'Bu görev tüm adımlar tamamlanmadan duraklatıldı. Tamamlanan düzenlemeler korunur; kalan işi bitirmek için Devam et seçeneğini seçin.',
   aiStopped: '(Durduruldu)',
@@ -230,4 +235,7 @@ export const tr = {
   aiTabChat: '对话',
   aiSummarizeDesc: '总结全文要点，快速把握内容',
   aiNoModelErrorBody: '配置一个自己的供应商（密钥即用），或登录 察元AIOffice 使用默认模型。全程无需账号。',
+  aiMindMapToggleLayout: 'Yerleşimi değiştir',
+  aiMindMapLayoutTopDown: 'Yukarıdan aşağı yerleşime geç',
+  aiMindMapLayoutLeftRight: 'Soldan sağa yerleşime geç',
 } satisfies Record<keyof typeof zh, string>

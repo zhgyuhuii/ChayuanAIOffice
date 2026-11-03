@@ -64,6 +64,8 @@ import {
   readBodyCapped,
   recoveryCopyDiskNewer,
   configuredAuthorName,
+  readLegacyImportSkip,
+  writeLegacyImportSkip,
 } from '@chaoffice/electron-utils'
 import { createMainProcessProxyDispatcher } from '@chaoffice/electron-utils/main-proxy'
 import {
@@ -543,6 +545,7 @@ export async function saveSessionDeckTo(session: Session, filePath: string): Pro
 }
 
 const RECENT_PATH = () => join(app.getPath('userData'), 'slides-recent.json')
+const APP_SETTINGS_PATH = () => join(app.getPath('userData'), 'app-settings.json')
 
 /** Settings → General author name, falling back to the OS account */
 function commentAuthorName(): string {
@@ -825,19 +828,29 @@ async function preparePresentationForOpen(filePath: string): Promise<string | nu
   const extension = deckExtension(filePath)
   if (extension !== 'odp' && extension !== 'otp') return filePath
   const parent = dialogParent()
-  const options = {
-    type: 'warning' as const,
-    message: tm('odpImportMsg', { ext: extension }),
-    detail: tm('odpImportDetail'),
-    buttons: [tm('odpImportConvertBtn'), tm('btnCancel')],
-    defaultId: 0,
-    cancelId: 1,
-    noLink: true,
+  if (!readLegacyImportSkip(APP_SETTINGS_PATH(), 'odp')) {
+    const options = {
+      type: 'warning' as const,
+      message: tm('odpImportMsg', { ext: extension }),
+      detail: tm('odpImportDetail'),
+      buttons: [tm('odpImportConvertBtn'), tm('btnCancel')],
+      defaultId: 0,
+      cancelId: 1,
+      noLink: true,
+      checkboxLabel: tm('importSkipConfirm'),
+    }
+    const { response, checkboxChecked } = parent
+      ? await dialog.showMessageBox(parent, options)
+      : await dialog.showMessageBox(options)
+    if (response !== 0) return null
+    if (checkboxChecked) {
+      try {
+        writeLegacyImportSkip(APP_SETTINGS_PATH(), 'odp', true)
+      } catch {
+        /* unwritable settings: ask again next time */
+      }
+    }
   }
-  const { response } = parent
-    ? await dialog.showMessageBox(parent, options)
-    : await dialog.showMessageBox(options)
-  if (response !== 0) return null
   const r = await showSaveDialogWithMemory(
     dialog,
     parent,
@@ -1404,7 +1417,7 @@ export function registerSlidesIpc(): void {
   // Screen recording: source dispatch for the renderer's navigator.mediaDevices.getDisplayMedia.
   // macOS prefers the system picker (with its permission flow), falling back to the first screen.
   void app.whenReady().then(() => {
-    electronSession.defaultSession.protocol.handle('genoffice-slide-media', (request) => {
+    electronSession.defaultSession.protocol.handle('chaoffice-slide-media', (request) => {
       const media = readSlideMedia(request.url)
       if (!media) return new Response(null, { status: 404 })
       return new Response(media.body as BodyInit, {
@@ -5701,7 +5714,7 @@ async function applyMainProcessProxy(): Promise<void> {
     try {
       const { setGlobalDispatcher } = await import('undici')
       // loopback stays direct: a Custom provider on 127.0.0.1 must not ride
-      // the proxy as an absolute-form request (genoffice#2084)
+      // the proxy as an absolute-form request (chaoffice#2084)
       setGlobalDispatcher(await createMainProcessProxyDispatcher(proxyUrl))
       // strip user:pass credentials before logging
       console.log('[proxy] main-process fetch via', proxyUrl.replace(/\/\/[^@/]*@/, '//***@'))

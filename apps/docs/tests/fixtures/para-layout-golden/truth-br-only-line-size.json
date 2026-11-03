@@ -1,0 +1,16 @@
+{
+  "source": "packages/docx-engine/tests/fixtures/truths/br-only-line-size/probe.docx",
+  "paragraphs": 2,
+  "hashes": [
+    "11b8a17cb7e9a019",
+    "970412197f5497fd"
+  ],
+  "cellParagraphs": 0,
+  "cellHashes": [],
+  "boxParagraphs": 0,
+  "boxHashes": [],
+  "hfParagraphs": 0,
+  "hfHashes": [],
+  "noteParagraphs": 0,
+  "noteHashes": []
+}

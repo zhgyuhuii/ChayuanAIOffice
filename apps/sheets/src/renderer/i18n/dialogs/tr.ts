@@ -74,6 +74,20 @@ export const tr = {
   dlgGoToNote:
     'Bir hücre başvurusu yazın veya adlandırılmış bir aralık seçin; Git hedefe atlar ve onu seçer. Doldurmak için bir ada tıklayın, doğrudan gitmek için çift tıklayın.',
   dlgGoToGo: 'Git',
+  dlgQueriesTitle: 'Sorgular ve Bağlantılar',
+  dlgQueriesEmpty: 'Bu çalışma kitabında sorgu veya veri bağlantısı yok.',
+  dlgQueriesKindPowerQuery: 'Power Query',
+  dlgQueriesKindWeb: 'Web sorgusu',
+  dlgQueriesKindText: 'Metin/CSV içe aktarma',
+  dlgQueriesKindDatabase: 'Veritabanı bağlantısı',
+  dlgQueriesKindOther: 'Veri bağlantısı',
+  dlgQueriesLoaded: '{rows} satır → {target}',
+  dlgQueriesConnectionOnly: 'Yalnızca bağlantı',
+  dlgQueriesNote:
+    'Sorguları yenileme henüz desteklenmiyor. Sorgular dosyada korunur, bu nedenle Excel bunları yenileyebilir; gösterilen satırlar son kaydedilen sonuçlardır.',
+  dlgQueriesGoHint: 'Yüklenen satırları seçmek için tıklayın',
+  dlgQueriesError: 'Çalışma kitabının bağlantıları okunamadı: {error}',
+  dlgPasteSpecialTitle: 'Özel Yapıştır',
   dlgPasteSpecialPaste: 'Yapıştır',
   dlgPasteSpecialAll: 'Tümü',
   dlgPasteSpecialFormulas: 'Formüller',
@@ -696,5 +710,4 @@ export const tr = {
   dlgFnNeedRequired: '必填参数「{name}」不能为空。',
   dlgRangePickTitle: '选取区域',
   dlgRangePickHint: '在表格中拖选单元格、行或列后确定',
-  dlgPasteSpecialTitle: '选择性粘贴',
 } satisfies Record<keyof typeof zh, string>
