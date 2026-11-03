@@ -196,7 +196,7 @@ const FILTER_FAMILY: Record<string, readonly string[]> = {
   html: ['html', 'htm'],
 }
 
-function matchesFilter(entry: RecentEntry, filter: string): boolean {
+function _matchesFilter(entry: RecentEntry, filter: string): boolean {
   if (filter === 'all') return true
   return (FILTER_FAMILY[filter] ?? [filter]).includes(entry.ext)
 }

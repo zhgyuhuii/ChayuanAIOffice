@@ -35,7 +35,7 @@ import type {
   TransitionKind,
   TransitionSpec,
 } from '../shared/ipc'
-import { baseName } from '../shared/base-name'
+import {} from '../shared/base-name'
 import { mergeBroadcastUpdate, mergeSlideUpdate, setDeckRefresh } from '../shared/slide-update'
 import { SlideCanvas, selectionChromeColor, type SlideCanvasHandle } from './SlideCanvas'
 import { tableCellOverlayBox } from './table-hit'

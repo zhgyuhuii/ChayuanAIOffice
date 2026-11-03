@@ -120,7 +120,7 @@ export const ko = {
   aiNetworkError:
     '네트워크에 문제가 있어 AI 서비스에 연결할 수 없습니다. 연결을 확인한 후 다시 시도해 주세요',
   aiCreditsExhausted:
-    'ChaAI Office 크레딧을 모두 사용했습니다. chaoffice.ai/pricing에서 충전한 후 다시 시도해 주세요',
+    'ChaAI Office 크레딧을 모두 사용했습니다. genspark.ai/pricing에서 충전한 후 다시 시도해 주세요',
   aiSumReadAttachment: '첨부 파일 읽기',
   aiSumImageAttachment: '이미지 첨부 {name}',
   aiSumRead: '{name} 읽기',

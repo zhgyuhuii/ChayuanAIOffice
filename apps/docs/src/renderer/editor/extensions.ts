@@ -93,8 +93,6 @@ import {
   type TableModel,
   type TextboxDisplay,
   type TextboxListMarker,
-  type ParaFrame,
-  type TextFlowDirection,
 } from '@chaoffice/docx-engine'
 import {
   substituteBullet,

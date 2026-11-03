@@ -122,7 +122,7 @@ export const ms = {
   aiNetworkError:
     'Masalah rangkaian: tidak dapat menghubungi perkhidmatan AI. Semak sambungan anda dan cuba lagi',
   aiCreditsExhausted:
-    'Kredit ChaAI Office anda telah habis. Tambah nilai di chaoffice.ai/pricing dan cuba lagi',
+    'Kredit ChaAI Office anda telah habis. Tambah nilai di genspark.ai/pricing dan cuba lagi',
   aiSumReadAttachment: 'Baca lampiran',
   aiSumImageAttachment: 'Lampiran imej {name}',
   aiSumRead: 'Baca {name}',

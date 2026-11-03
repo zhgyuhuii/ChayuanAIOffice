@@ -120,7 +120,7 @@ export const ar = {
   aiNetworkError:
     'مشكلة في الشبكة: تعذّر الوصول إلى خدمة الذكاء الاصطناعي. تحقق من الاتصال وحاول مجددًا',
   aiCreditsExhausted:
-    'نفدت أرصدة ChaAI Office لديك. يرجى إعادة الشحن عبر chaoffice.ai/pricing ثم المحاولة مجددًا',
+    'نفدت أرصدة ChaAI Office لديك. يرجى إعادة الشحن عبر genspark.ai/pricing ثم المحاولة مجددًا',
   aiSumReadAttachment: 'قراءة المرفق',
   aiSumImageAttachment: 'مرفق صورة {name}',
   aiSumRead: 'قراءة {name}',

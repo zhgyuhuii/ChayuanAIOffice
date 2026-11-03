@@ -742,7 +742,7 @@ export interface CloudProjectEntry {
   kind: CloudProjectKind | 'other'
   /** creation time, ms since epoch (0 when unparsable) */
   ctimeMs: number
-  /** relative chaoffice.ai URL ('/agents?id=...') */
+  /** relative genspark.ai URL ('/agents?id=...') */
   projectUrl: string
 }
 

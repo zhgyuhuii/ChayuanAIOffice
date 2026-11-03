@@ -29,7 +29,7 @@ import {
   latinSlotSubstitute,
   type ResolvedFace,
 } from '@chaoffice/font-metrics/resolve'
-import type { DocGrid, Run } from '@chaoffice/docx-engine'
+import type { DocGrid } from '@chaoffice/docx-engine'
 
 import {
   recordResolveDiff,

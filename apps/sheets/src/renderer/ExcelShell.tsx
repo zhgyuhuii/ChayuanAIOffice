@@ -94,18 +94,13 @@ import {
 } from './data-process-dialogs'
 import type { SheetVisualRef } from './ribbon-actions'
 import {
-  isFormulaBarKeyTarget,
   isGridKeyTarget,
   shouldInterceptClearSelection,
   shouldInterceptRedoRepeat,
 } from './clear-selection-keyboard'
 import {
-  accountingStyle,
-  COMMA_STYLE,
-  PERCENT_STYLE,
-  RIBBON_CURRENCY_SYMBOL,
 } from './excel-format-shortcuts'
-import { isModalOpen, resolveGlobalShortcut } from './global-shortcuts'
+import { isModalOpen } from './global-shortcuts'
 import { scrollRibbonOnWheel } from './ribbon-wheel'
 
 import type { ChartSeriesVisualState } from '@chaoffice/xlsx-gateway/domain/chart-visual'

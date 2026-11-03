@@ -10,8 +10,8 @@ import type { AiProviderId, AiProviderMeta, AiSettings, LegacyAiSettings } from 
  * which differs from the official vendor ids.
  */
 export const CHAOFFICE_LLM_BASE_URLS = {
-  anthropic: 'https://www.chaoffice.ai/api/anthropic',
-  openai: 'https://www.chaoffice.ai/api/llm_proxy/v1',
+  anthropic: 'https://www.genspark.ai/api/anthropic',
+  openai: 'https://www.genspark.ai/api/llm_proxy/v1',
 } as const
 
 /**
@@ -22,7 +22,7 @@ export const CHAOFFICE_LLM_BASE_URLS = {
 export const CHAOFFICE_AGENT_TYPE = 'chaoffice'
 
 export function chaofficeAttributionHeaders(baseUrl?: string): Record<string, string> {
-  return baseUrl?.startsWith('https://www.chaoffice.ai')
+  return baseUrl?.startsWith('https://www.genspark.ai')
     ? { 'X-Agent-Type': CHAOFFICE_AGENT_TYPE }
     : {}
 }

@@ -230,7 +230,7 @@ if (!process.env.SKIP_PLATFORM_VARIANTS) {
     const scopeDir = pkg.startsWith('@') ? join(nm, pkg.split('/')[0]) : null
     for (const v of variants) {
       // 包名规则：esbuild 直名（@esbuild/<triple>）；canvas 带 libc/msvc 后缀
-      const dirName = pkg === 'esbuild' ? v : v
+      const dirName = pkg === 'esbuild' ? v : v // eslint-disable-line @typescript-eslint/no-unused-vars
       const targetPkg = pkg === 'esbuild' ? `@esbuild/${v}` : `@napi-rs/canvas-${v.replace('canvas-', '')}`
       const target = join(nm, targetPkg)
       if (existsSync(join(target, 'package.json'))) continue

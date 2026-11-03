@@ -125,7 +125,7 @@ export const pt = {
   aiNetworkError:
     'Problema de rede: não foi possível conectar ao serviço de IA. Verifique sua conexão e tente novamente',
   aiCreditsExhausted:
-    'Seus créditos ChaAI Office acabaram. Recarregue em chaoffice.ai/pricing e tente novamente',
+    'Seus créditos ChaAI Office acabaram. Recarregue em genspark.ai/pricing e tente novamente',
   aiSumReadAttachment: 'Ler anexo',
   aiSumImageAttachment: 'Imagem anexada {name}',
   aiSumRead: 'Ler {name}',

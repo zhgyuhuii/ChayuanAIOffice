@@ -25,7 +25,7 @@ import {
 } from '../src/chaoffice'
 
 const CODE = 'a'.repeat(64)
-const AUTH_URL = `https://www.chaoffice.ai/api/office_addin_auth/verify?code=${CODE}`
+const AUTH_URL = `https://www.genspark.ai/api/office_addin_auth/verify?code=${CODE}`
 
 const deviceCodeOk = {
   device_code: CODE,
@@ -137,12 +137,12 @@ describe('startChaofficeLogin', () => {
     expect(events.at(-1)?.phase).toBe('success')
     const calls = fetchMock.mock.calls
     const mint = calls.find(([u]) => String(u).includes('/api_tokens/create'))!
-    expect(new Headers(mint[1]?.headers).get('X-ChaAI Office-Native-Pass')).toBe(token)
+    expect(new Headers(mint[1]?.headers).get('X-Genspark-Native-Pass')).toBe(token)
     expect(new Headers(mint[1]?.headers).get('Cookie')).toBe('session_id=sess-abc')
     expect(mint[1]?.redirect).toBe('manual')
     const session = calls.find(([u]) => String(u).includes('/office_addin_auth/session'))!
     expect(new Headers(session[1]?.headers).get('Authorization')).toBe('Bearer bearer-token')
-    expect(new Headers(session[1]?.headers).has('X-ChaAI Office-Native-Pass')).toBe(false)
+    expect(new Headers(session[1]?.headers).has('X-Genspark-Native-Pass')).toBe(false)
     expect(calls.filter(([u]) => String(u).endsWith('/api/native-waf/pass'))).toHaveLength(1)
   })
  it('runs device_code → poll → session → key create and stores the key', async () => {

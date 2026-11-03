@@ -6399,7 +6399,7 @@ export function App() {
     () => (editor ? buildReviewEntries(editor.state.doc, allRevisions, reviewAuthors) : []),
     [editor, allRevisions, reviewAuthors],
   )
-  const activeAllReviewIndex = useMemo(
+  const _activeAllReviewIndex = useMemo(
     () => allReviewEntries.findIndex(isActiveEntry),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [allReviewEntries, selectionHead, activeStoryId],

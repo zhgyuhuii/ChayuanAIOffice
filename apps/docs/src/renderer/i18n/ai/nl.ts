@@ -124,7 +124,7 @@ export const nl = {
   aiNetworkError:
     'Netwerkprobleem: kan de AI-service niet bereiken. Controleer je verbinding en probeer het opnieuw',
   aiCreditsExhausted:
-    'Je ChaAI Office-credits zijn op. Waardeer op via chaoffice.ai/pricing en probeer het opnieuw',
+    'Je ChaAI Office-credits zijn op. Waardeer op via genspark.ai/pricing en probeer het opnieuw',
   aiSumReadAttachment: 'Bijlage lezen',
   aiSumImageAttachment: 'Afbeeldingsbijlage {name}',
   aiSumRead: '{name} lezen',

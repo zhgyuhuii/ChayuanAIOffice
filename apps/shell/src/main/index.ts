@@ -828,13 +828,13 @@ function initAnalytics(): void {
 
 // ---- first-run onboarding ----
 // The GenTeam community page opened from the onboarding's second slide.
-// Stable short link served by the chaoffice.ai site; it 302s to the tokened
+// Stable short link served by the genspark.ai site; it 302s to the tokened
 // invite link, which stays out of this repo and rotates server-side.
-const GENTEAM_URL = 'https://chaoffice.ai/join'
+const GENTEAM_URL = 'https://genspark.ai/join'
 
 // ChaOffice credit-usage page opened from the account menu's credits row.
 // Kept main-side so the renderer never supplies the URL.
-const CREDIT_USAGE_URL = 'https://www.chaoffice.ai/credit-usage'
+const CREDIT_USAGE_URL = 'https://www.genspark.ai/credit-usage'
 
 // ---- "star us on GitHub" prompt (see star-prompt.ts for the rules) ----
 
@@ -8634,7 +8634,7 @@ async function installMainProcessProxy(): Promise<void> {
     try {
       // PAC/rule proxies answer per-host: probe the host the login flow, the
       // ChaOffice LLM proxy and the chaoffice CLI actually target
-      const resolved = await session.defaultSession.resolveProxy('https://www.chaoffice.ai/')
+      const resolved = await session.defaultSession.resolveProxy('https://www.genspark.ai/')
       const m = /PROXY\s+([^;\s]+)/.exec(resolved)
       if (m) proxyUrl = `http://${m[1]}`
     } catch {

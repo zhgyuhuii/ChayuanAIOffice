@@ -5,7 +5,7 @@
  */
 import { createAiHttpBridge } from '../ai-bridge.js'
 import type { BridgeClient } from '../client.js'
-import { b64ToBytes, bytesToB64, makeShim, pendingFromHash } from '../shim-factory.js'
+import { bytesToB64, makeShim, pendingFromHash } from '../shim-factory.js'
 
 export function installHtmlShim(client: BridgeClient): void {
   let currentFile: { id: string; name: string } | null = null

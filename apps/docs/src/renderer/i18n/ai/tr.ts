@@ -121,7 +121,7 @@ export const tr = {
   aiOverloadedError: 'AI hizmeti şu anda yoğun — lütfen biraz sonra yeniden deneyin',
   aiNetworkError: 'Ağ sorunu: AI hizmetine ulaşılamadı. Bağlantınızı kontrol edip yeniden deneyin',
   aiCreditsExhausted:
-    'ChaAI Office krediniz tükendi. Yüklemek için chaoffice.ai/pricing adresini ziyaret edin, sonra yeniden deneyin',
+    'ChaAI Office krediniz tükendi. Yüklemek için genspark.ai/pricing adresini ziyaret edin, sonra yeniden deneyin',
   aiSumReadAttachment: 'Ek okundu',
   aiSumImageAttachment: 'Resim eki {name}',
   aiSumRead: '{name} okundu',

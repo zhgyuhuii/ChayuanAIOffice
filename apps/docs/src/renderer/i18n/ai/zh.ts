@@ -112,7 +112,7 @@ export const zh = {
   aiRegionError: '该模型的厂商不向当前地区提供服务，请换一个模型或切换网络',
   aiOverloadedError: 'AI 服务当前繁忙，请稍后重试',
   aiNetworkError: '网络有问题，无法连接 AI 服务。请检查网络后重试',
-  aiCreditsExhausted: '察元AIOffice 积分已用完，请前往 chaoffice.ai/pricing 充值后重试',
+  aiCreditsExhausted: '察元AIOffice 积分已用完，请前往 genspark.ai/pricing 充值后重试',
   aiSumReadAttachment: '读取附件',
   aiSumImageAttachment: '图片附件 {name}',
   aiSumRead: '读取 {name}',

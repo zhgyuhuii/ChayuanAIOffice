@@ -126,7 +126,7 @@ export const it = {
   aiNetworkError:
     'Problema di rete: impossibile raggiungere il servizio IA. Controlla la connessione e riprova',
   aiCreditsExhausted:
-    'I tuoi crediti ChaAI Office sono esauriti. Ricarica su chaoffice.ai/pricing e riprova',
+    'I tuoi crediti ChaAI Office sono esauriti. Ricarica su genspark.ai/pricing e riprova',
   aiSumReadAttachment: 'Lettura allegato',
   aiSumImageAttachment: 'Immagine allegata {name}',
   aiSumRead: 'Lettura di {name}',

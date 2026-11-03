@@ -16,7 +16,7 @@ const PASS_HEADER = 'X-ChaAI Office-Token-Pass'
  * extra deployment hosts; no hostlist lives in source.
  */
 export function nativeAdmissionHosts(env: NodeJS.ProcessEnv = process.env): Set<string> {
-  const hosts = new Set(['www.chaoffice.ai'])
+  const hosts = new Set(['www.genspark.ai'])
   try {
     if (env.GSK_BASE_URL) hosts.add(new URL(env.GSK_BASE_URL).hostname)
   } catch {

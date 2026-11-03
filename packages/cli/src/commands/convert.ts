@@ -175,7 +175,7 @@ async function run(
     return { bytes: await markdownToDocx(text, { file: input, ctx }), detail: { title } }
   }
   if (from === 'csv') {
-    const sheet = basename(input, extname(input)).slice(0, 31) || 'Sheet1'
+    const sheet = sheetNameFromStem(basename(input, extname(input)))
     return { bytes: await csvToXlsx(readInput(input), sheet), detail: { sheet } }
   }
   if (to === 'csv') {

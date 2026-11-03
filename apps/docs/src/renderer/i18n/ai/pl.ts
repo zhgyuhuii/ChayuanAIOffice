@@ -123,7 +123,7 @@ export const pl = {
   aiNetworkError:
     'Problem z siecią: nie można połączyć się z usługą AI. Sprawdź połączenie i spróbuj ponownie',
   aiCreditsExhausted:
-    'Twoje kredyty ChaAI Office wyczerpały się. Doładuj konto na chaoffice.ai/pricing i spróbuj ponownie',
+    'Twoje kredyty ChaAI Office wyczerpały się. Doładuj konto na genspark.ai/pricing i spróbuj ponownie',
   aiSumReadAttachment: 'Odczyt załącznika',
   aiSumImageAttachment: 'Załącznik graficzny {name}',
   aiSumRead: 'Odczyt {name}',

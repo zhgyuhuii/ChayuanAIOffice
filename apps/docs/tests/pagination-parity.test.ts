@@ -20,22 +20,13 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parseDocx } from '@chaoffice/docx-engine'
-import { readSections } from '@chaoffice/docx-engine'
+import {} from '@chaoffice/docx-engine'
 import {
   computeSectionedSlicesF2,
-  sectionColGeom,
-  sectionColumns,
-  sectionGeoms,
-  type BlockBox,
-  type TableRowBox,
 } from '../src/renderer/pagination'
 import {
-  computeLineMetrics,
-  estimateFootnoteHeight,
-  resolveNoteStyle,
 } from '../src/renderer/line-metrics'
-import { loBaselineMetrics } from './helpers/lo-fonts'
-import type { ParsedDoc, DocGrid, ParaFormat, StyleDisplay } from '@chaoffice/docx-engine'
+import {} from './helpers/lo-fonts'
 import { buildCorpusBlocks } from './helpers/corpus-blocks'
 
 const __filename = fileURLToPath(import.meta.url)

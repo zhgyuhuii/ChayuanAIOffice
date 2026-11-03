@@ -5257,7 +5257,7 @@ async function applyMainProcessProxy(): Promise<void> {
     await app.whenReady()
     // PAC/rule proxies answer per-host: probe the host the login flow, the
     // ChaOffice LLM proxy and the chaoffice CLI actually target
-    const resolved = await electronSession.defaultSession.resolveProxy('https://www.chaoffice.ai/')
+    const resolved = await electronSession.defaultSession.resolveProxy('https://www.genspark.ai/')
     const m = /PROXY\s+([^;]+)/i.exec(resolved || '')
     if (m?.[1]) {
       await setDispatcher(`http://${m[1].trim()}`)
