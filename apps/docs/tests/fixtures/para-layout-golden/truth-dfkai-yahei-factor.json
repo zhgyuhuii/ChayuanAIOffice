@@ -1,7 +1,9 @@
 {
   "source": "packages/docx-engine/tests/fixtures/truths/dfkai-yahei-factor/probe.docx",
   "paragraphs": 1,
-  "hashes": ["2a2c69f860e4ab2f"],
+  "hashes": [
+    "9de857771a57266a"
+  ],
   "cellParagraphs": 0,
   "cellHashes": [],
   "boxParagraphs": 0,

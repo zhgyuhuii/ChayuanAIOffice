@@ -13,6 +13,9 @@ const state = vi.hoisted(() => ({
 }))
 
 vi.mock('electron', () => ({
+  nativeImage: {
+    createFromPath: () => ({ isEmpty: () => true, toDataURL: () => '' }),
+  },
   app: {
     isPackaged: true,
     whenReady: () => new Promise<void>(() => {}),
@@ -43,7 +46,6 @@ vi.mock('electron', () => ({
   },
   shell: {},
   clipboard: {},
-  nativeImage: {},
   net: {},
   session: {},
   webContents: {},
@@ -62,7 +64,7 @@ beforeEach(async () => {
 
 afterEach(() => rmSync(state.root, { recursive: true, force: true }))
 
-const blocker = () => join(state.root, 'documents', 'ChaAI Office')
+const blocker = () => join(state.root, 'documents', 'ChayuanAIOffice')
 const selected = () => join(state.root, 'picked', 'saved.docx')
 const documentBytes = () => buildDocx({ bodyXml: '<w:p><w:r><w:t>Save fixture</w:t></w:r></w:p>' })
 

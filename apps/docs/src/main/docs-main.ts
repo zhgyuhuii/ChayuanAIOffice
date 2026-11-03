@@ -3147,7 +3147,7 @@ async function saveDialog(event: IpcMainInvokeEvent, options: SaveDialogOptions)
     dialog,
     dialogParent(event),
     options,
-    override ?? defaultSaveDir(),
+    override ?? defaultSaveDir,
   )
 }
 

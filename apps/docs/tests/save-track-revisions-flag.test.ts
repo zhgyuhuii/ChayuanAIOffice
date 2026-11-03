@@ -63,6 +63,7 @@ async function fixture(settingsInner: string, trackChanges: boolean, dirty: bool
     pendingNumbering: { newDefs: [], restartNums: [] },
     trackChanges,
     trackRevisionsDirty: dirty,
+    styleDeletes: [],
   }
   const noop = () => {}
   const ctx = new Proxy(state, {

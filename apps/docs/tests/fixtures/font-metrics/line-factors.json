@@ -71,6 +71,18 @@
     1.22,
     1.22
   ],
+  "'ChaAI Office Batang'": [
+    1.172,
+    1.172
+  ],
+  "'ChaAI Office Hiragino Sans'": [
+    1.3,
+    1.3
+  ],
+  "'ChaOffice Sans KR'": [
+    1.172,
+    1.172
+  ],
   "'DM Sans',sans-serif": [
     1.302,
     1.172
@@ -81,22 +93,6 @@
   ],
   "'Geeza Pro'": [
     1.3617,
-    1.172
-  ],
-  "'ChaAI Office Batang'": [
-    1.172,
-    1.172
-  ],
-  "'ChaAI Office Batang','ChaAI Office Serif KR'": [
-    1.172,
-    1.172
-  ],
-  "'ChaAI Office Hiragino Sans'": [
-    1.3,
-    1.3
-  ],
-  "'ChaAI Office Sans KR'": [
-    1.172,
     1.172
   ],
   "'KR Theme Latin GO'": [
@@ -855,6 +851,90 @@
     1.206,
     1.206
   ],
+  "ChaAI Office Batang": [
+    1.172,
+    1.172
+  ],
+  "ChaAI Office Bengali": [
+    1.172,
+    1.172
+  ],
+  "ChaAI Office Box Drawing": [
+    1.172,
+    1.172
+  ],
+  "ChaAI Office DM Sans": [
+    1.172,
+    1.172
+  ],
+  "ChaAI Office Fullwidth TC": [
+    1.172,
+    1.172
+  ],
+  "ChaAI Office Gothic KR": [
+    1.172,
+    1.172
+  ],
+  "ChaAI Office Heiti TC": [
+    1.172,
+    1.172
+  ],
+  "ChaAI Office Hiragino Mincho": [
+    1.3,
+    1.3
+  ],
+  "ChaAI Office Hiragino Sans": [
+    1.3,
+    1.3
+  ],
+  "ChaAI Office MS Mincho": [
+    1.3,
+    1.3
+  ],
+  "ChaAI Office MingLiU": [
+    1.172,
+    1.172
+  ],
+  "ChaAI Office Myungjo": [
+    1.172,
+    1.172
+  ],
+  "ChaAI Office PUA Blank": [
+    1.172,
+    1.172
+  ],
+  "ChaAI Office Poppins": [
+    1.172,
+    1.172
+  ],
+  "ChaAI Office Serif KR": [
+    1.172,
+    1.172
+  ],
+  "ChaAI Office SimSun Latin": [
+    1.172,
+    1.172
+  ],
+  "ChaAI Office Songti SC": [
+    1.172,
+    1.172
+  ],
+  "ChaAI Office Songti TC": [
+    1.172,
+    1.172
+  ],
+  "ChaAI Office Tamil": [
+    1,
+    1
+  ],
+  "ChaAI Office YaHei Latin": [
+    1.172,
+    1.172
+  ],
+  "ChaOffice Sans KR": [
+    1.172,
+    1.172
+  ],
   "Chiller": [
     1.1538,
     1.172
@@ -1133,90 +1213,6 @@
   ],
   "Geeza Pro": [
     1.3617,
-    1.172
-  ],
-  "ChaAI Office Batang": [
-    1.172,
-    1.172
-  ],
-  "ChaAI Office Bengali": [
-    1.172,
-    1.172
-  ],
-  "ChaAI Office Box Drawing": [
-    1.172,
-    1.172
-  ],
-  "ChaAI Office DM Sans": [
-    1.172,
-    1.172
-  ],
-  "ChaAI Office Fullwidth TC": [
-    1.172,
-    1.172
-  ],
-  "ChaAI Office Gothic KR": [
-    1.172,
-    1.172
-  ],
-  "ChaAI Office Heiti TC": [
-    1.172,
-    1.172
-  ],
-  "ChaAI Office Hiragino Mincho": [
-    1.3,
-    1.3
-  ],
-  "ChaAI Office Hiragino Sans": [
-    1.3,
-    1.3
-  ],
-  "ChaAI Office MS Mincho": [
-    1.3,
-    1.3
-  ],
-  "ChaAI Office MingLiU": [
-    1.172,
-    1.172
-  ],
-  "ChaAI Office Myungjo": [
-    1.172,
-    1.172
-  ],
-  "ChaAI Office PUA Blank": [
-    1.172,
-    1.172
-  ],
-  "ChaAI Office Poppins": [
-    1.172,
-    1.172
-  ],
-  "ChaAI Office Sans KR": [
-    1.172,
-    1.172
-  ],
-  "ChaAI Office Serif KR": [
-    1.172,
-    1.172
-  ],
-  "ChaAI Office SimSun Latin": [
-    1.172,
-    1.172
-  ],
-  "ChaAI Office Songti SC": [
-    1.172,
-    1.172
-  ],
-  "ChaAI Office Songti TC": [
-    1.172,
-    1.172
-  ],
-  "ChaAI Office Tamil": [
-    1,
-    1
-  ],
-  "ChaAI Office YaHei Latin": [
-    1.172,
     1.172
   ],
   "Georgia": [

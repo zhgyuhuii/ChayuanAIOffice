@@ -22,7 +22,11 @@
   "boxParagraphs": 0,
   "boxHashes": [],
   "hfParagraphs": 3,
-  "hfHashes": ["dab330c70c27aeb2", "dde5599d1e8734f6", "ec03eced3ef27d82"],
+  "hfHashes": [
+    "dab330c70c27aeb2",
+    "dde5599d1e8734f6",
+    "ec03eced3ef27d82"
+  ],
   "noteParagraphs": 0,
   "noteHashes": []
 }

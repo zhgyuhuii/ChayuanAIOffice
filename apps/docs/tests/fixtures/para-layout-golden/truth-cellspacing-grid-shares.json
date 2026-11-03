@@ -1,7 +1,9 @@
 {
   "source": "packages/docx-engine/tests/fixtures/truths/cellspacing-grid-shares/probe.docx",
   "paragraphs": 1,
-  "hashes": ["2d61b88649208224"],
+  "hashes": [
+    "2d61b88649208224"
+  ],
   "cellParagraphs": 0,
   "cellHashes": [],
   "boxParagraphs": 0,

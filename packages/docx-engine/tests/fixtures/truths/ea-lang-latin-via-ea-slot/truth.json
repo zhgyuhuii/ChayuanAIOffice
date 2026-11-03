@@ -75,7 +75,7 @@
     {
       "kind": "cssFamilyIncludes",
       "font": "SimSun",
-      "expect": "GenOffice SimSun Latin",
+      "expect": "ChaAI Office SimSun Latin",
       "note": "the half-width 0.5em Latin stand-in heads the chain"
     }
   ]

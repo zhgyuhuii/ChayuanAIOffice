@@ -14,7 +14,7 @@
         "styles": [
           "font-size:12pt",
           "--doc-line-factor:1.3",
-          "font-family:'SimSun','GenOffice SimSun Latin','GenOffice Songti SC','STSong','Noto Serif CJK SC',serif",
+          "font-family:'SimSun','ChaAI Office SimSun Latin','ChaAI Office Songti SC','STSong','Noto Serif CJK SC',serif",
           "--doc-lead-gap:0px"
         ]
       },
