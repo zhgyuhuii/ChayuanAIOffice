@@ -34,7 +34,7 @@ const TEMPLATES = {
 const INSTALL_SCRIPT = join(BUILD_DIR, 'linux-after-install.sh')
 const REMOVE_SCRIPT = join(BUILD_DIR, 'linux-after-remove.sh')
 
-const require = createRequire(import.meta.url)
+const require = createRequire(join(SHELL_DIR, 'electron-builder.cjs'))
 // Inspect packaging metadata without downloading Electron or compiling OCR
 // helpers (same approach as shell-new.test.ts).
 const configModule = { exports: {} as ReturnType<typeof require> }
@@ -126,7 +126,7 @@ describe.skipIf(process.platform === 'win32')('Linux post-install scripts in a s
       writeFileSync(
         file,
         readFileSync(join(BUILD_DIR, name), 'utf-8')
-          .replaceAll('/opt/GenOffice', app)
+          .replaceAll('/opt/ChaAI Office', app)
           .replaceAll('/usr/share/templates', templates)
           .replaceAll('/usr/bin/', `${bin}/`),
       )
