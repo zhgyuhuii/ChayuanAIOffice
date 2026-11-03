@@ -413,8 +413,8 @@ export async function handleSave(
     if (state.file.needsSaveAs) {
       return await handleSave(ctx, 'save-as', quiet, explicitTarget)
     }
-    if (mode !== 'recovery') ctx.setMessage(t('appNoEditsToSave'))
-    return { ok: false }
+    if (mode !== 'recovery' && !quiet) ctx.setMessage(t('appNoEditsToSave'))
+    return { ok: false, reason: 'no-edits' }
   }
   // CSV session: Save keeps the CSV identity — Excel's "keep this format?"
   // question once per file, then the active sheet rides the save request as

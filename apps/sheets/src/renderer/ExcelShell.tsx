@@ -1634,6 +1634,15 @@ export function ExcelShell({
             {/* Status bar spans the sheet column only — the AI dock keeps the full window height (unified with docs/slides). */}
             <footer className="status-bar">
               <div className="status-left">
+                {/* Formula view is per sheet and survives a save, so a sheet can
+                    open showing formulas instead of values. Say so in the status
+                    bar: the one-off toast that announced the switch is gone by
+                    the time anyone notices, and the sheet looks broken. */}
+                {showFormulas && (
+                  <span className="status-flag" role="status" title={t('appShowingFormulas')}>
+                    {t('appShowingFormulasActive')}
+                  </span>
+                )}
                 <span className="status-msg">{statusMessage}</span>
               </div>
               <div className="status-right">
