@@ -1553,7 +1553,7 @@ export async function saveDocx(
           },
     )
     // comment pictures: the bytes land as media parts and their relationships
-    // live in the comments part's own rels file, not the document's (genoffice#2040)
+    // live in the comments part's own rels file, not the document's (chaoffice#2040)
     const commentsFile = zip.file(commentsPath)
     const imageRuns = new Map<string, string>()
     const imageComments = withParaIds.filter((c) => c.image)

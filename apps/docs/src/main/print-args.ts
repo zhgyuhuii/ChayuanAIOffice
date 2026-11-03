@@ -49,6 +49,3 @@ export function validPrintPaper(
   if (!validPrintDim(p.widthTwips) || !validPrintDim(p.heightTwips)) return null
   return { widthTwips: p.widthTwips, heightTwips: p.heightTwips }
 }
-
-export { printJobOptions } from '@chaoffice/electron-utils/print-job'
-export type { PrintDuplex, PrintJobOptions } from '@chaoffice/electron-utils/print-job'

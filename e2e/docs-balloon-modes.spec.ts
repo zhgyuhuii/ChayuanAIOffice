@@ -58,7 +58,7 @@ test.describe('docs Show Markup balloons', () => {
   let docPath: string
 
   test.beforeEach(async () => {
-    dir = realpathSync(mkdtempSync(join(tmpdir(), 'genoffice-e2e-balloons-')))
+    dir = realpathSync(mkdtempSync(join(tmpdir(), 'chaoffice-e2e-balloons-')))
     docPath = join(dir, 'tracked.docx')
     writeFileSync(docPath, await trackedDocx())
   })

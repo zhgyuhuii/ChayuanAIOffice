@@ -1,6 +1,6 @@
 /** Normal/docDefaults paragraph spacing reaches nested-table cell and textbox paragraphs */
 import { DOMSerializer } from '@tiptap/pm/model'
-import type { ParsedDocFull, StyleInfo, TableModel } from '@genoffice/docx-engine'
+import type { ParsedDocFull, StyleInfo, TableModel } from '@chaoffice/docx-engine'
 import { afterEach, describe, expect, it } from 'vitest'
 import { docStyleCss } from '../src/renderer/doc-style-css'
 import { setAdditiveParagraphSpacing } from '../src/renderer/line-metrics'

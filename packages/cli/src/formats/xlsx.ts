@@ -43,7 +43,7 @@ import { access, readFile } from 'node:fs/promises'
 import { z } from 'zod'
 import { atomicWriteFile } from '../../../../apps/sheets/src/main/atomic-write'
 import { XlsxSidecarClient } from '../../../../apps/sheets/src/main/xlsx-sidecar-client'
-import { planExternalLinkBreak } from '@genoffice/xlsx-gateway/gateway/xlsx-external-links'
+import { planExternalLinkBreak } from '@chaoffice/xlsx-gateway/gateway/xlsx-external-links'
 import { CliError, EXIT } from '../result'
 import { sheetNotFoundHints } from '../suggest'
 import { xlsxSidecarPath } from '../resources'
@@ -1326,7 +1326,7 @@ export async function writeWorkbook(
   }
 }
 
-// ── external links (genoffice#2109) ────────────────────────────────────
+// ── external links (chaoffice#2109) ────────────────────────────────────
 
 export interface ExternalLinkInfo {
   index: number

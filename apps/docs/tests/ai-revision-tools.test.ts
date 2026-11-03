@@ -133,6 +133,7 @@ describe('accept_changes / reject_changes tools', () => {
         undefined,
         undefined,
         undefined,
+        undefined,
         { revisionsLocked: true },
       )
       expect(r.isError).toBe(true)

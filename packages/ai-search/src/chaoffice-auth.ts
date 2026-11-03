@@ -31,7 +31,7 @@ const KEY_NAME = 'chaoffice'
 const HTTP_TIMEOUT_MS = 30_000
 
 function baseUrl(): string {
-  return (process.env.GSK_BASE_URL || 'https://www.genspark.ai').replace(/\/$/, '')
+  return (process.env.GSK_BASE_URL || 'https://www.chaoffice.ai').replace(/\/$/, '')
 }
 
 let cachedFetch: typeof fetch | undefined

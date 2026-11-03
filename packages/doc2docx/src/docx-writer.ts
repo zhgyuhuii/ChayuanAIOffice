@@ -20,7 +20,7 @@ import {
   type GeneratedBlock,
   type ParaFormat,
   type Run,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import {
   COLOR_BY_INDEX,
   type FormattedParagraph,

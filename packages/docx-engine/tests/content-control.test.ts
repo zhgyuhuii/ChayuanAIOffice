@@ -149,7 +149,7 @@ describe('content control unwrapping', () => {
 // ---- Nested block-level controls and inline (run-level) controls ----
 
 // outer wraps two paragraphs around an inner control, and a run-level control
-// sits inside the third paragraph (matches the genoffice#2062 nested fixture)
+// sits inside the third paragraph (matches the chaoffice#2062 nested fixture)
 const NESTED_SDT =
   '<w:sdt><w:sdtPr><w:tag w:val="outer"/><w:alias w:val="Outer"/><w:id w:val="10"/>' +
   '<w:lock w:val="sdtLocked"/><w:richText/></w:sdtPr><w:sdtContent>' +

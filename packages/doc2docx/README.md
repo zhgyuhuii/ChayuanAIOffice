@@ -1,4 +1,4 @@
-# @genoffice/doc2docx
+# @chaoffice/doc2docx
 
 Legacy Word 97-2003 (`.doc`) import, staged so every layer can be reviewed
 and tested on its own. The converter reads the OLE2/CFB container locally and

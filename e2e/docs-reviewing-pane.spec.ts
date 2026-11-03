@@ -45,7 +45,7 @@ test.describe('docs Reviewing Pane', () => {
   let docPath: string
 
   test.beforeEach(async () => {
-    dir = realpathSync(mkdtempSync(join(tmpdir(), 'genoffice-e2e-review-pane-')))
+    dir = realpathSync(mkdtempSync(join(tmpdir(), 'chaoffice-e2e-review-pane-')))
     docPath = join(dir, 'tracked.docx')
     writeFileSync(docPath, await trackedDocx())
   })

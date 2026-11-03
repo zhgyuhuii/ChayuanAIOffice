@@ -1417,7 +1417,7 @@ export function registerSlidesIpc(): void {
   // Screen recording: source dispatch for the renderer's navigator.mediaDevices.getDisplayMedia.
   // macOS prefers the system picker (with its permission flow), falling back to the first screen.
   void app.whenReady().then(() => {
-    electronSession.defaultSession.protocol.handle('genoffice-slide-media', (request) => {
+    electronSession.defaultSession.protocol.handle('chaoffice-slide-media', (request) => {
       const media = readSlideMedia(request.url)
       if (!media) return new Response(null, { status: 404 })
       return new Response(media.body as BodyInit, {
@@ -5714,7 +5714,7 @@ async function applyMainProcessProxy(): Promise<void> {
     try {
       const { setGlobalDispatcher } = await import('undici')
       // loopback stays direct: a Custom provider on 127.0.0.1 must not ride
-      // the proxy as an absolute-form request (genoffice#2084)
+      // the proxy as an absolute-form request (chaoffice#2084)
       setGlobalDispatcher(await createMainProcessProxyDispatcher(proxyUrl))
       // strip user:pass credentials before logging
       console.log('[proxy] main-process fetch via', proxyUrl.replace(/\/\/[^@/]*@/, '//***@'))
@@ -5738,7 +5738,7 @@ async function applyMainProcessProxy(): Promise<void> {
     await app.whenReady()
     // PAC/rule proxies answer per-host: probe the host the login flow, the
     // ChaOffice LLM proxy and the chaoffice CLI actually target
-    const resolved = await electronSession.defaultSession.resolveProxy('https://www.genspark.ai/')
+    const resolved = await electronSession.defaultSession.resolveProxy('https://www.chaoffice.ai/')
     // resolveProxy returns strings like "PROXY 127.0.0.1:1087" or "DIRECT"
     const m = /PROXY\s+([^;]+)/i.exec(resolved || '')
     if (m) {

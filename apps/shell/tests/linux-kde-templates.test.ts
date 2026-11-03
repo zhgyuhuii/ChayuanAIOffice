@@ -24,11 +24,11 @@ const TEMPLATE_DIR = join(BUILD_DIR, 'shell-new')
 // KDE Plasma's Dolphin builds its "Create New" menu from the XDG templates
 // directories, which include the system-wide /usr/share/templates. The deb/rpm
 // post-install script installs one blank document per format there
-// (genoffice#2384); the menu label is the installed file name.
+// (chaoffice#2384); the menu label is the installed file name.
 const TEMPLATES = {
-  docx: 'GenOffice Document.docx',
-  xlsx: 'GenOffice Spreadsheet.xlsx',
-  pptx: 'GenOffice Presentation.pptx',
+  docx: 'ChaAI Office Document.docx',
+  xlsx: 'ChaAI Office Spreadsheet.xlsx',
+  pptx: 'ChaAI Office Presentation.pptx',
 } as const
 
 const INSTALL_SCRIPT = join(BUILD_DIR, 'linux-after-install.sh')
@@ -47,7 +47,7 @@ runInNewContext(readFileSync(join(SHELL_DIR, 'electron-builder.cjs'), 'utf8'), {
 })
 const config = configModule.exports
 
-describe('Linux package: KDE Create New templates (genoffice#2384)', () => {
+describe('Linux package: KDE Create New templates (chaoffice#2384)', () => {
   // electron-builder only logs a missing extraResources source and still exits
   // 0, so a dropped shell-new entry would ship a deb/rpm whose post-install
   // silently finds nothing to install.
@@ -105,11 +105,11 @@ describe.skipIf(process.platform === 'win32')('Linux post-install scripts in a s
   // the system templates directory swapped runs against a temp tree, so the
   // test needs no root and touches no real system directory.
   function makeRoot(withPayload: boolean) {
-    const root = mkdtempSync(join(tmpdir(), 'genoffice-kde-templates-'))
-    const app = join(root, 'opt', 'GenOffice')
+    const root = mkdtempSync(join(tmpdir(), 'chaoffice-kde-templates-'))
+    const app = join(root, 'opt', 'ChaAI Office')
     const bin = join(root, 'usr', 'bin')
     const templates = join(root, 'usr', 'share', 'templates')
-    const launcher = join(app, 'resources', 'cli', 'genoffice')
+    const launcher = join(app, 'resources', 'cli', 'chaoffice')
     mkdirSync(join(app, 'resources', 'cli'), { recursive: true })
     mkdirSync(bin, { recursive: true })
     writeFileSync(launcher, '#!/bin/sh\n')

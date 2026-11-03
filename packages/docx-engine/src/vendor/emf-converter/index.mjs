@@ -5314,7 +5314,7 @@ function handleWmfDrawRecord(wCtx, recType, offset, dataOff, recSize) {
             // TA_UPDATECP (1) ignores the record coords and draws at — then
             // advances — the current position. MathType OLE previews place
             // every run with MOVETO + a zero-coord ExtTextOut/TextOut, so the
-            // record path stacks all of them at the origin (genoffice#2316).
+            // record path stacks all of them at the origin (chaoffice#2316).
             if ((state.textAlign & 1) !== 0) {
               const advance = drawWmfText(ctx, state, text, mx(state.curX), my(state.curY));
               const unit = mx(1) - mx(0);

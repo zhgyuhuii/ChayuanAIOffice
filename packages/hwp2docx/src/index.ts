@@ -1,5 +1,5 @@
 /**
- * @genoffice/hwp2docx — local Hancom word-processor import filter:
+ * @chaoffice/hwp2docx — local Hancom word-processor import filter:
  * .hwpx (OWPML, KS X 6101) → .docx, with binary .hwp read through rhwp into
  * HWPX first. Pure-function package: bytes in, bytes out; nothing
  * here touches Electron or the filesystem. Like the ODF filters, a construct

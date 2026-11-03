@@ -24,7 +24,7 @@ import JSZip from 'jszip'
 
 export const SKILL_NAME = 'chaoffice'
 
-export const LEGACY_SKILL_NAME = 'genoffice'
+export const LEGACY_SKILL_NAME = 'chaoffice'
 
 /** app-settings.json key under which every install this machine's ChaAI Office wrote is remembered */
 export const LEDGER_KEY = 'agentSkillInstalls'
@@ -82,7 +82,7 @@ interface AgentDef {
   skills: (probe: string, env: NodeJS.ProcessEnv, home: string) => string
   /**
    * false for a row kept only so `agentConfigDir` still finds the dotfolder
-   * (`genoffice mcp` needs it): the tool reads `~/.agents/skills`, so installing
+   * (`chaoffice mcp` needs it): the tool reads `~/.agents/skills`, so installing
    * the skill there gets no per-tool row
    */
   skillsTarget: boolean

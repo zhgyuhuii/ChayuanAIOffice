@@ -1,5 +1,5 @@
 /**
- * Optional signed edge admission (native-tok-v1) for Genspark LLM proxy requests whose final
+ * Optional signed edge admission (native-tok-v1) for ChaAI Office LLM proxy requests whose final
  * credential is a gsk key. On by default in Node host processes; GENOFFICE_NATIVE_WAF=0 turns it off.
  * Browsers and Electron renderers never take part.
  *
@@ -9,14 +9,14 @@
  * other host are never sent to the issuer. Issuer failure leaves the request unchanged.
  */
 
-const PASS_HEADER = 'X-Genspark-Token-Pass'
+const PASS_HEADER = 'X-ChaAI Office-Token-Pass'
 
 /**
  * The default proxy host (providers.ts always targets it), the configured service host and any
  * extra deployment hosts; no hostlist lives in source.
  */
 export function nativeAdmissionHosts(env: NodeJS.ProcessEnv = process.env): Set<string> {
-  const hosts = new Set(['www.genspark.ai'])
+  const hosts = new Set(['www.chaoffice.ai'])
   try {
     if (env.GSK_BASE_URL) hosts.add(new URL(env.GSK_BASE_URL).hostname)
   } catch {

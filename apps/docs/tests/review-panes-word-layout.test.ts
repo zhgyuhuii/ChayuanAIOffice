@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot } from 'react-dom/client'
-import type { CommentInfo } from '@genoffice/docx-engine'
+import type { CommentInfo } from '@chaoffice/docx-engine'
 import { LocaleProvider, setModuleLang } from '../src/renderer/i18n/locale'
 import { ReviewingPane } from '../src/renderer/components/ReviewingPane'
 import { loadLeftPane, saveLeftPane } from '../src/renderer/components/pane-width'

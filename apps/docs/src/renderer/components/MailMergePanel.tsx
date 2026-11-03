@@ -24,7 +24,7 @@ import { useModalKeys } from './modal-keys'
  * The panel asks for things and shows what comes back — the record list comes
  * from the main process, the preview from the merge module, the documents from
  * the app. It holds no merge logic of its own.
- * genoffice#2097.
+ * chaoffice#2097.
  */
 
 export interface MailMergePanelProps {

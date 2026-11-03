@@ -19,7 +19,7 @@ vi.mock('electron', () => ({
     getPath: (name: string) => join(state.root, name),
     getAppPath: () => state.root,
     getVersion: () => '0.1',
-    getName: () => 'GenOffice',
+    getName: () => 'ChaAI Office',
     on: vi.fn(),
   },
   BrowserWindow: class {
@@ -52,7 +52,7 @@ vi.mock('electron', () => ({
 
 beforeEach(async () => {
   vi.resetModules()
-  state.root = mkdtempSync(join(tmpdir(), 'genoffice-save-as-'))
+  state.root = mkdtempSync(join(tmpdir(), 'chaoffice-save-as-'))
   for (const dir of ['userData', 'documents', 'picked']) mkdirSync(join(state.root, dir))
   state.handlers.clear()
   state.pick.mockReset()
@@ -62,7 +62,7 @@ beforeEach(async () => {
 
 afterEach(() => rmSync(state.root, { recursive: true, force: true }))
 
-const blocker = () => join(state.root, 'documents', 'GenOffice')
+const blocker = () => join(state.root, 'documents', 'ChaAI Office')
 const selected = () => join(state.root, 'picked', 'saved.docx')
 const documentBytes = () => buildDocx({ bodyXml: '<w:p><w:r><w:t>Save fixture</w:t></w:r></w:p>' })
 

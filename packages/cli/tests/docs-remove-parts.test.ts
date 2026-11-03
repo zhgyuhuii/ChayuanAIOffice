@@ -1,5 +1,5 @@
 /**
- * genoffice docs apply remove_parts: a pre-filing metadata scrub drops customXml
+ * chaoffice docs apply remove_parts: a pre-filing metadata scrub drops customXml
  * stores and web-extension parts (plus their package wiring), lists the parts
  * on --dry-run, refuses when a removed store backs a bound content control
  * unless dataBinding: "strip" unbinds it, and leaves every other part alone.
@@ -125,7 +125,7 @@ function partNames(zip: JSZip): string[] {
   return Object.keys(zip.files).filter((name) => !zip.files[name]!.dir)
 }
 
-describe('genoffice docs apply remove_parts', () => {
+describe('chaoffice docs apply remove_parts', () => {
   it('lists the parts on --dry-run and writes nothing', async () => {
     const dir = tempDir()
     const file = await fixtureDocx(join(dir, 'motion.docx'), { dataBinding: true })

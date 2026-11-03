@@ -1,6 +1,6 @@
 // Reserved header/footer heights per section and variant: one probe path for
 // the canvas slicer (single and multi-section) and the preview.
-import type { HeaderFooter, HfImage, SectionInfo } from '@genoffice/docx-engine'
+import type { HeaderFooter, HfImage, SectionInfo } from '@chaoffice/docx-engine'
 
 import { hfReservedHeightPx, hfStripGeom, type HfStripGeom } from './editor/hf-dom'
 import { hfPartWidthPx, type HfVariant } from './pagination-hf'

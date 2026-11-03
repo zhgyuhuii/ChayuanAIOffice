@@ -1,4 +1,4 @@
-import type { DocGrid, NoteRun } from '@genoffice/docx-engine'
+import type { DocGrid, NoteRun } from '@chaoffice/docx-engine'
 import type { PageNoteItem } from '../pagination-types'
 import { noteMarkText, type NoteKind } from '../note-format'
 import { t } from '../i18n/locale'

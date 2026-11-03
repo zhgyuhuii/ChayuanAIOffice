@@ -225,7 +225,7 @@ async function links(
     )
   }
   // --break and --update write, so they honour --out/--force, the allowed
-  // write roots and the "open in GenOffice" guard like apply does
+  // write roots and the "open in ChaAI Office" guard like apply does
   const writeOutput = () =>
     resolveOutput(flagString(args, 'out'), ctx, {
       fallback: path,

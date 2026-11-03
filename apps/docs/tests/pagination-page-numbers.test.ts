@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { SectionInfo } from '@genoffice/docx-engine'
+import type { SectionInfo } from '@chaoffice/docx-engine'
 import { pageNoAfterOf, pageNumbers } from '../src/renderer/pagination'
 import type { PageSlice, SectionGeom } from '../src/renderer/pagination-types'
 

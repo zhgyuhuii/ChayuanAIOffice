@@ -12,7 +12,7 @@ import {
   mindMapToMermaid,
   parseMindMapTree,
   wrapLabel,
-} from '@genoffice/agent-core/mind-map'
+} from '@chaoffice/agent-core/mind-map'
 import { AGENT_SYSTEM_PROMPT } from '../src/renderer/ai/protocol'
 import type { MindMapTreeNode } from '@chaoffice/agent-core'
 
@@ -424,7 +424,7 @@ describe('generate_mindmap tool', () => {
 
 describe('MIND_MAP_TOOL schema', () => {
   it('gives every array an items schema (Gemini refuses the whole request without one)', () => {
-    // genoffice#2059: the leaf `children` array carried only a description,
+    // chaoffice#2059: the leaf `children` array carried only a description,
     // and the API answered "...properties[children].items: missing field".
     const walk = (node: unknown): void => {
       if (typeof node !== 'object' || node === null) return

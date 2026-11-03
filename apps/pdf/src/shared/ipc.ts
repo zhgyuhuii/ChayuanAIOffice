@@ -1035,7 +1035,7 @@ export interface PdfApi {
   readFile(path: string): Promise<ArrayBuffer>
   /** one slice of a granted file, with the file's size so the reader loop
    *  needs no separate stat: a 42 MB one-shot ArrayBuffer over IPC has
-   *  killed renderers before first paint on Windows (genoffice#2366) */
+   *  killed renderers before first paint on Windows (chaoffice#2366) */
   readFileChunk(
     path: string,
     start: number,

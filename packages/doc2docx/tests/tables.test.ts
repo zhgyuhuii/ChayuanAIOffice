@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import JSZip from 'jszip'
 import { describe, expect, it } from 'vitest'
-import { parseDocx } from '@genoffice/docx-engine'
+import { parseDocx } from '@chaoffice/docx-engine'
 import { convertLegacyDocToDocx, generateTableXml, readLegacyDocBody } from '../src/index'
 import {
   SYNTHETIC_TEXT_OFFSET,

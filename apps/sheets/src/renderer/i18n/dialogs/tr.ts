@@ -710,5 +710,4 @@ export const tr = {
   dlgFnNeedRequired: '必填参数「{name}」不能为空。',
   dlgRangePickTitle: '选取区域',
   dlgRangePickHint: '在表格中拖选单元格、行或列后确定',
-  dlgPasteSpecialTitle: '选择性粘贴',
 } satisfies Record<keyof typeof zh, string>

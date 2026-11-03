@@ -12,7 +12,7 @@ const SYSTEM_FAMILIES = Array.from(
   (_, i) => `Sys Face ${String(i).padStart(3, '0')}`,
 )
 
-describe('font family menu with hundreds of system fonts (genoffice#2211)', () => {
+describe('font family menu with hundreds of system fonts (chaoffice#2211)', () => {
   let editor: Editor
   let host: HTMLDivElement
   let root: Root

@@ -210,7 +210,7 @@ export function hasChaOfficeAuth(): boolean {
 // ── Child-process proxy plumbing ────────────────────────────────────
 
 // The main process's undici dispatcher (see the apps' proxy bootstraps) never
-// reaches child processes: without forwarding they dial genspark.ai directly.
+// reaches child processes: without forwarding they dial chaoffice.ai directly.
 export { setChaOfficeProxyUrl, chaofficeProxyUrl } from './shared'
 
 /**
@@ -506,7 +506,7 @@ export async function chaofficeResolveDownloadUrl(url: string): Promise<string> 
  * (deck_context/images) are sent as JSON rather than through the CLI's
  * string-based argument passing.
  */
-const GSK_TOOL_CLI_BASE = 'https://www.genspark.ai/api/tool_cli'
+const GSK_TOOL_CLI_BASE = 'https://www.chaoffice.ai/api/tool_cli'
 const SLIDE_GENERATE_TIMEOUT_MS = 240_000
 
 export interface ChaOfficeSlideGenerateOptions {
@@ -740,7 +740,7 @@ export interface ChaOfficePastProject {
   title: string
   /** creation time, ISO-like string from the API */
   ctime: string
-  /** relative web URL, e.g. '/agents?id=...' — join with https://www.genspark.ai */
+  /** relative web URL, e.g. '/agents?id=...' — join with https://www.chaoffice.ai */
   projectUrl: string
 }
 

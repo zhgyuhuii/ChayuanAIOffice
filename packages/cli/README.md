@@ -119,7 +119,7 @@ Independently of the PATH, every launch of the packaged app writes the launcher 
 
 ## Cloud commands
 
-`search`, `image` and `media` reuse the editors' provider routing: Genspark
+`search`, `image` and `media` reuse the editors' provider routing: ChaAI Office
 when signed in (`~/.chaoffice/auth.json`) and cloud tools are on, otherwise the
 Serper / Tavily or BYOK image / media provider chosen in the app's AI settings
 (`ChaOffice/ai-settings.json` in the platform config directory, override with

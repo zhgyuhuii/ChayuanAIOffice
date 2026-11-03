@@ -44,14 +44,14 @@
   "note": "Aptos Narrow: Word DFonts (letters -2% of Carlito, space -17%).\n\n2026-10-31: the bucket faces made letters of one word differ in height (size-adjust\nscales both axes; 'aCronymS' in sample 019). The ranged faces are replaced by one\nadvance-matched derivative per cut (AptosNarrowGO-*.ttf): Carlito outlines scaled\nhorizontally to each Word advance x the kerning factor, one vertical factor (H/x ink\nratio), hmtx = Word advances, GPOS/kern dropped, U+00A0 mapped to the space glyph.\nhhea/OS2 carry the general face's line box so the pagination model is unchanged.",
   "faces": [
     {
-      "src": "url('@genoffice/ui/fonts/Carlito-Regular.ttf')",
+      "src": "url('@chaoffice/ui/fonts/Carlito-Regular.ttf')",
       "sizeAdjust": 97.7,
       "ascentOverride": 76.76,
       "descentOverride": 25.59,
       "lineGapOverride": 22.59
     },
     {
-      "src": "url('@genoffice/ui/fonts/Carlito-Bold.ttf')",
+      "src": "url('@chaoffice/ui/fonts/Carlito-Bold.ttf')",
       "sizeAdjust": 99.8,
       "ascentOverride": 75.15,
       "descentOverride": 25.05,
@@ -59,7 +59,7 @@
       "weight": "bold"
     },
     {
-      "src": "url('@genoffice/ui/fonts/Carlito-Italic.ttf')",
+      "src": "url('@chaoffice/ui/fonts/Carlito-Italic.ttf')",
       "sizeAdjust": 97.7,
       "ascentOverride": 76.77,
       "descentOverride": 25.59,
@@ -67,7 +67,7 @@
       "style": "italic"
     },
     {
-      "src": "url('@genoffice/ui/fonts/Carlito-BoldItalic.ttf')",
+      "src": "url('@chaoffice/ui/fonts/Carlito-BoldItalic.ttf')",
       "sizeAdjust": 98.8,
       "ascentOverride": 75.87,
       "descentOverride": 25.29,

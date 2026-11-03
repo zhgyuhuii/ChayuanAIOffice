@@ -1452,7 +1452,7 @@ function cellContentBottom(cell: Element): number {
  * spans below it: the row sits inside a vertical merge. Height added inside one
  * of its cells then shifts every row the merge covers, the next measure sees
  * the shifted rows as new content, another boundary lands inside, another band
- * is anchored — the row inflates page by page (genoffice#2114). Such rows take
+ * is anchored — the row inflates page by page (chaoffice#2114). Such rows take
  * the zero-height cut marker, never an in-cell gap band.
  */
 function insideVerticalMerge(row: Element): boolean {
@@ -1488,7 +1488,7 @@ export function singleCutCell(row: Element | null, anchor?: LineAnchor | null): 
   if (cells.length === 0) return null
   // a row inside a vertical merge never hosts an in-cell band: the band's
   // height shifts every row the merge covers and feeds back into the next
-  // measure (genoffice#2114) — the zero-height cut marker carries the break
+  // measure (chaoffice#2114) — the zero-height cut marker carries the break
   if (insideVerticalMerge(row as HTMLTableRowElement)) return null
   if (cells.length === 1) return cells[0]
   if (!anchor) return null

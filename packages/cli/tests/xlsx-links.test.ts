@@ -89,7 +89,7 @@ async function writeDependent(path: string): Promise<void> {
   writeFileSync(path, await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' }))
 }
 
-describe('genoffice sheet links', () => {
+describe('chaoffice sheet links', () => {
   it.skipIf(!sidecar)('lists the links with resolved sources and reachability', async () => {
     const dir = tempDir()
     await writeSource(join(dir, 'source.xlsx'))

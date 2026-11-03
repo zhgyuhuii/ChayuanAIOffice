@@ -2180,7 +2180,7 @@ describe('computeSectionedSlicesF2 — table row-level page breaks', () => {
     expect(out2.rowFills).toEqual([{ blockTop: 0, row: 1, targetPx: 430 }])
   })
 
-  it('a vMerge group crossing the page turns between its rows and charges them (genoffice#2114)', () => {
+  it('a vMerge group crossing the page turns between its rows and charges them (chaoffice#2114)', () => {
     // page 200px: header 20, the group's head row 30, then three 30px
     // vMerge-continue rows carrying their own measured heights (the live DOM
     // measures every tr; only the parity model folds them into the head). The

@@ -5,7 +5,7 @@
  * active selection, a range it cannot take — and the ribbon used to drop that
  * answer on the floor. The sheet kept exactly the state it had, no filter
  * arrows appeared, and nothing said why: the button read as dead (user
- * report, genoffice#2243).
+ * report, chaoffice#2243).
  *
  * While the sheet is still loading, the gate in App.tsx has its own answer
  * (a footer note, a "load it all" prompt, or the column-projection path's

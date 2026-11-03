@@ -282,9 +282,6 @@ export function createDocumentTools(deps: DocToolDeps, host: SessionHost): McpTo
       },
     },
     {
-      name: 'open_in_chaoffice',
-      description: 'Open an existing file in the running ChaAI Office app, focusing its tab.',
-
       name: 'read_docx_properties',
       description:
         "Read a Word .docx file's document properties: core (title, author, dates), app and " +
@@ -305,7 +302,7 @@ export function createDocumentTools(deps: DocToolDeps, host: SessionHost): McpTo
     },
     {
       name: 'open_in_chaoffice',
-      description: 'Open an existing file in the running GenOffice app, focusing its tab.',
+      description: 'Open an existing file in the running ChaAI Office app, focusing its tab.',
       inputSchema: {
         path: z.string().describe('absolute path to the file to open'),
       },

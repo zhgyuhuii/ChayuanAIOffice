@@ -1,4 +1,4 @@
-import type { CellBorders, SectionSettings } from '@genoffice/docx-engine'
+import type { CellBorders, SectionSettings } from '@chaoffice/docx-engine'
 import type { PmNode } from '../editor/convert'
 
 /**
@@ -11,7 +11,7 @@ import type { PmNode } from '../editor/convert'
  * 3780/180/3780/180/3780), so the labels sit where the stock has them even
  * though the table spans the whole text column. Envelopes keep the per-record
  * documents the letter mode already builds, with the section's paper swapped
- * for the envelope. genoffice#2097.
+ * for the envelope. chaoffice#2097.
  */
 
 /** the paper the merge output prints on, and the label grid on it */

@@ -1,5 +1,5 @@
 /** Shared bits of the Word-style comment card: the Comments panel (React) and the margin bubbles (DOM) read the same identity helpers and class names */
-import type { CommentInfo } from '@genoffice/docx-engine'
+import type { CommentInfo } from '@chaoffice/docx-engine'
 import { REVISION_INK_COUNT } from './revision-filters'
 
 export const inkVar = (idx: number) =>

@@ -1,5 +1,5 @@
 /// Read-only list of a workbook's data connections and Power Query queries
-/// for Data › Queries & Connections (genoffice#2051). Nothing here refreshes
+/// for Data › Queries & Connections (chaoffice#2051). Nothing here refreshes
 /// or rewrites a query: the parts stay untouched in the package, so Excel can
 /// still refresh them, and this only says what the workbook depends on and
 /// where each query's rows land.

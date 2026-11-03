@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { Editor } from '@tiptap/core'
 import { NodeSelection, TextSelection } from '@tiptap/pm/state'
-import { buildBlankDocx, parseDocx } from '@genoffice/docx-engine'
+import { buildBlankDocx, parseDocx } from '@chaoffice/docx-engine'
 import { insertTableAt } from '../src/renderer/components/ribbon-tabs'
 import { blocksToPmDoc } from '../src/renderer/editor/convert'
 import { editorExtensions } from '../src/renderer/editor/extensions'

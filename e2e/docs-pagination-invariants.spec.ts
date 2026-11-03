@@ -201,7 +201,7 @@ test.describe('pagination invariants (rendered)', () => {
     const run = known ? test.fixme : test
     run(`${d.name}${known ? ` (known: ${known})` : ''}`, async () => {
       test.setTimeout(240_000)
-      const outDir = mkdtempSync(join(tmpdir(), 'genoffice-pagination-invariants-'))
+      const outDir = mkdtempSync(join(tmpdir(), 'chaoffice-pagination-invariants-'))
       const launched = await launchShell({
         onboardingSeen: true,
         videoDir: `docs-pagination-invariants-${d.name}`,

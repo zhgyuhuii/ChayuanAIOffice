@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { Editor } from '@tiptap/core'
-import { buildBlankDocx, generateTableModelXml, parseDocx } from '@genoffice/docx-engine'
+import { buildBlankDocx, generateTableModelXml, parseDocx } from '@chaoffice/docx-engine'
 import { insertTableAt } from '../src/renderer/components/ribbon-tabs'
 import { parseHtmlFragment } from '../src/renderer/ai/protocol'
 import { blocksToPmDoc, pmTableToModel } from '../src/renderer/editor/convert'

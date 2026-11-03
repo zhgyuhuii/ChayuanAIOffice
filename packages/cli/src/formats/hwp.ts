@@ -1,4 +1,4 @@
-import { convertHwpToDocx, HwpConvertError } from '@genoffice/hwp2docx'
+import { convertHwpToDocx, HwpConvertError } from '@chaoffice/hwp2docx'
 import { CliError, EXIT } from '../result'
 
 /** .hwp/.hwpx → .docx through the local import filter (same engine as the app's open route; routed by content). */

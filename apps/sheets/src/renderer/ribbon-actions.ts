@@ -4,6 +4,7 @@
  * go stale. Page-layout, export and save flows stay in App and arrive here
  * as callbacks.
  */
+import { stepFontSize } from './font-size-ladder'
 import {
   BaselineOffset,
   BooleanNumber,

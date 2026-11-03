@@ -54,7 +54,7 @@ export interface VideoTaskInfo {
   }
 }
 
-// ---- mail merge (genoffice#2097) ----
+// ---- mail merge (chaoffice#2097) ----
 
 /** a recipient list read from a local .xlsx or .csv */
 export interface MergeDataSource {

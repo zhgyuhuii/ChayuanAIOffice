@@ -1,4 +1,4 @@
-import type { TableModel } from '@genoffice/docx-engine'
+import type { TableModel } from '@chaoffice/docx-engine'
 import { describe, expect, it } from 'vitest'
 import { renderTableSpec } from '../src/renderer/editor/protected-render'
 

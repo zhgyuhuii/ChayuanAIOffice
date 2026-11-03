@@ -22,13 +22,13 @@ describe('collectLaunchPaths', () => {
   it('accepts the legacy Word .doc/.dot documents in either case', () => {
     expect(
       collectLaunchPaths(
-        ['GenOffice.app', '/tmp/legacy.doc', '/tmp/TEMPLATE.DOT'],
+        ['ChaAI Office.app', '/tmp/legacy.doc', '/tmp/TEMPLATE.DOT'],
         undefined,
         () => true,
       ),
     ).toEqual(['/tmp/legacy.doc', '/tmp/TEMPLATE.DOT'])
     expect(
-      collectLaunchPaths(['GenOffice.exe'], { launchPaths: ['/tmp/letter.Doc'] }, () => true),
+      collectLaunchPaths(['ChaAI Office.exe'], { launchPaths: ['/tmp/letter.Doc'] }, () => true),
     ).toEqual(['/tmp/letter.Doc'])
   })
 
@@ -96,7 +96,7 @@ describe('collectLaunchPaths', () => {
     // docs route instead of the fallback
     expect(
       collectLaunchPaths(
-        ['GenOffice.exe', 'legacy.doc', 'unsupported.rtf'],
+        ['ChaAI Office.exe', 'legacy.doc', 'unsupported.rtf'],
         undefined,
         (path) => path === 'legacy.doc' || path === 'unsupported.rtf',
       ),

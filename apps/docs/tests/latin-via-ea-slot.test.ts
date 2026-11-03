@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { Editor } from '@tiptap/core'
-import type { ParsedDocFull, StyleInfo } from '@genoffice/docx-engine'
+import type { ParsedDocFull, StyleInfo } from '@chaoffice/docx-engine'
 import { editorExtensions } from '../src/renderer/editor/extensions'
 import { docStyleCss } from '../src/renderer/doc-style-css'
 import {
@@ -114,10 +114,10 @@ describe('docDefaults East Asian w:lang w:val lays Latin out with the eastAsia s
     expect(runStyle({ font: 'Courier New', fontAscii: 'Courier New' })).toContain('Batang')
     expect(
       runStyle({ font: 'Courier New', fontAscii: 'Courier New', eastAsiaFont: 'Courier New' }),
-    ).toContain('GenOffice SimSun Latin')
+    ).toContain('ChaAI Office SimSun Latin')
     setLatinViaEastAsiaSlot(true, 'Arial')
     expect(runStyle({ font: 'Courier New', fontAscii: 'Courier New' })).toContain(
-      'GenOffice SimSun Latin',
+      'ChaAI Office SimSun Latin',
     )
   })
 
@@ -143,7 +143,7 @@ describe('docDefaults East Asian w:lang w:val lays Latin out with the eastAsia s
     const strong = /\[data-style="Strong"\] \{([^}]*)\}/.exec(css)![1]
     expect(strong).not.toContain('font-family')
     const code = /\[data-style="Code"\] \{([^}]*)\}/.exec(css)![1]
-    expect(code).toContain('GenOffice SimSun Latin')
+    expect(code).toContain('ChaAI Office SimSun Latin')
     expect(code).not.toContain('Courier New')
   })
 
@@ -167,7 +167,7 @@ describe('docDefaults East Asian w:lang w:val lays Latin out with the eastAsia s
     expect(runStyle({ font: 'Courier New', fontAscii: 'Courier New' })).toContain('Courier New')
     setLatinViaEastAsiaSlot(true)
     const ff = runStyle({ font: 'Courier New', fontAscii: 'Courier New' })
-    expect(ff).toContain('GenOffice SimSun Latin')
+    expect(ff).toContain('ChaAI Office SimSun Latin')
     expect(ff).not.toContain('Courier New')
     expect(runStyle({ font: 'Arial Unicode MS', fontAscii: 'Arial Unicode MS' })).toContain(
       'Arial Unicode MS',
@@ -177,11 +177,11 @@ describe('docDefaults East Asian w:lang w:val lays Latin out with the eastAsia s
   it('the document base family follows SimSun under lang=ko, the empty-line factor stays Arial', () => {
     const ko = docStyleCss(parsedWith({ asciiFont: 'Arial', eastAsiaFont: 'Arial', lang: 'ko' }))
     const base = BASE.exec(ko)![1]
-    expect(base).toContain('GenOffice SimSun Latin')
+    expect(base).toContain('ChaAI Office SimSun Latin')
     expect(base).not.toContain('Arial')
     // empty paragraphs keep the ascii face's height (Word probe 2026-11-02)
     expect(base).toContain('--doc-line-factor-latin:1.15')
-    expect(ko).toMatch(/--doc-latin-chain:[^;}]*GenOffice SimSun Latin/)
+    expect(ko).toMatch(/--doc-latin-chain:[^;}]*ChaAI Office SimSun Latin/)
     const en = docStyleCss(parsedWith({ asciiFont: 'Arial', eastAsiaFont: 'Arial', lang: 'en-US' }))
     expect(BASE.exec(en)![1]).toContain('Arial')
     expect(BASE.exec(en)![1]).not.toContain('SimSun')

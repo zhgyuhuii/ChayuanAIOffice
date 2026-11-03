@@ -116,7 +116,7 @@ export const he = {
   aiRegionError: 'ספק המודל הזה אינו פועל באזור הנוכחי שלך — בחרו מודל אחר או החליפו רשת',
   aiOverloadedError: 'שירות ה-AI עמוס כרגע — נסו שוב בעוד רגע',
   aiNetworkError: 'בעיית רשת: לא ניתן להתחבר לשירות ה-AI. בדוק את החיבור ונסה שוב',
-  aiCreditsExhausted: 'קרדיטי ChaAI Office שלך אזלו. טען מחדש ב-genspark.ai/pricing ונסה שוב',
+  aiCreditsExhausted: 'קרדיטי ChaAI Office שלך אזלו. טען מחדש ב-chaoffice.ai/pricing ונסה שוב',
   aiSumReadAttachment: 'קריאת קובץ מצורף',
   aiSumImageAttachment: 'תמונה מצורפת {name}',
   aiSumRead: 'קריאת {name}',

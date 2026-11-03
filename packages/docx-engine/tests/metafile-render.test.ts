@@ -251,7 +251,7 @@ describe('WMF DIB blts (ole-icon.wmf)', () => {
 describe('WMF TA_UPDATECP text (MathType OLE previews)', () => {
   // MathType writes every run as MOVETO + a zero-coord ExtTextOut while
   // TA_UPDATECP is set: GDI draws at the current position instead of the
-  // record's (0, 0). genoffice#2316 — the equation preview rendered as its
+  // record's (0, 0). chaoffice#2316 — the equation preview rendered as its
   // fraction line only, every glyph stacked at the origin.
   const rec = (type: number, params: number[]) => {
     const bytes = new Uint8Array(6 + params.length * 2)

@@ -512,7 +512,7 @@ const LABELS: Record<string, Labels> = {
     zoomOut: 'Uzaklaştır',
     fullscreen: 'Tam Ekran',
     help: 'Yardım',
-    about: 'GenOffice Hakkında',
+    about: 'ChaAI Office Hakkında',
     checkUpdates: 'Güncellemeleri Denetle…',
     version: 'Sürüm',
     nameWithAi: 'AI ile adlandır…',

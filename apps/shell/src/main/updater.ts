@@ -506,7 +506,7 @@ let updaterActive = false
 
 // The check in flight is quiet when a background timer started it: the package
 // then downloads in the background and the app installs it when it quits
-// (genoffice#2389). A check the user asked for — the Help entry, the About
+// (chaoffice#2389). A check the user asked for — the Help entry, the About
 // dialog button, a channel switch — opens the update card instead.
 let quietCheck = false
 
@@ -621,7 +621,7 @@ export async function checkForUpdatesNow(): Promise<void> {
 export function initAutoUpdater(
   getWindow: () => BrowserWindow | null,
   initialChannel: UpdateChannel = 'stable',
-  /** Settings › "Check for updates automatically"; read at every background check (genoffice#2127) */
+  /** Settings › "Check for updates automatically"; read at every background check (chaoffice#2127) */
   autoCheckEnabled: () => boolean = () => true,
   /** Settings › "Install updates silently" (off by default): a background check
    *  downloads the package quietly and installs it on quit instead of opening the card */
@@ -779,7 +779,7 @@ export function initAutoUpdater(
     log('update available:', info.version)
     if (quietCheck && silentInstallEnabled()) {
       // quiet path: no card, the package downloads in the background and the
-      // app installs it when it quits (genoffice#2389)
+      // app installs it when it quits (chaoffice#2389)
       startDownload()
       return
     }
@@ -812,7 +812,7 @@ export function initAutoUpdater(
     // turned off: only an explicit check (Help › Check for Updates…, a channel switch) asks the feed
     if (!autoCheckEnabled()) return
     // a background check is quiet: the package downloads in the background and
-    // the app installs it when it quits (genoffice#2389)
+    // the app installs it when it quits (chaoffice#2389)
     quietCheck = true
     autoUpdater.checkForUpdates().catch((err) => log('check failed:', err?.message ?? err))
   }

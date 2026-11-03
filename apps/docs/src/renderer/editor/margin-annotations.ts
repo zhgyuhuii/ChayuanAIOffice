@@ -281,7 +281,7 @@ function makeBubble(
     text.className = 'comment-text'
     text.textContent = c.text
     if (c.image) {
-      // the picture a comment carries (genoffice#2040): shown under its text,
+      // the picture a comment carries (chaoffice#2040): shown under its text,
       // sized by the saved extent like the editor draws body pictures
       const img = document.createElement('img')
       img.className = 'comment-image'

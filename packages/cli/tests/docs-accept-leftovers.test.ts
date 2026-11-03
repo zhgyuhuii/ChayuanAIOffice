@@ -1,11 +1,11 @@
 /**
- * genoffice#2337 (move-range half): genoffice docs apply accept_changes / reject_changes
+ * chaoffice#2337 (move-range half): chaoffice docs apply accept_changes / reject_changes
  * {all:true} used to leave w:moveFromRangeEnd / w:moveToRangeEnd behind in the
  * paragraphs Word wrote them into (the following, untouched paragraphs). The
  * fixture is the issue's synthetic document (JSZip + XML strings: python-docx
  * is not available in CI).
  *
- * The section-property half (the body w:sectPrChange record) is genoffice#2344 and
+ * The section-property half (the body w:sectPrChange record) is chaoffice#2344 and
  * is deliberately not covered here.
  */
 import { readFileSync, writeFileSync } from 'node:fs'
@@ -82,7 +82,7 @@ function writeOps(dir: string, ops: unknown[]): string {
   return opsPath
 }
 
-describe('genoffice docs apply accept/reject move-range leftovers', () => {
+describe('chaoffice docs apply accept/reject move-range leftovers', () => {
   it('accept all removes the cross-paragraph move range ends', async () => {
     const dir = tempDir()
     const file = await buildFixture(join(dir, 'accept.docx'), ISSUE_BODY)

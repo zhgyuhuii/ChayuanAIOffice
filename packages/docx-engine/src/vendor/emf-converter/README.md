@@ -88,4 +88,4 @@ Local modifications to `index.mjs` (2026-08, ChaOffice):
   position, and the position advances by the measured text extent. MathType OLE
   previews place every run with MOVETO + a zero-coord text record, so all runs
   stacked at the origin (a MathType equation rendered as its fraction line only,
-  genoffice#2316)
+  chaoffice#2316)

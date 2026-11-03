@@ -46,7 +46,7 @@ test.describe('docs Track Changes Options', () => {
   let docPath: string
 
   test.beforeEach(async () => {
-    dir = realpathSync(mkdtempSync(join(tmpdir(), 'genoffice-e2e-tcopts-')))
+    dir = realpathSync(mkdtempSync(join(tmpdir(), 'chaoffice-e2e-tcopts-')))
     docPath = join(dir, 'tracked.docx')
     writeFileSync(docPath, await trackedDocx())
   })

@@ -44,14 +44,14 @@
   "note": "Aptos (M365 default body face since 2023): Word renders the real font, but\nit ships only inside Office, so Chromium never resolves it and the chain\nfell to Carlito, 5% narrower per line, one line short per paragraph (SAS\nprobe 2026-09-03: seven samples, pitch stays Calibri's 1.22). Aptos is not\na scale of Carlito: per glyph the ratio spans 0.87 (M, t, r) to 1.22 (C, s,\nc), so one factor fitted over whole lines left capitals 2.7% and bold 1.3%\nshort and moved a wrap every two pages (prod corpus 2026-10-20). Each face\ntherefore declares the corpus-weighted letter scale as its general rule and\none range-limited face per 1.5% advance bucket of the ASCII letters, digits,\nspace and common punctuation; later faces win inside their unicode-range.\nRatios = Aptos hmtx (Word DFonts / cloud-font cache) over Carlito hmtx,\ntimes the face's mean pair-kerning factor (0.9957-0.9963 over the corpus):\nWord kerns every run under the 2024 Normal template (docDefaults kern 2)\nand HarfBuzz kern+liga reproduces its PDF line widths exactly, while\nChromium cannot kern across the bucket faces. The metric overrides undo\neach face's size-adjust on the vertical axis (overrides scale with\nsize-adjust) so every bucket carries the line box of the 106.5% Carlito\nface the pagination model (line-metrics.ts) assumes: a 1.22x capital\nbucket otherwise grew a 12pt body line 0.4pt. Generated: do not hand-edit\nthe numbers, refit them against the font files.\n\n2026-10-31: the bucket faces made letters of one word differ in height (size-adjust\nscales both axes; 'aCronymS' in sample 019). The ranged faces are replaced by one\nadvance-matched derivative per cut (AptosGO-*.ttf): Carlito outlines scaled\nhorizontally to each Word advance x the kerning factor, one vertical factor (H/x ink\nratio), hmtx = Word advances, GPOS/kern dropped, U+00A0 mapped to the space glyph.\nhhea/OS2 carry the general face's line box so the pagination model is unchanged.",
   "faces": [
     {
-      "src": "url('@genoffice/ui/fonts/Carlito-Regular.ttf')",
+      "src": "url('@chaoffice/ui/fonts/Carlito-Regular.ttf')",
       "sizeAdjust": 106.3,
       "ascentOverride": 75.15,
       "descentOverride": 25.05,
       "lineGapOverride": 22.11
     },
     {
-      "src": "url('@genoffice/ui/fonts/Carlito-Bold.ttf')",
+      "src": "url('@chaoffice/ui/fonts/Carlito-Bold.ttf')",
       "sizeAdjust": 110.1,
       "ascentOverride": 72.52,
       "descentOverride": 24.17,
@@ -59,7 +59,7 @@
       "weight": "bold"
     },
     {
-      "src": "url('@genoffice/ui/fonts/Carlito-Italic.ttf')",
+      "src": "url('@chaoffice/ui/fonts/Carlito-Italic.ttf')",
       "sizeAdjust": 106.7,
       "ascentOverride": 74.88,
       "descentOverride": 24.96,
@@ -67,7 +67,7 @@
       "style": "italic"
     },
     {
-      "src": "url('@genoffice/ui/fonts/Carlito-BoldItalic.ttf')",
+      "src": "url('@chaoffice/ui/fonts/Carlito-BoldItalic.ttf')",
       "sizeAdjust": 110.4,
       "ascentOverride": 72.37,
       "descentOverride": 24.12,

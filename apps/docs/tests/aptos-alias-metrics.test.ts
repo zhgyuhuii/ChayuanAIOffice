@@ -44,8 +44,8 @@ const fonts = new Map<string, opentype.Font>()
 function font(file: string): opentype.Font {
   let f = fonts.get(file)
   if (!f) {
-    const path = file.startsWith('@genoffice/ui/fonts/')
-      ? join(FONT_DIR, file.slice('@genoffice/ui/fonts/'.length))
+    const path = file.startsWith('@chaoffice/ui/fonts/')
+      ? join(FONT_DIR, file.slice('@chaoffice/ui/fonts/'.length))
       : join(APP_FONT_DIR, file)
     const buf = readFileSync(path)
     f = opentype.parse(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength))
@@ -53,7 +53,7 @@ function font(file: string): opentype.Font {
   }
   return f
 }
-const CARLITO = '@genoffice/ui/fonts/Carlito-Regular.ttf'
+const CARLITO = '@chaoffice/ui/fonts/Carlito-Regular.ttf'
 
 /** later faces win inside their unicode-range (CSS Fonts 4) */
 function widthEm(text: string, faces: Face[]): number {

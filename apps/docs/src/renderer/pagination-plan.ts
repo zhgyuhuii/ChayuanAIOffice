@@ -4,7 +4,7 @@
 // properties. Stage 1 runs it in shadow next to the DOM scrape in
 // measureBlocks (invariant I9: plan == scrape for every block).
 import type { Node as PmNode } from '@tiptap/pm/model'
-import type { EffectivePPr, ParsedDoc, SectionInfo, TableModel } from '@genoffice/docx-engine'
+import type { EffectivePPr, ParsedDoc, SectionInfo, TableModel } from '@chaoffice/docx-engine'
 import type { BlockBox, BlockMetaOf, RowPlan } from './pagination-types'
 import { outerTableRows } from './pagination-lines'
 import { sectionGeoms } from './pagination-sections'

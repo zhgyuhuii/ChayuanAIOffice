@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { AgentMessage, AgentToolCall } from '@genoffice/agent-core'
+import type { AgentMessage, AgentToolCall } from '@chaoffice/agent-core'
 import { chatForProvider } from '../src/chat'
 import { streamForProvider } from '../src/stream'
 import { jsonResponse, okResponse, sseStream } from './test-utils'

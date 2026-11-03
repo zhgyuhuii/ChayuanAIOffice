@@ -8,7 +8,7 @@
  * of an auto-fit box stay layout reads. Kept outside BlockPlan until the plan
  * grows obstacle facts.
  */
-import type { TextboxDisplay } from '@genoffice/docx-engine'
+import type { TextboxDisplay } from '@chaoffice/docx-engine'
 import type { BlockPlan, PlanDiff, PlanOf } from '../pagination-plan'
 import type { BlockBox } from '../pagination-types'
 import { resolveAnchor, textboxAnchor, type AnchorCtx } from './anchor-geometry'

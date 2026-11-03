@@ -37,7 +37,8 @@ export async function streamResolved(
       return streamGemini(config, system, messages, tools, maxTokens, cb, call.baseUrl)
     case 'openai-responses':
       return streamOpenAiResponses(call.baseUrl, config, system, messages, tools, maxTokens, cb, {
-        omitTemperature: call.omitTemperature,
+        bodyExtras: call.bodyExtras,
+        idleTimeoutMs: call.idleTimeoutMs,
       })
     case 'openai-compatible':
       return streamOpenAiCompatible(call.baseUrl, config, system, messages, tools, maxTokens, cb, {

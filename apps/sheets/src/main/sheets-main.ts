@@ -88,6 +88,7 @@ import {
 import { createMainProcessProxyDispatcher } from '@chaoffice/electron-utils/main-proxy'
 import { createI18n, getUiLang, type Lang, normalizeLang, setUiLang } from '@chaoffice/i18n'
 import { ProjectStore } from '@chaoffice/project-store'
+import { ConversationStore, bindConversationsIpc } from '@chaoffice/project-store'
 
 import {
   isAiOverloadedError,
@@ -212,7 +213,7 @@ const tMain = createI18n({
     filterXlsm: 'Excel 启用宏的工作簿',
     odsImportMsg: '转换 .{ext} 工作簿？',
     odsImportDetail:
-      'ChaAI Office 只编辑 .xlsx，不编辑 ODF。数值、公式和日期会被转换过来（公式改写为 Excel 语法，无法安全改写的只保留它的当前结果）；图片、合并单元格和列宽行高会一并带过来；边框等样式和图表不会保留。原文件不会被修改，转换出的副本首次保存时另存为 .xlsx。', // public-hygiene: allow
+      '察元AIOffice 只编辑 .xlsx，不编辑 ODF。数值、公式和日期会被转换过来（公式改写为 Excel 语法，无法安全改写的只保留它的当前结果）；图片、合并单元格和列宽行高会一并带过来；边框等样式和图表不会保留。原文件不会被修改，转换出的副本首次保存时另存为 .xlsx。', // public-hygiene: allow
     odsImportConvertBtn: '转换并打开',
     importSkipConfirm: '下次直接转换，不再提示',
     dlgAddAttachment: '添加附件',
@@ -227,13 +228,11 @@ const tMain = createI18n({
     errParseFailed: '文件解析失败',
     errImageNoText: '图片附件不提供文本,已作为图像随用户消息发送,直接看图即可',
     errNotImage: '不是支持的图片类型',
-    errChaOfficeNotLoggedIn: '未登录 察元AIOffice:请点击下方「登录」完成登录后重试',
+    errChaOfficeNotLoggedIn: '未登录 察元AIOffice:请点击下方「登录 察元AIOffice」完成登录后重试',
     errNoApiKey: '未配置 {provider} 的 API Key',
     errAiRegion: '该模型的厂商不向当前地区提供服务，请换一个模型或切换网络',
     errAiBusy: 'AI 服务当前繁忙，请稍后重试',
     errNoModel: '未配置模型名称',
-    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
-    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
     errImgAbsPath: '图片路径必须是绝对路径。',
     errImgNotFound: '找不到图片文件: {path}',
     errImgTooLarge20: '图片超过 20MB,不支持插入。',
@@ -271,6 +270,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: '继续以 CSV 格式保存吗?',
     csvKeepFormatDetail:
       'CSV 只保留单张工作表的纯文本值——公式、格式和其他工作表不会存入 .csv 文件。',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   en: {
     filterSpreadsheets: 'Spreadsheets',
@@ -294,16 +297,12 @@ const tMain = createI18n({
     errImageNoText: 'Image attachments have no text; the image is sent along with the user message',
     errNotImage: 'not a supported image type',
     errChaOfficeNotLoggedIn:
-      'Not signed in to ChaAI Office: click “Sign in” below, sign in, then retry',
+      'Not signed in to ChaAI Office: click “Sign in to ChaAI Office” below, sign in, then retry',
     errNoApiKey: 'No API key configured for {provider}',
     errAiRegion:
       "This model's provider does not serve your current region — pick another model or change your network",
     errAiBusy: 'The AI service is busy right now — please try again in a moment',
     errNoModel: 'No model name configured',
-    errNoImageModel:
-      'No image model configured: enable an image-generation model in Model Settings',
-    errChaOfficeToolsOff:
-      'ChaAI Office cloud tools are turned off in Model Settings; enable them to use this tool',
     errImgAbsPath: 'Image path must be absolute.',
     errImgNotFound: 'Image file not found: {path}',
     errImgTooLarge20: 'Image exceeds 20MB and cannot be inserted.',
@@ -344,6 +343,12 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'Keep saving in CSV format?',
     csvKeepFormatDetail:
       'CSV keeps plain values of a single sheet only — formulas, formatting, and any additional sheets are not saved to the .csv file.',
+    errNoImageModel:
+      'No image model configured: enable an image-generation model in Model Settings',
+
+    errChaOfficeToolsOff:
+      'ChaAI Office cloud tools are turned off in Model Settings; enable them to use this tool',
+
   },
   vi: {
     filterSpreadsheets: 'Bảng tính',
@@ -367,8 +372,8 @@ const tMain = createI18n({
     errImageNoText:
       'Tệp đính kèm hình ảnh không có văn bản; hình ảnh được gửi cùng với tin nhắn của người dùng',
     errNotImage: 'loại hình ảnh không được hỗ trợ',
-    errGskNotLoggedIn:
-      'Chưa đăng nhập vào Genspark: nhấp vào “Đăng nhập vào Genspark” bên dưới, đăng nhập, sau đó thử lại',
+    errChaOfficeNotLoggedIn:
+      'Chưa đăng nhập vào ChaAI Office: nhấp vào “Đăng nhập vào ChaAI Office” bên dưới, đăng nhập, sau đó thử lại',
     errNoApiKey: 'Chưa cấu hình khóa API cho {provider}',
     errAiRegion:
       'Nhà cung cấp của mô hình này không phục vụ khu vực hiện tại của bạn — hãy chọn mô hình khác hoặc đổi mạng',
@@ -415,6 +420,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'Tiếp tục lưu ở định dạng CSV?',
     csvKeepFormatDetail:
       'CSV chỉ giữ các giá trị thuần của một trang tính duy nhất — các công thức, định dạng và mọi trang tính bổ sung sẽ không được lưu vào tệp .csv.',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   tr: {
     filterSpreadsheets: 'Elektronik Tablolar',
@@ -486,9 +495,9 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'CSV biçiminde kaydetmeye devam edilsin mi?',
     csvKeepFormatDetail:
       'CSV yalnızca tek bir sayfanın düz değerlerini korur — formüller, biçimlendirme ve ek sayfalar .csv dosyasına kaydedilmez.',
-      errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
     errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
-},
+  },
   ja: {
     filterSpreadsheets: 'スプレッドシート',
     filterXlsx: 'Excel ブック',
@@ -512,15 +521,12 @@ const tMain = createI18n({
       '画像添付にはテキストがありません。画像はユーザー メッセージと一緒に送信されるため、そのまま画像をご確認ください',
     errNotImage: 'サポートされていない画像形式です',
     errChaOfficeNotLoggedIn:
-      'ChaAI Office にサインインしていません。下の「サインイン」からサインインして再試行してください',
+      'ChaAI Office にサインインしていません。下の「ChaAI Office にサインイン」からサインインして再試行してください',
     errNoApiKey: '{provider} の API キーが設定されていません',
     errAiRegion:
       'このモデルの提供元は現在の地域ではサービスを提供していません。別のモデルを選ぶか、ネットワークを切り替えてください',
     errAiBusy: 'AI サービスが混み合っています。しばらくしてからもう一度お試しください',
     errNoModel: 'モデル名が設定されていません',
-    errNoImageModel: '画像生成モデルが未設定です。モデル設定で画像生成モデルを有効にしてください',
-    errChaOfficeToolsOff:
-      'ChaAI Office クラウドツールがモデル設定でオフになっています。使用するにはオンにしてください',
     errImgAbsPath: '画像パスは絶対パスで指定してください。',
     errImgNotFound: '画像ファイルが見つかりません: {path}',
     errImgTooLarge20: '画像が 20MB を超えているため挿入できません。',
@@ -563,6 +569,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'CSV 形式のまま保存しますか?',
     csvKeepFormatDetail:
       'CSV は 1 枚のシートの値のみを保持します。数式、書式、追加のシートは .csv ファイルには保存されません。',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   ko: {
     filterSpreadsheets: '스프레드시트',
@@ -587,16 +597,12 @@ const tMain = createI18n({
       '이미지 첨부에는 텍스트가 없습니다. 이미지는 사용자 메시지와 함께 전송되므로 이미지를 직접 확인하세요',
     errNotImage: '지원되는 이미지 형식이 아닙니다',
     errChaOfficeNotLoggedIn:
-      'ChaAI Office에 로그인되어 있지 않습니다. 아래 "로그인"을 눌러 로그인한 뒤 다시 시도하세요',
+      'ChaAI Office에 로그인되어 있지 않습니다. 아래 "ChaAI Office 로그인"을 눌러 로그인한 뒤 다시 시도하세요',
     errNoApiKey: '{provider}의 API 키가 설정되지 않았습니다',
     errAiRegion:
       '이 모델의 제공업체는 현재 지역에서 서비스를 제공하지 않습니다. 다른 모델을 선택하거나 네트워크를 변경하세요',
     errAiBusy: 'AI 서비스가 혼잡합니다. 잠시 후 다시 시도해 주세요',
     errNoModel: '모델 이름이 설정되지 않았습니다',
-    errNoImageModel:
-      '이미지 생성 모델이 구성되지 않았습니다. 모델 설정에서 이미지 생성 모델을 활성화하세요',
-    errChaOfficeToolsOff:
-      'ChaAI Office 클라우드 도구가 모델 설정에서 꺼져 있습니다. 사용하려면 켜세요',
     errImgAbsPath: '이미지 경로는 절대 경로여야 합니다.',
     errImgNotFound: '이미지 파일을 찾을 수 없습니다: {path}',
     errImgTooLarge20: '이미지가 20MB를 초과하여 삽입할 수 없습니다.',
@@ -639,6 +645,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'CSV 형식으로 계속 저장하시겠습니까?',
     csvKeepFormatDetail:
       'CSV는 시트 하나의 값만 유지합니다 — 수식, 서식, 추가 시트는 .csv 파일에 저장되지 않습니다.',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   fr: {
     filterSpreadsheets: 'Feuilles de calcul',
@@ -663,16 +673,12 @@ const tMain = createI18n({
       "Les images jointes n'ont pas de texte ; l'image est envoyée avec le message de l'utilisateur",
     errNotImage: "type d'image non pris en charge",
     errChaOfficeNotLoggedIn:
-      'Non connecté à ChaAI Office : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez',
+      'Non connecté à ChaAI Office : cliquez sur « Se connecter à ChaAI Office » ci-dessous, connectez-vous puis réessayez',
     errNoApiKey: 'Aucune clé API configurée pour {provider}',
     errAiRegion:
       'Le fournisseur de ce modèle ne dessert pas votre région actuelle — choisissez un autre modèle ou changez de réseau',
     errAiBusy: "Le service d'IA est actuellement surchargé — réessayez dans un instant",
     errNoModel: 'Aucun nom de modèle configuré',
-    errNoImageModel:
-      "Aucun modèle d'image configuré : activez un modèle de génération d'images dans les paramètres des modèles",
-    errChaOfficeToolsOff:
-      'Les outils cloud ChaAI Office sont désactivés dans les paramètres des modèles ; activez-les pour utiliser cet outil',
     errImgAbsPath: "Le chemin de l'image doit être absolu.",
     errImgNotFound: 'Fichier image introuvable : {path}',
     errImgTooLarge20: "L'image dépasse 20 Mo et ne peut pas être insérée.",
@@ -716,6 +722,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'Continuer à enregistrer au format CSV ?',
     csvKeepFormatDetail:
       "Le CSV ne conserve que les valeurs d'une seule feuille — les formules, la mise en forme et les feuilles supplémentaires ne sont pas enregistrées dans le fichier .csv.",
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   de: {
     filterSpreadsheets: 'Tabellenkalkulationen',
@@ -740,16 +750,12 @@ const tMain = createI18n({
       'Bildanlagen enthalten keinen Text; das Bild wird zusammen mit der Benutzernachricht gesendet',
     errNotImage: 'kein unterstützter Bildtyp',
     errChaOfficeNotLoggedIn:
-      'Nicht bei ChaAI Office angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut',
+      'Nicht bei ChaAI Office angemeldet: Klicken Sie unten auf „Bei ChaAI Office anmelden“, melden Sie sich an und versuchen Sie es erneut',
     errNoApiKey: 'Kein API-Schlüssel für {provider} konfiguriert',
     errAiRegion:
       'Der Anbieter dieses Modells bedient Ihre aktuelle Region nicht — wählen Sie ein anderes Modell oder wechseln Sie das Netzwerk',
     errAiBusy: 'Der KI-Dienst ist derzeit überlastet — bitte gleich erneut versuchen',
     errNoModel: 'Kein Modellname konfiguriert',
-    errNoImageModel:
-      'Kein Bildmodell konfiguriert: aktiviere ein Bildgenerierungsmodell in den Modelleinstellungen',
-    errChaOfficeToolsOff:
-      'ChaAI Office-Cloud-Tools sind in den Modelleinstellungen deaktiviert; aktiviere sie, um dieses Tool zu nutzen',
     errImgAbsPath: 'Der Bildpfad muss absolut sein.',
     errImgNotFound: 'Bilddatei nicht gefunden: {path}',
     errImgTooLarge20: 'Das Bild überschreitet 20 MB und kann nicht eingefügt werden.',
@@ -792,6 +798,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'Weiter im CSV-Format speichern?',
     csvKeepFormatDetail:
       'CSV speichert nur die Werte eines einzelnen Blatts – Formeln, Formatierungen und weitere Blätter werden nicht in der .csv-Datei gespeichert.',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   es: {
     filterSpreadsheets: 'Hojas de cálculo',
@@ -816,17 +826,13 @@ const tMain = createI18n({
       'Las imágenes adjuntas no tienen texto; la imagen se envía junto con el mensaje del usuario',
     errNotImage: 'no es un tipo de imagen compatible',
     errChaOfficeNotLoggedIn:
-      'No has iniciado sesión en ChaAI Office: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo',
+      'No has iniciado sesión en ChaAI Office: pulsa «Iniciar sesión en ChaAI Office» abajo, inicia sesión y vuelve a intentarlo',
     errNoApiKey: 'No hay clave de API configurada para {provider}',
     errAiRegion:
       'El proveedor de este modelo no da servicio en tu región actual — elige otro modelo o cambia de red',
     errAiBusy:
       'El servicio de IA está saturado en este momento; inténtalo de nuevo en unos instantes',
     errNoModel: 'No hay nombre de modelo configurado',
-    errNoImageModel:
-      'No hay modelo de imagen configurado: activa un modelo de generación de imágenes en Ajustes de modelos',
-    errChaOfficeToolsOff:
-      'Las herramientas en la nube de ChaAI Office están desactivadas en Ajustes de modelos; actívalas para usar esta herramienta',
     errImgAbsPath: 'La ruta de la imagen debe ser absoluta.',
     errImgNotFound: 'No se encontró el archivo de imagen: {path}',
     errImgTooLarge20: 'La imagen supera los 20 MB y no se puede insertar.',
@@ -868,6 +874,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: '¿Seguir guardando en formato CSV?',
     csvKeepFormatDetail:
       'CSV solo conserva los valores de una única hoja: las fórmulas, el formato y las hojas adicionales no se guardan en el archivo .csv.',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   th: {
     filterSpreadsheets: 'สเปรดชีต',
@@ -892,15 +902,12 @@ const tMain = createI18n({
       'รูปภาพแนบไม่มีข้อความ รูปภาพจะถูกส่งไปพร้อมข้อความของผู้ใช้ ให้ดูที่รูปภาพโดยตรง',
     errNotImage: 'ไม่ใช่ชนิดรูปภาพที่รองรับ',
     errChaOfficeNotLoggedIn:
-      'ยังไม่ได้ลงชื่อเข้าใช้ ChaAI Office: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง',
+      'ยังไม่ได้ลงชื่อเข้าใช้ ChaAI Office: แตะ “ลงชื่อเข้าใช้ ChaAI Office” ด้านล่าง แล้วลองอีกครั้ง',
     errNoApiKey: 'ยังไม่ได้ตั้งค่า API Key ของ {provider}',
     errAiRegion:
       'ผู้ให้บริการของโมเดลนี้ไม่ให้บริการในภูมิภาคปัจจุบันของคุณ — โปรดเลือกโมเดลอื่นหรือเปลี่ยนเครือข่าย',
     errAiBusy: 'บริการ AI มีผู้ใช้งานจำนวนมากในขณะนี้ โปรดลองอีกครั้งในอีกสักครู่',
     errNoModel: 'ยังไม่ได้กำหนดชื่อโมเดล',
-    errNoImageModel: 'ยังไม่ได้ตั้งค่าโมเดลสร้างภาพ: เปิดใช้โมเดลสร้างภาพในการตั้งค่าโมเดล',
-    errChaOfficeToolsOff:
-      'เครื่องมือคลาวด์ของ ChaAI Office ถูกปิดอยู่ในการตั้งค่าโมเดล เปิดใช้เพื่อใช้เครื่องมือนี้',
     errImgAbsPath: 'เส้นทางรูปภาพต้องเป็นเส้นทางแบบสัมบูรณ์',
     errImgNotFound: 'ไม่พบไฟล์รูปภาพ: {path}',
     errImgTooLarge20: 'รูปภาพเกิน 20MB ไม่สามารถแทรกได้',
@@ -942,6 +949,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'บันทึกเป็นรูปแบบ CSV ต่อไปหรือไม่',
     csvKeepFormatDetail:
       'CSV เก็บเฉพาะค่าของชีตเดียวเท่านั้น — สูตร การจัดรูปแบบ และชีตอื่น ๆ จะไม่ถูกบันทึกลงในไฟล์ .csv',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   id: {
     filterSpreadsheets: 'Lembar bentang',
@@ -964,16 +975,12 @@ const tMain = createI18n({
     errParseFailed: 'Gagal mengurai file',
     errImageNoText: 'Lampiran gambar tidak memiliki teks; gambar dikirim bersama pesan pengguna',
     errNotImage: 'bukan jenis gambar yang didukung',
-    errChaOfficeNotLoggedIn: 'Belum masuk ke ChaAI Office: klik “Masuk” di bawah, lalu coba lagi',
+    errChaOfficeNotLoggedIn: 'Belum masuk ke ChaAI Office: klik “Masuk ke ChaAI Office” di bawah, lalu coba lagi',
     errNoApiKey: 'API Key untuk {provider} belum dikonfigurasi',
     errAiRegion:
       'Penyedia model ini tidak melayani wilayah Anda saat ini — pilih model lain atau ganti jaringan',
     errAiBusy: 'Layanan AI sedang sibuk — silakan coba lagi sebentar lagi',
     errNoModel: 'Nama model belum dikonfigurasi',
-    errNoImageModel:
-      'Belum ada model gambar yang dikonfigurasi: aktifkan model pembuatan gambar di Pengaturan Model',
-    errChaOfficeToolsOff:
-      'Alat cloud ChaAI Office dimatikan di Pengaturan Model; aktifkan untuk menggunakan alat ini',
     errImgAbsPath: 'Jalur gambar harus berupa jalur absolut.',
     errImgNotFound: 'File gambar tidak ditemukan: {path}',
     errImgTooLarge20: 'Gambar melebihi 20MB dan tidak dapat disisipkan.',
@@ -1015,6 +1022,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'Terus menyimpan dalam format CSV?',
     csvKeepFormatDetail:
       'CSV hanya menyimpan nilai dari satu lembar — rumus, pemformatan, dan lembar tambahan tidak disimpan ke file .csv.',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   ru: {
     filterSpreadsheets: 'Электронные таблицы',
@@ -1039,15 +1050,12 @@ const tMain = createI18n({
       'Вложенные изображения не содержат текста; изображение отправляется вместе с сообщением пользователя',
     errNotImage: 'неподдерживаемый тип изображения',
     errChaOfficeNotLoggedIn:
-      'Вы не вошли в ChaAI Office: нажмите «Войти» ниже, войдите и повторите попытку',
+      'Вы не вошли в ChaAI Office: нажмите «Войти в ChaAI Office» ниже, войдите и повторите попытку',
     errNoApiKey: 'API-ключ для {provider} не настроен',
     errAiRegion:
       'Поставщик этой модели не обслуживает ваш текущий регион — выберите другую модель или смените сеть',
     errAiBusy: 'Сервис ИИ сейчас перегружен — повторите попытку чуть позже',
     errNoModel: 'Имя модели не настроено',
-    errNoImageModel: 'Модель генерации изображений не настроена: включите её в настройках моделей',
-    errChaOfficeToolsOff:
-      'Облачные инструменты ChaAI Office отключены в настройках моделей; включите их, чтобы использовать этот инструмент',
     errImgAbsPath: 'Путь к изображению должен быть абсолютным.',
     errImgNotFound: 'Файл изображения не найден: {path}',
     errImgTooLarge20: 'Изображение превышает 20 МБ и не может быть вставлено.',
@@ -1089,6 +1097,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'Продолжить сохранение в формате CSV?',
     csvKeepFormatDetail:
       'CSV сохраняет только значения одного листа — формулы, форматирование и дополнительные листы не сохраняются в файле .csv.',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   ar: {
     filterSpreadsheets: 'جداول البيانات',
@@ -1112,15 +1124,12 @@ const tMain = createI18n({
     errImageNoText: 'مرفقات الصور لا تحتوي على نص؛ تُرسل الصورة مع رسالة المستخدم',
     errNotImage: 'نوع صورة غير مدعوم',
     errChaOfficeNotLoggedIn:
-      'لم تسجّل الدخول إلى ChaAI Office: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة',
+      'لم تسجّل الدخول إلى ChaAI Office: انقر على «تسجيل الدخول إلى ChaAI Office» أدناه ثم أعد المحاولة',
     errNoApiKey: 'لم يتم تكوين مفتاح API لـ {provider}',
     errAiRegion:
       'مزوّد هذا النموذج لا يقدم الخدمة في منطقتك الحالية — اختر نموذجًا آخر أو غيّر الشبكة',
     errAiBusy: 'خدمة الذكاء الاصطناعي مشغولة حاليًا — يرجى المحاولة مرة أخرى بعد قليل',
     errNoModel: 'لم يتم تكوين اسم النموذج',
-    errNoImageModel: 'لم يتم تهيئة نموذج توليد الصور: فعّل نموذجًا لتوليد الصور في إعدادات النماذج',
-    errChaOfficeToolsOff:
-      'أدوات ChaAI Office السحابية معطلة في إعدادات النماذج؛ فعّلها لاستخدام هذه الأداة',
     errImgAbsPath: 'يجب أن يكون مسار الصورة مسارًا مطلقًا.',
     errImgNotFound: 'لم يتم العثور على ملف الصورة: {path}',
     errImgTooLarge20: 'الصورة تتجاوز 20 ميغابايت ولا يمكن إدراجها.',
@@ -1160,6 +1169,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'هل تريد متابعة الحفظ بتنسيق CSV؟',
     csvKeepFormatDetail:
       'يحتفظ CSV بقيم ورقة واحدة فقط — لا تُحفظ الصيغ والتنسيق والأوراق الإضافية في ملف .csv.',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   pt: {
     filterSpreadsheets: 'Planilhas',
@@ -1184,16 +1197,12 @@ const tMain = createI18n({
       'Anexos de imagem não têm texto; a imagem é enviada junto com a mensagem do usuário',
     errNotImage: 'não é um tipo de imagem suportado',
     errChaOfficeNotLoggedIn:
-      'Não conectado ao ChaAI Office: clique em “Entrar” abaixo, entre e tente novamente',
+      'Não conectado ao ChaAI Office: clique em “Entrar no ChaAI Office” abaixo, entre e tente novamente',
     errNoApiKey: 'Nenhuma chave de API configurada para {provider}',
     errAiRegion:
       'O fornecedor deste modelo não atende à sua região atual — escolha outro modelo ou mude de rede',
     errAiBusy: 'O serviço de IA está sobrecarregado no momento — tente novamente em instantes',
     errNoModel: 'Nenhum nome de modelo configurado',
-    errNoImageModel:
-      'Nenhum modelo de imagem configurado: ative um modelo de geração de imagens nas configurações de modelos',
-    errChaOfficeToolsOff:
-      'As ferramentas de nuvem do ChaAI Office estão desativadas nas configurações de modelos; ative-as para usar esta ferramenta',
     errImgAbsPath: 'O caminho da imagem deve ser absoluto.',
     errImgNotFound: 'Arquivo de imagem não encontrado: {path}',
     errImgTooLarge20: 'A imagem excede 20MB e não pode ser inserida.',
@@ -1235,6 +1244,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'Continuar salvando no formato CSV?',
     csvKeepFormatDetail:
       'O CSV mantém apenas os valores de uma única planilha — fórmulas, formatação e planilhas adicionais não são salvas no arquivo .csv.',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   it: {
     filterSpreadsheets: 'Fogli di calcolo',
@@ -1259,16 +1272,12 @@ const tMain = createI18n({
       "Gli allegati immagine non hanno testo; l'immagine viene inviata insieme al messaggio dell'utente",
     errNotImage: 'tipo di immagine non supportato',
     errChaOfficeNotLoggedIn:
-      'Accesso a ChaAI Office non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova',
+      'Accesso a ChaAI Office non effettuato: fai clic su “Accedi a ChaAI Office” qui sotto, accedi e riprova',
     errNoApiKey: 'Nessuna chiave API configurata per {provider}',
     errAiRegion:
       'Il fornitore di questo modello non serve la tua regione attuale — scegli un altro modello o cambia rete',
     errAiBusy: 'Il servizio IA è momentaneamente sovraccarico — riprova tra poco',
     errNoModel: 'Nessun nome di modello configurato',
-    errNoImageModel:
-      'Nessun modello immagine configurato: attiva un modello di generazione immagini nelle impostazioni modelli',
-    errChaOfficeToolsOff:
-      'Gli strumenti cloud ChaAI Office sono disattivati nelle impostazioni modelli; attivali per usare questo strumento',
     errImgAbsPath: "Il percorso dell'immagine deve essere assoluto.",
     errImgNotFound: 'File immagine non trovato: {path}',
     errImgTooLarge20: "L'immagine supera i 20 MB e non può essere inserita.",
@@ -1311,6 +1320,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'Continuare a salvare in formato CSV?',
     csvKeepFormatDetail:
       'Il CSV conserva solo i valori di un singolo foglio: formule, formattazione e fogli aggiuntivi non vengono salvati nel file .csv.',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   pl: {
     filterSpreadsheets: 'Arkusze kalkulacyjne',
@@ -1335,16 +1348,12 @@ const tMain = createI18n({
       'Załączniki graficzne nie zawierają tekstu; obraz jest wysyłany razem z wiadomością użytkownika',
     errNotImage: 'nieobsługiwany typ obrazu',
     errChaOfficeNotLoggedIn:
-      'Nie zalogowano do ChaAI Office: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie',
+      'Nie zalogowano do ChaAI Office: kliknij „Zaloguj się do ChaAI Office” poniżej, zaloguj się i spróbuj ponownie',
     errNoApiKey: 'Nie skonfigurowano klucza API dla {provider}',
     errAiRegion:
       'Dostawca tego modelu nie obsługuje Twojego obecnego regionu — wybierz inny model lub zmień sieć',
     errAiBusy: 'Usługa AI jest obecnie przeciążona — spróbuj ponownie za chwilę',
     errNoModel: 'Nie skonfigurowano nazwy modelu',
-    errNoImageModel:
-      'Nie skonfigurowano modelu obrazów: włącz model generowania obrazów w ustawieniach modeli',
-    errChaOfficeToolsOff:
-      'Narzędzia chmurowe ChaAI Office są wyłączone w ustawieniach modeli; włącz je, aby użyć tego narzędzia',
     errImgAbsPath: 'Ścieżka obrazu musi być bezwzględna.',
     errImgNotFound: 'Nie znaleziono pliku obrazu: {path}',
     errImgTooLarge20: 'Obraz przekracza 20 MB i nie może zostać wstawiony.',
@@ -1386,6 +1395,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'Kontynuować zapisywanie w formacie CSV?',
     csvKeepFormatDetail:
       'CSV zachowuje tylko wartości jednego arkusza — formuły, formatowanie i dodatkowe arkusze nie są zapisywane w pliku .csv.',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   cs: {
     filterSpreadsheets: 'Tabulky',
@@ -1457,10 +1470,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'Pokračovat v ukládání ve formátu CSV?',
     csvKeepFormatDetail:
       'CSV zachovává pouze hodnoty jednoho listu — vzorce, formátování a další listy se do souboru .csv neuloží.',
-    errNoImageModel:
-      'No image model configured: enable an image-generation model in Model Settings',
-    errChaOfficeToolsOff:
-      'ChaAI Office cloud tools are turned off in Model Settings; enable them to use this tool',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   nl: {
     filterSpreadsheets: 'Spreadsheets',
@@ -1485,16 +1498,12 @@ const tMain = createI18n({
       'Afbeeldingsbijlagen bevatten geen tekst; de afbeelding wordt samen met het gebruikersbericht verzonden',
     errNotImage: 'geen ondersteund afbeeldingstype',
     errChaOfficeNotLoggedIn:
-      'Niet aangemeld bij ChaAI Office: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw',
+      'Niet aangemeld bij ChaAI Office: klik hieronder op “Aanmelden bij ChaAI Office”, meld u aan en probeer het opnieuw',
     errNoApiKey: 'Geen API-sleutel geconfigureerd voor {provider}',
     errAiRegion:
       'De aanbieder van dit model bedient uw huidige regio niet — kies een ander model of wissel van netwerk',
     errAiBusy: 'De AI-service is momenteel overbelast — probeer het zo opnieuw',
     errNoModel: 'Geen modelnaam geconfigureerd',
-    errNoImageModel:
-      'Geen afbeeldingsmodel geconfigureerd: schakel een model voor afbeeldingsgeneratie in bij de modelinstellingen',
-    errChaOfficeToolsOff:
-      'ChaAI Office-cloudtools zijn uitgeschakeld in de modelinstellingen; schakel ze in om deze tool te gebruiken',
     errImgAbsPath: 'Het afbeeldingspad moet absoluut zijn.',
     errImgNotFound: 'Afbeeldingsbestand niet gevonden: {path}',
     errImgTooLarge20: 'De afbeelding is groter dan 20 MB en kan niet worden ingevoegd.',
@@ -1537,6 +1546,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'Doorgaan met opslaan in CSV-indeling?',
     csvKeepFormatDetail:
       'CSV bewaart alleen de waarden van één blad — formules, opmaak en extra bladen worden niet in het .csv-bestand opgeslagen.',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   ms: {
     filterSpreadsheets: 'Hamparan',
@@ -1560,16 +1573,12 @@ const tMain = createI18n({
     errImageNoText: 'Lampiran imej tiada teks; imej dihantar bersama mesej pengguna',
     errNotImage: 'bukan jenis imej yang disokong',
     errChaOfficeNotLoggedIn:
-      'Belum log masuk ke ChaAI Office: klik “Log masuk” di bawah, kemudian cuba lagi',
+      'Belum log masuk ke ChaAI Office: klik “Log masuk ke ChaAI Office” di bawah, kemudian cuba lagi',
     errNoApiKey: 'Kunci API untuk {provider} belum dikonfigurasikan',
     errAiRegion:
       'Penyedia model ini tidak memberi perkhidmatan di rantau semasa anda — pilih model lain atau tukar rangkaian',
     errAiBusy: 'Perkhidmatan AI sedang sibuk — sila cuba lagi sebentar lagi',
     errNoModel: 'Nama model belum dikonfigurasikan',
-    errNoImageModel:
-      'Tiada model imej dikonfigurasi: aktifkan model penjanaan imej dalam Tetapan Model',
-    errChaOfficeToolsOff:
-      'Alat awan ChaAI Office dimatikan dalam Tetapan Model; aktifkan untuk menggunakan alat ini',
     errImgAbsPath: 'Laluan imej mestilah laluan mutlak.',
     errImgNotFound: 'Fail imej tidak ditemui: {path}',
     errImgTooLarge20: 'Imej melebihi 20MB dan tidak boleh disisipkan.',
@@ -1612,6 +1621,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'Terus simpan dalam format CSV?',
     csvKeepFormatDetail:
       'CSV hanya menyimpan nilai satu helaian — formula, pemformatan dan helaian tambahan tidak disimpan ke fail .csv.',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   he: {
     filterSpreadsheets: 'גיליונות אלקטרוניים',
@@ -1634,14 +1647,11 @@ const tMain = createI18n({
     errParseFailed: 'ניתוח הקובץ נכשל',
     errImageNoText: 'קבצים מצורפים מסוג תמונה אינם מכילים טקסט; התמונה נשלחת יחד עם הודעת המשתמש',
     errNotImage: 'סוג תמונה שאינו נתמך',
-    errChaOfficeNotLoggedIn: 'לא מחובר ל-ChaAI Office: לחץ על "התחבר" למטה, התחבר ונסה שוב',
+    errChaOfficeNotLoggedIn: 'לא מחובר ל-ChaAI Office: לחץ על "התחבר ל-ChaAI Office" למטה, התחבר ונסה שוב',
     errNoApiKey: 'לא הוגדר מפתח API עבור {provider}',
     errAiRegion: 'ספק המודל הזה אינו פועל באזור הנוכחי שלך — בחרו מודל אחר או החליפו רשת',
     errAiBusy: 'שירות ה-AI עמוס כרגע — נסו שוב בעוד רגע',
     errNoModel: 'לא הוגדר שם מודל',
-    errNoImageModel: 'לא הוגדר מודל ליצירת תמונות: הפעל מודל יצירת תמונות בהגדרות המודלים',
-    errChaOfficeToolsOff:
-      'כלי הענן של ChaAI Office כבויים בהגדרות המודלים; הפעל אותם כדי להשתמש בכלי זה',
     errImgAbsPath: 'נתיב התמונה חייב להיות מוחלט.',
     errImgNotFound: 'קובץ התמונה לא נמצא: {path}',
     errImgTooLarge20: 'התמונה חורגת מ-20MB ולא ניתן להוסיף אותה.',
@@ -1681,6 +1691,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'להמשיך לשמור בתבנית CSV?',
     csvKeepFormatDetail:
       'CSV שומר רק את הערכים של גיליון אחד — נוסחאות, עיצוב וגיליונות נוספים אינם נשמרים בקובץ ה-.csv.',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   hi: {
     filterSpreadsheets: 'स्प्रेडशीट',
@@ -1704,16 +1718,12 @@ const tMain = createI18n({
     errImageNoText: 'छवि अनुलग्नक में टेक्स्ट नहीं होता; छवि उपयोगकर्ता संदेश के साथ भेजी जाती है',
     errNotImage: 'समर्थित छवि प्रकार नहीं है',
     errChaOfficeNotLoggedIn:
-      'ChaAI Office में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें',
+      'ChaAI Office में साइन इन नहीं है: नीचे “ChaAI Office में साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें',
     errNoApiKey: '{provider} के लिए कोई API कुंजी कॉन्फ़िगर नहीं है',
     errAiRegion:
       'इस मॉडल का प्रदाता आपके वर्तमान क्षेत्र में सेवा नहीं देता — कोई दूसरा मॉडल चुनें या नेटवर्क बदलें',
     errAiBusy: 'AI सेवा अभी व्यस्त है — कृपया थोड़ी देर बाद फिर से प्रयास करें',
     errNoModel: 'कोई मॉडल नाम कॉन्फ़िगर नहीं है',
-    errNoImageModel:
-      'कोई इमेज मॉडल कॉन्फ़िगर नहीं है: मॉडल सेटिंग्स में इमेज-जनरेशन मॉडल सक्षम करें',
-    errChaOfficeToolsOff:
-      'ChaAI Office क्लाउड टूल मॉडल सेटिंग्स में बंद हैं; इस टूल का उपयोग करने के लिए उन्हें चालू करें',
     errImgAbsPath: 'छवि पथ निरपेक्ष होना चाहिए।',
     errImgNotFound: 'छवि फ़ाइल नहीं मिली: {path}',
     errImgTooLarge20: 'छवि 20MB से अधिक है और सम्मिलित नहीं की जा सकती।',
@@ -1756,78 +1766,10 @@ const tMain = createI18n({
     csvKeepFormatMsg: 'CSV प्रारूप में सहेजना जारी रखें?',
     csvKeepFormatDetail:
       'CSV केवल एक शीट के मान रखता है — सूत्र, स्वरूपण और अतिरिक्त शीट .csv फ़ाइल में सहेजे नहीं जाते।',
-  },
-  vi: {
-    odsImportMsg: 'Chuyển đổi sổ làm việc .{ext} này?',
-    odsImportDetail:
-      'Sổ làm việc sẽ được chuyển đổi sang định dạng OOXML và mở dưới dạng bản sao có thể chỉnh sửa.',
-    odsImportConvertBtn: 'Chuyển đổi và mở',
-    autosaveDiskNewer:
-      'Lưu ý: sau khi bản khôi phục này được lưu, tệp trên đĩa đã bị sửa đổi. Khôi phục sẽ thay thế các thay đổi mới hơn đó.',
-    filterSpreadsheets: 'Bảng tính',
-    filterXlsx: 'Sổ làm việc Excel',
-    filterXlsm: 'Sổ làm việc Excel hỗ trợ Macro',
-    dlgAddAttachment: 'Thêm tệp đính kèm',
-    filterSupported: 'Các tệp được hỗ trợ',
-    filterAll: 'Tất cả các tệp',
-    errUnsupportedExt: 'Tệp .{ext} không được hỗ trợ',
-    errNotFile: 'không phải là tệp',
-    errTooLarge: 'vượt quá giới hạn {mb}MB',
-    errImageTooLarge: 'hình ảnh vượt quá giới hạn 5MB',
-    errUnreadable: 'không thể đọc được',
-    errFileTooLarge: 'Tệp vượt quá giới hạn kích thước',
-    errParseFailed: 'Không thể phân tích tệp',
-    errImageNoText:
-      'Tệp đính kèm hình ảnh không có văn bản; hình ảnh được gửi cùng với tin nhắn của người dùng',
-    errNotImage: 'loại hình ảnh không được hỗ trợ',
-    errChaOfficeNotLoggedIn:
-      'Chưa đăng nhập vào ChaAI Office: nhấp vào “Đăng nhập vào ChaAI Office” bên dưới, đăng nhập, sau đó thử lại',
-    errNoApiKey: 'Chưa cấu hình khóa API cho {provider}',
-    errAiRegion:
-      'Nhà cung cấp của mô hình này không phục vụ khu vực hiện tại của bạn — hãy chọn mô hình khác hoặc đổi mạng',
-    errAiBusy: 'Dịch vụ AI hiện đang bận — vui lòng thử lại sau giây lát',
-    errNoModel: 'Chưa cấu hình tên mô hình',
-    errImgAbsPath: 'Đường dẫn hình ảnh phải là đường dẫn tuyệt đối.',
-    errImgNotFound: 'Không tìm thấy tệp hình ảnh: {path}',
-    errImgTooLarge20: 'Hình ảnh vượt quá 20MB và không thể chèn.',
-    errImgBadType: 'Tệp không phải là hình ảnh PNG/JPEG/GIF.',
-    errDiskChanged: 'Sổ làm việc đã thay đổi trên đĩa sau khi mở — hãy sử dụng Lưu dưới dạng.',
-    autosaveFoundTitle: 'Tìm thấy phiên bản khôi phục',
-    autosaveFoundBody:
-      'Có những thay đổi chưa được lưu từ phiên làm việc trước của bạn. Khôi phục phiên bản đã lưu tự động? Việc lưu sau khi khôi phục sẽ ghi đè lên tệp gốc.',
-    autosaveRestore: 'Khôi phục',
-    autosaveDiscard: 'Bỏ qua',
-    menuFile: 'Tệp',
-    menuOpenWorkbook: 'Mở sổ làm việc…',
-    menuSave: 'Lưu',
-    menuSaveAs: 'Lưu dưới dạng…',
-    menuExportPdf: 'Xuất PDF…',
-    menuPrint: 'In…',
-    menuClose: 'Đóng',
-    menuQuit: 'Thoát',
-    menuEdit: 'Chỉnh sửa',
-    menuUndo: 'Hoàn tác',
-    menuRedo: 'Làm lại',
-    closeUnsavedMsg: '{count} thay đổi chưa lưu',
-    closeUnsavedDetail: 'Các thay đổi của bạn sẽ bị mất nếu bạn đóng mà không lưu.',
-    btnDontSave: 'Không lưu',
-    btnCancel: 'Hủy',
-    csvSaveAsNotice:
-      'Tệp CSV không thể giữ lại định dạng — lưu dưới dạng .xlsx sẽ giữ lại tất cả các thay đổi của bạn.',
-    menuExportCsv: 'Xuất CSV…',
-    filterCsv: 'CSV (Phân tách bằng dấu phẩy)',
-    csvFormulaLossMsg: 'Trang tính này chứa các công thức mà định dạng CSV không thể lưu giữ.',
-    csvFormulaLossDetail:
-      'CSV chỉ giữ các giá trị thuần — các công thức được làm phẳng thành kết quả hiện tại của chúng và định dạng sẽ bị mất.',
-    csvKeepXlsxBtn: 'Lưu dưới dạng .xlsx',
-    csvContinueBtn: 'Tiếp tục dưới dạng CSV',
-    csvActiveSheetOnlyNotice:
-      'Tệp CSV chỉ chứa một trang tính duy nhất — chỉ trang tính đang hoạt động "{name}" sẽ được xuất.',
-    csvKeepFormatMsg: 'Tiếp tục lưu ở định dạng CSV?',
-    csvKeepFormatDetail:
-      'CSV chỉ giữ các giá trị thuần của một trang tính duy nhất — các công thức, định dạng và mọi trang tính bổ sung sẽ không được lưu vào tệp .csv.',
     errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+
     errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+
   },
   'zh-TW': {
     filterSpreadsheets: '電子試算表',
@@ -1850,13 +1792,11 @@ const tMain = createI18n({
     errParseFailed: '檔案解析失敗',
     errImageNoText: '圖片附件不提供文字,已作為影像隨使用者訊息傳送,直接看圖即可',
     errNotImage: '不是支援的圖片類型',
-    errChaOfficeNotLoggedIn: '未登入 察元AIOffice:請點擊下方「登入」完成登入後重試',
+    errChaOfficeNotLoggedIn: '未登入 ChaAI Office:請點擊下方「登入 ChaAI Office」完成登入後重試',
     errNoApiKey: '未設定 {provider} 的 API Key',
     errAiRegion: '該模型的廠商不向目前地區提供服務，請換一個模型或切換網路',
     errAiBusy: 'AI 服務目前繁忙，請稍後重試',
     errNoModel: '未設定模型名稱',
-    errNoImageModel: '未配置生圖模型：請在模型設定中啟用生圖模型',
-    errChaOfficeToolsOff: '已在模型設定中關閉雲端工具：請開啟後使用該功能',
     errImgAbsPath: '圖片路徑必須是絕對路徑。',
     errImgNotFound: '找不到圖片檔案: {path}',
     errImgTooLarge20: '圖片超過 20MB,不支援插入。',
@@ -1893,6 +1833,8 @@ const tMain = createI18n({
     csvActiveSheetOnlyNotice: 'CSV 檔案只包含一張工作表——只會匯出目前工作表「{name}」。',
     csvKeepFormatMsg: '要繼續以 CSV 格式儲存嗎?',
     csvKeepFormatDetail: 'CSV 只保留單張工作表的純值——公式、格式和其他工作表不會存入 .csv 檔案。',
+    errNoImageModel: '未配置生圖模型：請在模型設定中啟用生圖模型',
+    errChaOfficeToolsOff: '已在模型設定中關閉雲端工具：請開啟後使用該功能',
   },
 })
 const tm = (key: Parameters<typeof tMain>[1], params?: Parameters<typeof tMain>[2]) =>
@@ -4842,7 +4784,7 @@ let sessionSnapshotDirectoryPromise: Promise<string> | undefined
 
 /** Create a private per-process snapshot directory and sweep abandoned sessions. */
 async function createSessionSnapshotDirectory(): Promise<string> {
-  const root = join(app.getPath('temp'), 'genoffice-sheets-sessions')
+  const root = join(app.getPath('temp'), 'chaoffice-sheets-sessions')
   await mkdir(root, { recursive: true, mode: 0o700 })
   const directory = join(root, `${process.pid}-${randomUUID()}`)
   await mkdir(directory, { mode: 0o700 })
@@ -5315,7 +5257,7 @@ async function applyMainProcessProxy(): Promise<void> {
     await app.whenReady()
     // PAC/rule proxies answer per-host: probe the host the login flow, the
     // ChaOffice LLM proxy and the chaoffice CLI actually target
-    const resolved = await electronSession.defaultSession.resolveProxy('https://www.genspark.ai/')
+    const resolved = await electronSession.defaultSession.resolveProxy('https://www.chaoffice.ai/')
     const m = /PROXY\s+([^;]+)/i.exec(resolved || '')
     if (m?.[1]) {
       await setDispatcher(`http://${m[1].trim()}`)

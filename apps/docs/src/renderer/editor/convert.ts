@@ -4041,7 +4041,7 @@ export function inlineToRuns(content: PmNode[]): Run[] {
           prev.image)
       if (node.marks?.length) runs.push(runFromMarks(ch, node.marks))
       // an unformatted break joins a plain run only: folding it into a
-      // formatted neighbour re-authors a bare <w:br/> run as bold (genoffice#524)
+      // formatted neighbour re-authors a bare <w:br/> run as bold (chaoffice#524)
       else if (prev && !prevAtomic && runStyleKey(prev) === PLAIN_RUN_KEY) prev.text += ch
       else runs.push({ text: ch })
       continue

@@ -4,7 +4,7 @@
  */
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { Editor } from '@tiptap/core'
-import type { CommentInfo } from '@genoffice/docx-engine'
+import type { CommentInfo } from '@chaoffice/docx-engine'
 import { editorExtensions } from '../src/renderer/editor/extensions'
 import { syncMarginAnnotations } from '../src/renderer/editor/margin-annotations'
 import { revisionDisplayState } from '../src/renderer/editor/marks'

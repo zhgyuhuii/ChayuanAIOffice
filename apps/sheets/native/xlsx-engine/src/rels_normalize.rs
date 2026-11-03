@@ -6,7 +6,7 @@
 //! targets: a leading `/` means "from the package root". openpyxl writes the
 //! comments and VML drawing relationships that way, so the importer asks the
 //! archive for a bogus part name and the whole load fails with the opaque
-//! `Zip Error: specified file not found in archive` (genoffice#2306).
+//! `Zip Error: specified file not found in archive` (chaoffice#2306).
 //!
 //! IronCalc is an external crate, so the repair stays on our side of the
 //! import boundary: a package that uses absolute targets is copied in memory

@@ -84,6 +84,19 @@ import {
 import { configureMetricsCache, familyVerticalMetrics } from '@chaoffice/font-metrics'
 import { createI18n, getUiLang, normalizeLang, setUiLang } from '@chaoffice/i18n'
 import { ProjectStore } from '@chaoffice/project-store'
+// LOCAL(2026-09-21, d8201ad0): 多会话对话索引(B 区新模块)
+import { ConversationStore, bindConversationsIpc } from '@chaoffice/project-store'
+import {
+  bindRemoteFilesIpc,
+  createRemoteFilesHost,
+  formatRemoteUri,
+  isRemoteUri,
+  parseRemoteUri,
+  resolveDefaultSaveTarget,
+  RemoteConflictError,
+  type RemoteFilesHost,
+  type RemoteStorageConfig,
+} from '@chaoffice/storage-adapter'
 import type {
   IpcMainInvokeEvent,
   MenuItemConstructorOptions,
@@ -180,14 +193,15 @@ import {
   snapshotDocPassword,
 } from './docx-encryption'
 import { isExternallyModified, type DiskFileState } from './external-change'
-import { printScaleOption, validPrintDim, validPrintScale, validPrintGeometry, printJobOptions } from './print-args'
-import { copyImageDisplaySize, validCopyImageDataUrl } from './copy-image-guard'
 import {
   printJobOptions,
   printScaleOption,
+  validPrintDim,
   validPrintGeometry,
   validPrintPaper,
+  validPrintScale,
 } from './print-args'
+import { copyImageDisplaySize, validCopyImageDataUrl } from './copy-image-guard'
 import { printPdfViaCups } from '@chaoffice/electron-utils/print-cups'
 import { printOutcome } from '@chaoffice/electron-utils/print-job'
 import { addPdfInternalLinks } from './pdf-links'
@@ -228,7 +242,7 @@ const tMain = createI18n({
     importSkipConfirm: '下次直接转换，不再提示',
     docImportMsg: '转换 .{ext} 文档？',
     docImportDetail:
-      'GenOffice 只编辑 .docx，不编辑 Word 97-2003 旧版 .doc。正文、标题、列表、表格和图片会转换过来；脚注、批注和文本框不会完整保留。原文件不会被修改，转换出的 .docx 是一份独立副本，之后的保存都写入它。', // public-hygiene: allow
+      'ChaAI Office 只编辑 .docx，不编辑 Word 97-2003 旧版 .doc。正文、标题、列表、表格和图片会转换过来；脚注、批注和文本框不会完整保留。原文件不会被修改，转换出的 .docx 是一份独立副本，之后的保存都写入它。', // public-hygiene: allow
     docImportConvertBtn: '转换并打开',
     dlgSaveAs: '另存为',
     closeUnsavedMsg: '此文档有未保存的更改。',
@@ -350,7 +364,7 @@ const tMain = createI18n({
     importSkipConfirm: 'Convert without asking next time',
     docImportMsg: 'Convert this .{ext} document?',
     docImportDetail:
-      'GenOffice edits .docx, not Word 97-2003 documents. Body text, headings, lists, tables and images carry over; footnotes, comments and text boxes are not fully preserved. The original file is never changed; the converted .docx is a separate copy that later saves write to.',
+      'ChaAI Office edits .docx, not Word 97-2003 documents. Body text, headings, lists, tables and images carry over; footnotes, comments and text boxes are not fully preserved. The original file is never changed; the converted .docx is a separate copy that later saves write to.',
     docImportConvertBtn: 'Convert and open',
     dlgSaveAs: 'Save As',
     closeUnsavedMsg: 'This document has unsaved changes.',
@@ -465,6 +479,7 @@ const tMain = createI18n({
     menuWindow: 'Window',
     menuHelp: 'Help',
     menuShortcuts: 'Keyboard Shortcuts',
+    menuDocsHelp: 'ChaAI Office Docs Help',
   },
   vi: {
     dlgOpenDoc: 'Mở tài liệu',
@@ -478,7 +493,7 @@ const tMain = createI18n({
     importSkipConfirm: 'Lần sau chuyển đổi ngay, không hỏi lại',
     docImportMsg: 'Chuyển đổi tài liệu .{ext} này?',
     docImportDetail:
-      'GenOffice chỉnh sửa .docx chứ không chỉnh sửa tài liệu Word 97-2003 (.doc). Nội dung, tiêu đề, danh sách, bảng và hình ảnh được chuyển đổi; chú thích cuối trang, bình luận và hộp văn bản không được giữ đầy đủ. Tệp gốc không bao giờ bị sửa; bản .docx sau chuyển đổi là một bản sao độc lập để tiếp tục chỉnh sửa và lưu.',
+      'ChaAI Office chỉnh sửa .docx chứ không chỉnh sửa tài liệu Word 97-2003 (.doc). Nội dung, tiêu đề, danh sách, bảng và hình ảnh được chuyển đổi; chú thích cuối trang, bình luận và hộp văn bản không được giữ đầy đủ. Tệp gốc không bao giờ bị sửa; bản .docx sau chuyển đổi là một bản sao độc lập để tiếp tục chỉnh sửa và lưu.',
     docImportConvertBtn: 'Chuyển đổi và mở',
     dlgSaveAs: 'Lưu dưới dạng',
     closeUnsavedMsg: 'Tài liệu này có những thay đổi chưa được lưu.',
@@ -519,8 +534,8 @@ const tMain = createI18n({
     errImageNoText:
       'Tệp đính kèm hình ảnh không có văn bản; hình ảnh được gửi cùng với tin nhắn của người dùng',
     errNotImage: 'loại hình ảnh không được hỗ trợ',
-    errGskNotLoggedIn:
-      'Chưa đăng nhập vào Genspark: nhấp vào “Đăng nhập vào Genspark” bên dưới, đăng nhập, sau đó thử lại',
+    errChaOfficeNotLoggedIn:
+      'Chưa đăng nhập vào ChaAI Office: nhấp vào “Đăng nhập vào ChaAI Office” bên dưới, đăng nhập, sau đó thử lại',
     errNoApiKey: 'Chưa cấu hình khóa API cho {provider}',
     errAiRegion:
       'Nhà cung cấp của mô hình này không phục vụ khu vực hiện tại của bạn — hãy chọn mô hình khác hoặc đổi mạng',
@@ -549,10 +564,8 @@ const tMain = createI18n({
     menuPaste: 'Dán',
     menuPasteMatch: 'Dán và khớp kiểu định dạng',
     menuFindReplace: 'Tìm kiếm và thay thế…',
-    menuGoTo: 'Đi tới…',
     menuSelectAll: 'Chọn tất cả',
     menuView: 'Xem',
-    menuZoom: 'Thu phóng',
     menuZoomIn: 'Phóng to',
     menuZoomOut: 'Thu nhỏ',
     menuZoom100: 'Kích thước thực tế (100%)',
@@ -581,42 +594,19 @@ const tMain = createI18n({
     menuFont: 'Phông chữ…',
     menuParagraph: 'Đoạn văn…',
     menuTools: 'Công cụ',
-    menuTable: 'Bảng',
-    menuTableInsert: 'Chèn',
-    menuTableInsertTable: 'Bảng…',
-    menuTableColsLeft: 'Chèn cột bên trái',
-    menuTableColsRight: 'Chèn cột bên phải',
-    menuTableRowsAbove: 'Chèn hàng phía trên',
-    menuTableRowsBelow: 'Chèn hàng phía dưới',
-    menuTableCells: 'Ô…',
-    menuTableDelete: 'Xóa',
-    menuTableDeleteTable: 'Bảng',
-    menuTableDeleteColumns: 'Cột',
-    menuTableDeleteRows: 'Hàng',
-    menuTableSelect: 'Chọn',
-    menuTableSelectCell: 'Ô',
-    menuTableSelectColumn: 'Cột',
-    menuTableSelectRow: 'Hàng',
-    menuTableSelectTable: 'Bảng',
-    menuTableMergeCells: 'Hợp nhất các ô',
-    menuTableSplitCells: 'Tách ô…',
-    menuTableSplitTable: 'Tách bảng',
-    menuTableAutoFit: 'Tự động điều chỉnh',
-    menuTableAutoFitContents: 'Tự động điều chỉnh theo nội dung',
-    menuTableAutoFitWindow: 'Tự động điều chỉnh theo cửa sổ',
-    menuTableFixedWidth: 'Chiều rộng cột cố định',
-    menuTableDistributeRows: 'Phân bố hàng đều nhau',
-    menuTableDistributeColumns: 'Phân bố cột đều nhau',
-    menuTableRepeatHeader: 'Lặp lại hàng tiêu đề',
-    menuTableGridlines: 'Xem đường lưới',
-    menuTableProperties: 'Thuộc tính bảng…',
     menuWordCount: 'Đếm từ…',
     menuAutoCorrect: 'Tùy chọn tự sửa lỗi…',
-    menuPreferences: 'Tùy chọn…',
     menuAiProofread: 'Hiệu đính bằng AI',
     menuWindow: 'Cửa sổ',
     menuHelp: 'Trợ giúp',
     menuShortcuts: 'Phím tắt bàn phím',
+    menuDocsHelp: 'Trợ giúp ChaAI Office Docs',
+    rsConflictMsg: '远端文件已被其他设备修改。',
+    rsConflictDetail: '你的版本与远程存储上的当前版本不一致，请选择处理方式：',
+    rsConflictOverwrite: '用我的版本覆盖',
+    rsConflictCopy: '把我的存为副本',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
   },
   tr: {
     dlgOpenDoc: 'Belge Aç',
@@ -630,7 +620,7 @@ const tMain = createI18n({
     importSkipConfirm: 'Bir dahaki sefere sormadan dönüştür',
     docImportMsg: 'Bu .{ext} belgesi dönüştürülsün mü?',
     docImportDetail:
-      'GenOffice Word 97-2003 (.doc) belgelerini değil .docx düzenler. Gövde metni, başlıklar, listeler, tablolar ve resimler aktarılır; dipnotlar, açıklamalar ve metin kutuları tam olarak korunmaz. Özgün dosya hiçbir zaman değiştirilmez; dönüştürülen .docx, sonraki kaydetmelerin yazıldığı ayrı bir kopyadır.',
+      'ChaAI Office Word 97-2003 (.doc) belgelerini değil .docx düzenler. Gövde metni, başlıklar, listeler, tablolar ve resimler aktarılır; dipnotlar, açıklamalar ve metin kutuları tam olarak korunmaz. Özgün dosya hiçbir zaman değiştirilmez; dönüştürülen .docx, sonraki kaydetmelerin yazıldığı ayrı bir kopyadır.',
     docImportConvertBtn: 'Dönüştür ve aç',
     dlgSaveAs: 'Farklı Kaydet',
     closeUnsavedMsg: 'Bu belgede kaydedilmemiş değişiklikler var.',
@@ -757,7 +747,7 @@ const tMain = createI18n({
     importSkipConfirm: '次回から確認せずに変換する',
     docImportMsg: 'この .{ext} 文書を変換しますか？',
     docImportDetail:
-      'GenOffice は Word 97-2003 形式（.doc）ではなく .docx を編集します。本文・見出し・リスト・表・画像は変換されますが、脚注・コメント・テキストボックスは完全には保持されません。元のファイルは変更されず、変換後の .docx は独立したコピーとして以後の保存先になります。',
+      'ChaAI Office は Word 97-2003 形式（.doc）ではなく .docx を編集します。本文・見出し・リスト・表・画像は変換されますが、脚注・コメント・テキストボックスは完全には保持されません。元のファイルは変更されず、変換後の .docx は独立したコピーとして以後の保存先になります。',
     docImportConvertBtn: '変換して開く',
     dlgSaveAs: '名前を付けて保存',
     closeUnsavedMsg: 'このドキュメントに未保存の変更があります。',
@@ -884,7 +874,7 @@ const tMain = createI18n({
     importSkipConfirm: '다음부터 묻지 않고 변환',
     docImportMsg: '이 .{ext} 문서를 변환할까요?',
     docImportDetail:
-      'GenOffice은 Word 97-2003(.doc) 문서가 아니라 .docx를 편집합니다. 본문, 제목, 목록, 표, 이미지는 변환되지만 각주, 메모, 텍스트 상자는 완전히 유지되지 않습니다. 원본 파일은 변경되지 않으며, 변환된 .docx는 이후 저장이 기록되는 독립적인 사본입니다.',
+      'ChaAI Office은 Word 97-2003(.doc) 문서가 아니라 .docx를 편집합니다. 본문, 제목, 목록, 표, 이미지는 변환되지만 각주, 메모, 텍스트 상자는 완전히 유지되지 않습니다. 원본 파일은 변경되지 않으며, 변환된 .docx는 이후 저장이 기록되는 독립적인 사본입니다.',
     docImportConvertBtn: '변환 후 열기',
     dlgSaveAs: '다른 이름으로 저장',
     closeUnsavedMsg: '이 문서에 저장하지 않은 변경 사항이 있습니다.',
@@ -1013,7 +1003,7 @@ const tMain = createI18n({
     importSkipConfirm: 'La prochaine fois, convertir sans demander',
     docImportMsg: 'Convertir ce document .{ext} ?',
     docImportDetail:
-      'GenOffice modifie des .docx, pas de documents Word 97-2003 (.doc). Le texte, les titres, les listes, les tableaux et les images sont convertis ; les notes de bas de page, les commentaires et les zones de texte ne sont pas entièrement conservés. Le fichier d’origine n’est jamais modifié ; le .docx converti est une copie distincte où s’effectuent les enregistrements suivants.',
+      'ChaAI Office modifie des .docx, pas de documents Word 97-2003 (.doc). Le texte, les titres, les listes, les tableaux et les images sont convertis ; les notes de bas de page, les commentaires et les zones de texte ne sont pas entièrement conservés. Le fichier d’origine n’est jamais modifié ; le .docx converti est une copie distincte où s’effectuent les enregistrements suivants.',
     docImportConvertBtn: 'Convertir et ouvrir',
     dlgSaveAs: 'Enregistrer sous',
     closeUnsavedMsg: 'Ce document contient des modifications non enregistrées.',
@@ -1143,7 +1133,7 @@ const tMain = createI18n({
     importSkipConfirm: 'Nächstes Mal ohne Nachfrage konvertieren',
     docImportMsg: 'Dieses .{ext}-Dokument konvertieren?',
     docImportDetail:
-      'GenOffice bearbeitet .docx, nicht Word 97-2003-Dokumente (.doc). Text, Überschriften, Listen, Tabellen und Bilder werden übernommen; Fußnoten, Kommentare und Textfelder werden nicht vollständig bewahrt. Die Originaldatei bleibt unverändert; die konvertierte .docx-Kopie ist eigenständig, und spätere Speicherungen landen in ihr.',
+      'ChaAI Office bearbeitet .docx, nicht Word 97-2003-Dokumente (.doc). Text, Überschriften, Listen, Tabellen und Bilder werden übernommen; Fußnoten, Kommentare und Textfelder werden nicht vollständig bewahrt. Die Originaldatei bleibt unverändert; die konvertierte .docx-Kopie ist eigenständig, und spätere Speicherungen landen in ihr.',
     docImportConvertBtn: 'Konvertieren und öffnen',
     dlgSaveAs: 'Speichern unter',
     closeUnsavedMsg: 'Dieses Dokument enthält ungespeicherte Änderungen.',
@@ -1273,7 +1263,7 @@ const tMain = createI18n({
     importSkipConfirm: 'La próxima vez, convertir sin preguntar',
     docImportMsg: '¿Convertir este documento .{ext}?',
     docImportDetail:
-      'GenOffice edita .docx, no documentos de Word 97-2003 (.doc). El texto, los títulos, las listas, las tablas y las imágenes se convierten; las notas al pie, los comentarios y los cuadros de texto no se conservan por completo. El archivo original nunca se modifica; el .docx convertido es una copia independiente en la que se guardan los cambios posteriores.',
+      'ChaAI Office edita .docx, no documentos de Word 97-2003 (.doc). El texto, los títulos, las listas, las tablas y las imágenes se convierten; las notas al pie, los comentarios y los cuadros de texto no se conservan por completo. El archivo original nunca se modifica; el .docx convertido es una copia independiente en la que se guardan los cambios posteriores.',
     docImportConvertBtn: 'Convertir y abrir',
     dlgSaveAs: 'Guardar como',
     closeUnsavedMsg: 'Este documento tiene cambios sin guardar.',
@@ -1403,7 +1393,7 @@ const tMain = createI18n({
     importSkipConfirm: 'ครั้งถัดไปแปลงทันทีโดยไม่ต้องถาม',
     docImportMsg: 'แปลงเอกสาร .{ext} นี้ไหม?',
     docImportDetail:
-      'GenOffice แก้ไข .docx ไม่ใช่เอกสาร Word 97-2003 (.doc) ข้อความ หัวข้อ รายการ ตาราง และรูปภาพจะถูกแปลง ส่วนเชิงอรรถ ความคิดเห็น และกล่องข้อความจะไม่ถูกเก็บไว้ทั้งหมด ไฟล์ต้นทางจะไม่ถูกแก้ไข และไฟล์ .docx ที่แปลงแล้วเป็นสำเนาแยกต่างหากที่การบันทึกครั้งต่อไปจะเขียนลง',
+      'ChaAI Office แก้ไข .docx ไม่ใช่เอกสาร Word 97-2003 (.doc) ข้อความ หัวข้อ รายการ ตาราง และรูปภาพจะถูกแปลง ส่วนเชิงอรรถ ความคิดเห็น และกล่องข้อความจะไม่ถูกเก็บไว้ทั้งหมด ไฟล์ต้นทางจะไม่ถูกแก้ไข และไฟล์ .docx ที่แปลงแล้วเป็นสำเนาแยกต่างหากที่การบันทึกครั้งต่อไปจะเขียนลง',
     docImportConvertBtn: 'แปลงแล้วเปิด',
     dlgSaveAs: 'บันทึกเป็น',
     closeUnsavedMsg: 'เอกสารนี้มีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก',
@@ -1530,7 +1520,7 @@ const tMain = createI18n({
     importSkipConfirm: 'Lain kali langsung konversi tanpa bertanya',
     docImportMsg: 'Konversi dokumen .{ext} ini?',
     docImportDetail:
-      'GenOffice mengedit .docx, bukan dokumen Word 97-2003 (.doc). Teks isi, judul, daftar, tabel, dan gambar ikut dikonversi; catatan kaki, komentar, dan kotak teks tidak sepenuhnya dipertahankan. File asli tidak pernah diubah; salinan .docx hasil konversi berdiri sendiri dan penyimpanan berikutnya ditulis ke sana.',
+      'ChaAI Office mengedit .docx, bukan dokumen Word 97-2003 (.doc). Teks isi, judul, daftar, tabel, dan gambar ikut dikonversi; catatan kaki, komentar, dan kotak teks tidak sepenuhnya dipertahankan. File asli tidak pernah diubah; salinan .docx hasil konversi berdiri sendiri dan penyimpanan berikutnya ditulis ke sana.',
     docImportConvertBtn: 'Konversi dan buka',
     dlgSaveAs: 'Simpan Sebagai',
     closeUnsavedMsg: 'Dokumen ini memiliki perubahan yang belum disimpan.',
@@ -1659,7 +1649,7 @@ const tMain = createI18n({
     importSkipConfirm: 'В следующий раз конвертировать без запроса',
     docImportMsg: 'Преобразовать этот документ .{ext}?',
     docImportDetail:
-      'GenOffice редактирует .docx, а не документы Word 97-2003 (.doc). Текст, заголовки, списки, таблицы и изображения переносятся; сноски, примечания и надписи сохраняются не полностью. Исходный файл никогда не изменяется; преобразованный .docx — отдельная копия, в которую записывается дальнейшее сохранение.',
+      'ChaAI Office редактирует .docx, а не документы Word 97-2003 (.doc). Текст, заголовки, списки, таблицы и изображения переносятся; сноски, примечания и надписи сохраняются не полностью. Исходный файл никогда не изменяется; преобразованный .docx — отдельная копия, в которую записывается дальнейшее сохранение.',
     docImportConvertBtn: 'Преобразовать и открыть',
     dlgSaveAs: 'Сохранить как',
     closeUnsavedMsg: 'В этом документе есть несохранённые изменения.',
@@ -1787,7 +1777,7 @@ const tMain = createI18n({
     importSkipConfirm: 'في المرة القادمة، حوّل دون سؤال',
     docImportMsg: 'تحويل مستند .{ext} هذا؟',
     docImportDetail:
-      'يحرّر GenOffice ملفات ‎.docx ولا يحرّر مستندات Word 97-2003 (‎.doc). يُحوَّل النص والعناوين والقوائم والجداول والصور؛ أما الحواشي السفلية والتعليقات ومربعات النص فلا تُحفظ بالكامل. لا يتغيّر الملف الأصلي أبدًا؛ والملف ‎.docx المحوَّل نسخة مستقلة تُكتب فيها عمليات الحفظ اللاحقة.',
+      'يحرّر ChaAI Office ملفات ‎.docx ولا يحرّر مستندات Word 97-2003 (‎.doc). يُحوَّل النص والعناوين والقوائم والجداول والصور؛ أما الحواشي السفلية والتعليقات ومربعات النص فلا تُحفظ بالكامل. لا يتغيّر الملف الأصلي أبدًا؛ والملف ‎.docx المحوَّل نسخة مستقلة تُكتب فيها عمليات الحفظ اللاحقة.',
     docImportConvertBtn: 'تحويل وفتح',
     dlgSaveAs: 'حفظ باسم',
     closeUnsavedMsg: 'يحتوي هذا المستند على تغييرات غير محفوظة.',
@@ -1915,7 +1905,7 @@ const tMain = createI18n({
     importSkipConfirm: 'Da próxima vez, converter sem perguntar',
     docImportMsg: 'Converter este documento .{ext}?',
     docImportDetail:
-      'O GenOffice edita .docx, não documentos do Word 97-2003 (.doc). Texto, títulos, listas, tabelas e imagens são convertidos; notas de rodapé, comentários e caixas de texto não são preservados por completo. O arquivo original nunca é alterado; o .docx convertido é uma cópia independente em que os salvamentos seguintes são gravados.',
+      'O ChaAI Office edita .docx, não documentos do Word 97-2003 (.doc). Texto, títulos, listas, tabelas e imagens são convertidos; notas de rodapé, comentários e caixas de texto não são preservados por completo. O arquivo original nunca é alterado; o .docx convertido é uma cópia independente em que os salvamentos seguintes são gravados.',
     docImportConvertBtn: 'Converter e abrir',
     dlgSaveAs: 'Salvar Como',
     closeUnsavedMsg: 'Este documento tem alterações não salvas.',
@@ -2044,7 +2034,7 @@ const tMain = createI18n({
     importSkipConfirm: 'La prossima volta converti senza chiedere',
     docImportMsg: 'Convertire questo documento .{ext}?',
     docImportDetail:
-      'GenOffice modifica .docx, non documenti Word 97-2003 (.doc). Testo, titoli, elenchi, tabelle e immagini vengono convertiti; note a piè di pagina, commenti e caselle di testo non sono conservati completamente. Il file originale non viene mai modificato; il .docx convertito è una copia indipendente su cui vengono salvate le modifiche successive.',
+      'ChaAI Office modifica .docx, non documenti Word 97-2003 (.doc). Testo, titoli, elenchi, tabelle e immagini vengono convertiti; note a piè di pagina, commenti e caselle di testo non sono conservati completamente. Il file originale non viene mai modificato; il .docx convertito è una copia indipendente su cui vengono salvate le modifiche successive.',
     docImportConvertBtn: 'Converti e apri',
     dlgSaveAs: 'Salva con nome',
     closeUnsavedMsg: 'Questo documento contiene modifiche non salvate.',
@@ -2174,7 +2164,7 @@ const tMain = createI18n({
     importSkipConfirm: 'Następnym razem konwertuj bez pytania',
     docImportMsg: 'Skonwertować ten dokument .{ext}?',
     docImportDetail:
-      'GenOffice edytuje .docx, a nie dokumenty Word 97-2003 (.doc). Tekst, nagłówki, listy, tabele i obrazy są konwertowane; przypisy, komentarze i pola tekstowe nie są zachowywane w całości. Plik oryginalny nigdy nie jest zmieniany; skonwertowany .docx to niezależna kopia, do której trafiają kolejne zapisy.',
+      'ChaAI Office edytuje .docx, a nie dokumenty Word 97-2003 (.doc). Tekst, nagłówki, listy, tabele i obrazy są konwertowane; przypisy, komentarze i pola tekstowe nie są zachowywane w całości. Plik oryginalny nigdy nie jest zmieniany; skonwertowany .docx to niezależna kopia, do której trafiają kolejne zapisy.',
     docImportConvertBtn: 'Konwertuj i otwórz',
     dlgSaveAs: 'Zapisz jako',
     closeUnsavedMsg: 'Ten dokument zawiera niezapisane zmiany.',
@@ -2303,7 +2293,7 @@ const tMain = createI18n({
     importSkipConfirm: 'Příště převést bez ptaní',
     docImportMsg: 'Převést tento dokument .{ext}?',
     docImportDetail:
-      'GenOffice upravuje .docx, nikoli dokumenty Word 97-2003 (.doc). Text, nadpisy, seznamy, tabulky a obrázky se převedou; poznámky pod čarou, komentáře a textová pole se nepřevezmou úplně. Původní soubor se nikdy nemění; převedený .docx je samostatná kopie, do níž se dalším ukládáním zapisuje.',
+      'ChaAI Office upravuje .docx, nikoli dokumenty Word 97-2003 (.doc). Text, nadpisy, seznamy, tabulky a obrázky se převedou; poznámky pod čarou, komentáře a textová pole se nepřevezmou úplně. Původní soubor se nikdy nemění; převedený .docx je samostatná kopie, do níž se dalším ukládáním zapisuje.',
     docImportConvertBtn: 'Převést a otevřít',
     dlgSaveAs: 'Uložit jako',
     closeUnsavedMsg: 'Tento dokument obsahuje neuložené změny.',
@@ -2433,7 +2423,7 @@ const tMain = createI18n({
     importSkipConfirm: 'Volgende keer converteren zonder te vragen',
     docImportMsg: 'Dit .{ext}-document converteren?',
     docImportDetail:
-      'GenOffice bewerkt .docx, geen Word 97-2003-documenten (.doc). Tekst, koppen, lijsten, tabellen en afbeeldingen worden omgezet; voetnoten, opmerkingen en tekstvakken niet volledig. Het oorspronkelijke bestand wordt nooit gewijzigd; de omgezette .docx is een zelfstandige kopie waarin volgende opslaan-acties terechtkomen.',
+      'ChaAI Office bewerkt .docx, geen Word 97-2003-documenten (.doc). Tekst, koppen, lijsten, tabellen en afbeeldingen worden omgezet; voetnoten, opmerkingen en tekstvakken niet volledig. Het oorspronkelijke bestand wordt nooit gewijzigd; de omgezette .docx is een zelfstandige kopie waarin volgende opslaan-acties terechtkomen.',
     docImportConvertBtn: 'Converteren en openen',
     dlgSaveAs: 'Opslaan als',
     closeUnsavedMsg: 'Dit document bevat niet-opgeslagen wijzigingen.',
@@ -2562,7 +2552,7 @@ const tMain = createI18n({
     importSkipConfirm: 'Lain kali terus tukar tanpa bertanya',
     docImportMsg: 'Tukar dokumen .{ext} ini?',
     docImportDetail:
-      'GenOffice menyunting .docx, bukan dokumen Word 97-2003 (.doc). Teks kandungan, tajuk, senarai, jadual dan imej ditukar; nota kaki, komen dan kotak teks tidak dikekalkan sepenuhnya. Fail asal tidak pernah diubah; salinan .docx yang ditukar ialah salinan berasingan tempat simpanan seterusnya ditulis.',
+      'ChaAI Office menyunting .docx, bukan dokumen Word 97-2003 (.doc). Teks kandungan, tajuk, senarai, jadual dan imej ditukar; nota kaki, komen dan kotak teks tidak dikekalkan sepenuhnya. Fail asal tidak pernah diubah; salinan .docx yang ditukar ialah salinan berasingan tempat simpanan seterusnya ditulis.',
     docImportConvertBtn: 'Tukar dan buka',
     dlgSaveAs: 'Simpan Sebagai',
     closeUnsavedMsg: 'Dokumen ini mempunyai perubahan yang belum disimpan.',
@@ -2691,7 +2681,7 @@ const tMain = createI18n({
     importSkipConfirm: 'בפעם הבאה להמיר בלי לשאול',
     docImportMsg: 'להמיר את מסמך ה‑.{ext} הזה?',
     docImportDetail:
-      'GenOffice עורך קבצי ‎.docx ולא מסמכי Word 97-2003 (‎.doc). טקסט, כותרות, רשימות, טבלאות ותמונות מומרים; הערות שוליים, תגובות ותיבות טקסט לא נשמרים במלואם. קובץ המקור לעולם אינו משתנה; קובץ ה‑.docx שהומר הוא עותק נפרד שאליו נכתבות השמירות הבאות.',
+      'ChaAI Office עורך קבצי ‎.docx ולא מסמכי Word 97-2003 (‎.doc). טקסט, כותרות, רשימות, טבלאות ותמונות מומרים; הערות שוליים, תגובות ותיבות טקסט לא נשמרים במלואם. קובץ המקור לעולם אינו משתנה; קובץ ה‑.docx שהומר הוא עותק נפרד שאליו נכתבות השמירות הבאות.',
     docImportConvertBtn: 'המר ופתח',
     dlgSaveAs: 'שמירה בשם',
     closeUnsavedMsg: 'במסמך זה יש שינויים שלא נשמרו.',
@@ -2816,7 +2806,7 @@ const tMain = createI18n({
     importSkipConfirm: 'अगली बार बिना पूछे बदलें',
     docImportMsg: 'इस .{ext} दस्तावेज़ को बदलें?',
     docImportDetail:
-      'GenOffice Word 97-2003 (.doc) दस्तावेज़ नहीं, .docx संपादित करता है। मुख्य पाठ, शीर्षक, सूचियाँ, तालिकाएँ और चित्र बदल दिए जाते हैं; फुटनोट, टिप्पणियाँ और टेक्स्ट बॉक्स पूरी तरह नहीं रखे जाते। मूल फ़ाइल कभी नहीं बदलती; बदली हुई .docx एक स्वतंत्र प्रति है जिसमें आगे के सेव लिखे जाते हैं।',
+      'ChaAI Office Word 97-2003 (.doc) दस्तावेज़ नहीं, .docx संपादित करता है। मुख्य पाठ, शीर्षक, सूचियाँ, तालिकाएँ और चित्र बदल दिए जाते हैं; फुटनोट, टिप्पणियाँ और टेक्स्ट बॉक्स पूरी तरह नहीं रखे जाते। मूल फ़ाइल कभी नहीं बदलती; बदली हुई .docx एक स्वतंत्र प्रति है जिसमें आगे के सेव लिखे जाते हैं।',
     docImportConvertBtn: 'बदलकर खोलें',
     dlgSaveAs: 'इस रूप में सहेजें',
     closeUnsavedMsg: 'इस दस्तावेज़ में सहेजे नहीं गए परिवर्तन हैं।',
@@ -2933,126 +2923,6 @@ const tMain = createI18n({
     menuShortcuts: 'कीबोर्ड शॉर्टकट',
     menuDocsHelp: 'ChaAI Office Docs सहायता',
   },
-  vi: {
-    odtImportMsg: 'Chuyển đổi tài liệu .{ext} này?',
-    odtImportDetail:
-      'Tài liệu sẽ được chuyển đổi sang định dạng OOXML (.docx/.xlsx/.pptx) và mở dưới dạng bản sao có thể chỉnh sửa.',
-    odtImportConvertBtn: 'Chuyển đổi và mở',
-    autosaveDiskNewer:
-      'Lưu ý: sau khi bản khôi phục này được lưu, tệp trên đĩa đã bị sửa đổi. Khôi phục sẽ thay thế các thay đổi mới hơn đó.',
-    dlgExportMarkdown: 'Xuất dưới dạng Markdown',
-    menuExportMarkdown: 'Xuất dưới dạng Markdown…',
-    menuMultiPage: 'Nhiều trang',
-    dlgOpenDoc: 'Mở tài liệu',
-    filterWord: 'Tài liệu Word',
-    dlgSaveAs: 'Lưu dưới dạng',
-    closeUnsavedMsg: 'Tài liệu này có những thay đổi chưa được lưu.',
-    closeUnsavedDetail: 'Bạn có muốn lưu các thay đổi trước khi đóng không?',
-    closeNoReplyMsg: 'Tài liệu không phản hồi và có thể có những thay đổi chưa được lưu.',
-    closeNoReplyDetail: 'Vẫn đóng? Các thay đổi chưa lưu sẽ bị mất.',
-    btnCloseAnyway: 'Vẫn đóng',
-    autosaveFoundTitle: 'Tìm thấy phiên bản khôi phục',
-    autosaveFoundBody:
-      'Có những thay đổi chưa được lưu từ phiên làm việc trước của bạn. Khôi phục phiên bản đã lưu tự động?',
-    autosaveRestore: 'Khôi phục',
-    autosaveDiscard: 'Bỏ qua',
-    btnDontSave: 'Không lưu',
-    btnCancel: 'Hủy',
-    extModifiedMsg: 'Tệp đã được sửa đổi bởi một chương trình khác.',
-    extModifiedDetail: 'Vẫn lưu và ghi đè các thay đổi trên ổ đĩa?',
-    btnOverwrite: 'Ghi đè',
-    dlgInsertImage: 'Chèn hình ảnh',
-    filterImages: 'Hình ảnh',
-    dlgAddAttachment: 'Thêm tệp đính kèm',
-    filterSupported: 'Các tệp được hỗ trợ',
-    filterAll: 'Tất cả các tệp',
-    dlgExportPdf: 'Xuất dưới dạng PDF',
-    dlgExportHtml: 'Xuất dưới dạng HTML',
-    dlgPickExportDir: 'Chọn thư mục xuất',
-    errUnsupportedExt: 'Tệp .{ext} không được hỗ trợ',
-    errNotFile: 'không phải là tệp',
-    errTooLarge: 'vượt quá giới hạn {mb}MB',
-    errImageTooLarge: 'hình ảnh vượt quá giới hạn 5MB',
-    errUnreadable: 'không thể đọc được',
-    errFileTooLarge: 'Tệp vượt quá giới hạn kích thước',
-    errParseFailed: 'Không thể phân tích tệp',
-    errImageNoText:
-      'Tệp đính kèm hình ảnh không có văn bản; hình ảnh được gửi cùng với tin nhắn của người dùng',
-    errNotImage: 'loại hình ảnh không được hỗ trợ',
-    errChaOfficeNotLoggedIn:
-      'Chưa đăng nhập vào 察元AIOffice: nhấp vào “Đăng nhập” bên dưới, đăng nhập, sau đó thử lại',
-    errNoApiKey: 'Chưa cấu hình khóa API cho {provider}',
-    errAiRegion:
-      'Nhà cung cấp của mô hình này không phục vụ khu vực hiện tại của bạn — hãy chọn mô hình khác hoặc đổi mạng',
-    errAiBusy: 'Dịch vụ AI hiện đang bận — vui lòng thử lại sau giây lát',
-    errNoModel: 'Chưa cấu hình tên mô hình',
-    menuFile: 'Tệp',
-    menuNewDoc: 'Tài liệu mới',
-    menuNewWindow: 'Cửa sổ mới',
-    menuOpen: 'Mở…',
-    menuOpenRecent: 'Mở gần đây',
-    menuNoRecent: 'Không có tài liệu gần đây',
-    menuClose: 'Đóng',
-    menuSave: 'Lưu',
-    menuSaveAs: 'Lưu dưới dạng…',
-    menuPageSetup: 'Thiết lập trang…',
-    menuExportPdf: 'Xuất dưới dạng PDF…',
-    menuExportHtml: 'Xuất dưới dạng HTML…',
-    menuExportImages: 'Xuất dưới dạng hình ảnh…',
-    menuPrint: 'In…',
-    menuEdit: 'Chỉnh sửa',
-    menuUndo: 'Hoàn tác',
-    menuRedo: 'Làm lại',
-    menuCut: 'Cắt',
-    menuCopy: 'Sao chép',
-    menuPaste: 'Dán',
-    menuPasteMatch: 'Dán và khớp kiểu định dạng',
-    menuFindReplace: 'Tìm kiếm và thay thế…',
-    menuSelectAll: 'Chọn tất cả',
-    menuView: 'Xem',
-    menuZoomIn: 'Phóng to',
-    menuZoomOut: 'Thu nhỏ',
-    menuZoom100: 'Kích thước thực tế (100%)',
-    menuPageWidth: 'Chiều rộng trang',
-    menuWholePage: 'Toàn bộ trang',
-    menuAiSidebar: 'Thanh bên AI',
-    menuDarkMode: 'Chế độ tối',
-    menuFullscreen: 'Vào chế độ toàn màn hình',
-    menuInsert: 'Chèn',
-    menuInsertTable: 'Bảng…',
-    menuInsertImage: 'Hình ảnh…',
-    menuInsertPageBreak: 'Ngắt trang',
-    menuInsertLink: 'Siêu liên kết…',
-    menuInsertEquation: 'Phương trình…',
-    menuComment: 'Bình luận',
-    menuFormat: 'Định dạng',
-    menuBold: 'In đậm',
-    menuItalic: 'In nghiêng',
-    menuUnderline: 'Gạch chân',
-    menuAlign: 'Căn chỉnh',
-    menuAlignLeft: 'Căn trái',
-    menuAlignCenter: 'Căn giữa',
-    menuAlignRight: 'Căn phải',
-    menuAlignJustify: 'Căn đều',
-    menuFont: 'Phông chữ…',
-    menuParagraph: 'Đoạn văn…',
-    menuTools: 'Công cụ',
-    menuWordCount: 'Đếm từ…',
-    menuAutoCorrect: 'Tùy chọn tự sửa lỗi…',
-    menuAiProofread: 'Hiệu đính bằng AI',
-    menuWindow: 'Cửa sổ',
-    menuHelp: 'Trợ giúp',
-    menuShortcuts: 'Phím tắt bàn phím',
-    menuDocsHelp: 'Trợ giúp ChaAI Office Docs',
-    rsConflictMsg: '远端文件已被其他设备修改。',
-    rsConflictDetail: '你的版本与远程存储上的当前版本不一致，请选择处理方式：',
-    rsConflictOverwrite: '用我的版本覆盖',
-    rsConflictCopy: '把我的存为副本',
-    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
-    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
-    dlgMergeDataSource: 'Chọn danh sách người nhận',
-    filterMergeDataSource: 'Excel hoặc CSV',
-  },
   'zh-TW': {
     dlgOpenDoc: '開啟文件',
     filterWord: 'Word 文件',
@@ -3065,7 +2935,7 @@ const tMain = createI18n({
     importSkipConfirm: '下次直接轉換，不再提示',
     docImportMsg: '轉換這個 .{ext} 文件？',
     docImportDetail:
-      'GenOffice 只編輯 .docx，不編輯 Word 97-2003 舊版 .doc。內文、標題、清單、表格與圖片會轉換過來；註腳、註解與文字方塊不會完整保留。原始檔案不會被修改，轉換後的 .docx 是獨立副本，之後的儲存都寫入它。', // public-hygiene: allow
+      'ChaAI Office 只編輯 .docx，不編輯 Word 97-2003 舊版 .doc。內文、標題、清單、表格與圖片會轉換過來；註腳、註解與文字方塊不會完整保留。原始檔案不會被修改，轉換後的 .docx 是獨立副本，之後的儲存都寫入它。', // public-hygiene: allow
     docImportConvertBtn: '轉換並開啟',
     dlgSaveAs: '另存新檔',
     closeUnsavedMsg: '此文件有未儲存的變更。',
@@ -5881,7 +5751,7 @@ export function registerDocsIpc(): void {
     }
     // A named printer prints silently, and Chromium's silent print on macOS
     // can drop the job outright — no queue entry, no callback error
-    // (genoffice#2347). Route those jobs through CUPS instead: printToPDF
+    // (chaoffice#2347). Route those jobs through CUPS instead: printToPDF
     // bakes the pages at the document's own paper size, and lp spools a
     // real job whose queue state and failures are diagnosable.
     if (process.platform === 'darwin' && printOpts.silent) {

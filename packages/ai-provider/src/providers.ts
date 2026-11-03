@@ -10,8 +10,8 @@ import type { AiProviderId, AiProviderMeta, AiSettings, LegacyAiSettings } from 
  * which differs from the official vendor ids.
  */
 export const CHAOFFICE_LLM_BASE_URLS = {
-  anthropic: 'https://www.genspark.ai/api/anthropic',
-  openai: 'https://www.genspark.ai/api/llm_proxy/v1',
+  anthropic: 'https://www.chaoffice.ai/api/anthropic',
+  openai: 'https://www.chaoffice.ai/api/llm_proxy/v1',
 } as const
 
 /**
@@ -22,7 +22,7 @@ export const CHAOFFICE_LLM_BASE_URLS = {
 export const CHAOFFICE_AGENT_TYPE = 'chaoffice'
 
 export function chaofficeAttributionHeaders(baseUrl?: string): Record<string, string> {
-  return baseUrl?.startsWith('https://www.genspark.ai')
+  return baseUrl?.startsWith('https://www.chaoffice.ai')
     ? { 'X-Agent-Type': CHAOFFICE_AGENT_TYPE }
     : {}
 }
@@ -42,7 +42,7 @@ export function opencodeSessionHeaders(
 }
 
 /**
- * DeepSeek V4.1 Flash under the Genspark pool spelling. Only the proxy serves
+ * DeepSeek V4.1 Flash under the ChaAI Office pool spelling. Only the proxy serves
  * this id; api.deepseek.com knows the model as `deepseek-flash`, so the direct
  * provider lists the vendor spelling and keeps this one as an accepted alias.
  */
@@ -204,16 +204,6 @@ export const AI_PROVIDERS: AiProviderMeta[] = [
     // Pro/<id> prefix selects the accelerated serving. OpenAI-compatible
     // /chat/completions; docs: https://api-docs.siliconflow.cn. The CN and
     // global platforms (api.siliconflow.com) do not share keys or base URLs.
-    models: [
-      'deepseek-ai/DeepSeek-V4.1-Flash',
-      'deepseek-ai/DeepSeek-V4-Pro',
-      'deepseek-ai/DeepSeek-V3.2',
-      'zai-org/GLM-5.3',
-      'zai-org/GLM-5.3-Flash',
-      'moonshotai/Kimi-K2.7-Code',
-      'Qwen/Qwen3.8-27B',
-    ],
-    defaultModel: 'deepseek-ai/DeepSeek-V4-Pro',
     keyPlaceholder: 'sk-...',
   },
   {
@@ -224,15 +214,6 @@ export const AI_PROVIDERS: AiProviderMeta[] = [
     // works as-is when typed in. Docs: https://ppio.com/docs/model/llm — the
     // official SDK base_url is https://api.ppio.com/openai, so the chat
     // endpoint rides /openai/v1.
-    models: [
-      'deepseek/deepseek-v4.1-flash',
-      'deepseek/deepseek-v4-pro',
-      'moonshotai/kimi-k3',
-      'zai-org/glm-5.3',
-      'qwen/qwen3.8-max',
-      'minimax/minimax-m3.1-flash',
-    ],
-    defaultModel: 'deepseek/deepseek-v4.1-flash',
     keyPlaceholder: 'sk-...',
   },
   {
@@ -257,23 +238,6 @@ export const AI_PROVIDERS: AiProviderMeta[] = [
     // ride the Anthropic route. GPT-5.4+/6 call tools only over the Responses
     // API, which this route does not take, so GPT and Grok stay out as on the
     // OpenCode tiers.
-    models: [
-      'zai-org/GLM-5.3',
-      'zai-org/GLM-5.2',
-      'deepseek/deepseek-v4-pro',
-      'deepseek/deepseek-v4.1-flash',
-      'deepseek/deepseek-v4-flash',
-      'moonshotai/Kimi-K2.7-Code',
-      'moonshotai/Kimi-K3',
-      'Qwen/Qwen3.8-Max',
-      'Qwen/Qwen3.8-27B',
-      'MiniMaxAI/MiniMax-M3',
-      'minimax/minimax-m3.1-flash',
-      'tencent/hy3-paid',
-      'google/gemini-3.8-flash',
-      'google/gemini-3.7-flash',
-    ],
-    defaultModel: 'zai-org/GLM-5.3',
     keyPlaceholder: 'CMD API key',
   },
   {
@@ -351,7 +315,7 @@ export function activeProvider(settings: AiSettings): AiProviderId {
 const RETIRED_MODELS: Partial<Record<AiProviderId, Record<string, string>>> = {
   // chat/reasoner retired 2026-07-24 (thinking became a request parameter);
   // V4 Flash and V4 Flash Vision Exp retired 2026-09-10 in favour of V4.1
-  // Flash; every one of them, and the Genspark pool spelling that was the
+  // Flash; every one of them, and the ChaAI Office pool spelling that was the
   // listed id until 0.11, now resolves to the vendor's own `deepseek-flash`.
   deepseek: {
     'deepseek-chat': 'deepseek-flash',

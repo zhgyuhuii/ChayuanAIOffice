@@ -5,7 +5,7 @@
  * with it selected. The layer stays pointer-events: none (body paragraphs
  * paint over it), so presses are hit-tested against the pictures' boxes.
  */
-import type { HfPictureEdit } from '@genoffice/docx-engine'
+import type { HfPictureEdit } from '@chaoffice/docx-engine'
 import type { HfView } from '../doc-state'
 
 export interface HfFloatTarget {

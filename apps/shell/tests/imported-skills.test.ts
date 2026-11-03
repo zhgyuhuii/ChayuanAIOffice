@@ -36,7 +36,7 @@ import {
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import JSZip from 'jszip'
-import { setUiLang } from '@genoffice/i18n'
+import { setUiLang } from '@chaoffice/i18n'
 import {
   importSkillDir,
   importSkillMd,

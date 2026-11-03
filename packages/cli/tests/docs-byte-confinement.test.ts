@@ -6,7 +6,7 @@ import { buildDocx } from '../../docx-engine/tests/helpers/build-docx'
 import { run, tempDir } from './helpers'
 
 /**
- * The last byte-confinement gaps from genoffice#524: an edit must not rewrite
+ * The last byte-confinement gaps from chaoffice#524: an edit must not rewrite
  * paragraphs it did not target, and the attributes a regenerated revision
  * element carries must survive the round trip.
  *

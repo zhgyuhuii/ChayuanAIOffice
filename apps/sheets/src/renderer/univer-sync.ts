@@ -8222,7 +8222,7 @@ export function lazyCellEditable(
 }
 
 /**
- * Applies an external-links update (genoffice#2109): installs the freshly
+ * Applies an external-links update (chaoffice#2109): installs the freshly
  * computed values into the recalc overlay so the grid shows them and the
  * next save writes them as the formulas' cached `<v>` — the stored `[n]`
  * formula text is untouched. Each cell's `kind` keeps its type: a boolean

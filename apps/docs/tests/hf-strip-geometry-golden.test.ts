@@ -18,7 +18,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { parseDocx, readSections, type HeaderFooter, type HfImage } from '@genoffice/docx-engine'
+import { parseDocx, readSections, type HeaderFooter, type HfImage } from '@chaoffice/docx-engine'
 import { effectiveHfRefs, hfPartWidthPx, type HfVariant } from '../src/renderer/pagination-hf'
 import { estimateHfHeight, hfHeaderGeom } from '../src/renderer/line-metrics'
 

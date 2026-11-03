@@ -10,7 +10,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { Editor } from '@tiptap/core'
-import { parseDocx, readSections, type Block, type ParsedDoc } from '@genoffice/docx-engine'
+import { parseDocx, readSections, type Block, type ParsedDoc } from '@chaoffice/docx-engine'
 import { blocksToPmDoc } from '../src/renderer/editor/convert'
 import { editorExtensions } from '../src/renderer/editor/extensions'
 import {

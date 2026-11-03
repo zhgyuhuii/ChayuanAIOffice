@@ -45,7 +45,6 @@ import {
   registerSharedKbIpc,
 } from '@chaoffice/ai-host'
 import { PDF_CHANNELS } from '../shared/ipc'
-import { printJobOptions } from '@chaoffice/electron-utils/print-job'
 import { printJobOptions, printOutcome } from '@chaoffice/electron-utils/print-job'
 import { printPdfViaCups, printToPdfOptionsFor } from '@chaoffice/electron-utils/print-cups'
 import { CertificateEncryptionError, WrongPasswordError, decryptDocument } from './pdf-crypt'
@@ -1351,7 +1350,7 @@ function registerPdfIpc(): void {
     // the renderer's print stylesheet already lays one rasterized page per sheet
     if (process.platform === 'darwin' && opts.silent) {
       // Chromium's silent print on macOS can drop the job outright — no queue
-      // entry, no callback error (genoffice#2347). Route through CUPS:
+      // entry, no callback error (chaoffice#2347). Route through CUPS:
       // printToPDF bakes the sheets at the document's own paper size (the
       // renderer measured it), and lp spools a real, diagnosable job.
       const printed = await e.sender.printToPDF(
@@ -1380,7 +1379,7 @@ function registerPdfIpc(): void {
   })
 
   // Chunked reads for the same grant: one 42 MB ArrayBuffer over IPC has
-  // killed renderers before first paint on Windows (genoffice#2366), while
+  // killed renderers before first paint on Windows (chaoffice#2366), while
   // small slices deserialize fine. The size rides along so the renderer's
   // loop needs no separate stat.
   ipcMain.handle(

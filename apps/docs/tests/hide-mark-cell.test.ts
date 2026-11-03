@@ -67,7 +67,7 @@ describe('w:hideMark cells', () => {
     expect(rule![1]).toContain('margin: 0 !important')
   })
 
-  // spacer-gif rows (genoffice#2117): the picture-only paragraph is textless too,
+  // spacer-gif rows (chaoffice#2117): the picture-only paragraph is textless too,
   // but its line is the picture extent and must not collapse with the cell mark
   it('leaves a picture-only paragraph in a hideMark cell at its picture height', async () => {
     const xml = TABLE_XML.replace('<w:p/>', IMAGE_PARAGRAPH_XML)

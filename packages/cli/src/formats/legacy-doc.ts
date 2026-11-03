@@ -1,4 +1,4 @@
-import { convertLegacyDocToDocx, LegacyDocError } from '@genoffice/doc2docx'
+import { convertLegacyDocToDocx, LegacyDocError } from '@chaoffice/doc2docx'
 import { CliError, EXIT } from '../result'
 
 /**

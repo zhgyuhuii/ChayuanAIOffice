@@ -191,7 +191,7 @@ describe('paragraph format signatures', () => {
     expect(ltr).not.toBe(rtl)
   })
 
-  it('keeps a bare <w:br/> run between formatted runs its own run (genoffice#524)', () => {
+  it('keeps a bare <w:br/> run between formatted runs its own run (chaoffice#524)', () => {
     const runs = [
       { text: 'First line', bold: true },
       { text: '\n' },

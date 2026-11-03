@@ -4583,7 +4583,7 @@ function extractRuns(
             const eq = eqField(fieldInstr)!
             pushRun({ ...resultFormat(), text: eq.text, math: { omml: eq.omml } }, rev)
           } else if (fieldInstr.trim() === '') {
-            // an instruction-less field (genoffice#2099 left citations this way)
+            // an instruction-less field (chaoffice#2099 left citations this way)
             // keeps its result as an empty-instruction run, not a passthrough
             pushRun(
               {
@@ -7366,7 +7366,7 @@ function hfParagraphs(
       })
     }
     const boxed = hasDeepChild(pNode, TXBX_CONTENT) ? textboxParagraphs(pNode, ctx) : []
-    // runs carrying only w:rPr are a blank line like a bare w:p (genoffice#2116)
+    // runs carrying only w:rPr are a blank line like a bare w:p (chaoffice#2116)
     if (
       runs.length === 0 &&
       !hfOnlyEmptyRuns(pNode) &&

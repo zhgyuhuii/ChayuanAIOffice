@@ -1199,7 +1199,7 @@ describe('streamForProvider: chaoffice', () => {
       cb,
     ).catch(() => {})
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://www.genspark.ai/api/anthropic/v1/messages',
+      'https://www.chaoffice.ai/api/anthropic/v1/messages',
       expect.objectContaining({
         headers: expect.objectContaining({ 'x-api-key': 'chaoffice-k' }),
       }),
@@ -1221,7 +1221,7 @@ describe('streamForProvider: chaoffice', () => {
       cb,
     ).catch(() => {})
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://www.genspark.ai/api/llm_proxy/v1/chat/completions',
+      'https://www.chaoffice.ai/api/llm_proxy/v1/chat/completions',
       expect.anything(),
     )
   })
@@ -1315,7 +1315,7 @@ describe('streamForProvider: chaoffice', () => {
 
 describe('streamForProvider: 200 + non-stream JSON instead of SSE', () => {
   const creditsNotice =
-    'Your ChaOffice credits have been exhausted. Please visit https://www.genspark.ai/pricing to purchase more credits.'
+    'Your ChaOffice credits have been exhausted. Please visit https://www.chaoffice.ai/pricing to purchase more credits.'
   const json = (value: unknown) =>
     new Response(JSON.stringify(value), {
       status: 200,
@@ -1350,7 +1350,7 @@ describe('streamForProvider: 200 + non-stream JSON instead of SSE', () => {
           candidates: [
             {
               content: {
-                parts: [{ text: 'Out of quota, visit https://www.genspark.ai/pricing to top up.' }],
+                parts: [{ text: 'Out of quota, visit https://www.chaoffice.ai/pricing to top up.' }],
               },
             },
           ],
@@ -1498,7 +1498,7 @@ describe('streamForProvider: interleaved-thinking reasoning', () => {
 })
 
 describe('streamForProvider: a connection dropped mid tool arguments is not an empty stream', () => {
-  // Tool arguments are buffered upstream; the Genspark gateway closes the SSE
+  // Tool arguments are buffered upstream; the ChaAI Office gateway closes the SSE
   // after ~125s of that silence. The turn was billed and in progress, so it
   // must not match the "(empty stream)" contract that agent-core replays.
   it('anthropic: open tool_use block with no stop_reason rejects as a dropped connection', async () => {

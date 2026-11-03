@@ -762,7 +762,7 @@ const CONTENT_CONTROL_SCHEMAS: Record<(typeof CONTENT_CONTROL_OPS)[number], Json
       startBlockIndex: {
         type: 'integer',
         description:
-          'the first block of the range to wrap (0-based, as `genoffice docs read` numbers them)',
+          'the first block of the range to wrap (0-based, as `chaoffice docs read` numbers them)',
       },
       endBlockIndex: {
         type: 'integer',
@@ -796,7 +796,7 @@ const CONTENT_CONTROL_SCHEMAS: Record<(typeof CONTENT_CONTROL_OPS)[number], Json
 
 const CONTENT_CONTROL_NOTES: Record<(typeof CONTENT_CONTROL_OPS)[number], string> = {
   wrap_content_control:
-    'put a block range into one block-level content control (w:sdt); the blocks stay editable and the control carries the tag/title/lock; `genoffice docs read` shows the control chain on every block in it (contentControls, outermost first) and run-level controls as inlineContentControls',
+    'put a block range into one block-level content control (w:sdt); the blocks stay editable and the control carries the tag/title/lock; `chaoffice docs read` shows the control chain on every block in it (contentControls, outermost first) and run-level controls as inlineContentControls',
   unwrap_content_control:
     'remove every content control carrying that tag and leave its blocks as plain body blocks; nested controls unwrap level by level (unwrapping an inner tag keeps the outer shell around the content), inline/run-level controls are reported but not unwrapped',
 }

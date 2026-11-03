@@ -17,7 +17,7 @@ import type {
   CreateDocumentType,
 } from '../../shared/ipc'
 import { t } from '../i18n/locale'
-import { MIND_MAP_LIMITS, MIND_MAP_TOOL, parseMindMapTree } from '@genoffice/agent-core/mind-map'
+import { MIND_MAP_LIMITS, MIND_MAP_TOOL, parseMindMapTree } from '@chaoffice/agent-core/mind-map'
 import { executeOps, opNames } from './ops'
 import { clipExcerpt, repliesOf, resolveCommentAnchor } from './comment-ops'
 import { redactTextBetween } from './redact-view'
@@ -1195,7 +1195,7 @@ async function executeAsyncTool(
         )
       }
       // LOCAL(2026-09-22, f5247d3..476e5023): 上游 #544 原走其自有 ai:analyze-media 通道
-      // (Genspark/BYOK 提供方);本地并集改走统一媒体通道 media-understand(多厂商能力分组,
+      // (ChaAI Office/BYOK 提供方);本地并集改走统一媒体通道 media-understand(多厂商能力分组,
       // 与媒体技能同源)——analyzeMedia 专用通道不再接线。mediaUnderstand 桥在 preload 实现,
       // DesktopApi 尚未声明,按 media-skill 的 MediaWire 模式收窄调用
       const r = await (

@@ -19,7 +19,7 @@ function qualifiedRange(destination: NonNullable<Query['destination']>): string 
   return `'${destination.sheet.replaceAll("'", "''")}'!${destination.range}`
 }
 
-/// Data › Queries & Connections, read-only (genoffice#2051): the workbook's
+/// Data › Queries & Connections, read-only (chaoffice#2051): the workbook's
 /// Power Query queries and data connections, and where each one's rows are
 /// loaded. Clicking a loaded query selects its rows. Refresh is not offered:
 /// there is no query engine yet, and the parts stay in the file for Excel.

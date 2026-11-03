@@ -17,7 +17,7 @@ import type {
   Run,
   TextboxDisplay,
   TextboxParaDisplay,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import type { Node as PmNode } from '@tiptap/pm/model'
 import type { HfView } from '../doc-state'
 import { editKey, ownHf, type HfKind, type HfSectionState } from '../hf-sections'

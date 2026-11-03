@@ -2133,7 +2133,7 @@ function _placeTable(
       // vMerge group between real rows, and the gap row rides under the
       // bridged rowspan). Charging nothing and never checking let the computed
       // boundary drift past the real DOM heights, so the gap builder could not
-      // match a row top and anchored an in-cell band instead (genoffice#2114).
+      // match a row top and anchored an in-cell band instead (chaoffice#2114).
       // The parity model's zero-height continuations charge nothing and never
       // turn, exactly as before.
       if (!fits(row.height) && !pageEmpty()) {

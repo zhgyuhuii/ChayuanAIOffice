@@ -6,7 +6,6 @@ import type {
   TextFlowDirection,
   TextOutline,
 } from '@chaoffice/docx-engine'
-import type { SectionInfo, TextFlowDirection, TextOutline } from '@chaoffice/docx-engine'
 
 /** one placeable line of a block; `lead` marks ink-less space a float pushed the
  *  sole line past: the page bottom swallows it without a fit check */

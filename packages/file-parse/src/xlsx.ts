@@ -10,7 +10,7 @@ import {
   formatSerial,
   type DateFormatParts,
 } from './xlsx-dates'
-import { decodeXlsxEscapes } from '@genoffice/xlsx-gateway/gateway/xlsx-escapes'
+import { decodeXlsxEscapes } from '@chaoffice/xlsx-gateway/gateway/xlsx-escapes'
 
 function stripNamespacePrefix(name: string): string {
   const separator = name.indexOf(':')

@@ -50,7 +50,7 @@ export const MIND_MAP_EXPORT_COLORS = {
 
 /** Bounded recursion: the schema inlines down to the enforced depth limit; the
  *  deepest level carries a leaf-node shape, because Gemini's function schema
- *  refuses an array without `items` for the whole request (genoffice#2059). */
+ *  refuses an array without `items` for the whole request (chaoffice#2059). */
 const nodeSchema = (depth: number): Record<string, unknown> => ({
   type: 'object',
   properties: {

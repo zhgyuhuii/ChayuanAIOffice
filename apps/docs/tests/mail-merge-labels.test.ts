@@ -5,7 +5,7 @@ import {
   parseDocx,
   readSections,
   saveDocx,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { pmDocToSavePlan, type PmNode } from '../src/renderer/editor/convert'
 import { substituteMergeFields } from '../src/renderer/mail-merge/template'
 import {
@@ -18,7 +18,7 @@ import {
 /**
  * The label sheet, end to end: the records laid into the grid, the grid saved
  * through the same plan the editor saves with, and the .docx that comes out —
- * one table, a cell per record, the stock's paper. genoffice#2097.
+ * one table, a cell per record, the stock's paper. chaoffice#2097.
  */
 
 const template = (): PmNode => ({

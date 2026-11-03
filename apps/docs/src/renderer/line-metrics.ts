@@ -24,14 +24,12 @@
  */
 
 import { isEastAsianFontName } from './font-list'
-import type { DocGrid } from '@chaoffice/docx-engine'
 import {
   arabicCodePage,
   latinSlotSubstitute,
   type ResolvedFace,
 } from '@chaoffice/font-metrics/resolve'
 import type { DocGrid, Run } from '@chaoffice/docx-engine'
-import { latinSlotSubstitute, type ResolvedFace } from '@chaoffice/font-metrics/resolve'
 
 import {
   recordResolveDiff,
@@ -202,7 +200,7 @@ const JA_FONT_RE =
 
 /** Korean font names (Windows/Noto/Source Han/Nanum faces + bundled subsets) */
 const KO_FONT_RE =
-  /malgun|맑은|batang|바탕|myeongjo|myungjo|명조|gungsuh|궁서|gulim|굴림|dotum|돋움|nanum|나눔|genoffice (sans|serif) kr|(noto|source han) (sans|serif)[^,]*\bk(r|orean)?\b/i
+  /malgun|맑은|batang|바탕|myeongjo|myungjo|명조|gungsuh|궁서|gulim|굴림|dotum|돋움|nanum|나눔|chaoffice (sans|serif) kr|(noto|source han) (sans|serif)[^,]*\bk(r|orean)?\b/i
 
 /**
  * Per-font single-spacing line-height factor. Re-baselined against Word for

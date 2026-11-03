@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { Editor } from '@tiptap/core'
-import { buildBlankDocx, parseDocx } from '@genoffice/docx-engine'
+import { buildBlankDocx, parseDocx } from '@chaoffice/docx-engine'
 import { inheritTableFormatting } from '../src/renderer/ai/inherit-formatting'
 import { parseHtmlFragment } from '../src/renderer/ai/protocol'
 import { blocksToPmDoc, type PmNode } from '../src/renderer/editor/convert'

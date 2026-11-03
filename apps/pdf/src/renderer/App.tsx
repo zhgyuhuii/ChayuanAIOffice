@@ -1365,7 +1365,7 @@ export default function App() {
         }
         // A page that cannot be probed no longer destroys the document: the
         // tile renders as an error placeholder and the rest of the book opens
-        // (genoffice#2366 — one broken page deep in a large file used to blank
+        // (chaoffice#2366 — one broken page deep in a large file used to blank
         // the whole viewer with the reason only in the console)
         if (probe.failures.length > 0) {
           setFailedPages(new Set(probe.failures.map((f) => f.page)))
@@ -8255,7 +8255,7 @@ export default function App() {
                 <button
                   className="rb-big"
                   data-tip={t('exportImagesAll')}
-                  disabled={exporting}
+                  disabled={exporting !== null}
                   onClick={() => void exportImages(true)}
                 >
                   <span className="rb-big-icon">
@@ -8266,7 +8266,7 @@ export default function App() {
                 <button
                   className="rb-big"
                   data-tip={t('exportImagesAllJpg')}
-                  disabled={exporting}
+                  disabled={exporting !== null}
                   onClick={() => void exportImages(true, 'jpg')}
                 >
                   <span className="rb-big-icon">

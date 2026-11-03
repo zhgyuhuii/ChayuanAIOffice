@@ -19,7 +19,7 @@
  * right edge to the right margin, both overhanging the margins symmetrically /
  * leftwards when over-wide.
  */
-import type { TableModel } from '@genoffice/docx-engine'
+import type { TableModel } from '@chaoffice/docx-engine'
 import {
   clampTableColWidths,
   expandAutofitColWidths,

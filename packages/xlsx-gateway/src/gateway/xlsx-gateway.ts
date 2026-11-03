@@ -573,7 +573,7 @@ export async function readBasicWorkbook(buffer: Buffer): Promise<ImportedXlsx> {
  * merge) holds what the file last calculated. So the cell's own <v> is what
  * this reads, exactly like the pivot source reader does.
  *
- * The first sheet is read unless a sheet is named. genoffice#2097.
+ * The first sheet is read unless a sheet is named. chaoffice#2097.
  */
 export async function readSheetRows(buffer: Buffer, sheetName?: string): Promise<string[][]> {
   const zip = await createBufferEntrySource(buffer)

@@ -24,7 +24,7 @@ const FALLBACK: PageGeometry = { width: 595, height: 842, rotate: 0, origin: [0,
  * order. A page whose probe throws degrades to the previous good geometry (A4
  * before the first success) and is reported in `failures` instead of failing
  * the whole document — one broken page deep in a 450-page textbook must not
- * blank the other 449 (genoffice#2366: the open path used to destroy the
+ * blank the other 449 (chaoffice#2366: the open path used to destroy the
  * document over a single getPage rejection, leaving a white viewer and the
  * error only in the console).
  */

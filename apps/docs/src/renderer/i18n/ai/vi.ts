@@ -122,7 +122,7 @@ export const vi = {
   aiNetworkError:
     'Sự cố mạng: không thể kết nối tới dịch vụ AI. Kiểm tra kết nối của bạn và thử lại',
   aiCreditsExhausted:
-    'Điểm tín dụng ChaAI Office của bạn đã hết. Truy cập genspark.ai/pricing để nạp thêm rồi thử lại',
+    'Điểm tín dụng ChaAI Office của bạn đã hết. Truy cập chaoffice.ai/pricing để nạp thêm rồi thử lại',
   aiSumReadAttachment: 'Đọc tệp đính kèm',
   aiSumImageAttachment: 'Hình ảnh đính kèm {name}',
   aiSumRead: 'Đọc {name}',

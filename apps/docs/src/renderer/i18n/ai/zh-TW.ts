@@ -114,7 +114,7 @@ export const zhTW = {
   aiRegionError: '該模型的廠商不向目前地區提供服務，請換一個模型或切換網路',
   aiOverloadedError: 'AI 服務目前繁忙，請稍後重試',
   aiNetworkError: '網路有問題，無法連接 AI 服務。請檢查網路後重試',
-  aiCreditsExhausted: '察元AIOffice 點數已用完，請前往 genspark.ai/pricing 儲值後重試',
+  aiCreditsExhausted: '察元AIOffice 點數已用完，請前往 chaoffice.ai/pricing 儲值後重試',
   aiSumReadAttachment: '讀取附件',
   aiSumImageAttachment: '圖片附件 {name}',
   aiSumRead: '讀取 {name}',

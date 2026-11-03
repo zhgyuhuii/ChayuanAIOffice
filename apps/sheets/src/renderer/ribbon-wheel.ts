@@ -9,7 +9,7 @@ function scrollsItself(target: Element, ribbon: Element): boolean {
   return false
 }
 
-/// The ribbon overflows sideways, and its scrollbar is thin (genoffice#2334): a
+/// The ribbon overflows sideways, and its scrollbar is thin (chaoffice#2334): a
 /// mouse's vertical wheel over it scrolls it horizontally. Trackpads scroll it
 /// natively, and Ctrl/⌘ + wheel keeps zooming.
 export function scrollRibbonOnWheel(event: WheelEvent): void {

@@ -22,7 +22,7 @@ import {
   type HfImage,
   type ParsedDoc,
   type TableModel,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { describe, expect, it } from 'vitest'
 import { buildDocx } from '../../../packages/docx-engine/tests/helpers/build-docx'
 import { blocksToPmDoc, pmDocOptions } from '../src/renderer/editor/convert'

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import JSZip from 'jszip'
 import { Editor } from '@tiptap/core'
 import { editorExtensions } from '../src/renderer/editor/extensions'
-import { parseDocx, saveDocx, type Block } from '@genoffice/docx-engine'
+import { parseDocx, saveDocx, type Block } from '@chaoffice/docx-engine'
 import { blocksToPmDoc, pmDocToSavePlan, type PmNode } from '../src/renderer/editor/convert'
 import {
   acceptAllRevisions,

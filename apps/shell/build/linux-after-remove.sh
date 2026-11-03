@@ -21,13 +21,13 @@ link="/usr/bin/chaoffice"
 # same ownership rule as the post-install: only a link into our install dir is ours
 if [ -L "$link" ]; then
   case "$(readlink "$link")" in
-    "/opt/ChaAI Office"/*) rm -f "$link" ;;
+    "/opt/GenOffice"/*) rm -f "$link" ;;
   esac
 fi
 # Drop the KDE "Create New" templates the post-install step installed. Only
 # our exact file names are removed, so the directory and every other app's
-# templates stay (genoffice#2384).
-for name in "GenOffice Document.docx" "GenOffice Spreadsheet.xlsx" "GenOffice Presentation.pptx"; do
+# templates stay (chaoffice#2384).
+for name in "ChaAI Office Document.docx" "ChaAI Office Spreadsheet.xlsx" "ChaAI Office Presentation.pptx"; do
   rm -f "/usr/share/templates/$name"
 done
 exit 0

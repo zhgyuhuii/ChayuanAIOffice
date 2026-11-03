@@ -70,8 +70,8 @@ function extraResourceSeeds() {
 const NOTE = {
   '@fluentui/react-icons':
     'Copyright (c) Microsoft Corporation. Licensed under the MIT License.\nhttps://github.com/microsoft/fluentui-system-icons',
-  '@genspark/cli':
-    'Copyright (c) ChaOffice. Licensed under the MIT License.\nhttps://www.npmjs.com/package/@genspark/cli',
+  '@chaoffice/cli':
+    'Copyright (c) ChaOffice. Licensed under the MIT License.\nhttps://www.npmjs.com/package/@chaoffice/cli',
 }
 
 /**

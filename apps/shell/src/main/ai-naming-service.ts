@@ -4,7 +4,6 @@ import { readFileSync } from 'node:fs'
 import type { AgentMessage } from '@chaoffice/agent-core'
 import { streamForProvider } from '@chaoffice/ai-provider'
 import { chaofficeCliApiKey } from '@chaoffice/ai-search'
-import { buildNamingInstruction, excerptForNaming, sanitizeFileStem } from './ai-naming'
 import {
   buildNamingInstruction,
   excerptForNaming,

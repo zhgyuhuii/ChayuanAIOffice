@@ -1,4 +1,4 @@
-//! Breaking external workbook links (genoffice#2109): turns every formula
+//! Breaking external workbook links (chaoffice#2109): turns every formula
 //! that references a broken [n] link into the literal its cached value
 //! already holds, removes the link's parts and references, and renumbers the
 //! [m] indices of the surviving links (the index is the position in

@@ -124,7 +124,7 @@ const WIN_SIDECAR =
 // script was replaced by the lazy `install-electron` bin), and electron-builder
 // exits 0 on a missing extraResources source, so without this check the
 // installer would silently ship without the Chromium license.
-// (the @genspark/cli gsk runtime was dropped from dependencies when the AI
+// (the @chaoffice/cli gsk runtime was dropped from dependencies when the AI
 // stack moved to the V2 shared ai:* channels; its extraResources entries went
 // with it, so this list no longer checks for it)
 for (const rel of [
@@ -361,7 +361,7 @@ function ensureThirdPartyNotices() {
 // NSIS makes every declared ProgId the extension's default opener; for the
 // office types that is the point, for plain text/JSON and the legacy Word
 // 97-2003 .doc/.dot it would hijack the system editor, so Windows leaves those
-// out (mac/Linux still declare them for Open With). GenOffice opens .doc/.dot
+// out (mac/Linux still declare them for Open With). ChaAI Office opens .doc/.dot
 // through its own Open dialog on every platform.
 const WIN_OPEN_WITH_ONLY_EXTS = new Set(['txt', 'json', 'doc', 'dot'])
 const FILE_ASSOCIATIONS = [
@@ -374,7 +374,7 @@ const FILE_ASSOCIATIONS = [
     mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   },
   {
-    // import-only: opens as a converted .docx copy, GenOffice never writes .doc
+    // import-only: opens as a converted .docx copy, ChaAI Office never writes .doc
     ext: 'doc',
     name: 'Word 97-2003 Document',
     role: 'Editor',
@@ -770,8 +770,8 @@ const config = {
     // so apt sees the new packages as the same lineage. Homepage comes from
     // package.json "homepage"; the Package field is pinned in the deb block
     // below (packageName is a per-target option, rejected here by the schema).
-    maintainer: 'Mainfunc, Inc. <team@genspark.ai>',
-    vendor: 'Mainfunc, Inc. <team@genspark.ai>',
+    maintainer: 'Mainfunc, Inc. <team@chaoffice.ai>',
+    vendor: 'Mainfunc, Inc. <team@chaoffice.ai>',
     category: 'Office',
     // Icon SET directory, not the single 1024px png: electron-builder does
     // not resize a lone png, so deb/rpm would install only
@@ -801,7 +801,7 @@ const config = {
       // Same blank templates the Windows installer registers for Explorer's
       // "New" menu. The deb/rpm post-install step copies them into
       // /usr/share/templates, which KDE Plasma's Dolphin "Create New" menu
-      // scans (genoffice#2384). AppImage gets the payload too but runs no
+      // scans (chaoffice#2384). AppImage gets the payload too but runs no
       // install script, so it adds no templates.
       {
         from: 'build/shell-new',

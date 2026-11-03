@@ -13,10 +13,10 @@ send the original business request without a pass; no new 403 replay is added.
 Opt-in cookie traffic uses explicit Cookie with credentials omitted and manual
 redirects, retaining a 302 response without leaking credentials across origins.
 
-## Genspark provider requests (gsk key)
+## ChaAI Office provider requests (gsk key)
 
 The provider lane is on by default in Node host processes (`GENOFFICE_NATIVE_WAF=0`
-turns it off): the AI provider's Genspark LLM proxy requests use token admission (native-tok-v1, family `llm`) at the shared `aiFetch` seam. Only
+turns it off): the AI provider's ChaAI Office LLM proxy requests use token admission (native-tok-v1, family `llm`) at the shared `aiFetch` seam. Only
 HTTPS requests to an admitted host (the default proxy host, the `GSK_BASE_URL` host and any
 hosts in `GENOFFICE_NATIVE_WAF_HOSTS`) on `/api/llm_proxy/` or `/api/anthropic` that carry
 exactly one gsk credential (`Authorization: Bearer gsk-…` or `x-api-key: gsk-…`)
@@ -32,5 +32,5 @@ The prod edge token rules are gen-spark#77242; without them the pass is ignored
 at the edge and legacy rules still apply.
 
 Admitted hosts come from configuration, not source: the `GSK_BASE_URL` host
-(default `www.genspark.ai`) plus any comma-separated hostnames in
+(default `www.chaoffice.ai`) plus any comma-separated hostnames in
 `GENOFFICE_NATIVE_WAF_HOSTS`. Requests to any other origin are sent unchanged.

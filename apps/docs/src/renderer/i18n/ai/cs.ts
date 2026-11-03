@@ -123,7 +123,7 @@ export const cs = {
   aiNetworkError:
     'Problém se sítí: nepodařilo se připojit ke službě AI. Zkontrolujte připojení a zkuste to znovu',
   aiCreditsExhausted:
-    'Vaše kredity ChaAI Office byly vyčerpány. Navštivte genspark.ai/pricing pro dobití a zkuste to znovu',
+    'Vaše kredity ChaAI Office byly vyčerpány. Navštivte chaoffice.ai/pricing pro dobití a zkuste to znovu',
   aiSumReadAttachment: 'Přečtena příloha',
   aiSumImageAttachment: 'Obrázková příloha {name}',
   aiSumRead: 'Přečteno {name}',

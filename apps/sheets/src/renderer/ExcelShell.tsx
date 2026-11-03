@@ -75,7 +75,6 @@ import {
 import { setContextMenuCommandSink, registerPasteSpecialOpener } from './cell-context-menu'
 import { numberFormatLabel, type SelectionFormat } from './selection-format'
 import { fontFamilyGroups, useSystemFontFamilies } from './system-fonts'
-import { isGridKeyTarget, shouldInterceptClearSelection } from './clear-selection-keyboard'
 import { COLOR_SCALE_PRESETS, DATA_BAR_PRESETS, iconSetOf } from './cf-gallery'
 import { listCustomCellStyles, listCustomTableStyles } from './custom-styles'
 import { columnLabel, parseAddress } from '@chaoffice/xlsx-gateway/domain/cell-address'
@@ -94,6 +93,7 @@ import {
   type CfRuleDialogMode,
 } from './data-process-dialogs'
 import type { SheetVisualRef } from './ribbon-actions'
+import {
   isFormulaBarKeyTarget,
   isGridKeyTarget,
   shouldInterceptClearSelection,
@@ -106,12 +106,8 @@ import {
   RIBBON_CURRENCY_SYMBOL,
 } from './excel-format-shortcuts'
 import { isModalOpen, resolveGlobalShortcut } from './global-shortcuts'
-import { stepFontSize } from './font-size-ladder'
 import { scrollRibbonOnWheel } from './ribbon-wheel'
 
-import type { ChartSeriesVisualState } from '@chaoffice/xlsx-gateway/domain/chart-visual'
-import type { ChangePlan } from '@chaoffice/xlsx-gateway/domain/workbook.types'
-import type { AttachmentMeta } from '../shared/desktop-api'
 import type { ChartSeriesVisualState } from '@chaoffice/xlsx-gateway/domain/chart-visual'
 import type { ChangePlan } from '@chaoffice/xlsx-gateway/domain/workbook.types'
 import type { AttachmentMeta, WorkbookQueriesResult } from '../shared/desktop-api'
@@ -1104,7 +1100,7 @@ export function ExcelShell({
   // mounted once: re-binding after Univer starts would lose capture order.
   useEffect(() => {
     const onKeyDownCapture = (event: KeyboardEvent): void => {
-      if (openingWorkbookRef.current) return
+      if (openingWorkbook) return
       if (shouldInterceptRedoRepeat(event, onIsCellEditingRef.current(), isModalOpen())) {
         event.preventDefault()
         event.stopImmediatePropagation()

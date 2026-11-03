@@ -121,7 +121,7 @@ export const en = {
   aiNetworkError:
     'Network problem: could not reach the AI service. Check your connection and try again',
   aiCreditsExhausted:
-    'Your ChaAI Office credits have run out. Visit genspark.ai/pricing to top up, then try again',
+    'Your ChaAI Office credits have run out. Visit chaoffice.ai/pricing to top up, then try again',
   aiSumReadAttachment: 'Read attachment',
   aiSumImageAttachment: 'Image attachment {name}',
   aiSumRead: 'Read {name}',

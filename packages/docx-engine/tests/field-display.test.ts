@@ -1301,7 +1301,7 @@ describe('TOC entries without TOC styles (PAGEREF behind a right tab)', () => {
     expect(reparsed.blocks[2].type).toBe('passthrough')
   })
 
-  // genoffice#2331: a TOC whose entry style is not named "toc N" ("Contents 1", a localized
+  // chaoffice#2331: a TOC whose entry style is not named "toc N" ("Contents 1", a localized
   // name) and whose right dot-leader stop lives only in that style
   const CUSTOM_TOC_STYLES =
     '<w:style w:type="paragraph" w:styleId="Mokcha1"><w:name w:val="Contents 1"/>' +
@@ -1320,7 +1320,7 @@ describe('TOC entries without TOC styles (PAGEREF behind a right tab)', () => {
     customEntry(2, '4') +
     '<w:r><w:fldChar w:fldCharType="end"/></w:r></w:p>'
 
-  it('an entry whose right tab stop comes only from a custom style is still a toc line (genoffice#2331)', async () => {
+  it('an entry whose right tab stop comes only from a custom style is still a toc line (chaoffice#2331)', async () => {
     const doc = await parseDocx(
       await buildDocx({ bodyXml: CUSTOM_TOC, extraStylesXml: CUSTOM_TOC_STYLES }),
     )

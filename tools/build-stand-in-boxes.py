@@ -127,8 +127,8 @@ def src_box(src, system):
         m = re.match(r"url\(\s*['\"]?([^'\")]+)['\"]?\s*\)", part)
         if m:
             url = m.group(1).split("?")[0]
-            if url.startswith("@genoffice/ui/fonts/"):
-                path = os.path.join(UI_FONTS, url[len("@genoffice/ui/fonts/"):])
+            if url.startswith("@chaoffice/ui/fonts/"):
+                path = os.path.join(UI_FONTS, url[len("@chaoffice/ui/fonts/"):])
             else:
                 path = os.path.join(os.path.dirname(FONTS_CSS), url)
             if not os.path.isfile(path):

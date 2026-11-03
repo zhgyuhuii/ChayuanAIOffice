@@ -124,6 +124,13 @@ import {
   setTableLookOption,
   toggleRepeatHeaderRows,
 } from '../editor/table-properties'
+import { InsertImageDialog } from '@chaoffice/ui/InsertImageDialog'
+import { ensurePipelineImage } from '@chaoffice/ui/image-transcode'
+import { showToast } from './toast-bus'
+import { ModelSettingsPageLazy } from '@chaoffice/ui/ModelSettingsPageLazy'
+import { docsModelBridge } from '../ai/model-bridge'
+import type { InsertImageBridge } from '@chaoffice/ui/InsertImageDialog'
+import type { WebImageItem } from '@chaoffice/ui/InsertImageDialog'
 import { useI18n, type StringKey, type TFunc } from '../i18n/locale'
 import type { MergeDataSource } from '../../shared/ipc'
 import type { MailMergeRequest, MailMergeResponse } from '../mail-merge/output'
@@ -170,7 +177,7 @@ import {
   setParaAttrs,
   toggleParaSpace as toggleParaSpaceImpl,
 } from './ribbon-tabs'
-} from '@chaoffice/ui'
+import { ChayuanTab, type ChayuanServices } from './ribbon-chayuan-tab'
 import type { CommentsMode } from './comments-mode'
 import { WRAP_OPTIONS } from './ContextMenu'
 import { CropDialog, CutoutDialog } from './PictureDialogs'

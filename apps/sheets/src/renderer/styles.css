@@ -6006,7 +6006,7 @@ textarea:focus {
  * the two differ — a dark app with the document theme pinned light — the UA
  * system colors inside the popups resolve to their dark variants: the menu
  * item buttons only carry Univer's dark-mode text class, so their labels turn
- * white on the light menu surface and vanish (genoffice#2041). Track Univer's
+ * white on the light menu surface and vanish (chaoffice#2041). Track Univer's
  * own dark flag so its popups get the UA scheme matching what they render. */
 .univer-popup {
   color-scheme: light;

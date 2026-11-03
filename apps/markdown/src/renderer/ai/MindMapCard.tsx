@@ -6,7 +6,7 @@ import {
   MIND_MAP_EXPORT_COLORS,
   MIND_MAP_METRICS,
   type MindMapOrientation,
-} from '@genoffice/agent-core/mind-map'
+} from '@chaoffice/agent-core/mind-map'
 import { useI18n } from '../i18n/locale'
 
 /**

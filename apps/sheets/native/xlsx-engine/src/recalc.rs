@@ -1663,7 +1663,7 @@ mod tests {
     /// to 0), and producers built on the Open XML SDK leave it out. IronCalc
     /// 0.7.1 read it with a required-attribute lookup, so the first formula
     /// edit failed to import and every later read of the saved file died with
-    /// `Missing "xfId" XML attribute` (genoffice#2280).
+    /// `Missing "xfId" XML attribute` (chaoffice#2280).
     #[test]
     fn imports_a_workbook_whose_cell_xfs_omit_xfid() {
         use std::io::Write;
@@ -1927,7 +1927,7 @@ mod tests {
     /// openpyxl writes the comments and VML drawing relationships of a
     /// worksheet as absolute package targets. IronCalc's importer assumes a
     /// `../` relative target and failed the whole load with an opaque zip
-    /// error (genoffice#2306); the sidecar now rewrites them before the
+    /// error (chaoffice#2306); the sidecar now rewrites them before the
     /// import.
     #[test]
     fn imports_workbooks_with_absolute_relationship_targets() {

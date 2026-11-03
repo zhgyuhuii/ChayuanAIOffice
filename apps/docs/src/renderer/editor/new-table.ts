@@ -4,7 +4,7 @@ import type {
   TableCell,
   TableModel,
   TableParagraph,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 
 // Word's Insert Table look (Table Grid style): single 0.5pt borders on every
 // edge and cell paragraphs at single spacing with no space after, so a one-line

@@ -115,7 +115,7 @@ import {
   type MailMergeResponse,
 } from './mail-merge/output'
 import { ZoteroDocumentController } from './zotero/controller'
-import { AiPanel, aiRevisionAuthor } from './ai/AiPanel'
+import { AiPanel, aiRevisionAuthor, AI_REVISION_AUTHOR } from './ai/AiPanel'
 import type { AiCommentsAccess, AiDocExtras, AiHeaderFooterAccess } from './ai/tools'
 import type { AiStyleInfo } from './ai/style-ops'
 import { applyResolvedPageSetup, describeSection, type AiPageSetupAccess } from './ai/page-setup'
@@ -140,10 +140,14 @@ import {
   withHfPictureEdit,
   type HfSectionState,
 } from './hf-sections'
+import { noteRowMetrics } from './editor/note-dom'
+import { noteMarkText } from './note-format'
+import { textColorValue } from './editor/text-color'
+import { setDkColor } from './editor/dark-page'
+import { textOutlineCssValue } from './editor/text-outline'
 import { installHfFloatEdit, tagHfFloatEl } from './editor/hf-float-edit'
 import { hfFooterLine, hfLayoutResolved, hfPhantomSpec, hfWithPhantom } from './hf-phantom'
 import { hfVariantHeightsPx, sectionHfHeights } from './hf-heights'
-import { makeGapNotesEl, measureNoteHeightDom, noteRowMetrics } from './editor/note-dom'
 import { AiAskPopover } from './components/AiAskPopover'
 import { EDIT_QUEUE_MAX, selectionForAnchor, type DocsEditQueueItem } from './ai/edit-queue'
 import { addQueueAnchor, clearQueueAnchors, removeQueueAnchors } from './editor/ai-queue-anchors'
@@ -306,7 +310,7 @@ import {
   makeHfFloatImgEl,
   type HfFloatBox,
 } from './editor/hf-dom'
-import {
+import {cssFontFamily, 
   estimateFootnoteHeight,
   resolveNoteStyle,
   noteRunStyle,

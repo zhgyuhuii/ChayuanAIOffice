@@ -2,7 +2,7 @@
 # deb/rpm post-install. Replaces electron-builder's default template, so its
 # chrome-sandbox and AppArmor steps are repeated here (chaoffice#2150 parity).
 set -e
-app="/opt/ChaAI Office"
+app="/opt/GenOffice"
 # Chromium aborts when the SUID helper exists without 4755; Chrome's deb sets it unconditionally.
 [ -f "$app/chrome-sandbox" ] && { chown root:root "$app/chrome-sandbox" 2>/dev/null || true; chmod 4755 "$app/chrome-sandbox" 2>/dev/null || true; }
 # Ubuntu 24.04+ restricts unprivileged userns; --skip-kernel-load doubles as the abi/4.0 check.
@@ -39,9 +39,9 @@ if [ -d "$shell_new" ]; then
   mkdir -p "$templates_dir"
   for ext in docx xlsx pptx; do
     case "$ext" in
-      docx) name="GenOffice Document.docx" ;;
-      xlsx) name="GenOffice Spreadsheet.xlsx" ;;
-      pptx) name="GenOffice Presentation.pptx" ;;
+      docx) name="ChaAI Office Document.docx" ;;
+      xlsx) name="ChaAI Office Spreadsheet.xlsx" ;;
+      pptx) name="ChaAI Office Presentation.pptx" ;;
     esac
     # cp -f is the fallback for a busybox install(1) without -m. A template
     # that cannot be written must not fail the whole package install.
@@ -49,7 +49,7 @@ if [ -d "$shell_new" ]; then
       cp -f "$shell_new/blank.$ext" "$templates_dir/$name" || true
   done
 fi
-# Expose the genoffice command line shipped inside the app. Only an absent
+# Expose the chaoffice command line shipped inside the app. Only an absent
 # name, a dead link or a link into our own install dir is taken over; anything
 # else at /usr/bin/chaoffice belongs to another program (chaoffice#893 parity).
 launcher="$app/resources/cli/chaoffice"
@@ -57,7 +57,7 @@ link="/usr/bin/chaoffice"
 [ -x "$launcher" ] || exit 0
 if [ -L "$link" ]; then
   case "$(readlink "$link")" in
-    "/opt/ChaAI Office"/*) ;;
+    "/opt/GenOffice"/*) ;;
     *) [ -e "$link" ] && { echo "chaoffice: $link is another program, left as is; run: ln -s $launcher $link" >&2; exit 0; } ;;
   esac
 elif [ -e "$link" ]; then

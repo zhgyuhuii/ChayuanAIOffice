@@ -7,6 +7,8 @@ import {
   shouldInterceptRedoRepeat,
   SKIP_HOST_SELECTOR,
   type ClearSelectionKeyEvent,
+  isFormulaBarKeyTarget,
+
 } from '../src/renderer/clear-selection-keyboard'
 
 function keyEvent(

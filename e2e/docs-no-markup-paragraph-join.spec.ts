@@ -45,7 +45,7 @@ test.describe('docs No Markup paragraph join', () => {
   let docPath: string
 
   test.beforeEach(async () => {
-    dir = realpathSync(mkdtempSync(join(tmpdir(), 'genoffice-e2e-para-join-')))
+    dir = realpathSync(mkdtempSync(join(tmpdir(), 'chaoffice-e2e-para-join-')))
     docPath = join(dir, 'join.docx')
     writeFileSync(docPath, await docx())
   })

@@ -1,4 +1,4 @@
-//! Excel-style external workbook links (genoffice#2109): parse the workbook's
+//! Excel-style external workbook links (chaoffice#2109): parse the workbook's
 //! `<externalReferences>` — the `[1]Sheet1!A1` indices, each source's stored
 //! path and sheet names — resolve the source path the way Excel does, and, on
 //! an explicit update, compute live values for formulas that reference a
@@ -8,7 +8,7 @@
 //! value travels back to the caller (the file's `<v>`).
 //!
 //! An unreachable source keeps the file's cached values — the published
-//! genoffice#235 behaviour — and reports itself as broken. A formula whose
+//! chaoffice#235 behaviour — and reports itself as broken. A formula whose
 //! source cell errors, whose range explodes past the inline cap, or that is
 //! one instance of a shared formula is left on its cached value too: a stale
 //! number beats a wrong one.
@@ -466,7 +466,7 @@ pub(crate) fn update_external_link_values(
         model.evaluate();
     }
     // One report entry per cell: rewritten cells read the model, the rest
-    // report the file's cached value (genoffice#235).
+    // report the file's cached value (chaoffice#235).
     let mut cells: Vec<ExternalLinkCell> = Vec::new();
     for (sheet, row, column, text, cached) in &pending {
         let rewritten_now = rewritten.contains(&(*sheet, *row, *column));
@@ -1146,7 +1146,7 @@ mod tests {
     }
 
     /// An unreachable source: every cell reports its cached value and the
-    /// link reports itself broken — the published genoffice#235 behaviour.
+    /// link reports itself broken — the published chaoffice#235 behaviour.
     #[test]
     fn update_keeps_cached_values_when_the_source_is_gone() {
         let dir = tempfile::tempdir().unwrap();

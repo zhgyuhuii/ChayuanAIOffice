@@ -670,7 +670,6 @@ export function SettingsModal({
     void window.chaOffice.getAiPanelPrefs?.().then((prefs) => {
       if (alive) setAiPrefs(prefs)
     })
-    void window.chaOffice.getAuthorName?.().then((v) => {
     void window.chaOffice.getLegacyImportPrompt?.().then((v) => {
       if (alive) setLegacyImportPrompt(v)
     })
@@ -683,7 +682,6 @@ export function SettingsModal({
     void window.chaOffice.getAutoUpdateCheck?.().then((on) => {
       if (alive) setAutoUpdateCheckOn(on)
     })
-    void window.chaOffice.getAppVersion?.().then((v) => {
     void window.chaOffice.getSilentInstallUpdate?.().then((on) => {
       if (alive) setSilentInstallOn(on)
     })
@@ -965,7 +963,7 @@ export function SettingsModal({
                     onClick={() => {
                       const next = !legacyImportPrompt
                       setLegacyImportPrompt(next)
-                      void window.aiOffice.setLegacyImportPrompt?.(next).then(setLegacyImportPrompt)
+                      void window.chaOffice.setLegacyImportPrompt?.(next).then(setLegacyImportPrompt)
                     }}
                   />
                 </div>
@@ -1215,7 +1213,7 @@ export function SettingsModal({
                     onClick={() => {
                       const next = !silentInstallOn
                       setSilentInstallOn(next)
-                      void window.aiOffice.setSilentInstallUpdate?.(next).catch(() => {})
+                      void window.chaOffice.setSilentInstallUpdate?.(next).catch(() => {})
                     }}
                   />
                 </div>

@@ -435,7 +435,7 @@ describe('initAutoUpdater', () => {
   })
 })
 
-describe('quiet background updates (genoffice#2389)', () => {
+describe('quiet background updates (chaoffice#2389)', () => {
   const silent = () => true
 
   it('is off by default: a background check opens the card and downloads nothing', async () => {

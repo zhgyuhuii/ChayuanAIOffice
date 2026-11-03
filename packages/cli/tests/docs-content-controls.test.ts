@@ -179,7 +179,7 @@ it('rejects an unwrap of a tag no control carries', async () => {
 
 // ---- Nested block-level controls and inline (run-level) controls ----
 
-// matches the genoffice#2062 fixture: outer wraps a paragraph + an inner
+// matches the chaoffice#2062 fixture: outer wraps a paragraph + an inner
 // control + a paragraph with a run-level control
 const NESTED_SDT =
   '<w:sdt><w:sdtPr><w:tag w:val="outer"/><w:alias w:val="Outer"/><w:id w:val="10"/>' +

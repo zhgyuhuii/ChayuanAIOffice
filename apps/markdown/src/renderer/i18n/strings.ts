@@ -215,7 +215,7 @@ const upstreamStrings = {
     aiRegionError: '该模型的厂商不向当前地区提供服务，请换一个模型或切换网络',
     aiOverloadedError: 'AI 服务当前繁忙，请稍后重试',
     aiNetworkError: '网络有问题，无法连接 AI 服务。请检查网络后重试',
-    aiCreditsExhausted: '积分不足，请前往 genspark.ai 充值',
+    aiCreditsExhausted: '积分不足，请前往 chaoffice.ai 充值',
     aiOpenAssistant: '打开 AI 助手',
     aiNameFile: '用 AI 起名…',
     aiSummarizeBtn: 'AI 总结',
@@ -502,7 +502,7 @@ const upstreamStrings = {
     aiOverloadedError: 'The AI service is busy right now — please try again in a moment',
     aiNetworkError:
       'Network problem: could not reach the AI service. Check your connection and try again',
-    aiCreditsExhausted: 'Out of credits — top up at genspark.ai',
+    aiCreditsExhausted: 'Out of credits — top up at chaoffice.ai',
     aiOpenAssistant: 'Open AI assistant',
     aiNameFile: 'Name with AI…',
     aiSummarizeBtn: 'AI Summarize',
@@ -791,7 +791,7 @@ const upstreamStrings = {
       'Nhà cung cấp của mô hình này không phục vụ khu vực hiện tại của bạn — hãy chọn mô hình khác hoặc đổi mạng',
     aiOverloadedError: 'Dịch vụ AI hiện đang bận — vui lòng thử lại sau giây lát',
     aiNetworkError: 'Sự cố mạng: không thể kết nối với dịch vụ AI. Kiểm tra kết nối và thử lại',
-    aiCreditsExhausted: 'Đã hết tín dụng — nạp thêm tại genspark.ai',
+    aiCreditsExhausted: 'Đã hết tín dụng — nạp thêm tại chaoffice.ai',
     aiOpenAssistant: 'Mở trợ lý AI',
     aiNameFile: 'Đặt tên bằng AI…',
     aiSummarizeBtn: 'AI Tóm tắt',
@@ -1081,7 +1081,7 @@ const upstreamStrings = {
     aiOverloadedError: 'AI hizmeti şu anda yoğun — lütfen biraz sonra yeniden deneyin',
     aiNetworkError:
       'Ağ sorunu: AI hizmetine ulaşılamadı. Bağlantınızı kontrol edip yeniden deneyin',
-    aiCreditsExhausted: 'Krediniz bitti — genspark.ai adresinden yükleyin',
+    aiCreditsExhausted: 'Krediniz bitti — chaoffice.ai adresinden yükleyin',
     aiOpenAssistant: 'AI asistanını aç',
     aiNameFile: 'AI ile adlandır',
     aiSummarizeBtn: 'AI Özet',
@@ -1372,7 +1372,7 @@ const upstreamStrings = {
     aiOverloadedError: 'AI サービスが混み合っています。しばらくしてからもう一度お試しください',
     aiNetworkError:
       'ネットワークに問題があり、AI サービスに接続できません。接続を確認して再試行してください',
-    aiCreditsExhausted: 'クレジット不足です。genspark.ai でチャージしてください',
+    aiCreditsExhausted: 'クレジット不足です。chaoffice.ai でチャージしてください',
     aiOpenAssistant: 'AI アシスタントを開く',
     aiNameFile: 'AI で名前を変更…',
     aiSummarizeBtn: 'AI 要約',
@@ -1661,7 +1661,7 @@ const upstreamStrings = {
     aiOverloadedError: 'AI 서비스가 혼잡합니다. 잠시 후 다시 시도해 주세요',
     aiNetworkError:
       '네트워크에 문제가 있어 AI 서비스에 연결할 수 없습니다. 연결을 확인한 후 다시 시도해 주세요',
-    aiCreditsExhausted: '크레딧이 부족합니다. genspark.ai에서 충전하세요',
+    aiCreditsExhausted: '크레딧이 부족합니다. chaoffice.ai에서 충전하세요',
     aiOpenAssistant: 'AI 어시스턴트 열기',
     aiNameFile: 'AI로 이름 지정…',
     aiSummarizeBtn: 'AI 요약',
@@ -1954,7 +1954,7 @@ const upstreamStrings = {
     aiOverloadedError: "Le service d'IA est actuellement surchargé — réessayez dans un instant",
     aiNetworkError:
       'Problème réseau : impossible de joindre le service IA. Vérifiez votre connexion et réessayez',
-    aiCreditsExhausted: 'Crédits épuisés — rechargez sur genspark.ai',
+    aiCreditsExhausted: 'Crédits épuisés — rechargez sur chaoffice.ai',
     aiOpenAssistant: "Ouvrir l'assistant IA",
     aiNameFile: "Nommer avec l'IA…",
     aiSummarizeBtn: 'Résumé IA',
@@ -2250,7 +2250,7 @@ const upstreamStrings = {
     aiOverloadedError: 'Der KI-Dienst ist derzeit überlastet — bitte gleich erneut versuchen',
     aiNetworkError:
       'Netzwerkproblem: Der KI-Dienst ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut',
-    aiCreditsExhausted: 'Guthaben aufgebraucht — bei genspark.ai aufladen',
+    aiCreditsExhausted: 'Guthaben aufgebraucht — bei chaoffice.ai aufladen',
     aiOpenAssistant: 'KI-Assistent öffnen',
     aiNameFile: 'Mit KI benennen…',
     aiSummarizeBtn: 'KI-Zusammenfassung',
@@ -2543,7 +2543,7 @@ const upstreamStrings = {
       'El servicio de IA está saturado en este momento; inténtalo de nuevo en unos instantes',
     aiNetworkError:
       'Problema de red: no se pudo conectar con el servicio de IA. Comprueba tu conexión e inténtalo de nuevo',
-    aiCreditsExhausted: 'Sin créditos — recarga en genspark.ai',
+    aiCreditsExhausted: 'Sin créditos — recarga en chaoffice.ai',
     aiOpenAssistant: 'Abrir asistente de IA',
     aiNameFile: 'Nombrar con IA…',
     aiSummarizeBtn: 'Resumen IA',
@@ -2831,7 +2831,7 @@ const upstreamStrings = {
     aiOverloadedError: 'บริการ AI มีผู้ใช้งานจำนวนมากในขณะนี้ โปรดลองอีกครั้งในอีกสักครู่',
     aiNetworkError:
       'เครือข่ายมีปัญหา ไม่สามารถเชื่อมต่อบริการ AI ได้ โปรดตรวจสอบการเชื่อมต่อแล้วลองใหม่',
-    aiCreditsExhausted: 'เครดิตหมด — เติมได้ที่ genspark.ai',
+    aiCreditsExhausted: 'เครดิตหมด — เติมได้ที่ chaoffice.ai',
     aiOpenAssistant: 'เปิดผู้ช่วย AI',
     aiNameFile: 'ตั้งชื่อด้วย AI…',
     aiSummarizeBtn: 'สรุปด้วย AI',
@@ -3120,7 +3120,7 @@ const upstreamStrings = {
     aiOverloadedError: 'Layanan AI sedang sibuk — silakan coba lagi sebentar lagi',
     aiNetworkError:
       'Masalah jaringan: tidak dapat terhubung ke layanan AI. Periksa koneksi Anda lalu coba lagi',
-    aiCreditsExhausted: 'Kredit habis — isi ulang di genspark.ai',
+    aiCreditsExhausted: 'Kredit habis — isi ulang di chaoffice.ai',
     aiOpenAssistant: 'Buka asisten AI',
     aiNameFile: 'Beri nama dengan AI…',
     aiSummarizeBtn: 'Ringkasan AI',
@@ -3410,7 +3410,7 @@ const upstreamStrings = {
     aiOverloadedError: 'Сервис ИИ сейчас перегружен — повторите попытку чуть позже',
     aiNetworkError:
       'Проблема с сетью: не удалось подключиться к сервису ИИ. Проверьте подключение и повторите попытку',
-    aiCreditsExhausted: 'Кредиты закончились — пополните на genspark.ai',
+    aiCreditsExhausted: 'Кредиты закончились — пополните на chaoffice.ai',
     aiOpenAssistant: 'Открыть ИИ-ассистента',
     aiNameFile: 'Назвать с помощью ИИ…',
     aiSummarizeBtn: 'ИИ-резюме',
@@ -3696,7 +3696,7 @@ const upstreamStrings = {
     aiOverloadedError: 'خدمة الذكاء الاصطناعي مشغولة حاليًا — يرجى المحاولة مرة أخرى بعد قليل',
     aiNetworkError:
       'مشكلة في الشبكة: تعذّر الوصول إلى خدمة الذكاء الاصطناعي. تحقق من الاتصال وحاول مجددًا',
-    aiCreditsExhausted: 'نفدت الأرصدة — أعد الشحن على genspark.ai',
+    aiCreditsExhausted: 'نفدت الأرصدة — أعد الشحن على chaoffice.ai',
     aiOpenAssistant: 'فتح مساعد الذكاء الاصطناعي',
     aiNameFile: 'التسمية بالذكاء الاصطناعي…',
     aiSummarizeBtn: 'تلخيص AI',
@@ -3988,7 +3988,7 @@ const upstreamStrings = {
       'O serviço de IA está sobrecarregado no momento — tente novamente em instantes',
     aiNetworkError:
       'Problema de rede: não foi possível conectar ao serviço de IA. Verifique sua conexão e tente novamente',
-    aiCreditsExhausted: 'Créditos esgotados — recarregue em genspark.ai',
+    aiCreditsExhausted: 'Créditos esgotados — recarregue em chaoffice.ai',
     aiOpenAssistant: 'Abrir assistente de IA',
     aiNameFile: 'Nomear com IA…',
     aiSummarizeBtn: 'Resumo IA',
@@ -4280,7 +4280,7 @@ const upstreamStrings = {
     aiOverloadedError: 'Il servizio IA è momentaneamente sovraccarico — riprova tra poco',
     aiNetworkError:
       'Problema di rete: impossibile raggiungere il servizio IA. Controlla la connessione e riprova',
-    aiCreditsExhausted: 'Crediti esauriti — ricarica su genspark.ai',
+    aiCreditsExhausted: 'Crediti esauriti — ricarica su chaoffice.ai',
     aiOpenAssistant: 'Apri assistente IA',
     aiNameFile: 'Assegna un nome con IA…',
     aiSummarizeBtn: 'Riassunto IA',
@@ -4571,7 +4571,7 @@ const upstreamStrings = {
     aiOverloadedError: 'Usługa AI jest obecnie przeciążona — spróbuj ponownie za chwilę',
     aiNetworkError:
       'Problem z siecią: nie można połączyć się z usługą AI. Sprawdź połączenie i spróbuj ponownie',
-    aiCreditsExhausted: 'Brak kredytów — doładuj na genspark.ai',
+    aiCreditsExhausted: 'Brak kredytów — doładuj na chaoffice.ai',
     aiOpenAssistant: 'Otwórz asystenta AI',
     aiNameFile: 'Nazwij za pomocą AI…',
     aiSummarizeBtn: 'Podsumowanie AI',
@@ -4845,7 +4845,7 @@ const upstreamStrings = {
     aiOverloadedError: 'Služba AI je právě zaneprázdněna – zkuste to za chvíli znovu',
     aiNetworkError:
       'Problém se sítí: službu AI se nepodařilo kontaktovat. Zkontrolujte připojení a zkuste to znovu',
-    aiCreditsExhausted: 'Došly kredity – dobijte je na genspark.ai',
+    aiCreditsExhausted: 'Došly kredity – dobijte je na chaoffice.ai',
     aiOpenAssistant: 'Otevřít asistenta AI',
     aiNameFile: 'Pojmenovat pomocí AI…',
     aiSummarizeBtn: 'Shrnout pomocí AI',
@@ -5151,7 +5151,7 @@ const upstreamStrings = {
     aiOverloadedError: 'De AI-service is momenteel overbelast — probeer het zo opnieuw',
     aiNetworkError:
       'Netwerkprobleem: kan de AI-service niet bereiken. Controleer je verbinding en probeer het opnieuw',
-    aiCreditsExhausted: 'Credits op — waardeer op via genspark.ai',
+    aiCreditsExhausted: 'Credits op — waardeer op via chaoffice.ai',
     aiOpenAssistant: 'AI-assistent openen',
     aiNameFile: 'Naam geven met AI…',
     aiSummarizeBtn: 'AI-samenvatting',
@@ -5440,7 +5440,7 @@ const upstreamStrings = {
     aiOverloadedError: 'Perkhidmatan AI sedang sibuk — sila cuba lagi sebentar lagi',
     aiNetworkError:
       'Masalah rangkaian: tidak dapat menghubungi perkhidmatan AI. Semak sambungan anda dan cuba lagi',
-    aiCreditsExhausted: 'Kredit habis — tambah nilai di genspark.ai',
+    aiCreditsExhausted: 'Kredit habis — tambah nilai di chaoffice.ai',
     aiOpenAssistant: 'Buka pembantu AI',
     aiNameFile: 'Namakan dengan AI…',
     aiSummarizeBtn: 'Ringkasan AI',
@@ -5723,7 +5723,7 @@ const upstreamStrings = {
     aiRegionError: 'ספק המודל הזה אינו פועל באזור הנוכחי שלך — בחרו מודל אחר או החליפו רשת',
     aiOverloadedError: 'שירות ה-AI עמוס כרגע — נסו שוב בעוד רגע',
     aiNetworkError: 'בעיית רשת: לא ניתן להתחבר לשירות ה-AI. בדוק את החיבור ונסה שוב',
-    aiCreditsExhausted: 'נגמרו הקרדיטים — טענו ב-genspark.ai',
+    aiCreditsExhausted: 'נגמרו הקרדיטים — טענו ב-chaoffice.ai',
     aiOpenAssistant: 'פתחו את עוזר ה-AI',
     aiNameFile: 'מתן שם באמצעות AI…',
     aiSummarizeBtn: 'סיכום AI',
@@ -6012,7 +6012,7 @@ const upstreamStrings = {
     aiOverloadedError: 'AI सेवा अभी व्यस्त है — कृपया थोड़ी देर बाद फिर से प्रयास करें',
     aiNetworkError:
       'नेटवर्क समस्या: AI सेवा से कनेक्ट नहीं हो सका। कनेक्शन जांचें और फिर से प्रयास करें',
-    aiCreditsExhausted: 'क्रेडिट समाप्त — genspark.ai पर रिचार्ज करें',
+    aiCreditsExhausted: 'क्रेडिट समाप्त — chaoffice.ai पर रिचार्ज करें',
     aiOpenAssistant: 'AI सहायक खोलें',
     aiNameFile: 'AI से नाम दें…',
     aiSummarizeBtn: 'AI सारांश',
@@ -6295,7 +6295,7 @@ const upstreamStrings = {
     aiRegionError: '該模型的廠商不向目前地區提供服務，請換一個模型或切換網路',
     aiOverloadedError: 'AI 服務目前繁忙，請稍後重試',
     aiNetworkError: '網路有問題，無法連接 AI 服務。請檢查網路後重試',
-    aiCreditsExhausted: '點數不足，請前往 genspark.ai 儲值',
+    aiCreditsExhausted: '點數不足，請前往 chaoffice.ai 儲值',
     aiOpenAssistant: '開啟 AI 助手',
     aiNameFile: '用 AI 命名…',
     aiSummarizeBtn: 'AI 總結',

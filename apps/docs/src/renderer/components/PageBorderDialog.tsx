@@ -1,5 +1,5 @@
 import { useState, type CSSProperties } from 'react'
-import type { SectionSettings } from '@genoffice/docx-engine'
+import type { SectionSettings } from '@chaoffice/docx-engine'
 import { useI18n, type StringKey } from '../i18n/locale'
 import { useModalKeys } from './modal-keys'
 import {

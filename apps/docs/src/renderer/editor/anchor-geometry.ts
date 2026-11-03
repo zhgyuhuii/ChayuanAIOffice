@@ -15,7 +15,7 @@
  * counts from the margin top (L81); a quarter-turned picture is placed by its
  * unturned extent box and wraps by the turned bounding box (L93).
  */
-import type { HfImage, HfTextBox, TableModel, TextboxDisplay } from '@genoffice/docx-engine'
+import type { HfImage, HfTextBox, TableModel, TextboxDisplay } from '@chaoffice/docx-engine'
 import { quarterTurnInsetPx } from './image-rotation'
 
 export const EMU_PER_PX = 9525

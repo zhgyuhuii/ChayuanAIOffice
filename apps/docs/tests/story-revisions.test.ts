@@ -9,7 +9,7 @@ import {
   type HfPartInfo,
   type NoteInfo,
   type SectionInfo,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { editorExtensions } from '../src/renderer/editor/extensions'
 import { blocksToPmDoc, pmDocToSavePlan, type PmNode } from '../src/renderer/editor/convert'
 import { buildReviewEntries, filterRevisions } from '../src/renderer/editor/revision-filters'
