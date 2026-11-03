@@ -9,7 +9,7 @@
  * other host are never sent to the issuer. Issuer failure leaves the request unchanged.
  */
 
-const PASS_HEADER = 'X-ChaAI Office-Token-Pass'
+const PASS_HEADER = 'X-Genspark-Token-Pass'
 
 /**
  * The default proxy host (providers.ts always targets it), the configured service host and any

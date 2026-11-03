@@ -44,7 +44,7 @@ describe('native admission for ChaAI Office provider requests', () => {
         { headers: { Authorization: 'Bearer gsk-k' } },
         fetcher,
       )
-      expect(new Headers(prepared.headers).get('x-chaoffice-token-pass')).toBeTruthy()
+      expect(new Headers(prepared.headers).get('x-genspark-token-pass')).toBeTruthy()
       expect(fetcher).toHaveBeenCalledTimes(1)
     }
   })
@@ -83,7 +83,7 @@ describe('native admission for ChaAI Office provider requests', () => {
     expect(new Headers(calls[1]!.init.headers).get('x-api-key')).toBe('gsk-k')
     expect(calls[0]!.init.redirect).toBe('error')
     for (const init of [openai, anthropic]) {
-      expect(new Headers(init.headers).get('x-chaoffice-token-pass')).toBe(token)
+      expect(new Headers(init.headers).get('x-genspark-token-pass')).toBe(token)
       expect(init.redirect).toBe('error')
     }
     expect(new Headers(openai.headers).get('authorization')).toBe('Bearer gsk-k')
@@ -195,7 +195,7 @@ describe('native admission for ChaAI Office provider requests', () => {
     })
     const business = sent.find((call) => call.url === OPENAI)!
     const headers = new Headers(business.init.headers)
-    expect(headers.get('x-chaoffice-token-pass')).toBe(token)
+    expect(headers.get('x-genspark-token-pass')).toBe(token)
     expect(headers.get('authorization')).toBe('Bearer gsk-live')
     expect(headers.get('user-agent')).toBe('ChaOffice')
     expect(business.init.body).toBe('{"a":1}')
