@@ -295,10 +295,14 @@ export type AiMediaProviderId =
   | 'pollinations'
   | 'agnes'
   | 'huggingface'
+  | 'stability'
+  | 'bfl'
+  | 'microsoft'
   | 'custom'
 
 /** wire shape of the image endpoint */
-export type AiImageProtocol = 'openai-images' | 'gemini' | 'dashscope' | 'minimax' | 'pollinations'
+export type AiImageProtocol =
+  'openai-images' | 'gemini' | 'dashscope' | 'minimax' | 'pollinations' | 'stability' | 'bfl' | 'mai'
 /** wire shape of the understanding endpoint */
 export type AiAnalysisProtocol = 'openai-chat' | 'gemini'
 
