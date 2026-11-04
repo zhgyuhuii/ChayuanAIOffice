@@ -14,7 +14,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@chaoffice/doc2docx": "*",
+    "@chaoffice/compound-file": "*",
     "cfb": "^1.2.2",
     "jszip": "^3.10.1"
   },
