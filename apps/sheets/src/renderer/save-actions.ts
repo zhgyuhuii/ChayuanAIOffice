@@ -35,7 +35,6 @@ import {
 } from './csv-export'
 import type { CellScalar, CellState } from '@chaoffice/xlsx-gateway/domain/workbook.types'
 import type { SheetRedactionState } from '@chaoffice/xlsx-gateway/gateway/xlsx-redaction'
-import { verifiedFormulaValues } from './formula-values'
 import { formatAddress } from '@chaoffice/xlsx-gateway/domain/cell-address'
 import { isErrorResult, verifiedFormulaValues } from './formula-values'
 import { COORDINATE_SHIFTING_OPS } from './formula-cached-fallback'
