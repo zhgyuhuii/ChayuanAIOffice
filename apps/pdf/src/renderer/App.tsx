@@ -322,7 +322,6 @@ import {
   IconFieldPreview,
   IconFormCheck,
   IconFormCross,
-  IconExportImg,
   IconConvertPdf,
   IconInsertImage,
   IconEditImage,

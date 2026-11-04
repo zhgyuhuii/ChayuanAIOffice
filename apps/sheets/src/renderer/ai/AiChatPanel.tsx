@@ -54,6 +54,25 @@ import fileGeneralIcon from '../assets/file-general.png'
 const ModelSettingsPage = lazy(() =>
   import('@chaoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
 )
+  AttachmentCardIcon,
+  clampAiPanelWidth,
+  fileImageIcon,
+  formatAttachmentSize,
+  loadAiPanelWidth,
+  saveAiPanelWidth,
+  SentAttachments,
+  truncateCardName,
+import { AiSkillChips, AiSkillsMenu, createFileNav, Markdown } from '@chaoffice/ui'
+import sendEnterOn from '../assets/send-enter-on.png'
+import sendEnterOff from '../assets/send-enter-off.png'
+import sendStop from '../assets/send-stop.png'
+export function scopeLabel(range: string, columns: readonly string[] | null, t: TFunc): string {
+  if (columns?.length === 1) return t('aiScopeColumn', { name: columns[0] ?? '' })
+  if (columns && columns.length > 1) {
+    return t('aiScopeColumns', { names: columns.join(', '), count: columns.length })
+  }
+  return t('aiScopeRange', { range })
+}
 
 /** Clipboard bitmap MIME → attachment extension (matches the main process's
  * ATTACHMENT_IMAGE_EXTS) */

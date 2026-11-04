@@ -68,6 +68,9 @@ export const zh = {
   appFieldsUpdated: '已更新 {n} 个域',
   appStyleUpdated: '已用选区格式更新样式“{name}”,保存后写入文档',
   appStyleCreated: '已新建样式“{name}”并应用到选区',
+  appStyleInstancesSelected: '已选中 {count} 处“{name}”',
+  appStyleNoInstances: '文档中没有使用“{name}”的文字',
+  // Page number format
   appPgNumFormatSet: '已设置页码格式',
   appPageNumFormatTitle: '页码格式',
   appNumberFormat: '编号格式',

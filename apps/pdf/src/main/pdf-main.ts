@@ -44,8 +44,9 @@ import {
   createByokImageHandler,
   registerSharedKbIpc,
 } from '@chaoffice/ai-host'
-import { PDF_CHANNELS } from '../shared/ipc'
+import { PDF_CHANNELS, PDF_READ_CHUNK_BYTES } from '../shared/ipc'
 import { printJobOptions, printOutcome } from '@chaoffice/electron-utils/print-job'
+import { generateImageTool, documentMediaRoots } from '@chaoffice/ai-search'
 import {
   printFileViaCups,
   printPdfViaCups,
@@ -138,8 +139,6 @@ import type { ExternalSigner, SignPdfOptions } from './pdf-sign'
 import { readPdfSignatures } from './pdf-signatures'
 import { SystemStoreError, openSystemSigner, listSystemCertificates } from './system-certificates'
 import type { SystemCertificateRef, SystemIdentity } from './system-certificates'
-/** the largest slice readFileChunk hands over IPC (the renderer loops) */
-const PDF_READ_CHUNK_MAX_BYTES = 8 * 1024 * 1024
 
 const tDlg = createI18n({
   zh: {
@@ -1421,7 +1420,7 @@ function registerPdfIpc(): void {
       }
       const from = typeof start === 'number' && Number.isInteger(start) && start >= 0 ? start : -1
       const to = typeof end === 'number' && Number.isInteger(end) && end >= from ? end : -1
-      if (from < 0 || to < 0 || to - from > PDF_READ_CHUNK_MAX_BYTES) {
+      if (from < 0 || to < 0 || to - from > PDF_READ_CHUNK_BYTES) {
         throw new Error('pdf: invalid chunk range')
       }
       const handle = await open(path, 'r')

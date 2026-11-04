@@ -59,7 +59,8 @@ import { runHeadlessPdfExport } from './headless-export'
 import { syncPrivateFonts } from './doc-fonts'
 import { toPickerHex } from './color-input'
 import { InkOverlay } from './InkOverlay'
-import { inkNodesOf, type InkPenSettings, type InkStroke, type InkTool } from './ink'
+import { inkNodesOf, type InkStroke, type InkTool } from './ink'
+import { loadInkPresets, saveInkPresets, type InkPreset } from './ink-presets'
 import type { SlideThemePreset } from './themes'
 import { Ribbon, type FormatCmd, type SlidesViewMode } from './components/Ribbon'
 import {
@@ -590,11 +591,13 @@ export function App() {
   /** 动画刷 (WPS): copied animation items awaiting a target; null = idle */
   const [animBrush, setAnimBrush] = useState<AnimationItem[] | null>(null)
   const [inkTool, setInkTool] = useState<InkTool>('select')
-  const [inkPen, setInkPen] = useState<InkPenSettings>({ color: 'C00000', width: 2 })
-  const [inkHighlighter, setInkHighlighter] = useState<InkPenSettings>({
-    color: 'FFFF00',
-    width: 10,
-  })
+  const [inkPresets, setInkPresets] = useState<InkPreset[]>(loadInkPresets)
+  const [inkActiveId, setInkActiveId] = useState(() => loadInkPresets()[0]!.id)
+  const inkActive = inkPresets.find((p) => p.id === inkActiveId) ?? inkPresets[0]!
+  const onInkPresets = useCallback((next: InkPreset[]) => {
+    setInkPresets(next)
+    saveInkPresets(next)
+  }, [])
   const [ctxMenu, setCtxMenu] = useState<CtxMenuState>(null)
   /** status-bar play button ▾ menu anchor (从头/从当前), separate from the canvas ctxMenu */
   const [playMenuAt, setPlayMenuAt] = useState<{ x: number; y: number } | null>(null)
@@ -3739,18 +3742,13 @@ export function App() {
 
   // ---- Draw (freehand ink): one stroke = one transparent PNG picture element; undo/save use the existing pipeline ----
 
-  const onInkTool = useCallback(
-    (tool: InkTool) => {
-      // Clicking the currently active tool again = cancel (back to select mode)
-      const next = tool !== 'select' && inkTool === tool ? 'select' : tool
-      setInkTool(next)
-      if (next !== 'select') {
-        setSelectedIds([])
-        setEditing(null)
-      }
-    },
-    [inkTool],
-  )
+  const onInkTool = useCallback((tool: InkTool) => {
+    setInkTool(tool)
+    if (tool !== 'select') {
+      setSelectedIds([])
+      setEditing(null)
+    }
+  }, [])
 
   const commitInk = useCallback(
     (stroke: InkStroke) => arrangeActions.commitInk(ctxRef.current, stroke),
