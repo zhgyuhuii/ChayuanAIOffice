@@ -89,6 +89,7 @@ import { createMainProcessProxyDispatcher } from '@chaoffice/electron-utils/main
 import { createI18n, getUiLang, type Lang, normalizeLang, setUiLang } from '@chaoffice/i18n'
 import { ProjectStore } from '@chaoffice/project-store'
 import { ConversationStore, bindConversationsIpc } from '@chaoffice/project-store'
+import { fetchRemoteTable } from '@chaoffice/electron-utils/remote-table'
 
 import {
   isAiOverloadedError,
@@ -120,16 +121,24 @@ import {
   setChaOfficeProxyUrl,
   webSearch,
   imageSearch,
+  localMediaRoots,
 } from '@chaoffice/ai-search'
 import { parseFileToText } from '@chaoffice/file-parse'
 import type { CellEdit, SheetStructuralOps } from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
 import {
+  readArchiveEntriesText,
   readArchiveEntryText,
   saveWorkbookViaSidecar,
+  type ArchiveClient,
 } from '@chaoffice/xlsx-gateway/gateway/xlsx-package-io'
 import { parsePivotDefinition } from '@chaoffice/xlsx-gateway/gateway/xlsx-pivot'
 import { listWorkbookQueries } from '@chaoffice/xlsx-gateway/gateway/xlsx-connections'
 import type { SheetEditPlan } from '@chaoffice/xlsx-gateway/gateway/xlsx-sheets'
+import {
+  connectionSourceOf,
+  refreshableQueriesOf,
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-connection-refresh'
+import type { PartReader } from '@chaoffice/xlsx-gateway/gateway/xlsx-connections'
 import { readWorkbookRedactionPart } from './workbook-redactions'
 import type {
   AttachmentAddResult,
@@ -155,7 +164,11 @@ import {
   externalLinkRevealRequestSchema,
   workbookMediaRequestSchema,
   workbookMediaResultSchema,
+  workbookConnectionsRequestSchema,
+  workbookConnectionsResultSchema,
   workbookPivotRequestSchema,
+  workbookRefreshRequestSchema,
+  workbookRefreshResultSchema,
   workbookRedactionsRequestSchema,
   workbookRedactionsResultSchema,
   workbookQueriesRequestSchema,
@@ -2098,6 +2111,52 @@ function sessionFor(event: IpcMainInvokeEvent): SheetsTabSession {
   return entry
 }
 
+/**
+ * Parts the connection walk reads: the connections part, the workbook and its
+ * relationships, sheet relationship parts, tables and query tables. Worksheet
+ * cell data is never read, so the prefetch stays small even for a big sheet.
+ */
+function isConnectionWalkPart(name: string): boolean {
+  return (
+    name === 'xl/connections.xml' ||
+    name === 'xl/workbook.xml' ||
+    name === 'xl/_rels/workbook.xml.rels' ||
+    name.startsWith('xl/tables/') ||
+    name.startsWith('xl/queryTables/') ||
+    /^xl\/worksheets\/_rels\/[^/]+\.rels$/.test(name)
+  )
+}
+
+/**
+ * A part reader over a session snapshot for the connection walk. The walk asks
+ * for parts by path, so every part it can ask for is fetched in one sidecar
+ * round trip; a part the manifest does not list reads as undefined.
+ */
+async function connectionPartReader(
+  client: ArchiveClient,
+  snapshotPath: string,
+): Promise<PartReader> {
+  const manifest = z
+    .object({ entries: z.array(z.object({ name: z.string() })) })
+    .parse(await client.archiveManifest(snapshotPath))
+  const wanted = manifest.entries.map((entry) => entry.name).filter(isConnectionWalkPart)
+  const texts = await readArchiveEntriesText(client, snapshotPath, wanted)
+  return async (path) => texts.get(path)
+}
+
+/**
+ * Local media roots for a sheets renderer: the directories of the workbooks its
+ * tab has open, plus the directory sheets stages pasted images in. A tab can
+ * hold several workbook sessions, so every open one contributes its directory —
+ * a tool call naming a file the user put next to the workbook they are editing
+ * is the legitimate case, and nothing else is readable.
+ */
+function sheetsMediaRoots(wcId: number): string[] {
+  const tab = sheetsTabs.get(wcId)
+  const workbookDirs = tab ? [...tab.sessions.values()].map((s) => dirname(s.path)) : []
+  return localMediaRoots(...workbookDirs, join(app.getPath('temp'), 'chaoffice-pasted'))
+}
+
 /// A save request referencing a chunked edit transfer gets the accumulated
 /// edits spliced back in; the transfer is consumed either way.
 function resolveTransferredEdits(
@@ -3579,6 +3638,47 @@ export function registerSheetsIpc(): void {
       readArchiveEntryText(entry.client, session.snapshotPath, request.cachePath),
     ])
     return workbookPivotDefinitionSchema.parse(parsePivotDefinition(pivotXml, cacheXml))
+  })
+
+  // The workbook's refreshable web queries: the walk follows both shapes Excel
+  // writes (a table part's relationship, or a legacy ExternalData_N name) and
+  // returns the sheet and range each query fills. Read from the session
+  // snapshot so the list matches what the renderer shows.
+  ipcMain.handle(IPC_CHANNELS.listWorkbookConnections, async (event, input: unknown) => {
+    const entry = sessionFor(event)
+    const request = workbookConnectionsRequestSchema.parse(input)
+    const session = entry.sessions.get(request.sessionId)
+    if (!session) throw new Error('Unknown workbook session.')
+    const read = await connectionPartReader(entry.client, session.snapshotPath)
+    return workbookConnectionsResultSchema.parse({ connections: await refreshableQueriesOf(read) })
+  })
+
+  // Refreshing a query: the renderer names only the connection id, and the URL
+  // is resolved from the workbook part here — this IPC is not a fetch proxy.
+  // The fetch still goes through the SSRF gate, because a workbook could name
+  // loopback, a cloud metadata endpoint or a UNC share.
+  ipcMain.handle(IPC_CHANNELS.refreshWorkbookConnection, async (event, input: unknown) => {
+    const entry = sessionFor(event)
+    const request = workbookRefreshRequestSchema.parse(input)
+    const session = entry.sessions.get(request.sessionId)
+    if (!session) throw new Error('Unknown workbook session.')
+    // Only this part is needed, and a workbook without connections has no
+    // listed query to refresh: a missing part means "no such connection".
+    const connectionsXml = await readArchiveEntryText(
+      entry.client,
+      session.snapshotPath,
+      'xl/connections.xml',
+    ).catch(() => undefined)
+    const read: PartReader = async (path) =>
+      path === 'xl/connections.xml' ? connectionsXml : undefined
+    const source = await connectionSourceOf(read, request.connectionId)
+    if (!source) throw new Error('This workbook has no refreshable web query with that id.')
+    const table = await fetchRemoteTable(source)
+    if (!table) throw new Error('Could not read a table from that address.')
+    return workbookRefreshResultSchema.parse({
+      headers: [...table.headers],
+      rows: table.rows.map((row) => [...row]),
+    })
   })
 
   ipcMain.handle(IPC_CHANNELS.readWorkbookRedactions, async (event, input: unknown) => {

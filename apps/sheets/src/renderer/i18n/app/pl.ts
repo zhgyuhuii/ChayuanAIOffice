@@ -1216,6 +1216,13 @@ export const pl = {
   appGroupGetData: 'Pobierz dane',
   appFromTextCsv: 'Z pliku tekstowego/CSV',
   appRefreshAll: 'Odśwież wszystko',
+  appRefreshQuery: 'Odśwież zapytanie',
+  appQueryConnectionsTitle: 'Odśwież zapytania skoroszytu',
+  appQueryRefreshing: 'Odświeżanie {name}…',
+  appQueryRefreshed: 'Odświeżono {name} ({rows} wierszy)',
+  appQueryRefreshedClipped:
+    'Odświeżono {name} ({rows} wierszy, {dropped} nie mieści się w zakresie)',
+  appQueryRefreshFailed: 'Nie udało się odświeżyć {name}',
   appWorkbookNoPivot: 'Brak tabel przestawnych w tym skoroszycie.',
   appRefreshAllTitle: 'Odśwież wszystkie tabele przestawne',
   appQueriesConnections: 'Zapytania i połączenia',
