@@ -30,12 +30,16 @@ Brand: 察元 / Chayuan trademarks — Beijing Zhilingbird Technology Center; no
 
 ## Docs
 
-- README (English + complete 简体中文 mirror, keywords, FAQ): README.md
-- CLI & agent skill: README.md#command-line--agent-skill
-- MCP server: README.md#mcp-server
-- Comparison with Microsoft Office / WPS / LibreOffice / OnlyOffice: README.md#why-chayuan-ai-office-comparison
-- FAQ: README.md#faq
-- Architecture: README.md#architecture
+- README 简体中文完整版 (keywords, FAQ, feature matrix): README.md
+- README English complete mirror (keywords, FAQ, feature matrix): README.en.md
+- CLI & agent skill: README.md#命令行-clichaoffice17-个子命令 / README.en.md#command-line-cli-chaoffice-17-subcommands
+- MCP server: README.md#mcp-server办公文档-mcp / README.en.md#mcp-server-office-mcp-for-ai-agents
+- Comparison with Microsoft Office / WPS / LibreOffice / OnlyOffice: README.md#为什么选察元ai-office / README.en.md#why-chayuan-ai-office
+- FAQ: README.md#常见问题-faq / README.en.md#faq
+- Architecture: README.md#架构 / README.en.md#architecture
+- Screenshots assets (reusable folder): docs/images/
+- Illustrated tutorials (47 topics): docs/user-tutorials/
+- CLI command reference: docs/COMMANDS.md
 - Security posture: SECURITY.md
 - Privacy & telemetry disclosure: PRIVACY.md
 - Contributing & upstream sync policy: CONTRIBUTING.md
