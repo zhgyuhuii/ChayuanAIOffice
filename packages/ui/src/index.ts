@@ -69,6 +69,7 @@ export {
 export {
   installPopoverDismiss,
   useDismissablePopover,
+  useEscapeToClose,
   type PopoverDismissOptions,
 } from './popover-dismiss'
 export { Dropdown, type DropdownOption } from './dropdown'
