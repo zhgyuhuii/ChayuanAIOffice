@@ -96,6 +96,14 @@ export type {
   GenerateImageInput,
   MediaBlob,
 } from './media-protocols'
+export {
+  isThinkingEffort,
+  resolveThinkingEffort,
+  thinkingShapeFor,
+  THINKING_LEVELS,
+  type ThinkingEffort,
+  type ThinkingShape,
+} from './thinking-effort'
 export { chatForProvider, chatResolved } from './chat'
 export { setAiUserAgent, setRescueFetch } from './fetch'
 export {

@@ -71,9 +71,7 @@ export {
 export type { AiCapabilityKind, SearchPlatformKind, SearchPlatformMeta } from './capability-tree'
 /** sentinel: untouched key field so the backend keeps the stored secret */
 export const KEEP_KEY = '__keep__'
-export { endpointSupportsVision, getProviderAdapter, modelLacksVision } from './registry'
 export type { AiProtocol } from './registry'
-export { AI_MEDIA_PROVIDERS, imageGenerationAvailable, mediaAnalysisAvailable } from './media'
 export {
   activeCustomEndpoint,
   customEndpointLabel,
@@ -90,6 +88,9 @@ export {
   resolveCustomProfile,
 } from './custom-profile'
 export type { ResolvedCustomProfile } from './custom-profile'
+export { endpointSupportsVision, getProviderAdapter, modelLacksVision } from './registry'
+export { thinkingShapeFor, type ThinkingEffort, type ThinkingShape } from './thinking-effort'
+export { AI_MEDIA_PROVIDERS, imageGenerationAvailable, mediaAnalysisAvailable } from './media'
 export { AI_SEARCH_PROVIDERS } from './search-settings'
 export { discoverModels } from './discovery'
 export { setAiUserAgent } from './fetch'
