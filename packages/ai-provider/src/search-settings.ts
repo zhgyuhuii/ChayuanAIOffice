@@ -85,6 +85,13 @@ export const AI_SEARCH_PROVIDERS: AiSearchProviderMeta[] = [
     imageSearch: true,
     needsKey: false,
   },
+  {
+    id: 'searchapi',
+    label: 'SearchApi',
+    keyPlaceholder: 'SearchApi API key',
+    imageSearch: true,
+    needsKey: true,
+  },
 ]
 
 /** providers usable for web search */
@@ -100,8 +107,8 @@ export const DEFAULT_WEB_SEARCH_PROVIDER: AiSearchProviderId = 'duckduckgo'
 export const DEFAULT_IMAGE_SEARCH_PROVIDER: AiSearchProviderId = 'bing'
 
 /** providers that require an API key */
-type KeyedSearchProviderId = 'serper' | 'tavily' | 'linkup' | 'searxng'
-const KEYED_PROVIDERS: KeyedSearchProviderId[] = ['serper', 'tavily', 'linkup', 'searxng']
+type KeyedSearchProviderId = 'serper' | 'tavily' | 'linkup' | 'searxng' | 'searchapi'
+const KEYED_PROVIDERS: KeyedSearchProviderId[] = ['serper', 'tavily', 'linkup', 'searxng', 'searchapi']
 
 export function defaultAiSearchSettings(): AiSearchSettings {
   return { provider: 'duckduckgo', providers: {} }

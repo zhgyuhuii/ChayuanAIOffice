@@ -35,6 +35,7 @@ export * from './chaoffice'
 export * from './chaoffice-auth'
 
 const SERPER_KEY = () => process.env.SERPER_API_KEY ?? ''
+const SEARCHAPI_KEY = () => process.env.SEARCHAPI_API_KEY ?? ''
 const TAVILY_KEY = () => process.env.TAVILY_API_KEY ?? ''
 const LINKUP_KEY = () => process.env.LINKUP_API_KEY ?? ''
 const EXA_KEY = () => process.env.EXA_API_KEY ?? ''
@@ -45,6 +46,7 @@ const KEENABLE_KEY = () => process.env.KEENABLE_API_KEY ?? ''
 /** API keys resolved from settings (preferred) then env vars (fallback) */
 interface SearchKeys {
   serper?: string | undefined
+  searchapi?: string | undefined
   tavily?: string | undefined
   linkup?: string | undefined
   searxngBaseUrl?: string | undefined
@@ -161,6 +163,20 @@ export async function webSearch(
                 : { results, method: 'serper' }
             }
           }
+        } catch {
+          /* fall through to the next tier */
+        }
+        return null
+      },
+    },
+    {
+      id: 'searchapi',
+      run: async () => {
+        const searchapiKey = keys?.searchapi ?? SEARCHAPI_KEY()
+        if (!searchapiKey) return null
+        try {
+          const r = await searchapiWebSearch(searchapiKey, q, max)
+          if (r) return { results: r.results, answer: r.answer, method: r.method }
         } catch {
           /* fall through to the next tier */
         }
@@ -437,6 +453,24 @@ export async function imageSearch(
     return null
   }
 
+  /** SearchApi Google Images — keyed, tried right after Serper (#2484 adapted: rides the
+   * local serper/bing/openverse chain with attempts recorded like the other tiers) */
+  const searchapiTier = async (): Promise<{ images: ImageSearchResult[]; method: string } | null> => {
+    const key = SEARCHAPI_KEY()
+    if (!key) return null
+    try {
+      const r = await searchapiImageSearch(key, query, Math.min(maxResults, 20))
+      if (r && r.images.length > 0) {
+        const usable = filterUsableImages(r.images)
+        if (usable.length) return { images: usable, method: r.method }
+        attempts.push({ backend: 'searchapi', status: 'error', detail: 'only tiny results' })
+      }
+    } catch (err) {
+      attempts.push({ backend: 'searchapi', status: 'error', detail: String(err) })
+    }
+    return null
+  }
+
   const bingTier = async (): Promise<{ images: ImageSearchResult[]; method: string } | null> => {
     try {
       const images = await bingImageSearch(query, maxResults, page)
@@ -479,9 +513,49 @@ export async function imageSearch(
     return { images: [], method: 'error', error: `${only} image search failed`, attempts }
   }
 
-  const chained = (await serperTier()) ?? (await bingTier()) ?? (await openverseTier())
+  const chained =
+    (await serperTier()) ?? (await searchapiTier()) ?? (await bingTier()) ?? (await openverseTier())
   if (chained) return { images: chained.images, method: chained.method, attempts }
   return { images: [], method: 'error', error: 'all image backends failed', attempts }
+}
+
+/** SearchApi returns a fixed page of Google Images results, so the limit is applied locally. */
+async function searchapiImageSearch(
+  key: string,
+  q: string,
+  max: number,
+): Promise<{ images: ImageSearchResult[]; method: string } | null> {
+  if (!key) return null
+  try {
+    const data = await fetchWithTimeout(
+      `https://www.searchapi.io/api/v1/search?${new URLSearchParams({ engine: 'google_images', q })}`,
+      { headers: SEARCHAPI_HEADERS(key) },
+      async (resp) => (resp.ok ? asRecord(await resp.json()) : null),
+    )
+    if (!data) return null
+    const raw: unknown[] = Array.isArray(data.images) ? data.images : []
+    const images: ImageSearchResult[] = []
+    for (const item of raw) {
+      const result = asRecord(item)
+      const original = asRecord(result.original)
+      const source = asRecord(result.source)
+      const imageUrl = String(original.link ?? result.thumbnail ?? '')
+      if (!/^https?:\/\//i.test(imageUrl) || isCopyrightHost(imageUrl)) continue
+      const entry: ImageSearchResult = {
+        title: String(result.title ?? ''),
+        imageUrl,
+        sourceUrl: String(source.link ?? ''),
+        source: String(source.name ?? safeHost(source.link)),
+      }
+      if (typeof original.width === 'number' && original.width > 0) entry.width = original.width
+      if (typeof original.height === 'number' && original.height > 0) entry.height = original.height
+      images.push(entry)
+      if (images.length >= max) break
+    }
+    return images.length ? { images, method: 'searchapi' } : null
+  } catch {
+    return null
+  }
 }
 
 // ── DuckDuckGo fallback (no key / quota exhausted) ──────────────────
@@ -517,14 +591,69 @@ async function duckWebSearch(query: string, maxResults: number): Promise<WebSear
 
 // ── utils ───────────────────────────────────────────────────────────
 
+const SEARCHAPI_HEADERS = (key: string) => ({
+  Authorization: `Bearer ${key}`,
+  'User-Agent': 'chaoffice',
+})
+
+/**
+ * SearchApi Google web search; null when the key is empty, the call fails, or nothing comes
+ * back. Google no longer honors a result count, so one call returns one page (up to 10 organic
+ * rows) and the limit is applied locally.
+ */
+async function searchapiWebSearch(
+  key: string,
+  query: string,
+  maxResults: number,
+): Promise<{ results: WebSearchResult[]; answer?: string; method: string } | null> {
+  if (!key) return null
+  try {
+    const params = new URLSearchParams({ engine: 'google', q: query })
+    return await fetchWithTimeout(
+      `https://www.searchapi.io/api/v1/search?${params}`,
+      { headers: SEARCHAPI_HEADERS(key) },
+      async (resp) => {
+        if (!resp.ok) return null
+        const data = asRecord(await resp.json())
+        const raw: unknown[] = Array.isArray(data.organic_results) ? data.organic_results : []
+        const results: WebSearchResult[] = []
+        for (const item of raw) {
+          const o = asRecord(item)
+          if (typeof o.link !== 'string' || !/^https?:\/\//i.test(o.link)) continue
+          results.push({
+            title: String(o.title ?? ''),
+            url: o.link,
+            snippet: String(o.snippet ?? ''),
+          })
+          if (results.length >= maxResults) break
+        }
+        return results.length ? { results, method: 'searchapi' } : null
+      },
+    )
+  } catch {
+    return null
+  }
+}
+
 async function fetchWithTimeout(
   url: string,
-  init: RequestInit & { timeoutMs?: number } = {},
-): Promise<Response> {
+  init: RequestInit & { timeoutMs?: number },
+): Promise<Response>
+async function fetchWithTimeout<T>(
+  url: string,
+  init: RequestInit & { timeoutMs?: number },
+  consume: (response: Response) => Promise<T>,
+): Promise<T>
+async function fetchWithTimeout<T>(
+  url: string,
+  init: RequestInit & { timeoutMs?: number },
+  consume?: (response: Response) => Promise<T>,
+): Promise<T | Response> {
   const controller = new AbortController()
   const t = setTimeout(() => controller.abort(), init.timeoutMs ?? 15000)
   try {
-    return await fetch(url, { ...init, signal: controller.signal })
+    const response = await fetch(url, { ...init, signal: controller.signal })
+    return consume ? await consume(response) : response
   } finally {
     clearTimeout(t)
   }

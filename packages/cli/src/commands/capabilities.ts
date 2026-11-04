@@ -24,7 +24,7 @@ export const capabilitiesCommand: CommandDef = {
     const settings = readAiSettingsFile(aiSettingsPath(ctx.env))
     const searchProvider = activeSearchProvider(settings)
     const search = true
-    const imageSearch = searchProvider === 'serper' || searchProvider === 'bing' || searchProvider === 'duckduckgo' || searchProvider === 'openverse'
+    const imageSearch = searchProvider === 'serper' || searchProvider === 'bing' || searchProvider === 'duckduckgo' || searchProvider === 'openverse' || searchProvider === 'searchapi'
     const imageGeneration = imageGenerationAvailable(settings, hasChaOfficeAuth())
     const mediaAnalysis = mediaAnalysisAvailable(settings, hasChaOfficeAuth())
     const detail = {

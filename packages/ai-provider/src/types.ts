@@ -352,6 +352,7 @@ export type AiSearchProviderId =
   | 'chaoffice'
   | 'serper'
   | 'serply'
+  | 'searchapi'
   | 'tavily'
   | 'parallel'
   | 'exa'

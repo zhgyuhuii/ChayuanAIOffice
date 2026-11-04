@@ -10,6 +10,9 @@ const realFetch = globalThis.fetch
 afterEach(() => {
   globalThis.fetch = realFetch
   delete process.env.SERPER_API_KEY
+  delete process.env.SERPLY_API_KEY
+  delete process.env.SEARCHAPI_API_KEY
+  delete process.env.PARALLEL_API_KEY
   delete process.env.TAVILY_API_KEY
   delete process.env.KEENABLE_API_KEY
 })
