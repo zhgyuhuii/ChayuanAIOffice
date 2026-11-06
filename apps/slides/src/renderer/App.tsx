@@ -4107,10 +4107,10 @@ export function App() {
             onToggleHidden={() => void toggleHidden()}
             inkTool={inkTool}
             onInkTool={onInkTool}
-            inkPen={inkPen}
-            onInkPen={setInkPen}
-            inkHighlighter={inkHighlighter}
-            onInkHighlighter={setInkHighlighter}
+            inkPresets={inkPresets}
+            inkActiveId={inkActiveId}
+            onInkPresets={setInkPresets}
+            onInkActivate={setInkActiveId}
             inkCount={inkCount}
             onInkClearAll={() => void clearInk()}
             viewMode={viewMode}
@@ -5054,12 +5054,8 @@ export function App() {
                                 <InkOverlay
                                   slide={slide}
                                   tool={inkTool}
-                                  color={
-                                    inkTool === 'highlighter' ? inkHighlighter.color : inkPen.color
-                                  }
-                                  width={
-                                    inkTool === 'highlighter' ? inkHighlighter.width : inkPen.width
-                                  }
+                                  color={inkActive.color}
+                                  width={inkActive.width}
                                   onCommit={(stroke) => void commitInk(stroke)}
                                   onErase={(ids) => void eraseInk(ids)}
                                 />

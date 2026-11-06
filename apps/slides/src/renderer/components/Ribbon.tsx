@@ -27,10 +27,10 @@ import {
   THEME_COLOR_SHADES,
   STANDARD_COLORS,
 } from '@chaoffice/ui'
-import { getRecentColors, pushRecentColor } from '../recent-colors'
 import {
   createRecentColorSession,
   getRecentColors,
+  pushRecentColor,
   type RecentColorSession,
 } from '../recent-colors'
 import { ICON_COLORS } from '../insert-presets'

@@ -18,7 +18,7 @@ import type {
   TransitionSoundKey,
   TransitionSpec,
 } from '../../shared/ipc'
-import type { InkPenSettings, InkTool } from '../ink'
+import type { InkTool } from '../ink'
 import type { InkPreset } from '../ink-presets'
 import type { WordArtPreset } from '@chaoffice/ui'
 import type { ChartPresetDef, IconDef, SmartArtDef } from '../insert-presets'
