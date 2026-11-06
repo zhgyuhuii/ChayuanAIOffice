@@ -248,7 +248,8 @@ const upstreamStrings = {
     setAiOpenInNewDocs: '新文档中打开 AI 面板',
     setAiOpenInNewDocsDesc: '关闭后，新打开的文档默认收起 AI 面板；需要时点一下即可展开。',
     setAuthorName: '用户名',
-    setAuthorNameDesc: '作为批注和修订的作者显示在 Docs、Sheets、Slides 中。留空则使用电脑账户名。',
+    setAuthorNameDesc:
+      '作为批注和修订的作者显示在 Docs、Sheets、Slides、PDF 中。留空则使用电脑账户名。',
     settings: '设置',
     setSecAccount: '账户',
     setSecGeneral: '通用',
@@ -774,7 +775,7 @@ const upstreamStrings = {
       'When off, newly opened documents start with the AI panel collapsed; it is one click away when needed.',
     setAuthorName: 'User name',
     setAuthorNameDesc:
-      'Shown as the author of comments and tracked changes in Docs, Sheets and Slides. Leave blank to use your computer account name.',
+      'Shown as the author of comments and tracked changes in Docs, Sheets, Slides and PDF. Leave blank to use your computer account name.',
     settings: 'Settings',
     setSecAccount: 'Account',
     setSecGeneral: 'General',
@@ -1315,7 +1316,7 @@ const upstreamStrings = {
       'Khi tắt, tài liệu mới mở sẽ thu gọn bảng AI; chỉ cần một lần bấm để mở lại khi cần.',
     setAuthorName: 'Tên người dùng',
     setAuthorNameDesc:
-      'Hiển thị là tác giả của nhận xét và thay đổi được theo dõi trong Docs, Sheets và Slides. Để trống để dùng tên tài khoản máy tính.',
+      'Hiển thị là tác giả của nhận xét và thay đổi được theo dõi trong Docs, Sheets, Slides và PDF. Để trống để dùng tên tài khoản máy tính.',
     settings: 'Cài đặt',
     setSecAccount: 'Tài khoản',
     setSecGeneral: 'Chung',
@@ -1862,7 +1863,7 @@ const upstreamStrings = {
       'Kapalıyken yeni açılan belgeler AI paneli daraltılmış olarak başlar; gerektiğinde tek tıkla açılır.',
     setAuthorName: 'Kullanıcı adı',
     setAuthorNameDesc:
-      'Docs, Sheets ve Slides’ta açıklamaların ve izlenen değişikliklerin yazarı olarak gösterilir. Bilgisayar hesabınızın adını kullanmak için boş bırakın.',
+      'Docs, Sheets, Slides ve PDF’de açıklamaların ve izlenen değişikliklerin yazarı olarak gösterilir. Bilgisayar hesabınızın adını kullanmak için boş bırakın.',
     settings: 'Ayarlar',
     setSecAccount: 'Hesap',
     setSecGeneral: 'Genel',
@@ -2415,7 +2416,7 @@ const upstreamStrings = {
       'オフにすると、新しく開いたドキュメントは AI パネルを折りたたんだ状態で始まります。必要なときはワンクリックで開けます。',
     setAuthorName: 'ユーザー名',
     setAuthorNameDesc:
-      'Docs、Sheets、Slides でコメントと変更履歴の作成者として表示されます。空欄の場合はパソコンのアカウント名を使います。',
+      'Docs、Sheets、Slides、PDF でコメントと変更履歴の作成者として表示されます。空欄の場合はパソコンのアカウント名を使います。',
     settings: '設定',
     setSecAccount: 'アカウント',
     setSecGeneral: '一般',
@@ -2957,7 +2958,7 @@ const upstreamStrings = {
       '끄면 새로 여는 문서는 AI 패널이 접힌 상태로 시작합니다. 필요할 때 한 번 클릭하면 열립니다.',
     setAuthorName: '사용자 이름',
     setAuthorNameDesc:
-      'Docs, Sheets, Slides에서 메모와 변경 내용 추적의 작성자로 표시됩니다. 비워 두면 컴퓨터 계정 이름을 사용합니다.',
+      'Docs, Sheets, Slides, PDF에서 메모와 변경 내용 추적의 작성자로 표시됩니다. 비워 두면 컴퓨터 계정 이름을 사용합니다.',
     settings: '설정',
     setSecAccount: '계정',
     setSecGeneral: '일반',
@@ -3503,7 +3504,7 @@ const upstreamStrings = {
       "Désactivé : les documents nouvellement ouverts démarrent avec le panneau IA replié ; un clic suffit pour l'afficher.",
     setAuthorName: 'Nom d’utilisateur',
     setAuthorNameDesc:
-      'Affiché comme auteur des commentaires et des modifications suivies dans Docs, Sheets et Slides. Laissez vide pour utiliser le nom de votre compte.',
+      'Affiché comme auteur des commentaires et des modifications suivies dans Docs, Sheets, Slides et PDF. Laissez vide pour utiliser le nom de votre compte.',
     settings: 'Paramètres',
     setSecAccount: 'Compte',
     setSecGeneral: 'Général',
@@ -4065,7 +4066,7 @@ const upstreamStrings = {
       'Wenn aus, starten neu geöffnete Dokumente mit eingeklapptem KI-Panel; ein Klick genügt, um es zu öffnen.',
     setAuthorName: 'Benutzername',
     setAuthorNameDesc:
-      'Wird in Docs, Sheets und Slides als Autor von Kommentaren und nachverfolgten Änderungen angezeigt. Leer lassen, um den Kontonamen des Computers zu verwenden.',
+      'Wird in Docs, Sheets, Slides und PDF als Autor von Kommentaren und nachverfolgten Änderungen angezeigt. Leer lassen, um den Kontonamen des Computers zu verwenden.',
     settings: 'Einstellungen',
     setSecAccount: 'Konto',
     setSecGeneral: 'Allgemein',
@@ -4619,7 +4620,7 @@ const upstreamStrings = {
       'Si está desactivado, los documentos recién abiertos empiezan con el panel de IA plegado; se abre con un clic cuando lo necesites.',
     setAuthorName: 'Nombre de usuario',
     setAuthorNameDesc:
-      'Se muestra como autor de los comentarios y los cambios con seguimiento en Docs, Sheets y Slides. Déjalo vacío para usar el nombre de tu cuenta.',
+      'Se muestra como autor de los comentarios y los cambios con seguimiento en Docs, Sheets, Slides y PDF. Déjalo vacío para usar el nombre de tu cuenta.',
     settings: 'Configuración',
     setSecAccount: 'Cuenta',
     setSecGeneral: 'General',
@@ -5164,7 +5165,7 @@ const upstreamStrings = {
       'เมื่อปิด เอกสารที่เปิดใหม่จะเริ่มโดยพับแผง AI ไว้ คลิกครั้งเดียวเพื่อเปิดเมื่อต้องการ',
     setAuthorName: 'ชื่อผู้ใช้',
     setAuthorNameDesc:
-      'แสดงเป็นผู้เขียนความคิดเห็นและการติดตามการเปลี่ยนแปลงใน Docs, Sheets และ Slides เว้นว่างไว้เพื่อใช้ชื่อบัญชีคอมพิวเตอร์',
+      'แสดงเป็นผู้เขียนความคิดเห็นและการติดตามการเปลี่ยนแปลงใน Docs, Sheets, Slides และ PDF เว้นว่างไว้เพื่อใช้ชื่อบัญชีคอมพิวเตอร์',
     settings: 'การตั้งค่า',
     setSecAccount: 'บัญชี',
     setSecGeneral: 'ทั่วไป',
@@ -5703,7 +5704,7 @@ const upstreamStrings = {
       'Jika nonaktif, dokumen yang baru dibuka dimulai dengan panel AI terlipat; cukup satu klik saat dibutuhkan.',
     setAuthorName: 'Nama pengguna',
     setAuthorNameDesc:
-      'Ditampilkan sebagai penulis komentar dan perubahan terlacak di Docs, Sheets, dan Slides. Kosongkan untuk memakai nama akun komputer.',
+      'Ditampilkan sebagai penulis komentar dan perubahan terlacak di Docs, Sheets, Slides, dan PDF. Kosongkan untuk memakai nama akun komputer.',
     settings: 'Pengaturan',
     setSecAccount: 'Akun',
     setSecGeneral: 'Umum',
@@ -6247,7 +6248,7 @@ const upstreamStrings = {
       'Если выключено, новые документы открываются со свёрнутой панелью ИИ; она доступна в один клик.',
     setAuthorName: 'Имя пользователя',
     setAuthorNameDesc:
-      'Отображается как автор примечаний и исправлений в Docs, Sheets и Slides. Оставьте пустым, чтобы использовать имя учётной записи компьютера.',
+      'Отображается как автор примечаний и исправлений в Docs, Sheets, Slides и PDF. Оставьте пустым, чтобы использовать имя учётной записи компьютера.',
     settings: 'Настройки',
     setSecAccount: 'Аккаунт',
     setSecGeneral: 'Общие',
@@ -6793,7 +6794,7 @@ const upstreamStrings = {
       'عند الإيقاف، تبدأ المستندات المفتوحة حديثًا بلوحة الذكاء الاصطناعي مطوية؛ تكفي نقرة واحدة لفتحها عند الحاجة.',
     setAuthorName: 'اسم المستخدم',
     setAuthorNameDesc:
-      'يظهر كمؤلف التعليقات والتغييرات المتعقبة في Docs وSheets وSlides. اتركه فارغًا لاستخدام اسم حساب الكمبيوتر.',
+      'يظهر كمؤلف التعليقات والتغييرات المتعقبة في Docs وSheets وSlides وPDF. اتركه فارغًا لاستخدام اسم حساب الكمبيوتر.',
     settings: 'الإعدادات',
     setSecAccount: 'الحساب',
     setSecGeneral: 'عام',
@@ -7335,7 +7336,7 @@ const upstreamStrings = {
       'Quando desativado, os documentos recém-abertos começam com o painel de IA recolhido; basta um clique quando precisar.',
     setAuthorName: 'Nome de usuário',
     setAuthorNameDesc:
-      'Exibido como autor dos comentários e das alterações controladas no Docs, Sheets e Slides. Deixe em branco para usar o nome da conta do computador.',
+      'Exibido como autor dos comentários e das alterações controladas no Docs, Sheets, Slides e PDF. Deixe em branco para usar o nome da conta do computador.',
     settings: 'Configurações',
     setSecAccount: 'Conta',
     setSecGeneral: 'Geral',
@@ -7886,7 +7887,7 @@ const upstreamStrings = {
       'Se disattivato, i documenti appena aperti iniziano con il pannello IA ridotto; basta un clic quando serve.',
     setAuthorName: 'Nome utente',
     setAuthorNameDesc:
-      'Mostrato come autore di commenti e revisioni in Docs, Sheets e Slides. Lascia vuoto per usare il nome dell’account del computer.',
+      'Mostrato come autore di commenti e revisioni in Docs, Sheets, Slides e PDF. Lascia vuoto per usare il nome dell’account del computer.',
     settings: 'Impostazioni',
     setSecAccount: 'Account',
     setSecGeneral: 'Generale',
@@ -8436,7 +8437,7 @@ const upstreamStrings = {
       'Gdy wyłączone, nowo otwarte dokumenty zaczynają ze zwiniętym panelem AI; wystarczy jedno kliknięcie, gdy jest potrzebny.',
     setAuthorName: 'Nazwa użytkownika',
     setAuthorNameDesc:
-      'Wyświetlana jako autor komentarzy i śledzonych zmian w Docs, Sheets i Slides. Pozostaw puste, aby użyć nazwy konta komputera.',
+      'Wyświetlana jako autor komentarzy i śledzonych zmian w Docs, Sheets, Slides i PDF. Pozostaw puste, aby użyć nazwy konta komputera.',
     settings: 'Ustawienia',
     setSecAccount: 'Konto',
     setSecGeneral: 'Ogólne',
@@ -9231,7 +9232,7 @@ const upstreamStrings = {
     intgSkillsInstalledTag: 'Nainstalováno',
     setAuthorName: 'Uživatelské jméno',
     setAuthorNameDesc:
-      'Zobrazuje se jako autor komentářů a sledovaných změn v Docs, Sheets a Slides. Ponechte prázdné pro použití názvu účtu počítače.',
+      'Zobrazuje se jako autor komentářů a sledovaných změn v Docs, Sheets, Slides a PDF. Ponechte prázdné pro použití názvu účtu počítače.',
     helpSearchPlaceholder: 'Hledat v příručce… (stiskněte /)',
     helpSearchLabel: 'Hledat v příručce',
     helpContentsLabel: 'Obsah příručky',
@@ -9527,7 +9528,7 @@ const upstreamStrings = {
       'Indien uit, starten nieuw geopende documenten met een ingeklapt AI-paneel; één klik volstaat wanneer je het nodig hebt.',
     setAuthorName: 'Gebruikersnaam',
     setAuthorNameDesc:
-      'Wordt weergegeven als auteur van opmerkingen en bijgehouden wijzigingen in Docs, Sheets en Slides. Laat leeg om de accountnaam van je computer te gebruiken.',
+      'Wordt weergegeven als auteur van opmerkingen en bijgehouden wijzigingen in Docs, Sheets, Slides en PDF. Laat leeg om de accountnaam van je computer te gebruiken.',
     settings: 'Instellingen',
     setSecAccount: 'Account',
     setSecGeneral: 'Algemeen',
@@ -10075,7 +10076,7 @@ const upstreamStrings = {
       'Jika dimatikan, dokumen yang baru dibuka bermula dengan panel AI dilipat; cukup satu klik apabila diperlukan.',
     setAuthorName: 'Nama pengguna',
     setAuthorNameDesc:
-      'Dipaparkan sebagai pengarang komen dan perubahan dijejak dalam Docs, Sheets dan Slides. Biarkan kosong untuk menggunakan nama akaun komputer.',
+      'Dipaparkan sebagai pengarang komen dan perubahan dijejak dalam Docs, Sheets, Slides dan PDF. Biarkan kosong untuk menggunakan nama akaun komputer.',
     settings: 'Tetapan',
     setSecAccount: 'Akaun',
     setSecGeneral: 'Umum',
@@ -10619,7 +10620,7 @@ const upstreamStrings = {
       'כאשר כבוי, מסמכים שנפתחו זה עתה מתחילים עם לוח ה-AI מקופל; לחיצה אחת מספיקה כשצריך.',
     setAuthorName: 'שם משתמש',
     setAuthorNameDesc:
-      'מוצג כמחבר ההערות והשינויים במעקב ב‑Docs, Sheets ו‑Slides. השאירו ריק כדי להשתמש בשם חשבון המחשב.',
+      'מוצג כמחבר ההערות והשינויים במעקב ב‑Docs, Sheets, Slides ו‑PDF. השאירו ריק כדי להשתמש בשם חשבון המחשב.',
     settings: 'הגדרות',
     setSecAccount: 'חשבון',
     setSecGeneral: 'כללי',
@@ -11156,7 +11157,7 @@ const upstreamStrings = {
       'बंद होने पर, नए खोले गए दस्तावेज़ AI पैनल संक्षिप्त अवस्था में शुरू होते हैं; ज़रूरत पड़ने पर एक क्लिक में खुल जाता है।',
     setAuthorName: 'उपयोगकर्ता नाम',
     setAuthorNameDesc:
-      'Docs, Sheets और Slides में टिप्पणियों और ट्रैक किए गए परिवर्तनों के लेखक के रूप में दिखाया जाता है। कंप्यूटर खाता नाम उपयोग करने के लिए खाली छोड़ें।',
+      'Docs, Sheets, Slides और PDF में टिप्पणियों और ट्रैक किए गए परिवर्तनों के लेखक के रूप में दिखाया जाता है। कंप्यूटर खाता नाम उपयोग करने के लिए खाली छोड़ें।',
     settings: 'सेटिंग्स',
     setSecAccount: 'खाता',
     setSecGeneral: 'सामान्य',
@@ -11690,7 +11691,7 @@ const upstreamStrings = {
     setAiOpenInNewDocsDesc: '關閉後，新開啟的文件預設收合 AI 面板；需要時點一下即可展開。',
     setAuthorName: '使用者名稱',
     setAuthorNameDesc:
-      '作為註解和追蹤修訂的作者顯示在 Docs、Sheets、Slides 中。留空則使用電腦帳戶名稱。',
+      '作為註解和追蹤修訂的作者顯示在 Docs、Sheets、Slides、PDF 中。留空則使用電腦帳戶名稱。',
     settings: '設定',
     setSecAccount: '帳戶',
     setSecGeneral: '一般',

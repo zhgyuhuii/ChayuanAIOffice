@@ -25,6 +25,7 @@ import appIconPath from '../../../shell/src/main/assets/app-icon.png?asset'
 const APP_ICON = nativeImage.createFromPath(appIconPath)
 import {
   buildPrintableHtml,
+  configuredAuthorName,
   configuredDefaultSaveDir,
   contextMenuLabels,
   installContextMenu,
@@ -1347,13 +1348,7 @@ function registerPdfIpc(): void {
   })
   ipcMain.handle(PDF_CHANNELS.consumePending, (e) => openPathByWc.get(e.sender.id) ?? null)
 
-  ipcMain.handle(PDF_CHANNELS.getUsername, () => {
-    try {
-      return userInfo().username
-    } catch {
-      return ''
-    }
-  })
+  ipcMain.handle(PDF_CHANNELS.getUsername, (): string => configuredAuthorName(app))
 
   ipcMain.handle(PDF_CHANNELS.printers, async (e) => {
     const printers = await e.sender.getPrintersAsync()
