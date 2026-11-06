@@ -140,6 +140,8 @@ import {
 } from '@chaoffice/xlsx-gateway/gateway/xlsx-connection-refresh'
 import type { PartReader } from '@chaoffice/xlsx-gateway/gateway/xlsx-connections'
 import { readWorkbookRedactionPart } from './workbook-redactions'
+import { parseSlicerState } from '@chaoffice/xlsx-gateway/gateway/xlsx-slicer'
+import { manifestNamesSchema } from './workbook-redactions'
 import type {
   AttachmentAddResult,
   AttachmentImageResult,
@@ -191,6 +193,8 @@ import {
   saveEditsChunkArraySchema,
   workbookSaveEditsChunkSchema,
   workbookSaveRequestSchema,
+  workbookSlicerStateRequestSchema,
+  workbookSlicerStateResultSchema,
   type WorkbookCreateDocumentResult,
   type WorkbookSaveRequest,
 } from '../shared/desktop-api'
@@ -3733,6 +3737,46 @@ export function registerSheetsIpc(): void {
     return workbookPivotDefinitionSchema.parse(parsePivotDefinition(pivotXml, cacheXml))
   })
 
+  ipcMain.handle(IPC_CHANNELS.readSlicerState, async (event, input: unknown) => {
+    const entry = sessionFor(event)
+    const request = workbookSlicerStateRequestSchema.parse(input)
+    const session = entry.sessions.get(request.sessionId)
+    if (!session) throw new Error('Unknown workbook session.')
+    // The slicer parts are read from the session snapshot in one sidecar
+    // extraction; the gateway parser does the rest.
+    const manifest = manifestNamesSchema.parse(
+      await entry.client.archiveManifest(session.snapshotPath),
+    )
+    const names = manifest.entries.map((archiveEntry) => archiveEntry.name)
+    const hasSlicerParts = names.some((name) =>
+      /^xl\/(?:slicers|timelines)\/[^/]+\.xml$/.test(name),
+    )
+    if (!hasSlicerParts) return []
+    // Worksheet parts and their rels are keys/lookups for the parser (host
+    // sheets, pivot binding), so both ride the paths() view; only the XML
+    // texts below are actually extracted.
+    const wanted = names.filter(
+      (name) =>
+        name === 'xl/workbook.xml' ||
+        name === 'xl/_rels/workbook.xml.rels' ||
+        /^xl\/(?:slicers|timelines|slicerCaches|timelineCaches|pivotTables)\/[^/]+\.xml$/.test(
+          name,
+        ) ||
+        /^xl\/worksheets\/(?:_rels\/)?[^/]+\.xml(?:\.rels)?$/.test(name),
+    )
+    const texts = await readArchiveEntriesText(entry.client, session.snapshotPath, wanted)
+    return workbookSlicerStateResultSchema.parse(
+      await parseSlicerState({
+        paths: async () => names,
+        readText: async (path) => {
+          const text = texts.get(path)
+          if (text === undefined) throw new Error(`Workbook is missing ${path}.`)
+          return text
+        },
+      }),
+    )
+  })
+
   // The workbook's refreshable web queries: the walk follows both shapes Excel
   // writes (a table part's relationship, or a legacy ExternalData_N name) and
   // returns the sheet and range each query fills. Read from the session
@@ -4869,6 +4913,18 @@ async function writeWorkbookTo(
     sheetName: resolveSheetName(sheetId),
     ...group,
   }))
+  // Slicer panels: same sheetId → sheet name mapping as the other
+  // additions; part paths stay package-absolute.
+  const slicerState =
+    request.slicerState === null
+      ? null
+      : {
+          slicers: request.slicerState.slicers.map(({ sheetId, ...control }) => ({
+            ...control,
+            sheetName: resolveSheetName(sheetId),
+          })),
+          removals: [...request.slicerState.removals],
+        }
   // Recalculated formula values: sheetId → file sheet name, the same
   // resolution the cell edits use.
   const formulaValuesBySheet = new Map<
@@ -4946,6 +5002,7 @@ async function writeWorkbookTo(
       tableEdits,
       pivotAdditions,
       sparklineAdditions,
+      slicerState,
       formulaValues,
       pivotCacheRefreshPaths: request.pivotCacheRefreshPaths,
       // Output-area expansion from layout growth: sheetId → sheet name; the part
