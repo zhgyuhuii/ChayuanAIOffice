@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://genoffice.ai/">
+  <a href="https://chaoffice.ai/">
     <picture>
       <source srcset="../assets/readme/hero-dark.webp" media="(prefers-color-scheme: dark)">
       <img src="../assets/readme/hero.webp" alt="ChaAI Office — bộ ứng dụng văn phòng AI mã nguồn mở: Docs, Sheets, Slides, PDF, Markdown và HTML với panel AI tích hợp sẵn" width="100%">
@@ -20,15 +20,15 @@ Tệp Word, Excel, PowerPoint và PDF do bạn và AI của bạn cùng chỉnh 
   <a href="https://x.com/merrickbuilds"><img src="https://img.shields.io/badge/follow-%40merrickbuilds-000000?logo=x&logoColor=white" alt="Follow @merrickbuilds on X"></a>
 </p>
 
-<p align="center"><a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.pt-BR.md">Português (Brasil)</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">繁體中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ja.md">日本語</a> · <a href="README.ar.md">العربية</a> · <a href="README.ru.md">Русский</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.pl.md">Polski</a> · <a href="README.cs.md">Čeština</a> · <a href="README.id.md">Bahasa Indonesia</a> · <a href="README.ms.md">Bahasa Melayu</a> · <a href="README.th.md">ไทย</a> · <a href="README.hi.md">हिन्दी</a> · <a href="README.he.md">עברית</a> · <b>Tiếng Việt</b></p>
+<p align="center"><a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">繁體中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ja.md">日本語</a> · <a href="README.ar.md">العربية</a> · <a href="README.ru.md">Русский</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.pl.md">Polski</a> · <a href="README.cs.md">Čeština</a> · <a href="README.id.md">Bahasa Indonesia</a> · <a href="README.ms.md">Bahasa Melayu</a> · <a href="README.th.md">ไทย</a> · <a href="README.hi.md">हिन्दी</a> · <a href="README.he.md">עברית</a> · <b>Tiếng Việt</b> · <a href="README.tr.md">Türkçe</a></p>
 
 <p align="center">
   <a href="#download"><b>Tải xuống</b></a> ·
   <a href="#skills"><b>Skill</b></a> ·
   <a href="#command-line-and-agent-skill"><b>CLI</b></a> ·
   <a href="#mcp-server"><b>MCP</b></a> ·
-  <a href="https://genoffice.ai/"><b>Trang chủ</b></a> ·
-  <a href="https://genoffice.ai/join"><b>Cộng đồng</b></a> ·
+  <a href="https://chaoffice.ai/"><b>Trang chủ</b></a> ·
+  <a href="https://chaoffice.ai/join"><b>Cộng đồng</b></a> ·
   <a href="https://x.com/merrickbuilds"><b>X</b></a> ·
   <a href="../../PRIVACY.md"><b>Quyền riêng tư</b></a>
 </p>
@@ -66,7 +66,7 @@ soạn thảo đọc tệp, thực hiện thay đổi, và chỉ cho bạn chín
   Opper, Cheaper Inference, Atlas Cloud, hoặc bất kỳ điểm cuối tương thích
   OpenAI nào, kể cả máy chủ mô hình cục bộ.
 - **Viết script được và sẵn sàng cho agent.** Ứng dụng đi kèm dòng lệnh
-  `genoffice` và một skill cho Claude Code, Codex, Cursor, Gemini CLI,
+  `chaoffice` và một skill cho Claude Code, Codex, Cursor, Gemini CLI,
   GitHub Copilot, OpenCode và Windsurf, để agent lập trình có thể tạo,
   chuyển đổi, đọc và chỉnh sửa tệp Office thật ngay trên máy của bạn mà
   không cần mở cửa sổ nào.
@@ -266,24 +266,24 @@ và đọc tệp theo từng trang, nên mô hình chỉ thấy các kết quả
 
 ### 9 · CLI — agent lập trình của bạn điều khiển ChaAI Office, ngay trên máy của bạn
 
-ChaAI Office đi kèm dòng lệnh `genoffice` và một agent skill. Cài skill và
+ChaAI Office đi kèm dòng lệnh `chaoffice` và một agent skill. Cài skill và
 Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode hay
 Windsurf có thể tạo, chuyển đổi, đọc và chỉnh sửa tệp Office thật qua cùng
 những engine với các ứng dụng, mà không mở cửa sổ nào.
 
-<img src="../assets/readme/cli-deck-in-app.webp" alt="ChaAI Office Slides hiển thị bộ slide Tệp Mặt Trời tám slide do một agent lập trình dựng qua dòng lệnh genoffice: slide bìa trên khung vẽ, tám ảnh thu nhỏ bên trái và panel AI đang mở" width="100%">
+<img src="../assets/readme/cli-deck-in-app.webp" alt="ChaAI Office Slides hiển thị bộ slide Tệp Mặt Trời tám slide do một agent lập trình dựng qua dòng lệnh chaoffice: slide bìa trên khung vẽ, tám ảnh thu nhỏ bên trái và panel AI đang mở" width="100%">
 
 <table>
 <tr>
 <td width="50%"><img src="../assets/readme/cli-slides-grid.webp" alt="Tám slide đã kết xuất của bộ Tệp Mặt Trời đặt cạnh nhau: bìa, dòng thời gian thăm dò, bốn con số chủ chốt, biểu đồ cột đường kính hành tinh, các hành tinh đá đối với các khổng lồ, con số 99,8% của Mặt Trời, lưới bốn hành tinh khổng lồ và những điểm cần nhớ"></td>
-<td width="50%"><img src="../assets/readme/cli-integrations.webp" alt="ChaAI Office Settings, trang Integrations: skill genoffice đã cài vào Claude Code, với nút Install cạnh Codex và Cursor"></td>
+<td width="50%"><img src="../assets/readme/cli-integrations.webp" alt="ChaAI Office Settings, trang Integrations: skill chaoffice đã cài vào Claude Code, với nút Install cạnh Codex và Cursor"></td>
 </tr>
 <tr>
 <td><b>Một prompt cho agent của bạn</b> — "Dựng bộ slide tám phần về Hệ Mặt
 Trời." Agent đọc skill, viết một style sheet, một dàn ý và đặc tả từng trang,
-tạo hai bức ảnh bằng <code>genoffice image</code>, và để
-<code>genoffice slides check</code> chối mọi thứ tràn hoặc chồng lấn trước
-khi <code>genoffice create</code> lắp <code>.pptx</code> và
+tạo hai bức ảnh bằng <code>chaoffice image</code>, và để
+<code>chaoffice slides check</code> chối mọi thứ tràn hoặc chồng lấn trước
+khi <code>chaoffice create</code> lắp <code>.pptx</code> và
 <code>slides render</code> trả về một PNG mỗi slide để xem.</td>
 <td><b>Cài một lần, từ Settings → Integrations</b> — ChaAI Office liệt kê các
 agent lập trình tìm thấy trên máy này và ghi skill vào mỗi agent bạn chọn.
@@ -295,18 +295,18 @@ genspark-ai/chaoffice</code>. Các lệnh và toàn bộ quy trình nằm ở
 
 ### 10 · MCP — cùng bộ công cụ qua Model Context Protocol
 
-Mỗi lệnh `genoffice` cũng là một công cụ MCP. Claude Code, Claude Desktop,
-Cursor và bất kỳ MCP client nào khác có thể tự chạy `genoffice mcp`, không
+Mỗi lệnh `chaoffice` cũng là một công cụ MCP. Claude Code, Claude Desktop,
+Cursor và bất kỳ MCP client nào khác có thể tự chạy `chaoffice mcp`, không
 cần cài skill, không cần mở cửa sổ, và nhận 29 công cụ cùng các tài liệu
 tham chiếu op dưới dạng resources. Một máy chủ HTTP thứ hai bên trong ứng
 dụng cho phép agent dựng một tài liệu Word trong một tab trình soạn thảo
 hiện rõ trong khi bạn xem.
 
-<img src="../assets/readme/mcp-deck-motion.webp" alt="Quay lệch thời gian Claude Code dựng một bản báo cáo đầu tư năng lượng tái tạo tám slide qua máy chủ MCP genoffice: nó tìm số liệu và ảnh, kiểm tra từng ảnh ứng viên bằng media, deck_start ghi style sheet và dàn ý, deck_page thêm từng trang đã kiểm tra, deck_build lắp .pptx và slides_render trả về ảnh của từng slide; bộ slide hoàn tất sau đó mở trong ChaAI Office Slides" width="100%">
+<img src="../assets/readme/mcp-deck-motion.webp" alt="Quay lệch thời gian Claude Code dựng một bản báo cáo đầu tư năng lượng tái tạo tám slide qua máy chủ MCP chaoffice: nó tìm số liệu và ảnh, kiểm tra từng ảnh ứng viên bằng media, deck_start ghi style sheet và dàn ý, deck_page thêm từng trang đã kiểm tra, deck_build lắp .pptx và slides_render trả về ảnh của từng slide; bộ slide hoàn tất sau đó mở trong ChaAI Office Slides" width="100%">
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/mcp-deck-in-app.webp" alt="ChaAI Office Slides hiển thị bộ slide Renewable Energy 2026 tám slide mà Claude Code dựng qua máy chủ MCP genoffice: slide bìa với ảnh trang trại gió trên khung vẽ và tám ảnh thu nhỏ bên trái"></td>
+<td width="50%"><img src="../assets/readme/mcp-deck-in-app.webp" alt="ChaAI Office Slides hiển thị bộ slide Renewable Energy 2026 tám slide mà Claude Code dựng qua máy chủ MCP chaoffice: slide bìa với ảnh trang trại gió trên khung vẽ và tám ảnh thu nhỏ bên trái"></td>
 <td width="50%"><img src="../assets/readme/mcp-integrations.webp" alt="ChaAI Office Settings, trang Integrations, phần MCP: lệnh claude mcp add một dòng cho Claude Code, khối JSON cho Cursor, Claude Desktop và các MCP client khác, và tuỳ chọn máy chủ HTTP cục bộ bên dưới"></td>
 </tr>
 <tr>
@@ -353,7 +353,7 @@ trình soạn thảo Word hiện rõ. Cả hai được mô tả ở
   bằng ngôn ngữ thường ngày; mọi câu trả lời đều trích dẫn tệp nguồn, cách
   một cú bấm.
 - **Skill.** Skill có sẵn hoặc `SKILL.md` của riêng bạn, đính kèm từ menu **+** của bất kỳ bảng AI nào.
-- **Viết script được.** Dòng lệnh `genoffice`, một agent skill và một máy
+- **Viết script được.** Dòng lệnh `chaoffice`, một agent skill và một máy
   chủ MCP đặt mọi engine phục vụ Claude Code, Claude Desktop, Codex, Cursor
   và các agent khác — vẫn ngay trên máy.
 - **Miễn phí**, cho cả cá nhân lẫn nhóm.
@@ -406,7 +406,7 @@ ChaAI Office đi kèm một bộ skill và nhận cả skill của bạn, cùng 
 
 ## Dòng lệnh và agent skill
 
-Mọi thứ các ứng dụng làm được với một tệp, dòng lệnh `genoffice` làm được
+Mọi thứ các ứng dụng làm được với một tệp, dòng lệnh `chaoffice` làm được
 từ terminal: soát, chuyển đổi, tạo, đọc và chỉnh sửa Word, Excel,
 PowerPoint, PDF, Markdown và HTML trên cùng những engine, không giao diện.
 Nó cài cùng ChaAI Office, không cần runtime riêng, và không bao giờ gửi tài
@@ -427,25 +427,25 @@ OpenCode và Windsurf ngay từ đầu, bất kỳ agent nào đọc được sk
 | `npx skills add genspark-ai/chaoffice`     | Cài từ kho lưu trữ này vào bất kỳ agent tương thích skills nào.                                                                                                     |
 
 Sau đó mở một cuộc trò chuyện mới và yêu cầu một tài liệu. Skill dạy agent
-khi nào nên dùng tới `genoffice`, cách đọc tệp trước khi sửa, và cách tự
+khi nào nên dùng tới `chaoffice`, cách đọc tệp trước khi sửa, và cách tự
 kiểm tra sản phẩm của mình.
 
 ### Quickstart từ terminal
 
 ```bash
-genoffice --version
-genoffice info report.docx --json                  # headings and blocks; or sheets, slides, pages
-genoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx/md/html, odt/ods/odp → docx/xlsx/pptx, doc/dot → docx, …
-genoffice create --type docx --from notes.md --out notes.docx
-genoffice create --type xlsx --from table.json --out sales.xlsx   # "=SUM(B2:B9)" cells stay live formulas
-genoffice docs read report.docx --range 0-9 --json # then `docs apply --ops edits.json` edits in place
-genoffice render report.docx --out shots/          # one PNG per page, to look at what you made
-genoffice open sales.xlsx                          # hand the result to the editor
+chaoffice --version
+chaoffice info report.docx --json                  # headings and blocks; or sheets, slides, pages
+chaoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx/md/html, odt/ods/odp → docx/xlsx/pptx, doc/dot → docx, …
+chaoffice create --type docx --from notes.md --out notes.docx
+chaoffice create --type xlsx --from table.json --out sales.xlsx   # "=SUM(B2:B9)" cells stay live formulas
+chaoffice docs read report.docx --range 0-9 --json # then `docs apply --ops edits.json` edits in place
+chaoffice render report.docx --out shots/          # one PNG per page, to look at what you made
+chaoffice open sales.xlsx                          # hand the result to the editor
 ```
 
 Mỗi lệnh in một dòng tóm tắt, hoặc một đối tượng JSON duy nhất với `--json`.
 Chỉnh sửa là nguyên tử: một op bị chối bỏ giữ nguyên tệp và trả về lỗi có
-hướng dẫn. `genoffice help` liệt kê bề mặt lệnh hiện tại; tài liệu tham
+hướng dẫn. `chaoffice help` liệt kê bề mặt lệnh hiện tại; tài liệu tham
 chiếu đầy đủ nằm ở [packages/cli/README.md](../../packages/cli/README.md).
 
 ### Agent thực sự chạy những gì
@@ -455,20 +455,20 @@ Code. Phía sau, agent đi theo quy trình từng bước của skill và CLI ki
 mỗi giai đoạn trước khi giai đoạn sau bắt đầu:
 
 ```bash
-genoffice capabilities --json                        # which cloud tools ChaAI Office has configured
-genoffice guide slides design                        # the deck workflow and layout library
-genoffice image "the eight planets in a row …" --aspect 16:9 --out deck/assets/cover.jpg
-genoffice slides check deck/outline.json --json      # 8 pages, no findings
-genoffice slides check deck/pages/01.json --json     # builds one slide, audits overflow and overlap
+chaoffice capabilities --json                        # which cloud tools ChaAI Office has configured
+chaoffice guide slides design                        # the deck workflow and layout library
+chaoffice image "the eight planets in a row …" --aspect 16:9 --out deck/assets/cover.jpg
+chaoffice slides check deck/outline.json --json      # 8 pages, no findings
+chaoffice slides check deck/pages/01.json --json     # builds one slide, audits overflow and overlap
 …                                                    # one page file per slide, fixed until each check is clean
-genoffice create --type pptx --spec deck/pages --outline deck/outline.json --out deck/solar-system.pptx --json
-genoffice slides render deck/solar-system.pptx --out deck/shots --json
-genoffice slides audit deck/solar-system.pptx --json    # 8 slides, no layout issues
-genoffice slides replace deck/solar-system.pptx --slide 4 --spec deck/pages/05.json --json
-genoffice open deck/solar-system.pptx
+chaoffice create --type pptx --spec deck/pages --outline deck/outline.json --out deck/solar-system.pptx --json
+chaoffice slides render deck/solar-system.pptx --out deck/shots --json
+chaoffice slides audit deck/solar-system.pptx --json    # 8 slides, no layout issues
+chaoffice slides replace deck/solar-system.pptx --slide 4 --spec deck/pages/05.json --json
+chaoffice open deck/solar-system.pptx
 ```
 
-Không có lời gọi mô hình nào diễn ra bên trong `genoffice`: agent là người
+Không có lời gọi mô hình nào diễn ra bên trong `chaoffice`: agent là người
 suy nghĩ, CLI là người dựng và kiểm tra, và kết quả mở trong ChaAI Office hay
 PowerPoint như một `.pptx` bình thường.
 
@@ -482,13 +482,13 @@ MCP**:
 
 | Cách                                  | Là gì                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **A · `genoffice mcp`** (khuyến nghị) | Một máy chủ stdio trợ lý tự khởi động; ChaAI Office không cần mở. Một công cụ cho mỗi lệnh (`info`, `convert`, `create_docx`, `create_xlsx`, `create_pptx`, `create_pdf`, `docs_read` / `docs_apply` / `docs_check`, `sheet_*`, `slides_*`, `render`, `guide`, `search`, `image`, `media`, `open`) cùng luồng deck theo giai đoạn `deck_start` → `deck_page` → `deck_build` → `deck_replace`. Ops, spec và Markdown được truyền inline, nên client không có hệ thống tệp vẫn dùng được. |
+| **A · `chaoffice mcp`** (khuyến nghị) | Một máy chủ stdio trợ lý tự khởi động; ChaAI Office không cần mở. Một công cụ cho mỗi lệnh (`info`, `convert`, `create_docx`, `create_xlsx`, `create_pptx`, `create_pdf`, `docs_read` / `docs_apply` / `docs_check`, `sheet_*`, `slides_*`, `render`, `guide`, `search`, `image`, `media`, `open`) cùng luồng deck theo giai đoạn `deck_start` → `deck_page` → `deck_build` → `deck_replace`. Ops, spec và Markdown được truyền inline, nên client không có hệ thống tệp vẫn dùng được. |
 | **B · Máy chủ HTTP cục bộ**           | Chạy bên trong ứng dụng ChaAI Office tại `http://127.0.0.1:3093/mcp` (Streamable HTTP, kèm SSE kiểu cũ). Các công cụ của nó điều khiển một tab trình soạn thảo Word hiện rõ: `create_session`, `insert_content`, `replace_blocks`, `apply_ops`, `read_document`, `save_session`, và bạn xem tài liệu thành hình. Mặc định tắt; bật trong cùng pane cài đặt.                                                                                                                             |
-| **C · `genoffice mcp --http`**        | Bộ công cụ stdio dưới dạng máy chủ Streamable HTTP cho client trên máy khác: một container, một sandbox, một máy dùng chung trong mạng của bạn. Tệp đi cùng lời gọi: `PUT /files/<name>` tải lên một tệp và trả về URL, mọi tham số `file` nhận URL http(s), và công cụ ghi tệp trả lại dưới dạng URL tải xuống cùng, khi tệp nhỏ, các byte dưới dạng MCP resource. `--host 0.0.0.0` mở ra mạng, `--token` bảo vệ nó.                                                                |
+| **C · `chaoffice mcp --http`**        | Bộ công cụ stdio dưới dạng máy chủ Streamable HTTP cho client trên máy khác: một container, một sandbox, một máy dùng chung trong mạng của bạn. Tệp đi cùng lời gọi: `PUT /files/<name>` tải lên một tệp và trả về URL, mọi tham số `file` nhận URL http(s), và công cụ ghi tệp trả lại dưới dạng URL tải xuống cùng, khi tệp nhỏ, các byte dưới dạng MCP resource. `--host 0.0.0.0` mở ra mạng, `--token` bảo vệ nó.                                                                |
 
 ```bash
 # Claude Code
-claude mcp add --transport stdio genoffice -- genoffice mcp
+claude mcp add --transport stdio chaoffice -- chaoffice mcp
 ```
 
 ```jsonc
@@ -498,7 +498,7 @@ claude mcp add --transport stdio genoffice -- genoffice mcp
 
 ```bash
 # Trên máy có ChaAI Office (mạng riêng; thêm --token cho máy dùng chung)
-genoffice mcp --http 3093 --host 0.0.0.0 --token "$GENOFFICE_MCP_TOKEN"
+chaoffice mcp --http 3093 --host 0.0.0.0 --token "$GENOFFICE_MCP_TOKEN"
 
 # Từ phía client: tải lên, rồi dùng URL ở mọi nơi công cụ nhận tệp
 curl -T report.docx -H "Authorization: Bearer $GENOFFICE_MCP_TOKEN" http://server:3093/files/
@@ -514,18 +514,18 @@ của chính máy chủ. `render`, `convert` sang PDF và `create_pdf` vẫn kh�
 một tiến trình ChaAI Office ẩn, nên máy chủ không giao diện cần cài ứng dụng
 và một màn hình ảo (`xvfb-run`).
 
-`genoffice` ở đây là CLI đi trong ứng dụng (trên macOS
-`/Applications/ChaAI Office.app/Contents/Resources/cli/genoffice`; pane cài
+`chaoffice` ở đây là CLI đi trong ứng dụng (trên macOS
+`/Applications/ChaAI Office.app/Contents/Resources/cli/chaoffice`; pane cài
 đặt in đúng đường dẫn cho bản cài của bạn). Máy chủ mang theo hướng dẫn quy
 trình riêng và cung cấp các tài liệu tham chiếu op dưới dạng resources
-`genoffice://guide/*`, nên không cần skill; skill và máy chủ MCP có thể
+`chaoffice://guide/*`, nên không cần skill; skill và máy chủ MCP có thể
 cùng tồn tại và trợ lý tự chọn một. Tính năng đám mây (`search`, `image`,
 `media`) vẫn đi qua nhà cung cấp cấu hình trong ChaAI Office; mọi thứ khác
 chạy cục bộ, và `GENOFFICE_ALLOWED_ROOTS` giới hạn mọi công cụ trong các
 thư mục bạn liệt kê.
 
 Bộ slide năng lượng tái tạo trong [demo](#demo) là cảnh một prompt trong
-Claude Code chỉ gắn đúng máy chủ MCP `genoffice` trông ra sao từ phía giao
+Claude Code chỉ gắn đúng máy chủ MCP `chaoffice` trông ra sao từ phía giao
 thức:
 
 ```text
@@ -577,8 +577,8 @@ sudo apt install ./genoffice_<version>_amd64.deb
 Trên Fedora / họ RHEL / openSUSE, cài bản rpm:
 
 ```bash
-sudo dnf install ./genoffice-<version>.x86_64.rpm     # Fedora / RHEL family
-sudo zypper install ./genoffice-<version>.x86_64.rpm  # openSUSE
+sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
+sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
 
 AppImage chạy tại chỗ: cài runtime FUSE 2
@@ -639,7 +639,7 @@ ChaAI Office đang được phát triển liên tục và phản hồi của b�
 - **Báo lỗi hoặc đề xuất tính năng** trong
   [GitHub Issues](https://github.com/genspark-ai/chaoffice/issues).
 - **Tham gia trò chuyện nhóm ChaAI Office** trên
-  [GenTeam](https://genoffice.ai/join) để nói chuyện với đội ngũ và những
+  [GenTeam](https://chaoffice.ai/join) để nói chuyện với đội ngũ và những
   người dùng khác.
 - **Theo dõi [@merrickbuilds](https://x.com/merrickbuilds) trên X** để nhận
   ghi chú phát hành, demo và những gì đang được xây tiếp.
@@ -720,7 +720,7 @@ thẻ, hàng KPI, trường form và nền trang; chỉ những phần hiển th
 <details>
 <summary><b>Có thể điều khiển ChaAI Office từ Claude Code, Codex, Cursor hoặc một script không?</b></summary>
 
-Có. ChaAI Office cài dòng lệnh `genoffice` chạy cùng những engine ở chế độ
+Có. ChaAI Office cài dòng lệnh `chaoffice` chạy cùng những engine ở chế độ
 headless: soát, chuyển đổi, tạo, đọc và chỉnh sửa tài liệu từ terminal hoặc
 script, với đầu ra `--json` cho chương trình. Agent skill đi kèm dạy Claude
 Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode và Windsurf cách

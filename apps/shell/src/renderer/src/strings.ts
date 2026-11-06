@@ -844,7 +844,7 @@ const upstreamStrings = {
     intgExample2: 'Make a 6-slide deck about our Q3 results',
     intgExample3: 'Convert budget.xlsx to PDF and open it in ChaAI Office',
     intgStep2Note:
-      'The assistant calls GenOffice itself, through the command line or MCP; you never have to type a command.',
+      'The assistant calls ChaOffice itself, through the command line or MCP; you never have to type a command.',
 
     intgCliPartTitle: 'CLI · command line + skill',
     intgCliPartDesc:
@@ -1386,7 +1386,7 @@ const upstreamStrings = {
     intgExample2: 'Tạo bài thuyết trình 6 trang trình bày về kết quả quý 3 của chúng tôi',
     intgExample3: 'Chuyển đổi budget.xlsx sang PDF và mở trong ChaAI Office',
     intgStep2Note:
-      'Trợ lý tự gọi GenOffice qua dòng lệnh hoặc MCP; bạn không bao giờ phải nhập lệnh.',
+      'Trợ lý tự gọi ChaOffice qua dòng lệnh hoặc MCP; bạn không bao giờ phải nhập lệnh.',
 
     intgCliPartTitle: 'CLI · dòng lệnh + kỹ năng',
     intgCliPartDesc:
@@ -1931,7 +1931,7 @@ const upstreamStrings = {
     intgExample2: '3. çeyrek sonuçlarımız hakkında 6 slaytlık bir sunu hazırla',
     intgExample3: 'budget.xlsx dosyasını PDF’e dönüştür ve ChaAI Office’te aç',
     intgStep2Note:
-      'Asistan GenOffice’i komut satırı veya MCP üzerinden kendisi çağırır; sizin yazmanız hiç gerekmez.',
+      'Asistan ChaOffice’i komut satırı veya MCP üzerinden kendisi çağırır; sizin yazmanız hiç gerekmez.',
 
     intgCliPartTitle: 'CLI · komut satırı + beceri',
     intgCliPartDesc:
@@ -2486,7 +2486,7 @@ const upstreamStrings = {
     intgExample2: '第 3 四半期の業績について 6 枚のスライドを作って',
     intgExample3: 'budget.xlsx を PDF に変換して ChaAI Office で開いて',
     intgStep2Note:
-      'アシスタントがコマンドラインまたは MCP 経由で GenOffice を自分で呼び出します。あなたが入力する必要はありません。',
+      'アシスタントがコマンドラインまたは MCP 経由で ChaOffice を自分で呼び出します。あなたが入力する必要はありません。',
 
     intgCliPartTitle: 'CLI · コマンドライン + skill',
     intgCliPartDesc:
@@ -3576,7 +3576,7 @@ const upstreamStrings = {
     intgExample2: 'Prépare une présentation de 6 diapositives sur nos résultats du T3',
     intgExample3: 'Convertis budget.xlsx en PDF et ouvre-le dans ChaAI Office',
     intgStep2Note:
-      "L'assistant appelle lui-même GenOffice, par la ligne de commande ou MCP ; vous n'avez jamais à saisir de commande.",
+      "L'assistant appelle lui-même ChaOffice, par la ligne de commande ou MCP ; vous n'avez jamais à saisir de commande.",
 
     intgCliPartTitle: 'CLI · ligne de commande + skill',
     intgCliPartDesc:
@@ -4137,7 +4137,7 @@ const upstreamStrings = {
     intgExample2: 'Erstelle eine Präsentation mit 6 Folien zu unseren Q3-Ergebnissen',
     intgExample3: 'Wandle budget.xlsx in PDF um und öffne es in ChaAI Office',
     intgStep2Note:
-      'Der Assistent ruft GenOffice selbst auf – über die Befehlszeile oder MCP; Sie müssen nie einen Befehl eintippen.',
+      'Der Assistent ruft ChaOffice selbst auf – über die Befehlszeile oder MCP; Sie müssen nie einen Befehl eintippen.',
 
     intgCliPartTitle: 'CLI · Kommandozeile + Skill',
     intgCliPartDesc:
@@ -4691,7 +4691,7 @@ const upstreamStrings = {
     intgExample2: 'Haz una presentación de 6 diapositivas sobre nuestros resultados del T3',
     intgExample3: 'Convierte budget.xlsx a PDF y ábrelo en ChaAI Office',
     intgStep2Note:
-      'El asistente llama a GenOffice por sí mismo, mediante la línea de comandos o MCP; nunca tienes que escribir un comando.',
+      'El asistente llama a ChaOffice por sí mismo, mediante la línea de comandos o MCP; nunca tienes que escribir un comando.',
 
     intgCliPartTitle: 'CLI · línea de comandos + skill',
     intgCliPartDesc:
@@ -5773,7 +5773,7 @@ const upstreamStrings = {
     intgExample2: 'Buat presentasi 6 slide tentang hasil Q3 kami',
     intgExample3: 'Konversi budget.xlsx ke PDF dan buka di ChaAI Office',
     intgStep2Note:
-      'Asisten memanggil GenOffice sendiri, melalui baris perintah atau MCP; Anda tidak perlu mengetik perintah apa pun.',
+      'Asisten memanggil ChaOffice sendiri, melalui baris perintah atau MCP; Anda tidak perlu mengetik perintah apa pun.',
 
     intgCliPartTitle: 'CLI · baris perintah + skill',
     intgCliPartDesc:
@@ -6317,7 +6317,7 @@ const upstreamStrings = {
     intgExample2: 'Сделай презентацию из 6 слайдов о наших результатах за 3-й квартал',
     intgExample3: 'Конвертируй budget.xlsx в PDF и открой в ChaAI Office',
     intgStep2Note:
-      'Ассистент сам вызывает GenOffice — через командную строку или MCP; вам не нужно вводить команды.',
+      'Ассистент сам вызывает ChaOffice — через командную строку или MCP; вам не нужно вводить команды.',
 
     intgCliPartTitle: 'CLI · командная строка + skill',
     intgCliPartDesc:
@@ -6861,7 +6861,7 @@ const upstreamStrings = {
     intgExample2: 'أنشئ عرضاً من 6 شرائح عن نتائج الربع الثالث',
     intgExample3: 'حوّل budget.xlsx إلى PDF وافتحه في ChaAI Office',
     intgStep2Note:
-      'المساعد يستدعي GenOffice بنفسه، عبر سطر الأوامر أو MCP؛ لن تحتاج إلى كتابة أي أمر.',
+      'المساعد يستدعي ChaOffice بنفسه، عبر سطر الأوامر أو MCP؛ لن تحتاج إلى كتابة أي أمر.',
 
     intgCliPartTitle: 'CLI · سطر الأوامر + skill',
     intgCliPartDesc:
@@ -7118,11 +7118,11 @@ const upstreamStrings = {
     askSend: 'Enviar',
     askStop: 'Parar',
     askHeroTagline:
-      'Marque com estrela os arquivos que você lê com frequência e a IA poderá pesquisá-los e citar a fonte — clique numa citação para abrir.',
+      'Marque com estrela os arquivos que você lê com frequência e a IA poderá pesquisá-los e citar a fonte — clique em uma citação para abrir.',
     askStep1Title: 'Marcar arquivos',
     askStep1Desc: 'Em Recentes ou Pastas, clique na estrela da linha do arquivo',
     askStep2Title: 'Faça perguntas',
-    askStep2Desc: 'Pergunte como num chat, sem abrir nenhum documento antes',
+    askStep2Desc: 'Pergunte como em um chat, sem abrir nenhum documento antes',
     askStep3Title: 'Abrir citações',
     askStep3Desc: 'As respostas citam o arquivo de origem; clique para ir até ele',
     askCtaRecents: 'Marcar de Recentes',
@@ -7287,10 +7287,10 @@ const upstreamStrings = {
     saveLocation: 'Local de salvamento',
     setRestoreSession: 'Reabrir os documentos da última vez',
     setRestoreSessionDesc:
-      'Os documentos abertos ao fechar o ChaAI Office são reabertos automaticamente na próxima vez que ele for iniciado.',
-    setTabSleep: 'Suspender separadores inativos',
+      'Os documentos abertos ao fechar o ChaOffice são reabertos automaticamente na próxima vez que ele for iniciado.',
+    setTabSleep: 'Suspender guias inativas',
     setTabSleepDesc:
-      'Com muitos separadores abertos, os que não vê há algum tempo libertam a memória e reabrem o ficheiro quando regressa. Separadores com alterações por guardar ou fixados nunca são suspensos.',
+      'As guias que você não acessa há algum tempo liberam memória e reabrem o arquivo quando você volta. Guias fixadas ou com alterações não salvas nunca são suspensas.',
     tabSleeping: 'Suspenso',
     setAutoSave: 'Salvar automaticamente todos os documentos',
     setAutoSaveDesc:
@@ -7406,7 +7406,7 @@ const upstreamStrings = {
     intgExample2: 'Monte uma apresentação de 6 slides sobre nossos resultados do 3º trimestre',
     intgExample3: 'Converta budget.xlsx para PDF e abra no ChaAI Office',
     intgStep2Note:
-      'O assistente chama o GenOffice sozinho, pela linha de comando ou MCP; você nunca precisa digitar um comando.',
+      'O assistente chama o ChaOffice sozinho, pela linha de comando ou MCP; você nunca precisa digitar um comando.',
 
     intgCliPartTitle: 'CLI · linha de comando + skill',
     intgCliPartDesc:
@@ -7623,9 +7623,9 @@ const upstreamStrings = {
       'Cada entrada é { id, name, vision, maxTokens, alias }; o que não está listado mantém os interruptores acima e as heurísticas embarcadas.',
     setAiEndpointKeyEnv: 'Variável de ambiente da chave',
     setAiEndpointModelsProbed:
-      'As capacidades observadas por esta sonda (vision, maxTokens, contextWindow) são guardadas em cache ao lado do endpoint e valem para os modelos não declarados; a sonda seguinte substitui-as por completo e nada do que está escrito aqui muda.',
+      'As capacidades observadas por esta sonda (vision, maxTokens, contextWindow) são salvas em cache ao lado do endpoint e valem para os modelos não declarados; a sonda seguinte substitui-as por completo e nada do que está escrito aqui muda.',
     setAiEndpointKeyEnvHint:
-      'Se definido, nenhuma chave é guardada aqui; ela é lida dessa variável de ambiente.',
+      'Se definido, nenhuma chave é salva aqui; ela é lida dessa variável de ambiente.',
     setAiEndpointHeadersBad: 'Formato de cabeçalho inválido: cada linha deve ser "Nome: Valor".',
     setAiEndpointModelsBad:
       'Declarações de modelo inválidas: deve ser um array JSON, ex. [{ "id": "m" }].',
@@ -7958,7 +7958,7 @@ const upstreamStrings = {
     intgExample2: 'Prepara una presentazione di 6 slide sui nostri risultati del terzo trimestre',
     intgExample3: 'Converti budget.xlsx in PDF e aprilo in ChaAI Office',
     intgStep2Note:
-      "L'assistente richiama GenOffice da solo, tramite la riga di comando o MCP; non dovrai mai digitare un comando.",
+      "L'assistente richiama ChaOffice da solo, tramite la riga di comando o MCP; non dovrai mai digitare un comando.",
 
     intgCliPartTitle: 'CLI · riga di comando + skill',
     intgCliPartDesc:
@@ -8506,7 +8506,7 @@ const upstreamStrings = {
     intgExample2: 'Zrób prezentację z 6 slajdów o naszych wynikach za III kwartał',
     intgExample3: 'Przekonwertuj budget.xlsx do PDF i otwórz w ChaAI Office',
     intgStep2Note:
-      'Asystent sam wywołuje GenOffice — przez wiersz poleceń lub MCP; nigdy nie musisz wpisywać polecenia.',
+      'Asystent sam wywołuje ChaOffice — przez wiersz poleceń lub MCP; nigdy nie musisz wpisywać polecenia.',
 
     intgCliPartTitle: 'CLI · wiersz poleceń + skill',
     intgCliPartDesc:
@@ -9003,7 +9003,7 @@ const upstreamStrings = {
     intgExample2: 'Udělej prezentaci o 6 snímcích o našich výsledcích za 3. čtvrtletí',
     intgExample3: 'Převeď budget.xlsx do PDF a otevři ho v ChaAI Office',
     intgStep2Note:
-      'Asistent volá GenOffice sám – přes příkazový řádek nebo MCP; nikdy nemusíte psát žádný příkaz.',
+      'Asistent volá ChaOffice sám – přes příkazový řádek nebo MCP; nikdy nemusíte psát žádný příkaz.',
 
     intgCliPartTitle: 'CLI · příkazový řádek + skill',
     intgCliPartDesc:
@@ -9598,7 +9598,7 @@ const upstreamStrings = {
     intgExample2: 'Maak een presentatie van 6 dia’s over onze Q3-resultaten',
     intgExample3: 'Zet budget.xlsx om naar PDF en open het in ChaAI Office',
     intgStep2Note:
-      'De assistent roept GenOffice zelf aan, via de opdrachtregel of MCP; u hoeft nooit een opdracht te typen.',
+      'De assistent roept ChaOffice zelf aan, via de opdrachtregel of MCP; u hoeft nooit een opdracht te typen.',
 
     intgCliPartTitle: 'CLI · opdrachtregel + skill',
     intgCliPartDesc:
@@ -10146,7 +10146,7 @@ const upstreamStrings = {
     intgExample2: 'Buat pembentangan 6 slaid tentang hasil S3 kami',
     intgExample3: 'Tukar budget.xlsx kepada PDF dan buka dalam ChaAI Office',
     intgStep2Note:
-      'Pembantu memanggil GenOffice sendiri, melalui baris arahan atau MCP; anda tidak perlu menaip sebarang arahan.',
+      'Pembantu memanggil ChaOffice sendiri, melalui baris arahan atau MCP; anda tidak perlu menaip sebarang arahan.',
 
     intgCliPartTitle: 'CLI · baris arahan + skill',
     intgCliPartDesc:
@@ -10687,7 +10687,7 @@ const upstreamStrings = {
     intgExample2: 'הכן מצגת של 6 שקופיות על תוצאות הרבעון השלישי שלנו',
     intgExample3: 'המר את budget.xlsx ל-PDF ופתח אותו ב-ChaAI Office',
     intgStep2Note:
-      'העוזר קורא ל-GenOffice בעצמו, דרך שורת הפקודה או MCP; לעולם לא תצטרכו להקליד פקודה.',
+      'העוזר קורא ל-ChaOffice בעצמו, דרך שורת הפקודה או MCP; לעולם לא תצטרכו להקליד פקודה.',
 
     intgCliPartTitle: 'CLI · שורת פקודה + skill',
     intgCliPartDesc:
@@ -11225,7 +11225,7 @@ const upstreamStrings = {
     intgExample2: 'हमारे Q3 नतीजों पर 6 स्लाइड का प्रेज़ेंटेशन बनाओ',
     intgExample3: 'budget.xlsx को PDF में बदलो और ChaAI Office में खोलो',
     intgStep2Note:
-      'असिस्टेंट GenOffice को कमांड लाइन या MCP के ज़रिए खुद कॉल करता है; आपको कभी कोई कमांड टाइप नहीं करनी पड़ती।',
+      'असिस्टेंट ChaOffice को कमांड लाइन या MCP के ज़रिए खुद कॉल करता है; आपको कभी कोई कमांड टाइप नहीं करनी पड़ती।',
 
     intgCliPartTitle: 'CLI · कमांड लाइन + skill',
     intgCliPartDesc:
