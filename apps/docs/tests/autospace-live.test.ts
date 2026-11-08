@@ -8,7 +8,7 @@ import { readFileSync } from 'node:fs'
 import { Editor } from '@tiptap/core'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import type { Run } from '@chaoffice/docx-engine'
-import { autospaceRanges, editorExtensions, paragraphInlineSegments } from '../src/renderer/editor/extensions'
+import { editorExtensions, paragraphInlineSegments } from '../src/renderer/editor/extensions'
 import {
   renderTableSpec,
   renderTextboxSpec,
@@ -296,13 +296,13 @@ describe('balanced-space advance', () => {
     )
     // ChaOfficeCheLatinKR advances every glyph 0.5em (tools/build-kr-che-latin-font.py)
     expect(face?.[1]).toContain('ChaOfficeCheLatinKR.woff2')
-    const rule = /\.doc-balanced-space\s*\{([^}]*)\}/.exec(read('../src/renderer/styles.css'))
-    expect(rule?.[1]).toContain("font-family: 'ChaAI Office Balanced Space'")
-    const face = /font-family: 'ChaAI Office Balanced Space';([^}]*)\}/.exec(
+    const rule2 = /\.doc-balanced-space\s*\{([^}]*)\}/.exec(read('../src/renderer/styles.css'))
+    expect(rule2?.[1]).toContain("font-family: 'ChaAI Office Balanced Space'")
+    const face2 = /font-family: 'ChaAI Office Balanced Space';([^}]*)\}/.exec(
       read('../src/renderer/fonts/fonts.css'),
     )
-    expect(face?.[1]).toContain('ChaOfficeBalancedSpace.woff2')
-    expect(face?.[1]).toContain('unicode-range: U+0020;')
+    expect(face2?.[1]).toContain('ChaOfficeBalancedSpace.woff2')
+    expect(face2?.[1]).toContain('unicode-range: U+0020;')
   })
 })
 

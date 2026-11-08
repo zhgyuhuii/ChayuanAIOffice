@@ -2,7 +2,7 @@ import * as CFB from 'cfb'
 
 /**
  * The OLE2/CFB container opener shared by the legacy Office importers (the
- * .doc reader in @genoffice/doc2docx, the .ppt reader in @genoffice/ppt2pptx,
+ * .doc reader in @chaoffice/doc2docx, the .ppt reader in @chaoffice/ppt2pptx,
  * and any .xls reader that comes along).
  *
  * It validates the compound-file signature and the 512-byte header before

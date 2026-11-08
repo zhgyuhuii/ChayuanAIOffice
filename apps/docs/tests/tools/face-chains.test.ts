@@ -7,7 +7,7 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import wordFaces from '@genoffice/font-metrics/word-faces.json'
+import wordFaces from '@chaoffice/font-metrics/word-faces.json'
 import { cssFontFamily, setDocFontTable } from '../../src/renderer/line-metrics'
 
 const out = process.env.FACE_CHAINS_OUT ?? ''

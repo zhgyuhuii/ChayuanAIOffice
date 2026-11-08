@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { HfImage, SectionSettings } from '@genoffice/docx-engine'
+import type { HfImage, SectionSettings } from '@chaoffice/docx-engine'
 import { estimateHfHeight, hfHeaderGeom } from '../src/renderer/line-metrics'
 import { hfBodyObstacles, hfSideWrapObstacles, hfStripGeom } from '../src/renderer/editor/hf-dom'
 import { effectiveTopPx } from '../src/renderer/pagination-sections'

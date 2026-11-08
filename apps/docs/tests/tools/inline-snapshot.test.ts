@@ -8,9 +8,9 @@ import { createHash } from 'node:crypto'
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { basename, join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { parseDocx } from '@genoffice/docx-engine'
+import { parseDocx } from '@chaoffice/docx-engine'
 import { blockRunGroups } from '../../../../packages/docx-engine/src/parse-block-passes'
-import type { Run } from '@genoffice/docx-engine'
+import type { Run } from '@chaoffice/docx-engine'
 import {
   docAutospaceOff,
   docBodyFont,

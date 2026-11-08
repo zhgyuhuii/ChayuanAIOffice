@@ -7,7 +7,7 @@
 import { Editor } from '@tiptap/core'
 import { NodeSelection } from '@tiptap/pm/state'
 import { afterEach, describe, expect, it } from 'vitest'
-import { parseDocx, type TextboxDisplay } from '@genoffice/docx-engine'
+import { parseDocx, type TextboxDisplay } from '@chaoffice/docx-engine'
 import { buildDocx } from '../../../packages/docx-engine/tests/helpers/build-docx'
 import { computeFormatState } from '../src/renderer/components/ribbon-format-state'
 import { setActiveSubEditor } from '../src/renderer/editor/active-editor'

@@ -25,7 +25,7 @@
  * connectors are presented from the parent transition point.
  *
  * The pre-rendered drawing is laid out by the org-chart interpreter in
- * @genoffice/pptx-engine/dgm-hier from the same constraint facts the layout
+ * @chaoffice/pptx-engine/dgm-hier from the same constraint facts the layout
  * carries, so the first picture and Word's re-layout share their geometry.
  */
 
@@ -33,7 +33,7 @@ import {
   layoutHierTree,
   parseHierConstraints,
   type HierTreeNode,
-} from '@genoffice/pptx-engine/dgm-hier'
+} from '@chaoffice/pptx-engine/dgm-hier'
 
 import { HIERARCHY1_LAYOUT_XML } from './smartart-layout'
 

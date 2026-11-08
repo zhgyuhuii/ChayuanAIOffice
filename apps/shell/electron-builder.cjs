@@ -981,7 +981,7 @@ const config = {
         const hint = linuxArm64
           ? 'cross-build with "cargo zigbuild --release --target aarch64-unknown-linux-gnu", ' +
             'or build natively on an arm64 Linux host'
-          : 'run "npm run native:build -w @genoffice/sheets" on an x64 Linux host, ' +
+          : 'run "npm run native:build -w @chaoffice/sheets" on an x64 Linux host, ' +
             'or cross-build with "cargo zigbuild --release --target x86_64-unknown-linux-gnu"'
         throw new Error(
           `linux extraResources source missing: ${linuxSidecarCandidates.join(' or ')} (${hint})`,

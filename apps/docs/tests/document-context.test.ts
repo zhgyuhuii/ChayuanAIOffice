@@ -4,7 +4,7 @@
  * the themeFontLang face, a Latin-named slot falls back to SimSun / Batang.
  */
 import { describe, expect, it } from 'vitest'
-import type { ParsedDocFull } from '@genoffice/docx-engine'
+import type { ParsedDocFull } from '@chaoffice/docx-engine'
 import {
   documentTextContext,
   eaFaceForCjkFactor,

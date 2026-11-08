@@ -5,7 +5,7 @@ import {
   openOle2Container as openSharedOle2Container,
   type Ole2FailureCode,
   type Ole2OpenResult,
-} from '@genoffice/compound-file'
+} from '@chaoffice/compound-file'
 
 import { LegacyDocError } from './errors'
 
@@ -47,7 +47,7 @@ export const WORD_DOCUMENT_STREAM = 'WordDocument'
 /**
  * Open an OLE2 compound file and expose its document streams. The generic
  * rules (signature, 512-byte header, input and stream caps, owned stream
- * bytes) live in @genoffice/compound-file, shared with the other legacy
+ * bytes) live in @chaoffice/compound-file, shared with the other legacy
  * importers; this wrapper defaults to the .doc caps.
  */
 export function openOle2Container(

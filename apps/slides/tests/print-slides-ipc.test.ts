@@ -90,7 +90,7 @@ vi.mock('../src/main/shaped-metrics', () => ({
 vi.mock('../src/main/print-window', () => ({ printSlidesHtml: mocks.printSlidesHtml }))
 // macOS silent jobs spool through lp; the handler-level test only asserts the
 // route and the resolved job options, never touches CUPS.
-vi.mock('@genoffice/electron-utils/print-cups', () => ({
+vi.mock('@chaoffice/electron-utils/print-cups', () => ({
   printPdfViaCups: mocks.printPdfViaCups,
   printToPdfOptionsFor: (request: Record<string, unknown>) => request,
 }))

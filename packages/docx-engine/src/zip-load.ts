@@ -1,6 +1,5 @@
 import JSZip from 'jszip'
 import { assertDeclaredSizesWithinLimits, assertZipInflatesWithinLimits } from '@chaoffice/zip-gate'
-import { needsOoxmlNormalization, normalizeOoxmlXml } from './ooxml-normalize'
 import {
   dedupeStyleRefs,
   hasDuplicateStyleRefs,

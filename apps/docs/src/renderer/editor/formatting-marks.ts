@@ -1,5 +1,5 @@
 import { Extension } from '@tiptap/core'
-import type { SectionInfo } from '@genoffice/docx-engine'
+import type { SectionInfo } from '@chaoffice/docx-engine'
 import type { Node as PmNode } from '@tiptap/pm/model'
 import { Plugin, PluginKey } from '@tiptap/pm/state'
 import { Decoration, DecorationSet } from '@tiptap/pm/view'

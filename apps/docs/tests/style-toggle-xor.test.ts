@@ -4,7 +4,7 @@
  * keep it on, so the engine's resolved value is painted as a doc-cs-nb class.
  */
 import { Editor } from '@tiptap/core'
-import { parseDocx } from '@genoffice/docx-engine'
+import { parseDocx } from '@chaoffice/docx-engine'
 import { describe, expect, it } from 'vitest'
 import { buildDocx } from '../../../packages/docx-engine/tests/helpers/build-docx'
 import { blocksToPmDoc } from '../src/renderer/editor/convert'
