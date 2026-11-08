@@ -1,4 +1,4 @@
-import { convertPptToPptx, LegacyPptError } from '@genoffice/ppt2pptx'
+import { convertPptToPptx, LegacyPptError } from '@chaoffice/ppt2pptx'
 import { CliError, EXIT } from '../result'
 
 /**
