@@ -773,7 +773,7 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 - vitest 全工作区绿：链条前段 31 区 && 语义全过（i18n 63/electron-utils 361/font-metrics 144/zip-gate 434/docx-engine 5671/sheets 4126+cargo/shell 1352/cli/ui/ribbon/mobile-touch…）+slides 1628（修复后）/pptx-render 423/pdf 1149/markdown 1560/web-bridge 24/server 38/web 15/html 363（链外补验）；合计约 19.6k 用例。
 - cargo test --release 326 绿（R38 时 320，+6 随 xls_styles 等新模块）；sidecar mac release 在位（linux ELF 暂存已由 63376bf8c 测试桩化消除，/tmp/xlsx-sidecar-mac-backup 备份留存）。
 - 对账：60/60 subject 级全过；删除清单 0；品牌差分零新增。
-- 真机/发版：本轮未打包（Z 维持 16），九件/GitHub/aidooo 外部发布沿 R37 §850 清单待办（与 R39 同）。
+- 真机/发版：R40 施工时未打包（Z 维持 16）；**随轮发版 1.0.17 已于 2026-11-09 全链完成**（版本 Z+1 e6028bf3e；发版冒烟兜出 R40 pick #2503 吞 `}` 致 build:web 全链堵死的 CSS 断点，30ee11b9a 修复；九件四 pass 全绿+架构逐件直验+dmg 装机直启冒烟+CLI compare 闭环+单实例锁；tag 1.0.17 三仓；GitHub Release 九资产服务器中继一发全 201 size-match；aidooo 十槽位 DB ok=10+publishManifest+latest=1.0.17+Range 206 段 sha 三方一致；harness+察元AI OS.app 双侧 resources/chatoffice 重铺 1.0.17+staged 内容签名重铺实测+sidecar 六端 200+/ai/skills/status webForm:true）。详见 docs/release-test-report-1.0.17.md。
 
 ### 挂账（新增）
 
