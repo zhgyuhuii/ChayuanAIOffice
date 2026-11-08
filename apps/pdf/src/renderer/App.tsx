@@ -340,6 +340,7 @@ import {
   IconRotateR,
   IconDeletePage,
   IconExtract,
+  IconExportImg,
   IconInsertPdf,
   IconInsertBlank,
   IconRotateAll,

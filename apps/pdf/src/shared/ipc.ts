@@ -2,7 +2,7 @@ import type { AiPanelPrefs } from '@chaoffice/ui/ai-panel-prefs'
 import type { Lang } from '@chaoffice/i18n'
 import type { AiModelSelection, AiSettingsV2, AiStreamChunk } from '@chaoffice/ai-provider'
 import type { PrintDuplex, PrintJobOptions, PrinterInfo } from '@chaoffice/electron-utils/print-job'
-import type { PrinterOption } from '@genoffice/electron-utils/printer-options'
+import type { PrinterOption } from '@chaoffice/electron-utils/printer-options'
 export type { PrintDuplex, PrintJobOptions, PrinterInfo }
 export type { PrinterOption }
 

@@ -52,7 +52,7 @@ import {
   printPdfViaCups,
   printToPdfOptionsFor,
 } from '@chaoffice/electron-utils/print-cups'
-import { DRIVER_OPTION_NAMES, queryPrinterOptions } from '@genoffice/electron-utils/printer-options'
+import { DRIVER_OPTION_NAMES, queryPrinterOptions } from '@chaoffice/electron-utils/printer-options'
 
 /** 1-based file page positions for the lp `-P` page-list: integers within a
  * real document's reach, undefined = the whole document. Anything else is
