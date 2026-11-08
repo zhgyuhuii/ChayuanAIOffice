@@ -7,6 +7,7 @@
 import JSZip from 'jszip'
 import { describe, expect, it } from 'vitest'
 import { blankXlsxBuffer } from '@chaoffice/xlsx-gateway/gateway/csv-import'
+import { blankXlsxBuffer } from '@chaoffice/xlsx-gateway/gateway/csv-import-xlsx'
 import {
   assembleWithJsZip,
   createBufferEntrySource,

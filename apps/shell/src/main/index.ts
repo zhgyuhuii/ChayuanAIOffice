@@ -214,6 +214,7 @@ import {
   renameRemoteDocument,
   authorizeMcpDocWrite,
 } from '../../../docs/src/main/docs-main'
+import { blankXlsxBuffer } from '@chaoffice/xlsx-gateway/gateway/csv-import-xlsx'
 import { blankPdfBuffer } from '../../../pdf/src/main/blank-pdf'
 import { blankXlsxBuffer } from '@chaoffice/xlsx-gateway/gateway/csv-import'
 import {

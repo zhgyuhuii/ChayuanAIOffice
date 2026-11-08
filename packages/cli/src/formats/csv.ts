@@ -1,9 +1,9 @@
 import {
-  csvToXlsxBuffer,
   decodeCsvBuffer,
   parseCsv,
   sniffDelimiter,
 } from '@chaoffice/xlsx-gateway/gateway/csv-import'
+import { csvToXlsxBuffer } from '@chaoffice/xlsx-gateway/gateway/csv-import-xlsx'
 
 export interface CsvInfo {
   rows: number
