@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build GenOffice Balanced Space: a single blank 0.5em U+0020 glyph.
+"""Build ChaOffice Balanced Space: a single blank 0.5em U+0020 glyph.
 
 Under balanceSingleByteDoubleByteWidth Word advances a space beside an East
 Asian character or another space by half the run size whatever face draws
@@ -16,8 +16,8 @@ from fontTools.fontBuilder import FontBuilder
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.ttLib.woff2 import WOFF2FlavorData
 
-DEFAULT_OUT = "apps/docs/src/renderer/fonts/GenOfficeBalancedSpace.woff2"
-FAMILY = "GenOffice Balanced Space"
+DEFAULT_OUT = "apps/docs/src/renderer/fonts/ChaOfficeBalancedSpace.woff2"
+FAMILY = "ChaOffice Balanced Space"
 UPM = 1000
 
 

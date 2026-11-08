@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the GenOffice Thai faces from upstream Noto Sans Thai, metric-fitted to
+"""Build the ChaOffice Thai faces from upstream Noto Sans Thai, metric-fitted to
 the Thai faces Word for Mac lays out with.
 
 Word ships Cordia New and TH SarabunPSK in its DFonts; a declared Thai family
@@ -25,8 +25,8 @@ Upstream: https://github.com/notofonts/notofonts.github.io
           fonts/NotoSansThai/hinted/ttf/NotoSansThai-{Regular,Bold}.ttf
 
 Usage: python3 tools/build-thai-font.py <NotoSansThai-*.ttf> <word-face.ttf|ttc[#index]> <family> [Regular|Bold] [out.woff2]
-  e.g. build-thai-font.py NotoSansThai-Regular.ttf cordia.ttc#0 "GenOffice Cordia"
-       build-thai-font.py NotoSansThai-Bold.ttf cordia.ttc#1 "GenOffice Cordia" Bold
+  e.g. build-thai-font.py NotoSansThai-Regular.ttf cordia.ttc#0 "ChaOffice Cordia"
+       build-thai-font.py NotoSansThai-Bold.ttf cordia.ttc#1 "ChaOffice Cordia" Bold
 """
 
 import re
