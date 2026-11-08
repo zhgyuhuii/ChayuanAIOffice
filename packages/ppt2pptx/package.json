@@ -1,5 +1,5 @@
 {
-  "name": "@genoffice/ppt2pptx",
+  "name": "@chaoffice/ppt2pptx",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -14,7 +14,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@genoffice/doc2docx": "*",
+    "@chaoffice/doc2docx": "*",
     "cfb": "^1.2.2",
     "jszip": "^3.10.1"
   },
