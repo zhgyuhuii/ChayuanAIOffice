@@ -7,49 +7,15 @@ import type { RecentEntry, RecentPage, RecentQuery } from '../shared/home-api'
 const RECENT_PAGE_DEFAULT = 50
 const RECENT_PAGE_MAX = 200
 
-<<<<<<< HEAD
-function toRecentEntry(path: string, starredPaths: ReadonlySet<string>): RecentEntry {
-  // remote documents have no local stat; their identity carries name and ext
-  if (isRemoteUri(path)) {
-    return {
-      path,
-      name: basename(path),
-      ext: extname(path).slice(1).toLowerCase(),
-      mtimeMs: 0,
-      sizeBytes: 0,
-      starred: starredPaths.has(path),
-    }
-  }
-  try {
-    const stat = statSync(path)
-    return {
-      path,
-      name: basename(path),
-      ext: extname(path).slice(1).toLowerCase(),
-      mtimeMs: stat.mtimeMs,
-      sizeBytes: stat.size,
-      starred: starredPaths.has(path),
-    }
-  } catch {
-    // A failed stat is often transient (disconnected drive, pending mount,
-    // cloud placeholder) — dropping the entry made the recents list silently
-    // lose files until a later reload (r158). Word keeps unavailable recents
-    // listed; the row is flagged so the UI can dim it and offer removal.
-    return {
-      path,
-      name: basename(path),
-      ext: extname(path).slice(1).toLowerCase(),
-      mtimeMs: 0,
-      sizeBytes: 0,
-      starred: starredPaths.has(path),
-      missing: true,
-    }
-=======
 function toRecentEntry(
   path: string,
   starredPaths: ReadonlySet<string>,
   info?: { mtimeMs: number; size: number },
+  isRemote = false,
 ): RecentEntry {
+  // remote documents have no local stat; their identity carries name and ext
+  //（R40 #2541 并集：异步 info 架构采上游，本地 remote 分支保留——remote 无 stat 不算 missing）
+  const remote = isRemote || isRemoteUri(path)
   return {
     path,
     name: basename(path),
@@ -57,8 +23,7 @@ function toRecentEntry(
     mtimeMs: info?.mtimeMs ?? 0,
     sizeBytes: info?.size ?? 0,
     starred: starredPaths.has(path),
-    ...(info ? {} : { missing: true }),
->>>>>>> ae2a3313f (Avoid blocking main on recent-file metadata probes (#2541))
+    ...(info || remote ? {} : { missing: true }),
   }
 }
 

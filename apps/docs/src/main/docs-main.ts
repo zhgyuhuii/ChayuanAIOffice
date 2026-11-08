@@ -5514,13 +5514,9 @@ export function registerDocsIpc(): void {
     },
   )
 
-<<<<<<< HEAD
   ipcMain.handle('docs:recent', () =>
     readJson<string[]>(RECENT_PATH(), []).filter((p) => isRemoteUri(p) || existsSync(p)),
   )
-=======
-  ipcMain.handle('docs:recent', () => readJson<string[]>(RECENT_PATH(), []))
->>>>>>> ae2a3313f (Avoid blocking main on recent-file metadata probes (#2541))
 
   ipcMain.handle('docs:pick-image', async (event) => {
     const result = await openDialog(event, {

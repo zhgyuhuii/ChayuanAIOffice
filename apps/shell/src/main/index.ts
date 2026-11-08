@@ -216,7 +216,6 @@ import {
 } from '../../../docs/src/main/docs-main'
 import { blankXlsxBuffer } from '@chaoffice/xlsx-gateway/gateway/csv-import-xlsx'
 import { blankPdfBuffer } from '../../../pdf/src/main/blank-pdf'
-import { blankXlsxBuffer } from '@chaoffice/xlsx-gateway/gateway/csv-import'
 import {
   applyMcpSettings,
   clearMcpLogs,
@@ -369,6 +368,7 @@ import {
   normalizeRecentQuery,
   pageRecentPaths,
   statPathEntriesAsync,
+  capStatPaths,
 } from './recent-files'
 import { isSameFile, pdfSaveAsTarget, isValidRawRenameName } from './rename-validation'
 import { renameStaysInApp } from './app-routing'
@@ -5987,13 +5987,8 @@ function registerHomeIpc(): void {
     setStarredGroup(stringPaths(paths), typeof group === 'string' && group ? group : null)
   })
 
-<<<<<<< HEAD
-  ipcMain.handle(HOME_CHANNELS.statPaths, (_event, paths: unknown): RecentEntry[] =>
-    statEntries(stringPaths(paths)),
-=======
   ipcMain.handle(HOME_CHANNELS.statPaths, (_event, paths: unknown): Promise<RecentEntry[]> =>
     statEntries(capStatPaths(stringPaths(paths))),
->>>>>>> ae2a3313f (Avoid blocking main on recent-file metadata probes (#2541))
   )
 
   ipcMain.handle(HOME_CHANNELS.toggleStar, (_event, path: unknown) => {

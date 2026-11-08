@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 import { mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { csvToXlsxBuffer } from '@chaoffice/xlsx-gateway/gateway/csv-import'
 import { csvToXlsxBuffer } from '@chaoffice/xlsx-gateway/gateway/csv-import-xlsx'
 import { readMergeDataSource } from '../src/main/merge-data-source'
 
