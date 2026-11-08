@@ -78,7 +78,7 @@ Um agente que não conhece o vocabulário das operações vai adivinhar. A skill
 
 O servidor não se limita aos arquivos em disco. Enquanto o ChaOffice estiver em execução, o agente também pode trabalhar através da janela:
 
-- **`open_in_genoffice`** abre um arquivo em uma guia e coloca o foco nela.
+- **`open_in_chaoffice`** abre um arquivo em uma guia e coloca o foco nela.
 - **`open_documents`** lista todos os documentos que tem abertos — id, tipo, caminho e se têm alterações não salvas —, e depois lê o conteúdo atual de um deles, salva-o no próprio local ou fecha-o, salvando primeiro, a não ser que lhe peça para descartar.
 - **As ferramentas de conteúdo** recebem esse id (ou o caminho) como argumento `document`, por isso uma alteração aterra na guia que você já tem aberta e a janela muda para o mostrar.
 
