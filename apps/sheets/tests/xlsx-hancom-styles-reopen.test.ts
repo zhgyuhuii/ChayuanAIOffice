@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url'
 import JSZip from 'jszip'
 import { describe, expect, it } from 'vitest'
 
-import { saveWorkbookViaSidecar } from '@genoffice/xlsx-gateway/gateway/xlsx-package-io'
+import { saveWorkbookViaSidecar } from '@chaoffice/xlsx-gateway/gateway/xlsx-package-io'
 import { XlsxSidecarClient } from '../src/main/xlsx-sidecar-client'
 
 // The shape Hancom Cell (HCell 11.0) saves: every spreadsheetml element is

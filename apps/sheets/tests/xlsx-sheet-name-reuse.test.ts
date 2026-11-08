@@ -1,8 +1,8 @@
 import JSZip from 'jszip'
 import { describe, expect, it } from 'vitest'
 
-import { applyCellEditsToXlsx, type CellEdit } from '@genoffice/xlsx-gateway/gateway/xlsx-gateway'
-import { SheetEditError } from '@genoffice/xlsx-gateway/gateway/xlsx-sheets'
+import { applyCellEditsToXlsx, type CellEdit } from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
+import { SheetEditError } from '@chaoffice/xlsx-gateway/gateway/xlsx-sheets'
 import { buildSheetsFixture } from './fixture-builder'
 
 // Per-sheet states name an existing sheet by its original file name and an

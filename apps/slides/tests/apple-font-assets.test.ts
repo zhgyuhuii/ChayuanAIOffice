@@ -4,16 +4,16 @@ import { join, resolve } from 'node:path'
 import { afterAll, describe, expect, it, vi } from 'vitest'
 
 // Vitest turns ?asset imports into /@fs URLs, while font metrics reads the files from disk.
-vi.mock('@genoffice/ui/fonts/Carlito-Regular.ttf?asset', () => ({
+vi.mock('@chaoffice/ui/fonts/Carlito-Regular.ttf?asset', () => ({
   default: resolve(process.cwd(), '../../packages/ui/src/fonts/Carlito-Regular.ttf'),
 }))
-vi.mock('@genoffice/ui/fonts/Carlito-Bold.ttf?asset', () => ({
+vi.mock('@chaoffice/ui/fonts/Carlito-Bold.ttf?asset', () => ({
   default: resolve(process.cwd(), '../../packages/ui/src/fonts/Carlito-Bold.ttf'),
 }))
-vi.mock('@genoffice/ui/fonts/Carlito-Italic.ttf?asset', () => ({
+vi.mock('@chaoffice/ui/fonts/Carlito-Italic.ttf?asset', () => ({
   default: resolve(process.cwd(), '../../packages/ui/src/fonts/Carlito-Italic.ttf'),
 }))
-vi.mock('@genoffice/ui/fonts/Carlito-BoldItalic.ttf?asset', () => ({
+vi.mock('@chaoffice/ui/fonts/Carlito-BoldItalic.ttf?asset', () => ({
   default: resolve(process.cwd(), '../../packages/ui/src/fonts/Carlito-BoldItalic.ttf'),
 }))
 // shaped-metrics pulls in the harfbuzz wasm (?asset only resolves in electron builds)

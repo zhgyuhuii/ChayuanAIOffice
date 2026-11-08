@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import {
   applyCellEditsToXlsx,
   assertOnlyTouchedEntriesChanged,
-} from '@genoffice/xlsx-gateway/gateway/xlsx-gateway'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
 import { buildSheetsFixture } from './fixture-builder'
 
 async function entryText(buffer: Buffer, path: string): Promise<string> {
