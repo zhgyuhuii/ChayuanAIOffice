@@ -732,7 +732,6 @@ export const ru = {
   ribbonZoomSectionItem: 'Слайд {n} Раздел {k}: {name}',
   ribbonZoomSelectedSlides: 'Выбрано слайдов: {n}',
   ribbonZoomSelectedSections: 'Выбрано разделов: {n}',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonZoomJumpItem: 'Перейти к слайду {n}',
   ribbonCollapseTip: "Свернуть ленту",
   ribbonTabScrollLeft: "Прокрутить вкладки влево",

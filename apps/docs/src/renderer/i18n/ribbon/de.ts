@@ -1052,7 +1052,6 @@ export const de = {
   ribbonNoShading: 'Keine Schattierung',
   ribbonGroupFont: 'Schriftart',
   ribbonStylePaneTip:  'Formatvorlagenbereich: alle Formatvorlagen anzeigen, aus der Auswahl neue erstellen oder aktualisieren',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonCellShadingTip: 'Zellenschattierung #{hex}',
   ribbonAllBordersTip: 'Rahmenlinien an allen Seiten der ausgewählten Zellen hinzufügen',
   ribbonOuterBordersTip: 'Rahmenlinien nur am äußeren Rand der Auswahl',

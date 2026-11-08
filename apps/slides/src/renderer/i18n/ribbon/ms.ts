@@ -737,7 +737,6 @@ export const ms = {
   ribbonZoomSectionItem: 'Slaid {n} Seksyen {k}: {name}',
   ribbonZoomSelectedSlides: '{n} slaid dipilih',
   ribbonZoomSelectedSections: '{n} seksyen dipilih',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonZoomJumpItem: 'Pergi ke slaid {n}',
   ribbonCollapseTip: "Kuncupkan reben",
   ribbonTabScrollLeft: "Tatal tab ke kiri",

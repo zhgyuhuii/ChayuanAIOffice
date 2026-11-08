@@ -734,7 +734,6 @@ export const pt = {
   ribbonZoomSectionItem: 'Slide {n} Seção {k}: {name}',
   ribbonZoomSelectedSlides: '{n} slides selecionados',
   ribbonZoomSelectedSections: '{n} seções selecionadas',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonZoomJumpItem: 'Ir para o slide {n}',
   ribbonCollapseTip: "Recolher a faixa",
   ribbonTabScrollLeft: "Rolar guias para a esquerda",

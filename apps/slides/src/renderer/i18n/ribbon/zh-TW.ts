@@ -702,7 +702,6 @@ export const zhTW = {
   ribbonZoomSectionItem: '第 {n} 頁　第 {k} 節：{name}',
   ribbonZoomSelectedSlides: '已選取 {n} 張投影片',
   ribbonZoomSelectedSections: '已選取 {n} 個節',
-  ribbonAiAssistant: '察元AIOffice',
   ribbonZoomJumpItem: '跳至第 {n} 頁',
   ribbonCollapseTip: "摺疊功能區",
   ribbonTabScrollLeft: "向左捲動標籤",

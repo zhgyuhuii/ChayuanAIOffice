@@ -719,7 +719,6 @@ export const ar = {
   ribbonZoomSectionItem: 'الشريحة {n} المقطع {k}: {name}',
   ribbonZoomSelectedSlides: 'تم تحديد {n} شرائح',
   ribbonZoomSelectedSections: 'تم تحديد {n} مقاطع',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonZoomJumpItem: 'الانتقال إلى الشريحة {n}',
   ribbonCollapseTip: "طي الشريط",
   ribbonTabScrollLeft: "مرر علامات التبويب يسارًا",

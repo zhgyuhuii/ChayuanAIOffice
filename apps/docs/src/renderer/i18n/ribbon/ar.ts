@@ -1036,7 +1036,6 @@ export const ar = {
   ribbonNoShading: 'بلا تظليل',
   ribbonGroupFont: 'الخط',
   ribbonStylePaneTip: 'جزء الأنماط: استعراض كافة الأنماط، وإنشاء الأنماط أو تحديثها من التحديد',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonCellShadingTip: 'تظليل الخلية ‎#{hex}',
   ribbonAllBordersTip: 'إضافة حدود إلى كافة جوانب الخلايا المحددة',
   ribbonOuterBordersTip: 'حدود على الحافة الخارجية للتحديد فقط',

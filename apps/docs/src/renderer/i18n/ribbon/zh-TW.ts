@@ -1021,7 +1021,6 @@ export const zhTW = {
   ribbonNoShading: '無網底',
   ribbonGroupFont: '字型',
   ribbonStylePaneTip: '樣式窗格：檢視全部樣式，從選取範圍新增/更新樣式',
-  ribbonAiAssistant: '察元AIOffice',
   ribbonCellShadingTip: '儲存格網底 #{hex}',
   ribbonAllBordersTip: '選取儲存格四邊全部加上框線',
   ribbonOuterBordersTip: '僅選取範圍外側加上框線',

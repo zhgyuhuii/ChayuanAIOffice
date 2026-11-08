@@ -745,7 +745,6 @@ export const ja = {
   ribbonZoomSectionItem: 'スライド {n} セクション {k}: {name}',
   ribbonZoomSelectedSlides: '{n} 枚のスライドを選択中',
   ribbonZoomSelectedSections: '{n} 個のセクションを選択中',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonZoomJumpItem: 'スライド {n} へ移動',
   ribbonCollapseTip: "リボンを折りたたむ",
   ribbonTabScrollLeft: "タブを左へスクロール",

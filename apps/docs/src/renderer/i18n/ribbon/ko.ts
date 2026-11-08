@@ -1041,7 +1041,6 @@ export const ko = {
   ribbonTcColorPalePink: '연한 분홍',
   ribbonTcColorLightYellow: '연한 노랑',
   ribbonTcColorLightOrange: '연한 주황',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonPin: '리본 고정',
   ribbonDefault: '기본값',
   ribbonCm: 'cm',

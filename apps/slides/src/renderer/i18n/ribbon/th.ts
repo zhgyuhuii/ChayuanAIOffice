@@ -716,7 +716,6 @@ export const th = {
   ribbonZoomSectionItem: 'สไลด์ {n} ส่วน {k}: {name}',
   ribbonZoomSelectedSlides: 'เลือกแล้ว {n} สไลด์',
   ribbonZoomSelectedSections: 'เลือกแล้ว {n} ส่วน',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonZoomJumpItem: 'ไปยังสไลด์ {n}',
   ribbonCollapseTip: "ยุบริบบิ้น",
   ribbonTabScrollLeft: "เลื่อนแท็บไปทางซ้าย",

@@ -729,7 +729,6 @@ export const vi = {
   ribbonZoomSectionItem: 'Trang chiếu {n} Phần {k}: {name}',
   ribbonZoomSelectedSlides: 'Đã chọn {n} trang chiếu',
   ribbonZoomSelectedSections: 'Đã chọn {n} phần',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonZoomJumpItem: '跳转到第 {n} 页',
   ribbonCollapseTip: "折叠功能区",
   ribbonTabScrollLeft: "向左滚动标签",

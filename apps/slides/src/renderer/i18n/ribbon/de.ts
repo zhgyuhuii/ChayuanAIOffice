@@ -739,7 +739,6 @@ export const de = {
   ribbonZoomSectionItem: 'Folie {n} Abschnitt {k}: {name}',
   ribbonZoomSelectedSlides: '{n} Folien ausgewählt',
   ribbonZoomSelectedSections: '{n} Abschnitte ausgewählt',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonZoomJumpItem: 'Zu Folie {n} wechseln',
   ribbonCollapseTip: "Menüband einklappen",
   ribbonTabScrollLeft: "Registerkarten nach links scrollen",

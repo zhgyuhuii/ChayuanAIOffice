@@ -1024,7 +1024,6 @@ export const vi = {
   ribbonTcColorPalePink: 'Hồng nhạt',
   ribbonTcColorLightYellow: 'Vàng nhạt',
   ribbonTcColorLightOrange: 'Cam nhạt',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonPin: '固定功能区',
   ribbonDefault: '默认',
   ribbonCm: '厘米',

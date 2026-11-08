@@ -1029,7 +1029,6 @@ export const he = {
   ribbonNoShading: 'ללא הצללה',
   ribbonGroupFont: 'גופן',
   ribbonStylePaneTip: 'חלונית סגנונות: עיין בכל הסגנונות, צור או עדכן סגנונות מהקטע הנבחר',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonCellShadingTip: 'הצללת תא #{hex}',
   ribbonAllBordersTip: 'הוסף גבולות לכל צידי התאים הנבחרים',
   ribbonOuterBordersTip: 'גבולות רק בהיקף החיצוני של הבחירה',

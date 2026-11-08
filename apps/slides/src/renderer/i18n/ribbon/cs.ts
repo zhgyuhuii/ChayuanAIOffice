@@ -726,7 +726,6 @@ export const cs = {
   ribbonZoomSectionItem: 'Snímek {n} Oddíl {k}: {name}',
   ribbonZoomSelectedSlides: 'Vybráno snímků: {n}',
   ribbonZoomSelectedSections: 'Vybráno oddílů: {n}',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonZoomJumpItem: "Přejít na snímek {n}",
   ribbonCollapseTip: "Collapse the ribbon",
   ribbonTabScrollLeft: "Scroll tabs left",

@@ -711,7 +711,6 @@ export const he = {
   ribbonZoomSectionItem: 'שקופית {n} מקטע {k}: {name}',
   ribbonZoomSelectedSlides: 'נבחרו {n} שקופיות',
   ribbonZoomSelectedSections: 'נבחרו {n} מקטעים',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonZoomJumpItem: 'מעבר לשקופית {n}',
   ribbonCollapseTip: "כווץ את הרצועה",
   ribbonTabScrollLeft: "גלול לשוניות שמאלה",

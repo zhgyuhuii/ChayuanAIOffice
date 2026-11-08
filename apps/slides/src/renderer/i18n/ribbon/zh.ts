@@ -724,7 +724,6 @@ export const zh = {
   ribbonZoomSectionItem: '第 {n} 页　第 {k} 节：{name}',
   ribbonZoomSelectedSlides: '已选择 {n} 张幻灯片',
   ribbonZoomSelectedSections: '已选择 {n} 个节',
-  ribbonAiAssistant: '察元AIOffice',
   ribbonZoomJumpItem: '跳转到第 {n} 页',
   ribbonCollapseTip: "折叠功能区",
   ribbonTabScrollLeft: "向左滚动标签",

@@ -1044,7 +1044,6 @@ export const id = {
   ribbonNoShading: 'Tanpa Bayangan',
   ribbonGroupFont: 'Font',
   ribbonStylePaneTip: 'Panel Gaya: telusuri semua gaya, buat atau perbarui gaya dari pilihan',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonCellShadingTip: 'Bayangan sel #{hex}',
   ribbonAllBordersTip: 'Tambahkan batas ke semua sisi sel yang dipilih',
   ribbonOuterBordersTip: 'Batas hanya di tepi luar pilihan',

@@ -1046,7 +1046,6 @@ export const ru = {
   ribbonNoShading: 'Нет заливки',
   ribbonGroupFont: 'Шрифт',
   ribbonStylePaneTip:  'Область стилей: просмотр всех стилей, создание и обновление стилей по выделенному фрагменту',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonCellShadingTip: 'Заливка ячейки #{hex}',
   ribbonAllBordersTip: 'Добавить границы со всех сторон выделенных ячеек',
   ribbonOuterBordersTip: 'Границы только по внешнему краю выделения',

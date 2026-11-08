@@ -1043,7 +1043,6 @@ export const ja = {
   ribbonTcColorPalePink: '薄いピンク',
   ribbonTcColorLightYellow: '薄い黄',
   ribbonTcColorLightOrange: '薄いオレンジ',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonPin: 'リボンの固定',
   ribbonDefault: '既定',
   ribbonCm: 'cm',

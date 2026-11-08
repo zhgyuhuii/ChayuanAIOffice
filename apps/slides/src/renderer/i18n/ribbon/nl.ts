@@ -738,7 +738,6 @@ export const nl = {
   ribbonZoomSectionItem: 'Dia {n} Sectie {k}: {name}',
   ribbonZoomSelectedSlides: "{n} dia's geselecteerd",
   ribbonZoomSelectedSections: '{n} secties geselecteerd',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonZoomJumpItem: 'Ga naar dia {n}',
   ribbonCollapseTip: "Lint samenvouwen",
   ribbonTabScrollLeft: "Tabbladen naar links schuiven",

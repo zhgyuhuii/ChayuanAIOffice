@@ -730,7 +730,6 @@ export const hi = {
   ribbonZoomSectionItem: 'स्लाइड {n} अनुभाग {k}: {name}',
   ribbonZoomSelectedSlides: '{n} स्लाइड चयनित',
   ribbonZoomSelectedSections: '{n} अनुभाग चयनित',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonZoomJumpItem: 'स्लाइड {n} पर जाएँ',
   ribbonCollapseTip: "रिबन सिकोड़ें",
   ribbonTabScrollLeft: "टैब बाएँ स्क्रॉल करें",

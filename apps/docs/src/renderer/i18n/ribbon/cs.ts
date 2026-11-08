@@ -1019,7 +1019,6 @@ export const cs = {
   ribbonSort: 'Seřadit',
   ribbonNoShading: 'Bez stínování',
   ribbonGroupFont: 'Písmo',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonCellShadingTip: 'Stínování buňky #{hex}',
   ribbonAllBordersTip: 'Přidat ohraničení na všechny strany vybraných buněk',
   ribbonOuterBordersTip: 'Ohraničení pouze na vnějším okraji výběru',

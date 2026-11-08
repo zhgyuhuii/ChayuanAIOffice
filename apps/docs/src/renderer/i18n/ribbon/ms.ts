@@ -1047,7 +1047,6 @@ export const ms = {
   ribbonNoShading: 'Tiada Lorekan',
   ribbonGroupFont: 'Fon',
   ribbonStylePaneTip:  'Anak tetingkap gaya: lihat semua gaya, cipta atau kemas kini gaya daripada pilihan',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonCellShadingTip: 'Lorekan sel #{hex}',
   ribbonAllBordersTip: 'Tambah sempadan pada semua sisi sel yang dipilih',
   ribbonOuterBordersTip: 'Sempadan pada bahagian luar pilihan sahaja',

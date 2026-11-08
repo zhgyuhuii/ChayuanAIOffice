@@ -1035,7 +1035,6 @@ export const tr = {
   ribbonTcColorPalePink: 'Soluk pembe',
   ribbonTcColorLightYellow: 'Açık sarı',
   ribbonTcColorLightOrange: 'Açık turuncu',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonPin: '固定功能区',
   ribbonDefault: '默认',
   ribbonCm: '厘米',

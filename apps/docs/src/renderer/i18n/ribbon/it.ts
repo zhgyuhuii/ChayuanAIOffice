@@ -1055,7 +1055,6 @@ export const it = {
   ribbonNoShading: 'Nessuno sfondo',
   ribbonGroupFont: 'Carattere',
   ribbonStylePaneTip:  'Riquadro stili: sfoglia tutti gli stili, crea o aggiorna stili dalla selezione',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonCellShadingTip: 'Sfondo cella #{hex}',
   ribbonAllBordersTip: 'Aggiungi bordi a tutti i lati delle celle selezionate',
   ribbonOuterBordersTip: 'Bordi solo sul contorno esterno della selezione',

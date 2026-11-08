@@ -1051,7 +1051,6 @@ export const nl = {
   ribbonNoShading: 'Geen arcering',
   ribbonGroupFont: 'Lettertype',
   ribbonStylePaneTip:  'Deelvenster Stijlen: blader door alle stijlen, maak of werk stijlen bij op basis van de selectie',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonCellShadingTip: 'Celarcering #{hex}',
   ribbonAllBordersTip: 'Randen toevoegen aan alle zijden van de geselecteerde cellen',
   ribbonOuterBordersTip: 'Alleen randen aan de buitenkant van de selectie',

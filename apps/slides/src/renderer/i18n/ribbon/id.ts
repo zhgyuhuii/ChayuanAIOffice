@@ -732,7 +732,6 @@ export const id = {
   ribbonZoomSectionItem: 'Slide {n} Bagian {k}: {name}',
   ribbonZoomSelectedSlides: '{n} slide dipilih',
   ribbonZoomSelectedSections: '{n} bagian dipilih',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonZoomJumpItem: 'Buka slide {n}',
   ribbonCollapseTip: "Ciutkan pita",
   ribbonTabScrollLeft: "Gulir tab ke kiri",

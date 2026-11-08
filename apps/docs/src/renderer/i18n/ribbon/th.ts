@@ -1032,7 +1032,6 @@ export const th = {
   ribbonNoShading: 'ไม่มีแรเงา',
   ribbonGroupFont: 'ฟอนต์',
   ribbonStylePaneTip: 'บานหน้าต่างสไตล์: ดูสไตล์ทั้งหมด สร้างหรืออัปเดตสไตล์จากส่วนที่เลือก',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonCellShadingTip: 'แรเงาเซลล์ #{hex}',
   ribbonAllBordersTip: 'เพิ่มเส้นขอบทุกด้านของเซลล์ที่เลือก',
   ribbonOuterBordersTip: 'เส้นขอบเฉพาะรอบนอกของส่วนที่เลือกเท่านั้น',

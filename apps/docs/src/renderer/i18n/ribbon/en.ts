@@ -1038,7 +1038,6 @@ export const en = {
   ribbonNoShading: 'No Shading',
   ribbonGroupFont: 'Font',
   ribbonStylePaneTip: 'Styles pane: browse all styles, create or update styles from the selection',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonCellShadingTip: 'Cell shading #{hex}',
   ribbonAllBordersTip: 'Add borders to all sides of the selected cells',
   ribbonOuterBordersTip: 'Borders on the outer edge of the selection only',

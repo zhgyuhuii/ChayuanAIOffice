@@ -734,7 +734,6 @@ export const pl = {
   ribbonZoomSectionItem: 'Slajd {n} Sekcja {k}: {name}',
   ribbonZoomSelectedSlides: 'Wybrano slajdów: {n}',
   ribbonZoomSelectedSections: 'Wybrano sekcji: {n}',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonZoomJumpItem: 'Przejdź do slajdu {n}',
   ribbonCollapseTip: "Zwiń wstążkę",
   ribbonTabScrollLeft: "Przewiń karty w lewo",

@@ -728,7 +728,6 @@ export const tr = {
   ribbonZoomSectionItem: 'Slayt {n} Bölüm {k}: {name}',
   ribbonZoomSelectedSlides: '{n} slayt seçildi',
   ribbonZoomSelectedSections: '{n} bölüm seçildi',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonZoomJumpItem: '跳转到第 {n} 页',
   ribbonCollapseTip: "折叠功能区",
   ribbonTabScrollLeft: "向左滚动标签",

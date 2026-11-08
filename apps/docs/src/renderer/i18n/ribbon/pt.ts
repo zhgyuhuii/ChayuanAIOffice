@@ -1048,7 +1048,6 @@ export const pt = {
   ribbonNoShading: 'Sem Sombreamento',
   ribbonGroupFont: 'Fonte',
   ribbonStylePaneTip:  'Painel de estilos: veja todos os estilos, crie ou atualize estilos a partir da seleção',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonCellShadingTip: 'Sombreamento da célula #{hex}',
   ribbonAllBordersTip: 'Adicionar bordas a todos os lados das células selecionadas',
   ribbonOuterBordersTip: 'Bordas apenas no contorno externo da seleção',

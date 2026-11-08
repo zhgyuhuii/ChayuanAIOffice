@@ -739,7 +739,6 @@ export const ko = {
   ribbonZoomSectionItem: '슬라이드 {n} 구역 {k}: {name}',
   ribbonZoomSelectedSlides: '슬라이드 {n}개 선택됨',
   ribbonZoomSelectedSections: '구역 {n}개 선택됨',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonZoomJumpItem: '{n}번 슬라이드로 이동',
   ribbonCollapseTip: "리본 접기",
   ribbonTabScrollLeft: "탭 왼쪽으로 스크롤",

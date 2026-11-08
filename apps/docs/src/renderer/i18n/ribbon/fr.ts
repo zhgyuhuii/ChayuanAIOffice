@@ -1056,7 +1056,6 @@ export const fr = {
   ribbonNoShading: 'Aucune trame',
   ribbonGroupFont: 'Police',
   ribbonStylePaneTip:  'Volet Styles : parcourir tous les styles, créer ou mettre à jour un style à partir de la sélection',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonCellShadingTip: 'Trame de fond de cellule #{hex}',
   ribbonAllBordersTip: 'Ajouter des bordures aux quatre côtés des cellules sélectionnées',
   ribbonOuterBordersTip: 'Bordures uniquement sur le pourtour de la sélection',

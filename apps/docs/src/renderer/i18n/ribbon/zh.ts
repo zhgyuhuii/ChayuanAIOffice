@@ -1027,7 +1027,6 @@ export const zh = {
   ribbonTcColorPalePink: '浅粉',
   ribbonTcColorLightYellow: '浅黄',
   ribbonTcColorLightOrange: '浅橙',
-  ribbonAiAssistant: '察元AIOffice',
   ribbonPin: '固定功能区',
   ribbonDefault: '默认',
   ribbonCm: '厘米',

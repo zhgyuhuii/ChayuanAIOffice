@@ -1047,7 +1047,6 @@ export const pl = {
   ribbonNoShading: 'Brak cieniowania',
   ribbonGroupFont: 'Czcionka',
   ribbonStylePaneTip:  'Okienko stylów: przeglądaj wszystkie style, twórz lub aktualizuj style na podstawie zaznaczenia',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonCellShadingTip: 'Cieniowanie komórki #{hex}',
   ribbonAllBordersTip: 'Dodaj krawędzie ze wszystkich stron zaznaczonych komórek',
   ribbonOuterBordersTip: 'Krawędzie tylko na zewnętrznym obrysie zaznaczenia',

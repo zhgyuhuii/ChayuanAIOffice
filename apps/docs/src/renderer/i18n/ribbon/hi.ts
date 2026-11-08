@@ -1044,7 +1044,6 @@ export const hi = {
   ribbonNoShading: 'कोई छायांकन नहीं',
   ribbonGroupFont: 'फ़ॉन्ट',
   ribbonStylePaneTip: 'शैलियाँ फलक: सभी शैलियाँ देखें, चयन से नई शैली बनाएँ या अद्यतन करें',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonCellShadingTip: 'कक्ष छायांकन #{hex}',
   ribbonAllBordersTip: 'चयनित कक्षों के सभी किनारों पर बॉर्डर जोड़ें',
   ribbonOuterBordersTip: 'केवल चयन के बाहरी किनारे पर बॉर्डर',

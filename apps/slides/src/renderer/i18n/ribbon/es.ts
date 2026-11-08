@@ -744,7 +744,6 @@ export const es = {
   ribbonZoomSectionItem: 'Diapositiva {n} Sección {k}: {name}',
   ribbonZoomSelectedSlides: '{n} diapositivas seleccionadas',
   ribbonZoomSelectedSections: '{n} secciones seleccionadas',
-  ribbonAiAssistant: 'ChaAI Office',
   ribbonZoomJumpItem: 'Ir a la diapositiva {n}',
   ribbonCollapseTip: "Contraer la cinta",
   ribbonTabScrollLeft: "Desplazar pestañas a la izquierda",
