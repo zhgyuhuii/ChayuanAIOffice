@@ -383,9 +383,11 @@ describe('request wiring', () => {
   })
 
   it('a stored pick outranks a profile bodyExtras field, for both merge paths', async () => {
+    // adapted: R40 — one Response body cannot be read three times; a fresh
+    // one per fetch call keeps the asserted intent (body shape) unchanged
     const fetchMock = vi
       .fn()
-      .mockResolvedValue(jsonResponse({ choices: [{ message: { content: 'ok' } }] }))
+      .mockImplementation(() => Promise.resolve(jsonResponse({ choices: [{ message: { content: 'ok' } }] })))
     vi.stubGlobal('fetch', fetchMock)
     const base = { apiKey: 'k', baseUrl: 'https://gw.example.com/v1' }
 
