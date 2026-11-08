@@ -104,7 +104,11 @@ const winArch = winArm64 ? 'arm64' : 'x64'
 // target dir). Default follows the host arch like before; the mac-host
 // release pipeline runs the arm64 pass plain and this one for x64.
 const linuxArch =
-  process.env.CHAOFFICE_LINUX_X64 === '1' ? 'x64' : process.arch === 'arm64' ? 'arm64' : 'x64'
+  process.env.CHAOFFICE_LINUX_X64 === '1'
+    ? 'x64'
+    : process.env.GENOFFICE_LINUX_ARM64 === '1' || process.arch === 'arm64'
+      ? 'arm64'
+      : 'x64'
 const winSidecarTarget = winArm64 ? 'aarch64-pc-windows-msvc' : 'x86_64-pc-windows-gnu'
 // Where the release pipeline puts the sidecar: an explicit cross-compilation
 // triple (CI builds it that way). A Windows contributor's plain
@@ -928,35 +932,9 @@ const config = {
             ? 'x86_64-unknown-linux-gnu'
             : null
       if (!triple) throw new Error(`unsupported linux arch: ${String(context.arch)}`)
-      const staged = join(
-        __dirname,
-        '../sheets/native/xlsx-engine/target/release/xlsx-sidecar',
-      )
-      const native = process.arch === archName
-      if (native) {
-        // 原生构建（linux 宿主）：cargo build --release 的产物已在此路径。
-        // mac 宿主（arm64）上这个分支同样成立，但 target/release 常驻的是
-        // dist:mac 的 universal Mach-O——混进 deb 就是 R30 坏包事故。 ELF
-        // 且架构匹配才放行；否则要求先就位 zigbuild 产物（发版脚本负责）。
-        const sidecarElf = readFileSync(staged)
-        const isElf =
-          sidecarElf.length > 18 &&
-          sidecarElf[0] === 0x7f &&
-          sidecarElf[1] === 0x45 &&
-          sidecarElf[2] === 0x4c &&
-          sidecarElf[3] === 0x46
-        const elfMachineOk =
-          !isElf ||
-          (archName === 'arm64'
-            ? sidecarElf[18] === 0xb7 // EM_AARCH64
-            : sidecarElf[18] === 0x3e) // EM_X86_64
-        if (!existsSync(staged) || !isElf || !elfMachineOk) {
-          throw new Error(
-            `linux sidecar at ${staged} is not an ${archName} ELF ` +
-              `(mac hosts: cp the zigbuild output over it, or run the linux pass with the cross sidecar staged)`,
-          )
-        }
-      } else {
+      // 原生校验统一走下方的候选+ELF 头断言（assertLinuxSidecarArch 读 20 字节
+      // 头，与打包测试的 openSync/readSync 桩对齐）；这里只负责交叉产物就位。
+      if (process.arch !== archName) {
         // 交叉产物就位 + 宿主二进制备份；afterPack 还原（否则 linux-x64 打包
         // 会把宿主 dev/test 用的二进制永久换成外平台 ELF）
         stageCrossSidecar(__dirname, triple)
