@@ -3026,7 +3026,7 @@ const upstreamStrings = {
     intgExample2: '3분기 실적을 소개하는 6장짜리 슬라이드를 만들어 줘',
     intgExample3: 'budget.xlsx를 PDF로 변환해서 ChaAI Office에서 열어 줘',
     intgStep2Note:
-      '어시스턴트가 명령줄 또는 MCP를 통해 GenOffice를 직접 호출하므로 여러분이 입력할 필요가 없습니다.',
+      '어시스턴트가 명령줄 또는 MCP를 통해 ChaAI Office를 직접 호출하므로 여러분이 입력할 필요가 없습니다.',
 
     intgCliPartTitle: 'CLI · 명령줄 + skill',
     intgCliPartDesc:

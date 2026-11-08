@@ -5237,7 +5237,7 @@ export function registerSlidesIpc(): void {
         const win = buildWindow(false)
         let tempDir: string | null = null
         try {
-          tempDir = (await loadPrintHtml(win, html, 'slides.html', 'genoffice-slides-print-'))
+          tempDir = (await loadPrintHtml(win, html, 'slides.html', 'chaoffice-slides-print-'))
             .tempDir
           if (process.platform === 'darwin') {
             // Chromium's silent print can drop a job outright on macOS — no
