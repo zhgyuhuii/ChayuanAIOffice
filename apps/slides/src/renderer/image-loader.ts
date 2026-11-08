@@ -8,7 +8,7 @@ import { metafileToDataUrl } from '@chaoffice/docx-engine/metafile'
 
 /** Slide media is cross-origin: without CORS a canvas that draws it is tainted (cutout, export). */
 export function setImageSource(img: HTMLImageElement, url: string): void {
-  if (url.startsWith('genoffice-slide-media:')) img.crossOrigin = 'anonymous'
+  if (url.startsWith('chaoffice-slide-media:')) img.crossOrigin = 'anonymous'
   img.src = url
 }
 
@@ -16,7 +16,7 @@ export type ApplyImages = (entries: ReadonlyArray<readonly [string, HTMLImageEle
 
 /** EMF/WMF data URLs: browsers cannot decode metafiles — rasterize to PNG first (keyed by the original url). */
 const METAFILE_RE = /^data:(image\/x-(?:emf|wmf)|image\/(?:emf|wmf));base64,/
-const LAZY_METAFILE_RE = /^genoffice-slide-media:.*[?&]mime=image%2F(?:x-)?(emf|wmf)(?:&|$)/i
+const LAZY_METAFILE_RE = /^chaoffice-slide-media:.*[?&]mime=image%2F(?:x-)?(emf|wmf)(?:&|$)/i
 
 /**
  * EMF headers size the raster from their device bounds, up to the converter's 8192px cap:

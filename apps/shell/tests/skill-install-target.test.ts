@@ -81,9 +81,9 @@ beforeEach(() => {
   h.handlers.clear()
   h.installed.length = 0
   h.dialogResult = { canceled: true, filePaths: [] }
-  dir = mkdtempSync(join(tmpdir(), 'genoffice-integrations-'))
-  userData = mkdtempSync(join(tmpdir(), 'genoffice-userdata-'))
-  fakeHome = mkdtempSync(join(tmpdir(), 'genoffice-fakehome-'))
+  dir = mkdtempSync(join(tmpdir(), 'chaoffice-integrations-'))
+  userData = mkdtempSync(join(tmpdir(), 'chaoffice-userdata-'))
+  fakeHome = mkdtempSync(join(tmpdir(), 'chaoffice-fakehome-'))
   realHome = process.env.HOME
   process.env.HOME = fakeHome
   writeFileSync(join(dir, 'SKILL.md'), '---\nname: genoffice\n---\n')

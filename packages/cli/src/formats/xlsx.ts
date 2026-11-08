@@ -1,12 +1,12 @@
 import JSZip from 'jszip'
 import * as numfmt from 'numfmt'
 import {
-  blankXlsxBuffer,
   decodeCsvBuffer,
   isNumericCell,
   parseCsv,
 } from '@chaoffice/xlsx-gateway/gateway/csv-import'
 import { columnLabel, parseAddress } from '@chaoffice/xlsx-gateway/domain/cell-address'
+import { blankXlsxBuffer } from '@chaoffice/xlsx-gateway/gateway/csv-import-xlsx'
 import {
   assembleWithJsZip,
   createBufferEntrySource,

@@ -145,6 +145,7 @@ or copy an existing `target/release/xlsx-sidecar.exe` to
 None are required — the apps run with all of these unset. They exist for
 testing and local overrides:
 
+<<<<<<< HEAD
 | Variable                                                 | Effect                                                                 |
 | -------------------------------------------------------- | ---------------------------------------------------------------------- |
 | `CHATOFFICE_USER_DATA`                                    | Override the Electron userData directory (test isolation)              |
@@ -155,6 +156,18 @@ testing and local overrides:
 | `AI_SEARCH_DISABLE_GSK`, `SERPER_API_KEY`, `TAVILY_API_KEY` | Disable the gsk search backend / supply a Serper or Tavily key        |
 | `XLSX_SIDECAR_PATH`, `XLSX_OPEN_PATH`, `XLSX_DEBUG_PORT` | Point at a locally built xlsx sidecar and its debug port               |
 | `*_DEV_PORT`, `*_RENDERER_URL`                           | Per-app Vite dev server ports and renderer URLs (set by `npm run dev`) |
+=======
+| Variable                                                                                                               | Effect                                                                                      |
+| ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `BUILD_DIR`                                                                                                            | Override the electron-builder output directory (default `apps/shell/release`)               |
+| `GENOFFICE_USER_DATA`                                                                                                  | Override the Electron userData directory (test isolation)                                   |
+| `GENOFFICE_LANG`                                                                                                       | Force the UI language instead of following the OS locale                                    |
+| `GENOFFICE_FAKE_UPDATE`                                                                                                | Exercise the updater UI without a real release feed                                         |
+| `GSK_API_KEY`, `GSK_CLI_PATH`                                                                                          | ChaAI Office credentials / CLI location for the built-in AI provider                            |
+| `AI_SEARCH_DISABLE_GSK`, `SERPER_API_KEY`, `SERPLY_API_KEY`, `SEARCHAPI_API_KEY`, `TAVILY_API_KEY`, `PARALLEL_API_KEY` | Disable the gsk search backend / supply a Serper, Serply, SearchApi, Tavily or Parallel key |
+| `XLSX_SIDECAR_PATH`, `XLSX_OPEN_PATH`, `XLSX_DEBUG_PORT`                                                               | Point at a locally built xlsx sidecar and its debug port                                    |
+| `*_DEV_PORT`, `*_RENDERER_URL`                                                                                         | Per-app Vite dev server ports and renderer URLs (set by `npm run dev`)                      |
+>>>>>>> 5e9d11049 (feat(ai-search): add SearchApi as a web and image search provider (#2484))
 
 AI features degrade rather than break without credentials: requests surface an
 inline sign-in prompt, and web search falls back to a keyless backend.

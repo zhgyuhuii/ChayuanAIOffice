@@ -69,13 +69,13 @@ test('files dropped on Ask AI reach the model as attachments', async () => {
   const requests: ChatRequest[] = []
   const server = await startModelStub(requests)
   const port = (server.address() as AddressInfo).port
-  const root = await mkdtemp(join(tmpdir(), 'genoffice-e2e-ask-'))
+  const root = await mkdtemp(join(tmpdir(), 'chaoffice-e2e-ask-'))
   await mkdir(join(root, 'Documents'))
   const briefPath = join(root, 'brief.md')
   const photoPath = join(root, 'photo.png')
   await writeFile(briefPath, `# Brief\n\n${BRIEF_TEXT}\n`)
   await writeFile(photoPath, PNG_BYTES)
-  const userDataDir = await mkdtemp(join(tmpdir(), 'genoffice-e2e-'))
+  const userDataDir = await mkdtemp(join(tmpdir(), 'chaoffice-e2e-'))
   const settings = defaultAiSettings()
   settings.provider = 'custom'
   settings.providers.custom = {

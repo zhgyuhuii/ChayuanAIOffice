@@ -83,7 +83,6 @@ import {
   type WriteProtection,
   mergeFieldName,
   nextNoteId,
-  PAGE_MARK,
   placeholderText,
   type HeaderFooter,
   type HfPictureEdit,
@@ -280,6 +279,7 @@ import {
   pinParagraphRelVPictures,
   pageBorderStyleOf,
   type PageGapSpec,
+  type GapMetrics,
   LayoutBatch,
   pageFramesFromGaps,
   gapLedgerOf,
@@ -293,6 +293,7 @@ import { layoutMultipage, multipageColumns, multipageZoomForColumns } from './mu
 import { setColumnLayout } from './editor/column-layout'
 import { pageMargins } from './page-margins'
 import { syncLineNumbers } from './editor/line-numbers'
+import { formattingMarksPluginKey, sectionBreakMap } from './editor/formatting-marks'
 import {
   COMMENT_AREA_W,
   clearMarginAnnotations,
@@ -303,8 +304,10 @@ import {
   bumpHfProbeFontEpoch,
   hfHasPageField,
   hfHasVisibleContent,
+  hfPageNumberOnly,
   hfWithoutPageMarks,
   hfStripGeom,
+  hfBodyObstacles,
   makeGapHfEl,
   hfImageHangsOnPara,
   makeHfFloatImgEl,
@@ -455,6 +458,7 @@ import { setSelectionAlign } from './editor/direction'
 import {
   editorExtensions,
   findFloatImageAt,
+  runPictureAtEvent,
   resolvedCommentsPluginKey,
   revisionDisplayState,
 } from './editor/extensions'
@@ -1119,6 +1123,8 @@ export function App() {
   const [findFocusGoTo, setFindFocusGoTo] = useState(0)
   // last pagination pass, read by the Go To tab (page / section / line targets)
   const pageLayoutRef = useRef<PageLayout | null>(null)
+  /** live section list of the last pass (header obstacles of the next pass) */
+  const lastSecListRef = useRef<SectionInfo[] | null>(null)
   const cutsNow = useCallback(() => pageLayoutRef.current?.cuts, [])
   /** runs the debounced pagination pass now (set by the scheduler effect) */
   const flushPaginationRef = useRef<() => void>(() => {})
@@ -4175,6 +4181,8 @@ export function App() {
     [doc, pageColor],
   )
 
+  // compatibilityMode < 15: header wrapTopAndBottom bands clamp to the page top (hfStripGeom)
+  const legacyBands = (doc?.parsed.compatibilityMode ?? 0) < 15
   // single-section header/footer push-down: body top = max(marginTop, headerDist + header height)
   const singleHfPx = useMemo((): SectionHfHeights => {
     if (!section) return { headerPx: 0, footerPx: 0 }
@@ -4184,13 +4192,13 @@ export function App() {
     return hfVariantHeightsPx(
       (kind, variant) => hfLayoutResolved(kind, hfResolveAt(0, kind, variant), hfPhantom),
       () => contentW,
-      hfStripGeom(section),
+      hfStripGeom(section, legacyBands),
       titlePg,
       evenOddHf,
     )
     // hfMeasureEpoch: re-measure once the doc-scoped styles have committed
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [section, hfResolveAt, hfPhantom, titlePg, evenOddHf, hfMeasureEpoch])
+  }, [section, hfResolveAt, hfPhantom, titlePg, evenOddHf, legacyBands, hfMeasureEpoch])
   const effTopSingle = section ? effectiveTopPx(section, singleHfPx.headerPx) : 0
   const effBottomSingle = section ? effectiveBottomPx(section, singleHfPx.footerPx) : 0
   const canvasSection = sections[0]?.settings ?? section
@@ -4229,12 +4237,12 @@ export function App() {
         secs,
         (i, kind, variant) =>
           hfLayoutResolved(kind, resolveHf(liveState, i, kind, variant), hfPhantom),
-        { titlePg, evenOddHf },
+        { titlePg, evenOddHf, legacyBands },
       )
     },
     // hfMeasureEpoch: re-measure once the doc-scoped styles have committed
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [hfState, hfPhantom, titlePg, evenOddHf, hfMeasureEpoch],
+    [hfState, hfPhantom, titlePg, evenOddHf, legacyBands, hfMeasureEpoch],
   )
 
   // paragraphs without w:pStyle take the default paragraph style's constraints (widowControl off in Normal)
@@ -4290,9 +4298,11 @@ export function App() {
         : imageParaPaginationMeta(b.originalXml, styleOf, doc?.parsed.docDefaults)
       const fnBands = footnoteBandsOf(b)
       const fnExtra = fnBands.reduce((s, band) => s + band.heightPx, 0)
-      if (!flags && fnExtra === 0) return undefined
+      const modern = (doc?.parsed.compatibilityMode ?? 0) >= 15
+      if (!flags && fnExtra === 0 && !modern) return undefined
       return {
         ...flags,
+        ...(modern ? { modernAnchorFloats: true } : {}),
         ...(fnExtra > 0 ? { footnoteExtraPx: fnExtra, footnoteBands: fnBands } : {}),
       }
     },
@@ -4833,16 +4843,40 @@ export function App() {
       // the previous pass's block leads: where its gap widgets stand in the DOM
       const prevLayout = pageLayoutRef.current
       const pageLeads = prevLayout
-        ? new Set<Element>(
-            prevLayout.cuts.flatMap((c) => {
+        ? new Map<Element, number>(
+            prevLayout.cuts.flatMap((c, i) => {
               const el =
                 c.gap?.kind === 'block' && c.lead.kind === 'block'
                   ? prevLayout.blocks[c.lead.block]?.el
                   : undefined
-              return el ? [el] : []
+              return el ? [[el, i] as const] : []
             }),
           )
         : undefined
+      // header drawings reaching into the body of each page of the previous
+      // pass (its cuts name the variant and section a page shows)
+      const headerObstacleCache = new Map<number, ReturnType<typeof hfBodyObstacles>>()
+      const headerObstaclesOf = (pageIdx: number) => {
+        const hit = headerObstacleCache.get(pageIdx)
+        if (hit) return hit
+        const cut = prevLayout?.cuts[pageIdx]
+        const prevSecs = lastSecListRef.current
+        const si = prevSecs ? Math.min(cut?.section ?? 0, prevSecs.length - 1) : 0
+        const set = prevSecs ? prevSecs[si]?.settings : section
+        let out: ReturnType<typeof hfBodyObstacles> = []
+        if (cut && set) {
+          const end = prevSecs?.[si]?.lastBlockIndex
+          const hsi = end === undefined ? -1 : hfSections.findIndex((s) => s.lastBlockIndex === end)
+          const images = hfResolveAt(hsi >= 0 ? hsi : si, 'header', cut.hf.variant).images
+          out = hfBodyObstacles(
+            images,
+            hfStripGeom(set, legacyBands),
+            effectiveTopPx(set, cut.hf.headerPx),
+          )
+        }
+        headerObstacleCache.set(pageIdx, out)
+        return out
+      }
       const obstaclesChanged = syncWrapObstacles(
         pm,
         factor,
@@ -4850,6 +4884,7 @@ export function App() {
         planOf,
         obstacleShadow,
         pageLeads,
+        headerObstaclesOf,
       )
       // natural-flow measuring state: in-paragraph gap widgets force a line break
       // at the PREVIOUS pass's cut, so measuring with them in layout re-confirms
@@ -4894,6 +4929,7 @@ export function App() {
         // liveSections: when a section-break block is deleted, that section merges into the next in real time (effective before saving)
         const secList =
           sections.length > 0 ? liveSections(sections, blocks, sectBreaks, delSectBreaks) : null
+        lastSecListRef.current = secList
         if (secList) assignSections(blocks, secList)
         // the endnote area takes part in page slicing (placed together at the document end; overflows continue on later pages)
         const withEndnotes = appendEndnotesBlock(
@@ -4905,15 +4941,20 @@ export function App() {
         // floating boxes below the flow end still need pages to land on; boxes
         // reaching only into the last page's bottom margin stay there (Word
         // draws anchored objects over the margin instead of opening a page)
+        const hfHs = secList ? hfHeightsOf(secList) : null
+        const geoms: SectionGeom[] = secList
+          ? colGeomsFor(sectionGeoms(secList, hfHs!, evenOddHf))
+          : [{ contentHeight: contentH, forceBreak: false, ...singleVariantGeom }]
         const lastSec = secList?.[secList.length - 1]?.settings ?? section
+        const spillOverhangPx =
+          geoms[geoms.length - 1]?.marginBottomPx ?? (lastSec ? twipsToPx(lastSec.marginBottom) : 0)
         const flowWithFloats = appendFloatSpillBlock(
           blocks,
           withEndnotes?.totalHeight ?? totalHeight,
           floats,
-          lastSec ? twipsToPx(lastSec.marginBottom) : 0,
+          spillOverhangPx,
         )
         const flowH = flowWithFloats ?? withEndnotes?.totalHeight ?? totalHeight
-        const hfHs = secList ? hfHeightsOf(secList) : null
         const secSig = secList
           ? secList
               .map((s) => `${s.firstBlockIndex}:${s.lastBlockIndex}:${s.startType ?? ''}`)
@@ -4928,14 +4969,13 @@ export function App() {
           rowFills: [],
           rowSplits: [],
           floatVShifts: [],
+          floatPullUps: [],
+          floatCarries: [],
           floatFlows: [],
           floatSplits: [],
           oversizeClips: [],
         }
-        const geoms: SectionGeom[] = secList
-          ? colGeomsFor(sectionGeoms(secList, hfHs!, evenOddHf))
-          : [{ contentHeight: contentH, forceBreak: false, ...singleVariantGeom }]
-        const s = sliceWithLineSplit(
+        let s = sliceWithLineSplit(
           blocks,
           geoms,
           flowH,
@@ -4944,6 +4984,27 @@ export function App() {
           sliceOut,
           resume ?? undefined,
         )
+        const floatTops = floats.map((f) => f.top)
+        const pullFloats = () => {
+          floats.forEach((f, i) => (f.top = floatTops[i]))
+          for (const p of sliceOut.floatPullUps ?? [])
+            for (const f of floats)
+              if (!f.pinned && !f.pageRelV && Math.abs(f.anchorTop - p.blockTop) < 0.5)
+                f.top += p.dyPx
+        }
+        pullFloats()
+        // the spill block was sized from unpulled boxes: a box pulled up to the
+        // paper edge may no longer need the page it opened
+        if (flowWithFloats !== null && sliceOut.floatPullUps?.length) {
+          const spillAt = blocks.findIndex((b) => b.isFloatSpill)
+          if (spillAt >= 0) blocks.splice(spillAt, 1)
+          const base = withEndnotes?.totalHeight ?? totalHeight
+          const again = appendFloatSpillBlock(blocks, base, floats, spillOverhangPx)
+          if ((again ?? base) < flowH - 0.5) {
+            s = sliceWithLineSplit(blocks, geoms, again ?? base, factor, blockMetaOf, sliceOut)
+            pullFloats()
+          }
+        }
         tSlice = performance.now() - t1
         const cuts = buildPageCuts(blocks, s, geoms, hfHs ?? [singleHfPx], {
           evenOddHf,
@@ -4973,6 +5034,8 @@ export function App() {
           rowSplits: sliceOut.rowSplits ?? [],
           rowFills: sliceOut.rowFills ?? [],
           floatVShifts: sliceOut.floatVShifts ?? [],
+          floatPullUps: sliceOut.floatPullUps ?? [],
+          floatCarries: sliceOut.floatCarries ?? [],
           floatFlows: sliceOut.floatFlows ?? [],
           floatSplits: sliceOut.floatSplits ?? [],
           oversizeClips: sliceOut.oversizeClips ?? [],
@@ -4985,6 +5048,8 @@ export function App() {
         floats,
         rowFills,
         floatVShifts,
+        floatPullUps,
+        floatCarries,
         floatFlows,
         floatSplits,
         oversizeClips,
@@ -5295,7 +5360,7 @@ export function App() {
                 pageTotal: visiblePages,
                 sectionPages: sectionPages[k],
                 geom: {
-                  ...hfStripGeom(prevSec),
+                  ...hfStripGeom(prevSec, legacyBands),
                   stripLeft: gapStripLeft(prevSec, box, k),
                   ...stripColumnW(gapFooter, 'footer'),
                 },
@@ -5327,7 +5392,7 @@ export function App() {
                 pageTotal: visiblePages,
                 sectionPages: sectionPages[k + 1],
                 geom: {
-                  ...hfStripGeom(nextSec),
+                  ...hfStripGeom(nextSec, legacyBands),
                   stripLeft: gapStripLeft(nextSec, box, k + 1),
                   ...stripColumnW(gapHeader, 'header'),
                 },
@@ -5379,7 +5444,7 @@ export function App() {
               twipsToPx(prevSec.pageHeight) -
               effectiveTopPx(prevSec, prevHf.headerPx) -
               metrics.marginBottom
-            let notesMetrics = { ...metrics, bodyHeight: prevContentH - fnH }
+            let notesMetrics: GapMetrics = { ...metrics, bodyHeight: prevContentH - fnH }
             if (items.length > 0) {
               const contentW = twipsToPx(
                 prevSec.pageWidth - prevSec.marginLeft - prevSec.marginRight,
@@ -5394,7 +5459,11 @@ export function App() {
                 (id) => editNote('footnote', id),
               )
               notesKey = `${Math.round(fnH)}:${notesLeft.toFixed(1)}:${items.map((n) => `${n.no}${n.text}`).join('|')}`
-              notesMetrics = { ...notesMetrics, marginBottom: metrics.marginBottom + fnH }
+              notesMetrics = {
+                ...notesMetrics,
+                marginBottom: metrics.marginBottom + fnH,
+                bodyMarginBottom: metrics.marginBottom,
+              }
             }
             const markShown = () => items.forEach((n) => gapIds.add(n.id))
             // the page lead comes from the PageCut (I11); the DOM only resolves the
@@ -5423,6 +5492,7 @@ export function App() {
                         ...notesMetrics,
                         marginBottom: notesMetrics.marginBottom + pad,
                         bodyPad: pad,
+                        bodyMarginBottom: metrics.marginBottom,
                       }
                     : notesMetrics,
                 ...(pullUp > 0.5 ? { pullUp } : {}),
@@ -5450,6 +5520,7 @@ export function App() {
                           ...notesMetrics,
                           marginBottom: notesMetrics.marginBottom + pad,
                           bodyPad: pad,
+                          bodyMarginBottom: metrics.marginBottom,
                         }
                       : notesMetrics,
                   ...(pullUp > 0.5 ? { pullUp } : {}),
@@ -5557,7 +5628,11 @@ export function App() {
                         ...(repeatHeaderPx > 0 ? { repeatHeaderPx } : {}),
                         metrics:
                           tablePad > 0
-                            ? { ...metrics, marginBottom: metrics.marginBottom + tablePad }
+                            ? {
+                                ...metrics,
+                                marginBottom: metrics.marginBottom + tablePad,
+                                bodyMarginBottom: metrics.marginBottom,
+                              }
                             : metrics,
                         ...hfProps,
                         ...(repeatHeaderEls
@@ -5602,7 +5677,7 @@ export function App() {
                 missCut(`cell lead has no ProseMirror position`)
                 return
               }
-              const cutCell = singleCutCell(cutRow, anchor)
+              const cutCell = singleCutCell(cutRow, anchor, factor)
               if (cutCell) {
                 // single-column row: insert a real inline gap band; bleed to the paper
                 // edges from the anchor's block (the widget's containing block)
@@ -5753,6 +5828,7 @@ export function App() {
           dyPx: number
           flow?: boolean
           carryPx?: number
+          pull?: boolean
         }> = []
         // blocks by rounded top: a scan per shift was floats × blocks on picture-heavy
         // documents; the first match in document order wins, as the scan did
@@ -5779,6 +5855,20 @@ export function App() {
         for (const f of floatVShifts) {
           const b = pageRelBlockAt(f.blockTop)
           if (b?.el) floatVEls.push({ el: b.el, dyPx: f.dyPx })
+        }
+        const pictureAt = blockAtTop((bb) => !!bb.floatPicture)
+        for (const f of floatPullUps) {
+          const b = pictureAt(f.blockTop)
+          if (b?.el) floatVEls.push({ el: b.el, dyPx: f.dyPx, pull: true })
+        }
+        for (const f of floatCarries) {
+          const b = blocks.find(
+            (bb) =>
+              !!bb.el &&
+              !bb.floated &&
+              Math.abs(bb.top - (bb.carryAppliedPx ?? 0) - f.blockTop) < 0.5,
+          )
+          if (b?.el && f.carryPx > 0.5) floatVEls.push({ el: b.el, dyPx: 0, carryPx: f.carryPx })
         }
         const floatTableAt = blockAtTop((bb) => Boolean(bb.floatTable))
         for (const f of floatFlows) {
@@ -6293,6 +6383,7 @@ export function App() {
     hfState,
     hfSections,
     hfResolveAt,
+    legacyBands,
     comments,
     commentsUi.cards,
     commentsUi.panel,
@@ -7183,7 +7274,16 @@ export function App() {
         const img = (e.target as HTMLElement).closest('img') ?? protectedEl?.querySelector('img')
         imageSrc = img?.getAttribute('src') || null
         let selectedNode = false
-        if (protectedEl) {
+        // a floating run picture is its own node, outside any .doc-protected block
+        const runPic =
+          !protectedEl && !fromKeyboard ? runPictureAtEvent(editor.view, e.target, x, y) : null
+        if (runPic) {
+          editor.view.dispatch(
+            editor.state.tr.setSelection(NodeSelection.create(editor.state.doc, runPic.pos)),
+          )
+          imageSrc = runPic.img.getAttribute('src') || imageSrc
+          selectedNode = true
+        } else if (protectedEl) {
           const dom = editor.view.nodeDOM.bind(editor.view)
           let nodePos = -1
           editor.state.doc.descendants((node, pos) => {
@@ -7359,11 +7459,7 @@ export function App() {
         break
       case 'pageNumber':
         hfEditorRef.current?.exit()
-        commitHfAt(sectionOf(action.kind), action.kind, variant, {
-          text: PAGE_MARK,
-          pageNumber: true,
-          paras: [{ align: action.align, runs: [{ text: PAGE_MARK }] }],
-        })
+        commitHfAt(sectionOf(action.kind), action.kind, variant, hfPageNumberOnly(action.align))
         break
       case 'pageNumberHere':
         if (sub) insertHfField(sub, 'PAGE')
@@ -8517,6 +8613,15 @@ export function App() {
     scrollPosRef.current = { left: container.scrollLeft, top: container.scrollTop }
   }, [zoom, multipage, mpCols, mpActiveSlotTop, editor])
 
+  useEffect(() => {
+    if (!editor) return
+    editor.view.dispatch(
+      editor.state.tr
+        .setMeta(formattingMarksPluginKey, { on: showMarks, breaks: sectionBreakMap(sections) })
+        .setMeta('addToHistory', false),
+    )
+  }, [editor, showMarks, sections, lang])
+
   if (!editor) return null
 
   // canvas geometry is anchored to the first section (stable across cursor moves);
@@ -8994,7 +9099,7 @@ export function App() {
                             boxGeom={
                               canvasSection && canvasBox
                                 ? {
-                                    ...hfStripGeom(canvasSection),
+                                    ...hfStripGeom(canvasSection, legacyBands),
                                     stripLeft: edgeHeaderStyle
                                       ? twipsToPx(firstPageMargins!.left)
                                       : (paperW - canvasBox.contentWidth) / 2,
@@ -9068,7 +9173,7 @@ export function App() {
                             boxGeom={
                               lastSection && lastBox
                                 ? {
-                                    ...hfStripGeom(lastSection),
+                                    ...hfStripGeom(lastSection, legacyBands),
                                     stripLeft: edgeFooterStyle
                                       ? twipsToPx(lastPageMargins!.left)
                                       : (paperW - lastBox.contentWidth) / 2,
@@ -9606,6 +9711,7 @@ export function App() {
           mirrorMargins={mirrorMargins}
           delSectBreaks={delSectBreaks}
           hfParts={doc.parsed.hfParts ?? {}}
+          legacyBands={legacyBands}
           colFlow={viewMode === 'print' ? colFlow : null}
           colMode={viewMode === 'print' ? colMode : 'none'}
           hf={{

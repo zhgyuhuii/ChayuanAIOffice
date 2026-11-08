@@ -26,6 +26,9 @@
  * users can still install local font files.
  */
 
+// Buffer comes from node:buffer, not the global: this file is evaluated
+// inside a vm sandbox (the packaging tests) that has no Buffer global.
+const { Buffer } = require('node:buffer')
 // electron-builder 在打包期要从 GitHub 下载 Electron zip 与 fpm/7zip 等工具，
 // 国内直连 GitHub 常见超时/重置——默认走 npmmirror 镜像，让 `npm run dist:*`
 // 不带任何环境变量即可工作。CI 或特殊网络可用同名环境变量覆盖（设为官方地址）。
@@ -47,7 +50,7 @@ function hasRpmbuild() {
     return false
   }
 }
-const { existsSync, rmSync, writeFileSync, readFileSync } = require('node:fs')
+const { closeSync, existsSync, openSync, readFileSync, readSync, rmSync, writeFileSync } = require('node:fs')
 const { join } = require('node:path')
 const { stageCrossSidecar, restoreHostSidecar } = require('./build/linux-sidecar-staging.cjs')
 
@@ -101,7 +104,11 @@ const winArch = winArm64 ? 'arm64' : 'x64'
 // target dir). Default follows the host arch like before; the mac-host
 // release pipeline runs the arm64 pass plain and this one for x64.
 const linuxArch =
-  process.env.CHAOFFICE_LINUX_X64 === '1' ? 'x64' : process.arch === 'arm64' ? 'arm64' : 'x64'
+  process.env.CHAOFFICE_LINUX_X64 === '1'
+    ? 'x64'
+    : process.env.GENOFFICE_LINUX_ARM64 === '1' || process.arch === 'arm64'
+      ? 'arm64'
+      : 'x64'
 const winSidecarTarget = winArm64 ? 'aarch64-pc-windows-msvc' : 'x86_64-pc-windows-gnu'
 // Where the release pipeline puts the sidecar: an explicit cross-compilation
 // triple (CI builds it that way). A Windows contributor's plain
@@ -118,6 +125,24 @@ const winSidecarCandidates = [
 ]
 const WIN_SIDECAR =
   winSidecarCandidates.find((rel) => existsSync(join(__dirname, rel))) ?? winSidecarCandidates[0]
+
+// GENOFFICE_LINUX_ARM64=1（上游 #2474 口径）显式选 arm64 Linux 打包；本地默认沿
+// linuxArch（CHAOFFICE_LINUX_X64/host-arch）——两口径汇于同一 arm64 判定。
+const linuxArm64 = process.env.GENOFFICE_LINUX_ARM64 === '1' || linuxArch === 'arm64'
+const linuxSidecarTarget = linuxArm64 ? 'aarch64-unknown-linux-gnu' : 'x86_64-unknown-linux-gnu'
+// Mirrors the Windows candidate list above: the explicit triple first, then
+// cargo's plain host-native output — but only when the host really is the
+// packaged architecture, so an arm64 host can never hand its native sidecar
+// to an x64 package (and the other way round).
+const linuxSidecarCandidates = [
+  `../sheets/native/xlsx-engine/target/${linuxSidecarTarget}/release/xlsx-sidecar`,
+  ...(process.platform === 'linux' && (process.arch === 'arm64') === linuxArm64
+    ? ['../sheets/native/xlsx-engine/target/release/xlsx-sidecar']
+    : []),
+]
+const LINUX_SIDECAR =
+  linuxSidecarCandidates.find((rel) => existsSync(join(__dirname, rel))) ??
+  linuxSidecarCandidates[0]
 
 // LICENSES.chromium.html only exists after the Electron binary download —
 // since Electron 42 that no longer happens during `npm ci` (the postinstall
@@ -136,6 +161,35 @@ for (const rel of [
     throw new Error(
       `electron-builder extraResources source missing: ${rel} (npm hoisting changed?)`,
     )
+  }
+}
+
+/** ELF e_machine check (little-endian header): refuse a sidecar whose
+ *  architecture does not match the package being built. 0x3E = EM_X86_64,
+ *  0xB7 = EM_AARCH64. */
+function assertLinuxSidecarArch(sidecarPath, wantArm64) {
+  const fd = openSync(sidecarPath, 'r')
+  try {
+    const header = Buffer.alloc(20)
+    if (
+      readSync(fd, header, 0, 20, 0) < 20 ||
+      header.subarray(0, 4).toString('latin1') !== '\x7fELF'
+    ) {
+      throw new Error(`not an ELF binary: ${sidecarPath}`)
+    }
+    const machine = header.readUInt16LE(18)
+    const got = machine === 0xb7 ? 'aarch64' : machine === 0x3e ? 'x86_64' : `e_machine=${machine}`
+    const want = wantArm64 ? 'aarch64' : 'x86_64'
+    if (got !== want) {
+      throw new Error(
+        `linux sidecar is ${got} but this package ships ${want}: ${sidecarPath} — ` +
+          (wantArm64
+            ? 'cross-build it (cargo zigbuild --target aarch64-unknown-linux-gnu) or build natively on an arm64 host'
+            : 'rebuild it for x64'),
+      )
+    }
+  } finally {
+    closeSync(fd)
   }
 }
 
@@ -745,10 +799,13 @@ const config = {
   },
   // Unlike win (which cross-compiles the sidecar to an explicit target
   // triple), linux takes it from cargo's host-native target/release/ — the
-  // same source mac uses. So no `arch` is pinned here: electron-builder
-  // defaults to the build host's architecture, which is the only one the
-  // sidecar was actually built for. Packaging arm64 on an x64 host, or the
-  // reverse, needs a matching `cargo build --target` first.
+  // same source mac uses. So no `arch` is pinned here beyond the flag below:
+  // electron-builder defaults to the build host's architecture, which is the
+  // only one the sidecar was actually built for — and GENOFFICE_LINUX_ARM64=1
+  // switches every target to arm64, where the sidecar must come from a native
+  // arm64 host or an explicit cross build (see linuxSidecarCandidates and the
+  // ELF check). That flag is config support only: no second Linux pass runs
+  // anywhere yet, so the arm64 artifacts are not produced by this repo.
   linux: {
     // artifactName pins the AppImage name (deb/rpm override with their own);
   // all target names are space-free per user rule (2026-09-23).
@@ -760,7 +817,8 @@ const config = {
     // openSUSE). Default artifact names are kept on purpose —
     // ChaOffice-<v>.AppImage / chaoffice_<v>_amd64.deb — because the public
     // README download links and the already-published linux-v0.5.149 release
-    // use them.
+    // use them. The arm64 targets reuse the ${arch}-templated deb/rpm names
+    // (chaoffice_<v>_arm64.deb).
     target: [
       { target: 'AppImage', arch: [linuxArch] },
       { target: 'deb', arch: [linuxArch] },
@@ -795,7 +853,7 @@ const config = {
     syncDesktopName: true,
     extraResources: [
       {
-        from: '../sheets/native/xlsx-engine/target/release/xlsx-sidecar',
+        from: LINUX_SIDECAR,
         to: 'native/xlsx-sidecar',
       },
       // Same blank templates the Windows installer registers for Explorer's
@@ -874,35 +932,9 @@ const config = {
             ? 'x86_64-unknown-linux-gnu'
             : null
       if (!triple) throw new Error(`unsupported linux arch: ${String(context.arch)}`)
-      const staged = join(
-        __dirname,
-        '../sheets/native/xlsx-engine/target/release/xlsx-sidecar',
-      )
-      const native = process.arch === archName
-      if (native) {
-        // 原生构建（linux 宿主）：cargo build --release 的产物已在此路径。
-        // mac 宿主（arm64）上这个分支同样成立，但 target/release 常驻的是
-        // dist:mac 的 universal Mach-O——混进 deb 就是 R30 坏包事故。 ELF
-        // 且架构匹配才放行；否则要求先就位 zigbuild 产物（发版脚本负责）。
-        const sidecarElf = readFileSync(staged)
-        const isElf =
-          sidecarElf.length > 18 &&
-          sidecarElf[0] === 0x7f &&
-          sidecarElf[1] === 0x45 &&
-          sidecarElf[2] === 0x4c &&
-          sidecarElf[3] === 0x46
-        const elfMachineOk =
-          !isElf ||
-          (archName === 'arm64'
-            ? sidecarElf[18] === 0xb7 // EM_AARCH64
-            : sidecarElf[18] === 0x3e) // EM_X86_64
-        if (!existsSync(staged) || !isElf || !elfMachineOk) {
-          throw new Error(
-            `linux sidecar at ${staged} is not an ${archName} ELF ` +
-              `(mac hosts: cp the zigbuild output over it, or run the linux pass with the cross sidecar staged)`,
-          )
-        }
-      } else {
+      // 原生校验统一走下方的候选+ELF 头断言（assertLinuxSidecarArch 读 20 字节
+      // 头，与打包测试的 openSync/readSync 桩对齐）；这里只负责交叉产物就位。
+      if (process.arch !== archName) {
         // 交叉产物就位 + 宿主二进制备份；afterPack 还原（否则 linux-x64 打包
         // 会把宿主 dev/test 用的二进制永久换成外平台 ELF）
         stageCrossSidecar(__dirname, triple)
@@ -918,6 +950,22 @@ const config = {
         `win extraResources source missing: ${winSidecarCandidates.join(' or ')} ` +
           `(run "npm run native:build -w @chaoffice/sheets", or cargo build --target ${winSidecarTarget})`,
       )
+    }
+    if (context.electronPlatformName === 'linux') {
+      const sidecar = join(__dirname, LINUX_SIDECAR)
+      if (!existsSync(sidecar)) {
+        // The candidate list is picked by the flag, so the x64 pass never
+        // points at an aarch64 build (and the arm64 pass never at an x64 one).
+        const hint = linuxArm64
+          ? 'cross-build with "cargo zigbuild --release --target aarch64-unknown-linux-gnu", ' +
+            'or build natively on an arm64 Linux host'
+          : 'run "npm run native:build -w @chaoffice/sheets" on an x64 Linux host, ' +
+            'or cross-build with "cargo zigbuild --release --target x86_64-unknown-linux-gnu"'
+        throw new Error(
+          `linux extraResources source missing: ${linuxSidecarCandidates.join(' or ')} (${hint})`,
+        )
+      }
+      assertLinuxSidecarArch(sidecar, linuxArm64)
     }
   },
   dmg: {

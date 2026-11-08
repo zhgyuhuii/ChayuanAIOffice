@@ -47,8 +47,29 @@ export { COMPRESS_PRESETS, compressImageForDisplay, type CompressPresetId } from
 export { insertImageStrings } from './insert-image-strings'
 export { installAnchorPanelFallback } from './anchor-fallback'
 export {
+  SentAttachments,
+  truncateCardName,
+  formatAttachmentSize,
+  AttachmentCardIcon,
+  ATTACHMENT_IMAGE_EXTS,
+  fileImageIcon,
+  fileGeneralIcon,
+  fileDocumentIcon,
+  type AiAttachmentLike,
+} from './ai-attachments'
+export {
+  AI_PANEL_WIDTH_DEFAULT,
+  AI_PANEL_WIDTH_MIN,
+  AI_PANEL_WIDTH_MAX,
+  maxAiPanelWidth,
+  clampAiPanelWidth,
+  loadAiPanelWidth,
+  saveAiPanelWidth,
+} from './ai-panel-width'
+export {
   installPopoverDismiss,
   useDismissablePopover,
+  useEscapeToClose,
   type PopoverDismissOptions,
 } from './popover-dismiss'
 export { Dropdown, type DropdownOption } from './dropdown'

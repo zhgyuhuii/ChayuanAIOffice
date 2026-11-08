@@ -86,7 +86,7 @@ async function saveViaMenu(app: ElectronApplication, workbook: string) {
 test.describe('sheets: withhold a cell from the model', () => {
   test('the mark rides in the file and the cell keeps its value', async () => {
     test.setTimeout(180_000)
-    const scratch = await mkdtemp(join(tmpdir(), 'genoffice-sheets-redact-'))
+    const scratch = await mkdtemp(join(tmpdir(), 'chaoffice-sheets-redact-'))
     const workbook = join(scratch, 'redact.xlsx')
     await copyFile(FIXTURE, workbook)
     const before = sheetXml(workbook)
@@ -158,7 +158,7 @@ test.describe('sheets: withhold a cell from the model', () => {
 
   test('reopening the workbook keeps the mark', async () => {
     test.setTimeout(180_000)
-    const scratch = await mkdtemp(join(tmpdir(), 'genoffice-sheets-redact2-'))
+    const scratch = await mkdtemp(join(tmpdir(), 'chaoffice-sheets-redact2-'))
     const workbook = join(scratch, 'redact-reopen.xlsx')
     await copyFile(FIXTURE, workbook)
 

@@ -9,7 +9,7 @@ const settle = () => new Promise((r) => setTimeout(r, 2000))
 
 test.describe('reload when another program changes the open file', () => {
   test('markdown: clean document reloads, dirty document asks first', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'genoffice-md-disk-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chaoffice-md-disk-'))
     const mdPath = join(dir, 'shared.md')
     await writeFile(mdPath, '# First\n\nhello\n')
 
@@ -52,7 +52,7 @@ test.describe('reload when another program changes the open file', () => {
   })
 
   test('html: clean document reloads into the preview', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'genoffice-html-disk-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chaoffice-html-disk-'))
     const htmlPath = join(dir, 'shared.html')
     await writeFile(htmlPath, '<!doctype html><html><body><h1>First</h1></body></html>\n')
 

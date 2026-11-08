@@ -41,6 +41,11 @@ import {
   chaofficeSlideGenerate,
   setChaOfficeProxyUrl,
 } from '@chaoffice/ai-search'
+import { loadPrintHtml } from '@chaoffice/electron-utils/print-window'
+import { printOutcome, printJobOptions } from '@chaoffice/electron-utils/print-job'
+import { printPdfViaCups, printToPdfOptionsFor } from '@chaoffice/electron-utils/print-cups'
+import { queryPrinterOptions, DRIVER_OPTION_NAMES } from '@chaoffice/electron-utils/printer-options'
+
 import {
   appMenuLabels,
   appMenuTemplate,
@@ -80,6 +85,7 @@ import {
 import { matchesElementRef } from '@chaoffice/pptx-engine/identity'
 import { buildPagePptx, parsePageSpec } from '@chaoffice/pipelines/slides'
 import { convertOdpToPptx } from '../../../../packages/odf2ooxml/src'
+import { convertPptToPptx } from '../../../../packages/ppt2pptx/src'
 import { sniffImageMime } from './media-mime'
 import { getUiLang, normalizeLang, setUiLang } from '@chaoffice/i18n'
 import { ProjectStore } from '@chaoffice/project-store'
@@ -281,7 +287,7 @@ import type {
 } from '../shared/ipc'
 import { DECK_LINK_PROTOCOLS } from '../shared/run-link'
 import { planSlideDuplicates, planSlideMoves } from '../shared/slide-selection'
-import { buildPrintDocumentHtml } from '../shared/print-html'
+import { buildPrintDocumentHtml, printPageSizeIn } from '../shared/print-html'
 
 import { tm } from './i18n-main'
 import { tiffToPng } from './tiff-decode'
@@ -826,13 +832,20 @@ async function maybeRecoverBytes(
  */
 async function preparePresentationForOpen(filePath: string): Promise<string | null> {
   const extension = deckExtension(filePath)
-  if (extension !== 'odp' && extension !== 'otp') return filePath
+  if (extension !== 'odp' && extension !== 'otp' && extension !== 'ppt') return filePath
+  // a legacy .ppt rides the same flow as the ODF decks: confirm the lossy
+  // import, pick the destination, convert, write atomically and open the copy
+  const legacyPpt = extension === 'ppt'
+  const detailKey = legacyPpt ? 'pptImportDetail' : 'odpImportDetail'
+  const failedTitleKey = legacyPpt ? 'pptImportFailedTitle' : 'odpImportFailedTitle'
+  const failedBodyKey = legacyPpt ? 'pptImportFailedBody' : 'odpImportFailedBody'
+  const skipFormat = legacyPpt ? 'ppt' : 'odp'
   const parent = dialogParent()
-  if (!readLegacyImportSkip(APP_SETTINGS_PATH(), 'odp')) {
+  if (!readLegacyImportSkip(APP_SETTINGS_PATH(), skipFormat)) {
     const options = {
       type: 'warning' as const,
       message: tm('odpImportMsg', { ext: extension }),
-      detail: tm('odpImportDetail'),
+      detail: tm(detailKey),
       buttons: [tm('odpImportConvertBtn'), tm('btnCancel')],
       defaultId: 0,
       cancelId: 1,
@@ -845,7 +858,7 @@ async function preparePresentationForOpen(filePath: string): Promise<string | nu
     if (response !== 0) return null
     if (checkboxChecked) {
       try {
-        writeLegacyImportSkip(APP_SETTINGS_PATH(), 'odp', true)
+        writeLegacyImportSkip(APP_SETTINGS_PATH(), skipFormat, true)
       } catch {
         /* unwritable settings: ask again next time */
       }
@@ -855,22 +868,28 @@ async function preparePresentationForOpen(filePath: string): Promise<string | nu
     dialog,
     parent,
     {
-      defaultPath: join(dirname(filePath), basename(filePath).replace(/\.(odp|otp)$/i, '.pptx')),
+      defaultPath: join(
+        dirname(filePath),
+        basename(filePath).replace(/\.(odp|otp|ppt)$/i, '.pptx'),
+      ),
       filters: [{ name: 'PowerPoint', extensions: ['pptx'] }],
     },
     getDraftsDir(),
   )
   if (r.canceled || !r.filePath) return null
   try {
-    const result = await convertOdpToPptx(new Uint8Array(await readFile(filePath)))
+    const source = new Uint8Array(await readFile(filePath))
+    const out = legacyPpt
+      ? (await convertPptToPptx(source)).bytes
+      : (await convertOdpToPptx(source)).pptx
     // atomic like the Docs and shell copies: a plain write leaves a truncated
     // .pptx where the user expects a deck if the process dies mid-write
-    await atomicWriteFile(r.filePath, Buffer.from(result.pptx))
+    await atomicWriteFile(r.filePath, Buffer.from(out))
   } catch {
     const errorOptions = {
       type: 'error' as const,
-      message: tm('odpImportFailedTitle'),
-      detail: tm('odpImportFailedBody'),
+      message: tm(failedTitleKey),
+      detail: tm(failedBodyKey),
     }
     if (parent) await dialog.showMessageBox(parent, errorOptions)
     else await dialog.showMessageBox(errorOptions)
@@ -5169,6 +5188,19 @@ export function registerSlidesIpc(): void {
     })
   })
 
+  // The driver option groups one queue advertises, for the print dialog's
+  // dropdowns (same surface the PDF dialog exposes; genoffice#2347's chain).
+  ipcMain.handle('slides:printer-options', async (_e, queue: unknown) => {
+    if (typeof queue !== 'string' || !/^[A-Za-z0-9_.+-]{1,128}$/.test(queue)) return []
+    const groups = await queryPrinterOptions(queue)
+    return groups.filter((g) => DRIVER_OPTION_NAMES.includes(g.name))
+  })
+
+  ipcMain.handle('slides:printers', async (e) => {
+    const printers = await e.sender.getPrintersAsync()
+    return printers.map((p) => ({ name: p.name, displayName: p.displayName || p.name }))
+  })
+
   ipcMain.handle(
     'slides:print',
     async (e, op: PrintSlidesOp): Promise<{ ok: boolean; error?: string }> => {
@@ -5179,23 +5211,68 @@ export function registerSlidesIpc(): void {
         layout: op.layout ?? 'full',
         ...(op.notes ? { notes: op.notes } : {}),
         ...(op.orientation ? { orientation: op.orientation } : {}),
+        ...(op.order ? { order: op.order } : {}),
         ...(op.frame ? { frame: true } : {}),
       })
       const owner = hostWindowFor(e.sender) ?? dialogParent()
-      const win = new BrowserWindow({
-        show: false,
-        ...(owner && !owner.isDestroyed() ? { parent: owner } : {}),
-        ...(process.platform === 'win32'
-          ? {
-              width: 900,
-              height: 700,
-              autoHideMenuBar: true,
-              closable: false,
-              skipTaskbar: true,
-            }
-          : {}),
-        webPreferences: { sandbox: true },
-      })
+      const buildWindow = (visibleDialog: boolean) =>
+        new BrowserWindow({
+          show: false,
+          ...(owner && !owner.isDestroyed() ? { parent: owner } : {}),
+          // Windows attaches the native dialog to the printed window: only the
+          // system-dialog route needs it visible and sized
+          ...(process.platform === 'win32' && visibleDialog
+            ? {
+                width: 900,
+                height: 700,
+                autoHideMenuBar: true,
+                closable: false,
+                skipTaskbar: true,
+              }
+            : {}),
+          webPreferences: { sandbox: true },
+        })
+      const opts = printJobOptions(op.job)
+      if (opts.silent) {
+        const win = buildWindow(false)
+        let tempDir: string | null = null
+        try {
+          tempDir = (await loadPrintHtml(win, html, 'slides.html', 'chaoffice-slides-print-'))
+            .tempDir
+          if (process.platform === 'darwin') {
+            // Chromium's silent print can drop a job outright on macOS — no
+            // queue entry, no callback error (genoffice#2347). Bake the sheets
+            // at the layout's own paper and spool through lp instead.
+            const size = printPageSizeIn(
+              op.layout ?? 'full',
+              op.orientation,
+              op.widthPx / op.heightPx,
+            )
+            const printed = await win.webContents.printToPDF(
+              printToPdfOptionsFor({
+                marginsIn: { top: 0, bottom: 0, left: 0, right: 0 },
+                widthIn: size.width,
+                heightIn: size.height,
+              }),
+            )
+            return printPdfViaCups(printed, opts)
+          }
+          const result = await new Promise<{ success: boolean; failureReason: string }>(
+            (resolve) => {
+              win.webContents.print({ ...opts, printBackground: true }, (success, failureReason) =>
+                resolve({ success, failureReason }),
+              )
+            },
+          )
+          return printOutcome(result.success, result.failureReason, true)
+        } catch (err) {
+          return { ok: false, error: err instanceof Error ? err.message : String(err) }
+        } finally {
+          if (tempDir) await rm(tempDir, { recursive: true, force: true })
+          if (!win.isDestroyed()) win.destroy()
+        }
+      }
+      const win = buildWindow(true)
       return printSlidesHtml(html, win)
     },
   )

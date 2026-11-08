@@ -9,7 +9,7 @@
  */
 
 import { existsSync, readFileSync, statSync } from 'node:fs'
-import { basename, extname } from 'node:path'
+import { basename, dirname, extname } from 'node:path'
 import {
   activeMediaConfig,
   analyzeMediaWithProvider,
@@ -225,4 +225,21 @@ export async function analyzeMediaTool(
   } catch (err) {
     return { error: errorText(err) }
   }
+}
+
+/**
+ * Directories a bare local media path may be read from. Deliberately no
+ * default: cwd is "/" in a packaged macOS app and tmpdir() is world-readable,
+ * so every host opts in with its own list (empty = extension check only).
+ */
+export function localMediaRoots(...roots: (string | undefined | null)[]): string[] {
+  return roots.filter((root): root is string => Boolean(root))
+}
+
+/** The Electron allowlist: the open document's directory plus the app's attachment staging dir. */
+export function documentMediaRoots(
+  docPath: string | undefined | null,
+  attachmentDir: string | undefined | null,
+): string[] {
+  return localMediaRoots(docPath ? dirname(docPath) : undefined, attachmentDir)
 }

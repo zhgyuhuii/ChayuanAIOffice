@@ -248,7 +248,8 @@ const upstreamStrings = {
     setAiOpenInNewDocs: '新文档中打开 AI 面板',
     setAiOpenInNewDocsDesc: '关闭后，新打开的文档默认收起 AI 面板；需要时点一下即可展开。',
     setAuthorName: '用户名',
-    setAuthorNameDesc: '作为批注和修订的作者显示在 Docs、Sheets、Slides 中。留空则使用电脑账户名。',
+    setAuthorNameDesc:
+      '作为批注和修订的作者显示在 Docs、Sheets、Slides、PDF 中。留空则使用电脑账户名。',
     settings: '设置',
     setSecAccount: '账户',
     setSecGeneral: '通用',
@@ -308,11 +309,11 @@ const upstreamStrings = {
     intgCopy: '复制',
     intgStep2Title: '试一试',
     intgStep2Desc: '在助手里新开一个对话，用平常说话的方式提需求，例如：',
-    intgStep2DescBefore: '装好后，在助手里新开一个对话，用平常说话的方式提需求，例如：',
     intgExample1: '把 ~/Downloads/report.md 转成 Word 文档',
     intgExample2: '做一份 6 页的幻灯片，介绍我们第三季度的业绩',
     intgExample3: '把 budget.xlsx 转成 PDF，并在 察元AIOffice 里打开',
-    intgStep2Note: '助手会自己调用 chaoffice 命令行，你不需要输入任何命令。',
+    intgStep2Note: '助手会自己调用 察元AIOffice（命令行或 MCP），你不需要输入任何命令。',
+
     intgCliPartTitle: 'CLI · 命令行 + skill',
     intgCliPartDesc:
       '适合能运行终端命令的助手（Claude Code、Codex、Cursor 等）。安装 skill 后，助手会自己调用 chaoffice 命令行创建、转换、读取和编辑文件，你不需要输入任何命令。',
@@ -326,7 +327,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       '在 察元AIOffice 内运行，助手通过网址连接，可以看着它在 Word 编辑器里逐步生成。需要 察元AIOffice 保持打开；目前只支持 Word。',
     intgMcpHttpAdvanced: '高级：其他地址与日志',
-    intgMcpTryNote: '助手会通过 MCP 调用 察元AIOffice，你不需要输入任何命令。',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: '在终端运行一次：',
     intgMcpOtherTitle: 'Cursor、Claude Desktop 或其他支持 MCP 的助手',
@@ -369,6 +369,8 @@ const upstreamStrings = {
     setAiProvider: '模型服务商',
     setAiModelId: '模型',
     setAiModelSearch: '搜索模型…',
+    setAiThinking: '思考强度',
+    setAiThinkingDefault: '跟随模型默认',
     setAiApiKey: 'API Key',
     setAiKeyHint: '密钥仅保存在本机。',
     setAiBaseUrl: 'Base URL',
@@ -401,6 +403,7 @@ const upstreamStrings = {
       '网页与图片搜索使用 察元AIOffice 账号登录；未登录或关闭云工具时改用免费来源。',
     setAiSearchSerperHint: 'Serper 用你的 key 同时提供网页与图片搜索。',
     setAiSearchSerplyHint: 'Serply 用你的 key 同时提供网页与图片搜索。',
+    setAiSearchSearchApiHint: 'SearchApi 用你的 key 同时提供网页与图片搜索。',
     setAiSearchTavilyHint: 'Tavily 用你的 key 提供网页搜索；图片搜索改用免费来源。',
     setAiSearchParallelHint:
       '留空 API key 即可免费使用 Parallel 搜索（用量有限）。填写 key 可使用你的 Parallel 账户。图片搜索使用其他来源。',
@@ -772,7 +775,7 @@ const upstreamStrings = {
       'When off, newly opened documents start with the AI panel collapsed; it is one click away when needed.',
     setAuthorName: 'User name',
     setAuthorNameDesc:
-      'Shown as the author of comments and tracked changes in Docs, Sheets and Slides. Leave blank to use your computer account name.',
+      'Shown as the author of comments and tracked changes in Docs, Sheets, Slides and PDF. Leave blank to use your computer account name.',
     settings: 'Settings',
     setSecAccount: 'Account',
     setSecGeneral: 'General',
@@ -837,13 +840,12 @@ const upstreamStrings = {
     intgCopy: 'Copy',
     intgStep2Title: 'Try it',
     intgStep2Desc: 'Open a new chat in your assistant and ask in plain words, for example:',
-    intgStep2DescBefore:
-      'Once installed, open a new chat in your assistant and ask in plain words, for example:',
     intgExample1: 'Turn ~/Downloads/report.md into a Word document',
     intgExample2: 'Make a 6-slide deck about our Q3 results',
     intgExample3: 'Convert budget.xlsx to PDF and open it in ChaAI Office',
     intgStep2Note:
-      'The assistant runs the chaoffice command line itself; you never have to type it.',
+      'The assistant calls ChaOffice itself, through the command line or MCP; you never have to type a command.',
+
     intgCliPartTitle: 'CLI · command line + skill',
     intgCliPartDesc:
       'For assistants that can run terminal commands (Claude Code, Codex, Cursor and others). Once the skill is installed, the assistant calls the chaoffice command line itself to create, convert, read and edit files; you never type a command.',
@@ -857,7 +859,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'Runs inside ChaAI Office; the assistant connects to a URL and you can watch it build the document step by step in the Word editor. ChaAI Office must stay open; Word documents only for now.',
     intgMcpHttpAdvanced: 'Advanced: other endpoints and log',
-    intgMcpTryNote: 'The assistant calls ChaAI Office through MCP; you never type a command.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Run this once in a terminal:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop or any other MCP-capable assistant',
@@ -901,6 +902,8 @@ const upstreamStrings = {
     setAiProvider: 'Provider',
     setAiModelId: 'Model',
     setAiModelSearch: 'Search models…',
+    setAiThinking: 'Thinking effort',
+    setAiThinkingDefault: 'Model default',
     setAiApiKey: 'API Key',
     setAiKeyHint: 'Stored only on this device.',
     setAiBaseUrl: 'Base URL',
@@ -933,6 +936,7 @@ const upstreamStrings = {
       'Web and image search use your ChaAI Office sign-in; signed out or with cloud tools off they fall back to free sources.',
     setAiSearchSerperHint: 'Serper serves both web and image search with your key.',
     setAiSearchSerplyHint: 'Serply serves both web and image search with your key.',
+    setAiSearchSearchApiHint: 'SearchApi serves both web and image search with your key.',
     setAiSearchTavilyHint:
       'Tavily serves web search with your key; image search falls back to free sources.',
     setAiSearchParallelHint:
@@ -1312,7 +1316,7 @@ const upstreamStrings = {
       'Khi tắt, tài liệu mới mở sẽ thu gọn bảng AI; chỉ cần một lần bấm để mở lại khi cần.',
     setAuthorName: 'Tên người dùng',
     setAuthorNameDesc:
-      'Hiển thị là tác giả của nhận xét và thay đổi được theo dõi trong Docs, Sheets và Slides. Để trống để dùng tên tài khoản máy tính.',
+      'Hiển thị là tác giả của nhận xét và thay đổi được theo dõi trong Docs, Sheets, Slides và PDF. Để trống để dùng tên tài khoản máy tính.',
     settings: 'Cài đặt',
     setSecAccount: 'Tài khoản',
     setSecGeneral: 'Chung',
@@ -1378,12 +1382,12 @@ const upstreamStrings = {
     intgStep2Title: 'Dùng thử',
     intgStep2Desc:
       'Mở một cuộc trò chuyện mới trong trợ lý của bạn và hỏi bằng ngôn ngữ tự nhiên, ví dụ:',
-    intgStep2DescBefore:
-      'Sau khi cài đặt, hãy mở một cuộc trò chuyện mới trong trợ lý của bạn và hỏi bằng ngôn ngữ tự nhiên, ví dụ:',
     intgExample1: 'Chuyển đổi ~/Downloads/report.md thành tài liệu Word',
     intgExample2: 'Tạo bài thuyết trình 6 trang trình bày về kết quả quý 3 của chúng tôi',
     intgExample3: 'Chuyển đổi budget.xlsx sang PDF và mở trong ChaAI Office',
-    intgStep2Note: 'Trợ lý tự chạy dòng lệnh chaoffice; bạn không bao giờ phải nhập lệnh.',
+    intgStep2Note:
+      'Trợ lý tự gọi ChaOffice qua dòng lệnh hoặc MCP; bạn không bao giờ phải nhập lệnh.',
+
     intgCliPartTitle: 'CLI · dòng lệnh + kỹ năng',
     intgCliPartDesc:
       'Dành cho các trợ lý có thể chạy lệnh terminal (Claude Code, Codex, Cursor và các trợ lý khác). Khi kỹ năng đã được cài đặt, trợ lý sẽ tự gọi dòng lệnh chaoffice để tạo, chuyển đổi, đọc và chỉnh sửa tệp; bạn không cần nhập lệnh.',
@@ -1397,7 +1401,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'Chạy bên trong ChaAI Office; trợ lý kết nối với một URL và bạn có thể theo dõi nó tạo tài liệu từng bước trong trình chỉnh sửa Word. ChaAI Office phải luôn mở; hiện tại chỉ hỗ trợ tài liệu Word.',
     intgMcpHttpAdvanced: 'Nâng cao: các điểm cuối khác và nhật ký',
-    intgMcpTryNote: 'Trợ lý gọi ChaAI Office thông qua MCP; bạn không bao giờ phải nhập lệnh.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Chạy lệnh này một lần trong terminal:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop hoặc bất kỳ trợ lý hỗ trợ MCP nào khác',
@@ -1443,6 +1446,8 @@ const upstreamStrings = {
     setAiProvider: 'Nhà cung cấp',
     setAiModelId: 'Mô hình',
     setAiModelSearch: 'Tìm mô hình…',
+    setAiThinking: 'Mức suy luận',
+    setAiThinkingDefault: 'Mặc định của mô hình',
     setAiApiKey: 'Khóa API',
     setAiKeyHint: 'Chỉ được lưu trữ trên thiết bị này.',
     setAiBaseUrl: 'URL cơ sở',
@@ -1476,6 +1481,7 @@ const upstreamStrings = {
       'Tìm kiếm web và hình ảnh sử dụng thông tin đăng nhập ChaAI Office của bạn; khi đăng xuất hoặc tắt công cụ đám mây, hệ thống sẽ chuyển sang dùng các nguồn miễn phí.',
     setAiSearchSerperHint: 'Serper cung cấp cả tìm kiếm web và hình ảnh bằng khóa của bạn.',
     setAiSearchSerplyHint: 'Serply cung cấp cả tìm kiếm web và hình ảnh bằng key của bạn.',
+    setAiSearchSearchApiHint: 'SearchApi cung cấp cả tìm kiếm web và hình ảnh bằng key của bạn.',
     setAiSearchTavilyHint:
       'Tavily cung cấp tìm kiếm web bằng khóa của bạn; tìm kiếm hình ảnh sẽ chuyển sang dùng các nguồn miễn phí.',
     setAiSearchParallelHint:
@@ -1857,7 +1863,7 @@ const upstreamStrings = {
       'Kapalıyken yeni açılan belgeler AI paneli daraltılmış olarak başlar; gerektiğinde tek tıkla açılır.',
     setAuthorName: 'Kullanıcı adı',
     setAuthorNameDesc:
-      'Docs, Sheets ve Slides’ta açıklamaların ve izlenen değişikliklerin yazarı olarak gösterilir. Bilgisayar hesabınızın adını kullanmak için boş bırakın.',
+      'Docs, Sheets, Slides ve PDF’de açıklamaların ve izlenen değişikliklerin yazarı olarak gösterilir. Bilgisayar hesabınızın adını kullanmak için boş bırakın.',
     settings: 'Ayarlar',
     setSecAccount: 'Hesap',
     setSecGeneral: 'Genel',
@@ -1921,13 +1927,12 @@ const upstreamStrings = {
     intgCopy: 'Kopyala',
     intgStep2Title: 'Deneyin',
     intgStep2Desc: 'Asistanınızda yeni bir sohbet açın ve düz sözcüklerle isteyin, örneğin:',
-    intgStep2DescBefore:
-      'Yükledikten sonra asistanınızda yeni bir sohbet açın ve düz sözcüklerle isteyin, örneğin:',
     intgExample1: '~/Downloads/report.md dosyasını Word belgesine dönüştür',
     intgExample2: '3. çeyrek sonuçlarımız hakkında 6 slaytlık bir sunu hazırla',
     intgExample3: 'budget.xlsx dosyasını PDF’e dönüştür ve ChaAI Office’te aç',
     intgStep2Note:
-      'chaoffice komut satırını asistan kendisi çalıştırır; sizin yazmanız hiç gerekmez.',
+      'Asistan ChaOffice’i komut satırı veya MCP üzerinden kendisi çağırır; sizin yazmanız hiç gerekmez.',
+
     intgCliPartTitle: 'CLI · komut satırı + beceri',
     intgCliPartDesc:
       'Terminal komutları çalıştırabilen asistanlar için (Claude Code, Codex, Cursor ve diğerleri). Beceri yüklendikten sonra asistan, dosya oluşturmak, dönüştürmek, okumak ve düzenlemek için chaoffice komut satırını kendisi çağırır; siz hiç komut yazmazsınız.',
@@ -1941,7 +1946,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'ChaAI Office içinde çalışır; asistan bir URL’ye bağlanır ve belgeyi Word düzenleyicisinde adım adım oluşturmasını izleyebilirsiniz. ChaAI Office açık kalmalıdır; şimdilik yalnızca Word belgeleri.',
     intgMcpHttpAdvanced: 'Gelişmiş: diğer uç noktalar ve günlük',
-    intgMcpTryNote: 'Asistan ChaAI Office’i MCP üzerinden çağırır; siz hiç komut yazmazsınız.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Bunu bir terminalde bir kez çalıştırın:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop veya MCP destekli başka bir asistan',
@@ -1987,6 +1991,8 @@ const upstreamStrings = {
     setAiProvider: 'Sağlayıcı',
     setAiModelId: 'Model',
     setAiModelSearch: 'Model ara…',
+    setAiThinking: 'Düşünma çabası',
+    setAiThinkingDefault: 'Model varsayılanı',
     setAiApiKey: 'API Anahtarı',
     setAiKeyHint: 'Yalnızca bu cihazda saklanır.',
     setAiBaseUrl: 'Temel URL',
@@ -2022,6 +2028,7 @@ const upstreamStrings = {
       'Web ve görüntü araması ChaAI Office girişinizi kullanır; çıkış yapılmışsa veya bulut araçları kapalıysa ücretsiz kaynaklara döner.',
     setAiSearchSerperHint: 'Serper, anahtarınızla hem web hem görüntü aramasını sağlar.',
     setAiSearchSerplyHint: 'Serply, anahtarınızla hem web hem görüntü aramasını sağlar.',
+    setAiSearchSearchApiHint: 'SearchApi, anahtarınızla hem web hem görüntü aramasını sağlar.',
     setAiSearchTavilyHint:
       'Tavily, anahtarınızla web aramasını sağlar; görüntü araması ücretsiz kaynaklara döner.',
     setAiSearchParallelHint:
@@ -2409,7 +2416,7 @@ const upstreamStrings = {
       'オフにすると、新しく開いたドキュメントは AI パネルを折りたたんだ状態で始まります。必要なときはワンクリックで開けます。',
     setAuthorName: 'ユーザー名',
     setAuthorNameDesc:
-      'Docs、Sheets、Slides でコメントと変更履歴の作成者として表示されます。空欄の場合はパソコンのアカウント名を使います。',
+      'Docs、Sheets、Slides、PDF でコメントと変更履歴の作成者として表示されます。空欄の場合はパソコンのアカウント名を使います。',
     settings: '設定',
     setSecAccount: 'アカウント',
     setSecGeneral: '一般',
@@ -2475,13 +2482,12 @@ const upstreamStrings = {
     intgCopy: 'コピー',
     intgStep2Title: '試してみる',
     intgStep2Desc: 'アシスタントで新しいチャットを開き、普通の言葉で頼んでください。例：',
-    intgStep2DescBefore:
-      'インストール後、アシスタントで新しいチャットを開き、普通の言葉で頼んでください。例：',
     intgExample1: '~/Downloads/report.md を Word 文書にして',
     intgExample2: '第 3 四半期の業績について 6 枚のスライドを作って',
     intgExample3: 'budget.xlsx を PDF に変換して ChaAI Office で開いて',
     intgStep2Note:
-      'chaoffice コマンドラインはアシスタントが自分で実行します。あなたが入力する必要はありません。',
+      'アシスタントがコマンドラインまたは MCP 経由で ChaOffice を自分で呼び出します。あなたが入力する必要はありません。',
+
     intgCliPartTitle: 'CLI · コマンドライン + skill',
     intgCliPartDesc:
       'ターミナルコマンドを実行できるアシスタント（Claude Code、Codex、Cursor など）向け。skill をインストールすると、アシスタントが自分で chaoffice コマンドラインを呼び出してファイルを作成・変換・読み取り・編集します。コマンドを入力する必要はありません。',
@@ -2495,8 +2501,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'ChaAI Office 内で動作し、アシスタントは URL で接続します。Word エディター上で文書が段階的に生成される様子を見られます。ChaAI Office を開いたままにする必要があり、現時点では Word のみ対応です。',
     intgMcpHttpAdvanced: '詳細：その他のエンドポイントとログ',
-    intgMcpTryNote:
-      'アシスタントが MCP 経由で ChaAI Office を呼び出します。コマンドを入力する必要はありません。',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'ターミナルで一度だけ実行します：',
     intgMcpOtherTitle: 'Cursor、Claude Desktop、その他 MCP 対応のアシスタント',
@@ -2542,6 +2546,8 @@ const upstreamStrings = {
     setAiProvider: 'プロバイダー',
     setAiModelId: 'モデル',
     setAiModelSearch: 'モデルを検索…',
+    setAiThinking: '思考の強さ',
+    setAiThinkingDefault: 'モデルのデフォルト',
     setAiApiKey: 'APIキー',
     setAiKeyHint: 'キーはこの端末にのみ保存されます。',
     setAiBaseUrl: 'Base URL',
@@ -2573,6 +2579,7 @@ const upstreamStrings = {
       'Web 検索と画像検索は ChaAI Office のサインインを使用します。サインアウト時やクラウドツールがオフのときは無料ソースにフォールバックします。',
     setAiSearchSerperHint: 'Serper はあなたのキーで Web 検索と画像検索の両方を提供します。',
     setAiSearchSerplyHint: 'Serply はあなたのキーで Web 検索と画像検索の両方を提供します。',
+    setAiSearchSearchApiHint: 'SearchApi はあなたのキーで Web 検索と画像検索の両方を提供します。',
     setAiSearchTavilyHint:
       'Tavily はあなたのキーで Web 検索を提供します。画像検索は無料ソースにフォールバックします。',
     setAiSearchParallelHint:
@@ -2951,7 +2958,7 @@ const upstreamStrings = {
       '끄면 새로 여는 문서는 AI 패널이 접힌 상태로 시작합니다. 필요할 때 한 번 클릭하면 열립니다.',
     setAuthorName: '사용자 이름',
     setAuthorNameDesc:
-      'Docs, Sheets, Slides에서 메모와 변경 내용 추적의 작성자로 표시됩니다. 비워 두면 컴퓨터 계정 이름을 사용합니다.',
+      'Docs, Sheets, Slides, PDF에서 메모와 변경 내용 추적의 작성자로 표시됩니다. 비워 두면 컴퓨터 계정 이름을 사용합니다.',
     settings: '설정',
     setSecAccount: '계정',
     setSecGeneral: '일반',
@@ -3015,12 +3022,12 @@ const upstreamStrings = {
     intgCopy: '복사',
     intgStep2Title: '사용해 보기',
     intgStep2Desc: '어시스턴트에서 새 대화를 열고 평소 말투로 요청하세요. 예:',
-    intgStep2DescBefore: '설치 후 어시스턴트에서 새 대화를 열고 평소 말투로 요청하세요. 예:',
     intgExample1: '~/Downloads/report.md를 Word 문서로 만들어 줘',
     intgExample2: '3분기 실적을 소개하는 6장짜리 슬라이드를 만들어 줘',
     intgExample3: 'budget.xlsx를 PDF로 변환해서 ChaAI Office에서 열어 줘',
     intgStep2Note:
-      'chaoffice 명령줄은 어시스턴트가 직접 실행하므로 여러분이 입력할 필요가 없습니다.',
+      '어시스턴트가 명령줄 또는 MCP를 통해 ChaAI Office를 직접 호출하므로 여러분이 입력할 필요가 없습니다.',
+
     intgCliPartTitle: 'CLI · 명령줄 + skill',
     intgCliPartDesc:
       '터미널 명령을 실행할 수 있는 어시스턴트(Claude Code, Codex, Cursor 등)용입니다. skill을 설치하면 어시스턴트가 스스로 chaoffice 명령줄을 호출해 파일을 만들고 변환하고 읽고 편집합니다. 명령을 직접 입력할 필요가 없습니다.',
@@ -3034,8 +3041,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'ChaAI Office 안에서 실행되며 어시스턴트가 URL로 연결합니다. Word 편집기에서 문서가 단계별로 만들어지는 과정을 볼 수 있습니다. ChaAI Office를 열어 두어야 하며 현재는 Word만 지원합니다.',
     intgMcpHttpAdvanced: '고급: 기타 주소와 로그',
-    intgMcpTryNote:
-      '어시스턴트가 MCP를 통해 ChaAI Office를 호출합니다. 명령을 직접 입력할 필요가 없습니다.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: '터미널에서 한 번만 실행하세요:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop 또는 MCP를 지원하는 다른 어시스턴트',
@@ -3079,6 +3084,8 @@ const upstreamStrings = {
     setAiProvider: '제공업체',
     setAiModelId: '모델',
     setAiModelSearch: '모델 검색…',
+    setAiThinking: '사고 강도',
+    setAiThinkingDefault: '모델 기본값',
     setAiApiKey: 'API 키',
     setAiKeyHint: '키는 이 기기에만 저장됩니다.',
     setAiBaseUrl: 'Base URL',
@@ -3110,6 +3117,7 @@ const upstreamStrings = {
       '웹 검색과 이미지 검색은 ChaAI Office 로그인을 사용합니다. 로그아웃 상태거나 클라우드 도구가 꺼져 있으면 무료 소스로 대체됩니다.',
     setAiSearchSerperHint: 'Serper는 내 키로 웹 검색과 이미지 검색을 모두 제공합니다.',
     setAiSearchSerplyHint: 'Serply는 내 키로 웹 검색과 이미지 검색을 모두 제공합니다.',
+    setAiSearchSearchApiHint: 'SearchApi는 내 키로 웹 검색과 이미지 검색을 모두 제공합니다.',
     setAiSearchTavilyHint:
       'Tavily는 내 키로 웹 검색을 제공합니다. 이미지 검색은 무료 소스로 대체됩니다.',
     setAiSearchParallelHint:
@@ -3496,7 +3504,7 @@ const upstreamStrings = {
       "Désactivé : les documents nouvellement ouverts démarrent avec le panneau IA replié ; un clic suffit pour l'afficher.",
     setAuthorName: 'Nom d’utilisateur',
     setAuthorNameDesc:
-      'Affiché comme auteur des commentaires et des modifications suivies dans Docs, Sheets et Slides. Laissez vide pour utiliser le nom de votre compte.',
+      'Affiché comme auteur des commentaires et des modifications suivies dans Docs, Sheets, Slides et PDF. Laissez vide pour utiliser le nom de votre compte.',
     settings: 'Paramètres',
     setSecAccount: 'Compte',
     setSecGeneral: 'Général',
@@ -3564,13 +3572,12 @@ const upstreamStrings = {
     intgStep2Title: 'Essayez',
     intgStep2Desc:
       'Ouvrez une nouvelle discussion dans votre assistant et demandez simplement, par exemple :',
-    intgStep2DescBefore:
-      'Une fois installé, ouvrez une nouvelle discussion dans votre assistant et demandez simplement, par exemple :',
     intgExample1: 'Transforme ~/Downloads/report.md en document Word',
     intgExample2: 'Prépare une présentation de 6 diapositives sur nos résultats du T3',
     intgExample3: 'Convertis budget.xlsx en PDF et ouvre-le dans ChaAI Office',
     intgStep2Note:
-      "L'assistant lance lui-même la ligne de commande chaoffice ; vous n'avez jamais à la saisir.",
+      "L'assistant appelle lui-même ChaOffice, par la ligne de commande ou MCP ; vous n'avez jamais à saisir de commande.",
+
     intgCliPartTitle: 'CLI · ligne de commande + skill',
     intgCliPartDesc:
       'Pour les assistants capables de lancer des commandes dans le terminal (Claude Code, Codex, Cursor, etc.). Une fois le skill installé, l’assistant appelle lui-même la ligne de commande chaoffice pour créer, convertir, lire et modifier les fichiers ; vous ne tapez jamais de commande.',
@@ -3584,7 +3591,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'Tourne dans ChaAI Office ; l’assistant se connecte à une URL et vous voyez le document se construire pas à pas dans l’éditeur Word. ChaAI Office doit rester ouvert ; documents Word uniquement pour l’instant.',
     intgMcpHttpAdvanced: 'Avancé : autres adresses et journal',
-    intgMcpTryNote: 'L’assistant appelle ChaAI Office via MCP ; vous ne tapez jamais de commande.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Exécutez ceci une fois dans un terminal :',
     intgMcpOtherTitle: 'Cursor, Claude Desktop ou tout autre assistant compatible MCP',
@@ -3630,6 +3636,8 @@ const upstreamStrings = {
     setAiProvider: 'Fournisseur',
     setAiModelId: 'Modèle',
     setAiModelSearch: 'Rechercher un modèle…',
+    setAiThinking: 'Niveau de raisonnement',
+    setAiThinkingDefault: 'Défaut du modèle',
     setAiApiKey: 'Clé API',
     setAiKeyHint: 'Stockée uniquement sur cet appareil.',
     setAiBaseUrl: 'Base URL',
@@ -3665,6 +3673,8 @@ const upstreamStrings = {
       "Serper assure la recherche web et la recherche d'images avec votre clé.",
     setAiSearchSerplyHint:
       "Serply assure la recherche web et la recherche d'images avec votre clé.",
+    setAiSearchSearchApiHint:
+      "SearchApi assure la recherche web et la recherche d'images avec votre clé.",
     setAiSearchTavilyHint:
       "Tavily assure la recherche web avec votre clé ; la recherche d'images se rabat sur des sources gratuites.",
     setAiSearchParallelHint:
@@ -4056,7 +4066,7 @@ const upstreamStrings = {
       'Wenn aus, starten neu geöffnete Dokumente mit eingeklapptem KI-Panel; ein Klick genügt, um es zu öffnen.',
     setAuthorName: 'Benutzername',
     setAuthorNameDesc:
-      'Wird in Docs, Sheets und Slides als Autor von Kommentaren und nachverfolgten Änderungen angezeigt. Leer lassen, um den Kontonamen des Computers zu verwenden.',
+      'Wird in Docs, Sheets, Slides und PDF als Autor von Kommentaren und nachverfolgten Änderungen angezeigt. Leer lassen, um den Kontonamen des Computers zu verwenden.',
     settings: 'Einstellungen',
     setSecAccount: 'Konto',
     setSecGeneral: 'Allgemein',
@@ -4123,13 +4133,12 @@ const upstreamStrings = {
     intgStep2Title: 'Ausprobieren',
     intgStep2Desc:
       'Öffnen Sie einen neuen Chat in Ihrem Assistenten und fragen Sie in normalen Worten, zum Beispiel:',
-    intgStep2DescBefore:
-      'Öffnen Sie nach der Installation einen neuen Chat in Ihrem Assistenten und fragen Sie in normalen Worten, zum Beispiel:',
     intgExample1: 'Mach aus ~/Downloads/report.md ein Word-Dokument',
     intgExample2: 'Erstelle eine Präsentation mit 6 Folien zu unseren Q3-Ergebnissen',
     intgExample3: 'Wandle budget.xlsx in PDF um und öffne es in ChaAI Office',
     intgStep2Note:
-      'Der Assistent ruft die chaoffice-Befehlszeile selbst auf; Sie müssen sie nie eintippen.',
+      'Der Assistent ruft ChaOffice selbst auf – über die Befehlszeile oder MCP; Sie müssen nie einen Befehl eintippen.',
+
     intgCliPartTitle: 'CLI · Kommandozeile + Skill',
     intgCliPartDesc:
       'Für Assistenten, die Terminalbefehle ausführen können (Claude Code, Codex, Cursor u. a.). Nach der Installation des Skills ruft der Assistent die chaoffice-Kommandozeile selbst auf, um Dateien zu erstellen, zu konvertieren, zu lesen und zu bearbeiten; Sie tippen nie einen Befehl.',
@@ -4143,7 +4152,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'Läuft in ChaAI Office; der Assistent verbindet sich über eine URL, und Sie sehen im Word-Editor zu, wie das Dokument Schritt für Schritt entsteht. ChaAI Office muss geöffnet bleiben; derzeit nur Word-Dokumente.',
     intgMcpHttpAdvanced: 'Erweitert: weitere Adressen und Protokoll',
-    intgMcpTryNote: 'Der Assistent ruft ChaAI Office über MCP auf; Sie tippen nie einen Befehl.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Einmal im Terminal ausführen:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop oder ein anderer MCP-fähiger Assistent',
@@ -4189,6 +4197,8 @@ const upstreamStrings = {
     setAiProvider: 'Anbieter',
     setAiModelId: 'Modell',
     setAiModelSearch: 'Modelle suchen…',
+    setAiThinking: 'Denkanstrengung',
+    setAiThinkingDefault: 'Modellstandard',
     setAiApiKey: 'API-Schlüssel',
     setAiKeyHint: 'Wird nur auf diesem Gerät gespeichert.',
     setAiBaseUrl: 'Base URL',
@@ -4222,6 +4232,7 @@ const upstreamStrings = {
       'Web- und Bildsuche nutzen deine ChaAI Office-Anmeldung; abgemeldet oder mit ausgeschalteten Cloud-Tools greifen sie auf kostenlose Quellen zurück.',
     setAiSearchSerperHint: 'Serper liefert mit deinem Schlüssel Web- und Bildsuche.',
     setAiSearchSerplyHint: 'Serply liefert mit deinem Schlüssel Web- und Bildsuche.',
+    setAiSearchSearchApiHint: 'SearchApi liefert mit deinem Schlüssel Web- und Bildsuche.',
     setAiSearchTavilyHint:
       'Tavily liefert mit deinem Schlüssel die Websuche; die Bildsuche greift auf kostenlose Quellen zurück.',
     setAiSearchParallelHint:
@@ -4609,7 +4620,7 @@ const upstreamStrings = {
       'Si está desactivado, los documentos recién abiertos empiezan con el panel de IA plegado; se abre con un clic cuando lo necesites.',
     setAuthorName: 'Nombre de usuario',
     setAuthorNameDesc:
-      'Se muestra como autor de los comentarios y los cambios con seguimiento en Docs, Sheets y Slides. Déjalo vacío para usar el nombre de tu cuenta.',
+      'Se muestra como autor de los comentarios y los cambios con seguimiento en Docs, Sheets, Slides y PDF. Déjalo vacío para usar el nombre de tu cuenta.',
     settings: 'Configuración',
     setSecAccount: 'Cuenta',
     setSecGeneral: 'General',
@@ -4676,13 +4687,12 @@ const upstreamStrings = {
     intgCopy: 'Copiar',
     intgStep2Title: 'Pruébalo',
     intgStep2Desc: 'Abre un chat nuevo en tu asistente y pídelo con tus palabras, por ejemplo:',
-    intgStep2DescBefore:
-      'Una vez instalado, abre un chat nuevo en tu asistente y pídelo con tus palabras, por ejemplo:',
     intgExample1: 'Convierte ~/Downloads/report.md en un documento de Word',
     intgExample2: 'Haz una presentación de 6 diapositivas sobre nuestros resultados del T3',
     intgExample3: 'Convierte budget.xlsx a PDF y ábrelo en ChaAI Office',
     intgStep2Note:
-      'El asistente ejecuta la línea de comandos chaoffice por sí mismo; nunca tienes que escribirla.',
+      'El asistente llama a ChaOffice por sí mismo, mediante la línea de comandos o MCP; nunca tienes que escribir un comando.',
+
     intgCliPartTitle: 'CLI · línea de comandos + skill',
     intgCliPartDesc:
       'Para asistentes que pueden ejecutar comandos de terminal (Claude Code, Codex, Cursor y otros). Con el skill instalado, el asistente llama por sí mismo a la línea de comandos chaoffice para crear, convertir, leer y editar archivos; nunca escribes un comando.',
@@ -4696,7 +4706,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'Se ejecuta dentro de ChaAI Office; el asistente se conecta a una URL y puedes ver cómo construye el documento paso a paso en el editor de Word. ChaAI Office debe permanecer abierto; por ahora solo documentos Word.',
     intgMcpHttpAdvanced: 'Avanzado: otras direcciones y registro',
-    intgMcpTryNote: 'El asistente llama a ChaAI Office a través de MCP; nunca escribes un comando.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Ejecuta esto una vez en una terminal:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop o cualquier otro asistente compatible con MCP',
@@ -4741,6 +4750,8 @@ const upstreamStrings = {
     setAiProvider: 'Proveedor',
     setAiModelId: 'Modelo',
     setAiModelSearch: 'Buscar modelos…',
+    setAiThinking: 'Esfuerzo de razonamiento',
+    setAiThinkingDefault: 'Predeterminado del modelo',
     setAiApiKey: 'Clave de API',
     setAiKeyHint: 'Se guarda solo en este dispositivo.',
     setAiBaseUrl: 'Base URL',
@@ -4774,6 +4785,7 @@ const upstreamStrings = {
       'La búsqueda web y de imágenes usa tu inicio de sesión de ChaAI Office; sin sesión o con las herramientas en la nube desactivadas recurre a fuentes gratuitas.',
     setAiSearchSerperHint: 'Serper ofrece búsqueda web y de imágenes con tu clave.',
     setAiSearchSerplyHint: 'Serply ofrece búsqueda web y de imágenes con tu clave.',
+    setAiSearchSearchApiHint: 'SearchApi ofrece búsqueda web y de imágenes con tu clave.',
     setAiSearchTavilyHint:
       'Tavily ofrece búsqueda web con tu clave; la búsqueda de imágenes recurre a fuentes gratuitas.',
     setAiSearchParallelHint:
@@ -5153,7 +5165,7 @@ const upstreamStrings = {
       'เมื่อปิด เอกสารที่เปิดใหม่จะเริ่มโดยพับแผง AI ไว้ คลิกครั้งเดียวเพื่อเปิดเมื่อต้องการ',
     setAuthorName: 'ชื่อผู้ใช้',
     setAuthorNameDesc:
-      'แสดงเป็นผู้เขียนความคิดเห็นและการติดตามการเปลี่ยนแปลงใน Docs, Sheets และ Slides เว้นว่างไว้เพื่อใช้ชื่อบัญชีคอมพิวเตอร์',
+      'แสดงเป็นผู้เขียนความคิดเห็นและการติดตามการเปลี่ยนแปลงใน Docs, Sheets, Slides และ PDF เว้นว่างไว้เพื่อใช้ชื่อบัญชีคอมพิวเตอร์',
     settings: 'การตั้งค่า',
     setSecAccount: 'บัญชี',
     setSecGeneral: 'ทั่วไป',
@@ -5216,11 +5228,11 @@ const upstreamStrings = {
     intgCopy: 'คัดลอก',
     intgStep2Title: 'ลองใช้ดู',
     intgStep2Desc: 'เปิดแชตใหม่ในผู้ช่วยแล้วสั่งด้วยภาษาธรรมดา เช่น:',
-    intgStep2DescBefore: 'เมื่อติดตั้งแล้ว เปิดแชตใหม่ในผู้ช่วยแล้วสั่งด้วยภาษาธรรมดา เช่น:',
     intgExample1: 'แปลง ~/Downloads/report.md เป็นเอกสาร Word',
     intgExample2: 'ทำสไลด์ 6 หน้าเกี่ยวกับผลประกอบการไตรมาส 3 ของเรา',
     intgExample3: 'แปลง budget.xlsx เป็น PDF แล้วเปิดใน ChaAI Office',
-    intgStep2Note: 'ผู้ช่วยจะเรียกใช้บรรทัดคำสั่ง chaoffice เอง คุณไม่ต้องพิมพ์คำสั่งใด ๆ',
+    intgStep2Note: 'ผู้ช่วยจะเรียก ChaAI Office เองผ่านบรรทัดคำสั่งหรือ MCP คุณไม่ต้องพิมพ์คำสั่งใด ๆ',
+
     intgCliPartTitle: 'CLI · บรรทัดคำสั่ง + skill',
     intgCliPartDesc:
       'สำหรับผู้ช่วยที่รันคำสั่งเทอร์มินัลได้ (Claude Code, Codex, Cursor และอื่น ๆ) เมื่อติดตั้ง skill แล้ว ผู้ช่วยจะเรียกบรรทัดคำสั่ง chaoffice เองเพื่อสร้าง แปลง อ่าน และแก้ไขไฟล์ คุณไม่ต้องพิมพ์คำสั่งใด ๆ',
@@ -5234,7 +5246,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'ทำงานอยู่ใน ChaAI Office ผู้ช่วยเชื่อมต่อผ่าน URL และคุณจะเห็นเอกสารค่อย ๆ ถูกสร้างขึ้นในตัวแก้ไข Word ต้องเปิด ChaAI Office ไว้ตลอด ปัจจุบันรองรับเฉพาะ Word',
     intgMcpHttpAdvanced: 'ขั้นสูง: ที่อยู่อื่นและบันทึก',
-    intgMcpTryNote: 'ผู้ช่วยจะเรียก ChaAI Office ผ่าน MCP คุณไม่ต้องพิมพ์คำสั่งใด ๆ',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'รันคำสั่งนี้ครั้งเดียวในเทอร์มินัล:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop หรือผู้ช่วยอื่นที่รองรับ MCP',
@@ -5278,6 +5289,8 @@ const upstreamStrings = {
     setAiProvider: 'ผู้ให้บริการ',
     setAiModelId: 'โมเดล',
     setAiModelSearch: 'ค้นหาโมเดล…',
+    setAiThinking: 'ระดับการคิด',
+    setAiThinkingDefault: 'ค่าเริ่มต้นของโมเดล',
     setAiApiKey: 'คีย์ API',
     setAiKeyHint: 'จัดเก็บไว้ในเครื่องนี้เท่านั้น',
     setAiBaseUrl: 'Base URL',
@@ -5310,6 +5323,7 @@ const upstreamStrings = {
       'การค้นหาเว็บและภาพใช้การลงชื่อเข้าใช้ ChaAI Office หากไม่ได้ลงชื่อเข้าใช้หรือปิดเครื่องมือคลาวด์ จะใช้แหล่งข้อมูลฟรีแทน',
     setAiSearchSerperHint: 'Serper ให้บริการค้นหาเว็บและภาพด้วยคีย์ของคุณ',
     setAiSearchSerplyHint: 'Serply ให้บริการค้นหาเว็บและภาพด้วยคีย์ของคุณ',
+    setAiSearchSearchApiHint: 'SearchApi ให้บริการค้นหาเว็บและภาพด้วยคีย์ของคุณ',
     setAiSearchTavilyHint:
       'Tavily ให้บริการค้นหาเว็บด้วยคีย์ของคุณ ส่วนการค้นหาภาพจะใช้แหล่งข้อมูลฟรีแทน',
     setAiSearchParallelHint:
@@ -5690,7 +5704,7 @@ const upstreamStrings = {
       'Jika nonaktif, dokumen yang baru dibuka dimulai dengan panel AI terlipat; cukup satu klik saat dibutuhkan.',
     setAuthorName: 'Nama pengguna',
     setAuthorNameDesc:
-      'Ditampilkan sebagai penulis komentar dan perubahan terlacak di Docs, Sheets, dan Slides. Kosongkan untuk memakai nama akun komputer.',
+      'Ditampilkan sebagai penulis komentar dan perubahan terlacak di Docs, Sheets, Slides, dan PDF. Kosongkan untuk memakai nama akun komputer.',
     settings: 'Pengaturan',
     setSecAccount: 'Akun',
     setSecGeneral: 'Umum',
@@ -5755,13 +5769,12 @@ const upstreamStrings = {
     intgCopy: 'Salin',
     intgStep2Title: 'Coba sekarang',
     intgStep2Desc: 'Buka obrolan baru di asisten Anda dan minta dengan bahasa biasa, misalnya:',
-    intgStep2DescBefore:
-      'Setelah terpasang, buka obrolan baru di asisten Anda dan minta dengan bahasa biasa, misalnya:',
     intgExample1: 'Ubah ~/Downloads/report.md menjadi dokumen Word',
     intgExample2: 'Buat presentasi 6 slide tentang hasil Q3 kami',
     intgExample3: 'Konversi budget.xlsx ke PDF dan buka di ChaAI Office',
     intgStep2Note:
-      'Asisten menjalankan baris perintah chaoffice sendiri; Anda tidak perlu mengetiknya.',
+      'Asisten memanggil ChaOffice sendiri, melalui baris perintah atau MCP; Anda tidak perlu mengetik perintah apa pun.',
+
     intgCliPartTitle: 'CLI · baris perintah + skill',
     intgCliPartDesc:
       'Untuk asisten yang bisa menjalankan perintah terminal (Claude Code, Codex, Cursor, dan lainnya). Setelah skill terpasang, asisten memanggil baris perintah chaoffice sendiri untuk membuat, mengonversi, membaca, dan mengedit file; Anda tidak pernah mengetik perintah.',
@@ -5775,7 +5788,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'Berjalan di dalam ChaAI Office; asisten terhubung lewat URL dan Anda bisa melihat dokumen dibangun langkah demi langkah di editor Word. ChaAI Office harus tetap terbuka; untuk saat ini hanya dokumen Word.',
     intgMcpHttpAdvanced: 'Lanjutan: alamat lain dan log',
-    intgMcpTryNote: 'Asisten memanggil ChaAI Office melalui MCP; Anda tidak pernah mengetik perintah.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Jalankan ini sekali di terminal:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop, atau asisten lain yang mendukung MCP',
@@ -5820,6 +5832,8 @@ const upstreamStrings = {
     setAiProvider: 'Penyedia',
     setAiModelId: 'Model',
     setAiModelSearch: 'Cari model…',
+    setAiThinking: 'Tingkat penalaran',
+    setAiThinkingDefault: 'Default model',
     setAiApiKey: 'Kunci API',
     setAiKeyHint: 'Hanya disimpan di perangkat ini.',
     setAiBaseUrl: 'Base URL',
@@ -5852,6 +5866,7 @@ const upstreamStrings = {
       'Pencarian web dan gambar memakai login ChaAI Office Anda; saat keluar atau alat cloud dimatikan, keduanya memakai sumber gratis.',
     setAiSearchSerperHint: 'Serper menyediakan pencarian web dan gambar dengan kunci Anda.',
     setAiSearchSerplyHint: 'Serply menyediakan pencarian web dan gambar dengan kunci Anda.',
+    setAiSearchSearchApiHint: 'SearchApi menyediakan pencarian web dan gambar dengan kunci Anda.',
     setAiSearchTavilyHint:
       'Tavily menyediakan pencarian web dengan kunci Anda; pencarian gambar memakai sumber gratis.',
     setAiSearchParallelHint:
@@ -6233,7 +6248,7 @@ const upstreamStrings = {
       'Если выключено, новые документы открываются со свёрнутой панелью ИИ; она доступна в один клик.',
     setAuthorName: 'Имя пользователя',
     setAuthorNameDesc:
-      'Отображается как автор примечаний и исправлений в Docs, Sheets и Slides. Оставьте пустым, чтобы использовать имя учётной записи компьютера.',
+      'Отображается как автор примечаний и исправлений в Docs, Sheets, Slides и PDF. Оставьте пустым, чтобы использовать имя учётной записи компьютера.',
     settings: 'Настройки',
     setSecAccount: 'Аккаунт',
     setSecGeneral: 'Общие',
@@ -6298,13 +6313,12 @@ const upstreamStrings = {
     intgCopy: 'Копировать',
     intgStep2Title: 'Попробуйте',
     intgStep2Desc: 'Откройте новый чат в ассистенте и попросите обычными словами, например:',
-    intgStep2DescBefore:
-      'После установки откройте новый чат в ассистенте и попросите обычными словами, например:',
     intgExample1: 'Преврати ~/Downloads/report.md в документ Word',
     intgExample2: 'Сделай презентацию из 6 слайдов о наших результатах за 3-й квартал',
     intgExample3: 'Конвертируй budget.xlsx в PDF и открой в ChaAI Office',
     intgStep2Note:
-      'Ассистент сам запускает командную строку chaoffice; вводить её вам не придётся.',
+      'Ассистент сам вызывает ChaOffice — через командную строку или MCP; вам не нужно вводить команды.',
+
     intgCliPartTitle: 'CLI · командная строка + skill',
     intgCliPartDesc:
       'Для ассистентов, умеющих выполнять команды терминала (Claude Code, Codex, Cursor и другие). После установки skill ассистент сам вызывает командную строку chaoffice, чтобы создавать, конвертировать, читать и редактировать файлы; вам не нужно вводить команды.',
@@ -6318,7 +6332,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'Работает внутри ChaAI Office; ассистент подключается по URL, и вы видите, как документ шаг за шагом собирается в редакторе Word. ChaAI Office должен оставаться открытым; пока только документы Word.',
     intgMcpHttpAdvanced: 'Дополнительно: другие адреса и журнал',
-    intgMcpTryNote: 'Ассистент обращается к ChaAI Office через MCP; вам не нужно вводить команды.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Выполните один раз в терминале:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop или другой ассистент с поддержкой MCP',
@@ -6363,6 +6376,8 @@ const upstreamStrings = {
     setAiProvider: 'Провайдер',
     setAiModelId: 'Модель',
     setAiModelSearch: 'Поиск моделей…',
+    setAiThinking: 'Уровень рассуждений',
+    setAiThinkingDefault: 'По умолчанию модели',
     setAiApiKey: 'API-ключ',
     setAiKeyHint: 'Хранится только на этом устройстве.',
     setAiBaseUrl: 'Базовый URL',
@@ -6396,6 +6411,8 @@ const upstreamStrings = {
       'Веб-поиск и поиск изображений используют ваш вход в ChaAI Office; без входа или при выключенных облачных инструментах используются бесплатные источники.',
     setAiSearchSerperHint: 'Serper обеспечивает веб-поиск и поиск изображений с вашим ключом.',
     setAiSearchSerplyHint: 'Serply обеспечивает веб-поиск и поиск изображений с вашим ключом.',
+    setAiSearchSearchApiHint:
+      'SearchApi обеспечивает веб-поиск и поиск изображений с вашим ключом.',
     setAiSearchTavilyHint:
       'Tavily обеспечивает веб-поиск с вашим ключом; поиск изображений использует бесплатные источники.',
     setAiSearchParallelHint:
@@ -6777,7 +6794,7 @@ const upstreamStrings = {
       'عند الإيقاف، تبدأ المستندات المفتوحة حديثًا بلوحة الذكاء الاصطناعي مطوية؛ تكفي نقرة واحدة لفتحها عند الحاجة.',
     setAuthorName: 'اسم المستخدم',
     setAuthorNameDesc:
-      'يظهر كمؤلف التعليقات والتغييرات المتعقبة في Docs وSheets وSlides. اتركه فارغًا لاستخدام اسم حساب الكمبيوتر.',
+      'يظهر كمؤلف التعليقات والتغييرات المتعقبة في Docs وSheets وSlides وPDF. اتركه فارغًا لاستخدام اسم حساب الكمبيوتر.',
     settings: 'الإعدادات',
     setSecAccount: 'الحساب',
     setSecGeneral: 'عام',
@@ -6840,11 +6857,12 @@ const upstreamStrings = {
     intgCopy: 'نسخ',
     intgStep2Title: 'جرّبها',
     intgStep2Desc: 'افتح محادثة جديدة في مساعدك واطلب بكلمات عادية، مثلاً:',
-    intgStep2DescBefore: 'بعد التثبيت، افتح محادثة جديدة في مساعدك واطلب بكلمات عادية، مثلاً:',
     intgExample1: 'حوّل ~/Downloads/report.md إلى مستند Word',
     intgExample2: 'أنشئ عرضاً من 6 شرائح عن نتائج الربع الثالث',
     intgExample3: 'حوّل budget.xlsx إلى PDF وافتحه في ChaAI Office',
-    intgStep2Note: 'المساعد يشغّل سطر أوامر chaoffice بنفسه؛ لن تحتاج إلى كتابته أبداً.',
+    intgStep2Note:
+      'المساعد يستدعي ChaOffice بنفسه، عبر سطر الأوامر أو MCP؛ لن تحتاج إلى كتابة أي أمر.',
+
     intgCliPartTitle: 'CLI · سطر الأوامر + skill',
     intgCliPartDesc:
       'للمساعدين الذين يستطيعون تنفيذ أوامر الطرفية (Claude Code وCodex وCursor وغيرها). بعد تثبيت skill، يستدعي المساعد سطر أوامر chaoffice بنفسه لإنشاء الملفات وتحويلها وقراءتها وتحريرها؛ لن تكتب أي أمر.',
@@ -6858,7 +6876,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'يعمل داخل ChaAI Office؛ يتصل المساعد عبر عنوان URL ويمكنك مشاهدة المستند يُبنى خطوة بخطوة في محرر Word. يجب أن يبقى ChaAI Office مفتوحًا؛ مستندات Word فقط حاليًا.',
     intgMcpHttpAdvanced: 'متقدم: عناوين أخرى والسجل',
-    intgMcpTryNote: 'يستدعي المساعد ChaAI Office عبر MCP؛ لن تكتب أي أمر.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'شغّل هذا مرة واحدة في الطرفية:',
     intgMcpOtherTitle: 'Cursor أو Claude Desktop أو أي مساعد آخر يدعم MCP',
@@ -6902,6 +6919,8 @@ const upstreamStrings = {
     setAiProvider: 'المزوّد',
     setAiModelId: 'النموذج',
     setAiModelSearch: 'البحث عن نموذج…',
+    setAiThinking: 'مستوى التفكير',
+    setAiThinkingDefault: 'افتراضي النموذج',
     setAiApiKey: 'مفتاح API',
     setAiKeyHint: 'يُحفظ على هذا الجهاز فقط.',
     setAiBaseUrl: 'Base URL',
@@ -6933,6 +6952,7 @@ const upstreamStrings = {
       'يستخدم البحث في الويب والصور تسجيل دخولك إلى ChaAI Office؛ وعند الخروج أو إيقاف الأدوات السحابية يعود إلى مصادر مجانية.',
     setAiSearchSerperHint: 'يوفّر Serper البحث في الويب والصور بمفتاحك.',
     setAiSearchSerplyHint: 'يوفّر Serply البحث في الويب والصور بمفتاحك.',
+    setAiSearchSearchApiHint: 'يوفّر SearchApi البحث في الويب والصور بمفتاحك.',
     setAiSearchTavilyHint:
       'يوفّر Tavily البحث في الويب بمفتاحك؛ ويعود البحث في الصور إلى مصادر مجانية.',
     setAiSearchParallelHint:
@@ -7098,11 +7118,11 @@ const upstreamStrings = {
     askSend: 'Enviar',
     askStop: 'Parar',
     askHeroTagline:
-      'Marque com estrela os arquivos que você lê com frequência e a IA poderá pesquisá-los e citar a fonte — clique numa citação para abrir.',
+      'Marque com estrela os arquivos que você lê com frequência e a IA poderá pesquisá-los e citar a fonte — clique em uma citação para abrir.',
     askStep1Title: 'Marcar arquivos',
     askStep1Desc: 'Em Recentes ou Pastas, clique na estrela da linha do arquivo',
     askStep2Title: 'Faça perguntas',
-    askStep2Desc: 'Pergunte como num chat, sem abrir nenhum documento antes',
+    askStep2Desc: 'Pergunte como em um chat, sem abrir nenhum documento antes',
     askStep3Title: 'Abrir citações',
     askStep3Desc: 'As respostas citam o arquivo de origem; clique para ir até ele',
     askCtaRecents: 'Marcar de Recentes',
@@ -7267,10 +7287,10 @@ const upstreamStrings = {
     saveLocation: 'Local de salvamento',
     setRestoreSession: 'Reabrir os documentos da última vez',
     setRestoreSessionDesc:
-      'Os documentos abertos ao fechar o ChaAI Office são reabertos automaticamente na próxima vez que ele for iniciado.',
-    setTabSleep: 'Suspender separadores inativos',
+      'Os documentos abertos ao fechar o ChaOffice são reabertos automaticamente na próxima vez que ele for iniciado.',
+    setTabSleep: 'Suspender guias inativas',
     setTabSleepDesc:
-      'Com muitos separadores abertos, os que não vê há algum tempo libertam a memória e reabrem o ficheiro quando regressa. Separadores com alterações por guardar ou fixados nunca são suspensos.',
+      'As guias que você não acessa há algum tempo liberam memória e reabrem o arquivo quando você volta. Guias fixadas ou com alterações não salvas nunca são suspensas.',
     tabSleeping: 'Suspenso',
     setAutoSave: 'Salvar automaticamente todos os documentos',
     setAutoSaveDesc:
@@ -7316,7 +7336,7 @@ const upstreamStrings = {
       'Quando desativado, os documentos recém-abertos começam com o painel de IA recolhido; basta um clique quando precisar.',
     setAuthorName: 'Nome de usuário',
     setAuthorNameDesc:
-      'Exibido como autor dos comentários e das alterações controladas no Docs, Sheets e Slides. Deixe em branco para usar o nome da conta do computador.',
+      'Exibido como autor dos comentários e das alterações controladas no Docs, Sheets, Slides e PDF. Deixe em branco para usar o nome da conta do computador.',
     settings: 'Configurações',
     setSecAccount: 'Conta',
     setSecGeneral: 'Geral',
@@ -7382,13 +7402,12 @@ const upstreamStrings = {
     intgCopy: 'Copiar',
     intgStep2Title: 'Experimente',
     intgStep2Desc: 'Abra um chat novo no seu assistente e peça com suas palavras, por exemplo:',
-    intgStep2DescBefore:
-      'Depois de instalar, abra um chat novo no seu assistente e peça com suas palavras, por exemplo:',
     intgExample1: 'Transforme ~/Downloads/report.md em um documento Word',
     intgExample2: 'Monte uma apresentação de 6 slides sobre nossos resultados do 3º trimestre',
     intgExample3: 'Converta budget.xlsx para PDF e abra no ChaAI Office',
     intgStep2Note:
-      'O assistente executa a linha de comando chaoffice sozinho; você nunca precisa digitá-la.',
+      'O assistente chama o ChaOffice sozinho, pela linha de comando ou MCP; você nunca precisa digitar um comando.',
+
     intgCliPartTitle: 'CLI · linha de comando + skill',
     intgCliPartDesc:
       'Para assistentes que executam comandos de terminal (Claude Code, Codex, Cursor e outros). Com o skill instalado, o assistente chama a linha de comando chaoffice sozinho para criar, converter, ler e editar arquivos; você nunca digita um comando.',
@@ -7402,7 +7421,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'Roda dentro do ChaAI Office; o assistente conecta por URL e você acompanha o documento sendo montado passo a passo no editor Word. O ChaAI Office precisa ficar aberto; por enquanto só documentos Word.',
     intgMcpHttpAdvanced: 'Avançado: outros endereços e log',
-    intgMcpTryNote: 'O assistente chama o ChaAI Office via MCP; você nunca digita um comando.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Execute isto uma vez no terminal:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop ou qualquer outro assistente compatível com MCP',
@@ -7448,6 +7466,8 @@ const upstreamStrings = {
     setAiProvider: 'Provedor',
     setAiModelId: 'Modelo',
     setAiModelSearch: 'Pesquisar modelos…',
+    setAiThinking: 'Esforço de raciocínio',
+    setAiThinkingDefault: 'Padrão do modelo',
     setAiApiKey: 'Chave de API',
     setAiKeyHint: 'Armazenada apenas neste dispositivo.',
     setAiBaseUrl: 'Base URL',
@@ -7481,6 +7501,7 @@ const upstreamStrings = {
       'A busca na web e de imagens usa o seu login do ChaAI Office; desconectado ou com as ferramentas na nuvem desativadas, recorre a fontes gratuitas.',
     setAiSearchSerperHint: 'O Serper oferece busca na web e de imagens com a sua chave.',
     setAiSearchSerplyHint: 'O Serply oferece busca na web e de imagens com a sua chave.',
+    setAiSearchSearchApiHint: 'A SearchApi oferece busca na web e de imagens com a sua chave.',
     setAiSearchTavilyHint:
       'O Tavily oferece busca na web com a sua chave; a busca de imagens recorre a fontes gratuitas.',
     setAiSearchParallelHint:
@@ -7602,9 +7623,9 @@ const upstreamStrings = {
       'Cada entrada é { id, name, vision, maxTokens, alias }; o que não está listado mantém os interruptores acima e as heurísticas embarcadas.',
     setAiEndpointKeyEnv: 'Variável de ambiente da chave',
     setAiEndpointModelsProbed:
-      'As capacidades observadas por esta sonda (vision, maxTokens, contextWindow) são guardadas em cache ao lado do endpoint e valem para os modelos não declarados; a sonda seguinte substitui-as por completo e nada do que está escrito aqui muda.',
+      'As capacidades observadas por esta sonda (vision, maxTokens, contextWindow) são salvas em cache ao lado do endpoint e valem para os modelos não declarados; a sonda seguinte substitui-as por completo e nada do que está escrito aqui muda.',
     setAiEndpointKeyEnvHint:
-      'Se definido, nenhuma chave é guardada aqui; ela é lida dessa variável de ambiente.',
+      'Se definido, nenhuma chave é salva aqui; ela é lida dessa variável de ambiente.',
     setAiEndpointHeadersBad: 'Formato de cabeçalho inválido: cada linha deve ser "Nome: Valor".',
     setAiEndpointModelsBad:
       'Declarações de modelo inválidas: deve ser um array JSON, ex. [{ "id": "m" }].',
@@ -7866,7 +7887,7 @@ const upstreamStrings = {
       'Se disattivato, i documenti appena aperti iniziano con il pannello IA ridotto; basta un clic quando serve.',
     setAuthorName: 'Nome utente',
     setAuthorNameDesc:
-      'Mostrato come autore di commenti e revisioni in Docs, Sheets e Slides. Lascia vuoto per usare il nome dell’account del computer.',
+      'Mostrato come autore di commenti e revisioni in Docs, Sheets, Slides e PDF. Lascia vuoto per usare il nome dell’account del computer.',
     settings: 'Impostazioni',
     setSecAccount: 'Account',
     setSecGeneral: 'Generale',
@@ -7933,13 +7954,12 @@ const upstreamStrings = {
     intgStep2Title: 'Provalo',
     intgStep2Desc:
       'Apri una nuova chat nel tuo assistente e chiedi con parole semplici, ad esempio:',
-    intgStep2DescBefore:
-      "Dopo l'installazione, apri una nuova chat nel tuo assistente e chiedi con parole semplici, ad esempio:",
     intgExample1: 'Trasforma ~/Downloads/report.md in un documento Word',
     intgExample2: 'Prepara una presentazione di 6 slide sui nostri risultati del terzo trimestre',
     intgExample3: 'Converti budget.xlsx in PDF e aprilo in ChaAI Office',
     intgStep2Note:
-      "L'assistente esegue da solo la riga di comando chaoffice; non dovrai mai digitarla.",
+      "L'assistente richiama ChaOffice da solo, tramite la riga di comando o MCP; non dovrai mai digitare un comando.",
+
     intgCliPartTitle: 'CLI · riga di comando + skill',
     intgCliPartDesc:
       'Per assistenti che possono eseguire comandi da terminale (Claude Code, Codex, Cursor e altri). Installato lo skill, l’assistente richiama da sé la riga di comando chaoffice per creare, convertire, leggere e modificare file; non digiti mai un comando.',
@@ -7953,7 +7973,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'Gira dentro ChaAI Office; l’assistente si collega a un URL e puoi vedere il documento prendere forma passo dopo passo nell’editor Word. ChaAI Office deve restare aperto; per ora solo documenti Word.',
     intgMcpHttpAdvanced: 'Avanzato: altri indirizzi e registro',
-    intgMcpTryNote: 'L’assistente richiama ChaAI Office tramite MCP; non digiti mai un comando.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Esegui questo una volta nel terminale:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop o qualsiasi altro assistente compatibile con MCP',
@@ -7998,6 +8017,8 @@ const upstreamStrings = {
     setAiProvider: 'Provider',
     setAiModelId: 'Modello',
     setAiModelSearch: 'Cerca modelli…',
+    setAiThinking: 'Sforzo di ragionamento',
+    setAiThinkingDefault: 'Predefinito del modello',
     setAiApiKey: 'Chiave API',
     setAiKeyHint: 'Salvata solo su questo dispositivo.',
     setAiBaseUrl: 'Base URL',
@@ -8031,6 +8052,7 @@ const upstreamStrings = {
       'La ricerca web e di immagini usa il tuo accesso ChaAI Office; disconnesso o con gli strumenti cloud disattivati ricorre a fonti gratuite.',
     setAiSearchSerperHint: 'Serper offre ricerca web e di immagini con la tua chiave.',
     setAiSearchSerplyHint: 'Serply offre ricerca web e di immagini con la tua chiave.',
+    setAiSearchSearchApiHint: 'SearchApi offre ricerca web e di immagini con la tua chiave.',
     setAiSearchTavilyHint:
       'Tavily offre la ricerca web con la tua chiave; la ricerca di immagini ricorre a fonti gratuite.',
     setAiSearchParallelHint:
@@ -8415,7 +8437,7 @@ const upstreamStrings = {
       'Gdy wyłączone, nowo otwarte dokumenty zaczynają ze zwiniętym panelem AI; wystarczy jedno kliknięcie, gdy jest potrzebny.',
     setAuthorName: 'Nazwa użytkownika',
     setAuthorNameDesc:
-      'Wyświetlana jako autor komentarzy i śledzonych zmian w Docs, Sheets i Slides. Pozostaw puste, aby użyć nazwy konta komputera.',
+      'Wyświetlana jako autor komentarzy i śledzonych zmian w Docs, Sheets, Slides i PDF. Pozostaw puste, aby użyć nazwy konta komputera.',
     settings: 'Ustawienia',
     setSecAccount: 'Konto',
     setSecGeneral: 'Ogólne',
@@ -8480,12 +8502,12 @@ const upstreamStrings = {
     intgCopy: 'Kopiuj',
     intgStep2Title: 'Wypróbuj',
     intgStep2Desc: 'Otwórz nowy czat w asystencie i poproś zwykłymi słowami, na przykład:',
-    intgStep2DescBefore:
-      'Po instalacji otwórz nowy czat w asystencie i poproś zwykłymi słowami, na przykład:',
     intgExample1: 'Zamień ~/Downloads/report.md na dokument Word',
     intgExample2: 'Zrób prezentację z 6 slajdów o naszych wynikach za III kwartał',
     intgExample3: 'Przekonwertuj budget.xlsx do PDF i otwórz w ChaAI Office',
-    intgStep2Note: 'Asystent sam uruchamia wiersz poleceń chaoffice; nigdy nie musisz go wpisywać.',
+    intgStep2Note:
+      'Asystent sam wywołuje ChaOffice — przez wiersz poleceń lub MCP; nigdy nie musisz wpisywać polecenia.',
+
     intgCliPartTitle: 'CLI · wiersz poleceń + skill',
     intgCliPartDesc:
       'Dla asystentów, które potrafią uruchamiać polecenia terminala (Claude Code, Codex, Cursor i inne). Po zainstalowaniu skilla asystent sam wywołuje wiersz poleceń chaoffice, aby tworzyć, konwertować, czytać i edytować pliki; nigdy nie wpisujesz polecenia.',
@@ -8499,7 +8521,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'Działa wewnątrz ChaAI Office; asystent łączy się przez URL, a Ty widzisz, jak dokument powstaje krok po kroku w edytorze Word. ChaAI Office musi pozostać otwarty; na razie tylko dokumenty Word.',
     intgMcpHttpAdvanced: 'Zaawansowane: inne adresy i dziennik',
-    intgMcpTryNote: 'Asystent wywołuje ChaAI Office przez MCP; nigdy nie wpisujesz polecenia.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Uruchom to raz w terminalu:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop lub inny asystent obsługujący MCP',
@@ -8543,6 +8564,8 @@ const upstreamStrings = {
     setAiProvider: 'Dostawca',
     setAiModelId: 'Model',
     setAiModelSearch: 'Szukaj modeli…',
+    setAiThinking: 'Poziom rozumowania',
+    setAiThinkingDefault: 'Domyślny modelu',
     setAiApiKey: 'Klucz API',
     setAiKeyHint: 'Przechowywany tylko na tym urządzeniu.',
     setAiBaseUrl: 'Base URL',
@@ -8577,6 +8600,7 @@ const upstreamStrings = {
       'Wyszukiwanie w sieci i obrazów korzysta z logowania ChaAI Office; po wylogowaniu lub przy wyłączonych narzędziach chmurowych używa darmowych źródeł.',
     setAiSearchSerperHint: 'Serper zapewnia wyszukiwanie w sieci i obrazów z Twoim kluczem.',
     setAiSearchSerplyHint: 'Serply zapewnia wyszukiwanie w sieci i obrazów z Twoim kluczem.',
+    setAiSearchSearchApiHint: 'SearchApi zapewnia wyszukiwanie w sieci i obrazów z Twoim kluczem.',
     setAiSearchTavilyHint:
       'Tavily zapewnia wyszukiwanie w sieci z Twoim kluczem; wyszukiwanie obrazów używa darmowych źródeł.',
     setAiSearchParallelHint:
@@ -8975,12 +8999,12 @@ const upstreamStrings = {
     intgCopy: 'Kopírovat',
     intgStep2Title: 'Vyzkoušejte',
     intgStep2Desc: 'Otevřete v asistentovi nový chat a požádejte běžnými slovy, například:',
-    intgStep2DescBefore:
-      'Po instalaci otevřete v asistentovi nový chat a požádejte běžnými slovy, například:',
     intgExample1: 'Převeď ~/Downloads/report.md na dokument Word',
     intgExample2: 'Udělej prezentaci o 6 snímcích o našich výsledcích za 3. čtvrtletí',
     intgExample3: 'Převeď budget.xlsx do PDF a otevři ho v ChaAI Office',
-    intgStep2Note: 'Asistent spouští příkazový řádek chaoffice sám; nikdy ho nemusíte psát.',
+    intgStep2Note:
+      'Asistent volá ChaOffice sám – přes příkazový řádek nebo MCP; nikdy nemusíte psát žádný příkaz.',
+
     intgCliPartTitle: 'CLI · příkazový řádek + skill',
     intgCliPartDesc:
       'Pro asistenty, kteří umí spouštět příkazy terminálu (Claude Code, Codex, Cursor a další). Po instalaci skillu asistent sám volá příkazový řádek chaoffice k vytváření, převodu, čtení a úpravám souborů; žádný příkaz nepíšete.',
@@ -8994,7 +9018,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'Běží uvnitř ChaAI Office; asistent se připojí přes URL a v editoru Word sledujete, jak dokument krok za krokem vzniká. ChaAI Office musí zůstat otevřený; zatím jen dokumenty Word.',
     intgMcpHttpAdvanced: 'Pokročilé: další adresy a protokol',
-    intgMcpTryNote: 'Asistent volá ChaAI Office přes MCP; žádný příkaz nepíšete.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Spusťte jednou v terminálu:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop nebo jiný asistent s podporou MCP',
@@ -9039,6 +9062,8 @@ const upstreamStrings = {
     setAiProvider: 'Poskytovatel',
     setAiModelId: 'Model',
     setAiModelSearch: 'Hledat modely…',
+    setAiThinking: 'Úroveň uvažování',
+    setAiThinkingDefault: 'Výchozí pro model',
     setAiApiKey: 'Klíč API',
     setAiKeyHint: 'Ukládá se pouze na tomto zařízení.',
     setAiBaseUrl: 'Základní URL',
@@ -9073,6 +9098,7 @@ const upstreamStrings = {
       'Webové a obrázkové vyhledávání používá vaše přihlášení ke ChaAI Office; při odhlášení nebo vypnutých cloudových nástrojích se použijí bezplatné zdroje.',
     setAiSearchSerperHint: 'Serper zajišťuje webové i obrázkové vyhledávání s vaším klíčem.',
     setAiSearchSerplyHint: 'Serply zajišťuje webové i obrázkové vyhledávání s vaším klíčem.',
+    setAiSearchSearchApiHint: 'SearchApi zajišťuje webové i obrázkové vyhledávání s vaším klíčem.',
     setAiSearchTavilyHint:
       'Tavily zajišťuje webové vyhledávání s vaším klíčem; obrázkové vyhledávání použije bezplatné zdroje.',
     setAiSearchParallelHint:
@@ -9206,7 +9232,7 @@ const upstreamStrings = {
     intgSkillsInstalledTag: 'Nainstalováno',
     setAuthorName: 'Uživatelské jméno',
     setAuthorNameDesc:
-      'Zobrazuje se jako autor komentářů a sledovaných změn v Docs, Sheets a Slides. Ponechte prázdné pro použití názvu účtu počítače.',
+      'Zobrazuje se jako autor komentářů a sledovaných změn v Docs, Sheets, Slides a PDF. Ponechte prázdné pro použití názvu účtu počítače.',
     helpSearchPlaceholder: 'Hledat v příručce… (stiskněte /)',
     helpSearchLabel: 'Hledat v příručce',
     helpContentsLabel: 'Obsah příručky',
@@ -9502,7 +9528,7 @@ const upstreamStrings = {
       'Indien uit, starten nieuw geopende documenten met een ingeklapt AI-paneel; één klik volstaat wanneer je het nodig hebt.',
     setAuthorName: 'Gebruikersnaam',
     setAuthorNameDesc:
-      'Wordt weergegeven als auteur van opmerkingen en bijgehouden wijzigingen in Docs, Sheets en Slides. Laat leeg om de accountnaam van je computer te gebruiken.',
+      'Wordt weergegeven als auteur van opmerkingen en bijgehouden wijzigingen in Docs, Sheets, Slides en PDF. Laat leeg om de accountnaam van je computer te gebruiken.',
     settings: 'Instellingen',
     setSecAccount: 'Account',
     setSecGeneral: 'Algemeen',
@@ -9568,13 +9594,12 @@ const upstreamStrings = {
     intgStep2Title: 'Probeer het',
     intgStep2Desc:
       'Open een nieuwe chat in uw assistent en vraag het in gewone woorden, bijvoorbeeld:',
-    intgStep2DescBefore:
-      'Open na de installatie een nieuwe chat in uw assistent en vraag het in gewone woorden, bijvoorbeeld:',
     intgExample1: 'Maak van ~/Downloads/report.md een Word-document',
     intgExample2: 'Maak een presentatie van 6 dia’s over onze Q3-resultaten',
     intgExample3: 'Zet budget.xlsx om naar PDF en open het in ChaAI Office',
     intgStep2Note:
-      'De assistent voert de chaoffice-opdrachtregel zelf uit; u hoeft die nooit te typen.',
+      'De assistent roept ChaOffice zelf aan, via de opdrachtregel of MCP; u hoeft nooit een opdracht te typen.',
+
     intgCliPartTitle: 'CLI · opdrachtregel + skill',
     intgCliPartDesc:
       'Voor assistenten die terminalopdrachten kunnen uitvoeren (Claude Code, Codex, Cursor en andere). Na installatie van de skill roept de assistent zelf de chaoffice-opdrachtregel aan om bestanden te maken, converteren, lezen en bewerken; je typt nooit een opdracht.',
@@ -9588,7 +9613,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'Draait in ChaAI Office; de assistent verbindt via een URL en je ziet het document stap voor stap ontstaan in de Word-editor. ChaAI Office moet open blijven; voorlopig alleen Word-documenten.',
     intgMcpHttpAdvanced: 'Geavanceerd: andere adressen en logboek',
-    intgMcpTryNote: 'De assistent roept ChaAI Office aan via MCP; je typt nooit een opdracht.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Voer dit één keer uit in een terminal:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop of een andere assistent met MCP-ondersteuning',
@@ -9632,6 +9656,8 @@ const upstreamStrings = {
     setAiProvider: 'Provider',
     setAiModelId: 'Model',
     setAiModelSearch: 'Modellen zoeken…',
+    setAiThinking: 'Denkinspanning',
+    setAiThinkingDefault: 'Modelstandaard',
     setAiApiKey: 'API-sleutel',
     setAiKeyHint: 'Alleen op dit apparaat opgeslagen.',
     setAiBaseUrl: 'Base URL',
@@ -9665,6 +9691,7 @@ const upstreamStrings = {
       'Web- en afbeeldingszoeken gebruiken je ChaAI Office-aanmelding; afgemeld of met cloudtools uit vallen ze terug op gratis bronnen.',
     setAiSearchSerperHint: 'Serper levert web- en afbeeldingszoeken met je sleutel.',
     setAiSearchSerplyHint: 'Serply levert web- en afbeeldingszoeken met je sleutel.',
+    setAiSearchSearchApiHint: 'SearchApi levert web- en afbeeldingszoeken met je sleutel.',
     setAiSearchTavilyHint:
       'Tavily levert webzoeken met je sleutel; afbeeldingszoeken valt terug op gratis bronnen.',
     setAiSearchParallelHint:
@@ -10049,7 +10076,7 @@ const upstreamStrings = {
       'Jika dimatikan, dokumen yang baru dibuka bermula dengan panel AI dilipat; cukup satu klik apabila diperlukan.',
     setAuthorName: 'Nama pengguna',
     setAuthorNameDesc:
-      'Dipaparkan sebagai pengarang komen dan perubahan dijejak dalam Docs, Sheets dan Slides. Biarkan kosong untuk menggunakan nama akaun komputer.',
+      'Dipaparkan sebagai pengarang komen dan perubahan dijejak dalam Docs, Sheets, Slides dan PDF. Biarkan kosong untuk menggunakan nama akaun komputer.',
     settings: 'Tetapan',
     setSecAccount: 'Akaun',
     setSecGeneral: 'Umum',
@@ -10115,13 +10142,12 @@ const upstreamStrings = {
     intgStep2Title: 'Cuba sekarang',
     intgStep2Desc:
       'Buka sembang baharu dalam pembantu anda dan minta dengan bahasa biasa, contohnya:',
-    intgStep2DescBefore:
-      'Selepas dipasang, buka sembang baharu dalam pembantu anda dan minta dengan bahasa biasa, contohnya:',
     intgExample1: 'Tukar ~/Downloads/report.md kepada dokumen Word',
     intgExample2: 'Buat pembentangan 6 slaid tentang hasil S3 kami',
     intgExample3: 'Tukar budget.xlsx kepada PDF dan buka dalam ChaAI Office',
     intgStep2Note:
-      'Pembantu menjalankan baris arahan chaoffice sendiri; anda tidak perlu menaipnya.',
+      'Pembantu memanggil ChaOffice sendiri, melalui baris arahan atau MCP; anda tidak perlu menaip sebarang arahan.',
+
     intgCliPartTitle: 'CLI · baris arahan + skill',
     intgCliPartDesc:
       'Untuk pembantu yang boleh menjalankan arahan terminal (Claude Code, Codex, Cursor dan lain-lain). Setelah skill dipasang, pembantu memanggil baris arahan chaoffice sendiri untuk mencipta, menukar, membaca dan mengedit fail; anda tidak perlu menaip sebarang arahan.',
@@ -10135,8 +10161,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'Berjalan di dalam ChaAI Office; pembantu menyambung melalui URL dan anda boleh melihat dokumen dibina langkah demi langkah dalam editor Word. ChaAI Office mesti kekal dibuka; buat masa ini dokumen Word sahaja.',
     intgMcpHttpAdvanced: 'Lanjutan: alamat lain dan log',
-    intgMcpTryNote:
-      'Pembantu memanggil ChaAI Office melalui MCP; anda tidak perlu menaip sebarang arahan.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Jalankan ini sekali dalam terminal:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop atau pembantu lain yang menyokong MCP',
@@ -10181,6 +10205,8 @@ const upstreamStrings = {
     setAiProvider: 'Penyedia',
     setAiModelId: 'Model',
     setAiModelSearch: 'Cari model…',
+    setAiThinking: 'Tahap penaakulan',
+    setAiThinkingDefault: 'Lalai model',
     setAiApiKey: 'Kunci API',
     setAiKeyHint: 'Disimpan pada peranti ini sahaja.',
     setAiBaseUrl: 'Base URL',
@@ -10215,6 +10241,7 @@ const upstreamStrings = {
       'Carian web dan imej menggunakan log masuk ChaAI Office anda; apabila log keluar atau alat awan dimatikan, ia menggunakan sumber percuma.',
     setAiSearchSerperHint: 'Serper menyediakan carian web dan imej dengan kunci anda.',
     setAiSearchSerplyHint: 'Serply menyediakan carian web dan imej dengan kunci anda.',
+    setAiSearchSearchApiHint: 'SearchApi menyediakan carian web dan imej dengan kunci anda.',
     setAiSearchTavilyHint:
       'Tavily menyediakan carian web dengan kunci anda; carian imej menggunakan sumber percuma.',
     setAiSearchParallelHint:
@@ -10593,7 +10620,7 @@ const upstreamStrings = {
       'כאשר כבוי, מסמכים שנפתחו זה עתה מתחילים עם לוח ה-AI מקופל; לחיצה אחת מספיקה כשצריך.',
     setAuthorName: 'שם משתמש',
     setAuthorNameDesc:
-      'מוצג כמחבר ההערות והשינויים במעקב ב‑Docs, Sheets ו‑Slides. השאירו ריק כדי להשתמש בשם חשבון המחשב.',
+      'מוצג כמחבר ההערות והשינויים במעקב ב‑Docs, Sheets, Slides ו‑PDF. השאירו ריק כדי להשתמש בשם חשבון המחשב.',
     settings: 'הגדרות',
     setSecAccount: 'חשבון',
     setSecGeneral: 'כללי',
@@ -10656,11 +10683,12 @@ const upstreamStrings = {
     intgCopy: 'העתקה',
     intgStep2Title: 'נסו',
     intgStep2Desc: 'פתחו שיחה חדשה בעוזר ובקשו במילים פשוטות, למשל:',
-    intgStep2DescBefore: 'לאחר ההתקנה, פתחו שיחה חדשה בעוזר ובקשו במילים פשוטות, למשל:',
     intgExample1: 'הפוך את ~/Downloads/report.md למסמך Word',
     intgExample2: 'הכן מצגת של 6 שקופיות על תוצאות הרבעון השלישי שלנו',
     intgExample3: 'המר את budget.xlsx ל-PDF ופתח אותו ב-ChaAI Office',
-    intgStep2Note: 'העוזר מריץ בעצמו את שורת הפקודה chaoffice; לעולם לא תצטרכו להקליד אותה.',
+    intgStep2Note:
+      'העוזר קורא ל-ChaOffice בעצמו, דרך שורת הפקודה או MCP; לעולם לא תצטרכו להקליד פקודה.',
+
     intgCliPartTitle: 'CLI · שורת פקודה + skill',
     intgCliPartDesc:
       'לעוזרים שיכולים להריץ פקודות טרמינל (Claude Code‏, Codex‏, Cursor ואחרים). לאחר התקנת ה‑skill העוזר קורא בעצמו לשורת הפקודה chaoffice כדי ליצור, להמיר, לקרוא ולערוך קבצים; אתם לא מקלידים שום פקודה.',
@@ -10674,7 +10702,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'פועל בתוך ChaAI Office; העוזר מתחבר דרך כתובת URL ואפשר לראות את המסמך נבנה צעד אחר צעד בעורך Word. ChaAI Office חייב להישאר פתוח; בשלב זה מסמכי Word בלבד.',
     intgMcpHttpAdvanced: 'מתקדם: כתובות נוספות ויומן',
-    intgMcpTryNote: 'העוזר קורא ל‑ChaAI Office דרך MCP; אתם לא מקלידים שום פקודה.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'הריצו זאת פעם אחת בטרמינל:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop או כל עוזר אחר התומך ב-MCP',
@@ -10717,6 +10744,8 @@ const upstreamStrings = {
     setAiProvider: 'ספק',
     setAiModelId: 'מודל',
     setAiModelSearch: 'חיפוש מודלים…',
+    setAiThinking: 'עצימות חשיבה',
+    setAiThinkingDefault: 'ברירת מחדל של המודל',
     setAiApiKey: 'מפתח API',
     setAiKeyHint: 'נשמר רק במכשיר זה.',
     setAiBaseUrl: 'Base URL',
@@ -10748,6 +10777,7 @@ const upstreamStrings = {
       'חיפוש באינטרנט ובתמונות משתמש בהתחברות ChaAI Office שלך; כשלא מחוברים או כשכלי הענן כבויים הוא חוזר למקורות חינמיים.',
     setAiSearchSerperHint: 'Serper מספק חיפוש באינטרנט ובתמונות עם המפתח שלך.',
     setAiSearchSerplyHint: 'Serply מספק חיפוש באינטרנט ובתמונות עם המפתח שלך.',
+    setAiSearchSearchApiHint: 'SearchApi מספק חיפוש באינטרנט ובתמונות עם המפתח שלך.',
     setAiSearchTavilyHint:
       'Tavily מספק חיפוש באינטרנט עם המפתח שלך; חיפוש תמונות חוזר למקורות חינמיים.',
     setAiSearchParallelHint:
@@ -11127,7 +11157,7 @@ const upstreamStrings = {
       'बंद होने पर, नए खोले गए दस्तावेज़ AI पैनल संक्षिप्त अवस्था में शुरू होते हैं; ज़रूरत पड़ने पर एक क्लिक में खुल जाता है।',
     setAuthorName: 'उपयोगकर्ता नाम',
     setAuthorNameDesc:
-      'Docs, Sheets और Slides में टिप्पणियों और ट्रैक किए गए परिवर्तनों के लेखक के रूप में दिखाया जाता है। कंप्यूटर खाता नाम उपयोग करने के लिए खाली छोड़ें।',
+      'Docs, Sheets, Slides और PDF में टिप्पणियों और ट्रैक किए गए परिवर्तनों के लेखक के रूप में दिखाया जाता है। कंप्यूटर खाता नाम उपयोग करने के लिए खाली छोड़ें।',
     settings: 'सेटिंग्स',
     setSecAccount: 'खाता',
     setSecGeneral: 'सामान्य',
@@ -11191,12 +11221,12 @@ const upstreamStrings = {
     intgCopy: 'कॉपी करें',
     intgStep2Title: 'आज़माएँ',
     intgStep2Desc: 'अपने असिस्टेंट में नई चैट खोलें और सादे शब्दों में कहें, जैसे:',
-    intgStep2DescBefore:
-      'इंस्टॉल होने के बाद अपने असिस्टेंट में नई चैट खोलें और सादे शब्दों में कहें, जैसे:',
     intgExample1: '~/Downloads/report.md को Word दस्तावेज़ बना दो',
     intgExample2: 'हमारे Q3 नतीजों पर 6 स्लाइड का प्रेज़ेंटेशन बनाओ',
     intgExample3: 'budget.xlsx को PDF में बदलो और ChaAI Office में खोलो',
-    intgStep2Note: 'chaoffice कमांड लाइन असिस्टेंट खुद चलाता है; आपको कभी टाइप नहीं करना पड़ता।',
+    intgStep2Note:
+      'असिस्टेंट ChaOffice को कमांड लाइन या MCP के ज़रिए खुद कॉल करता है; आपको कभी कोई कमांड टाइप नहीं करनी पड़ती।',
+
     intgCliPartTitle: 'CLI · कमांड लाइन + skill',
     intgCliPartDesc:
       'उन सहायकों के लिए जो टर्मिनल कमांड चला सकते हैं (Claude Code, Codex, Cursor आदि)। skill इंस्टॉल होने के बाद सहायक फ़ाइलें बनाने, बदलने, पढ़ने और संपादित करने के लिए खुद chaoffice कमांड लाइन चलाता है; आपको कोई कमांड टाइप नहीं करना पड़ता।',
@@ -11210,8 +11240,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       'ChaAI Office के अंदर चलता है; सहायक URL से जुड़ता है और आप Word संपादक में दस्तावेज़ को चरण-दर-चरण बनते देख सकते हैं। ChaAI Office खुला रहना चाहिए; अभी केवल Word दस्तावेज़।',
     intgMcpHttpAdvanced: 'उन्नत: अन्य पते और लॉग',
-    intgMcpTryNote:
-      'सहायक MCP के ज़रिये ChaAI Office को बुलाता है; आपको कोई कमांड टाइप नहीं करना पड़ता।',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'टर्मिनल में इसे एक बार चलाएँ:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop या कोई अन्य MCP-समर्थित असिस्टेंट',
@@ -11255,6 +11283,8 @@ const upstreamStrings = {
     setAiProvider: 'प्रदाता',
     setAiModelId: 'मॉडल',
     setAiModelSearch: 'मॉडल खोजें…',
+    setAiThinking: 'चिंतन प्रयास',
+    setAiThinkingDefault: 'मॉडल डिफ़ॉल्ट',
     setAiApiKey: 'API कुंजी',
     setAiKeyHint: 'केवल इसी डिवाइस पर संग्रहीत।',
     setAiBaseUrl: 'Base URL',
@@ -11288,6 +11318,7 @@ const upstreamStrings = {
       'वेब और इमेज खोज आपके ChaAI Office साइन-इन का उपयोग करती हैं; साइन-आउट होने पर या क्लाउड टूल बंद होने पर वे मुफ़्त स्रोतों पर लौट जाती हैं।',
     setAiSearchSerperHint: 'Serper आपकी कुंजी से वेब और इमेज खोज दोनों देता है।',
     setAiSearchSerplyHint: 'Serply आपकी कुंजी से वेब और इमेज खोज दोनों देता है।',
+    setAiSearchSearchApiHint: 'SearchApi आपकी कुंजी से वेब और इमेज खोज दोनों देता है।',
     setAiSearchTavilyHint:
       'Tavily आपकी कुंजी से वेब खोज देता है; इमेज खोज मुफ़्त स्रोतों पर लौट जाती है।',
     setAiSearchParallelHint:
@@ -11660,7 +11691,7 @@ const upstreamStrings = {
     setAiOpenInNewDocsDesc: '關閉後，新開啟的文件預設收合 AI 面板；需要時點一下即可展開。',
     setAuthorName: '使用者名稱',
     setAuthorNameDesc:
-      '作為註解和追蹤修訂的作者顯示在 Docs、Sheets、Slides 中。留空則使用電腦帳戶名稱。',
+      '作為註解和追蹤修訂的作者顯示在 Docs、Sheets、Slides、PDF 中。留空則使用電腦帳戶名稱。',
     settings: '設定',
     setSecAccount: '帳戶',
     setSecGeneral: '一般',
@@ -11720,11 +11751,11 @@ const upstreamStrings = {
     intgCopy: '複製',
     intgStep2Title: '試試看',
     intgStep2Desc: '在助理中開一個新對話，用平常說話的方式提出需求，例如：',
-    intgStep2DescBefore: '安裝好後，在助理中開一個新對話，用平常說話的方式提出需求，例如：',
     intgExample1: '把 ~/Downloads/report.md 轉成 Word 文件',
     intgExample2: '做一份 6 頁的簡報，介紹我們第三季的業績',
     intgExample3: '把 budget.xlsx 轉成 PDF，並在 察元AIOffice 中開啟',
-    intgStep2Note: '助理會自行呼叫 chaoffice 命令列，你不需要輸入任何指令。',
+    intgStep2Note: '助理會透過命令列或 MCP 自行呼叫 ChaAI Office，你不需要輸入任何指令。',
+
     intgCliPartTitle: 'CLI · 命令列 + skill',
     intgCliPartDesc:
       '適合能執行終端機指令的助理（Claude Code、Codex、Cursor 等）。安裝 skill 後，助理會自己呼叫 chaoffice 命令列建立、轉換、讀取和編輯檔案，你不需要輸入任何指令。',
@@ -11738,7 +11769,6 @@ const upstreamStrings = {
     intgMcpHttpDesc:
       '在 察元AIOffice 內執行，助理透過網址連線，可以看著它在 Word 編輯器裡逐步產生。需要 察元AIOffice 保持開啟；目前只支援 Word。',
     intgMcpHttpAdvanced: '進階：其他位址與記錄',
-    intgMcpTryNote: '助理會透過 MCP 呼叫 察元AIOffice，你不需要輸入任何指令。',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: '在終端機執行一次：',
     intgMcpOtherTitle: 'Cursor、Claude Desktop 或其他支援 MCP 的助理',
@@ -11781,6 +11811,8 @@ const upstreamStrings = {
     setAiProvider: '模型服務商',
     setAiModelId: '模型',
     setAiModelSearch: '搜尋模型…',
+    setAiThinking: '思考強度',
+    setAiThinkingDefault: '跟隨模型預設',
     setAiApiKey: 'API Key',
     setAiKeyHint: '金鑰僅儲存在本機。',
     setAiBaseUrl: 'Base URL',
@@ -11813,6 +11845,7 @@ const upstreamStrings = {
       '網頁與圖片搜尋使用 察元AIOffice 帳號登入；未登入或關閉雲端工具時改用免費來源。',
     setAiSearchSerperHint: 'Serper 用你的 key 同時提供網頁與圖片搜尋。',
     setAiSearchSerplyHint: 'Serply 用你的 key 同時提供網頁與圖片搜尋。',
+    setAiSearchSearchApiHint: 'SearchApi 用你的 key 同時提供網頁與圖片搜尋。',
     setAiSearchTavilyHint: 'Tavily 用你的 key 提供網頁搜尋；圖片搜尋改用免費來源。',
     setAiSearchParallelHint:
       '留空 API key 即可免費使用 Parallel 搜尋（用量有限）。填寫 key 可使用你的 Parallel 帳戶。圖片搜尋使用其他來源。',

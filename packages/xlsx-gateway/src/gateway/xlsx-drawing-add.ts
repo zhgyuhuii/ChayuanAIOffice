@@ -193,6 +193,10 @@ export interface MutablePackage {
   add(path: string, content: string): void
   addBinary(path: string, bytes: Uint8Array): void
   remove(path: string): void
+  /// Paths dropped earlier in the same plan; paths() already hides them, but
+  /// allocators must still count them as taken or a remove-then-add save hands
+  /// the removed part's name out again and the mutation assertion fails.
+  removedPaths?(): readonly string[]
 }
 
 const DRAWING_REL_TYPE =
@@ -294,7 +298,7 @@ export async function applyVisualAdditions(
 }
 
 /// Finds the sheet's drawing part, creating (and wiring) one if absent.
-async function ensureSheetDrawing(
+export async function ensureSheetDrawing(
   pkg: MutablePackage,
   worksheetPath: string,
   touchedEntries: Set<string>,
@@ -1004,7 +1008,8 @@ function numPoints(values: readonly number[]): string {
 // ---- package plumbing ----
 
 /// Next free `<prefix>N<suffix>` path, scanning current entries (including
-/// entries added earlier in this same plan).
+/// entries added earlier in this plan) and entries removed earlier in it: a
+/// remove-then-add save must not reuse a part name it is deleting.
 export async function allocatePartPath(
   pkg: MutablePackage,
   prefix: string,
@@ -1012,7 +1017,7 @@ export async function allocatePartPath(
 ): Promise<string> {
   const pattern = new RegExp(`^${prefix}(\\d+)${suffix.replace('.', '\\.')}$`)
   let max = 0
-  for (const path of await pkg.paths()) {
+  for (const path of [...(await pkg.paths()), ...(pkg.removedPaths?.() ?? [])]) {
     const match = pattern.exec(path)
     if (match) max = Math.max(max, Number(match[1]))
   }

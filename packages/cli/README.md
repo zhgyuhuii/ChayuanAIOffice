@@ -119,10 +119,21 @@ Independently of the PATH, every launch of the packaged app writes the launcher 
 
 ## Cloud commands
 
+<<<<<<< HEAD
 `search`, `image` and `media` reuse the editors' provider routing: ChaAI Office
 when signed in (`~/.chaoffice/auth.json`) and cloud tools are on, otherwise the
 Serper / Tavily or BYOK image / media provider chosen in the app's AI settings
 (`ChaOffice/ai-settings.json` in the platform config directory, override with
+=======
+`search`, `image` and `media` reuse the editors' provider routing. Search uses
+the selected Serper / Serply / SearchApi / Tavily / Parallel provider when its key is configured;
+otherwise ChaAI Office is the default when signed in (`~/.chaoffice/auth.json`)
+and cloud tools are on, then Parallel's free, rate-limited Search MCP, then
+DuckDuckGo. Parallel
+and Tavily provide web search only. Image generation and media analysis use
+the corresponding provider chosen in the app's AI settings
+(`ChaAI Office/ai-settings.json` in the platform config directory, override with
+>>>>>>> 5e9d11049 (feat(ai-search): add SearchApi as a web and image search provider (#2484))
 `GENOFFICE_AI_SETTINGS`). `HTTPS_PROXY` / `HTTP_PROXY` / `ALL_PROXY` are honoured.
 Search results, image bytes and analysis text come back in the JSON `detail`;
 `image` also writes the file. These are the only commands that send data off

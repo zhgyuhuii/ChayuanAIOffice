@@ -149,7 +149,7 @@ async function probeCell(sheets: Page, row: number, col: number): Promise<CellPr
 
 test.describe('sheets: superscript and subscript', () => {
   test('whole-cell vertAlign is painted; in the editor it formats the selection', async () => {
-    const scratch = await mkdtemp(join(tmpdir(), 'genoffice-superscript-'))
+    const scratch = await mkdtemp(join(tmpdir(), 'chaoffice-superscript-'))
     const launched = await launchShell({
       onboardingSeen: true,
       videoDir: 'sheets-superscript',

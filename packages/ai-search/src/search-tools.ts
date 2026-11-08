@@ -14,6 +14,7 @@ function resolveSearchKeys(settings: AiSettings) {
   const providers = search.providers as Record<string, { apiKey?: string }> | undefined
   const keys: {
     serper?: string
+    searchapi?: string
     tavily?: string
     linkup?: string
     searxngBaseUrl?: string
@@ -32,6 +33,8 @@ function resolveSearchKeys(settings: AiSettings) {
   if (parallel) keys.parallelKey = parallel
   const keenable = providers?.keenable?.apiKey
   if (keenable) keys.keenable = keenable
+  const searchapi = providers?.searchapi?.apiKey
+  if (searchapi) keys.searchapi = searchapi
   const provider = activeSearchProvider(settings)
   const prefer = provider !== 'duckduckgo' ? provider : undefined
   return { keys: Object.keys(keys).length ? keys : undefined, prefer }

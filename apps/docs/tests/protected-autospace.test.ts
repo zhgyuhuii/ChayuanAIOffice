@@ -6,7 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { DOMSerializer } from '@tiptap/pm/model'
 import type { TableModel, TextboxDisplay } from '@chaoffice/docx-engine'
 import { renderTableSpec, renderTextboxSpec } from '../src/renderer/editor/protected-render'
-import { setHangulSpaceWidening } from '../src/renderer/line-metrics'
+import { setBalancedSpaceWidening } from '../src/renderer/line-metrics'
 
 const render = (spec: unknown): HTMLElement =>
   DOMSerializer.renderSpec(document, spec as never).dom as HTMLElement
@@ -17,15 +17,15 @@ const pads = (dom: HTMLElement) => dom.querySelectorAll('.doc-autospace-pad')
 // 已支持 neighbours,原样收录
 describe('renderTableSpec hangul spaces', () => {
   const H = '\ud55c\uae00'
-  beforeAll(() => setHangulSpaceWidening(true))
-  afterAll(() => setHangulSpaceWidening(false))
+  beforeAll(() => setBalancedSpaceWidening(true))
+  afterAll(() => setBalancedSpaceWidening(false))
 
   it('leaves the spaces in their text node without balanceSingleByteDoubleByteWidth', () => {
-    setHangulSpaceWidening(false)
+    setBalancedSpaceWidening(false)
     const dom = render(renderTableSpec({ rows: [[{ paras: [`${H} A ${H}`] }]] }))
-    expect(dom.querySelectorAll('.doc-hangul-space')).toHaveLength(0)
+    expect(dom.querySelectorAll('.doc-balanced-space')).toHaveLength(0)
     expect(dom.querySelector('td')!.textContent).toBe(`${H} A ${H}`)
-    setHangulSpaceWidening(true)
+    setBalancedSpaceWidening(true)
   })
   it('wraps spaces with a hangul neighbour across rich-cell runs, not Latin ones', () => {
     const model: TableModel = {
@@ -39,7 +39,7 @@ describe('renderTableSpec hangul spaces', () => {
       ],
     }
     const dom = render(renderTableSpec(model))
-    const wraps = dom.querySelectorAll('.doc-hangul-space')
+    const wraps = dom.querySelectorAll('.doc-balanced-space')
     expect(wraps).toHaveLength(1)
     expect(dom.querySelector('td')!.textContent).toBe(`${H} A B`)
   })
@@ -71,7 +71,7 @@ describe('renderTableSpec hangul spaces', () => {
       ],
     }
     const dom = render(renderTableSpec(model))
-    const wraps = Array.from(dom.querySelectorAll('.doc-hangul-space'))
+    const wraps = Array.from(dom.querySelectorAll('.doc-balanced-space'))
     expect(wraps).toHaveLength(1)
     expect(wraps[0].parentElement!.textContent).toBe(` ${H}`)
   })

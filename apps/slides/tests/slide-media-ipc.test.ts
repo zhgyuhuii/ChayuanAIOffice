@@ -129,7 +129,7 @@ describe('slide media IPC payload', () => {
     expect(payloadBytes).toBeLessThan(32 * 1024)
     expect(r.slides).toHaveLength(1)
     const url = (r.slides[0].nodes[0] as PictureRenderNode).dataUrl!
-    expect(url.startsWith('genoffice-slide-media://')).toBe(true)
+    expect(url.startsWith('chaoffice-slide-media://')).toBe(true)
     expect(readSlideMedia(url)?.body.byteLength).toBe(size)
   })
 
@@ -504,6 +504,6 @@ describe('slide media IPC payload', () => {
       (el) => el.type === 'picture',
     ) as PictureElement
     expect(makeMediaResolver(session.opened, slide.path)(restored.mediaRef!)).toBe(original)
-    expect(readSlideMedia('genoffice-slide-media://archive/unknown')).toBeNull()
+    expect(readSlideMedia('chaoffice-slide-media://archive/unknown')).toBeNull()
   })
 })

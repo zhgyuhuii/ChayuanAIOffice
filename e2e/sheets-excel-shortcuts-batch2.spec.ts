@@ -60,7 +60,7 @@ async function selection(sheets: Page): Promise<Range | null> {
 
 test.describe('sheets: Excel selection and editing chords', () => {
   test('current region, shift+home extension, ctrl+2 bold, ctrl+quote', async () => {
-    const scratch = await mkdtemp(join(tmpdir(), 'genoffice-xl-keys-'))
+    const scratch = await mkdtemp(join(tmpdir(), 'chaoffice-xl-keys-'))
     const launched = await launchShell({ onboardingSeen: true, videoDir: 'sheets-xl-keys' })
     try {
       const { app, page } = launched

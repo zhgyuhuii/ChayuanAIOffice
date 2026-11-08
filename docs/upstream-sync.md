@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/chaoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第三十七轮完成（2026-10-30，终点 df9a64c5，分支 sync/37-upstream；终点无新 tag，后三位维持 0.12.115；随轮发版 1.0.15：sidecar 四平台重编+九件安装包+tag 三仓+GitHub Release+aidooo 入库+发版测试报告+harness 产物更新——详见 §37 小节）**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第四十轮完成（2026-11-08，终点 0ac588ff，分支 sync/40-upstream；区间含新 tag v0.12.852，后三位取 tag 口径 0.12.852；本轮未打包 Z 维持 16；60 提交全吸收+五步核对+全量门禁+slides 协议半改名根治——详见 §R40 小节）**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -736,7 +736,57 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 挂账 | sheets i18n dialogs vi.ts 少 9 个 fork 本地键（HEAD 继承欠账，en 回退兜底，补译即销）；ai-host 若原生支持 settings-changed 推送可移除 sheets-main 的 fs.watch 包装广播 |
 | 门禁 | typecheck 全仓 0；vitest 全绿：docs 3152/sheets 3437/ai-provider 494/agent-core 176/xlsx-gateway 248/pptx-engine 1294/shell 931/slides 1475/md 1047/pdf 868/html 319/ui 250/docx-engine 1717/pdf2docx 822/cli 313/electron-utils 257…；cargo test 228 全绿；lint 0；品牌 grep 豁免外零残留；check:help-langs 21 语言全齐 |
 
-## 第三十八轮（2026-11-03，上游 df9a64c5..e1f50e90 79 提交全吸收，施工于 sync/38-upstream；终点 describe=v0.12.600-13-ge1f50e90——区间含新 tag v0.12.600（=1a0fcec9 快照），后三位取 tag 口径 0.12.600；前缀三段维持 1.0.15（本轮未打包））
+## 第四十轮（2026-11-08，上游 e1f50e90..0ac588ff 60 提交全吸收，施工于 sync/40-upstream；终点 describe=v0.12.852-28-g0ac588ff——区间含新 tag v0.12.852（=4b55db9e 快照），后三位取 tag 口径 0.12.852；前缀三段维持 1.0.16（本轮未打包 Z 不动）；版本落点 apps/shell chaofficeUpstreamVersion 0.12.600→0.12.852）
+
+> 上游 60 提交=11-04 快照巨件 #2503（731 文件区间主体 +41.8k/−10.1k）+11 月特性波：**ppt2pptx 新包**（legacy .ppt 可编辑导入两阶段 2a4b02518+#2509 b3bb4cba4 打开即转 pptx 副本）+**compound-file 新包**（OLE2 opener 独立化 #2495）+sheets 特性批（切片器/时间线持久化 #2226、外部链接断链改源 #2350、web/text 查询刷新 #2363、公式缓存全刷 #2476/#2524、排序保共享公式组 #2513/#2514、打印未访表 #2532、改名写打印区 #2531、AlternateContent 保整 #2530、owner 密码先试 #2525、csv 流式导入 #2538）+pdf（打印驱动选项 #2360、Replace/Crop/页尺寸/插入 undo-redo #2526、批注作者随设置 #2515、mac 静默打印 lp #2493、一个文本块排版 #2501）+slides（4/9 联版讲义+顺序 #2533、macOS 26 可下载字体+回退字形度量 #2522、打印对话框打印份数双面 #2364）+docs（跨格拖选=文本选区 #2536、图库页码 PAGE 域 #2499、recent 元数据探测不阻塞主进程 #2541）+ai（Stability/FLUX 图像厂商 #2442、SearchApi #2484、per-model thinking effort #2451、pt-BR 标准化 #2519）+cli（dsh MCP 注册 #2462、arm64 Linux 打包配置 #2474）+i18n 单表化（ribbon 共享词 d208e715）+Escape 下拉统一钩子 da042b9e+AI 面板宽度持久化/附件回显共享化 #2472+测试卫生 #2535。**Rust 9 文件 +1416/−54**（xls_styles.rs 新模块 578 行）→ sidecar 重编、cargo 326 绿。**依赖变更**：compound-file/ppt2pptx 新 workspace+root test/typecheck 链补全（doc2docx/hwp2docx R38 遗留缺口一并入链）→ npm install 重生 lock（ELECTRON_MIRROR=npmmirror）。
+
+### 《冲突与裁决清单》（要点摘录，86 分支提交=60 pick+26 缝合）
+
+| 域/提交 | 裁决 |
+|---|---|
+| 快照 #2503（3e4a85a45+f126eb846） | 品牌清扫 19 文件 @genoffice 引用；Balanced Space/Cordia/Sarabun 字体二进制+度量族改名承载（GenOffice*→ChaOffice* 五件字节一致）；新包 compound-file/ppt2pptx 依赖接线；README/lock Q5 保本地 |
+| #2472（197420891+99e9c2897） | 共享件落 packages/ui（ai-panel-width/ai-attachments+图标九件收拢）；六端本地面板不动（PanelTabs Q3①），App.tsx 五端消费 useAiPanelWidth；**#2472 上移的 per-app 图标资产恢复**（本地 AiPanel/ai-body-types 仍引旧路径；html video/voice 两件本地暂无消费者，死文件无害） |
+| #2462 dsh MCP（6225f1076） | 只落 agent-skills dsh 行（+10，skills 装机路径用）；agent-mcp.ts/mcp-dsh.test/mcp-install.test 属 R8 Route A 挂账区不落（本地 mcp 命令无 install 面；cli README 61 行 mcp install 文档为 main 既有挂账） |
+| #2541 recent 异步（e04924d2c） | toRecentEntry info 参数架构采上游+本地 remote 分支保留（remote 无 stat 不算 missing）；capStatPaths 接线+blankXlsxBuffer 新源去重；docs-main remote 过滤保 ours；#2503 后 docs:recent 去 stat 探测（d4d160da1，VM 桩 isRemoteUri 适配） |
+| #2538 csv 流式（561dbf8c0+9f5adaf16） | csv-import 模块分裂适配：xlsx 系导入切 csv-import-xlsx（blankXlsxBuffer/csvToXlsxBuffer*），六测试导入面整理+品牌 |
+| pdf strings 重建（2b5ba9a23） | #2519/#2526 期间去重脚本吞行事故修复：回 main 基线+重放 #2519 pt 净增量+块内重复键精清除；#2515/#2526 测试适配 2e87e9bcb（nativeImage 桩+注解作者 ChaOffice 统一） |
+| docs 字体对齐（d4d160da1） | text-layout/face-chains+line-metrics 对齐 fonts.css 真名（ChaAI Office 前缀族 CSS 层+ChaOffice 内部名双层）；font-faces fixture 四键+para-layout golden 重算；thai 测试品牌化 |
+| i18n（786ffc329） | 44 shard 删 ribbonAiAssistant 冗余 override（共享表已含同值）+common-ribbon 护栏测试锁单源 |
+| 缝合清零（6327be80b） | 未用导入/变量 22 处；pdf #2360 驱动选项组 UI+onChange 补线（冲突块取 ours 时被剪）、#2526 written 计数并入 undo/redo 钮态；slides ink 预设持久化回调接线 |
+| builder linux 守卫（63376bf8c） | 早段原生分支并入终段候选+ELF 头断言（20 字节头读与打包测试 openSync/readSync 桩对齐）；**packaged-cli 测试自此自带 ELF 桩，R37 的 linux ELF 暂存舞蹈不再需要**；GENOFFICE_LINUX_ARM64 口径并入 CHAOFFICE_LINUX_X64 体系 |
+| thinking-effort（2054159eb） | 单 Response 体不可三读→mockImplementation 每调用产新件（Q6 结构差异，断言意图不变）；SearchApi a722429b3 干净；Stability/FLUX b5c527bdc+427102f3f 品牌清扫 |
+| 品牌六轮（d6c12f764→0b4937f65） | README 回 main（Q5-②）、mcp.*.md 22 语言、smartart urn:chaoffice/officeart、临时目录前缀、__genofficeDisplayFontFamily→__chaoffice、字体生成脚本两件补漏（终检六轮） |
+
+### 施工事故与修复（同轮闭环）
+
+1. **slides 测试品牌化暴露 R38 半改名潜伏断线（b66012bdd 根治）**：R38 品牌全量重放（69e5addfd）只改了 slides-main handler 一侧→`chaoffice-slide-media`，生产者 session-state/特权注册 renderer-scheme/匹配器 image-loader×2+pptx-render/CSP index.html 五处仍 `genoffice-slide-media`——**自 R38 起真机 archive 媒体 URL 无处理器（404）、lazy EMF 栅格化与 CORS anonymous 全断**；本轮测试 URL 品牌化后 9 例红兜出，七处全链对齐（姊妹方案 chaoffice-docx-media 同款口径）。**防线：品牌全量重放凡改协议/方案字面量，必 grep 生产者-注册者-消费者-匹配器-CSP 五面闭环。**
+2. print-slides-ipc electron mock 缺 nativeImage.createFromPath 桩（a5ab5f6a6，R37 品牌窗图标链第 7 套桩）。
+3. 中断会话遗留：本轮由核对①~⑤五步全量兜底收口（见下）。
+
+### 五步核对终态（用户令：认真核对五次防遗留）
+
+①60/60 sha 对账（26 干净 patch-id+34 adapted 有落地提交，无 PENDING）；②文件级差异审计——上游 731 改动文件 vs 分支 707，「上游改而本分支未动」49 件全归因（README Q5-②/字体改名 5 件字节一致/ui 图标 9 件字节一致/AiPanel×6+Home+SettingsModal 本地架构区且共享件已被五端消费/agent-mcp+docs-tests+e2e=R8 Route A 挂账区本仓历史从未有/main 既有挂账）；③删除面 `git diff main..HEAD --diff-filter=D`=0+LOCAL 挂载点六项抽查全绿（FoundSkills tripwire/pdf-shim readFileChunk/registerMediaIpc 六端/bindConversationsIpc 源码与 main 一致/sheets FilesPane 撤除令/dsh consume* 握手与 main 逐点一致）；④品牌 grep 差分 HEAD vs main——豁免外零新增（新增命中全为 genoffice#NNNN issue 引用/GENOFFICE_* env/genspark.ai URL/CONTRIBUTING env 表摘抄），字体生成脚本两件真残留已修；⑤全量门禁（见下）。
+
+### 门禁终态
+
+- typecheck 全仓 0（40 工作区链 exit 0）；lint 0 error（29 warnings=28 基线+1 上游件 react-hooks）。
+- vitest 全工作区绿：链条前段 31 区 && 语义全过（i18n 63/electron-utils 361/font-metrics 144/zip-gate 434/docx-engine 5671/sheets 4126+cargo/shell 1352/cli/ui/ribbon/mobile-touch…）+slides 1628（修复后）/pptx-render 423/pdf 1149/markdown 1560/web-bridge 24/server 38/web 15/html 363（链外补验）；合计约 19.6k 用例。
+- cargo test --release 326 绿（R38 时 320，+6 随 xls_styles 等新模块）；sidecar mac release 在位（linux ELF 暂存已由 63376bf8c 测试桩化消除，/tmp/xlsx-sidecar-mac-backup 备份留存）。
+- 对账：60/60 subject 级全过；删除清单 0；品牌差分零新增。
+- 真机/发版：本轮未打包（Z 维持 16），九件/GitHub/aidooo 外部发布沿 R37 §850 清单待办（与 R39 同）。
+
+### 挂账（新增）
+
+| 项 | 说明 | 同步检查动作 |
+|---|---|---|
+| agent-mcp.ts 功能区 | #2462 只落 agent-skills dsh 行；agent-mcp/mcp-dsh.test/mcp-install.test 上游件持续不落（R8 Route A）；cli README 61 行 mcp install 文档先行（main 既有） | 上游若重构 mcp install 命令面再评估整体收敛 |
+| tools 基线品牌债 | build-bengali-font.py（产物名 GenOfficeBengali-* vs 树上 ChaOfficeBengali-*）/build-metric-fonts.py/convert-cff-to-glyf.py/docs-geometry-baseline.mjs 四件 main 既有 GenOffice 残留 | 下轮品牌 pass 连同重建-vs-改名口径一次清 |
+| parallel 测试两件 | parallel-mcp.ts 实现自 #656 落地但 parallel.test/parallel-mcp.test 从未随（serply 无实现无测试=一致） | 上游改这些测试时评估补落地 |
+| html file-video/voice.png | 本地面板未用（99e9c2897 恢复面内），上游 html AiPanel 用 | 收敛 attachment echo 到共享件时自然消费 |
+
+**R41 起点=0ac588ff**（v0.12.852-28-g0ac588ff）。
+
+
 
 > 上游 79 提交=两快照巨件（10-30 #2341 921 文件 +81k；11-02 #2437=tag v0.12.600 276 文件 +19k/−12.5k）+doc2docx 新包九阶段（legacy .doc 导入引擎 #2370-2386）+hwp2docx 新包（.hwp/.hwpx #2404）+docs 特性批（批注带图 #2376/嵌套内容控件 #2356/邮件合并标签信封 #2374/DOCX→PDF 四修 #2364/页眉图片 #2322/remove_parts #2351/自定义属性类型化 #2354/结构编辑保版式 #2411/分页符旁编辑 #2441/未触表字节一致 #2405/保存 fuzz 套件 #2445）+sheets 特性批（Queries & Connections #2345/外部链接三连 #2319+2343+2450/公式显示指示器 #2340/功能区滚轮 #2346/x14 DV 收尾）+pdf（8MiB 分片 #2373/坏页不炸开 #2368/worker 字节 #2415）+shell（静默更新 #2399+skills All tab #2438+AI 命名 preamble #2361+KB 徽章 #2401）+ai-provider（SiliconFlow/PPIO/Command Code #2439+openai-responses 成熟版）+mcp（fill_template/read_docx_properties #2409+sheet_links #2408+插图 #2344 系）+file-parse 修复批×9+CUPS 静默打印 #2355+思维导图共享核/左右布局 #2395-2398+KDE 模板 #2403。1416 文件 +127k/−13.7k。**Rust 10 文件**（external_links.rs/stream_patch.rs 新模块+recalc/archive/protocol…）→ sidecar debug+release 重编、cargo 320 绿。**依赖变更**：新 workspace doc2docx/hwp2docx+@rhwp/core 0.8.7+file-parse 增 xlsx-gateway 依赖 → npm install 重生 lock。
 

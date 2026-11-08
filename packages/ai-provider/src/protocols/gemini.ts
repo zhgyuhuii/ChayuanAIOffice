@@ -146,6 +146,11 @@ export interface GeminiRequestOptions {
   headers?: Record<string, string> | undefined
   /** stream idle budget override for slow local servers */
   idleTimeoutMs?: number | undefined
+  /** generationConfig.thinkingConfig.thinkingLevel for the 3/4.x families
+   * (their docs reject the 2.5-era thinkingBudget); absent = the model's
+   * dynamic default. The level only exists nested under thinkingConfig: a
+   * flat generationConfig.thinkingLevel is an unknown field and a 400. */
+  thinkingLevel?: string | undefined
 }
 
 export async function streamGemini(
@@ -213,6 +218,9 @@ async function geminiTurn(
       // so omit our hard-coded 0.3 for those models via omitTemperature.
       generationConfig: {
         ...(options.omitTemperature ? {} : { temperature: 0.3 }),
+        ...(options.thinkingLevel
+          ? { thinkingConfig: { thinkingLevel: options.thinkingLevel } }
+          : {}),
         maxOutputTokens: maxTokens,
         // 2.5 thinks by default and bills it against maxOutputTokens; without
         // a cap deep thinking crowds the actual prose out of a big budget
@@ -321,7 +329,12 @@ export async function chatGemini(
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: system }] },
       contents: [{ role: 'user', parts: [{ text: user }] }],
-      generationConfig: { ...(options.omitTemperature ? {} : { temperature: 0.3 }) },
+      generationConfig: {
+        ...(options.omitTemperature ? {} : { temperature: 0.3 }),
+        ...(options.thinkingLevel
+          ? { thinkingConfig: { thinkingLevel: options.thinkingLevel } }
+          : {}),
+      },
     }),
   })
   wd.touch()

@@ -45,6 +45,7 @@ const api: PdfApi = {
   mergePdf: (request) => ipcRenderer.invoke(PDF_CHANNELS.mergePdf, request),
   mergePages: (request) => ipcRenderer.invoke(PDF_CHANNELS.mergePages, request),
   replacePages: (request) => ipcRenderer.invoke(PDF_CHANNELS.replacePages, request),
+  restoreFile: (request) => ipcRenderer.invoke(PDF_CHANNELS.restoreFile, request),
   setPageSize: (request) => ipcRenderer.invoke(PDF_CHANNELS.setPageSize, request),
   splitPages: (request) => ipcRenderer.invoke(PDF_CHANNELS.splitPages, request),
   cropPages: (request) => ipcRenderer.invoke(PDF_CHANNELS.cropPages, request),
@@ -67,6 +68,13 @@ const api: PdfApi = {
   addSavedSignature: (data) => ipcRenderer.invoke(PDF_CHANNELS.addSignature, data),
   removeSavedSignature: (id) => ipcRenderer.invoke(PDF_CHANNELS.removeSignature, id),
   getUsername: () => ipcRenderer.invoke(PDF_CHANNELS.getUsername),
+  onUsernameChanged: (handler) => {
+    const listener = (_e: Electron.IpcRendererEvent, name: unknown) => {
+      if (typeof name === 'string') handler(name)
+    }
+    ipcRenderer.on(PDF_CHANNELS.authorNameChanged, listener)
+    return () => ipcRenderer.removeListener(PDF_CHANNELS.authorNameChanged, listener)
+  },
   setDirty: (dirty) => ipcRenderer.send(PDF_CHANNELS.dirtyChanged, dirty),
   onCloseSaveRequest: (handler) => {
     const listener = (_e: unknown, opts?: { flushAll?: boolean }) =>
@@ -87,6 +95,8 @@ const api: PdfApi = {
     return () => ipcRenderer.removeListener(PDF_CHANNELS.saveAsFlow, listener)
   },
   print: (job) => ipcRenderer.invoke(PDF_CHANNELS.print, job),
+  printFile: (job) => ipcRenderer.invoke(PDF_CHANNELS.printFile, job),
+  printerOptions: (queue: string) => ipcRenderer.invoke(PDF_CHANNELS.printerOptions, queue),
   listPrinters: () => ipcRenderer.invoke(PDF_CHANNELS.printers),
   onPrintRequest: (handler) => {
     const listener = () => handler()

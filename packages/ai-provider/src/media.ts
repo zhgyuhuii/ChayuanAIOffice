@@ -8,6 +8,8 @@ import type {
 
 export const OPENAI_IMAGES_BASE_URL = 'https://api.openai.com/v1'
 export const GEMINI_MEDIA_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta'
+export const STABILITY_BASE_URL = 'https://api.stability.ai'
+export const BFL_BASE_URL = 'https://api.bfl.ai'
 export const ARK_BASE_URL = 'https://ark.cn-beijing.volces.com/api/v3'
 export const ZHIPU_BASE_URL = 'https://open.bigmodel.cn/api/paas/v4'
 export const XAI_BASE_URL = 'https://api.x.ai/v1'
@@ -132,6 +134,43 @@ export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
     keyPlaceholder: 'sk-...',
     defaultBaseUrl: DEEPSEEK_MEDIA_BASE_URL,
     analysisProtocol: 'openai-chat',
+    videoAnalysis: false,
+  },
+  {
+    id: 'stability',
+    label: 'Stability AI',
+    description: 'Stable Image Ultra/Core and Stable Diffusion 3.5 through the Stability REST API',
+    keyPlaceholder: 'sk-...',
+    defaultBaseUrl: STABILITY_BASE_URL,
+    imageProtocol: 'stability',
+    // per docs.stability.ai 2026-11-02: generation lives at
+    // /v2beta/stable-image/generate/{ultra|core|sd3}; sd3.5 ids pick the model
+    // inside the sd3 endpoint
+    videoAnalysis: false,
+  },
+  {
+    id: 'bfl',
+    label: 'FLUX (Black Forest Labs)',
+    description: 'FLUX image generation through the Black Forest Labs API',
+    keyPlaceholder: 'API key',
+    defaultBaseUrl: BFL_BASE_URL,
+    imageProtocol: 'bfl',
+    // per docs.bfl.ai 2026-11-02: the endpoint is /v1/<id>; FLUX.2 Pro is the
+    // production-recommended default, FLUX 3 Image is the newest generation
+    videoAnalysis: false,
+  },
+  {
+    id: 'microsoft',
+    label: 'Microsoft (MAI-Image)',
+    description:
+      'MAI-Image generation and editing through Microsoft Foundry; base URL is your resource endpoint (https://<resource>.services.ai.azure.com)',
+    keyPlaceholder: 'API key',
+    needsBaseUrl: true,
+    defaultBaseUrl: '',
+    imageProtocol: 'mai',
+    // per learn.microsoft.com "deploy and use MAI image models" 2026-11-03: all
+    // five are Preview Global Standard deployments; the model field carries the
+    // deployment name, so a differently named deployment goes into the field
     videoAnalysis: false,
   },
   {

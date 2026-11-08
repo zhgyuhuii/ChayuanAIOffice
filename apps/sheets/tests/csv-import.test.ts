@@ -2,16 +2,18 @@ import JSZip from 'jszip'
 import { describe, expect, it } from 'vitest'
 
 import {
-  blankXlsxBuffer,
   buildWorksheetXml,
-  csvToXlsxBuffer,
-  sheetCsvToXlsxBuffer,
   decodeCsvBuffer,
   isNumericCell,
   parseCsv,
   resolveImportDelimiter,
   sniffDelimiter,
 } from '@chaoffice/xlsx-gateway/gateway/csv-import'
+import {
+  blankXlsxBuffer,
+  csvToXlsxBuffer,
+  sheetCsvToXlsxBuffer,
+} from '@chaoffice/xlsx-gateway/gateway/csv-import-xlsx'
 
 describe('decodeCsvBuffer', () => {
   const rows = '城市,人口\n东京,37\n'
