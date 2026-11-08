@@ -8,7 +8,6 @@ import {
   toA1Address,
   type CellEdit,
 } from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
-import { blankXlsxBuffer } from '@chaoffice/xlsx-gateway/gateway/csv-import'
 import { blankXlsxBuffer } from '@chaoffice/xlsx-gateway/gateway/csv-import-xlsx'
 import { createEditJournal, recordSetRangeValues, toSaveEdits } from '../src/renderer/edit-journal'
 import { buildEditFixture } from './fixture-builder'

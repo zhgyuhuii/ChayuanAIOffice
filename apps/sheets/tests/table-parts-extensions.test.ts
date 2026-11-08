@@ -5,7 +5,7 @@ import {
   assembleWithJsZip,
   createBufferEntrySource,
   planCellEditsToXlsx,
-} from '@genoffice/xlsx-gateway/gateway/xlsx-gateway'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
 import { buildEditFixture } from './fixture-builder'
 
 const NS = 'http://schemas.microsoft.com/office/spreadsheetml/2009/9/main'

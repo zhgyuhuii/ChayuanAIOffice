@@ -368,7 +368,7 @@ import {
   matchesExtFamily,
   normalizeRecentQuery,
   pageRecentPaths,
-  statPathEntries,
+  statPathEntriesAsync,
 } from './recent-files'
 import { isSameFile, pdfSaveAsTarget, isValidRawRenameName } from './rename-validation'
 import { renameStaysInApp } from './app-routing'
@@ -5646,8 +5646,8 @@ function startQueuedWorkbookNudge(): void {
 
 // ---- home IPC ----
 
-function statEntries(paths: string[]): RecentEntry[] {
-  return statPathEntries(paths, new Set(readStarredFiles()))
+function statEntries(paths: string[]): Promise<RecentEntry[]> {
+  return statPathEntriesAsync(paths, new Set(readStarredFiles()))
 }
 
 // Remote storage (MinIO / OSS): the host lives in the embedded docs module so
@@ -5799,7 +5799,7 @@ function registerHomeIpc(): void {
     })
   })
 
-  ipcMain.handle(HOME_CHANNELS.recents, (_event, query: unknown): RecentPage =>
+  ipcMain.handle(HOME_CHANNELS.recents, (_event, query: unknown): Promise<RecentPage> =>
     pageRecentPaths(readRecentFiles(), query, new Set(readStarredFiles())),
   )
 
@@ -5959,7 +5959,7 @@ function registerHomeIpc(): void {
   )
 
   // Starred files sort by mtime, which requires stat-ing them all first; they are hand-picked and few, so this is fine
-  ipcMain.handle(HOME_CHANNELS.starred, (_event, query: unknown): RecentPage => {
+  ipcMain.handle(HOME_CHANNELS.starred, async (_event, query: unknown): Promise<RecentPage> => {
     const { offset, limit, ext } = normalizeRecentQuery(query)
     // the Starred view's group pills scope the whole query (totals included)
     const raw = (query && typeof query === 'object' ? query : {}) as { group?: unknown }
@@ -5967,7 +5967,7 @@ function registerHomeIpc(): void {
     const groupOf = readStarredGroupMap()
     const paths = readStarredFiles()
     const scoped = group ? paths.filter((p) => groupOf.get(p) === group) : paths
-    const all = statEntries(scoped)
+    const all = (await statEntries(scoped))
       .sort((a, b) => b.mtimeMs - a.mtimeMs)
       .map((entry) => {
         const g = groupOf.get(entry.path)
@@ -5987,8 +5987,13 @@ function registerHomeIpc(): void {
     setStarredGroup(stringPaths(paths), typeof group === 'string' && group ? group : null)
   })
 
+<<<<<<< HEAD
   ipcMain.handle(HOME_CHANNELS.statPaths, (_event, paths: unknown): RecentEntry[] =>
     statEntries(stringPaths(paths)),
+=======
+  ipcMain.handle(HOME_CHANNELS.statPaths, (_event, paths: unknown): Promise<RecentEntry[]> =>
+    statEntries(capStatPaths(stringPaths(paths))),
+>>>>>>> ae2a3313f (Avoid blocking main on recent-file metadata probes (#2541))
   )
 
   ipcMain.handle(HOME_CHANNELS.toggleStar, (_event, path: unknown) => {

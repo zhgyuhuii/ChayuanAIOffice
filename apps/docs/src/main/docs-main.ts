@@ -5514,9 +5514,13 @@ export function registerDocsIpc(): void {
     },
   )
 
+<<<<<<< HEAD
   ipcMain.handle('docs:recent', () =>
     readJson<string[]>(RECENT_PATH(), []).filter((p) => isRemoteUri(p) || existsSync(p)),
   )
+=======
+  ipcMain.handle('docs:recent', () => readJson<string[]>(RECENT_PATH(), []))
+>>>>>>> ae2a3313f (Avoid blocking main on recent-file metadata probes (#2541))
 
   ipcMain.handle('docs:pick-image', async (event) => {
     const result = await openDialog(event, {
@@ -6316,9 +6320,8 @@ export function setDocsMenuGate(gate: () => boolean): void {
 export function buildDocsMenu(): void {
   if (docsMenuGate && !docsMenuGate()) return
   const isMac = process.platform === 'darwin'
-  const recent = readJson<string[]>(RECENT_PATH(), [])
-    .filter((p) => existsSync(p))
-    .slice(0, 10)
+  // Opening a menu must not trigger an automount; validate when the user opens a file.
+  const recent = readJson<string[]>(RECENT_PATH(), []).slice(0, 10)
 
   const recentSubmenu: MenuItemConstructorOptions[] =
     recent.length > 0

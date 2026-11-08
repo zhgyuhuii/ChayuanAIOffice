@@ -3,8 +3,6 @@ import { describe, expect, it } from 'vitest'
 
 import {
   buildWorksheetXml,
-  csvToXlsxBuffer,
-  sheetCsvToXlsxBuffer,
   decodeCsvBuffer,
   isNumericCell,
   parseCsv,

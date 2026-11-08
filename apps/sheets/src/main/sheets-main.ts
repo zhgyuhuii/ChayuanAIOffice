@@ -110,7 +110,8 @@ import {
   blankXlsxBuffer,
   csvToXlsxBufferForOpen,
   sheetCsvToXlsxBuffer,
-} from '@chaoffice/xlsx-gateway/gateway/csv-import'
+} from '@chaoffice/xlsx-gateway/gateway/csv-import-xlsx'
+import { decodeCsvBuffer } from '@chaoffice/xlsx-gateway/gateway/csv-import'
 import {
   ensureChaofficeLogin,
   chaofficeApiKey,
