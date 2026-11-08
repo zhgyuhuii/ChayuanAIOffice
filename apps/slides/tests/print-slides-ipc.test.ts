@@ -68,7 +68,8 @@ vi.mock('electron', () => {
     session: {
       defaultSession: { protocol: { handle: () => {} }, setDisplayMediaRequestHandler: () => {} },
     },
-    nativeImage: {},
+    // adapted: 本地品牌窗图标链 presenter-show 模块级 createFromPath 需桩（同 slide-media-ipc 六套 mock）
+    nativeImage: { createFromPath: () => ({ isEmpty: () => true, toDataURL: () => '' }) },
     shell: { openPath: () => Promise.resolve('') },
     desktopCapturer: { getSources: async () => [] },
     WebContentsView: class {},
