@@ -18,7 +18,6 @@ import type { PrinterOption } from '@chaoffice/electron-utils/printer-options'
 
 export type { PrintDuplex, PrintJobOptions, PrinterInfo }
 export type { PrinterOption }
-import type { LayoutSkeleton } from '../renderer/ai/layout-skeleton'
 import type {
   AiModelEntry,
   AiModelSelection,

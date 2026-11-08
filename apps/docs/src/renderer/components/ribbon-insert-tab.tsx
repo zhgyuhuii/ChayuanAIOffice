@@ -3,7 +3,7 @@ import type { CSSProperties } from 'react'
 import { getMarkRange } from '@tiptap/core'
 import type { Editor } from '@tiptap/core'
 import { ShapePreview, WORDART_PRESETS, wordArtStrokePx } from '@chaoffice/ui'
-import type { ChartDisplay, HeaderFooter, NewChart } from '@chaoffice/docx-engine'
+import type { ChartDisplay, NewChart } from '@chaoffice/docx-engine'
 import { hfHasPageField, hfPageNumberOnly, hfWithoutPageMarks } from '../editor/hf-dom'
 import { EquationGallery, EquationModal } from './EquationModal'
 import {

@@ -121,7 +121,6 @@ import {
   setChaOfficeProxyUrl,
   webSearch,
   imageSearch,
-  localMediaRoots,
 } from '@chaoffice/ai-search'
 import { parseFileToText } from '@chaoffice/file-parse'
 import type { CellEdit, SheetStructuralOps } from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
@@ -2158,19 +2157,6 @@ async function connectionPartReader(
   const wanted = manifest.entries.map((entry) => entry.name).filter(isConnectionWalkPart)
   const texts = await readArchiveEntriesText(client, snapshotPath, wanted)
   return async (path) => texts.get(path)
-}
-
-/**
- * Local media roots for a sheets renderer: the directories of the workbooks its
- * tab has open, plus the directory sheets stages pasted images in. A tab can
- * hold several workbook sessions, so every open one contributes its directory —
- * a tool call naming a file the user put next to the workbook they are editing
- * is the legitimate case, and nothing else is readable.
- */
-function sheetsMediaRoots(wcId: number): string[] {
-  const tab = sheetsTabs.get(wcId)
-  const workbookDirs = tab ? [...tab.sessions.values()].map((s) => dirname(s.path)) : []
-  return localMediaRoots(...workbookDirs, join(app.getPath('temp'), 'chaoffice-pasted'))
 }
 
 /// A save request referencing a chunked edit transfer gets the accumulated

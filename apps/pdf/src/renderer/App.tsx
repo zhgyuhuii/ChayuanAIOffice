@@ -8174,7 +8174,7 @@ export default function App() {
           className="qa-btn"
           data-tip={`${t('undo')} (${platformShortcuts('⌘Z')})`}
           aria-label={`${t('undo')} (${platformShortcuts('⌘Z')})`}
-          disabled={undoStack.length === 0}
+          disabled={undoStack.length === 0 && written.undo === 0}
           onClick={undo}
         >
           <IconUndo />
@@ -8183,7 +8183,7 @@ export default function App() {
           className="qa-btn"
           data-tip={`${t('redo')} (${platformShortcuts('⇧⌘Z')})`}
           aria-label={`${t('redo')} (${platformShortcuts('⇧⌘Z')})`}
-          disabled={redoStack.length === 0}
+          disabled={redoStack.length === 0 && written.redo === 0}
           onClick={redo}
         >
           <IconRedo />
@@ -11609,7 +11609,21 @@ export default function App() {
                       <select
                         className="pdf-modal-input"
                         value={printDevice}
-                        onChange={(e) => setPrintDevice(e.target.value)}
+                        onChange={(e) => {
+                          const request = ++driverOptionsRequest.current
+                          setPrintDevice(e.target.value)
+                          setDriverChoices({})
+                          setDriverOptions([])
+                          if (e.target.value && IS_MAC)
+                            void window.pdfApi
+                              .printerOptions(e.target.value)
+                              .then((options) => {
+                                if (request === driverOptionsRequest.current) setDriverOptions(options)
+                              })
+                              .catch(() => {
+                                if (request === driverOptionsRequest.current) setDriverOptions([])
+                              })
+                        }}
                       >
                         <option value="">{t('printDefaultPrinter')}</option>
                         {printers.map((p) => (
@@ -11637,6 +11651,24 @@ export default function App() {
                           }
                         />
                       </label>
+                      {driverOptions.map((group) => (
+                        <label key={group.name} className='pdf-modal-row pdf-print-field'>
+                          <span>{group.translation}</span>
+                          <select
+                            className='pdf-modal-input'
+                            value={driverChoices[group.name] ?? group.defaultValue ?? group.values[0]}
+                            onChange={(e) =>
+                              setDriverChoices((c) => ({ ...c, [group.name]: e.target.value }))
+                            }
+                          >
+                            {group.values.map((v) => (
+                              <option key={v} value={v}>
+                                {v}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      ))}
                       <label className="pdf-modal-check">
                         <input
                           type="checkbox"

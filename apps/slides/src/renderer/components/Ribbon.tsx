@@ -30,7 +30,6 @@ import {
 import {
   createRecentColorSession,
   getRecentColors,
-  pushRecentColor,
   type RecentColorSession,
 } from '../recent-colors'
 import { ICON_COLORS } from '../insert-presets'

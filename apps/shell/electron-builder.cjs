@@ -50,7 +50,7 @@ function hasRpmbuild() {
     return false
   }
 }
-const { existsSync, rmSync, writeFileSync, readFileSync } = require('node:fs')
+const { closeSync, existsSync, openSync, readFileSync, readSync, rmSync, writeFileSync } = require('node:fs')
 const { join } = require('node:path')
 const { stageCrossSidecar, restoreHostSidecar } = require('./build/linux-sidecar-staging.cjs')
 

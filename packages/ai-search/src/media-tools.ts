@@ -227,9 +227,6 @@ export async function analyzeMediaTool(
   }
 }
 
-/** no allowlist configured: the extension check alone decides */
-const NO_MEDIA_ROOTS: readonly string[] = []
-
 /**
  * Directories a bare local media path may be read from. Deliberately no
  * default: cwd is "/" in a packaged macOS app and tmpdir() is world-readable,

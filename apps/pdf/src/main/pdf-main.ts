@@ -13,7 +13,6 @@ import {
 } from 'node:fs'
 import { randomUUID } from 'node:crypto'
 import { mkdir, open, readFile, rm, stat, writeFile } from 'node:fs/promises'
-import { userInfo } from 'node:os'
 import { basename, dirname, join, resolve } from 'node:path'
 import { BrowserWindow, WebContentsView, app, dialog, ipcMain, nativeImage, shell } from 'electron'
 import type { WebContents } from 'electron'
@@ -47,7 +46,6 @@ import {
 } from '@chaoffice/ai-host'
 import { PDF_CHANNELS, PDF_READ_CHUNK_BYTES } from '../shared/ipc'
 import { printJobOptions, printOutcome } from '@chaoffice/electron-utils/print-job'
-import { generateImageTool, documentMediaRoots } from '@chaoffice/ai-search'
 import {
   printFileViaCups,
   printPdfViaCups,

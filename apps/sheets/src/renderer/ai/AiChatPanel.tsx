@@ -54,9 +54,6 @@ import fileGeneralIcon from '../assets/file-general.png'
 const ModelSettingsPage = lazy(() =>
   import('@chaoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
 )
-import sendEnterOn from '../assets/send-enter-on.png'
-import sendEnterOff from '../assets/send-enter-off.png'
-import sendStop from '../assets/send-stop.png'
 
 /** Clipboard bitmap MIME → attachment extension (matches the main process's
  * ATTACHMENT_IMAGE_EXTS) */

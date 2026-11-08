@@ -4109,7 +4109,7 @@ export function App() {
             onInkTool={onInkTool}
             inkPresets={inkPresets}
             inkActiveId={inkActiveId}
-            onInkPresets={setInkPresets}
+            onInkPresets={onInkPresets}
             onInkActivate={setInkActiveId}
             inkCount={inkCount}
             onInkClearAll={() => void clearInk()}

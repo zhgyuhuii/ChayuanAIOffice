@@ -8,12 +8,10 @@ import {
   parseCsv,
   resolveImportDelimiter,
   sniffDelimiter,
-  splitSepDeclaration,
 } from '@chaoffice/xlsx-gateway/gateway/csv-import'
 import {
   blankXlsxBuffer,
   csvToXlsxBuffer,
-  csvToXlsxBufferForOpen,
   sheetCsvToXlsxBuffer,
 } from '@chaoffice/xlsx-gateway/gateway/csv-import-xlsx'
 

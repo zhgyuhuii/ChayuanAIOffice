@@ -97,7 +97,7 @@ describe('chaoffice capabilities', () => {
     expect(d.image_search).toEqual({ available: true, via: 'searchapi' })
   })
 
-  it.each(['tavily', 'parallel'])('%s gives web search but no image search', async (provider) => {
+  it.each(['tavily', 'parallel'])('%s gives web search but no image search', async () => {
     const dir = tempDir()
     const settings = settingsFile(dir, {
       search: {
