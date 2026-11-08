@@ -1,7 +1,7 @@
-# GenOffice on ChromeOS
+# ChaAI Office on ChromeOS
 
 ChromeOS runs Linux applications in an integrated Debian VM ("Crostini", the
-Terminal app's Linux development environment). GenOffice ships as a standard
+Terminal app's Linux development environment). ChaAI Office ships as a standard
 Linux desktop package, so it runs there like any other Linux app — no separate
 ChromeOS build exists or is needed. This page covers what works, how to set it
 up, and where the limits are.
@@ -21,8 +21,8 @@ Requirements:
 Install (Debian/Ubuntu-style):
 
 ```sh
-sudo apt install ./genoffice_<version>_amd64.deb
-genoffice  # or launch from the app drawer
+sudo apt install ./chaoffice_<version>_amd64.deb
+chaoffice  # or launch from the app drawer
 ```
 
 The deb pulls in the runtime libraries it needs (`libgtk-3-0`, `libnss3`,
@@ -30,7 +30,7 @@ The deb pulls in the runtime libraries it needs (`libgtk-3-0`, `libnss3`,
 ships). The self-contained AppImage is an alternative that installs nothing:
 
 ```sh
-chmod +x GenOffice-<version>.AppImage && ./GenOffice-<version>.AppImage
+chmod +x ChaAI Office-<version>.AppImage && ./ChaAI Office-<version>.AppImage
 ```
 
 Files: Crostini shares the device's "My files" folder at `~/` inside Linux, so
@@ -46,11 +46,11 @@ only partially — keep important documents in `~/MyFiles/` so they live on the
 host filesystem.
 
 Display: the container's Sommelier bridges Linux windows to the ChromeOS
-desktop, over native Wayland or X11; GenOffice needs no display configuration.
+desktop, over native Wayland or X11; ChaAI Office needs no display configuration.
 
 ## What does not work / what does not exist
 
-- **Play Store / Android app**: GenOffice is not an Android application; ARC
+- **Play Store / Android app**: ChaAI Office is not an Android application; ARC
   (the Android runtime) is not a supported install path. The Electron desktop
   architecture does not translate to Android, and this is not planned.
 - **Google Drive sync**: no Drive integration is built in. Documents live in
