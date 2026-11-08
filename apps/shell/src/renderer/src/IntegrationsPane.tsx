@@ -373,19 +373,21 @@ export function IntegrationsPane({
           <summary>{t('intgOtherToggle')}</summary>
           <div className="set-field-desc set-intg-lead">{t('intgOtherDesc')}</div>
 
-          <div className="set-intg-option">
-            <span className="set-intg-option-letter">A</span>
-            <div className="set-field-stack">
-              <div className="set-field-label">{t('intgOtherFolderTitle')}</div>
-              <div className="set-field-desc">{t('intgOtherFolderDesc')}</div>
+          {!status.webForm && (
+            <div className="set-intg-option">
+              <span className="set-intg-option-letter">A</span>
+              <div className="set-field-stack">
+                <div className="set-field-label">{t('intgOtherFolderTitle')}</div>
+                <div className="set-field-desc">{t('intgOtherFolderDesc')}</div>
+              </div>
+              <button className="set-btn" onClick={() => void installElsewhere()}>
+                {t('intgInstallElsewhere')}
+              </button>
             </div>
-            <button className="set-btn" onClick={() => void installElsewhere()}>
-              {t('intgInstallElsewhere')}
-            </button>
-          </div>
+          )}
 
           <div className="set-intg-option">
-            <span className="set-intg-option-letter">B</span>
+            <span className="set-intg-option-letter">{status.webForm ? 'A' : 'B'}</span>
             <div className="set-field-stack">
               <div className="set-field-label">{t('intgOtherZipTitle')}</div>
               <div className="set-field-desc">{t('intgOtherZipDesc')}</div>
@@ -396,7 +398,7 @@ export function IntegrationsPane({
           </div>
 
           <div className="set-intg-option">
-            <span className="set-intg-option-letter">C</span>
+            <span className="set-intg-option-letter">{status.webForm ? 'B' : 'C'}</span>
             <div className="set-field-stack">
               <div className="set-field-label">{t('intgOtherNpxTitle')}</div>
               <div className="set-field-desc">{t('intgOtherNpxDesc')}</div>
@@ -422,6 +424,7 @@ export function IntegrationsPane({
         {examples}
         <div className="set-field-desc set-intg-lead">{t('intgStep2Note')}</div>
 
+        {!status.webForm && (
         <details className="set-intg-details set-intg-cli">
           <summary>{t('intgCliTitle')}</summary>
           <div className="set-field-desc set-intg-lead">
@@ -455,16 +458,18 @@ export function IntegrationsPane({
             </div>
           </div>
         </details>
+        )}
       </section>
 
-      <section className="set-intg-part">
-        <h4 className="set-pane-subtitle set-intg-step">
-          <span className="set-intg-step-no">2</span>
-          {t('intgMcpPartTitle')}
-        </h4>
-        <div className="set-field-desc set-intg-lead">{t('intgMcpPartDesc')}</div>
+      {!status.webForm && (
+        <section className="set-intg-part">
+          <h4 className="set-pane-subtitle set-intg-step">
+            <span className="set-intg-step-no">2</span>
+            {t('intgMcpPartTitle')}
+          </h4>
+          <div className="set-field-desc set-intg-lead">{t('intgMcpPartDesc')}</div>
 
-        <div className="set-intg-mcp">
+          <div className="set-intg-mcp">
           <h5 className="set-intg-sub">
             <span className="set-intg-option-letter">A</span>
             {t('intgMcpStdioTitle')}
@@ -523,6 +528,7 @@ export function IntegrationsPane({
         {examples}
         <div className="set-field-desc set-intg-lead">{t('intgMcpTryNote')}</div>
       </section>
+      )}
 
       <KbSourceSection />
     </>

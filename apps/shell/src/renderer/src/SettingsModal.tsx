@@ -29,6 +29,7 @@ import type {
 import type { UpdateUiState } from '../../shared/update-api'
 import { StoragePane } from './StoragePane'
 import { IntegrationsPane, skillUpdateDue } from './IntegrationsPane'
+import { FoundSkills } from './FoundSkills'
 import { McpServerSettings } from './McpServerSettings'
 import { McpManagePane } from './McpManagePane'
 import './settings.css'
@@ -1133,6 +1134,7 @@ export function SettingsModal({
                 <McpServerSettings />
               </>
             )}
+            {section === 'skills' && <FoundSkills t={t} />}
             {section === 'mcpManage' && <McpManagePane t={t} />}
             {section === 'about' && (
               <>

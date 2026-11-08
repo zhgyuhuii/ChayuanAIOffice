@@ -290,3 +290,15 @@ describe('FoundSkills', () => {
     expect(host.textContent).toBe('')
   })
 })
+
+describe('skills pane wiring', () => {
+  it('is mounted by the settings modal — the R32 merge dropped this once', async () => {
+    // source-level tripwire: the nav section exists without this pair, and the
+    // pane renders nothing (blank 技能 page in every form, 1.0.11..1.0.15)
+    const { readFileSync } = await import('node:fs')
+    const { resolve } = await import('node:path')
+    const src = readFileSync(resolve(process.cwd(), 'src/renderer/src/SettingsModal.tsx'), 'utf8')
+    expect(src).toContain("import { FoundSkills } from './FoundSkills'")
+    expect(src).toContain("{section === 'skills' && <FoundSkills t={t} />}")
+  })
+})

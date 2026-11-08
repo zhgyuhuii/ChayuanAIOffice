@@ -16,6 +16,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@chaoffice/agent-core": "*",
     "@chaoffice/ai-provider": "*",
     "@chaoffice/ai-search": "*",
     "@chaoffice/electron-utils": "*",
@@ -24,6 +25,7 @@
     "@chaoffice/service-core": "*",
     "@chaoffice/storage-adapter": "*",
     "fastify": "^5.2.1",
+    "jszip": "^3.10.1",
     "tsx": "^4.19.2",
     "@chaoffice/docx-engine": "*",
     "@chaoffice/file-parse": "*"

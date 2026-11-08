@@ -104,6 +104,88 @@ function page(
   }
 }
 
+// ── user-skills helpers (chaOfficeIntegrations + home composer picker) ──────
+
+/** JSON fetch over the BFF's /ai/skills* routes; non-2xx bodies carry {error} */
+async function skillsJson<T = unknown>(path: string, init?: RequestInit): Promise<T> {
+  const r = await fetch(aiUrl(path), init)
+  const body = (await r.json().catch(() => null)) as (T & { error?: string }) | null
+  if (!r.ok) throw new Error((body as { error?: string } | null)?.error ?? `HTTP ${r.status}`)
+  return body as T
+}
+
+async function skillsText(path: string): Promise<string> {
+  const r = await fetch(aiUrl(path))
+  if (!r.ok) {
+    const body = (await r.json().catch(() => null)) as { error?: string } | null
+    throw new Error(body?.error ?? `HTTP ${r.status}`)
+  }
+  return r.text()
+}
+
+/** the pane's UI language, same localStorage key the shell settings write */
+function uiLang(): string {
+  return localStorage.getItem(LS.lang) ?? 'zh'
+}
+
+function getAppVersionStr(): string {
+  return (window as unknown as { CHAOFFICE_VERSION?: string }).CHAOFFICE_VERSION ?? '1'
+}
+
+/**
+ * The web listing's path shape is `<name>/SKILL.md` (the sidecar root-relativizes
+ * before answering); the pane feeds that path back to skillBody, which only
+ * needs the name — the exact segment the store uses as the skills folder key.
+ */
+function skillNameFromPath(path: string): string {
+  const m = /(?:^|\/)([^/]+)\/SKILL\.md$/.exec(String(path ?? ''))
+  if (!m) throw new Error('unknown skill')
+  return m[1]!
+}
+
+/** one-shot <input> picker; resolves [] when the user cancels */
+function pickFiles(opts: {
+  accept?: string
+  multiple?: boolean
+  directory?: boolean
+}): Promise<File[]> {
+  return new Promise((resolvePromise) => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    if (opts.accept) input.accept = opts.accept
+    if (opts.multiple) input.multiple = true
+    if (opts.directory) {
+      input.setAttribute('webkitdirectory', '')
+      input.setAttribute('directory', '')
+    }
+    input.style.display = 'none'
+    let settled = false
+    const done = (files: File[]) => {
+      if (settled) return
+      settled = true
+      input.remove()
+      resolvePromise(files)
+    }
+    input.addEventListener('change', () => done(Array.from(input.files ?? [])))
+    // focus returns to the page when the picker closes without a choice
+    window.addEventListener('focus', () => setTimeout(() => done(Array.from(input.files ?? [])), 300), {
+      once: true,
+    })
+    document.body.appendChild(input)
+    input.click()
+  })
+}
+
+async function fileToB64(file: File): Promise<string> {
+  const bytes = new Uint8Array(await file.arrayBuffer())
+  let bin = ''
+  const chunk = 0x8000
+  for (let i = 0; i < bytes.length; i += chunk) {
+    bin += String.fromCharCode(...bytes.subarray(i, i + chunk))
+  }
+  return btoa(bin)
+}
+
 // ── language / theme / onboarding (localStorage) ────────────────────────────
 
 const LS = {
@@ -675,6 +757,24 @@ export function installShellShims(): void {
     },
     chaofficeStatus: async () => ({ loggedIn: false }),
     chaofficeLogin: async () => undefined,
+
+    // ── user skills (home chat composer picker; desktop ai:skills-list parity) ──
+    skillsList: async () => {
+      const skills = (await skillsJson<Array<Record<string, unknown>>>('ai/skills')) ?? []
+      return skills.map((s) => ({
+        name: String(s.name ?? ''),
+        description: String(s.description ?? ''),
+        relevant: s.relevant === true,
+      }))
+    },
+    skillText: async (name: string) => {
+      const r = await fetch(aiUrl(`ai/skills/text?name=${encodeURIComponent(String(name ?? ''))}`))
+      if (!r.ok) throw new Error(`HTTP ${r.status}`)
+      return r.text()
+    },
+    // the desktop handler for this deep-link never existed either (the invoke
+    // rejects and the panel swallows it) — keep the same no-op shape here
+    openSkillsSettings: async () => undefined,
     getDefaultSaveDir: async () => null,
     pickDefaultSaveDir: async () => degraded('chaOffice.pickDefaultSaveDir'),
     getAnalyticsEnabled: async () => false,
@@ -793,6 +893,113 @@ export function installShellShims(): void {
         return { ok: false, error: e instanceof Error ? e.message : String(e) }
       }
     },
+  }
+
+  // ── settings › integrations + skills pane (window.chaOfficeIntegrations):
+  // the HTTP port of the desktop preload's integrations API over the sidecar's
+  // /ai/skills* routes. The catalog/import/remove/install flows are fully
+  // wired; the CLI-link story (launcher, PATH, coding-agent dirs) is
+  // desktop-only — status() says so and the pane skips that chrome. ──
+  w.chaOfficeIntegrations = {
+    status: async () => skillsJson('ai/skills/status'),
+    listSkills: async () => skillsJson('ai/skills'),
+    listRecommendedSkills: async () =>
+      skillsJson(`ai/skills/recommended?lang=${encodeURIComponent(uiLang())}`),
+    skillBody: async (path: string) =>
+      skillsText(`ai/skills/body?name=${encodeURIComponent(skillNameFromPath(path))}`),
+    installRecommendedSkill: async (name: string) =>
+      skillsJson('ai/skills/recommended/install', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ name }),
+      }),
+    removeSkill: async (name: string) => {
+      await skillsJson('ai/skills/remove', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ name }),
+      })
+    },
+    // Import: the browser has no dialog API, so the pickers are <input> based
+    // and the bytes go up base64 (the store's caps still bite server-side).
+    importSkillZip: async () => {
+      const files = await pickFiles({ accept: '.zip,.md', multiple: false })
+      const file = files[0]
+      if (!file) return null
+      const bytesB64 = await fileToB64(file)
+      const isMd = /\.md$/i.test(file.name)
+      return skillsJson(
+        isMd ? 'ai/skills/import/markdown' : 'ai/skills/import/zip',
+        {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ filename: file.name, bytesB64 }),
+        },
+      )
+    },
+    importSkillFolder: async () => {
+      const files = await pickFiles({ directory: true, multiple: true })
+      if (files.length === 0) return null
+      const payloads: Array<{ path: string; bytesB64: string }> = []
+      let total = 0
+      for (const f of files) {
+        // webkitRelativePath = "<pickedDir>/…"; the store's one-top-folder rule
+        // names the skill after the picked directory, like the desktop import
+        const rel = (f as File & { webkitRelativePath?: string }).webkitRelativePath || f.name
+        total += f.size
+        if (total > 10 * 1024 * 1024) throw new Error('the skill is larger than the 10 MB import cap')
+        payloads.push({ path: rel, bytesB64: await fileToB64(f) })
+      }
+      return skillsJson('ai/skills/import/folder', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ files: payloads }),
+      })
+    },
+    saveSkillZip: async () => {
+      const r = await fetch(aiUrl('ai/skills/agent-skill.zip'))
+      if (!r.ok) return null
+      const blob = await r.blob()
+      const dispo = r.headers.get('content-disposition') ?? ''
+      const name =
+        /filename="([^"]+)"/.exec(dispo)?.[1] ?? `chaoffice-skill-${getAppVersionStr()}.zip`
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = name
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+      return name
+    },
+    // clipboard: never throws — the pane's copy button must stay quiet when
+    // the iframe denies the permission (fallback is the execCommand dance)
+    copyText: async (text: string) => {
+      try {
+        await navigator.clipboard.writeText(text)
+      } catch {
+        try {
+          const ta = document.createElement('textarea')
+          ta.value = text
+          ta.style.position = 'fixed'
+          ta.style.opacity = '0'
+          document.body.appendChild(ta)
+          ta.select()
+          document.execCommand('copy')
+          ta.remove()
+        } catch {
+          /* selection/permission denied: nothing more a page can do */
+        }
+      }
+    },
+    // the desktop-only writes: the pane never renders their entry points here
+    // (status() reports agents: [] and pickSkillDir answers "cancelled"), and
+    // an unexpected call degrades loudly instead of pretending
+    pickSkillDir: async () => null,
+    installSkill: async () => degraded('chaOfficeIntegrations.installSkill'),
+    uninstallSkill: async () => degraded('chaOfficeIntegrations.uninstallSkill'),
+    sweepLegacySkillCopies: async () => degraded('chaOfficeIntegrations.sweepLegacySkillCopies'),
   }
 
   w.chaOfficeProject = {

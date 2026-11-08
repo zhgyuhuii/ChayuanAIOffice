@@ -166,6 +166,13 @@ for (const pkg of PACKAGES) {
   copyIfExists(join(root, 'packages', pkg), join(out, 'packages', pkg))
 }
 
+// Bundled skills (488 KB): the recommended catalog feeds the settings › skills
+// pane in the web/embedded forms, and skills/chaoffice is the agent-skill the
+// integrations pane offers as a download. The server resolves them relative to
+// apps/server/src (three ups = this payload root), same layout as the repo.
+copyIfExists(join(root, 'skills', 'recommended'), join(out, 'skills', 'recommended'))
+copyIfExists(join(root, 'skills', 'chaoffice'), join(out, 'skills', 'chaoffice'))
+
 // Production dependency install inside the bundle. --legacy-peer-deps: npm's
 // loadPeerSet crashes on this synthetic workspace (vitest→jsdom→canvas chain,
 // arborist 'edgesOut' null); legacy mode skips peer-set solving entirely.

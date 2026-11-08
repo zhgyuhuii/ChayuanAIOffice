@@ -31,6 +31,12 @@ export interface IntegrationsStatus {
    * tool, never updated again, and invisible in the agent rows above
    */
   legacy: LegacySkillCopy[]
+  /**
+   * web/embedded form (sidecar-backed): no bundled CLI, no detected coding
+   * agents — the pane hides the launcher/PATH/MCP-stdio chrome and keeps the
+   * catalog, download, copy and KB sections
+   */
+  webForm?: boolean
 }
 
 export interface LegacySweepResult {

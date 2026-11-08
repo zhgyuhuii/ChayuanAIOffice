@@ -24,6 +24,7 @@ import { attachWsGateway } from './ws-gateway.js'
 import { attachAiProxy, type AiProxyOptions } from './ai-proxy.js'
 import { attachKbProxy, type KbProxyOptions } from './kb-proxy.js'
 import { attachMediaRoutes } from './ai-media.js'
+import { attachSkillsRoutes } from './skills-routes.js'
 import { attachStatic } from './static.js'
 import { createPptxService } from './services/pptx.js'
 import { createSheetsSaveService } from './services/sheets-save.js'
@@ -168,6 +169,9 @@ export function buildServer(options: ServerOptions = {}): BuiltServer {
   // media + document channels (the web/dsh port of the desktop ai:media-* IPC
   // and create_document's host write) ride the same runtime and secrets
   attachMediaRoutes(app, ai)
+  // user skills (integrations pane + composer picker): the web/dsh port of the
+  // desktop skills channels, same import rules via agent-core/skills-store
+  attachSkillsRoutes(app, { dataDir: options.ai?.dataDir ?? dataDir })
   // knowledge-base read proxy (dsh plugin form: harness origin; web form: absent → degrades)
   attachKbProxy(app, {
     harness:

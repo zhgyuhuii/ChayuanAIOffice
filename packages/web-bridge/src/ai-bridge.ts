@@ -52,6 +52,10 @@ export interface AiHttpBridge {
     text: string
     voice?: string
   }): Promise<{ url?: string; bytesB64?: string; mime?: string; error?: string }>
+  /** installed skills for the composer picker (desktop ai:skills-list parity) */
+  skillsList(): Promise<Array<{ name: string; description: string; relevant: boolean }>>
+  /** one installed skill's body, by name (desktop ai:skill-text parity, clipped) */
+  skillText(name: string): Promise<string>
 }
 
 async function jsonPost<T>(url: string, body?: unknown, method = 'POST'): Promise<T> {
@@ -218,6 +222,26 @@ export function createAiHttpBridge(baseUrl = defaultAiBase()): AiHttpBridge {
         `${baseUrl}/ai/media/tts`,
         req,
       )
+    },
+    async skillsList() {
+      // retryGet: the picker runs on first "+" open, which can beat sidecar readiness
+      return retryGet<Array<{ name: string; description: string; relevant: boolean }>>(
+        `${baseUrl}/ai/skills`,
+        3,
+        800,
+      )
+    },
+    async skillText(name) {
+      const response = await fetch(
+        `${baseUrl}/ai/skills/text?name=${encodeURIComponent(String(name ?? ''))}`,
+      )
+      if (!response.ok) {
+        // the sidecar's 400 body carries the reason ("no installed skill …");
+        // the send path shows it when a skill skips
+        const body = (await response.json().catch(() => null)) as { error?: string } | null
+        throw new Error(body?.error ?? `HTTP ${response.status}`)
+      }
+      return response.text()
     },
   }
 }
