@@ -109,7 +109,7 @@ describe('buildSmartArtParts: the layout', () => {
     for (const marker of structure) expect(layout.includes(marker), marker).toBe(true)
     // the hand-written definition Word used to replace is gone
     expect(layout.includes('rootComposite1')).toBe(false)
-    expect(layout.includes('urn:genoffice/officeart/layout')).toBe(false)
+    expect(layout.includes('urn:chaoffice/officeart/layout')).toBe(false)
   })
 
   it('is byte-identical on every build', () => {

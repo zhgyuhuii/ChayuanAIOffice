@@ -31,7 +31,7 @@ async function fixture(tracking: boolean) {
   noteDocumentSwapped()
   const bytes = await buildDocx({ bodyXml })
   const parsed = await parseDocx(bytes)
-  const dir = await mkdtemp(join(tmpdir(), 'genoffice-save-tracked-'))
+  const dir = await mkdtemp(join(tmpdir(), 'chaoffice-save-tracked-'))
   dirs.push(dir)
   const path = join(dir, 'fixture.docx')
   await writeFile(path, bytes)

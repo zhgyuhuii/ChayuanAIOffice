@@ -95,7 +95,7 @@ async function settledRowHeights(page: Page): Promise<number[]> {
 test.describe('a vertically merged table crossing pages', () => {
   test('keeps every row at its content height', async () => {
     test.setTimeout(300_000)
-    const dir = realpathSync(mkdtempSync(join(tmpdir(), 'genoffice-e2e-vmerge-')))
+    const dir = realpathSync(mkdtempSync(join(tmpdir(), 'chaoffice-e2e-vmerge-')))
     const docPath = join(dir, 'anchor.docx')
     writeFileSync(docPath, await minimalDocx())
 

@@ -7,7 +7,7 @@ import { run, tempDir } from './helpers'
 // the in-repo real .ppt the ppt2pptx package's own regression test uses
 const PPT_FIXTURE = join(__dirname, '../../file-parse/tests/fixtures/legacy-sample.ppt')
 
-describe('genoffice convert legacy .ppt → .pptx', () => {
+describe('chaoffice convert legacy .ppt → .pptx', () => {
   it('converts the real fixture deck to a package that reopens as a pptx', async () => {
     expect(existsSync(PPT_FIXTURE), 'legacy-sample.ppt fixture exists').toBe(true)
     const dir = tempDir()

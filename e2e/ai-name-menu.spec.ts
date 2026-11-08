@@ -83,7 +83,7 @@ async function expectMenuCommandReachesEditor(app: ElectronApplication, page: Pa
 
 test('docs: the File menu names the document with AI', async () => {
   test.setTimeout(180_000)
-  const dir = await mkdtemp(join(tmpdir(), 'genoffice-ai-name-docs-'))
+  const dir = await mkdtemp(join(tmpdir(), 'chaoffice-ai-name-docs-'))
   const docPath = join(dir, 'name-me.docx')
   await writeFile(docPath, await minimalDocx())
   const launched = await launchShell({
@@ -103,7 +103,7 @@ test('docs: the File menu names the document with AI', async () => {
 
 test('slides: the File menu names the deck with AI', async () => {
   test.setTimeout(180_000)
-  const dir = await mkdtemp(join(tmpdir(), 'genoffice-ai-name-slides-'))
+  const dir = await mkdtemp(join(tmpdir(), 'chaoffice-ai-name-slides-'))
   const deckPath = await makeDeck(dir)
   const launched = await launchShell({
     onboardingSeen: true,

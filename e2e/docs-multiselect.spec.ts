@@ -114,7 +114,7 @@ test.describe('docs non-contiguous selection', () => {
   let docPath: string
 
   test.beforeEach(async () => {
-    dir = realpathSync(mkdtempSync(join(tmpdir(), 'genoffice-e2e-multiselect-')))
+    dir = realpathSync(mkdtempSync(join(tmpdir(), 'chaoffice-e2e-multiselect-')))
     docPath = join(dir, 'words.docx')
     writeFileSync(docPath, await minimalDocx(['echo foxtrot golf hotel india juliet kilo lima']))
   })

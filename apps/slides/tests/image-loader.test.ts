@@ -135,7 +135,7 @@ describe('metafile rasterization waits for private fonts', () => {
 
   it('fetches lazy EMF bytes and rasterizes them under the original URL key', async () => {
     const bytes = new Uint8Array([1, 0, 0, 0])
-    const url = 'genoffice-slide-media://archive/test?mime=image%2Fx-emf'
+    const url = 'chaoffice-slide-media://archive/test?mime=image%2Fx-emf'
     const fetchMedia = vi.fn(async () => ({
       ok: true,
       headers: new Headers({ 'Content-Length': String(bytes.length) }),
@@ -163,7 +163,7 @@ describe('metafile rasterization waits for private fonts', () => {
       })),
     )
     const loader = createImageLoader(vi.fn())
-    loader.load(['genoffice-slide-media://archive/test?mime=image%2Fx-wmf'])
+    loader.load(['chaoffice-slide-media://archive/test?mime=image%2Fx-wmf'])
     await vi.advanceTimersByTimeAsync(0)
     expect(arrayBuffer).not.toHaveBeenCalled()
     expect(metafileToDataUrl).not.toHaveBeenCalled()
@@ -190,7 +190,7 @@ it('sets anonymous CORS before assigning slide media sources only', () => {
       assignments.push([url, this.crossOrigin])
     },
   }
-  setImageSource(image as HTMLImageElement, 'genoffice-slide-media://archive/image')
+  setImageSource(image as HTMLImageElement, 'chaoffice-slide-media://archive/image')
   const other = {
     crossOrigin: null as string | null,
     set src(url: string) {
@@ -199,7 +199,7 @@ it('sets anonymous CORS before assigning slide media sources only', () => {
   }
   setImageSource(other as HTMLImageElement, 'data:image/png;base64,AA==')
   expect(assignments).toEqual([
-    ['genoffice-slide-media://archive/image', 'anonymous'],
+    ['chaoffice-slide-media://archive/image', 'anonymous'],
     ['data:image/png;base64,AA==', null],
   ])
 })

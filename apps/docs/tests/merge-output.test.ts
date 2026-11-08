@@ -34,14 +34,14 @@ describe('mergeOutputFileName', () => {
 
 describe('mergeOutputPath', () => {
   it('gives two records of the same name two different files', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'genoffice-merge-out-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chaoffice-merge-out-'))
     await writeFile(join(dir, 'Ada.docx'), 'first')
     const second = mergeOutputPath(dir, 'Ada')
     expect(basename(second)).toBe('Ada-2.docx')
   })
 
   it('keeps the file inside the folder the user chose', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'genoffice-merge-out-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chaoffice-merge-out-'))
     const path = mergeOutputPath(dir, '../escape')
     expect(path.startsWith(dir)).toBe(true)
   })

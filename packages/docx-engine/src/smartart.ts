@@ -70,8 +70,8 @@ export interface SmartArtParts {
 
 /** Word's built-in Organization Chart layout: the definition a re-layout uses. */
 export const SMARTART_LAYOUT_ID = 'urn:microsoft.com/office/officeart/2005/8/layout/hierarchy1'
-export const SMARTART_QUICK_STYLE_ID = 'urn:genoffice/officeart/quickstyle/smartart'
-export const SMARTART_COLORS_ID = 'urn:genoffice/officeart/colors/smartart'
+export const SMARTART_QUICK_STYLE_ID = 'urn:chaoffice/officeart/quickstyle/smartart'
+export const SMARTART_COLORS_ID = 'urn:chaoffice/officeart/colors/smartart'
 
 const DGM_NS = 'http://schemas.openxmlformats.org/drawingml/2006/diagram'
 const A_NS = 'http://schemas.openxmlformats.org/drawingml/2006/main'

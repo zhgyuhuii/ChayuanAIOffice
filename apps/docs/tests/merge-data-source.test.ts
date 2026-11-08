@@ -11,7 +11,7 @@ import { readMergeDataSource } from '../src/main/merge-data-source'
  */
 
 async function tempDir(): Promise<string> {
-  return mkdtemp(join(tmpdir(), 'genoffice-merge-'))
+  return mkdtemp(join(tmpdir(), 'chaoffice-merge-'))
 }
 
 describe('readMergeDataSource', () => {
