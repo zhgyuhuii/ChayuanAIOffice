@@ -46,7 +46,7 @@ async function breaksDocx(): Promise<Buffer> {
 test.describe('formatting marks show breaks', () => {
   test('page, wrap and section breaks get Word-style marks only while marks are on', async () => {
     test.setTimeout(240_000)
-    const dir = realpathSync(mkdtempSync(join(tmpdir(), 'genoffice-e2e-fmt-marks-')))
+    const dir = realpathSync(mkdtempSync(join(tmpdir(), 'chaoffice-e2e-fmt-marks-')))
     const docPath = join(dir, 'breaks.docx')
     writeFileSync(docPath, await breaksDocx())
 

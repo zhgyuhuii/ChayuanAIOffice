@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import JSZip from 'jszip'
 import { launchShell, closeAndSaveVideo, waitForPageWithUrl } from './helpers'
 
-// the preload exposes window.__genofficeDebug only under this env var; the
+// the preload exposes window.__chaofficeDebug only under this env var; the
 // spec drives the freeze and reads cell data through the Facade
 process.env.GENOFFICE_DEBUG_HOOKS = '1'
 
@@ -80,7 +80,7 @@ interface HeaderState {
 test.describe('sheets: frozen top row survives streamed scrolling', () => {
   test('in-session Freeze Top Row keeps the header painted past the loaded window', async () => {
     test.setTimeout(240_000)
-    const scratch = await mkdtemp(join(tmpdir(), 'genoffice-freeze-stream-'))
+    const scratch = await mkdtemp(join(tmpdir(), 'chaoffice-freeze-stream-'))
     const fixture = join(scratch, 'freeze-stream.xlsx')
     await writeStreamingFixture(fixture)
     const launched = await launchShell({
@@ -92,13 +92,13 @@ test.describe('sheets: frozen top row survives streamed scrolling', () => {
       const { app } = launched
       const sheets = await waitForPageWithUrl(app, '://sheets/')
       await sheets.waitForFunction(
-        () => Boolean((window as unknown as Record<string, unknown>).__genofficeDebug),
+        () => Boolean((window as unknown as Record<string, unknown>).__chaofficeDebug),
         null,
         { timeout: 60_000 },
       )
       const headerState = (): Promise<HeaderState> =>
         sheets.evaluate(() => {
-          const debug = (window as unknown as Record<string, unknown>).__genofficeDebug as {
+          const debug = (window as unknown as Record<string, unknown>).__chaofficeDebug as {
             univerAPI: {
               getActiveWorkbook(): {
                 getActiveSheet(): {
@@ -135,7 +135,7 @@ test.describe('sheets: frozen top row survives streamed scrolling', () => {
       // Jump far past the initial window; the advancing window evicts the old
       // one. Before the fix this null-wiped row 1 and A1 went blank.
       await sheets.evaluate(() => {
-        const debug = (window as unknown as Record<string, unknown>).__genofficeDebug as {
+        const debug = (window as unknown as Record<string, unknown>).__chaofficeDebug as {
           univerAPI: {
             getActiveWorkbook(): {
               setActiveRange(range: unknown): void

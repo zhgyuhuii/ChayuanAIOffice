@@ -127,7 +127,7 @@ Serper / Tavily or BYOK image / media provider chosen in the app's AI settings
 =======
 `search`, `image` and `media` reuse the editors' provider routing. Search uses
 the selected Serper / Serply / SearchApi / Tavily / Parallel provider when its key is configured;
-otherwise Genspark is the default when signed in (`~/.genoffice/auth.json`)
+otherwise ChaAI Office is the default when signed in (`~/.chaoffice/auth.json`)
 and cloud tools are on, then Parallel's free, rate-limited Search MCP, then
 DuckDuckGo. Parallel
 and Tavily provide web search only. Image generation and media analysis use

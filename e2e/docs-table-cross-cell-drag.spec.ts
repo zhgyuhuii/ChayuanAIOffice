@@ -122,7 +122,7 @@ async function dragProbe(page: import('@playwright/test').Page): Promise<DragPro
 
 test('a drag from one cell into another selects text across them', async () => {
   test.setTimeout(150_000)
-  const dir = realpathSync(mkdtempSync(join(tmpdir(), 'genoffice-e2e-cross-cell-drag-')))
+  const dir = realpathSync(mkdtempSync(join(tmpdir(), 'chaoffice-e2e-cross-cell-drag-')))
   const docPath = join(dir, 'table.docx')
   writeFileSync(docPath, await docx())
   const launched = await launchShell({
@@ -163,7 +163,7 @@ test('a drag from one cell into another selects text across them', async () => {
 
 test('typing over a cross-cell selection replaces it in the first cell', async () => {
   test.setTimeout(150_000)
-  const dir = realpathSync(mkdtempSync(join(tmpdir(), 'genoffice-e2e-cross-cell-type-')))
+  const dir = realpathSync(mkdtempSync(join(tmpdir(), 'chaoffice-e2e-cross-cell-type-')))
   const docPath = join(dir, 'table.docx')
   writeFileSync(docPath, await docx())
   const launched = await launchShell({

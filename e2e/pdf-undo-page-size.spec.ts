@@ -6,7 +6,7 @@ import { PDFDocument } from 'pdf-lib'
 import { launchShell, waitForPageWithUrl, closeAndSaveVideo } from './helpers'
 
 test('Page size, written to the file at once, is undone and redone in the file', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'genoffice-pdf-page-size-'))
+  const dir = await mkdtemp(join(tmpdir(), 'chaoffice-pdf-page-size-'))
   const pdfPath = join(dir, 'two.pdf')
   const doc = await PDFDocument.create()
   doc.addPage([400, 600])
