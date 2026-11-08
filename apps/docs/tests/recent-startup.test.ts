@@ -30,6 +30,8 @@ function fixture() {
     RECENT_PATH: () => '/synthetic/recent.json',
     existsSync,
     basename,
+    // adapted: R40 — 本地 docs:recent 保 remote 过滤（B 区远程文档），VM 上下文给桩
+    isRemoteUri: (p: string) => p.startsWith('remote://'),
     tm: (key: string) => key,
     getUiLang: () => 'en',
     appMenuLabels: () => ({}),

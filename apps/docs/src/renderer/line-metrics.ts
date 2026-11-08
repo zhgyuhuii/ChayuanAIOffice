@@ -681,7 +681,7 @@ export function computeLineHeight(
 export const BUNDLED_FONTS = new Set([
   'Noto Sans CJK SC',
   'Noto Serif CJK SC',
-  'ChaAI Office Sans KR',
+  'ChaOffice Sans KR',
   'ChaAI Office Serif KR',
   'ChaAI Office Gothic KR',
   'ChaAI Office Poppins',
@@ -789,7 +789,7 @@ export function unloadedBundledPrimary(chain: string): string | null {
  * while layout later resolves the loaded alias (0.69/0.25em) as primary.
  */
 function isWebFace(family: string): boolean {
-  return isBundledFont(family) || / GO$/.test(family) || /^ChaOffice /.test(family)
+  return isBundledFont(family) || / GO$/.test(family) || /^Cha(AI)? Office /.test(family)
 }
 
 /** bundled web face a chain resolves to before any installed family or generic */

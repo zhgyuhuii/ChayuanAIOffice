@@ -3147,25 +3147,25 @@
  * Liberation Sans size-adjusted to the Word face's Latin advances (hmtx sentence ratio
  * over a mixed-case English sample).
  * 
- * GenOffice Cordia: hmtx 2026-11-03
+ * ChaAI Office Cordia: hmtx 2026-11-03
  * Thai advances per glyph from hmtx, Regular and Bold; Latin ratio 0.649 regular / 0.643 bold
  * fonts: Cordia New (Word DFonts cordia.ttc); NotoSansThai; LiberationSans */
 @font-face {
-  font-family: 'GenOffice Cordia';
+  font-family: 'ChaAI Office Cordia';
   src: url('./ChaOfficeCordia-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
   font-display: block;
 }
 @font-face {
-  font-family: 'GenOffice Cordia';
+  font-family: 'ChaAI Office Cordia';
   src: url('./ChaOfficeCordia-Bold.woff2') format('woff2');
   font-weight: bold;
   font-style: normal;
   font-display: block;
 }
 @font-face {
-  font-family: 'GenOffice Cordia';
+  font-family: 'ChaAI Office Cordia';
   src: url('./LiberationSans-Regular.ttf');
   size-adjust: 64.9%;
   unicode-range: U+0000-0DFF, U+0E80-10FFFF;
@@ -3174,7 +3174,7 @@
   font-display: block;
 }
 @font-face {
-  font-family: 'GenOffice Cordia';
+  font-family: 'ChaAI Office Cordia';
   src: url('./LiberationSans-Bold.ttf');
   size-adjust: 64.3%;
   unicode-range: U+0000-0DFF, U+0E80-10FFFF;
@@ -3209,25 +3209,25 @@
  * Liberation Sans size-adjusted to the Word face's Latin advances (hmtx sentence ratio
  * over a mixed-case English sample).
  * 
- * GenOffice Sarabun: hmtx 2026-11-03
+ * ChaAI Office Sarabun: hmtx 2026-11-03
  * Thai advances per glyph from hmtx, Regular and Bold; Latin ratio 0.644 regular / 0.657 bold
  * fonts: TH SarabunPSK (Word DFonts thsarabun.ttf); NotoSansThai; LiberationSans */
 @font-face {
-  font-family: 'GenOffice Sarabun';
+  font-family: 'ChaAI Office Sarabun';
   src: url('./ChaOfficeSarabun-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
   font-display: block;
 }
 @font-face {
-  font-family: 'GenOffice Sarabun';
+  font-family: 'ChaAI Office Sarabun';
   src: url('./ChaOfficeSarabun-Bold.woff2') format('woff2');
   font-weight: bold;
   font-style: normal;
   font-display: block;
 }
 @font-face {
-  font-family: 'GenOffice Sarabun';
+  font-family: 'ChaAI Office Sarabun';
   src: url('./LiberationSans-Regular.ttf');
   size-adjust: 64.4%;
   unicode-range: U+0000-0DFF, U+0E80-10FFFF;
@@ -3236,7 +3236,7 @@
   font-display: block;
 }
 @font-face {
-  font-family: 'GenOffice Sarabun';
+  font-family: 'ChaAI Office Sarabun';
   src: url('./LiberationSans-Bold.ttf');
   size-adjust: 65.7%;
   unicode-range: U+0000-0DFF, U+0E80-10FFFF;

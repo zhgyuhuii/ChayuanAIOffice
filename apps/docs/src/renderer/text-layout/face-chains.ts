@@ -18,35 +18,35 @@ import {
 
 export const CJK_SERIF = 'Noto Serif CJK SC'
 export const CJK_SANS = 'Noto Sans CJK SC'
-export const BOX = 'ChaOffice Box Drawing'
-export const JA_SANS = ['Yu Gothic', 'ChaOffice Hiragino Sans', 'Meiryo', 'Noto Sans JP']
+export const BOX = 'ChaAI Office Box Drawing'
+export const JA_SANS = ['Yu Gothic', 'ChaAI Office Hiragino Sans', 'Meiryo', 'Noto Sans JP']
 export const JA_SERIF = [
   'Yu Mincho',
-  'ChaOffice Hiragino Mincho',
-  'ChaOffice MS Mincho',
+  'ChaAI Office Hiragino Mincho',
+  'ChaAI Office MS Mincho',
   'Noto Serif JP',
 ]
 export const KO_SANS = ['Malgun Gothic', 'ChaOffice Sans KR', 'Apple SD Gothic Neo', 'Noto Sans KR']
 export const KO_SERIF = [
-  'ChaOffice Batang',
-  'ChaOffice Serif KR',
-  'ChaOffice Myungjo',
+  'ChaAI Office Batang',
+  'ChaAI Office Serif KR',
+  'ChaAI Office Myungjo',
   'Noto Serif KR',
 ]
 // 'ChaOffice *' entries are CJK-only local() aliases (fonts.css): the underlying
 // system faces draw Cyrillic/Greek fullwidth, so those scripts must pass through
-const TC_SANS = ['Microsoft JhengHei', 'PingFang TC', 'ChaOffice Heiti TC', 'Noto Sans TC']
-// 'ChaOffice Fullwidth TC' (fonts.css): fullwidth U+FF0D/FF0F/FF3C/FF3F/FF5E whose Songti TC glyphs look half-width
-// 'ChaOffice Songti TC' (fonts.css): weight-normal alias so bold synthesizes like Word's faux-bold PMingLiU
+const TC_SANS = ['Microsoft JhengHei', 'PingFang TC', 'ChaAI Office Heiti TC', 'Noto Sans TC']
+// 'ChaAI Office Fullwidth TC' (fonts.css): fullwidth U+FF0D/FF0F/FF3C/FF3F/FF5E whose Songti TC glyphs look half-width
+// 'ChaAI Office Songti TC' (fonts.css): weight-normal alias so bold synthesizes like Word's faux-bold PMingLiU
 const TC_SERIF = [
-  'ChaOffice MingLiU',
-  'ChaOffice Fullwidth TC',
-  'ChaOffice Songti TC',
+  'ChaAI Office MingLiU',
+  'ChaAI Office Fullwidth TC',
+  'ChaAI Office Songti TC',
   'Songti TC',
   'Noto Serif TC',
 ]
 const SC_SANS = ['PingFang SC', 'Microsoft YaHei', CJK_SANS]
-const SC_SERIF = ['ChaOffice Songti SC', 'STSong', 'SimSun', CJK_SERIF]
+const SC_SERIF = ['ChaAI Office Songti SC', 'STSong', 'SimSun', CJK_SERIF]
 
 export const cssChain = (...families: string[]): string =>
   [...new Set(families)].map((x) => `'${x.replace(/'/g, '')}'`).join(',')
@@ -90,7 +90,7 @@ export const FACE_CHAIN_RULES: ChainRule[] = [
   },
   // Aptos (M365 cloud face, never installed locally): line metrics equal Calibri's
   // (Word probe 2026-08-22) but its advances do not, so the size-adjusted Carlito
-  // aliases in fonts.css stand in (probe 2026-09-03); 'ChaOffice PUA Blank' keeps
+  // aliases in fonts.css stand in (probe 2026-09-03); 'ChaAI Office PUA Blank' keeps
   // AI-residue PUA tokens invisible like Word. Body, Display and Narrow cuts have
   // fitted aliases; Mono/Serif are unprobed
   {
@@ -104,7 +104,7 @@ export const FACE_CHAIN_RULES: ChainRule[] = [
           : f.includes('narrow')
             ? 'Aptos Narrow GO'
             : 'Aptos GO'
-      return [[alias, 'ChaOffice PUA Blank', CJK_SANS], 'sans-serif']
+      return [[alias, 'ChaAI Office PUA Blank', CJK_SANS], 'sans-serif']
     },
   },
   // Cambria Math text runs lay out with Cambria's advances in Word (fonts.css alias); only the symbols need a math face
@@ -180,7 +180,7 @@ export const FACE_CHAIN_RULES: ChainRule[] = [
   {
     id: 'segoe-ui',
     when: (f) => SEGOE_UI_TEXT_RE.test(f),
-    chain: () => [['Segoe UI GO', 'Noto Sans CJK GO', 'ChaOffice PUA Blank'], 'sans-serif'],
+    chain: () => [['Segoe UI GO', 'Noto Sans CJK GO', 'ChaAI Office PUA Blank'], 'sans-serif'],
   },
   // Consolas is Office-only: the size-adjusted Menlo alias carries its advances
   {
@@ -215,13 +215,13 @@ export const FACE_CHAIN_RULES: ChainRule[] = [
   {
     id: 'poppins',
     when: (f) => f.includes('poppins'),
-    chain: () => [['ChaOffice Poppins', CJK_SANS], 'sans-serif'],
+    chain: () => [['ChaAI Office Poppins', CJK_SANS], 'sans-serif'],
   },
   // DM Sans renders real in Word when installed; the bundled Latin subset carries its true advances (corpus 2026-09-30)
   {
     id: 'dm-sans',
     when: (f) => f.includes('dm sans'),
-    chain: () => [['ChaOffice DM Sans', CJK_SANS], 'sans-serif'],
+    chain: () => [['ChaAI Office DM Sans', CJK_SANS], 'sans-serif'],
   },
   // Montserrat is an M365 cloud font Word renders real, ignoring its fontTable altName; only the
   // cloud family names qualify: a PostScript-style "Montserrat-Bold" is unknown to Word and keeps the altName
@@ -242,14 +242,14 @@ export const FACE_CHAIN_RULES: ChainRule[] = [
     when: (f) => f.includes('\u4e2d\u5b8b') || f.includes('zhongsong'),
     chain: () => [['STZhongsong', 'Songti SC', 'STSong', 'SimSun', CJK_SERIF], 'serif'],
   },
-  // 'ChaOffice Songti SC' (fonts.css local() alias of Songti SC): macOS Chromium refuses synthetic
+  // 'ChaAI Office Songti SC' (fonts.css local() alias of Songti SC): macOS Chromium refuses synthetic
   // bold for 'Songti SC' by name; the alias lets Blink synthesize. SimSun's ASCII is half-width
   // fixed pitch (0.5em); the Songti stand-in is proportional, so the Latin alias leads
   {
     id: 'simsun',
     when: (f) => /simsun|\u5b8b\u4f53|nsimsun/.test(f),
     chain: () => [
-      ['ChaOffice SimSun Latin', 'ChaOffice Songti SC', 'STSong', 'SimSun', CJK_SERIF],
+      ['ChaAI Office SimSun Latin', 'ChaAI Office Songti SC', 'STSong', 'SimSun', CJK_SERIF],
       'serif',
     ],
   },
@@ -427,7 +427,7 @@ export const FACE_CHAIN_RULES: ChainRule[] = [
         const cheSerif = cheGungsuh || /batang|바탕/i.test(nfkc)
         return [
           [
-            'ChaOffice Che Latin KR',
+            'ChaAI Office Che Latin KR',
             ...(cheGungsuh ? ['GungSeo'] : []),
             ...(cheSerif ? KO_SERIF : KO_SANS),
           ],
@@ -449,7 +449,7 @@ export const FACE_CHAIN_RULES: ChainRule[] = [
     id: 'dfkai',
     when: (f) => /\u6a19\u6977|dfkai/.test(f),
     chain: () => [
-      ['Microsoft YaHei', 'ChaOffice YaHei Latin', 'PingFang SC', CJK_SANS],
+      ['Microsoft YaHei', 'ChaAI Office YaHei Latin', 'PingFang SC', CJK_SANS],
       'sans-serif',
     ],
   },
@@ -470,19 +470,19 @@ export const FACE_CHAIN_RULES: ChainRule[] = [
   {
     id: 'ethiopic',
     when: (_f, _h, nfkc) => /nyala|ebrima|abyssinica|ethiopic/i.test(nfkc),
-    chain: () => [['ChaOffice Ethiopic'], 'sans-serif'],
+    chain: () => [['ChaAI Office Ethiopic'], 'sans-serif'],
   },
   // Bengali: Nirmala UI is an M365 cloud face Word renders real; macOS has no twin and Chromium's Kohinoor Bangla shapes ~8% narrower, so the bundled Nirmala-metric face leads
   {
     id: 'nirmala',
     when: (_f, _h, nfkc) => /nirmala/i.test(nfkc),
-    chain: () => [['ChaOffice Bengali', 'Kohinoor Bangla', 'Bangla Sangam MN'], 'sans-serif'],
+    chain: () => [['ChaAI Office Bengali', 'Kohinoor Bangla', 'Bangla Sangam MN'], 'sans-serif'],
   },
   // Tamil: Latha renders through the bundled Latha-metric face; Vijaya and missing Tamil names lay out as Vijaya on Word for Mac (probe 2026-09-30), whose advances InaiMathi matches within 1 %
   {
     id: 'latha',
     when: (_f, _h, nfkc) => /latha/i.test(nfkc),
-    chain: () => [['ChaOffice Tamil', 'InaiMathi', 'Tamil MN', 'Tamil Sangam MN'], 'sans-serif'],
+    chain: () => [['ChaAI Office Tamil', 'InaiMathi', 'Tamil MN', 'Tamil Sangam MN'], 'sans-serif'],
   },
   {
     id: 'tamil',

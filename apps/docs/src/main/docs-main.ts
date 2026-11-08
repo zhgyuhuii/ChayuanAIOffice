@@ -5514,9 +5514,8 @@ export function registerDocsIpc(): void {
     },
   )
 
-  ipcMain.handle('docs:recent', () =>
-    readJson<string[]>(RECENT_PATH(), []).filter((p) => isRemoteUri(p) || existsSync(p)),
-  )
+  // R40 #2541：不再 stat 探测离线盘（阻塞主进程）；离线条目由 Home 侧 missing 标记处理
+  ipcMain.handle('docs:recent', () => readJson<string[]>(RECENT_PATH(), []))
 
   ipcMain.handle('docs:pick-image', async (event) => {
     const result = await openDialog(event, {
