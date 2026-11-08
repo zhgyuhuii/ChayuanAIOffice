@@ -592,7 +592,7 @@ export function makeMediaResolver(opened: OpenedPptx, slidePath?: string) {
     const key = `${byteVersion(bytes)}:${mime}:${context}`
     let url = urls.get(key)
     if (!url) {
-      url = `genoffice-slide-media://archive/${randomUUID()}?mime=${encodeURIComponent(mime)}`
+      url = `chaoffice-slide-media://archive/${randomUUID()}?mime=${encodeURIComponent(mime)}`
       urls.set(key, url)
       mediaSources.set(url, {
         opened: new WeakRef(opened),

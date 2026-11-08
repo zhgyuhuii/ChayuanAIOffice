@@ -604,7 +604,7 @@ function buildPicture(
   const isMetafile =
     typeof dataUrl === 'string' &&
     (/^data:image\/(x-)?(emf|wmf|emz|wmz)[;,]/.test(dataUrl) ||
-      /^genoffice-slide-media:.*[?&]mime=image%2F(?:x-)?(emf|wmf)(?:&|$)/i.test(dataUrl))
+      /^chaoffice-slide-media:.*[?&]mime=image%2F(?:x-)?(emf|wmf)(?:&|$)/i.test(dataUrl))
   const node: PictureRenderNode = {
     id: `r_${el.id}`,
     type: 'picture',
