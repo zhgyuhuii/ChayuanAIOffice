@@ -9,7 +9,7 @@ export default defineConfig({
       // against the local sources. An exact regex keeps a string find from
       // swallowing subpath imports.
       {
-        find: /^@genoffice\/compound-file$/,
+        find: /^@chaoffice\/compound-file$/,
         replacement: fileURLToPath(new URL('../compound-file/src/index.ts', import.meta.url)),
       },
     ],

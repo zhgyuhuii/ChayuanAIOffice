@@ -190,7 +190,7 @@ describe('loadPrintHtml', () => {
       win,
       '<html><body>doc</body></html>',
       'x.html',
-      'genoffice-test-print-',
+      'chaoffice-test-print-',
     )
     expect(win.calls).toEqual(['loadFile', 'executeJavaScript'])
     expect(win.loadedHtml).toContain('doc')
