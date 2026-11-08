@@ -14,7 +14,7 @@ ChaOffice speaks the Model Context Protocol, so a coding agent can read, write a
 
 - “Turn ~/Downloads/report.md into a Word document”
 - “Make a 6-slide deck about our Q3 results”
-- “Convert budget.xlsx to PDF and open it in GenOffice”
+- “Convert budget.xlsx to PDF and open it in ChaAI Office”
 
 ## Registering it from the command line
 

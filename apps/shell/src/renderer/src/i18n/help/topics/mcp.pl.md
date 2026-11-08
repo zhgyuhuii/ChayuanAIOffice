@@ -14,7 +14,7 @@ Robisz to w **Ustawienia ▸ Integracje**. Panel ma dwie połowy i możesz skorz
 
 - “Zamień ~/Downloads/report.md na dokument Word”
 - “Zrób prezentację z 6 slajdów o naszych wynikach za III kwartał”
-- “Przekonwertuj budget.xlsx do PDF i otwórz w GenOffice”
+- “Przekonwertuj budget.xlsx do PDF i otwórz w ChaAI Office”
 
 ## Rejestrowanie z wiersza poleceń
 

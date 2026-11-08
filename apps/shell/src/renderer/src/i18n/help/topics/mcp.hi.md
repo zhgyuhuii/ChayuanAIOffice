@@ -14,7 +14,7 @@ ChaOffice Model Context Protocol बोलता है, इसलिए को�
 
 - “~/Downloads/report.md को Word दस्तावेज़ बना दो”
 - “हमारे Q3 नतीजों पर 6 स्लाइड का प्रेज़ेंटेशन बनाओ”
-- “budget.xlsx को PDF में बदलो और GenOffice में खोलो”
+- “budget.xlsx को PDF में बदलो और ChaAI Office में खोलो”
 
 ## कमांड लाइन से पंजीकृत करना
 

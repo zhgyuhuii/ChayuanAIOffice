@@ -14,7 +14,7 @@ Uděláte to v **Nastavení ▸ Integrace**. Panel má dvě poloviny a můžete 
 
 - “Převeď ~/Downloads/report.md na dokument Word”
 - “Udělej prezentaci o 6 snímcích o našich výsledcích za 3. čtvrtletí”
-- “Převeď budget.xlsx do PDF a otevři ho v GenOffice”
+- “Převeď budget.xlsx do PDF a otevři ho v ChaAI Office”
 
 ## Registrace z příkazového řádku
 

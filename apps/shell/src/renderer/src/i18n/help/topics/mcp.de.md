@@ -14,7 +14,7 @@ ChaOffice spricht das Model Context Protocol: Ein Coding-Agent kann Ihre Dokumen
 
 - “Mach aus ~/Downloads/report.md ein Word-Dokument”
 - “Erstelle eine Präsentation mit 6 Folien zu unseren Q3-Ergebnissen”
-- “Wandle budget.xlsx in PDF um und öffne es in GenOffice”
+- “Wandle budget.xlsx in PDF um und öffne es in ChaAI Office”
 
 ## Über die Kommandozeile einrichten
 

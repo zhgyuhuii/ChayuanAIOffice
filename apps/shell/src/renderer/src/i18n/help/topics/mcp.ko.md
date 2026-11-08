@@ -14,7 +14,7 @@ ChaOffice는 Model Context Protocol을 말하므로, 코딩 에이전트가 앱�
 
 - “~/Downloads/report.md를 Word 문서로 만들어 줘”
 - “3분기 실적을 소개하는 6장짜리 슬라이드를 만들어 줘”
-- “budget.xlsx를 PDF로 변환해서 GenOffice에서 열어 줘”
+- “budget.xlsx를 PDF로 변환해서 ChaAI Office에서 열어 줘”
 
 ## 명령줄에서 등록하기
 

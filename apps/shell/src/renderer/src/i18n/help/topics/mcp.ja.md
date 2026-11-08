@@ -14,7 +14,7 @@ ChaOffice は Model Context Protocol を話せます。コーディングエー�
 
 - “~/Downloads/report.md を Word 文書にして”
 - “第 3 四半期の業績について 6 枚のスライドを作って”
-- “budget.xlsx を PDF に変換して GenOffice で開いて”
+- “budget.xlsx を PDF に変換して ChaAI Office で開いて”
 
 ## コマンドラインから登録する
 

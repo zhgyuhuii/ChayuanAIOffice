@@ -14,7 +14,7 @@
 
 - “הפוך את ~/Downloads/report.md למסמך Word”
 - “הכן מצגת של 6 שקופיות על תוצאות הרבעון השלישי שלנו”
-- “המר את budget.xlsx ל-PDF ופתח אותו ב-GenOffice”
+- “המר את budget.xlsx ל-PDF ופתח אותו ב-ChaAI Office”
 
 ## רישום מתוך שורת הפקודה
 

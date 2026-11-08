@@ -14,7 +14,7 @@ ChaOffice สื่อสารด้วย Model Context Protocol เอเจ�
 
 - “แปลง ~/Downloads/report.md เป็นเอกสาร Word”
 - “ทำสไลด์ 6 หน้าเกี่ยวกับผลประกอบการไตรมาส 3 ของเรา”
-- “แปลง budget.xlsx เป็น PDF แล้วเปิดใน GenOffice”
+- “แปลง budget.xlsx เป็น PDF แล้วเปิดใน ChaAI Office”
 
 ## ลงทะเบียนจากบรรทัดคำสั่ง
 

@@ -14,7 +14,7 @@ Việc này làm ở **Cài đặt ▸ Tích hợp**. Bảng đó có hai nửa,
 
 - “Chuyển đổi ~/Downloads/report.md thành tài liệu Word”
 - “Tạo bài thuyết trình 6 trang trình bày về kết quả quý 3 của chúng tôi”
-- “Chuyển đổi budget.xlsx sang PDF và mở trong GenOffice”
+- “Chuyển đổi budget.xlsx sang PDF và mở trong ChaAI Office”
 
 ## Đăng ký từ dòng lệnh
 

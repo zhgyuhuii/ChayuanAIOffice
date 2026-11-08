@@ -14,7 +14,7 @@
 
 - “حوّل ~/Downloads/report.md إلى مستند Word”
 - “أنشئ عرضاً من 6 شرائح عن نتائج الربع الثالث”
-- “حوّل budget.xlsx إلى PDF وافتحه في GenOffice”
+- “حوّل budget.xlsx إلى PDF وافتحه في ChaAI Office”
 
 ## تسجيله من سطر الأوامر
 

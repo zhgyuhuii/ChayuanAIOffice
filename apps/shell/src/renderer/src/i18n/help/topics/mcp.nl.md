@@ -14,7 +14,7 @@ ChaOffice spreekt het Model Context Protocol, zodat een coding agent je document
 
 - “Maak van ~/Downloads/report.md een Word-document”
 - “Maak een presentatie van 6 dia’s over onze Q3-resultaten”
-- “Zet budget.xlsx om naar PDF en open het in GenOffice”
+- “Zet budget.xlsx om naar PDF en open het in ChaAI Office”
 
 ## Registreren vanaf de opdrachtregel
 

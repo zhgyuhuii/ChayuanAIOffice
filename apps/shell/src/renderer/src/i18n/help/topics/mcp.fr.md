@@ -14,7 +14,7 @@ C’est dans **Paramètres ▸ Intégrations** qu’on fait cela. Le panneau a d
 
 - “Transforme ~/Downloads/report.md en document Word”
 - “Prépare une présentation de 6 diapositives sur nos résultats du T3”
-- “Convertis budget.xlsx en PDF et ouvre-le dans GenOffice”
+- “Convertis budget.xlsx en PDF et ouvre-le dans ChaAI Office”
 
 ## L’enregistrer depuis la ligne de commande
 

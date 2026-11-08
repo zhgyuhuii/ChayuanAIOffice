@@ -14,7 +14,7 @@ Tempatnya ialah **Tetapan ▸ Integrasi**. Panel itu mempunyai dua bahagian, dan
 
 - “Tukar ~/Downloads/report.md kepada dokumen Word”
 - “Buat pembentangan 6 slaid tentang hasil S3 kami”
-- “Tukar budget.xlsx kepada PDF dan buka dalam GenOffice”
+- “Tukar budget.xlsx kepada PDF dan buka dalam ChaAI Office”
 
 ## Mendaftarkannya dari baris arahan
 

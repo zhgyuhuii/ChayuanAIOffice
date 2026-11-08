@@ -213,8 +213,8 @@ per OFL ("Noto" is a Reserved Font Name; advances are modified).
 
 | Font                                   | Role                                                    |
 | -------------------------------------- | ------------------------------------------------------- |
-| GenOffice Cordia (Regular/Bold woff2)  | Cordia New-metric stand-in for Thai families Word lacks |
-| GenOffice Sarabun (Regular/Bold woff2) | TH SarabunPSK-metric stand-in (Word ships that face)    |
+| ChaAI Office Cordia (Regular/Bold woff2)  | Cordia New-metric stand-in for Thai families Word lacks |
+| ChaAI Office Sarabun (Regular/Bold woff2) | TH SarabunPSK-metric stand-in (Word ships that face)    |
 
 Word for Mac ships Cordia New and TH SarabunPSK in its DFonts and substitutes
 Cordia New for every other Thai family (TH SarabunIT9, Angsana New, the UPC

@@ -14,7 +14,7 @@ ChaOffice говорит на языке Model Context Protocol, поэтому 
 
 - “Преврати ~/Downloads/report.md в документ Word”
 - “Сделай презентацию из 6 слайдов о наших результатах за 3-й квартал”
-- “Конвертируй budget.xlsx в PDF и открой в GenOffice”
+- “Конвертируй budget.xlsx в PDF и открой в ChaAI Office”
 
 ## Регистрация из командной строки
 

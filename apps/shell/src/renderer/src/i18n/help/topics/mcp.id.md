@@ -14,7 +14,7 @@ Inilah tempatnya: **Pengaturan ▸ Integrasi**. Panel ini punya dua bagian, dan 
 
 - “Ubah ~/Downloads/report.md menjadi dokumen Word”
 - “Buat presentasi 6 slide tentang hasil Q3 kami”
-- “Konversi budget.xlsx ke PDF dan buka di GenOffice”
+- “Konversi budget.xlsx ke PDF dan buka di ChaAI Office”
 
 ## Mendaftarkannya dari baris perintah
 

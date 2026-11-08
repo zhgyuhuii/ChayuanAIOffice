@@ -14,7 +14,7 @@ ChaOffice habla el Model Context Protocol, de modo que un agente de codificació
 
 - “Convierte ~/Downloads/report.md en un documento de Word”
 - “Haz una presentación de 6 diapositivas sobre nuestros resultados del T3”
-- “Convierte budget.xlsx a PDF y ábrelo en GenOffice”
+- “Convierte budget.xlsx a PDF y ábrelo en ChaAI Office”
 
 ## Registrarlo desde la línea de comandos
 

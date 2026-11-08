@@ -14,7 +14,7 @@ ChaOffice 说 Model Context Protocol，所以编程代理可以通过应用所�
 
 - “把 ~/Downloads/report.md 转成 Word 文档”
 - “做一份 6 页的幻灯片，介绍我们第三季度的业绩”
-- “把 budget.xlsx 转成 PDF，并在 GenOffice 里打开”
+- “把 budget.xlsx 转成 PDF，并在 ChaAI Office 里打开”
 
 ## 从命令行注册
 

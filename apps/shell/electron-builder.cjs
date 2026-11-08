@@ -814,7 +814,7 @@ const config = {
     // ChaOffice-<v>.AppImage / chaoffice_<v>_amd64.deb — because the public
     // README download links and the already-published linux-v0.5.149 release
     // use them. The arm64 targets reuse the ${arch}-templated deb/rpm names
-    // (genoffice_<v>_arm64.deb).
+    // (chaoffice_<v>_arm64.deb).
     target: [
       { target: 'AppImage', arch: [linuxArch] },
       { target: 'deb', arch: [linuxArch] },
