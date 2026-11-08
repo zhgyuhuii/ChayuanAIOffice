@@ -50,7 +50,7 @@ import { redactPdf } from './redaction'
 const num = (v: number) => Math.round(v * 100) / 100
 const STATIC_FORM_FILLS_KEY = PDFName.of('ChaOfficeStaticFormFills')
 /** /T of a new annotation when the request names no author */
-const DEFAULT_ANNOT_AUTHOR = 'ChaAI Office'
+const DEFAULT_ANNOT_AUTHOR = 'ChaOffice'
 
 const rectsIntersect = (a: readonly number[], b: readonly number[]): boolean =>
   Math.min(a[0]!, a[2]!) < Math.max(b[0]!, b[2]!) &&

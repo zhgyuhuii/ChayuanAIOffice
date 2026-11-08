@@ -1,6 +1,6 @@
 import { existsSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
-import { appleFontAssetRoots } from '@genoffice/font-metrics'
+import { appleFontAssetRoots } from '@chaoffice/font-metrics'
 
 /** PingFang lives under /System/Library/Fonts on older macOS, AssetsV2 on newer */
 export const hasPingFang = (() => {

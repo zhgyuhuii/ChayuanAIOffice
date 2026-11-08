@@ -82,9 +82,9 @@ describe('the author of a saved annotation', () => {
     })
   })
 
-  it('falls back to GenOffice, still as a text string, when no author is known', async () => {
+  it('falls back to ChaOffice, still as a text string, when no author is known', async () => {
     const authors = await savedAuthors()
-    expect(authors.get('Highlight')).toEqual(['GenOffice'])
-    expect(authors.get('Ink')).toEqual(['GenOffice'])
+    expect(authors.get('Highlight')).toEqual(['ChaOffice'])
+    expect(authors.get('Ink')).toEqual(['ChaOffice'])
   })
 })
