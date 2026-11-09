@@ -461,6 +461,7 @@ export const vi = {
   appColumnLabel: 'Cột {col}',
   appBridgeUnavailable: '桌面文件桥不可用。请重启 Electron 应用。',
   appOpenCanceled: 'Đã hủy chọn sổ làm việc.',
+  appImportCanceled: 'Đã hủy nhập.',
   appOpeningWorkbook: 'Đang mở sổ làm việc…',
   appOpened: 'Đã mở {name} — các chỉnh sửa ô được lưu lại bằng ⌘S.',
   appOpenFailed: 'Không thể mở sổ làm việc.',

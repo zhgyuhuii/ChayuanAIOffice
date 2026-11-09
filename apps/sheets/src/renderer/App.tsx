@@ -259,6 +259,8 @@ import { isSelectionDrag, type Point, type SelectionAskAnchor } from './ai/selec
 import { createAiDocument } from './ai/create-document'
 import { createWorkbookSkill } from './ai/workbook-skill'
 import { findWorkbookCells, selectWorkbookRange } from './ai/workbook-search'
+import { ImportProgressCard } from './ImportProgressCard'
+import { useImportProgress } from './import-progress'
 import {
   a1RangeToTarget,
   planTableRefresh,
@@ -932,7 +934,10 @@ export function App({
     () => createSheetTabActions({ univerRef, lazyWorkbookRef, notify: setMessage }),
     [],
   )
-  const [openingWorkbook] = useState(
+  /// how far a delimited import (a .csv/.tsv opened as a workbook) is; null
+  /// when no import is running
+  const importProgress = useImportProgress()
+  const [openingWorkbook, setOpeningWorkbook] = useState(
     () =>
       queuedWorkbookAtBoot ||
       new URLSearchParams(window.location.search).get('openingWorkbook') === '1',
@@ -1548,6 +1553,11 @@ export function App({
   /** The shell can repeat its queued-open nudge while the renderer starts.
    * Only one picker/open request may own the workbook session at a time. */
   const workbookOpeningRef = useRef(false)
+  /** The user stopped the delimited import rather than the file selection:
+   *  the open ends with nothing opened, but it is not a failed open. */
+  const importCancelledRef = useRef(false)
+  /** Current session's projectId/chatId (resolved when the workbook opens) */
+  const chatRefIdsRef = useRef<{ projectId: string; chatId: string } | null>(null)
 
   // File renamed externally (in the shell Home list) → sync the title-bar file
   // name (the save path is synced by the main process)
@@ -6502,13 +6512,24 @@ export function App({
   async function handleInspectWorkbook(): Promise<void> {
     if (workbookOpeningRef.current) return
     workbookOpeningRef.current = true
+    setOpeningWorkbook(true)
+    // each open starts fresh: a cancel belongs to the open it happened in
+    importCancelledRef.current = false
+    const finishOpening = (): void => {
+      workbookOpeningRef.current = false
+      setOpeningWorkbook(false)
+      focusSheetGrid()
+    }
     try {
       if (!window.desktopApi) {
         throw new Error(t('appBridgeUnavailable'))
       }
       let selected = await window.desktopApi.selectWorkbook()
       if (!selected) {
-        setMessage(t('appOpenCanceled'))
+        // The import was cancelled, not the file selection: the user picked a
+        // file and then stopped the conversion.
+        setMessage(importCancelledRef.current ? t('appImportCanceled') : t('appOpenCanceled'))
+        finishOpening()
         return
       }
       if ('passwordRequired' in selected) {
@@ -6529,17 +6550,21 @@ export function App({
         }
         selected = decryptedWorkbook
         if (!selected) {
-          setMessage(t('appOpenCanceled'))
+          setMessage(importCancelledRef.current ? t('appImportCanceled') : t('appOpenCanceled'))
+          finishOpening()
           return
         }
       }
-      openLazyWorkbook(selected)
+      if (!(await openLazyWorkbook(selected, { onInitialRangeLoaded: finishOpening }))) {
+        finishOpening()
+        setMessage(t('appOpenFailed'))
+        return
+      }
       setEmptyCsvNotice(selected.emptyCsv === true)
       setMessage(selected.emptyCsv ? '' : t('appOpened', { name: selected.name }))
     } catch (error: unknown) {
       setMessage(error instanceof Error ? error.message : t('appOpenFailed'))
-    } finally {
-      workbookOpeningRef.current = false
+      finishOpening()
     }
   }
 
@@ -7561,7 +7586,17 @@ export function App({
       />
       {openingWorkbook && (
         <div className="workbook-opening-screen" role="status" aria-live="polite">
-          {t('appOpeningWorkbook')}
+          <ImportProgressCard
+            progress={importProgress}
+            label={t('appOpeningWorkbook')}
+            cancelLabel={t('appDialogCancel')}
+            onCancel={() => {
+              // the open ends with nothing opened, but it is the user's own
+              // doing: it is not a failed open and not a cancelled selection
+              importCancelledRef.current = true
+              void window.desktopApi?.cancelImport?.()
+            }}
+          />
         </div>
       )}
       {encryptedPasswordPrompt && (
