@@ -625,6 +625,10 @@ export interface DesktopApi {
   writeMergeOutput(request: MergeOutputRequest): Promise<MergeOutputResponse>
   /** vertical metrics of an installed family (exact name match), null when missing */
   fontMetrics(family: string): Promise<FaceVerticalMetrics | null>
+  /** the other spellings of the installed faces behind these names: a localized
+   *  (CJK) family name yields the English spelling the browser resolves.
+   *  Only the names that have an alias are answered (chaoffice#2449). */
+  fontAliases(names: readonly string[]): Promise<Record<string, readonly string[]>>
   /** v2 settings view: BYOK keys redacted to the KEEP_KEY sentinel */
   getAiSettings(): Promise<AiSettingsV2>
   /** persist the view; KEEP_KEY entries keep their stored key */
