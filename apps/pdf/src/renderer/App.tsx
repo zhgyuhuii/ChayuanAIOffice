@@ -271,6 +271,8 @@ import {
   textEditPreviewParts,
   textEditPreviewContent,
   seedDraftColors,
+  draftOwnedEditIds,
+  previewsTextEdit,
   paperCss,
   textEraseKey,
   textEraseProbe,
@@ -6067,7 +6069,7 @@ export default function App() {
   /** Pending edits the open draft stands in for (reopened / folded): the draft's probe
       erases their run, so they take the draft's erased state */
   const draftOwnedIds = useMemo(
-    () => new Set(textDraft ? [textDraft.editId, ...(textDraft.foldedIds ?? [])] : []),
+    () => draftOwnedEditIds(textDraft),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- same: identity fields only
     [textDraft?.editId, textDraft?.foldedIds],
   )
@@ -9724,9 +9726,6 @@ export default function App() {
                                       className={`pdf-textblock-box${hovered ? ' is-hover' : ''}${
                                         textDraft ? ' is-faded' : ''
                                       }`}
-                                      style={{ ...box, ...dragCss }}
-                                    />
-                                    {(hovered || dragging) && !textDraft && (
                                       <div
                                         className="pdf-textblock-frame"
                                         style={{ ...box, ...dragCss }}
@@ -9927,7 +9926,7 @@ export default function App() {
                                   })}
                                 {/* Pending text edits: cover the original run and preview the replacement */}
                                 {textEdits
-                                  .filter((te) => te.input.pageIndex === origIdx)
+                                  .filter((te) => previewsTextEdit(te, origIdx, draftOwnedIds))
                                   .map((te) => {
                                     const { style, coverStyle } = textEditPreviewParts(
                                       te,
