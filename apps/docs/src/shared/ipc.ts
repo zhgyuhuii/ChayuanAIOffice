@@ -627,7 +627,7 @@ export interface DesktopApi {
   fontMetrics(family: string): Promise<FaceVerticalMetrics | null>
   /** the other spellings of the installed faces behind these names: a localized
    *  (CJK) family name yields the English spelling the browser resolves.
-   *  Only the names that have an alias are answered (chaoffice#2449). */
+   *  Only the names that have an alias are answered (genoffice#2449). */
   fontAliases(names: readonly string[]): Promise<Record<string, readonly string[]>>
   /** v2 settings view: BYOK keys redacted to the KEEP_KEY sentinel */
   getAiSettings(): Promise<AiSettingsV2>

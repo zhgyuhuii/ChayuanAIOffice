@@ -106,6 +106,7 @@ import {
   type GenSparkAccountStatus,
   type LegacyAiSettings,
 } from '@chaoffice/ai-provider'
+import { delimitedImportLimit } from './csv-import-limit'
 import {
   getSharedAiRuntime,
   persistGeneratedImage,
@@ -2062,8 +2063,8 @@ interface SheetsTabSession {
  * tab (or a closed-then-reopened tab) registered and overwrote the previous closure. */
 /// Same ceiling as local add_image (readLocalImage's 20MB check)
 const MAX_REMOTE_IMAGE_BYTES = 20 * 1024 * 1024
-/** Max CSV bytes converted on open: prevents 500MB CSV OOMing main before sidecar limits. */
-const MAX_DELIMITED_IMPORT_BYTES = 32 * 1024 * 1024
+// the .csv/.tsv ceiling lives with the numbers it describes (the gateway's
+// csv-limits, exposed through csv-import-limit)
 
 
 const unsavedNewWorkbooks = new Map<string, { suggestSaveAs: string; tempDir: string }>()
@@ -5377,7 +5378,12 @@ async function prepareWorkbookForOpen(
   try {
     if (extension === 'csv' || extension === 'tsv') {
       const csvStat = await stat(path)
-      if (csvStat.size > MAX_DELIMITED_IMPORT_BYTES) throw new Error(tm('errFileTooLarge'))
+      const limitBytes = delimitedImportLimit()
+      if (csvStat.size > limitBytes) {
+        const limitMb = Math.round(limitBytes / 1024 / 1024)
+        const sizeMb = (csvStat.size / 1024 / 1024).toFixed(1)
+        throw new Error(`${tm('errTooLarge', { mb: limitMb })} (${sizeMb} MB)`)
+      }
       const converted = await csvToXlsxBufferForOpen(
         decodeCsvBuffer(await readFile(path), legacyCsvCharset()),
         'Sheet1',

@@ -7,7 +7,12 @@ import {
   AI_CUSTOM_FONT_MIN_PX,
   AI_CUSTOM_FONT_MAX_PX,
 } from '@chaoffice/ui/ai-panel-prefs'
-import { AUTHOR_NAME_MAX, isCloudflareEndpoint } from '../../shared/home-api'
+import {
+  AUTHOR_NAME_MAX,
+  CSV_IMPORT_DEFAULT_LIMIT_MB,
+  CSV_IMPORT_LIMIT_CHOICES_MB,
+  isCloudflareEndpoint,
+} from '../../shared/home-api'
 import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { ModelSettingsPage } from '@chaoffice/ui/ModelSettingsPage'
@@ -627,6 +632,7 @@ export function SettingsModal({
   const [theme, setTheme] = useState<UiTheme>('system')
   const [docTheme, setDocTheme] = useState<DocTheme>('follow')
   const [updateState, setUpdateState] = useState<UpdateUiState | null>(null)
+  const [csvLimitMb, setCsvLimitMb] = useState(CSV_IMPORT_DEFAULT_LIMIT_MB)
   const [saveDir, setSaveDir] = useState('')
   const [analyticsOn, setAnalyticsOn] = useState(true)
   const [analyticsSaving, setAnalyticsSaving] = useState(false)
@@ -661,6 +667,12 @@ export function SettingsModal({
     })
     void window.chaOffice.getAutoSaveDefault?.().then((v) => {
       if (alive) setAutoSaveOn(v.on)
+    })
+    void window.chaOffice.getTabSleepEnabled?.().then((on) => {
+      if (alive) setTabSleepOn(on)
+    })
+    void window.chaOffice.getCsvImportLimit?.().then((mb) => {
+      if (alive && mb > 0) setCsvLimitMb(mb)
     })
     void window.chaOffice.getRestoreLastSession?.().then((on) => {
       if (alive) setRestoreSessionOn(on)
@@ -877,6 +889,26 @@ export function SettingsModal({
                       label: t(opt.labelKey),
                     }))}
                     onPick={(v) => applyDocumentTheme(v as DocTheme)}
+                  />
+                </div>
+                <div className="set-field">
+                  <div className="set-field-text">
+                    <label className="set-field-label">{t('csvImportLimit')}</label>
+                  </div>
+                  <Dropdown
+                    className="set-dd"
+                    value={String(csvLimitMb)}
+                    ariaLabel={t('csvImportLimit')}
+                    options={CSV_IMPORT_LIMIT_CHOICES_MB.map((mb) => ({
+                      value: String(mb),
+                      label: `${mb} MB`,
+                    }))}
+                    onPick={(v) => {
+                      const mb = Number(v)
+                      if (!Number.isInteger(mb)) return
+                      setCsvLimitMb(mb)
+                      void window.chaOffice.setCsvImportLimit?.(mb)
+                    }}
                   />
                 </div>
                 <div className="set-field">
