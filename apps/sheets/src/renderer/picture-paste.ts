@@ -39,9 +39,14 @@ export function transferHasImage(data: Pick<TransferLike, 'items'>): boolean {
 /// text without an <img> counterpart is still text, so both stay cell pastes.
 export function pickTransferImage(data: TransferLike): File | null {
   if (!transferHasImage(data)) return null
+  // The engine's Excel markers include the generic Office namespace, and it
+  // pastes such HTML itself, never the file: there only a transfer that is a
+  // picture (no cells, no text of its own) is claimed.
   const html = data.getData('text/html')
-  if (/<(table|tr|td|th)\b/i.test(html)) return null
-  if (data.getData('text/plain').trim() && !/<img\b/i.test(html)) return null
+  if (htmlIsFromExcel(html)) {
+    if (/<(table|tr|td|th)\b/i.test(html)) return null
+    if (data.getData('text/plain').trim() && !/<img\b/i.test(html)) return null
+  }
   for (const item of Array.from(data.items)) {
     if (item.kind !== 'file' || !item.type.startsWith('image/')) continue
     const file = item.getAsFile()
