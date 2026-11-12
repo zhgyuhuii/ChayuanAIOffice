@@ -217,6 +217,7 @@ export type DecisionEndpoint =
   | 'liquid'
   | 'liquid-ultra'
   | 'openai'
+  | 'gemini'
   | 'cloudflare'
   | 'cloudflare-flash'
   | 'kev'

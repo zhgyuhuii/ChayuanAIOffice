@@ -68,6 +68,7 @@ test('Jev reranking lives in its own settings section, saves instantly, and repo
           liquid: '',
           'liquid-ultra': '',
           openai: '',
+          gemini: '',
           cloudflare: '',
           'cloudflare-flash': '',
           kev: '',
