@@ -608,8 +608,9 @@ function buildPicture(
         rotationDeg: box.rotationDeg + m.rotationDeg,
       }
   }
-  // GDI metafiles play back on an opaque white DC: PowerPoint shows a white panel for
-  // an EMF/WMF that never paints its background (PlanS academy banner, measured)
+  // An EMF plays back on an opaque white DC: PowerPoint shows a white panel for one
+  // that never paints its background (PlanS academy banner, measured). A WMF is
+  // transparent: a legacy-deck table metafile over a tinted rectangle shows the tint.
   const isMetafile =
     typeof dataUrl === 'string' &&
     (/^data:image\/(x-)?(emf|wmf|emz|wmz)[;,]/.test(dataUrl) ||

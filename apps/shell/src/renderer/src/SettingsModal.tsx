@@ -7,6 +7,15 @@ import {
   AI_CUSTOM_FONT_MIN_PX,
   AI_CUSTOM_FONT_MAX_PX,
 } from '@chaoffice/ui/ai-panel-prefs'
+} from '@chaoffice/ui'
+import type { AiFontSize, AiPanelPrefs, AiPanelSide } from '@chaoffice/ui'
+import { getProviderAdapter, thinkingShapeFor } from '@chaoffice/ai-provider/browser'
+import type {
+  DecisionEndpoint,
+  DefaultAppStatus,
+  FileSearchSettings,
+  PdfDefaultZoom,
+} from '../../shared/home-api'
 import {
   AUTHOR_NAME_MAX,
   CSV_IMPORT_DEFAULT_LIMIT_MB,
@@ -639,7 +648,7 @@ export function SettingsModal({
   const [analyticsSaving, setAnalyticsSaving] = useState(false)
   const [autoSaveOn, setAutoSaveOn] = useState(false)
   const [tabSleepOn, setTabSleepOn] = useState(true)
-  const [restoreSessionOn, setRestoreSessionOn] = useState(false)
+  const [restoreSessionOn, setRestoreSessionOn] = useState(true)
   const [autoUpdateCheckOn, setAutoUpdateCheckOn] = useState(true)
   const [silentInstallOn, setSilentInstallOn] = useState(false)
   const [defaultApp, setDefaultApp] = useState<DefaultAppStatus | null>(null)
@@ -648,6 +657,7 @@ export function SettingsModal({
   const [aiPrefs, setAiPrefs] = useState<AiPanelPrefs>(DEFAULT_AI_PANEL_PREFS)
   const [authorName, setAuthorName] = useState<AuthorNameSetting>({ value: '', fallback: '' })
   const [legacyImportPrompt, setLegacyImportPrompt] = useState(true)
+  const [pdfDefaultZoom, setPdfDefaultZoom] = useState<PdfDefaultZoom>('width')
   const [channel, setChannel] = useState<'stable' | 'beta'>('stable')
   const [appVersion, setAppVersion] = useState('')
   const [githubStars, setGithubStars] = useState<number | null>(null)
@@ -686,6 +696,9 @@ export function SettingsModal({
     })
     void window.chaOffice.getLegacyImportPrompt?.().then((v) => {
       if (alive) setLegacyImportPrompt(v)
+    })
+    void window.chaOffice.getPdfDefaultZoom?.().then((v) => {
+      if (alive) setPdfDefaultZoom(v)
     })
     void window.chaOffice.getAuthorName?.().then((v) => {
       if (alive) setAuthorName(v)
@@ -1000,6 +1013,30 @@ export function SettingsModal({
                       void window.chaOffice.setLegacyImportPrompt?.(next).then(setLegacyImportPrompt)
                     }}
                   />
+                </div>
+                <div className="set-field">
+                  <div className="set-field-text">
+                    <div className="set-field-stack">
+                      <label className="set-field-label" htmlFor="set-pdf-default-zoom">
+                        {t('setPdfDefaultZoom')}
+                      </label>
+                      <div className="set-field-desc">{t('setPdfDefaultZoomDesc')}</div>
+                    </div>
+                  </div>
+                  <select
+                    id="set-pdf-default-zoom"
+                    className="set-input"
+                    value={pdfDefaultZoom}
+                    onChange={(e) => {
+                      const next = e.target.value as PdfDefaultZoom
+                      setPdfDefaultZoom(next)
+                      void window.chaOffice.setPdfDefaultZoom?.(next).then(setPdfDefaultZoom)
+                    }}
+                  >
+                    <option value="width">{t('setPdfDefaultZoomWidth')}</option>
+                    <option value="page">{t('setPdfDefaultZoomPage')}</option>
+                    <option value="last">{t('setPdfDefaultZoomLast')}</option>
+                  </select>
                 </div>
                 <div className="set-field">
                   <div className="set-field-text">

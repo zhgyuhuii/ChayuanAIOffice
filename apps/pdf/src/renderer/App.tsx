@@ -78,6 +78,15 @@ const PRINT_DUPLEX_MODES: PrintDuplex[] = ['simplex', 'longEdge', 'shortEdge']
 /** Auto-detect stops here so a long scanned form cannot flood the document with fields */
 const DETECT_FIELD_CAP = 300
 
+const REDACT_PATTERN_LABELS: Record<RedactPattern, StringKey> = {
+  phone: 'redactPatternPhone',
+  email: 'redactPatternEmail',
+  'credit-card': 'redactPatternCreditCard',
+  ssn: 'redactPatternSsn',
+  date: 'redactPatternDate',
+  iban: 'redactPatternIban',
+}
+
 /** Field names still taken once pending widget removals are applied (a fully removed field frees its name) */
 function liveFieldNames(
   catalog: FormCatalog | null,
@@ -114,8 +123,16 @@ import type { CropFractions, ImageBakeOp } from './image-bake'
 import { removeBackground, type PixelImage } from './cutout'
 import { navAction, shouldHandleDocumentUndo } from './keyNav'
 import { rowOfVisIdx, spreadRows, stepPage } from './spread'
-import { captureViewState, loadViewState, saveViewState } from './view-state'
-import type { PdfViewState } from './view-state'
+import {
+  captureViewState,
+  captureZoomAnchor,
+  loadLastZoom,
+  loadViewState,
+  saveLastZoom,
+  saveViewState,
+  zoomAnchorY,
+} from './view-state'
+import type { PdfViewState, ZoomAnchor } from './view-state'
 import { LinkLayer } from './LinkLayer'
 import { OutlinePanel } from './OutlinePanel'
 import { CommentsPanel, type CommentEntry } from './CommentsPanel'
@@ -139,6 +156,7 @@ import type {
   PrinterOption,
 } from '../shared/ipc'
 import { mayChangeProtection } from './protection-gate'
+import { MAX_REDACTION_REGIONS } from '../shared/ipc'
 import { PasswordDialog } from './PasswordDialog'
 import { PropertiesDialog } from './PropertiesDialog'
 import { LinkDialog, type LinkDraft } from './LinkDialog'
@@ -160,7 +178,9 @@ import {
 import { StampDialog } from './StampDialog'
 import { buildStamps } from './stamps'
 import type { HeaderFooterConfig, WatermarkConfig } from './stamps'
-import { createSearchIndexCache, searchInIndex } from './search'
+import { createSearchIndexCache, findPatternsInIndex, patternMarks, searchInIndex } from './search'
+import { REDACT_PATTERNS } from './redact-patterns'
+import type { RedactPattern } from './redact-patterns'
 import type { SearchIndex, SearchMatch } from './search'
 import { mapDocFont, type DocFontStyle } from './doc-font'
 import { groupPageBlocks, reflowOverflows, type TextBlock } from './text-block'
@@ -197,6 +217,7 @@ import {
 } from '@chaoffice/ui'
 import '@chaoffice/ui/dock.css'
 import { useI18n } from './i18n/locale'
+import type { StringKey } from './i18n/locale'
 import { useAutosave } from './useAutosave'
 import type {
   AnnotDeleteInput,
@@ -408,8 +429,8 @@ type RibbonTab = (typeof RIBBON_TABS)[number]['id'] | 'fillForm' | 'formDesign'
 
 /** The file's bytes before and after a change written to it at once */
 interface WrittenStep {
-  before: ArrayBuffer
-  after: ArrayBuffer
+  before: Uint8Array
+  after: Uint8Array
 }
 interface WrittenSteps {
   undo: WrittenStep[]
@@ -608,6 +629,10 @@ export default function App() {
     if (drawTool !== 'measure') measureRecalibrateRef.current = false
   }, [drawTool])
   const [redactions, setRedactions] = useState<LocalRedaction[]>([])
+  const redactionsRef = useRef(redactions)
+  redactionsRef.current = redactions
+  const [redactFindOpen, setRedactFindOpen] = useState(false)
+  const redactFindWrapRef = useRef<HTMLDivElement | null>(null)
   const redactionApplyConfirmedRef = useRef(false)
   const redactionRequestInFlightRef = useRef(false)
   const [redactionCopyInFlight, setRedactionCopyInFlight] = useState(false)
@@ -1726,6 +1751,13 @@ export default function App() {
     [],
   )
 
+  /** A fit mode is recomputed at 'ready'; a custom zoom must be in place before it so
+   *  the initial fit-width recompute does not take over */
+  const applyOpeningZoom = useCallback((zoom: { scale: number; fitMode: FitMode }) => {
+    fitModeRef.current = zoom.fitMode
+    if (zoom.fitMode === null) setScale(Math.min(MAX_SCALE, Math.max(MIN_SCALE, zoom.scale)))
+  }, [])
+
   const openPath = useCallback(
     async (path: string) => {
       try {
@@ -1740,9 +1772,11 @@ export default function App() {
         const savedView = loadViewState(path)
         if (savedView) {
           pendingViewRestoreRef.current = savedView
-          fitModeRef.current = savedView.fitMode
-          if (savedView.fitMode === null)
-            setScale(Math.min(MAX_SCALE, Math.max(MIN_SCALE, savedView.scale)))
+          applyOpeningZoom(savedView)
+        } else {
+          const pref = await window.pdfApi.getDefaultZoom().catch(() => 'width' as const)
+          const zoom = pref === 'last' ? loadLastZoom() : null
+          applyOpeningZoom(zoom ?? { scale: 1, fitMode: pref === 'page' ? 'page' : 'width' })
         }
         setStatus('ready')
       } catch (err) {
@@ -1772,7 +1806,7 @@ export default function App() {
         setStatus('error')
       }
     },
-    [loadDoc],
+    [loadDoc, applyOpeningZoom],
   )
 
   useEffect(() => {
@@ -1971,6 +2005,7 @@ export default function App() {
           fitMode: fitModeRef.current,
         }),
       )
+      saveLastZoom({ scale, fitMode: fitModeRef.current })
     }
     const schedule = () => {
       window.clearTimeout(timer)
@@ -4958,6 +4993,51 @@ export default function App() {
     return true
   }
 
+  // The ref is written in the same turn so back-to-back calls see the true count against the cap
+  const appendRedactions = (
+    marks: readonly { pageIndex: number; rect: [number, number, number, number] }[],
+  ) => {
+    if (marks.length === 0) return
+    const next = [...redactionsRef.current, ...marks.map((m) => ({ ...m, id: newId() }))]
+    redactionsRef.current = next
+    setRedactions(next)
+  }
+
+  /** Queue redaction marks over every hit of the patterns; the user still reviews and applies */
+  const markSensitive = async (
+    patterns: readonly RedactPattern[],
+  ): Promise<{ hits: number; areas: number; rotated: number; capped: boolean } | null> => {
+    const indexPromise = getSearchIndex()
+    if (!indexPromise) return null
+    const index = await indexPromise
+    const room = MAX_REDACTION_REGIONS - redactionsRef.current.length
+    const found = patternMarks(
+      findPatternsInIndex(index, patterns, (i) => deletedRef.current.has(i)),
+      room,
+    )
+    appendRedactions(found.marks)
+    return {
+      hits: found.hits,
+      areas: found.marks.length,
+      rotated: found.rotated,
+      capped: found.capped,
+    }
+  }
+
+  const runRedactFind = (patterns: readonly RedactPattern[]) => {
+    setRedactFindOpen(false)
+    void markSensitive(patterns).then(
+      (r) => {
+        if (!r) return
+        const notes = [r.hits > 0 ? t('redactFound', { count: r.hits }) : t('redactFoundNone')]
+        if (r.rotated > 0) notes.push(t('redactFoundRotated', { count: r.rotated }))
+        if (r.capped) notes.push(t('redactFoundCapped', { count: r.areas }))
+        showNotice(notes.join(' '))
+      },
+      (err: unknown) => opFailed(err instanceof Error ? err.message : String(err)),
+    )
+  }
+
   const requestRedactionSaveAs = () => {
     if (redactions.length === 0 || redactionRequestInFlightRef.current) return
     const otherPending =
@@ -6499,10 +6579,10 @@ export default function App() {
     return result as Exclude<R, { canceled: true }>
   }
   /** Reloads the file a change just wrote, and keeps the file from *before* it as an Undo step */
-  const reloadWritten = async (before: ArrayBuffer): Promise<number> => {
+  const reloadWritten = async (before: Uint8Array): Promise<number> => {
     const kept = writtenRef.current.undo
     const pageCount = await loadDoc(filePath, doc)
-    const after = await window.pdfApi.readFile(filePath)
+    const after = await readFileBytes(window.pdfApi, filePath)
     setWritten({ undo: [...kept.slice(-(MAX_WRITTEN_STEPS - 1)), { before, after }], redo: [] })
     return pageCount
   }
@@ -6517,7 +6597,10 @@ export default function App() {
     void (async () => {
       try {
         const bytes = direction === 'undo' ? step.before : step.after
-        const result = await window.pdfApi.restoreFile({ path: filePath, bytes })
+        const result = await window.pdfApi.restoreFile({
+          path: filePath,
+          bytes: bytes.slice().buffer as ArrayBuffer,
+        })
         if (!result.ok) {
           opFailed(result.error)
           return
@@ -6538,9 +6621,9 @@ export default function App() {
   const rewriteInPlace = async (
     run: () => Promise<{ ok: true } | { ok: true; canceled: true } | { ok: false; error: string }>,
   ): Promise<FileOpResult> => {
-    const held: { before?: ArrayBuffer } = {}
+    const held: { before?: Uint8Array } = {}
     const result = await runFileOp(async () => {
-      held.before = await window.pdfApi.readFile(filePath)
+      held.before = await readFileBytes(window.pdfApi, filePath)
       return run()
     })
     if (!result.ok || 'canceled' in result) return result
@@ -6630,7 +6713,7 @@ export default function App() {
     // the flush bakes the visible order into the file, so the anchor becomes its visible position
     const afterPageIndex = visListOf(orderRef.current).indexOf(afterOrigIdx)
     return flushThen(async () => {
-      const before = await window.pdfApi.readFile(filePath)
+      const before = await readFileBytes(window.pdfApi, filePath)
       const result = await window.pdfApi.insertPdf({ path: filePath, afterPageIndex })
       if (!result.ok) {
         opFailed(result.error)
@@ -7014,6 +7097,8 @@ export default function App() {
     },
     outline: () => outline,
     searchIndex: getSearchIndex,
+    redactionCount: () => redactionsRef.current.length,
+    addRedactions: appendRedactions,
     isDeleted: (i) => deletedRef.current.has(i),
     gotoPage: (p) => {
       if (orderRef.current !== order) {
@@ -7419,6 +7504,9 @@ export default function App() {
     const top = Math.max(0, Math.min(formMenu.y, window.innerHeight - r.height - 4))
     if (left !== formMenu.x || top !== formMenu.y) setFormMenu({ ...formMenu, x: left, y: top })
   }, [formMenu])
+  useDismissablePopover(redactFindOpen, () => setRedactFindOpen(false), {
+    inside: () => [redactFindWrapRef.current],
+  })
   useDismissablePopover(arrangeOpen, () => setArrangeOpen(false), {
     inside: () => [arrangeWrapRef.current],
   })
@@ -8447,27 +8535,88 @@ export default function App() {
                     </span>
                     <span>{t(key)}</span>
                   </button>
-                ))}
-                <button
-                  className={`rb-big${drawTool === 'redact' ? ' active' : ''}`}
-                  disabled={readOnly}
-                  data-tip={t('redactHint')}
-                  onClick={() => {
-                    setEditTextMode(false)
-                    setTextDraft(null)
-                    setPendingTextInsert(null)
-                    setImagePick(null)
-                    setEditImageMode(false)
-                    setDrawTool((tool) => (tool === 'redact' ? null : 'redact'))
-                  }}
-                >
-                  <span className="rb-big-icon">
-                    <IconRect />
-                  </span>
-                  <span>{t('redact')}</span>
-                </button>
-                {redactions.length > 0 && (
-                  <>
+                  <div className="rb-drop-wrap" ref={redactFindWrapRef}>
+                    <button
+                      className={`rb-big${redactFindOpen ? ' active' : ''}`}
+                      disabled={readOnly || redactionCopyInFlight}
+                      data-tip={t('redactFindHint')}
+                      onClick={() => setRedactFindOpen((v) => !v)}
+                    >
+                      <span className="rb-big-icon">
+                        <IconSearch />
+                        <RbCaret />
+                      </span>
+                      <span>{t('redactFind')}</span>
+                    </button>
+                    {redactFindOpen && (
+                      <div className="rb-drop rb-menu">
+                        {REDACT_PATTERNS.map((p) => (
+                          <button key={p} onClick={() => runRedactFind([p])}>
+                            {t(REDACT_PATTERN_LABELS[p])}
+                          </button>
+                        ))}
+                        <div className="rb-menu-sep" />
+                        <button onClick={() => runRedactFind(REDACT_PATTERNS)}>
+                          {t('redactFindAll')}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  {redactions.length > 0 && (
+                    <>
+                      <button
+                        className="rb-big"
+                        data-tip={t('redactClear')}
+                        onClick={() => setRedactions([])}
+                      >
+                        {t('redactClear')}
+                      </button>
+                      <button
+                        className="rb-big"
+                        data-tip={t('redactApply')}
+                        onClick={requestRedactionSaveAs}
+                      >
+                        {t('redactApply')}
+                      </button>
+                    </>
+                  )}
+                  <button
+                    className={`rb-big${pendingSign ? ' active' : ''}`}
+                    disabled={readOnly}
+                    data-tip={t('signTitle')}
+                    onClick={() => {
+                      if (pendingSign) setPendingSign(null)
+                      else openSignatureDialog(null)
+                    }}
+                  >
+                    <span className="rb-big-icon">
+                      <IconSign />
+                    </span>
+                    <span>{t('sign')}</span>
+                  </button>
+                  <button
+                    className="rb-big"
+                    disabled={readOnly || status !== 'ready'}
+                    data-tip={t('certSignHint')}
+                    onClick={openCertSignDialog}
+                  >
+                    <span className="rb-big-icon">
+                      <IconCertSign />
+                    </span>
+                    <span>{t('certSign')}</span>
+                  </button>
+                  <button
+                    className="rb-big"
+                    disabled={!protectionEditable || status !== 'ready'}
+                    data-tip={t('protectHint')}
+                    onClick={() => setProtectionDlg(true)}
+                  >
+                    <span className="rb-big-icon">
+                      <IconProtect />
+                    </span>
+                    <span>{t('protect')}</span>
+                  </button>
+                  {digitalSignatures.length > 0 && (
                     <button
                       className="rb-big"
                       data-tip={t('redactClear')}

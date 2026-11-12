@@ -2,14 +2,14 @@
   "source": "packages/docx-engine/tests/fixtures/truths/cjk-face-factors/probe.docx",
   "paragraphs": 8,
   "hashes": [
-    "26b6f82f03584a7c",
-    "573a6604b73461a6",
-    "288d8d4775363341",
-    "d664c91f81cb95c0",
-    "bb48175506f1fa03",
-    "38c0d2cd7d642f36",
-    "1300035715d77737",
-    "6c29ac19c8be8170"
+    "3df73368aba3f6b5",
+    "f0aec2f1fa2b4444",
+    "b6b14b752f999e62",
+    "f9a79e9df02ee6a0",
+    "b060fc20c69cc629",
+    "06940ed0c90dc23f",
+    "0c9658f743a1c168",
+    "56e9c57b66b483b8"
   ],
   "cellParagraphs": 0,
   "cellHashes": [],

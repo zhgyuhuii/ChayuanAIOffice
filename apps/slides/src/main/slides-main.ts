@@ -35,6 +35,7 @@ import { basename, dirname, join, resolve } from 'node:path'
 import { printSlidesHtml } from './print-window'
 import { cleanupExpiredGeneratedPages } from './generated-page-temp'
 import { buildExportImagePaths } from './export-images'
+import { registerVideoExportIpc } from './video-export'
 import { exportSlidesPdf } from './pdf-export'
 import {
   chaofficeApiKey,
@@ -85,7 +86,7 @@ import {
 import { matchesElementRef } from '@chaoffice/pptx-engine/identity'
 import { buildPagePptx, parsePageSpec } from '@chaoffice/pipelines/slides'
 import { convertOdpToPptx } from '../../../../packages/odf2ooxml/src'
-import { convertPptToPptx } from '../../../../packages/ppt2pptx/src'
+import { convertPptToPptx, LegacyPptError } from '../../../../packages/ppt2pptx/src'
 import { sniffImageMime } from './media-mime'
 import { getUiLang, normalizeLang, setUiLang } from '@chaoffice/i18n'
 import { ProjectStore } from '@chaoffice/project-store'
@@ -885,11 +886,12 @@ async function preparePresentationForOpen(filePath: string): Promise<string | nu
     // atomic like the Docs and shell copies: a plain write leaves a truncated
     // .pptx where the user expects a deck if the process dies mid-write
     await atomicWriteFile(r.filePath, Buffer.from(out))
-  } catch {
+  } catch (error) {
+    const encrypted = error instanceof LegacyPptError && error.code === 'encrypted'
     const errorOptions = {
       type: 'error' as const,
-      message: tm(failedTitleKey),
-      detail: tm(failedBodyKey),
+      message: tm(encrypted ? 'encryptedPptxTitle' : failedTitleKey),
+      detail: tm(encrypted ? 'encryptedPptxBody' : failedBodyKey),
     }
     if (parent) await dialog.showMessageBox(parent, errorOptions)
     else await dialog.showMessageBox(errorOptions)
@@ -5161,6 +5163,17 @@ export function registerSlidesIpc(): void {
     return r.canceled || !r.filePath ? null : r.filePath
   })
 
+  ipcMain.handle('slides:pick-export-video-path', async (_e, defaultName: string) => {
+    const options = {
+      title: tm('dlgExportVideo'),
+      defaultPath: defaultName,
+      filters: [{ name: 'MP4', extensions: ['mp4'] }],
+    }
+    const r = await showSaveDialogWithMemory(dialog, dialogParent(), options, getDraftsDir())
+    return r.canceled || !r.filePath ? null : r.filePath
+  })
+  registerVideoExportIpc(ipcMain)
+
   ipcMain.handle(
     'slides:save-picture',
     async (_e, op: SavePictureOp): Promise<SavePictureResult> => {
@@ -5726,6 +5739,7 @@ export function buildSlidesMenu(): Menu {
         { label: tm('menuExportPdf'), click: () => send('export-pdf') },
         { label: tm('menuExportImages'), click: () => send('export-images') },
         { label: tm('menuExportImagesJpg'), click: () => send('export-images-jpg') },
+        { label: tm('menuExportVideo'), click: () => send('export-video') },
         { label: tm('menuPrint'), accelerator: 'CmdOrCtrl+P', click: () => send('print') },
         { type: 'separator' },
         closeActiveTabHook

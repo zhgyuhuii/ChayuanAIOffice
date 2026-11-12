@@ -2,6 +2,7 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { htmlDir, htmlLang, type Lang } from '@chaoffice/i18n'
 import { App } from './App'
+import { installCanvasKerning } from './canvas-kerning'
 import { AudienceView } from './components/AudienceView'
 import { LocaleProvider, setModuleLang } from './i18n/locale'
 import type { SlidesApi } from '../shared/ipc'
@@ -24,6 +25,8 @@ import '@chaoffice/ui/ai-skills.css'
 import './styles.css'
 import { applyAiPanelPrefs, installScreenTips } from '@chaoffice/ui'
 import { installAnchorPanelFallback } from '@chaoffice/ui'
+
+installCanvasKerning()
 
 installScreenTips()
 
