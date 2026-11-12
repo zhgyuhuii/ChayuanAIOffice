@@ -1,4 +1,3 @@
-import './dev-identity'
 import { execSync, spawn } from 'node:child_process'
 import { startSiteSync } from './site-sync'
 import { randomUUID } from 'node:crypto'
@@ -33,7 +32,8 @@ import {
   webContents,
 } from 'electron'
 import type { MenuItemConstructorOptions, NativeImage, WebContents } from 'electron'
-import { atomicWriteFile } from './atomic-write'
+import { atomicCopyFile, atomicWriteFile } from './atomic-write'
+import { openTrash } from './trash'
 import { registerAiNamingIpc } from './ai-naming-service'
 import { tabStripOverlay } from './title-bar-overlay'
 import { createFeedbackClient } from './feedback'
@@ -6278,14 +6278,8 @@ function registerHomeIpc(): void {
     removeStarredFiles(removed)
   })
 
-  ipcMain.handle(HOME_CHANNELS.openTrash, () => {
-    if (process.platform === 'darwin') {
-      void shell.openPath(join(app.getPath('home'), '.Trash'))
-    } else if (process.platform === 'win32') {
-      spawn('explorer.exe', ['shell:RecycleBin'], { detached: true }).unref()
-    } else {
-      void shell.openPath(join(app.getPath('home'), '.local', 'share', 'Trash', 'files'))
-    }
+  ipcMain.handle(HOME_CHANNELS.openTrash, async () => {
+    await openTrash()
   })
 
   ipcMain.handle(HOME_CHANNELS.openHelp, () => {
