@@ -248,6 +248,7 @@ import { AiQueueAnchorsExtension } from './ai-queue-anchors'
 import { CheckboxToggleExtension } from './checkbox-toggle'
 import { DoubleClickWordExtension } from './dblclick-word'
 import { OutlineViewExtension } from './outline-view'
+import { StoryViewExtension } from './story-view'
 import { PageGapNavExtension } from './page-gap-nav'
 import { TrailingTableExitExtension } from './trailing-table-exit'
 import { moveBlocks } from './move-block'
@@ -7752,4 +7753,5 @@ export const editorExtensions = [
   RevisionOriginalExtension,
   BalloonMarkersExtension,
   AutoDirectionExtension,
+  StoryViewExtension,
 ]
