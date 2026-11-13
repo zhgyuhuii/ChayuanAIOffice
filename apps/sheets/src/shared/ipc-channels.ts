@@ -159,4 +159,7 @@ export const IPC_CHANNELS = {
   filesAddPastedImage: 'sheets:files-add-pasted-image',
   filesRead: 'sheets:files-read',
   filesReadImage: 'sheets:files-read-image',
+  /** Windows clipboard helper: append the copied range's EMF rendering */
+  appendCopyEmf: 'sheets:append-copy-emf',
+  copyEmfAvailable: 'sheets:copy-emf-available',
 } as const
