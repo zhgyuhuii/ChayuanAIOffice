@@ -49,7 +49,11 @@ import {
   transposeChartSeries,
   type ChartSeriesVisualState,
 } from '@chaoffice/xlsx-gateway/domain/chart-visual'
-import { applyFlashFillTemplate, inferFlashFillTemplate } from '@chaoffice/xlsx-gateway/domain/flash-fill'
+import {
+  applyFlashFillTemplate,
+  flashFillFirstSource,
+  inferFlashFillTemplate,
+} from '@chaoffice/xlsx-gateway/domain/flash-fill'
 import { csvSheetById, serializeActiveSheetCsv } from './csv-export'
 import { parseTsv, plainTextFromCells } from './clipboard-tsv'
 import { boundingRange, renderRangeToPng } from './range-image'
@@ -3740,7 +3744,13 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
           ctx.setMessage(t('appFlashFillNeedsRows'))
           return
         }
-        const firstSource = Math.max(0, targetColumn - 6)
+        const firstSource = flashFillFirstSource(targetColumn, (column) =>
+          (
+            worksheet.getRange(startRow, column, rowCount, 1).getValues() as (
+              string | number | boolean | null | undefined
+            )[][]
+          ).some(([value]) => String(value ?? '').trim() !== ''),
+        )
         const grid = worksheet
           .getRange(startRow, firstSource, rowCount, targetColumn - firstSource + 1)
           .getValues() as (string | number | boolean | null | undefined)[][]
