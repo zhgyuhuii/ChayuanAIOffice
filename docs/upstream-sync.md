@@ -840,8 +840,22 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | pptx-render wmf 底色覆盖 | EMF-only 跟随后本地 wmf/wmz 认知超集测试覆盖收敛 | 上游若回摆 wmf 底色再跟随 |
 | video-export 过渡时长表 | 本地 21 种过渡的 ms/缓动为估值（CSS 近似），非实测 | 发版前真机过一遍视频导出对齐时长 |
 | mp4-muxer 依赖 | 新增（slides video-export） | 发版打包链验证 |
+| check:inline-rules 基线红 | 上游新 CI 门禁照出 styles.css 本地存量段（移动端 P1 中文注释码点）；脚本已接线 | 后续 P1 样式迁 local.css 时顺带清零或补 allow 标记 |
 
 **R42 起点=19a389b39**（v0.13.18-56-g19a389b39）。
+
+### 三轮审查（用户令：做三次审查有无遗留，2026-11-15 合并后追加）
+
+| 轮 | 口径 | 结果 |
+|---|---|---|
+| ①提交级 | 120 提交逐个 patch-id 对本地 128 非 merge 提交 | 86 精确匹配；34 非精确=品牌改写/adapted 裁决/空 pick/Q5-②（逐一与施工记录对上，无悬空） |
+| ②行级 containment | 上游区间净新增行（brand 规范化后）须被本地包含；893 文件全扫 | 72 文件报缺，逐件归因：**1 件真实遗留已修复**（picture-paste.ts+test：#2599 Office 命名空间认领守卫块与三测试在 #2596 链上解错边被回退，ce132274a 取上游终态，18/18 绿）；其余=Route A/Q5-②/providers seeds/设置 restyle 拒收/金具重算/e2e 本地删除区，均为既录裁定 |
+| ③符号级 | 区间新增符号 2933 个（TS/Rust）逐个 git grep -w HEAD | 7 缺席全归因：withCompactSchemas/COMPACT_SCHEMAS_ENV/sameForm/tableText=Route A 挂账区；chipSwitch=settings-ai-panel.test（R24 裁定删）；oneLineDocx/shellPage=e2e 新件品牌改写（规范化后终态零差异实测） |
+| ③b i18n 键级 | 113 个 i18n/strings 文件上游新增键 vs 本地键集 | **0 缺失** |
+| ③c Rust 终态 | 5 文件规范化比对 | sparklines.rs/win-clipboard-helper 逐字节一致；lib.rs 差 1 行=临时目录前缀品牌基线；visuals.rs +47=本地四件套超集（edit_as 在位，仅注释措辞差） |
+| ③d 脚本面 | 根 package.json scripts 对账 | 补接线 4 件（check:font-rules/check:inline-rules/check:page-cut-readers/check:table-layout-rules，工具 .mjs 随快照已落库）；3 过 1 红——check:inline-rules 照出 styles.css 本地存量段（移动端 P1 中文注释），记基线红挂账（上游 CI 门禁，本地 test 链不含） |
+
+**审查结论**：除 picture-paste 一件（已修复）与 scripts 接线（已补）外，无其他合并遗留；所有差异均落既录裁定。
 
 
 
