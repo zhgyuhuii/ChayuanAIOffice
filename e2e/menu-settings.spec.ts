@@ -74,7 +74,7 @@ test('every app menu carries a Settings entry that opens the Settings view', asy
     await expect(page.locator('.set-dialog')).toBeVisible({ timeout: 30_000 })
 
     // and the same holds in another editor, whose menu is built elsewhere
-    await page.evaluate((p) => window.aiOffice.openPath(p), mdPath)
+    await page.evaluate((p) => window.chaOffice.openPath(p), mdPath)
     await waitForPageWithUrl(app, '://markdown/')
     await page.waitForTimeout(1500)
 

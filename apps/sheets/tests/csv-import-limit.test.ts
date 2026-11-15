@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { CSV_IMPORT_DEFAULT_LIMIT_MB } from '@genoffice/xlsx-gateway/gateway/csv-limits'
+import { CSV_IMPORT_DEFAULT_LIMIT_MB } from '@chaoffice/xlsx-gateway/gateway/csv-limits'
 
 import { delimitedImportLimit, setDelimitedImportLimit } from '../src/main/csv-import-limit'
 

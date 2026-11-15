@@ -5,7 +5,7 @@
  * canvas re-runs the pass and the new cuts carry the float.
  */
 import { describe, expect, it, vi } from 'vitest'
-import type { SectionSettings } from '@genoffice/docx-engine'
+import type { SectionSettings } from '@chaoffice/docx-engine'
 import {
   FloatWatch,
   changedFloatBoxes,

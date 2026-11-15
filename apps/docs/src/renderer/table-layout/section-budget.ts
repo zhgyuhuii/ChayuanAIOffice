@@ -1,4 +1,4 @@
-import type { SectionInfo, TableModel } from '@genoffice/docx-engine'
+import type { SectionInfo, TableModel } from '@chaoffice/docx-engine'
 
 /** twips a body table may use: growth bound, text column and paper (resolveTableWidth input) */
 export interface TableWidthBudget {

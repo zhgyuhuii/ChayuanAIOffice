@@ -89,8 +89,6 @@ import {
   AiQueueStrip,
   AI_QUEUE_LABELS,
   AiUsageChip,
-  AiSkillChips,
-  AiSkillsMenu,
   addTokenUsage,
   useChatRunQueue,
   type AiTokenUsageView,

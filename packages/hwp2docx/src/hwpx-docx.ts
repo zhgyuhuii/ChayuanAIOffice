@@ -226,7 +226,7 @@ export async function convertHwpxToDocx(hwpx: Uint8Array): Promise<HwpxToDocxRes
     ...((ended ?? ctx.section) ? { section: (ended ?? ctx.section)! } : {}),
     ...(Object.keys(ctx.pictures).length > 0 ? { newPictures: ctx.pictures } : {}),
   })
-  // original font names stay on the runs; the table tells Word/GenOffice how to substitute
+  // original font names stay on the runs; the table tells Word/ChaAI Office how to substitute
   // one more pass over the package: the parts docx-engine does not write
   const zip = await JSZip.loadAsync(saved)
   await addHeaderFooter(zip, ctx.hf, pageNumberRunPr(ctx))
@@ -1177,7 +1177,7 @@ function withKeepNext(xml: string): string {
   return xml.slice(0, m.index) + next + xml.slice(m.index + m[0].length)
 }
 
-/** Word's left cell margin where a table declares none (GenOffice convert.ts DEFAULT_CELL_MAR) */
+/** Word's left cell margin where a table declares none (ChaAI Office convert.ts DEFAULT_CELL_MAR) */
 const WORD_CELL_MARGIN_TW = 108
 
 /** the line a table set like a character (treatAsChar) occupies in its host paragraph */
@@ -1307,7 +1307,7 @@ function tableHost(
     startTw,
     endTw,
     roomTw: saved > 0 ? saved - startTw - endTw : null,
-    // the host's own page break is not carried (as before): GenOffice then
+    // the host's own page break is not carried (as before): ChaAI Office then
     // places the page-break paragraph after a page-relative full-page
     // picture on the picture's page and holds that picture's band on the
     // next page too (a press release ran a page long); a page started by the

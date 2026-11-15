@@ -270,8 +270,8 @@ import {
   quarterTurnMarginCss,
   type PictureLayer,
 } from './image-rotation'
-import {
 import { FormModeExtension } from '../docops/form-mode'
+import {
   blockPictureAnchor,
   resolveAnchor,
   runPictureAnchor,

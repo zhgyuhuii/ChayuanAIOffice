@@ -100,7 +100,7 @@ export interface AutoSaveDefault {
 export {
   CSV_IMPORT_DEFAULT_LIMIT_MB,
   CSV_IMPORT_LIMIT_CHOICES_MB,
-} from '@genoffice/xlsx-gateway/gateway/csv-limits'
+} from '@chaoffice/xlsx-gateway/gateway/csv-limits'
 
 /** local MCP server state (persisted in userData/app-settings.json) */
 export interface McpStatus {

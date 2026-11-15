@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { useAiPanelPrefs, useImeEnterGuard } from '@genoffice/ui'
+import { useAiPanelPrefs, useImeEnterGuard } from '@chaoffice/ui'
 import { useI18n } from '../i18n/locale'
 import {
   selectionAskPosition,

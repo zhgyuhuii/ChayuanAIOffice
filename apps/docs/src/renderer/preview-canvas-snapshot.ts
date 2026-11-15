@@ -2,8 +2,8 @@
 // comment / revision anchors, per-block clone geometry, the preview-only CSS derived from
 // the pass blocks' DOM markers. The preview component and the export path read the canvas
 // through this module only (tools/check-page-cut-readers.mjs).
-import type { CommentInfo, SectionInfo } from '@genoffice/docx-engine'
-import { decodeEntities } from '@genoffice/docx-engine'
+import type { CommentInfo, SectionInfo } from '@chaoffice/docx-engine'
+import { decodeEntities } from '@chaoffice/docx-engine'
 import {
   anchorShiftPx,
   pageRelHang,

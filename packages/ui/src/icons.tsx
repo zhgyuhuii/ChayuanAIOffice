@@ -99,3 +99,12 @@ export function IconPlay(props: IconProps) {
     </Svg>
   )
 }
+
+export function IconEnter(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M13 3.5v4a2.5 2.5 0 0 1-2.5 2.5H3.5" />
+      <path d="M6.5 7 3.5 10l3 3" />
+    </Svg>
+  )
+}

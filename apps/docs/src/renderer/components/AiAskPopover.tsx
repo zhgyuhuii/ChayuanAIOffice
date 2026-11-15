@@ -10,14 +10,14 @@
  * editable there) instead of discarding it.
  */
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { useImeEnterGuard } from '@genoffice/ui'
+import { useImeEnterGuard } from '@chaoffice/ui'
 import type { Editor } from '@tiptap/core'
 import { NodeSelection } from '@tiptap/pm/state'
 import { CellSelection } from '@tiptap/pm/tables'
 import { useI18n, type StringKey } from '../i18n/locale'
 import { AI_QUEUE_ANCHOR_CLICK, queueAnchorRange } from '../editor/ai-queue-anchors'
 import { setInactiveSelectionShown } from '../editor/inactive-selection'
-import { useAiPanelPrefs } from '@genoffice/ui'
+import { useAiPanelPrefs } from '@chaoffice/ui'
 import {
   EDIT_INSTRUCTION_MAX,
   EDIT_QUEUE_MAX,

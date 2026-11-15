@@ -10,7 +10,7 @@
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
-import { useImeEnterGuard } from '@genoffice/ui'
+import { useImeEnterGuard } from '@chaoffice/ui'
 import { useI18n, type StringKey } from './i18n/locale'
 
 export interface AskAnchorRect {

@@ -3,7 +3,7 @@
  * animation steps run back to back, recorded narration on the audio track — and encodes the
  * frames into an MP4 next to the deck. Progress and cancellation flow through the dialog.
  */
-import type { RenderSlide } from '@genoffice/pptx-render'
+import type { RenderSlide } from '@chaoffice/pptx-render'
 import { buildSteps, computeNodeStates } from '../animation-play'
 import type { FrameRenderer } from './frames'
 import { AUDIO_SAMPLE_RATE, EncoderUnsupportedError, Mp4Writer } from './encoder'

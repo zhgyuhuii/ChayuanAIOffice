@@ -7,22 +7,14 @@ import {
   AI_CUSTOM_FONT_MIN_PX,
   AI_CUSTOM_FONT_MAX_PX,
 } from '@chaoffice/ui/ai-panel-prefs'
-} from '@chaoffice/ui'
-import type { AiFontSize, AiPanelPrefs, AiPanelSide } from '@chaoffice/ui'
 import { getProviderAdapter, thinkingShapeFor } from '@chaoffice/ai-provider/browser'
-import type {
-  DecisionEndpoint,
-  DefaultAppStatus,
-  FileSearchSettings,
-  PdfDefaultZoom,
-} from '../../shared/home-api'
 import {
   AUTHOR_NAME_MAX,
   CSV_IMPORT_DEFAULT_LIMIT_MB,
   CSV_IMPORT_LIMIT_CHOICES_MB,
   isCloudflareEndpoint,
 } from '../../shared/home-api'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { ModelSettingsPage } from '@chaoffice/ui/ModelSettingsPage'
 import { CapabilitySettingsPage } from '@chaoffice/ui/CapabilitySettingsPage'
@@ -38,6 +30,7 @@ import type {
   DocTheme,
   FileSearchSettings,
   DecisionEndpoint,
+  PdfDefaultZoom,
   UiTheme,
 } from '../../shared/home-api'
 import type { UpdateUiState } from '../../shared/update-api'
@@ -48,6 +41,7 @@ import { McpServerSettings } from './McpServerSettings'
 import { McpManagePane } from './McpManagePane'
 import './settings.css'
 import './settings-skin.css'
+import { useSlidingIndicator } from './settings-fx'
 import './settings-fx.css'
 
 // ── Settings modal (opened from the account menu) ─────────
@@ -633,12 +627,17 @@ export interface SettingsModalProps {
 
 export function SettingsModal({
   onClose,
+  status = null,
   skillUpdateDue: updateDue = false,
   onSkillUpdateDue,
   initialSection,
 }: SettingsModalProps) {
   const { lang, setLang, t } = useI18n()
   const [section, setSection] = useState<SectionId>(initialSection ?? 'modelSettings')
+  const navRef = useRef<HTMLElement | null>(null)
+  const navPill = useSlidingIndicator(navRef, '.set-nav-item.active', section)
+  const loggedIn = status?.loggedIn ?? false
+  const email = status?.email ?? ''
   // 生图、媒体与搜索 → 去模型设置启用：deep link onto that vendor's form
   const [aiModelVendor, setAiModelVendor] = useState<string | undefined>(undefined)
   const [theme, setTheme] = useState<UiTheme>('system')
@@ -1192,7 +1191,7 @@ export function SettingsModal({
                     onChange={(e) => {
                       const next = e.target.value as PdfDefaultZoom
                       setPdfDefaultZoom(next)
-                      void window.aiOffice.setPdfDefaultZoom?.(next).then(setPdfDefaultZoom)
+                      void window.chaOffice.setPdfDefaultZoom?.(next).then(setPdfDefaultZoom)
                     }}
                   >
                     <option value="width">{t('setPdfDefaultZoomWidth')}</option>
@@ -1215,7 +1214,7 @@ export function SettingsModal({
                     onClick={() => {
                       const next = !legacyImportPrompt
                       setLegacyImportPrompt(next)
-                      void window.aiOffice.setLegacyImportPrompt?.(next).then(setLegacyImportPrompt)
+                      void window.chaOffice.setLegacyImportPrompt?.(next).then(setLegacyImportPrompt)
                     }}
                   />
                 </div>
@@ -1235,7 +1234,7 @@ export function SettingsModal({
                       const mb = Number(v)
                       if (!Number.isInteger(mb)) return
                       setCsvLimitMb(mb)
-                      void window.aiOffice.setCsvImportLimit?.(mb)
+                      void window.chaOffice.setCsvImportLimit?.(mb)
                     }}
                   />
                 </div>

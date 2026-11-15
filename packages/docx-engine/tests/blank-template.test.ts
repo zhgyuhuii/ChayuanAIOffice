@@ -260,12 +260,12 @@ describe('blank document template (new-document / AI generation base)', () => {
     const zip = await JSZip.loadAsync(
       await buildBlankDocx({
         createdAt: CREATED,
-        application: 'GenOffice Docs',
+        application: 'ChaAI Office Docs',
         appVersion: '9.9.9',
       }),
     )
     const app = await zip.file('docProps/app.xml')!.async('string')
-    expect(app).toContain('<Application>GenOffice Docs</Application>')
+    expect(app).toContain('<Application>ChaAI Office Docs</Application>')
     expect(app).toContain('<AppVersion>9.9.9</AppVersion>')
   })
 })

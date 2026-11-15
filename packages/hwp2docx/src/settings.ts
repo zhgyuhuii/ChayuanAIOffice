@@ -18,7 +18,7 @@ const SETTINGS_CT = 'application/vnd.openxmlformats-officedocument.wordprocessin
 const COMPAT = '<w:compat><w:balanceSingleByteDoubleByteWidth/><w:useFELayout/></w:compat>'
 
 /**
- * The document language, Korean: without a w:lang Word (and GenOffice) keep
+ * The document language, Korean: without a w:lang Word (and ChaAI Office) keep
  * the Japanese line rules, hanging or squeezing a closing bracket into the
  * margin to pull a syllable up (a statute form keeps "…관한 법률」" on one line), which
  * Hangul never does. CT_RPr puts w:lang after w:szCs.

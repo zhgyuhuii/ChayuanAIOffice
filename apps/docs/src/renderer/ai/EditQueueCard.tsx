@@ -4,7 +4,7 @@
  * follows the current content instead of a snapshot taken at annotation time.
  */
 import React, { useState } from 'react'
-import { useImeEnterGuard } from '@genoffice/ui'
+import { useImeEnterGuard } from '@chaoffice/ui'
 import type { Editor } from '@tiptap/core'
 import { useI18n } from '../i18n/locale'
 import {

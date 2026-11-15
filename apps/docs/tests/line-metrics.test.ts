@@ -75,7 +75,7 @@ import {
   simsunGapLineFactor,
   wordMetricAliasFace,
 } from '../src/renderer/text-layout/font-rules'
-import type { Run } from '@genoffice/docx-engine'
+import type { Run } from '@chaoffice/docx-engine'
 import {
   latinParaFactor,
   layoutParaOfRuns,
@@ -897,7 +897,7 @@ describe('cssFontFamily', () => {
     // an HTML export declaring system-ui on every run: Word prints Cambria, Chromium would draw the platform UI face
     for (const f of ['system-ui', 'sans-serif', 'cursive']) {
       expect(cssFontFamily(f)).toBe(
-        "'Cambria','Caladea','Cambria Cyrillic GO','GenOffice Box Drawing','Noto Serif CJK SC',serif",
+        "'Cambria','Caladea','Cambria Cyrillic GO','ChaAI Office Box Drawing','Noto Serif CJK SC',serif",
       )
       expect(lineHeightFactor(f)).toBe(1.1724)
     }
@@ -1046,14 +1046,14 @@ describe('cssFontFamily', () => {
     expect(cssDualFontFamily('MS UI Gothic', 'Meiryo')).not.toContain('JA GO')
     // the JA chains' hangul tail stays out of the Latin head: hangul of a dual-slot run is the eastAsia face's
     const jaKo = cssDualFontFamily('MS Mincho', 'Malgun Gothic')
-    expect(jaKo.indexOf("'Malgun Gothic'")).toBeLessThan(jaKo.indexOf("'GenOffice Sans KR'"))
-    expect(jaKo).not.toContain("'GenOffice Batang'")
+    expect(jaKo.indexOf("'Malgun Gothic'")).toBeLessThan(jaKo.indexOf("'ChaOffice Sans KR'"))
+    expect(jaKo).not.toContain("'ChaAI Office Batang'")
     // a Korean ascii face keeps its bundled stand-ins in the inherited Latin chain
-    expect(docLatinChainCss('Malgun Gothic')).toContain("'GenOffice Sans KR'")
+    expect(docLatinChainCss('Malgun Gothic')).toContain("'ChaOffice Sans KR'")
     // a declared Noto JP head keeps its own substitute chain, only the KR tail goes
     const notoJp = docLatinChainCss('Noto Sans JP')
     expect(notoJp).toContain("'KR Theme Latin GO'")
-    expect(notoJp).not.toContain("'GenOffice Sans KR'")
+    expect(notoJp).not.toContain("'ChaOffice Sans KR'")
     expect(docLatinChainCss('MS PGothic')).not.toContain('JA GO')
     // Berlin Sans FB Demi rides its bold alias; the regular cut is unprobed
     expect(cssFontFamily('Berlin Sans FB Demi')).toContain("'Berlin Sans FB GO'")

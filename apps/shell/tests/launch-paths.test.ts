@@ -104,7 +104,7 @@ describe('collectLaunchPaths', () => {
     // .ppt converts through the slides route since the legacy importer landed
     expect(
       collectLaunchPaths(
-        ['GenOffice.exe', 'legacy.ppt', 'unsupported.rtf'],
+        ['ChaAI Office.exe', 'legacy.ppt', 'unsupported.rtf'],
         undefined,
         (path) => path === 'legacy.ppt' || path === 'unsupported.rtf',
       ),

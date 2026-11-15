@@ -269,7 +269,7 @@ function createConvertDocumentTool(deps: DocToolDeps): McpToolDefinition {
   return {
     name: 'convert_document',
     description:
-      'Convert a document to another format with the GenOffice engines and write the result to ' +
+      'Convert a document to another format with the ChaAI Office engines and write the result to ' +
       'disk without opening the app: pdf → docx/pptx/xlsx/md, legacy .doc/.ppt → modern Open ' +
       'XML, odt/ods/ots → xlsx/docx, hwp/hwpx → docx, md → docx/html, docx → md, xlsx → csv. ' +
       'An unsupported pair is refused with the list of targets the source format supports. ' +

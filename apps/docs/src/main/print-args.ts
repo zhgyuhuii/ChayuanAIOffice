@@ -76,5 +76,4 @@ export function printPaperOption(
   }
 }
 
-export { printJobOptions } from '@chaoffice/electron-utils/print-job'
-export type { PrintDuplex, PrintJobOptions } from '@chaoffice/electron-utils/print-job'
+

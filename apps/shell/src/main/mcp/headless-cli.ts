@@ -165,7 +165,7 @@ export async function mergeTemplateViaCli(
  * `sheet links <path>`: list, refresh (`--update`) or break (`--break`, 1-based
  * indices) a workbook's external links. Mutations default to writing in place
  * and honour `--out`/`--force` — the CLI routes them through the same
- * output/allow-list/open-in-GenOffice guards `sheet apply` uses.
+ * output/allow-list/open-in-ChaAI Office guards `sheet apply` uses.
  */
 export async function sheetLinksViaCli(
   runner: CliRunner,

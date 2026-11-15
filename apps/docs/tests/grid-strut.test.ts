@@ -183,10 +183,10 @@ describe('docStyleCss grid strut face', () => {
       docStyleCss(parsedWith(GRID_SECT)),
       docStyleCss(parsedWith(null, 'Century')),
     ]) {
-      expect(css).not.toContain("@font-face { font-family:'GenOffice Grid Strut'")
+      expect(css).not.toContain("@font-face { font-family:'ChaAI Office Grid Strut'")
       expect(css).not.toContain('.doc-ea-strut')
       expect(css).toContain(
-        ".doc-page :is(.doc-grid-strut) { font-family:var(--doc-strut-face,'GenOffice Grid Strut'),var(--doc-grid-strut-tail,serif) !important }",
+        ".doc-page :is(.doc-grid-strut) { font-family:var(--doc-strut-face,'ChaAI Office Grid Strut'),var(--doc-grid-strut-tail,serif) !important }",
       )
       expect(css).toContain('--doc-grid-strut-tail:')
     }
@@ -220,7 +220,7 @@ describe('docStyleCss grid strut face', () => {
     const resolved = parsedWith(GRID_SECT, 'PMingLiU', { eaSlotEmpty: true, eaFromLang: true })
     expect(docStyleCss(resolved)).toContain('ascent-override:95.08%')
     const unresolved = parsedWith(GRID_SECT, 'Yu Gothic', { eaSlotEmpty: true })
-    expect(docStyleCss(unresolved)).not.toContain("@font-face { font-family:'GenOffice Grid Strut'")
+    expect(docStyleCss(unresolved)).not.toContain("@font-face { font-family:'ChaAI Office Grid Strut'")
   })
 
   it('Office-private faces under a metric alias get the strut without a grid', () => {
@@ -301,7 +301,7 @@ describe('per-paragraph strut face (strut-face.ts)', () => {
     const added = stubFontFaces()
     // MS Gothic and MS Mincho share Word's hhea (0.8594 / 0.1406) and line factor: one face
     const gothic = declaredStrutFace('ＭＳ ゴシック')
-    expect(gothic).toBe('GenOffice Grid Strut 1')
+    expect(gothic).toBe('ChaAI Office Grid Strut 1')
     expect(declaredStrutFace('MS Mincho')).toBe(gothic)
     expect(added).toHaveLength(1)
     expect(added[0].src).toContain('GenOfficePUABlank.woff2')
@@ -310,8 +310,8 @@ describe('per-paragraph strut face (strut-face.ts)', () => {
       descentOverride: '29.06%',
       lineGapOverride: '0%',
     })
-    expect(declaredStrutFace('Yu Mincho')).toBe('GenOffice Grid Strut 2')
-    expect(declaredStrutFace('Calibri')).toBe('GenOffice Grid Strut 3')
+    expect(declaredStrutFace('Yu Mincho')).toBe('ChaAI Office Grid Strut 2')
+    expect(declaredStrutFace('Calibri')).toBe('ChaAI Office Grid Strut 3')
     expect(document.fonts.add).toHaveBeenCalledTimes(3)
 
     // a Cambria + MS Gothic paragraph under a Latin-only document: the runs'
@@ -323,7 +323,7 @@ describe('per-paragraph strut face (strut-face.ts)', () => {
     })
     const p = pOf(editor)
     expect(p.classList.contains('doc-grid-strut')).toBe(true)
-    expect(p.style.getPropertyValue('--doc-strut-face')).toBe("'GenOffice Grid Strut 1'")
+    expect(p.style.getPropertyValue('--doc-strut-face')).toBe("'ChaAI Office Grid Strut 1'")
     editor.destroy()
   })
 

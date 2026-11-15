@@ -1,4 +1,4 @@
-import type { TableCell, TableModel, TableParagraph } from '@genoffice/docx-engine'
+import type { TableCell, TableModel, TableParagraph } from '@chaoffice/docx-engine'
 import { textHasComplexScript } from '../line-metrics'
 import { borderTotalPt } from '../editor/border-metrics'
 import type { MeasureRun, RunDefaults, TextMeasure } from './measure'

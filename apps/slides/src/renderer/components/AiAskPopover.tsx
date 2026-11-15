@@ -7,7 +7,7 @@
  * coordinates and refreshed while the canvas scrolls or zooms.
  */
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { useAiPanelPrefs, useImeEnterGuard } from '@genoffice/ui'
+import { useAiPanelPrefs, useImeEnterGuard } from '@chaoffice/ui'
 import { useI18n, type StringKey } from '../i18n/locale'
 import {
   EDIT_INSTRUCTION_MAX,

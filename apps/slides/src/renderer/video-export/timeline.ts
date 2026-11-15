@@ -25,6 +25,28 @@ export const TRANSITION_MS: Record<PlayedTransition, number> = {
   pull: 500,
   dissolve: 600,
   zoom: 500,
+  // local transition effects (local TransitionKind superset): CSS durations from transitions.css
+  blinds: 700,
+  checker: 700,
+  comb: 700,
+  cut: 0,
+  diamond: 600,
+  newsflash: 700,
+  plus: 600,
+  strips: 700,
+  wedge: 700,
+  wheel: 700,
+  ripple: 800,
+  glitter: 800,
+  vortex: 800,
+  doors: 700,
+  window: 700,
+  honeycomb: 800,
+  flash: 400,
+  ferris: 800,
+  gallery: 800,
+  conveyor: 800,
+  randomBar: 600,
 }
 
 const RANDOM_POOL: PlayedTransition[] = [

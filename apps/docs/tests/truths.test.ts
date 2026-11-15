@@ -16,7 +16,7 @@ import {
   type SectionInfo,
   type SectionSettings,
   type TabStop,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import {
   autoSpacingPt,
   autospaceMode,

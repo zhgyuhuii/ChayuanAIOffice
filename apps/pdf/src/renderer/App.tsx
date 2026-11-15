@@ -8327,13 +8327,13 @@ export default function App() {
                 <button
                   className="rb-big"
                   data-tip={`${t('print')} (${platformShortcuts('⌘P')})`}
-                  disabled={printing}
-                  onClick={openPrintDlg}
+                  disabled={print.printing}
+                  onClick={print.openPrintDlg}
                 >
                   <span className="rb-big-icon">
                     <IconPrint />
                   </span>
-                  {printing ? t('printPreparing') : t('print')}
+                  {print.printing ? t('printPreparing') : t('print')}
                 </button>
                 <button
                   className="rb-big"
@@ -8411,6 +8411,24 @@ export default function App() {
                   <button
                     key={tool}
                     className={`rb-big${drawTool === tool ? ' active' : ''}`}
+                    disabled={readOnly}
+                    data-tip={t(key)}
+                    onClick={() => {
+                      setEditTextMode(false)
+                      setTextDraft(null)
+                      setPendingTextInsert(null)
+                      setImagePick(null)
+                      setEditImageMode(false)
+                      setDrawTool((v) => (v === tool ? null : tool))
+                    }}
+                  >
+                    <span className="rb-big-icon">
+                      <DrawIcon />
+                    </span>
+                    <span>{t(key)}</span>
+                  </button>
+                ))}
+                <button
                     className="rb-big"
                     data-tip={`${t('print')} (${platformShortcuts('⌘P')})`}
                     disabled={print.printing}
@@ -8450,24 +8468,6 @@ export default function App() {
                       </span>
                     </span>
                     <span>{t('aiReviewSummaryBtn')}</span>
-                  </button>
-                  <button
-                    className="rb-big ai-entry"
-                    disabled={readOnly}
-                    data-tip={t(key)}
-                    onClick={() => {
-                      setEditTextMode(false)
-                      setTextDraft(null)
-                      setPendingTextInsert(null)
-                      setImagePick(null)
-                      setEditImageMode(false)
-                      setDrawTool((v) => (v === tool ? null : tool))
-                    }}
-                  >
-                    <span className="rb-big-icon">
-                      <DrawIcon />
-                    </span>
-                    <span>{t(key)}</span>
                   </button>
                   <div className="rb-drop-wrap" ref={redactFindWrapRef}>
                     <button
@@ -8550,23 +8550,24 @@ export default function App() {
                     </span>
                     <span>{t('protect')}</span>
                   </button>
-                  {digitalSignatures.length > 0 && (
-                    <button
-                      className="rb-big"
-                      data-tip={t('redactClear')}
-                      onClick={() => setRedactions([])}
-                    >
-                      {t('redactClear')}
-                    </button>
-                    <button
-                      className="rb-big"
-                      data-tip={t('redactApply')}
-                      onClick={requestRedactionSaveAs}
-                    >
-                      {t('redactApply')}
-                    </button>
-                  </>
-                )}
+                  {redactions.length > 0 && (
+                    <>
+                      <button
+                        className="rb-big"
+                        data-tip={t('redactClear')}
+                        onClick={() => setRedactions([])}
+                      >
+                        {t('redactClear')}
+                      </button>
+                      <button
+                        className="rb-big"
+                        data-tip={t('redactApply')}
+                        onClick={requestRedactionSaveAs}
+                      >
+                        {t('redactApply')}
+                      </button>
+                    </>
+                  )}
                 <button
                   className={`rb-big${pendingSign ? ' active' : ''}`}
                   disabled={readOnly}
@@ -9809,7 +9810,10 @@ export default function App() {
                                       className={`pdf-textblock-box${hovered ? ' is-hover' : ''}${
                                         textDraft ? ' is-faded' : ''
                                       }`}
-                                      <div
+                                      style={{ ...box, ...dragCss }}
+                                    />
+                                    {(hovered || dragging) && !textDraft && (
+                                    <div
                                         className="pdf-textblock-frame"
                                         style={{ ...box, ...dragCss }}
                                         data-tip={t('textBlockMoveHint')}
@@ -11523,34 +11527,70 @@ export default function App() {
                   }}
                 />
               )}
-              {staticTextDialog && (
-                <div
-                  className="pdf-modal-mask"
-                  onClick={() => {
-                    setStaticTextDialog(false)
-                    setStaticTextEditTarget(null)
-                    setTextInsertEditId(null)
-                  }}
-                >
-                  <div className="pdf-modal" onClick={(e) => e.stopPropagation()}>
-                    <div className="pdf-modal-title">
-                      {t(
-                        staticTextPurpose === 'insert'
-                          ? textInsertEditId
-                            ? 'editInsertedText'
-                            : 'insertTextTitle'
-                          : staticTextEditTarget
-                            ? 'formEditText'
-                            : 'formAddTextTitle',
+            {staticTextDialog && (
+              <div
+                className="pdf-modal-mask"
+                onClick={() => {
+                  setStaticTextDialog(false)
+                  setStaticTextEditTarget(null)
+                  setTextInsertEditId(null)
+                }}
+              >
+                <div className="pdf-modal" onClick={(e) => e.stopPropagation()}>
+                  <div className="pdf-modal-title">
+                    {t(
+                      staticTextPurpose === 'insert'
+                        ? textInsertEditId
+                          ? 'editInsertedText'
+                          : 'insertTextTitle'
+                        : staticTextEditTarget
+                          ? 'formEditText'
+                          : 'formAddTextTitle',
+                    )}
+                  </div>
+                  <textarea
+                    className="pdf-modal-textarea"
+                    value={staticText}
+                    placeholder={t('formAddTextPlaceholder')}
+                    autoFocus
+                    onChange={(e) => setStaticText(e.target.value)}
+                  />
+                  <label className="pdf-field">
+                    <span>{t('formTextSize')}</span>
+                    <input
+                      className="pdf-modal-input"
+                      type="number"
+                      min={6}
+                      max={72}
+                      value={staticTextSize}
+                      onChange={(e) =>
+                        setStaticTextSize(Math.min(72, Math.max(6, Number(e.target.value) || 14)))
+                      }
+                    />
+                  </label>
+                  <div className="pdf-field-grid">
+                    <div ref={staticColorFieldRef} className="pdf-field pdf-color-field">
+                      <span>{t('formTextColor')}</span>
+                      <button
+                        type="button"
+                        className="pdf-color-trigger"
+                        aria-expanded={staticTextColorOpen}
+                        onClick={() => setStaticTextColorOpen((open) => !open)}
+                      >
+                        <span
+                          className="pdf-color-trigger-swatch"
+                          style={{ background: staticTextColor }}
+                        />
+                        <span>{staticTextColor.toUpperCase()}</span>
+                      </button>
+                      {staticTextColorOpen && (
+                        <ColorPickerPopover
+                          value={staticTextColor}
+                          onPick={setStaticTextColor}
+                          onClose={() => setStaticTextColorOpen(false)}
+                        />
                       )}
                     </div>
-                    <textarea
-                      className="pdf-modal-textarea"
-                      value={staticText}
-                      placeholder={t('formAddTextPlaceholder')}
-                      autoFocus
-                      onChange={(e) => setStaticText(e.target.value)}
-                    />
                     <label className="pdf-field">
                       <span>{t('formTextAlign')}</span>
                       <Dropdown
@@ -11647,109 +11687,6 @@ export default function App() {
               </div>
             )}
             <PrintDialog print={print} printCurrentPage={print.printCurrentPage} />
-            {mergePagesDlg && (
-              <div className="pdf-modal-mask" onClick={() => setMergePagesDlg(false)}>
-                <div className="pdf-modal" onClick={(e) => e.stopPropagation()}>
-                  <div className="pdf-modal-title">{t('mergePages')}</div>
-                  <div className="pdf-modal-hint">{t('mergePagesHint', { total: pageCount })}</div>
-                  <label className="pdf-modal-row">
-                    <span>{t('mergePagesCount')}</span>
-                    <input
-                      className={`pdf-modal-input${mergeCountInvalid ? ' invalid' : ''}`}
-                      value={mergeCount}
-                      autoFocus
-                      onChange={(e) => {
-                        setMergeCount(e.target.value)
-                        setMergeCountInvalid(false)
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') confirmMergePages()
-                        else if (e.key === 'Escape') setMergePagesDlg(false)
-                      }}
-                    />
-                  </label>
-                  <div className="pdf-modal-row">
-                    <span>{t('mergePagesSeq')}</span>
-                    <label className="pdf-modal-check">
-                      <input
-                        type="radio"
-                        name="print-range"
-                        checked={printMode === 'all'}
-                        onChange={() => {
-                          setPrintMode('all')
-                          setPrintInvalid(false)
-                        }}
-                      />
-                      <span>{t('printRangeAll')}</span>
-                    </label>
-                    <label className="pdf-modal-row">
-                      <input
-                        type="radio"
-                        name="print-range"
-                        checked={printMode === 'current'}
-                        onChange={() => {
-                          setPrintMode('current')
-                          setPrintInvalid(false)
-                        }}
-                      />
-                      <span>
-                        {t('printRangeCurrent')} ({printCurrentPage})
-                      </span>
-                    </label>
-                    <label className="pdf-modal-row">
-                      <input
-                        type="radio"
-                        name="print-range"
-                        checked={printMode === 'custom'}
-                        onChange={() => setPrintMode('custom')}
-                      />
-                      <span>{t('printRangeCustom')}</span>
-                    </label>
-                    {printMode === 'custom' && (
-                      <input
-                        className={`pdf-modal-input${printInvalid ? ' invalid' : ''}`}
-                        value={printInput}
-                        placeholder={t('printRangeHint')}
-                        autoFocus
-                        onChange={(e) => {
-                          setPrintInput(e.target.value)
-                          setPrintInvalid(false)
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') confirmPrint()
-                          else if (e.key === 'Escape') setPrintDlg(false)
-                        }}
-                      />
-                    )}
-                    <label className="pdf-modal-row pdf-print-field">
-                      <span>{t('printSubset')}</span>
-                      <select
-                        className="pdf-modal-input"
-                        value={printParity}
-                        onChange={(e) => {
-                          setPrintParity(e.target.value as PageParity)
-                          setPrintInvalid(false)
-                        }}
-                      >
-                        <option value="all">{t('printSubsetAll')}</option>
-                        <option value="odd">{t('printSubsetOdd')}</option>
-                        <option value="even">{t('printSubsetEven')}</option>
-                      </select>
-                    </label>
-                    {printInvalid && printMode !== 'custom' && (
-                      <div className="pdf-modal-hint pdf-print-empty">{t('printSubsetEmpty')}</div>
-                    )}
-                    <div className="pdf-modal-actions">
-                      <button className="pdf-modal-btn" onClick={() => setPrintDlg(false)}>
-                        {t('cancel')}
-                      </button>
-                      <button className="pdf-modal-btn primary" onClick={confirmPrint}>
-                        {t('print')}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
               {mergePagesDlg && (
                 <div className="pdf-modal-mask" onClick={() => setMergePagesDlg(false)}>
                   <div className="pdf-modal" onClick={(e) => e.stopPropagation()}>

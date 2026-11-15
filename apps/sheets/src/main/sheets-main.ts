@@ -104,10 +104,11 @@ import {
   type AiRuntime,
   type AiSettings,
   type AiStreamChunk,
-  type GenSparkAccountStatus,
+  type ChaOfficeAccountStatus,
   type LegacyAiSettings,
 } from '@chaoffice/ai-provider'
 import { delimitedImportLimit } from './csv-import-limit'
+import type { CsvImportProgress } from '@chaoffice/xlsx-gateway/gateway/csv-import'
 import {
   getSharedAiRuntime,
   persistGeneratedImage,
@@ -3292,6 +3293,7 @@ export function registerSheetsIpc(): void {
       (session) => session.path === validated || session.restoreTarget === validated,
     )
     return openSelectedWorkbook(event, validated, priorSession?.password)
+  })
   // The renderer cancels a delimited import that is taking too long; the
   // conversion throws and nothing opens.
   ipcMain.handle(IPC_CHANNELS.cancelImport, (event) => {

@@ -307,6 +307,7 @@ import {
   syncMarginAnnotations,
   type MarginHandlers,
 } from './editor/margin-annotations'
+import { cssFontFamily } from './text-layout/font-rules'
 import {
   bumpHfProbeFontEpoch,
   hfHasPageField,
@@ -320,7 +321,7 @@ import {
   makeHfFloatImgEl,
   type HfFloatBox,
 } from './editor/hf-dom'
-import {cssFontFamily, 
+import {
   estimateFootnoteHeight,
   resolveNoteStyle,
   noteRunStyle,

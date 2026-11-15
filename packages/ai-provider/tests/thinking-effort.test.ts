@@ -126,7 +126,7 @@ describe('thinkingShapeFor', () => {
       kind: 'openai-effort',
       levels: ['none', 'low', 'medium', 'high', 'xhigh', 'max'],
     })
-    // the GenOffice-facing alias spells it with the hyphen (DEEPSEEK_V41_FLASH)
+    // the ChaAI Office-facing alias spells it with the hyphen (DEEPSEEK_V41_FLASH)
     expect(thinkingShapeFor('deep-seek-v4.1-flash')).toEqual({
       kind: 'openai-effort',
       levels: ['none', 'low', 'medium', 'high', 'xhigh', 'max'],

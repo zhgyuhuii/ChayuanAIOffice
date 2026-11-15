@@ -44,7 +44,7 @@ interface NamingApi {
  *
  * The shell's `aiOffice` namespace is deliberately **not** used here. It is
  * the shell's home API, and a second, partial `aiOffice` in an editor window
- * would shadow the real one in that window: `window.aiOffice.setTheme` would
+ * would shadow the real one in that window: `window.chaOffice.setTheme` would
  * disappear, and anything that identifies the shell window by that global —
  * the e2e suite included — would find the editor instead.
  */

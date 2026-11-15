@@ -4,7 +4,7 @@
  * default is what an import gets until it does.
  */
 
-import { CSV_IMPORT_DEFAULT_LIMIT_MB } from '@genoffice/xlsx-gateway/gateway/csv-limits'
+import { CSV_IMPORT_DEFAULT_LIMIT_MB } from '@chaoffice/xlsx-gateway/gateway/csv-limits'
 
 let limitBytes = CSV_IMPORT_DEFAULT_LIMIT_MB * 1024 * 1024
 

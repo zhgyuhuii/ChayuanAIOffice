@@ -1,6 +1,6 @@
 import type { Editor } from '@tiptap/core'
 import type { Node as PmNode } from '@tiptap/pm/model'
-import { generateTocFieldXml, type Block, type TocEntry } from '@genoffice/docx-engine'
+import { generateTocFieldXml, type Block, type TocEntry } from '@chaoffice/docx-engine'
 import { collectHeadings } from './headings'
 import { t } from '../i18n/locale'
 

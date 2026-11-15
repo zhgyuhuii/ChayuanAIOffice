@@ -9,7 +9,7 @@
  *   - the font picker's family list still comes from queryLocalFonts
  */
 
-import type { ParsedDoc } from '@genoffice/docx-engine'
+import type { ParsedDoc } from '@chaoffice/docx-engine'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 interface LocalFontFace {

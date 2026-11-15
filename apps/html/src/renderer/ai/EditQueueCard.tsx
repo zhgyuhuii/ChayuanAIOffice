@@ -5,7 +5,7 @@
  */
 import { useState } from 'react'
 import type { ReactElement } from 'react'
-import { useImeEnterGuard } from '@genoffice/ui'
+import { useImeEnterGuard } from '@chaoffice/ui'
 import { useI18n } from '../i18n/locale'
 import type { ParseMap } from '../document/parse-map'
 import {

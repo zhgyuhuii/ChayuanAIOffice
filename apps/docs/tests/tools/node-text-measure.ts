@@ -3,7 +3,7 @@
  * chain (`cssFontFamily`) the way Chromium does — per character, first family
  * with a glyph wins — reading the bundled @font-face files (fonts.css +
  * fonts.generated.css, ttf and woff2, size-adjust applied) and the installed
- * fonts through @genoffice/font-metrics. A character no chain face covers takes
+ * fonts through @chaoffice/font-metrics. A character no chain face covers takes
  * the installed face Chromium on macOS would cascade to for its script
  * (`system` counter); when none is installed it falls back to 1 em (CJK /
  * fullwidth) or the heuristic estimate (`unresolved` counter).
@@ -11,7 +11,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { advanceWidths, fileAdvanceWidths } from '@genoffice/font-metrics'
+import { advanceWidths, fileAdvanceWidths } from '@chaoffice/font-metrics'
 import {
   HeuristicMetrics,
   type FontMetricsProvider,
@@ -53,8 +53,8 @@ function parseFontFaces(css: string, faces: Map<string, CssFace[]>): void {
     for (const s of src.matchAll(/(url|local)\(\s*['"]?([^'")]+)['"]?\s*\)/g)) {
       if (s[1] === 'url') {
         const ref = s[2]!
-        const file = ref.startsWith('@genoffice/ui/fonts/')
-          ? resolve(UI_FONT_DIR, ref.slice('@genoffice/ui/fonts/'.length))
+        const file = ref.startsWith('@chaoffice/ui/fonts/')
+          ? resolve(UI_FONT_DIR, ref.slice('@chaoffice/ui/fonts/'.length))
           : resolve(FONT_DIR, ref)
         if (/\.(ttf|otf|ttc|woff2)$/i.test(file) && existsSync(file)) srcs.push({ file })
       } else srcs.push({ local: s[2]! })

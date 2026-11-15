@@ -5,7 +5,7 @@ import { GENERIC_FAMILIES, isBundledFont, isFontAvailable } from './availability
  * Bundled web face that leads a chain but has not loaded yet: canvas measures
  * the next installed family instead (an unloaded font-display:block face is
  * skipped), so the strut would carry e.g. Apple SD Gothic Neo's 0.90/0.30
- * under GenOffice Sans KR spans (1.16/0.29) and every hangul line unions
+ * under ChaOffice Sans KR spans (1.16/0.29) and every hangul line unions
  * ~1.5px past its line-height (+1pt per Korean table row vs Word).
  */
 export function unloadedBundledPrimary(chain: string): string | null {
@@ -33,7 +33,7 @@ export function unloadedBundledPrimary(chain: string): string | null {
  * while layout later resolves the loaded alias (0.69/0.25em) as primary.
  */
 export function isWebFace(family: string): boolean {
-  return isBundledFont(family) || / GO$/.test(family) || /^GenOffice /.test(family)
+  return isBundledFont(family) || / GO$/.test(family) || /^ChaAI Office /.test(family)
 }
 
 /** bundled web face a chain resolves to before any installed family or generic */

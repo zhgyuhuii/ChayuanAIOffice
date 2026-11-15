@@ -20,7 +20,7 @@ import {
   readSections,
   type ParsedDoc,
   type SectionSettings,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import {
   applyBlockMeta,
   pageCutDiffs,

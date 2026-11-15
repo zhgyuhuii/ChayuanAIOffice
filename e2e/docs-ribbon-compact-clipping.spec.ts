@@ -32,7 +32,7 @@ test('compact ribbon fits every tab without clipping', async () => {
   try {
     // a blank document, from the home screen's own new-document action
     const shellPage = launched.page
-    // adapted (LOCAL R24): 上游 window.aiOffice.newDoc() 桥本地不存在——
+    // adapted (LOCAL R24): 上游 window.chaOffice.newDoc() 桥本地不存在——
     // 经首页新建磁贴（本地树内联形态）等价创建
     await shellPage.waitForFunction((ext) => [...document.querySelectorAll('.side-new-tile')].some((b) => b.textContent?.trim() === `.${ext}`), 'docx', { timeout: 20_000 })
     await shellPage.evaluate((ext) => {

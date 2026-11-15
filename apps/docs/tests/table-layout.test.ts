@@ -5,7 +5,7 @@
  * the tokenizer rules are checked through the heuristic measure.
  */
 import { describe, expect, it } from 'vitest'
-import type { TableModel } from '@genoffice/docx-engine'
+import type { TableModel } from '@chaoffice/docx-engine'
 import {
   clampColumnWidths,
   distributeContentAutofit,

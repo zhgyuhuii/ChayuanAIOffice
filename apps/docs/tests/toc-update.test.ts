@@ -2,13 +2,13 @@
  * Table-of-contents update: References → Update Directory and the TOC
  * context menu share findTocRange/updateTocField. The update must
  * regenerate the entries from the live headings for both TOC shapes:
- * the GenOffice TOC field and Word's automatic TOC (a w:sdt gallery
+ * the ChaAI Office TOC field and Word's automatic TOC (a w:sdt gallery
  * control, which has PAGEREF entries and no TOC instruction).
  */
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { Editor } from '@tiptap/core'
 import JSZip from 'jszip'
-import { generateTocFieldXml, parseDocx, saveDocx } from '@genoffice/docx-engine'
+import { generateTocFieldXml, parseDocx, saveDocx } from '@chaoffice/docx-engine'
 import { buildDocx } from '../../../packages/docx-engine/tests/helpers/build-docx'
 import { blocksToPmDoc, pmDocToSavePlan, type PmNode } from '../src/renderer/editor/convert'
 import { editorExtensions } from '../src/renderer/editor/extensions'

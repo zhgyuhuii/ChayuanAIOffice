@@ -10,7 +10,7 @@
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { basename, join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { parseDocx, readSections, type TableModel } from '@genoffice/docx-engine'
+import { parseDocx, readSections, type TableModel } from '@chaoffice/docx-engine'
 import { pmDocOptions } from '../../src/renderer/editor/convert'
 import { resolveTableWidth } from '../../src/renderer/editor/table-geometry'
 import { budgetAvail, sectionWidthBudget } from '../../src/renderer/table-layout'

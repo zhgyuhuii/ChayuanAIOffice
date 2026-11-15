@@ -1,4 +1,4 @@
-import type { TableModel } from '@genoffice/docx-engine'
+import type { TableModel } from '@chaoffice/docx-engine'
 import type { FontMetricsProvider } from '../line-metrics'
 import { defaultTextMeasure, textMeasureOf, type RunDefaults, type TextMeasure } from './measure'
 import { DEFAULT_CELL_MAR, MIN_COL_TWIPS } from './constants'

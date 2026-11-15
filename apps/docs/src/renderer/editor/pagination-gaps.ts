@@ -2541,3 +2541,139 @@ const vrulerObservers = new WeakMap<HTMLElement, ResizeObserver>()
  * after the measurement passes have gone quiet. Page 1 is React-rendered (it
  * owns the margin drag handles).
  */
+
+export function syncTableGapBands(wrap: HTMLElement, zoomFactor: number): void {
+  const trGaps = Array.from(wrap.querySelectorAll<HTMLElement>('.page-gap-table'))
+  let layer = wrap.querySelector(':scope > .table-gap-overlays') as HTMLElement | null
+  if (trGaps.length === 0) {
+    layer?.remove()
+    return
+  }
+  if (!layer) {
+    layer = document.createElement('div')
+    layer.className = 'table-gap-overlays'
+    wrap.appendChild(layer)
+  }
+  layer.dataset.zoom = String(zoomFactor)
+  const wr = wrap.getBoundingClientRect()
+  const geom = trGaps.map((g) => {
+    const r = g.getBoundingClientRect()
+    const mb = parseFloat(g.style.getPropertyValue('--gap-mb')) || 0
+    const mt = parseFloat(g.style.getPropertyValue('--gap-mt')) || 0
+    const collapsed = g.classList.contains('gap-collapsed')
+    const top = (r.top - wr.top) / zoomFactor
+    const h = r.height / zoomFactor
+    return { top, h, mb, mt, collapsed }
+  })
+  const sig = geom
+    .map((p) => `${Math.round(p.top)}:${Math.round(p.h)}:${p.collapsed ? 1 : 0}`)
+    .join(',')
+  if (layer.dataset.sig === sig) return
+  layer.dataset.sig = sig
+  layer.textContent = ''
+  for (const p of geom) {
+    const band = document.createElement('div')
+    if (p.collapsed) {
+      band.className = 'table-gap-band table-gap-line'
+      band.style.top = `${p.top + (p.h - 1) / 2}px`
+      band.style.height = '1px'
+    } else {
+      band.className = 'table-gap-band'
+      band.style.top = `${p.top + p.mb}px`
+      band.style.height = `${Math.max(0, p.h - p.mb - p.mt)}px`
+    }
+    // the overlay spans the full paper width, so it — not the confined tr —
+    // receives the double-click outside the table's own columns
+    band.title = allGapsCollapsed
+      ? 'Double-click to expand page gaps'
+      : 'Double-click to collapse page gaps'
+    band.addEventListener('dblclick', (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      toggleGapCollapse(wrap)
+    })
+    layer.appendChild(band)
+  }
+  // the fills' own shadows would double under the overlay band
+  for (const g of trGaps) {
+    const fill = g.querySelector<HTMLElement>('.page-gap-table-fill')
+    if (fill) fill.style.boxShadow = 'none'
+  }
+}
+
+/** document-wide toggle: collapse/expand EVERY page gap at once (double-click
+ *  on any gap band or full-width table-gap overlay band) */
+function toggleGapCollapse(root: ParentNode): void {
+  allGapsCollapsed = !allGapsCollapsed
+  persistCollapsed()
+  for (const g of Array.from(root.querySelectorAll('.page-gap:not(.page-gap-cut)')))
+    applyGapMode(g as HTMLElement, allGapsCollapsed)
+  // refresh the full-width table-gap overlay bands to line/band mode right
+  // away (height changes may be absorbed by the min-height clamp, so the
+  // ResizeObserver alone can lag)
+  const wrap = root instanceof Element ? (root.closest('.page-wrap') as HTMLElement | null) : null
+  const host = wrap ?? (root as HTMLElement)
+  const layer = host.querySelector(':scope > .table-gap-overlays') as HTMLElement | null
+  if (layer) syncTableGapBands(host, Number(layer.dataset.zoom) || 1)
+  // re-glue the vertical ruler segments to the moved page boundaries right
+  // away: the wrap's min-height clamp can absorb the height change entirely,
+  // so the wrap ResizeObserver may never fire and the segments would stay at
+  // their pre-toggle positions (visibly detached from the pages)
+  if (wrap) {
+    const vrAnchor = wrap.previousElementSibling as HTMLElement | null
+    if (vrAnchor?.classList.contains('vruler-anchor')) repositionVRuler(vrAnchor, wrap)
+  }
+}
+
+/** glue segment tops to the current page boundaries (cheap, layout-safe);
+ *  returns the joined rounded tops, or null when there is nothing to place.
+ *  A segment is glued to its page's PAPER TOP — the gray band's bottom edge —
+ *  which is the gap's own bottom minus the next page's top-margin band (that
+ *  var reads 0 while collapsed, when the margins fold into the thin line). */
+export function repositionVRuler(anchor: HTMLElement, wrap: HTMLElement): string | null {
+  const layer = anchor.querySelector(':scope > .vruler-ext') as HTMLElement | null
+  if (!layer) return null
+  const segs = Array.from(layer.children) as HTMLElement[]
+  if (segs.length === 0) return null
+  const zoom = Number(layer.dataset.zoom) || 1
+  const wr = wrap.getBoundingClientRect()
+  // only real page gaps: zero-height cut markers are in-table break hints, not
+  // paper boundaries (page-gap-table rows carry .page-gap and do count)
+  const seams = Array.from(wrap.querySelectorAll('.page-gap'))
+    .map((g) => {
+      const r = g.getBoundingClientRect()
+      // inline vars first (gap widgets always carry them); computed as fallback
+      const gEl = g as HTMLElement
+      const varOf = (name: string) =>
+        parseFloat(
+          gEl.style.getPropertyValue(name) || getComputedStyle(g).getPropertyValue(name),
+        ) || 0
+      const mt = varOf('--gap-mt')
+      const mb = varOf('--gap-mb')
+      // paper top of the page starting at this gap = gray band bottom edge =
+      // gap bottom − that page's top-margin band (0 while collapsed); the gap's
+      // own top sits mb px above the PREVIOUS page's paper bottom edge
+      return {
+        top: (r.top - wr.top) / zoom + mb,
+        paperTop: (r.bottom - wr.top) / zoom - mt,
+      }
+    })
+    .sort((a, b) => a.paperTop - b.paperTop)
+  let sig = ''
+  segs.forEach((seg, i) => {
+    const s = seams[i]
+    if (s === undefined) return
+    seg.style.top = `${s.paperTop}px`
+    // collapsed seams sit closer together than a full page: clip each segment
+    // at the next seam (re-pinning its bottom margin zone) so folded-away
+    // whitespace doesn't stack rulers; expanded pages never reach the limit
+    const full = Number(seg.dataset.h) || parseFloat(seg.style.height) || 0
+    const limit = seams[i + 1]?.top
+    const h = limit != null ? Math.min(full, Math.max(0, limit - s.paperTop)) : full
+    seg.style.height = `${h}px`
+    const zb = seg.querySelector<HTMLElement>(':scope > .vruler-zone-bottom')
+    if (zb) zb.style.top = `${h - (Number(seg.dataset.mb) || 0)}px`
+    sig += `${Math.round(s.paperTop)},${Math.round(h)},`
+  })
+  return sig
+}

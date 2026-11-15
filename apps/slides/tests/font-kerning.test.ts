@@ -3,16 +3,16 @@ import { resolve } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import * as opentype from 'opentype.js'
 
-vi.mock('@genoffice/ui/fonts/Carlito-Regular.ttf?asset', () => ({
+vi.mock('@chaoffice/ui/fonts/Carlito-Regular.ttf?asset', () => ({
   default: resolve(process.cwd(), '../../packages/ui/src/fonts/Carlito-Regular.ttf'),
 }))
-vi.mock('@genoffice/ui/fonts/Carlito-Bold.ttf?asset', () => ({
+vi.mock('@chaoffice/ui/fonts/Carlito-Bold.ttf?asset', () => ({
   default: resolve(process.cwd(), '../../packages/ui/src/fonts/Carlito-Bold.ttf'),
 }))
-vi.mock('@genoffice/ui/fonts/Carlito-Italic.ttf?asset', () => ({
+vi.mock('@chaoffice/ui/fonts/Carlito-Italic.ttf?asset', () => ({
   default: resolve(process.cwd(), '../../packages/ui/src/fonts/Carlito-Italic.ttf'),
 }))
-vi.mock('@genoffice/ui/fonts/Carlito-BoldItalic.ttf?asset', () => ({
+vi.mock('@chaoffice/ui/fonts/Carlito-BoldItalic.ttf?asset', () => ({
   default: resolve(process.cwd(), '../../packages/ui/src/fonts/Carlito-BoldItalic.ttf'),
 }))
 vi.mock('../src/main/shaped-metrics', () => ({

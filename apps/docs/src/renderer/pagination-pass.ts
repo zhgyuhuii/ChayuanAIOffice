@@ -5,7 +5,7 @@
  * differ only in the context they hand in (header/footer resolver, resume),
  * never in the steps, so a step added for one side runs for the other.
  */
-import type { SectionInfo, SectionSettings } from '@genoffice/docx-engine'
+import type { SectionInfo, SectionSettings } from '@chaoffice/docx-engine'
 import { buildPageCuts, type PageCut } from './pagination-cuts'
 import { sliceWithLineSplit, type PassResume } from './pagination-lines'
 import { appendEndnotesBlock, appendFloatSpillBlock } from './pagination-measure'

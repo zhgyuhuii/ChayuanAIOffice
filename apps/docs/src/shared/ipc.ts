@@ -111,10 +111,12 @@ import type {
   AiSettingsV2,
   AiStreamChunk,
   LocalToolStatus,
+  LocalToolOpResult,
+  DiscoveryTarget,
+  ChaOfficeAccountStatus,
 } from '@chaoffice/ai-provider'
 import type { HeadlessExportTarget } from '@chaoffice/electron-utils/headless-export'
 import type { FaceVerticalMetrics } from '@chaoffice/font-metrics'
-import type { AiPanelPrefs } from '@chaoffice/ui'
 import type { SaveAsExportFormat } from './save-as-format'
 
 export type { FaceVerticalMetrics }

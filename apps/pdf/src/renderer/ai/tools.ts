@@ -2,8 +2,6 @@ import type { PDFDocumentProxy } from 'pdfjs-dist'
 import type { AgentToolCall, AgentToolDef, ToolExecution } from '@chaoffice/agent-core'
 import type { OutlineNode } from '../OutlinePanel'
 import type { PageEntry, SearchIndex } from '../search'
-import { searchInIndex } from '../search'
-
 import { findPatternsInIndex, patternMarks, searchInIndex } from '../search'
 import { REDACT_PATTERNS } from '../redact-patterns'
 import type { RedactPattern } from '../redact-patterns'

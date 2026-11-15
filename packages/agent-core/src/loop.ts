@@ -711,7 +711,7 @@ export class AgentLoop<TSnapshot = unknown> {
     this.verifyRetryUsed = false
     this.runUsage = null
     this.abortController = new AbortController()
-    void this.beginRun(userMsg)
+    void this.beginRun(userMsg, null)
     return true
   }
 

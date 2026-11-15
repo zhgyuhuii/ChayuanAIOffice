@@ -561,6 +561,9 @@ function AccountEntry({
   const loggedIn = status?.loggedIn ?? false
   const email = status?.email ?? ''
   const initial = email ? email[0].toUpperCase() : loggedIn ? 'G' : '?'
+  const [loginError, setLoginError] = useState<
+    'timeout' | 'launch' | 'network' | 'expired' | 'failed' | null
+  >(null)
   const errorText = loginError
     ? {
         timeout: t('loginTimeout'),
@@ -701,6 +704,51 @@ function AccountEntry({
                 />
               </svg>
             )}
+          </button>
+        </div>
+      )}
+      {feedbackOpen && <FeedbackModal onClose={() => setFeedbackOpen(false)} />}
+      <div className="account-row">
+      <button
+        className="account-btn"
+        onClick={handleClick}
+        aria-haspopup="dialog"
+        aria-expanded={settingsOpen}
+        data-tip={
+          loggedIn
+            ? email || t('loggedInGenspark')
+            : waiting
+              ? t('waitingLogin')
+              : (errorText ?? t('loginGenspark'))
+        }
+        aria-label={t('settings')}
+      >
+        <span
+          className={`account-avatar${loggedIn ? ' logged-in' : ''}${waiting ? ' waiting' : ''}`}
+        >
+          {waiting ? (
+            <svg
+              className="account-spinner"
+              width="14"
+              height="14"
+              viewBox="0 0 16 16"
+              aria-hidden="true"
+            >
+              <circle
+                cx="8"
+                cy="8"
+                r="6"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                fill="none"
+                strokeDasharray="26"
+                strokeDashoffset="18"
+                strokeLinecap="round"
+              />
+            </svg>
+          ) : (
+            initial
+          )}
             {skillUpdate && (
               <span className="account-badge" role="img" aria-label={t('intgUpdateDue')} />
             )}

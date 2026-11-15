@@ -130,7 +130,7 @@ export function thinkingShapeFor(model: string, protocol?: AiProtocol): Thinking
   // so the ladder maps straight onto reasoning_effort with no toggle riding
   // along. The guide's clamp table folds medium -> high and xhigh -> high
   // server-side, so the six UI rungs really are four outcomes (none / low /
-  // high / max). The GenOffice-facing alias spells it "deep-seek"
+  // high / max). The ChaAI Office-facing alias spells it "deep-seek"
   // (DEEPSEEK_V41_FLASH); legacy and wire ids spell it "deepseek".
   if (/(^|\/)deep-?seek/.test(id)) {
     return { kind: 'openai-effort', levels: OPENAI_SIX_LEVELS }

@@ -9,10 +9,10 @@
  *  no "right" output.
  *
  *  Two surfaces eat untrusted bytes:
- *  - openPptx (@genoffice/pptx-engine): the OOXML package the Slides app opens;
+ *  - openPptx (@chaoffice/pptx-engine): the OOXML package the Slides app opens;
  *    on success the pipeline property also round-trips the deck through
  *    savePptx and re-opens the saved bytes.
- *  - convertPptToPptx (@genoffice/ppt2pptx): the legacy binary .ppt container
+ *  - convertPptToPptx (@chaoffice/ppt2pptx): the legacy binary .ppt container
  *    (CFB over MS-PPT records), fed corrupted containers built from the
  *    synthetic-ppt generator.
  *
@@ -22,7 +22,7 @@
 import JSZip from 'jszip'
 import { describe, expect, it } from 'vitest'
 
-import { openPptx, savePptx } from '@genoffice/pptx-engine'
+import { openPptx, savePptx } from '@chaoffice/pptx-engine'
 import { convertPptToPptx } from '../../../packages/ppt2pptx/src'
 import { buildFuzzPptx, rng } from './helpers/fuzz-pptx'
 import {

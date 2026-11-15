@@ -3980,6 +3980,7 @@ export function App() {
             onPrint={() => setPrintDlgOpen(true)}
             onExportImages={() => void exportImages()}
             onExportImagesJpg={() => void exportImages('jpg')}
+            onExportVideo={() => setVideoDlgOpen(true)}
             onFormat={onFormat}
             zoom={zoom}
             onZoom={previewZoom}

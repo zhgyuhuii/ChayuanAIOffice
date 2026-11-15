@@ -10,7 +10,7 @@ export {
   TCW_GRID_PCT_TOLERANCE,
   UNIFORM_GRID_MIN_TWIPS,
   UNIFORM_GRID_TOLERANCE,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 
 /** w:tblCellMar default of TableNormal (ECMA-376; probe 2026-11-09: 30 m -> 30 x 175.7 + 216) */
 export const DEFAULT_CELL_MAR = 108

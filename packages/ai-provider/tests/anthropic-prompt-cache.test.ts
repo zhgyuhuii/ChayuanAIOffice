@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { AgentMessage } from '@genoffice/agent-core'
+import type { AgentMessage } from '@chaoffice/agent-core'
 import { streamAnthropic } from '../src/protocols/anthropic'
-import { GENSPARK_LLM_BASE_URLS } from '../src/providers'
+import { CHAOFFICE_LLM_BASE_URLS } from '../src/providers'
 import { okResponse, sseStream } from './test-utils'
 
 afterEach(() => {
@@ -65,7 +65,7 @@ describe('anthropic prompt-cache breakpoints', () => {
   })
 
   it('marks requests to the Genspark proxy', async () => {
-    const body = await requestBody(GENSPARK_LLM_BASE_URLS.anthropic)
+    const body = await requestBody(CHAOFFICE_LLM_BASE_URLS.anthropic)
     expect(JSON.stringify(body)).toContain('cache_control')
   })
 

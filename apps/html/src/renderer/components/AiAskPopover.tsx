@@ -5,7 +5,7 @@
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
-import { useImeEnterGuard } from '@genoffice/ui'
+import { useImeEnterGuard } from '@chaoffice/ui'
 import { useI18n, type StringKey } from '../i18n/locale'
 import { EDIT_INSTRUCTION_MAX, EDIT_QUEUE_MAX, truncate } from '../ai/edit-queue'
 

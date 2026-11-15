@@ -2,7 +2,7 @@
  * Font table for the converted document. Runs keep the original Hangul font
  * names (휴먼명조, 한양중고딕, HY헤드라인M, ...), so a downloaded .docx opens in
  * those faces wherever they are installed. Where they are not, Word — and
- * GenOffice, which follows Word's substitution rules — falls back by the
+ * ChaAI Office, which follows Word's substitution rules — falls back by the
  * word/fontTable.xml hints: charset 81 (Hangul) + family roman → Batang class,
  * charset 81 + swiss/modern → Malgun class. Without an entry every
  * Hangul-lettered name lands in Batang, so gothic/headline faces would render

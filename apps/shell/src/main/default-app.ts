@@ -2,7 +2,7 @@ import { execFile } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { decodeCommandOutput } from '@genoffice/electron-utils'
+import { decodeCommandOutput } from '@chaoffice/electron-utils'
 import type { DefaultAppStatus } from '../shared/home-api'
 
 // macOS writes the LaunchServices user choice via osascript (no helper binary to

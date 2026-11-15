@@ -8,7 +8,7 @@ import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import type { Editor } from '@tiptap/core'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { applyAiPanelPrefs } from '@genoffice/ui'
+import { applyAiPanelPrefs } from '@chaoffice/ui'
 import { AiAskPopover } from '../src/renderer/components/AiAskPopover'
 
 let coords: { left: number; right: number; top: number; bottom: number }

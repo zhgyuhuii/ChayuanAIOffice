@@ -877,7 +877,7 @@ contextBridge.exposeInMainWorld('chaOfficeProject', projectApi)
  *
  * A global of its own rather than part of `aiOffice`: `aiOffice` is the
  * shell's home API, and an editor window that reused the name would shadow it
- * there — `window.aiOffice.setTheme` would vanish with it.
+ * there — `window.chaOffice.setTheme` would vanish with it.
  */
 const aiNamingApi = {
   suggestFileName(input: { content: string }) {
