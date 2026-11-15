@@ -46,19 +46,24 @@ const mac = process.platform === 'darwin'
 // With Office for Mac installed, its private DFonts (real Yu Gothic/Malgun/MingLiU…) win over
 // same-script substitution — the assertions accept either the real family or the substitute.
 const office = existsSync('/Applications/Microsoft PowerPoint.app/Contents/Resources/DFonts')
+// adapted(2026-11-15, upstream #2698): the file-reading family index also discovers
+// Apple's on-demand downloadable faces, so a real Yu Gothic can be present without
+// any Office install — branch on the registry, not on the Office dir alone.
+
 
 describe.runIf(mac)(
   'Japanese/Korean/Traditional-Chinese font substitution (macOS system fonts)',
   () => {
     const m = createSystemFontMetrics()
+    const yuAvailable = office || familyAvailable('Yu Gothic')
 
     it('Japanese font requests resolve to matching system faces', () => {
-      const yuSans = office ? /^Yu Gothic/ : /^Hiragino Sans$/
+      const yuSans = yuAvailable ? /^Yu ?Gothic/ : /^Hiragino Sans$/
       expect(m.displayFamily!(style('游ゴシック'))).toMatch(yuSans)
       expect(m.displayFamily!(style('Yu Gothic'))).toMatch(yuSans)
-      expect(m.displayFamily!(style('メイリオ'))).toMatch(office ? /Meiryo/ : /^Hiragino Sans$/)
+      expect(m.displayFamily!(style('メイリオ'))).toMatch(yuAvailable ? /Meiryo|^Hiragino Sans$/ : /^Hiragino Sans$/)
       expect(m.displayFamily!(style('ＭＳ Ｐゴシック'))).toMatch(
-        office ? /MS P?Gothic|Hiragino Sans/ : /^Hiragino Sans$/,
+        yuAvailable ? /MS P?Gothic|Hiragino Sans/ : /^Hiragino Sans$/,
       )
       // Yu Mincho ships with recent macOS as the "YuMincho" family, so the real
       // font can win even without Office installed
@@ -71,9 +76,9 @@ describe.runIf(mac)(
 
     it('a missing Japanese sans substitutes to the plain Yu Gothic face, not the narrow-kana UI face', () => {
       const fam = m.displayFamily!(style('BIZ UDPGothic'))
-      expect(fam).toMatch(office ? /^Yu Gothic( Medium)?$|^Hiragino Sans$/ : /^Hiragino Sans$/)
+      expect(fam).toMatch(yuAvailable ? /^Yu ?Gothic( Medium)?$|^Hiragino Sans$/ : /^Hiragino Sans$/)
       expect(fam).not.toMatch(/UI/)
-      expect(m.displayFamily!(style('Yu Gothic UI'))).toMatch(office ? /Yu Gothic UI/ : /Hiragino/)
+      expect(m.displayFamily!(style('Yu Gothic UI'))).toMatch(yuAvailable ? /Yu ?Gothic( UI)?|Hiragino/ : /Hiragino/)
     })
 
     it('SinoType (ST*) families resolve to the matching macOS faces, not Calibri', () => {

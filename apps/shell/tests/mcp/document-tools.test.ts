@@ -353,7 +353,6 @@ describe('M6 visible-editing tools (docs control wired)', () => {
       'insert_content',
       'insert_picture',
       'open_in_chaoffice',
-      'open_in_chaoffice',
       'read_blocks',
       'read_document',
       'read_docx',

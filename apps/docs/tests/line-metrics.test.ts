@@ -936,7 +936,7 @@ describe('cssFontFamily', () => {
 
   it('Japanese fonts → same-script fallback chain, never falls back to Simplified Chinese', () => {
     expect(cssFontFamily('游ゴシック')).toBe(
-      "'游ゴシック','Yu Gothic GO','Yu Gothic Sans GO','Yu Gothic','ChaAI Office Hiragino Sans','Meiryo','Noto Sans JP','ChaAI Office Sans KR',sans-serif",
+      "'游ゴシック','Yu Gothic GO','Yu Gothic Sans GO','Yu Gothic','ChaAI Office Hiragino Sans','Meiryo','Noto Sans JP','ChaOffice Sans KR',sans-serif",
     )
     expect(cssFontFamily('ＭＳ Ｐ明朝')).toBe(
       "'\uff2d\uff33 \uff30\u660e\u671d','Yu Mincho','ChaAI Office Hiragino Mincho','ChaAI Office MS Mincho','Noto Serif JP','ChaAI Office Batang','ChaAI Office Serif KR',serif",
@@ -951,7 +951,7 @@ describe('cssFontFamily', () => {
     it('missing BIZ UDP names take the JA sans chain and the Yu Gothic factor, even the Mincho cut', () => {
       for (const name of ['BIZ UDPゴシック', 'BIZ UDPGothic', 'BIZ UDP明朝 Medium']) {
         expect(cssFontFamily(name)).toBe(
-          `'${name}','Yu Gothic','Yu Gothic GO','Yu Gothic Sans GO','ChaAI Office Hiragino Sans','Meiryo','Noto Sans JP','ChaAI Office Sans KR',sans-serif`,
+          `'${name}','Yu Gothic','Yu Gothic GO','Yu Gothic Sans GO','ChaAI Office Hiragino Sans','Meiryo','Noto Sans JP','ChaOffice Sans KR',sans-serif`,
         )
         expect(lineHeightFactor(name)).toBe(1.4327)
         expect(isCjkFontName(name)).toBe(true)
@@ -979,7 +979,7 @@ describe('cssFontFamily', () => {
       for (const name of [kyokasho, minchoB, popTai, gothicM, hiraginoKakuGo]) {
         expect(lineHeightFactor(name)).toBe(1.4327)
         expect(cssFontFamily(name)).toBe(
-          `'${name}','Yu Gothic','Yu Gothic GO','Yu Gothic Sans GO','ChaAI Office Hiragino Sans','Meiryo','Noto Sans JP','ChaAI Office Sans KR',sans-serif`,
+          `'${name}','Yu Gothic','Yu Gothic GO','Yu Gothic Sans GO','ChaAI Office Hiragino Sans','Meiryo','Noto Sans JP','ChaOffice Sans KR',sans-serif`,
         )
         expect(isCjkFontName(name)).toBe(true)
       }
@@ -1013,10 +1013,10 @@ describe('cssFontFamily', () => {
 
   it('Meiryo (UI) leads with the range-limited metric aliases ahead of the JP sans chain', () => {
     expect(cssFontFamily('Meiryo UI')).toBe(
-      "'Meiryo UI','Meiryo UI GO','Yu Gothic','ChaAI Office Hiragino Sans','Meiryo','Noto Sans JP','ChaAI Office Sans KR',sans-serif",
+      "'Meiryo UI','Meiryo UI GO','Yu Gothic','ChaAI Office Hiragino Sans','Meiryo','Noto Sans JP','ChaOffice Sans KR',sans-serif",
     )
     expect(cssFontFamily('メイリオ')).toBe(
-      "'メイリオ','Meiryo GO','Yu Gothic','ChaAI Office Hiragino Sans','Meiryo','Noto Sans JP','ChaAI Office Sans KR',sans-serif",
+      "'メイリオ','Meiryo GO','Yu Gothic','ChaAI Office Hiragino Sans','Meiryo','Noto Sans JP','ChaOffice Sans KR',sans-serif",
     )
     expect(cssFontFamily('Meiryo')).toContain("'Meiryo GO'")
     // localized UI spelling still selects the UI cut; no face carries that
@@ -1029,7 +1029,7 @@ describe('cssFontFamily', () => {
 
   it('MS Gothic family leads with its Word-metric alias (fonts.css), fullwidth names included', () => {
     expect(cssFontFamily('ＭＳ ゴシック')).toBe(
-      "'ＭＳ ゴシック','MS Gothic GO','Yu Gothic','ChaAI Office Hiragino Sans','Meiryo','Noto Sans JP','ChaAI Office Sans KR',sans-serif",
+      "'ＭＳ ゴシック','MS Gothic GO','Yu Gothic','ChaAI Office Hiragino Sans','Meiryo','Noto Sans JP','ChaOffice Sans KR',sans-serif",
     )
     expect(cssFontFamily('MS Gothic')).toContain("'MS Gothic GO'")
     expect(cssFontFamily('ＭＳ Ｐゴシック')).toContain(
@@ -1141,7 +1141,7 @@ describe('cssFontFamily', () => {
 
   it('Korean/Traditional Chinese fonts → same-script fallback chain', () => {
     expect(cssFontFamily('맑은 고딕')).toBe(
-      "'맑은 고딕','Malgun Gothic','ChaAI Office Sans KR','Noto Sans CJK GO','PingFang TC','Apple SD Gothic Neo','Noto Sans KR',sans-serif",
+      "'맑은 고딕','Malgun Gothic','ChaOffice Sans KR','Noto Sans CJK GO','PingFang TC','Apple SD Gothic Neo','Noto Sans KR',sans-serif",
     )
     expect(cssFontFamily('Batang')).toBe(
       "'Batang','ChaAI Office Batang','ChaAI Office Serif KR','ChaAI Office Myungjo','Noto Serif KR',serif",
@@ -1178,13 +1178,13 @@ describe('cssFontFamily', () => {
     it('the matching source family leads the bundled real-metric face', () => {
       stubCanvas(['NanumGothic'])
       expect(cssFontFamily('NanumGothic')).toBe(
-        "'NanumGothic','ChaAI Office Gothic KR','Malgun Gothic','ChaAI Office Sans KR','Noto Sans CJK GO','PingFang TC','Apple SD Gothic Neo','Noto Sans KR',sans-serif",
+        "'NanumGothic','ChaAI Office Gothic KR','Malgun Gothic','ChaOffice Sans KR','Noto Sans CJK GO','PingFang TC','Apple SD Gothic Neo','Noto Sans KR',sans-serif",
       )
     })
 
     it('the localized source name takes the bundled face when missing', () => {
       expect(cssFontFamily('나눔고딕')).toBe(
-        "'나눔고딕','ChaAI Office Gothic KR','Malgun Gothic','ChaAI Office Sans KR','Noto Sans CJK GO','PingFang TC','Apple SD Gothic Neo','Noto Sans KR',sans-serif",
+        "'나눔고딕','ChaAI Office Gothic KR','Malgun Gothic','ChaOffice Sans KR','Noto Sans CJK GO','PingFang TC','Apple SD Gothic Neo','Noto Sans KR',sans-serif",
       )
     })
 
@@ -1257,7 +1257,7 @@ describe('document fontTable substitution hints', () => {
     expect(krLineFactor('\ud568\ucd08\ub86c\ubc14\ud0d5')).toBe(1.7291)
     expect(lineHeightFactor('\ud568\ucd08\ub86c\ubc14\ud0d5')).toBe(1.7291)
     expect(cssFontFamily('\ud568\ucd08\ub86c\ubc14\ud0d5')).toBe(
-      "'\ud568\ucd08\ub86c\ubc14\ud0d5','Malgun Gothic','ChaAI Office Sans KR','Noto Sans CJK GO','PingFang TC','Apple SD Gothic Neo','Noto Sans KR',sans-serif",
+      "'\ud568\ucd08\ub86c\ubc14\ud0d5','Malgun Gothic','ChaOffice Sans KR','Noto Sans CJK GO','PingFang TC','Apple SD Gothic Neo','Noto Sans KR',sans-serif",
     )
     // Latin-named entry without PANOSE: charset alone decides
     expect(krLineFactor('Squirrel Serif Probe')).toBe(1.7291)

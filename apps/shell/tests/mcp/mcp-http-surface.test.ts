@@ -46,7 +46,6 @@ const DEFAULT_NAMES = [
   'insert_picture',
   'open_documents',
   'open_in_chaoffice',
-  'open_in_chaoffice',
   'read_blocks',
   'read_deck',
   'read_document',

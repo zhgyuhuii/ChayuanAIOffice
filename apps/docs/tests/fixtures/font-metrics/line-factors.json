@@ -79,6 +79,18 @@
     1.2207,
     1.1724
   ],
+  "'ChaAI Office Batang'": [
+    1.1724,
+    1.1724
+  ],
+  "'ChaAI Office Hiragino Sans'": [
+    1.3,
+    1.3
+  ],
+  "'ChaOffice Sans KR'": [
+    1.1724,
+    1.1724
+  ],
   "'DM Sans',sans-serif": [
     1.302,
     1.1724
@@ -89,22 +101,6 @@
   ],
   "'Geeza Pro'": [
     1.3617,
-    1.1724
-  ],
-  "'ChaAI Office Batang'": [
-    1.1724,
-    1.1724
-  ],
-  "'ChaAI Office Batang','ChaAI Office Serif KR'": [
-    1.1724,
-    1.1724
-  ],
-  "'ChaAI Office Hiragino Sans'": [
-    1.3,
-    1.3
-  ],
-  "'ChaOffice Sans KR'": [
-    1.1724,
     1.1724
   ],
   "'KR Theme Latin GO'": [
@@ -883,6 +879,90 @@
     1.2021,
     1.1724
   ],
+  "ChaAI Office Batang": [
+    1.1724,
+    1.1724
+  ],
+  "ChaAI Office Bengali": [
+    1.1724,
+    1.1724
+  ],
+  "ChaAI Office Box Drawing": [
+    1.1724,
+    1.1724
+  ],
+  "ChaAI Office DM Sans": [
+    1.1724,
+    1.1724
+  ],
+  "ChaAI Office Fullwidth TC": [
+    1.1724,
+    1.1724
+  ],
+  "ChaAI Office Gothic KR": [
+    1.1724,
+    1.1724
+  ],
+  "ChaAI Office Heiti TC": [
+    1.1724,
+    1.1724
+  ],
+  "ChaAI Office Hiragino Mincho": [
+    1.3,
+    1.3
+  ],
+  "ChaAI Office Hiragino Sans": [
+    1.3,
+    1.3
+  ],
+  "ChaAI Office MS Mincho": [
+    1.3,
+    1.3
+  ],
+  "ChaAI Office MingLiU": [
+    1.1724,
+    1.1724
+  ],
+  "ChaAI Office Myungjo": [
+    1.1724,
+    1.1724
+  ],
+  "ChaAI Office PUA Blank": [
+    1.1724,
+    1.1724
+  ],
+  "ChaAI Office Poppins": [
+    1.1724,
+    1.1724
+  ],
+  "ChaAI Office Serif KR": [
+    1.1724,
+    1.1724
+  ],
+  "ChaAI Office SimSun Latin": [
+    1.1724,
+    1.1724
+  ],
+  "ChaAI Office Songti SC": [
+    1.1724,
+    1.1724
+  ],
+  "ChaAI Office Songti TC": [
+    1.1724,
+    1.1724
+  ],
+  "ChaAI Office Tamil": [
+    1.0068,
+    1.1724
+  ],
+  "ChaAI Office YaHei Latin": [
+    1.1724,
+    1.1724
+  ],
+  "ChaOffice Sans KR": [
+    1.1724,
+    1.1724
+  ],
   "Chiller": [
     1.1538,
     1.1724
@@ -1161,90 +1241,6 @@
   ],
   "Geeza Pro": [
     1.3617,
-    1.1724
-  ],
-  "GenOffice Batang": [
-    1.1724,
-    1.1724
-  ],
-  "GenOffice Bengali": [
-    1.1724,
-    1.1724
-  ],
-  "GenOffice Box Drawing": [
-    1.1724,
-    1.1724
-  ],
-  "GenOffice DM Sans": [
-    1.1724,
-    1.1724
-  ],
-  "GenOffice Fullwidth TC": [
-    1.1724,
-    1.1724
-  ],
-  "GenOffice Gothic KR": [
-    1.1724,
-    1.1724
-  ],
-  "GenOffice Heiti TC": [
-    1.1724,
-    1.1724
-  ],
-  "GenOffice Hiragino Mincho": [
-    1.3,
-    1.3
-  ],
-  "GenOffice Hiragino Sans": [
-    1.3,
-    1.3
-  ],
-  "GenOffice MS Mincho": [
-    1.3,
-    1.3
-  ],
-  "GenOffice MingLiU": [
-    1.1724,
-    1.1724
-  ],
-  "GenOffice Myungjo": [
-    1.1724,
-    1.1724
-  ],
-  "GenOffice PUA Blank": [
-    1.1724,
-    1.1724
-  ],
-  "GenOffice Poppins": [
-    1.1724,
-    1.1724
-  ],
-  "GenOffice Sans KR": [
-    1.1724,
-    1.1724
-  ],
-  "GenOffice Serif KR": [
-    1.1724,
-    1.1724
-  ],
-  "GenOffice SimSun Latin": [
-    1.1724,
-    1.1724
-  ],
-  "GenOffice Songti SC": [
-    1.1724,
-    1.1724
-  ],
-  "GenOffice Songti TC": [
-    1.1724,
-    1.1724
-  ],
-  "GenOffice Tamil": [
-    1.0068,
-    1.1724
-  ],
-  "GenOffice YaHei Latin": [
-    1.1724,
     1.1724
   ],
   "Georgia": [
