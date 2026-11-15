@@ -827,7 +827,7 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 ### 门禁终态
 
 - typecheck 全仓 0；lint 0 error（warnings=基线 28+上游件 react-hooks）。
-- vitest 全工作区绿（终跑数字见台账定稿行）；cargo test 327 绿（R40 时 326，+1 sparklines）；sidecar mac release 重编在位（win-clipboard-helper 新 crate 仅 Windows 打包链消费，native:build 口径已并）。
+- vitest 全工作区绿（npm test 全链 exit 0 零失败：docs 6196/slides 1387/markdown 1749/sheets 1252+/pdf/shell mcp 177/cli 461/pptx-render 443/font-metrics 65 等，合计约 2 万用例）；cargo test 327 绿（R40 时 326，+1 sparklines）；sidecar mac release 重编在位（win-clipboard-helper 新 crate 仅 Windows 打包链消费，native:build 口径已并）。
 - build:web 全链过（1.0.17 CSS 断点教训兜底执行）；品牌 grep 豁免外零残留。
 - 对账：120/120 subject 级全过；删除清单 0；品牌差分零新增。
 - 真机/发版：本轮未打包（Z 维持 17）；随轮发版 1.0.18 另行。
