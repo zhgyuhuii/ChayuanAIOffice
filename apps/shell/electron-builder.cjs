@@ -490,7 +490,7 @@ const FILE_ASSOCIATIONS = [
     mimeType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
   },
   {
-    // import-only: opens as a converted .pptx copy, GenOffice never writes .ppt
+    // import-only: opens as a converted .pptx copy, ChaAI Office never writes .ppt
     ext: 'ppt',
     name: 'PowerPoint 97-2003 Presentation',
     role: 'Editor',

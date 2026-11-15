@@ -4,8 +4,8 @@ import { describe, expect, it } from 'vitest'
 import { fileAdvanceWidths, isWoff2, woff2ToSfnt } from '../src'
 
 const DOCS_FONTS = resolve(__dirname, '../../../apps/docs/src/renderer/fonts')
-const KR = resolve(DOCS_FONTS, 'GenOfficeSansKR-Regular-subset.woff2')
-const THAI = resolve(DOCS_FONTS, 'GenOfficeSarabun-Regular.woff2')
+const KR = resolve(DOCS_FONTS, 'ChaOfficeSansKR-Regular-subset.woff2')
+const THAI = resolve(DOCS_FONTS, 'ChaOfficeSarabun-Regular.woff2')
 const CARLITO = resolve(__dirname, '../../ui/src/fonts/Carlito-Regular.ttf')
 
 describe('woff2ToSfnt', () => {

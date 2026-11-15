@@ -286,7 +286,7 @@ export async function buildFuzzXlsx(seed: number): Promise<Uint8Array> {
     const tableRelId = plan.table ? `rId${relId}` : null
     if (hyperlinkRelId) {
       sheetRels.push(
-        `<Relationship Id="${hyperlinkRelId}" Type="${OFFICE_REL}/hyperlink" Target="https://example.com/genoffice" TargetMode="External"/>`,
+        `<Relationship Id="${hyperlinkRelId}" Type="${OFFICE_REL}/hyperlink" Target="https://example.com/chaoffice" TargetMode="External"/>`,
       )
     }
     if (commentRelId) {
