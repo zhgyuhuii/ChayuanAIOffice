@@ -92,18 +92,23 @@ function runsFromChildren(
       const name = nodeName(node)
       switch (name) {
         case '#comment':
+        case 'text:ruby-text':
           break
         case 'text:span': {
           const spanProps = mergeProps(
             props,
-            ctx.styles.textProps(attr(node, 'text:style-name'), ctx.families),
+            ctx.styles.textProps(attr(node, 'text:style-name'), ctx.families, false),
           )
           walk(nodeChildren(node), spanProps, href)
           break
         }
         case 'text:a': {
           const target = attr(node, 'xlink:href') ?? ''
-          walk(nodeChildren(node), props, LINKABLE_HREF.test(target) ? target : href)
+          const linkProps = mergeProps(
+            props,
+            ctx.styles.textProps(attr(node, 'text:style-name'), ['text'], false),
+          )
+          walk(nodeChildren(node), linkProps, LINKABLE_HREF.test(target) ? target : href)
           break
         }
         case 'text:tab':
@@ -113,7 +118,8 @@ function runsFromChildren(
           push({ text: '\n', ...base(props), ...(href ? { href } : {}) })
           break
         case 'text:s': {
-          const count = Math.min(Number(attr(node, 'text:c') ?? '1') || 1, 1000)
+          const raw = Number(attr(node, 'text:c') ?? '1') || 1
+          const count = Math.max(1, Math.min(raw, 1000))
           push({ text: ' '.repeat(count), ...base(props), ...(href ? { href } : {}) })
           break
         }
@@ -124,7 +130,6 @@ function runsFromChildren(
         case 'text:reference-mark':
         case 'text:reference-mark-start':
         case 'text:reference-mark-end':
-        case 'text:sequence':
           break
         case 'text:note':
           ctx.drops.add('footnotes')
@@ -153,6 +158,7 @@ function runsFromChildren(
           ctx.drops.add('objects')
           break
         case 'text:page-number':
+        case 'text:sequence':
         case 'text:page-count':
         case 'text:sequence-ref':
         case 'text:bookmark-ref':

@@ -110,13 +110,14 @@ import type {
   AiModelSelection,
   AiSettingsV2,
   AiStreamChunk,
+  LocalToolStatus,
+  LocalToolOpResult,
   DiscoveryTarget,
   ChaOfficeAccountStatus,
-  LocalToolOpResult,
-  LocalToolStatus,
 } from '@chaoffice/ai-provider'
 import type { HeadlessExportTarget } from '@chaoffice/electron-utils/headless-export'
 import type { FaceVerticalMetrics } from '@chaoffice/font-metrics'
+import type { SaveAsExportFormat } from './save-as-format'
 
 export type { FaceVerticalMetrics }
 
@@ -392,8 +393,8 @@ export interface ZoteroRendererResponse {
  * MCP bridge: an editor command pushed from the shell main process into a docs
  * tab so an external agent drives the *visible* editor instead of writing a file
  * behind it. `insert_content` / `replace_blocks` / `apply_ops` / `insert_picture` /
- * `read_document` reuse the built-in agent's tool executors; `save_document` writes
- * the live document to an explicit path.
+ * `read_document` / `read_blocks` reuse the built-in agent's tool executors;
+ * `save_document` writes the live document to an explicit path.
  */
 export type McpEditorCommand =
   | 'insert_content'
@@ -401,6 +402,7 @@ export type McpEditorCommand =
   | 'apply_ops'
   | 'insert_picture'
   | 'read_document'
+  | 'read_blocks'
   | 'save_document'
 
 export interface McpCommandMessage {
@@ -594,6 +596,8 @@ export interface DesktopApi {
     ok: boolean
     path?: string
     error?: string
+    /** the dialog picked another format: nothing was written, export to `path` instead */
+    exportAs?: SaveAsExportFormat
     passwordIntentPending?: boolean
     dataUrl?: string
   }>
@@ -625,6 +629,10 @@ export interface DesktopApi {
   writeMergeOutput(request: MergeOutputRequest): Promise<MergeOutputResponse>
   /** vertical metrics of an installed family (exact name match), null when missing */
   fontMetrics(family: string): Promise<FaceVerticalMetrics | null>
+  /** the other spellings of the installed faces behind these names: a localized
+   *  (CJK) family name yields the English spelling the browser resolves.
+   *  Only the names that have an alias are answered (genoffice#2449). */
+  fontAliases(names: readonly string[]): Promise<Record<string, readonly string[]>>
   /** v2 settings view: BYOK keys redacted to the KEEP_KEY sentinel */
   getAiSettings(): Promise<AiSettingsV2>
   /** persist the view; KEEP_KEY entries keep their stored key */

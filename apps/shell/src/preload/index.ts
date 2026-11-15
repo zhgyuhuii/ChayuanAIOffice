@@ -455,6 +455,15 @@ const homeApi: HomeApi = {
       updatedAt: typeof r?.updatedAt === 'number' ? r.updatedAt : 0,
     }
   },
+  async getCsvImportLimit() {
+    const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.getCsvImportLimit)
+    return typeof result === 'number' ? result : 0
+  },
+  async setCsvImportLimit(mb) {
+    if (typeof mb !== 'number' || !Number.isInteger(mb))
+      throw new Error('Invalid CSV import limit.')
+    await ipcRenderer.invoke(HOME_CHANNELS.setCsvImportLimit, mb)
+  },
   async getTabSleepEnabled() {
     const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.getTabSleepEnabled)
     return result !== false
@@ -555,6 +564,8 @@ const homeApi: HomeApi = {
   async setLegacyImportPrompt(prompt) {
     return (await ipcRenderer.invoke(HOME_CHANNELS.setLegacyImportPrompt, prompt)) !== false
   },
+  getPdfDefaultZoom: () => ipcRenderer.invoke(HOME_CHANNELS.getPdfDefaultZoom),
+  setPdfDefaultZoom: (zoom) => ipcRenderer.invoke(HOME_CHANNELS.setPdfDefaultZoom, zoom),
   async getAuthorName() {
     return normalizeAuthorNameSetting(await ipcRenderer.invoke(HOME_CHANNELS.getAuthorName))
   },
@@ -866,7 +877,7 @@ contextBridge.exposeInMainWorld('chaOfficeProject', projectApi)
  *
  * A global of its own rather than part of `aiOffice`: `aiOffice` is the
  * shell's home API, and an editor window that reused the name would shadow it
- * there — `window.aiOffice.setTheme` would vanish with it.
+ * there — `window.chaOffice.setTheme` would vanish with it.
  */
 const aiNamingApi = {
   suggestFileName(input: { content: string }) {

@@ -2,7 +2,7 @@
   "source": "packages/docx-engine/tests/fixtures/truths/embedded-face-hhea/probe.docx",
   "paragraphs": 1,
   "hashes": [
-    "853f7c4f92a60fce"
+    "05e9db7dee5e00a9"
   ],
   "cellParagraphs": 0,
   "cellHashes": [],

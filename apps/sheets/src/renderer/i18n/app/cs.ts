@@ -460,6 +460,7 @@ export const cs = {
   appColumnLabel: 'Sloupec {col}',
   appBridgeUnavailable: "桌面文件桥不可用。请重启 Electron 应用。",
   appOpenCanceled: 'Výběr sešitu zrušen.',
+  appImportCanceled: 'Import zrušen.',
   appOpeningWorkbook: 'Otevírání sešitu…',
   appOpened: 'Otevřeno {name} — úpravy buněk se uloží zpět pomocí ⌘S.',
   appOpenFailed: 'Sešit nelze otevřít.',

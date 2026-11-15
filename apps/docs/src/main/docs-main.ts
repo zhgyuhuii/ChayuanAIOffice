@@ -81,7 +81,11 @@ import {
   readLegacyImportSkip,
   writeLegacyImportSkip,
 } from '@chaoffice/electron-utils'
-import { configureMetricsCache, familyVerticalMetrics } from '@chaoffice/font-metrics'
+import {
+  configureMetricsCache,
+  familyAliases,
+  familyVerticalMetrics,
+} from '@chaoffice/font-metrics'
 import { createI18n, getUiLang, normalizeLang, setUiLang } from '@chaoffice/i18n'
 import { ProjectStore } from '@chaoffice/project-store'
 // LOCAL(2026-09-21, d8201ad0): 多会话对话索引(B 区新模块)
@@ -156,6 +160,7 @@ import { ATTACHMENT_IMAGE_EXTS, MARKDOWN_MEDIA_DIR_TOKEN, type ContextMenuReques
 import { MERGE_DATA_SOURCE_EXTENSIONS, readMergeDataSource } from './merge-data-source'
 import { mergeOutputFileName, mergeOutputPath } from './merge-output'
 import { ClickClaims } from '../shared/context-menu-claims'
+import { SAVE_AS_EXPORT_FILTERS, saveAsExportFormat } from '../shared/save-as-format'
 import {
   OPENABLE_DOC_EXTENSIONS,
   docImportKindForPath,
@@ -195,6 +200,7 @@ import {
 import { isExternallyModified, type DiskFileState } from './external-change'
 import {
   printJobOptions,
+  printPaperOption,
   printScaleOption,
   validPrintDim,
   validPrintGeometry,
@@ -4843,6 +4849,20 @@ export function registerDocsIpc(): void {
   ipcMain.handle('docs:font-metrics', (_event, family: string) =>
     typeof family === 'string' ? familyVerticalMetrics(family) : null,
   )
+  // the other spellings of the installed faces behind these names: a document
+  // that declares a CJK font by its localized name needs the English spelling
+  // the browser resolves (genoffice#2449). The renderer is not trusted, but
+  // the answer is only font names.
+  ipcMain.handle('docs:font-aliases', (_event, names: unknown) => {
+    if (!Array.isArray(names)) return {}
+    const out: Record<string, readonly string[]> = {}
+    for (const raw of names.slice(0, 512)) {
+      if (typeof raw !== 'string' || raw.length === 0 || raw.length > 256) continue
+      const aliases = familyAliases(raw)
+      if (aliases.length) out[raw] = aliases
+    }
+    return out
+  })
 
   ipcMain.handle('docs:open', async (event) => {
     const result = await openDialog(event, {
@@ -5321,12 +5341,18 @@ export function registerDocsIpc(): void {
           typeof sourcePath === 'string' ? sourcePath : null,
           defaultName,
         ),
-        filters: [{ name: tm('filterWord'), extensions: ['docx'] }],
+        filters: [{ name: tm('filterWord'), extensions: ['docx'] }, ...SAVE_AS_EXPORT_FILTERS],
       })
       if (result.canceled || !result.filePath) return { ok: false }
       // the tab may have been closed while the dialog was open; checked before the
       // write because Save As may overwrite an existing file (no safe rollback)
       if (tornDownWcIds.has(event.sender.id)) return { ok: false }
+      // another format is an exported copy: the renderer runs that export, the document stays where it is
+      const exportAs = saveAsExportFormat(result.filePath)
+      if (exportAs) {
+        allowPdfWrite(event.sender.id, result.filePath)
+        return { ok: false, exportAs, path: result.filePath }
+      }
       try {
         const passwordState = snapshotDocPassword(
           event.sender.id,
@@ -5747,6 +5773,10 @@ export function registerDocsIpc(): void {
       margins: { marginType: 'none' as const },
       ...printScale(scale),
       ...printJobOptions(job),
+      // the document's own paper: Chromium prints on Letter unless the job
+      // states one, and an A4 sheet on Letter is taller than the paper — it
+      // splits in two, so the printed page loses its bottom (genoffice#2563)
+      ...printPaperOption(paper),
     }
     // A named printer prints silently, and Chromium's silent print on macOS
     // can drop the job outright — no queue entry, no callback error

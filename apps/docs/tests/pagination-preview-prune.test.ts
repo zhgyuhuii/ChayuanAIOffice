@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { prunedCloneHtml, type CloneChild } from '../src/renderer/components/PaginationPreview'
+import {
+  canvasWrapWidth,
+  cloneChildGeom,
+  prunedCloneHtml,
+  shouldPruneClones,
+  type CloneChild,
+} from '../src/renderer/components/PaginationPreview'
 
 const kid = (partial: Partial<CloneChild> & Pick<CloneChild, 'html' | 'vTop' | 'vBottom'>) => ({
   mt: 0,
@@ -65,5 +71,63 @@ describe('prunedCloneHtml', () => {
     // flow position (3000), not from the pre-marker base — the buggy stale
     // base would re-add the 3000px already consumed and shift B a page down
     expect(spacerHeights(out)).toEqual([3000, 9000 - 20 - 3000])
+  })
+})
+
+describe('shouldPruneClones', () => {
+  it('keeps full clones for a document that fits both budgets', () => {
+    expect(shouldPruneClones(20, 500, 20_000)).toBe(false)
+  })
+
+  it('prunes once pages x blocks passes the block budget', () => {
+    expect(shouldPruneClones(300, 500, 1_000)).toBe(true)
+  })
+
+  it('prunes a page-heavy document whose few blocks carry a huge DOM', () => {
+    // under the block budget (112 x 869), 9.7 M elements over the element one
+    expect(shouldPruneClones(112, 869, 87_039)).toBe(true)
+  })
+
+  it('prunes a 1.7 M-element preview that sits under both former budgets', () => {
+    expect(shouldPruneClones(107, 859, 15_919)).toBe(true)
+  })
+})
+
+describe('canvasWrapWidth', () => {
+  // A4 with 1134-twip margins: 642.5333px nominal, Blink lays the canvas out at 642.5390625
+  const NOMINAL = 642.5333333333333
+
+  it('returns the snapped width of a full-width canvas block', () => {
+    expect(canvasWrapWidth([22.5, 642.5390625, 701, 642.5390625], NOMINAL)).toBe(642.5390625)
+  })
+
+  it('ignores indented blocks, over-wide tables and empty canvases', () => {
+    expect(canvasWrapWidth([600.2, 701, 0], NOMINAL)).toBeNull()
+    expect(canvasWrapWidth([], NOMINAL)).toBeNull()
+  })
+
+  it('prefers the block closest to the nominal width', () => {
+    expect(canvasWrapWidth([642.5, 642.546875, 642.5390625], NOMINAL)).toBe(642.5390625)
+  })
+})
+
+describe('cloneChildGeom', () => {
+  it('positions a block-backed child on the pass geometry, a block-less one on its rect', () => {
+    const raw = { vTop: 100, h: 40 }
+    expect(cloneChildGeom(undefined, raw)).toEqual(raw)
+    // the lead fold moved the first block's space before out of its top
+    expect(cloneChildGeom({ top: 0, height: 120, domHeight: 40, leadFoldPx: 100 }, raw)).toEqual({
+      vTop: 100,
+      h: 40,
+    })
+    // a page-relative V float: the applied shift was taken out of the slicer top,
+    // the clone paints the shifted box
+    expect(
+      cloneChildGeom({ top: 300, height: 50, domHeight: 50, shiftAppliedPx: 80 }, raw),
+    ).toEqual({ vTop: 380, h: 50 })
+    // a joined paragraph tail extended the head's DOM box; footnote extras never do
+    expect(
+      cloneChildGeom({ top: 100, height: 160, domHeight: 60, footnoteExtraPx: 100 }, raw),
+    ).toEqual({ vTop: 100, h: 60 })
   })
 })

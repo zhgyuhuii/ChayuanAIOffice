@@ -1,4 +1,4 @@
-/** Main-process i18n strings for ChaOffice Slides (dialogs, native menus, export, autosave prompts). */
+/** Main-process i18n strings for ChaAI Office Slides (dialogs, native menus, export, autosave prompts). */
 import { createI18n, getUiLang } from '@chaoffice/i18n'
 
 export const tMain = createI18n({
@@ -20,6 +20,7 @@ export const tMain = createI18n({
     dlgPickExportDir: '选择导出目录',
     btnExport: '导出',
     dlgExportPdf: '导出为 PDF',
+    dlgExportVideo: '导出为视频 (MP4)',
     dlgSavePicture: '另存为图片',
     dlgAddAttachment: '添加附件',
     filterSupported: '支持的文件',
@@ -40,13 +41,13 @@ export const tMain = createI18n({
     mediaAviBody:
       'AVI 格式不受内置播放器支持，无法在应用内播放。文件会原样嵌入，导出后在 PowerPoint 中仍可播放。',
     pptImportDetail:
-      '察元AIOffice 会把演示文稿重建为可编辑的文本框，保持原来的幻灯片顺序和尺寸；形状位置、图片和文字格式暂不保留。原文件不会被改动，转换出的 .pptx 是一个独立副本，之后的保存都写入它。',
+      ' 会把演示文稿重建为可编辑的文本框，保持原来的幻灯片顺序和尺寸；形状位置、图片和文字格式暂不保留。原文件不会被改动，转换出的 .pptx 是一个独立副本，之后的保存都写入它。',
     pptImportFailedTitle: '无法转换这个 .ppt',
     pptImportFailedBody: '文件可能已损坏，或不是有效的 PowerPoint 97-2003 演示文稿。',
     legacyPptTitle: '无法打开 .ppt 旧格式',
     odpImportMsg: '转换 .{ext} 演示文稿？',
     odpImportDetail:
-      '察元AIOffice 只编辑 .pptx，不编辑 ODF。每页会变成一张幻灯片，文字框和图片按原位置摆放；母版、占位符版式、表格和图形样式不会保留。原文件不会被修改，转换出的 .pptx 是一份独立副本，之后的保存都写入它。',
+      ' 只编辑 .pptx，不编辑 ODF。每页会变成一张幻灯片，文字框和图片按原位置摆放；母版、占位符版式、表格和图形样式不会保留。原文件不会被修改，转换出的 .pptx 是一份独立副本，之后的保存都写入它。',
     odpImportConvertBtn: '转换并打开',
     importSkipConfirm: '下次直接转换，不再提示',
     odpImportFailedTitle: '无法转换 .odp',
@@ -82,12 +83,12 @@ export const tMain = createI18n({
     errParseFailed: '文件解析失败',
     errImageNoText: '图片附件不提供文本,已作为图像随用户消息发送,直接看图即可',
     errNotImage: '不是支持的图片类型',
-    errChaOfficeNotLoggedIn: '未登录 察元AIOffice:请点击下方「登录」完成登录后重试',
+    errChaOfficeNotLoggedIn: '未登录 察元AIOffice:请点击下方「登录 ChaAI Office」完成登录后重试',
     errNoApiKey: '未配置 {provider} 的 API Key',
     errNoModel: '未配置模型名称',
-    errChaOfficeCli: 'chaoffice 未登录:请先运行 chaoffice login 登录 察元AIOffice 账号',
     errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
     errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+    errChaOfficeCli: 'gsk 未登录:请先运行 chaoffice login 登录 察元AIOffice 账号',
     errNoDeckAppend:
       '当前没有可追加的文稿（会话不存在）。请先用 mode:"replace" 生成首页，或改用原生工具新增页面。',
     errAppendFailed: '追加失败：{reason}',
@@ -112,6 +113,7 @@ export const tMain = createI18n({
     menuExportPdf: '导出为 PDF…',
     menuExportImages: '导出为 PNG…',
     menuExportImagesJpg: '导出为 JPG…',
+    menuExportVideo: '导出为视频 (MP4)…',
     menuPrint: '打印…',
     menuClose: '关闭',
     menuQuit: '退出',
@@ -144,6 +146,7 @@ export const tMain = createI18n({
     dlgPickExportDir: 'Choose Export Folder',
     btnExport: 'Export',
     dlgExportPdf: 'Export as PDF',
+    dlgExportVideo: 'Export as Video (MP4)',
     dlgSavePicture: 'Save as Picture',
     dlgAddAttachment: 'Add Attachments',
     filterSupported: 'Supported Files',
@@ -166,13 +169,13 @@ export const tMain = createI18n({
     mediaAviBody:
       'The AVI format is not supported by the built-in player, so it cannot be played inside the app. The file is embedded as-is and still plays in PowerPoint after export.',
     pptImportDetail:
-      'ChaAI Office rebuilds the deck as editable text boxes, in the original slide order and size; shape geometry, images and text formatting are not carried over yet. The original file is never changed; the converted .pptx is a separate copy that later saves write to.',
+      ' rebuilds the deck as editable text boxes, in the original slide order and size; shape geometry, images and text formatting are not carried over yet. The original file is never changed; the converted .pptx is a separate copy that later saves write to.',
     pptImportFailedTitle: 'Cannot convert this .ppt',
     pptImportFailedBody: 'The file may be damaged or not a valid PowerPoint 97-2003 presentation.',
     legacyPptTitle: 'Cannot open legacy .ppt',
     odpImportMsg: 'Convert this .{ext} presentation?',
     odpImportDetail:
-      'ChaAI Office edits .pptx, not ODF. Each page becomes a slide with its text boxes and pictures placed at their original positions; masters, placeholder layouts, tables and shape styling are not preserved. The original file is never changed; the converted .pptx is a separate copy that later saves write to.',
+      ' edits .pptx, not ODF. Each page becomes a slide with its text boxes and pictures placed at their original positions; masters, placeholder layouts, tables and shape styling are not preserved. The original file is never changed; the converted .pptx is a separate copy that later saves write to.',
     odpImportConvertBtn: 'Convert and open',
     importSkipConfirm: 'Convert without asking next time',
     odpImportFailedTitle: 'Cannot convert this .odp',
@@ -209,15 +212,12 @@ export const tMain = createI18n({
     errImageNoText: 'Image attachments have no text; the image is sent along with the user message',
     errNotImage: 'not a supported image type',
     errChaOfficeNotLoggedIn:
-      'Not signed in to ChaAI Office: click “Sign in” below, sign in, then retry',
+      'Not signed in to ChaAI Office: click “Sign in to ChaAI Office” below, sign in, then retry',
     errNoApiKey: 'No API key configured for {provider}',
     errNoModel: 'No model name configured',
-    errChaOfficeCli:
-      'chaoffice not signed in: run chaoffice login to sign in to your ChaAI Office account first',
-    errNoImageModel:
-      'No image model configured: enable an image-generation model in Model Settings',
-    errChaOfficeToolsOff:
-      'ChaAI Office cloud tools are turned off in Model Settings; enable them to use this tool',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
+    errChaOfficeCli: 'gsk not signed in: run chaoffice login to sign in to your ChaAI Office account first',
     errNoDeckAppend:
       'No deck to append to (session missing). Generate the first page with mode:"replace" or add pages with the native tools.',
     errAppendFailed: 'Append failed: {reason}',
@@ -242,6 +242,7 @@ export const tMain = createI18n({
     menuExportPdf: 'Export as PDF…',
     menuExportImages: 'Export as PNG…',
     menuExportImagesJpg: 'Export as JPG…',
+    menuExportVideo: 'Export as Video (MP4)…',
     menuPrint: 'Print…',
     menuClose: 'Close',
     menuQuit: 'Quit',
@@ -257,135 +258,139 @@ export const tMain = createI18n({
     menuActualSize: 'Actual Size',
   },
   vi: {
-    dlgInsertImage: 'Insert Image',
-    dlgReplacePicture: 'Replace Picture',
-    freezeTitle: 'Page Unresponsive',
+    dlgInsertImage: 'Chèn hình ảnh',
+    dlgReplacePicture: 'Thay thế hình ảnh',
+    freezeTitle: 'Trang không phản hồi',
     freezeBody:
-      'The presentation page has stopped responding. You can keep waiting, or force a reload (restores from the current session; at most the last 30 seconds of changes are lost). Diagnostics have been recorded.',
-    freezeWait: 'Wait',
-    freezeReload: 'Force Reload',
-    filterImages: 'Images',
-    dlgInsertVideo: 'Insert Video',
-    dlgInsertAudio: 'Insert Audio',
+      'Trang trình bày đã ngừng phản hồi. Bạn có thể tiếp tục chờ hoặc buộc tải lại (khôi phục từ phiên hiện tại; tối đa mất các thay đổi trong 30 giây gần nhất). Thông tin chẩn đoán đã được ghi lại.',
+    freezeWait: 'Chờ',
+    freezeReload: 'Buộc tải lại',
+    filterImages: 'Hình ảnh',
+    dlgInsertVideo: 'Chèn video',
+    dlgInsertAudio: 'Chèn âm thanh',
     filterVideo: 'Video',
-    filterAudio: 'Audio',
-    dlgInsert3d: 'Insert 3D Model',
-    filter3d: '3D Models',
-    dlgPickExportDir: 'Choose Export Folder',
-    btnExport: 'Export',
-    dlgExportPdf: 'Export as PDF',
-    dlgSavePicture: 'Save as Picture',
-    dlgAddAttachment: 'Add Attachments',
-    filterSupported: 'Supported Files',
-    filterAll: 'All Files',
-    untitledDeck: 'Untitled Presentation',
-    autosaveFoundTitle: 'Recovered version found',
+    filterAudio: 'Âm thanh',
+    dlgInsert3d: 'Chèn mô hình 3D',
+    filter3d: 'Mô hình 3D',
+    dlgPickExportDir: 'Chọn thư mục xuất',
+    btnExport: 'Xuất',
+    dlgExportPdf: 'Xuất dưới dạng PDF',
+    dlgExportVideo: 'Xuất dưới dạng video (MP4)',
+    dlgSavePicture: 'Lưu dưới dạng hình ảnh',
+    dlgAddAttachment: 'Thêm tệp đính kèm',
+    filterSupported: 'Các tệp được hỗ trợ',
+    filterAll: 'Tất cả các tệp',
+    untitledDeck: 'Bản trình bày chưa có tiêu đề',
+    autosaveFoundTitle: 'Tìm thấy phiên bản khôi phục',
     autosaveDiskNewer:
-      'Note: the file on disk was modified after this recovery copy was saved. Restoring replaces those newer changes.',
+      'Lưu ý: tệp trên đĩa đã được sửa đổi sau khi bản sao khôi phục này được lưu. Khôi phục sẽ thay thế những thay đổi mới hơn đó.',
     autosaveFoundBody:
-      'There are unsaved changes from your last session. Restore the autosaved version?',
-    autosaveRestore: 'Restore',
-    autosaveDiscard: 'Discard',
-    closeUnsavedMsg: 'This presentation has unsaved changes.',
-    closeUnsavedDetail: 'Do you want to save them before closing?',
-    btnDontSave: "Don't Save",
-    btnCancel: 'Cancel',
-    mediaUnsupportedTitle: 'This video may not play inside the app',
+      'Có những thay đổi chưa được lưu từ phiên làm việc trước của bạn. Khôi phục phiên bản đã lưu tự động?',
+    autosaveRestore: 'Khôi phục',
+    autosaveDiscard: 'Bỏ qua',
+    closeUnsavedMsg: 'Bản trình bày này có những thay đổi chưa được lưu.',
+    closeUnsavedDetail: 'Bạn có muốn lưu các thay đổi trước khi đóng không?',
+    btnDontSave: 'Không lưu',
+    btnCancel: 'Hủy',
+    mediaUnsupportedTitle: 'Video này có thể không phát được bên trong ứng dụng',
     mediaNoAudioBody:
-      'The video’s audio codec ({codec}) is not supported by the built-in player, so in-app playback will have no sound. The file is embedded as-is and plays normally in PowerPoint after export.',
+      'Bộ giải mã âm thanh của video ({codec}) không được trình phát tích hợp hỗ trợ, vì vậy khi phát trong ứng dụng sẽ không có âm thanh. Tệp được nhúng nguyên trạng và phát bình thường trong PowerPoint sau khi xuất.',
     mediaAviBody:
-      'The AVI format is not supported by the built-in player, so it cannot be played inside the app. The file is embedded as-is and still plays in PowerPoint after export.',
+      'Định dạng AVI không được trình phát tích hợp hỗ trợ, vì vậy nó không thể phát bên trong ứng dụng. Tệp được nhúng nguyên trạng và vẫn phát được trong PowerPoint sau khi xuất.',
     pptImportDetail:
-      'ChaAI Office dựng lại bản trình bày thành các hộp văn bản có thể chỉnh sửa, theo thứ tự và kích thước slide gốc; vị trí hình khối, hình ảnh và định dạng chữ chưa được giữ lại. Tệp gốc không bị thay đổi; tệp .pptx đã chuyển đổi là bản sao riêng mà các lần lưu sau ghi vào.',
+      ' dựng lại bản trình bày thành các hộp văn bản có thể chỉnh sửa, theo thứ tự và kích thước slide gốc; vị trí hình khối, hình ảnh và định dạng chữ chưa được giữ lại. Tệp gốc không bị thay đổi; tệp .pptx đã chuyển đổi là bản sao riêng mà các lần lưu sau ghi vào.',
     pptImportFailedTitle: 'Không thể chuyển đổi tệp .ppt này',
     pptImportFailedBody:
       'Tệp có thể bị hỏng hoặc không phải bản trình bày PowerPoint 97-2003 hợp lệ.',
-    legacyPptTitle: 'Cannot open legacy .ppt',
-    odpImportMsg: 'Convert this .{ext} presentation?',
+    legacyPptTitle: 'Không thể mở tệp .ppt phiên bản cũ',
+    odpImportMsg: 'Chuyển đổi bản trình bày .{ext} này?',
     odpImportDetail:
-      'ChaAI Office chỉnh sửa .pptx chứ không chỉnh sửa ODF. Mỗi trang trở thành một slide với hộp văn bản và hình ảnh đặt đúng vị trí gốc; mẫu trình chiếu, bố cục giữ chỗ, bảng và kiểu hình khối không được giữ lại. Tệp gốc không bao giờ bị sửa; bản .pptx sau chuyển đổi là một bản sao độc lập để tiếp tục chỉnh sửa và lưu.',
+      ' chỉnh sửa .pptx chứ không chỉnh sửa ODF. Mỗi trang trở thành một slide với hộp văn bản và hình ảnh đặt đúng vị trí gốc; mẫu trình chiếu, bố cục giữ chỗ, bảng và kiểu hình khối không được giữ lại. Tệp gốc không bao giờ bị sửa; bản .pptx sau chuyển đổi là một bản sao độc lập để tiếp tục chỉnh sửa và lưu.',
     odpImportConvertBtn: 'Chuyển đổi và mở',
     importSkipConfirm: 'Lần sau chuyển đổi ngay, không hỏi lại',
     odpImportFailedTitle: 'Không thể chuyển đổi .odp này',
     odpImportFailedBody: 'Tệp có thể bị hỏng hoặc không phải bản trình bày ODF hợp lệ.',
     legacyPptBody:
-      'This is a PowerPoint 97-2003 (.ppt) binary file. Only .pptx is supported. Open it in PowerPoint/WPS/Keynote and "Save As .pptx", then try again.',
+      'Đây là tệp nhị phân PowerPoint 97-2003 (.ppt). Chỉ hỗ trợ định dạng .pptx. Hãy mở tệp trong PowerPoint/WPS/Keynote và chọn "Lưu dưới dạng .pptx", sau đó thử lại.',
     legacyPptOk: 'OK',
-    encryptedPptxTitle: 'Cannot open password-protected file',
+    encryptedPptxTitle: 'Không thể mở tệp được bảo vệ bằng mật khẩu',
     encryptedPptxBody:
-      'This file is an encrypted Office document. Password-protected files are not supported yet. Open it in PowerPoint, remove the password (File → Info → Protect Presentation), save, and try again.',
-    chartSimplifyTitle: 'Editing will simplify this chart',
+      'Tệp này là tài liệu Office được mã hóa. Tệp được bảo vệ bằng mật khẩu hiện chưa được hỗ trợ. Hãy mở tệp trong PowerPoint, xóa mật khẩu (Tệp → Thông tin → Bảo vệ bản trình bày), lưu lại và thử lại.',
+    chartSimplifyTitle: 'Chỉnh sửa sẽ làm đơn giản hóa biểu đồ này',
     chartSimplifyBody:
-      'This chart comes from an external file. Editing rebuilds it with this app’s model; fine-grained formatting such as number formats, trendlines, error bars and per-point styles will be lost.',
-    chartSimplifyOk: 'Edit anyway',
-    untitledDraft: 'Untitled Presentation',
-    labelTextBox: 'Text Box',
-    labelShape: 'Shape',
-    labelPicture: 'Picture',
-    labelGroup: 'Group',
-    labelTable: 'Table',
-    labelChart: 'Chart',
-    labelObject: 'Object',
-    schemeThemeDefault: 'Theme Default',
-    schemeColorful: 'Colorful',
-    schemeColorful2: 'Colorful 2',
-    schemeMono: 'Monochromatic {n}',
-    errUnsupportedExt: '.{ext} files are not supported',
-    errNotFile: 'not a file',
-    errTooLarge: 'exceeds the {mb}MB limit',
-    errImageTooLarge: 'image exceeds the 5MB limit',
-    errUnreadable: 'cannot be read',
-    errFileTooLarge: 'File exceeds the size limit',
-    errParseFailed: 'Failed to parse file',
-    errImageNoText: 'Image attachments have no text; the image is sent along with the user message',
-    errNotImage: 'not a supported image type',
+      'Biểu đồ này đến từ một tệp bên ngoài. Chỉnh sửa sẽ dựng lại biểu đồ theo mô hình của ứng dụng này; các định dạng chi tiết như định dạng số, đường xu hướng, thanh sai số và kiểu theo từng điểm sẽ bị mất.',
+    chartSimplifyOk: 'Vẫn chỉnh sửa',
+    untitledDraft: 'Bản trình bày chưa có tiêu đề',
+    labelTextBox: 'Hộp văn bản',
+    labelShape: 'Hình dạng',
+    labelPicture: 'Hình ảnh',
+    labelGroup: 'Nhóm',
+    labelTable: 'Bảng',
+    labelChart: 'Biểu đồ',
+    labelObject: 'Đối tượng',
+    schemeThemeDefault: 'Mặc định của chủ đề',
+    schemeColorful: 'Nhiều màu sắc',
+    schemeColorful2: 'Nhiều màu sắc 2',
+    schemeMono: 'Đơn sắc {n}',
+    errUnsupportedExt: 'Tệp .{ext} không được hỗ trợ',
+    errNotFile: 'không phải là tệp',
+    errTooLarge: 'vượt quá giới hạn {mb}MB',
+    errImageTooLarge: 'hình ảnh vượt quá giới hạn 5MB',
+    errUnreadable: 'không thể đọc được',
+    errFileTooLarge: 'Tệp vượt quá giới hạn kích thước',
+    errParseFailed: 'Không thể phân tích tệp',
+    errImageNoText:
+      'Tệp đính kèm hình ảnh không có văn bản; hình ảnh được gửi cùng với tin nhắn của người dùng',
+    errNotImage: 'loại hình ảnh không được hỗ trợ',
     errChaOfficeNotLoggedIn:
-      'Not signed in to ChaAI Office: click “Sign in” below, sign in, then retry',
-    errNoApiKey: 'No API key configured for {provider}',
-    errNoModel: 'No model name configured',
+      'Chưa đăng nhập vào ChaAI Office: nhấp vào “Đăng nhập vào ChaAI Office” bên dưới, đăng nhập, sau đó thử lại',
+    errNoApiKey: 'Chưa cấu hình khóa API cho {provider}',
+    errNoModel: 'Chưa cấu hình tên mô hình',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
     errChaOfficeCli:
-      'chaoffice not signed in: run chaoffice login to sign in to your ChaAI Office account first',
-    errNoImageModel:
-      'No image model configured: enable an image-generation model in Model Settings',
-    errChaOfficeToolsOff:
-      'ChaAI Office cloud tools are turned off in Model Settings; enable them to use this tool',
+      'gsk chưa đăng nhập: trước tiên hãy chạy chaoffice login để đăng nhập vào tài khoản ChaAI Office của bạn',
     errNoDeckAppend:
-      'No deck to append to (session missing). Generate the first page with mode:"replace" or add pages with the native tools.',
-    errAppendFailed: 'Append failed: {reason}',
-    errPartialAppend: 'Some pages failed to append: {reason}',
-    errMergeFailed: 'Failed to merge slide (source single-page pptx has no valid slide)',
-    errNoDeckReplace: 'No deck is open (session missing); cannot redo the page.',
-    errNoDeckInsert: 'No deck is open (session missing); cannot insert the page.',
-    errIndexRange: 'atIndex out of range (0-{max})',
-    errReplaceNeedsOne: 'replace_at mode requires exactly one HTML page',
-    errInsertNeedsOne: 'insert_at mode requires exactly one HTML page',
-    errReplaceFailed: 'In-place page replacement failed (error moving/deleting the old page)',
-    errInsertFailed: 'Page insertion failed (error moving the new page)',
-    errUnknown: 'unknown error',
-    errTplNameInvalid: 'Invalid template name',
-    errTplMissing: 'Template "{name}" does not exist',
-    errTplNoSkill: 'Template "{name}" has no valid Style Skill',
-    menuFile: 'File',
-    menuOpenNewWindow: 'Open in New Window',
-    menuOpen: 'Open…',
-    menuSave: 'Save',
-    menuSaveAs: 'Save As…',
-    menuExportPdf: 'Export as PDF…',
-    menuExportImages: 'Export as Images…',
+      'Không có bản trình bày để nối thêm vào (thiếu phiên làm việc). Hãy tạo trang đầu tiên với mode:"replace" hoặc thêm trang bằng các công cụ gốc.',
+    errAppendFailed: 'Nối thêm thất bại: {reason}',
+    errPartialAppend: 'Một số trang không nối thêm được: {reason}',
+    errMergeFailed:
+      'Hợp nhất trang trình bày thất bại (tệp pptx một trang nguồn không có trang trình bày hợp lệ)',
+    errNoDeckReplace:
+      'Không có bản trình bày nào đang mở (thiếu phiên làm việc); không thể làm lại trang.',
+    errNoDeckInsert:
+      'Không có bản trình bày nào đang mở (thiếu phiên làm việc); không thể chèn trang.',
+    errIndexRange: 'atIndex nằm ngoài phạm vi (0-{max})',
+    errReplaceNeedsOne: 'chế độ replace_at yêu cầu chính xác một trang HTML',
+    errInsertNeedsOne: 'chế độ insert_at yêu cầu chính xác một trang HTML',
+    errReplaceFailed: 'Thay thế trang tại chỗ thất bại (lỗi khi di chuyển/xóa trang cũ)',
+    errInsertFailed: 'Chèn trang thất bại (lỗi khi di chuyển trang mới)',
+    errUnknown: 'lỗi không xác định',
+    errTplNameInvalid: 'Tên mẫu không hợp lệ',
+    errTplMissing: 'Mẫu "{name}" không tồn tại',
+    errTplNoSkill: 'Mẫu "{name}" không có Kỹ năng Kiểu dáng hợp lệ',
+    menuFile: 'Tệp',
+    menuOpenNewWindow: 'Mở trong cửa sổ mới',
+    menuOpen: 'Mở…',
+    menuSave: 'Lưu',
+    menuSaveAs: 'Lưu dưới dạng…',
+    menuExportPdf: 'Xuất dưới dạng PDF…',
+    menuExportImages: 'Xuất dưới dạng PNG…',
     menuExportImagesJpg: 'Xuất dưới dạng JPG…',
-    menuPrint: 'Print…',
-    menuClose: 'Close',
-    menuQuit: 'Quit',
-    menuEdit: 'Edit',
-    menuUndo: 'Undo',
-    menuRedo: 'Redo',
-    menuCut: 'Cut',
-    menuCopy: 'Copy',
-    menuPaste: 'Paste',
-    menuView: 'View',
-    menuZoomIn: 'Zoom In',
-    menuZoomOut: 'Zoom Out',
-    menuActualSize: 'Actual Size',
+    menuExportVideo: 'Xuất dưới dạng video (MP4)…',
+    menuPrint: 'In…',
+    menuClose: 'Đóng',
+    menuQuit: 'Thoát',
+    menuEdit: 'Chỉnh sửa',
+    menuUndo: 'Hoàn tác',
+    menuRedo: 'Làm lại',
+    menuCut: 'Cắt',
+    menuCopy: 'Sao chép',
+    menuPaste: 'Dán',
+    menuView: 'Xem',
+    menuZoomIn: 'Phóng to',
+    menuZoomOut: 'Thu nhỏ',
+    menuActualSize: 'Kích thước thực tế',
   },
   tr: {
     dlgInsertImage: 'Resim Ekle',
@@ -405,6 +410,7 @@ export const tMain = createI18n({
     dlgPickExportDir: 'Dışa Aktarma Klasörünü Seçin',
     btnExport: 'Dışa Aktar',
     dlgExportPdf: 'PDF Olarak Dışa Aktar',
+    dlgExportVideo: 'Video Olarak Dışa Aktar (MP4)',
     dlgSavePicture: 'Resim Olarak Kaydet',
     dlgAddAttachment: 'Ek Dosya Ekle',
     filterSupported: 'Desteklenen Dosyalar',
@@ -427,14 +433,14 @@ export const tMain = createI18n({
     mediaAviBody:
       'AVI biçimi yerleşik oynatıcı tarafından desteklenmiyor; bu nedenle uygulama içinde oynatılamaz. Dosya olduğu gibi gömülür ve dışa aktarıldıktan sonra PowerPoint’te yine oynatılır.',
     pptImportDetail:
-      'ChaAI Office, desteyi özgün slayt sırası ve boyutuyla düzenlenebilir metin kutuları olarak yeniden kurar; şekil yerleşimi, görseller ve metin biçimlendirmesi henüz aktarılmaz. Özgün dosya değiştirilmez; dönüştürülen .pptx, sonraki kayıtların yazıldığı ayrı bir kopyadır.',
+      ', desteyi özgün slayt sırası ve boyutuyla düzenlenebilir metin kutuları olarak yeniden kurar; şekil yerleşimi, görseller ve metin biçimlendirmesi henüz aktarılmaz. Özgün dosya değiştirilmez; dönüştürülen .pptx, sonraki kayıtların yazıldığı ayrı bir kopyadır.',
     pptImportFailedTitle: 'Bu .ppt dosyası dönüştürülemiyor',
     pptImportFailedBody:
       'Dosya hasarlı olabilir veya geçerli bir PowerPoint 97-2003 sunumu olmayabilir.',
     legacyPptTitle: 'Eski .ppt dosyası açılamıyor',
     odpImportMsg: 'Bu .{ext} sunusu dönüştürülsün mü?',
     odpImportDetail:
-      'ChaAI Office ODF değil .pptx düzenler. Her sayfa, metin kutuları ve resimleri özgün konumlarına yerleştirilmiş bir slayt olur; asıl slaytlar, yer tutucu düzenleri, tablolar ve şekil stilleri korunmaz. Özgün dosya hiçbir zaman değiştirilmez; dönüştürülen .pptx, sonraki kayıtların yazıldığı ayrı bir kopyadır.',
+      ' ODF değil .pptx düzenler. Her sayfa, metin kutuları ve resimleri özgün konumlarına yerleştirilmiş bir slayt olur; asıl slaytlar, yer tutucu düzenleri, tablolar ve şekil stilleri korunmaz. Özgün dosya hiçbir zaman değiştirilmez; dönüştürülen .pptx, sonraki kayıtların yazıldığı ayrı bir kopyadır.',
     odpImportConvertBtn: 'Dönüştür ve aç',
     importSkipConfirm: 'Bir dahaki sefere sormadan dönüştür',
     odpImportFailedTitle: 'Bu .odp dönüştürülemiyor',
@@ -470,8 +476,13 @@ export const tMain = createI18n({
     errParseFailed: 'Dosya ayrıştırılamadı',
     errImageNoText: 'Resim eklerinde metin yoktur; resim kullanıcı mesajıyla birlikte gönderilir',
     errNotImage: 'desteklenen bir resim türü değil',
+    errChaOfficeNotLoggedIn:
+      'ChaAI Office oturumu açılmamış: aşağıdaki “ChaAI Office’a giriş yap” düğmesine tıklayıp oturum açın, sonra yeniden deneyin',
     errNoApiKey: '{provider} için API anahtarı yapılandırılmamış',
     errNoModel: 'Model adı yapılandırılmamış',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
+    errChaOfficeCli: 'chaoffice oturumu açık değil: önce chaoffice login ile ChaAI Office hesabınıza giriş yapın',
     errNoDeckAppend:
       'Eklenecek sunu yok (oturum eksik). İlk sayfayı mode:"replace" ile oluşturun veya yerel araçlarla sayfa ekleyin.',
     errAppendFailed: 'Ekleme başarısız: {reason}',
@@ -496,6 +507,7 @@ export const tMain = createI18n({
     menuExportPdf: 'PDF Olarak Dışa Aktar…',
     menuExportImages: 'PNG Olarak Dışa Aktar…',
     menuExportImagesJpg: 'JPG Olarak Dışa Aktar…',
+    menuExportVideo: 'Video Olarak Dışa Aktar (MP4)…',
     menuPrint: 'Yazdır…',
     menuClose: 'Kapat',
     menuQuit: 'Çıkış',
@@ -509,11 +521,7 @@ export const tMain = createI18n({
     menuZoomIn: 'Yakınlaştır',
     menuZoomOut: 'Uzaklaştır',
     menuActualSize: 'Gerçek Boyut',
-      errChaOfficeNotLoggedIn: '未登录 察元AIOffice:请点击下方「登录」完成登录后重试',
-    errChaOfficeCli: 'chaoffice 未登录:请先运行 chaoffice login 登录 察元AIOffice 账号',
-    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
-    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
-},
+  },
   ja: {
     dlgInsertImage: '画像の挿入',
     dlgReplacePicture: '図の変更',
@@ -532,6 +540,7 @@ export const tMain = createI18n({
     dlgPickExportDir: 'エクスポート先フォルダーの選択',
     btnExport: 'エクスポート',
     dlgExportPdf: 'PDF としてエクスポート',
+    dlgExportVideo: 'ビデオとしてエクスポート (MP4)',
     dlgSavePicture: '図として保存',
     dlgAddAttachment: '添付ファイルの追加',
     filterSupported: 'サポートされているファイル',
@@ -553,14 +562,14 @@ export const tMain = createI18n({
     mediaAviBody:
       'AVI 形式は内蔵プレーヤーでサポートされていないため、アプリ内では再生できません。ファイルはそのまま埋め込まれ、エクスポート後は PowerPoint で再生できます。',
     pptImportDetail:
-      'ChaAI Office はデッキを、元のスライドの順序とサイズのまま編集可能なテキストボックスとして再構成します。図形の位置、画像、文字書式はまだ反映されません。元のファイルは変更されず、変換された .pptx はそれ以降の保存先となる独立したコピーです。',
+      ' はデッキを、元のスライドの順序とサイズのまま編集可能なテキストボックスとして再構成します。図形の位置、画像、文字書式はまだ反映されません。元のファイルは変更されず、変換された .pptx はそれ以降の保存先となる独立したコピーです。',
     pptImportFailedTitle: 'この .ppt を変換できません',
     pptImportFailedBody:
       'ファイルが壊れているか、有効な PowerPoint 97-2003 プレゼンテーションではない可能性があります。',
     legacyPptTitle: '.ppt 形式は開けません',
     odpImportMsg: 'この .{ext} プレゼンテーションを変換しますか？',
     odpImportDetail:
-      'ChaAI Office は ODF ではなく .pptx を編集します。各ページがスライドになり、テキストボックスと画像は元の位置に配置されます。マスター・プレースホルダーレイアウト・表・図形スタイルは保持されません。元のファイルは変更されず、変換後の .pptx は独立したコピーとして以後の保存先になります。',
+      ' は ODF ではなく .pptx を編集します。各ページがスライドになり、テキストボックスと画像は元の位置に配置されます。マスター・プレースホルダーレイアウト・表・図形スタイルは保持されません。元のファイルは変更されず、変換後の .pptx は独立したコピーとして以後の保存先になります。',
     odpImportConvertBtn: '変換して開く',
     importSkipConfirm: '次回から確認せずに変換する',
     odpImportFailedTitle: 'この .odp を変換できません',
@@ -599,14 +608,13 @@ export const tMain = createI18n({
       '画像添付はテキストを提供しません。画像としてユーザー メッセージと一緒に送信済みのため、そのまま画像をご覧ください',
     errNotImage: 'サポートされていない画像形式です',
     errChaOfficeNotLoggedIn:
-      'ChaAI Office にサインインしていません。下の「サインイン」からサインインして再試行してください',
+      'ChaAI Office にサインインしていません。下の「ChaAI Office にサインイン」からサインインして再試行してください',
     errNoApiKey: '{provider} の API キーが設定されていません',
     errNoModel: 'モデル名が設定されていません',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
     errChaOfficeCli:
-      'chaoffice が未サインインです。先に chaoffice login を実行して ChaAI Office アカウントにサインインしてください',
-    errNoImageModel: '画像生成モデルが未設定です。モデル設定で画像生成モデルを有効にしてください',
-    errChaOfficeToolsOff:
-      'ChaAI Office クラウドツールがモデル設定でオフになっています。使用するにはオンにしてください',
+      'gsk が未サインインです。先に chaoffice login を実行して ChaAI Office アカウントにサインインしてください',
     errNoDeckAppend:
       '追加先のプレゼンテーションがありません（セッションが存在しません）。まず mode:"replace" で最初のページを生成するか、ネイティブ ツールでページを追加してください。',
     errAppendFailed: '追加に失敗しました: {reason}',
@@ -634,6 +642,7 @@ export const tMain = createI18n({
     menuExportPdf: 'PDF としてエクスポート…',
     menuExportImages: 'PNG としてエクスポート…',
     menuExportImagesJpg: 'JPG としてエクスポート…',
+    menuExportVideo: 'ビデオとしてエクスポート (MP4)…',
     menuPrint: '印刷…',
     menuClose: '閉じる',
     menuQuit: '終了',
@@ -666,6 +675,7 @@ export const tMain = createI18n({
     dlgPickExportDir: '내보낼 폴더 선택',
     btnExport: '내보내기',
     dlgExportPdf: 'PDF로 내보내기',
+    dlgExportVideo: '비디오로 내보내기 (MP4)',
     dlgSavePicture: '그림으로 저장',
     dlgAddAttachment: '첨부 파일 추가',
     filterSupported: '지원되는 파일',
@@ -688,14 +698,14 @@ export const tMain = createI18n({
     mediaAviBody:
       'AVI 형식은 내장 플레이어에서 지원되지 않아 앱 내에서 재생할 수 없습니다. 파일은 원본 그대로 삽입되며 내보낸 후 PowerPoint에서는 재생할 수 있습니다.',
     pptImportDetail:
-      'ChaAI Office는 데크를 원본 슬라이드 순서와 크기대로 편집 가능한 텍스트 상자로 다시 만듭니다. 도형 위치, 이미지, 텍스트 서식은 아직 옮겨지지 않습니다. 원본 파일은 변경되지 않으며, 변환된 .pptx는 이후 저장이 기록되는 별도의 사본입니다.',
+      '는 데크를 원본 슬라이드 순서와 크기대로 편집 가능한 텍스트 상자로 다시 만듭니다. 도형 위치, 이미지, 텍스트 서식은 아직 옮겨지지 않습니다. 원본 파일은 변경되지 않으며, 변환된 .pptx는 이후 저장이 기록되는 별도의 사본입니다.',
     pptImportFailedTitle: '이 .ppt를 변환할 수 없습니다',
     pptImportFailedBody:
       '파일이 손상되었거나 유효한 PowerPoint 97-2003 프레젠테이션이 아닐 수 있습니다.',
     legacyPptTitle: '.ppt 형식을 열 수 없음',
     odpImportMsg: '이 .{ext} 프레젠테이션을 변환할까요?',
     odpImportDetail:
-      'ChaAI Office은 ODF가 아니라 .pptx를 편집합니다. 각 페이지가 슬라이드가 되고 텍스트 상자와 이미지는 원래 위치에 배치됩니다. 마스터, 자리 표시자 레이아웃, 표, 도형 스타일은 유지되지 않습니다. 원본 파일은 변경되지 않으며, 변환된 .pptx는 이후 저장이 기록되는 독립적인 사본입니다.',
+      '은 ODF가 아니라 .pptx를 편집합니다. 각 페이지가 슬라이드가 되고 텍스트 상자와 이미지는 원래 위치에 배치됩니다. 마스터, 자리 표시자 레이아웃, 표, 도형 스타일은 유지되지 않습니다. 원본 파일은 변경되지 않으며, 변환된 .pptx는 이후 저장이 기록되는 독립적인 사본입니다.',
     odpImportConvertBtn: '변환 후 열기',
     importSkipConfirm: '다음부터 묻지 않고 변환',
     odpImportFailedTitle: '이 .odp을 변환할 수 없습니다',
@@ -733,15 +743,13 @@ export const tMain = createI18n({
       '이미지 첨부는 텍스트를 제공하지 않으며, 이미지로 사용자 메시지와 함께 전송되었으니 이미지를 직접 확인하세요',
     errNotImage: '지원되는 이미지 형식이 아님',
     errChaOfficeNotLoggedIn:
-      'ChaAI Office에 로그인되어 있지 않습니다. 아래 "로그인"을 눌러 로그인한 뒤 다시 시도하세요',
+      'ChaAI Office에 로그인되어 있지 않습니다. 아래 "ChaAI Office 로그인"을 눌러 로그인한 뒤 다시 시도하세요',
     errNoApiKey: '{provider}의 API 키가 설정되지 않았습니다',
     errNoModel: '모델 이름이 설정되지 않았습니다',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
     errChaOfficeCli:
-      'chaoffice가 로그인되어 있지 않습니다. 먼저 chaoffice login을 실행해 ChaAI Office 계정에 로그인하세요',
-    errNoImageModel:
-      '이미지 생성 모델이 구성되지 않았습니다. 모델 설정에서 이미지 생성 모델을 활성화하세요',
-    errChaOfficeToolsOff:
-      'ChaAI Office 클라우드 도구가 모델 설정에서 꺼져 있습니다. 사용하려면 켜세요',
+      'gsk가 로그인되어 있지 않습니다. 먼저 chaoffice login을 실행해 ChaAI Office 계정에 로그인하세요',
     errNoDeckAppend:
       '추가할 수 있는 문서가 없습니다(세션 없음). 먼저 mode:"replace"로 첫 페이지를 생성하거나 네이티브 도구로 페이지를 추가하세요.',
     errAppendFailed: '추가 실패: {reason}',
@@ -766,6 +774,7 @@ export const tMain = createI18n({
     menuExportPdf: 'PDF로 내보내기…',
     menuExportImages: 'PNG로 내보내기…',
     menuExportImagesJpg: 'JPG로 내보내기…',
+    menuExportVideo: '비디오로 내보내기 (MP4)…',
     menuPrint: '인쇄…',
     menuClose: '닫기',
     menuQuit: '끝내기',
@@ -798,6 +807,7 @@ export const tMain = createI18n({
     dlgPickExportDir: "Choisir le dossier d'exportation",
     btnExport: 'Exporter',
     dlgExportPdf: 'Exporter au format PDF',
+    dlgExportVideo: 'Exporter en vidéo (MP4)',
     dlgSavePicture: 'Enregistrer en tant qu’image',
     dlgAddAttachment: 'Ajouter des pièces jointes',
     filterSupported: 'Fichiers pris en charge',
@@ -820,14 +830,14 @@ export const tMain = createI18n({
     mediaAviBody:
       'Le format AVI n’est pas pris en charge par le lecteur intégré : lecture impossible dans l’application. Le fichier est incorporé tel quel et reste lisible dans PowerPoint après export.',
     pptImportDetail:
-      'ChaAI Office reconstruit le deck en zones de texte modifiables, dans l’ordre et à la taille d’origine des diapositives ; la géométrie des formes, les images et la mise en forme du texte ne sont pas encore conservées. Le fichier d’origine n’est jamais modifié ; le .pptx converti est une copie distincte sur laquelle les enregistrements suivants écrivent.',
+      ' reconstruit le deck en zones de texte modifiables, dans l’ordre et à la taille d’origine des diapositives ; la géométrie des formes, les images et la mise en forme du texte ne sont pas encore conservées. Le fichier d’origine n’est jamais modifié ; le .pptx converti est une copie distincte sur laquelle les enregistrements suivants écrivent.',
     pptImportFailedTitle: 'Impossible de convertir ce .ppt',
     pptImportFailedBody:
       'Le fichier est peut-être endommagé ou n’est pas une présentation PowerPoint 97-2003 valide.',
     legacyPptTitle: 'Impossible d’ouvrir le format .ppt',
     odpImportMsg: 'Convertir cette présentation .{ext} ?',
     odpImportDetail:
-      'ChaAI Office modifie des .pptx, pas de l’ODF. Chaque page devient une diapositive, avec les zones de texte et les images à leur position d’origine ; les masques, les dispositions d’espaces réservés, les tableaux et les styles de formes ne sont pas conservés. Le fichier d’origine n’est jamais modifié ; le .pptx converti est une copie distincte où s’effectuent les enregistrements suivants.',
+      ' modifie des .pptx, pas de l’ODF. Chaque page devient une diapositive, avec les zones de texte et les images à leur position d’origine ; les masques, les dispositions d’espaces réservés, les tableaux et les styles de formes ne sont pas conservés. Le fichier d’origine n’est jamais modifié ; le .pptx converti est une copie distincte où s’effectuent les enregistrements suivants.',
     odpImportConvertBtn: 'Convertir et ouvrir',
     importSkipConfirm: 'La prochaine fois, convertir sans demander',
     odpImportFailedTitle: 'Impossible de convertir ce .odp',
@@ -866,17 +876,15 @@ export const tMain = createI18n({
       "Les pièces jointes image ne fournissent pas de texte ; l'image a été envoyée avec le message de l'utilisateur, consultez-la directement",
     errNotImage: "n'est pas un type d'image pris en charge",
     errChaOfficeNotLoggedIn:
-      'Non connecté à ChaAI Office : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez',
+      'Non connecté à ChaAI Office : cliquez sur « Se connecter à ChaAI Office » ci-dessous, connectez-vous puis réessayez',
     errNoApiKey: 'Aucune clé API configurée pour {provider}',
     errNoModel: 'Aucun nom de modèle configuré',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
     errChaOfficeCli:
-      "chaoffice non connecté : exécutez d'abord chaoffice login pour vous connecter à votre compte ChaAI Office",
+      "gsk non connecté : exécutez d'abord chaoffice login pour vous connecter à votre compte ChaAI Office",
     errNoDeckAppend:
       'Aucune présentation à compléter (session inexistante). Générez d\'abord la première page avec mode:"replace" ou ajoutez des pages avec les outils natifs.',
-    errNoImageModel:
-      "Aucun modèle d'image configuré : activez un modèle de génération d'images dans les paramètres des modèles",
-    errChaOfficeToolsOff:
-      'Les outils cloud ChaAI Office sont désactivés dans les paramètres des modèles ; activez-les pour utiliser cet outil',
     errAppendFailed: "Échec de l'ajout : {reason}",
     errPartialAppend: "Échec de l'ajout de certaines pages : {reason}",
     errMergeFailed:
@@ -904,6 +912,7 @@ export const tMain = createI18n({
     menuExportPdf: 'Exporter au format PDF…',
     menuExportImages: 'Exporter en PNG…',
     menuExportImagesJpg: 'Exporter en JPG…',
+    menuExportVideo: 'Exporter en vidéo (MP4)…',
     menuPrint: 'Imprimer…',
     menuClose: 'Fermer',
     menuQuit: 'Quitter',
@@ -936,6 +945,7 @@ export const tMain = createI18n({
     dlgPickExportDir: 'Exportordner auswählen',
     btnExport: 'Exportieren',
     dlgExportPdf: 'Als PDF exportieren',
+    dlgExportVideo: 'Als Video exportieren (MP4)',
     dlgSavePicture: 'Als Grafik speichern',
     dlgAddAttachment: 'Anlagen hinzufügen',
     filterSupported: 'Unterstützte Dateien',
@@ -958,14 +968,14 @@ export const tMain = createI18n({
     mediaAviBody:
       'Das AVI-Format wird vom integrierten Player nicht unterstützt und kann in der App nicht wiedergegeben werden. Die Datei wird unverändert eingebettet und ist nach dem Export in PowerPoint weiterhin abspielbar.',
     pptImportDetail:
-      'ChaAI Office baut das Deck als editierbare Textfelder in der ursprünglichen Folienreihenfolge und -größe wieder auf; Formgeometrie, Bilder und Textformatierung werden noch nicht übernommen. Die Originaldatei wird nie verändert; die konvertierte .pptx ist eine separate Kopie, in die spätere Speicherungen schreiben.',
+      ' baut das Deck als editierbare Textfelder in der ursprünglichen Folienreihenfolge und -größe wieder auf; Formgeometrie, Bilder und Textformatierung werden noch nicht übernommen. Die Originaldatei wird nie verändert; die konvertierte .pptx ist eine separate Kopie, in die spätere Speicherungen schreiben.',
     pptImportFailedTitle: 'Diese .ppt kann nicht konvertiert werden',
     pptImportFailedBody:
       'Die Datei ist möglicherweise beschädigt oder keine gültige PowerPoint-97-2003-Präsentation.',
     legacyPptTitle: '.ppt kann nicht geöffnet werden',
     odpImportMsg: 'Diese .{ext}-Präsentation konvertieren?',
     odpImportDetail:
-      'ChaAI Office bearbeitet .pptx, nicht ODF. Jede Seite wird eine Folie, mit Textfeldern und Bildern an ihren ursprünglichen Positionen; Masters, Platzhalterlayouts, Tabellen und Formatstile werden nicht übernommen. Die Originaldatei bleibt unverändert; die konvertierte .pptx-Kopie ist eigenständig, und spätere Speicherungen landen in ihr.',
+      ' bearbeitet .pptx, nicht ODF. Jede Seite wird eine Folie, mit Textfeldern und Bildern an ihren ursprünglichen Positionen; Masters, Platzhalterlayouts, Tabellen und Formatstile werden nicht übernommen. Die Originaldatei bleibt unverändert; die konvertierte .pptx-Kopie ist eigenständig, und spätere Speicherungen landen in ihr.',
     odpImportConvertBtn: 'Konvertieren und öffnen',
     importSkipConfirm: 'Nächstes Mal ohne Nachfrage konvertieren',
     odpImportFailedTitle: 'Diese .odp-Datei kann nicht konvertiert werden',
@@ -1004,15 +1014,13 @@ export const tMain = createI18n({
       'Bildanlagen liefern keinen Text; das Bild wurde mit der Benutzernachricht gesendet, bitte direkt ansehen',
     errNotImage: 'kein unterstütztes Bildformat',
     errChaOfficeNotLoggedIn:
-      'Nicht bei ChaAI Office angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut',
+      'Nicht bei ChaAI Office angemeldet: Klicken Sie unten auf „Bei ChaAI Office anmelden“, melden Sie sich an und versuchen Sie es erneut',
     errNoApiKey: 'Kein API-Schlüssel für {provider} konfiguriert',
     errNoModel: 'Kein Modellname konfiguriert',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
     errChaOfficeCli:
-      'chaoffice nicht angemeldet: Führen Sie zuerst chaoffice login aus, um sich bei Ihrem ChaAI Office-Konto anzumelden',
-    errNoImageModel:
-      'Kein Bildmodell konfiguriert: aktiviere ein Bildgenerierungsmodell in den Modelleinstellungen',
-    errChaOfficeToolsOff:
-      'ChaAI Office-Cloud-Tools sind in den Modelleinstellungen deaktiviert; aktiviere sie, um dieses Tool zu nutzen',
+      'gsk nicht angemeldet: Führen Sie zuerst chaoffice login aus, um sich bei Ihrem ChaAI Office-Konto anzumelden',
     errNoDeckAppend:
       'Keine Präsentation zum Anfügen vorhanden (Sitzung fehlt). Generieren Sie zuerst die erste Seite mit mode:"replace" oder fügen Sie Seiten mit den nativen Tools hinzu.',
     errAppendFailed: 'Anfügen fehlgeschlagen: {reason}',
@@ -1041,6 +1049,7 @@ export const tMain = createI18n({
     menuExportPdf: 'Als PDF exportieren…',
     menuExportImages: 'Als PNG exportieren…',
     menuExportImagesJpg: 'Als JPG exportieren…',
+    menuExportVideo: 'Als Video exportieren (MP4)…',
     menuPrint: 'Drucken…',
     menuClose: 'Schließen',
     menuQuit: 'Beenden',
@@ -1073,6 +1082,7 @@ export const tMain = createI18n({
     dlgPickExportDir: 'Elegir carpeta de exportación',
     btnExport: 'Exportar',
     dlgExportPdf: 'Exportar como PDF',
+    dlgExportVideo: 'Exportar como video (MP4)',
     dlgSavePicture: 'Guardar como imagen',
     dlgAddAttachment: 'Agregar datos adjuntos',
     filterSupported: 'Archivos compatibles',
@@ -1095,14 +1105,14 @@ export const tMain = createI18n({
     mediaAviBody:
       'El formato AVI no es compatible con el reproductor integrado y no se puede reproducir en la aplicación. El archivo se incrusta tal cual y sigue reproduciéndose en PowerPoint tras exportar.',
     pptImportDetail:
-      'ChaAI Office reconstruye la presentación como cuadros de texto editables, en el orden y tamaño originales de las diapositivas; la geometría de las formas, las imágenes y el formato del texto aún no se conservan. El archivo original nunca se modifica; el .pptx convertido es una copia aparte en la que se escriben los guardados posteriores.',
+      ' reconstruye la presentación como cuadros de texto editables, en el orden y tamaño originales de las diapositivas; la geometría de las formas, las imágenes y el formato del texto aún no se conservan. El archivo original nunca se modifica; el .pptx convertido es una copia aparte en la que se escriben los guardados posteriores.',
     pptImportFailedTitle: 'No se puede convertir este .ppt',
     pptImportFailedBody:
       'El archivo puede estar dañado o no ser una presentación válida de PowerPoint 97-2003.',
     legacyPptTitle: 'No se puede abrir el formato .ppt',
     odpImportMsg: '¿Convertir esta presentación .{ext}?',
     odpImportDetail:
-      'ChaAI Office edita .pptx, no ODF. Cada página se convierte en una diapositiva, con los cuadros de texto y las imágenes en su posición original; los patrones, los diseños de marcadores de posición, las tablas y los estilos de forma no se conservan. El archivo original nunca se modifica; el .pptx convertido es una copia independiente en la que se guardan los cambios posteriores.',
+      ' edita .pptx, no ODF. Cada página se convierte en una diapositiva, con los cuadros de texto y las imágenes en su posición original; los patrones, los diseños de marcadores de posición, las tablas y los estilos de forma no se conservan. El archivo original nunca se modifica; el .pptx convertido es una copia independiente en la que se guardan los cambios posteriores.',
     odpImportConvertBtn: 'Convertir y abrir',
     importSkipConfirm: 'La próxima vez, convertir sin preguntar',
     odpImportFailedTitle: 'No se puede convertir este .odp',
@@ -1140,15 +1150,13 @@ export const tMain = createI18n({
       'Las imágenes adjuntas no proporcionan texto; la imagen se envió junto con el mensaje del usuario, consúltala directamente',
     errNotImage: 'no es un tipo de imagen compatible',
     errChaOfficeNotLoggedIn:
-      'No has iniciado sesión en ChaAI Office: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo',
+      'No has iniciado sesión en ChaAI Office: pulsa «Iniciar sesión en ChaAI Office» abajo, inicia sesión y vuelve a intentarlo',
     errNoApiKey: 'No hay clave de API configurada para {provider}',
     errNoModel: 'No hay nombre de modelo configurado',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
     errChaOfficeCli:
-      'chaoffice sin sesión iniciada: ejecuta primero chaoffice login para iniciar sesión en tu cuenta de ChaAI Office',
-    errNoImageModel:
-      'No hay modelo de imagen configurado: activa un modelo de generación de imágenes en Ajustes de modelos',
-    errChaOfficeToolsOff:
-      'Las herramientas en la nube de ChaAI Office están desactivadas en Ajustes de modelos; actívalas para usar esta herramienta',
+      'gsk sin sesión iniciada: ejecuta primero chaoffice login para iniciar sesión en tu cuenta de ChaAI Office',
     errNoDeckAppend:
       'No hay ninguna presentación a la que anexar (no existe la sesión). Genera primero la primera página con mode:"replace" o añade páginas con las herramientas nativas.',
     errAppendFailed: 'Error al anexar: {reason}',
@@ -1177,6 +1185,7 @@ export const tMain = createI18n({
     menuExportPdf: 'Exportar como PDF…',
     menuExportImages: 'Exportar como PNG…',
     menuExportImagesJpg: 'Exportar como JPG…',
+    menuExportVideo: 'Exportar como video (MP4)…',
     menuPrint: 'Imprimir…',
     menuClose: 'Cerrar',
     menuQuit: 'Salir',
@@ -1209,6 +1218,7 @@ export const tMain = createI18n({
     dlgPickExportDir: 'เลือกโฟลเดอร์ส่งออก',
     btnExport: 'ส่งออก',
     dlgExportPdf: 'ส่งออกเป็น PDF',
+    dlgExportVideo: 'ส่งออกเป็นวิดีโอ (MP4)',
     dlgSavePicture: 'บันทึกเป็นรูปภาพ',
     dlgAddAttachment: 'เพิ่มสิ่งที่แนบ',
     filterSupported: 'ไฟล์ที่รองรับ',
@@ -1230,13 +1240,13 @@ export const tMain = createI18n({
     mediaAviBody:
       'รูปแบบ AVI ไม่รองรับโดยเครื่องเล่นในตัว จึงเล่นในแอปไม่ได้ ไฟล์จะถูกฝังตามต้นฉบับและยังเล่นได้ใน PowerPoint หลังส่งออก',
     pptImportDetail:
-      'ChaAI Office สร้างเดคใหม่เป็นกล่องข้อความที่แก้ไขได้ตามลำดับและขนาดสไลด์เดิม; ตำแหน่งรูปทรง รูปภาพ และการจัดรูปแบบข้อความยังไม่ถูกนำมาด้วย ไฟล์ต้นฉบับจะไม่ถูกแก้ไข; ไฟล์ .pptx ที่แปลงแล้วเป็นสำเนาแยกต่างหากที่การบันทึกครั้งถัดไปจะเขียนลงไป',
+      ' สร้างเดคใหม่เป็นกล่องข้อความที่แก้ไขได้ตามลำดับและขนาดสไลด์เดิม; ตำแหน่งรูปทรง รูปภาพ และการจัดรูปแบบข้อความยังไม่ถูกนำมาด้วย ไฟล์ต้นฉบับจะไม่ถูกแก้ไข; ไฟล์ .pptx ที่แปลงแล้วเป็นสำเนาแยกต่างหากที่การบันทึกครั้งถัดไปจะเขียนลงไป',
     pptImportFailedTitle: 'ไม่สามารถแปลงไฟล์ .ppt นี้',
     pptImportFailedBody: 'ไฟล์อาจเสียหายหรือไม่ใช่งานนำเสนอ PowerPoint 97-2003 ที่ถูกต้อง',
     legacyPptTitle: 'ไม่สามารถเปิดไฟล์ .ppt',
     odpImportMsg: 'แปลงงานนำเสนอ .{ext} นี้ไหม?',
     odpImportDetail:
-      'ChaAI Office แก้ไข .pptx ไม่ใช่ ODF แต่ละหน้าจะกลายเป็นสไลด์ โดยกล่องข้อความและรูปภาพจะอยู่ตำแหน่งเดิม ส่วนต้นแบบ เลย์เอาต์ตัวยึด ตาราง และสไตล์รูปทรงจะไม่ถูกเก็บไว้ ไฟล์ต้นทางจะไม่ถูกแก้ไข และไฟล์ .pptx ที่แปลงแล้วเป็นสำเนาแยกต่างหากที่การบันทึกครั้งต่อไปจะเขียนลง',
+      ' แก้ไข .pptx ไม่ใช่ ODF แต่ละหน้าจะกลายเป็นสไลด์ โดยกล่องข้อความและรูปภาพจะอยู่ตำแหน่งเดิม ส่วนต้นแบบ เลย์เอาต์ตัวยึด ตาราง และสไตล์รูปทรงจะไม่ถูกเก็บไว้ ไฟล์ต้นทางจะไม่ถูกแก้ไข และไฟล์ .pptx ที่แปลงแล้วเป็นสำเนาแยกต่างหากที่การบันทึกครั้งต่อไปจะเขียนลง',
     odpImportConvertBtn: 'แปลงแล้วเปิด',
     importSkipConfirm: 'ครั้งถัดไปแปลงทันทีโดยไม่ต้องถาม',
     odpImportFailedTitle: 'ไม่สามารถแปลงไฟล์ .odp นี้ได้',
@@ -1274,14 +1284,12 @@ export const tMain = createI18n({
       'สิ่งที่แนบเป็นรูปภาพไม่มีข้อความ รูปถูกส่งไปพร้อมข้อความของผู้ใช้แล้ว โปรดดูรูปโดยตรง',
     errNotImage: 'ไม่ใช่ชนิดรูปภาพที่รองรับ',
     errChaOfficeNotLoggedIn:
-      'ยังไม่ได้ลงชื่อเข้าใช้ ChaAI Office: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง',
+      'ยังไม่ได้ลงชื่อเข้าใช้ ChaAI Office: แตะ “ลงชื่อเข้าใช้ ChaAI Office” ด้านล่าง แล้วลองอีกครั้ง',
     errNoApiKey: 'ยังไม่ได้ตั้งค่า API Key ของ {provider}',
     errNoModel: 'ยังไม่ได้ตั้งค่าชื่อโมเดล',
-    errChaOfficeCli:
-      'chaoffice ยังไม่ได้เข้าสู่ระบบ: โปรดรัน chaoffice login เพื่อเข้าสู่ระบบบัญชี ChaAI Office ก่อน',
-    errNoImageModel: 'ยังไม่ได้ตั้งค่าโมเดลสร้างภาพ: เปิดใช้โมเดลสร้างภาพในการตั้งค่าโมเดล',
-    errChaOfficeToolsOff:
-      'เครื่องมือคลาวด์ของ ChaAI Office ถูกปิดอยู่ในการตั้งค่าโมเดล เปิดใช้เพื่อใช้เครื่องมือนี้',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
+    errChaOfficeCli: 'gsk ยังไม่ได้เข้าสู่ระบบ: โปรดรัน chaoffice login เพื่อเข้าสู่ระบบบัญชี ChaAI Office ก่อน',
     errNoDeckAppend:
       'ไม่มีเอกสารให้เพิ่มต่อท้าย (ไม่มีเซสชัน) โปรดสร้างหน้าแรกด้วย mode:"replace" ก่อน หรือใช้เครื่องมือเนทีฟเพิ่มหน้าแทน',
     errAppendFailed: 'เพิ่มต่อท้ายไม่สำเร็จ: {reason}',
@@ -1306,6 +1314,7 @@ export const tMain = createI18n({
     menuExportPdf: 'ส่งออกเป็น PDF…',
     menuExportImages: 'ส่งออกเป็น PNG…',
     menuExportImagesJpg: 'ส่งออกเป็น JPG…',
+    menuExportVideo: 'ส่งออกเป็นวิดีโอ (MP4)…',
     menuPrint: 'พิมพ์…',
     menuClose: 'ปิด',
     menuQuit: 'ออก',
@@ -1338,6 +1347,7 @@ export const tMain = createI18n({
     dlgPickExportDir: 'Pilih Folder Ekspor',
     btnExport: 'Ekspor',
     dlgExportPdf: 'Ekspor sebagai PDF',
+    dlgExportVideo: 'Ekspor sebagai video (MP4)',
     dlgSavePicture: 'Simpan sebagai Gambar',
     dlgAddAttachment: 'Tambahkan Lampiran',
     filterSupported: 'File yang Didukung',
@@ -1360,13 +1370,13 @@ export const tMain = createI18n({
     mediaAviBody:
       'Format AVI tidak didukung pemutar bawaan sehingga tidak dapat diputar di aplikasi. File disematkan apa adanya dan tetap dapat diputar di PowerPoint setelah diekspor.',
     pptImportDetail:
-      'ChaAI Office membangun kembali dek sebagai kotak teks yang dapat diedit, dalam urutan dan ukuran slide asli; geometri bentuk, gambar, dan pemformatan teks belum dibawa. File asli tidak pernah diubah; .pptx yang dikonversi adalah salinan terpisah yang ditulis oleh penyimpanan berikutnya.',
+      ' membangun kembali dek sebagai kotak teks yang dapat diedit, dalam urutan dan ukuran slide asli; geometri bentuk, gambar, dan pemformatan teks belum dibawa. File asli tidak pernah diubah; .pptx yang dikonversi adalah salinan terpisah yang ditulis oleh penyimpanan berikutnya.',
     pptImportFailedTitle: 'Tidak dapat mengonversi .ppt ini',
     pptImportFailedBody: 'File mungkin rusak atau bukan presentasi PowerPoint 97-2003 yang valid.',
     legacyPptTitle: 'Tidak dapat membuka format .ppt',
     odpImportMsg: 'Konversi presentasi .{ext} ini?',
     odpImportDetail:
-      'ChaAI Office mengedit .pptx, bukan ODF. Setiap halaman menjadi satu salindia dengan kotak teks dan gambar pada posisi aslinya; master, tata letak placeholder, tabel, dan gaya bentuk tidak dipertahankan. File asli tidak pernah diubah; salinan .pptx hasil konversi berdiri sendiri dan penyimpanan berikutnya ditulis ke sana.',
+      ' mengedit .pptx, bukan ODF. Setiap halaman menjadi satu salindia dengan kotak teks dan gambar pada posisi aslinya; master, tata letak placeholder, tabel, dan gaya bentuk tidak dipertahankan. File asli tidak pernah diubah; salinan .pptx hasil konversi berdiri sendiri dan penyimpanan berikutnya ditulis ke sana.',
     odpImportConvertBtn: 'Konversi dan buka',
     importSkipConfirm: 'Lain kali langsung konversi tanpa bertanya',
     odpImportFailedTitle: 'Tidak dapat mengonversi .odp ini',
@@ -1403,15 +1413,12 @@ export const tMain = createI18n({
     errImageNoText:
       'Lampiran gambar tidak menyediakan teks; gambar telah dikirim bersama pesan pengguna, silakan lihat gambarnya langsung',
     errNotImage: 'bukan jenis gambar yang didukung',
-    errChaOfficeNotLoggedIn: 'Belum masuk ke ChaAI Office: klik “Masuk” di bawah, lalu coba lagi',
+    errChaOfficeNotLoggedIn: 'Belum masuk ke ChaAI Office: klik “Masuk ke ChaAI Office” di bawah, lalu coba lagi',
     errNoApiKey: 'API Key untuk {provider} belum dikonfigurasi',
     errNoModel: 'Nama model belum dikonfigurasi',
-    errChaOfficeCli:
-      'chaoffice belum masuk: jalankan chaoffice login dulu untuk masuk ke akun ChaAI Office',
-    errNoImageModel:
-      'Belum ada model gambar yang dikonfigurasi: aktifkan model pembuatan gambar di Pengaturan Model',
-    errChaOfficeToolsOff:
-      'Alat cloud ChaAI Office dimatikan di Pengaturan Model; aktifkan untuk menggunakan alat ini',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
+    errChaOfficeCli: 'gsk belum masuk: jalankan chaoffice login dulu untuk masuk ke akun ChaAI Office',
     errNoDeckAppend:
       'Tidak ada dokumen yang bisa ditambahi (sesi tidak ada). Buat halaman pertama dengan mode:"replace" dulu, atau tambahkan halaman dengan alat bawaan.',
     errAppendFailed: 'Gagal menambahkan: {reason}',
@@ -1440,6 +1447,7 @@ export const tMain = createI18n({
     menuExportPdf: 'Ekspor sebagai PDF…',
     menuExportImages: 'Ekspor sebagai PNG…',
     menuExportImagesJpg: 'Ekspor sebagai JPG…',
+    menuExportVideo: 'Ekspor sebagai video (MP4)…',
     menuPrint: 'Cetak…',
     menuClose: 'Tutup',
     menuQuit: 'Keluar',
@@ -1472,6 +1480,7 @@ export const tMain = createI18n({
     dlgPickExportDir: 'Выбор папки для экспорта',
     btnExport: 'Экспорт',
     dlgExportPdf: 'Экспорт в PDF',
+    dlgExportVideo: 'Экспорт в видео (MP4)',
     dlgSavePicture: 'Сохранить как рисунок',
     dlgAddAttachment: 'Добавление вложений',
     filterSupported: 'Поддерживаемые файлы',
@@ -1494,14 +1503,14 @@ export const tMain = createI18n({
     mediaAviBody:
       'Формат AVI не поддерживается встроенным проигрывателем, воспроизведение в приложении невозможно. Файл встраивается без изменений и по-прежнему воспроизводится в PowerPoint после экспорта.',
     pptImportDetail:
-      'ChaAI Office пересобирает презентацию в редактируемые текстовые блоки, сохраняя порядок и размер исходных слайдов; геометрия фигур, изображения и форматирование текста пока не переносятся. Исходный файл не меняется; преобразованный .pptx — отдельная копия, в которую пишутся последующие сохранения.',
+      ' пересобирает презентацию в редактируемые текстовые блоки, сохраняя порядок и размер исходных слайдов; геометрия фигур, изображения и форматирование текста пока не переносятся. Исходный файл не меняется; преобразованный .pptx — отдельная копия, в которую пишутся последующие сохранения.',
     pptImportFailedTitle: 'Не удалось преобразовать этот .ppt',
     pptImportFailedBody:
       'Возможно, файл повреждён или это не действительная презентация PowerPoint 97-2003.',
     legacyPptTitle: 'Не удаётся открыть формат .ppt',
     odpImportMsg: 'Преобразовать эту презентацию .{ext}?',
     odpImportDetail:
-      'ChaAI Office редактирует .pptx, а не ODF. Каждая страница становится слайдом, текстовые поля и изображения располагаются на исходных местах; образцы, макеты заполнителей, таблицы и стили фигур не сохраняются. Исходный файл никогда не изменяется; преобразованный .pptx — отдельная копия, в которую записывается дальнейшее сохранение.',
+      ' редактирует .pptx, а не ODF. Каждая страница становится слайдом, текстовые поля и изображения располагаются на исходных местах; образцы, макеты заполнителей, таблицы и стили фигур не сохраняются. Исходный файл никогда не изменяется; преобразованный .pptx — отдельная копия, в которую записывается дальнейшее сохранение.',
     odpImportConvertBtn: 'Преобразовать и открыть',
     importSkipConfirm: 'В следующий раз конвертировать без запроса',
     odpImportFailedTitle: 'Не удалось преобразовать этот .odp',
@@ -1539,14 +1548,13 @@ export const tMain = createI18n({
       'Вложения-изображения не содержат текста; изображение отправлено вместе с сообщением пользователя, просто посмотрите на него',
     errNotImage: 'неподдерживаемый тип изображения',
     errChaOfficeNotLoggedIn:
-      'Вы не вошли в ChaAI Office: нажмите «Войти» ниже, войдите и повторите попытку',
+      'Вы не вошли в ChaAI Office: нажмите «Войти в ChaAI Office» ниже, войдите и повторите попытку',
     errNoApiKey: 'API-ключ для {provider} не настроен',
     errNoModel: 'Не указано имя модели',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
     errChaOfficeCli:
-      'chaoffice не авторизован: сначала выполните chaoffice login, чтобы войти в учётную запись ChaAI Office',
-    errNoImageModel: 'Модель генерации изображений не настроена: включите её в настройках моделей',
-    errChaOfficeToolsOff:
-      'Облачные инструменты ChaAI Office отключены в настройках моделей; включите их, чтобы использовать этот инструмент',
+      'gsk не авторизован: сначала выполните chaoffice login, чтобы войти в учётную запись ChaAI Office',
     errNoDeckAppend:
       'Нет презентации для добавления страниц (сессия отсутствует). Сначала создайте первую страницу с mode:"replace" или добавьте страницы нативными инструментами.',
     errAppendFailed: 'Сбой добавления: {reason}',
@@ -1574,6 +1582,7 @@ export const tMain = createI18n({
     menuExportPdf: 'Экспорт в PDF…',
     menuExportImages: 'Экспорт в PNG…',
     menuExportImagesJpg: 'Экспорт в JPG…',
+    menuExportVideo: 'Экспорт в видео (MP4)…',
     menuPrint: 'Печать…',
     menuClose: 'Закрыть',
     menuQuit: 'Выход',
@@ -1606,6 +1615,7 @@ export const tMain = createI18n({
     dlgPickExportDir: 'اختيار مجلد التصدير',
     btnExport: 'تصدير',
     dlgExportPdf: 'تصدير بتنسيق PDF',
+    dlgExportVideo: 'تصدير كفيديو (MP4)',
     dlgSavePicture: 'حفظ كصورة',
     dlgAddAttachment: 'إضافة مرفقات',
     filterSupported: 'الملفات المدعومة',
@@ -1628,14 +1638,14 @@ export const tMain = createI18n({
     mediaAviBody:
       'تنسيق AVI غير مدعوم في المشغّل المدمج ولا يمكن تشغيله داخل التطبيق. يتم تضمين الملف كما هو ويظل قابلاً للتشغيل في PowerPoint بعد التصدير.',
     pptImportDetail:
-      'يعيد ChaAI Office بناء العرض كمربعات نص قابلة للتحرير، بترتيب الشرائح وأبعادها الأصلية؛ لا يتم نقل موضع الأشكال أو الصور أو تنسيق النص بعد. الملف الأصلي لا يتغير أبداً؛ ملف .pptx المحوَّل نسخة منفصلة تُكتب فيها عمليات الحفظ اللاحقة.',
+      'يعيد  بناء العرض كمربعات نص قابلة للتحرير، بترتيب الشرائح وأبعادها الأصلية؛ لا يتم نقل موضع الأشكال أو الصور أو تنسيق النص بعد. الملف الأصلي لا يتغير أبداً؛ ملف .pptx المحوَّل نسخة منفصلة تُكتب فيها عمليات الحفظ اللاحقة.',
     pptImportFailedTitle: 'لا يمكن تحويل ملف .ppt هذا',
     pptImportFailedBody:
       'قد يكون الملف تالفاً أو ليس عرضاً تقديمياً صالحاً بصيغة PowerPoint 97-2003.',
     legacyPptTitle: 'تعذّر فتح تنسيق .ppt',
     odpImportMsg: 'تحويل هذا العرض التقديمي ‎.{ext}؟',
     odpImportDetail:
-      'يحرّر ChaAI Office ملفات ‎.pptx ولا يحرّر ODF. تصبح كل صفحة شريحة، مع مربعات النصوص والصور في مواضعها الأصلية؛ أما الشرائح الرئيسية وتخطيطات العناصر النائبة والجداول وأنماط الأشكال فلا تُحفظ. لا يتغيّر الملف الأصلي أبدًا؛ والملف ‎.pptx المحوَّل نسخة مستقلة تُكتب فيها عمليات الحفظ اللاحقة.',
+      'يحرّر  ملفات ‎.pptx ولا يحرّر ODF. تصبح كل صفحة شريحة، مع مربعات النصوص والصور في مواضعها الأصلية؛ أما الشرائح الرئيسية وتخطيطات العناصر النائبة والجداول وأنماط الأشكال فلا تُحفظ. لا يتغيّر الملف الأصلي أبدًا؛ والملف ‎.pptx المحوَّل نسخة مستقلة تُكتب فيها عمليات الحفظ اللاحقة.',
     odpImportConvertBtn: 'تحويل وفتح',
     importSkipConfirm: 'في المرة القادمة، حوّل دون سؤال',
     odpImportFailedTitle: 'تعذّر تحويل هذا الملف ‎.odp',
@@ -1673,14 +1683,12 @@ export const tMain = createI18n({
       'المرفقات من نوع الصور لا توفر نصًا؛ وقد أُرسلت الصورة مع رسالة المستخدم، يكفي النظر إليها مباشرة',
     errNotImage: 'ليس نوع صورة مدعومًا',
     errChaOfficeNotLoggedIn:
-      'لم تسجّل الدخول إلى ChaAI Office: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة',
+      'لم تسجّل الدخول إلى ChaAI Office: انقر على «تسجيل الدخول إلى ChaAI Office» أدناه ثم أعد المحاولة',
     errNoApiKey: 'لم يتم تكوين مفتاح API لـ {provider}',
     errNoModel: 'لم يتم تكوين اسم النموذج',
-    errChaOfficeCli:
-      'chaoffice غير مسجَّل الدخول: شغّل chaoffice login أولًا لتسجيل الدخول إلى حساب ChaAI Office',
-    errNoImageModel: 'لم يتم تهيئة نموذج توليد الصور: فعّل نموذجًا لتوليد الصور في إعدادات النماذج',
-    errChaOfficeToolsOff:
-      'أدوات ChaAI Office السحابية معطلة في إعدادات النماذج؛ فعّلها لاستخدام هذه الأداة',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
+    errChaOfficeCli: 'gsk غير مسجَّل الدخول: شغّل chaoffice login أولًا لتسجيل الدخول إلى حساب ChaAI Office',
     errNoDeckAppend:
       'لا يوجد مستند يمكن الإلحاق به (الجلسة غير موجودة). أنشئ الصفحة الأولى باستخدام mode:"replace" أولًا، أو أضف صفحات بالأدوات الأصلية.',
     errAppendFailed: 'فشل الإلحاق: {reason}',
@@ -1705,6 +1713,7 @@ export const tMain = createI18n({
     menuExportPdf: 'تصدير بتنسيق PDF…',
     menuExportImages: 'تصدير كصور PNG…',
     menuExportImagesJpg: 'تصدير كصور JPG…',
+    menuExportVideo: 'تصدير كفيديو (MP4)…',
     menuPrint: 'طباعة…',
     menuClose: 'إغلاق',
     menuQuit: 'إنهاء',
@@ -1737,6 +1746,7 @@ export const tMain = createI18n({
     dlgPickExportDir: 'Escolher Pasta de Exportação',
     btnExport: 'Exportar',
     dlgExportPdf: 'Exportar como PDF',
+    dlgExportVideo: 'Exportar como vídeo (MP4)',
     dlgSavePicture: 'Salvar como imagem',
     dlgAddAttachment: 'Adicionar Anexos',
     filterSupported: 'Arquivos Compatíveis',
@@ -1759,14 +1769,14 @@ export const tMain = createI18n({
     mediaAviBody:
       'O formato AVI não é suportado pelo player integrado e não pode ser reproduzido no aplicativo. O arquivo é incorporado como está e continua reproduzível no PowerPoint após a exportação.',
     pptImportDetail:
-      'O ChaAI Office reconstrói a apresentação como caixas de texto editáveis, na ordem e tamanho originais dos slides; geometria das formas, imagens e formatação de texto ainda não são transportadas. O arquivo original nunca é alterado; o .pptx convertido é uma cópia separada em que os salvamentos seguintes gravam.',
+      'O  reconstrói a apresentação como caixas de texto editáveis, na ordem e tamanho originais dos slides; geometria das formas, imagens e formatação de texto ainda não são transportadas. O arquivo original nunca é alterado; o .pptx convertido é uma cópia separada em que os salvamentos seguintes gravam.',
     pptImportFailedTitle: 'Não é possível converter este .ppt',
     pptImportFailedBody:
       'O arquivo pode estar danificado ou não é uma apresentação válida do PowerPoint 97-2003.',
     legacyPptTitle: 'Não é possível abrir o formato .ppt antigo',
     odpImportMsg: 'Converter esta apresentação .{ext}?',
     odpImportDetail:
-      'O ChaAI Office edita .pptx, não ODF. Cada página torna-se um slide, com caixas de texto e imagens nas posições originais; mestres, layouts de espaços reservados, tabelas e estilos de formas não são preservados. O arquivo original nunca é alterado; o .pptx convertido é uma cópia independente em que os salvamentos seguintes são gravados.',
+      'O  edita .pptx, não ODF. Cada página torna-se um slide, com caixas de texto e imagens nas posições originais; mestres, layouts de espaços reservados, tabelas e estilos de formas não são preservados. O arquivo original nunca é alterado; o .pptx convertido é uma cópia independente em que os salvamentos seguintes são gravados.',
     odpImportConvertBtn: 'Converter e abrir',
     importSkipConfirm: 'Da próxima vez, converter sem perguntar',
     odpImportFailedTitle: 'Não foi possível converter este .odp',
@@ -1804,15 +1814,12 @@ export const tMain = createI18n({
       'Anexos de imagem não têm texto; a imagem é enviada junto com a mensagem do usuário',
     errNotImage: 'não é um tipo de imagem suportado',
     errChaOfficeNotLoggedIn:
-      'Não conectado ao ChaAI Office: clique em “Entrar” abaixo, entre e tente novamente',
+      'Não conectado ao ChaAI Office: clique em “Entrar no ChaAI Office” abaixo, entre e tente novamente',
     errNoApiKey: 'Nenhuma chave de API configurada para {provider}',
     errNoModel: 'Nenhum nome de modelo configurado',
-    errChaOfficeCli:
-      'chaoffice não conectado: execute chaoffice login primeiro para entrar na sua conta ChaAI Office',
-    errNoImageModel:
-      'Nenhum modelo de imagem configurado: ative um modelo de geração de imagens nas configurações de modelos',
-    errChaOfficeToolsOff:
-      'As ferramentas de nuvem do ChaAI Office estão desativadas nas configurações de modelos; ative-as para usar esta ferramenta',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
+    errChaOfficeCli: 'gsk não conectado: execute chaoffice login primeiro para entrar na sua conta ChaAI Office',
     errNoDeckAppend:
       'Não há apresentação para anexar (sessão inexistente). Gere a primeira página com mode:"replace" ou adicione páginas com as ferramentas nativas.',
     errAppendFailed: 'Falha ao anexar: {reason}',
@@ -1841,6 +1848,7 @@ export const tMain = createI18n({
     menuExportPdf: 'Exportar como PDF…',
     menuExportImages: 'Exportar como PNG…',
     menuExportImagesJpg: 'Exportar como JPG…',
+    menuExportVideo: 'Exportar como vídeo (MP4)…',
     menuPrint: 'Imprimir…',
     menuClose: 'Fechar',
     menuQuit: 'Sair',
@@ -1873,6 +1881,7 @@ export const tMain = createI18n({
     dlgPickExportDir: 'Scegli la cartella di esportazione',
     btnExport: 'Esporta',
     dlgExportPdf: 'Esporta come PDF',
+    dlgExportVideo: 'Esporta come video (MP4)',
     dlgSavePicture: 'Salva come immagine',
     dlgAddAttachment: 'Aggiungi allegati',
     filterSupported: 'File supportati',
@@ -1895,14 +1904,14 @@ export const tMain = createI18n({
     mediaAviBody:
       'Il formato AVI non è supportato dal lettore integrato e non può essere riprodotto nell’app. Il file viene incorporato così com’è e resta riproducibile in PowerPoint dopo l’esportazione.',
     pptImportDetail:
-      'ChaAI Office ricostruisce il deck come caselle di testo modificabili, nell’ordine e con le dimensioni originali delle diapositive; geometria delle forme, immagini e formattazione del testo non sono ancora trasferite. Il file originale non viene mai modificato; il .pptx convertito è una copia separata su cui vengono scritti i salvataggi successivi.',
+      ' ricostruisce il deck come caselle di testo modificabili, nell’ordine e con le dimensioni originali delle diapositive; geometria delle forme, immagini e formattazione del testo non sono ancora trasferite. Il file originale non viene mai modificato; il .pptx convertito è una copia separata su cui vengono scritti i salvataggi successivi.',
     pptImportFailedTitle: 'Impossibile convertire questo .ppt',
     pptImportFailedBody:
       'Il file potrebbe essere danneggiato o non essere una presentazione PowerPoint 97-2003 valida.',
     legacyPptTitle: 'Impossibile aprire il vecchio formato .ppt',
     odpImportMsg: 'Convertire questa presentazione .{ext}?',
     odpImportDetail:
-      'ChaAI Office modifica .pptx, non ODF. Ogni pagina diventa una diapositiva, con caselle di testo e immagini nelle posizioni originali; schemi, layout dei segnaposto, tabelle e stili delle forme non sono conservati. Il file originale non viene mai modificato; il .pptx convertito è una copia indipendente su cui vengono salvate le modifiche successive.',
+      ' modifica .pptx, non ODF. Ogni pagina diventa una diapositiva, con caselle di testo e immagini nelle posizioni originali; schemi, layout dei segnaposto, tabelle e stili delle forme non sono conservati. Il file originale non viene mai modificato; il .pptx convertito è una copia indipendente su cui vengono salvate le modifiche successive.',
     odpImportConvertBtn: 'Converti e apri',
     importSkipConfirm: 'La prossima volta converti senza chiedere',
     odpImportFailedTitle: 'Impossibile convertire questo .odp',
@@ -1941,17 +1950,15 @@ export const tMain = createI18n({
       "Gli allegati immagine non hanno testo; l'immagine viene inviata insieme al messaggio dell'utente",
     errNotImage: 'tipo di immagine non supportato',
     errChaOfficeNotLoggedIn:
-      'Accesso a ChaAI Office non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova',
+      'Accesso a ChaAI Office non effettuato: fai clic su “Accedi a ChaAI Office” qui sotto, accedi e riprova',
     errNoApiKey: 'Nessuna chiave API configurata per {provider}',
     errNoModel: 'Nessun nome di modello configurato',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
     errChaOfficeCli:
-      "chaoffice non ha effettuato l'accesso: esegui prima chaoffice login per accedere al tuo account ChaAI Office",
+      "gsk non ha effettuato l'accesso: esegui prima chaoffice login per accedere al tuo account ChaAI Office",
     errNoDeckAppend:
       'Nessuna presentazione a cui aggiungere pagine (sessione mancante). Genera la prima pagina con mode:"replace" o aggiungi pagine con gli strumenti nativi.',
-    errNoImageModel:
-      'Nessun modello immagine configurato: attiva un modello di generazione immagini nelle impostazioni modelli',
-    errChaOfficeToolsOff:
-      'Gli strumenti cloud ChaAI Office sono disattivati nelle impostazioni modelli; attivali per usare questo strumento',
     errAppendFailed: 'Aggiunta non riuscita: {reason}',
     errPartialAppend: 'Aggiunta di alcune pagine non riuscita: {reason}',
     errMergeFailed:
@@ -1979,6 +1986,7 @@ export const tMain = createI18n({
     menuExportPdf: 'Esporta come PDF…',
     menuExportImages: 'Esporta come PNG…',
     menuExportImagesJpg: 'Esporta come JPG…',
+    menuExportVideo: 'Esporta come video (MP4)…',
     menuPrint: 'Stampa…',
     menuClose: 'Chiudi',
     menuQuit: 'Esci',
@@ -2011,6 +2019,7 @@ export const tMain = createI18n({
     dlgPickExportDir: 'Wybierz folder eksportu',
     btnExport: 'Eksportuj',
     dlgExportPdf: 'Eksportuj jako PDF',
+    dlgExportVideo: 'Eksportuj jako wideo (MP4)',
     dlgSavePicture: 'Zapisz jako obraz',
     dlgAddAttachment: 'Dodaj załączniki',
     filterSupported: 'Obsługiwane pliki',
@@ -2033,14 +2042,14 @@ export const tMain = createI18n({
     mediaAviBody:
       'Format AVI nie jest obsługiwany przez wbudowany odtwarzacz i nie można go odtworzyć w aplikacji. Plik jest osadzany bez zmian i po eksporcie nadal odtwarza się w programie PowerPoint.',
     pptImportDetail:
-      'ChaAI Office przebudowuje prezentację na edytowalne pola tekstowe, w oryginalnej kolejności i rozmiarze slajdów; geometria kształtów, obrazy i formatowanie tekstu nie są jeszcze przenoszone. Oryginalny plik nigdy nie jest zmieniany; przekonwertowany .pptx to osobna kopia, do której zapisują się kolejne zapisy.',
+      ' przebudowuje prezentację na edytowalne pola tekstowe, w oryginalnej kolejności i rozmiarze slajdów; geometria kształtów, obrazy i formatowanie tekstu nie są jeszcze przenoszone. Oryginalny plik nigdy nie jest zmieniany; przekonwertowany .pptx to osobna kopia, do której zapisują się kolejne zapisy.',
     pptImportFailedTitle: 'Nie można przekonwertować tego pliku .ppt',
     pptImportFailedBody:
       'Plik może być uszkodzony lub nie jest prawidłową prezentacją PowerPoint 97-2003.',
     legacyPptTitle: 'Nie można otworzyć starego formatu .ppt',
     odpImportMsg: 'Skonwertować tę prezentację .{ext}?',
     odpImportDetail:
-      'ChaAI Office edytuje .pptx, a nie ODF. Każda strona staje się slajdem, a pola tekstowe i obrazy trafiają na swoje pierwotne pozycje; wzorce, układy symboli zastępczych, tabele i style kształtów nie są zachowywane. Plik oryginalny nigdy nie jest zmieniany; skonwertowany .pptx to niezależna kopia, do której trafiają kolejne zapisy.',
+      ' edytuje .pptx, a nie ODF. Każda strona staje się slajdem, a pola tekstowe i obrazy trafiają na swoje pierwotne pozycje; wzorce, układy symboli zastępczych, tabele i style kształtów nie są zachowywane. Plik oryginalny nigdy nie jest zmieniany; skonwertowany .pptx to niezależna kopia, do której trafiają kolejne zapisy.',
     odpImportConvertBtn: 'Konwertuj i otwórz',
     importSkipConfirm: 'Następnym razem konwertuj bez pytania',
     odpImportFailedTitle: 'Nie można skonwertować tego pliku .odp',
@@ -2078,15 +2087,13 @@ export const tMain = createI18n({
       'Załączniki graficzne nie zawierają tekstu; obraz jest wysyłany razem z wiadomością użytkownika',
     errNotImage: 'nieobsługiwany typ obrazu',
     errChaOfficeNotLoggedIn:
-      'Nie zalogowano do ChaAI Office: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie',
+      'Nie zalogowano do ChaAI Office: kliknij „Zaloguj się do ChaAI Office” poniżej, zaloguj się i spróbuj ponownie',
     errNoApiKey: 'Nie skonfigurowano klucza API dla {provider}',
     errNoModel: 'Nie skonfigurowano nazwy modelu',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
     errChaOfficeCli:
-      'chaoffice nie jest zalogowany: najpierw uruchom chaoffice login, aby zalogować się na konto ChaAI Office',
-    errNoImageModel:
-      'Nie skonfigurowano modelu obrazów: włącz model generowania obrazów w ustawieniach modeli',
-    errChaOfficeToolsOff:
-      'Narzędzia chmurowe ChaAI Office są wyłączone w ustawieniach modeli; włącz je, aby używać tego narzędzia',
+      'gsk nie jest zalogowany: najpierw uruchom chaoffice login, aby zalogować się na konto ChaAI Office',
     errNoDeckAppend:
       'Brak prezentacji do rozszerzenia (brak sesji). Najpierw wygeneruj pierwszą stronę z mode:"replace" albo dodaj strony narzędziami natywnymi.',
     errAppendFailed: 'Dołączanie nie powiodło się: {reason}',
@@ -2114,6 +2121,7 @@ export const tMain = createI18n({
     menuExportPdf: 'Eksportuj jako PDF…',
     menuExportImages: 'Eksportuj jako PNG…',
     menuExportImagesJpg: 'Eksportuj jako JPG…',
+    menuExportVideo: 'Eksportuj jako wideo (MP4)…',
     menuPrint: 'Drukuj…',
     menuClose: 'Zamknij',
     menuQuit: 'Zakończ',
@@ -2146,6 +2154,7 @@ export const tMain = createI18n({
     dlgPickExportDir: 'Zvolte složku pro export',
     btnExport: 'Exportovat',
     dlgExportPdf: 'Exportovat jako PDF',
+    dlgExportVideo: 'Exportovat jako video (MP4)',
     dlgSavePicture: 'Uložit jako obrázek',
     dlgAddAttachment: 'Přidat přílohy',
     filterSupported: 'Podporované soubory',
@@ -2168,14 +2177,14 @@ export const tMain = createI18n({
     mediaAviBody:
       'Formát AVI není vestavěným přehrávačem podporován, takže ho v aplikaci nelze přehrát. Soubor je vložen beze změny a po exportu se v PowerPointu stále přehrává.',
     pptImportDetail:
-      'ChaAI Office prezentaci znovu sestaví jako upravitelná textová pole, v původním pořadí a velikosti snímků; geometrie tvarů, obrázky a formátování textu se zatím nepřenášejí. Původní soubor se nikdy nemění; převedený .pptx je samostatná kopie, do které se zapisují další uložení.',
+      ' prezentaci znovu sestaví jako upravitelná textová pole, v původním pořadí a velikosti snímků; geometrie tvarů, obrázky a formátování textu se zatím nepřenášejí. Původní soubor se nikdy nemění; převedený .pptx je samostatná kopie, do které se zapisují další uložení.',
     pptImportFailedTitle: 'Tento .ppt nelze převést',
     pptImportFailedBody:
       'Soubor může být poškozený nebo jde o neplatnou prezentaci PowerPoint 97-2003.',
     legacyPptTitle: 'Nelze otevřít starší formát .ppt',
     odpImportMsg: 'Převést tuto prezentaci .{ext}?',
     odpImportDetail:
-      'ChaAI Office upravuje .pptx, nikoli ODF. Každá stránka se stane snímkem, textová pole a obrázky zůstanou na původních pozicích; předlohy, rozložení zástupných symbolů, tabulky a styly tvarů se nepřevezmou. Původní soubor se nikdy nemění; převedený .pptx je samostatná kopie, do níž se dalším ukládáním zapisuje.',
+      ' upravuje .pptx, nikoli ODF. Každá stránka se stane snímkem, textová pole a obrázky zůstanou na původních pozicích; předlohy, rozložení zástupných symbolů, tabulky a styly tvarů se nepřevezmou. Původní soubor se nikdy nemění; převedený .pptx je samostatná kopie, do níž se dalším ukládáním zapisuje.',
     odpImportConvertBtn: 'Převést a otevřít',
     importSkipConfirm: 'Příště převést bez ptaní',
     odpImportFailedTitle: 'Tento soubor .odp nelze převést',
@@ -2213,11 +2222,12 @@ export const tMain = createI18n({
       'Obrázkové přílohy neobsahují text; obrázek je odeslán spolu se zprávou uživatele',
     errNotImage: 'nepodporovaný typ obrázku',
     errChaOfficeNotLoggedIn:
-      'Nejste přihlášeni k ChaAI Office: klikněte níže na „Přihlásit se“, přihlaste se a zkuste to znovu',
+      'Nejste přihlášeni ke ChaAI Office: klikněte níže na „Přihlásit se ke ChaAI Office“, přihlaste se a zkuste to znovu',
     errNoApiKey: 'Pro {provider} není nakonfigurován žádný klíč API',
     errNoModel: 'Není nakonfigurován název modelu',
-    errChaOfficeCli:
-      'chaoffice není přihlášen: nejprve spusťte chaoffice login a přihlaste se k účtu ChaAI Office',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
+    errChaOfficeCli: 'gsk není přihlášen: nejprve spusťte chaoffice login a přihlaste se k účtu ChaAI Office',
     errNoDeckAppend:
       'Není k čemu přidávat (chybí relace). Vygenerujte první stránku s mode:"replace" nebo přidejte stránky nativními nástroji.',
     errAppendFailed: 'Přidání se nezdařilo: {reason}',
@@ -2244,6 +2254,7 @@ export const tMain = createI18n({
     menuExportPdf: 'Exportovat jako PDF…',
     menuExportImages: 'Exportovat jako PNG…',
     menuExportImagesJpg: 'Exportovat jako JPG…',
+    menuExportVideo: 'Exportovat jako video (MP4)…',
     menuPrint: 'Tisk…',
     menuClose: 'Zavřít',
     menuQuit: 'Ukončit',
@@ -2257,8 +2268,6 @@ export const tMain = createI18n({
     menuZoomIn: 'Přiblížit',
     menuZoomOut: 'Oddálit',
     menuActualSize: 'Skutečná velikost',
-    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
-    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
   },
   nl: {
     dlgInsertImage: 'Afbeelding invoegen',
@@ -2278,6 +2287,7 @@ export const tMain = createI18n({
     dlgPickExportDir: 'Exportmap kiezen',
     btnExport: 'Exporteren',
     dlgExportPdf: 'Exporteren als PDF',
+    dlgExportVideo: 'Exporteren als video (MP4)',
     dlgSavePicture: 'Opslaan als afbeelding',
     dlgAddAttachment: 'Bijlagen toevoegen',
     filterSupported: 'Ondersteunde bestanden',
@@ -2300,14 +2310,14 @@ export const tMain = createI18n({
     mediaAviBody:
       'Het AVI-formaat wordt niet ondersteund door de ingebouwde speler en kan niet in de app worden afgespeeld. Het bestand wordt ongewijzigd ingesloten en blijft na export afspeelbaar in PowerPoint.',
     pptImportDetail:
-      'ChaAI Office bouwt de deck opnieuw op als bewerkbare tekstvakken, in de oorspronkelijke slidevolgorde en -grootte; vormgeometrie, afbeeldingen en tekstopmaak worden nog niet overgezet. Het originele bestand wordt nooit gewijzigd; de geconverteerde .pptx is een aparte kopie waar latere opslagen naar schrijven.',
+      ' bouwt de deck opnieuw op als bewerkbare tekstvakken, in de oorspronkelijke slidevolgorde en -grootte; vormgeometrie, afbeeldingen en tekstopmaak worden nog niet overgezet. Het originele bestand wordt nooit gewijzigd; de geconverteerde .pptx is een aparte kopie waar latere opslagen naar schrijven.',
     pptImportFailedTitle: 'Deze .ppt kan niet worden geconverteerd',
     pptImportFailedBody:
       'Het bestand is mogelijk beschadigd of geen geldige PowerPoint 97-2003-presentatie.',
     legacyPptTitle: 'Kan het oude .ppt-formaat niet openen',
     odpImportMsg: 'Deze .{ext}-presentatie converteren?',
     odpImportDetail:
-      'ChaAI Office bewerkt .pptx, niet ODF. Elke pagina wordt een dia, met tekstvakken en afbeeldingen op hun oorspronkelijke positie; modellen, plaatsaanduidingslay-outs, tabellen en vormstijlen worden niet overgenomen. Het oorspronkelijke bestand wordt nooit gewijzigd; de omgezette .pptx is een zelfstandige kopie waarin volgende opslaan-acties terechtkomen.',
+      ' bewerkt .pptx, niet ODF. Elke pagina wordt een dia, met tekstvakken en afbeeldingen op hun oorspronkelijke positie; modellen, plaatsaanduidingslay-outs, tabellen en vormstijlen worden niet overgenomen. Het oorspronkelijke bestand wordt nooit gewijzigd; de omgezette .pptx is een zelfstandige kopie waarin volgende opslaan-acties terechtkomen.',
     odpImportConvertBtn: 'Converteren en openen',
     importSkipConfirm: 'Volgende keer converteren zonder te vragen',
     odpImportFailedTitle: 'Deze .odp kan niet worden omgezet',
@@ -2345,15 +2355,13 @@ export const tMain = createI18n({
       'Afbeeldingsbijlagen bevatten geen tekst; de afbeelding wordt samen met het gebruikersbericht verzonden',
     errNotImage: 'geen ondersteund afbeeldingstype',
     errChaOfficeNotLoggedIn:
-      'Niet aangemeld bij ChaAI Office: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw',
+      'Niet aangemeld bij ChaAI Office: klik hieronder op “Aanmelden bij ChaAI Office”, meld u aan en probeer het opnieuw',
     errNoApiKey: 'Geen API-sleutel geconfigureerd voor {provider}',
     errNoModel: 'Geen modelnaam geconfigureerd',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
     errChaOfficeCli:
-      'chaoffice is niet aangemeld: voer eerst chaoffice login uit om u aan te melden bij uw ChaAI Office-account',
-    errNoImageModel:
-      'Geen afbeeldingsmodel geconfigureerd: schakel een model voor afbeeldingsgeneratie in bij de modelinstellingen',
-    errChaOfficeToolsOff:
-      'ChaAI Office-cloudtools zijn uitgeschakeld in de modelinstellingen; schakel ze in om deze tool te gebruiken',
+      'gsk is niet aangemeld: voer eerst chaoffice login uit om u aan te melden bij uw ChaAI Office-account',
     errNoDeckAppend:
       'Geen presentatie om aan toe te voegen (sessie ontbreekt). Genereer eerst de eerste pagina met mode:"replace" of voeg pagina\'s toe met de native tools.',
     errAppendFailed: 'Toevoegen mislukt: {reason}',
@@ -2381,6 +2389,7 @@ export const tMain = createI18n({
     menuExportPdf: 'Exporteren als PDF…',
     menuExportImages: 'Exporteren als PNG…',
     menuExportImagesJpg: 'Exporteren als JPG…',
+    menuExportVideo: 'Exporteren als video (MP4)…',
     menuPrint: 'Afdrukken…',
     menuClose: 'Sluiten',
     menuQuit: 'Stoppen',
@@ -2413,6 +2422,7 @@ export const tMain = createI18n({
     dlgPickExportDir: 'Pilih Folder Eksport',
     btnExport: 'Eksport',
     dlgExportPdf: 'Eksport sebagai PDF',
+    dlgExportVideo: 'Eksport sebagai video (MP4)',
     dlgSavePicture: 'Simpan sebagai Gambar',
     dlgAddAttachment: 'Tambah Lampiran',
     filterSupported: 'Fail yang Disokong',
@@ -2435,13 +2445,13 @@ export const tMain = createI18n({
     mediaAviBody:
       'Format AVI tidak disokong oleh pemain terbina dalam dan tidak boleh dimainkan dalam aplikasi. Fail dibenamkan seadanya dan masih boleh dimainkan dalam PowerPoint selepas eksport.',
     pptImportDetail:
-      'ChaAI Office membina semula dek sebagai kotak teks yang boleh disunting, mengikut urutan dan saiz slaid asal; geometri bentuk, imej dan pemformatan teks belum dibawa. Fail asal tidak pernah diubah; .pptx yang ditukar ialah salinan berasingan yang ditulis oleh simpanan berikutnya.',
+      ' membina semula dek sebagai kotak teks yang boleh disunting, mengikut urutan dan saiz slaid asal; geometri bentuk, imej dan pemformatan teks belum dibawa. Fail asal tidak pernah diubah; .pptx yang ditukar ialah salinan berasingan yang ditulis oleh simpanan berikutnya.',
     pptImportFailedTitle: 'Tidak dapat menukar .ppt ini',
     pptImportFailedBody: 'Fail mungkin rosak atau bukan pembentangan PowerPoint 97-2003 yang sah.',
     legacyPptTitle: 'Tidak dapat membuka format .ppt lama',
     odpImportMsg: 'Tukar pembentangan .{ext} ini?',
     odpImportDetail:
-      'ChaAI Office menyunting .pptx, bukan ODF. Setiap halaman menjadi satu slaid, dengan kotak teks dan imej pada kedudukan asalnya; induk, susun atur pemegang tempat, jadual dan gaya bentuk tidak dikekalkan. Fail asal tidak pernah diubah; salinan .pptx yang ditukar ialah salinan berasingan tempat simpanan seterusnya ditulis.',
+      ' menyunting .pptx, bukan ODF. Setiap halaman menjadi satu slaid, dengan kotak teks dan imej pada kedudukan asalnya; induk, susun atur pemegang tempat, jadual dan gaya bentuk tidak dikekalkan. Fail asal tidak pernah diubah; salinan .pptx yang ditukar ialah salinan berasingan tempat simpanan seterusnya ditulis.',
     odpImportConvertBtn: 'Tukar dan buka',
     importSkipConfirm: 'Lain kali terus tukar tanpa bertanya',
     odpImportFailedTitle: 'Tidak dapat menukar .odp ini',
@@ -2478,15 +2488,13 @@ export const tMain = createI18n({
     errImageNoText: 'Lampiran imej tiada teks; imej dihantar bersama mesej pengguna',
     errNotImage: 'bukan jenis imej yang disokong',
     errChaOfficeNotLoggedIn:
-      'Belum log masuk ke ChaAI Office: klik “Log masuk” di bawah, kemudian cuba lagi',
+      'Belum log masuk ke ChaAI Office: klik “Log masuk ke ChaAI Office” di bawah, kemudian cuba lagi',
     errNoApiKey: 'Kunci API untuk {provider} belum dikonfigurasikan',
     errNoModel: 'Nama model belum dikonfigurasikan',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
     errChaOfficeCli:
-      'chaoffice belum log masuk: jalankan chaoffice login dahulu untuk log masuk ke akaun ChaAI Office anda',
-    errNoImageModel:
-      'Tiada model imej dikonfigurasi: aktifkan model penjanaan imej dalam Tetapan Model',
-    errChaOfficeToolsOff:
-      'Alat awan ChaAI Office dimatikan dalam Tetapan Model; aktifkan untuk menggunakan alat ini',
+      'gsk belum log masuk: jalankan chaoffice login dahulu untuk log masuk ke akaun ChaAI Office anda',
     errNoDeckAppend:
       'Tiada persembahan untuk ditambah (sesi tidak wujud). Jana halaman pertama dengan mode:"replace" dahulu, atau tambah halaman dengan alat asli.',
     errAppendFailed: 'Gagal menambah: {reason}',
@@ -2514,6 +2522,7 @@ export const tMain = createI18n({
     menuExportPdf: 'Eksport sebagai PDF…',
     menuExportImages: 'Eksport sebagai PNG…',
     menuExportImagesJpg: 'Eksport sebagai JPG…',
+    menuExportVideo: 'Eksport sebagai video (MP4)…',
     menuPrint: 'Cetak…',
     menuClose: 'Tutup',
     menuQuit: 'Keluar',
@@ -2546,6 +2555,7 @@ export const tMain = createI18n({
     dlgPickExportDir: 'בחירת תיקיית ייצוא',
     btnExport: 'ייצוא',
     dlgExportPdf: 'ייצוא כ-PDF',
+    dlgExportVideo: 'ייצוא כווידאו (MP4)',
     dlgSavePicture: 'שמור כתמונה',
     dlgAddAttachment: 'הוספת קבצים מצורפים',
     filterSupported: 'קבצים נתמכים',
@@ -2567,13 +2577,13 @@ export const tMain = createI18n({
     mediaAviBody:
       'פורמט AVI אינו נתמך בנגן המובנה ולא ניתן להפעילו באפליקציה. הקובץ מוטמע כפי שהוא ועדיין ניתן להפעלה ב-PowerPoint לאחר הייצוא.',
     pptImportDetail:
-      'ChaAI Office בונה מחדש את החפיסה כתיבות טקסט הניתנות לעריכה, בסדר ובגודל המקוריים של השקופיות; מיקום צורות, תמונות ועיצוב טקסט עדיין לא מועברים. הקובץ המקורי לעולם אינו משתנה; ה-.pptx המומר הוא עותק נפרד שאליו נכתבות השמירות הבאות.',
+      ' בונה מחדש את החפיסה כתיבות טקסט הניתנות לעריכה, בסדר ובגודל המקוריים של השקופיות; מיקום צורות, תמונות ועיצוב טקסט עדיין לא מועברים. הקובץ המקורי לעולם אינו משתנה; ה-.pptx המומר הוא עותק נפרד שאליו נכתבות השמירות הבאות.',
     pptImportFailedTitle: 'לא ניתן להמיר את קובץ ה-.ppt הזה',
     pptImportFailedBody: 'ייתכן שהקובץ פגום או שאינו מצגת PowerPoint 97-2003 תקינה.',
     legacyPptTitle: 'לא ניתן לפתוח את הפורמט הישן .ppt',
     odpImportMsg: 'להמיר את מצגת ה‑.{ext} הזו?',
     odpImportDetail:
-      'ChaAI Office עורך קבצי ‎.pptx ולא ODF. כל עמוד הופך לשקופית, עם תיבות הטקסט והתמונות במקומן המקורי; גבות, פריסות של מצייני מקום, טבלאות וסגנונות צורות אינם נשמרים. קובץ המקור לעולם אינו משתנה; קובץ ה‑.pptx שהומר הוא עותק נפרד שאליו נכתבות השמירות הבאות.',
+      ' עורך קבצי ‎.pptx ולא ODF. כל עמוד הופך לשקופית, עם תיבות הטקסט והתמונות במקומן המקורי; גבות, פריסות של מצייני מקום, טבלאות וסגנונות צורות אינם נשמרים. קובץ המקור לעולם אינו משתנה; קובץ ה‑.pptx שהומר הוא עותק נפרד שאליו נכתבות השמירות הבאות.',
     odpImportConvertBtn: 'המר ופתח',
     importSkipConfirm: 'בפעם הבאה להמיר בלי לשאול',
     odpImportFailedTitle: 'לא ניתן להמיר את קובץ ה‑.odp הזה',
@@ -2609,14 +2619,12 @@ export const tMain = createI18n({
     errParseFailed: 'ניתוח הקובץ נכשל',
     errImageNoText: 'קבצים מצורפים מסוג תמונה אינם מכילים טקסט; התמונה נשלחת יחד עם הודעת המשתמש',
     errNotImage: 'סוג תמונה שאינו נתמך',
-    errChaOfficeNotLoggedIn: 'לא מחובר ל-ChaAI Office: לחץ על "התחבר" למטה, התחבר ונסה שוב',
+    errChaOfficeNotLoggedIn: 'לא מחובר ל-ChaAI Office: לחץ על "התחבר ל-ChaAI Office" למטה, התחבר ונסה שוב',
     errNoApiKey: 'לא הוגדר מפתח API עבור {provider}',
     errNoModel: 'לא הוגדר שם מודל',
-    errChaOfficeCli:
-      'chaoffice אינו מחובר: הרץ תחילה chaoffice login כדי להיכנס לחשבון ChaAI Office שלך',
-    errNoImageModel: 'לא הוגדר מודל ליצירת תמונות: הפעל מודל יצירת תמונות בהגדרות המודלים',
-    errChaOfficeToolsOff:
-      'כלי הענן של ChaAI Office כבויים בהגדרות המודלים; הפעל אותם כדי להשתמש בכלי זה',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
+    errChaOfficeCli: 'gsk אינו מחובר: הרץ תחילה chaoffice login כדי להיכנס לחשבון ChaAI Office שלך',
     errNoDeckAppend:
       'אין מצגת להוסיף אליה (הפעלה חסרה). צור תחילה את העמוד הראשון עם mode:"replace" או הוסף עמודים בכלים המקוריים.',
     errAppendFailed: 'ההוספה נכשלה: {reason}',
@@ -2641,6 +2649,7 @@ export const tMain = createI18n({
     menuExportPdf: 'ייצוא כ-PDF…',
     menuExportImages: 'ייצוא כ-PNG…',
     menuExportImagesJpg: 'ייצוא כ-JPG…',
+    menuExportVideo: 'ייצוא כווידאו (MP4)…',
     menuPrint: 'הדפסה…',
     menuClose: 'סגירה',
     menuQuit: 'יציאה',
@@ -2673,6 +2682,7 @@ export const tMain = createI18n({
     dlgPickExportDir: 'निर्यात फ़ोल्डर चुनें',
     btnExport: 'निर्यात करें',
     dlgExportPdf: 'PDF के रूप में निर्यात करें',
+    dlgExportVideo: 'वीडियो के रूप में निर्यात (MP4)',
     dlgSavePicture: 'चित्र के रूप में सहेजें',
     dlgAddAttachment: 'अनुलग्नक जोड़ें',
     filterSupported: 'समर्थित फ़ाइलें',
@@ -2695,14 +2705,14 @@ export const tMain = createI18n({
     mediaAviBody:
       'AVI प्रारूप अंतर्निहित प्लेयर द्वारा समर्थित नहीं है और ऐप में नहीं चलाया जा सकता। फ़ाइल यथावत एम्बेड की जाती है और निर्यात के बाद PowerPoint में चलती रहती है।',
     pptImportDetail:
-      'ChaAI Office प्रस्तुति को संपादन योग्य टेक्स्ट बॉक्स के रूप में, मूल स्लाइड क्रम और आकार में फिर से बनाता है; आकृतियों की स्थिति, चित्र और टेक्स्ट फ़ॉर्मैटिंग अभी नहीं लाए जाते। मूल फ़ाइल कभी नहीं बदलती; रूपांतरित .pptx एक अलग प्रति है जिसमें आगे के सेव लिखे जाते हैं।',
+      ' प्रस्तुति को संपादन योग्य टेक्स्ट बॉक्स के रूप में, मूल स्लाइड क्रम और आकार में फिर से बनाता है; आकृतियों की स्थिति, चित्र और टेक्स्ट फ़ॉर्मैटिंग अभी नहीं लाए जाते। मूल फ़ाइल कभी नहीं बदलती; रूपांतरित .pptx एक अलग प्रति है जिसमें आगे के सेव लिखे जाते हैं।',
     pptImportFailedTitle: 'इस .ppt को बदला नहीं जा सकता',
     pptImportFailedBody:
       'फ़ाइल क्षतिग्रस्त हो सकती है या मान्य PowerPoint 97-2003 प्रस्तुति नहीं है।',
     legacyPptTitle: 'पुराना .ppt प्रारूप नहीं खोला जा सकता',
     odpImportMsg: 'इस .{ext} प्रेजेंटेशन को बदलें?',
     odpImportDetail:
-      'ChaAI Office .pptx संपादित करता है, ODF नहीं। हर पृष्ठ एक स्लाइड बन जाता है, टेक्स्ट बॉक्स और चित्र अपनी मूल स्थिति पर रखे जाते हैं; मास्टर, प्लेसहोल्डर लेआउट, तालिकाएँ और आकृति शैलियाँ नहीं रखी जातीं। मूल फ़ाइल कभी नहीं बदलती; बदली हुई .pptx एक स्वतंत्र प्रति है जिसमें आगे के सेव लिखे जाते हैं।',
+      ' .pptx संपादित करता है, ODF नहीं। हर पृष्ठ एक स्लाइड बन जाता है, टेक्स्ट बॉक्स और चित्र अपनी मूल स्थिति पर रखे जाते हैं; मास्टर, प्लेसहोल्डर लेआउट, तालिकाएँ और आकृति शैलियाँ नहीं रखी जातीं। मूल फ़ाइल कभी नहीं बदलती; बदली हुई .pptx एक स्वतंत्र प्रति है जिसमें आगे के सेव लिखे जाते हैं।',
     odpImportConvertBtn: 'बदलकर खोलें',
     importSkipConfirm: 'अगली बार बिना पूछे बदलें',
     odpImportFailedTitle: 'यह .odp बदला नहीं जा सका',
@@ -2739,15 +2749,12 @@ export const tMain = createI18n({
     errImageNoText: 'छवि अनुलग्नक में टेक्स्ट नहीं होता; छवि उपयोगकर्ता संदेश के साथ भेजी जाती है',
     errNotImage: 'समर्थित छवि प्रकार नहीं है',
     errChaOfficeNotLoggedIn:
-      'ChaAI Office में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें',
+      'ChaAI Office में साइन इन नहीं है: नीचे “ChaAI Office में साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें',
     errNoApiKey: '{provider} के लिए कोई API कुंजी कॉन्फ़िगर नहीं है',
     errNoModel: 'कोई मॉडल नाम कॉन्फ़िगर नहीं है',
-    errChaOfficeCli:
-      'chaoffice साइन इन नहीं है: पहले chaoffice login चलाकर अपने ChaAI Office खाते में साइन इन करें',
-    errNoImageModel:
-      'कोई इमेज मॉडल कॉन्फ़िगर नहीं है: मॉडल सेटिंग्स में इमेज-जनरेशन मॉडल सक्षम करें',
-    errChaOfficeToolsOff:
-      'ChaAI Office क्लाउड टूल मॉडल सेटिंग्स में बंद हैं; इस टूल का उपयोग करने के लिए उन्हें चालू करें',
+    errNoImageModel: 'No image model configured: enable an image model in Model Settings',
+    errChaOfficeToolsOff: 'Cloud tools are turned off in Model Settings: enable them to use this feature',
+    errChaOfficeCli: 'gsk साइन इन नहीं है: पहले chaoffice login चलाकर अपने ChaAI Office खाते में साइन इन करें',
     errNoDeckAppend:
       'जोड़ने के लिए कोई प्रस्तुति नहीं है (सत्र मौजूद नहीं)। पहले mode:"replace" से पहला पृष्ठ बनाएँ, या नेटिव टूल से पृष्ठ जोड़ें।',
     errAppendFailed: 'जोड़ना विफल: {reason}',
@@ -2775,6 +2782,7 @@ export const tMain = createI18n({
     menuExportPdf: 'PDF के रूप में निर्यात करें…',
     menuExportImages: 'PNG के रूप में निर्यात…',
     menuExportImagesJpg: 'JPG के रूप में निर्यात…',
+    menuExportVideo: 'वीडियो के रूप में निर्यात (MP4)…',
     menuPrint: 'प्रिंट करें…',
     menuClose: 'बंद करें',
     menuQuit: 'बाहर निकलें',
@@ -2807,6 +2815,7 @@ export const tMain = createI18n({
     dlgPickExportDir: '選擇匯出目錄',
     btnExport: '匯出',
     dlgExportPdf: '匯出為 PDF',
+    dlgExportVideo: '匯出為影片 (MP4)',
     dlgSavePicture: '另存為圖片',
     dlgAddAttachment: '新增附件',
     filterSupported: '支援的檔案',
@@ -2827,13 +2836,13 @@ export const tMain = createI18n({
     mediaAviBody:
       'AVI 格式不受內建播放器支援，無法在應用程式內播放。檔案會原樣嵌入，匯出後在 PowerPoint 中仍可播放。',
     pptImportDetail:
-      'ChaAI Office 會把簡報重建為可編輯的文字方塊，保持原來的投影片順序和尺寸；形狀位置、圖片和文字格式暫不保留。原檔案不會被改動，轉換出的 .pptx 是一個獨立副本，之後的儲存都寫入它。',
+      ' 會把簡報重建為可編輯的文字方塊，保持原來的投影片順序和尺寸；形狀位置、圖片和文字格式暫不保留。原檔案不會被改動，轉換出的 .pptx 是一個獨立副本，之後的儲存都寫入它。',
     pptImportFailedTitle: '無法轉換這個 .ppt',
     pptImportFailedBody: '檔案可能已損毀，或不是有效的 PowerPoint 97-2003 簡報。',
     legacyPptTitle: '無法開啟 .ppt 舊格式',
     odpImportMsg: '轉換這個 .{ext} 簡報？',
     odpImportDetail:
-      '察元AIOffice 只編輯 .pptx，不編輯 ODF。每一頁會變成一張投影片，文字方塊與圖片按原始位置擺放；母片、預留位置版面、表格與圖形樣式不會保留。原始檔案不會被修改，轉換後的 .pptx 是獨立副本，之後的儲存都寫入它。',
+      ' 只編輯 .pptx，不編輯 ODF。每一頁會變成一張投影片，文字方塊與圖片按原始位置擺放；母片、預留位置版面、表格與圖形樣式不會保留。原始檔案不會被修改，轉換後的 .pptx 是獨立副本，之後的儲存都寫入它。',
     odpImportConvertBtn: '轉換並開啟',
     importSkipConfirm: '下次直接轉換，不再提示',
     odpImportFailedTitle: '無法轉換這個 .odp',
@@ -2869,12 +2878,12 @@ export const tMain = createI18n({
     errParseFailed: '檔案解析失敗',
     errImageNoText: '圖片附件不提供文字,已作為影像隨使用者訊息傳送,直接看圖即可',
     errNotImage: '不是支援的圖片類型',
-    errChaOfficeNotLoggedIn: '未登入 察元AIOffice:請點擊下方「登入」完成登入後重試',
+    errChaOfficeNotLoggedIn: '未登入 ChaAI Office:請點擊下方「登入 ChaAI Office」完成登入後重試',
     errNoApiKey: '未設定 {provider} 的 API Key',
     errNoModel: '未設定模型名稱',
-    errChaOfficeCli: 'chaoffice 未登入:請先執行 chaoffice login 登入 察元AIOffice 帳號',
-    errNoImageModel: '未配置生圖模型：請在模型設定中啟用生圖模型',
-    errChaOfficeToolsOff: '已在模型設定中關閉雲端工具：請開啟後使用該功能',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
+    errChaOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+    errChaOfficeCli: 'gsk 未登入:請先執行 chaoffice login 登入 ChaAI Office 帳號',
     errNoDeckAppend:
       '目前沒有可附加的簡報（工作階段不存在）。請先用 mode:"replace" 產生首頁，或改用原生工具新增頁面。',
     errAppendFailed: '附加失敗：{reason}',
@@ -2899,6 +2908,7 @@ export const tMain = createI18n({
     menuExportPdf: '匯出為 PDF…',
     menuExportImages: '匯出為 PNG…',
     menuExportImagesJpg: '匯出為 JPG…',
+    menuExportVideo: '匯出為影片 (MP4)…',
     menuPrint: '列印…',
     menuClose: '關閉',
     menuQuit: '結束',

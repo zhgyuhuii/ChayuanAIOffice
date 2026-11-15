@@ -15,6 +15,7 @@ export type {
   ToolDisplay,
   ToolExecution,
 } from './types'
+export { addTokenUsage } from './types'
 export { composeSkills, DEGRADED_PROTOCOL_SUFFIX, degradedToolLines } from './skill'
 export { withAttachedSkills, type AttachedSkill } from './attached-skills'
 export {
@@ -61,6 +62,8 @@ export { classifySkill, parseSkillFrontmatter, SKILL_FORMAT_TOKENS } from './imp
 export {
   AgentLoop,
   COMPLETED_VIA_TOOLS_TEXT,
+  CONTEXT_OMITTED_NOTE,
+  CONTEXT_SUPERSEDES_NOTE,
   DEFAULT_MAX_TURNS,
   parseDegradedToolCalls,
   TOOL_ABORTED_OUTPUT,

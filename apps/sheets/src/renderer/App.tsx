@@ -221,7 +221,7 @@ import type { SheetRedactionState } from '@chaoffice/xlsx-gateway/gateway/xlsx-r
 import { statesOnScreen } from './redact-marks-shift'
 import { installLazyFindBridge } from './lazy-find'
 import { startFullLoad } from './full-load'
-import { opensInFormulaMode, workbookCellCounts } from './load-budget'
+import { autoFullLoadsAtOpen, opensInFormulaMode, workbookCellCounts } from './load-budget'
 import { installReplaceAutoSearch } from './replace-autosearch'
 import { SpellingDialog } from './SpellingDialog'
 import { spellcheckEnabled, storeSpellcheckEnabled } from './spellcheck-pref'
@@ -259,6 +259,8 @@ import { isSelectionDrag, type Point, type SelectionAskAnchor } from './ai/selec
 import { createAiDocument } from './ai/create-document'
 import { createWorkbookSkill } from './ai/workbook-skill'
 import { findWorkbookCells, selectWorkbookRange } from './ai/workbook-search'
+import { ImportProgressCard } from './ImportProgressCard'
+import { useImportProgress } from './import-progress'
 import {
   a1RangeToTarget,
   planTableRefresh,
@@ -279,6 +281,7 @@ import type {
 import type { StructuralJournalOp } from './edit-journal'
 import {
   AUTO_FILL_COMMAND,
+  AUTO_FULL_LOAD_DELAY_MS,
   AXIS_ATTR_MUTATIONS,
   BLOCKED_COMMAND_PATTERN,
   CF_MUTATIONS,
@@ -932,7 +935,10 @@ export function App({
     () => createSheetTabActions({ univerRef, lazyWorkbookRef, notify: setMessage }),
     [],
   )
-  const [openingWorkbook] = useState(
+  /// how far a delimited import (a .csv/.tsv opened as a workbook) is; null
+  /// when no import is running
+  const importProgress = useImportProgress()
+  const [openingWorkbook, setOpeningWorkbook] = useState(
     () =>
       queuedWorkbookAtBoot ||
       new URLSearchParams(window.location.search).get('openingWorkbook') === '1',
@@ -1548,6 +1554,10 @@ export function App({
   /** The shell can repeat its queued-open nudge while the renderer starts.
    * Only one picker/open request may own the workbook session at a time. */
   const workbookOpeningRef = useRef(false)
+  /** The user stopped the delimited import rather than the file selection:
+   *  the open ends with nothing opened, but it is not a failed open. */
+  const importCancelledRef = useRef(false)
+  /** Current session's projectId/chatId (resolved when the workbook opens) */
 
   // File renamed externally (in the shell Home list) → sync the title-bar file
   // name (the save path is synced by the main process)
@@ -2228,7 +2238,7 @@ export function App({
     // The fx bar grows to fit a wrapped formula instead of clipping it.
     const formulaBarAutosizeDisposable = installFormulaBarAutosize(runtime)
     const fxButtonDisposable = installFxButtonHook(runtime)
-    // The picking side of the cross-workbook range picker (#2109): another
+    // The picking side of the cross-workbook range picker (genoffice#2109): another
     // tab's dialog can arm a pick against this workbook's grid.
     const pickRelayDisposable = installWorkbookPickRelay(runtime)
     // A file formula the engine re-computes into an error shows the file's
@@ -3334,8 +3344,13 @@ export function App({
                 .catch((error: unknown) => setMessage(String(error)))
               return
             }
-            if (verdict === 'loading') setMessage(t('appFullLoadRunning'))
-            else setFullLoadPrompt(verdict === 'offerFullLoad' ? 'ask' : 'tooLarge')
+            if (verdict === 'loading') {
+              // The footer note alone read as "filtering is broken" (a user
+              // clicked Filter during the silent print load and saw nothing
+              // happen) — surface it where the click landed too.
+              setMessage(t('appFullLoadRunning'))
+              showToast(t('appFullLoadRunning'), 'info')
+            } else setFullLoadPrompt(verdict === 'offerFullLoad' ? 'ask' : 'tooLarge')
             return
           }
           if (!isFilter) {
@@ -3361,8 +3376,10 @@ export function App({
             })
             if (verdict !== 'allow') {
               event.cancel = true
-              if (verdict === 'loading') setMessage(t('appFullLoadRunning'))
-              else if (verdict === 'offerFullLoad') setFullLoadPrompt('ask')
+              if (verdict === 'loading') {
+                setMessage(t('appFullLoadRunning'))
+                showToast(t('appFullLoadRunning'), 'info')
+              } else if (verdict === 'offerFullLoad') setFullLoadPrompt('ask')
               else if (verdict === 'workbookTooLarge') setFullLoadPrompt('tooLarge')
               else if (verdict === 'valueModeFormulas') setMessage(t('appSortValueModeFormulas'))
               else setMessage(t('appSortRangeTooLarge'))
@@ -6493,6 +6510,22 @@ export function App({
           setTimeout(() => {
             void activateFormulaClosure(runtime, lazyWorkbookRef, setMessage)
           }, 1500)
+          // A streamed book within the Full Load budget scrolls badly: every
+          // viewport past the ±80-row/±8-column buffer waits on a sidecar
+          // round-trip before it paints. Print already makes such books
+          // resident silently; take the same path unprompted once open and
+          // closure activation have settled, and scrolling stops streaming.
+          if (autoFullLoadsAtOpen(cellCounts)) {
+            setTimeout(() => {
+              // Guarded: by now another workbook may own the view, and
+              // startFullLoad reads the ref — it would load that one instead.
+              // A load Print or Load-all already started keeps its own status.
+              if (lazyWorkbookRef.current !== state) return
+              if (state.flags.preloadComplete || state.flags.preloadRunning) return
+              setMessage(t('appFullLoadRunning'))
+              void startFullLoad(runtime, lazyWorkbookRef, setMessage)
+            }, AUTO_FULL_LOAD_DELAY_MS)
+          }
         }
       })
     }
@@ -6502,13 +6535,24 @@ export function App({
   async function handleInspectWorkbook(): Promise<void> {
     if (workbookOpeningRef.current) return
     workbookOpeningRef.current = true
+    setOpeningWorkbook(true)
+    // each open starts fresh: a cancel belongs to the open it happened in
+    importCancelledRef.current = false
+    const finishOpening = (): void => {
+      workbookOpeningRef.current = false
+      setOpeningWorkbook(false)
+      focusSheetGrid()
+    }
     try {
       if (!window.desktopApi) {
         throw new Error(t('appBridgeUnavailable'))
       }
       let selected = await window.desktopApi.selectWorkbook()
       if (!selected) {
-        setMessage(t('appOpenCanceled'))
+        // The import was cancelled, not the file selection: the user picked a
+        // file and then stopped the conversion.
+        setMessage(importCancelledRef.current ? t('appImportCanceled') : t('appOpenCanceled'))
+        finishOpening()
         return
       }
       if ('passwordRequired' in selected) {
@@ -6529,17 +6573,21 @@ export function App({
         }
         selected = decryptedWorkbook
         if (!selected) {
-          setMessage(t('appOpenCanceled'))
+          setMessage(importCancelledRef.current ? t('appImportCanceled') : t('appOpenCanceled'))
+          finishOpening()
           return
         }
       }
-      openLazyWorkbook(selected)
+      if (!(await openLazyWorkbook(selected, { onInitialRangeLoaded: finishOpening }))) {
+        finishOpening()
+        setMessage(t('appOpenFailed'))
+        return
+      }
       setEmptyCsvNotice(selected.emptyCsv === true)
       setMessage(selected.emptyCsv ? '' : t('appOpened', { name: selected.name }))
     } catch (error: unknown) {
       setMessage(error instanceof Error ? error.message : t('appOpenFailed'))
-    } finally {
-      workbookOpeningRef.current = false
+      finishOpening()
     }
   }
 
@@ -7561,7 +7609,17 @@ export function App({
       />
       {openingWorkbook && (
         <div className="workbook-opening-screen" role="status" aria-live="polite">
-          {t('appOpeningWorkbook')}
+          <ImportProgressCard
+            progress={importProgress}
+            label={t('appOpeningWorkbook')}
+            cancelLabel={t('appDialogCancel')}
+            onCancel={() => {
+              // the open ends with nothing opened, but it is the user's own
+              // doing: it is not a failed open and not a cancelled selection
+              importCancelledRef.current = true
+              void window.desktopApi?.cancelImport?.()
+            }}
+          />
         </div>
       )}
       {encryptedPasswordPrompt && (

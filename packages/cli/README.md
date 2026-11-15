@@ -34,7 +34,7 @@ chaoffice sheet check book.xlsx --json                # formula errors, missing-
 chaoffice sheet links book.xlsx                       # external [n] links: stored path, resolved path, reachable, source sheets
 chaoffice sheet links book.xlsx --update              # re-read reachable sources and write the computed values as the formulas' cached <v> (formulas untouched; unreachable links keep their cache)
 chaoffice sheet links book.xlsx --break 1,2           # break links: formulas become their cached values, the links' parts are removed and surviving links renumber
-chaoffice create --type docx --from report.md --out report.docx      # or --from fragment.html (restricted HTML); the new file carries Word-like docProps/core.xml + app.xml
+chaoffice create --type docx --from report.md --out report.docx      # or --from fragment.html (restricted HTML); the new file carries Word-like docProps/core.xml + app.xml; --no-generator-fields drops the Application / AppVersion stamps
 chaoffice convert notes.md --to docx|html
 chaoffice convert report.docx --to html               # the Word editor's standalone-HTML export
 chaoffice convert page.html --to docx                 # html2docx, same as the HTML app's Export as Word
@@ -119,12 +119,6 @@ Independently of the PATH, every launch of the packaged app writes the launcher 
 
 ## Cloud commands
 
-<<<<<<< HEAD
-`search`, `image` and `media` reuse the editors' provider routing: ChaAI Office
-when signed in (`~/.chaoffice/auth.json`) and cloud tools are on, otherwise the
-Serper / Tavily or BYOK image / media provider chosen in the app's AI settings
-(`ChaOffice/ai-settings.json` in the platform config directory, override with
-=======
 `search`, `image` and `media` reuse the editors' provider routing. Search uses
 the selected Serper / Serply / SearchApi / Tavily / Parallel provider when its key is configured;
 otherwise ChaAI Office is the default when signed in (`~/.chaoffice/auth.json`)
@@ -133,7 +127,6 @@ DuckDuckGo. Parallel
 and Tavily provide web search only. Image generation and media analysis use
 the corresponding provider chosen in the app's AI settings
 (`ChaAI Office/ai-settings.json` in the platform config directory, override with
->>>>>>> 5e9d11049 (feat(ai-search): add SearchApi as a web and image search provider (#2484))
 `GENOFFICE_AI_SETTINGS`). `HTTPS_PROXY` / `HTTP_PROXY` / `ALL_PROXY` are honoured.
 Search results, image bytes and analysis text come back in the JSON `detail`;
 `image` also writes the file. These are the only commands that send data off

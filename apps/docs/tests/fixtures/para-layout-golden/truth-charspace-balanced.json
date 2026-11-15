@@ -2,10 +2,10 @@
   "source": "packages/docx-engine/tests/fixtures/truths/charspace-balanced/probe.docx",
   "paragraphs": 4,
   "hashes": [
-    "0651fccc0728f9c8",
-    "43c421751c4e38dd",
-    "76583c5e495aa22b",
-    "c78dadf14f6c981b"
+    "c8a4e81e8981ca69",
+    "37d6db99983b4b15",
+    "b57806913f0048ff",
+    "863e258a72712697"
   ],
   "cellParagraphs": 0,
   "cellHashes": [],

@@ -27,7 +27,7 @@ test('sheets: compact ribbon fits every tab without clipping', async () => {
   try {
     const shellPage = launched.page
     await shellPage.waitForFunction((ext) => [...document.querySelectorAll('.side-new-tile')].some((b) => b.textContent?.trim() === `.${ext}`), 'xlsx', { timeout: 20_000 })
-    // adapted (LOCAL R24): 上游 window.aiOffice.newDoc() 桥本地不存在——
+    // adapted (LOCAL R24): 上游 window.chaOffice.newDoc() 桥本地不存在——
     // 经首页新建磁贴（本地树内联形态）等价创建
     await shellPage.evaluate((ext) => {
       const tile = [...document.querySelectorAll('.side-new-tile')].find((b) => b.textContent?.trim() === `.${ext}`)

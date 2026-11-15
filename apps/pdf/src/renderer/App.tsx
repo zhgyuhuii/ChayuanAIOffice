@@ -4,7 +4,7 @@ import type { CSSProperties, MouseEvent as ReactMouseEvent } from 'react'
 // Electron V8 lacks, making embedded font parsing fail and whole pages render as garbled raw char codes
 import { handlePdfControl, type ControlRequest } from './control'
 import bootLogo from './assets/boot-logo.png'
-import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
+import { GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
 import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url'
 import { AiPanel, ChaOfficeMark } from './ai/AiPanel'
@@ -70,13 +70,17 @@ type Arrange =
   | 'sameSize'
 
 const PASTE_OFFSET_PTS = 12
-/// Printer option that is not a device name (Electron: '' = OS default printer)
-const PRINT_SYSTEM_DIALOG = '\u0000system-dialog'
-// macOS's print sheet already carries copies/duplex, so it stays the default there
-const IS_MAC = navigator.platform.toLowerCase().includes('mac')
-const PRINT_DUPLEX_MODES: PrintDuplex[] = ['simplex', 'longEdge', 'shortEdge']
 /** Auto-detect stops here so a long scanned form cannot flood the document with fields */
 const DETECT_FIELD_CAP = 300
+
+const REDACT_PATTERN_LABELS: Record<RedactPattern, StringKey> = {
+  phone: 'redactPatternPhone',
+  email: 'redactPatternEmail',
+  'credit-card': 'redactPatternCreditCard',
+  ssn: 'redactPatternSsn',
+  date: 'redactPatternDate',
+  iban: 'redactPatternIban',
+}
 
 /** Field names still taken once pending widget removals are applied (a fully removed field frees its name) */
 function liveFieldNames(
@@ -114,7 +118,13 @@ import type { CropFractions, ImageBakeOp } from './image-bake'
 import { removeBackground, type PixelImage } from './cutout'
 import { navAction, shouldHandleDocumentUndo } from './keyNav'
 import { rowOfVisIdx, spreadRows, stepPage } from './spread'
-import { captureViewState, loadViewState, saveViewState } from './view-state'
+import {
+  captureViewState,
+  loadLastZoom,
+  loadViewState,
+  saveLastZoom,
+  saveViewState,
+} from './view-state'
 import type { PdfViewState } from './view-state'
 import { LinkLayer } from './LinkLayer'
 import { OutlinePanel } from './OutlinePanel'
@@ -129,16 +139,12 @@ import {
   remapOutlinePages,
   remapOutlineTree,
 } from './heading-outline'
-import { filterPageParity, maySpoolOriginal, printPdf, type PageParity } from './print'
 import { readFileBytes } from './file-bytes'
-import type {
-  PdfEncryptionInput,
-  PdfPermissions,
-  PrintDuplex,
-  PrinterInfo,
-  PrinterOption,
-} from '../shared/ipc'
+import type { PdfEncryptionInput, PdfPermissions } from '../shared/ipc'
 import { mayChangeProtection } from './protection-gate'
+import { MAX_REDACTION_REGIONS } from '../shared/ipc'
+import { usePrintJob } from './usePrintJob'
+import { PrintDialog } from './PrintDialog'
 import { PasswordDialog } from './PasswordDialog'
 import { PropertiesDialog } from './PropertiesDialog'
 import { LinkDialog, type LinkDraft } from './LinkDialog'
@@ -160,7 +166,9 @@ import {
 import { StampDialog } from './StampDialog'
 import { buildStamps } from './stamps'
 import type { HeaderFooterConfig, WatermarkConfig } from './stamps'
-import { createSearchIndexCache, searchInIndex } from './search'
+import { createSearchIndexCache, findPatternsInIndex, patternMarks, searchInIndex } from './search'
+import { REDACT_PATTERNS } from './redact-patterns'
+import type { RedactPattern } from './redact-patterns'
 import type { SearchIndex, SearchMatch } from './search'
 import { mapDocFont, type DocFontStyle } from './doc-font'
 import { groupPageBlocks, reflowOverflows, type TextBlock } from './text-block'
@@ -197,6 +205,7 @@ import {
 } from '@chaoffice/ui'
 import '@chaoffice/ui/dock.css'
 import { useI18n } from './i18n/locale'
+import type { StringKey } from './i18n/locale'
 import { useAutosave } from './useAutosave'
 import type {
   AnnotDeleteInput,
@@ -232,7 +241,6 @@ import {
   SIDEBAR_CHROME,
   clampSidebarW,
   loadSidebarW,
-  DOC_OPTS,
   PAPER_SIZES,
   STROKE_WIDTH,
   NOTE_MARGIN_W,
@@ -271,6 +279,8 @@ import {
   textEditPreviewParts,
   textEditPreviewContent,
   seedDraftColors,
+  draftOwnedEditIds,
+  previewsTextEdit,
   paperCss,
   textEraseKey,
   textEraseProbe,
@@ -406,8 +416,8 @@ type RibbonTab = (typeof RIBBON_TABS)[number]['id'] | 'fillForm' | 'formDesign'
 
 /** The file's bytes before and after a change written to it at once */
 interface WrittenStep {
-  before: ArrayBuffer
-  after: ArrayBuffer
+  before: Uint8Array
+  after: Uint8Array
 }
 interface WrittenSteps {
   undo: WrittenStep[]
@@ -606,6 +616,10 @@ export default function App() {
     if (drawTool !== 'measure') measureRecalibrateRef.current = false
   }, [drawTool])
   const [redactions, setRedactions] = useState<LocalRedaction[]>([])
+  const redactionsRef = useRef(redactions)
+  redactionsRef.current = redactions
+  const [redactFindOpen, setRedactFindOpen] = useState(false)
+  const redactFindWrapRef = useRef<HTMLDivElement | null>(null)
   const redactionApplyConfirmedRef = useRef(false)
   const redactionRequestInFlightRef = useRef(false)
   const [redactionCopyInFlight, setRedactionCopyInFlight] = useState(false)
@@ -1098,7 +1112,6 @@ export default function App() {
   const [searchWholeWord, setSearchWholeWord] = useState(false)
   const [searchMatches, setSearchMatches] = useState<SearchMatch[]>([])
   const [searchCur, setSearchCur] = useState(0)
-  const [printing, setPrinting] = useState(false)
   const [undoStack, setUndoStack] = useState<EditSnapshot[]>([])
   const [redoStack, setRedoStack] = useState<EditSnapshot[]>([])
   /** The file around each change written to it at once (Replace pages, Page size, Crop, Insert
@@ -1129,24 +1142,6 @@ export default function App() {
   const [replaceInvalid, setReplaceInvalid] = useState(false)
   const [pageSizeDlg, setPageSizeDlg] = useState(false)
   const [splitPagesDlg, setSplitPagesDlg] = useState(false)
-  const [printDlg, setPrintDlg] = useState(false)
-  const [printMode, setPrintMode] = useState<'all' | 'current' | 'custom'>('all')
-  const [printInput, setPrintInput] = useState('')
-  const [printInvalid, setPrintInvalid] = useState(false)
-  const [printParity, setPrintParity] = useState<PageParity>('all')
-  const [printers, setPrinters] = useState<PrinterInfo[]>([])
-  const [printDevice, setPrintDevice] = useState(IS_MAC ? PRINT_SYSTEM_DIALOG : '')
-  const [printCopies, setPrintCopies] = useState(1)
-  const [printCollate, setPrintCollate] = useState(true)
-  const [printDuplex, setPrintDuplex] = useState<PrintDuplex>('simplex')
-  // the chosen printer's driver option groups (quality, color, media type) and
-  // what the user picked from them; empty for the system dialog and on
-  // platforms where the CUPS route does not run
-  const [driverOptions, setDriverOptions] = useState<PrinterOption[]>([])
-  // bumped on every printer switch: a slow printerOptions() answer from an
-  // earlier queue must not overwrite the current queue's groups
-  const driverOptionsRequest = useRef(0)
-  const [driverChoices, setDriverChoices] = useState<Record<string, string>>({})
   /** Page-crop dialog: rendered page bitmap + which page it shows */
   const [pageCropDlg, setPageCropDlg] = useState<{ png: string; origIdx: number } | null>(null)
   const [cropAllPages, setCropAllPages] = useState(false)
@@ -1724,6 +1719,13 @@ export default function App() {
     [],
   )
 
+  /** A fit mode is recomputed at 'ready'; a custom zoom must be in place before it so
+   *  the initial fit-width recompute does not take over */
+  const applyOpeningZoom = useCallback((zoom: { scale: number; fitMode: FitMode }) => {
+    fitModeRef.current = zoom.fitMode
+    if (zoom.fitMode === null) setScale(Math.min(MAX_SCALE, Math.max(MIN_SCALE, zoom.scale)))
+  }, [])
+
   const openPath = useCallback(
     async (path: string) => {
       try {
@@ -1738,9 +1740,11 @@ export default function App() {
         const savedView = loadViewState(path)
         if (savedView) {
           pendingViewRestoreRef.current = savedView
-          fitModeRef.current = savedView.fitMode
-          if (savedView.fitMode === null)
-            setScale(Math.min(MAX_SCALE, Math.max(MIN_SCALE, savedView.scale)))
+          applyOpeningZoom(savedView)
+        } else {
+          const pref = await window.pdfApi.getDefaultZoom().catch(() => 'width' as const)
+          const zoom = pref === 'last' ? loadLastZoom() : null
+          applyOpeningZoom(zoom ?? { scale: 1, fitMode: pref === 'page' ? 'page' : 'width' })
         }
         setStatus('ready')
       } catch (err) {
@@ -1770,7 +1774,7 @@ export default function App() {
         setStatus('error')
       }
     },
-    [loadDoc],
+    [loadDoc, applyOpeningZoom],
   )
 
   useEffect(() => {
@@ -1969,6 +1973,7 @@ export default function App() {
           fitMode: fitModeRef.current,
         }),
       )
+      saveLastZoom({ scale, fitMode: fitModeRef.current })
     }
     const schedule = () => {
       window.clearTimeout(timer)
@@ -4956,6 +4961,51 @@ export default function App() {
     return true
   }
 
+  // The ref is written in the same turn so back-to-back calls see the true count against the cap
+  const appendRedactions = (
+    marks: readonly { pageIndex: number; rect: [number, number, number, number] }[],
+  ) => {
+    if (marks.length === 0) return
+    const next = [...redactionsRef.current, ...marks.map((m) => ({ ...m, id: newId() }))]
+    redactionsRef.current = next
+    setRedactions(next)
+  }
+
+  /** Queue redaction marks over every hit of the patterns; the user still reviews and applies */
+  const markSensitive = async (
+    patterns: readonly RedactPattern[],
+  ): Promise<{ hits: number; areas: number; rotated: number; capped: boolean } | null> => {
+    const indexPromise = getSearchIndex()
+    if (!indexPromise) return null
+    const index = await indexPromise
+    const room = MAX_REDACTION_REGIONS - redactionsRef.current.length
+    const found = patternMarks(
+      findPatternsInIndex(index, patterns, (i) => deletedRef.current.has(i)),
+      room,
+    )
+    appendRedactions(found.marks)
+    return {
+      hits: found.hits,
+      areas: found.marks.length,
+      rotated: found.rotated,
+      capped: found.capped,
+    }
+  }
+
+  const runRedactFind = (patterns: readonly RedactPattern[]) => {
+    setRedactFindOpen(false)
+    void markSensitive(patterns).then(
+      (r) => {
+        if (!r) return
+        const notes = [r.hits > 0 ? t('redactFound', { count: r.hits }) : t('redactFoundNone')]
+        if (r.rotated > 0) notes.push(t('redactFoundRotated', { count: r.rotated }))
+        if (r.capped) notes.push(t('redactFoundCapped', { count: r.areas }))
+        showNotice(notes.join(' '))
+      },
+      (err: unknown) => opFailed(err instanceof Error ? err.message : String(err)),
+    )
+  }
+
   const requestRedactionSaveAs = () => {
     if (redactions.length === 0 || redactionRequestInFlightRef.current) return
     const otherPending =
@@ -6067,7 +6117,7 @@ export default function App() {
   /** Pending edits the open draft stands in for (reopened / folded): the draft's probe
       erases their run, so they take the draft's erased state */
   const draftOwnedIds = useMemo(
-    () => new Set(textDraft ? [textDraft.editId, ...(textDraft.foldedIds ?? [])] : []),
+    () => draftOwnedEditIds(textDraft),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- same: identity fields only
     [textDraft?.editId, textDraft?.foldedIds],
   )
@@ -6497,10 +6547,10 @@ export default function App() {
     return result as Exclude<R, { canceled: true }>
   }
   /** Reloads the file a change just wrote, and keeps the file from *before* it as an Undo step */
-  const reloadWritten = async (before: ArrayBuffer): Promise<number> => {
+  const reloadWritten = async (before: Uint8Array): Promise<number> => {
     const kept = writtenRef.current.undo
     const pageCount = await loadDoc(filePath, doc)
-    const after = await window.pdfApi.readFile(filePath)
+    const after = await readFileBytes(window.pdfApi, filePath)
     setWritten({ undo: [...kept.slice(-(MAX_WRITTEN_STEPS - 1)), { before, after }], redo: [] })
     return pageCount
   }
@@ -6515,7 +6565,10 @@ export default function App() {
     void (async () => {
       try {
         const bytes = direction === 'undo' ? step.before : step.after
-        const result = await window.pdfApi.restoreFile({ path: filePath, bytes })
+        const result = await window.pdfApi.restoreFile({
+          path: filePath,
+          bytes: bytes.slice().buffer as ArrayBuffer,
+        })
         if (!result.ok) {
           opFailed(result.error)
           return
@@ -6536,9 +6589,9 @@ export default function App() {
   const rewriteInPlace = async (
     run: () => Promise<{ ok: true } | { ok: true; canceled: true } | { ok: false; error: string }>,
   ): Promise<FileOpResult> => {
-    const held: { before?: ArrayBuffer } = {}
+    const held: { before?: Uint8Array } = {}
     const result = await runFileOp(async () => {
-      held.before = await window.pdfApi.readFile(filePath)
+      held.before = await readFileBytes(window.pdfApi, filePath)
       return run()
     })
     if (!result.ok || 'canceled' in result) return result
@@ -6628,7 +6681,7 @@ export default function App() {
     // the flush bakes the visible order into the file, so the anchor becomes its visible position
     const afterPageIndex = visListOf(orderRef.current).indexOf(afterOrigIdx)
     return flushThen(async () => {
-      const before = await window.pdfApi.readFile(filePath)
+      const before = await readFileBytes(window.pdfApi, filePath)
       const result = await window.pdfApi.insertPdf({ path: filePath, afterPageIndex })
       if (!result.ok) {
         opFailed(result.error)
@@ -6771,92 +6824,14 @@ export default function App() {
     void cropPagesOnDisk(pages, crop)
   }
 
-  // currentPage only tracks scroll, so it can outlive a page deletion
-  const printCurrentPage = Math.max(1, Math.min(currentPage, pageCount))
-  const openPrintDlg = () => {
-    setPrintMode('all')
-    setPrintInput(String(printCurrentPage))
-    setPrintInvalid(false)
-    setPrintParity('all')
-    setPrintDlg(true)
-    window.pdfApi
-      .listPrinters()
-      .then(setPrinters)
-      .catch(() => undefined)
-  }
-
-  /** Print: save first (markups/forms/page ops all into the file), then reload from the file to render, avoiding a destroyed old doc */
-  // Synchronous re-entry guard: the menu accelerator and the renderer's own ⌘P can both
-  // fire, and the `printing` state only updates after the async flush has started
-  const printBusyRef = useRef(false)
-  // `pages` are 1-based file pages; the flush compacts the file to the visible
-  // order first, so visible page v prints as file page v.
-  const printDoc = async (pages?: number[]) => {
-    if (printBusyRef.current) return
-    printBusyRef.current = true
-    const job =
-      printDevice === PRINT_SYSTEM_DIALOG
-        ? undefined
-        : {
-            deviceName: printDevice,
-            copies: printCopies,
-            collate: printCollate,
-            duplex: printDuplex,
-            driverOptions: driverOptions
-              .filter(
-                (g) =>
-                  driverChoices[g.name] !== undefined && driverChoices[g.name] !== g.defaultValue,
-              )
-              .map((g) => ({ name: g.name, value: driverChoices[g.name]! })),
-          }
-    try {
-      await flushThen(async () => {
-        setPrinting(true)
-        try {
-          if (job && IS_MAC && maySpoolOriginal(diskPasswordRef.current)) {
-            // macOS named printer: lp spools the flushed file itself — the
-            // vector original reaches the driver untouched, instead of a
-            // 150-200 DPI raster pass (genoffice#2347's route, quality half).
-            // An encrypted file stays encrypted on disk, which CUPS' pdftopdf
-            // cannot open, so those fall through to the raster path below.
-            const r = await window.pdfApi.printFile({ ...job, pages, path: filePath })
-            if (!r.ok && r.error) opFailed(r.error)
-            return
-          }
-          const data = await readFileBytes(window.pdfApi, filePath)
-          const pdoc = await getDocument({ data, ...DOC_OPTS }).promise
-          try {
-            await printPdf(pdoc, pages, job)
-          } finally {
-            void pdoc.loadingTask.destroy()
-          }
-        } catch (err) {
-          opFailed(err instanceof Error ? err.message : String(err))
-        } finally {
-          setPrinting(false)
-        }
-      })
-    } finally {
-      printBusyRef.current = false
-    }
-  }
-
-  /** Print dialog confirm: visible page numbers → 1-based file pages */
-  const confirmPrint = () => {
-    const pages =
-      printMode === 'all'
-        ? Array.from({ length: pageCount }, (_x, i) => i + 1)
-        : printMode === 'current'
-          ? [printCurrentPage]
-          : parsePageRanges(printInput, pageCount)
-    const subset = pages ? filterPageParity(pages, printParity) : []
-    if (subset.length === 0) {
-      setPrintInvalid(true)
-      return
-    }
-    setPrintDlg(false)
-    void printDoc(printMode === 'all' && printParity === 'all' ? undefined : subset)
-  }
+  const print = usePrintJob({
+    filePath,
+    pageCount,
+    currentPage,
+    flushThen,
+    opFailed,
+    diskPasswordRef,
+  })
 
   /** Capability surface for AI tools; rebuilt each render (AiPanel mirrors it via refs to get the latest) */
   /** One context line about edits queued but unsaved — the model cannot see them in the file */
@@ -7012,6 +6987,8 @@ export default function App() {
     },
     outline: () => outline,
     searchIndex: getSearchIndex,
+    redactionCount: () => redactionsRef.current.length,
+    addRedactions: appendRedactions,
     isDeleted: (i) => deletedRef.current.has(i),
     gotoPage: (p) => {
       if (orderRef.current !== order) {
@@ -7417,6 +7394,9 @@ export default function App() {
     const top = Math.max(0, Math.min(formMenu.y, window.innerHeight - r.height - 4))
     if (left !== formMenu.x || top !== formMenu.y) setFormMenu({ ...formMenu, x: left, y: top })
   }, [formMenu])
+  useDismissablePopover(redactFindOpen, () => setRedactFindOpen(false), {
+    inside: () => [redactFindWrapRef.current],
+  })
   useDismissablePopover(arrangeOpen, () => setArrangeOpen(false), {
     inside: () => [arrangeWrapRef.current],
   })
@@ -7482,7 +7462,7 @@ export default function App() {
 
   // Shell menu Print → same dialog as the ribbon button / ⌘P
   useEffect(() => {
-    return window.pdfApi.onPrintRequest(openPrintDlg)
+    return window.pdfApi.onPrintRequest(print.openPrintDlg)
   })
 
   // Shortcuts: ⌘S/⌘F/⌘P/⌘±/⌘0 + page navigation (only ⌘ combos kept while an input control is focused)
@@ -7536,7 +7516,7 @@ export default function App() {
           openSearch()
         } else if (k === 'p' && !e.shiftKey) {
           e.preventDefault()
-          openPrintDlg()
+          print.openPrintDlg()
         } else if (e.key === '=' || e.key === '+') {
           e.preventDefault()
           zoomIn()
@@ -8345,13 +8325,13 @@ export default function App() {
                 <button
                   className="rb-big"
                   data-tip={`${t('print')} (${platformShortcuts('⌘P')})`}
-                  disabled={printing}
-                  onClick={openPrintDlg}
+                  disabled={print.printing}
+                  onClick={print.openPrintDlg}
                 >
                   <span className="rb-big-icon">
                     <IconPrint />
                   </span>
-                  {printing ? t('printPreparing') : t('print')}
+                  {print.printing ? t('printPreparing') : t('print')}
                 </button>
                 <button
                   className="rb-big"
@@ -8447,41 +8427,145 @@ export default function App() {
                   </button>
                 ))}
                 <button
-                  className={`rb-big${drawTool === 'redact' ? ' active' : ''}`}
-                  disabled={readOnly}
-                  data-tip={t('redactHint')}
-                  onClick={() => {
-                    setEditTextMode(false)
-                    setTextDraft(null)
-                    setPendingTextInsert(null)
-                    setImagePick(null)
-                    setEditImageMode(false)
-                    setDrawTool((tool) => (tool === 'redact' ? null : 'redact'))
-                  }}
-                >
-                  <span className="rb-big-icon">
-                    <IconRect />
-                  </span>
-                  <span>{t('redact')}</span>
-                </button>
-                {redactions.length > 0 && (
-                  <>
+                    className="rb-big"
+                    data-tip={`${t('print')} (${platformShortcuts('⌘P')})`}
+                    disabled={print.printing}
+                    onClick={print.openPrintDlg}
+                  >
+                    <span className="rb-big-icon">
+                      <IconPrint />
+                    </span>
+                    <span>{print.printing ? t('printPreparing') : t('print')}</span>
+                  </button>
+                  <button
+                    className="rb-big"
+                    data-tip={t('propsTitle')}
+                    onClick={() => setPropsDlg(true)}
+                  >
+                    <span className="rb-big-icon">
+                      <IconProps />
+                    </span>
+                    <span>{t('props')}</span>
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+          {ribbonTab === 'annotate' && (
+            <>
+              <div className="ribbon-group">
+                <div className="ribbon-group-items">
+                  <button
+                    className="rb-big ai-entry"
+                    data-tip={t('aiReviewSummaryBtn')}
+                    onClick={() => runAiPreset(t('aiReviewSummaryPrompt'))}
+                  >
+                    <span className="rb-big-icon">
+                      <span className="ai-feature-icon" aria-hidden="true">
+                        <IconAiSummarize />
+                      </span>
+                    </span>
+                    <span>{t('aiReviewSummaryBtn')}</span>
+                  </button>
+                  <div className="rb-drop-wrap" ref={redactFindWrapRef}>
                     <button
-                      className="rb-big"
-                      data-tip={t('redactClear')}
-                      onClick={() => setRedactions([])}
+                      className={`rb-big${redactFindOpen ? ' active' : ''}`}
+                      disabled={readOnly || redactionCopyInFlight}
+                      data-tip={t('redactFindHint')}
+                      onClick={() => setRedactFindOpen((v) => !v)}
                     >
-                      {t('redactClear')}
+                      <span className="rb-big-icon">
+                        <IconSearch />
+                        <RbCaret />
+                      </span>
+                      <span>{t('redactFind')}</span>
                     </button>
-                    <button
-                      className="rb-big"
-                      data-tip={t('redactApply')}
-                      onClick={requestRedactionSaveAs}
-                    >
-                      {t('redactApply')}
-                    </button>
-                  </>
-                )}
+                    {redactFindOpen && (
+                      <div className="rb-drop rb-menu">
+                        {REDACT_PATTERNS.map((p) => (
+                          <button key={p} onClick={() => runRedactFind([p])}>
+                            {t(REDACT_PATTERN_LABELS[p])}
+                          </button>
+                        ))}
+                        <div className="rb-menu-sep" />
+                        <button onClick={() => runRedactFind(REDACT_PATTERNS)}>
+                          {t('redactFindAll')}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  {redactions.length > 0 && (
+                    <>
+                      <button
+                        className="rb-big"
+                        data-tip={t('redactClear')}
+                        onClick={() => setRedactions([])}
+                      >
+                        {t('redactClear')}
+                      </button>
+                      <button
+                        className="rb-big"
+                        data-tip={t('redactApply')}
+                        onClick={requestRedactionSaveAs}
+                      >
+                        {t('redactApply')}
+                      </button>
+                    </>
+                  )}
+                  <button
+                    className={`rb-big${pendingSign ? ' active' : ''}`}
+                    disabled={readOnly}
+                    data-tip={t('signTitle')}
+                    onClick={() => {
+                      if (pendingSign) setPendingSign(null)
+                      else openSignatureDialog(null)
+                    }}
+                  >
+                    <span className="rb-big-icon">
+                      <IconSign />
+                    </span>
+                    <span>{t('sign')}</span>
+                  </button>
+                  <button
+                    className="rb-big"
+                    disabled={readOnly || status !== 'ready'}
+                    data-tip={t('certSignHint')}
+                    onClick={openCertSignDialog}
+                  >
+                    <span className="rb-big-icon">
+                      <IconCertSign />
+                    </span>
+                    <span>{t('certSign')}</span>
+                  </button>
+                  <button
+                    className="rb-big"
+                    disabled={!protectionEditable || status !== 'ready'}
+                    data-tip={t('protectHint')}
+                    onClick={() => setProtectionDlg(true)}
+                  >
+                    <span className="rb-big-icon">
+                      <IconProtect />
+                    </span>
+                    <span>{t('protect')}</span>
+                  </button>
+                  {redactions.length > 0 && (
+                    <>
+                      <button
+                        className="rb-big"
+                        data-tip={t('redactClear')}
+                        onClick={() => setRedactions([])}
+                      >
+                        {t('redactClear')}
+                      </button>
+                      <button
+                        className="rb-big"
+                        data-tip={t('redactApply')}
+                        onClick={requestRedactionSaveAs}
+                      >
+                        {t('redactApply')}
+                      </button>
+                    </>
+                  )}
                 <button
                   className={`rb-big${pendingSign ? ' active' : ''}`}
                   disabled={readOnly}
@@ -9727,7 +9811,7 @@ export default function App() {
                                       style={{ ...box, ...dragCss }}
                                     />
                                     {(hovered || dragging) && !textDraft && (
-                                      <div
+                                    <div
                                         className="pdf-textblock-frame"
                                         style={{ ...box, ...dragCss }}
                                         data-tip={t('textBlockMoveHint')}
@@ -9927,7 +10011,7 @@ export default function App() {
                                   })}
                                 {/* Pending text edits: cover the original run and preview the replacement */}
                                 {textEdits
-                                  .filter((te) => te.input.pageIndex === origIdx)
+                                  .filter((te) => previewsTextEdit(te, origIdx, draftOwnedIds))
                                   .map((te) => {
                                     const { style, coverStyle } = textEditPreviewParts(
                                       te,
@@ -11441,346 +11525,166 @@ export default function App() {
                   }}
                 />
               )}
-              {staticTextDialog && (
-                <div
-                  className="pdf-modal-mask"
-                  onClick={() => {
-                    setStaticTextDialog(false)
-                    setStaticTextEditTarget(null)
-                    setTextInsertEditId(null)
-                  }}
-                >
-                  <div className="pdf-modal" onClick={(e) => e.stopPropagation()}>
-                    <div className="pdf-modal-title">
-                      {t(
-                        staticTextPurpose === 'insert'
-                          ? textInsertEditId
-                            ? 'editInsertedText'
-                            : 'insertTextTitle'
-                          : staticTextEditTarget
-                            ? 'formEditText'
-                            : 'formAddTextTitle',
+            {staticTextDialog && (
+              <div
+                className="pdf-modal-mask"
+                onClick={() => {
+                  setStaticTextDialog(false)
+                  setStaticTextEditTarget(null)
+                  setTextInsertEditId(null)
+                }}
+              >
+                <div className="pdf-modal" onClick={(e) => e.stopPropagation()}>
+                  <div className="pdf-modal-title">
+                    {t(
+                      staticTextPurpose === 'insert'
+                        ? textInsertEditId
+                          ? 'editInsertedText'
+                          : 'insertTextTitle'
+                        : staticTextEditTarget
+                          ? 'formEditText'
+                          : 'formAddTextTitle',
+                    )}
+                  </div>
+                  <textarea
+                    className="pdf-modal-textarea"
+                    value={staticText}
+                    placeholder={t('formAddTextPlaceholder')}
+                    autoFocus
+                    onChange={(e) => setStaticText(e.target.value)}
+                  />
+                  <label className="pdf-field">
+                    <span>{t('formTextSize')}</span>
+                    <input
+                      className="pdf-modal-input"
+                      type="number"
+                      min={6}
+                      max={72}
+                      value={staticTextSize}
+                      onChange={(e) =>
+                        setStaticTextSize(Math.min(72, Math.max(6, Number(e.target.value) || 14)))
+                      }
+                    />
+                  </label>
+                  <div className="pdf-field-grid">
+                    <div ref={staticColorFieldRef} className="pdf-field pdf-color-field">
+                      <span>{t('formTextColor')}</span>
+                      <button
+                        type="button"
+                        className="pdf-color-trigger"
+                        aria-expanded={staticTextColorOpen}
+                        onClick={() => setStaticTextColorOpen((open) => !open)}
+                      >
+                        <span
+                          className="pdf-color-trigger-swatch"
+                          style={{ background: staticTextColor }}
+                        />
+                        <span>{staticTextColor.toUpperCase()}</span>
+                      </button>
+                      {staticTextColorOpen && (
+                        <ColorPickerPopover
+                          value={staticTextColor}
+                          onPick={setStaticTextColor}
+                          onClose={() => setStaticTextColorOpen(false)}
+                        />
                       )}
                     </div>
-                    <textarea
-                      className="pdf-modal-textarea"
-                      value={staticText}
-                      placeholder={t('formAddTextPlaceholder')}
-                      autoFocus
-                      onChange={(e) => setStaticText(e.target.value)}
-                    />
                     <label className="pdf-field">
-                      <span>{t('formTextSize')}</span>
-                      <input
-                        className="pdf-modal-input"
-                        type="number"
-                        min={6}
-                        max={72}
-                        value={staticTextSize}
-                        onChange={(e) =>
-                          setStaticTextSize(Math.min(72, Math.max(6, Number(e.target.value) || 14)))
-                        }
+                      <span>{t('formTextAlign')}</span>
+                      <Dropdown
+                        className="pdf-modal-dd"
+                        ariaLabel={t('formTextAlign')}
+                        value={staticTextAlign}
+                        options={[
+                          { value: 'left', label: t('formAlignLeft') },
+                          { value: 'center', label: t('formAlignCenter') },
+                          { value: 'right', label: t('formAlignRight') },
+                        ]}
+                        onPick={setStaticTextAlign}
                       />
                     </label>
-                    <div className="pdf-field-grid">
-                      <div ref={staticColorFieldRef} className="pdf-field pdf-color-field">
-                        <span>{t('formTextColor')}</span>
-                        <button
-                          type="button"
-                          className="pdf-color-trigger"
-                          aria-expanded={staticTextColorOpen}
-                          onClick={() => setStaticTextColorOpen((open) => !open)}
-                        >
-                          <span
-                            className="pdf-color-trigger-swatch"
-                            style={{ background: staticTextColor }}
-                          />
-                          <span>{staticTextColor.toUpperCase()}</span>
-                        </button>
-                        {staticTextColorOpen && (
-                          <ColorPickerPopover
-                            value={staticTextColor}
-                            onPick={setStaticTextColor}
-                            onClose={() => setStaticTextColorOpen(false)}
-                          />
-                        )}
-                      </div>
-                      <label className="pdf-field">
-                        <span>{t('formTextAlign')}</span>
-                        <Dropdown
-                          className="pdf-modal-dd"
-                          ariaLabel={t('formTextAlign')}
-                          value={staticTextAlign}
-                          options={[
-                            { value: 'left', label: t('formAlignLeft') },
-                            { value: 'center', label: t('formAlignCenter') },
-                            { value: 'right', label: t('formAlignRight') },
-                          ]}
-                          onPick={setStaticTextAlign}
-                        />
-                      </label>
-                    </div>
-                    <div className="pdf-modal-actions">
-                      <button
-                        className="pdf-modal-btn"
-                        onClick={() => {
-                          setStaticTextDialog(false)
-                          setStaticTextEditTarget(null)
-                          setTextInsertEditId(null)
-                        }}
-                      >
-                        {t('cancel')}
-                      </button>
-                      <button
-                        className="pdf-modal-btn primary"
-                        disabled={!staticText.trim()}
-                        onClick={confirmStaticFormText}
-                      >
-                        {t('ok')}
-                      </button>
-                    </div>
+                  </div>
+                  <div className="pdf-modal-actions">
+                    <button
+                      className="pdf-modal-btn"
+                      onClick={() => {
+                        setStaticTextDialog(false)
+                        setStaticTextEditTarget(null)
+                        setTextInsertEditId(null)
+                      }}
+                    >
+                      {t('cancel')}
+                    </button>
+                    <button
+                      className="pdf-modal-btn primary"
+                      disabled={!staticText.trim()}
+                      onClick={confirmStaticFormText}
+                    >
+                      {t('ok')}
+                    </button>
                   </div>
                 </div>
-              )}
-              {extractDlg && (
-                <div className="pdf-modal-mask" onClick={() => setExtractDlg(false)}>
-                  <div className="pdf-modal" onClick={(e) => e.stopPropagation()}>
-                    <div className="pdf-modal-title">{t('extractRangeTitle')}</div>
-                    <input
-                      className={`pdf-modal-input${extractInvalid ? ' invalid' : ''}`}
-                      value={extractInput}
-                      placeholder={t('extractRangeHint', { total: pageCount })}
-                      autoFocus
-                      onChange={(e) => {
-                        setExtractInput(e.target.value)
-                        setExtractInvalid(false)
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') confirmExtract()
-                        else if (e.key === 'Escape') setExtractDlg(false)
-                      }}
-                    />
-                    <div className="pdf-modal-actions">
-                      <button className="pdf-modal-btn" onClick={() => setExtractDlg(false)}>
-                        {t('cancel')}
-                      </button>
-                      <button className="pdf-modal-btn primary" onClick={confirmExtract}>
-                        {t('ok')}
-                      </button>
-                    </div>
+              </div>
+            )}
+            {extractDlg && (
+              <div className="pdf-modal-mask" onClick={() => setExtractDlg(false)}>
+                <div className="pdf-modal" onClick={(e) => e.stopPropagation()}>
+                  <div className="pdf-modal-title">{t('extractRangeTitle')}</div>
+                  <input
+                    className={`pdf-modal-input${extractInvalid ? ' invalid' : ''}`}
+                    value={extractInput}
+                    placeholder={t('extractRangeHint', { total: pageCount })}
+                    autoFocus
+                    onChange={(e) => {
+                      setExtractInput(e.target.value)
+                      setExtractInvalid(false)
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') confirmExtract()
+                      else if (e.key === 'Escape') setExtractDlg(false)
+                    }}
+                  />
+                  <div className="pdf-modal-actions">
+                    <button className="pdf-modal-btn" onClick={() => setExtractDlg(false)}>
+                      {t('cancel')}
+                    </button>
+                    <button className="pdf-modal-btn primary" onClick={confirmExtract}>
+                      {t('ok')}
+                    </button>
                   </div>
                 </div>
-              )}
-              {splitDlg && (
-                <div className="pdf-modal-mask" onClick={() => setSplitDlg(false)}>
-                  <div className="pdf-modal" onClick={(e) => e.stopPropagation()}>
-                    <div className="pdf-modal-title">{t('splitDlgTitle')}</div>
-                    <input
-                      className={`pdf-modal-input${splitInvalid ? ' invalid' : ''}`}
-                      value={splitInput}
-                      placeholder={t('splitDlgHint', { total: pageCount })}
-                      autoFocus
-                      onChange={(e) => {
-                        setSplitInput(e.target.value)
-                        setSplitInvalid(false)
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') confirmSplit()
-                        else if (e.key === 'Escape') setSplitDlg(false)
-                      }}
-                    />
-                    <div className="pdf-modal-actions">
-                      <button className="pdf-modal-btn" onClick={() => setSplitDlg(false)}>
-                        {t('cancel')}
-                      </button>
-                      <button className="pdf-modal-btn primary" onClick={confirmSplit}>
-                        {t('ok')}
-                      </button>
-                    </div>
+              </div>
+            )}
+            {splitDlg && (
+              <div className="pdf-modal-mask" onClick={() => setSplitDlg(false)}>
+                <div className="pdf-modal" onClick={(e) => e.stopPropagation()}>
+                  <div className="pdf-modal-title">{t('splitDlgTitle')}</div>
+                  <input
+                    className={`pdf-modal-input${splitInvalid ? ' invalid' : ''}`}
+                    value={splitInput}
+                    placeholder={t('splitDlgHint', { total: pageCount })}
+                    autoFocus
+                    onChange={(e) => {
+                      setSplitInput(e.target.value)
+                      setSplitInvalid(false)
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') confirmSplit()
+                      else if (e.key === 'Escape') setSplitDlg(false)
+                    }}
+                  />
+                  <div className="pdf-modal-actions">
+                    <button className="pdf-modal-btn" onClick={() => setSplitDlg(false)}>
+                      {t('cancel')}
+                    </button>
+                    <button className="pdf-modal-btn primary" onClick={confirmSplit}>
+                      {t('ok')}
+                    </button>
                   </div>
                 </div>
-              )}
-              {printDlg && (
-                <div className="pdf-modal-mask" onClick={() => setPrintDlg(false)}>
-                  <div className="pdf-modal" onClick={(e) => e.stopPropagation()}>
-                    <div className="pdf-modal-title">{t('print')}</div>
-                    <label className="pdf-modal-row pdf-print-field">
-                      <span>{t('printPrinter')}</span>
-                      <select
-                        className="pdf-modal-input"
-                        value={printDevice}
-                        onChange={(e) => {
-                          const request = ++driverOptionsRequest.current
-                          setPrintDevice(e.target.value)
-                          setDriverChoices({})
-                          setDriverOptions([])
-                          if (e.target.value && IS_MAC)
-                            void window.pdfApi
-                              .printerOptions(e.target.value)
-                              .then((options) => {
-                                if (request === driverOptionsRequest.current) setDriverOptions(options)
-                              })
-                              .catch(() => {
-                                if (request === driverOptionsRequest.current) setDriverOptions([])
-                              })
-                        }}
-                      >
-                        <option value="">{t('printDefaultPrinter')}</option>
-                        {printers.map((p) => (
-                          <option key={p.name} value={p.name}>
-                            {p.displayName}
-                          </option>
-                        ))}
-                        <option value={PRINT_SYSTEM_DIALOG}>{t('printSystemDialog')}</option>
-                      </select>
-                    </label>
-                    <div className="pdf-modal-row pdf-print-field">
-                      <label className="pdf-print-copies">
-                        <span>{t('printCopies')}</span>
-                        <input
-                          className="pdf-modal-input"
-                          type="number"
-                          min={1}
-                          max={999}
-                          value={printCopies}
-                          disabled={printDevice === PRINT_SYSTEM_DIALOG}
-                          onChange={(e) =>
-                            setPrintCopies(
-                              Math.min(999, Math.max(1, Math.round(Number(e.target.value)) || 1)),
-                            )
-                          }
-                        />
-                      </label>
-                      {driverOptions.map((group) => (
-                        <label key={group.name} className='pdf-modal-row pdf-print-field'>
-                          <span>{group.translation}</span>
-                          <select
-                            className='pdf-modal-input'
-                            value={driverChoices[group.name] ?? group.defaultValue ?? group.values[0]}
-                            onChange={(e) =>
-                              setDriverChoices((c) => ({ ...c, [group.name]: e.target.value }))
-                            }
-                          >
-                            {group.values.map((v) => (
-                              <option key={v} value={v}>
-                                {v}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-                      ))}
-                      <label className="pdf-modal-check">
-                        <input
-                          type="checkbox"
-                          checked={printCollate}
-                          disabled={printDevice === PRINT_SYSTEM_DIALOG || printCopies < 2}
-                          onChange={(e) => setPrintCollate(e.target.checked)}
-                        />
-                        {t('printCollate')}
-                      </label>
-                    </div>
-                    <label className="pdf-modal-row pdf-print-field">
-                      <span>{t('printDuplex')}</span>
-                      <select
-                        className="pdf-modal-input"
-                        value={printDuplex}
-                        disabled={printDevice === PRINT_SYSTEM_DIALOG}
-                        onChange={(e) => setPrintDuplex(e.target.value as PrintDuplex)}
-                      >
-                        {PRINT_DUPLEX_MODES.map((m) => (
-                          <option key={m} value={m}>
-                            {t(
-                              m === 'simplex'
-                                ? 'printDuplexOff'
-                                : m === 'longEdge'
-                                  ? 'printDuplexLong'
-                                  : 'printDuplexShort',
-                            )}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <div className="pdf-print-divider" />
-                    <label className="pdf-modal-row">
-                      <input
-                        type="radio"
-                        name="print-range"
-                        checked={printMode === 'all'}
-                        onChange={() => {
-                          setPrintMode('all')
-                          setPrintInvalid(false)
-                        }}
-                      />
-                      <span>{t('printRangeAll')}</span>
-                    </label>
-                    <label className="pdf-modal-row">
-                      <input
-                        type="radio"
-                        name="print-range"
-                        checked={printMode === 'current'}
-                        onChange={() => {
-                          setPrintMode('current')
-                          setPrintInvalid(false)
-                        }}
-                      />
-                      <span>
-                        {t('printRangeCurrent')} ({printCurrentPage})
-                      </span>
-                    </label>
-                    <label className="pdf-modal-row">
-                      <input
-                        type="radio"
-                        name="print-range"
-                        checked={printMode === 'custom'}
-                        onChange={() => setPrintMode('custom')}
-                      />
-                      <span>{t('printRangeCustom')}</span>
-                    </label>
-                    {printMode === 'custom' && (
-                      <input
-                        className={`pdf-modal-input${printInvalid ? ' invalid' : ''}`}
-                        value={printInput}
-                        placeholder={t('printRangeHint')}
-                        autoFocus
-                        onChange={(e) => {
-                          setPrintInput(e.target.value)
-                          setPrintInvalid(false)
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') confirmPrint()
-                          else if (e.key === 'Escape') setPrintDlg(false)
-                        }}
-                      />
-                    )}
-                    <label className="pdf-modal-row pdf-print-field">
-                      <span>{t('printSubset')}</span>
-                      <select
-                        className="pdf-modal-input"
-                        value={printParity}
-                        onChange={(e) => {
-                          setPrintParity(e.target.value as PageParity)
-                          setPrintInvalid(false)
-                        }}
-                      >
-                        <option value="all">{t('printSubsetAll')}</option>
-                        <option value="odd">{t('printSubsetOdd')}</option>
-                        <option value="even">{t('printSubsetEven')}</option>
-                      </select>
-                    </label>
-                    {printInvalid && printMode !== 'custom' && (
-                      <div className="pdf-modal-hint pdf-print-empty">{t('printSubsetEmpty')}</div>
-                    )}
-                    <div className="pdf-modal-actions">
-                      <button className="pdf-modal-btn" onClick={() => setPrintDlg(false)}>
-                        {t('cancel')}
-                      </button>
-                      <button className="pdf-modal-btn primary" onClick={confirmPrint}>
-                        {t('print')}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+              </div>
+            )}
+            <PrintDialog print={print} printCurrentPage={print.printCurrentPage} />
               {mergePagesDlg && (
                 <div className="pdf-modal-mask" onClick={() => setMergePagesDlg(false)}>
                   <div className="pdf-modal" onClick={(e) => e.stopPropagation()}>

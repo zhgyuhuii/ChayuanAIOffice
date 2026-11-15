@@ -14,6 +14,7 @@ import type {
   AttachmentImageResult,
   AttachmentMeta,
   AttachmentReadResult,
+  CopyEmfRequest,
   DesktopApi,
   McpCommandMessage,
   RecoveryPromptPayload,
@@ -109,6 +110,24 @@ const desktopApi: DesktopApi = {
     return () => ipcRenderer.removeListener('app:document-theme-changed', listener)
   },
   getAutoSaveDefault: () => ipcRenderer.invoke('app:get-auto-save-default'),
+  getCsvImportLimit: () => ipcRenderer.invoke('app:get-csv-import-limit'),
+  onImportProgress(listener) {
+    const wrapped = (_event: unknown, progress: unknown): void => {
+      // null means the import is over: the bar must go with it, or the next
+      // workbook opens showing the last file's percentage.
+      if (progress === null) {
+        listener(null)
+        return
+      }
+      const value = progress as { phase?: unknown; fraction?: unknown } | null
+      if (!value || (value.phase !== 'read' && value.phase !== 'write')) return
+      if (typeof value.fraction !== 'number' || !Number.isFinite(value.fraction)) return
+      listener({ phase: value.phase, fraction: Math.max(0, Math.min(value.fraction, 1)) })
+    }
+    ipcRenderer.on(IPC_CHANNELS.importProgress, wrapped)
+    return () => ipcRenderer.removeListener(IPC_CHANNELS.importProgress, wrapped)
+  },
+  cancelImport: () => ipcRenderer.invoke(IPC_CHANNELS.cancelImport),
   onAutoSaveDefaultChanged(handler) {
     const listener = (_event: Electron.IpcRendererEvent, value: AutoSaveDefault) => handler(value)
     ipcRenderer.on('app:auto-save-default-changed', listener)
@@ -947,6 +966,16 @@ const desktopApi: DesktopApi = {
     const result: unknown = await ipcRenderer.invoke(IPC_CHANNELS.filesAddPastedImage, data, ext)
     return parseAttachmentAddResult(result)
   },
+  async appendCopyEmf(request) {
+    const validated = parseCopyEmfRequest(request)
+    const result: unknown = await ipcRenderer.invoke(IPC_CHANNELS.appendCopyEmf, validated)
+    return result && typeof result === 'object' && (result as { ok?: boolean }).ok === true
+      ? { ok: true }
+      : { ok: false }
+  },
+  async isCopyEmfAvailable() {
+    return (await ipcRenderer.invoke(IPC_CHANNELS.copyEmfAvailable)) === true
+  },
   async readAttachment(path, offset, maxChars) {
     if (typeof path !== 'string' || path.length === 0 || path.length > 1024) {
       throw new Error('Invalid attachment path.')
@@ -994,6 +1023,71 @@ const desktopApi: DesktopApi = {
   getPathForFile(file) {
     return webUtils.getPathForFile(file)
   },
+}
+
+/// Guards the EMF copy payload: cell text, alignment letters and non-negative
+/// geometry, bounded like the helper's own validation. The EMF is an extra
+/// clipboard format, so a rejected payload simply keeps the copy text-only.
+function parseCopyEmfRequest(request: unknown): CopyEmfRequest {
+  const bad = (reason: string): Error => new Error(`Invalid copy-EMF payload: ${reason}.`)
+  if (!isRecord(request)) throw bad('not an object')
+  const cell = (input: unknown): CopyEmfRequest['cells'][number][number] => {
+    if (!isRecord(input)) throw bad('bad cell')
+    if (typeof input.v !== 'string' || input.v.length > 32_000) throw bad('bad cell')
+    if (input.a !== 'l' && input.a !== 'r' && input.a !== 'c') throw bad('bad alignment')
+    return { v: input.v, a: input.a }
+  }
+  const edge = (values: unknown, max: number): number[] => {
+    if (!Array.isArray(values) || values.length === 0 || values.length > max) {
+      throw bad('bad edge')
+    }
+    return values.map((value: unknown) => {
+      if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) {
+        throw bad('bad geometry')
+      }
+      return value
+    })
+  }
+  if (!Array.isArray(request.colWidths) || request.colWidths.length === 0) {
+    throw bad('bad columns')
+  }
+  const cells = request.cells
+  if (!Array.isArray(cells) || cells.length === 0 || cells.length > 1_048_576) {
+    throw bad('bad cells')
+  }
+  const merges: CopyEmfRequest['merges'] = []
+  if (request.merges !== undefined) {
+    if (!Array.isArray(request.merges) || request.merges.length > 2_000) throw bad('bad merges')
+    for (const merge of request.merges) {
+      if (!isRecord(merge)) throw bad('bad merge')
+      const span = (value: unknown): number => {
+        if (typeof value !== 'number' || !Number.isInteger(value) || value < 0) {
+          throw bad('bad merge')
+        }
+        return value
+      }
+      const spanAtLeastOne = (value: unknown): number => {
+        const size = span(value)
+        if (size < 1) throw bad('bad merge')
+        return size
+      }
+      merges.push({
+        r: span(merge.r),
+        c: span(merge.c),
+        rs: spanAtLeastOne(merge.rs),
+        cs: spanAtLeastOne(merge.cs),
+      })
+    }
+  }
+  return {
+    colWidths: edge(request.colWidths, 16_384),
+    rowHeights: edge(request.rowHeights, 1_048_576),
+    cells: cells.map((row) => {
+      if (!Array.isArray(row) || row.length === 0 || row.length > 16_384) throw bad('bad row')
+      return row.map(cell)
+    }),
+    merges,
+  }
 }
 
 function parseAttachmentAddResult(input: unknown): AttachmentAddResult {

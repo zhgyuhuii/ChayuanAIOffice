@@ -21,7 +21,9 @@ import {
   stat,
   writeFile,
 } from 'node:fs/promises'
+import { runCopyEmfHelper } from './copy-emf-helper'
 import { refreshCsvDigest } from './csv-digest'
+import { ImportRegistry } from './import-registry'
 import { createServer } from 'node:http'
 import { basename, dirname, isAbsolute, join } from 'node:path'
 
@@ -98,6 +100,8 @@ import {
   setRescueFetch,
   type AiRuntime,
 } from '@chaoffice/ai-provider'
+import { delimitedImportLimit } from './csv-import-limit'
+import type { CsvImportProgress } from '@chaoffice/xlsx-gateway/gateway/csv-import'
 import {
   getSharedAiRuntime,
   persistGeneratedImage,
@@ -192,6 +196,7 @@ import {
   saveEditsChunkArraySchema,
   workbookSaveEditsChunkSchema,
   workbookSaveRequestSchema,
+  copyEmfRequestSchema,
   workbookSlicerStateRequestSchema,
   workbookSlicerStateResultSchema,
   type WorkbookCreateDocumentResult,
@@ -2054,8 +2059,8 @@ interface SheetsTabSession {
  * tab (or a closed-then-reopened tab) registered and overwrote the previous closure. */
 /// Same ceiling as local add_image (readLocalImage's 20MB check)
 const MAX_REMOTE_IMAGE_BYTES = 20 * 1024 * 1024
-/** Max CSV bytes converted on open: prevents 500MB CSV OOMing main before sidecar limits. */
-const MAX_DELIMITED_IMPORT_BYTES = 32 * 1024 * 1024
+// the .csv/.tsv ceiling lives with the numbers it describes (the gateway's
+// csv-limits, exposed through csv-import-limit)
 
 
 const unsavedNewWorkbooks = new Map<string, { suggestSaveAs: string; tempDir: string }>()
@@ -2109,6 +2114,12 @@ export function pendingUnsavedNewRecoveries(): string[] {
   writeUnsavedNewIndex(live)
   return live
 }
+/**
+ * The delimited import (a .csv/.tsv opened as a workbook) that is running for
+ * a tab, so the renderer can cancel it: a 250 MB file takes a while, and the
+ * user should not have to wait it out.
+ */
+const pendingImports = new ImportRegistry()
 
 const sheetsTabs = new Map<number, SheetsTabSession>()
 let activeSheetsWebContents: WebContents | null = null
@@ -3142,12 +3153,56 @@ export function registerSheetsIpc(): void {
         await decryptOoxml(bytes, password)
       }
     }
-    const prepared = await prepareWorkbookForOpen(
-      entry.client,
-      path,
-      event.sender,
-      dialogParent(event),
-    )
+    // A delimited import can take a while on a big file, so the renderer
+    // watches its progress and can cancel it.
+    const owner = event.sender.id
+    // a superseded import may have left its bar standing; this open owns the
+    // tab now, whether or not it will report anything itself
+    const superseded = pendingImports.controllerFor(owner) !== undefined
+    const importController = pendingImports.start(owner)
+    if (superseded && !event.sender.isDestroyed())
+      event.sender.send(IPC_CHANNELS.importProgress, null)
+    // only a delimited import reports progress; a plain .xlsx never does,
+    // and there is no bar to take down for it
+    let reported = false
+    const reportProgress = (progress: CsvImportProgress | null): void => {
+      if (event.sender.isDestroyed()) return
+      // an import that was replaced no longer owns the bar
+      if (pendingImports.controllerFor(owner) !== importController) return
+      if (progress === null) {
+        if (!reported) return
+        reported = false
+      } else {
+        reported = true
+      }
+      event.sender.send(IPC_CHANNELS.importProgress, progress)
+    }
+    let prepared: Awaited<ReturnType<typeof prepareWorkbookForOpen>>
+    try {
+      prepared = await prepareWorkbookForOpen(
+        entry.client,
+        path,
+        event.sender,
+        dialogParent(event),
+        {
+          import: {
+            onProgress: reportProgress,
+            signal: importController.signal,
+          },
+        },
+      )
+    } catch (error) {
+      // The user stopped the import: nothing opens, and it is not a failure
+      // to report. The renderer already knows it asked for this.
+      if (pendingImports.wasCancelled(importController)) return null
+      throw error
+    } finally {
+      // the import is over (done, failed or cancelled): the bar must not
+      // stand into the next open; reportProgress drops this for a
+      // superseded import, so finish comes after
+      reportProgress(null)
+      pendingImports.finish(owner, importController)
+    }
     // a declined import (an .ods the user chose not to convert) opens nothing
     if (!prepared) return null
     // The recovery prompt (or the file dialog / import conversion) can outlive
@@ -3231,6 +3286,11 @@ export function registerSheetsIpc(): void {
       (session) => session.path === validated || session.restoreTarget === validated,
     )
     return openSelectedWorkbook(event, validated, priorSession?.password)
+  })
+  // The renderer cancels a delimited import that is taking too long; the
+  // conversion throws and nothing opens.
+  ipcMain.handle(IPC_CHANNELS.cancelImport, (event) => {
+    pendingImports.cancel(event.sender.id)
   })
 
   ipcMain.handle(IPC_CHANNELS.selectWorkbook, async (event) => {
@@ -3975,6 +4035,18 @@ export function registerSheetsIpc(): void {
       ? await dialog.showMessageBox(parent, options)
       : await dialog.showMessageBox(options)
     return response === 0 ? 'csv' : response === 1 ? 'xlsx' : 'cancel'
+  })
+
+  ipcMain.handle(IPC_CHANNELS.appendCopyEmf, (_event, input: unknown) =>
+    appendCopyEmfToClipboard(input),
+  )
+
+  // one cheap lookup per call: the renderer caches the answer and only then
+  // builds the O(cells) copy payload (an unanswered call would walk the
+  // selection and ship a multi-MB matrix for nothing off Windows)
+  ipcMain.handle(IPC_CHANNELS.copyEmfAvailable, () => {
+    const helper = resolveClipboardHelperPath()
+    return !!helper && existsSync(helper)
   })
 
   ipcMain.handle(IPC_CHANNELS.saveWorkbook, async (event, input: unknown) => {
@@ -5263,7 +5335,14 @@ async function prepareWorkbookForOpen(
   path: string,
   contents?: WebContents | undefined,
   parent?: BrowserWindow | undefined,
-  options?: { skipRecoveryPrompt?: boolean },
+  options?: {
+    skipRecoveryPrompt?: boolean
+    /** progress and cancellation for a delimited import */
+    import?: {
+      readonly onProgress?: (progress: CsvImportProgress) => void
+      readonly signal?: AbortSignal
+    }
+  },
 ): Promise<{
   openPath: string
   suggestSaveAs?: string
@@ -5308,7 +5387,12 @@ async function prepareWorkbookForOpen(
   try {
     if (extension === 'csv' || extension === 'tsv') {
       const csvStat = await stat(path)
-      if (csvStat.size > MAX_DELIMITED_IMPORT_BYTES) throw new Error(tm('errFileTooLarge'))
+      const limitBytes = delimitedImportLimit()
+      if (csvStat.size > limitBytes) {
+        const limitMb = Math.round(limitBytes / 1024 / 1024)
+        const sizeMb = (csvStat.size / 1024 / 1024).toFixed(1)
+        throw new Error(`${tm('errTooLarge', { mb: limitMb })} (${sizeMb} MB)`)
+      }
       const converted = await csvToXlsxBufferForOpen(
         decodeCsvBuffer(await readFile(path), legacyCsvCharset()),
         'Sheet1',
@@ -5319,6 +5403,7 @@ async function prepareWorkbookForOpen(
         // every row shatters on the comma. A .csv keeps the sniff — the prose
         // guard in resolveImportDelimiter is what that path needs.
         extension === 'tsv' ? '\t' : undefined,
+        options?.import,
       )
       emptyCsv = converted.empty
       await writeFile(openPath, converted.buffer)
@@ -5550,6 +5635,31 @@ function resolveSidecarPath(): string {
   if (process.env.XLSX_SIDECAR_PATH) return process.env.XLSX_SIDECAR_PATH
   if (app.isPackaged) return join(process.resourcesPath, 'native', executable)
   return join(app.getAppPath(), 'native', 'xlsx-engine', 'target', 'release', executable)
+}
+
+function resolveClipboardHelperPath(): string | null {
+  if (process.platform !== 'win32') return null
+  if (process.env.WIN_CLIPBOARD_HELPER_PATH) return process.env.WIN_CLIPBOARD_HELPER_PATH
+  if (app.isPackaged) return join(process.resourcesPath, 'native', 'win-clipboard-helper.exe')
+  return join(
+    app.getAppPath(),
+    'native',
+    'win-clipboard-helper',
+    'target',
+    'release',
+    'win-clipboard-helper.exe',
+  )
+}
+
+/// Spawns the clipboard helper with the copied range's description. The EMF
+/// it appends is an extra clipboard format beside the text the grid already
+/// wrote, so every failure here — missing helper, busy clipboard, a crash —
+/// degrades to the plain copy instead of surfacing an error.
+async function appendCopyEmfToClipboard(request: unknown): Promise<{ ok: boolean }> {
+  const helper = resolveClipboardHelperPath()
+  if (!helper || !existsSync(helper)) return { ok: false }
+  const payload = JSON.stringify(copyEmfRequestSchema.parse(request))
+  return await runCopyEmfHelper(helper, payload)
 }
 
 async function sha256File(path: string): Promise<string> {

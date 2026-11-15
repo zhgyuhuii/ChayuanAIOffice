@@ -25,6 +25,8 @@ import { fileCountKey,  chatCountKey } from './counts'
 import { MonoFileIcon } from './file-icons'
 import { useI18n } from './locale'
 import type { I18n, StringKey } from './locale'
+import { ConfirmDialog } from './ConfirmDialog'
+import { SettingsModal, coerceSectionId, type SectionId } from './SettingsModal'
 import { skillUpdateDue } from './IntegrationsPane'
 import { ChatPanel } from './home-chat/ChatPanel'
 import { FileTreePane } from './home-files/FileTreePane'
@@ -42,8 +44,7 @@ import {
 import type { IntegrationsApi } from '../../shared/integrations-api'
 import type { McpClientApi } from '../../shared/mcp-client-api'
 
-import { SettingsModal, coerceSectionId, type SectionId } from './SettingsModal'
-import { FeedbackModal, FeedbackQrCard } from './FeedbackModal'
+import { FeedbackModal } from './FeedbackModal'
 import { onFilesChanged } from './file-events'
 
 import type { ProjectApi } from '@chaoffice/project-store'
@@ -105,7 +106,7 @@ const FILE_ICONS: Record<string, string> = {
    width, so it ellipsizes and a hover ScreenTip carries the full list. Keep in
    sync with the main-process open-dialog filter (OPEN_DIALOG_EXTENSIONS). */
 const OPEN_LOCAL_EXTENSIONS =
-  '.docx / .doc / .dot / .odt / .ott / .hwpx / .hwp / .xlsx / .xlsm / .xls / .csv / .tsv / .ods / .ots / .pptx / .odp / .otp / .pdf / .md / .html'
+  '.docx / .doc / .dot / .odt / .ott / .hwpx / .hwp / .xlsx / .xlsm / .xls / .csv / .tsv / .ods / .ots / .pptx / .ppt / .odp / .otp / .pdf / .md / .html'
 
 /**
  * Width of the viewport that fixed-position menus anchor to. The layout engine
@@ -557,6 +558,23 @@ function AccountEntry({
     return () => clearInterval(timer)
   }, [waiting, loginNonce])
 
+  const loggedIn = status?.loggedIn ?? false
+  const email = status?.email ?? ''
+  const initial = email ? email[0].toUpperCase() : loggedIn ? 'G' : '?'
+  const [loginError] = useState<
+    'timeout' | 'launch' | 'network' | 'expired' | 'failed' | null
+  >(null)
+  const errorText = loginError
+    ? {
+        timeout: t('loginTimeout'),
+        launch: t('loginLaunchFailed'),
+        network: t('loginNetworkError'),
+        expired: t('loginExpired'),
+        failed: t('loginFailed'),
+      }[loginError]
+    : null
+
+  const [confirmSignOut, setConfirmSignOut] = useState(false)
   const doLogout = () => {
     setLoggingOut(true)
     statusSeq.current++
@@ -628,36 +646,44 @@ function AccountEntry({
             onSettingsOpenChange(false)
             startLogin()
           }}
-          onLogout={doLogout}
+          onLogout={() => setConfirmSignOut(true)}
           skillUpdateDue={skillUpdate}
           onSkillUpdateDue={setSkillUpdate}
           initialSection={settingsSection}
         />
       )}
-      {feedbackOpen && <FeedbackModal onClose={() => setFeedbackOpen(false)} />}
-      {feedbackQrOpen && <FeedbackQrCard onClose={() => setFeedbackQrOpen(false)} />}
-      <div className="account-row">
-        <button
-          className="account-btn"
-          onClick={handleClick}
-          aria-haspopup="dialog"
-          aria-expanded={settingsOpen}
-          data-tip={t('settings')}
-          aria-label={t('settings')}
-        >
-          <span className={`account-avatar${waiting ? ' waiting' : ''}`}>
-            {waiting ? (
-              <svg
-                className="account-spinner"
-                width="14"
-                height="14"
-                viewBox="0 0 16 16"
-                aria-hidden="true"
-              >
-                <circle
-                  cx="8"
-                  cy="8"
-                  r="6"
+      {confirmSignOut && (
+        <ConfirmDialog
+          title={t('confirmSignOutTitle')}
+          body={t('confirmSignOutBody')}
+          confirmLabel={t('logout')}
+          cancelLabel={t('cancel')}
+          danger
+          onCancel={() => setConfirmSignOut(false)}
+          onConfirm={() => {
+            setConfirmSignOut(false)
+            doLogout()
+          }}
+        />
+      )}
+      {!settingsOpen && waiting && authUrl && (
+        <div className="login-hint" role="status">
+          <button className="login-hint-open" onClick={openLoginUrl}>
+            {t('loginOpenShort')}
+          </button>
+          <button
+            className={`login-hint-copy${urlCopied ? ' copied' : ''}`}
+            onClick={copyLoginUrl}
+            // static tip: screentips are suppressed from pointerdown until the pointer
+            // leaves the control, so a swapped-in "copied" tip would never show — the
+            // check-mark icon is the visible feedback
+            data-tip={t('loginCopyUrl')}
+            aria-label={urlCopied ? t('loginCopied') : t('loginCopyUrl')}
+          >
+            {urlCopied ? (
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path
+                  d="m3.5 8.5 3 3 6-7"
                   stroke="currentColor"
                   strokeWidth="1.8"
                   fill="none"
@@ -678,6 +704,51 @@ function AccountEntry({
                 />
               </svg>
             )}
+          </button>
+        </div>
+      )}
+      {feedbackOpen && <FeedbackModal onClose={() => setFeedbackOpen(false)} />}
+      <div className="account-row">
+      <button
+        className="account-btn"
+        onClick={handleClick}
+        aria-haspopup="dialog"
+        aria-expanded={settingsOpen}
+        data-tip={
+          loggedIn
+            ? email || t('loggedInGenspark')
+            : waiting
+              ? t('waitingLogin')
+              : (errorText ?? t('loginGenspark'))
+        }
+        aria-label={t('settings')}
+      >
+        <span
+          className={`account-avatar${loggedIn ? ' logged-in' : ''}${waiting ? ' waiting' : ''}`}
+        >
+          {waiting ? (
+            <svg
+              className="account-spinner"
+              width="14"
+              height="14"
+              viewBox="0 0 16 16"
+              aria-hidden="true"
+            >
+              <circle
+                cx="8"
+                cy="8"
+                r="6"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                fill="none"
+                strokeDasharray="26"
+                strokeDashoffset="18"
+                strokeLinecap="round"
+              />
+            </svg>
+          ) : (
+            initial
+          )}
             {skillUpdate && (
               <span className="account-badge" role="img" aria-label={t('intgUpdateDue')} />
             )}

@@ -165,7 +165,7 @@ export async function mergeTemplateViaCli(
  * `sheet links <path>`: list, refresh (`--update`) or break (`--break`, 1-based
  * indices) a workbook's external links. Mutations default to writing in place
  * and honour `--out`/`--force` — the CLI routes them through the same
- * output/allow-list/open-in-GenOffice guards `sheet apply` uses.
+ * output/allow-list/open-in-ChaAI Office guards `sheet apply` uses.
  */
 export async function sheetLinksViaCli(
   runner: CliRunner,
@@ -182,6 +182,58 @@ export async function sheetLinksViaCli(
   else if (opts.update) args.push('--update')
   if (opts.out !== undefined) args.push('--out', opts.out, ...(opts.overwrite ? ['--force'] : []))
   const outcome = await runner.run(args)
+  if (!outcome.ok || !outcome.json || outcome.json.status !== 'ok') {
+    throw new Error(cliErrorMessage(outcome))
+  }
+  return outcome.json
+}
+
+/**
+ * `convert <path> --to <format> [--out <target>] [--force] [--password <pw>]
+ * [--sheet <name>]`: one document through the CLI's conversion matrix (pdf →
+ * docx/pptx/xlsx/md, legacy .doc/.ppt → modern Open XML, odt/ods/hwp → their
+ * modern counterparts, md → docx/html, xlsx → csv, …). The CLI owns the route
+ * table: an unsupported pair comes back as a usage error whose `detail`
+ * names every supported target for the source format.
+ */
+export async function convertViaCli(
+  runner: CliRunner,
+  opts: {
+    path: string
+    to: string
+    out?: string
+    overwrite?: boolean
+    password?: string
+    sheet?: string
+  },
+): Promise<CliJsonOk> {
+  const args = [
+    'convert',
+    opts.path,
+    '--to',
+    opts.to,
+    ...(opts.out !== undefined ? ['--out', opts.out] : []),
+    ...(opts.overwrite ? ['--force'] : []),
+    ...(opts.password !== undefined ? ['--password', opts.password] : []),
+    ...(opts.sheet !== undefined ? ['--sheet', opts.sheet] : []),
+    '--json',
+  ]
+  const outcome = await runner.run(args)
+  if (!outcome.ok || !outcome.json || outcome.json.status !== 'ok') {
+    throw new Error(cliErrorMessage(outcome))
+  }
+  return outcome.json
+}
+
+/**
+ * `docs check <path>`: the document-quality read (fields without results,
+ * broken references, a stale TOC, missing images, empty charts/headings,
+ * level skips, leftover placeholder text, pending tracked changes, open
+ * comments). Read-only, so no output resolution and always registered —
+ * the same tier as `read_docx`.
+ */
+export async function docsCheckViaCli(runner: CliRunner, path: string): Promise<CliJsonOk> {
+  const outcome = await runner.run(['docs', 'check', path, '--json'])
   if (!outcome.ok || !outcome.json || outcome.json.status !== 'ok') {
     throw new Error(cliErrorMessage(outcome))
   }

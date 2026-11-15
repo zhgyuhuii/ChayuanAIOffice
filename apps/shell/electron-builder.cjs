@@ -126,9 +126,32 @@ const winSidecarCandidates = [
 const WIN_SIDECAR =
   winSidecarCandidates.find((rel) => existsSync(join(__dirname, rel))) ?? winSidecarCandidates[0]
 
-// GENOFFICE_LINUX_ARM64=1（上游 #2474 口径）显式选 arm64 Linux 打包；本地默认沿
-// linuxArch（CHAOFFICE_LINUX_X64/host-arch）——两口径汇于同一 arm64 判定。
-const linuxArm64 = process.env.GENOFFICE_LINUX_ARM64 === '1' || linuxArch === 'arm64'
+// Same layout rule as the sidecar: cross-build triple from the release
+// pipeline, or the host-native MSVC build on a matching Windows contributor
+// machine. Windows-only by purpose — the EMF clipboard helper has no role off
+// Windows, so its absence from other platforms' bundles is the normal state
+// and the sheets resolver degrades to a silent no-op when it is missing.
+const winClipboardCandidates = [
+  `../sheets/native/win-clipboard-helper/target/${winSidecarTarget}/release/win-clipboard-helper.exe`,
+  ...(process.platform === 'win32' && (process.arch === 'arm64') === winArm64
+    ? ['../sheets/native/win-clipboard-helper/target/release/win-clipboard-helper.exe']
+    : []),
+]
+const WIN_CLIPBOARD_HELPER =
+  winClipboardCandidates.find((rel) => existsSync(join(__dirname, rel))) ??
+  winClipboardCandidates[0]
+
+// GENOFFICE_LINUX_ARM64=1 — package the arm64 Linux artifacts instead of x64.
+// Config support only: no CI job runs a second Linux pass yet, and whether
+// Linux arm64 joins the release matrix is decided on the maintainers' side.
+// With the flag set the AppImage/deb/rpm targets switch to arm64, and the
+// sidecar has to be an aarch64 build — cargo's host-native target/release when
+// the build host is arm64 Linux itself (a native ubuntu-arm64 runner needs no
+// cross toolchain), or an explicit cross-compilation triple otherwise.
+// beforePack checks the ELF machine type either way, because
+// electron-builder exits 0 on a missing/odd extraResources source and would
+// otherwise ship Sheets dead on every install.
+const linuxArm64 = process.env.GENOFFICE_LINUX_ARM64 === '1'
 const linuxSidecarTarget = linuxArm64 ? 'aarch64-unknown-linux-gnu' : 'x86_64-unknown-linux-gnu'
 // Mirrors the Windows candidate list above: the explicit triple first, then
 // cargo's plain host-native output — but only when the host really is the
@@ -417,7 +440,7 @@ function ensureThirdPartyNotices() {
 // 97-2003 .doc/.dot it would hijack the system editor, so Windows leaves those
 // out (mac/Linux still declare them for Open With). ChaAI Office opens .doc/.dot
 // through its own Open dialog on every platform.
-const WIN_OPEN_WITH_ONLY_EXTS = new Set(['txt', 'json', 'doc', 'dot'])
+const WIN_OPEN_WITH_ONLY_EXTS = new Set(['txt', 'json', 'doc', 'dot', 'ppt'])
 const FILE_ASSOCIATIONS = [
   {
     ext: 'docx',
@@ -465,6 +488,14 @@ const FILE_ASSOCIATIONS = [
     role: 'Editor',
     icon: 'pptx',
     mimeType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  },
+  {
+    // import-only: opens as a converted .pptx copy, ChaAI Office never writes .ppt
+    ext: 'ppt',
+    name: 'PowerPoint 97-2003 Presentation',
+    role: 'Editor',
+    icon: 'pptx',
+    mimeType: 'application/vnd.ms-powerpoint',
   },
   {
     ext: 'xls',
@@ -789,6 +820,10 @@ const config = {
       {
         from: WIN_SIDECAR,
         to: 'native/xlsx-sidecar.exe',
+      },
+      {
+        from: WIN_CLIPBOARD_HELPER,
+        to: 'native/win-clipboard-helper.exe',
       },
       {
         from: 'build/shell-new',

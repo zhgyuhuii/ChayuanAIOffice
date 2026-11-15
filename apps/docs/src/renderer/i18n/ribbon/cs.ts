@@ -775,6 +775,8 @@ export const cs = {
   ribbonWebLayoutTip: 'Rozložení webové stránky: vyplnit šířku okna bez konců stránek',
   ribbonOutlineView: 'Osnova',
   ribbonOutlineViewTip: "大纲视图:只显示标题层级,可直接编辑标题",
+  ribbonStoryView: 'Příběh',
+  ribbonStoryViewTip: 'Příběh: psaní bez formátování dokumentu',
   ribbonReadMode: 'Režim čtení',
   ribbonReadModeTip: 'Režim čtení: skrýt pás karet pro soustředěné čtení, ukončíte klávesou Esc',
   ribbonPagePreview: 'Náhled stránky',

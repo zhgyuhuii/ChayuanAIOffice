@@ -46,19 +46,24 @@ const mac = process.platform === 'darwin'
 // With Office for Mac installed, its private DFonts (real Yu Gothic/Malgun/MingLiU…) win over
 // same-script substitution — the assertions accept either the real family or the substitute.
 const office = existsSync('/Applications/Microsoft PowerPoint.app/Contents/Resources/DFonts')
+// adapted(2026-11-15, upstream #2698): the file-reading family index also discovers
+// Apple's on-demand downloadable faces, so a real Yu Gothic can be present without
+// any Office install — branch on the registry, not on the Office dir alone.
+
 
 describe.runIf(mac)(
   'Japanese/Korean/Traditional-Chinese font substitution (macOS system fonts)',
   () => {
     const m = createSystemFontMetrics()
+    const yuAvailable = office || familyAvailable('Yu Gothic')
 
     it('Japanese font requests resolve to matching system faces', () => {
-      const yuSans = office ? /^Yu Gothic/ : /^Hiragino Sans$/
+      const yuSans = yuAvailable ? /^Yu ?Gothic/ : /^Hiragino Sans$/
       expect(m.displayFamily!(style('游ゴシック'))).toMatch(yuSans)
       expect(m.displayFamily!(style('Yu Gothic'))).toMatch(yuSans)
-      expect(m.displayFamily!(style('メイリオ'))).toMatch(office ? /Meiryo/ : /^Hiragino Sans$/)
+      expect(m.displayFamily!(style('メイリオ'))).toMatch(yuAvailable ? /Meiryo|^Hiragino Sans$/ : /^Hiragino Sans$/)
       expect(m.displayFamily!(style('ＭＳ Ｐゴシック'))).toMatch(
-        office ? /MS P?Gothic|Hiragino Sans/ : /^Hiragino Sans$/,
+        yuAvailable ? /MS P?Gothic|Hiragino Sans/ : /^Hiragino Sans$/,
       )
       // Yu Mincho ships with recent macOS as the "YuMincho" family, so the real
       // font can win even without Office installed
@@ -67,6 +72,21 @@ describe.runIf(mac)(
       expect(m.displayFamily!(style('MS Mincho'))).toMatch(
         office ? /MS Mincho|Hiragino Mincho/ : /^Hiragino Mincho ProN$/,
       )
+    })
+
+    it('a missing Japanese sans substitutes to the plain Yu Gothic face, not the narrow-kana UI face', () => {
+      const fam = m.displayFamily!(style('BIZ UDPGothic'))
+      expect(fam).toMatch(yuAvailable ? /^Yu ?Gothic( Medium)?$|^Hiragino Sans$/ : /^Hiragino Sans$/)
+      expect(fam).not.toMatch(/UI/)
+      expect(m.displayFamily!(style('Yu Gothic UI'))).toMatch(yuAvailable ? /Yu ?Gothic( UI)?|Hiragino/ : /Hiragino/)
+    })
+
+    it('SinoType (ST*) families resolve to the matching macOS faces, not Calibri', () => {
+      expect(m.displayFamily!(style('\u534e\u6587\u6977\u4f53'))).toMatch(/Kai/i)
+      expect(m.displayFamily!(style('STKaiti'))).toMatch(/Kai/i)
+      expect(m.displayFamily!(style('\u534e\u6587\u5b8b\u4f53'))).toMatch(/Song/i)
+      expect(m.displayFamily!(style('\u534e\u6587\u884c\u6977'))).toMatch(/Xingkai|Kai/i)
+      expect(m.displayFamily!(style('KaiTi_GB2312'))).toMatch(/Kai/i)
     })
 
     it('missing Korean/Traditional-Chinese fonts substitute to same-script fonts, not Arial/Simplified Chinese', () => {
@@ -93,6 +113,27 @@ describe.runIf(mac)(
       },
     )
 
+    it.runIf(office)(
+      'Office families under 8.3 filenames resolve through the name table, not to Calibri',
+      () => {
+        // Constan.ttf, gara.ttf, pala.ttf, consola.ttf: no filename spells the family
+        expect(m.displayFamily!(style('Constantia'))).toBe('Constantia')
+        expect(m.displayFamily!(style('Garamond'))).toBe('Garamond')
+        expect(m.displayFamily!(style('Palatino Linotype'))).toBe('Palatino Linotype')
+        expect(m.displayFamily!(style('Consolas'))).toBe('Consolas')
+        expect(m.displayFamily!(style('Constantia', { bold: true }))).toBe('Constantia')
+        // and they measure as themselves: Consolas is monospaced, Calibri is not
+        const i = m.measure('iiii', style('Consolas'))
+        const w = m.measure('wwww', style('Consolas'))
+        expect(Math.abs(i - w)).toBeLessThan(1)
+      },
+    )
+
+    it('Liberation Sans substitutes to its metric twin Arial, as PowerPoint does', () => {
+      expect(m.displayFamily!(style('Liberation Sans'))).toBe('Arial')
+      expect(m.displayFamily!(style('Liberation Serif'))).toBe('Times New Roman')
+    })
+
     it('ttc parsing yields real metrics: CJK full-width 1em, Latin non-heuristic', () => {
       expect(m.measure('あア亜', style('游ゴシック'))).toBeCloseTo(300, 0)
       expect(m.measure('한글', style('맑은 고딕'))).toBeGreaterThan(150)
@@ -116,6 +157,24 @@ describe.runIf(mac)(
       expect(m.displayFamily!(style('Zxqvwt Mono Courier'))).toMatch(cal) // mono-looking name
       expect(m.displayFamily!(style('Apercu Light'))).toMatch(cal) // weight suffix dropped too
     })
+
+    it("DejaVu Sans takes PowerPoint's table substitute Verdana, unkerned like any substitution", () => {
+      expect(m.displayFamily!(style('DejaVu Sans'))).toBe('Verdana')
+      expect(m.substituted!(style('DejaVu Sans'))).toBe(true)
+      expect(m.displayFamily!(style('Verdana'))).toBe('Verdana')
+      expect(m.substituted!(style('Verdana'))).toBe(false)
+    })
+
+    it.runIf(office)(
+      'Ethiopic text in a face without the script draws in Nyala; Latin words keep the face',
+      () => {
+        const ethiopic = '\u12a0\u1275\u120c\u1271\u1295'
+        expect(m.displayFamily!(style('Calibri'), ethiopic)).toBe('Nyala')
+        expect(m.displayFamily!(style('Calibri', { bold: true }), ethiopic)).toBe('Nyala')
+        expect(m.displayFamily!(style('Calibri'), 'Athlete')).toBe('Calibri')
+        expect(m.displayFamily!(style('Nyala'), ethiopic)).toBe('Nyala')
+      },
+    )
 
     it('a "Family Weight" request with an installed base family picks the sub-family face', () => {
       expect(m.displayFamily!(style('Avenir Light'))).toBe('Avenir Light')

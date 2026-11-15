@@ -32,3 +32,4 @@ apps/docs/src/renderer/ai/assistants/packs/
 
 # ISO/IEC 29500 schemas: keep byte-identical to the published files (one marked amendment).
 tools/ooxml-validate/schemas/
+apps/docs/src/renderer/stand-in-chains.generated.ts

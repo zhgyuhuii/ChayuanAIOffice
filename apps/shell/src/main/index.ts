@@ -1,5 +1,5 @@
 import './dev-identity'
-import { execSync, spawn } from 'node:child_process'
+import { execSync } from 'node:child_process'
 import { startSiteSync } from './site-sync'
 import { randomUUID } from 'node:crypto'
 import {
@@ -34,6 +34,7 @@ import {
 } from 'electron'
 import type { MenuItemConstructorOptions, NativeImage, WebContents } from 'electron'
 import { atomicWriteFile } from './atomic-write'
+import { openTrash } from './trash'
 import { registerAiNamingIpc } from './ai-naming-service'
 import { tabStripOverlay } from './title-bar-overlay'
 import { createFeedbackClient } from './feedback'
@@ -100,6 +101,9 @@ import {
   systemAuthorName,
   readLegacyImportPrompt,
   writeLegacyImportPrompt,
+  readPdfDefaultZoom,
+  sanitizePdfDefaultZoom,
+  writePdfDefaultZoom,
 } from '@chaoffice/electron-utils'
 import { createMainProcessProxyDispatcher } from '@chaoffice/electron-utils/main-proxy'
 import {
@@ -261,6 +265,7 @@ import {
   startSheetsCaptureServer,
   stopSheetsSidecar,
 } from '../../../sheets/src/main/sheets-main'
+import { setDelimitedImportLimit } from '../../../sheets/src/main/csv-import-limit'
 import {
   configureSlidesRuntime,
   discardSlidesRecovery,
@@ -351,7 +356,13 @@ import type {
   FileSearchRerank,
   FileSearchSettings,
 } from '../shared/home-api'
-import { HOME_CHANNELS, type SystemSearchEntry, type SystemSearchResult } from '../shared/home-api'
+import {
+  CSV_IMPORT_LIMIT_CHOICES_MB,
+  HOME_CHANNELS,
+  type SystemSearchEntry,
+  type SystemSearchResult,
+} from '../shared/home-api'
+import { csvImportLimitMb } from './csv-import-limit'
 import {
   normalizeAiPanelPrefs,
   sameAiPanelPrefs,
@@ -711,6 +722,15 @@ function currentDocTheme(): DocTheme {
   return cachedDocTheme
 }
 
+/**
+ * The ceiling a delimited import (a .csv/.tsv opened as a workbook) may reach,
+ * in MB. The editors take it through setDelimitedImportLimit, so the value the
+ * user picks applies to the next file they open.
+ */
+function currentCsvImportLimitMb(): number {
+  return csvImportLimitMb(readAppSettings(APP_SETTINGS_PATH()))
+}
+
 let cachedAutoSaveDefault: AutoSaveDefault | null = null
 
 function currentAutoSaveDefault(): AutoSaveDefault {
@@ -757,6 +777,7 @@ function currentAiPanelPrefs(): AiPanelPrefs {
     spellcheck: saved.aiPanelSpellcheck,
     openInNewDocs: saved.aiPanelOpenInNewDocs,
     showAiSidebar: saved.aiPanelShowSidebar,
+    showAiAskTrigger: saved.aiPanelShowAskTrigger,
   })
   return cachedAiPanelPrefs
 }
@@ -5107,10 +5128,8 @@ const MD_RE = /\.(md|markdown)$/i
 const HTML_RE = /\.html?$/i
 
 /**
- * Single source of truth for the open-dialog filter. Includes the still-legacy
- * .ppt binary so it is selectable and surfaces the explicit "not supported"
- * dialog via openDocumentPath instead of being grayed out; .doc/.dot route into
- * the docs import filter.
+ * Single source of truth for the open-dialog filter. .doc/.dot and .ppt route
+ * into the docs/slides import filters (converted copies).
  */
 const OPEN_DIALOG_EXTENSIONS = [
   'docx',
@@ -6261,14 +6280,8 @@ function registerHomeIpc(): void {
     removeStarredFiles(removed)
   })
 
-  ipcMain.handle(HOME_CHANNELS.openTrash, () => {
-    if (process.platform === 'darwin') {
-      void shell.openPath(join(app.getPath('home'), '.Trash'))
-    } else if (process.platform === 'win32') {
-      spawn('explorer.exe', ['shell:RecycleBin'], { detached: true }).unref()
-    } else {
-      void shell.openPath(join(app.getPath('home'), '.local', 'share', 'Trash', 'files'))
-    }
+  ipcMain.handle(HOME_CHANNELS.openTrash, async () => {
+    await openTrash()
   })
 
   ipcMain.handle(HOME_CHANNELS.openHelp, () => {
@@ -6381,6 +6394,11 @@ function registerHomeIpc(): void {
     writeLegacyImportPrompt(APP_SETTINGS_PATH(), prompt !== false)
     return readLegacyImportPrompt(APP_SETTINGS_PATH())
   })
+  ipcMain.handle(HOME_CHANNELS.getPdfDefaultZoom, () => readPdfDefaultZoom(APP_SETTINGS_PATH()))
+  ipcMain.handle(HOME_CHANNELS.setPdfDefaultZoom, (_event, zoom: unknown) => {
+    writePdfDefaultZoom(APP_SETTINGS_PATH(), sanitizePdfDefaultZoom(zoom))
+    return readPdfDefaultZoom(APP_SETTINGS_PATH())
+  })
 
   ipcMain.handle(HOME_CHANNELS.getAutoSaveDefault, (): AutoSaveDefault => currentAutoSaveDefault())
   ipcMain.handle('app:get-auto-save-default', (): AutoSaveDefault => currentAutoSaveDefault())
@@ -6395,6 +6413,18 @@ function registerHomeIpc(): void {
       autoSaveDefaultUpdatedAt: next.updatedAt,
     })
     for (const wc of webContents.getAllWebContents()) wc.send('app:auto-save-default-changed', next)
+  })
+
+  ipcMain.handle(HOME_CHANNELS.getCsvImportLimit, (): number => currentCsvImportLimitMb())
+  ipcMain.handle('app:get-csv-import-limit', (): number => currentCsvImportLimitMb())
+  ipcMain.handle(HOME_CHANNELS.setCsvImportLimit, (_event, mb: unknown) => {
+    if (typeof mb !== 'number' || !Number.isInteger(mb)) return
+    if (!CSV_IMPORT_LIMIT_CHOICES_MB.includes(mb as (typeof CSV_IMPORT_LIMIT_CHOICES_MB)[number])) {
+      return
+    }
+    if (mb === currentCsvImportLimitMb()) return
+    writeAppSettings(APP_SETTINGS_PATH(), { csvImportLimitMb: mb })
+    setDelimitedImportLimit(mb * 1024 * 1024)
   })
 
   ipcMain.handle(HOME_CHANNELS.getTabSleepEnabled, () => tabSleepEnabled())
@@ -6486,6 +6516,7 @@ function registerHomeIpc(): void {
       spellcheck: 'spellcheck' in raw ? raw.spellcheck : prev.spellcheck,
       openInNewDocs: 'openInNewDocs' in raw ? raw.openInNewDocs : prev.openInNewDocs,
       showAiSidebar: 'showAiSidebar' in raw ? raw.showAiSidebar : prev.showAiSidebar,
+      showAiAskTrigger: 'showAiAskTrigger' in raw ? raw.showAiAskTrigger : prev.showAiAskTrigger,
     })
     if (sameAiPanelPrefs(next, prev)) return prev
     cachedAiPanelPrefs = next
@@ -6496,6 +6527,7 @@ function registerHomeIpc(): void {
       aiPanelSpellcheck: next.spellcheck,
       aiPanelOpenInNewDocs: next.openInNewDocs,
       aiPanelShowSidebar: next.showAiSidebar,
+      aiPanelShowAskTrigger: next.showAiAskTrigger,
     })
     for (const wc of webContents.getAllWebContents()) wc.send('app:ai-panel-prefs-changed', next)
     return next
@@ -8818,6 +8850,9 @@ if (process.env.REMOTE_DEBUG_PORT) {
 }
 
 app.whenReady().then(async () => {
+  // the editors take the ceiling before anything can be opened: the headless
+  // export opens documents too
+  setDelimitedImportLimit(currentCsvImportLimitMb() * 1024 * 1024)
   startSiteSync('office') // 官网心跳+检查更新（静默）  // first scan waits for the windows to come up; later ones follow folder changes
   setTimeout(() => ensureFileIndexer()?.refresh(), 4000)
   installRendererProtocol({
@@ -9057,18 +9092,7 @@ app.whenReady().then(async () => {
     })
   }
 
-  const launchSettings = readAppSettings(APP_SETTINGS_PATH())
-  const launchPaths = launchPathsWithLastSession(launchSettings, pendingLaunchPaths)
-  if (launchSettings[LAST_SESSION_DOCUMENTS_KEY] !== undefined) {
-    // consumed before opening: a document that crashes the app during restore
-    // must not be restored again at the next launch
-    try {
-      writeAppSettings(APP_SETTINGS_PATH(), { [LAST_SESSION_DOCUMENTS_KEY]: undefined })
-    } catch (err) {
-      console.warn('[shell] could not clear the session documents:', err)
-    }
-  }
-  openLaunchPaths(launchPaths)
+  openLaunchPaths(consumeLastSessionPaths(pendingLaunchPaths))
   pendingLaunchPaths = []
 
   startControlServer(
@@ -9089,9 +9113,27 @@ app.whenReady().then(async () => {
   )
 
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createShellWindow()
+    if (BrowserWindow.getAllWindows().length > 0) return
+    createShellWindow()
+    openLaunchPaths(consumeLastSessionPaths([]))
   })
 })
+
+/** the last session's documents ahead of the launch paths, forgotten as they are read */
+function consumeLastSessionPaths(launchPaths: readonly string[]): string[] {
+  const settings = readAppSettings(APP_SETTINGS_PATH())
+  const paths = launchPathsWithLastSession(settings, launchPaths)
+  if (settings[LAST_SESSION_DOCUMENTS_KEY] !== undefined) {
+    // consumed before opening: a document that crashes the app during restore
+    // must not be restored again at the next launch
+    try {
+      writeAppSettings(APP_SETTINGS_PATH(), { [LAST_SESSION_DOCUMENTS_KEY]: undefined })
+    } catch (err) {
+      console.warn('[shell] could not clear the session documents:', err)
+    }
+  }
+  return paths
+}
 
 app.on('window-all-closed', () => {
   // A headless export destroys its hidden window between documents; only

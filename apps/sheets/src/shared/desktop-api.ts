@@ -2204,6 +2204,41 @@ export const externalLinkOpsSchema = z
   .strict()
 export type ExternalLinkOps = z.infer<typeof externalLinkOpsSchema>
 
+/// A copied range as the Windows clipboard helper consumes it: displayed text
+/// plus per-cell alignment, geometry in the grid's pixel units (genoffice#1985
+/// stage 1 — the helper turns this into an EMF so CAD paste dialogs offer a
+/// "Picture (Enhanced Metafile)" entry).
+export const copyEmfRequestSchema = z
+  .object({
+    colWidths: z.array(z.number().finite().min(0)).min(1).max(16_384),
+    rowHeights: z.array(z.number().finite().min(0)).min(1).max(1_048_576),
+    cells: z
+      .array(
+        z
+          .array(
+            z.object({
+              v: z.string().max(32_000),
+              a: z.enum(['l', 'r', 'c']),
+            }),
+          )
+          .max(16_384),
+      )
+      .min(1)
+      .max(1_048_576),
+    merges: z
+      .array(
+        z.object({
+          r: z.number().int().min(0),
+          c: z.number().int().min(0),
+          rs: z.number().int().min(1),
+          cs: z.number().int().min(1),
+        }),
+      )
+      .max(2_000),
+  })
+  .strict()
+export type CopyEmfRequest = z.infer<typeof copyEmfRequestSchema>
+
 export const workbookSaveRequestSchema = z
   .object({
     sessionId: z.string().uuid(),
@@ -3514,6 +3549,8 @@ export interface DesktopApi {
   onDocumentThemeChanged(handler: (theme: DocTheme) => void): () => void
   /** shell-wide AutoSave default (see useAutoSavePref) */
   getAutoSaveDefault(): Promise<AutoSaveDefault>
+  /** the ceiling a delimited import may reach, in MB (the user's setting) */
+  getCsvImportLimit(): Promise<number>
   onAutoSaveDefaultChanged(handler: (value: AutoSaveDefault) => void): () => void
   /** AI panel text size + chat-input spellcheck (Settings → General in the shell) */
   getAiPanelPrefs(): Promise<AiPanelPrefs>
@@ -3529,6 +3566,16 @@ export interface DesktopApi {
    */
   onChromePressed(handler: () => void): () => void
   selectWorkbook(): Promise<WorkbookFile | { passwordRequired: true; path: string } | null>
+  /** How far a delimited import is: 'read' parses the text, 'write' builds the
+   *  workbook. The fraction is 0..1 within the phase. `null` means the import
+   *  is over — the bar belongs to one import and must not outlive it. */
+  onImportProgress?: (
+    listener: (
+      progress: { readonly phase: 'read' | 'write'; readonly fraction: number } | null,
+    ) => void,
+  ) => (() => void) | undefined
+  /** Stop the delimited import that is running for this tab */
+  cancelImport?: () => Promise<void>
   openEncryptedWorkbook(path: string, password: string): Promise<WorkbookFile | null>
   updateWorkbookPassword(
     sessionId: string,
@@ -3790,6 +3837,14 @@ export interface DesktopApi {
   /// Persists a clipboard-pasted image (no local path) to a temp file and adds it
   /// as an attachment
   addPastedImage(data: ArrayBuffer, ext: string): Promise<AttachmentAddResult>
+  /// Appends the copied range's EMF rendering to the Windows clipboard, so
+  /// CAD paste dialogs offer it as a picture. A no-op off Windows and a
+  /// silent failure without the helper: the EMF is an extra clipboard format,
+  /// never a required one.
+  appendCopyEmf(request: CopyEmfRequest): Promise<{ ok: boolean }>
+  /** Whether the copy EMF helper can run here; false everywhere but Windows
+   *  with the sidecar present, so the renderer skips building the payload. */
+  isCopyEmfAvailable(): Promise<boolean>
   /// Reads one chunk of an attachment's extracted text
   readAttachment(path: string, offset: number, maxChars: number): Promise<AttachmentReadResult>
   /// Reads an image attachment as base64 for multimodal input (≤5MB)
