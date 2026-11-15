@@ -1019,15 +1019,10 @@ describe('metafile pictures get an opaque white backdrop (PlanS academy banner)'
         elements: [
           mk('data:image/x-emf;base64,AAAA'),
           mk('data:image/png;base64,AAAA'),
-<<<<<<< HEAD
           mk('chaoffice-slide-media://archive/emf?mime=image%2Fx-emf'),
           mk('chaoffice-slide-media://archive/png?mime=image%2Fpng'),
-=======
-          mk('genoffice-slide-media://archive/emf?mime=image%2Fx-emf'),
-          mk('genoffice-slide-media://archive/png?mime=image%2Fpng'),
           mk('data:image/x-wmf;base64,AAAA'),
-          mk('genoffice-slide-media://archive/wmf?mime=image%2Fx-wmf'),
->>>>>>> ac19c5411 (Sync snapshot (2026-11-12) (#2641))
+          mk('chaoffice-slide-media://archive/wmf?mime=image%2Fx-wmf'),
         ],
         decorations: [],
       },
