@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/chaoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第四十轮完成（2026-11-08，终点 0ac588ff，分支 sync/40-upstream；区间含新 tag v0.12.852，后三位取 tag 口径 0.12.852；本轮未打包 Z 维持 16；60 提交全吸收+五步核对+全量门禁+slides 协议半改名根治——详见 §R40 小节）**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第四十一轮完成（2026-11-15，终点 19a389b39，分支 sync/41-upstream；区间含新 tag v0.13.18，后三位取 tag 口径 0.13.18；本轮未打包 Z 维持 17；120 提交全吸收+五步核对+全量门禁——详见 §R41 小节**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -785,6 +785,63 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | html file-video/voice.png | 本地面板未用（99e9c2897 恢复面内），上游 html AiPanel 用 | 收敛 attachment echo 到共享件时自然消费 |
 
 **R41 起点=0ac588ff**（v0.12.852-28-g0ac588ff）。
+
+
+## 第四十一轮（2026-11-15，上游 0ac588ff..19a389b39 120 提交全吸收，施工于 sync/41-upstream；终点 describe=v0.13.18-56-g19a389b39——区间含新 tag v0.13.18（=ac19c5411 快照 #2641），后三位取 tag 口径 0.13.18；本轮未打包 Z 维持 17；版本落点 apps/shell chaofficeUpstreamVersion 0.12.852→0.13.18，六段 1.0.17.0.13.18）
+
+> 上游 120 提交=11-12 快照巨件 #2641（893 文件区间主体 +52.7k/−9.6k=tag v0.13.18）+引擎修复大波（odf2ooxml ×25：演示文本框分节/列表头保留/超链接样式/ruby 剥离/百分比字号/固定行高/斜体/透明背景/零位基线/继承分页重置等；file-parse ×14：包级 workbook/presentation 关系跟随/严格 PPTX 注释/notes 关系解析/vanish run 保留/显式 outline 优先/混合格式月-分钟区分等；pptx-engine ×9：裸 a14:m 方程/bare-eqn/percent-suffix ST_Percentage/malformed sz-spc 继承/单引号 rels/EOT 短载荷拒绝/hex 修剪双件；docx-engine ×6：绘图空间组子尺寸/remove_parts 依赖路径拒绝/revision 1 起始/无 folder entries/过渡文档通用单位）+docs 特性（story view 无格式写作 #2595/未样式段落大纲推断 #2667/跨 run 短语查找替换 #2632/TOC 右键更新含 SDT #2578/Ribbon 格式刷拆分 ribbon-painter #2582/行内文本拖选防整框选 #2529/Themed canvas 阅读模式 #2659/裁剪标记隐藏 #2686/命令字母物理键匹配 #2685/文本域排版编辑器重构=text-layout 模块族大迁移）+sheets（csv 导入进度可停 #2545+用户上限 #2539/EMF Windows 剪贴板 #2588 新原生 crate win-clipboard-helper/Flash Fill 全列 #2630/工作表单次 XML 读取 #2635/add_chart 列命名 #2547/Office 命名空间图片认领 #2599-2596/视频导出 video-export 模块族+mp4-muxer）+pdf（打印子系统外提 usePrintJob+PrintDialog #2589/redact-find 下拉族/Gemini 决策路由 #2637/退出确认 #2690/设置三段重构 #2591p3 拒收挂账）+Linux 字体递归扫描+XDG #2698+DeepSeek thinking 阶梯 #2550+MCP read_blocks #2664/convert_document 面 #2587+cli set_header_footer 分节 #2565。**Rust 5 文件**（sparklines.rs 新模块+lib/tests/visuals/main.rs=win-clipboard-helper 新 crate）→ sidecar release 重编、cargo 327 绿。**依赖**：mp4-muxer ^5.2.2 新增（slides）、fast-xml-parser ^5.12.0（pptx-engine/docx-engine/odf2ooxml/cli）、node-forge ^1.4.3、@chaoffice/ppt2pptx 入 cli deps → npm install 重生 lock。
+
+### 《冲突与裁决清单》（要点摘录；快照 #2641 75 冲突为主战场）
+
+| 域/提交 | 裁决 |
+|---|---|
+| 快照 #2641（24b11abb9+3f1d05624 缝合） | 75 冲突全清：金具 22 件取 theirs（哈希基线）+stand-in-boxes.json 21 键 genoffice→chaoffice；README/docs i18n 21 语+lock Q5-② 保 ours；package.json 系手工并；text-layout/font-rules+table-layout 新模块族落位全量品牌（GenOffice 族名→ChaAI Office/ChaOffice Sans KR/Grid Strut→ChaAI 例外、@genoffice 作用域、运行时正则 /^GenOffice / 双处）；doc-style-css GRID_STRUT_FAMILY 采常量版+blankFontFaceSrc 收敛模块源；line-metrics 五块 theirs（878 行外迁进 font-rules 族）；pagination-gaps 保本地 syncPageWidthBands/gap 折叠三函数（fitPhantomRows 织入+区块缝合恢复） |
+| #2545/#2539 csv 导入族 | sheets-main 三处并集（unsavedNew 注册表+pendingImports/cancelImport/reopenWorkbook 逐 handler 并存，一处吞 `})` tsc 兜出补回）；App.tsx 五块 theirs（setOpeningWorkbook/importProgress/focusSheetGrid 去重保本地 R23 版）；SettingsModal csvLimitMb+桥 chaOffice 化 |
+| #2591p3 设置重构（620413787） | **拒收挂账**：本地 V2 设置面架构（ModelDefaultsPage/CapabilitySettingsPage/McpPanes）胜，restyle 471 行块不落；settings-fx.tsx/skin.css 新文件到库未消费；navRef/navPill/email/loggedIn 四定义织入（body 半重构态） |
+| #2589 pdf 打印外提 | App.tsx 三块裁伤最重（draw 循环/print 按钮二贴/redact 组重复/staticTextDialog 残段/mergePages 双开块/printDlg 孤儿体）——五处结构性缝合+对话框块整段换上游版；usePrintJob/PrintDialog 接线保齐 |
+| #2568 mcp compact-schema（888a060fa 空提交） | Route A 区不落（agent-mcp/mcp-launch/mcp-install/mcp-launch.test 维持删除+tools.ts 保 ours） |
+| #2664 read_blocks（6225f1076 段） | 工具列表并集（read_blocks+本地 open_in_chaoffice；缝合四去双测试重复键） |
+| #2690 退出确认 | Home.tsx 三块 theirs+缝合（account-row 包装层/FeedbackModal 行/loginError 状态恢复/coerceSectionId 导入误删补回） |
+| i18n-main.ts 整文件重建（缝合四内） | 上游版+品牌（Genspark→ChaAI Office 值面）+errGsk*→errChaOffice* 键名族+errNoImageModel/errChaOfficeToolsOff 本地键 21 语补齐（en 回退） |
+| providers 静态 seeds（快照内 3 块+测试） | anthropic/openrouter/Requesty 静态 models/defaultModel 拒收保 ours（live-discovery 沿 R35-R40）+anthropic.ts CHAOFFICE_LLM_BASE_URLS 本地常量映射 |
+| pptx-render EMF 底色 | 上游 EMF-only 收窄跟随（wmf/wmz 出底色表；缝合三对齐+测试绿） |
+| build-slide 协议 | 保本地 chaoffice-slide-media 超集（快照冲突 ours 胜，测试 wmf 覆盖随上游 narrowing 收敛） |
+| find-replace/format-painter-undo/settings-ai-panel 三测试+e2e 两件 | DU 维持本地既有删除（settings-ai-panel=R24 裁定；e2e=main 本无） |
+| 87b99f1f1 README demo | Q5-② 保 ours（上游演示资产条目不适用本地发行版） |
+| 20134e2e1 cli merge | Route A 维持删除（merge.ts/merge.test 本地从未落地；mcp/tools.ts merge 工具定义拒收） |
+
+### 施工事故与修复（同轮闭环）
+
+1. **快照两处冲突标记随提交入库**（cli README 云命令段/pptx-render build-slide 测试）：grep 复查兜出，3f1d05624 清理解——防线：快照级巨件 pick 后必须全树 `grep -rn '<<<<<<<'` 才可 continue。
+2. **sequencer 陈旧态三现**（链含已落提交时显示"currently cherry-picking"旧件/空 pick 报"nothing added"）：quit+落位核对脚本（subject 对账定位真实 next）恢复；教训：链式 pick 前先跑进度脚本取精确待办集，勿凭 sed 行号。
+3. **并集吞收尾行/括号三连**（ai-provider import 闭行/sheets-main reopenWorkbook `})`/extensions.ts 导入插错位入 import 块内）：全部 tsc/esbuild 兜出缝合——防线照 R38：union 后立即 tsc。
+4. **docs App cssFontFamily 导入重构**（text-layout 迁移后旧路径失效）：独立导入行接线 font-rules。
+5. **快照级 text-layout/table-layout 新目录品牌漏扫**（首轮只扫 text-layout）：table-layout 4 文件补扫；运行时正则 `/^GenOffice /`（web-faces/index 两处）属功能面必须改，非仅文本。
+6. **金具键品牌双形态**（JSON 键含引号组合串 `"'GenOffice Batang','GenOffice Serif KR'"`）：两轮正则（裸键+带内引号组合键）才清零；font-metric-baseline 快照 -u 重算（R40 惯例）。
+7. **环境语义变化**（#2698 文件级族索引发现 Apple 按需 YuGothic）：system-fonts 断言改编——office 目录代理改注册表实测 familyAvailable+Yu ?Gothic 拼写双收（// adapted: 注记）。
+
+### 五步核对终态（用户令：认真核对五次防遗留）
+
+①120/120 sha 对账（subject 级全过，含 1 空提交 #2568）；②文件级差异审计——上游 893 改动文件 vs 本分支，未触碰 40 件全归因（README+i18n README 22=Q5-②/三测试+两 e2e=本地裁定删除区/providers+test=静态 seeds 拒收/cli mcp 族 6=Route A 挂账/skills genoffice=R37 裁定/package.json 3=Q5 手工并后内容一致）；③删除面 `git diff main..HEAD --diff-filter=D`=0+LOCAL 挂载六项抽查（registerMediaIpc 6 端/bindConversationsIpc 3 端/FoundSkills/sheets FilesPane 撤除令 0 引用/**apps/server 与 dsh-plugin 本轮零触碰**=铁律③硬验证）；④品牌 grep 差分 HEAD vs main——豁免外零新增（新增命中全为 genoffice#NNNN issue 引用/GENOFFICE_* env/genspark.ai URL/NEW_DOCUMENT_APPLICATION='GenOffice' 与 update-feed 金具等 main 基线值；运行时面全部品牌化含正则与 JSON 键）；⑤全量门禁（见下）。
+
+### 门禁终态
+
+- typecheck 全仓 0；lint 0 error（warnings=基线 28+上游件 react-hooks）。
+- vitest 全工作区绿（终跑数字见台账定稿行）；cargo test 327 绿（R40 时 326，+1 sparklines）；sidecar mac release 重编在位（win-clipboard-helper 新 crate 仅 Windows 打包链消费，native:build 口径已并）。
+- build:web 全链过（1.0.17 CSS 断点教训兜底执行）；品牌 grep 豁免外零残留。
+- 对账：120/120 subject 级全过；删除清单 0；品牌差分零新增。
+- 真机/发版：本轮未打包（Z 维持 17）；随轮发版 1.0.18 另行。
+
+### 挂账（新增）
+
+| 项 | 说明 | 同步检查动作 |
+|---|---|---|
+| #2591p3 设置面 restyle | 三段重构只落 parts1-2 的 body 半态+p3 拒收；settings-fx/skin.css 未消费；四定义已织入 | 上游后续设置面演进时评估 V2 面收敛或 restyle 适配重开 |
+| pptx-render wmf 底色覆盖 | EMF-only 跟随后本地 wmf/wmz 认知超集测试覆盖收敛 | 上游若回摆 wmf 底色再跟随 |
+| video-export 过渡时长表 | 本地 21 种过渡的 ms/缓动为估值（CSS 近似），非实测 | 发版前真机过一遍视频导出对齐时长 |
+| mp4-muxer 依赖 | 新增（slides video-export） | 发版打包链验证 |
+
+**R42 起点=19a389b39**（v0.13.18-56-g19a389b39）。
 
 
 

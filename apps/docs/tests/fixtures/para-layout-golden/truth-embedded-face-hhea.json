@@ -1,7 +1,9 @@
 {
   "source": "packages/docx-engine/tests/fixtures/truths/embedded-face-hhea/probe.docx",
   "paragraphs": 1,
-  "hashes": ["fe6c814916c9e5b4"],
+  "hashes": [
+    "05e9db7dee5e00a9"
+  ],
   "cellParagraphs": 0,
   "cellHashes": [],
   "boxParagraphs": 0,
