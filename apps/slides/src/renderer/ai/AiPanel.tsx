@@ -1,12 +1,4 @@
-import {
-  aiPanelWidthAtPointer,
-  AiPanelSideButton,
-  AiModelPicker,
-  type AiModelPickerBridge,
-  AiSkillChips,
-  AiSkillsMenu,
-  useImeEnterGuard,
-} from '@chaoffice/ui'
+import { AiSkillChips, AiSkillsMenu, useImeEnterGuard } from '@chaoffice/ui'
 import React, { useEffect, useRef, useState, useCallback, lazy, Suspense } from 'react'
 import { createSlidesMediaSkill } from './media-skill'
 import {

@@ -7,7 +7,6 @@ import {
   AI_CUSTOM_FONT_MIN_PX,
   AI_CUSTOM_FONT_MAX_PX,
 } from '@chaoffice/ui/ai-panel-prefs'
-import { getProviderAdapter, thinkingShapeFor } from '@chaoffice/ai-provider/browser'
 import {
   AUTHOR_NAME_MAX,
   CSV_IMPORT_DEFAULT_LIMIT_MB,

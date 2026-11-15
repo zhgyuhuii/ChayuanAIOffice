@@ -8,7 +8,6 @@ import {
   generateIndexFieldXml,
   type Block,
   type SourceInfo,
-  type TocEntry,
 } from '@chaoffice/docx-engine'
 import { Dropdown } from '@chaoffice/ui'
 import { PromptModal } from './PromptModal'

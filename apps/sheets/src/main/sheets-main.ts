@@ -98,14 +98,7 @@ import {
   isAiRegionBlockedError,
   setAiUserAgent,
   setRescueFetch,
-  resolveProfileCredential,
-  streamForProvider,
-  type AiProviderId,
   type AiRuntime,
-  type AiSettings,
-  type AiStreamChunk,
-  type ChaOfficeAccountStatus,
-  type LegacyAiSettings,
 } from '@chaoffice/ai-provider'
 import { delimitedImportLimit } from './csv-import-limit'
 import type { CsvImportProgress } from '@chaoffice/xlsx-gateway/gateway/csv-import'

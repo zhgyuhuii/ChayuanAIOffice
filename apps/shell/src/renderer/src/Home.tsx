@@ -44,7 +44,7 @@ import {
 import type { IntegrationsApi } from '../../shared/integrations-api'
 import type { McpClientApi } from '../../shared/mcp-client-api'
 
-import { FeedbackModal, FeedbackQrCard } from './FeedbackModal'
+import { FeedbackModal } from './FeedbackModal'
 import { onFilesChanged } from './file-events'
 
 import type { ProjectApi } from '@chaoffice/project-store'
@@ -561,7 +561,7 @@ function AccountEntry({
   const loggedIn = status?.loggedIn ?? false
   const email = status?.email ?? ''
   const initial = email ? email[0].toUpperCase() : loggedIn ? 'G' : '?'
-  const [loginError, setLoginError] = useState<
+  const [loginError] = useState<
     'timeout' | 'launch' | 'network' | 'expired' | 'failed' | null
   >(null)
   const errorText = loginError

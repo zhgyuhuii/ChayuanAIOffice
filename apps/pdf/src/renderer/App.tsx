@@ -120,14 +120,12 @@ import { navAction, shouldHandleDocumentUndo } from './keyNav'
 import { rowOfVisIdx, spreadRows, stepPage } from './spread'
 import {
   captureViewState,
-  captureZoomAnchor,
   loadLastZoom,
   loadViewState,
   saveLastZoom,
   saveViewState,
-  zoomAnchorY,
 } from './view-state'
-import type { PdfViewState, ZoomAnchor } from './view-state'
+import type { PdfViewState } from './view-state'
 import { LinkLayer } from './LinkLayer'
 import { OutlinePanel } from './OutlinePanel'
 import { CommentsPanel, type CommentEntry } from './CommentsPanel'

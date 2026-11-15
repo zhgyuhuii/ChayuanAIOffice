@@ -2526,11 +2526,6 @@ export function syncPageWidthBands(
 }
 
 /** live vruler sync targets (latest anchor/wrap/zoom of the last pass) */
-const vrulerState = new WeakMap<
-  HTMLElement,
-  { anchor: HTMLElement; wrap: HTMLElement; zoom: number }
->()
-const vrulerObservers = new WeakMap<HTMLElement, ResizeObserver>()
 
 /**
  * Vertical ruler segments for pages after the first: the ruler is glued to the

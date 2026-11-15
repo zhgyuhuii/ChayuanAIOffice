@@ -1,5 +1,5 @@
 import './dev-identity'
-import { execSync, spawn } from 'node:child_process'
+import { execSync } from 'node:child_process'
 import { startSiteSync } from './site-sync'
 import { randomUUID } from 'node:crypto'
 import {
@@ -33,7 +33,7 @@ import {
   webContents,
 } from 'electron'
 import type { MenuItemConstructorOptions, NativeImage, WebContents } from 'electron'
-import { atomicCopyFile, atomicWriteFile } from './atomic-write'
+import { atomicWriteFile } from './atomic-write'
 import { openTrash } from './trash'
 import { registerAiNamingIpc } from './ai-naming-service'
 import { tabStripOverlay } from './title-bar-overlay'

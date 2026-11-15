@@ -126,9 +126,6 @@ const winSidecarCandidates = [
 const WIN_SIDECAR =
   winSidecarCandidates.find((rel) => existsSync(join(__dirname, rel))) ?? winSidecarCandidates[0]
 
-// GENOFFICE_LINUX_ARM64=1（上游 #2474 口径）显式选 arm64 Linux 打包；本地默认沿
-// linuxArch（CHAOFFICE_LINUX_X64/host-arch）——两口径汇于同一 arm64 判定。
-const linuxArm64 = process.env.GENOFFICE_LINUX_ARM64 === '1' || linuxArch === 'arm64'
 // Same layout rule as the sidecar: cross-build triple from the release
 // pipeline, or the host-native MSVC build on a matching Windows contributor
 // machine. Windows-only by purpose — the EMF clipboard helper has no role off

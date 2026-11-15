@@ -1558,7 +1558,6 @@ export function App({
    *  the open ends with nothing opened, but it is not a failed open. */
   const importCancelledRef = useRef(false)
   /** Current session's projectId/chatId (resolved when the workbook opens) */
-  const chatRefIdsRef = useRef<{ projectId: string; chatId: string } | null>(null)
 
   // File renamed externally (in the shell Home list) → sync the title-bar file
   // name (the save path is synced by the main process)

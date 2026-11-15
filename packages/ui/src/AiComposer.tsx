@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import { IconEnter, IconSend, IconStop } from './icons'
+import { IconSend, IconStop } from './icons'
 import { useImeEnterGuard } from './ime-enter'
 
 // Keep in sync with the CSS `max-height` on `.ai-input-box textarea` (7 lines à 24px)
