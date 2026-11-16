@@ -36,6 +36,7 @@ import { printSlidesHtml } from './print-window'
 import { cleanupExpiredGeneratedPages } from './generated-page-temp'
 import { buildExportImagePaths } from './export-images'
 import { registerVideoExportIpc } from './video-export'
+import { isSlidesScreenRecordingSource } from './display-media-gate'
 import { exportSlidesPdf } from './pdf-export'
 import {
   chaofficeApiKey,
@@ -1452,7 +1453,16 @@ export function registerSlidesIpc(): void {
     })
     try {
       electronSession.defaultSession.setDisplayMediaRequestHandler(
-        (_request, callback) => {
+        (request, callback) => {
+          // The handler rides the shared default session, so every app's
+          // frames reach it; only the Slides renderer may record a screen.
+          // On Windows/Linux a grant here is silent (no system picker), and
+          // a hostile document one click away in the HTML preview otherwise
+          // gets the user's screen — see display-media-gate.ts.
+          if (!isSlidesScreenRecordingSource(request.frame?.url, runtime.rendererDevUrl)) {
+            callback({})
+            return
+          }
           desktopCapturer
             .getSources({ types: ['screen', 'window'] })
             .then((sources) => {
