@@ -134,7 +134,8 @@ export function registerAiIpc(): void {
       readFile: (p) => readFile(p, 'utf8'),
       writeFile: async (p, contents) => {
         mkdirSync(join(p, '..'), { recursive: true })
-        writeFileSync(p, contents)
+        // upstream 6a1a51f16: BYOK keys are credentials — owner-only settings file
+        writeFileSync(p, contents, { mode: 0o600 })
       },
       watch: (p, cb) => {
         try {

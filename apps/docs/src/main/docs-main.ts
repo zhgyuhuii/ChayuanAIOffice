@@ -77,6 +77,7 @@ import {
   readBodyCapped,
   setContextMenuInterceptor,
   writeJsonAtomic,
+  restrictFileToOwner,
   recoveryCopyDiskNewer,
   readLegacyImportSkip,
   writeLegacyImportSkip,
@@ -3978,7 +3979,8 @@ export function registerAiIpc(): void {
     fs: {
       readFile: (p) => readFile(p, 'utf8'),
       writeFile: async (p, contents) => {
-        await atomicWriteFile(p, Buffer.from(contents, 'utf8'))
+        // upstream 6a1a51f16: BYOK keys are credentials — owner-only settings file
+        await atomicWriteFile(p, Buffer.from(contents, 'utf8'), 0o600)
       },
       watch: (p, cb) => {
         try {

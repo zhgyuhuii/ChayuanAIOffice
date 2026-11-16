@@ -23,7 +23,7 @@ import {
   type StockSource,
 } from '@chaoffice/ai-search'
 import { fetchRemoteImage } from '@chaoffice/electron-utils/remote-image'
-import { abortOnDestroyed } from '@chaoffice/electron-utils'
+import { abortOnDestroyed, restrictFileToOwner } from '@chaoffice/electron-utils'
 import {
   CHATOP_LOCAL_AGENT_ID,
   CHATOP_LOCAL_PROFILE_ID,
@@ -243,6 +243,11 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   // recovery — the app's chaofficeLogin flow opens its own windows
   setChaOfficeLoginOpener((_url) => deps.chaofficeLogin())
 
+  // heal the settings file mode saved by an older build: BYOK keys are
+  // credentials and must not stay readable by other local accounts (upstream
+  // 6a1a51f16 heals in each app's ai:get-settings reader; the shared registry
+  // runs at every app start, so one heal here covers all editor apps — adapted)
+  restrictFileToOwner(deps.settingsPath())
   const fileSource = createFileSource(deps.settingsPath, deps.fs)
   // LOCAL(R30 挂账): settings-changed 原生推送——上游在 ai:set-settings handler
   // 尾部广播；本地 V2 写盘统一经 fs 注入（含外部/harness 改写），故以文件

@@ -1,6 +1,8 @@
 import { randomBytes } from 'node:crypto'
 import {
   closeSync,
+  chmodSync,
+  existsSync,
   fsyncSync,
   mkdirSync,
   openSync,
@@ -113,11 +115,17 @@ function syncFileBestEffortSync(path: string): void {
  * transiently on Windows (Defender/indexer locks: retry) and permanently on some
  * network mounts (gvfs SMB refuses with EEXIST, chaoffice#1877); either way the
  * save falls back to an in-place write rather than failing.
+ *
+ * `mode` restricts the file's permissions (e.g. 0o600 for the AI settings
+ * file, whose BYOK keys must not be readable by other local accounts): it
+ * applies at creation so the rename lands the restricted file, and the
+ * in-place fallback passes it too. Ignored on platforms without POSIX modes.
+ * Same semantics as writeJsonAtomic's `mode` (0b4d24f1, adapted: async variant).
  */
-export async function atomicWriteFile(filePath: string, data: Buffer): Promise<void> {
+export async function atomicWriteFile(filePath: string, data: Buffer, mode?: number): Promise<void> {
   const tmp = tempPathBeside(filePath)
   try {
-    await writeFile(tmp, data)
+    await writeFile(tmp, data, mode ? { mode } : undefined)
     await syncFileBestEffort(tmp)
   } catch (error) {
     await unlink(tmp).catch(() => {})
@@ -133,7 +141,7 @@ export async function atomicWriteFile(filePath: string, data: Buffer): Promise<v
   // Keep the completed temp until the fallback lands: if that write fails
   // or the process dies, the new bytes still exist somewhere on disk.
   try {
-    await writeFile(filePath, data)
+    await writeFile(filePath, data, mode ? { mode } : undefined)
   } catch (error) {
     // The target could not be written at all: park the new bytes beside it
     // under one stable name, so a save that keeps failing replaces the same
@@ -229,8 +237,13 @@ export async function atomicWriteVia(
  * settings). Same retry + in-place fallback as atomicWriteFile; the retry
  * sleeps block the caller, which is acceptable for a few KB under a transient
  * Windows lock.
+ *
+ * `mode` restricts the file's permissions (e.g. 0o600 for the AI settings
+ * file, whose BYOK keys must not be readable by other local accounts): it
+ * applies at creation so the rename lands the restricted file, and the
+ * in-place fallback passes it too. Ignored on platforms without POSIX modes.
  */
-export function writeJsonAtomic(filePath: string, value: unknown): void {
+export function writeJsonAtomic(filePath: string, value: unknown, mode?: number): void {
   mkdirSync(dirname(filePath), { recursive: true })
   const json = JSON.stringify(value, null, 2)
   const tmp = tempPathBeside(filePath)
@@ -242,7 +255,7 @@ export function writeJsonAtomic(filePath: string, value: unknown): void {
     }
   }
   try {
-    writeFileSync(tmp, json, { encoding: 'utf8', flag: 'wx' })
+    writeFileSync(tmp, json, { encoding: 'utf8', flag: 'wx', ...(mode ? { mode } : {}) })
     syncFileBestEffortSync(tmp)
     for (let attempt = 0; ; attempt += 1) {
       try {
@@ -255,11 +268,25 @@ export function writeJsonAtomic(filePath: string, value: unknown): void {
     }
   } catch (error) {
     if (isRetryableRename(error)) {
-      writeFileSync(filePath, json, 'utf8')
+      writeFileSync(filePath, json, { encoding: 'utf8', ...(mode ? { mode } : {}) })
       removeTemp()
       return
     }
     removeTemp()
     throw error
+  }
+}
+
+/**
+ * Best-effort owner-only permissions for a credentials file that may predate
+ * the 0600 write (a file saved by an older build stays world-readable until
+ * the next save). Called from the settings readers, which run at every app
+ * start, so one launch heals the mode. No-op on platforms without POSIX modes.
+ */
+export function restrictFileToOwner(filePath: string): void {
+  try {
+    if (existsSync(filePath)) chmodSync(filePath, 0o600)
+  } catch {
+    /* a locked or unusual filesystem must not break the read that follows */
   }
 }
