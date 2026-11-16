@@ -25,6 +25,7 @@ export const cs = {
   ribbonLangTraditionalChinese: 'tradiční čínština',
   ribbonLangVietnamese: 'vietnamština',
   ribbonLangTurkish: 'turečtina',
+  ribbonLangHungarian: 'maďarština',
   ribbonAiCreditNote: 'Používá AI a spotřebovává kredity',
   ribbonAiRewriteConfirm: "此操作将调用 AI：会消耗额度，并可能改写整篇内容。是否继续？（确认后不再提示）",
   ribbonTabHome: 'Domů',

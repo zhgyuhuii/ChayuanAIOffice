@@ -560,9 +560,37 @@ const tr = {  // LOCAL: 本地独有模块，tr 暂用中文值（vi 同例）
   failed: '操作失敗',
 } satisfies Record<keyof typeof zh, string>
 
+// LOCAL(R42, 4a40b0559): hu 为上游 #2716 新增 UI 语言；本文件为本地 B 区词典，无上游匈牙利语译文，按 R41 配方以 en 回退。
+const hu = {
+  title: 'Files',
+  close: 'Close files pane',
+  newFolder: 'New folder',
+  newSubfolder: 'New subfolder',
+  untitledFolder: 'Untitled folder',
+  open: 'Open',
+  rename: 'Rename',
+  revealInFolder: 'Show in folder',
+  deleteFolder: 'Delete folder…',
+  deleteFile: 'Delete file…',
+  deleteFolderConfirm: '"{name}" and everything inside it will be moved to the trash.',
+  deleteFileConfirm: '"{name}" will be moved to the trash.',
+  cancel: 'Cancel',
+  delete: 'Delete',
+  moreActions: 'More actions for {name}',
+  conflictTitle: 'An item with that name already exists',
+  conflictBody:
+    'The target folder already contains an item with the same name. What would you like to do?',
+  conflictKeepBoth: 'Keep both',
+  conflictReplace: 'Replace',
+  emptyFolder: 'Empty folder',
+  rootUnusable: 'The default save location is unavailable.',
+  failed: 'The operation failed',
+} satisfies Record<keyof typeof zh, string>
+
 export const tFilesPane = createI18n({
   zh,
   en,
+  hu,
   ja,
   ko,
   fr,

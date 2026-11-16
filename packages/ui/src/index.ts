@@ -239,3 +239,30 @@ export { useRedactLabelField } from './use-redact-label'
 export type { RedactLabelField } from './use-redact-label'
 export { useScrollWindow } from './scroll-window'
 export { createImeEnterGuard, useImeEnterGuard, type ImeEnterGuard } from './ime-enter'
+// LOCAL(2026-11-19, main@b4f4499d3): ZCode-style chrome icons + editor side pane
+// for the home/editor visual-consistency project
+// (docs/plans/2026-11-19-zcode-ui-consistency.md)
+export {
+  ArrowUpIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  EllipsisIcon,
+  FolderIcon,
+  FolderOpenIcon,
+  FolderPlusIcon,
+  ListFilterIcon,
+  MessageCirclePlusIcon,
+  PanelLeftCloseIcon,
+  PanelLeftOpenIcon,
+  PanelRightCloseIcon,
+  PanelRightOpenIcon,
+  PlusIcon,
+  SearchIcon,
+  XIcon,
+} from './zcode-icons'
+export {
+  EditorFilesPane,
+  SidePaneToggleButton,
+  editorSidePaneTitle,
+  useEditorSidePane,
+} from './editor-side-pane/EditorFilesPane'

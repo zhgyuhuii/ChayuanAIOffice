@@ -23,6 +23,7 @@ import { zhTW } from './ai/zh-TW'
 import { localStrings } from './local/ai-local'
 import { vi } from './ai/vi'
 import { tr } from './ai/tr'
+import { hu } from './ai/hu'
 
 /** User-visible copy for the ai/ panel and tool feedback (LLM prompts excluded) */
 export const aiStrings = defineStrings({
@@ -48,4 +49,5 @@ export const aiStrings = defineStrings({
   vi: { ...vi, ...localStrings.vi },
   'zh-TW': { ...zhTW, ...localStrings['zh-TW'] },
   tr: { ...tr, ...localStrings.zh },
+  hu: { ...hu, ...localStrings.en },
 })

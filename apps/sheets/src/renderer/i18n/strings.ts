@@ -24,5 +24,6 @@ export const strings = {
   hi: { ...appStrings.hi, ...dialogStrings.hi, ...aiStrings.hi },
   vi: { ...appStrings.vi, ...dialogStrings.vi, ...aiStrings.vi },
   tr: { ...appStrings.tr, ...dialogStrings.tr, ...aiStrings.tr },
+  hu: { ...appStrings.hu, ...dialogStrings.hu, ...aiStrings.hu },
   'zh-TW': { ...appStrings['zh-TW'], ...dialogStrings['zh-TW'], ...aiStrings['zh-TW'] },
 }
