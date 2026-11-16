@@ -4629,23 +4629,32 @@ function installUiScale(): void {
  * tab. CmdOrCtrl+Alt (not Shift): Shift+= is Sheets insert-cells and Docs
  * superscript, and the View menu now exists on editor tabs too, where those
  * accelerators are taken.
+ *
+ * On macOS it is Cmd+Ctrl instead: Sheets binds Cmd+Opt+- / Cmd+Opt+0 to the
+ * Excel-for-Mac border chords and the sheet swallows Cmd+Opt+= as well, so the
+ * Option chords never reached this menu on the one tab the scale applies to.
  */
+const UI_ZOOM_ACCEL =
+  process.platform === 'darwin'
+    ? { in: 'Cmd+Ctrl+=', out: 'Cmd+Ctrl+-', reset: 'Cmd+Ctrl+0' }
+    : { in: 'CmdOrCtrl+Alt+=', out: 'CmdOrCtrl+Alt+-', reset: 'CmdOrCtrl+Alt+0' }
+
 function uiScaleMenuItems(): MenuItemConstructorOptions[] {
   return [
     {
       label: tm('menuUiZoomIn'),
-      accelerator: 'CmdOrCtrl+Alt+=',
+      accelerator: UI_ZOOM_ACCEL.in,
       click: () => changeUiScale(APP_SETTINGS_PATH(), 1),
     },
     {
       label: tm('menuUiZoomOut'),
-      accelerator: 'CmdOrCtrl+Alt+-',
+      accelerator: UI_ZOOM_ACCEL.out,
       click: () => changeUiScale(APP_SETTINGS_PATH(), -1),
     },
     { type: 'separator' },
     {
       label: tm('menuUiZoomReset'),
-      accelerator: 'CmdOrCtrl+Alt+0',
+      accelerator: UI_ZOOM_ACCEL.reset,
       click: () => changeUiScale(APP_SETTINGS_PATH(), 0),
     },
   ]
@@ -4664,6 +4673,34 @@ function viewMenuTemplate(): MenuItemConstructorOptions {
  * separator; the rest get a fresh View menu inserted before the Help menu that
  * withUserGuide has just guaranteed.
  */
+function withViewMenu(): void {
+  const menu = Menu.getApplicationMenu()
+  if (!menu) return
+  const hasScale = menu.items.some((item) =>
+    item.submenu?.items.some((i) => i.accelerator === UI_ZOOM_ACCEL.in),
+  )
+  if (hasScale) return
+  const view = menu.items.find((item) => item.label === tm('menuView'))
+  if (view?.submenu) {
+    // build the separator together with the items: Electron drops a separator
+    // that sits alone in a template
+    for (const item of Menu.buildFromTemplate([{ type: 'separator' }, ...uiScaleMenuItems()])
+      .items) {
+      view.submenu.append(item)
+    }
+    // Items appended to the live application menu stay in the Electron model
+    // but never reach the native macOS bar (Sheets: View showed only the system
+    // "Full Screen"). Setting the menu again rebuilds the bar from the model.
+    Menu.setApplicationMenu(menu)
+    return
+  }
+  const viewItem = Menu.buildFromTemplate([viewMenuTemplate()]).items[0]!
+  const helpIdx = menu.items.findIndex((item) => item.role === 'help')
+  if (helpIdx === -1) menu.append(viewItem)
+  else menu.insert(helpIdx, viewItem)
+  // Same as above: rebuild the native bar from the updated model.
+  Menu.setApplicationMenu(menu)
+}
 function createShellWindow(): void {
   // Last session's geometry, when a display can still show it (issue #2049).
   // A saved position on an unplugged monitor falls back to the default
@@ -5126,6 +5163,8 @@ function applyMenuFor(kind: TabKind): void {
   }
   // 上游 939116f8：每个菜单构建完成后注入「使用手册」(F1) 项，新 tab 种类免费获得入口
   withUserGuide()
+  // 上游 2d39002e5：View › 界面缩放项挂进当前菜单（macOS 原生栏重建）
+  withViewMenu()
 }
 
 // ---- routing: one dispatch function for every open path ----
