@@ -8,7 +8,12 @@
 
 import { randomUUID } from 'node:crypto'
 import { openPptx, savePptx, createBlankPptx, type OpenedPptx } from '@chaoffice/pptx-engine'
-import { buildAllRenderSlides, deckDefaultFont } from '../../../slides/src/main/render-build'
+import { runTxn, type TxnRequest, type TxnResult } from '@chaoffice/pptx-ops'
+import {
+  buildAllRenderSlides,
+  buildOneRenderSlide,
+  deckDefaultFont,
+} from '../../../slides/src/main/render-build'
 
 export interface PptxApi {
   openBytes(input: { base64: string; name: string; fitWidthPx?: number }): Promise<{
@@ -27,6 +32,21 @@ export interface PptxApi {
   }>
   /** Serialize the session's current model to pptx bytes. */
   saveBytes(sessionId: string): Promise<{ base64: string }>
+  /** Run one editor verb (a pptx-ops transaction) against the session model,
+   *  returning the rebuilt slide for the renderer's applySlide. The web twin
+   *  of the Electron slides-main edit handlers (addTable/addPicture/…). */
+  command(input: {
+    sessionId: string
+    ops: TxnRequest['ops']
+    fitWidthPx?: number
+  }): Promise<{
+    ok: boolean
+    failures?: TxnResult['failures']
+    slide: unknown
+    slideIndex: number
+    sourceIds: (string | number)[]
+    size: { cx: number; cy: number }
+  }>
   close(sessionId: string): Promise<void>
   status(): { openSessions: number }
 }
@@ -65,6 +85,32 @@ export function createPptxService(): PptxApi {
         slides: buildAllRenderSlides(opened, fitWidthPx),
         size: { cx: opened.deck.size.cx, cy: opened.deck.size.cy },
         defaultFont: deckDefaultFont(opened),
+      }
+    },
+    async command(input) {
+      const session = sessions.get(input.sessionId)
+      if (!session) throw new Error(`unknown pptx session: ${input.sessionId}`)
+      if (input.fitWidthPx && input.fitWidthPx > 0) session.fitWidthPx = input.fitWidthPx
+      const r = runTxn(session.opened, { ops: input.ops })
+      if (!r.applied || !r.records?.length) {
+        return {
+          ok: false,
+          failures: r.failures,
+          slide: null,
+          slideIndex: -1,
+          sourceIds: [],
+          size: { cx: session.opened.deck.size.cx, cy: session.opened.deck.size.cy },
+        }
+      }
+      const slideIndex = (input.ops[0]?.target as { slide?: number } | undefined)?.slide ?? 0
+      const slide = buildOneRenderSlide(session.opened, slideIndex, session.fitWidthPx)
+      const sourceIds = r.records.flatMap((rec) => rec.created ?? [])
+      return {
+        ok: true,
+        slide,
+        slideIndex,
+        sourceIds,
+        size: { cx: session.opened.deck.size.cx, cy: session.opened.deck.size.cy },
       }
     },
     async saveBytes(sessionId) {

@@ -13,7 +13,40 @@ import { existsSync, readFileSync } from 'node:fs'
 // Deep-path import (the package exports only expose an ESM wrapper with a top-level await,
 // which the CJS main process cannot bundle)
 import createHarfBuzz from '../../../../node_modules/harfbuzzjs/dist/harfbuzz.js'
-import hbWasmPath from '../../../../node_modules/harfbuzzjs/dist/harfbuzz.wasm?asset'
+import { createRequire } from 'node:module'
+// The bundler resolves the `?asset` import (hb-wasm-path.mjs); the node/tsx
+// loader chain rejects that specifier at resolve time, so the default import
+// lives behind a dynamic await (caught) and the CJS hooks answer a plain
+// require of the same URL as the fallback.
+declare const __filename: string | undefined
+let hbWasmPathCache: string | null = null
+function hbWasmPathSync(): string {
+  if (hbWasmPathCache) return hbWasmPathCache
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const req = createRequire(typeof __filename === 'string' ? __filename : import.meta.url)
+    const p = req('../../../../node_modules/harfbuzzjs/dist/harfbuzz.wasm?asset=')
+    if (typeof p === 'string') {
+      hbWasmPathCache = p
+      return p
+    }
+  } catch {
+    /* fall through to the bundler path */
+  }
+  throw new Error('harfbuzz.wasm path unavailable in this runtime')
+}
+async function hbWasmPathAsync(): Promise<string> {
+  try {
+    const m = (await import('./hb-wasm-path.mjs')) as { default: string }
+    if (m.default) {
+      hbWasmPathCache = m.default
+      return m.default
+    }
+  } catch {
+    /* tsx/node chain: the CJS require fallback above answers */
+  }
+  return hbWasmPathSync()
+}
 
 type Script = 'arabic' | 'hebrew' | 'thai' | 'devanagari'
 
@@ -182,7 +215,7 @@ export function initShapedMetrics(): void {
   started = true
   readyPromise = (async () => {
     try {
-      const wasmBinary = readFileSync(hbWasmPath)
+      const wasmBinary = readFileSync(await hbWasmPathAsync())
       // Types come from the package's d.ts (0-arg + narrowed Module surface); it is really an
       // Emscripten factory: accepts wasmBinary and exposes HEAP views
       const factory = createHarfBuzz as unknown as (

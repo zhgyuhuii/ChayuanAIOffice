@@ -12,14 +12,26 @@ import { displayMime } from './media-mime'
 import { createSystemFontMetrics } from './fonts'
 
 export function buildAllRenderSlides(opened: OpenedPptx, fitWidthPx: number): RenderSlide[] {
-  return opened.deck.slides.map((s, i) =>
-    buildRenderSlide(s, opened.deck.size, {
-      fitWidthPx,
-      media: makeMediaResolver(opened, s.path),
-      metrics: getFontMetrics(),
-      slideNo: i + 1,
-    }),
-  )
+  return opened.deck.slides
+    .map((s, i) => buildOneRenderSlide(opened, i, fitWidthPx))
+    .filter((s): s is RenderSlide => s !== null)
+}
+
+/** Single-slide variant for edit channels: one op changed one slide, so one
+ *  rebuild answers the renderer's applySlide without re-rendering the deck. */
+export function buildOneRenderSlide(
+  opened: OpenedPptx,
+  slideIndex: number,
+  fitWidthPx: number,
+): RenderSlide | null {
+  const slide = opened.deck.slides[slideIndex]
+  if (!slide) return null
+  return buildRenderSlide(slide, opened.deck.size, {
+    fitWidthPx,
+    media: makeMediaResolver(opened, slide.path),
+    metrics: getFontMetrics(),
+    slideNo: slideIndex + 1,
+  })
 }
 /** Office theme-class slot (MsftOfcThm_<slot>_Fill/_Stroke) → schemeClr name. */
 const SVG_THEME_SLOTS: Record<string, string> = {

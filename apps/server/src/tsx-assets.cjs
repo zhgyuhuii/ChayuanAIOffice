@@ -44,6 +44,20 @@ for (const ext of ASSET_EXTENSIONS) {
   require.extensions[ext] = assetModule
 }
 
+// tsx registers CJS compile hooks for .ts/.tsx but not the explicit .cts form;
+// sources forced to commonjs via .cts (shaped-metrics) must resolve through the
+// same hooks or require('./shaped-metrics') fails with MODULE_NOT_FOUND.
+for (const [from, to] of [
+  ['.cts', '.ts'],
+  ['.mts', '.ts'],
+]) {
+  const hooked = require.extensions[to]
+  if (hooked && !require.extensions[from]) {
+    Module._extensions[from] = hooked
+    require.extensions[from] = hooked
+  }
+}
+
 const origLoad = Module.prototype.load
 Module.prototype.load = function (filename) {
   const queryAt = filename.indexOf('?')
@@ -51,4 +65,19 @@ Module.prototype.load = function (filename) {
     return origLoad.call(this, filename.slice(0, queryAt))
   }
   return origLoad.call(this, filename)
+}
+
+// ESM loads bypass the CJS hooks above (worker threads included): register the
+// same coverage as ESM loader hooks. tsx-assets-loader.mjs serves vite-style
+// `?raw` text imports and `?asset` path exports for any ESM importer that
+// reaches the loader chain here (tsx's own hooks reject unknown-query URLs at
+// resolve time). Registered through module.register so worker threads spawned
+// with inherited execArgv get the same coverage.
+try {
+  const { register } = require('node:module')
+  const { pathToFileURL } = require('node:url')
+  const { join } = require('node:path')
+  register(pathToFileURL(join(__dirname, 'tsx-assets-loader.mjs')))
+} catch (e) {
+  console.warn('[tsx-assets] ESM loader registration unavailable:', String(e).slice(0, 120))
 }

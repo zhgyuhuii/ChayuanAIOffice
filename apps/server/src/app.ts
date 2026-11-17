@@ -115,6 +115,14 @@ export function buildServer(options: ServerOptions = {}): BuiltServer {
       return reply.code(400).send({ ok: false, error: String(err) })
     }
   })
+  app.post('/rpc/pptx/command', async (request, reply) => {
+    const args = (request.body as { args?: unknown[] } | null)?.args ?? []
+    try {
+      return { ok: true, result: await pptx.command(args[0] as never) }
+    } catch (err) {
+      return reply.code(400).send({ ok: false, error: String(err) })
+    }
+  })
   app.post('/rpc/pptx/saveBytes', async (request, reply) => {
     const args = (request.body as { args?: unknown[] } | null)?.args ?? []
     try {

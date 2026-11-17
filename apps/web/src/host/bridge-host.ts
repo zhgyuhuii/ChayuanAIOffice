@@ -55,6 +55,10 @@ async function handleFile(channel: string, args: unknown[]): Promise<unknown> {
       return fileStore.saveAsPicker(String(args[1] ?? 'untitled'), b64ToBytes(String(args[0])))
     case 'fs.name':
       return fileStore.name(String(args[0]))
+    case 'fs.pick': {
+      const picked = await fileStore.openPicker()
+      return picked ? { id: picked.id, name: picked.name } : null
+    }
     default:
       throw new Error(`unknown file channel: ${channel}`)
   }

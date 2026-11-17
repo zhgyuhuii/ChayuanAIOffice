@@ -28,7 +28,8 @@
     "jszip": "^3.10.1",
     "tsx": "^4.19.2",
     "@chaoffice/docx-engine": "*",
-    "@chaoffice/file-parse": "*"
+    "@chaoffice/file-parse": "*",
+    "@chaoffice/pptx-ops": "*"
   },
   "devDependencies": {
     "@types/ws": "^8.5.10",

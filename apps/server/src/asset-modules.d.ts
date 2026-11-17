@@ -6,3 +6,9 @@ declare module '*?asset' {
 
 /** bidi-js ships without types (slides' own tsconfig tolerates it the same way) */
 declare module 'bidi-js'
+
+/** markdown prompt docs imported as raw text (pptx-ops op-docs) */
+declare module '*?raw' {
+  const text: string
+  export default text
+}

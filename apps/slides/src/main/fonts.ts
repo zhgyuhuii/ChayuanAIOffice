@@ -47,10 +47,12 @@ import {
   type ShapedPrefFace,
   gtMeasure,
 } from './shaped-metrics'
-import carlitoRegular from '@chaoffice/ui/fonts/Carlito-Regular.ttf?asset'
-import carlitoBold from '@chaoffice/ui/fonts/Carlito-Bold.ttf?asset'
-import carlitoItalic from '@chaoffice/ui/fonts/Carlito-Italic.ttf?asset'
-import carlitoBoldItalic from '@chaoffice/ui/fonts/Carlito-BoldItalic.ttf?asset'
+import { createRequire } from 'node:module'
+// The bundler resolves these `?asset` imports (electron-vite); the node/tsx
+// loader chain rejects the specifier at resolve time, so the values load
+// through the CJS hooks (ts-assets assetModule) with the bundled import as a
+// runtime fallback via the dynamic mjs twin.
+import { bundledFontPaths } from './runtime-assets.mjs'
 
 /**
  * Vite dev/test URLs (`/@fs/…?asset`) are not filesystem paths — recover the
@@ -66,11 +68,31 @@ function assetFsPath(value: string): string {
 }
 
 /** Fonts shipped with the app (metric substitutes for fonts most decks assume, e.g. Calibri→Carlito). */
+declare const __filename: string | undefined
+function requireAssetPath(spec: string): string | null {
+  try {
+    const req = createRequire(typeof __filename === 'string' ? __filename : import.meta.url)
+    const v = req(spec)
+    return typeof v === 'string' ? v : null
+  } catch {
+    return null
+  }
+}
+function bundledFontPath(spec: string, key: keyof typeof bundledFontPaths): string {
+  const viaRequire = requireAssetPath(spec)
+  if (viaRequire) return assetFsPath(viaRequire)
+  const viaBundle = bundledFontPaths[key]
+  return assetFsPath(typeof viaBundle === 'string' ? viaBundle : '')
+}
+
 const BUNDLED_FONTS: Record<string, string> = {
-  'Carlito-Regular': assetFsPath(carlitoRegular),
-  'Carlito-Bold': assetFsPath(carlitoBold),
-  'Carlito-Italic': assetFsPath(carlitoItalic),
-  'Carlito-BoldItalic': assetFsPath(carlitoBoldItalic),
+  'Carlito-Regular': bundledFontPath('@chaoffice/ui/fonts/Carlito-Regular.ttf?asset', 'carlitoRegular'),
+  'Carlito-Bold': bundledFontPath('@chaoffice/ui/fonts/Carlito-Bold.ttf?asset', 'carlitoBold'),
+  'Carlito-Italic': bundledFontPath('@chaoffice/ui/fonts/Carlito-Italic.ttf?asset', 'carlitoItalic'),
+  'Carlito-BoldItalic': bundledFontPath(
+    '@chaoffice/ui/fonts/Carlito-BoldItalic.ttf?asset',
+    'carlitoBoldItalic',
+  ),
 }
 
 /**
