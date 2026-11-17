@@ -844,6 +844,12 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 
 **R42 起点=19a389b39**（v0.13.18-56-g19a389b39）。
 
+### R41 随轮发版（2026-11-18，六段 1.0.18.0.13.18，main=17dd47e7a→发版链末）
+
+> 120 提交吸收随轮打包 Z+1（1.0.17→1.0.18，14be28222）。四 pass 九件×2 轮（首版+用户报告的 dsh 演示稿编辑链根治重打）全 EXIT 0+架构直验；发版报告 docs/release-test-report-1.0.18.md；tag `1.0.18` 三仓；GitHub Release **449196371** 九资产服务器中继全 201/SIZE_MATCH_ALL；aidooo：十槽位硬链接+releases-admin office['1.0.18'] 十条目（db.js 真函数入库）+publishManifest→latest=1.0.18+五平台 updateAvailable=true+Range 206+1MB 段 sha 三方一致（5f3ec04c…）；**存量故障顺带修复**：1.0.17 槽位清盘时 releases-admin office 空段（升级链已断）本次入库即恢复，products.json 误写域清除；harness `build.mjs chatoffice`→resources 1.0.18+OS app rsync 原位覆盖（651M）+staged 同源 1.0.18。
+
+**发版治理（用户真机报告根治）**：dsh/web 形态演示稿编辑链自 1.0.15 起存量断（shim 只有 open/save，编辑动词全 reject；tsx 链 ?raw/?asset 无 loader+.cts require 不认）——17dd47e7a 全量根治（server pptx.command+shim 动词族+tsx-assets ESM hooks/.cts 转发+harfbuzz/Carlito 双模兜底+fs.pick），staged 同源端到端实证（磁贴→新建→插入表格落画布）。**新坑三条**：①dsh 冒烟只验页面 200 会漏交互层，须逐端点真机交互（playwright 真浏览器路径为标准）；②tsx `--import` 链 ESM hooks（register）与 CJS hooks（Module._extensions）覆盖面不同，`?asset/?raw` 双语义双路兜底；③products.json 与 releases-admin.json 两个域，office 版本入库勿串。R42 起点=19a389b39（发版后不变）。
+
 ### 三轮审查（用户令：做三次审查有无遗留，2026-11-15 合并后追加）
 
 | 轮 | 口径 | 结果 |
