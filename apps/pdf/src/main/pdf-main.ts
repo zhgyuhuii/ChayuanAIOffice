@@ -1,7 +1,5 @@
 import { createHash } from 'node:crypto'
 import {
-  constants,
-  copyFileSync,
   existsSync,
   linkSync,
   readFileSync,
@@ -52,6 +50,7 @@ import {
   printPdfViaCups,
   printToPdfOptionsFor,
 } from '@chaoffice/electron-utils/print-cups'
+import { copyFileExclusiveSync } from '@chaoffice/electron-utils/copy-file'
 import { DRIVER_OPTION_NAMES, queryPrinterOptions } from '@chaoffice/electron-utils/printer-options'
 
 /** 1-based file page positions for the lp `-P` page-list: integers within a
@@ -1071,7 +1070,7 @@ export interface NoClobberFileOps {
 
 const defaultNoClobberFileOps: NoClobberFileOps = {
   link: linkSync,
-  copyExclusive: (source, target) => copyFileSync(source, target, constants.COPYFILE_EXCL),
+  copyExclusive: copyFileExclusiveSync,
   unlink: unlinkSync,
   identity: (path) => {
     const stats = statSync(path, { bigint: true })
