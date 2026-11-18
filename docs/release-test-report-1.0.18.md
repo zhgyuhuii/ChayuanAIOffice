@@ -86,6 +86,11 @@
 > **装机验证时发现重打 dmg 实为旧产物**（dist:mac 的 electron-builder 增量缓存复用旧 modules/sheets——`ls -S` 对比 out/ 与安装内 bundle 名，DrJyyhDd 旧 vs xn9R9blU 新），重装正确 dmg 后端到端复验：**新建即撤屏（首个 2s 探针起 opening=false），连开四 tab 全 OK**。
 > 送达链：mac dmg/zip 重传 aidooo（DB sha/size 刷新+publishManifest，公网 1MB 段 945550bc… 三方一致）+ GitHub 两资产 delete+reupload 201；其余平台安装包同源代码已在首轮构建中（无此 bug 暴露差异，不需重传）。
 
+## 追加治理 3：九件全量重打包发布（用户令，4a92d67ec 后）
+
+> 用户指出 windows 等其余平台安装包未含新建表格修复——全部九件重打发布。清空 release/ 与各 app out/ 后四 pass 全新构建（全 EXIT 0，构建自 876e0c96f 修复后源码树）；新 dmg 装机内 bundle 验证含 finally 修复（workbookOpeningRef ×4+onInitialRangeLoaded 后 finally 块在位）。
+> 送达：aidooo 九件重传+硬链接槽位刷新+DB 十条目 sha/size 全量重算（r41-release-full-rebuild）+publishManifest；公网段验证 exe（d62d4525…）dmg（c1eb1c4f…）206 三方一致；GitHub 九资产 delete+reupload 全 201、FINAL 9/9 size-MATCH。
+
 ## 附注
 
 - 中继脚本 /root/gh-upload-1.0.18.mjs（1.0.17 版 sed+body 拼接，日志 /root/gh-upload-1.0.18.log）。
