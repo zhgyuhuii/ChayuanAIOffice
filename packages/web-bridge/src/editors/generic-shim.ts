@@ -58,6 +58,11 @@ export function installSheetsShim(client: BridgeClient): void {
     async consumeNewBlankWorkbook(): Promise<boolean> {
       return !pendingFromHash()
     },
+    /** Threaded-comment author (web): empty string keeps setAuthor's
+     *  name.trim() from crashing on the get* safe-degrade undefined. */
+    async getUserDisplayName(): Promise<string> {
+      return ''
+    },
     // R37 headless-export 握手位（缺席即结构化 reject；仅 headless 导出用）
     async consumeHeadlessExport(): Promise<null> {
       return null
@@ -448,6 +453,11 @@ export function installSlidesShim(client: BridgeClient): void {
      *  degrades to "no external content" instead of a startup rejection. */
     async clipboardProbe(): Promise<boolean> {
       return false
+    },
+    /** Threaded-comment author: web has no userDisplayName store yet; an empty
+     *  string keeps setAuthor (name.trim()) from crashing on undefined. */
+    async getUserDisplayName(): Promise<string> {
+      return ''
     },
     // R37 headless-export 握手位（缺席即结构化 reject；仅 headless 导出用）
     async consumeHeadlessExport(): Promise<null> {
