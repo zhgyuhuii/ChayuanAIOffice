@@ -247,7 +247,7 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   // credentials and must not stay readable by other local accounts (upstream
   // 6a1a51f16 heals in each app's ai:get-settings reader; the shared registry
   // runs at every app start, so one heal here covers all editor apps — adapted)
-  restrictFileToOwner(deps.settingsPath())
+  restrictFileToOwner(deps.settingsPath)
   const fileSource = createFileSource(deps.settingsPath, deps.fs)
   // LOCAL(R30 挂账): settings-changed 原生推送——上游在 ai:set-settings handler
   // 尾部广播；本地 V2 写盘统一经 fs 注入（含外部/harness 改写），故以文件

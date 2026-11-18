@@ -12,14 +12,19 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
  * Same-directory temp file + rename prevents observers from reading a partial
  * export. Windows rename-over-existing can fail transiently, so retry with
  * backoff and finally fall back to the prior in-place write behavior.
+ *
+ * `mode` restricts permissions at creation so the rename lands the restricted
+ * file (upstream 6a1a51f16: 0o600 for the AI settings file, whose BYOK keys
+ * must not stay readable by other local accounts). Ignored on platforms
+ * without POSIX modes.
  */
-export async function atomicWriteFile(filePath: string, data: Buffer): Promise<void> {
+export async function atomicWriteFile(filePath: string, data: Buffer, mode?: number): Promise<void> {
   const tmp = join(
     dirname(filePath),
     `.${basename(filePath)}.${randomBytes(6).toString('hex')}.tmp`,
   )
   try {
-    await writeFile(tmp, data)
+    await writeFile(tmp, data, { mode })
     for (let attempt = 0; ; attempt += 1) {
       try {
         await rename(tmp, filePath)
@@ -35,7 +40,7 @@ export async function atomicWriteFile(filePath: string, data: Buffer): Promise<v
     if (retryable) {
       // Preserve the completed temp until the non-atomic fallback succeeds.
       // If that write fails or the process exits, the new bytes still exist.
-      await writeFile(filePath, data)
+      await writeFile(filePath, data, { mode })
       await unlink(tmp).catch(() => {})
       return
     }
