@@ -75,6 +75,10 @@
 3. **tsx 链三坑**（dsh sidecar 源码运行态）：`?raw`/`?asset` ESM import 无 loader（ts-asset loader 注册 ESM resolve/load 双钩+裸包名两段解析）；`.cts` 强制 CJS 文件 require 不认（tsx-assets 补 .cts/.mts 转发）；harfbuzz/Carlito `?asset` 双模运行时解析兜底（bundler 动态 mjs import + CJS hooks fallback，炸点全 catch）。
 4. **打包面连带**：package-embedded PACKAGES 补 pptx-ops（npm install synthetic workspace 解析失败教训）+ server package.json 依赖登记。
 
+## 追加治理：dsh/web 新建表格 trim 崩溃（用户真机报告，add203af8）
+
+> 用户报告「新建表格文件很慢 基本上无法新建」。诊断=web shim sheets impl 缺 `getUserDisplayName`（get* 安全降级返回 undefined → threaded-comments setAuthor(name.trim()) 炸断 boot 链，用户感知为慢/失败）。修复=sheets impl 补空串兜底；**服务链本身实测 570ms/次（两次连续）**，零错误。dsh tgz/staged/OS app 三方已重铺（含修复）。注：桌面 sidecar 首启含 xlsx wasm 编译一次性开销（~20s），属首次成本非回归。
+
 ## 附注
 
 - 中继脚本 /root/gh-upload-1.0.18.mjs（1.0.17 版 sed+body 拼接，日志 /root/gh-upload-1.0.18.log）。
