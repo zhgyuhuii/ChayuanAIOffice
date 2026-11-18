@@ -6587,6 +6587,14 @@ export function App({
       setMessage(selected.emptyCsv ? '' : t('appOpened', { name: selected.name }))
     } catch (error: unknown) {
       setMessage(error instanceof Error ? error.message : t('appOpenFailed'))
+    } finally {
+      // The success path returns before this: the opening screen must come down
+      // once the workbook is up regardless. onInitialRangeLoaded only fires on
+      // the no-active-workbook branch — a streamed lazy open (blank backing
+      // workbook: 1 row) takes the active branch and never calls it, so the
+      // screen would hang forever ("正在打开工作簿…" stuck). A success-path
+      // finishOpening is a no-op (workbookOpeningRef already cleared there),
+      // and focusSheetGrid is idempotent.
       finishOpening()
     }
   }
