@@ -79,6 +79,13 @@
 
 > 用户报告「新建表格文件很慢 基本上无法新建」。诊断=web shim sheets impl 缺 `getUserDisplayName`（get* 安全降级返回 undefined → threaded-comments setAuthor(name.trim()) 炸断 boot 链，用户感知为慢/失败）。修复=sheets impl 补空串兜底；**服务链本身实测 570ms/次（两次连续）**，零错误。dsh tgz/staged/OS app 三方已重铺（含修复）。注：桌面 sidecar 首启含 xlsx wasm 编译一次性开销（~20s），属首次成本非回归。
 
+## 追加治理 2：安装包新建表格「正在打开工作簿…」永挂（用户报告，876e0c96f）
+
+> 安装包（Electron 形态）新建表格卡「正在打开工作簿…」不撤。诊断=**R41 链上采纳的上游 #2545 撤屏增强**（finishOpening 绑 onInitialRangeLoaded）与流式懒加载语义冲突：该回调只在「无活动工作簿」分支触发，空白底簿（1 行）走激活分支永不回调 → 撤屏永挂。main 基线的 `finally { workbookOpeningRef.current = false }` 无条件语义才是对的。
+> 修复=对齐 main finally 语义（保留 setOpeningWorkbook 增强与幂等 finishOpening）。
+> **装机验证时发现重打 dmg 实为旧产物**（dist:mac 的 electron-builder 增量缓存复用旧 modules/sheets——`ls -S` 对比 out/ 与安装内 bundle 名，DrJyyhDd 旧 vs xn9R9blU 新），重装正确 dmg 后端到端复验：**新建即撤屏（首个 2s 探针起 opening=false），连开四 tab 全 OK**。
+> 送达链：mac dmg/zip 重传 aidooo（DB sha/size 刷新+publishManifest，公网 1MB 段 945550bc… 三方一致）+ GitHub 两资产 delete+reupload 201；其余平台安装包同源代码已在首轮构建中（无此 bug 暴露差异，不需重传）。
+
 ## 附注
 
 - 中继脚本 /root/gh-upload-1.0.18.mjs（1.0.17 版 sed+body 拼接，日志 /root/gh-upload-1.0.18.log）。
