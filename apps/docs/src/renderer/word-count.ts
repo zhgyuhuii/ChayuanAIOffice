@@ -7,7 +7,7 @@
  * Asian-character figure.
  */
 
-import type { TableModel } from '@genoffice/docx-engine'
+import type { TableModel } from '@chaoffice/docx-engine'
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import type { Selection } from '@tiptap/pm/state'
 

@@ -329,6 +329,12 @@ export interface AiMediaProviderMeta {
   defaultBaseUrl: string
   /** absent = the provider does not generate images */
   imageProtocol?: AiImageProtocol
+  // adapted: #2656 上游把 imageModels/defaultImageModel 定为必填；本地 keyless
+  // 供应商族（pollinations/agnes/…）不携带，收窄为可选元数据（协议层按需读取）
+  /** curated image-model ids when the vendor names them (absent = free-form) */
+  imageModels?: string[]
+  /** the recommended id among imageModels */
+  defaultImageModel?: string
   /** absent = the provider does not analyze media */
   analysisProtocol?: AiAnalysisProtocol
   /** the analysis model accepts video input (Gemini natively; OpenAI-compatible vendors via a video_url part) */
