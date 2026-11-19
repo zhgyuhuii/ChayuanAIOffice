@@ -1,3 +1,4 @@
+export { shortFileError } from './file-error'
 export { AiPanelSideButton } from './AiPanelSideButton'
 export { FilesPane, FilesEdgeTab, type FilesPaneProps } from './files-pane/FilesPane'
 export { tFilesPane } from './files-pane/strings'
