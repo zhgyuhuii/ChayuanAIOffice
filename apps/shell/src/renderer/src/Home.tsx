@@ -3268,8 +3268,25 @@ export function Home() {
                 </div>
               )}
             </span>
-            <button className="side-head-btn" title={t('clearRecent')} onClick={clearAllRecent}>
-              {t('clearRecent')}
+            <button
+              className="side-head-btn"
+              aria-label={t('clearRecent')}
+              title={t('clearRecent')}
+              onClick={(event) => {
+                event.stopPropagation()
+                clearAllRecent()
+              }}
+            >
+              {/* 图标化：胶囊头空间窄，「清空最近」四字换行；与分组头的清空/漏斗同族 13px 线性图标 */}
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path
+                  d="M2.5 4h11M6 4V2.8c0-.44.36-.8.8-.8h2.4c.44 0 .8.36.8.8V4M4 4l.7 8.5c.04.55.5 1 1.05 1h4.5c.55 0 1.01-.45 1.05-1L12 4M6.6 7v4M9.4 7v4"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
           </div>
         ) : (
