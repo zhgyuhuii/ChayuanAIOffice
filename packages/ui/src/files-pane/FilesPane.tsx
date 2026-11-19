@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { DragEvent, MouseEvent, ReactElement } from 'react'
 import type { Lang } from '@chaoffice/i18n'
 import { useDismissablePopover } from '../popover-dismiss'
+import { FileTileBadge } from '../file-tiles/badge'
 import { tFilesPane } from './strings'
 import type {
   FileEntry,
@@ -24,41 +25,13 @@ const DRAG_PATHS_MIME = 'application/x-chaoffice-paths'
 const DRAG_EXPAND_DELAY_MS = 600
 const EXPANDED_KEY = 'chaoffice.filesPane.expanded'
 
-const BADGE: Record<string, { label: string; color: string }> = {
-  docx: { label: 'W', color: '#2b63d9' },
-  doc: { label: 'W', color: '#2b63d9' },
-  xlsx: { label: 'X', color: '#1f8a4c' },
-  xlsm: { label: 'X', color: '#1f8a4c' },
-  xls: { label: 'X', color: '#1f8a4c' },
-  csv: { label: 'X', color: '#1f8a4c' },
-  pptx: { label: 'P', color: '#c9481f' },
-  ppt: { label: 'P', color: '#c9481f' },
-  pdf: { label: 'A', color: '#d6352d' },
-  md: { label: 'M', color: '#7a4ddb' },
-  markdown: { label: 'M', color: '#7a4ddb' },
-  html: { label: '<>', color: '#1f8f8a' },
-  htm: { label: '<>', color: '#1f8f8a' },
-}
-
-/* Badge colors are document-type brand colors (same in both themes), not chrome. */
+/* Badge tiles come from the single-source file-tiles map (same art as the OS
+ * file-association icons and the home recents/tree lists). */
 function FileBadge({ ext }: { ext: string }) {
-  const badge = BADGE[ext] ?? { label: ext ? ext.charAt(0).toUpperCase() : '?', color: '#98a2b3' }
   return (
-    <svg className="fp-badge" width="16" height="16" viewBox="0 0 32 32" aria-hidden="true">
-      <rect width="32" height="32" rx="7" fill={badge.color} />
-      <text
-        x="16"
-        y="16.5"
-        textAnchor="middle"
-        dominantBaseline="central"
-        fill="#fff"
-        fontSize={badge.label.length > 1 ? 14 : 18}
-        fontWeight="700"
-        fontFamily="system-ui, -apple-system, 'Segoe UI', sans-serif"
-      >
-        {badge.label}
-      </text>
-    </svg>
+    <span className="fp-badge">
+      <FileTileBadge ext={ext} size={16} />
+    </span>
   )
 }
 

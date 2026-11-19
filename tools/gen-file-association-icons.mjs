@@ -4,8 +4,8 @@
  * `icon` field): <type>.icns for the macOS CFBundleDocumentTypes entry and
  * <type>.ico for the NSIS DefaultIcon registry value.
  *
- * Source of truth is the shell renderer's file-type tiles
- * (apps/shell/src/renderer/src/assets/file-*.svg) so Finder/Explorer show the
+ * Source of truth is the shared file-type tiles
+ * (packages/ui/src/file-tiles/file-*.svg) so Finder/Explorer show the
  * same visual language as the in-app recent-files list. The SVGs are
  * rasterized with the system Chrome via Playwright (transparent background),
  * then packed with `iconutil` (icns, macOS host only) and a hand-rolled
@@ -23,7 +23,9 @@ import { fileURLToPath } from 'node:url'
 import { chromium } from 'playwright'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-const assetDir = join(root, 'apps/shell/src/renderer/src/assets')
+// 2026-11-19: the tiles moved to packages/ui/src/file-tiles (single source
+// shared with the editors' FilesPane via @chaoffice/ui/file-tiles/*)
+const assetDir = join(root, 'packages/ui/src/file-tiles')
 const outDir = join(root, 'apps/shell/build')
 
 // One icon per visual type; associations for xlsm/xls/csv/markdown reuse

@@ -3,12 +3,12 @@ import type { ReactElement } from 'react'
 import type { DockTabSummary } from '../../shared/dock-api'
 import { getHomeLayout, onHomeLayoutChange, setHomeLayout } from './home-layout'
 import { useI18n } from './locale'
-import tabIconDocx from './assets/file-docx.svg'
-import tabIconXlsx from './assets/file-xlsx.svg'
-import tabIconPptx from './assets/file-pptx.svg'
-import tabIconMd from './assets/file-md.svg'
-import tabIconPdf from './assets/file-pdf.svg'
-import tabIconHtml from './assets/file-html.svg'
+import tabIconDocx from '@chaoffice/ui/file-tiles/file-docx.svg'
+import tabIconXlsx from '@chaoffice/ui/file-tiles/file-xlsx.svg'
+import tabIconPptx from '@chaoffice/ui/file-tiles/file-pptx.svg'
+import tabIconMd from '@chaoffice/ui/file-tiles/file-md.svg'
+import tabIconPdf from '@chaoffice/ui/file-tiles/file-pdf.svg'
+import tabIconHtml from '@chaoffice/ui/file-tiles/file-html.svg'
 
 // help tabs ship no binary asset; a small inline question-mark book glyph keeps the Record total
 const HELP_ICON_SRC =

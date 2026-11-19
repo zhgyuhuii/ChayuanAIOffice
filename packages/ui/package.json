@@ -26,6 +26,8 @@
     "./image-dialogs.css": "./src/image-dialogs.css",
     "./image-viewer.css": "./src/image-viewer.css",
     "./fonts/*": "./src/fonts/*",
+    "./file-tiles/badge": "./src/file-tiles/badge.tsx",
+    "./file-tiles/*": "./src/file-tiles/*",
     "./shape-gallery": "./src/shape-gallery.tsx",
     "./InsertImageDialog": "./src/InsertImageDialog.tsx",
     "./image-transcode": "./src/image-transcode.ts",
