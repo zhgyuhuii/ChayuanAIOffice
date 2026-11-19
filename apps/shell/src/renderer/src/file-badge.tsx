@@ -6,8 +6,8 @@ import iconMd from './assets/file-md.svg'
 import iconHtml from './assets/file-html.svg'
 import iconTxt from './assets/file-txt.svg'
 import iconJson from './assets/file-json.svg'
-import iconDwg from './assets/file-dwg.png'
-import iconMind from './assets/file-mind.png'
+import iconDwg from './assets/file-dwg.svg'
+import iconMind from './assets/file-mind.svg'
 
 /**
  * 单一字形瓦片（W/X/P/PDF 丝带/M↓/</>/行文/{}），与 OS 文件关联图标同源

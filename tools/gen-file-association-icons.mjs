@@ -27,13 +27,14 @@ const assetDir = join(root, 'apps/shell/src/renderer/src/assets')
 const outDir = join(root, 'apps/shell/build')
 
 // One icon per visual type; associations for xlsm/xls/csv/markdown reuse
-// these via the fileAssociations `icon` field. Sources are the brand PNGs
-// moved here from docs/logos (162×211 portrait sheets); pdf still uses the
-// legacy SVG tile until a brand pdf.png lands in assets/.
+// these via the fileAssociations `icon` field. Sources are the single-glyph
+// SVG tiles (W/X/P/PDF 丝带/M↓/</>/行文/{}) — the same files the in-app
+// badges render, so Finder/Explorer and the tab/home lists share one design.
+// (2026-11-19 用户令：横幅文字在缩略图尺寸不可辨，全量单字形。)
 const TYPES = {
-  docx: 'file-docx.png',
-  xlsx: 'file-xlsx.png',
-  pptx: 'file-pptx.png',
+  docx: 'file-docx.svg',
+  xlsx: 'file-xlsx.svg',
+  pptx: 'file-pptx.svg',
   pdf: 'file-pdf.svg',
   md: 'file-md.svg',
   html: 'file-html.svg',
