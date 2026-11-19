@@ -15,7 +15,7 @@ export type HomeTreeTab = 'recent' | 'chats' | 'projects'
 export interface HomeLayoutState {
   leftCollapsed: boolean
   rightCollapsed: boolean
-  /** ZCode 式左树双 Tab（对话 | 项目）：当前显示的面（默认对话） */
+  /** ZCode 式左树三 Tab（对话 | 项目 | 最近）：当前显示的面（默认项目） */
   activeTab: HomeTreeTab
   recentCollapsed: boolean
   /** 侧栏「新建」分组（6 新建 + 打开本地）的折叠态 */
@@ -25,6 +25,10 @@ export interface HomeLayoutState {
   sidebarWidth: number
   /** dock pane width in px; null = equal flex split (never dragged yet) */
   dockWidth: number | null
+  /** one-time migration marker: the first run after the 2026-11-19 default-tab
+   *  switch (recent→projects) resets a pre-switch stored tab to projects once;
+   *  written true with the next layout change so later choices stick */
+  homeLayoutV2: boolean
 }
 
 const STORAGE_KEY = 'chaoffice.home-layout'
@@ -53,11 +57,12 @@ export function clampDockWidth(w: number): number {
 const DEFAULT_STATE: HomeLayoutState = {
   leftCollapsed: false,
   rightCollapsed: true,
-  activeTab: 'recent',
+  activeTab: 'projects',
   recentCollapsed: false,
   newCollapsed: false,
   sidebarWidth: SIDEBAR_DEFAULT,
   dockWidth: null,
+  homeLayoutV2: true,
 }
 
 /**
@@ -65,12 +70,17 @@ const DEFAULT_STATE: HomeLayoutState = {
  * flags: with both groups expanded the chats tab wins (default); a folded
  * 对话 group with the projects group open means the user last looked at
  * projects.
+ *
+ * 2026-11-19 产品裁定：默认面从「最近」改为「项目」（左树退役文件列表面板后，
+ * 项目成为侧栏主入口）；存量的 homeLayoutV2 标记缺位视为旧默认，一次性切到
+ * projects，之后用户的手动选择照常持久化。
  */
 export function treeTabFromStored(obj: Record<string, unknown>): HomeTreeTab {
-  if (obj.activeTab === 'recent' || obj.activeTab === 'projects' || obj.activeTab === 'chats')
+  if (obj.activeTab === 'recent' || obj.activeTab === 'projects' || obj.activeTab === 'chats') {
+    if (obj.activeTab !== 'projects' && obj.homeLayoutV2 !== true) return 'projects'
     return obj.activeTab
-  if (obj.chatsCollapsed === true && obj.projectsCollapsed === false) return 'projects'
-  return 'recent'
+  }
+  return 'projects'
 }
 
 function load(): HomeLayoutState {
@@ -94,6 +104,7 @@ function load(): HomeLayoutState {
           typeof obj.dockWidth === 'number' && Number.isFinite(obj.dockWidth)
             ? clampDockWidth(obj.dockWidth)
             : null,
+        homeLayoutV2: true,
       }
     }
   } catch {

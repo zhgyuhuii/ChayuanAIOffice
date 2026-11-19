@@ -5,12 +5,12 @@ import { TEAR_OFF_SLACK, insertionIndexForX, isBeyondBand } from '../../shared/t
 import { notifyFilesChanged } from './file-events'
 import { useI18n } from './locale'
 import { getHomeLayout, onHomeLayoutChange, setHomeLayout } from './home-layout'
-import tabIconDocx from './assets/file-docx.svg'
-import tabIconXlsx from './assets/file-xlsx.svg'
-import tabIconPptx from './assets/file-pptx.svg'
-import tabIconMd from './assets/file-md.svg'
-import tabIconPdf from './assets/file-pdf.svg'
-import tabIconHtml from './assets/file-html.svg'
+import tabIconDocx from '@chaoffice/ui/file-tiles/file-docx.svg'
+import tabIconXlsx from '@chaoffice/ui/file-tiles/file-xlsx.svg'
+import tabIconPptx from '@chaoffice/ui/file-tiles/file-pptx.svg'
+import tabIconMd from '@chaoffice/ui/file-tiles/file-md.svg'
+import tabIconPdf from '@chaoffice/ui/file-tiles/file-pdf.svg'
+import tabIconHtml from '@chaoffice/ui/file-tiles/file-html.svg'
 import tabIconLogo from './assets/logo.png'
 
 declare global {
@@ -742,6 +742,18 @@ export function TabBar() {
             strokeLinejoin="round"
           />
         </svg>
+      </button>
+      {/* LOCAL(2026-11-19, r43)：右上角文件图标恢复（2026-09-14 首页重构时随三栏
+          内容栏一起退役）——现在切换主页右侧文件树（zcode-ref SidePane 同款
+          PanelRight 开合语义：只翻转 rightCollapsed，树内容由最后请求的根决定） */}
+      <button
+        className={`tab-pane-toggle${layout.rightCollapsed ? ' collapsed' : ''}`}
+        title={t('toggleFilesPane')}
+        aria-label={t('toggleFilesPane')}
+        aria-pressed={!layout.rightCollapsed}
+        onClick={() => setHomeLayout({ rightCollapsed: !layout.rightCollapsed })}
+      >
+        <PaneToggleIcon side="right" />
       </button>
       {controlSide === 'right' && <WindowControls side="right" />}
     </div>
