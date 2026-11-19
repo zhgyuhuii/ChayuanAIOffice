@@ -1,13 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import type { ReactElement, ReactNode } from 'react'
-import iconDocx from './assets/file-docx.png'
-import iconXlsx from './assets/file-xlsx.png'
-import iconPptx from './assets/file-pptx.png'
-import iconPdf from './assets/file-pdf.png'
-import iconMd from './assets/file-md.png'
-import iconHtml from './assets/file-html.png'
-import iconDwg from './assets/file-dwg.png'
-import iconMind from './assets/file-mind.png'
+import { FileBadge } from './file-badge'
 import { KbAskPanel } from './KbAskPanel'
 import type {
   AccountStatus,
@@ -82,36 +75,11 @@ function useShellModalSurface(open: boolean): void {
 /** page size of the home list; scrolling to the bottom auto-loads the next page */
 const PAGE_SIZE = 50
 
-const FILE_ICONS: Record<string, string> = {
-  docx: iconDocx,
-  doc: iconDocx,
-  odt: iconDocx,
-  ott: iconDocx,
-  xlsx: iconXlsx,
-  xlsm: iconXlsx,
-  xls: iconXlsx,
-  csv: iconXlsx,
-  ods: iconXlsx,
-  ots: iconXlsx,
-  pptx: iconPptx,
-  odp: iconPptx,
-  otp: iconPptx,
-  pdf: iconPdf,
-  md: iconMd,
-  markdown: iconMd,
-  html: iconHtml,
-  htm: iconHtml,
-  dwg: iconDwg,
-  dxf: iconDwg,
-  mind: iconMind,
-  mindmap: iconMind,
-}
-
 /* Formats the open-local card advertises. Too long for the card at any window
    width, so it ellipsizes and a hover ScreenTip carries the full list. Keep in
    sync with the main-process open-dialog filter (OPEN_DIALOG_EXTENSIONS). */
 const OPEN_LOCAL_EXTENSIONS =
-  '.docx / .doc / .dot / .odt / .ott / .hwpx / .hwp / .xlsx / .xlsm / .xls / .csv / .tsv / .ods / .ots / .pptx / .ppt / .odp / .otp / .pdf / .md / .html'
+  '.docx / .doc / .dot / .odt / .ott / .hwpx / .hwp / .xlsx / .xlsm / .xls / .csv / .tsv / .ods / .ots / .pptx / .ppt / .odp / .otp / .pdf / .md / .markdown / .txt / .json / .html'
 
 /**
  * Width of the viewport that fixed-position menus anchor to. The layout engine
@@ -121,32 +89,6 @@ const OPEN_LOCAL_EXTENSIONS =
  */
 function fixedViewportWidth(): number {
   return document.documentElement.clientWidth
-}
-
-function FileBadge({ ext, size }: { ext: string; size: number }) {
-  const icon = FILE_ICONS[ext]
-  if (icon) {
-    // brand file icons are square squircle badges: scale by height, width follows
-    return <img src={icon} style={{ height: size, width: 'auto' }} alt="" aria-hidden="true" />
-  }
-  const label = ext ? ext[0].toUpperCase() : '?'
-  return (
-    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true">
-      <rect width="32" height="32" rx="7.5" fill="#98a2b3" />
-      <text
-        x="16"
-        y="16.5"
-        textAnchor="middle"
-        dominantBaseline="central"
-        fill="#fff"
-        fontSize={17}
-        fontWeight="700"
-        fontFamily="system-ui, -apple-system, 'Segoe UI', sans-serif"
-      >
-        {label}
-      </text>
-    </svg>
-  )
 }
 
 function formatModified(mtimeMs: number, i18n: I18n): string {

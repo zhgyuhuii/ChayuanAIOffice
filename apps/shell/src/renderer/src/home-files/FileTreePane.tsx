@@ -9,14 +9,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { DragEvent as ReactDragEvent, ReactElement } from 'react'
-import iconDocx from '../assets/file-docx.png'
-import iconXlsx from '../assets/file-xlsx.png'
-import iconPptx from '../assets/file-pptx.png'
-import iconPdf from '../assets/file-pdf.png'
-import iconMd from '../assets/file-md.png'
-import iconHtml from '../assets/file-html.png'
-import iconDwg from '../assets/file-dwg.png'
-import iconMind from '../assets/file-mind.png'
+import { FileBadge } from '../file-badge'
 import { useDismissablePopover } from '@chaoffice/ui'
 import { markText } from '../../../shared/text-marks'
 import { useI18n } from '../locale'
@@ -37,50 +30,6 @@ const TREE_STATE_KEY = 'home.folderTree'
 /** 行拖拽的载荷 MIME（树行 → 文件夹行移动；渲染层自产自销，两端一致即可） */
 const DRAG_PATHS_MIME = 'application/x-chaoffice-paths'
 const DRAG_EXPAND_DELAY_MS = 600
-
-const FILE_ICONS: Record<string, string> = {
-  docx: iconDocx,
-  doc: iconDocx,
-  xlsx: iconXlsx,
-  xlsm: iconXlsx,
-  xls: iconXlsx,
-  csv: iconXlsx,
-  pptx: iconPptx,
-  pdf: iconPdf,
-  md: iconMd,
-  markdown: iconMd,
-  html: iconHtml,
-  htm: iconHtml,
-  dwg: iconDwg,
-  dxf: iconDwg,
-  mind: iconMind,
-  mindmap: iconMind,
-}
-
-export function FileBadge({ ext, size }: { ext: string; size: number }) {
-  const icon = FILE_ICONS[ext]
-  if (icon) {
-    return <img src={icon} width={size} height={size} alt="" aria-hidden="true" />
-  }
-  const label = ext ? ext[0].toUpperCase() : '?'
-  return (
-    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true">
-      <rect width="32" height="32" rx="7.5" fill="#98a2b3" />
-      <text
-        x="16"
-        y="16.5"
-        textAnchor="middle"
-        dominantBaseline="central"
-        fill="#fff"
-        fontSize={17}
-        fontWeight={700}
-        fontFamily="system-ui, -apple-system, 'Segoe UI', sans-serif"
-      >
-        {label}
-      </text>
-    </svg>
-  )
-}
 
 function FolderIcon({ size = 16, open = false }: { size?: number; open?: boolean }) {
   return (

@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 
 import { TEXT_RE, appForPath, renameStaysInApp } from '../src/main/app-routing'
@@ -84,5 +85,27 @@ describe('renameStaysInApp', () => {
   it('stays put when the file was never openable to begin with', () => {
     // no app to stay in, so this gate is not what blocks it
     expect(renameStaysInApp('/x/a.xyz', 'a.anything')).toBe(true)
+  })
+})
+
+// 2026-11-19 用户报告：json 能双击打开（OS 关联）但主页面弹「无法打开」。
+// 根因是 index.ts 内联了一套窄 RE（docx 只有 .docx、没有 TEXT_RE），与
+// app-routing 的宽 RE 漂移——双击 doc/odt/ppt/txt/json 全部落进
+// notifyUnsupportedFile。此守卫钉住：open 路由必须引 app-routing 的 RE，
+// 不得再内联第三份。
+describe('the open route stays on the shared routing module', () => {
+  const indexSource = readFileSync(new URL('../src/main/index.ts', import.meta.url), 'utf8')
+
+  it('imports the shared REs instead of inlining narrower copies', () => {
+    expect(indexSource).toContain("from './app-routing'")
+    expect(indexSource).not.toMatch(/const (DOCX|XLSX|PPTX|PDF|MD|HTML|TEXT)_RE =/)
+    expect(indexSource).toContain('TEXT_RE.test(filePath)')
+  })
+
+  it('advertises the same families the routing opens (Home card list)', () => {
+    const homeSource = readFileSync(new URL('../src/renderer/src/Home.tsx', import.meta.url), 'utf8')
+    for (const ext of ['txt', 'json', 'markdown']) {
+      expect(homeSource).toContain(`.${ext} `)
+    }
   })
 })

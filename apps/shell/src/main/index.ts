@@ -382,7 +382,15 @@ import {
   capStatPaths,
 } from './recent-files'
 import { isSameFile, pdfSaveAsTarget, isValidRawRenameName } from './rename-validation'
-import { renameStaysInApp } from './app-routing'
+import {
+  DOCX_RE,
+  HTML_RE,
+  PDF_RE,
+  PPTX_RE,
+  TEXT_RE,
+  XLSX_RE,
+  renameStaysInApp,
+} from './app-routing'
 import { isMoveSource, isUserVisibleFile, type FileTargetSources } from './file-targets'
 import {
   FolderWatcher,
@@ -5322,13 +5330,9 @@ function applyMenuFor(kind: TabKind): void {
 }
 
 // ---- routing: one dispatch function for every open path ----
+// RE 集取自 app-routing（单一事实源：open 路由/打开对话框/重命名门禁三处共享，
+// .doc/.odt/.hwpx/.ods/.ppt 走对应编辑器的导入转换流，txt/json 走 markdown 源码视图）
 
-const DOCX_RE = /\.docx$/i
-const XLSX_RE = /\.(xlsx|xlsm|xls|csv|tsv)$/i
-const PPTX_RE = /\.pptx$/i
-const PDF_RE = /\.pdf$/i
-const MD_RE = /\.(md|markdown)$/i
-const HTML_RE = /\.html?$/i
 
 /**
  * Single source of truth for the open-dialog filter. .doc/.dot and .ppt route
@@ -5337,10 +5341,9 @@ const HTML_RE = /\.html?$/i
 const OPEN_DIALOG_EXTENSIONS = [
   'docx',
   'doc',
+  'dot',
   // ODF import (upstream #1982): opens as a converted OOXML copy (odf2ooxml);
   // ott/ots/otp templates follow their parent type
-  'doc',
-  'dot',
   'odt',
   'ott',
   'ods',
@@ -5357,11 +5360,8 @@ const OPEN_DIALOG_EXTENSIONS = [
   'json',
   'pptx',
   'ppt',
-  'odt',
   'hwpx',
   'hwp',
-  'odp',
-  'otp',
   'pdf',
   'md',
   'markdown',
@@ -5483,7 +5483,7 @@ function routeDocumentPath(filePath: string, dock = false): boolean {
       }
       return true
     }
-    if (MD_RE.test(filePath)) {
+    if (TEXT_RE.test(filePath)) {
       recordRecentFile(filePath)
       const existing = tabManager.findMarkdownTabByPath(filePath)
       if (existing) {
@@ -5542,7 +5542,7 @@ function routeDocumentPath(filePath: string, dock = false): boolean {
     else tabManager.openPdfTab(filePath)
     return true
   }
-  if (MD_RE.test(filePath)) {
+  if (TEXT_RE.test(filePath)) {
     recordRecentFile(filePath)
     const existing = tabManager.findMarkdownTabByPath(filePath)
     if (existing) tabManager.activateTab(existing)
