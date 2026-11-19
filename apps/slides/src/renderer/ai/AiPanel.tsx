@@ -97,15 +97,9 @@ import {
 } from '@chaoffice/ai-provider/browser'
 import { slidesModelBridge } from './model-bridge'
 import { hydrateSpecSvg } from './spec-svg-hydrate'
-import filePdfIcon from '../assets/file-pdf.png'
-import fileWordIcon from '../assets/file-word.png'
-import fileExcelIcon from '../assets/file-excel.png'
-import filePptIcon from '../assets/file-ppt.png'
-import fileImageIcon from '../assets/file-image.png'
-import fileVideoIcon from '../assets/file-video.png'
-import fileVoiceIcon from '../assets/file-voice.png'
-import fileDocumentIcon from '../assets/file-document.png'
-import fileGeneralIcon from '../assets/file-general.png'
+// LOCAL(2026-11-19, r43): 附件卡图标改用共享单字形瓦片（@chaoffice/ui
+// file-tiles 家族），九枚旧横幅 PNG 退役
+import { AttachmentCardIcon as SharedAttachmentCardIcon, fileImageIcon } from '@chaoffice/ui'
 import { IconNewChat } from '../components/icons'
 import {
   AssistantTab,
@@ -147,56 +141,10 @@ const PASTE_MIME_EXT: Record<string, string> = {
   'image/webp': 'webp',
 }
 
-/** File-type icons for attachment cards (ChaOffice attachment icon set); exts the
- *  attachment allowlist doesn't accept yet are mapped ahead so they light up when added */
-const ATTACHMENT_CARD_ICON_GROUPS: [icon: string, exts: string[]][] = [
-  [fileWordIcon, ['doc', 'docx']],
-  [fileExcelIcon, ['xls', 'xlsx', 'xlsm', 'csv', 'tsv']],
-  [filePptIcon, ['ppt', 'pptx']],
-  [filePdfIcon, ['pdf']],
-  [fileImageIcon, ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg', 'tiff', 'heic']],
-  [fileVideoIcon, ['mp4', 'mov', 'avi', 'mkv', 'webm', 'm4v']],
-  [fileVoiceIcon, ['mp3', 'wav', 'm4a', 'aac', 'flac', 'ogg', 'opus']],
-  [
-    fileDocumentIcon,
-    [
-      'txt',
-      'md',
-      'markdown',
-      'rtf',
-      'log',
-      'json',
-      'yaml',
-      'yml',
-      'xml',
-      'html',
-      'htm',
-      'js',
-      'ts',
-      'tsx',
-      'jsx',
-      'py',
-      'java',
-      'c',
-      'h',
-      'cpp',
-      'go',
-      'rs',
-      'rb',
-      'sh',
-      'sql',
-      'css',
-    ],
-  ],
-]
-
-const ATTACHMENT_CARD_ICONS: Record<string, string> = Object.fromEntries(
-  ATTACHMENT_CARD_ICON_GROUPS.flatMap(([icon, exts]) => exts.map((ext) => [ext, icon])),
-)
-
 function AttachmentCardIcon({ ext }: { ext: string }) {
-  return <img src={ATTACHMENT_CARD_ICONS[ext] ?? fileGeneralIcon} alt="" aria-hidden />
+  return <SharedAttachmentCardIcon ext={ext} />
 }
+
 
 /** Card name slot width: 190 card - 2 border - 8/14 padding - 40 icon - 10 gap */
 const CARD_NAME_MAX_WIDTH = 116

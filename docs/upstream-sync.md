@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/chaoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第四十二轮完成（2026-11-19，终点 6b43f81b，施工于 r42-work；区间无新 tag 后三位维持 0.13.18；63 提交全吸收+双重对账+八批缝合+全量门禁+web 真机 smoke——详见 §R42 小节**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第四十三轮完成（2026-11-19，终点 2491896c，施工于 sync/43-upstream；区间无新 tag 后三位维持 0.13.18；20 提交全吸收+patch-id 对账（12 原样/8 adapted）+全量门禁+web 真机 smoke；同链本地三提交=图标单一事实源收口（packages/ui/file-tiles）+首页左树改版/右侧文件树/右上角文件图标恢复——详见 §R43 小节**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -787,6 +787,43 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 **R41 起点=0ac588ff**（v0.12.852-28-g0ac588ff）。
 
 
+## 第四十三轮（2026-11-19，上游 6b43f81b..2491896c 20 提交全吸收，施工于 sync/43-upstream；区间无新 tag（v0.13.18-139-g2491896c），chaofficeUpstreamVersion 维持 0.13.18，六段 1.0.18.0.13.18，本轮未打包 Z 不动；同链三本地提交=图标单一事实源收口+首页左树改版右侧文件树+R43 测试适配）
+
+> 上游 20 提交=docs 引擎修复波（#2860 嵌套表格内分页+#2861 表格单元格空行+#2862 填充分隔行顶对齐+#2850 Word 列表级次→HTML 嵌套列表+#2846 图组旁锚线换行+#2853 单元格内嵌表格字数+#2852 Avenir Next LT Pro 字体链+#2851 View>Ruler 跨窗口记忆（stored-flag 新件））+sheets（#2737 网格滚动时单元格编辑器跟随+#2761 ribbon 溢出时先紧凑后图标化（ribbon-fit 新件）+#2857 流式状态命名工作簿）+odf2ooxml（#2616 表格预算下重复行展开）+pptx-ops（#2864 setText 拒绝不支持的 bullet 格式（原子性前拒绝））+ai-provider（#2656 MiniMax H3-Image 生图模型族）+shell（#2859 Linux 网络文件夹不卡窗口（per-folder-watch 新件）+#2865 知识库问答背后展示星标文件+#2847 headless 导出前初始化保存语言）+i18n（#2740 保存/打开失败文案短化（shortFileError 入 packages/ui））+bench（#2756 pdf2docx 发票/报告精度记分卡 vs LibreOffice）。**依赖零变更**（regexpp 等未触及 lock）。
+
+### 《冲突与裁决清单》（八冲突文件全清）
+
+| 域/提交 | 裁决 |
+|---|---|
+| #2656 media.ts | 本地供应商超集（pollinations/agnes/huggingface/deepseek keyless 族）+上游 minimax 条目 imageModels/defaultImageModel 织入；types.ts 收窄可选（上游必填×本地 keyless 无携带矛盾，adapted） |
+| #2740 file-actions×2 | 品牌 import 并集（@chaoffice/ui）；slides 保本地三分支保存架构（ok/error/dismissed 首存对话框），shortFileError 只叠进 error 分支（adapted） |
+| #2852 css-chains.ts | 品牌（GenOffice PUA Blank→ChaAI Office PUA Blank）+avenir next lt pro 三键全收 |
+| #2761 ExcelShell.tsx | 保本地 isModalOpen 单导入+内联 stepFontSize；只收 installRibbonFit 导入+useEffect（adapted：上游分叉版 ExcelShell 的 resolveGlobalShortcut/font-size-ladder 导入属其自有上下文，本地不随） |
+| #2865 KbAskPanel.tsx | applyCorpus 统一快照（ref+state+count 同源）收编；window.aiOffice→chaOffice 桥名品牌；本地 V2 selection 架构不动 |
+| #2864 pptx-engine index.ts | SVG_BLIP_URI（本地）+imageExtensionSupported（上游）导出并集 |
+| #2860 pagination-gaps.ts | **中间地带**：上游内联 build 收敛成模块级 buildGapEl/gapContentKey 采纳；本地折叠模式三件（applyGapMode 全局收起态/双击统一开合/boundaryY dataset）织进 helper——嵌套表格新调用位（inlineDOM/nested table/cell）与主路径同行为；旧折叠标志迁移键（chatsCollapsed 组合）废除统一落 projects |
+| 测试适配×2 | #2847 headless-language：本地 ready 前缀多 startSiteSync 补 vm 桩+CHAOFFICE_LANG 桥名；#2656 media：策展 imageModels 可选契约改编（本地 live-discovery 架构） |
+
+### 对账与品牌
+
+- **20/20 patch-id 对账：12 原样+8 adapted**（#2656 供应商并集/#2740 三分支+品牌/#2852 品牌行/#2761 import 收窄/#2859+#2865 桥名品牌/#2864 导出并集/#2862 测试结构缝合/#2860 中间地带）。
+- 品牌 pass：headless-language/kb-ask-corpus/perop-settext 测试导入 @genoffice→@chaoffice 三件+pdf2docx bench 三件 genoffice→chaoffice（engine 字面量/文案/scorecard）+word-count docx-engine 导入归位；豁免外全树零残留。
+- **markdown roundtrip 语料新增豁免**：docs/upstream-sync.md（台账，glob 尾/环境变量名/箭头等正则敌对内容，R42 末次回写后 doc.check() 报 italic,italic 嵌套强调——R42 门禁跑在回写提交前的存量时差；byte round-trip 仍严格）。
+
+### 门禁终态
+
+- typecheck 全仓 0；lint 0 error；vitest 全工作区绿（npm test 首败即停盲区两次兜住：ai-provider 策展契约红→改编后全链重跑；docs docops-table-ops 一次 prosemirror 卸载后定时器 uncaught（R34/R42 类 flake，单文件+全量复跑双绿）；markdown 台账语料豁免后 1592 绿）；build:web 过。
+- **web 真机 smoke（5180+sidecar）**：左树三胶囊 Tab 默认「项目」选中✅、左栏文件面板退役（tablist 下无树）✅、TabBar 右上角「展开/隐藏文件栏」图标在位✅、点击展开右侧 home-files-pane（280px docked/1px 缝/chat 736→1016 让位）✅、关闭钮卸载✅（web 形态 folderRoots 空列表=shim 既定行为，桌面形态有默认目录）。
+
+### 本轮新坑
+
+1. **管道吞退出码两现**（`npm test 2>&1 | tail` 的 tail 出码覆盖 npm 出码——R41 已记，本轮任务通知仍报 exit 0 而实际红）：全量门禁一律重定向到日志文件+echo $? 追加，不管道。
+2. **cherry-pick sequencer 陈旧态再现**（R41 坑）：落位提交已在链上而 sequencer 仍指旧 pick（nothing to commit）——patch-id 验证落位后手清 .git/sequencer+CHERRY_PICK_HEAD（abort 会回滚整段链，禁用）。
+3. **git mv 后的提交边界**：rename 的两侧（新路径 add 与旧路径 delete）必须同一提交收口，否则中间提交树双份/缺件——本轮 icons 提交一次 amend 补齐后软重置重做。
+4. **amend 目标漂移**：连续两文件 amend 时 HEAD 已是下一提交，边界混入——reset --soft 重做为准。
+
+**R44 起点=2491896c**（上游 main 当前 HEAD）。
+
 ## 第四十二轮（2026-11-19，上游 19a389b39..6b43f81b 63 提交全吸收，施工于 r42-work worktree（前半 37 pick 落 sync/42-upstream，后半 26 pick 续于 r42-work，两段同源续链经 patch-id 对账无断层，终链链重写一次拆 articles）；区间无新 tag（最新仍 v0.13.18），chaofficeUpstreamVersion 维持 0.13.18，六段 1.0.18.0.13.18，本轮未打包 Z 不动）
 
 > 上游 63 提交=引擎修复大波（odf2ooxml：#2721-#2729 表格列宽继承/单元格底色/行列组遍历/标题保留/隐藏文本域/演示行距/重复项目符/表内分节/根级 slide notes 族+#2741 表头跨页重复+#2765 单元格垂直对齐+#2767-#2768 段落 keep/背景+#2780 列表重编号）+file-parse（#2730-#2732 根级 slide notes/DOCX 主部件优先/耗时溢出数字）+**安全加固批**（#2742 懒加载 zip 尺寸头伪造防护/#2743 electron ^43.8.10 CVE-2026-111497 brotli 修复/#2744 AI 设置文件 0o600 自愈/#2745 getDisplayMedia 仅 Slides renderer 应答/#2746 渲染层命名写通道与 reveal 通道关闭/#2748 深度 XML 树解析封顶/#2749 遗留导入路径尺寸上限/#2753 非 ASCII checkout 路径 wasm 测试/#2782 NSS 证书并发读上限）+特性（#2720 sheets Excel 正则函数族+PERCENTOF/#2736 技能说明独立页/#2598 PDF OCR bake 就地编辑+Recognize-text/#2661 视图按钮单亮/#2492/#2517/#2611/#2760 macOS 界面缩放可达/#2762 80%/90% 缩放档/#2600/#2793 逐键扫描只走必需区/#2811/#2774/#2777/#2802/#2800/#2791/#2789/#2823/#2822/#2799/#2810/#2819 gvfs 回退普通读写/#2831/#2829/#2830/#2833/#2832 RTL 视觉序）+**i18n 大件**（#2716 匈牙利语 23 语入列+hu help topics ×18+docs i18n README.hu、#2772 hu 技能页+PDF OCR 命令串）。**依赖**：@eslint-community/regexpp 入 sheets。**版本落点**：无新 tag，三段不动。
@@ -835,7 +872,7 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | W42 桌面形态真机复验 | web 形态已验；桌面 dev 因端口被用户实例占用未跑，落链后随日常 dev 复验 | 常规 |
 | 随轮发版判断 | 六段 1.0.18.0.13.18，Z 未动 | 用户决定是否 Z+1 打包 |
 
-**R43 起点=6b43f81b**（上游 main 当前 HEAD）。
+**R43 起点=6b43f81b**（R42 收轮时上游 HEAD；R43 施工后 R44 起点=2491896c，见上）。
 
 ## 第四十一轮（2026-11-15，上游 0ac588ff..19a389b39 120 提交全吸收，施工于 sync/41-upstream；终点 describe=v0.13.18-56-g19a389b39——区间含新 tag v0.13.18（=ac19c5411 快照 #2641），后三位取 tag 口径 0.13.18；本轮未打包 Z 维持 17；版本落点 apps/shell chaofficeUpstreamVersion 0.12.852→0.13.18，六段 1.0.17.0.13.18）
 

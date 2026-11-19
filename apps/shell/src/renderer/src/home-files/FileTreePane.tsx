@@ -571,9 +571,12 @@ export interface FileTreePaneProps {
   /** 树内选中的文件夹（新建文件落点，状态由 Home 持有） */
   selectedFolder: string | null
   onSelectFolder: (dir: string | null) => void
+  /** 2026-11-19 右侧项目文件树：钉住单一根（项目绑定文件夹）时树只展示它，
+   *  不拉 folderRoots 也不响应「添加文件夹」；缺省 = 原左栏全根形态 */
+  scopeRoot?: { path: string; name: string } | null
 }
 
-export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePaneProps) {
+export function FileTreePane({ selectedFolder, onSelectFolder, scopeRoot }: FileTreePaneProps) {
   const i18n = useI18n()
   const { t } = i18n
   // the default save folder first, then the folders the user added; `root` is the default one
@@ -625,6 +628,24 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
   })
 
   const loadRoot = useCallback(() => {
+    if (scopeRoot) {
+      // scoped pane (right-hand project tree): one root, always expanded, no
+      // settings/add-folder wiring — the scope owner (project row) decides it
+      setRoots((prev) => {
+        if (prev.length === 1 && prev[0].path === scopeRoot.path) return prev
+        return [
+          {
+            path: scopeRoot.path,
+            name: scopeRoot.name,
+            usable: true,
+            readable: true,
+            removable: false,
+          },
+        ]
+      })
+      setExpanded((prev) => (prev.has(scopeRoot.path) ? prev : new Set([scopeRoot.path])))
+      return
+    }
     void window.chaOffice.folderRoots().then((next) => {
       setRoots((prev) => {
         if (prev[0] && prev[0].path !== next[0]?.path) {
@@ -641,26 +662,29 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
         return next
       })
     })
-  }, [resetFolders, onSelectFolder])
+  }, [resetFolders, onSelectFolder, scopeRoot])
 
   useEffect(loadRoot, [loadRoot])
 
   useEffect(() => {
-    if (root?.usable) writeTreeState({ expanded: [...expanded], root: root.path })
-  }, [expanded, root])
+    // scoped panes (right-hand project tree) never touch the shared layout
+    // slot — it belongs to the all-roots view
+    if (!scopeRoot && root?.usable) writeTreeState({ expanded: [...expanded], root: root.path })
+  }, [expanded, root, scopeRoot])
 
   useEffect(() => {
     if (!root?.usable) return
     if (seededRoot.current !== root.path) {
       seededRoot.current = root.path
-      if (treeState.root !== root.path) {
+      if (!scopeRoot && treeState.root !== root.path) {
         // a layout saved for another root is not ours: start from the root rows
+        // (a scoped pane always starts from its own root, freshly expanded)
         setExpanded(new Set(roots.map((r) => r.path)))
         return
       }
     }
     for (const dir of expanded) loadFolder(dir)
-  }, [root, roots, expanded, loadFolder, treeState])
+  }, [root, roots, expanded, loadFolder, treeState, scopeRoot])
 
   useEffect(() => {
     if (selectedFolder) loadFolder(selectedFolder)
@@ -1369,7 +1393,9 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
         <div className="folder-panel-head">
           <span className="folder-panel-title">{t('folders')}</span>
           <div className="folder-panel-actions">
-            {roots.length > 0 && (
+            {/* scoped panes show one pinned root — adding roots is an
+                all-roots-view action only */}
+            {!scopeRoot && roots.length > 0 && (
               <button
                 className="folder-add-btn folder-add-root-btn"
                 data-tip={t('addFolderRoot')}

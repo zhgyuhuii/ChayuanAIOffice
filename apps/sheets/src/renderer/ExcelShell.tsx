@@ -101,6 +101,9 @@ import {
 import {
 } from './excel-format-shortcuts'
 import { isModalOpen } from './global-shortcuts'
+// adapted: #2761 ribbon-fit 只收 installRibbonFit；resolveGlobalShortcut/font-size-ladder
+// 导入属上游分叉版 ExcelShell 的既有上下文，本地用内联 stepFontSize+global-shortcuts 单导入
+import { installRibbonFit } from './ribbon-fit'
 import { scrollRibbonOnWheel } from './ribbon-wheel'
 
 import type { ChartSeriesVisualState } from '@chaoffice/xlsx-gateway/domain/chart-visual'
@@ -781,6 +784,12 @@ export function ExcelShell({
     window.addEventListener('wheel', scrollRibbonOnWheel, { passive: false })
     return () => window.removeEventListener('wheel', scrollRibbonOnWheel)
   }, [])
+  // Tight metrics, then icon-only groups from the right, only when the band would scroll
+  const ribbonRoot = collapse.rootRef
+  useEffect(() => {
+    const header = ribbonRoot.current
+    return header ? installRibbonFit(header) : undefined
+  }, [ribbonRoot])
   useEffect(() => {
     // a docked boot must not clobber the user's persisted preference
     if (dockedRef.current) return

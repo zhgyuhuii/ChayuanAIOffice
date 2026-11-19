@@ -1321,6 +1321,15 @@ export function Home() {
 
   // ── 文件树选中的文件夹（新建文件的落点；共识 Q2：树选中=落点，未选中=默认目录） ──
   const [newFileDir, setNewFileDir] = useState<string | null>(null)
+  // ── 右侧文件树（2026-11-19 左树退役文件面板后的承接位）：scopeRoot 钉住项目
+  //    根目录（项目行「查看文件」进来），null = 全根形态（folderRoots 默认目录+已添加）。
+  //    开合走 home-layout 的 rightCollapsed（TabBar 右上角文件图标同键），与
+  //    zcode-ref 的 SidePane 行为一致：图标只翻转开合，树内容由最后请求的根决定 ──
+  const [filesPaneRoot, setFilesPaneRoot] = useState<{ path: string; name: string } | null>(null)
+  const openProjectFiles = useCallback((path: string, name: string) => {
+    setFilesPaneRoot({ path, name })
+    setHomeLayout({ rightCollapsed: false })
+  }, [])
 
   // ── Project state ──
   const [projects, setProjects] = useState<ProjectSummaryEntry[]>([])
@@ -2880,7 +2889,10 @@ export function Home() {
                             aria-label={t('viewFiles')}
                             onClick={(event) => {
                               event.stopPropagation()
-                              void window.chaOffice.revealPath(proj.rootPath!)
+                              // 2026-11-19：查看文件从 OS revealPath 改为右侧项目文件树
+                              // （zcode-ref ProjectNodeContent ListTree 同款行为）；
+                              // revealPath 仍保留在行菜单里
+                              openProjectFiles(proj.rootPath!, displayName)
                             }}
                           >
                             <TreeListTreeIcon />
@@ -3305,8 +3317,8 @@ export function Home() {
                 : layout.activeTab === 'projects' && projectMode
                   ? renderProjectsSection()
                   : renderChatsSection()}
-              {/* 上游 #757 文件树（树内联文件+全文搜索）；LOCAL: 移植进新组件，见 home-files/FileTreePane.tsx */}
-              <FileTreePane selectedFolder={newFileDir} onSelectFolder={setNewFileDir} />
+              {/* 上游 #757 文件树（树内联文件+全文搜索）2026-11-19 起移出左栏，
+                  承接位在右侧 home-files-pane（项目行「查看文件」/右上角文件图标） */}
             </>
           )}
         </div>
@@ -3375,6 +3387,32 @@ export function Home() {
               projects={projects}
             />
           </div>
+          {/* 右侧文件树（2026-11-19）：左栏退役文件面板后的承接位。开合由
+              home-layout.rightCollapsed 控制（TabBar 右上角文件图标同一把键）；
+              filesPaneRoot 钉项目根时树只展示该项目，null 时为全根形态。
+              点击文件行直接 openPath 开标签（FileTreePane 既有行为） */}
+          {!layout.rightCollapsed && (
+            <aside className="home-files-pane" aria-label={t('filesPaneTitle')}>
+              <div className="home-files-pane-head">
+                <span className="home-files-pane-title">
+                  {filesPaneRoot ? filesPaneRoot.name : t('filesPaneTitle')}
+                </span>
+                <button
+                  className="home-files-pane-close"
+                  aria-label={t('toggleFilesPane')}
+                  title={t('toggleFilesPane')}
+                  onClick={() => setHomeLayout({ rightCollapsed: true })}
+                >
+                  <TreeXIcon size={13} />
+                </button>
+              </div>
+              <FileTreePane
+                selectedFolder={newFileDir}
+                onSelectFolder={setNewFileDir}
+                scopeRoot={filesPaneRoot}
+              />
+            </aside>
+          )}
         </>
       )}
 

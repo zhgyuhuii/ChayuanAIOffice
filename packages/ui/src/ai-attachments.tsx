@@ -1,18 +1,12 @@
 /**
  * The attachment echo under a sent AI message: the file-type icon card and,
  * for images, the preview thumbnail. Every app's AiPanel carried a verbatim
- * copy of this block (docs/slides/sheets/html); the icon assets are the same
- * bytes everywhere, so they live here once.
+ * copy of this block (docs/slides/sheets/html); the tile art is the shared
+ * single-glyph family (./file-tiles — same source as the OS file-association
+ * icons and the home lists), so the icon mapping lives here once.
  */
-import fileDocumentIcon from './assets/file-document.png'
-import fileExcelIcon from './assets/file-excel.png'
-import fileGeneralIcon from './assets/file-general.png'
-import fileImageIcon from './assets/file-image.png'
-import filePdfIcon from './assets/file-pdf.png'
-import filePptIcon from './assets/file-ppt.png'
-import fileVideoIcon from './assets/file-video.png'
-import fileVoiceIcon from './assets/file-voice.png'
-import fileWordIcon from './assets/file-word.png'
+import { FileTileBadge, FILE_TILE_ICONS } from './file-tiles/badge'
+import fileImageTile from './file-tiles/file-image.svg'
 
 /** Structural stand-in for the per-app AttachmentMeta: only what the echo reads. */
 export interface AiAttachmentLike {
@@ -22,58 +16,18 @@ export interface AiAttachmentLike {
   readonly sizeBytes: number
 }
 
-export { fileDocumentIcon, fileGeneralIcon, fileImageIcon }
+/** image tile URL — the pending-thumbnail placeholder while a preview loads */
+export const fileImageIcon = fileImageTile
+/** kept for the barrel's compatibility surface; tiles replaced the banner art */
+export const fileGeneralIcon = FILE_TILE_ICONS.txt
+export const fileDocumentIcon = FILE_TILE_ICONS.txt
 
 /** Image attachments render as thumbnails (previews) instead of icon cards. */
 export const ATTACHMENT_IMAGE_EXTS = new Set(['png', 'jpg', 'jpeg', 'gif', 'webp'])
 
-const ATTACHMENT_CARD_ICON_GROUPS: [icon: string, exts: string[]][] = [
-  [fileWordIcon, ['doc', 'docx']],
-  [fileExcelIcon, ['xls', 'xlsx', 'xlsm', 'csv', 'tsv']],
-  [filePptIcon, ['ppt', 'pptx']],
-  [filePdfIcon, ['pdf']],
-  [fileImageIcon, ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg', 'tiff', 'heic']],
-  [fileVideoIcon, ['mp4', 'mov', 'avi', 'mkv', 'webm', 'm4v']],
-  [fileVoiceIcon, ['mp3', 'wav', 'm4a', 'aac', 'flac', 'ogg', 'opus']],
-  [
-    fileDocumentIcon,
-    [
-      'txt',
-      'md',
-      'markdown',
-      'rtf',
-      'log',
-      'json',
-      'yaml',
-      'yml',
-      'xml',
-      'html',
-      'htm',
-      'js',
-      'ts',
-      'tsx',
-      'jsx',
-      'py',
-      'java',
-      'c',
-      'h',
-      'cpp',
-      'go',
-      'rs',
-      'rb',
-      'sh',
-      'sql',
-      'css',
-    ],
-  ],
-]
-
-export const ATTACHMENT_CARD_ICONS: Record<string, string> = Object.fromEntries(
-  ATTACHMENT_CARD_ICON_GROUPS.flatMap(([icon, exts]) => exts.map((ext) => [ext, icon])),
-)
-
-export function AttachmentCardIcon({ ext }: { ext: string }) {
-  return <img src={ATTACHMENT_CARD_ICONS[ext] ?? fileGeneralIcon} alt="" aria-hidden />
+/** Card icon: the shared single-glyph tile (ext → tile, gray-letter fallback). */
+export function AttachmentCardIcon({ ext, size = 40 }: { ext: string; size?: number }) {
+  return <FileTileBadge ext={ext} size={size} />
 }
 
 /** Card name slot width: 190 card - 2 border - 8/14 padding - 40 icon - 10 gap */
@@ -123,7 +77,7 @@ export function SentAttachments({
               <img src={previews[a.path]} alt={a.name} />
             ) : (
               <span className="ai-attachment-thumb-pending" aria-hidden>
-                <img src={fileImageIcon} alt="" />
+                <img src={fileImageTile} alt="" />
               </span>
             )}
           </span>

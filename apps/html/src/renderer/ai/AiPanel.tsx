@@ -43,13 +43,9 @@ import { htmlModelBridge } from './model-bridge'
 import { AssistantTab } from './AssistantTab'
 import { AssistantLibraryBrowser } from '@chaoffice/ui/assistant-library'
 import { IconPalette, IconSummarize, IconWand } from '../components/icons'
-import fileDocumentIcon from '../assets/file-document.png'
-import fileExcelIcon from '../assets/file-excel.png'
-import fileGeneralIcon from '../assets/file-general.png'
-import fileImageIcon from '../assets/file-image.png'
-import filePdfIcon from '../assets/file-pdf.png'
-import filePptIcon from '../assets/file-ppt.png'
-import fileWordIcon from '../assets/file-word.png'
+// LOCAL(2026-11-19, r43): 附件卡图标改用共享单字形瓦片（@chaoffice/ui
+// file-tiles 家族），旧横幅 PNG 退役
+import { AttachmentCardIcon as SharedAttachmentCardIcon, fileImageIcon } from '@chaoffice/ui'
 import { createDocumentSkill } from './html-skill'
 import { createFilesSkill } from './files-skill'
 import { createIntentSkill, type PageIntent } from './intent'
@@ -114,17 +110,10 @@ const PASTE_MIME_EXT: Record<string, string> = {
   'image/gif': 'gif',
   'image/webp': 'webp',
 }
-const ATTACHMENT_CARD_ICONS: Record<string, string> = Object.fromEntries(
-  (
-    [
-      [fileWordIcon, ['doc', 'docx']],
-      [fileExcelIcon, ['xls', 'xlsx', 'xlsm', 'csv', 'tsv']],
-      [filePptIcon, ['ppt', 'pptx']],
-      [filePdfIcon, ['pdf']],
-      [fileImageIcon, ['png', 'jpg', 'jpeg', 'gif', 'webp']],
-    ] as [string, string[]][]
-  ).flatMap(([icon, exts]) => exts.map((ext) => [ext, icon])),
-)
+/** LOCAL(2026-11-19, r43): 卡图标直用共享单字形瓦片（见顶部 import） */
+function AttachmentCardIcon({ ext }: { ext: string }) {
+  return <SharedAttachmentCardIcon ext={ext} />
+}
 const MAX_IMAGES_PER_MESSAGE = 20
 
 function formatAttachmentSize(bytes: number): string {
@@ -179,11 +168,7 @@ function AttachmentList({
         ) : (
           <span key={a.path} className="ai-attachment-card" title={a.path}>
             <span className="ai-attachment-card-icon">
-              <img
-                src={ATTACHMENT_CARD_ICONS[a.ext] ?? fileDocumentIcon ?? fileGeneralIcon}
-                alt=""
-                aria-hidden
-              />
+              <AttachmentCardIcon ext={a.ext} />
             </span>
             <span className="ai-attachment-card-meta">
               <span className="ai-attachment-card-name">{a.name}</span>

@@ -106,7 +106,8 @@ import {
   type ToolActivity,
 } from './ai-body-types'
 import attachIcon from '../assets/attach-icon.png'
-import fileImageIcon from '../assets/file-image.png'
+// LOCAL(2026-11-19, r43): 图片占位随共享瓦片走（旧 file-image.png 退役）
+import { fileImageIcon } from '@chaoffice/ui'
 
 export interface AiConversationBodyProps {
   chatId: string
