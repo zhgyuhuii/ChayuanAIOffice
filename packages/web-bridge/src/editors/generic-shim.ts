@@ -172,7 +172,7 @@ export function installSlidesShim(client: BridgeClient): void {
   const editThroughCommand = async (
     ops: unknown[],
     fitWidthPx: number,
-    slideIndex: number,
+    _slideIndex: number,
   ): Promise<{ slide: unknown; sourceId: string } | null> => {
     if (!session) return null
     const res = (await client.call('rpc', 'pptx.command', {

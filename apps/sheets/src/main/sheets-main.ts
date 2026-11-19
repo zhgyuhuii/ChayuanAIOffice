@@ -82,7 +82,6 @@ import {
   registerRendererScheme,
   rendererUrl,
   writeJsonAtomic,
-  restrictFileToOwner,
   recoveryCopyDiskNewer,
   configuredAuthorName,
   readLegacyImportSkip,
