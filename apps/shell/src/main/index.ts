@@ -9070,6 +9070,8 @@ app.whenReady().then(async () => {
     help: join(__dirname, '../renderer'),
   })
   if (headlessArgv.kind !== 'none') {
+    // Headless renderers use the same shared language as editor tabs.
+    currentLang()
     await runHeadlessExportEntry(headlessArgv)
     return
   }
