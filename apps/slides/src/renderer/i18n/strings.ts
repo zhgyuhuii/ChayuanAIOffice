@@ -42,10 +42,4 @@ export const strings = {
     ...aiStrings.tr,
   },
   hu: { ...appStrings.hu, ...ribbonStrings.hu, ...paneStrings.hu, ...aiStrings.hu },
-  'zh-TW': {
-    ...appStrings['zh-TW'],
-    ...ribbonStrings['zh-TW'],
-    ...paneStrings['zh-TW'],
-    ...aiStrings['zh-TW'],
-  },
 }

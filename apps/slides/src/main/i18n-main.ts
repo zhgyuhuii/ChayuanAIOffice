@@ -607,12 +607,16 @@ export const tMain = createI18n({
     errImageNoText:
       'A képmellékletek nem tartalmaznak szöveget; a kép a felhasználó üzenetével együtt kerül elküldésre',
     errNotImage: 'nem támogatott képtípus',
-    errGskNotLoggedIn:
+    errChaOfficeNotLoggedIn:
       'Nem vagy bejelentkezve a ChaAI Officeba: kattints alább a „Bejelentkezés a ChaAI Officeba” gombra, jelentkezz be, majd próbáld újra',
     errNoApiKey: 'Nincs API-kulcs beállítva a következőhöz: {provider}',
     errNoModel: 'Nincs modellnév beállítva',
-    errGskCli:
-      'A gsk nincs bejelentkezve: futtasd a gsk login parancsot, hogy előbb bejelentkezz a ChaAI Office-fiókodba',
+    errChaOfficeCli:
+      'A gsk nincs bejelentkezve: futtasd a chaoffice login parancsot, hogy előbb bejelentkezz a ChaAI Office-fiókodba',
+    // LOCAL(2026-11-19): 本地键 2 枚（上游 hu 表没有，Record 全键集必需）——hu 译补齐
+    errNoImageModel: 'Nincs képmodell beállítva: engedélyezz képmodellt a modellbeállításokban',
+    errChaOfficeToolsOff:
+      'A felhőeszközök ki vannak kapcsolva a modellbeállításokban: a funkció használatához kapcsold be őket',
     errNoDeckAppend:
       'Nincs bemutató, amihez hozzá lehetne adni (a munkamenet hiányzik). Az első oldalt a mode:"replace" móddal generáld, vagy adj hozzá oldalakat a natív eszközökkel.',
     errAppendFailed: 'Hozzáadás sikertelen: {reason}',

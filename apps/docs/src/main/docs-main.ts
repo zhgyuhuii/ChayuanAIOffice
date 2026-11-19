@@ -77,7 +77,6 @@ import {
   readBodyCapped,
   setContextMenuInterceptor,
   writeJsonAtomic,
-  restrictFileToOwner,
   recoveryCopyDiskNewer,
   readLegacyImportSkip,
   writeLegacyImportSkip,

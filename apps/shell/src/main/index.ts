@@ -1509,6 +1509,29 @@ const tMain = createI18n({
   
 },
   hu: {
+    // LOCAL(2026-11-19): 本地独有键 20 枚（察元OS 激活/购买、本地 Word 导出、PDF 云转 credits、标签右键菜单）——上游 hu 表没有，Record 全键集必需，hu 译补齐
+    menuActivate: 'Licenc',
+    menuActivateEntitled: 'Aktiválva · érvényes: {date}',
+    menuActivateExpired: 'A próbaidőszak lejárt · a vásárlással kikapcsolhatod az emlékeztetőket',
+    menuActivateFree: 'Ingyenes próbaidőszak · {n} nap hátra',
+    menuActivateLoading: 'Licencállapot betöltése…',
+    menuExportDocxLocal: 'Exportálás Wordként (helyi)…',
+    menuPurchaseActivate: 'Vásárlás / aktiválás…',
+    pdfDocxBtnConvert: 'Folytatás',
+    pdfDocxBtnLogin: 'Bejelentkezés',
+    pdfDocxConfirmBalance: 'Jelenlegi egyenleg: {balance} kredit.',
+    pdfDocxConfirmDetail:
+      'Az átalakítás 5 kreditbe kerül. A fájl fel lesz töltve felhőfeldolgozásra.',
+    pdfDocxConfirmMsg: 'Feltöltjük ezt a PDF-et a ChaAI Office felhőbe, és Word formátumra alakítjuk?',
+    pdfDocxLoginDetail:
+      'A „Bejelentkezés” gombra kattintva a böngészőben engedélyezheted; ha kész, kattints újra az Exportálásra.',
+    pdfDocxLoginMsg: 'A Word-exportáláshoz be kell jelentkezni a ChaAI Office fiókba.',
+    pdfDocxNoCliMsg: 'Nem lehet bejelentkezni a ChaAI Office-ba: hiányzik a szükséges összetevő (chaoffice), telepítsd újra az alkalmazást.',
+    tabCtxClose: 'Bezárás',
+    tabCtxCloseAll: 'Összes bezárása',
+    tabCtxCloseLeft: 'Baloldaliak bezárása',
+    tabCtxCloseOthers: 'Többi bezárása',
+    tabCtxCloseRight: 'Jobboldaliak bezárása',
     menuTabSave: 'Mentés',
     menuTabSaveAs: 'Mentés másként…',
     menuTabPrint: 'Nyomtatás…',
