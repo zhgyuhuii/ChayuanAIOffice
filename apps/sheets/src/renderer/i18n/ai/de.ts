@@ -119,4 +119,5 @@ export const de = {
   aiDockRestore: 'Bereich wiederherstellen',
   aiToolGenSvg: 'SVG-Illustration zeichnen',
   aiToolGenSvgDone: 'SVG-Illustration rasterisiert; mit add_image platzieren',
+  aiGskLoginOk: 'Bei ChaAI Office angemeldet',
 }

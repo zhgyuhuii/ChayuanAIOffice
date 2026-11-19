@@ -17,6 +17,7 @@ import {
   type DocWriteSpec,
 } from './doc-writer'
 import type { AiCommentsAccess, AiDocExtras, AiHeaderFooterAccess } from './tools'
+import { showToast } from '../components/toast-bus'
 import type { AiPageSetupAccess } from './page-setup'
 import type { AiNotesAccess } from './note-ops'
 import { createElectronTransport } from './transport'
@@ -154,6 +155,20 @@ export function AiPanel({
 
   // 未保存 → 已保存 / 文件重命名:索引键换绑(chatId 不变;数据流单点在 hook)
   const prevFilePathRef = useRef(filePath ?? null)
+  // A browser-approved sign-in landed (from this panel's sign-in button
+  // or any other surface): confirm it where the user is and retire the inline
+  // sign-in buttons — nothing else in an editor view changes visibly on login.
+  useEffect(
+    () =>
+      window.desktop?.onChaOfficeLoginLanded?.(() => {
+        gskLoggedInRef.current = true
+        // 本地多会话池:消息态由 useAiConversations 持有,面板级只提示
+        showToast(tModule('aiGskLoginOk'), 'success')
+      }),
+    [],
+  )
+
+  const gskLoggedInRef = useRef(false)
   useEffect(() => {
     const prev = prevFilePathRef.current
     prevFilePathRef.current = filePath ?? null

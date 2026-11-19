@@ -2050,6 +2050,8 @@ export interface SlidesApi {
   aiLocalToolStatus(vendorId: string): Promise<LocalToolStatus>
   aiLocalToolInstall(vendorId: string, onLine?: (line: string) => void): Promise<LocalToolOpResult>
   aiLocalToolStart(vendorId: string): Promise<LocalToolOpResult>
+  /** A browser-approved sign-in landed (whichever surface started it) */
+  onChaOfficeLoginLanded: (handler: () => void) => () => void
   /** Record a run that ended without a usable reply, for post-mortem (fire-and-forget, never throws) */
   aiLogRunFailure: (entry: AiRunFailure) => Promise<void>
   webSearch: (

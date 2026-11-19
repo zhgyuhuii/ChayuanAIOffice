@@ -119,4 +119,5 @@ export const hi = {
   aiDockRestore: 'पैनल पुनर्स्थापित करें',
   aiToolGenSvg: 'SVG चित्र बनाएँ',
   aiToolGenSvgDone: 'SVG चित्र रैस्टराइज़ हो गया; add_image से रखें',
+  aiGskLoginOk: 'ChaAI Office में साइन इन हो गए',
 }

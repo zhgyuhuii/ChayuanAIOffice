@@ -129,4 +129,5 @@ export const hu = {
   aiDockRestore: 'Restore panel',
   aiToolGenSvg: 'Draw SVG illustration',
   aiToolGenSvgDone: 'SVG illustration rasterized; place it with add_image',
+  aiGskLoginOk: 'Bejelentkezve a ChaAI Officeba',
 } satisfies Record<keyof typeof zh, string>

@@ -119,4 +119,5 @@ export const nl = {
   aiDockRestore: 'Paneel herstellen',
   aiToolGenSvg: 'SVG-illustratie tekenen',
   aiToolGenSvgDone: 'SVG-illustratie gerasterd; plaats met add_image',
+  aiGskLoginOk: 'Aangemeld bij ChaAI Office',
 }

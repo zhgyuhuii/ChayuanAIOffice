@@ -25,14 +25,8 @@
 
 import { isEastAsianFaceName, isJapaneseFaceName, isKoreanFaceName } from './text-layout/face-info'
 import { openDocumentText } from './text-layout/open-document'
-import type { DocGrid } from '@chaoffice/docx-engine'
-import {
-  isCjkLetterChar,
-  isDoubleByteChar,
-  isEastAsianChar,
-  isHangulChar,
-  textHasEastAsian,
-} from '@chaoffice/docx-engine'
+import { DocGrid, isCjkLetterChar, isDoubleByteChar, isEastAsianChar, isHangulChar, textHasEastAsian } from '@chaoffice/docx-engine'
+import { LINE_GRIDS } from './char-grid'
 import {
   SEGOE_SYMBOL_CSS,
   declaredFaceMetrics,
@@ -387,7 +381,7 @@ export function computeLineHeight(
   // max(rule value, snapped single). Holds for mult < 1 and atLeast; exact
   // never snaps; w:snapToGrid=0 opts a paragraph out (pitch 0 here).
   const pitchPx =
-    docGrid && (docGrid.type === 'lines' || docGrid.type === 'linesAndChars') && docGrid.linePitch
+    docGrid && LINE_GRIDS.includes(docGrid.type) && docGrid.linePitch
       ? docGrid.linePitch * TWIPS_TO_PX
       : 0
   const snapped = snapLineToPitch(naturalLineH, pitchPx)

@@ -327,4 +327,5 @@ export const cs = {
   aiToolRunReadUrl: 'Čtu stránku…',
   aiPageCloudToLocal: 'Cloud není dostupný — vygenerováno lokálně',
 
+  aiGskLoginOk: 'Přihlášeno ke ChaAI Office',
 }

@@ -237,4 +237,5 @@ export const th = {
   aiMindMapToggleLayout: 'สลับเลย์เอาต์',
   aiMindMapLayoutTopDown: 'สลับเป็นเลย์เอาต์แบบบนลงล่าง',
   aiMindMapLayoutLeftRight: 'สลับเป็นเลย์เอาต์แบบซ้ายไปขวา',
+  aiGskLoginOk: 'ลงชื่อเข้าใช้ ChaAI Office แล้ว',
 } satisfies Record<keyof typeof zh, string>

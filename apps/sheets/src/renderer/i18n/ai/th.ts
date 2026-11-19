@@ -119,4 +119,5 @@ export const th = {
   aiDockRestore: 'คืนค่าแผง',
   aiToolGenSvg: 'วาดภาพประกอบ SVG',
   aiToolGenSvgDone: 'แรสเตอร์ภาพ SVG แล้ว วางด้วย add_image',
+  aiGskLoginOk: 'ลงชื่อเข้าใช้ ChaAI Office แล้ว',
 }

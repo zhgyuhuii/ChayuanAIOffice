@@ -242,4 +242,5 @@ export const pl = {
   aiMindMapToggleLayout: 'Zmień układ',
   aiMindMapLayoutTopDown: 'Przełącz na układ od góry do dołu',
   aiMindMapLayoutLeftRight: 'Przełącz na układ od lewej do prawej',
+  aiGskLoginOk: 'Zalogowano do ChaAI Office',
 } satisfies Record<keyof typeof zh, string>

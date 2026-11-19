@@ -119,4 +119,5 @@ export const ru = {
   aiDockRestore: 'Восстановить панель',
   aiToolGenSvg: 'Нарисовать SVG-иллюстрацию',
   aiToolGenSvgDone: 'SVG-иллюстрация растрирована; разместите через add_image',
+  aiGskLoginOk: 'Выполнен вход в ChaAI Office',
 }

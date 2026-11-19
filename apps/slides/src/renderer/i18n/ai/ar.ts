@@ -327,4 +327,5 @@ export const ar = {
   aiToolRunReadUrl: 'جارٍ قراءة الصفحة…',
   aiPageCloudToLocal: 'السحابة غير متاحة — تم التوليد محليًا',
 
+  aiGskLoginOk: 'تم تسجيل الدخول إلى ChaAI Office',
 }

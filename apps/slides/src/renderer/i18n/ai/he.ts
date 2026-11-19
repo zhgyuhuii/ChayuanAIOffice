@@ -327,4 +327,5 @@ export const he = {
   aiToolRunReadUrl: 'העמוד נקרא…',
   aiPageCloudToLocal: 'הענן לא זמין — נוצר מקומית',
 
+  aiGskLoginOk: 'מחובר ל-ChaAI Office',
 }

@@ -520,6 +520,11 @@ const api: SlidesApi = {
       .finally(() => ipcRenderer.removeListener('ai:local-tool-progress', ch))
   },
   aiLocalToolStart: (vendorId: string) => ipcRenderer.invoke('ai:local-tool-start', vendorId),
+  onChaOfficeLoginLanded: (handler: () => void) => {
+    const listener = () => handler()
+    ipcRenderer.on('ai:chaoffice-login-landed', listener)
+    return () => ipcRenderer.removeListener('ai:chaoffice-login-landed', listener)
+  },
   aiLogRunFailure: (entry: AiRunFailure) => ipcRenderer.invoke('ai:log-run-failure', entry),
   webSearch: (query: string, maxResults?: number) =>
     ipcRenderer.invoke('ai:web-search', query, maxResults),

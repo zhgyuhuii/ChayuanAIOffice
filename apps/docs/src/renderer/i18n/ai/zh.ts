@@ -228,4 +228,5 @@ export const zh = {
   aiMindMapToggleLayout: '切换布局',
   aiMindMapLayoutTopDown: '切换为从上到下布局',
   aiMindMapLayoutLeftRight: '切换为左右分栏布局',
+  aiGskLoginOk: '已登录 察元AIOffice',
 }

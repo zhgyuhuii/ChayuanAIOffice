@@ -180,6 +180,19 @@ describe('image posOffset (free-position drag)', () => {
     expect(out).toContain('relativeHeight="251658240"')
   })
 
+  it('patchImageParagraphXml turns an alignment keyword into the dragged offset', () => {
+    const aligned = ANCHOR_IMAGE_XML.replace(
+      /(<wp:positionH[^>]*>)<wp:posOffset>-?\d+<\/wp:posOffset>/,
+      '$1<wp:align>left</wp:align>',
+    )
+    expect(aligned).toContain('<wp:align>left</wp:align>')
+    const out = patchImageParagraphXml(aligned, { posOffsetX: 1905000 })
+    expect(out).toContain(
+      '<wp:positionH relativeFrom="column"><wp:posOffset>1905000</wp:posOffset></wp:positionH>',
+    )
+    expect(out).not.toContain('<wp:align>')
+  })
+
   it('patchImageParagraphXml leaves images without posOffset unchanged', () => {
     // IMAGE_PARAGRAPH_XML is inline (no posOffset) — no rewrite should happen
     const unchanged = patchImageParagraphXml(IMAGE_PARAGRAPH_XML, {

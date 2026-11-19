@@ -119,4 +119,5 @@ export const pt = {
   aiDockRestore: 'Restaurar painel',
   aiToolGenSvg: 'Desenhar ilustração SVG',
   aiToolGenSvgDone: 'Ilustração SVG rasterizada; coloque-a com add_image',
+  aiGskLoginOk: 'Conectado ao ChaAI Office',
 }

@@ -327,4 +327,5 @@ export const zhTW = {
   aiToolRunReadUrl: '正在讀取網頁…',
   aiPageCloudToLocal: '雲端不可用,已本地生成',
 
+  aiGskLoginOk: '已登入 察元AIOffice',
 }

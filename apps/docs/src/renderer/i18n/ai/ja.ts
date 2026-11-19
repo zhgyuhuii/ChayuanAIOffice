@@ -241,4 +241,5 @@ export const ja = {
   aiMindMapToggleLayout: 'レイアウトを切り替え',
   aiMindMapLayoutTopDown: '上から下のレイアウトに切り替える',
   aiMindMapLayoutLeftRight: '左右のレイアウトに切り替える',
+  aiGskLoginOk: 'ChaAI Office にサインインしました',
 } satisfies Record<keyof typeof zh, string>

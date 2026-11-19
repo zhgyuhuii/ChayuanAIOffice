@@ -240,4 +240,5 @@ export const en = {
   aiMindMapToggleLayout: 'Switch layout',
   aiMindMapLayoutTopDown: 'Switch to the top-down layout',
   aiMindMapLayoutLeftRight: 'Switch to the left-right layout',
+  aiGskLoginOk: 'Signed in to ChaAI Office',
 } satisfies Record<keyof typeof zh, string>

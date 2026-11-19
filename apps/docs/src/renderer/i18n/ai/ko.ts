@@ -237,4 +237,5 @@ export const ko = {
   aiMindMapToggleLayout: '레이아웃 전환',
   aiMindMapLayoutTopDown: '위에서 아래로 레이아웃으로 전환',
   aiMindMapLayoutLeftRight: '왼쪽에서 오른쪽 레이아웃으로 전환',
+  aiGskLoginOk: 'ChaAI Office에 로그인했습니다',
 } satisfies Record<keyof typeof zh, string>

@@ -239,4 +239,5 @@ export const hi = {
   aiMindMapToggleLayout: 'लेआउट बदलें',
   aiMindMapLayoutTopDown: 'ऊपर से नीचे वाले लेआउट पर स्विच करें',
   aiMindMapLayoutLeftRight: 'बाएँ से दाएँ वाले लेआउट पर स्विच करें',
+  aiGskLoginOk: 'ChaAI Office में साइन इन हो गए',
 } satisfies Record<keyof typeof zh, string>

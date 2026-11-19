@@ -119,4 +119,5 @@ export const he = {
   aiDockRestore: 'שחזר חלונית',
   aiToolGenSvg: 'צייר איור SVG',
   aiToolGenSvgDone: 'איור SVG רוסטר; מקם אותו עם add_image',
+  aiGskLoginOk: 'מחובר ל-ChaAI Office',
 }

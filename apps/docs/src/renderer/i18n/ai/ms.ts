@@ -240,4 +240,5 @@ export const ms = {
   aiMindMapToggleLayout: 'Tukar susun atur',
   aiMindMapLayoutTopDown: 'Tukar kepada susun atur atas ke bawah',
   aiMindMapLayoutLeftRight: 'Tukar kepada susun atur kiri ke kanan',
+  aiGskLoginOk: 'Berjaya log masuk ke ChaAI Office',
 } satisfies Record<keyof typeof zh, string>

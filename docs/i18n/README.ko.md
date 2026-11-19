@@ -13,19 +13,23 @@
 Word, Excel, PowerPoint, PDF 파일을 당신과 당신의 AI가 함께 편집하고, 실제 포맷 그대로 저장합니다.</p>
 
 <p align="center">
-  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/ChayuanAIOffice" alt="라이선스: Apache-2.0"></a>
-  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/ChayuanAIOffice" alt="최신 릴리스"></a>
-  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/ChayuanAIOffice/total" alt="다운로드 수"></a>
-  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/ChayuanAIOffice?style=flat" alt="GitHub 스타 수"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/genspark-ai/chaoffice" alt="라이선스: Apache-2.0"></a>
+  <a href="https://github.com/genspark-ai/chaoffice/releases/latest"><img src="https://img.shields.io/github/v/release/genspark-ai/chaoffice" alt="최신 릴리스"></a>
+  <a href="https://github.com/genspark-ai/chaoffice/releases"><img src="https://img.shields.io/github/downloads/genspark-ai/chaoffice/total" alt="다운로드 수"></a>
+  <a href="https://github.com/genspark-ai/chaoffice/stargazers"><img src="https://img.shields.io/github/stars/genspark-ai/chaoffice?style=flat" alt="GitHub 스타 수"></a>
+  <a href="https://x.com/merrickbuilds"><img src="https://img.shields.io/badge/follow-%40merrickbuilds-000000?logo=x&logoColor=white" alt="X에서 @merrickbuilds 팔로우"></a>
 </p>
 
 <p align="center"><a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">繁體中文</a> · <b>한국어</b> · <a href="README.ja.md">日本語</a> · <a href="README.ar.md">العربية</a> · <a href="README.ru.md">Русский</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.pl.md">Polski</a> · <a href="README.cs.md">Čeština</a> · <a href="README.id.md">Bahasa Indonesia</a> · <a href="README.ms.md">Bahasa Melayu</a> · <a href="README.th.md">ไทย</a> · <a href="README.hi.md">हिन्दी</a> · <a href="README.he.md">עברית</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.hu.md">Magyar</a></p>
 
 <p align="center">
   <a href="#download"><b>다운로드</b></a> ·
+  <a href="#skills"><b>스킬</b></a> ·
   <a href="#command-line-and-agent-skill"><b>CLI</b></a> ·
+  <a href="#mcp-server"><b>MCP</b></a> ·
   <a href="https://chaoffice.ai/"><b>웹사이트</b></a> ·
   <a href="https://chaoffice.ai/join"><b>커뮤니티</b></a> ·
+  <a href="https://x.com/merrickbuilds"><b>X</b></a> ·
   <a href="../../PRIVACY.md"><b>개인정보</b></a>
 </p>
 
@@ -33,7 +37,12 @@ ChaOffice는 macOS, Windows, Linux에서 사용할 수 있는 무료 오픈소�
 마이크로소프트 오피스 대체 프로그램입니다. 네이티브 `.docx`, `.xlsx`,
 `.pptx` 파일을 열고 저장하며, PDF, Markdown, HTML을 편집하고, 모든 문서
 옆에 AI 에이전트를 배치합니다 — 옆에 덧붙인 챗봇이 아니라, 파일을 읽고
-변경을 수행한 뒤 정확히 무엇을 수정했는지 보여주는 편집기입니다.
+변경을 수행한 뒤 정확히 무엇을 수정했는지 보여주는 편집기입니다. ODF
+파일(`.odt`, `.ods`, `.odp`와 `.ott`/`.ots`/`.otp` 템플릿)은 편집 가능한
+OOXML 사본으로 열리며, 이전 형식의 Word `.doc`/`.dot`, Excel 97 `.xls`,
+PowerPoint 97–2003 `.ppt` 파일과 한컴 문서(`.hwp`, `.hwpx`)도 마찬가지입니다.
+가져오기는 열기 전용이며 — 저장은 항상 OOXML로 기록하고, 절대 원본 형식으로
+기록하지 않습니다.
 
 - **실제 포맷을 그대로, 바이트 단위로 보존합니다.** 편집한 부분만 다시
   작성되고, 파일의 나머지는 바이트 단위로 그대로 유지되어 문서가 Word,
@@ -41,29 +50,44 @@ ChaOffice는 macOS, Windows, Linux에서 사용할 수 있는 무료 오픈소�
 - **검토할 수 있는 AI입니다.** 편집 내용은 변경 내용 추적과 diff로
   반영되며 원클릭 롤백이 가능합니다. 스프레드시트에는 붙여넣은 값이
   아니라 실시간으로 동작하는 수식이 들어갑니다. 슬라이드와 페이지는
-  캔버스에 직접 생성되어 계속 자유롭게 편집할 수 있습니다.
+  캔버스에 직접 생성되어 계속 자유롭게 편집할 수 있습니다. Docs의
+  선택 영역이나 Sheets의 셀 범위를 모델이 보지 못하도록 숨기면 AI에는
+  이름 붙은 자리 표시자만 보입니다. 원래 문구는 파일 안에 그대로 남아
+  있다가 다시 돌아옵니다. 숨기기는 이 앱의 AI에만 적용됩니다 — CLI,
+  MCP 도구, 헤드리스 내보내기는 파일을 직접 읽으므로 이 문구를 여전히
+  볼 수 있습니다.
 - **로컬 우선으로 설계되었습니다.** 파일은 사용자의 기기에서 열리고,
   편집되고, 저장되고, 변환됩니다. PDF → Word / Excel / PowerPoint,
   Markdown → Word, HTML → Word 변환 모두 기기 내에서 실행됩니다. 오직
   AI 호출만 사용자가 선택한 공급자로 전송됩니다.
+- **내용으로 파일을 찾습니다.** 홈 화면에서 `.docx`, `.xlsx`, `.pptx`, PDF,
+  Markdown, HTML 파일의 이름, 폴더, 본문 전체를 로컬 SQLite 인덱스로 검색하며,
+  CJK 텍스트도 지원합니다. 원한다면 System One 판단 모델인
+  **[TypeSafe Jev](https://typesafe.ai/)** 로 상위 결과를 다시 정렬해, 질문에
+  답하는 파일이 맨 위에 오게 할 수 있습니다.
+- **출처와 함께, 내 파일에 물어보세요.** 문서 묶음에 별표를 달아 두면 홈 화면의
+  **Ask AI**가 그 문서들을 아울러 질문에 답하고, 모든 주장마다 근거가 된 파일을
+  인용하므로 직접 열어 확인할 수 있습니다.
 - **API 키가 있어도, 없어도 됩니다.** Genspark로 로그인하면 키 없이 바로
   사용할 수 있고, 원한다면 Claude, OpenAI, Gemini, DeepSeek, Kimi, GLM,
-  Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty는 물론 OpenAI
-  호환 엔드포인트(로컬 서버 포함)까지 직접 가져올 수 있습니다.
+  Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty, Opper, Cheaper
+  Inference, Atlas Cloud는 물론 OpenAI 호환 엔드포인트(로컬 서버 포함)까지 직접
+  가져올 수 있습니다.
 - **스크립트로 다룰 수 있고, 에이전트가 바로 쓸 수 있습니다.** 앱에는
   `chaoffice` 명령줄과 Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot,
   OpenCode, Windsurf용 스킬이 함께 제공되어, 코딩 에이전트가 창 하나 열지
   않고도 내 컴퓨터에서 실제 Office 파일을 만들고, 변환하고, 읽고, 편집할 수
   있습니다.
 
-**다운로드:** [macOS](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (Apple Silicon 및 Intel) ·
-[Windows](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (x64 및 Arm) ·
-[Linux](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (deb, rpm, AppImage) —
+**다운로드:** [macOS](https://github.com/genspark-ai/chaoffice/releases/latest) (Apple Silicon 및 Intel) ·
+[Windows](https://github.com/genspark-ai/chaoffice/releases/latest) (x64 및 Arm) ·
+[Linux](https://github.com/genspark-ai/chaoffice/releases/latest) (deb, rpm, AppImage) —
 자세한 내용과 요구 사항은 [다운로드](#download) 섹션을 참고하세요.
 
-## 데모
+## <a id="demo"></a>데모
 
-여섯 개의 앱, 하나의 AI 패널, 그리고 코딩 에이전트를 위한 명령줄. 모든
+여섯 개의 앱, 하나의 AI 패널, TypeSafe Jev가 재정렬하는 파일 검색, 별표 표시한
+파일에서 출처와 함께 답하는 Ask AI, 그리고 코딩 에이전트를 위한 명령줄. 모든
 스크린샷은 macOS에서 실제로 구동되는 앱이며, 패널에서 확인할 수 있는
 프롬프트로 AI를 직접 실행한 결과입니다.
 
@@ -75,8 +99,8 @@ ChaOffice는 macOS, Windows, Linux에서 사용할 수 있는 무료 오픈소�
 <td width="50%"><img src="../assets/readme/docs-ai.webp" alt="ChaOffice Docs: 배너 이미지가 있는 회사 개요 문서에서 AI가 개요 섹션을 다듬고 새로운 글머리 기호 섹션을 삽입했으며, 패널에서 원클릭 롤백을 제공하는 화면"></td>
 </tr>
 <tr>
-<td><b>Word가 배치한 그대로 파일을 엽니다</b> — 2단 구성, 여백 없는 전체 이미지, 음영 표, 머리글과 바닥글, Word의 줄 단위 계량 기준을 따르는 페이지 나누기까지 그대로입니다. 스타일, 댓글, 변경 내용 추적, 수식, 잉크 주석도 손상 없이 그대로 유지됩니다.</td>
-<td><b>원하는 편집을 요청하세요</b> — AI가 필요한 블록을 읽어 개요를 다시 작성하고 새로운 글머리 기호 섹션을 삽입합니다. AI가 수행한 모든 작업은 롤백 가능한 스냅샷으로 남으며, <b>변경 내용 추적</b>을 켜면 편집 내용이 Word 스타일의 수정 내용으로 표시됩니다.</td>
+<td><b>Word가 배치한 그대로 파일을 엽니다</b> — 2단 구성, 여백 없는 전체 이미지, 음영 표, 머리글과 바닥글, Word의 줄 단위 계량 기준을 따르는 페이지 나누기까지 그대로입니다. 스타일, 댓글, 변경 내용 추적, 수식, 잉크 주석, 콘텐츠 컨트롤도 손상 없이 그대로 유지됩니다. <b>Mailings</b> 탭이 문서를 메일 병합 템플릿으로 바꿔 줍니다: <code>.xlsx</code> 또는 <code>.csv</code> 수신자 목록을 고르고, 실제 <code>MERGEFIELD</code>를 삽입하고, 레코드별로 미리 본 다음, 하나의 문서로 병합하거나 레코드마다 <code>.docx</code> 하나씩 만듭니다.</td>
+<td><b>원하는 편집을 요청하세요</b> — AI가 필요한 블록을 읽어 개요를 다시 작성하고 새로운 글머리 기호 섹션을 삽입합니다. AI가 수행한 모든 작업은 롤백 가능한 스냅샷으로 남으며, <b>변경 내용 추적</b>을 켜면 편집 내용이 Word 스타일의 수정 내용으로 표시됩니다. 대신 마인드맵을 요청하면 문서 전체의 인터랙티브 다이어그램이 답으로 돌아옵니다: 분기는 접었다 폈다 할 수 있고, 확대/축소와 이동이 가능하며, 노드를 클릭해 후속 질문을 하고, 출처는 해당 블록으로 다시 연결됩니다.</td>
 </tr>
 </table>
 
@@ -89,7 +113,7 @@ ChaOffice는 macOS, Windows, Linux에서 사용할 수 있는 무료 오픈소�
 </tr>
 <tr>
 <td><b>직접 만들어 줍니다</b> — 한 문장의 요청만으로 에이전트가 지역 및 카테고리별 실제 <code>SUMIF</code> 수식이 담긴 Summary 시트를 추가하고, 세로 막대형 차트를 삽입하며, 43건의 변경을 실행 취소 가능한 하나의 배치로 적용합니다.</td>
-<td><b>물어보세요</b> — 워크북에 대한 질문에는 근거와 함께, 사용한 정확한 셀이 클릭 가능한 출처로 돌아옵니다. 내부적으로는 자체 개발한 Rust <code>.xlsx</code> 엔진, 피벗 테이블, 슬라이서, 조건부 서식, 수식 추적 기능이 동작합니다.</td>
+<td><b>물어보세요</b> — 워크북에 대한 질문에는 근거와 함께, 사용한 정확한 셀이 클릭 가능한 출처로 돌아옵니다. 내부적으로는 자체 개발한 Rust <code>.xlsx</code> 엔진, 피벗 테이블, 슬라이서, 조건부 서식, 수식 추적, 그리고 Excel의 네이티브 rich value로 셀에 삽입되는 그림까지 동작합니다 — Excel에서 다시 열어도 그림은 여전히 그 셀 안에 있습니다. 셀 메모에는 그림을 넣을 수 있으며, 메모 팝업 아래에 표시됩니다.</td>
 </tr>
 </table>
 
@@ -104,9 +128,13 @@ ChaOffice는 macOS, Windows, Linux에서 사용할 수 있는 무료 오픈소�
 </tr>
 <tr>
 <td><b>한 줄만 입력하세요</b> — "Aurora Home을 위한 10장짜리 투자자 피치 덱을 만들어줘…"처럼요. ChaOffice가 스토리라인을 구성하고, 필요한 숫자를 조사하고, 실제 <code>.pptx</code>로 모든 슬라이드를 캔버스에 초안 작성합니다.</td>
-<td><b>완성된 덱이 나옵니다</b> — 일관된 타이포그래피, 이미지, 마무리 행동 유도 문구까지 디자인이 완료된 11장의 슬라이드. 마스터, 레이아웃, 스마트 가이드, 비파괴 자르기로 계속 편집하거나, 패널에 스타일 변경, 재작성, 순서 재배치를 요청할 수 있습니다.</td>
+<td><b>완성된 덱이 나옵니다</b> — 일관된 타이포그래피, 이미지, 마무리 행동 유도 문구까지 디자인이 완료된 11장의 슬라이드. 마스터, 레이아웃, 스마트 가이드, 비파괴 자르기로 계속 편집하거나, 패널에 스타일 변경, 재작성, 순서 재배치를 요청할 수 있습니다. <code>.glb</code>를 삽입하면 진짜 3D 모델이 됩니다: 편집기에서 드래그해 돌릴 수 있고, PowerPoint가 3D를 저장하는 방식 그대로 저장되어 PowerPoint에서도 여전히 3D입니다.</td>
 </tr>
 </table>
+
+**Slide Show → Record**는 덱의 내레이션을 슬라이드마다 녹음하며, 일시정지했다가
+이어서 할 수 있습니다. 녹음된 내레이션과 함께 측정된 자동 진행 시간도 `.pptx`에
+저장되고, PowerPoint에서도 같은 방식으로 재생됩니다.
 
 ### 4 · PDF — PDF 텍스트를 그 자리에서 편집하고, 기기 내에서 Word로 변환합니다
 
@@ -163,7 +191,54 @@ ChaOffice는 macOS, Windows, Linux에서 사용할 수 있는 무료 오픈소�
 </tr>
 </table>
 
-### 7 · CLI — 코딩 에이전트가 내 컴퓨터에서 ChaOffice를 움직입니다
+**Obsidian 방식의 링크 노트.** `[[wiki links]]`를 클릭하면 이름이 가리키는 노트로
+이동하고, `[[`를 입력하면 노트 이름 자동 완성이 나타나며, `![[…]]`는 노트나
+그림을 인라인으로 끼워 넣습니다. **Backlinks** 패널은 열려 있는 노트를 가리키는
+모든 노트를 나열하고, **Graph** 뷰는 볼트 전체의 링크를 한눈에 보여 줍니다.
+
+### <a id="7--search--find-the-file-that-answers-the-question-with-typesafe-jev"></a>7 · 검색 — TypeSafe Jev로 질문에 답하는 파일을 찾습니다
+
+작업 폴더의 모든 파일이 기기 내에서 색인됩니다: Word, Excel, PowerPoint, PDF,
+Markdown, HTML 파일의 이름, 폴더, 추출된 텍스트가 CJK를 고려한 토큰화를 갖춘
+SQLite 전문 검색 인덱스에 담깁니다. **Jev 검색 재정렬**을 켜면 로컬 상위 20개
+결과를 [TypeSafe Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev)가
+판정합니다. Jev는 텍스트를 생성하는 대신 한 번의 호출로 문서마다 보정된 관련도
+점수 하나를 돌려주는 System One 모델입니다. 목록은 이 점수에 따라 다시 정렬되며,
+호출이 실패하거나 시간이 초과되면 로컬 순서가 그대로 유지됩니다.
+
+<img src="../assets/readme/search-jev-motion.webp" alt="ChaOffice 홈 화면 녹화 영상: laptop refresh policy를 입력하면 브라우저 캐시 정책, 브랜드 리프레시 계획, 대시보드 새로 고침 일정이 먼저 나오고 장비 표준 문서는 맨 마지막에 있습니다. 설정 페이지에서는 AI 미디어 및 검색 아래 TypeSafe 엔드포인트로 Jev 검색 재정렬이 켜져 있고, 같은 검색을 다시 하면 장비 표준 문서가 맨 위에 오며 결과 수 옆에 Jev 배지가 표시됩니다" width="100%">
+
+<table>
+<tr>
+<td width="50%"><img src="../assets/readme/search-jev-before-after.webp" alt="laptop refresh policy 검색어에 대한 두 결과 목록을 나란히 놓은 화면: Jev가 없으면 대시보드 새로 고침 일정, 브랜드 리프레시 계획, 브라우저 캐시 새로 고침 정책이 앞서고 회사 장비 표준 문서는 다섯 번째입니다. Jev를 쓰면 노트북 3년 교체 주기를 명시한 장비 표준 문서가 첫 번째입니다"></td>
+<td width="50%"><img src="../assets/readme/search-jev-settings.webp" alt="ChaOffice 설정의 AI 미디어 및 검색 페이지: Jev 검색 재정렬 스위치, OpenRouter와 TypeSafe 중 엔드포인트 선택, API 키 입력란이 있는 로컬 파일 검색 블록"></td>
+</tr>
+<tr>
+<td><b>같은 단어, 다른 답</b> — "laptop refresh policy"는 브라우저 캐시 새로 고침 정책, 브랜드 리프레시 계획, 대시보드 새로 고침 일정과 단어 그대로 일치하므로, 전문 검색 순위는 이 문서들을 앞에 둡니다. Jev는 발췌문을 읽고, 3년 교체 주기를 명시한 바로 그 문서인 장비 표준 문서를 맨 위로 올립니다. 결과 수 옆의 <b>Jev</b> 배지는 순서가 모델에서 나왔음을 알려 줍니다.</td>
+<td><b>기본값은 꺼짐, 스위치 하나로 켭니다</b> — 설정 → AI 미디어 및 검색 → 로컬 파일 검색. OpenRouter 또는 TypeSafe 직접 연결을 고르고, 키를 붙여넣고, 연결 테스트를 누르세요. 스위치가 켜져 있을 때만 상위 결과의 발췌문이 기기를 벗어나며, 인덱스 자체는 절대 벗어나지 않습니다.</td>
+</tr>
+</table>
+
+### 8 · Ask AI — 별표 표시한 파일에서, 출처와 함께 답합니다
+
+자주 쓰는 파일에 별표를 달아 두면 홈 화면의 **Ask AI**가 이를 지식 베이스로
+다룹니다. 평소 쓰는 말로 질문하세요. 에이전트가 별표 표시된 파일을 검색하고,
+필요한 파일을 읽은 뒤, 모든 주장 뒤에 출처를 붙여 답합니다. 출처를 클릭하면 해당
+파일이 알맞은 앱에서 열립니다. 파일은 끌어다 놓거나, 붙여넣거나, **+** 메뉴에서
+질문에 첨부할 수 있고 — 이미지는 시각 입력으로 모델에 전달됩니다 — 모든 질문은
+각각 별도의 대화로 보관됩니다: 대화 사이를 오가고, 새 대화를 시작하고, 하나를
+삭제할 수 있으며, 목록은 앱을 다시 시작해도 남아 있습니다.
+
+<img src="../assets/readme/home-ask-ai-motion.webp" alt="ChaOffice Ask AI 화면 녹화 영상: 홈 화면에 간단히 요약해 줘, 3분기 성장을 이끈 요인은 무엇이고 아시아 태평양 실적은 어땠어 라는 질문을 입력하면, 에이전트가 별표 표시된 파일 두 개를 읽고 Aurora X1 출시와 아시아 태평양 확장으로 답하며, 각 주장 뒤에는 분기 보고서나 지역별 매출 워크북의 이름이 적힌 출처 칩이 붙습니다. 워크북 칩을 클릭하면 Sheets에서 열리고 아시아 태평양 행이 강조 표시됩니다" width="100%">
+
+Ask AI는
+[검색](#7--search--find-the-file-that-answers-the-question-with-typesafe-jev)과
+같은 기기 내 전문 검색 인덱스를 검색하고 파일을 페이지 단위로 읽으므로, 모델은
+사용자가 선택한 공급자를 통해 검색 결과와 자신이 요청한 구절만 보게 됩니다. 내장
+`chaoffice` CLI를 호출해 파일을 통째로 만들 수도 있으며, 만든 파일은 답변 아래에
+아티팩트 카드로 나타나고 클릭하면 열립니다.
+
+### 9 · CLI — 코딩 에이전트가 내 컴퓨터에서 ChaOffice를 움직입니다
 
 ChaOffice에는 `chaoffice` 명령줄과 에이전트 스킬이 함께 제공됩니다. 스킬을
 설치하면 Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode,
@@ -179,9 +254,36 @@ Windsurf가 앱과 동일한 엔진을 통해 창을 열지 않고도 실제 Off
 </tr>
 <tr>
 <td><b>에이전트에게 프롬프트 하나</b> — "태양계에 관한 8장짜리 덱을 만들어줘." 에이전트는 스킬을 읽고 스타일 시트, 개요, 슬라이드마다 하나씩의 페이지 스펙을 작성하고, <code>chaoffice image</code>로 사진 두 장을 생성하고, <code>chaoffice slides check</code>가 넘치거나 겹치는 요소를 걸러낸 뒤, <code>chaoffice create</code>로 <code>.pptx</code>를 조립하고 <code>slides render</code>로 슬라이드마다 PNG 한 장을 받아 확인합니다.</td>
-<td><b>설정 → 연동에서 한 번만 설치</b> — ChaOffice가 이 컴퓨터에서 찾은 코딩 에이전트를 나열하고, 선택한 각 에이전트에 스킬을 기록합니다. 스킬을 zip으로 내려받거나 <code>npx skills add zhgyuhuii/ChayuanAIOffice</code>를 실행해도 됩니다. 명령과 전체 워크플로는 <a href="#command-line-and-agent-skill">명령줄과 에이전트 스킬</a>에 있습니다.</td>
+<td><b>설정 → 연동에서 한 번만 설치</b> — ChaOffice가 이 컴퓨터에서 찾은 코딩 에이전트를 나열하고, 선택한 각 에이전트에 스킬을 기록합니다. 스킬을 zip으로 내려받거나 <code>npx skills add genspark-ai/chaoffice</code>를 실행해도 됩니다. 명령과 전체 워크플로는 <a href="#command-line-and-agent-skill">명령줄과 에이전트 스킬</a>에 있습니다.</td>
 </tr>
 </table>
+
+### 10 · MCP — Model Context Protocol로 제공되는 동일한 도구
+
+모든 `chaoffice` 명령은 MCP 도구이기도 합니다. Claude Code, Claude Desktop,
+Cursor 및 다른 모든 MCP 클라이언트는 스킬을 설치하거나 창을 열 필요 없이
+직접 `chaoffice mcp`를 실행해 29개의 도구와 리소스로 제공되는 작업 레퍼런스를
+얻을 수 있습니다. 앱 내부의 두 번째 HTTP 서버를 사용하면 에이전트가 눈에
+보이는 편집기 탭에서 Word 문서를 만드는 과정을 지켜볼 수도 있습니다.
+
+<img src="../assets/readme/mcp-deck-motion.webp" alt="Claude Code가 chaoffice MCP 서버로 8장짜리 재생에너지 투자 브리핑 덱을 만드는 과정의 타임랩스: search로 도표와 사진을 찾고 media로 각 후보 사진을 확인한 뒤, deck_start가 스타일 시트와 개요를 작성하고, deck_page가 검사를 마친 페이지를 한 장씩 추가하며, deck_build가 .pptx를 조립하고 slides_render가 슬라이드마다 이미지를 돌려줍니다. 완성된 덱은 이후 ChaOffice Slides에서 열립니다" width="100%">
+
+<table>
+<tr>
+<td width="50%"><img src="../assets/readme/mcp-deck-in-app.webp" alt="ChaOffice Slides가 Claude Code가 chaoffice MCP 서버로 만든 8장짜리 재생에너지 2026 덱을 보여주는 화면: 캔버스에는 풍력 발전 단지 사진이 있는 표지 슬라이드, 왼쪽에는 여덟 개의 축소판"></td>
+<td width="50%"><img src="../assets/readme/mcp-integrations.webp" alt="ChaOffice 설정의 연동 페이지, MCP 부분: Claude Code용 한 줄짜리 claude mcp add 명령, Cursor, Claude Desktop 및 다른 MCP 클라이언트용 JSON 블록, 그 아래의 로컬 HTTP 서버 옵션"></td>
+</tr>
+<tr>
+<td><b>프롬프트 하나, 도구 호출 서른여덟 번, 터미널 없이</b> — "2026년 재생에너지에 관한 8장짜리 투자 브리핑을 만들어줘. 표지와 사진이 도움이 될 만한 곳에는 실제 사진을 넣어줘." 에이전트는 <code>search</code>로 도표와 사진을 가져오고, <code>media</code>로 각 후보 사진이 실제 사진인지 확인한 다음, 스타일 시트와 개요를 담아 <code>deck_start</code>를 호출하고, 이어서 슬라이드마다 <code>deck_page</code>를 호출합니다. 모든 페이지는 개요와 팔레트에 맞는지 검사를 통과해야 유지되며, <code>deck_build</code>가 <code>.pptx</code>를 조립하고, <code>slides_audit</code>이 넘치는 부분을 찾고, <code>slides_render</code>가 모델이 볼 수 있는 이미지 콘텐츠로 슬라이드마다 PNG를 돌려주면, 마지막으로 <code>deck_replace</code>가 마음에 들지 않았던 세 페이지를 고칩니다.</td>
+<td><b>설정 → 연동에서 한 번만 연결</b> — Claude Code용 <code>claude mcp add</code> 명령을 복사하거나, JSON 블록을 Cursor, Claude Desktop 또는 다른 MCP 클라이언트에 붙여넣으세요. 옵션 B는 눈에 보이는 Word 편집기를 위한 로컬 HTTP 서버를 켭니다. 두 방법 모두 <a href="#mcp-server">MCP 서버</a>에 설명되어 있습니다.</td>
+</tr>
+</table>
+
+### 11 · 이전 형식 파일 — 2000년대의 `.doc`, `.xls`, `.ppt`도 열립니다
+
+Word 97–2003 `.doc`, Excel `.xls`, PowerPoint `.ppt` 파일은 사용자의 컴퓨터에서 변환된 `.docx`, `.xlsx`, `.pptx` 사본으로 열립니다. 원본 파일은 변경되지 않습니다. 그림, 표, 수식, 숫자 서식, 채우기, 레이아웃이 그대로 옮겨집니다. 형식별로 무엇이 유지되고 무엇이 빠지는지는 [이전 형식 및 ODF 파일은 변환된 사본으로 열립니다](#legacy-and-odf-files-open-as-converted-copies)에 있습니다.
+
+<img src="../assets/readme/legacy-formats-motion.webp" alt="ChaOffice가 가상의 2004년 연례 보고서 .ppt, .doc, .xls 파일을 여는 타임랩스. 이어서 PowerPoint의 원본 슬라이드와 ChaOffice에서 변환한 슬라이드를 나란히 표시" width="100%">
 
 ## ChaOffice를 선택하는 이유
 
@@ -200,9 +302,15 @@ Windsurf가 앱과 동일한 엔진을 통해 창을 열지 않고도 실제 Off
   Word, Excel, PowerPoint로 변환하며, 스캔 문서는 시스템 OCR을 사용합니다.
 - **Markdown과 HTML도 지원**하며, 동일한 AI 패널과 로컬 Word 내보내기를 사용합
   니다.
-- **스크립트로 다룰 수 있습니다.** `chaoffice` 명령줄과 에이전트 스킬이 모든
-  엔진을 Claude Code, Codex, Cursor 및 다른 코딩 에이전트가 쓸 수 있게 하며,
-  이 역시 기기 내에서 동작합니다.
+- **키워드가 아니라 답을 찾는 검색.** 폴더에 있는 모든 문서를 기기 내에서 색인해
+  전문 검색하며, 원한다면 System One 판단 모델인 TypeSafe Jev로 재정렬할 수
+  있습니다.
+- **내 파일 전체에 Ask AI.** 중요한 파일에 별표를 달고 평소 쓰는 말로 질문하세요.
+  모든 답변은 근거가 된 파일을 인용하며, 클릭 한 번이면 열립니다.
+- **스킬.** 기본 제공되는 스킬이나 직접 만든 `SKILL.md`를 어느 AI 패널에서든 **+** 메뉴로 첨부합니다.
+- **스크립트로 다룰 수 있습니다.** `chaoffice` 명령줄, 에이전트 스킬, MCP
+  서버가 모든 엔진을 Claude Code, Claude Desktop, Codex, Cursor 및 다른
+  에이전트가 쓸 수 있게 하며, 이 역시 기기 내에서 동작합니다.
 - **무료**로 개인과 팀 모두 사용할 수 있습니다.
 
 ## AI 백엔드
@@ -213,21 +321,44 @@ Genspark 프록시(Claude, GPT, Gemini 계열)를 거치고, 에이전트는 웹
 있습니다.
 
 **직접 키를 가져올 수도 있습니다.** 설정 → AI에는 Claude, OpenAI, Gemini,
-DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty,
+DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty, Opper, Cheaper Inference, Atlas Cloud, SiliconFlow, PPIO, Command Code,
 OpenCode Zen/Go가 있으며, 로컬 모델 서버를 포함한 모든 OpenAI 호환
 엔드포인트(기본 URL + 키)를 위한 사용자 지정 슬롯도 제공됩니다. 검색과
 미디어는 **AI 미디어 및 검색**에서 기능별로 별도 공급자를 설정할 수
-있습니다: 웹 검색은 Serper 또는 Tavily, 이미지 생성과 이미지/비디오
-분석은 OpenAI, Gemini, Doubao/Seedream, GLM, Grok, Qwen, MiniMax 또는
-OpenAI 호환 이미지 엔드포인트 중에서 선택합니다.
+있습니다: 웹 검색은 Serper, Serply, SearchApi, Tavily, Parallel, Keenable, Exa
+또는 Firecrawl, 이미지 생성과 이미지/비디오 분석은 OpenAI,
+Gemini, Doubao/Seedream, GLM, Grok, Qwen, MiniMax, Stability, FLUX 또는 OpenAI 호환
+이미지 엔드포인트 중에서 선택하며, 이미지 분석에는 DeepSeek V4.1 Flash도 쓸 수
+있습니다.
+
+**TypeSafe Jev**는 홈 화면의 파일 검색 결과를 재정렬합니다. **AI 미디어 및 검색 →
+로컬 파일 검색**에서 Jev 검색 재정렬을 켜고 엔드포인트를 고르세요:
+[OpenRouter](https://openrouter.ai/typesafe)(모델 `typesafe/jev-1.13`) 또는
+TypeSafe 자체 API입니다. 키는 이 기기에만 저장됩니다. 기본값은 꺼짐이며, 켜면
+로컬 상위 20개 결과의 발췌문이 판정을 위해 전송되고 그 밖에는 아무것도 기기를
+벗어나지 않습니다.
+
+**Parallel**은 계정 없이도 동작합니다: Genspark 로그인이나 검색 키가 설정되어 있지
+않으면 무료 Search MCP(속도 제한 있음)가 기본 웹 검색으로 쓰이며, DuckDuckGo
+스크레이핑보다 먼저 실행됩니다. Search API를 대신 쓰려면 웹 검색에서 Parallel을
+선택하고 [Parallel](https://platform.parallel.ai/) 키를 입력하세요. Keenable도 키
+없이 쓸 수 있으며, 키가 있으면 속도 제한만 완화됩니다.
 
 전체 제품군은 라이트, 다크, 시스템 테마를 지원합니다. 테마는 화면에
 보이는 모습만 바꿀 뿐입니다: 내보내기, 인쇄, 저장된 파일은 항상 문서
 고유의 색상을 그대로 유지합니다.
 
-<a id="command-line-and-agent-skill"></a>
+## <a id="skills"></a>스킬
 
-## 명령줄과 에이전트 스킬
+스킬은 주간 보고서, NDA, 수업 계획처럼 한 가지 일을 잘 해내는 방법을 AI에 알려 주는 `SKILL.md` 파일입니다.
+ChaOffice는 스킬 묶음을 기본 제공하고, 코딩 에이전트와 같은 형식의 사용자 스킬도 받습니다.
+
+- **설정 → 스킬.** 추천 스킬을 **설치**하거나 폴더, zip 또는 단일 `SKILL.md`를 **가져옵니다**. 가져오기 시 아무것도 실행되지 않습니다. **전체** 탭에는 추천 카탈로그 전체가 한곳에 표시되며, 설명은 앱 언어를 따릅니다.
+- **채팅에서.** 어느 AI 패널에서든 입력창 옆 **+** 메뉴를 열고 **스킬**을 선택해 하나를 체크한 뒤 보냅니다. 스킬은 그 메시지에만 함께 전달됩니다.
+
+---
+
+## <a id="command-line-and-agent-skill"></a>명령줄과 에이전트 스킬
 
 앱이 파일에 할 수 있는 모든 일을 `chaoffice` 명령줄은 터미널에서 할 수
 있습니다: Word, Excel, PowerPoint, PDF, Markdown, HTML을 동일한 엔진으로,
@@ -238,7 +369,8 @@ OpenAI 호환 이미지 엔드포인트 중에서 선택합니다.
 
 **지원 대상:** Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot,
 OpenCode, Windsurf는 바로 사용할 수 있고, 스킬을 읽을 수 있는 다른 모든
-에이전트에서도 동작합니다.
+에이전트, 그리고 [MCP 서버](#mcp-server)를 통해 Claude Desktop과 모든 MCP
+클라이언트에서도 동작합니다.
 
 ### 스킬 설치
 
@@ -246,7 +378,7 @@ OpenCode, Windsurf는 바로 사용할 수 있고, 스킬을 읽을 수 있는 �
 | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 앱의 **설정 → 연동**                   | 이 컴퓨터에서 찾은 에이전트를 나열하고, 클릭 한 번으로 선택한 각 에이전트에 스킬을 기록합니다. ChaOffice 릴리스에 새 스킬이 포함되면 **업데이트** 버튼이 나타납니다. |
 | 같은 페이지의 **zip으로 다운로드**     | claude.ai, Claude 데스크톱 앱, 그 밖의 어시스턴트가 업로드 스킬로 받아들이는 구조입니다.                                                                             |
-| `npx skills add zhgyuhuii/ChayuanAIOffice` | 이 저장소에서 스킬을 지원하는 모든 에이전트에 설치합니다.                                                                                                            |
+| `npx skills add genspark-ai/chaoffice` | 이 저장소에서 스킬을 지원하는 모든 에이전트에 설치합니다.                                                                                                            |
 
 그런 다음 새 대화를 시작해 문서를 요청하세요. 스킬은 언제 `chaoffice`를
 꺼내야 하는지, 편집 전에 파일을 어떻게 읽어야 하는지, 자신의 작업을
@@ -257,7 +389,7 @@ OpenCode, Windsurf는 바로 사용할 수 있고, 스킬을 읽을 수 있는 �
 ```bash
 chaoffice --version
 chaoffice info report.docx --json                  # headings and blocks; or sheets, slides, pages
-chaoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx/md/html, odt/ods/odp → docx/xlsx/pptx, doc/dot → docx, …
+chaoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx/md/html, odt/ods/odp → docx/xlsx/pptx, doc/dot → docx, ppt → pptx, …
 chaoffice create --type docx --from notes.md --out notes.docx
 chaoffice create --type xlsx --from table.json --out sales.xlsx   # "=SUM(B2:B9)" cells stay live formulas
 chaoffice docs read report.docx --range 0-9 --json # then `docs apply --ops edits.json` edits in place
@@ -273,7 +405,7 @@ chaoffice open sales.xlsx                          # hand the result to the edit
 
 ### 에이전트가 실제로 실행하는 것
 
-위의 데모에 나온 태양계 덱은 Claude Code에서 프롬프트 하나로 만들어졌습니다.
+[데모](#demo)에 나온 태양계 덱은 Claude Code에서 프롬프트 하나로 만들어졌습니다.
 그 뒤에서 에이전트는 스킬의 단계별 워크플로를 따랐고, CLI는 다음 단계로
 넘어가기 전에 매 단계를 검사했습니다:
 
@@ -295,22 +427,90 @@ chaoffice open deck/solar-system.pptx
 에이전트가 하고, 만들고 검사하는 일은 CLI가 하며, 결과는 평범한 `.pptx`로
 ChaOffice나 PowerPoint에서 열립니다.
 
-<a id="download"></a>
+### <a id="mcp-server"></a>MCP 서버
 
-## 다운로드
+동일한 명령을 [Model Context Protocol](https://modelcontextprotocol.io) 도구로도
+사용할 수 있습니다. 터미널을 실행할 수 없거나, 터미널 권한을 주고 싶지 않은
+어시스턴트를 위한 방법입니다. 연결 방법은 두 가지이며, 둘 다 **설정 → 연동 →
+MCP**에 바로 복사할 수 있는 코드 조각으로 안내되어 있습니다:
+
+| 방법                           | 설명                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A · `chaoffice mcp`**(권장)  | 어시스턴트가 직접 실행하는 stdio 서버로, ChaOffice가 열려 있을 필요가 없습니다. 명령마다 도구가 하나씩 있습니다(`info`, `convert`, `create_docx`, `create_xlsx`, `create_pptx`, `create_pdf`, `docs_read` / `docs_apply` / `docs_check`, `sheet_*`, `slides_*`, `render`, `guide`, `search`, `image`, `media`, `open`). 여기에 단계별 덱 흐름 `deck_start` → `deck_page` → `deck_build` → `deck_replace`가 더해집니다. Ops, 스펙, Markdown이 모두 인라인으로 전달되므로 파일 시스템이 없는 클라이언트도 문제없이 동작합니다. |
+| **B · 로컬 HTTP 서버**         | ChaOffice 앱 내부에서 `http://127.0.0.1:3093/mcp`(Streamable HTTP, 레거시 SSE 지원)로 실행됩니다. 이 도구들은 눈에 보이는 Word 편집기 탭을 움직입니다: `create_session`, `insert_content`, `replace_blocks`, `apply_ops`, `read_document`, `save_session`이며, 문서가 만들어지는 과정을 직접 지켜볼 수 있습니다. 기본값은 꺼짐이며, 같은 설정 화면에서 켤 수 있습니다.                                                                                                                                                       |
+| **C · `chaoffice mcp --http`** | stdio 도구 세트를 다른 기기의 클라이언트(컨테이너, 샌드박스, 네트워크의 공용 서버)를 위한 Streamable HTTP 서버로 제공합니다. 파일은 호출과 함께 오갑니다: `PUT /files/<name>`으로 파일을 업로드하면 URL이 반환되고, 모든 `file` 매개변수는 http(s) URL을 받으며, 파일을 쓰는 도구는 결과를 다운로드 URL로 돌려주고, 크기가 작으면 바이트도 MCP 리소스로 함께 돌려줍니다. `--host 0.0.0.0`은 네트워크에 공개하고, `--token`은 이를 보호합니다.                                                                                |
+
+```bash
+# Claude Code
+claude mcp add --transport stdio chaoffice -- chaoffice mcp
+```
+
+```jsonc
+// Cursor, Claude Desktop or any other MCP client
+{ "mcpServers": { "chaoffice": { "command": "chaoffice", "args": ["mcp"] } } }
+```
+
+```bash
+# On the machine that has ChaOffice (private network; add --token for a shared box)
+chaoffice mcp --http 3093 --host 0.0.0.0 --token "$GENOFFICE_MCP_TOKEN"
+
+# From the client: upload, then use the URL wherever a tool takes a file
+curl -T report.docx -H "Authorization: Bearer $GENOFFICE_MCP_TOKEN" http://server:3093/files/
+#   → { "url": "http://server:3093/files/<id>/report.docx", ... }
+#   docs_read({ "file": "http://server:3093/files/<id>/report.docx" })
+#   docs_apply(...) → output_url, downloadable with curl -o
+```
+
+HTTP로 연결하면 세션마다 전용 임시 폴더가 주어지고, 상대 경로와 덱 폴더는 그
+안에서 해석되며, `open`은 제공되지 않고, `GENOFFICE_ALLOWED_ROOTS`가 설정되지
+않은 경우 도구는 서버 자체의 파일 저장소를 벗어날 수 없습니다. `render`, PDF로의
+`convert`, `create_pdf`는 여전히 숨겨진 ChaOffice 프로세스를 실행하므로, 헤드리스
+호스트에는 앱이 설치되어 있어야 하고 가상 디스플레이(`xvfb-run`)가 필요합니다.
+
+여기서 `chaoffice`는 앱 내부에 포함된 바로 그 CLI입니다(macOS에서는
+`/Applications/ChaOffice.app/Contents/Resources/cli/chaoffice`이며, 설정
+화면에서 실제 설치 경로를 확인할 수 있습니다). 이 서버는 자체 워크플로
+안내를 담고 있고, 작업 레퍼런스를 `chaoffice://guide/*` 리소스로 노출하므로
+별도의 스킬이 필요 없습니다. 스킬과 MCP 서버는 함께 존재할 수 있으며,
+어시스턴트가 둘 중 하나를 선택해 사용합니다. 클라우드 기능(`search`,
+`image`, `media`)은 여전히 ChaOffice에 설정된 공급자를 거치며, 그 밖의
+모든 기능은 로컬에서 동작하고, `GENOFFICE_ALLOWED_ROOTS`가 모든 도구를
+지정한 폴더로 제한합니다.
+
+[데모](#demo)에 나온 재생에너지 덱은, `chaoffice` MCP 서버만 연결한 Claude
+Code에서 프롬프트 하나가 프로토콜 수준에서 어떻게 보이는지를 보여줍니다:
+
+```text
+capabilities · guide(slides, spec) · guide(slides, design)
+search(query) ×4                         → IEA, BNEF and IRENA figures for the slides
+search(query, images) ×7 · media(url, ask) ×7
+                                         → candidate photos, each one checked to be a real photograph
+deck_start(dir, style, outline)          → outline checked: 8 pages to write
+deck_page(dir, 0, page) … deck_page(dir, 7, page)
+                                         → each page checked against the outline and the palette; one page sent again
+deck_build(dir, out)                     → renewables-2026.pptx, no image failures
+slides_audit(file) · slides_render(file, out)
+                                         → no layout findings; 8 PNGs come back as image content
+deck_replace(dir, n, page) ×3 · slides_render(file, out)
+                                         → three pages fixed after looking at the renders
+```
+
+서른여덟 번의 호출, 약 13분, 그리고 어시스턴트는 터미널을 한 번도 건드리지 않았습니다: 도표, 사진, 가이드, 검사, 렌더링 결과가 모두 MCP 도구 결과로 오갔습니다. 기기를 벗어난 것은 `search`와 `media`뿐이며, ChaOffice에 설정된 제공업체로 전달되었습니다.
+
+## <a id="download"></a>다운로드
 
 | 플랫폼                               | 요구 사항                                             | 다운로드                                                                                |
 | ------------------------------------ | ----------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [최신 `.dmg` (arm64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)         |
-| **macOS** — Intel (x64)              | macOS 11+                                             | [최신 `.dmg` (x64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)           |
-| **Windows** (x64, 대부분의 PC)       | Windows 10+, Intel/AMD                                | [최신 `-x64.exe` 설치 파일](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)   |
-| **Windows** on Arm (ARM64)           | Windows 11 on Arm (Snapdragon X 및 유사 기종)         | [최신 `-arm64.exe` 설치 파일](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) |
-| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 이상)               | [최신 `.deb`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
-| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [최신 `.rpm`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
-| **Linux** — 기타 배포판              | x86_64, glibc 2.34+, FUSE 2                           | [최신 `.AppImage`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)            |
+| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [최신 `.dmg` (arm64)](https://github.com/genspark-ai/chaoffice/releases/latest)         |
+| **macOS** — Intel (x64)              | macOS 11+                                             | [최신 `.dmg` (x64)](https://github.com/genspark-ai/chaoffice/releases/latest)           |
+| **Windows** (x64, 대부분의 PC)       | Windows 10+, Intel/AMD                                | [최신 `-x64.exe` 설치 파일](https://github.com/genspark-ai/chaoffice/releases/latest)   |
+| **Windows** on Arm (ARM64)           | Windows 11 on Arm (Snapdragon X 및 유사 기종)         | [최신 `-arm64.exe` 설치 파일](https://github.com/genspark-ai/chaoffice/releases/latest) |
+| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 이상)               | [최신 `.deb`](https://github.com/genspark-ai/chaoffice/releases/latest)                 |
+| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [최신 `.rpm`](https://github.com/genspark-ai/chaoffice/releases/latest)                 |
+| **Linux** — 기타 배포판              | x86_64, glibc 2.34+, FUSE 2                           | [최신 `.AppImage`](https://github.com/genspark-ai/chaoffice/releases/latest)            |
 
 모든 빌드는 `main` 브랜치에서 만들어지며, macOS와 Windows 설치 파일에는
-서명이 되어 있습니다. 이전 버전은 [릴리스](https://github.com/zhgyuhuii/ChayuanAIOffice/releases) 페이지에서 확인할 수 있습니다.
+서명이 되어 있습니다. 이전 버전은 [릴리스](https://github.com/genspark-ai/chaoffice/releases) 페이지에서 확인할 수 있습니다.
 
 <details>
 <summary><b>Linux에 설치하기</b></summary>
@@ -329,6 +529,11 @@ sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
 sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
 
+deb와 rpm은 KDE Plasma의 Dolphin용 빈 템플릿도 추가합니다: 폴더에서 마우스
+오른쪽 버튼 → **새로 만들기**(Create New)에 _ChaOffice Document_, _ChaOffice
+Spreadsheet_, _ChaOffice Presentation_ 항목이 나타납니다. 템플릿은
+`/usr/share/templates`에 있으며 패키지와 함께 제거됩니다.
+
 AppImage는 별도 설치 없이 그 자리에서 실행됩니다: FUSE 2 런타임을
 설치하고(`sudo apt install libfuse2`; Ubuntu 24.04에서는 패키지 이름이
 `libfuse2t64`), 파일에 실행 권한을 부여한 뒤 실행하세요:
@@ -337,6 +542,8 @@ AppImage는 별도 설치 없이 그 자리에서 실행됩니다: FUSE 2 런타
 chmod +x ChaOffice-<version>.AppImage
 ./ChaOffice-<version>.AppImage
 ```
+
+Chromebook에서는 동일한 패키지가 Linux 환경(Crostini) 안에서 실행됩니다. 자세한 내용은 [docs/platforms/chromeos.md](../platforms/chromeos.md)을 참고하세요.
 
 </details>
 
@@ -359,6 +566,28 @@ save      ─► dirty blocks → OOXML fragments (referencing existing styles o
 
 패키지별 상세 설명(docx/pptx 엔진, `pdf2docx`, `html2docx`, 에이전트
 코어와 프로바이더)은 [CONTRIBUTING.md](../../CONTRIBUTING.md#engine-packages)에 있습니다.
+
+### <a id="legacy-and-odf-files-open-as-converted-copies"></a>이전 형식 및 ODF 파일은 변환된 사본으로 열립니다
+
+ChaOffice가 다시 기록할 수 없는 형식 — 이전 형식의 Word `.doc`/`.dot`, 한컴
+`.hwp`/`.hwpx`, Excel 97 `.xls`, `.tsv`, 이전 형식의 PowerPoint `.ppt`, 그리고
+OpenDocument 계열(`.odt`, `.ott`, `.ods`, `.ots`, `.odp`, `.otp`) — 은 네이티브
+파일이 아니라 가져오기 대상입니다. 이런 파일을 열면 사용자의 기기에서 `.docx`,
+`.xlsx` 또는 `.pptx` 사본으로 변환한 뒤 그 사본을 엽니다. 원본은 다시 읽히지
+않으며 절대 기록되지 않습니다.
+
+- Docs와 Slides는 먼저 사본을 어디에 둘지 묻습니다(기본값은 원본 옆의 같은 이름
+  `.docx`/`.pptx`). 이후의 모든 저장은 그곳에 기록됩니다. `.ppt`는 마스터, 도형
+  기하, 채우기, 그림, 텍스트 서식과 함께 변환되므로 덱이 PowerPoint에서 보이던
+  모습 그대로 보입니다. 노트, 애니메이션, 전환 효과, 하이퍼링크는 아직 옮겨지지
+  않습니다.
+- Sheets는 변환된 워크북을 바로 열고, 첫 저장은 다른 이름으로 저장을 거쳐 새
+  `.xlsx`로 보냅니다. `.csv`는 예외입니다: 형식을 그대로 유지하며, 저장하면
+  Excel처럼 값을 `.csv`에 다시 기록합니다.
+- 변환은 단방향이며, 원본 형식에는 있지만 OOXML에는 없는 기능은 빠질 수 있습니다.
+  `.doc`, `.ppt`, `.hwp`, ODF 형식은 이를 알리는 확인 대화 상자를 표시합니다.
+  "다음부터 묻지 않고 변환"을 체크하면 건너뛸 수 있고, 설정 → 일반의 "이전 형식
+  파일 변환 전 확인"으로 다시 켤 수 있습니다.
 
 ## 개발
 
@@ -385,9 +614,11 @@ ChaOffice는 활발히 개발되고 있으며, 여러분의 피드백이 그 방
 만들어갑니다.
 
 - **버그를 신고하거나 기능을 요청**하려면
-  [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues)를 이용하세요.
+  [GitHub Issues](https://github.com/genspark-ai/chaoffice/issues)를 이용하세요.
 - **ChaOffice 그룹 채팅에 참여**하려면
   [GenTeam](https://chaoffice.ai/join)에서 팀 및 다른 사용자들과 대화할 수 있습니다.
+- 릴리스 노트, 데모, 다음에 만들고 있는 것을 보려면 **X에서
+  [@merrickbuilds](https://x.com/merrickbuilds)를 팔로우**하세요.
 - ChaOffice가 유용하다고 느끼셨다면 **저장소에 스타를 눌러주세요** —
   프로젝트를 지원하는 가장 좋은 방법입니다.
 
@@ -407,7 +638,10 @@ ChaOffice는 활발히 개발되고 있으며, 여러분의 피드백이 그 방
 네. ChaOffice는 네이티브 `.docx`, `.xlsx`, `.pptx` 파일을 열고 저장할 수
 있습니다. 저장은 바이트 단위로 보존되므로, 손대지 않은 부분은 그대로
 다시 기록되어 문서가 마이크로소프트 오피스에서도 계속 정상적으로
-열립니다.
+열립니다. 이전 형식의 `.doc`/`.dot`, `.xls`, `.ppt` 파일도 변환된
+`.docx`/`.xlsx`/`.pptx` 사본으로 열립니다 —
+[이전 형식 및 ODF 파일은 변환된 사본으로 열립니다](#legacy-and-odf-files-open-as-converted-copies)를
+참고하세요.
 
 </details>
 
@@ -445,10 +679,21 @@ ChaOffice는 활발히 개발되고 있으며, 여러분의 피드백이 그 방
 
 네. 키가 필요 없는 Genspark 로그인 외에도, ChaOffice는 Claude, OpenAI,
 Gemini, DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral,
-OpenRouter, Requesty, OpenCode Zen/Go를 위한 직접 키 사용을 지원하며, 로컬 모델
+OpenRouter, Requesty, Opper, Cheaper Inference, Atlas Cloud, OpenCode Zen/Go를 위한 직접 키 사용을 지원하며, 로컬 모델
 서버를 포함한 모든 OpenAI 호환 엔드포인트도 사용할 수 있습니다. 검색,
 이미지 생성, 이미지/비디오 분석은 설정 → AI 미디어 및 검색에서 별도의
 키를 설정합니다.
+
+</details>
+
+<details>
+<summary><b>AI 패널을 끌 수 있나요?</b></summary>
+
+네. 설정 → AI에는 **Show the AI sidebar**(AI 사이드바 표시) 스위치가
+있습니다. 끄면 모든 편집기에서 사이드바가 숨겨지고, 새 문서에서 더는
+자동으로 열리지 않습니다. 리본 버튼이나 메뉴 항목처럼 명시적인 AI
+동작은 해당 문서에서 여전히 패널을 열며, 닫으면 다시 숨겨진 상태로
+돌아갑니다.
 
 </details>
 
@@ -519,6 +764,11 @@ ChaOffice는 다음의 오픈소스 프로젝트가 없었다면 만들어질 �
 - [libeot](https://github.com/umanwizard/libeot) (MPL-2.0) — 임베디드
   PowerPoint 폰트를 위한 MicroType Express 디코더를 TypeScript로 포팅한
   것입니다.
+- [rhwp](https://github.com/edwardkim/rhwp) (MIT) — 한컴 가져오기를 위해 바이너리
+  `.hwp` 문서를 HWPX로 읽어 들입니다. WebAssembly 빌드에는 서드파티 고지에 나열된
+  Rust 크레이트와 Volexity hwp-extract 포트가 포함되어 있습니다. "한글", "한컴",
+  "HWP", "HWPX"는 Hancom Inc.의 등록 상표이며, ChaOffice는 Hancom과 관련이
+  없습니다.
 - [React](https://react.dev/) (MIT) — 모든 앱의 UI 레이어입니다.
 - [Mermaid](https://mermaid.js.org/) (MIT)와 [KaTeX](https://katex.org/)
   (MIT) — Markdown과 Docs의 다이어그램과 수식을 담당합니다.

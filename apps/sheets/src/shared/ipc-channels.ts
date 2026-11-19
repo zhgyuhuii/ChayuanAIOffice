@@ -146,6 +146,7 @@ export const IPC_CHANNELS = {
   aiLocalToolInstall: 'ai:local-tool-install',
   aiLocalToolStart: 'ai:local-tool-start',
   aiLocalToolProgress: 'ai:local-tool-progress',
+  aiChaOfficeLoginLanded: 'ai:chaoffice-login-landed',
   aiImageSearch: 'ai:image-search',
   aiFetchImage: 'ai:fetch-image',
   // sheets: prefix — slides' ai:generate-image only registers once a slides view exists

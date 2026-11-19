@@ -13,10 +13,10 @@
 Word-, Excel-, PowerPoint- és PDF-fájlok, amelyeket te és az AI-d szerkesztetek, és amelyek valódi formátumban mentődnek vissza.</p>
 
 <p align="center">
-  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/ChayuanAIOffice" alt="Licenc: Apache-2.0"></a>
-  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/ChayuanAIOffice" alt="Legutóbbi kiadás"></a>
-  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/ChayuanAIOffice/total" alt="Letöltések"></a>
-  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/ChayuanAIOffice?style=flat" alt="GitHub-csillagok"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/genspark-ai/chaoffice" alt="Licenc: Apache-2.0"></a>
+  <a href="https://github.com/genspark-ai/chaoffice/releases/latest"><img src="https://img.shields.io/github/v/release/genspark-ai/chaoffice" alt="Legutóbbi kiadás"></a>
+  <a href="https://github.com/genspark-ai/chaoffice/releases"><img src="https://img.shields.io/github/downloads/genspark-ai/chaoffice/total" alt="Letöltések"></a>
+  <a href="https://github.com/genspark-ai/chaoffice/stargazers"><img src="https://img.shields.io/github/stars/genspark-ai/chaoffice?style=flat" alt="GitHub-csillagok"></a>
   <a href="https://x.com/merrickbuilds"><img src="https://img.shields.io/badge/follow-%40merrickbuilds-000000?logo=x&logoColor=white" alt="Követés X-en: @merrickbuilds"></a>
 </p>
 
@@ -78,12 +78,12 @@ a mentés mindig OOXML-be ír, soha az eredeti formátumba.
   és Windsurf számára, így egy kódoló ügynök valódi Office-fájlokat hozhat
   létre, konvertálhat, olvashat és szerkeszthet a gépeden, ablak megnyitása nélkül.
 
-**Töltsd le:** [macOS](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (Apple Silicon és Intel) ·
-[Windows](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (x64 és Arm) ·
-[Linux](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (deb, rpm, AppImage) —
+**Töltsd le:** [macOS](https://github.com/genspark-ai/chaoffice/releases/latest) (Apple Silicon és Intel) ·
+[Windows](https://github.com/genspark-ai/chaoffice/releases/latest) (x64 és Arm) ·
+[Linux](https://github.com/genspark-ai/chaoffice/releases/latest) (deb, rpm, AppImage) —
 a részletekkel és a rendszerkövetelményekkel a [Letöltés](#download) részben találod.
 
-## Demó
+## <a id="demo"></a>Demó
 
 Hat alkalmazás, egy AI-panel, egy TypeSafe Jevvel újrarendezett fájlkereső, egy AI kérdezése funkció,
 amely a csillagozott fájljaidból válaszol forrásokkal, valamint egy parancssor a kódoló ügynöködnek.
@@ -188,7 +188,7 @@ Mondd el, mire való az oldal, és kinek készül. Az AI először egy **tervez�
 
 **Összekapcsolt jegyzetek, ahogy az Obsidian teszi.** A `[[wiki links]]`-re kattintva az adott jegyzethez ugrasz, a `[[` begépelése jegyzetnév-kiegészítést kínál, a `![[…]]` pedig beágyaz egy jegyzetet vagy képet a szövegbe. A **Visszahivatkozások** panel felsorolja az összes jegyzetet, amely a megnyitottra mutat, a **Gráf** nézet pedig feltérképezi a teljes jegyzettár (vault) hivatkozásait.
 
-### 7 · Keresés — találd meg a kérdésedre válaszoló fájlt, TypeSafe Jevvel
+### <a id="7--search--find-the-file-that-answers-the-question-with-typesafe-jev"></a>7 · Keresés — találd meg a kérdésedre válaszoló fájlt, TypeSafe Jevvel
 
 A munkamappád minden fájlja helyben indexelve van: nevek, mappák, valamint a Word-, Excel-, PowerPoint-, PDF-, Markdown- és HTML-fájlok kinyert szövege, egy CJK-érzékeny tokenizálású, teljes szövegű SQLite-indexben. Kapcsold be a **Jev keresési átrendezést**, és a legjobb 20 helyi találatot a [TypeSafe Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev) értékeli, a System One modell, amely szöveg generálása helyett dokumentumonként egyetlen kalibrált relevanciapontszámot ad vissza egyetlen hívásban. A lista e pontszám alapján rendeződik újra; ha a hívás sikertelen, vagy időtúllépés lép fel, a helyi sorrend marad érvényben.
 
@@ -230,7 +230,7 @@ Windsurf valódi Office-fájlokat tud létrehozni, konvertálni, olvasni és sze
 </tr>
 <tr>
 <td><b>Egy prompt az ügynöködhöz</b> — „Készíts egy nyolc diás bemutatót a Naprendszerről.” Az ügynök elolvassa a képességet, megír egy stíluslapot, egy vázlatot és diánként egy oldalleírást, legenerálja a két fotót a <code>chaoffice image</code> paranccsal, és hagyja, hogy a <code>chaoffice slides check</code> elutasítson mindent, ami túlnyúlik vagy átfedésben van, mielőtt a <code>chaoffice create</code> összeállítja a <code>.pptx</code>-et, és a <code>slides render</code> diánként egy PNG-t ad vissza megtekintésre.</td>
-<td><b>Telepítsd egyszer, a Beállítások → Integrációk menüből</b> — a ChaOffice felsorolja azokat a kódoló ügynököket, amelyeket ezen a számítógépen talál, és minden kiválasztottba beírja a képességet. Vagy töltsd le a képességet zip-ként, vagy futtasd az <code>npx skills add zhgyuhuii/ChayuanAIOffice</code> parancsot. A parancsok és a teljes munkafolyamat a <a href="#command-line-and-agent-skill">Parancssor és ügynök-képesség</a> részben található.</td>
+<td><b>Telepítsd egyszer, a Beállítások → Integrációk menüből</b> — a ChaOffice felsorolja azokat a kódoló ügynököket, amelyeket ezen a számítógépen talál, és minden kiválasztottba beírja a képességet. Vagy töltsd le a képességet zip-ként, vagy futtasd az <code>npx skills add genspark-ai/chaoffice</code> parancsot. A parancsok és a teljes munkafolyamat a <a href="#command-line-and-agent-skill">Parancssor és ügynök-képesség</a> részben található.</td>
 </tr>
 </table>
 
@@ -287,7 +287,7 @@ A **Parallel** fiók nélkül is működik: az ingyenes Search MCP-je (korlátoz
 
 A teljes csomag világos, sötét és rendszer szerinti témákkal érkezik. A témák csak a képernyőn látottakat változtatják meg: az exportálások, a nyomtatások és a mentett fájlok mindig a dokumentum saját színeit őrzik.
 
-## Képességek
+## <a id="skills"></a>Képességek
 
 Egy képesség egy `SKILL.md`, amely elmondja az AI-nak, hogyan oldjon meg egy adott feladatot jól: heti jelentés, NDA, óraterv. A ChaOffice egy készletet szállít belőlük, és fogadja a sajátjaidat is, ugyanabban a formátumban, amelyet a kódoló ügynökök használnak.
 
@@ -296,7 +296,7 @@ Egy képesség egy `SKILL.md`, amely elmondja az AI-nak, hogyan oldjon meg egy a
 
 ---
 
-## Parancssor és ügynök-képesség
+## <a id="command-line-and-agent-skill"></a>Parancssor és ügynök-képesség
 
 Amit az alkalmazások egy fájllal tudnak, azt a `chaoffice` parancssor is elvégzi terminálból:
 megvizsgál, konvertál, létrehoz, olvas és szerkeszt Word-, Excel-, PowerPoint-,
@@ -317,7 +317,7 @@ meg minden MCP-kliens.
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Beállítások → Integrációk** az alkalmazásban | Felsorolja a gépen megtalált ügynököket; egy kattintás beírja a képességet mindbe, amelyiket választod. **Frissítés** gomb jelenik meg, ha egy új ChaOffice-kiadás frissebb képességet hoz. |
 | **Letöltés zipként** ugyanazon az oldalon      | Olyan felépítés, amelyet a claude.ai, a Claude asztali alkalmazásai és más asszisztensek feltöltött képességként elfogadnak.                                                                |
-| `npx skills add zhgyuhuii/ChayuanAIOffice`         | Ebből a tárolóból telepít bármely képesség-kompatibilis ügynökbe.                                                                                                                           |
+| `npx skills add genspark-ai/chaoffice`         | Ebből a tárolóból telepít bármely képesség-kompatibilis ügynökbe.                                                                                                                           |
 
 Ezután indíts új csevegést, és kérj egy dokumentumot. A képesség megtanítja az ügynöknek,
 mikor nyúljon a `chaoffice`-hoz, hogyan olvasson be egy fájlt a szerkesztés előtt, és
@@ -366,7 +366,7 @@ A `chaoffice`-on belül nem történik modellhívás: a gondolkodást az ügynö
 az építést és az ellenőrzést a CLI, az eredmény pedig közönséges `.pptx`-ként nyílik meg
 a ChaOffice-ban vagy a PowerPointban.
 
-### MCP-kiszolgáló
+### <a id="mcp-server"></a>MCP-kiszolgáló
 
 Ugyanezek a parancsok [Model Context Protocol](https://modelcontextprotocol.io)-eszközként is
 elérhetők, olyan asszisztenseknek, amelyek nem tudnak terminált futtatni, vagy amelyeknek
@@ -408,7 +408,7 @@ rejtett ChaOffice-folyamatot indít, ezért egy grafikus felület nélküli gép
 alkalmazásra és virtuális kijelzőre (`xvfb-run`) van szüksége.
 
 Az itt szereplő `chaoffice` az alkalmazásban szállított CLI (macOS-en:
-`/Applications/ChaAI Office.app/Contents/Resources/cli/chaoffice`; a beállítási panel kiírja
+`/Applications/ChaOffice.app/Contents/Resources/cli/chaoffice`; a beállítási panel kiírja
 a pontos elérési utat a telepítésedhez). A kiszolgáló saját munkafolyamat-utasításokkal
 érkezik, és az op-referenciákat `chaoffice://guide/*` erőforrásokként teszi elérhetővé,
 így képesség nem szükséges; a képesség és az MCP-kiszolgáló együtt is megfér, az
@@ -440,20 +440,20 @@ a számadatok, a fotók, az útmutatók, az ellenőrzések és a renderelések m
 MCP-eszközeredményként utaztak. Csak a `search` és a `media` hagyta el a gépet –
 a ChaOffice-ban beállított szolgáltató felé.
 
-## Letöltés
+## <a id="download"></a>Letöltés
 
 | Platform                             | Követelmények                                         | Letöltés                                                                                      |
 | ------------------------------------ | ----------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [Legfrissebb `.dmg` (arm64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)        |
-| **macOS** — Intel (x64)              | macOS 11+                                             | [Legfrissebb `.dmg` (x64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)          |
-| **Windows** (x64, a legtöbb gépen)   | Windows 10+, Intel/AMD                                | [Legfrissebb `-x64.exe` telepítő](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)   |
-| **Windows** on Arm (ARM64)           | Windows 11 on Arm (Snapdragon X és hasonlók)          | [Legfrissebb `-arm64.exe` telepítő](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) |
-| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 vagy újabb)         | [Legfrissebb `.deb`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                |
-| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [Legfrissebb `.rpm`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                |
-| **Linux** — egyéb disztribúciók      | x86_64, glibc 2.34+, FUSE 2                           | [Legfrissebb `.AppImage`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)           |
+| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [Legfrissebb `.dmg` (arm64)](https://github.com/genspark-ai/chaoffice/releases/latest)        |
+| **macOS** — Intel (x64)              | macOS 11+                                             | [Legfrissebb `.dmg` (x64)](https://github.com/genspark-ai/chaoffice/releases/latest)          |
+| **Windows** (x64, a legtöbb gépen)   | Windows 10+, Intel/AMD                                | [Legfrissebb `-x64.exe` telepítő](https://github.com/genspark-ai/chaoffice/releases/latest)   |
+| **Windows** on Arm (ARM64)           | Windows 11 on Arm (Snapdragon X és hasonlók)          | [Legfrissebb `-arm64.exe` telepítő](https://github.com/genspark-ai/chaoffice/releases/latest) |
+| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 vagy újabb)         | [Legfrissebb `.deb`](https://github.com/genspark-ai/chaoffice/releases/latest)                |
+| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [Legfrissebb `.rpm`](https://github.com/genspark-ai/chaoffice/releases/latest)                |
+| **Linux** — egyéb disztribúciók      | x86_64, glibc 2.34+, FUSE 2                           | [Legfrissebb `.AppImage`](https://github.com/genspark-ai/chaoffice/releases/latest)           |
 
 Minden build a `main` ágból készül; a macOS- és a Windows-telepítők alá vannak írva.
-A régebbi verziók a [Kiadások](https://github.com/zhgyuhuii/ChayuanAIOffice/releases) oldalon érhetők el.
+A régebbi verziók a [Kiadások](https://github.com/genspark-ai/chaoffice/releases) oldalon érhetők el.
 
 <details>
 <summary><b>Telepítés Linuxon</b></summary>
@@ -461,7 +461,7 @@ A régebbi verziók a [Kiadások](https://github.com/zhgyuhuii/ChayuanAIOffice/r
 A deb az apttal telepíthető — ez magával húzza a függőségeket, és felveszi a ChaOffice-ot az alkalmazásmenübe:
 
 ```bash
-sudo apt install ./ChaAIOffice_<version>_amd64.deb
+sudo apt install ./chaoffice_<version>_amd64.deb
 ```
 
 Fedora / RHEL-család / openSUSE alatt az rpm-et telepítsd helyette:
@@ -510,7 +510,7 @@ save      ─► dirty blocks → OOXML fragments (referencing existing styles o
 A csomagonkénti körbejárás (docx/pptx motorok, `pdf2docx`, `html2docx`,
 az ügynökmag és a szolgáltatók) a [CONTRIBUTING.md](../../CONTRIBUTING.md#engine-packages) fájlban található.
 
-### A korábbi formátumú és ODF-fájlok konvertált másolatként nyílnak meg
+### <a id="legacy-and-odf-files-open-as-converted-copies"></a>A korábbi formátumú és ODF-fájlok konvertált másolatként nyílnak meg
 
 Azok a formátumok, amelyeket a ChaOffice nem tud visszaírni — a Word korábbi `.doc`/`.dot`,
 a Hancom `.hwp`/`.hwpx`, az Excel 97 `.xls`, a `.tsv`, a PowerPoint korábbi `.ppt`, valamint az
@@ -556,7 +556,7 @@ A [CONTRIBUTING.md](../../CONTRIBUTING.md) leírja az ellenőrzéseket, amelyeke
 A ChaOffice aktív fejlesztés alatt áll, és a visszajelzéseid formálják.
 
 - **Jelents hibát vagy kérj új funkciót** a
-  [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues) oldalon.
+  [GitHub Issues](https://github.com/genspark-ai/chaoffice/issues) oldalon.
 - **Csatlakozz a ChaOffice csoportcsevegéséhez** a
   [GenTeam](https://chaoffice.ai/join) oldalon, hogy a csapattal és más felhasználókkal
   beszélgethess.

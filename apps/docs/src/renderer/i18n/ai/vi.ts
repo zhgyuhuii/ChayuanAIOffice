@@ -240,4 +240,5 @@ export const vi = {
   aiMindMapToggleLayout: 'Đổi bố cục',
   aiMindMapLayoutTopDown: 'Chuyển sang bố cục từ trên xuống dưới',
   aiMindMapLayoutLeftRight: 'Chuyển sang bố cục từ trái sang phải',
+  aiGskLoginOk: 'Đã đăng nhập ChaAI Office',
 } satisfies Record<keyof typeof zh, string>

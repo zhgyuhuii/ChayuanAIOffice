@@ -2,6 +2,7 @@ import { flushSync } from 'react-dom'
 import { createRoot } from 'react-dom/client'
 import { htmlDir, htmlLang, type Lang } from '@chaoffice/i18n'
 import { App } from './App'
+import { installKeyLayer } from './key-layer'
 import { setAuthorName } from './author-name'
 import { LocaleProvider, setModuleLang } from './i18n/locale'
 import type { DocTheme, UiTheme } from '../shared/ipc'
@@ -30,6 +31,7 @@ import { applyAiPanelPrefs, installScreenTips } from '@chaoffice/ui'
 import { setAltChunkHtmlConverter } from '@chaoffice/docx-engine'
 
 installScreenTips()
+installKeyLayer()
 if (window.desktop?.convertAltChunkHtml) {
   setAltChunkHtmlConverter((html) => window.desktop.convertAltChunkHtml(html))
 }

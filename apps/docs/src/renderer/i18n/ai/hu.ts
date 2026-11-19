@@ -244,4 +244,5 @@ export const hu = {
   aiTabChat: 'Chat',
   aiSummarizeDesc: 'Summarize the document and capture its key points',
   aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
+  aiGskLoginOk: 'Bejelentkezve a ChaAI Officeba',
 } satisfies Record<keyof typeof zh, string>

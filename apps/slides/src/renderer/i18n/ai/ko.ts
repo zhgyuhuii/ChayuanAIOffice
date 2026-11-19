@@ -327,4 +327,5 @@ export const ko = {
   aiToolRunReadUrl: '페이지 읽는 중…',
   aiPageCloudToLocal: '클라우드 생성 불가 — 로컬로 생성',
 
+  aiGskLoginOk: 'ChaAI Office에 로그인했습니다',
 }

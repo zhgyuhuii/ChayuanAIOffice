@@ -119,4 +119,5 @@ export const ja = {
   aiDockRestore: 'パネルを元に戻す',
   aiToolGenSvg: 'SVGイラストを描画',
   aiToolGenSvgDone: 'SVGイラストをラスタライズしました。add_imageで配置できます',
+  aiGskLoginOk: 'ChaAI Office にサインインしました',
 }
