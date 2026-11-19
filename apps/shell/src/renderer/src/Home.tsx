@@ -2,6 +2,22 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import type { ReactElement, ReactNode } from 'react'
 import { FileBadge } from './file-badge'
 import { KbAskPanel } from './KbAskPanel'
+import {
+  TreeArchiveIcon,
+  TreeArrowLeftIcon,
+  TreeChatIcon,
+  TreeChatPlusIcon,
+  TreeChevronIcon,
+  TreeDotsIcon,
+  TreeFunnelIcon,
+  TreeListTreeIcon,
+  TreePinIcon,
+  TreePlusIcon,
+  TreeSearchIcon,
+  TreeStarIcon,
+  TreeTrashIcon,
+  TreeXIcon,
+} from './tree-icons'
 import type {
   AccountStatus,
   CloudProjectKind,
@@ -247,10 +263,7 @@ function TreeFilterBar({
   }, [])
   return (
     <div className="tree-filter">
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-        <circle cx="7" cy="7" r="4.4" stroke="currentColor" strokeWidth="1.3" />
-        <path d="M10.4 10.4L14 14" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-      </svg>
+      <TreeSearchIcon />
       <input
         ref={inputRef}
         value={value}
@@ -269,14 +282,7 @@ function TreeFilterBar({
         aria-label={value ? clearLabel : closeLabel}
         onClick={() => (value ? onChange('') : onClose())}
       >
-        <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-          <path
-            d="M3 3l6 6M9 3l-6 6"
-            stroke="currentColor"
-            strokeWidth="1.4"
-            strokeLinecap="round"
-          />
-        </svg>
+        <TreeXIcon size={12} />
       </button>
     </div>
   )
@@ -2052,15 +2058,7 @@ export function Home() {
               else removeRecent([entry.path])
             }}
           >
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path
-                d="M2.5 4h11M6 4V2.8c0-.44.36-.8.8-.8h2.4c.44 0 .8.36.8.8V4M4 4l.7 8.5c.04.55.5 1 1.05 1h4.5c.55 0 1.01-.45 1.05-1L12 4M6.6 7v4M9.4 7v4"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <TreeTrashIcon />
           </button>
         )}
         <button
@@ -2071,15 +2069,7 @@ export function Home() {
             toggleStar(entry.path)
           }}
         >
-          <svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true">
-            <path
-              d="M8 1.9l1.9 3.85 4.25.62-3.07 3 .72 4.23L8 11.6l-3.8 2 .72-4.23-3.07-3 4.25-.62z"
-              fill={entry.starred ? '#f5a623' : 'none'}
-              stroke={entry.starred ? '#f5a623' : 'currentColor'}
-              strokeWidth="1.2"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <TreeStarIcon filled={entry.starred} />
         </button>
         {bare && (
           <>
@@ -2092,7 +2082,7 @@ export function Home() {
                 void window.chaOffice.openPath(entry.path, { dock: false })
               }}
             >
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path
                   d="M6.5 3.5H4a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 4 13.5h7A1.5 1.5 0 0 0 12.5 12V9.5M9.5 2.5h4v4M13 3l-5.5 5.5"
                   stroke="currentColor"
@@ -2111,15 +2101,7 @@ export function Home() {
                 deleteFiles([entry.path])
               }}
             >
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path
-                  d="M2.5 4h11M6 4V2.8c0-.44.36-.8.8-.8h2.4c.44 0 .8.36.8.8V4M4 4l.7 8.5c.04.55.5 1 1.05 1h4.5c.55 0 1.01-.45 1.05-1L12 4M6.6 7v4M9.4 7v4"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <TreeTrashIcon />
             </button>
           </>
         )}
@@ -2134,11 +2116,7 @@ export function Home() {
             aria-expanded={rowMenu === entry.path}
             onClick={() => setRowMenu(rowMenu === entry.path ? null : entry.path)}
           >
-            <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-              <circle cx="3.2" cy="8" r="1.4" fill="currentColor" />
-              <circle cx="8" cy="8" r="1.4" fill="currentColor" />
-              <circle cx="12.8" cy="8" r="1.4" fill="currentColor" />
-            </svg>
+            <TreeDotsIcon />
           </button>
           {rowMenu === entry.path && (
             <div className="row-menu side" role="menu">
@@ -2423,10 +2401,32 @@ export function Home() {
     const vw = fixedViewportWidth()
     const clampedY =
       y + estHeight > window.innerHeight ? Math.max(8, window.innerHeight - estHeight - 8) : y
-    // 上游 #2131 意图重实现：菜单开在指针右侧（+2px）而非以指针为左缘，贴近视口左缘时不再被截断
-    const clampedX = x + 2 + estWidth > vw ? Math.max(8, vw - estWidth - 8) : x + 2
+    // 上游 #2131 意图重实现：菜单开在指针右侧（+2px）而非以指针为左缘，贴近视口左缘时不再被截断。
+    // 右界取树条右缘而非窗口右缘：树内 fixed 菜单越过侧栏的部分会被文档标签页的
+    // clip-path（tabbar.css .doc-active）硬裁掉——与 FileTreePane.folder-menu 同款约定
+    const stripRight = layout.leftCollapsed ? vw : layout.sidebarWidth
+    const bound = Math.min(vw, stripRight)
+    const clampedX = x + 2 + estWidth > bound ? Math.max(8, bound - estWidth - 8) : x + 2
     setCtxMenu({ ...spec, x: clampedX, y: clampedY })
   }
+
+  /** 菜单挂载后按实测尺寸二次落位：右缘钳回树条（实际宽可达 max-width 260，
+   *  估宽 224 的预钳位会漏）、底部按实测高钳回窗口（行高估算可能漂移）。
+   *  同一回调兼任 useDismissablePopover 的 wrap ref（菜单 div 只挂得下一个 ref） */
+  const settleCtxMenu = useCallback((el: HTMLDivElement | null) => {
+    ctxMenuWrapRef.current = el
+    if (!el) return
+    const { leftCollapsed, sidebarWidth } = getHomeLayout()
+    const stripRight = leftCollapsed ? fixedViewportWidth() : sidebarWidth
+    const left = Number(el.dataset.x)
+    if (Number.isFinite(left) && left + el.offsetWidth > stripRight) {
+      el.style.left = `${Math.max(8, stripRight - el.offsetWidth - 8)}px`
+    }
+    const top = Number(el.dataset.y)
+    if (Number.isFinite(top) && top + el.offsetHeight > window.innerHeight - 8) {
+      el.style.top = `${Math.max(8, window.innerHeight - el.offsetHeight - 8)}px`
+    }
+  }, [])
 
   /** 会话菜单：打开 / 重命名 / 置顶 / 复制标题 / 导出 / 归档 / 删除 */
   function sessionMenuOf(session: HomeChatSession): { title: string; items: TreeMenuEntry[] } {
@@ -2582,15 +2582,7 @@ export function Home() {
             openTreeMenu(sessionMenuOf(session), event.clientX, event.clientY)
           }}
         >
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path
-              d="M3 4.5A1.5 1.5 0 0 1 4.5 3h7A1.5 1.5 0 0 1 13 4.5v5A1.5 1.5 0 0 1 11.5 11H7.6L4.8 13.3a.6.6 0 0 1-1-.47V11h-.3A1.5 1.5 0 0 1 2 9.5v-5A1.5 1.5 0 0 1 3.5 3.5"
-              stroke="currentColor"
-              strokeWidth="1.2"
-              strokeLinejoin="round"
-              transform="translate(0.5 0)"
-            />
-          </svg>
+          <TreeChatIcon />
           {isRenaming ? (
             <input
               className="tree-chat-rename"
@@ -2614,15 +2606,7 @@ export function Home() {
               <span className="tree-chat-title">{label}</span>
               {session.pinned && (
                 <span className="tree-chat-pin" aria-label={t('chatPin')}>
-                  <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path
-                      d="M4.2 11.8l1.2-3.2L11 3l2 2-5.6 5.6-3.2 1.2z"
-                      stroke="currentColor"
-                      strokeWidth="1.3"
-                      strokeLinejoin="round"
-                    />
-                    <path d="M9.8 4.2l2 2" stroke="currentColor" strokeWidth="1.3" />
-                  </svg>
+                  <TreePinIcon size={13} />
                 </span>
               )}
               <button
@@ -2635,24 +2619,7 @@ export function Home() {
                   else archiveSession(session.id)
                 }}
               >
-                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <rect
-                    x="2.5"
-                    y="3.2"
-                    width="11"
-                    height="2.4"
-                    rx="0.9"
-                    stroke="currentColor"
-                    strokeWidth="1.2"
-                  />
-                  <path
-                    d="M3.7 5.6v5.6a1.2 1.2 0 0 0 1.2 1.2h6.2a1.2 1.2 0 0 0 1.2-1.2V5.6M6.5 8.4h3"
-                    stroke="currentColor"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <TreeArchiveIcon />
               </button>
             </>
           )}
@@ -2684,22 +2651,7 @@ export function Home() {
           if (event.key === 'Enter' && event.target === event.currentTarget) onToggle()
         }}
       >
-        <svg
-          className={`side-group-arrow${collapsed ? ' folded' : ''}`}
-          width="12"
-          height="12"
-          viewBox="0 0 16 16"
-          aria-hidden="true"
-        >
-          <path
-            d="M6 3.5L10.5 8L6 12.5"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-          />
-        </svg>
+        <TreeChevronIcon className={`side-group-arrow${collapsed ? ' folded' : ''}`} />
         <span className="side-files-title">{title}</span>
         <span className="side-files-count">{t(countKey, { n: count })}</span>
         {headExtra}
@@ -2713,15 +2665,7 @@ export function Home() {
               onClear()
             }}
           >
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path
-                d="M2.5 4h11M6 4V2.8c0-.44.36-.8.8-.8h2.4c.44 0 .8.36.8.8V4M4 4l.7 8.5c.04.55.5 1 1.05 1h4.5c.55 0 1.01-.45 1.05-1L12 4M6.6 7v4M9.4 7v4"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <TreeTrashIcon />
           </button>
         )}
       </div>
@@ -2748,38 +2692,14 @@ export function Home() {
             active={chatsFilterOpen || chatsQuery !== ''}
             onClick={() => setChatsFilterOpen((v) => !v)}
           >
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path
-                d="M2.2 3h11.6l-4.5 5.2v4l-2.6 1.4V8.2z"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <TreeFunnelIcon />
           </TreeHeadBtn>
           <TreeHeadBtn
             label={t('chatArchive')}
             active={archiveOpen}
             onClick={() => setArchiveOpen(true)}
           >
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <rect
-                x="2.5"
-                y="3.2"
-                width="11"
-                height="2.4"
-                rx="0.9"
-                stroke="currentColor"
-                strokeWidth="1.2"
-              />
-              <path
-                d="M3.7 5.6v5.6a1.2 1.2 0 0 0 1.2 1.2h6.2a1.2 1.2 0 0 0 1.2-1.2V5.6M6.5 8.4h3"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <TreeArchiveIcon />
           </TreeHeadBtn>
         </div>
         {chatsFilterOpen && (
@@ -2829,52 +2749,21 @@ export function Home() {
           </span>
           {/* LOCAL(2026-11-19, main@b4f4499d3): opens the ZCode-style dialog */}
           <TreeHeadBtn label={t('newProject')} onClick={() => setZcProjectDialogOpen(true)}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path
-                d="M7 1v12M1 7h12"
-                stroke="currentColor"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-              />
-            </svg>
+            <TreePlusIcon size={16} />
           </TreeHeadBtn>
           <TreeHeadBtn
             label={t('chatFilter')}
             active={projFilterOpen || projQuery !== ''}
             onClick={() => setProjFilterOpen((v) => !v)}
           >
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path
-                d="M2.2 3h11.6l-4.5 5.2v4l-2.6 1.4V8.2z"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <TreeFunnelIcon />
           </TreeHeadBtn>
           <TreeHeadBtn
             label={t('chatArchive')}
             active={archiveOpen}
             onClick={() => setArchiveOpen(true)}
           >
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <rect
-                x="2.5"
-                y="3.2"
-                width="11"
-                height="2.4"
-                rx="0.9"
-                stroke="currentColor"
-                strokeWidth="1.2"
-              />
-              <path
-                d="M3.7 5.6v5.6a1.2 1.2 0 0 0 1.2 1.2h6.2a1.2 1.2 0 0 0 1.2-1.2V5.6M6.5 8.4h3"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <TreeArchiveIcon />
           </TreeHeadBtn>
         </div>
         {projFilterOpen && (
@@ -2954,16 +2843,7 @@ export function Home() {
                           toggleProjectExpand(proj.id)
                         }}
                       >
-                        <svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true">
-                          <path
-                            d="M6 3.5L10.5 8L6 12.5"
-                            stroke="currentColor"
-                            strokeWidth="1.6"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            fill="none"
-                          />
-                        </svg>
+                        <TreeChevronIcon />
                       </button>
                       {isRenaming ? (
                         <input
@@ -3003,20 +2883,7 @@ export function Home() {
                               void window.chaOffice.revealPath(proj.rootPath!)
                             }}
                           >
-                            <svg
-                              width="13"
-                              height="13"
-                              viewBox="0 0 16 16"
-                              fill="none"
-                              aria-hidden="true"
-                            >
-                              <path
-                                d="M1.5 4A1.5 1.5 0 0 1 3 2.5h3.1c.44 0 .85.19 1.13.52L8.4 4.4H13A1.5 1.5 0 0 1 14.5 5.9v5.6A1.5 1.5 0 0 1 13 13H3a1.5 1.5 0 0 1-1.5-1.5V4z"
-                                stroke="currentColor"
-                                strokeWidth="1.3"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
+                            <TreeListTreeIcon />
                           </button>
                         )}
                         <button
@@ -3028,26 +2895,7 @@ export function Home() {
                             createTask(proj.id)
                           }}
                         >
-                          <svg
-                            width="12"
-                            height="12"
-                            viewBox="0 0 16 16"
-                            fill="none"
-                            aria-hidden="true"
-                          >
-                            <path
-                              d="M3 4.2A1.2 1.2 0 0 1 4.2 3h7.6A1.2 1.2 0 0 1 13 4.2v4.9a1.2 1.2 0 0 1-1.2 1.2H7.9L5.6 12.4a.55.55 0 0 1-.9-.43v-1.67h-.5A1.2 1.2 0 0 1 3 9.1V4.2z"
-                              stroke="currentColor"
-                              strokeWidth="1.2"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M8 5.4v2.6M6.7 6.7h2.6"
-                              stroke="currentColor"
-                              strokeWidth="1.2"
-                              strokeLinecap="round"
-                            />
-                          </svg>
+                          <TreeChatPlusIcon />
                         </button>
                         <button
                           className="proj-more-btn"
@@ -3059,11 +2907,7 @@ export function Home() {
                             openTreeMenu(projectMenuOf(proj), rect.left, rect.bottom + 4)
                           }}
                         >
-                          <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-                            <circle cx="3.2" cy="8" r="1.35" fill="currentColor" />
-                            <circle cx="8" cy="8" r="1.35" fill="currentColor" />
-                            <circle cx="12.8" cy="8" r="1.35" fill="currentColor" />
-                          </svg>
+          <TreeDotsIcon />
                         </button>
                       </div>
                     </div>
@@ -3103,15 +2947,7 @@ export function Home() {
             aria-label={t('archiveBack')}
             onClick={() => setArchiveOpen(false)}
           >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path
-                d="M10 3.5L5.5 8l4.5 4.5"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <TreeArrowLeftIcon />
           </button>
           <span className="archive-title">{t('archiveViewTitle')}</span>
         </div>
@@ -3192,24 +3028,7 @@ export function Home() {
               toggleStar(entry.path)
             }}
           >
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <rect
-                x="2.5"
-                y="3.2"
-                width="11"
-                height="2.4"
-                rx="0.9"
-                stroke="currentColor"
-                strokeWidth="1.2"
-              />
-              <path
-                d="M3.7 5.6v5.6a1.2 1.2 0 0 0 1.2 1.2h6.2a1.2 1.2 0 0 0 1.2-1.2V5.6M8 9.6V7.2M6.9 8.3L8 7.2l1.1 1.1"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <TreeArchiveIcon />
           </button>
         </div>
       </li>
@@ -3239,14 +3058,7 @@ export function Home() {
                   setFilterMenuOpen((v) => !v)
                 }}
               >
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path
-                    d="M2.2 3h11.6l-4.5 5.2v4l-2.6 1.4V8.2z"
-                    stroke="currentColor"
-                    strokeWidth="1.2"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <TreeFunnelIcon />
               </button>
               {filterMenuOpen && (
                 <div className="funnel-menu" role="menu">
@@ -3278,15 +3090,7 @@ export function Home() {
               }}
             >
               {/* 图标化：胶囊头空间窄，「清空最近」四字换行；与分组头的清空/漏斗同族 13px 线性图标 */}
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path
-                  d="M2.5 4h11M6 4V2.8c0-.44.36-.8.8-.8h2.4c.44 0 .8.36.8.8V4M4 4l.7 8.5c.04.55.5 1 1.05 1h4.5c.55 0 1.01-.45 1.05-1L12 4M6.6 7v4M9.4 7v4"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <TreeTrashIcon />
             </button>
           </div>
         ) : (
@@ -3307,14 +3111,7 @@ export function Home() {
                 setFilterMenuOpen((v) => !v)
               }}
             >
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path
-                  d="M2.2 3h11.6l-4.5 5.2v4l-2.6 1.4V8.2z"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <TreeFunnelIcon />
             </button>
             {filterMenuOpen && (
               <div className="funnel-menu" role="menu">
@@ -3663,12 +3460,14 @@ export function Home() {
         </div>
       )}
 
-      {/* 右键 / … 菜单（全树单实例，固定定位 + 边界钳制） */}
+      {/* 右键 / … 菜单（全树单实例，固定定位 + 边界钳制；挂载后按实测尺寸二次落位） */}
       {ctxMenu && (
         <div
           className="tree-ctx-menu"
           role="menu"
-          ref={ctxMenuWrapRef}
+          ref={settleCtxMenu}
+          data-x={ctxMenu.x}
+          data-y={ctxMenu.y}
           style={{ left: ctxMenu.x, top: ctxMenu.y }}
         >
           {ctxMenu.title && <div className="tree-ctx-title">{ctxMenu.title}</div>}

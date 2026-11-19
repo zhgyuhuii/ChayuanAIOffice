@@ -233,6 +233,14 @@
   border: none;
 }
 
+/* Host stylesheets pin the glyph ink at the svg level (`.ai-send-btn svg
+ * { color: var(--text) }`), and a direct hit beats inheritance from the
+ * button — so the glyph would land same-tone on the brand circle (dark on
+ * dark in light, light on light in dark) and vanish. Re-pin it here. */
+.home .chat-composer .ai-send-btn svg {
+  color: var(--color-btn-primary-text);
+}
+
 .home .chat-composer .ai-send-btn:hover:not(:disabled) {
   background: var(--color-btn-primary-hover);
 }
@@ -302,6 +310,11 @@
   background: var(--color-btn-primary);
   color: var(--color-btn-primary-text);
   border: none;
+}
+
+/* Same svg-level pin as the home composer above — re-point the glyph ink. */
+.ai-panel .ai-send-btn svg {
+  color: var(--color-btn-primary-text);
 }
 
 .ai-panel .ai-send-btn:hover:not(:disabled) {

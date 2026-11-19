@@ -383,7 +383,6 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-width: 672px;
   padding: 20px;
 }
 
@@ -681,7 +680,6 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  max-width: 560px;
 }
 .msp-defaults-field select {
   width: 100%;

@@ -13,6 +13,13 @@ import { FileBadge } from '../file-badge'
 import { useDismissablePopover } from '@chaoffice/ui'
 import { markText } from '../../../shared/text-marks'
 import { useI18n } from '../locale'
+import {
+  TreeChevronIcon,
+  TreeDotsIcon,
+  TreeFolderIcon,
+  TreeFolderInputIcon,
+  TreePlusIcon,
+} from '../tree-icons'
 import type { I18n } from '../locale'
 import type {
   FileEntry,
@@ -32,48 +39,25 @@ const DRAG_PATHS_MIME = 'application/x-chaoffice-paths'
 const DRAG_EXPAND_DELAY_MS = 600
 
 function FolderIcon({ size = 16, open = false }: { size?: number; open?: boolean }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path
-        d="M1.5 4A1.5 1.5 0 0 1 3 2.5h3.1c.44 0 .85.19 1.13.52L8.4 4.4H13A1.5 1.5 0 0 1 14.5 5.9v5.6A1.5 1.5 0 0 1 13 13H3a1.5 1.5 0 0 1-1.5-1.5V4z"
-        stroke="currentColor"
-        strokeWidth="1.2"
-        strokeLinejoin="round"
-        fill={open ? 'currentColor' : 'none'}
-        fillOpacity={open ? 0.12 : 0}
-      />
-    </svg>
-  )
+  return <TreeFolderIcon size={size} open={open} />
 }
 
 function Chevron({ open }: { open: boolean }) {
   return (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 12 12"
-      aria-hidden="true"
-      style={{ transform: open ? 'rotate(90deg)' : undefined, transition: 'transform 0.12s' }}
+    <span
+      style={{
+        display: 'inline-flex',
+        transform: open ? 'rotate(90deg)' : undefined,
+        transition: 'transform 0.12s',
+      }}
     >
-      <path
-        d="M4.5 2.5l4 3.5-4 3.5"
-        stroke="currentColor"
-        strokeWidth="1.3"
-        strokeLinecap="round"
-        fill="none"
-      />
-    </svg>
+      <TreeChevronIcon size={14} />
+    </span>
   )
 }
 
 function MoreDots() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-      <circle cx="3.2" cy="8" r="1.35" fill="currentColor" />
-      <circle cx="8" cy="8" r="1.35" fill="currentColor" />
-      <circle cx="12.8" cy="8" r="1.35" fill="currentColor" />
-    </svg>
-  )
+  return <TreeDotsIcon />
 }
 
 function formatModified(mtimeMs: number, i18n: I18n): string {
@@ -1392,21 +1376,7 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
                 aria-label={t('addFolderRoot')}
                 onClick={addFolderRoot}
               >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M2 9V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1" />
-                  <path d="M2 13h10" />
-                  <path d="m9 16 3-3-3-3" />
-                </svg>
+                <TreeFolderInputIcon size={16} />
               </button>
             )}
             {canCreate && (
@@ -1416,14 +1386,7 @@ export function FileTreePane({ selectedFolder, onSelectFolder }: FileTreePanePro
                 aria-label={t('newFolder')}
                 onClick={() => startCreateFolder(createIn as string)}
               >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                  <path
-                    d="M7 1v12M1 7h12"
-                    stroke="currentColor"
-                    strokeWidth="1.7"
-                    strokeLinecap="round"
-                  />
-                </svg>
+                <TreePlusIcon size={40} />
               </button>
             )}
           </div>
