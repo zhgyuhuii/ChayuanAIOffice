@@ -28,6 +28,11 @@ import {
 import { LocaleProvider, setModuleLang } from './i18n/locale'
 import type { DocTheme, UiTheme } from '../shared/desktop-api'
 import './styles.css'
+// LOCAL(2026-11-19, main@b4f4499d3): ZCode-style visual language — kept after the
+// host stylesheets so its scoped overrides win the cascade
+// LOCAL(2026-11-19, main@b4f4499d3): FilesPane base styles (side pane host)
+import '@chaoffice/ui/files-pane.css'
+import '@chaoffice/ui/zcode-theme.css'
 import { installAnchorPanelFallback } from '@chaoffice/ui'
 
 if (import.meta.hot) {

@@ -96,21 +96,31 @@ export function formatTabTooltip(tab: TabSummary): string {
 }
 
 /** Panel glyph: outlined window with one side column filled to signal the target pane */
+// LOCAL(2026-11-19, main@b4f4499d3): lucide panel-left-close/open glyph shapes
+// (ZCode-identical sidebar toggle; visual-consistency project
+// docs/plans/2026-11-19-zcode-ui-consistency.md). Path data from lucide (ISC).
 function PaneToggleIcon({ side }: { side: 'left' | 'right' }): ReactElement {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="3" y="4.5" width="18" height="15" rx="2" stroke="currentColor" strokeWidth="1.5" />
-      <path
-        d={side === 'left' ? 'M9.25 4.5v15' : 'M14.75 4.5v15'}
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <path
-        d={side === 'left' ? 'M4.5 9.25h3.25M4.5 12h3.25' : 'M16.25 9.25h3.25M16.25 12h3.25'}
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
+      <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <path d={side === 'left' ? 'M9 3v18' : 'M15 3v18'} stroke="currentColor" strokeWidth="1.5" />
+      {side === 'left' ? (
+        <path
+          d="m16 15-3-3 3-3"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      ) : (
+        <path
+          d="m8 9-3 3 3 3"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      )}
     </svg>
   )
 }

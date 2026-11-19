@@ -22,6 +22,8 @@ import type {
 } from '../shared/ipc'
 import type { ProjectApi } from '@chaoffice/project-store'
 import { installDropOpenBridge } from '@chaoffice/electron-utils/drop-open'
+// LOCAL(2026-11-19, main@b4f4499d3): ZCode-style editor side pane needs the filesPaneApi bridge
+import { installFilesPaneBridge } from '@chaoffice/electron-utils/files-pane-bridge'
 
 /** P2 relay command pump: main → renderer. Buffers commands that race the
  *  renderer boot (the dock's first seed) until onRelayCommand subscribes. */
@@ -459,6 +461,9 @@ contextBridge.exposeInMainWorld(
 
 // open documents dragged from the OS onto this tab as a new shell tab
 installDropOpenBridge()
+
+// LOCAL(2026-11-19, main@b4f4499d3): ZCode-style editor side pane (EditorFilesPane) bridge
+installFilesPaneBridge()
 
 // Knowledge-base read surface (docs/kb-integration-plan.md): one dedicated
 // global so every app shell / editor window shares the same facade contract.

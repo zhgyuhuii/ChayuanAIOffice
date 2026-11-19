@@ -266,3 +266,4 @@ export {
   editorSidePaneTitle,
   useEditorSidePane,
 } from './editor-side-pane/EditorFilesPane'
+export { FileTypeIcon } from './zcode-icons'

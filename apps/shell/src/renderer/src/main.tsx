@@ -12,6 +12,9 @@ import '@chaoffice/ui/ai-usage.css'
 import '@chaoffice/ui/ai-skills.css'
 import './home.css'
 import './tabbar.css'
+// LOCAL(2026-11-19, main@b4f4499d3): ZCode-style visual language — must stay
+// after the host stylesheets so its scoped overrides win the cascade
+import '@chaoffice/ui/zcode-theme.css'
 import { installScreenTips } from '@chaoffice/ui'
 
 installScreenTips()

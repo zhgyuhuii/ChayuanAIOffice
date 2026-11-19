@@ -1,0 +1,826 @@
+/* ZCode-style visual language for ChaOffice chrome.
+ *
+ * Design-consistency project (docs/plans/2026-11-19-zcode-ui-consistency.md):
+ * port the measured ZCode desktop surfaces — sidebar rows, list headers, the
+ * draft composer card, chat bubbles, and the file trees — onto ChaOffice's
+ * existing DOM, so the two apps read as one visual family.
+ *
+ * Rules kept here (see file header discipline in CLAUDE.md):
+ *   - Chrome colors only via tokens.css custom properties, color-mix()
+ *     derivatives, `transparent`, or `currentColor`. No raw color literals.
+ *   - Scoped overrides: every rule names its host container (.home / .ai-panel
+ *     / .files-pane / .editor-side-pane) so specificity beats the host apps'
+ *     single-class rules without !important.
+ *   - Load this file LAST in every host entry (after app styles.css).
+ */
+
+/* ── 0. Shared primitives ─────────────────────────────────────────────── */
+
+:root {
+  /* ZCode metrics: sidebar/task rows h-8 (32px), tree rows h-7 (28px),
+   * rounded-lg (8px) rows, rounded-2xl (16px) cards, 0.5px hairlines. */
+  --zc-row-h: 32px;
+  --zc-tree-row-h: 28px;
+  --zc-radius-row: 8px;
+  --zc-radius-card: 16px;
+  --zc-composer-max: 42rem;
+  --zc-bubble-max: 36rem;
+  --zc-focus-ring: var(--color-brand-secondary);
+  --zc-composer-shadow: 0 8px 24px color-mix(in oklab, var(--text) 6%, transparent);
+}
+
+/* Ghost icon button used by the side-pane toggles (mirrors ZCode's
+ * `ghost icon-md` buttons: transparent rest, --hover on hover, --active-bg
+ * while the panel is open — the "!bg-selected" state). */
+.zc-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.zc-icon-btn:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.zc-icon-btn.is-active {
+  background: var(--active-bg);
+  color: var(--text);
+}
+
+/* ── 1. Home sidebar (.home .sidebar) ─────────────────────────────────── */
+
+/* Segmented tab strip → ZCode list-header look: quiet text tabs, soft active
+ * pill (replaces the inset-shadow capsule from home.css). */
+.home .sidebar-seg {
+  display: flex;
+  align-self: stretch;
+  gap: 2px;
+  margin: 4px 8px 2px;
+  padding: 2px;
+  border-radius: var(--zc-radius-row);
+  background: transparent;
+  box-shadow: none;
+}
+
+.home .sidebar-seg-item {
+  flex: 0 0 auto;
+  min-height: 26px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.home .sidebar-seg-item:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.home .sidebar-seg-item.active {
+  background: var(--active-bg);
+  color: var(--text);
+}
+
+/* Section-header icon buttons (TreeHeadBtn .side-head-btn) → ZCode ghost
+ * squares: 26px, tertiary ink, hover fill. */
+.home .side-head-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  color: var(--text-tertiary);
+}
+
+.home .side-head-btn:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.home .side-head-btn.active {
+  background: var(--active-bg);
+  color: var(--text);
+}
+
+/* Chat/session rows → ZCode task rows: 28px, rounded-lg, --hover/--active-bg. */
+.home .tree-chat {
+  min-height: var(--zc-tree-row-h);
+  border-radius: var(--zc-radius-row);
+  padding: 3px 8px 3px 12px;
+}
+
+.home .tree-chat:hover {
+  background: var(--hover);
+}
+
+.home .tree-chat.active {
+  background: var(--active-bg);
+}
+
+/* Project rows → ZCode project rows: 32px, rounded-lg. */
+.home .proj-item {
+  min-height: var(--zc-row-h);
+  border-radius: var(--zc-radius-row);
+}
+
+.home .proj-item:hover {
+  background: var(--hover);
+}
+
+.home .proj-item.active {
+  background: var(--active-bg);
+}
+
+/* Recent/file rows: same 28px rhythm. */
+.home .side-file-main {
+  min-height: var(--zc-tree-row-h);
+  border-radius: var(--zc-radius-row);
+}
+
+/* Disk tree (home-files/FileTreePane): 28px rounded rows; depth indent stays
+ * inline (8px + 14px/level ≈ ZCode's 0.5rem + 0.75rem/level). */
+.home .tree-row {
+  min-height: var(--zc-tree-row-h);
+  border-radius: var(--zc-radius-row);
+  transition: background-color var(--transition-fast);
+}
+
+.home .tree-row:hover {
+  background: var(--hover);
+}
+
+.home .tree-row.active {
+  background: var(--active-bg);
+}
+
+.home .tree-chevron {
+  color: var(--text-tertiary);
+}
+
+/* Drag divider → ZCode handle: faint line, brand tint on hover. */
+.home .sidebar-resizer:hover {
+  background: color-mix(in oklab, var(--zc-focus-ring) 45%, transparent);
+}
+
+/* ── 2. Home center: greeting + draft composer (.home .chat-pane) ─────── */
+
+/* Draft layout: ZCode centers the greeting + composer with elastic head
+ * whitespace (before: basis-[29dvh]); reproduce a bounded version. */
+.home .chat-landing {
+  padding-top: clamp(40px, 12dvh, 140px);
+}
+
+.home .chat-greet {
+  max-width: var(--zc-composer-max);
+  margin: 0 auto 18px;
+  font-size: clamp(20px, 2.2vw, 30px);
+  font-weight: 700;
+}
+
+/* Composer column: max-w-2xl, centered. */
+.home .chat-composer {
+  max-width: var(--zc-composer-max);
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+/* Input card: ZCode ChatPromptEditor shell — rounded-2xl, 0.5px border,
+ * soft shadow, hover border tint, focus-within ring color + border swap. */
+.home .chat-composer .ai-input-box {
+  border: 0.5px solid var(--border);
+  border-radius: var(--zc-radius-card);
+  background: var(--surface);
+  box-shadow: var(--zc-composer-shadow);
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.home .chat-composer .ai-input-box:hover {
+  border-color: var(--border-hover);
+}
+
+.home .chat-composer .ai-input-box:focus-within {
+  border-color: var(--zc-focus-ring);
+}
+
+.home .chat-composer .ai-input-box textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Send/stop: ZCode round brand button (bg-brand circle + glyph). */
+.home .chat-composer .ai-send-btn {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  padding: 0;
+  border-radius: 9999px;
+  background: var(--color-btn-primary);
+  color: var(--color-btn-primary-text);
+  border: none;
+}
+
+.home .chat-composer .ai-send-btn:hover:not(:disabled) {
+  background: var(--color-btn-primary-hover);
+}
+
+.home .chat-composer .ai-send-btn:disabled {
+  opacity: 0.4;
+}
+
+.home .chat-composer .ai-send-btn.ai-stop-btn {
+  background: var(--color-btn-primary);
+  color: var(--color-btn-primary-text);
+}
+
+/* ── 3. Editor AI conversation column (.ai-panel) ─────────────────────── */
+
+/* User message → ZCode ConversationUserInputBubble: bordered surface bubble,
+ * right-aligned, max-w-xl, rounded-xl with a tighter top-right corner. */
+.ai-panel .ai-msg-user {
+  align-self: flex-end;
+  max-width: min(80%, var(--zc-bubble-max));
+  padding: 10px 14px;
+  background: var(--surface);
+  color: var(--text);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  border-top-right-radius: 4px;
+}
+
+/* Assistant message stays plain full-width prose (ZCode renders markdown
+ * without a bubble). */
+.ai-panel .ai-msg-assistant {
+  align-self: stretch;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* Composer card: same ZCode shell as the home composer. */
+.ai-panel .ai-input-box {
+  border: 0.5px solid var(--border);
+  border-radius: var(--zc-radius-card);
+  background: var(--surface);
+  box-shadow: var(--zc-composer-shadow);
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.ai-panel .ai-input-box:hover {
+  border-color: var(--border-hover);
+}
+
+.ai-panel .ai-input-box:focus-within {
+  border-color: var(--zc-focus-ring);
+}
+
+.ai-panel .ai-input-box textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+.ai-panel .ai-send-btn {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  padding: 0;
+  border-radius: 9999px;
+  background: var(--color-btn-primary);
+  color: var(--color-btn-primary-text);
+  border: none;
+}
+
+.ai-panel .ai-send-btn:hover:not(:disabled) {
+  background: var(--color-btn-primary-hover);
+}
+
+.ai-panel .ai-send-btn:disabled {
+  opacity: 0.4;
+}
+
+/* ── 4. Editor side pane (.editor-side-pane) ──────────────────────────── */
+
+/* Right-hand collapsible file pane hosting the shared FilesPane. Expanded:
+ * a 264px drawer docked right of the canvas with a hairline seam and a
+ * 200ms slide-in (ZCode side-pane motion). The host app adds
+ * `.has-editor-side-pane` on the container that should reserve the width. */
+.editor-side-pane {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 264px;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  z-index: 30;
+  animation: zc-side-pane-in 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes zc-side-pane-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Collapsed state keeps the toggle-only affordance; the drawer is unmounted
+ * (state lives in the component, persisted per app). */
+
+/* Host compression rules: the drawer mounts inside the app's content
+ * container; `:has` reserves its width by padding so the canvas reflows
+ * while the ribbon above stays full-width (one rule per host container). */
+.app-content:has(> .editor-side-pane) {
+  position: relative;
+  padding-right: 264px;
+}
+
+.sheet-main:has(> .editor-side-pane) {
+  position: relative;
+  padding-right: 264px;
+}
+
+/* Sheets ribbon-tabs gives every button a tab-shaped baseline (background,
+ * padding, bottom border) at specificity (0,4,1); re-assert the ghost-square
+ * shape with an outgunning selector. zcode-theme.css loads last, so an equal
+ * specificity would also win — this is deliberately higher. */
+.ribbon-tabs button.zc-icon-btn.zc-icon-btn:not(.qa-btn):not(.ai-panel-toggle):not(.ribbon-tab-file) {
+  padding: 0;
+  border-bottom: none;
+  border-radius: 6px;
+  background: transparent;
+}
+
+.ribbon-tabs button.zc-icon-btn.zc-icon-btn:not(.qa-btn):not(.ai-panel-toggle):not(.ribbon-tab-file):hover {
+  background: var(--hover);
+}
+
+.ribbon-tabs button.zc-icon-btn.zc-icon-btn:not(.qa-btn):not(.ai-panel-toggle):not(.ribbon-tab-file).is-active {
+  background: var(--active-bg);
+}
+
+/* Floating toggle for hosts whose ribbon has no trailing slot: pinned to the
+ * content area's top-right corner (the ZCode header position, one ribbon row
+ * lower because the office ribbons own that row). Keep the host positioned
+ * whenever the fab exists (not only while the drawer is open) so the fab's
+ * absolute anchor never falls through to a distant ancestor. */
+.app-content:has(.zc-side-fab),
+.sheet-main:has(.zc-side-fab) {
+  position: relative;
+}
+
+.zc-side-fab {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 31;
+  background: var(--surface);
+  box-shadow: var(--shadow-btn-hover);
+}
+
+.zc-side-fab:hover {
+  background: var(--hover);
+}
+
+.zc-side-fab.is-active {
+  background: var(--active-bg);
+}
+
+/* Drawer open: the padding reservation puts right:8px inside the pane; park
+ * the fab just outside the pane's left seam instead (264 + 8). */
+.app-content:has(> .editor-side-pane) .zc-side-fab,
+.sheet-main:has(> .editor-side-pane) .zc-side-fab {
+  right: 272px;
+}
+
+/* ── 5. Files tree restyle (shared FilesPane + home FileTreePane) ─────── */
+
+/* FilesPane rows → ZCode file-tree rows: 28px, rounded-lg, chevron rotates
+ * open (the DOM already toggles a class), hover fill. */
+.files-pane .fp-row {
+  min-height: var(--zc-tree-row-h);
+  border-radius: var(--zc-radius-row);
+  margin-right: 4px;
+  transition: background-color var(--transition-fast);
+}
+
+.files-pane .fp-row:hover {
+  background: var(--hover);
+}
+
+.files-pane .fp-row.current {
+  background: var(--active-bg);
+}
+
+.files-pane .fp-row.drop-target {
+  background: color-mix(in oklab, var(--zc-focus-ring) 14%, transparent);
+}
+
+.files-pane .fp-chevron {
+  color: var(--text-tertiary);
+}
+
+.files-pane .fp-name {
+  font-size: 13px;
+}
+
+.files-pane .fp-head-btn {
+  border-radius: 6px;
+  color: var(--text-tertiary);
+}
+
+.files-pane .fp-head-btn:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+/* Edge tab (collapsed affordance docked on the container's left edge). */
+.files-edge-tab {
+  border-radius: 6px 0 0 6px;
+  background: var(--surface);
+  color: var(--text-secondary);
+}
+
+.files-edge-tab:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+/* ── 6. Home sidebar new-chat button (ZCode NewTaskButtonGroup twin) ──── */
+
+.home .zc-new-chat-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: calc(100% - 16px);
+  min-height: 26px;
+  margin: 0 8px 0;
+  padding: 2px 10px;
+  border: none;
+  border-radius: var(--zc-radius-row);
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.home .zc-new-chat-btn:hover {
+  background: var(--hover);
+}
+
+.home .zc-new-chat-btn:active {
+  background: var(--pressed);
+}
+
+.home .zc-new-chat-btn svg {
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+
+.home .zc-new-chat-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── 7. Project creation dialog (ZCode ProjectEditor twin) ───────────── */
+
+.zc-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: clamp(64px, 16dvh, 160px);
+  background: var(--color-bg-overlay);
+}
+
+.zc-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(560px, calc(100vw - 48px));
+  max-height: min(640px, calc(100dvh - 96px));
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow-menu);
+}
+
+.zc-dialog-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.zc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+}
+
+.zc-field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.zc-input {
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--zc-radius-row);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.zc-input:focus {
+  border-color: var(--zc-focus-ring);
+}
+
+.zc-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Up-one-level reuses ChevronRightIcon rotated into a chevron-up. */
+.zc-browser-bar .zc-icon-btn svg {
+  transform: rotate(-90deg);
+}
+
+/* Embedded directory browser: bar + scrollable list + footer actions. */
+.zc-browser {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--zc-radius-row);
+  overflow: hidden;
+}
+
+.zc-browser-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-subtle);
+}
+
+.zc-browser-path {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  direction: rtl;
+  text-align: left;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.zc-browser-list {
+  flex: 1;
+  min-height: 120px;
+  max-height: 240px;
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.zc-browser-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: var(--zc-tree-row-h);
+  padding: 2px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.zc-browser-row:hover {
+  background: var(--hover);
+}
+
+.zc-browser-row svg {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+}
+
+.zc-browser-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zc-browser-empty {
+  padding: 8px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.zc-browser-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 6px 8px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* "add folder" dashed call-to-action (shown before any folder is set). */
+.zc-add-folder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 96px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--zc-radius-row);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.zc-add-folder:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.zc-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.zc-btn {
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--zc-radius-row);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.zc-btn:hover:not(:disabled) {
+  background: var(--hover);
+}
+
+.zc-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.zc-btn-primary {
+  border-color: var(--color-btn-primary);
+  background: var(--color-btn-primary);
+  color: var(--color-btn-primary-text);
+}
+
+.zc-btn-primary:hover:not(:disabled) {
+  background: var(--color-btn-primary-hover);
+}
+
+/* ── 8. Sidebar new-file rows (ZCode vertical list twin) ──────────────── */
+
+/* The 6-tile new-file grid becomes a ZCode NewTaskButtonGroup-style column:
+ * one full-width compact 26px row per type — 16px line icon, label, muted ext
+ * suffix on the right (the slot where ZCode shows the shortcut badge). */
+/* The group wrapper carries a legacy 2px bottom padding that breaks the
+ * 26px pitch before the new-chat row — zero it out. */
+.home .side-sec-new {
+  padding-bottom: 0;
+}
+
+/* NOTE: home.css ships an older `.side-new-list/.side-new-row` pair (the
+ * retired "launcher" block) with `padding: 0 8px 6px` on the list and a
+ * 9px-gap/12.5px row — every property here is restated at `.home` scope
+ * (higher specificity) so the eight rows share one geometry by construction. */
+.home .side-new-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.home .side-new-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 26px;
+  padding: 2px 10px;
+  border: none;
+  border-radius: var(--zc-radius-row);
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.home .side-new-row:hover {
+  background: var(--hover);
+}
+
+.home .side-new-row:active {
+  background: var(--pressed);
+}
+
+/* Hard-pin the icon box: every row's glyph lives in the same 16px slot, so
+ * left edges align regardless of the SVG's own width/height attributes. */
+.home .side-new-row svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--text-secondary);
+}
+
+.home .side-new-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home .side-new-ext {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+/* Open-local button: same row metrics, flush with the list above so the
+ * whole group reads as one continuous ZCode-style column. */
+.home .side-new-browse {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 26px;
+  margin: 0;
+  padding: 2px 10px;
+  border: none;
+  border-radius: var(--zc-radius-row);
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.home .side-new-browse:hover {
+  background: var(--hover);
+}
+
+.home .side-new-browse svg {
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}

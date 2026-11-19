@@ -21,6 +21,9 @@ import '@chaoffice/ui/image-viewer.css'
 import 'katex/dist/katex.min.css'
 import './styles.css'
 import './markdown-themes.css'
+// LOCAL(2026-11-19, main@b4f4499d3): ZCode-style visual language — kept after the
+// host stylesheets so its scoped overrides win the cascade
+import '@chaoffice/ui/zcode-theme.css'
 import { applyAiPanelPrefs, installScreenTips } from '@chaoffice/ui'
 import type { MarkdownTheme } from '../shared/markdown-theme'
 

@@ -32,7 +32,10 @@ const STORAGE_KEY = 'chaoffice.home-layout'
 /** hard floor keeps the tree's labels readable; cap leaves the chat pane usable */
 export const SIDEBAR_MIN = 180
 export const SIDEBAR_MAX = 420
-const SIDEBAR_DEFAULT = 232
+// LOCAL(2026-11-19, main@b4f4499d3): 264px matches the ZCode workspace sidebar
+// default (visual-consistency project); the main process mirrors this via the
+// setTreeWidth IPC so document views keep their inset
+const SIDEBAR_DEFAULT = 264
 
 export function clampSidebarWidth(w: number): number {
   return Math.round(Math.min(Math.max(w, SIDEBAR_MIN), SIDEBAR_MAX))

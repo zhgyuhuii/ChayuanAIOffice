@@ -33,6 +33,11 @@ import { FileTreePane } from './home-files/FileTreePane'
 import { refreshHomeModelCache } from './home-chat/bridge'
 import { useHomeChatStore } from './home-chat/store'
 import { clampSidebarWidth, getHomeLayout, onHomeLayoutChange, setHomeLayout } from './home-layout'
+// LOCAL(2026-11-19, main@b4f4499d3): ZCode-style home additions (visual-consistency
+// project, docs/plans/2026-11-19-zcode-ui-consistency.md) — new-file mounts only
+import { FileTypeIcon } from '@chaoffice/ui'
+import { ProjectCreationDialog } from './home-zcode/ProjectCreationDialog'
+import { SidebarNewChatButton } from './home-zcode/SidebarNewChatButton'
 import {
   applyRelayEvent,
   RelaySessionLink,
@@ -1285,6 +1290,8 @@ export function Home() {
   const [confirmDeleteProject, setConfirmDeleteProject] = useState<ProjectSummaryEntry | null>(null)
   /** 新建项目的退回流程（目录选择器不可用的 web shim 才走名输入） */
   const [creatingProject, setCreatingProject] = useState(false)
+  // LOCAL(2026-11-19, main@b4f4499d3): ZCode-style new-project dialog visibility
+  const [zcProjectDialogOpen, setZcProjectDialogOpen] = useState(false)
   const [newProjectName, setNewProjectName] = useState('')
   const newProjectInputRef = useRef<HTMLInputElement>(null)
   /** 待确认的磁盘删除：paths=文件，sessionIds=显式勾选的会话（执行时还会并入被删文件下的对话） */
@@ -1975,34 +1982,39 @@ export function Home() {
           <span className="side-files-title">{t('secNew')}</span>
         </div>
         <div className="side-group-body">
-          <div className="side-new-grid">
+          {/* LOCAL(2026-11-19, main@b4f4499d3): ZCode-style vertical new-file rows
+              (16px line icon + label + muted ext suffix, one full-width row each) */}
+          <div className="side-new-list">
             {NEW_ITEMS.map((item) => (
               <button
                 key={item.ext}
-                className="side-new-tile"
+                className="side-new-row"
                 title={`${item.title} (${item.sub})`}
                 onClick={() => void item.action()}
               >
-                <FileBadge ext={item.ext} size={22} />
+                <FileTypeIcon ext={item.ext} size={16} />
+                <span className="side-new-label">{item.title}</span>
                 <span className="side-new-ext">{item.sub}</span>
               </button>
             ))}
           </div>
           <button
-            className="side-new-browse"
+            className="side-new-row"
             title={OPEN_LOCAL_EXTENSIONS}
             onClick={() => window.chaOffice.browse().catch((err) => showOpenFileErrorToast(err))}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            {/* LOCAL(2026-11-19, main@b4f4499d3): 16px/stroke-2 to match the
+                FileTypeIcon rows above */}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M3 7a2 2 0 0 1 2-2h4.586a1 1 0 0 1 .707.293L12 7h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"
                 stroke="currentColor"
-                strokeWidth="1.5"
+                strokeWidth="2"
                 strokeLinejoin="round"
               />
-              <path d="M9 13h6M12 10v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M9 13h6M12 10v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
-            <span>{t('openLocal')}</span>
+            <span className="side-new-label">{t('openLocal')}</span>
           </button>
         </div>
       </div>
@@ -2408,22 +2420,11 @@ export function Home() {
 
   /** 新建项目＝选择本地文件夹（ZCode 式）：选完即以文件夹名建项目；
    *  目录选择器不可用（web shim）或选择失败时退回名输入流程 */
-  const startNewProject = async () => {
-    if (typeof window.chaOfficeProject?.pickFolder === 'function') {
-      try {
-        const picked = await window.chaOfficeProject.pickFolder()
-        if (!picked) return // cancelled — nothing happens
-        const name = picked.split(/[\\/]/).filter(Boolean).pop() || picked
-        await window.chaOfficeProject!.createProject(name, picked)
-        refresh()
-        return
-      } catch {
-        // picker failure falls through to the name-only flow
-      }
-    }
-    setNewProjectName('')
-    setCreatingProject(true)
-  }
+  // LOCAL(2026-11-19, main@b4f4499d3): pickFolder quick-flow superseded by the
+  // ZCode-style ProjectCreationDialog (home-zcode/), which also covers the
+  // web-shim case via its name-only submit. The inline name-input flow below
+  // (creatingProject) is thus unreachable — kept verbatim to minimize the
+  // upstream-sync diff; drop it wholesale when the dialog proves stable.
   useEffect(() => {
     if (creatingProject) newProjectInputRef.current?.focus()
   }, [creatingProject])
@@ -2884,7 +2885,8 @@ export function Home() {
           <span className="tree-tab-count">
             {t(visible.length === 1 ? 'projCountOne' : 'projCount', { n: visible.length })}
           </span>
-          <TreeHeadBtn label={t('newProject')} onClick={() => void startNewProject()}>
+          {/* LOCAL(2026-11-19, main@b4f4499d3): opens the ZCode-style dialog */}
+          <TreeHeadBtn label={t('newProject')} onClick={() => setZcProjectDialogOpen(true)}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path
                 d="M7 1v12M1 7h12"
@@ -3445,6 +3447,19 @@ export function Home() {
       >
         {renderSideActions()}
 
+        {/* LOCAL(2026-11-19, main@b4f4499d3): ZCode-style sidebar new-chat row
+            (reuses the empty-active-session shortcut ChatPanel applies) */}
+        <SidebarNewChatButton
+          label={t('zcNewChat')}
+          onClick={() => {
+            const empty = chatStore.active && chatStore.active.messages.length === 0
+            const session = empty ? chatStore.active : chatStore.createSession()
+            if (session) {
+              setChatOpenSignal((prev) => ({ sessionId: session.id, nonce: (prev?.nonce ?? 0) + 1 }))
+            }
+          }}
+        />
+
         {/* 应用内图文用户手册（上游 help tab）：常驻入口，不随登录态隐藏 */}
         {/* LOCAL(R24 用户裁定): 使用手册/AI 问答两个左上入口隐藏——功能保留（F1/openHelp、KbAskPanel 代码在位），
             入口按需再放；跳转观察：askMode 恒 false，主区接管分支成为死分支 */}
@@ -3794,6 +3809,14 @@ export function Home() {
           onPick={(group) => assignGroup(groupPicker, group)}
           onCreate={(name) => assignGroup(groupPicker, name)}
           onRemove={() => assignGroup(groupPicker, null)}
+        />
+      )}
+
+      {/* LOCAL(2026-11-19, main@b4f4499d3): ZCode-style new-project dialog */}
+      {zcProjectDialogOpen && (
+        <ProjectCreationDialog
+          onClose={() => setZcProjectDialogOpen(false)}
+          onCreated={refresh}
         />
       )}
 

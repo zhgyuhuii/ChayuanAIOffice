@@ -21,6 +21,11 @@ import '@chaoffice/ui/ai-scope-quote.css'
 import '@chaoffice/ui/image-viewer.css'
 import './styles.css'
 import './fonts/fonts.css'
+// LOCAL(2026-11-19, main@b4f4499d3): ZCode-style visual language — kept after the
+// host stylesheets so its scoped overrides win the cascade
+// LOCAL(2026-11-19, main@b4f4499d3): FilesPane base styles (side pane host)
+import '@chaoffice/ui/files-pane.css'
+import '@chaoffice/ui/zcode-theme.css'
 import { applyAiPanelPrefs, installScreenTips } from '@chaoffice/ui'
 import { setAltChunkHtmlConverter } from '@chaoffice/docx-engine'
 

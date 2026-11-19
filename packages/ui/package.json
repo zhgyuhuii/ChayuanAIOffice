@@ -37,6 +37,7 @@
     "./assistant-library": "./src/assistant-library/index.tsx",
     "./ai-model-picker.css": "./src/ai-model-picker.css",
     "./ai-skills.css": "./src/ai-skills.css",
+    "./zcode-theme.css": "./src/zcode-theme.css",
     "./use-redact-label": "./src/use-redact-label.ts"
   },
   "scripts": {

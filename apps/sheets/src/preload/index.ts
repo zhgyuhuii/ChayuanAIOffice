@@ -81,6 +81,8 @@ import {
   SAVE_EDITS_CHUNK_JSON_MAX,
 } from '../shared/ipc-channels'
 import { installDropOpenBridge } from '@chaoffice/electron-utils/drop-open'
+// LOCAL(2026-11-19, main@b4f4499d3): ZCode-style editor side pane needs the filesPaneApi bridge
+import { installFilesPaneBridge } from '@chaoffice/electron-utils/files-pane-bridge'
 import { KB_CHANNELS } from '@chaoffice/ai-host/kb-channels'
 
 const desktopApi: DesktopApi = {
@@ -1204,6 +1206,9 @@ if (process.env.GENOFFICE_DEBUG_HOOKS === '1') {
 
 // open documents dragged from the OS onto this tab as a new shell tab
 installDropOpenBridge()
+
+// LOCAL(2026-11-19, main@b4f4499d3): ZCode-style editor side pane (EditorFilesPane) bridge
+installFilesPaneBridge()
 
 function parseWorkbookFile(input: unknown): WorkbookFile {
   if (!isRecord(input)) throw new Error('Invalid workbook response.')
