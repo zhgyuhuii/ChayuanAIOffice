@@ -327,4 +327,5 @@ export const hi = {
   aiToolRunReadUrl: 'पेज पढ़ा जा रहा है…',
   aiPageCloudToLocal: 'क्लाउड अनुपलब्ध — स्थानीय रूप से जनरेट',
 
+  aiGskLoginOk: 'ChaAI Office में साइन इन हो गए',
 }

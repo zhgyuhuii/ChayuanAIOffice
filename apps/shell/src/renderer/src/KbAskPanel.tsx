@@ -743,6 +743,7 @@ export function KbAskPanel({
               type="button"
               className="kb-ask-corpus-toggle"
               aria-expanded={corpusOpen}
+              aria-controls="kb-ask-corpus"
               onClick={() => setCorpusOpen((open) => !open)}
             >
               <IconChevron open={corpusOpen} />
@@ -1087,7 +1088,7 @@ export function KbCorpusList({
   label: string
 }): React.JSX.Element {
   return (
-    <div className="kb-ask-corpus" role="list" aria-label={label}>
+    <div id="kb-ask-corpus" className="kb-ask-corpus" role="list" aria-label={label}>
       {files.map((file) => (
         <div key={file.path} role="listitem" className="kb-ask-corpus-item">
           <button

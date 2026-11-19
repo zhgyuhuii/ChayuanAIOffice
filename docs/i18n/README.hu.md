@@ -68,7 +68,7 @@ a mentés mindig OOXML-be ír, soha az eredeti formátumba.
   és a kezdőképernyőn az **AI kérdezése** a rájuk vonatkozó kérdésekre válaszol,
   minden állításhoz feltüntetve a mögötte álló fájlt, így azt megnyithatod, és
   ellenőrizheted.
-- **Saját kulccsal vagy anélkül.** Jelentkezz be Gensparkkal, így nincs szükség kulcsra,
+- **Saját kulccsal vagy anélkül.** Jelentkezz be ChaAI Officekal, így nincs szükség kulcsra,
   vagy használd a saját kulcsodat: Claude, OpenAI, Gemini, DeepSeek, Kimi, GLM,
   Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty, Opper, Cheaper
   Inference, Atlas Cloud, illetve bármely OpenAI-kompatibilis végpont, a helyi
@@ -83,7 +83,7 @@ a mentés mindig OOXML-be ír, soha az eredeti formátumba.
 [Linux](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (deb, rpm, AppImage) —
 a részletekkel és a rendszerkövetelményekkel a [Letöltés](#download) részben találod.
 
-## Demó
+## <a id="demo"></a>Demó
 
 Hat alkalmazás, egy AI-panel, egy TypeSafe Jevvel újrarendezett fájlkereső, egy AI kérdezése funkció,
 amely a csillagozott fájljaidból válaszol forrásokkal, valamint egy parancssor a kódoló ügynöködnek.
@@ -188,7 +188,7 @@ Mondd el, mire való az oldal, és kinek készül. Az AI először egy **tervez�
 
 **Összekapcsolt jegyzetek, ahogy az Obsidian teszi.** A `[[wiki links]]`-re kattintva az adott jegyzethez ugrasz, a `[[` begépelése jegyzetnév-kiegészítést kínál, a `![[…]]` pedig beágyaz egy jegyzetet vagy képet a szövegbe. A **Visszahivatkozások** panel felsorolja az összes jegyzetet, amely a megnyitottra mutat, a **Gráf** nézet pedig feltérképezi a teljes jegyzettár (vault) hivatkozásait.
 
-### 7 · Keresés — találd meg a kérdésedre válaszoló fájlt, TypeSafe Jevvel
+### <a id="7--search--find-the-file-that-answers-the-question-with-typesafe-jev"></a>7 · Keresés — találd meg a kérdésedre válaszoló fájlt, TypeSafe Jevvel
 
 A munkamappád minden fájlja helyben indexelve van: nevek, mappák, valamint a Word-, Excel-, PowerPoint-, PDF-, Markdown- és HTML-fájlok kinyert szövege, egy CJK-érzékeny tokenizálású, teljes szövegű SQLite-indexben. Kapcsold be a **Jev keresési átrendezést**, és a legjobb 20 helyi találatot a [TypeSafe Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev) értékeli, a System One modell, amely szöveg generálása helyett dokumentumonként egyetlen kalibrált relevanciapontszámot ad vissza egyetlen hívásban. A lista e pontszám alapján rendeződik újra; ha a hívás sikertelen, vagy időtúllépés lép fel, a helyi sorrend marad érvényben.
 
@@ -266,7 +266,7 @@ az elrendezés átkerülnek. Hogy az egyes formátumoknál mi marad meg és mi v
 - **Nálad fut.** Natív alkalmazások macOS-re, Windowsra és Linuxra; a fájljaid a saját lemezeden maradnak, és minden szerkesztés, mentés és átalakítás a te gépeden történik.
 - **Valódi Office-fájlok.** Natív `.docx`, `.xlsx` és `.pptx`, bájtpontosan: a fájl azon részei, amelyeket nem érintettél, pontosan úgy másolódnak át, ahogy voltak.
 - **Olyan AI, amely magát a dokumentumot szerkeszti.** Változáskövetés a Docsban, élő képletek és diagramok a Sheetsben, a diák közvetlenül a vászonra kerülnek – és minden AI-lépés egy pillanatkép, amelyre visszagörgethetsz.
-- **Saját modell, saját kulcs.** Jelentkezz be a Gensparkkal, vagy hozz saját kulcsot a Claude-hoz, az OpenAI-hoz, a Geminihez, a DeepSeekhez és sok máshoz – a helyi kiszolgálókat és bármilyen OpenAI-kompatibilis végpontot is beleértve.
+- **Saját modell, saját kulcs.** Jelentkezz be a ChaAI Officekal, vagy hozz saját kulcsot a Claude-hoz, az OpenAI-hoz, a Geminihez, a DeepSeekhez és sok máshoz – a helyi kiszolgálókat és bármilyen OpenAI-kompatibilis végpontot is beleértve.
 - **Rendesen megoldott PDF.** Szerkeszd a szöveget közvetlenül az oldalon, és konvertáld a PDF-et Word-, Excel- vagy PowerPoint-formátumba az eszközön, szkennelt lapoknál a rendszer OCR-jével.
 - **Markdown és HTML is**, ugyanazzal az AI-panellel és helyi Word-exporttal.
 - **Olyan keresés, amely a választ találja meg, nem a kulcsszót.** Teljes szöveges keresés a mappáidban lévő összes dokumentumban, helyben indexelve, igény szerint a TypeSafe Jev, a System One értékelő modellje általi átrendezéssel.
@@ -277,17 +277,17 @@ az elrendezés átkerülnek. Hogy az egyes formátumoknál mi marad meg és mi v
 
 ## AI-háttérrendszerek
 
-**Jelentkezz be a Gensparkkal**, és nincs mit beállítani: a modellhívások a Genspark-proxyn keresztül mennek (Claude, GPT és Gemini modellcsaládok), az ügynökök pedig webes és képkeresést, képgenerálást, valamint kép-, hang- és videóelemzést kapnak.
+**Jelentkezz be a ChaAI Officekal**, és nincs mit beállítani: a modellhívások a ChaAI Office-proxyn keresztül mennek (Claude, GPT és Gemini modellcsaládok), az ügynökök pedig webes és képkeresést, képgenerálást, valamint kép-, hang- és videóelemzést kapnak.
 
 **Vagy hozz saját kulcsot.** A Beállítások → AI alatt a Claude, az OpenAI, a Gemini, a DeepSeek, a Kimi, a GLM, a Qwen, a Doubao, a MiniMax, a Grok, a Mistral, az OpenRouter, a Requesty, az Opper, a Cheaper Inference, az Atlas Cloud, a SiliconFlow, a PPIO, a Command Code és az OpenCode Zen/Go szerepel a listán, valamint egy egyéni szolgáltatói hely bármilyen OpenAI-kompatibilis végponthoz (alap URL + kulcs), a helyi modellkiszolgálókat is beleértve. A keresés és a média az **AI média és keresés** alatt funkciónként külön szolgáltatóval rendelkezik: webes keresésre a Serper, a Serply, a SearchApi, a Tavily, a Parallel, a Keenable, az Exa vagy a Firecrawl, képgenerálásra és kép-/videóelemzésre az OpenAI, a Gemini, a Doubao/Seedream, a GLM, a Grok, a Qwen, a MiniMax, a Stability, a FLUX vagy bármilyen OpenAI-kompatibilis képvégpont, képelemzésre pedig a DeepSeek V4.1 Flash.
 
 A **TypeSafe Jev** átrendezi a kezdőképernyő fájlkeresését. Az **AI média és keresés → Helyi fájlkeresés** beállításnál kapcsold be a Jev keresési átrendezését, és válassz végpontot: [OpenRouter](https://openrouter.ai/typesafe) (modell: `typesafe/jev-1.13`) vagy a TypeSafe saját API-ja. A kulcs kizárólag ezen az eszközön tárolódik. Alapértelmezetten ki van kapcsolva; bekapcsoláskor a legjobb 20 helyi találat részletei mennek el értékelésre, és semmi más nem hagyja el a gépet.
 
-A **Parallel** fiók nélkül is működik: az ingyenes Search MCP-je (korlátozott hívásszámú) akkor az alapértelmezett webes keresés, ha se Genspark-bejelentkezés, se keresési kulcs nincs beállítva, és a DuckDuckGo-oldalak kaparásos (scraping) keresése előtt fut. A Webes keresés alatt válaszd a Parallelt, és adj meg egy [Parallel](https://platform.parallel.ai/) kulcsot, ha helyette a Search API-t szeretnéd használni. A Keenable is kulcs nélkül működik; a kulcs csak a hívási korlátokat emeli meg.
+A **Parallel** fiók nélkül is működik: az ingyenes Search MCP-je (korlátozott hívásszámú) akkor az alapértelmezett webes keresés, ha se ChaAI Office-bejelentkezés, se keresési kulcs nincs beállítva, és a DuckDuckGo-oldalak kaparásos (scraping) keresése előtt fut. A Webes keresés alatt válaszd a Parallelt, és adj meg egy [Parallel](https://platform.parallel.ai/) kulcsot, ha helyette a Search API-t szeretnéd használni. A Keenable is kulcs nélkül működik; a kulcs csak a hívási korlátokat emeli meg.
 
 A teljes csomag világos, sötét és rendszer szerinti témákkal érkezik. A témák csak a képernyőn látottakat változtatják meg: az exportálások, a nyomtatások és a mentett fájlok mindig a dokumentum saját színeit őrzik.
 
-## Képességek
+## <a id="skills"></a>Képességek
 
 Egy képesség egy `SKILL.md`, amely elmondja az AI-nak, hogyan oldjon meg egy adott feladatot jól: heti jelentés, NDA, óraterv. A ChaOffice egy készletet szállít belőlük, és fogadja a sajátjaidat is, ugyanabban a formátumban, amelyet a kódoló ügynökök használnak.
 
@@ -296,7 +296,7 @@ Egy képesség egy `SKILL.md`, amely elmondja az AI-nak, hogyan oldjon meg egy a
 
 ---
 
-## Parancssor és ügynök-képesség
+## <a id="command-line-and-agent-skill"></a>Parancssor és ügynök-képesség
 
 Amit az alkalmazások egy fájllal tudnak, azt a `chaoffice` parancssor is elvégzi terminálból:
 megvizsgál, konvertál, létrehoz, olvas és szerkeszt Word-, Excel-, PowerPoint-,
@@ -366,7 +366,7 @@ A `chaoffice`-on belül nem történik modellhívás: a gondolkodást az ügynö
 az építést és az ellenőrzést a CLI, az eredmény pedig közönséges `.pptx`-ként nyílik meg
 a ChaOffice-ban vagy a PowerPointban.
 
-### MCP-kiszolgáló
+### <a id="mcp-server"></a>MCP-kiszolgáló
 
 Ugyanezek a parancsok [Model Context Protocol](https://modelcontextprotocol.io)-eszközként is
 elérhetők, olyan asszisztenseknek, amelyek nem tudnak terminált futtatni, vagy amelyeknek
@@ -408,7 +408,7 @@ rejtett ChaOffice-folyamatot indít, ezért egy grafikus felület nélküli gép
 alkalmazásra és virtuális kijelzőre (`xvfb-run`) van szüksége.
 
 Az itt szereplő `chaoffice` az alkalmazásban szállított CLI (macOS-en:
-`/Applications/ChaAI Office.app/Contents/Resources/cli/chaoffice`; a beállítási panel kiírja
+`/Applications/ChaOffice.app/Contents/Resources/cli/chaoffice`; a beállítási panel kiírja
 a pontos elérési utat a telepítésedhez). A kiszolgáló saját munkafolyamat-utasításokkal
 érkezik, és az op-referenciákat `chaoffice://guide/*` erőforrásokként teszi elérhetővé,
 így képesség nem szükséges; a képesség és az MCP-kiszolgáló együtt is megfér, az
@@ -440,7 +440,7 @@ a számadatok, a fotók, az útmutatók, az ellenőrzések és a renderelések m
 MCP-eszközeredményként utaztak. Csak a `search` és a `media` hagyta el a gépet –
 a ChaOffice-ban beállított szolgáltató felé.
 
-## Letöltés
+## <a id="download"></a>Letöltés
 
 | Platform                             | Követelmények                                         | Letöltés                                                                                      |
 | ------------------------------------ | ----------------------------------------------------- | --------------------------------------------------------------------------------------------- |
@@ -461,7 +461,7 @@ A régebbi verziók a [Kiadások](https://github.com/zhgyuhuii/ChayuanAIOffice/r
 A deb az apttal telepíthető — ez magával húzza a függőségeket, és felveszi a ChaOffice-ot az alkalmazásmenübe:
 
 ```bash
-sudo apt install ./ChaAIOffice_<version>_amd64.deb
+sudo apt install ./chaoffice_<version>_amd64.deb
 ```
 
 Fedora / RHEL-család / openSUSE alatt az rpm-et telepítsd helyette:
@@ -510,7 +510,7 @@ save      ─► dirty blocks → OOXML fragments (referencing existing styles o
 A csomagonkénti körbejárás (docx/pptx motorok, `pdf2docx`, `html2docx`,
 az ügynökmag és a szolgáltatók) a [CONTRIBUTING.md](../../CONTRIBUTING.md#engine-packages) fájlban található.
 
-### A korábbi formátumú és ODF-fájlok konvertált másolatként nyílnak meg
+### <a id="legacy-and-odf-files-open-as-converted-copies"></a>A korábbi formátumú és ODF-fájlok konvertált másolatként nyílnak meg
 
 Azok a formátumok, amelyeket a ChaOffice nem tud visszaírni — a Word korábbi `.doc`/`.dot`,
 a Hancom `.hwp`/`.hwpx`, az Excel 97 `.xls`, a `.tsv`, a PowerPoint korábbi `.ppt`, valamint az
@@ -593,7 +593,7 @@ ODF-fájlok konvertált másolatként nyílnak meg](#legacy-and-odf-files-open-a
 A dokumentumszerkesztés teljesen helyi — a fájlok soha nem hagyják el a gépedet
 megnyitás, szerkesztés, mentés vagy átalakítás céljából. Az AI-funkciók
 (ügynökök, keresés, képeszközök) hálózati kapcsolatot igényelnek: ehhez vagy a
-Genspark-bejelentkezés, vagy a saját modell-API-kulcsod kell.
+ChaAI Office-bejelentkezés, vagy a saját modell-API-kulcsod kell.
 
 </details>
 
@@ -619,7 +619,7 @@ szerkeszthető szöveggé alakulnak, nem oldalképpé.
 <details>
 <summary><b>Használhatok saját AI-modellt vagy API-kulcsot?</b></summary>
 
-Igen. A kulcs nélküli Genspark-bejelentkezés mellett a ChaOffice támogatja a
+Igen. A kulcs nélküli ChaAI Office-bejelentkezés mellett a ChaOffice támogatja a
 saját kulcs használatát is: Claude, OpenAI, Gemini, DeepSeek, Kimi, GLM, Qwen,
 Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty, Opper, Cheaper Inference,
 Atlas Cloud és OpenCode Zen/Go, valamint bármely OpenAI-kompatibilis végpont —
@@ -743,6 +743,6 @@ A ChaOffice az [Apache License 2.0](../../LICENSE) licenc alatt érhető el, egy
 kivétellel: az `ee/` könyvtár a jövőbeli vállalati moduloknak van fenntartva,
 és a [ChaOffice Enterprise License](../../ee/LICENSE) hatálya alá tartozik.
 
-A ChaOffice és a Genspark nevek és logók a Mainfunc, Inc. védjegyei. Az
+A ChaOffice és a ChaAI Office nevek és logók a Mainfunc, Inc. védjegyei. Az
 Apache-2.0 licenc nem ad engedélyt a használatukra (lásd a 6. szakaszt); a
 forkok saját márkajelzést használjanak.

@@ -56,7 +56,8 @@
     "check:font-rules": "node tools/check-font-rules.mjs",
     "check:inline-rules": "node tools/check-inline-rules.mjs",
     "check:page-cut-readers": "node tools/check-page-cut-readers.mjs",
-    "check:table-layout-rules": "node tools/check-table-layout-rules.mjs"
+    "check:table-layout-rules": "node tools/check-table-layout-rules.mjs",
+    "check:docs-commands": "node tools/check-docs-commands.mjs"
   },
   "dependencies": {
     "opencc-js": "^1.4.2",

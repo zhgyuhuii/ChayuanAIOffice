@@ -119,4 +119,5 @@ export const ko = {
   aiDockRestore: '패널 복원',
   aiToolGenSvg: 'SVG 일러스트 그리기',
   aiToolGenSvgDone: 'SVG 일러스트가 래스터화되었습니다. add_image로 배치하세요',
+  aiGskLoginOk: 'ChaAI Office에 로그인했습니다',
 }

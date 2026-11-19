@@ -233,4 +233,5 @@ export const he = {
   aiMindMapToggleLayout: 'החלף פריסה',
   aiMindMapLayoutTopDown: 'החלף לפריסה מלמעלה למטה',
   aiMindMapLayoutLeftRight: 'החלף לפריסה משמאל לימין',
+  aiGskLoginOk: 'מחובר ל-ChaAI Office',
 } satisfies Record<keyof typeof zh, string>

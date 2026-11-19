@@ -238,4 +238,5 @@ export const tr = {
   aiMindMapToggleLayout: 'Yerleşimi değiştir',
   aiMindMapLayoutTopDown: 'Yukarıdan aşağı yerleşime geç',
   aiMindMapLayoutLeftRight: 'Soldan sağa yerleşime geç',
+  aiGskLoginOk: 'ChaAI Office’a giriş yapıldı',
 } satisfies Record<keyof typeof zh, string>

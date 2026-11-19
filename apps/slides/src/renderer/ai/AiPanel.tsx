@@ -86,6 +86,7 @@ import {
   type AiTokenUsageView,
 } from '@chaoffice/ui'
 import { MessageActions } from '@chaoffice/ui'
+import { showToast } from '../components/toast-bus'
 import {
   defaultSettingsV2,
   enabledChatModels,
@@ -639,6 +640,24 @@ function AiConversationBody({
       window.removeEventListener('focus', refresh)
     }
   }, [])
+
+  // A browser-approved sign-in landed (from this panel's sign-in button
+  // or any other surface): confirm it where the user is and retire the inline
+  // sign-in buttons — nothing else in an editor view changes visibly on login.
+  useEffect(
+    () =>
+      window.slidesApi?.onChaOfficeLoginLanded?.(() => {
+        // adapted: 本地云工具门是 chaofficeLoggedInRef（上游 gskLoggedInRef 的本地架构对应物）
+        chaofficeLoggedInRef.current = true
+        setChat((prev) =>
+          prev.some((e) => e.loginRequired)
+            ? prev.map((e) => (e.loginRequired ? { ...e, loginRequired: false } : e))
+            : prev,
+        )
+        showToast(tGlobal('aiGskLoginOk'), 'success')
+      }),
+    [],
+  )
   const imagesRef = useRef(images)
   imagesRef.current = images
   const attachedSkillsRef = useRef(attachedSkills)

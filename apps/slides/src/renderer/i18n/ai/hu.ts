@@ -334,4 +334,5 @@ export const hu = {
   aiToolRunImageSearch: 'Searching for images…',
   aiToolRunReadUrl: 'Reading the page…',
   aiPageCloudToLocal: 'cloud unavailable — generated locally',
+  aiGskLoginOk: 'Bejelentkezve a ChaAI Officeba',
 } satisfies Record<keyof typeof zh, string>

@@ -128,6 +128,8 @@ const KNOWN_INVALID_DOCS = new Set([
   'README.md',
   'docs/math-omml-handoff.md',
   'docs/upstream-sync.md',
+  // adapted(r44): pdf2docx 精度记分卡（pipe 表格+箭头/×记号，同台账类嵌套强调）
+  'scripts/pdf2docx-accuracy-scorecard.md',
 ])
 
 // Exercise the actual loading path and validate the resulting editor schema.

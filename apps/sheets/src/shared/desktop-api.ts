@@ -3738,6 +3738,8 @@ export interface DesktopApi {
   aiLocalToolStatus(vendorId: string): Promise<LocalToolStatus>
   aiLocalToolInstall(vendorId: string, onLine?: (line: string) => void): Promise<LocalToolOpResult>
   aiLocalToolStart(vendorId: string): Promise<LocalToolOpResult>
+  /// A browser-approved login landed (whichever surface started it) (r44 #2872, 品牌通道)
+  onChaOfficeLoginLanded(handler: () => void): () => void
   /// Web search (main-process Serper/DuckDuckGo, shared with docs/slides)
   webSearch(query: string, maxResults?: number): Promise<WebSearchResult>
   /// Image search (same shared main-process channel as docs/slides)

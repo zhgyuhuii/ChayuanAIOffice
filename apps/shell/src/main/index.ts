@@ -32,7 +32,7 @@ import {
   shell,
   webContents,
 } from 'electron'
-import type { MenuItemConstructorOptions, NativeImage, WebContents } from 'electron'
+import type { MenuItemConstructorOptions, NativeImage, Rectangle, WebContents } from 'electron'
 import { atomicWriteFile } from './atomic-write'
 import { openTrash } from './trash'
 import { registerAiNamingIpc } from './ai-naming-service'
@@ -104,6 +104,7 @@ import {
   readPdfDefaultZoom,
   sanitizePdfDefaultZoom,
   writePdfDefaultZoom,
+  tileWindows,
 } from '@chaoffice/electron-utils'
 import { createMainProcessProxyDispatcher } from '@chaoffice/electron-utils/main-proxy'
 import {
@@ -171,6 +172,7 @@ import {
   resolveChaOfficeEntry,
   setChaOfficeProxyUrl,
   startChaofficeLogin,
+  setGenofficeLoginSuccessListener,
   watchChaofficeApiKey,
 } from '@chaoffice/ai-search'
 import { setRescueFetch } from '@chaoffice/ai-provider'
@@ -452,7 +454,10 @@ import {
   detachedWebContentsFor,
   detachedSetTitleFor,
   detachedWindowForWebContents,
+  detachedWindowsOf,
+  holdDocking,
   dockBandFor,
+  releaseDetachedOf,
   dragTornWindow,
   endTornDrag,
   findDetachedTabByPath,
@@ -662,7 +667,13 @@ const publishOpenDocumentsIfOwner = (paths: readonly string[]) => {
 function publishAllOpenDocuments(): void {
   publishOpenDocumentsIfOwner([...(tabManager?.openFilePaths() ?? []), ...detachedFilePaths()])
 }
-setDetachedChangedListener(publishAllOpenDocuments)
+setDetachedChangedListener(() => {
+  publishAllOpenDocuments()
+  // Docs greys Merge All Windows while no window of its own stands outside the strip
+  const count = detachedWindowsOf('docs').length
+  for (const wc of webContents.getAllWebContents())
+    if (!wc.isDestroyed()) wc.send('win:detached-changed', count)
+})
 
 let uiLang: Lang | null = null
 
@@ -5061,11 +5072,15 @@ function createShellWindow(): void {
       const tabId = manager.tabIdForWebContents(wcId)
       return !!tabId && !!manager.list().find((t) => t.id === tabId)?.docked
     },
+openResultDocTab: (doc) => ensureTabManager().openDocsTab(undefined, { resultDoc: doc }),
     listTabs: () =>
       (tabManager?.list() ?? [])
         .filter((t) => t.kind === 'docs')
         .map((t) => ({ id: t.id, title: t.title, focused: t.active })),
     focusTab: (id) => tabManager?.activateTab(id),
+    arrangeAll: arrangeDocsWindows,
+    gatherWindows: gatherDocsWindows,
+    detachedWindowCount: () => detachedWindowsOf('docs').length,
     // ⌘W in a detached docs window closes that window (its own close guard runs)
     closeActiveTab: () => {
       const focused = BrowserWindow.getFocusedWindow()
@@ -5115,6 +5130,7 @@ function createShellWindow(): void {
         return false
       }
     },
+fileMoved: afterFileMoved,
   })
   setSheetsCloseTabHook(() => {
     const focused = BrowserWindow.getFocusedWindow()
@@ -7408,6 +7424,57 @@ function detachTabToWindow(id: string): void {
   win.focus()
 }
 
+/** Docs' Arrange All: the shell window is a tile only while its active tab is a Docs document */
+function arrangeDocsWindows(from: WebContents): void {
+  const fromWindow = detachedWindowForWebContents(from.id) ?? shellWindow
+  if (!fromWindow || fromWindow.isDestroyed()) return
+  let shellShowsDocs = false
+  if (tabManager && shellWindow && !shellWindow.isDestroyed()) {
+    for (const tab of tabManager.list()) {
+      if (tab.kind !== 'docs') continue
+      if (tab.active) {
+        shellShowsDocs = true
+        continue
+      }
+      tabManager.webContentsForTab(tab.id)
+      const record = tabManager.detachTab(tab.id)
+      if (record) createDetachedEditorWindow({ ...record, applyMenuFor })
+    }
+  }
+  const windows = [
+    ...(shellShowsDocs && shellWindow ? [shellWindow] : []),
+    ...detachedWindowsOf('docs'),
+  ]
+  const ordered = [fromWindow, ...windows.filter((w) => w !== fromWindow)].filter((w) =>
+    windows.includes(w),
+  )
+  if (shellShowsDocs && shellWindow && windows.length > 1)
+    shellBoundsBeforeArrange ??= shellWindow.getBounds()
+  tileWindows(ordered, screen.getDisplayMatching(fromWindow.getBounds()).workArea, holdDocking)
+  fromWindow.focus()
+  if (!from.isDestroyed()) from.focus()
+}
+
+/** the shell window's place before Arrange All made a tile of it */
+let shellBoundsBeforeArrange: Rectangle | null = null
+
+/** the inverse of Arrange All: every detached Docs window becomes a tab of the shell window again */
+function gatherDocsWindows(from: WebContents): void {
+  const tabs = releaseDetachedOf('docs')
+  const manager = ensureTabManager()
+  for (const tab of tabs) manager.attachTab(tab)
+  const win = shellWindow
+  if (!win || win.isDestroyed()) return
+  if (shellBoundsBeforeArrange && tabs.length > 0) win.setBounds(shellBoundsBeforeArrange)
+  shellBoundsBeforeArrange = null
+  const fromTab = from.isDestroyed() ? undefined : manager.tabIdForWebContents(from.id)
+  if (fromTab) manager.activateTab(fromTab)
+  if (win.isMinimized()) win.restore()
+  win.show()
+  win.focus()
+  if (!from.isDestroyed()) from.focus()
+}
+
 /** Tear-off: the tab leaves the strip for a window created under the held
  *  pointer at (x, y); the strip keeps steering it until release. */
 function tearOffTabToWindow(id: string, x: number, y: number): boolean {
@@ -9118,6 +9185,21 @@ app.whenReady().then(async () => {
     if (!loadChaofficeAuth()) return
     for (const w of BrowserWindow.getAllWindows())
       w.webContents.send(HOME_CHANNELS.accountLoginEvent, { phase: 'success' })
+  })
+  // A browser-approved login is otherwise invisible from the app: the approval
+  // happens in the system browser and nothing navigates back. Pull the window
+  // the user left back to the front and tell every view, so the surface they
+  // logged in from — an editor AI panel included — confirms the login at once.
+  setGenofficeLoginSuccessListener(() => {
+    if (shellWindow && !shellWindow.isDestroyed()) {
+      if (shellWindow.isMinimized()) shellWindow.restore()
+      shellWindow.show()
+      shellWindow.moveTop()
+      shellWindow.focus()
+    }
+    app.focus({ steal: true })
+    for (const wc of webContents.getAllWebContents())
+      if (!wc.isDestroyed()) wc.send('ai:chaoffice-login-landed')
   })
   // a registry left by a crashed instance must not block chaoffice writes
   ownsOpenDocumentsRegistry = true

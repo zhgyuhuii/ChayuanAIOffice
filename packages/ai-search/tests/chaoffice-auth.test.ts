@@ -15,6 +15,8 @@ import {
   recoverFromRejectedChaofficeKey,
   resetChaofficeAuthCache,
   setChaOfficeLoginOpener,
+  // adapted(r44): 本地 src 保留上游函数名（R36 文件级改名，导出标识符未跟）
+  setGenofficeLoginSuccessListener,
   startChaofficeLogin,
   type ChaOfficeLoginProgress,
 } from '../src/chaoffice-auth'
@@ -129,6 +131,27 @@ async function loginAndCollect(): Promise<ChaOfficeLoginProgress[]> {
 }
 
 describe('startChaofficeLogin', () => {
+  // adapted(r44): 上游 #2872 新增——浏览器批准的登录才触发成功回调，失败不触发
+  it('fires the login-success listener after a browser-approved login, not on failure', async () => {
+    const landed = vi.fn()
+    setGenofficeLoginSuccessListener(landed)
+    try {
+      stubFlow({ pendingPolls: 1 })
+      const events = await loginAndCollect()
+      expect(events.at(-1)?.phase).toBe('success')
+      expect(landed).toHaveBeenCalledTimes(1)
+
+      // a failing mint emits 'error' and must not fire the listener again
+      resetChaofficeAuthCache()
+      stubFlow({ createResponse: { status: 1, message: 'nope' } })
+      const failed = await loginAndCollect()
+      expect(failed.at(-1)?.phase).toBe('error')
+      expect(landed).toHaveBeenCalledTimes(1)
+    } finally {
+      setGenofficeLoginSuccessListener(null)
+    }
+  })
+
   it('by default signs the cookie mint only and preserves Bearer session exchange', async () => {
     delete process.env.GENOFFICE_NATIVE_WAF
     const token = `${Math.floor(Date.now() / 1000)}-${'a'.repeat(43)}`

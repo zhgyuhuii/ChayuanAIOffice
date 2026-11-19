@@ -17,15 +17,19 @@ Word、Excel、PowerPoint 與 PDF 檔案，由你與你的 AI 共同編輯，並
   <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/ChayuanAIOffice" alt="Latest release"></a>
   <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/ChayuanAIOffice/total" alt="Downloads"></a>
   <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/ChayuanAIOffice?style=flat" alt="GitHub stars"></a>
+  <a href="https://x.com/merrickbuilds"><img src="https://img.shields.io/badge/follow-%40merrickbuilds-000000?logo=x&logoColor=white" alt="在 X 上追蹤 @merrickbuilds"></a>
 </p>
 
 <p align="center"><a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <a href="README.zh-CN.md">简体中文</a> · <b>繁體中文</b> · <a href="README.ko.md">한국어</a> · <a href="README.ja.md">日本語</a> · <a href="README.ar.md">العربية</a> · <a href="README.ru.md">Русский</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.pl.md">Polski</a> · <a href="README.cs.md">Čeština</a> · <a href="README.id.md">Bahasa Indonesia</a> · <a href="README.ms.md">Bahasa Melayu</a> · <a href="README.th.md">ไทย</a> · <a href="README.hi.md">हिन्दी</a> · <a href="README.he.md">עברית</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.hu.md">Magyar</a></p>
 
 <p align="center">
   <a href="#download"><b>下載</b></a> ·
+  <a href="#skills"><b>Skills</b></a> ·
   <a href="#command-line-and-agent-skill"><b>CLI</b></a> ·
+  <a href="#mcp-server"><b>MCP</b></a> ·
   <a href="https://chaoffice.ai/"><b>官網</b></a> ·
   <a href="https://chaoffice.ai/join"><b>社群</b></a> ·
+  <a href="https://x.com/merrickbuilds"><b>X</b></a> ·
   <a href="../../PRIVACY.md"><b>隱私權</b></a>
 </p>
 
@@ -33,20 +37,36 @@ ChaOffice 是一套免費、開源的 Microsoft Office 替代方案，支援 mac
 Windows 與 Linux。它能開啟並儲存原生的 `.docx`、`.xlsx` 與 `.pptx`
 檔案，也能編輯 PDF、Markdown 與 HTML，並在每份文件旁放上一個 AI
 代理——不是硬塞在旁邊的聊天視窗，而是真正讀懂檔案、動手修改，
-並清楚告訴你它改了哪裡的編輯器。
+並清楚告訴你它改了哪裡的編輯器。ODF 檔案（`.odt`、`.ods`、`.odp` 以及
+`.ott`/`.ots`/`.otp` 範本）會以可編輯的 OOXML 副本開啟，舊版 Word
+`.doc`/`.dot`、Excel 97 `.xls`、PowerPoint 97–2003 `.ppt` 檔案以及 Hancom
+文件（`.hwp`、`.hwpx`）也是如此；這類匯入是「僅開啟」式的——儲存時寫出的
+始終是 OOXML，絕不會是來源格式。
 
 - **原生格式，位元級保留。** 只有你編輯的部分會被重寫，檔案裡其他
   內容都會原樣保留，文件在 Word、Excel 與 PowerPoint 中依然能正常運作。
 - **AI 的每一步都能檢視。** 編輯以追蹤修訂與差異呈現，一鍵即可回復。
   試算表拿到的是即時公式，不是貼上的數字。投影片與頁面會直接生成在
-  畫面上，且完全可再編輯。
+  畫面上，且完全可再編輯。把 Docs 的選取範圍或 Sheets 的儲存格範圍對
+  模型隱藏，AI 就只會看到一個具名佔位符；原文仍保留在檔案中，隨時可以
+  恢復。隱藏只涵蓋這個應用程式內的 AI——CLI、MCP 工具與無介面匯出會
+  直接讀取檔案，仍然看得到這些原文。
 - **本機優先的設計。** 檔案的開啟、編輯、儲存與轉換都在你的裝置上完成。
   PDF → Word / Excel / PowerPoint、Markdown → Word、HTML → Word 全部
   在本機執行。只有 AI 呼叫會離開這台裝置，且僅送往你選擇的服務商。
-- **用你自己的金鑰，或完全不用。** 用 Genspark 登入即可省去金鑰設定，
+- **依內容找檔案。** 主畫面會從本機的 SQLite 索引搜尋 `.docx`、`.xlsx`、
+  `.pptx`、PDF、Markdown 與 HTML 檔案的名稱、資料夾與全文，也支援 CJK
+  文字。還可以選擇讓 System One 判斷模型
+  **[TypeSafe Jev](https://typesafe.ai/)** 為排名最前面的結果重新排序，
+  讓真正回答你問題的檔案排在第一位。
+- **向你的檔案提問，並附上來源。** 為一組文件加上星號，主畫面的
+  **Ask AI** 就能跨這些文件回答問題，每一項說法都會引用背後的檔案，
+  方便你開啟查證。
+- **用你自己的金鑰，或完全不用。** 用 察元AIOffice 登入即可省去金鑰設定，
   或自行帶入 Claude、OpenAI、Gemini、DeepSeek、Kimi、GLM、Qwen、
-  Doubao、MiniMax、Grok、Mistral、OpenRouter、Requesty，或任何相容 OpenAI 介面
-  的服務端點，也支援本機伺服器。
+  Doubao、MiniMax、Grok、Mistral、OpenRouter、Requesty、Opper、
+  Cheaper Inference、Atlas Cloud，或任何相容 OpenAI 介面的服務端點，
+  也支援本機伺服器。
 - **可寫成腳本，也隨時能交給代理。** 應用程式內建 `chaoffice` 命令列，
   並附上一份給 Claude Code、Codex、Cursor、Gemini CLI、GitHub Copilot、
   OpenCode 與 Windsurf 使用的 agent skill，讓程式開發代理不必開啟任何
@@ -57,9 +77,11 @@ Windows 與 Linux。它能開啟並儲存原生的 `.docx`、`.xlsx` 與 `.pptx`
 [Linux](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)（deb、rpm、AppImage）——
 詳細內容與系統需求請見[下載](#download)。
 
-## Demo
+## <a id="demo"></a>Demo
 
-六款應用程式，一個 AI 面板，再加上一套給程式開發代理使用的命令列。
+六款應用程式，一個 AI 面板，一套由 TypeSafe Jev 重新排序的檔案搜尋，
+一個根據你加星號的檔案作答並附上來源的 Ask AI，再加上一套給程式開發
+代理使用的命令列。
 每張截圖都是在 macOS 上實際操作的真實畫面，AI 的動作皆由面板中可見的
 提示詞驅動。
 
@@ -72,11 +94,16 @@ Windows 與 Linux。它能開啟並儲存原生的 `.docx`、`.xlsx` 與 `.pptx`
 </tr>
 <tr>
 <td><b>依 Word 排版方式開啟檔案</b>——雙欄版面、滿版出血圖片、灰底表格、
-頁首頁尾，分頁依 Word 的行距量測。樣式、註解、追蹤修訂、公式與手寫
-筆跡都能原樣往返不受影響。</td>
+頁首頁尾，分頁依 Word 的行距量測。樣式、註解、追蹤修訂、公式、手寫
+筆跡與內容控制項都能原樣往返不受影響。<b>Mailings</b> 索引標籤能把文件
+變成合併列印範本：挑選 <code>.xlsx</code> 或 <code>.csv</code> 收件者清單，插入真正的
+<code>MERGEFIELD</code>，逐筆預覽，然後合併成一份文件，或每筆記錄各產出一份
+<code>.docx</code>。</td>
 <td><b>直接說出想要的修改</b>——AI 只讀取需要的區塊，重寫概覽段落並插入
 新的條列區塊。每一次 AI 操作都是可回復的快照；開啟<b>追蹤修訂</b>後，
-編輯會以 Word 樣式修訂呈現。</td>
+編輯會以 Word 樣式修訂呈現。改為要求一張心智圖，得到的則是整份文件的
+互動式圖表：分支可收合，支援縮放與平移，點選節點即可追問，引用還能
+跳回它所來自的區塊。</td>
 </tr>
 </table>
 
@@ -92,8 +119,9 @@ Windows 與 Linux。它能開啟並儲存原生的 `.docx`、`.xlsx` 與 `.pptx`
 <code>SUMIF</code> 公式依地區與類別統計，插入直條圖，並把 43 項變更
 整合成一次可復原的批次操作。</td>
 <td><b>直接詢問</b>——對工作簿的提問會附上推理過程，並把實際使用的
-儲存格做成可點擊的引用連結。背後是自研的 Rust `.xlsx` 引擎、樞紐分析表、
-篩選器、條件格式與公式追蹤。</td>
+儲存格做成可點擊的引用連結。背後是自研的 Rust <code>.xlsx</code> 引擎、樞紐分析表、
+篩選器、條件格式、公式追蹤，以及以 Excel 原生 rich value 形式嵌入儲存格的
+圖片——Excel 重新開啟時，圖片仍然在儲存格中。儲存格備註可以帶圖片，顯示在備註彈出視窗的下方。</td>
 </tr>
 </table>
 
@@ -109,12 +137,18 @@ Windows 與 Linux。它能開啟並儲存原生的 `.docx`、`.xlsx` 與 `.pptx`
 <tr>
 <td><b>只需一句話</b>——「為 Aurora Home 製作一份 10 頁的投資人簡報……」。
 ChaOffice 會規劃敘事脈絡、研究相關數據，並把每一頁直接生成在畫面上，
-成為一份真正的 `.pptx`。</td>
+成為一份真正的 <code>.pptx</code>。</td>
 <td><b>拿到的是完整成品</b>——十一頁設計完整的投影片，字體排版、圖像
 風格一致，並以行動呼籲收尾；可繼續用母片、版面配置、智慧輔助線與
-不破壞原圖的裁切功能編輯，或請面板重新設計風格、改寫文字、調整順序。</td>
+不破壞原圖的裁切功能編輯，或請面板重新設計風格、改寫文字、調整順序。
+插入 <code>.glb</code>，它就是真正的 3D 模型：在編輯器中拖曳即可轉動方向，
+以 PowerPoint 儲存 3D 的方式保存，在 PowerPoint 裡依然是一個 3D 模型。</td>
 </tr>
 </table>
+
+**Slide Show → Record** 可以為簡報逐頁錄製旁白，支援暫停與繼續。錄製的
+旁白與據此量測到的自動換片時間會一併存入 `.pptx`，PowerPoint 會以同樣的
+方式播放。
 
 ### 4 · PDF — 就地編輯 PDF 文字，在本機把 PDF 轉成 Word
 
@@ -128,7 +162,7 @@ ChaOffice 會規劃敘事脈絡、研究相關數據，並把每一頁直接生�
 重新輸入；內容串流是透過 PDFium 用原始字體重寫，而不是覆蓋式的注解。
 向 AI 詢問長篇報告的問題，也能得到附頁碼引用的回答。</td>
 <td><b>在本機完成轉換</b>——<b>PDF 轉換器 → PDF 轉 Word</b> 會產生可
-編輯的 `.docx`，在 Docs 中與來源檔並排開啟，標題、統計列與段落皆完整
+編輯的 <code>.docx</code>，在 Docs 中與來源檔並排開啟，標題、統計列與段落皆完整
 保留。Excel 與 PowerPoint 的轉換方式相同；掃描頁面則交由系統 OCR 處理。</td>
 </tr>
 </table>
@@ -184,11 +218,58 @@ ChaOffice 會規劃敘事脈絡、研究相關數據，並把每一頁直接生�
 執行。這個入口在每個應用程式中都相同。</td>
 <td><b>渲染顯示，仍以純 Markdown 儲存</b>——標題、清單、表格、圖片、
 程式碼區塊與 Mermaid 圖表都在 Tiptap 區塊編輯器中呈現，存回時仍是
-純 `.md`，並支援完全在本機執行的 <b>Markdown → Word</b> 匯出。</td>
+純 <code>.md</code>，並支援完全在本機執行的 <b>Markdown → Word</b> 匯出。</td>
 </tr>
 </table>
 
-### 7 · CLI — 讓你的程式開發代理在本機驅動 ChaOffice
+**類 Obsidian 的互連筆記。** `[[wiki links]]` 點擊即可跳至它所指名的筆記，
+輸入 `[[` 會提供筆記名稱的自動補全，`![[…]]` 則把一則筆記或一張圖片內嵌
+進來。**Backlinks** 面板列出所有指向目前筆記的筆記，**Graph** 視圖則以
+圖譜形式呈現整個筆記庫的連結關係。
+
+### <a id="7--search--find-the-file-that-answers-the-question-with-typesafe-jev"></a>7 · 搜尋 — 用 TypeSafe Jev 找出能回答問題的那個檔案
+
+工作資料夾裡的每個檔案都會在本機建立索引：名稱、資料夾，以及從 Word、
+Excel、PowerPoint、PDF、Markdown 與 HTML 檔案擷取出的文字，全都存進一個
+支援 CJK 斷詞的 SQLite 全文索引。開啟 **Jev search reranking** 之後，
+本機排名前 20 的結果會交由
+[TypeSafe Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev)
+評判——這個 System One 模型不生成文字，而是在一次呼叫中為每份文件回傳
+一個經過校準的相關性分數。清單會依這個分數重新排序；如果呼叫失敗或
+逾時，就維持本機的排序。
+
+<img src="../assets/readme/search-jev-motion.webp" alt="ChaOffice 主畫面的螢幕錄影：輸入 laptop refresh policy 後，瀏覽器快取政策、品牌更新計畫與儀表板重新整理排程排在最前面，設備標準文件則排在最後；設定頁面顯示「AI 媒體與搜尋」下的 Jev search reranking 已開啟，並選用 TypeSafe 端點；接著同樣的搜尋把設備標準文件排在第一位，結果數量旁邊多了一個 Jev 徽章" width="100%">
+
+<table>
+<tr>
+<td width="50%"><img src="../assets/readme/search-jev-before-after.webp" alt="查詢 laptop refresh policy 的兩份結果清單並排呈現：未使用 Jev 時，儀表板重新整理排程、品牌更新計畫與瀏覽器快取重新整理政策排在前面，公司設備標準文件排第五；使用 Jev 時，載明筆電三年汰換週期的設備標準文件排在第一位"></td>
+<td width="50%"><img src="../assets/readme/search-jev-settings.webp" alt="ChaOffice 設定的「AI 媒體與搜尋」頁面：「本機檔案搜尋」區塊，內含 Jev search reranking 開關、OpenRouter 與 TypeSafe 的端點選項，以及 API 金鑰欄位"></td>
+</tr>
+<tr>
+<td><b>同樣的字詞，不同的答案</b>——「laptop refresh policy」與瀏覽器快取重新整理政策、品牌更新計畫和儀表板重新整理排程逐字相符，所以全文排名會把它們排在最前面。Jev 讀過摘錄之後，把載明三年汰換週期的設備標準文件移到最上方。結果數量旁邊的 <b>Jev</b> 徽章會顯示目前的排序是否出自模型。</td>
+<td><b>預設關閉，一個開關就能開啟</b>——設定 → AI 媒體與搜尋 → 本機檔案搜尋。選擇 OpenRouter 或直連 TypeSafe，貼上金鑰，按下「測試連線」。只有在開關開啟時，排名前面的結果摘錄才會離開裝置；索引本身永遠不會。</td>
+</tr>
+</table>
+
+### 8 · Ask AI — 你加星號的檔案，附上來源作答
+
+為常用的檔案加上星號，主畫面的 **Ask AI** 就會把它們當成一座知識庫。
+用白話提問即可；代理會搜尋加星號的檔案，讀取需要的那幾個，並在每一項
+說法後面附上引用。點一下引用，檔案就會在對應的應用程式中開啟。可以用
+拖曳、貼上或 **+** 選單把檔案附加到問題上——圖片會以視覺輸入的形式
+送給模型——而且每個問題都會保存為獨立的對話：可以在對話之間切換、
+開新對話、刪除對話，清單在重新啟動後依然保留。
+
+<img src="../assets/readme/home-ask-ai-motion.webp" alt="ChaOffice Ask AI 的螢幕錄影：在主畫面輸入問題 quick summary, what drove our Q3 growth and how did Asia-Pacific perform；代理讀取兩個加星號的檔案，以 Aurora X1 上市與亞太區擴張作答，每一項說法後面都有一個引用標籤，標明出自季度報告或區域銷售活頁簿；點一下活頁簿的標籤，它就在 Sheets 中開啟，亞太區那一列會被醒目提示" width="100%">
+
+Ask AI 搜尋的是與
+[搜尋](#7--search--find-the-file-that-answers-the-question-with-typesafe-jev)
+相同的本機全文索引，並以分頁方式讀取檔案，因此模型只會看到搜尋結果與它
+要求的段落，而且是透過你選擇的服務商。它也能呼叫內建的 `chaoffice` CLI
+直接建立檔案；每個檔案都會以成品卡片的形式出現在回答下方，點一下即可
+開啟。
+
+### 9 · CLI — 讓你的程式開發代理在本機驅動 ChaOffice
 
 ChaOffice 內建 `chaoffice` 命令列與一份 agent skill。安裝這份 skill 之後，
 Claude Code、Codex、Cursor、Gemini CLI、GitHub Copilot、OpenCode 或 Windsurf
@@ -216,6 +297,33 @@ Claude Code、Codex、Cursor、Gemini CLI、GitHub Copilot、OpenCode 或 Windsu
 </tr>
 </table>
 
+### 10 · MCP — 透過 Model Context Protocol 提供相同的工具
+
+每一個 `chaoffice` 命令同時也是一個 MCP 工具。Claude Code、Claude Desktop、
+Cursor 及任何其他 MCP 用戶端都能自行啟動 `chaoffice mcp`，不必安裝 skill，
+也不必開啟任何視窗，就能取得 29 個工具以及以資源形式提供的操作參考文件。
+應用程式內建的第二個 HTTP 伺服器，還能讓代理在一個可見的編輯器分頁中
+建立 Word 文件，讓你即時查看。
+
+<img src="../assets/readme/mcp-deck-motion.webp" alt="Claude Code 透過 chaoffice MCP 伺服器建立一份八頁再生能源投資簡報的縮時畫面：它會搜尋圖表與照片，並用 media 檢查每一張候選圖片，deck_start 寫入樣式表與大綱，deck_page 逐頁新增經過檢查的頁面，deck_build 組裝出 .pptx，slides_render 傳回每一頁的圖片；完成的簡報接著會在 ChaOffice Slides 中開啟" width="100%">
+
+<table>
+<tr>
+<td width="50%"><img src="../assets/readme/mcp-deck-in-app.webp" alt="ChaOffice Slides 顯示 Claude Code 透過 chaoffice MCP 伺服器建立的八頁再生能源 2026 簡報：畫布上是帶有風力發電場照片的封面投影片，左側有八張縮圖"></td>
+<td width="50%"><img src="../assets/readme/mcp-integrations.webp" alt="ChaOffice 設定的「整合」頁面，MCP 部分：Claude Code 適用的一行 claude mcp add 指令、Cursor、Claude Desktop 與其他 MCP 用戶端適用的 JSON 程式碼區塊，以及下方的本機 HTTP 伺服器選項"></td>
+</tr>
+<tr>
+<td><b>一句提示詞，三十八次工具呼叫，不用終端機</b>——「做一份關於 2026 年再生能源的八頁投資簡報，封面和其他合適的地方都配上真實照片。」代理先用 <code>search</code> 蒐集圖表與照片，再用 <code>media</code> 確認每一張候選圖片是不是真實照片，然後帶著樣式表與大綱呼叫 <code>deck_start</code>，接著逐頁呼叫 <code>deck_page</code>；每一頁都會先對照大綱與配色方案檢查通過才會保留，接著 <code>deck_build</code> 組裝出 <code>.pptx</code>，<code>slides_audit</code> 檢查是否溢出，<code>slides_render</code> 為每一頁交回一張供模型檢視的 PNG 圖片內容，最後 <code>deck_replace</code> 修復了它不滿意的三頁。</td>
+<td><b>在設定 → 整合中連接一次即可</b>——複製 Claude Code 適用的 <code>claude mcp add</code> 指令，或把 JSON 程式碼區塊貼進 Cursor、Claude Desktop 或任何其他 MCP 用戶端。選項 B 會開啟本機 HTTP 伺服器，供可見的 Word 編輯器使用。兩者都在<a href="#mcp-server">MCP 伺服器</a>中有詳細說明。</td>
+</tr>
+</table>
+
+### 11 · 舊格式檔案 — 2000 年代的 `.doc`、`.xls` 和 `.ppt` 也能開啟
+
+Word 97–2003 的 `.doc`、Excel 的 `.xls` 或 PowerPoint 的 `.ppt` 會在本機轉換成 `.docx`、`.xlsx` 或 `.pptx` 副本後開啟，原檔案不會被改動。圖片、表格、公式、數字格式、填滿和版面配置都會保留。各格式會保留與捨棄哪些內容，請見[舊格式與 ODF 檔案會以轉換後的副本開啟](#legacy-and-odf-files-open-as-converted-copies)。
+
+<img src="../assets/readme/legacy-formats-motion.webp" alt="ChaOffice 依序開啟一份虛構的 2004 年度報告的 .ppt、.doc 和 .xls 檔案的縮時畫面，接著是同一張投影片在 PowerPoint 中的原件與在 ChaOffice 中的轉換結果並排對照" width="100%">
+
 ## 為什麼選 ChaOffice
 
 - **開源**，採用 Apache-2.0 授權，在 GitHub 上公開開發。
@@ -225,35 +333,63 @@ Claude Code、Codex、Cursor、Gemini CLI、GitHub Copilot、OpenCode 或 Windsu
   的部分會原樣複製。
 - **AI 直接編輯文件本身。** Docs 中的追蹤修訂、Sheets 中即時運算的公式與圖表、
   直接在畫布上生成的投影片，每一次 AI 操作都會留下可回復的快照。
-- **自帶模型，自帶金鑰。** 使用 Genspark 登入，或帶上 Claude、OpenAI、Gemini、
+- **自帶模型，自帶金鑰。** 使用 察元AIOffice 登入，或帶上 Claude、OpenAI、Gemini、
   DeepSeek 等服務的金鑰，同時支援本機伺服器與任何相容 OpenAI 的服務端點。
 - **認真做好 PDF。** 直接在頁面內編輯文字，並在本機將 PDF 轉換為 Word、Excel 或
   PowerPoint，掃描檔案支援系統 OCR。
 - **同樣支援 Markdown 與 HTML**，共用同一套 AI 面板，並可在本機匯出為 Word。
-- **可寫成腳本。** `chaoffice` 命令列與 agent skill 讓每一個引擎都能供 Claude Code、
-  Codex、Cursor 及其他程式開發代理使用，而且依然在本機執行。
+- **找到的是答案，不只是關鍵字。** 對資料夾中的每份文件做全文搜尋，
+  索引建立在本機，還可以選擇由 System One 判斷模型 TypeSafe Jev 重新排序。
+- **跨檔案的 Ask AI。** 為重要的檔案加上星號，用白話提問；每個回答都會
+  引用出處的檔案，點一下就能開啟。
+- **Skills。** 內建的現成 skill，或你自己的 `SKILL.md`，在任一 AI 面板的 **+** 選單中附帶。
+- **可寫成腳本。** `chaoffice` 命令列、agent skill 與 MCP 伺服器讓每一個引擎
+  都能供 Claude Code、Claude Desktop、Codex、Cursor 及其他代理使用，而且依然
+  在本機執行。
 - **免費**，個人與團隊皆可使用。
 
 ## AI 後端
 
-**用 Genspark 登入**就完全不用設定：模型呼叫會透過 Genspark 代理路由
+**用 察元AIOffice 登入**就完全不用設定：模型呼叫會透過 察元AIOffice 代理路由
 （涵蓋 Claude、GPT 與 Gemini 家族），代理也能使用網頁與圖片搜尋、
 圖片生成，以及圖片／音訊／影片分析。
 
 **或自帶金鑰。**「設定 → AI」列出了 Claude、OpenAI、Gemini、DeepSeek、
-Kimi、GLM、Qwen、Doubao、MiniMax、Grok、Mistral、OpenRouter、Requesty 與
+Kimi、GLM、Qwen、Doubao、MiniMax、Grok、Mistral、OpenRouter、Requesty、Opper、Cheaper Inference、Atlas Cloud、SiliconFlow、PPIO、Command Code 與
 OpenCode Zen/Go，另外還有一個自訂欄位可填入任何相容 OpenAI 的服務端點
 （base URL + 金鑰），也包括本機模型伺服器。搜尋與媒體功能則各自在
-**AI 媒體與搜尋**下設定獨立的服務商：網頁搜尋可選 Serper 或 Tavily，
-圖片生成與圖片／影片分析可選 OpenAI、Gemini、Doubao/Seedream、GLM、
-Grok、Qwen、MiniMax，或任何相容 OpenAI 的圖片服務端點。
+**AI 媒體與搜尋**下設定獨立的服務商：網頁搜尋可選 Serper、Serply、
+SearchApi、
+Tavily、Parallel、Keenable、Exa 或 Firecrawl；圖片生成與圖片／影片分析可選
+OpenAI、Gemini、Doubao/Seedream、GLM、Grok、Qwen、MiniMax、Stability、FLUX，
+或任何相容 OpenAI 的圖片服務端點，圖片分析另外還可選 DeepSeek V4.1 Flash。
+
+**TypeSafe Jev** 會為主畫面的檔案搜尋重新排序。在 **AI 媒體與搜尋 →
+本機檔案搜尋**下開啟 Jev search reranking，並選擇一個端點：
+[OpenRouter](https://openrouter.ai/typesafe)（模型 `typesafe/jev-1.13`）或
+TypeSafe 自家的 API。金鑰只會儲存在這台裝置上。這項功能預設關閉；開啟後，
+本機排名前 20 的結果摘錄會送出評判，除此之外沒有任何資料離開這台裝置。
+
+**Parallel** 不需要帳號就能使用：只要沒有設定 察元AIOffice 登入或搜尋金鑰，
+它的免費 Search MCP（有速率限制）就是預設的網頁搜尋，而且優先於
+DuckDuckGo 擷取。在「網頁搜尋」下選擇 Parallel 並輸入
+[Parallel](https://platform.parallel.ai/) 金鑰，即可改用 Search API。
+Keenable 同樣免金鑰；設定金鑰只會提高速率限制。
 
 整套軟體支援亮色、深色與跟隨系統三種主題。主題只會改變畫面顯示：
 匯出、列印與儲存的檔案永遠保留文件本身的原始色彩。
 
-<a id="command-line-and-agent-skill"></a>
+## <a id="skills"></a>Skills
 
-## 命令列與 agent skill
+Skill 是一份 `SKILL.md`，告訴 AI 怎樣把一件事做好：週報、保密協議、教案。
+ChaOffice 內建了一批，也接受你自己的，格式與程式開發代理所用的相同。
+
+- **設定 → Skills。** **安裝**推薦的 skill，或**匯入**資料夾、zip 或單一 `SKILL.md`。匯入不會執行任何東西。 **全部**標籤頁把整個推薦目錄列在一處，說明隨應用程式語言顯示。
+- **在聊天中。** 開啟任一 AI 面板輸入框旁的 **+** 選單，選 **Skills**，勾選一個，送出。Skill 只隨這一則訊息送出。
+
+---
+
+## <a id="command-line-and-agent-skill"></a>命令列與 agent skill
 
 應用程式能對檔案做的每一件事，`chaoffice` 命令列都能在終端機裡完成：
 檢視、轉換、建立、讀取與編輯 Word、Excel、PowerPoint、PDF、Markdown 與
@@ -263,7 +399,8 @@ HTML，用的是同一套引擎，且無需介面。它隨 ChaOffice 一起安�
 用 Markdown 勉強充數。
 
 **支援：** Claude Code、Codex、Cursor、Gemini CLI、GitHub Copilot、OpenCode
-與 Windsurf 開箱即用，以及任何其他能讀取 skill 的代理。
+與 Windsurf 開箱即用，任何其他能讀取 skill 的代理，以及透過
+[MCP 伺服器](#mcp-server) 支援的 Claude Desktop 與所有 MCP 用戶端。
 
 ### 安裝 skill
 
@@ -281,7 +418,7 @@ HTML，用的是同一套引擎，且無需介面。它隨 ChaOffice 一起安�
 ```bash
 chaoffice --version
 chaoffice info report.docx --json                  # headings and blocks; or sheets, slides, pages
-chaoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx/md/html, odt/ods/odp → docx/xlsx/pptx, doc/dot → docx, …
+chaoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx/md/html, odt/ods/odp → docx/xlsx/pptx, doc/dot → docx, ppt → pptx, …
 chaoffice create --type docx --from notes.md --out notes.docx
 chaoffice create --type xlsx --from table.json --out sales.xlsx   # "=SUM(B2:B9)" cells stay live formulas
 chaoffice docs read report.docx --range 0-9 --json # then `docs apply --ops edits.json` edits in place
@@ -297,7 +434,7 @@ chaoffice open sales.xlsx                          # hand the result to the edit
 
 ### 代理實際執行了什麼
 
-上方 Demo 中的太陽系簡報，在 Claude Code 裡只用了一句提示詞。在它背後，
+[Demo](#demo) 中的太陽系簡報，在 Claude Code 裡只用了一句提示詞。在它背後，
 代理依照 skill 的分階段工作流程逐步進行，而 CLI 會在每個階段開始下一步
 之前先做檢查：
 
@@ -318,9 +455,75 @@ chaoffice open deck/solar-system.pptx
 `chaoffice` 內部不會發出任何模型呼叫：思考由代理負責，建置與檢查由 CLI
 負責，成品則以一份普通的 `.pptx` 在 ChaOffice 或 PowerPoint 中開啟。
 
-<a id="download"></a>
+### <a id="mcp-server"></a>MCP 伺服器
 
-## 下載
+同樣這些命令也以 [Model Context Protocol](https://modelcontextprotocol.io) 工具
+的形式提供，供那些無法執行終端機、或你不想給它終端機權限的助理使用。接入
+方式有兩種，**設定 → 整合 → MCP** 中都提供了可直接複製的程式碼片段：
+
+| 方式                                | 內容                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A · `chaoffice mcp`**（建議使用） | 一個由助理自行啟動的 stdio 伺服器，ChaOffice 不需要處於開啟狀態。每個命令對應一個工具（`info`、`convert`、`create_docx`、`create_xlsx`、`create_pptx`、`create_pdf`、`docs_read` / `docs_apply` / `docs_check`、`sheet_*`、`slides_*`、`render`、`guide`、`search`、`image`、`media`、`open`），再加上分階段的簡報建立流程 `deck_start` → `deck_page` → `deck_build` → `deck_replace`。Ops、spec 與 Markdown 都以內嵌方式傳入，因此沒有檔案系統的用戶端也能正常運作。 |
+| **B · 本機 HTTP 伺服器**            | 執行於 ChaOffice 應用程式內部，位址為 `http://127.0.0.1:3093/mcp`（Streamable HTTP，並相容舊版 SSE）。它的工具會驅動一個可見的 Word 編輯器分頁：`create_session`、`insert_content`、`replace_blocks`、`apply_ops`、`read_document`、`save_session`，你可以即時看著文件成形。預設為關閉；在同一個設定面板中開啟。                                                                                                                                                      |
+| **C · `chaoffice mcp --http`**      | 把 stdio 的那套工具以 Streamable HTTP 伺服器的形式提供給其他機器上的用戶端：容器、沙箱，或你網路上的一台共用主機。檔案會隨呼叫一起傳遞：`PUT /files/<name>` 上傳一個檔案並回傳 URL，每個 `file` 參數都接受 http(s) URL，而會寫出檔案的工具則以下載 URL 交回成果，檔案不大時還會附上位元組內容作為 MCP 資源。`--host 0.0.0.0` 把它開放給網路，`--token` 則為它加上保護。                                                                                               |
+
+```bash
+# Claude Code
+claude mcp add --transport stdio chaoffice -- chaoffice mcp
+```
+
+```jsonc
+// Cursor, Claude Desktop or any other MCP client
+{ "mcpServers": { "chaoffice": { "command": "chaoffice", "args": ["mcp"] } } }
+```
+
+```bash
+# On the machine that has ChaOffice (private network; add --token for a shared box)
+chaoffice mcp --http 3093 --host 0.0.0.0 --token "$GENOFFICE_MCP_TOKEN"
+
+# From the client: upload, then use the URL wherever a tool takes a file
+curl -T report.docx -H "Authorization: Bearer $GENOFFICE_MCP_TOKEN" http://server:3093/files/
+#   → { "url": "http://server:3093/files/<id>/report.docx", ... }
+#   docs_read({ "file": "http://server:3093/files/<id>/report.docx" })
+#   docs_apply(...) → output_url, downloadable with curl -o
+```
+
+透過 HTTP 時，每個工作階段都有一個私有的暫存資料夾，相對路徑與簡報資料夾
+都會解析到其中，不提供 `open`，而且在未設定 `GENOFFICE_ALLOWED_ROOTS` 的
+情況下，工具無法離開伺服器自己的檔案儲存區。`render`、轉換為 PDF 的
+`convert` 與 `create_pdf` 仍會啟動一個隱藏的 ChaOffice 行程，因此無介面的
+主機需要安裝應用程式，並備妥虛擬顯示器（`xvfb-run`）。
+
+這裡的 `chaoffice` 就是應用程式內建的那個命令列（在 macOS 上位於
+`/Applications/ChaOffice.app/Contents/Resources/cli/chaoffice`；設定面板
+會印出你本機安裝的確切路徑）。這個伺服器自帶工作流程說明，並把操作參考
+文件以 `chaoffice://guide/*` 資源的形式公開，因此不需要額外的 skill；
+skill 與 MCP 伺服器可以共存，由助理自行選擇要用哪一個。雲端功能
+（`search`、`image`、`media`）仍會透過 ChaOffice 中設定的服務商完成；
+其餘一切都在本機執行，`GENOFFICE_ALLOWED_ROOTS` 會把每個工具都限制在
+你列出的資料夾之內。
+
+[Demo](#demo) 中的再生能源簡報，就是僅接上 `chaoffice` MCP 伺服器時，
+Claude Code 裡一句提示詞從協定層面呈現出的樣子：
+
+```text
+capabilities · guide(slides, spec) · guide(slides, design)
+search(query) ×4                         → IEA, BNEF and IRENA figures for the slides
+search(query, images) ×7 · media(url, ask) ×7
+                                         → candidate photos, each one checked to be a real photograph
+deck_start(dir, style, outline)          → outline checked: 8 pages to write
+deck_page(dir, 0, page) … deck_page(dir, 7, page)
+                                         → each page checked against the outline and the palette; one page sent again
+deck_build(dir, out)                     → renewables-2026.pptx, no image failures
+slides_audit(file) · slides_render(file, out)
+                                         → no layout findings; 8 PNGs come back as image content
+deck_replace(dir, n, page) ×3 · slides_render(file, out)
+                                         → three pages fixed after looking at the renders
+```
+
+三十八次呼叫，大約十三分鐘，助理全程沒有碰過終端機：圖表、照片、指南、檢查與渲染結果都是以 MCP 工具結果的形式傳遞。只有 `search` 與 `media` 離開過本機，傳送至 ChaOffice 中設定的服務供應商。
+
+## <a id="download"></a>下載
 
 | 平台                                 | 系統需求                                               | 下載                                                                                     |
 | ------------------------------------ | ------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
@@ -348,9 +551,14 @@ sudo apt install ./chaoffice_<version>_amd64.deb
 在 Fedora / RHEL 家族 / openSUSE 上，改安裝 rpm 套件：
 
 ```bash
-sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL 家族
+sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
 sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
+
+deb 與 rpm 套件還會為 KDE Plasma 的 Dolphin 加入空白範本：在資料夾中按
+右鍵 → **Create New** 會列出 _ChaOffice Document_、_ChaOffice Spreadsheet_
+與 _ChaOffice Presentation_。這些範本位於 `/usr/share/templates`，會隨套件
+一併移除。
 
 AppImage 可直接就地執行：先安裝 FUSE 2 執行環境
 （`sudo apt install libfuse2`；Ubuntu 24.04 上的套件名稱是
@@ -360,6 +568,8 @@ AppImage 可直接就地執行：先安裝 FUSE 2 執行環境
 chmod +x ChaOffice-<version>.AppImage
 ./ChaOffice-<version>.AppImage
 ```
+
+在 Chromebook 上，同樣的安裝套件可以在 Linux 環境（Crostini）中執行——詳見 [docs/platforms/chromeos.md](../platforms/chromeos.md)。
 
 </details>
 
@@ -371,29 +581,50 @@ chmod +x ChaOffice-<version>.AppImage
 局部差異的方式套用，編輯器沒動過的內容在往返過程中完全不受影響。
 
 ```
-open docx ─► 依雜湊封存原始檔案（永遠不動它）
-          ─► 解析 word/document.xml 成區塊樹，每個區塊都對應到原始 XML
-          ─► Tiptap 編輯器（手動編輯 + AI 編輯，並追蹤已變更內容）
-save      ─► 已變更的區塊 → OOXML 片段（只參照既有樣式）
-          ─► 拼接回原始 document.xml；未變更的區塊保留原有位元組
-          ─► 重新打包 zip；其他每個項目皆逐位元組複製
+open docx ─► archive original by hash (never touched)
+          ─► parse word/document.xml into a block tree, each block anchored to its original XML
+          ─► Tiptap editor (manual + AI editing, dirty tracking)
+save      ─► dirty blocks → OOXML fragments (referencing existing styles only)
+          ─► splice into the original document.xml; untouched blocks keep their bytes
+          ─► repack the zip; every other entry is copied byte-for-byte
 ```
 
 各套件（docx/pptx 引擎、`pdf2docx`、`html2docx`、代理核心與各服務商）
 的逐一介紹，收錄在 [CONTRIBUTING.md](../../CONTRIBUTING.md#engine-packages)。
 
+### <a id="legacy-and-odf-files-open-as-converted-copies"></a>舊格式與 ODF 檔案會以轉換後的副本開啟
+
+ChaOffice 無法寫回的格式——舊版 Word `.doc`/`.dot`、Hancom
+`.hwp`/`.hwpx`、Excel 97 `.xls`、`.tsv`、舊版 PowerPoint `.ppt`，以及
+OpenDocument 家族（`.odt`、`.ott`、`.ods`、`.ots`、`.odp`、`.otp`）——
+屬於匯入，而不是原生檔案。
+開啟這類檔案時，會在本機把它轉換成 `.docx`、`.xlsx` 或 `.pptx` 副本，
+並開啟這份副本；原始檔案之後不會再被讀取，也永遠不會被寫入。
+
+- Docs 與 Slides 會先詢問副本要放在哪裡（預設是原始檔案旁邊的同名
+  `.docx`/`.pptx`），之後每一次儲存都會寫到那裡。`.ppt` 轉換時會帶上
+  母片、圖形幾何、填滿、圖片與文字格式，因此簡報看起來和 PowerPoint
+  顯示的一樣；備忘稿、動畫、轉場與超連結目前尚未帶入。
+- Sheets 會直接開啟轉換後的活頁簿，第一次儲存則會導向「另存新檔」，
+  存成一份全新的 `.xlsx`。`.csv` 是例外：它維持原本的身分，儲存時會像
+  Excel 一樣把值寫回 `.csv`。
+- 轉換是單向的，來源格式具備但 OOXML 沒有的功能可能會遺失。`.doc`、
+  `.ppt`、`.hwp` 與 ODF 格式會顯示確認對話方塊加以說明；勾選
+  「Convert without asking next time」即可略過，在設定 → 一般中開啟
+  「Ask before converting legacy files」則會恢復詢問。
+
 ## 開發
 
 ```bash
 npm install
-npm run fixtures     # 產生測試用的 .docx fixture
-npm test             # 引擎 + 應用程式單元測試（docs/sheets/slides 不需要顯示器）
-npm run typecheck    # 對整個 workspace 執行 tsc --noEmit
-npm run dev          # 六個編輯器 + 外殼，皆跑在 Vite 開發伺服器上
-npm run dev:docs     # 只跑單一應用程式（其他 workspace 也是同樣模式）
-npm run dist:mac     # 打包 macOS dmg（會重新產生第三方授權聲明）
-npm run dist:win     # 打包 Windows nsis 安裝程式
-npm run dist:linux   # 打包 Linux AppImage + deb + rpm
+npm run fixtures     # generate test .docx fixtures
+npm test             # engine + app unit tests (docs/sheets/slides need no display)
+npm run typecheck    # tsc --noEmit across every workspace
+npm run dev          # all six editors + shell against Vite dev servers
+npm run dev:docs     # a single app (same pattern works per workspace)
+npm run dist:mac     # package macOS dmg (regenerates third-party notices)
+npm run dist:win     # package Windows nsis installer
+npm run dist:linux   # package Linux AppImage + deb + rpm
 ```
 
 sheets 應用程式還需要 Rust 工具鏈來編譯其 xlsx sidecar
@@ -409,6 +640,8 @@ ChaOffice 正在積極開發中，你的意見回饋會影響它的方向。
   **回報問題或提出功能需求**。
 - 到 [GenTeam](https://chaoffice.ai/join) **加入 ChaOffice 群組聊天**，
   和團隊及其他使用者交流。
+- **在 X 上追蹤 [@merrickbuilds](https://x.com/merrickbuilds)**，掌握版本
+  說明、展示影片與接下來的開發動向。
 - 如果 ChaOffice 對你有幫助，**幫這個專案按個星星**——這是支持這個
   專案最簡單的方式。
 
@@ -428,6 +661,9 @@ ChaOffice 正在積極開發中，你的意見回饋會影響它的方向。
 可以。ChaOffice 能開啟並儲存原生的 `.docx`、`.xlsx` 與 `.pptx` 檔案。
 儲存時採位元級保留：你沒動過的部分會原樣寫回，文件在 Microsoft
 Office 中依然能正常使用。
+舊版 `.doc`/`.dot`、`.xls` 與 `.ppt` 檔案也能開啟，會轉換成
+`.docx`/`.xlsx`/`.pptx` 副本——請見[舊格式與 ODF 檔案會以轉換後的副本
+開啟](#legacy-and-odf-files-open-as-converted-copies)。
 
 </details>
 
@@ -436,7 +672,7 @@ Office 中依然能正常使用。
 
 文件編輯完全在本機執行——檔案在開啟、編輯、儲存或轉換的過程中
 都不會離開你的裝置。AI 功能（代理、搜尋、圖片工具）需要網路連線，
-可透過 Genspark 登入或使用你自己的模型 API 金鑰。
+可透過 察元AIOffice 登入或使用你自己的模型 API 金鑰。
 
 </details>
 
@@ -461,11 +697,21 @@ Office 中依然能正常使用。
 <details>
 <summary><b>我可以使用自己的 AI 模型或 API 金鑰嗎？</b></summary>
 
-可以。除了免金鑰的 Genspark 登入之外，ChaOffice 也支援自帶金鑰，
+可以。除了免金鑰的 察元AIOffice 登入之外，ChaOffice 也支援自帶金鑰，
 涵蓋 Claude、OpenAI、Gemini、DeepSeek、Kimi、GLM、Qwen、Doubao、
-MiniMax、Grok、Mistral、OpenRouter、Requesty 與 OpenCode Zen/Go，以及任何相容
-OpenAI 的服務端點——包括本機模型伺服器。搜尋、圖片生成與圖片／影片
+MiniMax、Grok、Mistral、OpenRouter、Requesty、Opper、Cheaper Inference、
+Atlas Cloud 與 OpenCode Zen/Go，以及任何相容 OpenAI 的服務端點——包括本機模型伺服器。搜尋、圖片生成與圖片／影片
 分析則在「設定 → AI 媒體與搜尋」下使用各自獨立的金鑰。
+
+</details>
+
+<details>
+<summary><b>我可以關閉 AI 面板嗎？</b></summary>
+
+可以。「設定 → AI」裡有一個 **Show the AI sidebar**（顯示 AI 側邊欄）開關。
+關閉之後，所有編輯器都會隱藏側邊欄，新文件也不再自動開啟它。明確的
+AI 動作——例如功能區按鈕或選單項目——仍會為該文件開啟面板，關閉後
+面板會恢復隱藏。
 
 </details>
 
@@ -533,6 +779,10 @@ Gemini CLI、GitHub Copilot、OpenCode 與 Windsurf 使用它；請在 **設定 
   的讀取與計算層。
 - [libeot](https://github.com/umanwizard/libeot)（MPL-2.0）— 用於內嵌
   PowerPoint 字型的 MicroType Express 解碼器，已移植為 TypeScript。
+- [rhwp](https://github.com/edwardkim/rhwp)（MIT）— 把二進位 `.hwp` 文件
+  讀成 HWPX，供 Hancom 匯入使用；它的 WebAssembly 建置包含第三方授權聲明中
+  列出的 Rust crate 與 Volexity hwp-extract 移植版。"한글"、"한컴"、"HWP" 與
+  "HWPX" 是 Hancom Inc. 的註冊商標；ChaOffice 與 Hancom 沒有任何關聯。
 - [React](https://react.dev/)（MIT）— 每個應用程式的 UI 層。
 - [Mermaid](https://mermaid.js.org/)（MIT）與 [KaTeX](https://katex.org/)
   （MIT）— Markdown 與 Docs 中的圖表與數學公式。
@@ -557,6 +807,6 @@ ChaOffice 採用 [Apache License 2.0](../../LICENSE) 授權，唯一例外是
 `ee/` 目錄，該目錄保留給未來的企業模組，適用
 [ChaOffice 企業授權](../../ee/LICENSE)。
 
-ChaOffice 與 Genspark 的名稱與標誌皆為 Mainfunc, Inc. 的商標。
+ChaOffice 與 察元AIOffice 的名稱與標誌皆為 Mainfunc, Inc. 的商標。
 Apache-2.0 授權並未授予使用這些商標的權利（詳見第 6 節）；
 基於本專案的分支請使用自己的品牌識別。

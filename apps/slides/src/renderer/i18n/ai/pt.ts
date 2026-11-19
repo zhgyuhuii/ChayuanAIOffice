@@ -327,4 +327,5 @@ export const pt = {
   aiToolRunReadUrl: 'Lendo a página…',
   aiPageCloudToLocal: 'Nuvem indisponível — gerado localmente',
 
+  aiGskLoginOk: 'Conectado ao ChaAI Office',
 }

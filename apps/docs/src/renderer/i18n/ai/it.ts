@@ -245,4 +245,5 @@ export const it = {
   aiMindMapToggleLayout: 'Cambia layout',
   aiMindMapLayoutTopDown: 'Passa al layout dall’alto verso il basso',
   aiMindMapLayoutLeftRight: 'Passa al layout da sinistra a destra',
+  aiGskLoginOk: 'Accesso a ChaAI Office effettuato',
 } satisfies Record<keyof typeof zh, string>

@@ -327,4 +327,5 @@ export const ms = {
   aiToolRunReadUrl: 'Membaca halaman…',
   aiPageCloudToLocal: 'Awan tidak tersedia — dijana secara setempat',
 
+  aiGskLoginOk: 'Berjaya log masuk ke ChaAI Office',
 }

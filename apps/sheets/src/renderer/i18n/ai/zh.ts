@@ -119,4 +119,5 @@ export const zh = {
   aiDockRestore: '还原面板',
   aiToolGenSvg: '绘制 SVG 插图',
   aiToolGenSvgDone: '已生成 SVG 插图，可用 add_image 放置',
+  aiGskLoginOk: '已登录 察元AIOffice',
 }

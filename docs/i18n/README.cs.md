@@ -17,15 +17,19 @@ Soubory Word, Excel, PowerPoint a PDF, upravované vámi a vaší AI, ukládané
   <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/ChayuanAIOffice" alt="Nejnovější verze"></a>
   <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/ChayuanAIOffice/total" alt="Stažení"></a>
   <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/ChayuanAIOffice?style=flat" alt="Hvězdy na GitHubu"></a>
+  <a href="https://x.com/merrickbuilds"><img src="https://img.shields.io/badge/follow-%40merrickbuilds-000000?logo=x&logoColor=white" alt="Sledujte @merrickbuilds na X"></a>
 </p>
 
 <p align="center"><a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">繁體中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ja.md">日本語</a> · <a href="README.ar.md">العربية</a> · <a href="README.ru.md">Русский</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.pl.md">Polski</a> · <b>Čeština</b> · <a href="README.id.md">Bahasa Indonesia</a> · <a href="README.ms.md">Bahasa Melayu</a> · <a href="README.th.md">ไทย</a> · <a href="README.hi.md">हिन्दी</a> · <a href="README.he.md">עברית</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.hu.md">Magyar</a></p>
 
 <p align="center">
   <a href="#download"><b>Stažení</b></a> ·
+  <a href="#skills"><b>Skilly</b></a> ·
   <a href="#command-line-and-agent-skill"><b>CLI</b></a> ·
+  <a href="#mcp-server"><b>MCP</b></a> ·
   <a href="https://chaoffice.ai/"><b>Web</b></a> ·
   <a href="https://chaoffice.ai/join"><b>Komunita</b></a> ·
+  <a href="https://x.com/merrickbuilds"><b>X</b></a> ·
   <a href="../../PRIVACY.md"><b>Soukromí</b></a>
 </p>
 
@@ -33,7 +37,12 @@ ChaOffice je bezplatná open-source alternativa k Microsoft Office pro macOS,
 Windows a Linux. Otevírá a ukládá nativní soubory `.docx`, `.xlsx` a `.pptx`,
 upravuje PDF, Markdown a HTML a ke každému dokumentu přidává AI agenta —
 nejde o přilepené chatovací okno, ale o editor, který soubor přečte,
-provede požadovanou úpravu a přesně vám ukáže, čeho se dotkl.
+provede požadovanou úpravu a přesně vám ukáže, čeho se dotkl. Soubory ODF
+(`.odt`, `.ods`, `.odp` a šablony `.ott`/`.ots`/`.otp`) se otevírají jako
+editovatelné kopie OOXML, stejně jako starší soubory Wordu `.doc`/`.dot`,
+Excelu 97 `.xls` a PowerPointu 97–2003 `.ppt` a dokumenty Hancom (`.hwp`,
+`.hwpx`); import podporuje jen otevírání — ukládání zapisuje výhradně OOXML,
+nikdy zdrojový formát.
 
 - **Skutečné formáty, zachování na úrovni bajtů.** Přepíše se jen to, co
   upravíte. Vše ostatní v souboru zůstává bajtově identické, takže dokumenty
@@ -41,15 +50,29 @@ provede požadovanou úpravu a přesně vám ukáže, čeho se dotkl.
 - **AI, kterou můžete zkontrolovat.** Úpravy přicházejí jako sledované změny
   a rozdíly s možností vrátit je jedním kliknutím. Tabulky získávají živé
   vzorce, ne vložená čísla. Prezentace a stránky se generují přímo na plochu
-  a zůstávají plně editovatelné.
+  a zůstávají plně editovatelné. Skryjete-li před modelem výběr v Docs nebo
+  oblast buněk v Sheets, uvidí AI jen pojmenovaný zástupný symbol; původní
+  slova zůstávají v souboru a vrací se zpět. Skrývání se týká jen AI této
+  aplikace — CLI, MCP nástroje a headless export čtou soubor přímo a tento
+  text stále vidí.
 - **Lokální už z principu.** Soubory se otevírají, upravují, ukládají
   i převádějí přímo na vašem počítači. PDF → Word / Excel / PowerPoint
   a Markdown → Word i HTML → Word běží celé na zařízení. Zařízení opouštějí
   jen volání AI, a to k poskytovateli, kterého si sami vyberete.
-- **Vaše klíče, nebo žádné.** Přihlaste se přes Genspark a klíče nepotřebujete,
+- **Hledejte soubory podle toho, co říkají.** Domovská obrazovka prohledává
+  názvy, složky a plný text vašich souborů `.docx`, `.xlsx`, `.pptx`, PDF,
+  Markdown a HTML v lokálním indexu SQLite, včetně CJK. Volitelně nejlepší
+  výsledky přeřadí **[TypeSafe Jev](https://typesafe.ai/)**, posuzovací model
+  System One, takže soubor, který odpovídá na vaši otázku, je první.
+- **Ptejte se svých souborů, se zdroji.** Označte sadu dokumentů hvězdičkou
+  a **Ask AI** na domovské obrazovce odpovídá na otázky napříč nimi a u každého
+  tvrzení cituje soubor, ze kterého vychází, takže jej můžete otevřít
+  a ověřit.
+- **Vaše klíče, nebo žádné.** Přihlaste se přes ChaAI Office a klíče nepotřebujete,
   nebo použijte vlastní klíč pro Claude, OpenAI, Gemini, DeepSeek, Kimi, GLM,
-  Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty nebo jakýkoli OpenAI
-  kompatibilní endpoint, včetně lokálních serverů.
+  Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty, Opper, Cheaper
+  Inference, Atlas Cloud nebo jakýkoli OpenAI kompatibilní endpoint, včetně
+  lokálních serverů.
 - **Skriptovatelný a připravený pro agenty.** Aplikace obsahuje příkazový
   řádek `chaoffice` a skill pro Claude Code, Codex, Cursor, Gemini CLI,
   GitHub Copilot, OpenCode a Windsurf, takže kódovací agent může na vašem
@@ -61,9 +84,11 @@ provede požadovanou úpravu a přesně vám ukáže, čeho se dotkl.
 [Linux](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (deb, rpm, AppImage) —
 podrobnosti a požadavky najdete v sekci [Stažení](#download).
 
-## Ukázka
+## <a id="demo"></a>Ukázka
 
-Šest aplikací, jeden AI panel a příkazový řádek pro vašeho kódovacího agenta.
+Šest aplikací, jeden AI panel, vyhledávání souborů přeřazované modelem
+TypeSafe Jev, Ask AI, které odpovídá z vašich souborů s hvězdičkou a uvádí
+zdroje, a příkazový řádek pro vašeho kódovacího agenta.
 Každý snímek obrazovky je ze skutečné aplikace na macOS, s AI ovládanou
 promptem, který si můžete přečíst v panelu.
 
@@ -75,8 +100,8 @@ promptem, který si můžete přečíst v panelu.
 <td width="50%"><img src="../assets/readme/docs-ai.webp" alt="ChaOffice Docs: přehled společnosti s bannerovým obrázkem; AI zestručnila sekci Overview a vložila novou sekci s odrážkami, panel nabízí vrácení jedním kliknutím"></td>
 </tr>
 <tr>
-<td><b>Otevře soubor přesně tak, jak jej rozvrhl Word</b> — dvoukolonové sekce, obrázky přes celou stránku, podbarvené tabulky, záhlaví a zápatí, stránkování podle Wordových metrik řádkování. Styly, komentáře, sledované změny, rovnice i ruční poznámky se zachovají beze změny.</td>
-<td><b>Zadejte úpravu</b> — AI si přečte jen bloky, které potřebuje, přepíše sekci Overview a vloží novou sekci s odrážkami. Každé kolo AI je snímek, který lze vrátit; se zapnutým <b>sledováním změn</b> přicházejí úpravy jako revize ve stylu Wordu.</td>
+<td><b>Otevře soubor přesně tak, jak jej rozvrhl Word</b> — dvoukolonové sekce, obrázky přes celou stránku, podbarvené tabulky, záhlaví a zápatí, stránkování podle Wordových metrik řádkování. Styly, komentáře, sledované změny, rovnice, ruční poznámky i ovládací prvky obsahu se zachovají beze změny. Záložka <b>Mailings</b> promění dokument v šablonu hromadné korespondence: vyberte seznam příjemců <code>.xlsx</code> nebo <code>.csv</code>, vložte skutečná pole <code>MERGEFIELD</code>, prohlížejte náhled záznam po záznamu a sloučte vše do jednoho dokumentu, nebo do jednoho <code>.docx</code> na každý záznam.</td>
+<td><b>Zadejte úpravu</b> — AI si přečte jen bloky, které potřebuje, přepíše sekci Overview a vloží novou sekci s odrážkami. Každé kolo AI je snímek, který lze vrátit; se zapnutým <b>sledováním změn</b> přicházejí úpravy jako revize ve stylu Wordu. Požádáte-li místo toho o myšlenkovou mapu, odpovědí je interaktivní diagram celého dokumentu: větve lze sbalovat, lze přibližovat a posouvat, kliknutí na uzel položí doplňující otázku a citace skočí zpět na blok, ze kterého pocházejí.</td>
 </tr>
 </table>
 
@@ -89,7 +114,7 @@ promptem, který si můžete přečíst v panelu.
 </tr>
 <tr>
 <td><b>Vytvořte to</b> — z jedné věty agent přidá list Summary se skutečnými vzorci <code>SUMIF</code> podle regionu a kategorie, vloží sloupcový graf a všech 43 změn provede jako jednu dávku, kterou lze vrátit.</td>
-<td><b>Zeptejte se</b> — dotazy k sešitu se vracejí s odůvodněním a konkrétními buňkami použitými jako klikatelné citace. Pod kapotou: vlastní Rust engine `.xlsx`, kontingenční tabulky, filtry, podmíněné formátování a sledování vzorců.</td>
+<td><b>Zeptejte se</b> — dotazy k sešitu se vracejí s odůvodněním a konkrétními buňkami použitými jako klikatelné citace. Pod kapotou: vlastní Rust engine `.xlsx`, kontingenční tabulky, filtry, podmíněné formátování, sledování vzorců a obrázky vložené do buněk jako nativní rich values Excelu — Excel je po opětovném otevření najde stále v buňce. Poznámka buňky může obsahovat obrázek, zobrazený pod vyskakovacím okénkem poznámky.</td>
 </tr>
 </table>
 
@@ -104,9 +129,14 @@ promptem, který si můžete přečíst v panelu.
 </tr>
 <tr>
 <td><b>Jeden vstupní řádek</b> — „Vytvoř 10snímkovou investorskou prezentaci pro Aurora Home…“. ChaOffice naplánuje dějovou linku, vyhledá čísla a vytvoří každý snímek na ploše jako skutečný soubor `.pptx`.</td>
-<td><b>Hotová prezentace na výstupu</b> — jedenáct navržených snímků s konzistentní typografií, obrázky a závěrečnou výzvou k akci; dál upravujte pomocí předloh, rozvržení, chytrých vodicích čar a nedestruktivního oříznutí, nebo požádejte panel o změnu stylu, přepsání a přeuspořádání.</td>
+<td><b>Hotová prezentace na výstupu</b> — jedenáct navržených snímků s konzistentní typografií, obrázky a závěrečnou výzvou k akci; dál upravujte pomocí předloh, rozvržení, chytrých vodicích čar a nedestruktivního oříznutí, nebo požádejte panel o změnu stylu, přepsání a přeuspořádání. Vložíte-li <code>.glb</code>, získáte skutečný 3D model: v editoru jej otočíte tažením, ukládá se tak, jak PowerPoint ukládá 3D, a v PowerPointu zůstává stále 3D.</td>
 </tr>
 </table>
+
+**Slide Show → Record** umožňuje prezentaci namluvit snímek po snímku,
+s možností pauzy a pokračování. Komentář i časy automatického posunu snímků
+změřené při nahrávání se uloží do `.pptx` a PowerPoint je přehraje stejným
+způsobem.
 
 ### 4 · PDF — upravujte text v PDF na místě, převádějte PDF do Wordu na zařízení
 
@@ -163,7 +193,58 @@ podle těchto tokenů vytvoří jeden samostatný soubor `.html`.
 </tr>
 </table>
 
-### 7 · CLI — váš kódovací agent řídí ChaOffice, na vašem počítači
+**Prolinkované poznámky, jako to umí Obsidian.** Kliknutí na `[[wiki links]]`
+přejde na poznámku, kterou pojmenovávají, po napsání `[[` se nabízí
+doplňování názvů poznámek a `![[…]]` vloží poznámku nebo obrázek přímo
+do textu. Panel **Backlinks** vypíše každou poznámku, která ukazuje na tu
+otevřenou, a pohled **Graph** zmapuje odkazy celého trezoru.
+
+### <a id="7--search--find-the-file-that-answers-the-question-with-typesafe-jev"></a>7 · Vyhledávání — najděte soubor, který odpovídá na otázku, s TypeSafe Jev
+
+Každý soubor ve vaší pracovní složce se indexuje přímo na zařízení: názvy,
+složky a extrahovaný text souborů Word, Excel, PowerPoint, PDF, Markdown
+a HTML, ve fulltextovém indexu SQLite s tokenizací, která počítá s CJK.
+Zapněte **Jev search reranking** a 20 nejlepších lokálních výsledků posoudí
+[TypeSafe Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev),
+model System One, který místo generování textu vrátí v jediném volání jedno
+kalibrované skóre relevance pro každý dokument. Seznam se podle tohoto skóre
+přeřadí; pokud volání selže nebo vyprší jeho časový limit, zůstane lokální
+pořadí.
+
+<img src="../assets/readme/search-jev-motion.webp" alt="Záznam obrazovky domovské obrazovky ChaOffice: po zadání laptop refresh policy se nejprve vypíší zásady pro mezipaměť prohlížeče, plán obnovy značky a harmonogram obnovování dashboardu, zatímco dokument se standardy vybavení je poslední; stránka Nastavení ukazuje zapnutý přepínač Jev search reranking v části AI Media & Search s endpointem TypeSafe; stejné hledání pak ukazuje dokument se standardy vybavení na prvním místě s odznakem Jev vedle počtu výsledků" width="100%">
+
+<table>
+<tr>
+<td width="50%"><img src="../assets/readme/search-jev-before-after.webp" alt="Dva seznamy výsledků pro dotaz laptop refresh policy vedle sebe: bez Jev vedou harmonogram obnovování dashboardu, plán obnovy značky a zásady obnovování mezipaměti prohlížeče a dokument se standardy firemního vybavení je pátý; s Jev je dokument se standardy vybavení, který uvádí tříletý cyklus výměny notebooků, první"></td>
+<td width="50%"><img src="../assets/readme/search-jev-settings.webp" alt="Nastavení ChaOffice, stránka AI Media & Search: blok Local file search s přepínačem Jev search reranking, volbou endpointu mezi OpenRouter a TypeSafe a polem pro API klíč"></td>
+</tr>
+<tr>
+<td><b>Stejná slova, jiné odpovědi</b> — „laptop refresh policy“ se slovo od slova shoduje se zásadami obnovování mezipaměti prohlížeče, plánem obnovy značky i harmonogramem obnovování dashboardu, takže fulltextové řazení je dá na první místa. Jev si přečte úryvky a posune nahoru dokument se standardy vybavení — ten, který uvádí tříletý cyklus výměny. Odznak <b>Jev</b> vedle počtu výsledků ukazuje, kdy pořadí určil model.</td>
+<td><b>Ve výchozím stavu vypnuto, zapíná se jedním přepínačem</b> — Nastavení → AI Media & Search → Local file search. Zvolte OpenRouter nebo přímo TypeSafe, vložte klíč a klikněte na Test connection. Úryvky nejlepších výsledků opouštějí zařízení jen při zapnutém přepínači; samotný index nikdy.</td>
+</tr>
+</table>
+
+### 8 · Ask AI — vaše soubory s hvězdičkou, zodpovězené se zdroji
+
+Označte hvězdičkou soubory, se kterými pracujete, a **Ask AI** na domovské
+obrazovce s nimi zachází jako se znalostní bází. Položte otázku běžným
+jazykem; agent prohledá soubory s hvězdičkou, přečte ty, které potřebuje,
+a odpoví s citací za každým tvrzením. Kliknete na citaci a soubor se otevře
+ve správné aplikaci. K otázce můžete přiložit soubory přetažením, vložením
+nebo z nabídky **+** — obrázky dostane model jako vizuální vstup — a každá
+otázka se uchová jako samostatná konverzace: přepínejte mezi nimi, založte
+novou, některou smažte; seznam přežije restart.
+
+<img src="../assets/readme/home-ask-ai-motion.webp" alt="Záznam obrazovky ChaOffice Ask AI: na domovské obrazovce se zadá otázka quick summary, what drove our Q3 growth and how did Asia-Pacific perform; agent přečte dva soubory s hvězdičkou a odpoví uvedením produktu Aurora X1 a expanzí v asijsko-pacifickém regionu, přičemž za každým tvrzením následuje citační čip s názvem čtvrtletní zprávy nebo regionálního sešitu prodejů; kliknutí na čip sešitu jej otevře v Sheets se zvýrazněným řádkem Asia-Pacific" width="100%">
+
+Ask AI prohledává stejný fulltextový index na zařízení jako
+[Vyhledávání](#7--search--find-the-file-that-answers-the-question-with-typesafe-jev)
+a čte soubory po stránkách, takže model vidí jen nalezené výsledky a pasáže,
+o které si řekl, přes poskytovatele, kterého jste zvolili. Umí také zavolat
+vestavěné CLI `chaoffice` a soubory rovnou vytvořit; každý se objeví pod
+odpovědí jako karta artefaktu a kliknutím se otevře.
+
+### 9 · CLI — váš kódovací agent řídí ChaOffice, na vašem počítači
 
 ChaOffice obsahuje příkazový řádek `chaoffice` a agentní skill. Nainstalujte
 skill a Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode nebo
@@ -183,6 +264,34 @@ přes stejné enginy jako aplikace, aniž by otevřely jediné okno.
 </tr>
 </table>
 
+### 10 · MCP — stejné nástroje přes Model Context Protocol
+
+Každý příkaz `chaoffice` je zároveň nástrojem MCP. Claude Code, Claude
+Desktop, Cursor a jakýkoli jiný MCP klient si mohou sami spustit `chaoffice
+mcp` — bez instalace skillu a bez otevřeného okna — a získat 29 nástrojů
+plus referenční příručky k operacím jako zdroje (resources). Druhý,
+HTTP server uvnitř aplikace umožňuje agentovi sestavit dokument Word přímo
+ve viditelné záložce editoru, zatímco se díváte.
+
+<img src="../assets/readme/mcp-deck-motion.webp" alt="Zrychlený záznam toho, jak Claude Code staví osmislajdovou investorskou prezentaci o obnovitelné energii přes MCP server chaoffice: hledá čísla a fotografie, kontroluje každou kandidátní fotografii pomocí media, deck_start zapíše stylový list a osnovu, deck_page přidává vždy jednu zkontrolovanou stránku, deck_build sestaví .pptx a slides_render vrátí obrázek každého slajdu; hotová prezentace se pak otevře v ChaOffice Slides" width="100%">
+
+<table>
+<tr>
+<td width="50%"><img src="../assets/readme/mcp-deck-in-app.webp" alt="ChaOffice Slides zobrazuje osmislajdovou prezentaci Renewable Energy 2026, kterou Claude Code postavil přes MCP server chaoffice: titulní slajd s fotografií větrné farmy na ploše a osm miniatur vlevo"></td>
+<td width="50%"><img src="../assets/readme/mcp-integrations.webp" alt="Nastavení ChaOffice, stránka Integrations, část MCP: jednořádkový příkaz claude mcp add pro Claude Code, blok JSON pro Cursor, Claude Desktop a další MCP klienty, a níže možnost lokálního HTTP serveru"></td>
+</tr>
+<tr>
+<td><b>Jeden prompt, 38 volání nástrojů, žádný shell</b> — „Vytvoř osmislajdovou investorskou prezentaci o obnovitelné energii v roce 2026, se skutečnou fotografií na titulní straně a všude, kde fotografie pomůže.“ Agent stáhne čísla a fotografie pomocí <code>search</code>, zeptá se <code>media</code>, zda je každá kandidátní fotografie skutečnou fotografií, zavolá <code>deck_start</code> se stylovým listem a osnovou, poté <code>deck_page</code> pro každý slajd; každá stránka je zkontrolována proti osnově a paletě, než je přijata, <code>deck_build</code> sestaví <code>.pptx</code>, <code>slides_audit</code> hledá přetečení, <code>slides_render</code> vrátí PNG pro každý slajd jako obrazový obsah, na který se model může podívat, a <code>deck_replace</code> opraví tři stránky, které se mu nelíbily.</td>
+<td><b>Připojte se jednou, z Nastavení → Integrace</b> — zkopírujte řádek <code>claude mcp add</code> pro Claude Code, nebo blok JSON do Cursoru, Claude Desktop či jiného MCP klienta. Možnost B zapíná lokální HTTP server pro viditelný editor Word. Obojí je popsáno v sekci <a href="#mcp-server">MCP server</a>.</td>
+</tr>
+</table>
+
+### 11 · Starší soubory — otevřou se i `.doc`, `.xls` a `.ppt` z nultých let
+
+Soubor `.doc` z Wordu 97–2003, excelový `.xls` nebo powerpointový `.ppt` se otevře jako převedená kopie `.docx`, `.xlsx` nebo `.pptx` vytvořená ve vašem počítači; původní soubor se nikdy nemění. Obrázky, tabulky, vzorce, formáty čísel, výplně a rozvržení se přenesou. Co který formát zachová a co zahodí, popisuje sekce [Starší soubory a soubory ODF se otevírají jako převedené kopie](#legacy-and-odf-files-open-as-converted-copies).
+
+<img src="../assets/readme/legacy-formats-motion.webp" alt="Časosběr: ChaOffice otevírá tři soubory fiktivní výroční zprávy za rok 2004: šestisnímkový .ppt prolistovaný ve Slides, .doc s titulním obrázkem a podbarvenou tabulkou posouvaný v Docs a tabulku prodejů .xls se součty v Sheets; poté jeden snímek zobrazený vedle sebe, původní .ppt v PowerPointu vedle převedené prezentace v ChaOffice" width="100%">
+
 ## Proč ChaOffice
 
 - **Open source**, Apache-2.0, vyvíjený otevřeně na GitHubu.
@@ -195,40 +304,72 @@ přes stejné enginy jako aplikace, aniž by otevřely jediné okno.
 - **AI, která upravuje dokument přímo.** Sledované změny v Docs, živé vzorce
   a grafy v Sheets, prezentace kreslené přímo na plochu, každý krok AI je
   snapshot, ke kterému se lze vrátit.
-- **Vlastní model, vlastní klíč.** Přihlaste se přes Genspark, nebo použijte
+- **Vlastní model, vlastní klíč.** Přihlaste se přes ChaAI Office, nebo použijte
   klíč pro Claude, OpenAI, Gemini, DeepSeek a další, včetně lokálních serverů
   a jakéhokoli OpenAI kompatibilního endpointu.
 - **PDF udělané správně.** Upravujte text přímo na stránce a převádějte PDF
   do Word, Excel nebo PowerPoint na zařízení, se systémovým OCR pro skeny.
 - **Také Markdown a HTML**, se stejným panelem AI a místním exportem do Word.
-- **Skriptovatelný.** Příkazový řádek `chaoffice` a agentní skill dávají
-  každý engine do služeb agentů Claude Code, Codex, Cursor a dalších, stále
-  na zařízení.
+- **Vyhledávání, které najde odpověď, ne klíčové slovo.** Fulltextové
+  vyhledávání ve všech dokumentech ve vašich složkách, indexované na
+  zařízení, s volitelným přeřazením modelem TypeSafe Jev, posuzovacím modelem
+  System One.
+- **Ask AI napříč vašimi soubory.** Označte hvězdičkou soubory, na kterých
+  záleží, a ptejte se běžným jazykem; každá odpověď cituje soubor, ze kterého
+  pochází, a ten je na jedno kliknutí.
+- **Skilly.** Hotové skilly nebo vlastní `SKILL.md`, připojené z nabídky **+** v kterémkoli AI panelu.
+- **Skriptovatelný.** Příkazový řádek `chaoffice`, agentní skill a MCP
+  server dávají každý engine do služeb Claude Code, Claude Desktop, Codex,
+  Cursor a dalších agentů, stále na zařízení.
 - **Zdarma**, pro jednotlivce i týmy.
 
 ## AI backendy
 
-**Přihlaste se přes Genspark** a nemusíte nic nastavovat: volání modelů
-prochází přes proxy Genspark (rodiny Claude, GPT a Gemini) a agenti získávají
+**Přihlaste se přes ChaAI Office** a nemusíte nic nastavovat: volání modelů
+prochází přes proxy ChaAI Office (rodiny Claude, GPT a Gemini) a agenti získávají
 webové a obrázkové vyhledávání, generování obrázků a analýzu
 obrázků/zvuku/videa.
 
 **Nebo použijte vlastní klíč.** Nastavení → AI nabízí Claude, OpenAI, Gemini,
-DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty
+DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty, Opper, Cheaper Inference, Atlas Cloud, SiliconFlow, PPIO, Command Code
 a OpenCode Zen/Go, plus vlastní slot pro jakýkoli OpenAI kompatibilní
 endpoint (base URL + klíč), včetně lokálních serverů s modely. Vyhledávání
 a média mají vlastní poskytovatele pro každou schopnost pod **AI Media
-& Search**: Serper nebo Tavily pro webové vyhledávání a OpenAI, Gemini,
-Doubao/Seedream, GLM, Grok, Qwen, MiniMax nebo jakýkoli OpenAI kompatibilní
-endpoint pro obrázky, generování obrázků a analýzu obrázků/videa.
+& Search**: Serper, Serply, SearchApi, Tavily, Parallel, Keenable, Exa nebo Firecrawl
+pro webové vyhledávání a OpenAI, Gemini, Doubao/Seedream, GLM, Grok, Qwen, MiniMax, Stability, FLUX
+nebo jakýkoli OpenAI kompatibilní endpoint pro obrázky, generování obrázků
+a analýzu obrázků/videa, plus DeepSeek V4.1 Flash pro analýzu obrázků.
+
+**TypeSafe Jev** přeřazuje výsledky vyhledávání souborů na domovské obrazovce.
+Pod **AI Media & Search → Local file search** zapněte Jev search reranking
+a zvolte endpoint: [OpenRouter](https://openrouter.ai/typesafe) (model
+`typesafe/jev-1.13`) nebo vlastní API TypeSafe. Klíč se ukládá pouze na tomto
+zařízení. Ve výchozím stavu je funkce vypnutá; když je zapnutá, odesílají se
+k posouzení úryvky 20 nejlepších lokálních výsledků a nic jiného počítač
+neopouští.
+
+**Parallel** funguje bez účtu: jeho bezplatné Search MCP (s omezením počtu
+požadavků) je výchozím webovým vyhledáváním, kdykoli není nastaveno přihlášení
+přes ChaAI Office ani klíč pro vyhledávání, a má přednost před scrapováním
+DuckDuckGo. Chcete-li místo toho používat Search API, vyberte Parallel pod
+Web search a zadejte klíč [Parallel](https://platform.parallel.ai/). I Keenable
+je bez klíče; klíč pouze zvýší limity počtu požadavků.
 
 Celý balík nabízí světlý, tmavý a systémový vzhled. Vzhledy mění pouze to,
 co je vidět na obrazovce: exporty, tisky a uložené soubory si vždy zachovávají
 vlastní barvy dokumentu.
 
-<a id="command-line-and-agent-skill"></a>
+## <a id="skills"></a>Skilly
 
-## Příkazový řádek a agentní skill
+Skill je soubor `SKILL.md`, který AI říká, jak dobře zvládnout jeden úkol: týdenní report, NDA, plán hodiny.
+ChaOffice jich sadu dodává a přijímá i vaše vlastní, ve stejném formátu, jaký používají programovací agenti.
+
+- **Nastavení → Skilly.** **Nainstalujte** doporučený skill nebo **Importujte** složku, zip či jediný `SKILL.md`. Při importu se nic nespouští. Karta **Vše** zobrazí celý doporučený katalog na jednom místě, s popisy v jazyce aplikace.
+- **V chatu.** Otevřete nabídku **+** vedle pole pro zprávu v kterémkoli AI panelu, zvolte **Skilly**, jeden zaškrtněte a odešlete. Skill putuje jen s touto zprávou.
+
+---
+
+## <a id="command-line-and-agent-skill"></a>Příkazový řádek a agentní skill
 
 Vše, co aplikace umí se souborem, umí příkazový řádek `chaoffice`
 z terminálu: prohlížet, převádět, vytvářet, číst a upravovat Word, Excel,
@@ -239,8 +380,9 @@ skillem** promění kódovacího agenta v dokumentového pracovníka, který
 vytváří skutečné soubory Office místo přibližných napodobenin v Markdownu.
 
 **Funguje s:** Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot,
-OpenCode a Windsurf hned po instalaci a s jakýmkoli dalším agentem, který
-čte skilly.
+OpenCode a Windsurf hned po instalaci, s jakýmkoli dalším agentem, který čte
+skilly, a díky [MCP serveru](#mcp-server) také s Claude Desktop a jakýmkoli
+MCP klientem.
 
 ### Instalace skillu
 
@@ -259,7 +401,7 @@ práci.
 ```bash
 chaoffice --version
 chaoffice info report.docx --json                  # headings and blocks; or sheets, slides, pages
-chaoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx/md/html, odt/ods/odp → docx/xlsx/pptx, doc/dot → docx, …
+chaoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx/md/html, odt/ods/odp → docx/xlsx/pptx, doc/dot → docx, ppt → pptx, …
 chaoffice create --type docx --from notes.md --out notes.docx
 chaoffice create --type xlsx --from table.json --out sales.xlsx   # "=SUM(B2:B9)" cells stay live formulas
 chaoffice docs read report.docx --range 0-9 --json # then `docs apply --ops edits.json` edits in place
@@ -275,7 +417,7 @@ s návodnou chybovou hláškou. `chaoffice help` vypíše aktuální sadu přík
 
 ### Co agent ve skutečnosti spouští
 
-Prezentace o sluneční soustavě v ukázce výše vznikla z jediného promptu
+Prezentace o sluneční soustavě v [ukázce](#demo) vznikla z jediného promptu
 v Claude Code. Agent za ní postupoval podle fázovaného pracovního postupu ze
 skillu a CLI zkontrolovalo každou fázi, než začala další:
 
@@ -297,9 +439,82 @@ Uvnitř `chaoffice` neprobíhá žádné volání modelu: agent přemýšlí, CL
 a kontroluje a výsledek se otevře v ChaOffice nebo PowerPointu jako obyčejný
 soubor `.pptx`.
 
-<a id="download"></a>
+### <a id="mcp-server"></a>MCP server
 
-## Stažení
+Stejné příkazy jsou dostupné jako nástroje [Model Context Protocol](https://modelcontextprotocol.io)
+pro asistenty, kteří neumí spustit terminál nebo kterým byste ho raději
+nedávali. Vedou k tomu dvě cesty, obě ukázané s připravenými fragmenty ke
+zkopírování v **Nastavení → Integrace → MCP**:
+
+| Cesta                                | Co to je                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **A · `chaoffice mcp`** (doporučeno) | stdio server, který si asistent spustí sám; ChaOffice nemusí být otevřené. Jeden nástroj na příkaz (`info`, `convert`, `create_docx`, `create_xlsx`, `create_pptx`, `create_pdf`, `docs_read` / `docs_apply` / `docs_check`, `sheet_*`, `slides_*`, `render`, `guide`, `search`, `image`, `media`, `open`) plus fázovaný postup sestavování prezentace `deck_start` → `deck_page` → `deck_build` → `deck_replace`. Operace, specifikace a Markdown se předávají přímo v argumentech, takže funguje i klient bez souborového systému. |
+| **B · Lokální HTTP server**          | Běží uvnitř aplikace ChaOffice na `http://127.0.0.1:3093/mcp` (Streamable HTTP, se starším SSE). Jeho nástroje ovládají viditelnou záložku editoru Word: `create_session`, `insert_content`, `replace_blocks`, `apply_ops`, `read_document`, `save_session` — a vy sledujete, jak dokument vzniká. Ve výchozím stavu vypnutý; zapíná se ve stejném panelu nastavení.                                                                                                                                                                 |
+| **C · `chaoffice mcp --http`**       | Sada stdio nástrojů jako Streamable HTTP server pro klienty na jiných počítačích: kontejner, sandbox, sdílený stroj ve vaší síti. Soubory cestují s voláními: `PUT /files/<name>` jeden nahraje a vrátí URL, každý parametr `file` přijímá http(s) URL a nástroj, který zapisuje soubor, jej vrátí jako URL ke stažení a u malých souborů navíc jako bajty v MCP resource. `--host 0.0.0.0` jej otevře do sítě, `--token` jej chrání.                                                                                                |
+
+```bash
+# Claude Code
+claude mcp add --transport stdio chaoffice -- chaoffice mcp
+```
+
+```jsonc
+// Cursor, Claude Desktop or any other MCP client
+{ "mcpServers": { "chaoffice": { "command": "chaoffice", "args": ["mcp"] } } }
+```
+
+```bash
+# On the machine that has ChaOffice (private network; add --token for a shared box)
+chaoffice mcp --http 3093 --host 0.0.0.0 --token "$GENOFFICE_MCP_TOKEN"
+
+# From the client: upload, then use the URL wherever a tool takes a file
+curl -T report.docx -H "Authorization: Bearer $GENOFFICE_MCP_TOKEN" http://server:3093/files/
+#   → { "url": "http://server:3093/files/<id>/report.docx", ... }
+#   docs_read({ "file": "http://server:3093/files/<id>/report.docx" })
+#   docs_apply(...) → output_url, downloadable with curl -o
+```
+
+Přes HTTP dostane každá relace soukromou pracovní složku, relativní cesty
+a složky prezentací se vyhodnocují uvnitř ní, `open` se nenabízí a bez
+nastaveného `GENOFFICE_ALLOWED_ROOTS` nemohou nástroje opustit vlastní
+úložiště souborů serveru. `render`, `convert` do PDF a `create_pdf` stále
+spouštějí skrytý proces ChaOffice, takže hostitel bez displeje potřebuje
+nainstalovanou aplikaci a virtuální displej (`xvfb-run`).
+
+`chaoffice` je tady CLI dodávané uvnitř aplikace (na macOS
+`/Applications/ChaOffice.app/Contents/Resources/cli/chaoffice`; panel
+nastavení vypíše přesnou cestu pro vaši instalaci). Server nese vlastní
+instrukce k pracovnímu postupu a zpřístupňuje referenční příručky k operacím
+jako zdroje `chaoffice://guide/*`, takže skill není potřeba; skill a MCP
+server mohou koexistovat a asistent si jeden z nich vybere. Cloudové funkce
+(`search`, `image`, `media`) stále jdou přes poskytovatele nastaveného v
+ChaOffice; všechno ostatní běží lokálně a `GENOFFICE_ALLOWED_ROOTS` omezuje
+každý nástroj na složky, které uvedete.
+
+Prezentace o obnovitelné energii z [ukázky](#demo) je to, jak jeden prompt v
+Claude Code s připojeným pouze MCP serverem `chaoffice` vypadá ze strany
+protokolu:
+
+```text
+capabilities · guide(slides, spec) · guide(slides, design)
+search(query) ×4                         → IEA, BNEF and IRENA figures for the slides
+search(query, images) ×7 · media(url, ask) ×7
+                                         → candidate photos, each one checked to be a real photograph
+deck_start(dir, style, outline)          → outline checked: 8 pages to write
+deck_page(dir, 0, page) … deck_page(dir, 7, page)
+                                         → each page checked against the outline and the palette; one page sent again
+deck_build(dir, out)                     → renewables-2026.pptx, no image failures
+slides_audit(file) · slides_render(file, out)
+                                         → no layout findings; 8 PNGs come back as image content
+deck_replace(dir, n, page) ×3 · slides_render(file, out)
+                                         → three pages fixed after looking at the renders
+```
+
+Osmatřicet volání, zhruba třináct minut, a asistent se ani jednou nedotkl
+shellu: čísla, fotografie, průvodci, kontroly i rendery cestovaly jako
+výsledky volání MCP nástrojů. Pouze `search` a `media` opustily počítač, k
+poskytovateli nastavenému v ChaOffice.
+
+## <a id="download"></a>Stažení
 
 | Platforma                            | Požadavky                                             | Stažení                                                                                        |
 | ------------------------------------ | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
@@ -331,6 +546,11 @@ sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
 sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
 
+Balíčky deb a rpm přidávají také prázdné šablony pro Dolphin v KDE Plasma:
+kliknutí pravým tlačítkem ve složce → **Create New** nabídne _ChaOffice
+Document_, _ChaOffice Spreadsheet_ a _ChaOffice Presentation_. Jsou uložené
+v `/usr/share/templates` a odstraní se spolu s balíčkem.
+
 AppImage běží na místě: nainstalujte runtime FUSE 2
 (`sudo apt install libfuse2`; na Ubuntu 24.04 se balíček jmenuje `libfuse2t64`),
 udělejte soubor spustitelným a spusťte jej:
@@ -339,6 +559,8 @@ udělejte soubor spustitelným a spusťte jej:
 chmod +x ChaOffice-<version>.AppImage
 ./ChaOffice-<version>.AppImage
 ```
+
+Na Chromebooku běží stejné balíčky uvnitř linuxového prostředí (Crostini) — podrobnosti v [docs/platforms/chromeos.md](../platforms/chromeos.md).
 
 </details>
 
@@ -361,6 +583,31 @@ save      ─► dirty blocks → OOXML fragments (referencing existing styles o
 
 Prohlídka balíčků po balíčcích (enginy docx/pptx, `pdf2docx`, `html2docx`,
 jádro agenta a poskytovatelé) je v [CONTRIBUTING.md](../../CONTRIBUTING.md#engine-packages).
+
+### <a id="legacy-and-odf-files-open-as-converted-copies"></a>Starší soubory a soubory ODF se otevírají jako převedené kopie
+
+Formáty, které ChaOffice neumí zapsat zpět — starší Word `.doc`/`.dot`, Hancom
+`.hwp`/`.hwpx`, Excel 97 `.xls`, `.tsv`, starší PowerPoint `.ppt` a rodina
+OpenDocument (`.odt`, `.ott`, `.ods`, `.ots`, `.odp`, `.otp`) — jsou importy,
+ne nativní soubory.
+Otevřením se takový soubor na vašem počítači převede na kopii `.docx`,
+`.xlsx` nebo `.pptx` a otevře se tato kopie; originál se už znovu nečte
+a nikdy se do něj nezapisuje.
+
+- Docs a Slides se nejprve zeptají, kam kopii uložit (ve výchozím stavu
+  stejnojmenný `.docx`/`.pptx` vedle originálu), takže každé pozdější Uložit
+  míří tam. Soubor `.ppt` se převádí včetně předloh, geometrie tvarů, výplní,
+  obrázků a formátování textu, takže prezentace vypadá tak, jak ji ukazoval
+  PowerPoint; poznámky, animace, přechody a hypertextové odkazy se zatím
+  nepřenášejí.
+- Sheets otevře převedený sešit rovnou a první Uložit nasměruje přes Uložit
+  jako do nového `.xlsx`. Výjimkou je `.csv`: zachovává si svou identitu
+  a Uložit zapisuje hodnoty zpět do `.csv`, stejně jako Excel.
+- Převod je jednosměrný a může zahodit funkce, které zdrojový formát má, ale
+  OOXML ne. U `.doc`, `.ppt`, `.hwp` a formátů ODF na to upozorní potvrzovací
+  dialog; zaškrtnutím „Convert without asking next time“ jej příště přeskočíte
+  a volba „Ask before converting legacy files“ v Nastavení → Obecné jej znovu
+  zapne.
 
 ## Vývoj
 
@@ -390,6 +637,8 @@ ChaOffice je v aktivním vývoji a vaše zpětná vazba jej utváří.
 - **Připojte se ke skupinovému chatu ChaOffice** na
   [GenTeam](https://chaoffice.ai/join), kde si můžete promluvit s týmem
   i ostatními uživateli.
+- **Sledujte [@merrickbuilds](https://x.com/merrickbuilds) na X** — poznámky
+  k vydání, ukázky a to, na čem se právě pracuje.
 - **Ohvězdičkujte repozitář**, pokud je pro vás ChaOffice užitečný — je to
   nejlepší způsob, jak projekt podpořit.
 
@@ -409,6 +658,9 @@ zkušební verze, žádný placený tarif pro samotné aplikace.
 Ano. ChaOffice otevírá a ukládá nativní soubory `.docx`, `.xlsx` a `.pptx`.
 Ukládání zachovává bajty: části souboru, kterých jste se nedotkli, se zapíší
 zpět beze změny, takže dokumenty dál fungují v Microsoft Office.
+Otevírají se i starší soubory `.doc`/`.dot`, `.xls` a `.ppt`, a to jako
+převedené kopie `.docx`/`.xlsx`/`.pptx` — viz [Starší soubory a soubory ODF se
+otevírají jako převedené kopie](#legacy-and-odf-files-open-as-converted-copies).
 
 </details>
 
@@ -418,7 +670,7 @@ zpět beze změny, takže dokumenty dál fungují v Microsoft Office.
 Úprava dokumentů je zcela lokální — soubory neopustí váš počítač při
 otevírání, úpravách, ukládání ani konverzi. AI funkce (agenti, vyhledávání,
 nástroje pro obrázky) potřebují síťové připojení, buď s přihlášením přes
-Genspark, nebo s vlastním API klíčem k modelu.
+ChaAI Office, nebo s vlastním API klíčem k modelu.
 
 </details>
 
@@ -443,11 +695,22 @@ OCR, takže se převedou na editovatelný text, ne na obrázek stránky.
 <details>
 <summary><b>Můžu použít vlastní AI model nebo API klíč?</b></summary>
 
-Ano. Kromě bezklíčového přihlášení Genspark ChaOffice podporuje vlastní klíč
+Ano. Kromě bezklíčového přihlášení ChaAI Office ChaOffice podporuje vlastní klíč
 pro Claude, OpenAI, Gemini, DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok,
-Mistral, OpenRouter, Requesty a OpenCode Zen/Go, plus jakýkoli OpenAI kompatibilní
+Mistral, OpenRouter, Requesty, Opper, Cheaper Inference, Atlas Cloud a OpenCode Zen/Go, plus jakýkoli OpenAI kompatibilní
 endpoint — včetně lokálních serverů s modely. Vyhledávání, generování obrázků
 a analýza obrázků/videa mají vlastní klíče pod Nastavení → AI Media & Search.
+
+</details>
+
+<details>
+<summary><b>Lze AI panel vypnout?</b></summary>
+
+Ano. V Nastavení → AI je přepínač **Show the AI sidebar**. Když jej vypnete,
+každý editor panel skryje a nové dokumenty jej přestanou otevírat samy od
+sebe. Explicitní AI akce — tlačítko na pásu nástrojů, položka v nabídce —
+panel pro daný dokument stále otevře, a po zavření se vrátí do skrytého
+stavu.
 
 </details>
 
@@ -518,6 +781,12 @@ ChaOffice by nebyl možný bez těchto open-source projektů:
 - [libeot](https://github.com/umanwizard/libeot) (MPL-2.0) — dekodér
   MicroType Express pro vložená písma PowerPointu, přenesený do
   TypeScriptu.
+- [rhwp](https://github.com/edwardkim/rhwp) (MIT) — čte binární dokumenty
+  `.hwp` do HWPX pro import z Hancomu; jeho sestavení pro WebAssembly obsahuje
+  crates v Rustu a port Volexity hwp-extract uvedené v přehledu licencí
+  třetích stran. „한글“, „한컴“, „HWP“ a „HWPX“ jsou registrované ochranné
+  známky společnosti Hancom Inc.; ChaOffice není se společností Hancom nijak
+  spojen.
 - [React](https://react.dev/) (MIT) — vrstva uživatelského rozhraní každé
   aplikace.
 - [Mermaid](https://mermaid.js.org/) (MIT) a [KaTeX](https://katex.org/)
@@ -544,6 +813,6 @@ ChaOffice je licencován pod [Apache License 2.0](../../LICENSE), s jednou
 výjimkou: adresář `ee/` je vyhrazen pro budoucí podnikové moduly a je kryt
 [ChaOffice Enterprise License](../../ee/LICENSE).
 
-Názvy a loga ChaOffice a Genspark jsou ochranné známky společnosti Mainfunc,
+Názvy a loga ChaOffice a ChaAI Office jsou ochranné známky společnosti Mainfunc,
 Inc. Licence Apache-2.0 neuděluje oprávnění je používat (viz oddíl 6); forky
 by měly používat vlastní branding.

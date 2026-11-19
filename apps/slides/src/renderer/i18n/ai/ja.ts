@@ -327,4 +327,5 @@ export const ja = {
   aiToolRunReadUrl: 'ページを読み込み中…',
   aiPageCloudToLocal: 'クラウド生成不可効 — ローカルで生成',
 
+  aiGskLoginOk: 'ChaAI Office にサインインしました',
 }

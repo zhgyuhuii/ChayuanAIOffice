@@ -212,7 +212,7 @@ export {
   addSvgPicture,
   addImageMediaAndRel,
   SVG_BLIP_URI,
-  imageExtensionSupported,
+  isSupportedImageExt,
   deleteElement,
   buildSpXml,
   buildTableXml,

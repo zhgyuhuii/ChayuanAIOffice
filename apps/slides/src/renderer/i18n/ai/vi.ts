@@ -327,4 +327,5 @@ export const vi = {
   aiToolRunReadUrl: '正在读取网页…',
   aiPageCloudToLocal: 'đám mây không khả dụng — đã tạo cục bộ',
 
+  aiGskLoginOk: 'Đã đăng nhập ChaAI Office',
 }

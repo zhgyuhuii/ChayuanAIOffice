@@ -237,4 +237,5 @@ export const ar = {
   aiMindMapToggleLayout: 'تبديل التخطيط',
   aiMindMapLayoutTopDown: 'التبديل إلى التخطيط من أعلى إلى أسفل',
   aiMindMapLayoutLeftRight: 'التبديل إلى التخطيط من اليسار إلى اليمين',
+  aiGskLoginOk: 'تم تسجيل الدخول إلى ChaAI Office',
 } satisfies Record<keyof typeof zh, string>

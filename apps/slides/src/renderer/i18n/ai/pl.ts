@@ -327,4 +327,5 @@ export const pl = {
   aiToolRunReadUrl: 'Czytanie strony…',
   aiPageCloudToLocal: 'Chmura niedostępna — wygenerowano lokalnie',
 
+  aiGskLoginOk: 'Zalogowano do ChaAI Office',
 }

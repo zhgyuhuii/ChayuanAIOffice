@@ -1508,6 +1508,17 @@ export function App({
   const registerConvHandle = (chatId: string) => (handle: SheetsConversationHandle) => {
     convHandlesRef.current.set(chatId, handle)
   }
+  // adapted(r44 #2872): 上游登录落地广播——本地多会话池架构里 loginRequired 由
+  // 会话宿主(AiSheetsConversation)持有、状态卡走 aiChaOfficeStatus 自刷新；
+  // 面板级只补一条即时提示（渠道名按本地品牌 aiChaOfficeLoginLanded）
+  useEffect(
+    () =>
+      window.desktopApi?.onChaOfficeLoginLanded?.(() => {
+        chaofficeLoggedInRef.current = true
+        showToast(t('aiGskLoginOk'), 'success')
+      }),
+    [],
+  )
   const unregisterConvHandle = (chatId: string) => () => {
     convHandlesRef.current.delete(chatId)
   }

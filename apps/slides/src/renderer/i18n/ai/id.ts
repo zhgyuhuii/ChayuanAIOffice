@@ -327,4 +327,5 @@ export const id = {
   aiToolRunReadUrl: 'Membaca halaman…',
   aiPageCloudToLocal: 'Awan tidak tersedia — dibuat secara lokal',
 
+  aiGskLoginOk: 'Berhasil masuk ke ChaAI Office',
 }

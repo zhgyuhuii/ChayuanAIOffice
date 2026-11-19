@@ -327,4 +327,5 @@ export const nl = {
   aiToolRunReadUrl: 'Pagina wordt gelezen…',
   aiPageCloudToLocal: 'Cloud niet beschikbaar — lokaal gegenereerd',
 
+  aiGskLoginOk: 'Aangemeld bij ChaAI Office',
 }

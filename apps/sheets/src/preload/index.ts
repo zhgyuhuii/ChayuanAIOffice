@@ -796,6 +796,11 @@ const desktopApi: DesktopApi = {
       vendorId,
     )) as import('@chaoffice/ai-provider').LocalToolOpResult
   },
+  onChaOfficeLoginLanded(handler) {
+    const listener = () => handler()
+    ipcRenderer.on(IPC_CHANNELS.aiChaOfficeLoginLanded, listener)
+    return () => ipcRenderer.removeListener(IPC_CHANNELS.aiChaOfficeLoginLanded, listener)
+  },
   async webSearch(query, maxResults) {
     if (typeof query !== 'string' || !query.trim() || query.length > 512) {
       throw new Error('Invalid search query.')

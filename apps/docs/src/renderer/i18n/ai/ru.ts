@@ -241,4 +241,5 @@ export const ru = {
   aiMindMapToggleLayout: 'Сменить макет',
   aiMindMapLayoutTopDown: 'Переключиться на макет сверху вниз',
   aiMindMapLayoutLeftRight: 'Переключиться на макет слева направо',
+  aiGskLoginOk: 'Выполнен вход в ChaAI Office',
 } satisfies Record<keyof typeof zh, string>

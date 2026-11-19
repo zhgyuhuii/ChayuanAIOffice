@@ -119,4 +119,5 @@ export const ms = {
   aiDockRestore: 'Pulihkan panel',
   aiToolGenSvg: 'Lukis ilustrasi SVG',
   aiToolGenSvgDone: 'Ilustrasi SVG dirasterkan; letakkan dengan add_image',
+  aiGskLoginOk: 'Berjaya log masuk ke ChaAI Office',
 }

@@ -239,4 +239,5 @@ export const id = {
   aiMindMapToggleLayout: 'Ganti tata letak',
   aiMindMapLayoutTopDown: 'Beralih ke tata letak atas ke bawah',
   aiMindMapLayoutLeftRight: 'Beralih ke tata letak kiri ke kanan',
+  aiGskLoginOk: 'Berhasil masuk ke ChaAI Office',
 } satisfies Record<keyof typeof zh, string>

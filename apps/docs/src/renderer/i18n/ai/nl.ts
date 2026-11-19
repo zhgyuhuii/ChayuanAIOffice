@@ -243,4 +243,5 @@ export const nl = {
   aiMindMapToggleLayout: 'Lay-out wisselen',
   aiMindMapLayoutTopDown: 'Overschakelen naar de lay-out van boven naar beneden',
   aiMindMapLayoutLeftRight: 'Overschakelen naar de lay-out van links naar rechts',
+  aiGskLoginOk: 'Aangemeld bij ChaAI Office',
 } satisfies Record<keyof typeof zh, string>

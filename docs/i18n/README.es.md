@@ -17,15 +17,19 @@ Archivos Word, Excel, PowerPoint y PDF, editados por ti y tu IA, guardados de nu
   <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/ChayuanAIOffice" alt="Última versión"></a>
   <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/ChayuanAIOffice/total" alt="Descargas"></a>
   <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/ChayuanAIOffice?style=flat" alt="Estrellas de GitHub"></a>
+  <a href="https://x.com/merrickbuilds"><img src="https://img.shields.io/badge/follow-%40merrickbuilds-000000?logo=x&logoColor=white" alt="Sigue a @merrickbuilds en X"></a>
 </p>
 
 <p align="center"><a href="../../README.md">English</a> · <b>Español</b> · <a href="README.pt-BR.md">Português</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">繁體中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ja.md">日本語</a> · <a href="README.ar.md">العربية</a> · <a href="README.ru.md">Русский</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.pl.md">Polski</a> · <a href="README.cs.md">Čeština</a> · <a href="README.id.md">Bahasa Indonesia</a> · <a href="README.ms.md">Bahasa Melayu</a> · <a href="README.th.md">ไทย</a> · <a href="README.hi.md">हिन्दी</a> · <a href="README.he.md">עברית</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.hu.md">Magyar</a></p>
 
 <p align="center">
   <a href="#download"><b>Descargar</b></a> ·
+  <a href="#skills"><b>Skills</b></a> ·
   <a href="#command-line-and-agent-skill"><b>CLI</b></a> ·
+  <a href="#mcp-server"><b>MCP</b></a> ·
   <a href="https://chaoffice.ai/"><b>Sitio web</b></a> ·
   <a href="https://chaoffice.ai/join"><b>Comunidad</b></a> ·
+  <a href="https://x.com/merrickbuilds"><b>X</b></a> ·
   <a href="../../PRIVACY.md"><b>Privacidad</b></a>
 </p>
 
@@ -33,7 +37,12 @@ ChaOffice es una alternativa gratuita y de código abierto a Microsoft Office
 para macOS, Windows y Linux. Abre y guarda archivos nativos `.docx`, `.xlsx`
 y `.pptx`, edita PDF, Markdown y HTML, y coloca un agente de IA junto a cada
 documento: no un chat pegado a un lado, sino un editor que lee el archivo,
-hace el cambio y te muestra exactamente qué tocó.
+hace el cambio y te muestra exactamente qué tocó. Los archivos ODF
+(`.odt`, `.ods`, `.odp` y las plantillas `.ott`/`.ots`/`.otp`) se abren como
+copias OOXML editables, igual que los archivos antiguos `.doc`/`.dot` de
+Word, `.xls` de Excel 97 y `.ppt` de PowerPoint 97–2003 y los documentos de
+Hancom (`.hwp`, `.hwpx`); las importaciones son de solo apertura — al guardar
+se escribe OOXML, nunca el formato de origen.
 
 - **Formatos reales, con preservación de bytes.** Solo se reescribe lo que
   editas. Todo lo demás en el archivo se conserva byte por byte, así que los
@@ -41,15 +50,31 @@ hace el cambio y te muestra exactamente qué tocó.
 - **IA que puedes revisar.** Los cambios llegan como cambios con seguimiento
   y diffs con reversión de un clic. Las hojas de cálculo obtienen fórmulas en
   vivo, no números pegados. Las presentaciones y páginas se generan en el
-  lienzo y siguen siendo totalmente editables.
+  lienzo y siguen siendo totalmente editables. Oculta una selección de Docs o
+  un rango de celdas de Sheets al modelo y la IA solo ve un marcador de
+  posición con nombre; las palabras originales siguen en el archivo y vuelven.
+  La ocultación cubre la IA de esta app — la CLI, las herramientas MCP y la
+  exportación sin interfaz leen el archivo directamente y siguen viendo estas
+  palabras.
 - **Local por diseño.** Los archivos se abren, editan, guardan y convierten
   en tu equipo. PDF → Word / Excel / PowerPoint, Markdown → Word y HTML →
   Word se ejecutan todos en el dispositivo. Solo las llamadas de IA salen de
   tu equipo, hacia el proveedor que elijas.
-- **Tus claves o ninguna.** Inicia sesión con Genspark y olvídate de las
+- **Encuentra archivos por lo que dicen.** La pantalla de inicio busca en los
+  nombres, las carpetas y el texto completo de tus archivos `.docx`, `.xlsx`,
+  `.pptx`, PDF, Markdown y HTML a partir de un índice SQLite local, CJK
+  incluido. Opcionalmente, los primeros resultados se reordenan con
+  **[TypeSafe Jev](https://typesafe.ai/)**, el modelo de juicio System One,
+  para que el archivo que responde a tu pregunta aparezca primero.
+- **Pregunta a tus archivos, con fuentes.** Marca con estrella un conjunto de
+  documentos y **Ask AI**, en la pantalla de inicio, responde preguntas sobre
+  todos ellos citando el archivo que respalda cada afirmación, para que
+  puedas abrirlo y comprobarlo.
+- **Tus claves o ninguna.** Inicia sesión con ChaAI Office y olvídate de las
   claves, o usa tu propia clave para Claude, OpenAI, Gemini, DeepSeek, Kimi,
-  GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty, o cualquier endpoint
-  compatible con OpenAI, servidores locales incluidos.
+  GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty, Opper,
+  Cheaper Inference, Atlas Cloud, o cualquier endpoint compatible con OpenAI,
+  servidores locales incluidos.
 - **Automatizable y listo para agentes.** La app incluye una línea de comandos
   `chaoffice` y un skill para Claude Code, Codex, Cursor, Gemini CLI, GitHub
   Copilot, OpenCode y Windsurf, de modo que un agente de programación puede
@@ -63,7 +88,9 @@ detalles y requisitos en [Download](#download).
 
 ## Demo
 
-Seis apps, un solo panel de IA y una línea de comandos para tu agente de
+Seis apps, un solo panel de IA, una búsqueda de archivos reordenada por
+TypeSafe Jev, un Ask AI que responde a partir de tus archivos marcados con
+estrella citando las fuentes, y una línea de comandos para tu agente de
 programación. Cada captura es la app real en macOS, con la IA impulsada por
 el prompt que puedes leer en el panel.
 
@@ -75,8 +102,8 @@ el prompt que puedes leer en el panel.
 <td width="50%"><img src="../assets/readme/docs-ai.webp" alt="ChaOffice Docs: una descripción general de la empresa con una imagen de banner; la IA ajustó la sección Overview e insertó una nueva sección con viñetas, y el panel ofrece deshacer el cambio con un solo clic"></td>
 </tr>
 <tr>
-<td><b>Abre el archivo tal como lo compone Word</b> — secciones a dos columnas, imágenes a sangre completa, tablas con sombreado, encabezados y pies de página, con la paginación calculada según las métricas de línea de Word. Los estilos, comentarios, cambios con seguimiento, ecuaciones y trazos de tinta se conservan intactos en el ida y vuelta.</td>
-<td><b>Pide el cambio</b> — la IA lee los bloques que necesita, reescribe la sección Overview e inserta una nueva sección con viñetas. Cada turno de la IA es una instantánea que puedes revertir; con <b>Track changes</b> activado, los cambios llegan como revisiones al estilo Word.</td>
+<td><b>Abre el archivo tal como lo compone Word</b> — secciones a dos columnas, imágenes a sangre completa, tablas con sombreado, encabezados y pies de página, con la paginación calculada según las métricas de línea de Word. Los estilos, comentarios, cambios con seguimiento, ecuaciones, trazos de tinta y controles de contenido se conservan intactos en el ida y vuelta. Una pestaña <b>Mailings</b> convierte el documento en una plantilla de combinación de correspondencia: elige una lista de destinatarios en <code>.xlsx</code> o <code>.csv</code>, inserta auténticos <code>MERGEFIELD</code>, previsualiza registro por registro y combina todo en un solo documento o en un <code>.docx</code> por registro.</td>
+<td><b>Pide el cambio</b> — la IA lee los bloques que necesita, reescribe la sección Overview e inserta una nueva sección con viñetas. Cada turno de la IA es una instantánea que puedes revertir; con <b>Track changes</b> activado, los cambios llegan como revisiones al estilo Word. Pide mejor un mapa mental y la respuesta es un diagrama interactivo de todo el documento: ramas que se pliegan, zoom y desplazamiento, un clic en un nodo lanza una pregunta de seguimiento, y las citas saltan de vuelta al bloque del que proceden.</td>
 </tr>
 </table>
 
@@ -89,7 +116,7 @@ el prompt que puedes leer en el panel.
 </tr>
 <tr>
 <td><b>Créala</b> — a partir de una sola frase, el agente añade una hoja Summary con auténticas fórmulas <code>SUMIF</code> por región y categoría, inserta un gráfico de columnas y aplica los 43 cambios como un único lote que se puede deshacer.</td>
-<td><b>Pregúntale</b> — las preguntas sobre el libro se responden con el razonamiento y las celdas exactas usadas, presentadas como citas en las que se puede hacer clic. Por debajo: un motor <code>.xlsx</code> en Rust desarrollado internamente, tablas dinámicas, segmentaciones de datos, formato condicional y trazado de fórmulas.</td>
+<td><b>Pregúntale</b> — las preguntas sobre el libro se responden con el razonamiento y las celdas exactas usadas, presentadas como citas en las que se puede hacer clic. Por debajo: un motor <code>.xlsx</code> en Rust desarrollado internamente, tablas dinámicas, segmentaciones de datos, formato condicional, trazado de fórmulas e imágenes incrustadas en las celdas como valores enriquecidos nativos de Excel — Excel las vuelve a abrir aún dentro de la celda. Las notas de celda pueden llevar una imagen, que se muestra bajo la ventana emergente de la nota.</td>
 </tr>
 </table>
 
@@ -104,9 +131,13 @@ el prompt que puedes leer en el panel.
 </tr>
 <tr>
 <td><b>Con una sola línea</b> — «Crea una presentación de 10 diapositivas para inversores de Aurora Home…». ChaOffice planifica el hilo narrativo, investiga las cifras y redacta cada diapositiva en el lienzo como un auténtico <code>.pptx</code>.</td>
-<td><b>Una presentación terminada</b> — once diapositivas diseñadas con tipografía e imágenes consistentes y una llamada a la acción de cierre; sigue editando con patrones, diseños, guías inteligentes y recorte no destructivo, o pide al panel que reestilice, reescriba y reordene.</td>
+<td><b>Una presentación terminada</b> — once diapositivas diseñadas con tipografía e imágenes consistentes y una llamada a la acción de cierre; sigue editando con patrones, diseños, guías inteligentes y recorte no destructivo, o pide al panel que reestilice, reescriba y reordene. Inserta un <code>.glb</code> y es un modelo 3D real: gíralo arrastrando en el editor, se guarda de la forma en que PowerPoint guarda el 3D y sigue siendo 3D en PowerPoint.</td>
 </tr>
 </table>
+
+**Slide Show → Record** narra la presentación diapositiva a diapositiva, con
+pausa y reanudación. La narración y los tiempos de avance automático que mide
+se guardan en el `.pptx`, y PowerPoint los reproduce de la misma manera.
 
 ### 4 · PDF — edita texto de PDF directamente, convierte PDF a Word en el dispositivo
 
@@ -164,7 +195,61 @@ siguiendo esos tokens.
 </tr>
 </table>
 
-### 7 · CLI — tu agente de programación maneja ChaOffice, en tu equipo
+**Notas enlazadas, como las hace Obsidian.** Los `[[wiki links]]` llevan con
+un clic a la nota que nombran, al escribir `[[` se ofrece autocompletado de
+nombres de nota, y `![[…]]` incrusta una nota o una imagen en línea. Un panel
+de **Backlinks** enumera todas las notas que apuntan a la abierta, y la vista
+**Graph** traza el mapa de enlaces de toda la bóveda.
+
+### <a id="7--search--find-the-file-that-answers-the-question-with-typesafe-jev"></a>7 · Búsqueda — encuentra el archivo que responde a la pregunta, con TypeSafe Jev
+
+Todos los archivos de tu carpeta de trabajo se indexan en el dispositivo: los
+nombres, las carpetas y el texto extraído de los archivos Word, Excel,
+PowerPoint, PDF, Markdown y HTML, en un índice de texto completo SQLite con
+tokenización adaptada a CJK. Activa **Jev search reranking** y los 20
+primeros resultados locales son evaluados por
+[TypeSafe Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev),
+el modelo System One que devuelve una puntuación de relevancia calibrada por
+documento en una sola llamada, en lugar de generar texto. La lista se
+reordena según esa puntuación; si la llamada falla o agota el tiempo de
+espera, se mantiene el orden local.
+
+<img src="../assets/readme/search-jev-motion.webp" alt="Grabación de pantalla de la pantalla de inicio de ChaOffice: al escribir laptop refresh policy aparecen primero una política de caché del navegador, un plan de renovación de marca y un calendario de actualización de paneles, mientras que el documento de estándares de equipamiento queda el último; la página de Ajustes muestra Jev search reranking activado en AI Media & Search con el endpoint de TypeSafe; la misma búsqueda muestra después el documento de estándares de equipamiento en primer lugar, con una insignia Jev junto al número de resultados" width="100%">
+
+<table>
+<tr>
+<td width="50%"><img src="../assets/readme/search-jev-before-after.webp" alt="Dos listas de resultados para la consulta laptop refresh policy, una junto a otra: sin Jev encabezan la lista el calendario de actualización de paneles, el plan de renovación de marca y la política de actualización de la caché del navegador, y el documento de estándares de equipamiento de la empresa es el quinto; con Jev, el documento de estándares de equipamiento, que establece el ciclo de sustitución de portátiles de tres años, es el primero"></td>
+<td width="50%"><img src="../assets/readme/search-jev-settings.webp" alt="Ajustes de ChaOffice, página AI Media & Search: el bloque Local file search con el interruptor Jev search reranking, la elección de endpoint entre OpenRouter y TypeSafe, y el campo de la clave de API"></td>
+</tr>
+<tr>
+<td><b>Las mismas palabras, respuestas distintas</b> — «laptop refresh policy» coincide palabra por palabra con una política de actualización de la caché del navegador, un plan de renovación de marca y un calendario de actualización de paneles, así que la clasificación de texto completo los pone primero. Jev lee los extractos y sube al primer puesto el documento de estándares de equipamiento, el que establece el ciclo de sustitución de tres años. La insignia <b>Jev</b> junto al número de resultados indica cuándo el orden procede del modelo.</td>
+<td><b>Desactivado por defecto, un interruptor para activarlo</b> — Ajustes → AI Media & Search → Local file search. Elige OpenRouter o TypeSafe directo, pega una clave y pulsa Test connection. Solo cuando el interruptor está activado salen del dispositivo extractos de los primeros resultados; el índice en sí nunca sale.</td>
+</tr>
+</table>
+
+### 8 · Ask AI — tus archivos marcados con estrella, respondidos con fuentes
+
+Marca con estrella los archivos con los que trabajas y el **Ask AI** de la
+pantalla de inicio los trata como una base de conocimiento. Haz una pregunta
+en lenguaje natural; el agente busca en los archivos marcados, lee los que
+necesita y responde con una cita después de cada afirmación. Haz clic en una
+cita y el archivo se abre en la app adecuada. Adjunta archivos a la pregunta
+arrastrándolos, pegándolos o desde el menú **+** — las imágenes llegan al
+modelo como entrada visual — y cada pregunta se guarda como su propia
+conversación: cambia de una a otra, empieza una nueva, borra alguna; la lista
+sobrevive a un reinicio.
+
+<img src="../assets/readme/home-ask-ai-motion.webp" alt="Grabación de pantalla de Ask AI en ChaOffice: en la pantalla de inicio se escribe la pregunta quick summary, what drove our Q3 growth and how did Asia-Pacific perform; el agente lee dos archivos marcados con estrella y responde con el lanzamiento de Aurora X1 y la expansión en Asia-Pacífico, cada afirmación seguida de un chip de cita que nombra el informe trimestral o el libro de ventas regionales; un clic en el chip del libro lo abre en Sheets con la fila de Asia-Pacífico resaltada" width="100%">
+
+Ask AI busca en el mismo índice de texto completo local que la
+[Búsqueda](#7--search--find-the-file-that-answers-the-question-with-typesafe-jev)
+y lee los archivos por páginas, así que el modelo solo ve los resultados y
+los pasajes que pidió, a través del proveedor que elegiste. También puede
+llamar a la CLI `chaoffice` integrada para crear archivos directamente; cada
+uno aparece como una tarjeta de artefacto bajo la respuesta, y un clic lo
+abre.
+
+### 9 · CLI — tu agente de programación maneja ChaOffice, en tu equipo
 
 ChaOffice incluye una línea de comandos `chaoffice` y un skill de agente.
 Instala el skill y Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot,
@@ -184,6 +269,35 @@ reales con los mismos motores que las apps, sin abrir una ventana.
 </tr>
 </table>
 
+### 10 · MCP — las mismas herramientas a través del Model Context Protocol
+
+Cada comando de `chaoffice` es también una herramienta MCP. Claude Code,
+Claude Desktop, Cursor y cualquier otro cliente MCP pueden iniciar
+`chaoffice mcp` por sí mismos, sin necesidad de instalar ningún skill ni
+abrir una ventana, y obtienen 29 herramientas más las referencias de
+operaciones como recursos. Un segundo servidor HTTP dentro de la app permite
+que un agente construya un documento Word en una pestaña de editor visible
+mientras lo observas.
+
+<img src="../assets/readme/mcp-deck-motion.webp" alt="Lapso de tiempo de Claude Code construyendo una presentación de inversión de ocho diapositivas sobre energías renovables mediante el servidor MCP de chaoffice: busca figuras y fotos, comprueba cada imagen candidata con media, deck_start escribe la hoja de estilos y el esquema, deck_page añade una página comprobada cada vez, deck_build ensambla el .pptx y slides_render devuelve una imagen de cada diapositiva; la presentación terminada se abre después en ChaOffice Slides" width="100%">
+
+<table>
+<tr>
+<td width="50%"><img src="../assets/readme/mcp-deck-in-app.webp" alt="ChaOffice Slides mostrando la presentación de ocho diapositivas Renewable Energy 2026 que Claude Code construyó mediante el servidor MCP de chaoffice: la diapositiva de portada con una fotografía de un parque eólico en el lienzo y ocho miniaturas a la izquierda"></td>
+<td width="50%"><img src="../assets/readme/mcp-integrations.webp" alt="Ajustes de ChaOffice, página Integraciones, parte de MCP: el comando de una línea claude mcp add para Claude Code, el bloque JSON para Cursor, Claude Desktop y otros clientes MCP, y la opción de servidor HTTP local debajo"></td>
+</tr>
+<tr>
+<td><b>Un prompt, 38 llamadas a herramientas, sin terminal</b> — «Crea una presentación de inversión de ocho diapositivas sobre energías renovables en 2026, con una foto real en la portada y dondequiera que una foto ayude». El agente obtiene las figuras y las fotos con <code>search</code>, pregunta a <code>media</code> si cada imagen candidata es una fotografía real, llama a <code>deck_start</code> con una hoja de estilos y un esquema, después <code>deck_page</code> una vez por diapositiva; cada página se comprueba contra el esquema y la paleta antes de conservarla, <code>deck_build</code> ensambla el <code>.pptx</code>, <code>slides_audit</code> busca desbordes, <code>slides_render</code> devuelve un PNG por diapositiva como contenido de imagen que el modelo puede mirar, y <code>deck_replace</code> corrige las tres páginas que no le convencieron.</td>
+<td><b>Conéctate una vez, desde Ajustes → Integraciones</b> — copia la línea <code>claude mcp add</code> para Claude Code, o el bloque JSON en Cursor, Claude Desktop o cualquier otro cliente MCP. La opción B activa el servidor HTTP local para el editor de Word visible. Ambas se describen en <a href="#mcp-server">Servidor MCP</a>.</td>
+</tr>
+</table>
+
+### 11 · Archivos antiguos — los `.doc`, `.xls` y `.ppt` de los años 2000 también se abren
+
+Un `.doc` de Word 97–2003, un `.xls` de Excel o un `.ppt` de PowerPoint se abre como una copia convertida `.docx`, `.xlsx` o `.pptx` creada en tu equipo; el archivo original nunca se modifica. Se conservan imágenes, tablas, fórmulas, formatos de número, rellenos y diseño. Lo que cada formato conserva y lo que pierde está en [Los archivos antiguos y ODF se abren como copias convertidas](#legacy-and-odf-files-open-as-converted-copies).
+
+<img src="../assets/readme/legacy-formats-motion.webp" alt="Secuencia acelerada de ChaOffice abriendo tres archivos de un informe anual ficticio de 2004: un .ppt de seis diapositivas que se recorre en Slides, un .doc con una imagen de portada y una tabla sombreada que se desplaza en Docs, y una tabla de ventas .xls con totales en Sheets; después, una diapositiva mostrada lado a lado, el .ppt original en PowerPoint junto a la presentación convertida en ChaOffice" width="100%">
+
 ## Por qué ChaOffice
 
 - **Código abierto**, Apache-2.0, desarrollado abiertamente en GitHub.
@@ -197,7 +311,7 @@ reales con los mismos motores que las apps, sin abrir una ventana.
   fórmulas y gráficos en vivo en Sheets, diapositivas dibujadas directamente
   en el lienzo, y cada turno de la IA deja una instantánea a la que puedes
   volver.
-- **Tu modelo, tu clave.** Inicia sesión con Genspark, o usa tu propia clave
+- **Tu modelo, tu clave.** Inicia sesión con ChaAI Office, o usa tu propia clave
   para Claude, OpenAI, Gemini, DeepSeek y más; también incluye servidores
   locales y cualquier endpoint compatible con OpenAI.
 - **PDF hecho como debe ser.** Edita el texto directamente en la página y
@@ -205,35 +319,69 @@ reales con los mismos motores que las apps, sin abrir una ventana.
   sistema para escaneos.
 - **También Markdown y HTML**, con el mismo panel de IA y exportación local a
   Word.
-- **Automatizable.** Una línea de comandos `chaoffice` y un skill de agente
-  ponen todos los motores al servicio de Claude Code, Codex, Cursor y otros
-  agentes de programación, siempre en el dispositivo.
+- **Una búsqueda que encuentra la respuesta, no la palabra clave.** Búsqueda
+  de texto completo en todos los documentos de tus carpetas, indexados en el
+  dispositivo, con reordenación opcional por TypeSafe Jev, el modelo de
+  juicio System One.
+- **Ask AI sobre todos tus archivos.** Marca con estrella los archivos que
+  importan y pregunta en lenguaje natural; cada respuesta cita el archivo del
+  que procede, a un clic de distancia.
+- **Skills.** Skills listos para usar o tu propio `SKILL.md`, adjuntos desde el menú **+** de cualquier panel de IA.
+- **Automatizable.** Una línea de comandos `chaoffice`, un skill de agente y
+  un servidor MCP ponen todos los motores al servicio de Claude Code, Claude
+  Desktop, Codex, Cursor y otros agentes, siempre en el dispositivo.
 - **Gratis**, tanto para personas individuales como para equipos.
 
 ## Backends de IA
 
-**Inicia sesión con Genspark** y no hay nada que configurar: las llamadas al
-modelo se enrutan a través del proxy de Genspark (familias Claude, GPT y
+**Inicia sesión con ChaAI Office** y no hay nada que configurar: las llamadas al
+modelo se enrutan a través del proxy de ChaAI Office (familias Claude, GPT y
 Gemini) y los agentes obtienen búsqueda web y de imágenes, generación de
 imágenes, y análisis de imagen/audio/video.
 
 **O usa tu propia clave.** Settings → AI incluye Claude, OpenAI, Gemini,
-DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty y
+DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty, Opper, Cheaper Inference, Atlas Cloud, SiliconFlow, PPIO, Command Code y
 OpenCode Zen/Go, además de una ranura personalizada para cualquier endpoint
 compatible con OpenAI (URL base + clave), incluidos servidores de modelos
 locales. La búsqueda y los medios tienen sus propios proveedores por
-capacidad en **AI Media & Search**: Serper o Tavily para búsqueda web, y
-OpenAI, Gemini, Doubao/Seedream, GLM, Grok, Qwen, MiniMax o cualquier
+capacidad en **AI Media & Search**: Serper, Serply, SearchApi, Tavily, Parallel,
+Keenable, Exa o Firecrawl para búsqueda web, y
+OpenAI, Gemini, Doubao/Seedream, GLM, Grok, Qwen, MiniMax, Stability, FLUX o cualquier
 endpoint de imágenes compatible con OpenAI para generación de imágenes y
-análisis de imagen/video.
+análisis de imagen/video, además de DeepSeek V4.1 Flash para análisis de
+imagen.
+
+**TypeSafe Jev** reordena la búsqueda de archivos de la pantalla de inicio.
+En **AI Media & Search → Local file search**, activa Jev search reranking y
+elige un endpoint: [OpenRouter](https://openrouter.ai/typesafe) (modelo
+`typesafe/jev-1.13`) o la API propia de TypeSafe. La clave se guarda solo en
+este dispositivo. Está desactivado por defecto; cuando está activado, los
+extractos de los 20 primeros resultados locales se envían para su evaluación
+y nada más sale de la máquina.
+
+**Parallel** funciona sin cuenta: su Search MCP gratuito (con límite de
+frecuencia) es la búsqueda web predeterminada siempre que no haya un inicio
+de sesión de ChaAI Office ni una clave de búsqueda configurados, y se ejecuta
+antes que el scraping de DuckDuckGo. Selecciona Parallel en Web search e
+introduce una clave de [Parallel](https://platform.parallel.ai/) para usar
+en su lugar la Search API. Keenable tampoco necesita clave; una clave solo
+eleva los límites de frecuencia.
 
 Toda la suite incluye temas claro, oscuro y del sistema. Los temas solo
 cambian lo que se ve en pantalla: las exportaciones, las impresiones y los
 archivos guardados siempre conservan los colores propios del documento.
 
-<a id="command-line-and-agent-skill"></a>
+## <a id="skills"></a>Skills
 
-## Línea de comandos y skill de agente
+Un skill es un `SKILL.md` que le dice a la IA cómo hacer bien una tarea: un informe semanal, un NDA, un plan de clase.
+ChaOffice incluye un conjunto y acepta los tuyos, en el mismo formato que usan los agentes de código.
+
+- **Ajustes → Skills.** **Instala** un skill recomendado o **Importa** una carpeta, un zip o un único `SKILL.md`. Al importar no se ejecuta nada. La pestaña **Todas** muestra todo el catálogo recomendado en un solo lugar, con descripciones en el idioma de la aplicación.
+- **En un chat.** Abre el menú **+** junto al cuadro de texto de cualquier panel de IA, elige **Skills**, marca uno y envía. El skill solo acompaña a ese mensaje.
+
+---
+
+## <a id="command-line-and-agent-skill"></a>Línea de comandos y skill de agente
 
 Todo lo que las apps pueden hacer con un archivo, la línea de comandos
 `chaoffice` puede hacerlo desde una terminal: inspeccionar, convertir, crear,
@@ -245,8 +393,9 @@ trabajador documental que produce archivos Office reales en lugar de
 aproximaciones en Markdown.
 
 **Funciona con:** Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot,
-OpenCode y Windsurf de forma nativa, y con cualquier otro agente que lea
-skills.
+OpenCode y Windsurf de forma nativa, con cualquier otro agente que lea
+skills, y, a través del [servidor MCP](#mcp-server), Claude Desktop y
+cualquier cliente MCP.
 
 ### Instalar el skill
 
@@ -265,7 +414,7 @@ comprobar su propio trabajo.
 ```bash
 chaoffice --version
 chaoffice info report.docx --json                  # headings and blocks; or sheets, slides, pages
-chaoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx/md/html, odt/ods/odp → docx/xlsx/pptx, doc/dot → docx, …
+chaoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx/md/html, odt/ods/odp → docx/xlsx/pptx, doc/dot → docx, ppt → pptx, …
 chaoffice create --type docx --from notes.md --out notes.docx
 chaoffice create --type xlsx --from table.json --out sales.xlsx   # "=SUM(B2:B9)" cells stay live formulas
 chaoffice docs read report.docx --range 0-9 --json # then `docs apply --ops edits.json` edits in place
@@ -282,7 +431,7 @@ lista actual de comandos; la referencia completa está en
 
 ### Lo que el agente ejecuta realmente
 
-La presentación del Sistema Solar de la demo de arriba llevó un solo prompt
+La presentación del Sistema Solar de la [demo](#demo) llevó un solo prompt
 en Claude Code. Por detrás, el agente siguió el flujo de trabajo por etapas
 del skill y la CLI comprobó cada etapa antes de iniciar la siguiente:
 
@@ -304,9 +453,86 @@ Dentro de `chaoffice` no se hace ninguna llamada a un modelo: el agente
 piensa, la CLI construye y comprueba, y el resultado se abre en ChaOffice o
 en PowerPoint como un `.pptx` normal.
 
-<a id="download"></a>
+### <a id="mcp-server"></a>Servidor MCP
 
-## Descargar
+Los mismos comandos están disponibles como herramientas de
+[Model Context Protocol](https://modelcontextprotocol.io) para asistentes
+que no pueden ejecutar una terminal o a los que prefieras no dársela. Hay
+dos formas de conectarse, ambas con fragmentos listos para copiar en
+**Ajustes → Integraciones → MCP**:
+
+| Vía                                   | Qué es                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A · `chaoffice mcp`** (recomendado) | Un servidor stdio que el propio asistente inicia; ChaOffice no necesita estar abierto. Una herramienta por comando (`info`, `convert`, `create_docx`, `create_xlsx`, `create_pptx`, `create_pdf`, `docs_read` / `docs_apply` / `docs_check`, `sheet_*`, `slides_*`, `render`, `guide`, `search`, `image`, `media`, `open`) más el flujo de presentación por etapas `deck_start` → `deck_page` → `deck_build` → `deck_replace`. Las operaciones, especificaciones y el Markdown se pasan en línea, así que un cliente sin sistema de archivos también funciona. |
+| **B · Servidor HTTP local**           | Se ejecuta dentro de la app ChaOffice en `http://127.0.0.1:3093/mcp` (Streamable HTTP, con SSE heredado). Sus herramientas manejan una pestaña de editor de Word visible: `create_session`, `insert_content`, `replace_blocks`, `apply_ops`, `read_document`, `save_session`, y ves cómo el documento va tomando forma. Desactivado por defecto; actívalo en el mismo panel de ajustes.                                                                                                                                                                        |
+| **C · `chaoffice mcp --http`**        | El conjunto de herramientas stdio como servidor Streamable HTTP para clientes en otras máquinas: un contenedor, un sandbox, un equipo compartido de tu red. Los archivos viajan con las llamadas: `PUT /files/<name>` sube uno y devuelve una URL, cada parámetro `file` acepta una URL http(s), y una herramienta que escribe un archivo lo devuelve como URL de descarga y, cuando es pequeño, también los bytes como recurso MCP. `--host 0.0.0.0` lo abre a la red, `--token` lo protege.                                                                  |
+
+```bash
+# Claude Code
+claude mcp add --transport stdio chaoffice -- chaoffice mcp
+```
+
+```jsonc
+// Cursor, Claude Desktop or any other MCP client
+{ "mcpServers": { "chaoffice": { "command": "chaoffice", "args": ["mcp"] } } }
+```
+
+```bash
+# On the machine that has ChaOffice (private network; add --token for a shared box)
+chaoffice mcp --http 3093 --host 0.0.0.0 --token "$GENOFFICE_MCP_TOKEN"
+
+# From the client: upload, then use the URL wherever a tool takes a file
+curl -T report.docx -H "Authorization: Bearer $GENOFFICE_MCP_TOKEN" http://server:3093/files/
+#   → { "url": "http://server:3093/files/<id>/report.docx", ... }
+#   docs_read({ "file": "http://server:3093/files/<id>/report.docx" })
+#   docs_apply(...) → output_url, downloadable with curl -o
+```
+
+Por HTTP, cada sesión recibe una carpeta temporal privada, las rutas
+relativas y las carpetas de presentación se resuelven dentro de ella, `open`
+no se ofrece y, con `GENOFFICE_ALLOWED_ROOTS` sin definir, las herramientas
+no pueden salir del almacén de archivos del propio servidor. `render`,
+`convert` a PDF y `create_pdf` siguen iniciando un proceso oculto de
+ChaOffice, así que un host sin interfaz gráfica necesita la app instalada y
+una pantalla virtual (`xvfb-run`).
+
+Aquí `chaoffice` es la CLI incluida dentro de la app (en macOS
+`/Applications/ChaOffice.app/Contents/Resources/cli/chaoffice`; el panel de
+ajustes imprime la ruta exacta de tu instalación). El servidor lleva sus
+propias instrucciones de flujo de trabajo y expone las referencias de
+operaciones como recursos `chaoffice://guide/*`, así que no hace falta
+ningún skill; el skill y el servidor MCP pueden coexistir y el asistente
+elige uno. Las funciones en la nube (`search`, `image`, `media`) siguen
+pasando por el proveedor configurado en ChaOffice; todo lo demás se ejecuta
+localmente, y `GENOFFICE_ALLOWED_ROOTS` limita cada herramienta a las
+carpetas que indiques.
+
+La presentación sobre energías renovables de la [demo](#demo) es lo que
+parece, desde el lado del protocolo, un solo prompt en Claude Code con solo
+el servidor MCP de `chaoffice` conectado:
+
+```text
+capabilities · guide(slides, spec) · guide(slides, design)
+search(query) ×4                         → IEA, BNEF and IRENA figures for the slides
+search(query, images) ×7 · media(url, ask) ×7
+                                         → candidate photos, each one checked to be a real photograph
+deck_start(dir, style, outline)          → outline checked: 8 pages to write
+deck_page(dir, 0, page) … deck_page(dir, 7, page)
+                                         → each page checked against the outline and the palette; one page sent again
+deck_build(dir, out)                     → renewables-2026.pptx, no image failures
+slides_audit(file) · slides_render(file, out)
+                                         → no layout findings; 8 PNGs come back as image content
+deck_replace(dir, n, page) ×3 · slides_render(file, out)
+                                         → three pages fixed after looking at the renders
+```
+
+Treinta y ocho llamadas, unos trece minutos, y el asistente nunca tocó una
+terminal: las figuras, las fotos, las guías, las comprobaciones y las
+renderizaciones viajaron todas como resultados de herramientas MCP. Solo
+`search` y `media` salieron de la máquina, hacia el proveedor configurado
+en ChaOffice.
+
+## <a id="download"></a>Descargar
 
 | Plataforma                              | Requisitos                                            | Descarga                                                                                         |
 | --------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
@@ -339,6 +565,11 @@ sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
 sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
 
+El deb y el rpm también añaden plantillas en blanco para Dolphin, de KDE
+Plasma: clic derecho en una carpeta → **Create New** muestra _ChaOffice
+Document_, _ChaOffice Spreadsheet_ y _ChaOffice Presentation_. Se guardan en
+`/usr/share/templates` y se eliminan junto con el paquete.
+
 El AppImage se ejecuta directamente: instala el runtime de FUSE 2
 (`sudo apt install libfuse2`; en Ubuntu 24.04 el paquete es `libfuse2t64`),
 haz que el archivo sea ejecutable y luego ejecútalo:
@@ -347,6 +578,8 @@ haz que el archivo sea ejecutable y luego ejecútalo:
 chmod +x ChaOffice-<version>.AppImage
 ./ChaOffice-<version>.AppImage
 ```
+
+En un Chromebook, los mismos paquetes funcionan dentro del entorno Linux (Crostini): los detalles están en [docs/platforms/chromeos.md](../platforms/chromeos.md).
 
 </details>
 
@@ -370,6 +603,32 @@ save      ─► dirty blocks → OOXML fragments (referencing existing styles o
 El recorrido paquete por paquete (motores docx/pptx, `pdf2docx`,
 `html2docx`, el núcleo del agente y los proveedores) está en
 [CONTRIBUTING.md](../../CONTRIBUTING.md#engine-packages).
+
+### <a id="legacy-and-odf-files-open-as-converted-copies"></a>Los archivos antiguos y ODF se abren como copias convertidas
+
+Los formatos que ChaOffice no puede volver a escribir — los antiguos
+`.doc`/`.dot` de Word, `.hwp`/`.hwpx` de Hancom, `.xls` de Excel 97, `.tsv`,
+el antiguo `.ppt` de PowerPoint y la familia OpenDocument (`.odt`, `.ott`,
+`.ods`, `.ots`, `.odp`, `.otp`) — son importaciones, no archivos nativos.
+Al abrir uno, se convierte en tu equipo en una copia `.docx`, `.xlsx` o
+`.pptx` y se abre esa copia; el original no se vuelve a leer ni se escribe
+nunca.
+
+- Docs y Slides preguntan primero dónde poner la copia (por defecto, el
+  `.docx`/`.pptx` hermano junto al original), de modo que cada guardado
+  posterior va a parar ahí. Un `.ppt` se convierte con sus patrones, la
+  geometría de las formas, los rellenos, las imágenes y el formato del texto,
+  así que la presentación se ve como la mostraba PowerPoint; las notas, las
+  animaciones, las transiciones y los hipervínculos todavía no se conservan.
+- Sheets abre el libro convertido de inmediato y dirige el primer guardado a
+  través de Guardar como hacia un `.xlsx` nuevo. `.csv` es la excepción:
+  conserva su identidad y al guardar se escriben los valores de vuelta en el
+  `.csv`, como hace Excel.
+- La conversión es de un solo sentido y puede descartar funciones que el
+  formato de origen tiene pero OOXML no. `.doc`, `.ppt`, `.hwp` y los
+  formatos ODF muestran un cuadro de confirmación que lo advierte; marca
+  «Convert without asking next time» para omitirlo, y «Ask before converting
+  legacy files» en Settings → General lo vuelve a activar.
 
 ## Desarrollo
 
@@ -400,6 +659,8 @@ ChaOffice está en desarrollo activo y tu opinión ayuda a darle forma.
 - **Únete al chat de grupo de ChaOffice** en
   [GenTeam](https://chaoffice.ai/join) para hablar con el equipo y otros
   usuarios.
+- **Sigue a [@merrickbuilds](https://x.com/merrickbuilds) en X** para ver
+  notas de versión, demos y lo próximo que se está construyendo.
 - **Dale una estrella al repositorio** si ChaOffice te resulta útil: es la
   mejor forma de apoyar el proyecto.
 
@@ -419,7 +680,10 @@ sin prueba gratuita, sin nivel de pago para las apps en sí.
 Sí. ChaOffice abre y guarda archivos nativos `.docx`, `.xlsx` y `.pptx`. Al
 guardar se preservan los bytes: las partes del archivo que no tocaste se
 escriben de nuevo byte por byte, así que los documentos siguen funcionando
-en Microsoft Office.
+en Microsoft Office. Los archivos antiguos `.doc`/`.dot`, `.xls` y `.ppt`
+también se abren, como copias convertidas `.docx`/`.xlsx`/`.pptx` — consulta
+[Los archivos antiguos y ODF se abren como copias
+convertidas](#legacy-and-odf-files-open-as-converted-copies).
 
 </details>
 
@@ -429,7 +693,7 @@ en Microsoft Office.
 La edición de documentos es completamente local: los archivos nunca salen
 de tu equipo para abrirse, editarse, guardarse o convertirse. Las funciones
 de IA (agentes, búsqueda, herramientas de imagen) necesitan conexión a la
-red, ya sea con un inicio de sesión de Genspark o con tu propia clave de API
+red, ya sea con un inicio de sesión de ChaAI Office o con tu propia clave de API
 de modelo.
 
 </details>
@@ -457,12 +721,23 @@ en lugar de una imagen de página.
 <details>
 <summary><b>¿Puedo usar mi propio modelo de IA o clave de API?</b></summary>
 
-Sí. Además del inicio de sesión sin clave con Genspark, ChaOffice admite tu
+Sí. Además del inicio de sesión sin clave con ChaAI Office, ChaOffice admite tu
 propia clave para Claude, OpenAI, Gemini, DeepSeek, Kimi, GLM, Qwen, Doubao,
-MiniMax, Grok, Mistral, OpenRouter, Requesty y OpenCode Zen/Go, además de cualquier
-endpoint compatible con OpenAI, incluidos servidores de modelos locales. La
+MiniMax, Grok, Mistral, OpenRouter, Requesty, Opper, Cheaper Inference,
+Atlas Cloud y OpenCode Zen/Go, además de cualquier endpoint compatible con OpenAI, incluidos servidores de modelos locales. La
 búsqueda, la generación de imágenes y el análisis de imagen/video usan sus
 propias claves en Settings → AI Media & Search.
+
+</details>
+
+<details>
+<summary><b>¿Puedo desactivar el panel de IA?</b></summary>
+
+Sí. Settings → AI incluye un interruptor **Show the AI sidebar**. Al
+desactivarlo, cada editor oculta la barra lateral y los documentos nuevos
+dejan de abrirla por su cuenta. Una acción de IA explícita — un botón de la
+cinta de opciones, un elemento del menú — sigue abriendo el panel para ese
+documento, y al cerrarlo vuelve a quedar oculto.
 
 </details>
 
@@ -539,6 +814,12 @@ ChaOffice no sería posible sin estos proyectos de código abierto:
 - [libeot](https://github.com/umanwizard/libeot) (MPL-2.0): el decodificador
   MicroType Express para las fuentes de PowerPoint incrustadas, portado a
   TypeScript.
+- [rhwp](https://github.com/edwardkim/rhwp) (MIT): lee documentos `.hwp`
+  binarios y los convierte a HWPX para la importación de Hancom; su
+  compilación WebAssembly incluye los crates de Rust y el port de
+  hwp-extract de Volexity que figuran en los avisos de terceros. "한글",
+  "한컴", "HWP" y "HWPX" son marcas registradas de Hancom Inc.; ChaOffice no
+  está afiliado a Hancom.
 - [React](https://react.dev/) (MIT): la capa de interfaz de usuario de cada
   app.
 - [Mermaid](https://mermaid.js.org/) (MIT) y [KaTeX](https://katex.org/)
@@ -566,6 +847,6 @@ excepción: el directorio `ee/` está reservado para futuros módulos
 empresariales y está cubierto por la
 [ChaOffice Enterprise License](../../ee/LICENSE).
 
-Los nombres y logotipos de ChaOffice y Genspark son marcas registradas de
+Los nombres y logotipos de ChaOffice y ChaAI Office son marcas registradas de
 Mainfunc, Inc. La licencia Apache-2.0 no otorga permiso para usarlos
 (consulta la sección 6); los forks deben usar su propia identidad de marca.

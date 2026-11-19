@@ -241,4 +241,5 @@ export const cs = {
   aiMindMapToggleLayout: 'Přepnout rozvržení',
   aiMindMapLayoutTopDown: 'Přepnout na rozvržení shora dolů',
   aiMindMapLayoutLeftRight: 'Přepnout na rozvržení zleva doprava',
+  aiGskLoginOk: 'Přihlášeno ke ChaAI Office',
 } satisfies Record<keyof typeof zh, string>

@@ -334,4 +334,5 @@ export const tr = {
   aiToolRunImageSearch: '正在搜索图片…',
   aiToolRunReadUrl: '正在读取网页…',
   aiPageCloudToLocal: '云端不可用,已本地生成',
+  aiGskLoginOk: 'ChaAI Office’a giriş yapıldı',
 } satisfies Record<keyof typeof zh, string>

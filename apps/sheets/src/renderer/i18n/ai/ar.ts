@@ -119,4 +119,5 @@ export const ar = {
   aiDockRestore: 'استعادة اللوحة',
   aiToolGenSvg: 'ارسم رسمًا متجهيًا',
   aiToolGenSvgDone: 'تم تحويل الرسم SVG؛ ضعه عبر add_image',
+  aiGskLoginOk: 'تم تسجيل الدخول إلى ChaAI Office',
 }

@@ -230,4 +230,5 @@ export const zhTW = {
   aiMindMapToggleLayout: '切換版面',
   aiMindMapLayoutTopDown: '切換為由上而下版面',
   aiMindMapLayoutLeftRight: '切換為左右分欄版面',
+  aiGskLoginOk: '已登入 察元AIOffice',
 } satisfies Record<keyof typeof zh, string>

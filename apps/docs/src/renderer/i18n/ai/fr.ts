@@ -243,4 +243,5 @@ export const fr = {
   aiMindMapToggleLayout: 'Changer la disposition',
   aiMindMapLayoutTopDown: 'Passer à la disposition de haut en bas',
   aiMindMapLayoutLeftRight: 'Passer à la disposition de gauche à droite',
+  aiGskLoginOk: 'Connecté à ChaAI Office',
 } satisfies Record<keyof typeof zh, string>

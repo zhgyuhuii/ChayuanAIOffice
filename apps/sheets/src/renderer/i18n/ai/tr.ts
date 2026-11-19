@@ -128,4 +128,5 @@ export const tr = {
   aiDockRestore: '还原面板',
   aiToolGenSvg: '绘制 SVG 插图',
   aiToolGenSvgDone: '已生成 SVG 插图，可用 add_image 放置',
+  aiGskLoginOk: 'ChaAI Office’a giriş yapıldı',
 } satisfies Record<keyof typeof zh, string>

@@ -1,22 +1,22 @@
 <p align="center">
-  <a href="https://genoffice.ai/">
+  <a href="https://chaoffice.ai/">
     <picture>
       <source srcset="../assets/readme/hero-dark.webp" media="(prefers-color-scheme: dark)">
-      <img src="../assets/readme/hero.webp" alt="GenOffice — açık kaynaklı yapay zekâ Office paketi: yerleşik yapay zekâ paneliyle Docs, Sheets, Slides, PDF, Markdown ve HTML" width="100%">
+      <img src="../assets/readme/hero.webp" alt="ChaOffice — açık kaynaklı yapay zekâ Office paketi: yerleşik yapay zekâ paneliyle Docs, Sheets, Slides, PDF, Markdown ve HTML" width="100%">
     </picture>
   </a>
 </p>
 
-<h1 align="center">GenOffice</h1>
+<h1 align="center">ChaOffice</h1>
 
 <p align="center"><b>Dünyanın ilk tam özellikli açık kaynaklı yapay zekâ Office paketi.</b><br>
 Word, Excel, PowerPoint ve PDF dosyaları; siz ve yapay zekânız tarafından düzenlenir, gerçek biçimlerinde geri kaydedilir.</p>
 
 <p align="center">
-  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/genspark-ai/genoffice" alt="Lisans: Apache-2.0"></a>
-  <a href="https://github.com/genspark-ai/genoffice/releases/latest"><img src="https://img.shields.io/github/v/release/genspark-ai/genoffice" alt="Son sürüm"></a>
-  <a href="https://github.com/genspark-ai/genoffice/releases"><img src="https://img.shields.io/github/downloads/genspark-ai/genoffice/total" alt="İndirmeler"></a>
-  <a href="https://github.com/genspark-ai/genoffice/stargazers"><img src="https://img.shields.io/github/stars/genspark-ai/genoffice?style=flat" alt="GitHub yıldızları"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/ChayuanAIOffice" alt="Lisans: Apache-2.0"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/ChayuanAIOffice" alt="Son sürüm"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/ChayuanAIOffice/total" alt="İndirmeler"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/ChayuanAIOffice?style=flat" alt="GitHub yıldızları"></a>
   <a href="https://x.com/merrickbuilds"><img src="https://img.shields.io/badge/follow-%40merrickbuilds-000000?logo=x&logoColor=white" alt="X'te @merrickbuilds'i takip edin"></a>
 </p>
 
@@ -27,20 +27,22 @@ Word, Excel, PowerPoint ve PDF dosyaları; siz ve yapay zekânız tarafından d�
   <a href="#skills"><b>Skills</b></a> ·
   <a href="#command-line-and-agent-skill"><b>CLI</b></a> ·
   <a href="#mcp-server"><b>MCP</b></a> ·
-  <a href="https://genoffice.ai/"><b>Web sitesi</b></a> ·
-  <a href="https://genoffice.ai/join"><b>Topluluk</b></a> ·
+  <a href="https://chaoffice.ai/"><b>Web sitesi</b></a> ·
+  <a href="https://chaoffice.ai/join"><b>Topluluk</b></a> ·
   <a href="https://x.com/merrickbuilds"><b>X</b></a> ·
   <a href="../../PRIVACY.md"><b>Gizlilik</b></a>
 </p>
 
-GenOffice; macOS, Windows ve Linux için ücretsiz, açık kaynaklı bir Microsoft
+ChaOffice; macOS, Windows ve Linux için ücretsiz, açık kaynaklı bir Microsoft
 Office alternatifidir. Yerel `.docx`, `.xlsx` ve `.pptx` dosyalarını açar ve
 kaydeder, PDF, Markdown ve HTML düzenler ve her belgenin yanına bir yapay zekâ
 ajanı koyar — kenara iliştirilmiş bir sohbet kutusu değil, dosyayı okuyan,
 değişikliği yapan ve tam olarak neye dokunduğunu size gösteren bir düzenleyici.
 ODF dosyaları (`.odt`, `.ods`, `.odp` ve `.ott`/`.ots`/`.otp` şablonları)
-düzenlenebilir OOXML kopyaları olarak açılır; içe aktarma yalnızca açma
-yönündedir — kaydetme her zaman OOXML yazar, asla ODF yazmaz.
+düzenlenebilir OOXML kopyaları olarak açılır; eski Word `.doc`/`.dot`,
+Excel 97 `.xls` ve PowerPoint 97–2003 `.ppt` dosyaları ile Hancom belgeleri
+(`.hwp`, `.hwpx`) de öyle. İçe aktarma yalnızca açma yönündedir — kaydetme
+her zaman OOXML yazar, asla kaynak biçimi yazmaz.
 
 - **Gerçek biçimler, bayt bayt korunur.** Yalnızca düzenlediğiniz kısım yeniden
   yazılır. Dosyadaki diğer her şey bayt bayt korunur; böylece belgeler Word,
@@ -73,15 +75,15 @@ yönündedir — kaydetme her zaman OOXML yazar, asla ODF yazmaz.
   Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty, Opper, Cheaper
   Inference, Atlas Cloud veya yerel sunucular dahil herhangi bir OpenAI uyumlu
   uç nokta için kendi anahtarınızı getirin.
-- **Betiklenebilir ve ajanlara hazır.** Uygulama bir `genoffice` komut satırı
+- **Betiklenebilir ve ajanlara hazır.** Uygulama bir `chaoffice` komut satırı
   ve Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode ve
   Windsurf için bir skill ile gelir; böylece bir kodlama ajanı, hiçbir pencere
   açmadan makinenizde gerçek Office dosyaları oluşturabilir, dönüştürebilir,
   okuyabilir ve düzenleyebilir.
 
-**Edinin:** [macOS](https://github.com/genspark-ai/genoffice/releases/latest) (Apple Silicon ve Intel) ·
-[Windows](https://github.com/genspark-ai/genoffice/releases/latest) (x64 ve Arm) ·
-[Linux](https://github.com/genspark-ai/genoffice/releases/latest) (deb, rpm, AppImage) —
+**Edinin:** [macOS](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (Apple Silicon ve Intel) ·
+[Windows](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (x64 ve Arm) ·
+[Linux](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (deb, rpm, AppImage) —
 ayrıntılar ve gereksinimler [İndir](#download) bölümünde.
 
 ## Demo
@@ -96,8 +98,8 @@ yönlendirilmiştir.
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/docs-report.webp" alt="GenOffice Docs; tam genişlikte kapak görseli, gölgeli KPI tablosu, üst bilgi ve alt bilgi içeren iki sütunlu bir yıllık rapor sayfasını, yapay zekâ paneli daraltılmış hâlde %80 yakınlaştırmada gösteriyor"></td>
-<td width="50%"><img src="../assets/readme/docs-ai.webp" alt="GenOffice Docs: banner görselli bir şirket tanıtımı; yapay zekâ Genel Bakış bölümünü sıkılaştırdı ve madde işaretli yeni bir bölüm ekledi, panel tek tıkla geri alma sunuyor"></td>
+<td width="50%"><img src="../assets/readme/docs-report.webp" alt="ChaOffice Docs; tam genişlikte kapak görseli, gölgeli KPI tablosu, üst bilgi ve alt bilgi içeren iki sütunlu bir yıllık rapor sayfasını, yapay zekâ paneli daraltılmış hâlde %80 yakınlaştırmada gösteriyor"></td>
+<td width="50%"><img src="../assets/readme/docs-ai.webp" alt="ChaOffice Docs: banner görselli bir şirket tanıtımı; yapay zekâ Genel Bakış bölümünü sıkılaştırdı ve madde işaretli yeni bir bölüm ekledi, panel tek tıkla geri alma sunuyor"></td>
 </tr>
 <tr>
 <td><b>Dosyayı Word'ün yerleştirdiği gibi açar</b> — iki sütunlu bölümler, taşmalı görseller, gölgeli tablolar, üst ve alt bilgiler, Word'ün satır ölçülerine göre sayfalama. Stiller, yorumlar, izlenen değişiklikler, denklemler, mürekkep ve içerik denetimleri dokunulmadan gidip gelir. <b>Mailings</b> sekmesi belgeyi bir birleştirme şablonuna dönüştürür: bir <code>.xlsx</code> veya <code>.csv</code> alıcı listesi seçin, gerçek <code>MERGEFIELD</code> alanları ekleyin, kayıt kayıt önizleyin ve tek bir belgeye ya da kayıt başına bir <code>.docx</code> dosyasına birleştirin.</td>
@@ -109,26 +111,26 @@ yönlendirilmiştir.
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/sheets-ai.webp" alt="GenOffice Sheets: yapay zekâ, SUMIF formülleriyle bölge ve kategoriye göre geliri içeren bir Summary sayfası ve bir sütun grafiği ekledi ve bir Geri Al düğmesiyle 43 uygulanan değişiklik bildiriyor"></td>
-<td width="50%"><img src="../assets/readme/sheets-qa.webp" alt="GenOffice Sheets: 2. çeyrek gelirinde hangi bölgenin önde olduğu sorulduğunda yapay zekâ, kategori dökümüyle birlikte Avrupa yanıtını veriyor ve kullandığı hücreleri Orders sayfasının yanında bağlantı olarak gösteriyor"></td>
+<td width="50%"><img src="../assets/readme/sheets-ai.webp" alt="ChaOffice Sheets: yapay zekâ, SUMIF formülleriyle bölge ve kategoriye göre geliri içeren bir Summary sayfası ve bir sütun grafiği ekledi ve bir Geri Al düğmesiyle 43 uygulanan değişiklik bildiriyor"></td>
+<td width="50%"><img src="../assets/readme/sheets-qa.webp" alt="ChaOffice Sheets: 2. çeyrek gelirinde hangi bölgenin önde olduğu sorulduğunda yapay zekâ, kategori dökümüyle birlikte Avrupa yanıtını veriyor ve kullandığı hücreleri Orders sayfasının yanında bağlantı olarak gösteriyor"></td>
 </tr>
 <tr>
 <td><b>Oluşturun</b> — tek bir cümleden ajan, bölge ve kategoriye göre gerçek <code>SUMIF</code> formülleri içeren bir Summary sayfası ekler, bir sütun grafiği yerleştirir ve 43 değişikliği tek bir geri alınabilir toplu işlem olarak uygular.</td>
-<td><b>Sorun</b> — çalışma kitabıyla ilgili sorular, gerekçesiyle ve kullanılan hücreler tıklanabilir alıntılar olarak geri döner. Arka planda: kendi geliştirdiğimiz Rust tabanlı <code>.xlsx</code> motoru, özet tablolar, dilimleyiciler, koşullu biçimlendirme, formül izleme ve hücrelere Excel'in yerel zengin değerleri olarak gömülen resimler — Excel onları yeniden açtığında hâlâ hücrenin içindedir.Hücre notları bir resim taşıyabilir; resim, notun açılır penceresinin altında gösterilir.</td>
+<td><b>Sorun</b> — çalışma kitabıyla ilgili sorular, gerekçesiyle ve kullanılan hücreler tıklanabilir alıntılar olarak geri döner. Arka planda: kendi geliştirdiğimiz Rust tabanlı <code>.xlsx</code> motoru, özet tablolar, dilimleyiciler, koşullu biçimlendirme, formül izleme ve hücrelere Excel'in yerel zengin değerleri olarak gömülen resimler — Excel onları yeniden açtığında hâlâ hücrenin içindedir. Hücre notları bir resim taşıyabilir; resim, notun açılır penceresinin altında gösterilir.</td>
 </tr>
 </table>
 
 ### 3 · Slides — bir istemden `.pptx` sunumuna
 
-<img src="../assets/readme/slides-generate.webp" alt="GenOffice Slides'ın Aurora Home yatırımcı sunumunu üretmesinin hızlandırılmış kaydı: yapay zekâ panelde hikâye akışını planlıyor, slaytlar tuvalde art arda beliriyor ve bitmiş sunum kapanış çağrısıyla sona eriyor" width="100%">
+<img src="../assets/readme/slides-generate.webp" alt="ChaOffice Slides'ın Aurora Home yatırımcı sunumunu üretmesinin hızlandırılmış kaydı: yapay zekâ panelde hikâye akışını planlıyor, slaytlar tuvalde art arda beliriyor ve bitmiş sunum kapanış çağrısıyla sona eriyor" width="100%">
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/slides-cover.webp" alt="GenOffice Slides: yapay zekâ tarafından üretilen Aurora Home yatırımcı sunumunun kapak slaytı tuvalde, özgün tek satırlık istem ve yapay zekânın ne oluşturduğuna dair özeti panelde"></td>
-<td width="50%"><img src="../assets/readme/slides-ai.webp" alt="GenOffice Slides: aynı 11 slaytlık sunumun tasarlanmış kapanış slaytı, solda küçük resim şeridi ve hikâye akışını özetleyen yapay zekâ paneliyle"></td>
+<td width="50%"><img src="../assets/readme/slides-cover.webp" alt="ChaOffice Slides: yapay zekâ tarafından üretilen Aurora Home yatırımcı sunumunun kapak slaytı tuvalde, özgün tek satırlık istem ve yapay zekânın ne oluşturduğuna dair özeti panelde"></td>
+<td width="50%"><img src="../assets/readme/slides-ai.webp" alt="ChaOffice Slides: aynı 11 slaytlık sunumun tasarlanmış kapanış slaytı, solda küçük resim şeridi ve hikâye akışını özetleyen yapay zekâ paneliyle"></td>
 </tr>
 <tr>
-<td><b>Tek satır girdi</b> — "Aurora Home için 10 slaytlık bir yatırımcı sunumu oluştur…". GenOffice hikâye akışını planlar, rakamları araştırır ve her slaytı gerçek bir <code>.pptx</code> olarak tuvale taslaklar.</td>
+<td><b>Tek satır girdi</b> — "Aurora Home için 10 slaytlık bir yatırımcı sunumu oluştur…". ChaOffice hikâye akışını planlar, rakamları araştırır ve her slaytı gerçek bir <code>.pptx</code> olarak tuvale taslaklar.</td>
 <td><b>Bitmiş bir sunum çıktı</b> — tutarlı tipografi, görseller ve kapanış eylem çağrısıyla on bir tasarlanmış slayt; asıl slaytlar, düzenler, akıllı kılavuzlar ve yıkıcı olmayan kırpma ile düzenlemeye devam edin ya da panelden yeniden biçimlendirmesini, yeniden yazmasını ve yeniden sıralamasını isteyin. Bir <code>.glb</code> ekleyin; gerçek bir 3B modeldir: düzenleyicide sürükleyerek döndürün, PowerPoint'in 3B sakladığı biçimde saklanır, PowerPoint'te de 3B kalır.</td>
 </tr>
 </table>
@@ -141,8 +143,8 @@ desteğiyle seslendirir. Anlatım ve ölçtüğü otomatik ilerleme süreleri
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/pdf-edit.webp" alt="GenOffice PDF: Metin düzenleme modu, yerinde düzenleme için sayfadaki her metin bloğunu çerçeveliyor; yapay zekâ paneli raporla ilgili bir soruyu sayfa alıntılarıyla yanıtlıyor"></td>
-<td width="50%"><img src="../assets/readme/pdf-convert.webp" alt="GenOffice Docs, Helios üç aylık değerlendirme PDF'sinden yerel olarak dönüştürülmüş bir Word belgesini, özgün PDF'nin yanındaki ikinci bir sekmede gösteriyor"></td>
+<td width="50%"><img src="../assets/readme/pdf-edit.webp" alt="ChaOffice PDF: Metin düzenleme modu, yerinde düzenleme için sayfadaki her metin bloğunu çerçeveliyor; yapay zekâ paneli raporla ilgili bir soruyu sayfa alıntılarıyla yanıtlıyor"></td>
+<td width="50%"><img src="../assets/readme/pdf-convert.webp" alt="ChaOffice Docs, Helios üç aylık değerlendirme PDF'sinden yerel olarak dönüştürülmüş bir Word belgesini, özgün PDF'nin yanındaki ikinci bir sekmede gösteriyor"></td>
 </tr>
 <tr>
 <td><b>Sayfanın içinde düzenleyin</b> — Metin düzenleme modu, yerinde yeniden yazmak için her metin bloğunu çerçeveler; içerik akışı, üstünü örten bir açıklama notuyla değil, özgün yazı tipleriyle PDFium üzerinden yeniden yazılır. Yapay zekâya uzun bir rapor hakkında soru sorun ve sayfa alıntılı yanıtlar alın.</td>
@@ -156,11 +158,11 @@ Sayfanın ne için ve kimin için olduğunu söyleyin. Yapay zekâ önce bir **t
 özeti** önerir — kanca, palet, tipografi ve stil yönleri — ardından bu
 belirteçlere göre tek, kendi kendine yeten bir `.html` dosyası oluşturur.
 
-<img src="../assets/readme/html-restyle-motion.webp" alt="GenOffice HTML'nin Lumen açılış sayfasını yeniden biçimlendirmesinin hızlandırılmış kaydı: paneldeki tek bir Restyle isteği, karanlık Midnight Studio sayfasını sıcak Solar Daybreak sürümüne dönüştürürken her bölüm ve tüm metin yerinde kalıyor" width="100%">
+<img src="../assets/readme/html-restyle-motion.webp" alt="ChaOffice HTML'nin Lumen açılış sayfasını yeniden biçimlendirmesinin hızlandırılmış kaydı: paneldeki tek bir Restyle isteği, karanlık Midnight Studio sayfasını sıcak Solar Daybreak sürümüne dönüştürürken her bölüm ve tüm metin yerinde kalıyor" width="100%">
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/html-ai.webp" alt="GenOffice HTML: güneş enerjili bir masa lambası için karanlık Midnight Studio yönünde üretilmiş bir açılış sayfası, canlı önizlemede ve az önce oluşturduğu sayfayı özetleyen yapay zekâ paneliyle gösteriliyor"></td>
+<td width="50%"><img src="../assets/readme/html-ai.webp" alt="ChaOffice HTML: güneş enerjili bir masa lambası için karanlık Midnight Studio yönünde üretilmiş bir açılış sayfası, canlı önizlemede ve az önce oluşturduğu sayfayı özetleyen yapay zekâ paneliyle gösteriliyor"></td>
 <td width="50%"><img src="../assets/readme/html-restyle.webp" alt="Aynı Lumen açılış sayfası yapay zekâ tarafından sıcak Solar Daybreak yönüne yeniden biçimlendirilmiş: kâğıt arka plan, serifli başlıklar ve turuncu bir vurgu; her bölüm ve tüm metin korunmuş"></td>
 </tr>
 <tr>
@@ -170,8 +172,8 @@ belirteçlere göre tek, kendi kendine yeten bir `.html` dosyası oluşturur.
 </table>
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/html-dashboard.webp" alt="GenOffice HTML: serbest çalışan bir tasarımcı için sıcak keten tarzında üretilmiş kişisel bir gösterge paneli arayüzü; sol şerit, serifli karşılama ve dört metrik kartıyla"></td>
-<td width="50%"><img src="../assets/readme/html-report.webp" alt="GenOffice HTML: geniş sayfa gazete tarzında üretilmiş bir elektrikli araç pazarı veri raporu; serifli bir başlık bandı, 17,3 milyonluk bir manşet rakamı ve bir istatistik satırıyla"></td>
+<td width="50%"><img src="../assets/readme/html-dashboard.webp" alt="ChaOffice HTML: serbest çalışan bir tasarımcı için sıcak keten tarzında üretilmiş kişisel bir gösterge paneli arayüzü; sol şerit, serifli karşılama ve dört metrik kartıyla"></td>
+<td width="50%"><img src="../assets/readme/html-report.webp" alt="ChaOffice HTML: geniş sayfa gazete tarzında üretilmiş bir elektrikli araç pazarı veri raporu; serifli bir başlık bandı, 17,3 milyonluk bir manşet rakamı ve bir istatistik satırıyla"></td>
 </tr>
 <tr>
 <td><b>Arayüz taslakları</b> — "kişisel gösterge paneli" başlangıç şablonu bir personayı çalışan bir düzene dönüştürür: sol şerit, karşılama, faturalandırılabilir saat çizgi grafiği, fatura ve kullanım kartları; hepsi bir geliştiriciye teslim edebileceğiniz gerçek HTML.</td>
@@ -183,8 +185,8 @@ belirteçlere göre tek, kendi kendine yeten bir `.html` dosyası oluşturur.
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/markdown-ai.webp" alt="GenOffice Markdown: seçili bir paragrafta, yazılmış bir talimat ve Polish, Make more concise, Expand ve Fix grammar gibi öneri çipleri ile Send now ve Add to queue düğmeleri içeren bir Ask AI açılır penceresi görünüyor"></td>
-<td width="50%"><img src="../assets/readme/markdown-render.webp" alt="GenOffice Markdown; bir tablo, bir Mermaid akış şeması ve bir görev listesi içeren lansman notları belgesini, solda yapay zekâ panelinin başlangıç istemleriyle gösteriyor"></td>
+<td width="50%"><img src="../assets/readme/markdown-ai.webp" alt="ChaOffice Markdown: seçili bir paragrafta, yazılmış bir talimat ve Polish, Make more concise, Expand ve Fix grammar gibi öneri çipleri ile Send now ve Add to queue düğmeleri içeren bir Ask AI açılır penceresi görünüyor"></td>
+<td width="50%"><img src="../assets/readme/markdown-render.webp" alt="ChaOffice Markdown; bir tablo, bir Mermaid akış şeması ve bir görev listesi içeren lansman notları belgesini, solda yapay zekâ panelinin başlangıç istemleriyle gösteriyor"></td>
 </tr>
 <tr>
 <td><b>Bir seçim hakkında yapay zekâya sorun</b> — herhangi bir pasajı seçin, bir <b>Ask AI</b> çipi belirir: bir talimat yazın ya da bir öneri seçin, hemen gönderin ya da birkaç bağlantılı düzenlemeyi kuyruğa alıp tek seferde çalıştırın. Aynı giriş her uygulamada vardır.</td>
@@ -197,7 +199,7 @@ nota tıklanarak gidilir, `[[` yazmak not adı tamamlama sunar ve `![[…]]` bir
 notu ya da resmi satır içine gömer. **Backlinks** paneli, açık nota işaret eden
 her notu listeler ve **Graph** görünümü tüm kasanın bağlantılarını haritalar.
 
-### 7 · Arama — soruyu yanıtlayan dosyayı bulun, TypeSafe Jev ile
+### <a id="7--search--find-the-file-that-answers-the-question-with-typesafe-jev"></a>7 · Arama — soruyu yanıtlayan dosyayı bulun, TypeSafe Jev ile
 
 Çalışma klasörünüzdeki her dosya cihaz üzerinde dizinlenir: adlar, klasörler
 ve Word, Excel, PowerPoint, PDF, Markdown ve HTML dosyalarından çıkarılan
@@ -209,12 +211,12 @@ kalibre edilmiş alaka puanı döndüren System One modeliyle değerlendirilir.
 Liste bu puana göre yeniden sıralanır; çağrı başarısız olur veya zaman aşımına
 uğrarsa yerel sıra korunur.
 
-<img src="../assets/readme/search-jev-motion.webp" alt="GenOffice ana ekranının ekran kaydı: laptop refresh policy yazıldığında önce bir tarayıcı önbelleği politikası, bir marka yenileme planı ve bir gösterge paneli yenileme takvimi listeleniyor, ekipman standartları belgesi ise en sonda; Ayarlar sayfası, AI Media & Search altında TypeSafe uç noktasıyla Jev search reranking seçeneğinin açıldığını gösteriyor; aynı arama ardından ekipman standartları belgesini, sonuç sayısının yanındaki Jev rozetiyle ilk sırada gösteriyor" width="100%">
+<img src="../assets/readme/search-jev-motion.webp" alt="ChaOffice ana ekranının ekran kaydı: laptop refresh policy yazıldığında önce bir tarayıcı önbelleği politikası, bir marka yenileme planı ve bir gösterge paneli yenileme takvimi listeleniyor, ekipman standartları belgesi ise en sonda; Ayarlar sayfası, AI Media & Search altında TypeSafe uç noktasıyla Jev search reranking seçeneğinin açıldığını gösteriyor; aynı arama ardından ekipman standartları belgesini, sonuç sayısının yanındaki Jev rozetiyle ilk sırada gösteriyor" width="100%">
 
 <table>
 <tr>
 <td width="50%"><img src="../assets/readme/search-jev-before-after.webp" alt="laptop refresh policy sorgusu için yan yana iki sonuç listesi: Jev olmadan gösterge paneli yenileme takvimi, marka yenileme planı ve tarayıcı önbelleği yenileme politikası önde, şirket ekipman standartları belgesi beşinci; Jev ile üç yıllık dizüstü bilgisayar değiştirme döngüsünü belirten ekipman standartları belgesi ilk sırada"></td>
-<td width="50%"><img src="../assets/readme/search-jev-settings.webp" alt="GenOffice Ayarlar, AI Media & Search sayfası: Jev search reranking anahtarı, OpenRouter ile TypeSafe arasındaki uç nokta seçimi ve API anahtarı alanını içeren Local file search bloğu"></td>
+<td width="50%"><img src="../assets/readme/search-jev-settings.webp" alt="ChaOffice Ayarlar, AI Media & Search sayfası: Jev search reranking anahtarı, OpenRouter ile TypeSafe arasındaki uç nokta seçimi ve API anahtarı alanını içeren Local file search bloğu"></td>
 </tr>
 <tr>
 <td><b>Aynı sözcükler, farklı yanıtlar</b> — "laptop refresh policy" bir tarayıcı önbelleği yenileme politikası, bir marka yenileme planı ve bir gösterge paneli yenileme takvimiyle sözcük sözcük eşleşir; bu yüzden tam metin sıralaması onları öne koyar. Jev alıntıları okur ve üç yıllık değiştirme döngüsünü belirten ekipman standartları belgesini en üste taşır. Sonuç sayısının yanındaki <b>Jev</b> rozeti, sıranın modelden geldiğini gösterir.</td>
@@ -233,51 +235,51 @@ modele görsel girdi olarak gider — ve her soru kendi konuşması olarak
 saklanır: aralarında geçiş yapın, yenisini başlatın, birini silin; liste
 yeniden başlatmadan sonra da korunur.
 
-<img src="../assets/readme/home-ask-ai-motion.webp" alt="GenOffice Ask AI ekran kaydı: ana ekrana kısa özet, 3. çeyrek büyümemizi ne sürükledi ve Asya-Pasifik nasıl performans gösterdi sorusu yazılıyor; ajan iki yıldızlı dosyayı okuyup Aurora X1 lansmanı ve Asya-Pasifik genişlemesiyle yanıtlıyor, her iddiayı üç aylık raporu ya da bölgesel satış çalışma kitabını adlandıran bir alıntı çipi izliyor; çalışma kitabı çipine tıklamak onu Asya-Pasifik satırı vurgulanmış hâlde Sheets'te açıyor" width="100%">
+<img src="../assets/readme/home-ask-ai-motion.webp" alt="ChaOffice Ask AI ekran kaydı: ana ekrana kısa özet, 3. çeyrek büyümemizi ne sürükledi ve Asya-Pasifik nasıl performans gösterdi sorusu yazılıyor; ajan iki yıldızlı dosyayı okuyup Aurora X1 lansmanı ve Asya-Pasifik genişlemesiyle yanıtlıyor, her iddiayı üç aylık raporu ya da bölgesel satış çalışma kitabını adlandıran bir alıntı çipi izliyor; çalışma kitabı çipine tıklamak onu Asya-Pasifik satırı vurgulanmış hâlde Sheets'te açıyor" width="100%">
 
 Ask AI,
 [Arama](#7--search--find-the-file-that-answers-the-question-with-typesafe-jev)
 ile aynı cihaz üzeri tam metin dizininde arar ve dosyaları sayfa sayfa okur;
 böylece model yalnızca isabetleri ve istediği pasajları, seçtiğiniz sağlayıcı
 üzerinden görür. Ayrıca dosyaları doğrudan oluşturmak için yerleşik
-`genoffice` CLI'yi çağırabilir; her biri yanıtın altında bir yapıt kartı
+`chaoffice` CLI'yi çağırabilir; her biri yanıtın altında bir yapıt kartı
 olarak görünür ve bir tıklamayla açılır.
 
-### 9 · CLI — kodlama ajanınız GenOffice'i makinenizde yönetir
+### 9 · CLI — kodlama ajanınız ChaOffice'i makinenizde yönetir
 
-GenOffice bir `genoffice` komut satırı ve bir ajan skill'i ile gelir. Skill'i
+ChaOffice bir `chaoffice` komut satırı ve bir ajan skill'i ile gelir. Skill'i
 kurun; Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode ya da
 Windsurf, hiçbir pencere açmadan uygulamalarla aynı motorlar üzerinden gerçek
 Office dosyaları oluşturabilir, dönüştürebilir, okuyabilir ve düzenleyebilir.
 
-<img src="../assets/readme/cli-deck-in-app.webp" alt="GenOffice Slides, bir kodlama ajanının genoffice komut satırı üzerinden oluşturduğu sekiz slaytlık bir Güneş Sistemi sunumunu gösteriyor: kapak slaytı tuvalde, solda sekiz küçük resim ve yapay zekâ paneli açık" width="100%">
+<img src="../assets/readme/cli-deck-in-app.webp" alt="ChaOffice Slides, bir kodlama ajanının chaoffice komut satırı üzerinden oluşturduğu sekiz slaytlık bir Güneş Sistemi sunumunu gösteriyor: kapak slaytı tuvalde, solda sekiz küçük resim ve yapay zekâ paneli açık" width="100%">
 
 <table>
 <tr>
 <td width="50%"><img src="../assets/readme/cli-slides-grid.webp" alt="Güneş Sistemi sunumunun işlenmiş sekiz slaytı yan yana: kapak, keşif zaman çizelgesi, dört temel rakam, gezegen çapı çubuk grafiği, kayaç gezegenler ile devler, Güneş'in %99,8'lik hero rakamı, dört dev gezegen ızgarası ve çıkarımlar"></td>
-<td width="50%"><img src="../assets/readme/cli-integrations.webp" alt="GenOffice Ayarlar, Integrations sayfası: genoffice skill'i Claude Code'a kurulmuş, Codex ve Cursor'ın yanında Install düğmeleri"></td>
+<td width="50%"><img src="../assets/readme/cli-integrations.webp" alt="ChaOffice Ayarlar, Integrations sayfası: chaoffice skill'i Claude Code'a kurulmuş, Codex ve Cursor'ın yanında Install düğmeleri"></td>
 </tr>
 <tr>
-<td><b>Ajanınıza tek bir istem</b> — "Güneş Sistemi hakkında sekiz slaytlık bir sunum oluştur." Ajan skill'i okur, bir stil sayfası, bir ana hat ve slayt başına bir sayfa spesifikasyonu yazar, iki fotoğrafı <code>genoffice image</code> ile üretir ve <code>genoffice create</code> dosyayı <code>.pptx</code> olarak birleştirip <code>slides render</code> bakmanız için slayt başına bir PNG vermeden önce <code>genoffice slides check</code> komutunun taşan ya da çakışan her şeyi reddetmesine izin verir.</td>
-<td><b>Bir kez kurun, Ayarlar → Integrations üzerinden</b> — GenOffice bu bilgisayarda bulduğu kodlama ajanlarını listeler ve skill'i seçtiğiniz her birine yazar. Ya da skill'i zip olarak indirin ya da <code>npx skills add genspark-ai/genoffice</code> çalıştırın. Komutlar ve tam iş akışı <a href="#command-line-and-agent-skill">Komut satırı ve ajan skill'i</a> bölümünde.</td>
+<td><b>Ajanınıza tek bir istem</b> — "Güneş Sistemi hakkında sekiz slaytlık bir sunum oluştur." Ajan skill'i okur, bir stil sayfası, bir ana hat ve slayt başına bir sayfa spesifikasyonu yazar, iki fotoğrafı <code>chaoffice image</code> ile üretir ve <code>chaoffice create</code> dosyayı <code>.pptx</code> olarak birleştirip <code>slides render</code> bakmanız için slayt başına bir PNG vermeden önce <code>chaoffice slides check</code> komutunun taşan ya da çakışan her şeyi reddetmesine izin verir.</td>
+<td><b>Bir kez kurun, Ayarlar → Integrations üzerinden</b> — ChaOffice bu bilgisayarda bulduğu kodlama ajanlarını listeler ve skill'i seçtiğiniz her birine yazar. Ya da skill'i zip olarak indirin ya da <code>npx skills add zhgyuhuii/ChayuanAIOffice</code> çalıştırın. Komutlar ve tam iş akışı <a href="#command-line-and-agent-skill">Komut satırı ve ajan skill'i</a> bölümünde.</td>
 </tr>
 </table>
 
 ### 10 · MCP — aynı araçlar, Model Context Protocol üzerinden
 
-Her `genoffice` komutu aynı zamanda bir MCP aracıdır. Claude Code, Claude
+Her `chaoffice` komutu aynı zamanda bir MCP aracıdır. Claude Code, Claude
 Desktop, Cursor ve diğer tüm MCP istemcileri, kurulacak skill ve açık pencere
-olmadan `genoffice mcp` komutunu kendileri başlatabilir ve 29 aracın yanı sıra
+olmadan `chaoffice mcp` komutunu kendileri başlatabilir ve 29 aracın yanı sıra
 op başvurularını kaynak olarak alabilir. Uygulama içindeki ikinci bir HTTP
 sunucusu, bir ajanın siz izlerken görünür bir düzenleyici sekmesinde Word
 belgesi oluşturmasına izin verir.
 
-<img src="../assets/readme/mcp-deck-motion.webp" alt="Claude Code'un genoffice MCP sunucusu üzerinden sekiz slaytlık bir yenilenebilir enerji yatırımcı brifingi oluşturmasının hızlandırılmış kaydı: rakamları ve fotoğrafları arıyor, her aday resmi media ile kontrol ediyor, deck_start stil sayfasını ve ana hattı yazıyor, deck_page her seferinde kontrol edilmiş bir sayfa ekliyor, deck_build .pptx dosyasını birleştiriyor ve slides_render her slaytın bir resmini döndürüyor; bitmiş sunum ardından GenOffice Slides'ta açılıyor" width="100%">
+<img src="../assets/readme/mcp-deck-motion.webp" alt="Claude Code'un chaoffice MCP sunucusu üzerinden sekiz slaytlık bir yenilenebilir enerji yatırımcı brifingi oluşturmasının hızlandırılmış kaydı: rakamları ve fotoğrafları arıyor, her aday resmi media ile kontrol ediyor, deck_start stil sayfasını ve ana hattı yazıyor, deck_page her seferinde kontrol edilmiş bir sayfa ekliyor, deck_build .pptx dosyasını birleştiriyor ve slides_render her slaytın bir resmini döndürüyor; bitmiş sunum ardından ChaOffice Slides'ta açılıyor" width="100%">
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/mcp-deck-in-app.webp" alt="GenOffice Slides, Claude Code'un genoffice MCP sunucusu üzerinden oluşturduğu sekiz slaytlık Renewable Energy 2026 sunumunu gösteriyor: rüzgâr çiftliği fotoğraflı kapak slaytı tuvalde ve solda sekiz küçük resim"></td>
-<td width="50%"><img src="../assets/readme/mcp-integrations.webp" alt="GenOffice Ayarlar, Integrations sayfası, MCP bölümü: Claude Code için tek satırlık claude mcp add komutu, Cursor, Claude Desktop ve diğer MCP istemcileri için JSON bloğu ve altında yerel HTTP sunucusu seçeneği"></td>
+<td width="50%"><img src="../assets/readme/mcp-deck-in-app.webp" alt="ChaOffice Slides, Claude Code'un chaoffice MCP sunucusu üzerinden oluşturduğu sekiz slaytlık Renewable Energy 2026 sunumunu gösteriyor: rüzgâr çiftliği fotoğraflı kapak slaytı tuvalde ve solda sekiz küçük resim"></td>
+<td width="50%"><img src="../assets/readme/mcp-integrations.webp" alt="ChaOffice Ayarlar, Integrations sayfası, MCP bölümü: Claude Code için tek satırlık claude mcp add komutu, Cursor, Claude Desktop ve diğer MCP istemcileri için JSON bloğu ve altında yerel HTTP sunucusu seçeneği"></td>
 </tr>
 <tr>
 <td><b>Tek istem, 38 araç çağrısı, kabuk yok</b> — "2026'da yenilenebilir enerji hakkında, kapakta ve fotoğrafın yardımcı olduğu her yerde gerçek bir fotoğraf bulunan sekiz slaytlık bir yatırımcı brifingi oluştur." Ajan rakamları ve fotoğrafları <code>search</code> ile çeker, her aday resmin gerçek bir fotoğraf olup olmadığını <code>media</code> ile sorar, bir stil sayfası ve ana hat ile <code>deck_start</code>'ı, ardından slayt başına bir kez <code>deck_page</code>'i çağırır; her sayfa saklanmadan önce ana hatta ve palete göre kontrol edilir, <code>deck_build</code> <code>.pptx</code> dosyasını birleştirir, <code>slides_audit</code> taşma arar, <code>slides_render</code> modelin bakabileceği görsel içerik olarak slayt başına bir PNG verir ve <code>deck_replace</code> beğenmediği üç sayfayı düzeltir.</td>
@@ -287,11 +289,11 @@ belgesi oluşturmasına izin verir.
 
 ### 11 · Eski dosyalar — 2000'lerden kalma `.doc`, `.xls` ve `.ppt` dosyaları da açılır
 
-Word 97–2003 `.doc`, Excel `.xls` veya PowerPoint `.ppt` dosyası, bilgisayarınızda oluşturulan dönüştürülmüş bir `.docx`, `.xlsx` veya `.pptx` kopyası olarak açılır; özgün dosya hiçbir zaman değiştirilmez. Görseller, tablolar, formüller, sayı biçimleri, dolgular ve düzen aktarılır.
+Word 97–2003 `.doc`, Excel `.xls` veya PowerPoint `.ppt` dosyası, bilgisayarınızda oluşturulan dönüştürülmüş bir `.docx`, `.xlsx` veya `.pptx` kopyası olarak açılır; özgün dosya hiçbir zaman değiştirilmez. Görseller, tablolar, formüller, sayı biçimleri, dolgular ve düzen aktarılır. Her biçimin neyi koruduğu ve neyi bıraktığı [Eski ve ODF dosyaları dönüştürülmüş kopyalar olarak açılır](#legacy-and-odf-files-open-as-converted-copies) bölümünde yer alır.
 
-<img src="../assets/readme/legacy-formats-motion.webp" alt="GenOffice'in kurgusal bir 2004 faaliyet raporuna ait .ppt, .doc ve .xls dosyalarını açtığı hızlandırılmış görüntü; ardından bir slayt PowerPoint'te, yanında GenOffice'te dönüştürülmüş sunu" width="100%">
+<img src="../assets/readme/legacy-formats-motion.webp" alt="ChaOffice'in kurgusal bir 2004 faaliyet raporuna ait .ppt, .doc ve .xls dosyalarını açtığı hızlandırılmış görüntü; ardından bir slayt PowerPoint'te, yanında ChaOffice'te dönüştürülmüş sunu" width="100%">
 
-## Neden GenOffice
+## Neden ChaOffice
 
 - **Açık kaynak**, Apache-2.0, GitHub'da açıkta geliştiriliyor.
 - **Sizin çalıştırdığınız.** macOS, Windows ve Linux için yerel uygulamalar;
@@ -318,7 +320,7 @@ Word 97–2003 `.doc`, Excel `.xls` veya PowerPoint `.ppt` dosyası, bilgisayar�
   gösterir.
 - **Skills.** Hazır skill'ler ya da kendi `SKILL.md` dosyanız, herhangi bir
   yapay zekâ panelinin **+** menüsünden eklenir.
-- **Betiklenebilir.** Bir `genoffice` komut satırı, bir ajan skill'i ve bir
+- **Betiklenebilir.** Bir `chaoffice` komut satırı, bir ajan skill'i ve bir
   MCP sunucusu, her motoru Claude Code, Claude Desktop, Codex, Cursor ve diğer
   ajanların hizmetine, yine cihaz üzerinde sunar.
 - **Ücretsiz**, bireyler ve ekipler için aynı şekilde.
@@ -365,7 +367,7 @@ her zaman belgenin kendi renklerini korur.
 ## Skills
 
 Bir skill, yapay zekâya tek bir işi iyi yapmayı anlatan bir `SKILL.md`
-dosyasıdır: haftalık rapor, gizlilik sözleşmesi, ders planı. GenOffice bunların
+dosyasıdır: haftalık rapor, gizlilik sözleşmesi, ders planı. ChaOffice bunların
 bir setiyle gelir ve kodlama ajanlarının kullandığı biçimde kendi skill'lerinizi
 de kabul eder.
 
@@ -379,12 +381,12 @@ de kabul eder.
 
 ---
 
-## Komut satırı ve ajan skill'i
+## <a id="command-line-and-agent-skill"></a>Komut satırı ve ajan skill'i
 
-Uygulamaların bir dosyaya yapabildiği her şeyi `genoffice` komut satırı bir
+Uygulamaların bir dosyaya yapabildiği her şeyi `chaoffice` komut satırı bir
 terminalden yapabilir: Word, Excel, PowerPoint, PDF, Markdown ve HTML'yi aynı
 motorlar üzerinde, başsız olarak inceleyin, dönüştürün, oluşturun, okuyun ve
-düzenleyin. GenOffice ile birlikte kurulur, kendi çalışma zamanına ihtiyaç
+düzenleyin. ChaOffice ile birlikte kurulur, kendi çalışma zamanına ihtiyaç
 duymaz ve hiçbir belgeyi hiçbir yere göndermez. Birlikte gelen **ajan
 skill'i** ile eşleştirildiğinde, bir kodlama ajanını Markdown yaklaşımları
 yerine gerçek Office dosyaları üreten bir belge çalışanına dönüştürür.
@@ -398,31 +400,31 @@ istemcisi.
 
 | Nasıl                                  | Ne olur                                                                                                                                                                       |
 | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Uygulamada **Ayarlar → Integrations**  | Bu bilgisayarda bulunan ajanları listeler; tek tık skill'i seçtiğiniz her birine yazar. Bir GenOffice sürümü daha yeni bir skill getirdiğinde bir **Update** düğmesi belirir. |
+| Uygulamada **Ayarlar → Integrations**  | Bu bilgisayarda bulunan ajanları listeler; tek tık skill'i seçtiğiniz her birine yazar. Bir ChaOffice sürümü daha yeni bir skill getirdiğinde bir **Update** düğmesi belirir. |
 | Aynı sayfadaki **Download as zip**     | claude.ai, Claude masaüstü uygulamaları ve diğer asistanların yüklenen skill olarak kabul ettiği düzen.                                                                       |
-| `npx skills add genspark-ai/genoffice` | Bu depodan skill uyumlu herhangi bir ajana kurar.                                                                                                                             |
+| `npx skills add zhgyuhuii/ChayuanAIOffice` | Bu depodan skill uyumlu herhangi bir ajana kurar.                                                                                                                             |
 
 Ardından yeni bir sohbet başlatın ve bir belge isteyin. Skill, ajana ne zaman
-`genoffice`'e başvuracağını, bir dosyayı düzenlemeden önce nasıl okuyacağını
+`chaoffice`'e başvuracağını, bir dosyayı düzenlemeden önce nasıl okuyacağını
 ve kendi işini nasıl kontrol edeceğini öğretir.
 
 ### Terminalden hızlı başlangıç
 
 ```bash
-genoffice --version
-genoffice info report.docx --json                  # headings and blocks; or sheets, slides, pages
-genoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx/md/html, odt/ods/odp → docx/xlsx/pptx, doc/dot → docx, …
-genoffice create --type docx --from notes.md --out notes.docx
-genoffice create --type xlsx --from table.json --out sales.xlsx   # "=SUM(B2:B9)" cells stay live formulas
-genoffice docs read report.docx --range 0-9 --json # then `docs apply --ops edits.json` edits in place
-genoffice docs compare original.docx revised.docx --out redline.docx   # the differences as tracked Word revisions
-genoffice render report.docx --out shots/          # one PNG per page, to look at what you made
-genoffice open sales.xlsx                          # hand the result to the editor
+chaoffice --version
+chaoffice info report.docx --json                  # headings and blocks; or sheets, slides, pages
+chaoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx/md/html, odt/ods/odp → docx/xlsx/pptx, doc/dot → docx, ppt → pptx, …
+chaoffice create --type docx --from notes.md --out notes.docx
+chaoffice create --type xlsx --from table.json --out sales.xlsx   # "=SUM(B2:B9)" cells stay live formulas
+chaoffice docs read report.docx --range 0-9 --json # then `docs apply --ops edits.json` edits in place
+chaoffice docs compare original.docx revised.docx --out redline.docx   # the differences as tracked Word revisions
+chaoffice render report.docx --out shots/          # one PNG per page, to look at what you made
+chaoffice open sales.xlsx                          # hand the result to the editor
 ```
 
 Her komut tek satırlık bir özet ya da `--json` ile tek bir JSON nesnesi
 yazdırır. Düzenlemeler atomiktir: reddedilen bir op dosyayı olduğu gibi bırakır
-ve yol gösterici bir hatayla geri döner. `genoffice help` güncel komut
+ve yol gösterici bir hatayla geri döner. `chaoffice help` güncel komut
 yüzeyini listeler; tam başvuru
 [packages/cli/README.md](../../packages/cli/README.md) dosyasındadır.
 
@@ -433,24 +435,24 @@ aldı. Arkasında ajan, skill'in aşamalı iş akışını izledi ve CLI, bir so
 başlamadan önce her aşamayı kontrol etti:
 
 ```bash
-genoffice capabilities --json                        # which cloud tools GenOffice has configured
-genoffice guide slides design                        # the deck workflow and layout library
-genoffice image "the eight planets in a row …" --aspect 16:9 --out deck/assets/cover.jpg
-genoffice slides check deck/outline.json --json      # 8 pages, no findings
-genoffice slides check deck/pages/01.json --json     # builds one slide, audits overflow and overlap
+chaoffice capabilities --json                        # which cloud tools ChaOffice has configured
+chaoffice guide slides design                        # the deck workflow and layout library
+chaoffice image "the eight planets in a row …" --aspect 16:9 --out deck/assets/cover.jpg
+chaoffice slides check deck/outline.json --json      # 8 pages, no findings
+chaoffice slides check deck/pages/01.json --json     # builds one slide, audits overflow and overlap
 …                                                    # one page file per slide, fixed until each check is clean
-genoffice create --type pptx --spec deck/pages --outline deck/outline.json --out deck/solar-system.pptx --json
-genoffice slides render deck/solar-system.pptx --out deck/shots --json
-genoffice slides audit deck/solar-system.pptx --json    # 8 slides, no layout issues
-genoffice slides replace deck/solar-system.pptx --slide 4 --spec deck/pages/05.json --json
-genoffice open deck/solar-system.pptx
+chaoffice create --type pptx --spec deck/pages --outline deck/outline.json --out deck/solar-system.pptx --json
+chaoffice slides render deck/solar-system.pptx --out deck/shots --json
+chaoffice slides audit deck/solar-system.pptx --json    # 8 slides, no layout issues
+chaoffice slides replace deck/solar-system.pptx --slide 4 --spec deck/pages/05.json --json
+chaoffice open deck/solar-system.pptx
 ```
 
-`genoffice` içinde hiçbir model çağrısı yapılmaz: düşünmeyi ajan yapar,
-oluşturmayı ve kontrolü CLI yapar ve sonuç GenOffice'te ya da PowerPoint'te
+`chaoffice` içinde hiçbir model çağrısı yapılmaz: düşünmeyi ajan yapar,
+oluşturmayı ve kontrolü CLI yapar ve sonuç ChaOffice'te ya da PowerPoint'te
 sıradan bir `.pptx` olarak açılır.
 
-### MCP sunucusu
+### <a id="mcp-server"></a>MCP sunucusu
 
 Aynı komutlar, terminal çalıştıramayan ya da terminal vermeyi tercih
 etmediğiniz asistanlar için [Model Context Protocol](https://modelcontextprotocol.io)
@@ -459,23 +461,23 @@ Integrations → MCP** altında kopyalamaya hazır parçacıklarla gösterilir:
 
 | Yol                                | Nedir                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **A · `genoffice mcp`** (önerilen) | Asistanın kendisinin başlattığı bir stdio sunucusu; GenOffice'in açık olması gerekmez. Komut başına bir araç (`info`, `convert`, `create_docx`, `create_xlsx`, `create_pptx`, `create_pdf`, `docs_read` / `docs_apply` / `docs_check`, `sheet_*`, `slides_*`, `render`, `guide`, `search`, `image`, `media`, `open`) ve aşamalı sunum akışı `deck_start` → `deck_page` → `deck_build` → `deck_replace`. Op'lar, spesifikasyonlar ve Markdown satır içi aktarılır; böylece dosya sistemi olmayan bir istemci de çalışır. |
-| **B · Yerel HTTP sunucusu**        | GenOffice uygulamasının içinde `http://127.0.0.1:3093/mcp` adresinde çalışır (Streamable HTTP, eski SSE ile). Araçları görünür bir Word düzenleyici sekmesini yönetir: `create_session`, `insert_content`, `replace_blocks`, `apply_ops`, `read_document`, `save_session`; belgenin şekillenmesini izlersiniz. Varsayılan olarak kapalıdır; aynı ayarlar bölmesinden açın.                                                                                                                                              |
-| **C · `genoffice mcp --http`**     | Stdio araç seti, başka makinelerdeki istemciler için bir Streamable HTTP sunucusu olarak: bir konteyner, bir sandbox, ağınızdaki paylaşılan bir makine. Dosyalar çağrılarla birlikte yolculuk eder: `PUT /files/<name>` bir dosya yükler ve bir URL döndürür, her `file` parametresi bir http(s) URL'si alır ve dosya yazan bir araç onu bir indirme URL'si olarak, küçükse ayrıca baytları bir MCP kaynağı olarak geri verir. `--host 0.0.0.0` onu ağa açar, `--token` korur.                                          |
+| **A · `chaoffice mcp`** (önerilen) | Asistanın kendisinin başlattığı bir stdio sunucusu; ChaOffice'in açık olması gerekmez. Komut başına bir araç (`info`, `convert`, `create_docx`, `create_xlsx`, `create_pptx`, `create_pdf`, `docs_read` / `docs_apply` / `docs_check`, `sheet_*`, `slides_*`, `render`, `guide`, `search`, `image`, `media`, `open`) ve aşamalı sunum akışı `deck_start` → `deck_page` → `deck_build` → `deck_replace`. Op'lar, spesifikasyonlar ve Markdown satır içi aktarılır; böylece dosya sistemi olmayan bir istemci de çalışır. |
+| **B · Yerel HTTP sunucusu**        | ChaOffice uygulamasının içinde `http://127.0.0.1:3093/mcp` adresinde çalışır (Streamable HTTP, eski SSE ile). Araçları görünür bir Word düzenleyici sekmesini yönetir: `create_session`, `insert_content`, `replace_blocks`, `apply_ops`, `read_document`, `save_session`; belgenin şekillenmesini izlersiniz. Varsayılan olarak kapalıdır; aynı ayarlar bölmesinden açın.                                                                                                                                              |
+| **C · `chaoffice mcp --http`**     | Stdio araç seti, başka makinelerdeki istemciler için bir Streamable HTTP sunucusu olarak: bir konteyner, bir sandbox, ağınızdaki paylaşılan bir makine. Dosyalar çağrılarla birlikte yolculuk eder: `PUT /files/<name>` bir dosya yükler ve bir URL döndürür, her `file` parametresi bir http(s) URL'si alır ve dosya yazan bir araç onu bir indirme URL'si olarak, küçükse ayrıca baytları bir MCP kaynağı olarak geri verir. `--host 0.0.0.0` onu ağa açar, `--token` korur.                                          |
 
 ```bash
 # Claude Code
-claude mcp add --transport stdio genoffice -- genoffice mcp
+claude mcp add --transport stdio chaoffice -- chaoffice mcp
 ```
 
 ```jsonc
 // Cursor, Claude Desktop or any other MCP client
-{ "mcpServers": { "genoffice": { "command": "genoffice", "args": ["mcp"] } } }
+{ "mcpServers": { "chaoffice": { "command": "chaoffice", "args": ["mcp"] } } }
 ```
 
 ```bash
-# On the machine that has GenOffice (private network; add --token for a shared box)
-genoffice mcp --http 3093 --host 0.0.0.0 --token "$GENOFFICE_MCP_TOKEN"
+# On the machine that has ChaOffice (private network; add --token for a shared box)
+chaoffice mcp --http 3093 --host 0.0.0.0 --token "$GENOFFICE_MCP_TOKEN"
 
 # From the client: upload, then use the URL wherever a tool takes a file
 curl -T report.docx -H "Authorization: Bearer $GENOFFICE_MCP_TOKEN" http://server:3093/files/
@@ -488,21 +490,21 @@ HTTP üzerinden her oturum özel bir çalışma klasörü alır, göreli yollar 
 sunum klasörleri bunun içinde çözümlenir, `open` sunulmaz ve
 `GENOFFICE_ALLOWED_ROOTS` ayarlanmamışken araçlar sunucunun kendi dosya
 deposunun dışına çıkamaz. `render`, PDF'ye `convert` ve `create_pdf` yine de
-gizli bir GenOffice süreci başlatır; bu yüzden başsız bir ana makinede
+gizli bir ChaOffice süreci başlatır; bu yüzden başsız bir ana makinede
 uygulamanın kurulu olması ve bir sanal ekran (`xvfb-run`) gerekir.
 
-Buradaki `genoffice`, uygulamanın içinde gelen CLI'dir (macOS'te
-`/Applications/GenOffice.app/Contents/Resources/cli/genoffice`; ayarlar
+Buradaki `chaoffice`, uygulamanın içinde gelen CLI'dir (macOS'te
+`/Applications/ChaOffice.app/Contents/Resources/cli/chaoffice`; ayarlar
 bölmesi kurulumunuz için tam yolu yazdırır). Sunucu kendi iş akışı
-talimatlarını taşır ve op başvurularını `genoffice://guide/*` kaynakları
+talimatlarını taşır ve op başvurularını `chaoffice://guide/*` kaynakları
 olarak sunar; bu yüzden skill gerekmez. Skill ve MCP sunucusu bir arada
 bulunabilir, asistan birini seçer. Bulut özellikleri (`search`, `image`,
-`media`) yine GenOffice'te yapılandırılan sağlayıcı üzerinden gider; geri
+`media`) yine ChaOffice'te yapılandırılan sağlayıcı üzerinden gider; geri
 kalan her şey yerel çalışır ve `GENOFFICE_ALLOWED_ROOTS` her aracı
 listelediğiniz klasörlerle sınırlar.
 
 [Demo](#demo) bölümündeki yenilenebilir enerji sunumu, Claude Code'da yalnızca
-`genoffice` MCP sunucusu bağlıyken tek bir istemin protokol tarafından nasıl
+`chaoffice` MCP sunucusu bağlıyken tek bir istemin protokol tarafından nasıl
 göründüğüdür:
 
 ```text
@@ -523,47 +525,52 @@ deck_replace(dir, n, page) ×3 · slides_render(file, out)
 Otuz sekiz çağrı, yaklaşık on üç dakika ve asistan hiç kabuğa dokunmadı:
 rakamlar, fotoğraflar, kılavuzlar, kontroller ve işlenmiş görüntülerin tamamı
 MCP araç sonuçları olarak yolculuk etti. Makineden yalnızca `search` ve
-`media`, GenOffice'te yapılandırılan sağlayıcıya gitti.
+`media`, ChaOffice'te yapılandırılan sağlayıcıya gitti.
 
-## İndir
+## <a id="download"></a>İndir
 
 | Platform                             | Gereksinimler                                         | İndirme                                                                                |
 | ------------------------------------ | ----------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [Son `.dmg` (arm64)](https://github.com/genspark-ai/genoffice/releases/latest)         |
-| **macOS** — Intel (x64)              | macOS 11+                                             | [Son `.dmg` (x64)](https://github.com/genspark-ai/genoffice/releases/latest)           |
-| **Windows** (x64, çoğu PC)           | Windows 10+, Intel/AMD                                | [Son `-x64.exe` yükleyici](https://github.com/genspark-ai/genoffice/releases/latest)   |
-| **Windows** Arm üzerinde (ARM64)     | Arm üzerinde Windows 11 (Snapdragon X ve benzerleri)  | [Son `-arm64.exe` yükleyici](https://github.com/genspark-ai/genoffice/releases/latest) |
-| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 veya daha yeni)     | [Son `.deb`](https://github.com/genspark-ai/genoffice/releases/latest)                 |
-| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [Son `.rpm`](https://github.com/genspark-ai/genoffice/releases/latest)                 |
-| **Linux** — diğer dağıtımlar         | x86_64, glibc 2.34+, FUSE 2                           | [Son `.AppImage`](https://github.com/genspark-ai/genoffice/releases/latest)            |
+| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [Son `.dmg` (arm64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)         |
+| **macOS** — Intel (x64)              | macOS 11+                                             | [Son `.dmg` (x64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)           |
+| **Windows** (x64, çoğu PC)           | Windows 10+, Intel/AMD                                | [Son `-x64.exe` yükleyici](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)   |
+| **Windows** Arm üzerinde (ARM64)     | Arm üzerinde Windows 11 (Snapdragon X ve benzerleri)  | [Son `-arm64.exe` yükleyici](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) |
+| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 veya daha yeni)     | [Son `.deb`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
+| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [Son `.rpm`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
+| **Linux** — diğer dağıtımlar         | x86_64, glibc 2.34+, FUSE 2                           | [Son `.AppImage`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)            |
 
 Tüm derlemeler `main` dalından gelir; macOS ve Windows yükleyicileri imzalıdır.
-Eski sürümler [Releases](https://github.com/genspark-ai/genoffice/releases) sayfasındadır.
+Eski sürümler [Releases](https://github.com/zhgyuhuii/ChayuanAIOffice/releases) sayfasındadır.
 
 <details>
 <summary><b>Linux'a kurulum</b></summary>
 
-Deb paketi apt ile kurulur — bağımlılıkları çeker ve GenOffice'i uygulama
+Deb paketi apt ile kurulur — bağımlılıkları çeker ve ChaOffice'i uygulama
 menüsüne ekler:
 
 ```bash
-sudo apt install ./genoffice_<version>_amd64.deb
+sudo apt install ./chaoffice_<version>_amd64.deb
 ```
 
 Fedora / RHEL ailesi / openSUSE üzerinde bunun yerine rpm'i kurun:
 
 ```bash
-sudo dnf install ./genoffice-<version>.x86_64.rpm     # Fedora / RHEL family
-sudo zypper install ./genoffice-<version>.x86_64.rpm  # openSUSE
+sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
+sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
+
+Deb ve rpm ayrıca KDE Plasma'nın Dolphin'i için boş şablonlar ekler: bir
+klasörde sağ tıklayın → **Create New** altında _ChaOffice Document_,
+_ChaOffice Spreadsheet_ ve _ChaOffice Presentation_ listelenir. Şablonlar
+`/usr/share/templates` içinde durur ve paketle birlikte kaldırılır.
 
 AppImage olduğu yerde çalışır: FUSE 2 çalışma zamanını kurun
 (`sudo apt install libfuse2`; Ubuntu 24.04'te paket `libfuse2t64`), dosyayı
 çalıştırılabilir yapın, ardından çalıştırın:
 
 ```bash
-chmod +x GenOffice-<version>.AppImage
-./GenOffice-<version>.AppImage
+chmod +x ChaOffice-<version>.AppImage
+./ChaOffice-<version>.AppImage
 ```
 
 Bir Chromebook’ta aynı paketler Linux ortamında (Crostini) çalışır — ayrıntılar için [docs/platforms/chromeos.md](../platforms/chromeos.md).
@@ -591,6 +598,32 @@ Paket paket tur (docx/pptx motorları, `pdf2docx`, `html2docx`, ajan çekirdeği
 ve sağlayıcılar) [CONTRIBUTING.md](../../CONTRIBUTING.md#engine-packages)
 dosyasındadır.
 
+### <a id="legacy-and-odf-files-open-as-converted-copies"></a>Eski ve ODF dosyaları dönüştürülmüş kopyalar olarak açılır
+
+ChaOffice'in geri yazamadığı biçimler — eski Word `.doc`/`.dot`, Hancom
+`.hwp`/`.hwpx`, Excel 97 `.xls`, `.tsv`, eski PowerPoint `.ppt` ve
+OpenDocument ailesi (`.odt`, `.ott`, `.ods`, `.ots`, `.odp`, `.otp`) — yerel
+dosyalar değil, içe aktarmalardır.
+Bunlardan birini açmak, dosyayı makinenizde bir `.docx`, `.xlsx` veya `.pptx`
+kopyasına dönüştürür ve o kopyayı açar; özgün dosya bir daha okunmaz ve asla
+yazılmaz.
+
+- Docs ve Slides önce kopyanın nereye konacağını sorar (varsayılan olarak
+  özgün dosyanın yanındaki aynı adlı `.docx`/`.pptx`); böylece sonraki her
+  Kaydet oraya yazılır. Bir `.ppt`; asıl slaytları, şekil geometrisi,
+  dolguları, resimleri ve metin biçimlendirmesiyle dönüştürülür, yani sunum
+  PowerPoint'in gösterdiği gibi görünür; notlar, animasyonlar, geçişler ve
+  köprüler henüz aktarılmaz.
+- Sheets dönüştürülmüş çalışma kitabını hemen açar ve ilk Kaydet'i Farklı
+  Kaydet üzerinden yeni bir `.xlsx` dosyasına yönlendirir. `.csv` istisnadır:
+  kimliğini korur ve Kaydet, Excel'in yaptığı gibi değerleri `.csv` dosyasına
+  geri yazar.
+- Dönüştürme tek yönlüdür ve kaynak biçimin taşıdığı ama OOXML'in taşımadığı
+  özellikleri düşürebilir. `.doc`, `.ppt`, `.hwp` ve ODF biçimleri bunu
+  belirten bir onay iletişim kutusu gösterir; atlamak için "Convert without
+  asking next time" seçeneğini işaretleyin, Ayarlar → General altındaki "Ask
+  before converting legacy files" ise onu yeniden açar.
+
 ## Geliştirme
 
 ```bash
@@ -606,45 +639,48 @@ npm run dist:linux   # package Linux AppImage + deb + rpm
 ```
 
 Sheets uygulaması xlsx yardımcı süreci için ayrıca bir Rust araç zincirine
-(PATH üzerinde `cargo`) ihtiyaç duyar; `npm run build -w @genoffice/sheets`
+(PATH üzerinde `cargo`) ihtiyaç duyar; `npm run build -w @chaoffice/sheets`
 bunu otomatik derler. Her değişikliğin geçmesi gereken kontroller ve çekme
 isteklerinin nasıl birleştirildiği için [CONTRIBUTING.md](../../CONTRIBUTING.md)
 dosyasına bakın.
 
 ## Topluluk
 
-GenOffice etkin geliştirme aşamasındadır ve geri bildiriminiz onu şekillendirir.
+ChaOffice etkin geliştirme aşamasındadır ve geri bildiriminiz onu şekillendirir.
 
 - **Hata bildirin ya da özellik isteyin:**
-  [GitHub Issues](https://github.com/genspark-ai/genoffice/issues).
-- **GenOffice grup sohbetine katılın:** ekiple ve diğer kullanıcılarla konuşmak
-  için [GenTeam](https://genoffice.ai/join).
+  [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues).
+- **ChaOffice grup sohbetine katılın:** ekiple ve diğer kullanıcılarla konuşmak
+  için [GenTeam](https://chaoffice.ai/join).
 - **X'te [@merrickbuilds](https://x.com/merrickbuilds) hesabını takip edin:**
   sürüm notları, demolar ve sırada ne olduğu için.
-- **Depoya yıldız verin:** GenOffice size yararlıysa, projeyi desteklemenin en
+- **Depoya yıldız verin:** ChaOffice size yararlıysa, projeyi desteklemenin en
   iyi yolu budur.
 
 ## SSS
 
 <details>
-<summary><b>GenOffice ücretsiz mi?</b></summary>
+<summary><b>ChaOffice ücretsiz mi?</b></summary>
 
-Evet. GenOffice, Apache-2.0 lisansı altında ücretsiz ve açık kaynaklıdır —
+Evet. ChaOffice, Apache-2.0 lisansı altında ücretsiz ve açık kaynaklıdır —
 deneme süresi yok, uygulamaların kendisi için ücretli katman yok.
 
 </details>
 
 <details>
-<summary><b>GenOffice, Microsoft Word, Excel ve PowerPoint dosyalarını açabilir mi?</b></summary>
+<summary><b>ChaOffice, Microsoft Word, Excel ve PowerPoint dosyalarını açabilir mi?</b></summary>
 
-Evet. GenOffice yerel `.docx`, `.xlsx` ve `.pptx` dosyalarını açar ve kaydeder.
+Evet. ChaOffice yerel `.docx`, `.xlsx` ve `.pptx` dosyalarını açar ve kaydeder.
 Kaydetme bayt bayt korur: dosyanın dokunmadığınız kısımları bayt bayt geri
 yazılır; böylece belgeler Microsoft Office'te çalışmaya devam eder.
+Eski `.doc`/`.dot`, `.xls` ve `.ppt` dosyaları da dönüştürülmüş
+`.docx`/`.xlsx`/`.pptx` kopyaları olarak açılır — bkz. [Eski ve ODF dosyaları
+dönüştürülmüş kopyalar olarak açılır](#legacy-and-odf-files-open-as-converted-copies).
 
 </details>
 
 <details>
-<summary><b>GenOffice çevrimdışı çalışır mı?</b></summary>
+<summary><b>ChaOffice çevrimdışı çalışır mı?</b></summary>
 
 Belge düzenleme tamamen yereldir — dosyalar açılmak, düzenlenmek, kaydedilmek
 ya da dönüştürülmek için makinenizden asla çıkmaz. Yapay zekâ özellikleri
@@ -654,7 +690,7 @@ da kendi model API anahtarınızı gerektirir.
 </details>
 
 <details>
-<summary><b>GenOffice PDF dosyalarını düzenleyebilir mi?</b></summary>
+<summary><b>ChaOffice PDF dosyalarını düzenleyebilir mi?</b></summary>
 
 Evet — üstünü örten açıklama notları değil, sayfa içerik akışını özgün yazı
 tiplerini koruyarak yeniden yazan gerçek PDF metin ve görsel düzenleme.
@@ -662,7 +698,7 @@ tiplerini koruyarak yeniden yazan gerçek PDF metin ve görsel düzenleme.
 </details>
 
 <details>
-<summary><b>GenOffice PDF'yi Word, Excel ya da PowerPoint'e dönüştürebilir mi?</b></summary>
+<summary><b>ChaOffice PDF'yi Word, Excel ya da PowerPoint'e dönüştürebilir mi?</b></summary>
 
 Evet — tamamen cihaz üzerinde: PDFium karakter düzeyinde çıkarma ve geometri
 tabanlı düzen analizi; bulut hizmeti yok, yükleme yok. Taranmış sayfalar da
@@ -674,7 +710,7 @@ görüntüsü yerine düzenlenebilir metne dönüşürler.
 <details>
 <summary><b>Kendi yapay zekâ modelimi ya da API anahtarımı kullanabilir miyim?</b></summary>
 
-Evet. Anahtarsız ChaAI Office oturumunun yanı sıra GenOffice; Claude, OpenAI,
+Evet. Anahtarsız ChaAI Office oturumunun yanı sıra ChaOffice; Claude, OpenAI,
 Gemini, DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter,
 Requesty, Opper, Cheaper Inference, Atlas Cloud ve OpenCode Zen/Go için kendi
 anahtarınızı getirmeyi, ayrıca yerel model sunucuları dahil herhangi bir
@@ -694,7 +730,7 @@ başına açmayı bırakır. Açık bir yapay zekâ eylemi — bir şerit düğm
 </details>
 
 <details>
-<summary><b>GenOffice HTML'yi Word'e dönüştürebilir mi?</b></summary>
+<summary><b>ChaOffice HTML'yi Word'e dönüştürebilir mi?</b></summary>
 
 Evet — HTML uygulamasındaki Export as Word, tamamen cihaz üzerinde yerel,
 düzenlenebilir bir `.docx` üretir. Sayfa yerleşik Chromium'da işlenir ve
@@ -706,9 +742,9 @@ gömülür.
 </details>
 
 <details>
-<summary><b>GenOffice'i Claude Code, Codex, Cursor ya da bir betikten yönetebilir miyim?</b></summary>
+<summary><b>ChaOffice'i Claude Code, Codex, Cursor ya da bir betikten yönetebilir miyim?</b></summary>
 
-Evet. GenOffice, aynı motorları başsız çalıştıran bir `genoffice` komut satırı
+Evet. ChaOffice, aynı motorları başsız çalıştıran bir `chaoffice` komut satırı
 kurar: belgeleri bir terminalden ya da betikten inceleyin, dönüştürün,
 oluşturun, okuyun ve düzenleyin; programlar için `--json` çıktısıyla. Birlikte
 gelen ajan skill'i Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot,
@@ -718,13 +754,13 @@ OpenCode ve Windsurf'e onu kullanmayı öğretir; **Ayarlar → Integrations**
 </details>
 
 <details>
-<summary><b>GenOffice herhangi bir veri topluyor mu?</b></summary>
+<summary><b>ChaOffice herhangi bir veri topluyor mu?</b></summary>
 
 Resmî paketlenmiş derlemeler varsayılan olarak sınırlı kullanım analitiği
 gönderir ve raporlamayı Ayarlar → General altında istediğiniz zaman
 kapatabilirsiniz. Analitik asla belge içeriği, dosya adları, dosya yolları,
 hesap kimliği ya da e-posta adresi göndermez. Olay ve veri açıklamalarının
-tamamı için [GenOffice Gizlilik](../../PRIVACY.md) sayfasına bakın.
+tamamı için [ChaOffice Gizlilik](../../PRIVACY.md) sayfasına bakın.
 
 </details>
 
@@ -736,7 +772,7 @@ denetimi) ve yapay zekâ tarafından üretilen içerik için tehdit modelleri i�
 
 ## Teşekkürler
 
-GenOffice, şu açık kaynak projeler olmadan mümkün olmazdı:
+ChaOffice, şu açık kaynak projeler olmadan mümkün olmazdı:
 
 - [Electron](https://www.electronjs.org/) — her uygulamanın masaüstü çalışma
   zamanı.
@@ -761,6 +797,11 @@ GenOffice, şu açık kaynak projeler olmadan mümkün olmazdı:
   sürecinin okuma ve hesaplama katmanları.
 - [libeot](https://github.com/umanwizard/libeot) (MPL-2.0) — gömülü PowerPoint
   yazı tipleri için TypeScript'e taşınmış MicroType Express çözücüsü.
+- [rhwp](https://github.com/edwardkim/rhwp) (MIT) — Hancom içe aktarması için
+  ikili `.hwp` belgelerini HWPX'e okur; WebAssembly derlemesi, üçüncü taraf
+  bildirimlerinde listelenen Rust crate'lerini ve Volexity hwp-extract
+  uyarlamasını içerir. "한글", "한컴", "HWP" ve "HWPX", Hancom Inc.'in tescilli
+  ticari markalarıdır; ChaOffice'in Hancom ile bir bağlantısı yoktur.
 - [React](https://react.dev/) (MIT) — her uygulamanın arayüz katmanı.
 - [Mermaid](https://mermaid.js.org/) (MIT) ve [KaTeX](https://katex.org/)
   (MIT) — Markdown ve Docs'ta diyagramlar ve matematik.
@@ -782,10 +823,10 @@ MIT/Apache-2.0/BSD-3-Clause/OFL lisanslıdır.
 
 ## Lisans
 
-GenOffice, tek bir istisnayla [Apache License 2.0](../../LICENSE) altında
+ChaOffice, tek bir istisnayla [Apache License 2.0](../../LICENSE) altında
 lisanslanmıştır: `ee/` dizini gelecekteki kurumsal modüller için ayrılmıştır ve
-[GenOffice Enterprise License](../../ee/LICENSE) kapsamındadır.
+[ChaOffice Enterprise License](../../ee/LICENSE) kapsamındadır.
 
-GenOffice ve ChaAI Office adları ile logoları Mainfunc, Inc.'in ticari
+ChaOffice ve ChaAI Office adları ile logoları Mainfunc, Inc.'in ticari
 markalarıdır. Apache-2.0 lisansı bunları kullanma izni vermez (bkz. 6. bölüm);
 çatallar kendi markalarını kullanmalıdır.

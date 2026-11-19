@@ -327,4 +327,5 @@ export const th = {
   aiToolRunReadUrl: 'กำลังอ่านหน้าเว็บ…',
   aiPageCloudToLocal: 'คลาวด์ไม่พร้อมใช้ — สร้างในเครื่อง',
 
+  aiGskLoginOk: 'ลงชื่อเข้าใช้ ChaAI Office แล้ว',
 }
