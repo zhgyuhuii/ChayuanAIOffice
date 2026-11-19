@@ -38,11 +38,19 @@ function openaiSettings(apiKey = 'sk-test', imageModel = 'gpt-image-2'): AiSetti
 }
 
 describe('media settings', () => {
+  // adapted: #2656 minimax 携带策展 imageModels/defaultImageModel（可选元数据，types.ts
+  // 已收窄可选）；本地 live-discovery 契约改为——策展列表可选、出现则 default 必在列内，
+  // analysis 列表仍然禁止（分析模型一律 live 发现）
   it('carries wire capability only — no built-in model lists', () => {
     for (const meta of AI_MEDIA_PROVIDERS) {
-      expect(Object.hasOwn(meta, 'imageModels'), `${meta.id} ships image models`).toBe(false)
+      if (Object.hasOwn(meta, 'imageModels')) {
+        expect(meta.imageModels!.length, `${meta.id} imageModels is never empty`).toBeGreaterThan(0)
+        expect(
+          meta.imageModels,
+          `${meta.id} defaultImageModel is one of imageModels`,
+        ).toContain(meta.defaultImageModel)
+      }
       expect(Object.hasOwn(meta, 'analysisModels'), `${meta.id} ships analysis models`).toBe(false)
-      expect(Object.hasOwn(meta, 'defaultImageModel'), `${meta.id} ships a default image model`).toBe(false)
       expect(
         Object.hasOwn(meta, 'defaultAnalysisModel'),
         `${meta.id} ships a default analysis model`,

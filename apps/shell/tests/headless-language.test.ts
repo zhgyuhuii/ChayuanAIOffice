@@ -78,7 +78,8 @@ it.each([
     let exported: Lang | undefined
     const context = createContext({
       uiLang: null,
-      process: { env: { GENOFFICE_LANG: override } },
+      // adapted: 本地语言覆盖环境变量按品牌叫 CHAOFFICE_LANG（上游 GENOFFICE_LANG）
+      process: { env: { CHAOFFICE_LANG: override } },
       app: { getLocale: () => locale },
       APP_SETTINGS_PATH: () => settings,
       readAppSettings,
@@ -94,6 +95,9 @@ it.each([
       setDelimitedImportLimit: () => {},
       currentCsvImportLimitMb: () => 1,
       setTimeout: () => 0,
+      // adapted: 本地 ready 前缀比上游多两件——官网心跳（startSiteSync）与文件索引
+      // 延迟刷新（ensureFileIndexer；回调悬在桩 setTimeout 里从不执行，无需真身）
+      startSiteSync: () => {},
       installRendererProtocol: () => {},
       DOCS_OUT: '',
       SHEETS_OUT: '',
