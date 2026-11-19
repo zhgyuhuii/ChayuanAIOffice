@@ -13,10 +13,10 @@
 Word, Excel, PowerPoint ve PDF dosyaları; siz ve yapay zekânız tarafından düzenlenir, gerçek biçimlerinde geri kaydedilir.</p>
 
 <p align="center">
-  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/genspark-ai/chaoffice" alt="Lisans: Apache-2.0"></a>
-  <a href="https://github.com/genspark-ai/chaoffice/releases/latest"><img src="https://img.shields.io/github/v/release/genspark-ai/chaoffice" alt="Son sürüm"></a>
-  <a href="https://github.com/genspark-ai/chaoffice/releases"><img src="https://img.shields.io/github/downloads/genspark-ai/chaoffice/total" alt="İndirmeler"></a>
-  <a href="https://github.com/genspark-ai/chaoffice/stargazers"><img src="https://img.shields.io/github/stars/genspark-ai/chaoffice?style=flat" alt="GitHub yıldızları"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/ChayuanAIOffice" alt="Lisans: Apache-2.0"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/ChayuanAIOffice" alt="Son sürüm"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/ChayuanAIOffice/total" alt="İndirmeler"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/ChayuanAIOffice?style=flat" alt="GitHub yıldızları"></a>
   <a href="https://x.com/merrickbuilds"><img src="https://img.shields.io/badge/follow-%40merrickbuilds-000000?logo=x&logoColor=white" alt="X'te @merrickbuilds'i takip edin"></a>
 </p>
 
@@ -70,7 +70,7 @@ her zaman OOXML yazar, asla kaynak biçimi yazmaz.
   ana ekrandaki **Ask AI** soruları bu belgeler üzerinden yanıtlar ve her
   iddianın arkasındaki dosyayı kaynak gösterir, böylece açıp kontrol
   edebilirsiniz.
-- **Kendi anahtarlarınız ya da hiç anahtar yok.** Genspark ile oturum açıp
+- **Kendi anahtarlarınız ya da hiç anahtar yok.** ChaAI Office ile oturum açıp
   anahtar işini atlayın ya da Claude, OpenAI, Gemini, DeepSeek, Kimi, GLM,
   Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty, Opper, Cheaper
   Inference, Atlas Cloud veya yerel sunucular dahil herhangi bir OpenAI uyumlu
@@ -81,9 +81,9 @@ her zaman OOXML yazar, asla kaynak biçimi yazmaz.
   açmadan makinenizde gerçek Office dosyaları oluşturabilir, dönüştürebilir,
   okuyabilir ve düzenleyebilir.
 
-**Edinin:** [macOS](https://github.com/genspark-ai/chaoffice/releases/latest) (Apple Silicon ve Intel) ·
-[Windows](https://github.com/genspark-ai/chaoffice/releases/latest) (x64 ve Arm) ·
-[Linux](https://github.com/genspark-ai/chaoffice/releases/latest) (deb, rpm, AppImage) —
+**Edinin:** [macOS](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (Apple Silicon ve Intel) ·
+[Windows](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (x64 ve Arm) ·
+[Linux](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (deb, rpm, AppImage) —
 ayrıntılar ve gereksinimler [İndir](#download) bölümünde.
 
 ## Demo
@@ -261,7 +261,7 @@ Office dosyaları oluşturabilir, dönüştürebilir, okuyabilir ve düzenleyebi
 </tr>
 <tr>
 <td><b>Ajanınıza tek bir istem</b> — "Güneş Sistemi hakkında sekiz slaytlık bir sunum oluştur." Ajan skill'i okur, bir stil sayfası, bir ana hat ve slayt başına bir sayfa spesifikasyonu yazar, iki fotoğrafı <code>chaoffice image</code> ile üretir ve <code>chaoffice create</code> dosyayı <code>.pptx</code> olarak birleştirip <code>slides render</code> bakmanız için slayt başına bir PNG vermeden önce <code>chaoffice slides check</code> komutunun taşan ya da çakışan her şeyi reddetmesine izin verir.</td>
-<td><b>Bir kez kurun, Ayarlar → Integrations üzerinden</b> — ChaOffice bu bilgisayarda bulduğu kodlama ajanlarını listeler ve skill'i seçtiğiniz her birine yazar. Ya da skill'i zip olarak indirin ya da <code>npx skills add genspark-ai/chaoffice</code> çalıştırın. Komutlar ve tam iş akışı <a href="#command-line-and-agent-skill">Komut satırı ve ajan skill'i</a> bölümünde.</td>
+<td><b>Bir kez kurun, Ayarlar → Integrations üzerinden</b> — ChaOffice bu bilgisayarda bulduğu kodlama ajanlarını listeler ve skill'i seçtiğiniz her birine yazar. Ya da skill'i zip olarak indirin ya da <code>npx skills add zhgyuhuii/ChayuanAIOffice</code> çalıştırın. Komutlar ve tam iş akışı <a href="#command-line-and-agent-skill">Komut satırı ve ajan skill'i</a> bölümünde.</td>
 </tr>
 </table>
 
@@ -304,7 +304,7 @@ Word 97–2003 `.doc`, Excel `.xls` veya PowerPoint `.ppt` dosyası, bilgisayar�
 - **Belgenin kendisini düzenleyen bir yapay zekâ.** Docs'ta izlenen
   değişiklikler, Sheets'te canlı formüller ve grafikler, tuvale çizilen
   slaytlar; her yapay zekâ turu geri alabileceğiniz bir anlık görüntü.
-- **Sizin modeliniz, sizin anahtarınız.** Genspark ile oturum açın ya da
+- **Sizin modeliniz, sizin anahtarınız.** ChaAI Office ile oturum açın ya da
   Claude, OpenAI, Gemini, DeepSeek ve daha fazlası için bir anahtar getirin;
   yerel sunucular ve her OpenAI uyumlu uç nokta dahil.
 - **Doğru dürüst PDF.** Sayfanın içinde metin düzenleyin ve PDF'yi cihaz
@@ -327,8 +327,8 @@ Word 97–2003 `.doc`, Excel `.xls` veya PowerPoint `.ppt` dosyası, bilgisayar�
 
 ## Yapay zekâ arka uçları
 
-**Genspark ile oturum açın**; yapılandırılacak hiçbir şey yoktur: model
-çağrıları Genspark proxy'si üzerinden yönlendirilir (Claude, GPT ve Gemini
+**ChaAI Office ile oturum açın**; yapılandırılacak hiçbir şey yoktur: model
+çağrıları ChaAI Office proxy'si üzerinden yönlendirilir (Claude, GPT ve Gemini
 aileleri) ve ajanlar web ve görsel arama, görsel üretimi ve görsel/ses/video
 analizi kazanır.
 
@@ -354,7 +354,7 @@ alıntıları değerlendirilmek üzere gönderilir ve makineden başka hiçbir �
 çıkmaz.
 
 **Parallel** hesap olmadan çalışır: ücretsiz Search MCP'si (hız sınırlı),
-Genspark girişi ya da arama anahtarı yapılandırılmamışken varsayılan web
+ChaAI Office girişi ya da arama anahtarı yapılandırılmamışken varsayılan web
 aramasıdır ve DuckDuckGo kazımasından önce çalışır. Bunun yerine Search API'yi
 kullanmak için Web search altında Parallel'i seçin ve bir
 [Parallel](https://platform.parallel.ai/) anahtarı girin. Keenable de
@@ -402,7 +402,7 @@ istemcisi.
 | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Uygulamada **Ayarlar → Integrations**  | Bu bilgisayarda bulunan ajanları listeler; tek tık skill'i seçtiğiniz her birine yazar. Bir ChaOffice sürümü daha yeni bir skill getirdiğinde bir **Update** düğmesi belirir. |
 | Aynı sayfadaki **Download as zip**     | claude.ai, Claude masaüstü uygulamaları ve diğer asistanların yüklenen skill olarak kabul ettiği düzen.                                                                       |
-| `npx skills add genspark-ai/chaoffice` | Bu depodan skill uyumlu herhangi bir ajana kurar.                                                                                                                             |
+| `npx skills add zhgyuhuii/ChayuanAIOffice` | Bu depodan skill uyumlu herhangi bir ajana kurar.                                                                                                                             |
 
 Ardından yeni bir sohbet başlatın ve bir belge isteyin. Skill, ajana ne zaman
 `chaoffice`'e başvuracağını, bir dosyayı düzenlemeden önce nasıl okuyacağını
@@ -531,16 +531,16 @@ MCP araç sonuçları olarak yolculuk etti. Makineden yalnızca `search` ve
 
 | Platform                             | Gereksinimler                                         | İndirme                                                                                |
 | ------------------------------------ | ----------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [Son `.dmg` (arm64)](https://github.com/genspark-ai/chaoffice/releases/latest)         |
-| **macOS** — Intel (x64)              | macOS 11+                                             | [Son `.dmg` (x64)](https://github.com/genspark-ai/chaoffice/releases/latest)           |
-| **Windows** (x64, çoğu PC)           | Windows 10+, Intel/AMD                                | [Son `-x64.exe` yükleyici](https://github.com/genspark-ai/chaoffice/releases/latest)   |
-| **Windows** Arm üzerinde (ARM64)     | Arm üzerinde Windows 11 (Snapdragon X ve benzerleri)  | [Son `-arm64.exe` yükleyici](https://github.com/genspark-ai/chaoffice/releases/latest) |
-| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 veya daha yeni)     | [Son `.deb`](https://github.com/genspark-ai/chaoffice/releases/latest)                 |
-| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [Son `.rpm`](https://github.com/genspark-ai/chaoffice/releases/latest)                 |
-| **Linux** — diğer dağıtımlar         | x86_64, glibc 2.34+, FUSE 2                           | [Son `.AppImage`](https://github.com/genspark-ai/chaoffice/releases/latest)            |
+| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [Son `.dmg` (arm64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)         |
+| **macOS** — Intel (x64)              | macOS 11+                                             | [Son `.dmg` (x64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)           |
+| **Windows** (x64, çoğu PC)           | Windows 10+, Intel/AMD                                | [Son `-x64.exe` yükleyici](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)   |
+| **Windows** Arm üzerinde (ARM64)     | Arm üzerinde Windows 11 (Snapdragon X ve benzerleri)  | [Son `-arm64.exe` yükleyici](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) |
+| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 veya daha yeni)     | [Son `.deb`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
+| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [Son `.rpm`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
+| **Linux** — diğer dağıtımlar         | x86_64, glibc 2.34+, FUSE 2                           | [Son `.AppImage`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)            |
 
 Tüm derlemeler `main` dalından gelir; macOS ve Windows yükleyicileri imzalıdır.
-Eski sürümler [Releases](https://github.com/genspark-ai/chaoffice/releases) sayfasındadır.
+Eski sürümler [Releases](https://github.com/zhgyuhuii/ChayuanAIOffice/releases) sayfasındadır.
 
 <details>
 <summary><b>Linux'a kurulum</b></summary>
@@ -649,7 +649,7 @@ dosyasına bakın.
 ChaOffice etkin geliştirme aşamasındadır ve geri bildiriminiz onu şekillendirir.
 
 - **Hata bildirin ya da özellik isteyin:**
-  [GitHub Issues](https://github.com/genspark-ai/chaoffice/issues).
+  [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues).
 - **ChaOffice grup sohbetine katılın:** ekiple ve diğer kullanıcılarla konuşmak
   için [GenTeam](https://chaoffice.ai/join).
 - **X'te [@merrickbuilds](https://x.com/merrickbuilds) hesabını takip edin:**
@@ -684,7 +684,7 @@ dönüştürülmüş kopyalar olarak açılır](#legacy-and-odf-files-open-as-co
 
 Belge düzenleme tamamen yereldir — dosyalar açılmak, düzenlenmek, kaydedilmek
 ya da dönüştürülmek için makinenizden asla çıkmaz. Yapay zekâ özellikleri
-(ajanlar, arama, görsel araçları) bir ağ bağlantısı ve ya Genspark oturumu ya
+(ajanlar, arama, görsel araçları) bir ağ bağlantısı ve ya ChaAI Office oturumu ya
 da kendi model API anahtarınızı gerektirir.
 
 </details>
@@ -710,7 +710,7 @@ görüntüsü yerine düzenlenebilir metne dönüşürler.
 <details>
 <summary><b>Kendi yapay zekâ modelimi ya da API anahtarımı kullanabilir miyim?</b></summary>
 
-Evet. Anahtarsız Genspark oturumunun yanı sıra ChaOffice; Claude, OpenAI,
+Evet. Anahtarsız ChaAI Office oturumunun yanı sıra ChaOffice; Claude, OpenAI,
 Gemini, DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter,
 Requesty, Opper, Cheaper Inference, Atlas Cloud ve OpenCode Zen/Go için kendi
 anahtarınızı getirmeyi, ayrıca yerel model sunucuları dahil herhangi bir
@@ -827,6 +827,6 @@ ChaOffice, tek bir istisnayla [Apache License 2.0](../../LICENSE) altında
 lisanslanmıştır: `ee/` dizini gelecekteki kurumsal modüller için ayrılmıştır ve
 [ChaOffice Enterprise License](../../ee/LICENSE) kapsamındadır.
 
-ChaOffice ve Genspark adları ile logoları Mainfunc, Inc.'in ticari
+ChaOffice ve ChaAI Office adları ile logoları Mainfunc, Inc.'in ticari
 markalarıdır. Apache-2.0 lisansı bunları kullanma izni vermez (bkz. 6. bölüm);
 çatallar kendi markalarını kullanmalıdır.

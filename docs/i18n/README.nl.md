@@ -13,10 +13,10 @@
 Word-, Excel-, PowerPoint- en PDF-bestanden, bewerkt door jou en je AI, opgeslagen in de echte formaten.</p>
 
 <p align="center">
-  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/genspark-ai/chaoffice" alt="Licentie: Apache-2.0"></a>
-  <a href="https://github.com/genspark-ai/chaoffice/releases/latest"><img src="https://img.shields.io/github/v/release/genspark-ai/chaoffice" alt="Nieuwste release"></a>
-  <a href="https://github.com/genspark-ai/chaoffice/releases"><img src="https://img.shields.io/github/downloads/genspark-ai/chaoffice/total" alt="Downloads"></a>
-  <a href="https://github.com/genspark-ai/chaoffice/stargazers"><img src="https://img.shields.io/github/stars/genspark-ai/chaoffice?style=flat" alt="GitHub-sterren"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/ChayuanAIOffice" alt="Licentie: Apache-2.0"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/ChayuanAIOffice" alt="Nieuwste release"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/ChayuanAIOffice/total" alt="Downloads"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/ChayuanAIOffice?style=flat" alt="GitHub-sterren"></a>
   <a href="https://x.com/merrickbuilds"><img src="https://img.shields.io/badge/follow-%40merrickbuilds-000000?logo=x&logoColor=white" alt="Volg @merrickbuilds op X"></a>
 </p>
 
@@ -70,7 +70,7 @@ bronformaat.
   ster en **Ask AI** op het startscherm beantwoordt vragen over al die
   documenten heen, met bij elke bewering het bestand erachter, zodat je het
   kunt openen en controleren.
-- **Jouw eigen keys, of geen enkele.** Log in met Genspark en je hoeft niets te
+- **Jouw eigen keys, of geen enkele.** Log in met ChaAI Office en je hoeft niets te
   regelen, of gebruik je eigen key voor Claude, OpenAI, Gemini, DeepSeek,
   Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty,
   Opper, Cheaper Inference, Atlas Cloud, of elk OpenAI-compatibel endpoint,
@@ -81,9 +81,9 @@ bronformaat.
   agent echte Office-bestanden op je eigen machine kan maken, converteren,
   lezen en bewerken zonder een venster te openen.
 
-**Haal het hier:** [macOS](https://github.com/genspark-ai/chaoffice/releases/latest) (Apple Silicon en Intel) ·
-[Windows](https://github.com/genspark-ai/chaoffice/releases/latest) (x64 en Arm) ·
-[Linux](https://github.com/genspark-ai/chaoffice/releases/latest) (deb, rpm, AppImage) —
+**Haal het hier:** [macOS](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (Apple Silicon en Intel) ·
+[Windows](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (x64 en Arm) ·
+[Linux](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (deb, rpm, AppImage) —
 details en vereisten in [Download](#download).
 
 ## Demo
@@ -266,7 +266,7 @@ venster te openen.
 </tr>
 <tr>
 <td><b>Eén prompt aan je agent</b> — "Bouw een deck van acht slides over het zonnestelsel." De agent leest de skill, schrijft een stylesheet, een outline en één paginaspecificatie per slide, genereert de twee foto's met <code>chaoffice image</code> en laat <code>chaoffice slides check</code> alles afwijzen wat overloopt of overlapt, voordat <code>chaoffice create</code> de <code>.pptx</code> samenstelt en <code>slides render</code> per slide een PNG teruggeeft om te bekijken.</td>
-<td><b>Eén keer installeren, via Instellingen → Integraties</b> — ChaOffice toont de coding agents die het op deze computer vindt en schrijft de skill naar elke agent die je kiest. Of download de skill als zip, of voer <code>npx skills add genspark-ai/chaoffice</code> uit. Commando's en de volledige workflow staan in <a href="#command-line-and-agent-skill">Opdrachtregel en agent-skill</a>.</td>
+<td><b>Eén keer installeren, via Instellingen → Integraties</b> — ChaOffice toont de coding agents die het op deze computer vindt en schrijft de skill naar elke agent die je kiest. Of download de skill als zip, of voer <code>npx skills add zhgyuhuii/ChayuanAIOffice</code> uit. Commando's en de volledige workflow staan in <a href="#command-line-and-agent-skill">Opdrachtregel en agent-skill</a>.</td>
 </tr>
 </table>
 
@@ -310,7 +310,7 @@ Een Word 97–2003-bestand `.doc`, een Excel-bestand `.xls` of een PowerPoint-be
 - **Een AI die het document zelf bewerkt.** Tracked changes in Docs, live
   formules en grafieken in Sheets, slides die direct op het canvas worden
   getekend, elke AI-beurt een snapshot waarnaar je kunt teruggaan.
-- **Je eigen model, je eigen key.** Log in met Genspark, of gebruik een key
+- **Je eigen model, je eigen key.** Log in met ChaAI Office, of gebruik een key
   voor Claude, OpenAI, Gemini, DeepSeek en meer, inclusief lokale servers en
   elk OpenAI-compatibel endpoint.
 - **PDF goed gedaan.** Bewerk tekst direct op de pagina en converteer PDF
@@ -331,8 +331,8 @@ Een Word 97–2003-bestand `.doc`, een Excel-bestand `.xls` of een PowerPoint-be
 
 ## AI-backends
 
-**Log in met Genspark** en er is niets te configureren: modelaanroepen lopen
-via de Genspark-proxy (de Claude-, GPT- en Gemini-families) en de agents
+**Log in met ChaAI Office** en er is niets te configureren: modelaanroepen lopen
+via de ChaAI Office-proxy (de Claude-, GPT- en Gemini-families) en de agents
 krijgen toegang tot web- en beeldzoeken, beeldgeneratie en analyse van beeld,
 audio en video.
 
@@ -355,7 +355,7 @@ fragmenten van de 20 beste lokale treffers ter beoordeling verstuurd en
 verlaat verder niets de machine.
 
 **Parallel** werkt zonder account: de gratis Search MCP (met rate limit) is
-de standaard voor webzoeken zolang er geen Genspark-login of search-key is
+de standaard voor webzoeken zolang er geen ChaAI Office-login of search-key is
 ingesteld, en gaat vóór de DuckDuckGo-scrape. Kies Parallel onder Web search
 en vul een [Parallel](https://platform.parallel.ai/)-key in om in plaats
 daarvan de Search API te gebruiken. Keenable werkt ook keyless; een key
@@ -397,7 +397,7 @@ MCP-client.
 | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Instellingen → Integraties** in de app  | Toont de agents die op deze computer zijn gevonden; met één klik wordt de skill naar elke agent geschreven die je kiest. Er verschijnt een knop **Bijwerken** wanneer een ChaOffice-release een nieuwere skill meebrengt. |
 | **Downloaden als zip** op dezelfde pagina | De indeling die claude.ai, de Claude-desktop-apps en andere assistenten accepteren als geüploade skill.                                                                                                                   |
-| `npx skills add genspark-ai/chaoffice`    | Installeert vanuit deze repository in elke agent die skills ondersteunt.                                                                                                                                                  |
+| `npx skills add zhgyuhuii/ChayuanAIOffice`    | Installeert vanuit deze repository in elke agent die skills ondersteunt.                                                                                                                                                  |
 
 Start daarna een nieuwe chat en vraag om een document. De skill leert de
 agent wanneer hij naar `chaoffice` moet grijpen, hoe hij een bestand leest
@@ -530,16 +530,16 @@ ChaOffice is geconfigureerd.
 
 | Platform                             | Vereisten                                               | Download                                                                                    |
 | ------------------------------------ | ------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| **macOS** — Apple Silicon (arm64)    | macOS 11+                                               | [Nieuwste `.dmg` (arm64)](https://github.com/genspark-ai/chaoffice/releases/latest)         |
-| **macOS** — Intel (x64)              | macOS 11+                                               | [Nieuwste `.dmg` (x64)](https://github.com/genspark-ai/chaoffice/releases/latest)           |
-| **Windows** (x64, de meeste pc's)    | Windows 10+, Intel/AMD                                  | [Nieuwste `-x64.exe`-installer](https://github.com/genspark-ai/chaoffice/releases/latest)   |
-| **Windows** op Arm (ARM64)           | Windows 11 op Arm (Snapdragon X en vergelijkbare chips) | [Nieuwste `-arm64.exe`-installer](https://github.com/genspark-ai/chaoffice/releases/latest) |
-| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 of nieuwer)           | [Nieuwste `.deb`](https://github.com/genspark-ai/chaoffice/releases/latest)                 |
-| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+)   | [Nieuwste `.rpm`](https://github.com/genspark-ai/chaoffice/releases/latest)                 |
-| **Linux** — overige distributies     | x86_64, glibc 2.34+, FUSE 2                             | [Nieuwste `.AppImage`](https://github.com/genspark-ai/chaoffice/releases/latest)            |
+| **macOS** — Apple Silicon (arm64)    | macOS 11+                                               | [Nieuwste `.dmg` (arm64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)         |
+| **macOS** — Intel (x64)              | macOS 11+                                               | [Nieuwste `.dmg` (x64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)           |
+| **Windows** (x64, de meeste pc's)    | Windows 10+, Intel/AMD                                  | [Nieuwste `-x64.exe`-installer](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)   |
+| **Windows** op Arm (ARM64)           | Windows 11 op Arm (Snapdragon X en vergelijkbare chips) | [Nieuwste `-arm64.exe`-installer](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) |
+| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 of nieuwer)           | [Nieuwste `.deb`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
+| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+)   | [Nieuwste `.rpm`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
+| **Linux** — overige distributies     | x86_64, glibc 2.34+, FUSE 2                             | [Nieuwste `.AppImage`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)            |
 
 Alle builds komen van `main`; de macOS- en Windows-installers zijn gesigneerd.
-Oudere versies staan op de pagina [Releases](https://github.com/genspark-ai/chaoffice/releases).
+Oudere versies staan op de pagina [Releases](https://github.com/zhgyuhuii/ChayuanAIOffice/releases).
 
 <details>
 <summary><b>Installeren op Linux</b></summary>
@@ -648,7 +648,7 @@ ChaOffice wordt actief doorontwikkeld en jouw feedback bepaalt mee de
 richting.
 
 - **Meld een bug of vraag een functie aan** via
-  [GitHub Issues](https://github.com/genspark-ai/chaoffice/issues).
+  [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues).
 - **Doe mee aan de ChaOffice-groepschat** op
   [GenTeam](https://chaoffice.ai/join) om met het team en andere gebruikers te
   praten.
@@ -687,7 +687,7 @@ kopieën](#legacy-and-odf-files-open-as-converted-copies).
 Documenten bewerken is volledig lokaal — bestanden verlaten je machine nooit
 om te worden geopend, bewerkt, opgeslagen of geconverteerd. De AI-functies
 (agents, search, beeldtools) hebben een netwerkverbinding nodig, met ofwel
-een Genspark-login of je eigen model-API-key.
+een ChaAI Office-login of je eigen model-API-key.
 
 </details>
 
@@ -714,7 +714,7 @@ pagina-afbeelding.
 <details>
 <summary><b>Kan ik mijn eigen AI-model of API-key gebruiken?</b></summary>
 
-Ja. Naast de keyless Genspark-login ondersteunt ChaOffice je eigen key voor
+Ja. Naast de keyless ChaAI Office-login ondersteunt ChaOffice je eigen key voor
 Claude, OpenAI, Gemini, DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok,
 Mistral, OpenRouter, Requesty, Opper, Cheaper Inference, Atlas Cloud en OpenCode Zen/Go, plus elk OpenAI-compatibel endpoint —
 inclusief lokale modelservers. Search, beeldgeneratie en analyse van beeld en
@@ -835,6 +835,6 @@ ChaOffice wordt uitgebracht onder de [Apache License 2.0](../../LICENSE), met
 enterprise-modules en valt onder de
 [ChaOffice Enterprise License](../../ee/LICENSE).
 
-De namen en logo's van ChaOffice en Genspark zijn handelsmerken van Mainfunc,
+De namen en logo's van ChaOffice en ChaAI Office zijn handelsmerken van Mainfunc,
 Inc. De Apache-2.0-licentie geeft geen toestemming om deze te gebruiken (zie
 sectie 6); forks moeten hun eigen branding gebruiken.

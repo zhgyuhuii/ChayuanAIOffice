@@ -13,10 +13,10 @@
 Word、Excel、PowerPoint 和 PDF 文件，由你与你的 AI 共同编辑，并以原生格式保存。</p>
 
 <p align="center">
-  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/genspark-ai/chaoffice" alt="许可证：Apache-2.0"></a>
-  <a href="https://github.com/genspark-ai/chaoffice/releases/latest"><img src="https://img.shields.io/github/v/release/genspark-ai/chaoffice" alt="最新版本"></a>
-  <a href="https://github.com/genspark-ai/chaoffice/releases"><img src="https://img.shields.io/github/downloads/genspark-ai/chaoffice/total" alt="下载量"></a>
-  <a href="https://github.com/genspark-ai/chaoffice/stargazers"><img src="https://img.shields.io/github/stars/genspark-ai/chaoffice?style=flat" alt="GitHub Star 数"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/ChayuanAIOffice" alt="许可证：Apache-2.0"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/ChayuanAIOffice" alt="最新版本"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/ChayuanAIOffice/total" alt="下载量"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/ChayuanAIOffice?style=flat" alt="GitHub Star 数"></a>
   <a href="https://x.com/merrickbuilds"><img src="https://img.shields.io/badge/follow-%40merrickbuilds-000000?logo=x&logoColor=white" alt="在 X 上关注 @merrickbuilds"></a>
 </p>
 
@@ -59,7 +59,7 @@ OOXML 副本形式打开，旧版 Word `.doc`/`.dot`、Excel 97 `.xls`、PowerPo
   的结果重新排序，让真正回答你问题的文件排在第一位。
 - **向文件提问，答案带出处。** 给一组文档加上星标，主屏幕上的 **Ask AI** 就能
   跨这些文档回答问题，每个论断都标明出自哪个文件，方便你打开核对。
-- **用自己的密钥，或者不用密钥。** 登录 Genspark 即可免配置使用；也可以自带
+- **用自己的密钥，或者不用密钥。** 登录 察元AIOffice 即可免配置使用；也可以自带
   Claude、OpenAI、Gemini、DeepSeek、Kimi、GLM、Qwen、Doubao、MiniMax、Grok、
   Mistral、OpenRouter、Requesty、Opper、Cheaper Inference、Atlas Cloud 的密钥，
   或任何 OpenAI 兼容端点，包括本地模型服务。
@@ -68,9 +68,9 @@ OOXML 副本形式打开，旧版 Word `.doc`/`.dot`、Excel 97 `.xls`、PowerPo
   的 agent skill，让编程智能体无需打开任何窗口，就能在你的电脑上创建、转换、
   读取和编辑真正的 Office 文件。
 
-**获取：** [macOS](https://github.com/genspark-ai/chaoffice/releases/latest)（Apple Silicon 和 Intel）·
-[Windows](https://github.com/genspark-ai/chaoffice/releases/latest)（x64 和 Arm）·
-[Linux](https://github.com/genspark-ai/chaoffice/releases/latest)（deb、rpm、AppImage）——
+**获取：** [macOS](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)（Apple Silicon 和 Intel）·
+[Windows](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)（x64 和 Arm）·
+[Linux](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)（deb、rpm、AppImage）——
 详情与系统要求见[下载](#download)。
 
 ## <a id="demo"></a>演示
@@ -232,7 +232,7 @@ Claude Code、Codex、Cursor、Gemini CLI、GitHub Copilot、OpenCode 或 Windsu
 </tr>
 <tr>
 <td><b>给智能体一句提示词</b> —— “制作一份关于太阳系的八页演示文稿。”智能体读取 skill，依次写出样式表、大纲和每页一份的页面规格，用 <code>chaoffice image</code> 生成两张图片，再由 <code>chaoffice slides check</code> 拦下所有溢出或重叠的内容，最后由 <code>chaoffice create</code> 组装出 <code>.pptx</code>，并用 <code>slides render</code> 为每一页交回一张 PNG 供查看。</td>
-<td><b>在设置 → 集成中一次安装</b> —— ChaOffice 会列出在这台电脑上找到的编程智能体，并把 skill 写入你选中的每一个。也可以把 skill 下载为 zip 压缩包，或运行 <code>npx skills add genspark-ai/chaoffice</code>。命令和完整工作流见<a href="#command-line-and-agent-skill">命令行与 agent skill</a>。</td>
+<td><b>在设置 → 集成中一次安装</b> —— ChaOffice 会列出在这台电脑上找到的编程智能体，并把 skill 写入你选中的每一个。也可以把 skill 下载为 zip 压缩包，或运行 <code>npx skills add zhgyuhuii/ChayuanAIOffice</code>。命令和完整工作流见<a href="#command-line-and-agent-skill">命令行与 agent skill</a>。</td>
 </tr>
 </table>
 
@@ -272,7 +272,7 @@ Word 97–2003 的 `.doc`、Excel 的 `.xls` 或 PowerPoint 的 `.ppt` 会在本
   的部分原样复制。
 - **直接编辑文档的 AI。** Docs 中的修订痕迹、Sheets 中实时生效的公式和图表、直接
   在画布上生成的幻灯片，每一次 AI 操作都会留下可回滚的快照。
-- **自带模型，自带密钥。** 使用 Genspark 登录，或带上 Claude、OpenAI、Gemini、
+- **自带模型，自带密钥。** 使用 察元AIOffice 登录，或带上 Claude、OpenAI、Gemini、
   DeepSeek 等的密钥，同样支持本地服务器和任意 OpenAI 兼容端点。
 - **认真做好 PDF。** 在页面内直接编辑文字，本机将 PDF 转换为 Word、Excel 或
   PowerPoint，扫描件支持系统 OCR。
@@ -289,7 +289,7 @@ Word 97–2003 的 `.doc`、Excel 的 `.xls` 或 PowerPoint 的 `.ppt` 会在本
 
 ## AI 后端
 
-**登录 Genspark**，无需任何配置：模型调用通过 Genspark 代理路由（Claude、GPT
+**登录 察元AIOffice**，无需任何配置：模型调用通过 察元AIOffice 代理路由（Claude、GPT
 和 Gemini 系列），智能体同时获得网页与图片搜索、图片生成，以及图片/音频/视频
 解析能力。
 
@@ -307,7 +307,7 @@ Doubao/Seedream、GLM、Grok、Qwen、MiniMax、Stability、FLUX 或任何 OpenA
 TypeSafe 自己的 API。密钥只保存在这台设备上。该功能默认关闭；开启后，本地排名
 前 20 的结果摘录会被发送去评判，除此之外没有任何内容离开本机。
 
-**Parallel** 无需账号即可使用：只要既没有登录 Genspark，也没有配置搜索密钥，
+**Parallel** 无需账号即可使用：只要既没有登录 察元AIOffice，也没有配置搜索密钥，
 它的免费 Search MCP（有速率限制）就是默认的网页搜索，并且优先于 DuckDuckGo
 抓取。在「网页搜索」下选择 Parallel 并填入
 [Parallel](https://platform.parallel.ai/) 密钥，即可改用 Search API。Keenable
@@ -344,7 +344,7 @@ ChaOffice 内置了一批，也接受你自己的，格式与编程智能体所�
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | 应用内的 **设置 → 集成**               | 列出在这台电脑上找到的智能体；一键即可把 skill 写入你选中的每一个。当 ChaOffice 新版本附带更新的 skill 时，会出现**更新**按钮。 |
 | 同一页面上的 **下载为 zip**            | claude.ai、Claude 桌面应用及其他助手可作为上传 skill 接受的目录结构。                                                           |
-| `npx skills add genspark-ai/chaoffice` | 从本仓库安装到任何兼容 skills 的智能体。                                                                                        |
+| `npx skills add zhgyuhuii/ChayuanAIOffice` | 从本仓库安装到任何兼容 skills 的智能体。                                                                                        |
 
 然后开启一个新对话，让它帮你做一份文档。这份 skill 会教智能体何时该用
 `chaoffice`、编辑前如何先读取文件，以及如何检查自己的成果。
@@ -461,16 +461,16 @@ deck_replace(dir, n, page) ×3 · slides_render(file, out)
 
 | 平台                                  | 系统要求                                               | 下载                                                                                   |
 | ------------------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------- |
-| **macOS** —— Apple Silicon (arm64)    | macOS 11+                                              | [最新 `.dmg`（arm64）](https://github.com/genspark-ai/chaoffice/releases/latest)       |
-| **macOS** —— Intel (x64)              | macOS 11+                                              | [最新 `.dmg`（x64）](https://github.com/genspark-ai/chaoffice/releases/latest)         |
-| **Windows**（x64，大多数 PC）         | Windows 10+，Intel/AMD                                 | [最新 `-x64.exe` 安装程序](https://github.com/genspark-ai/chaoffice/releases/latest)   |
-| **Windows** on Arm（ARM64）           | Windows 11 on Arm（Snapdragon X 及同类芯片）           | [最新 `-arm64.exe` 安装程序](https://github.com/genspark-ai/chaoffice/releases/latest) |
-| **Linux** —— Debian / Ubuntu          | x86_64，glibc 2.34+（Ubuntu 22.04 或更新）             | [最新 `.deb`](https://github.com/genspark-ai/chaoffice/releases/latest)                |
-| **Linux** —— Fedora / RHEL / openSUSE | x86_64，glibc 2.34+（Fedora 35+、RHEL 9+、Leap 15.6+） | [最新 `.rpm`](https://github.com/genspark-ai/chaoffice/releases/latest)                |
-| **Linux** —— 其他发行版               | x86_64，glibc 2.34+，FUSE 2                            | [最新 `.AppImage`](https://github.com/genspark-ai/chaoffice/releases/latest)           |
+| **macOS** —— Apple Silicon (arm64)    | macOS 11+                                              | [最新 `.dmg`（arm64）](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)       |
+| **macOS** —— Intel (x64)              | macOS 11+                                              | [最新 `.dmg`（x64）](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)         |
+| **Windows**（x64，大多数 PC）         | Windows 10+，Intel/AMD                                 | [最新 `-x64.exe` 安装程序](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)   |
+| **Windows** on Arm（ARM64）           | Windows 11 on Arm（Snapdragon X 及同类芯片）           | [最新 `-arm64.exe` 安装程序](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) |
+| **Linux** —— Debian / Ubuntu          | x86_64，glibc 2.34+（Ubuntu 22.04 或更新）             | [最新 `.deb`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                |
+| **Linux** —— Fedora / RHEL / openSUSE | x86_64，glibc 2.34+（Fedora 35+、RHEL 9+、Leap 15.6+） | [最新 `.rpm`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                |
+| **Linux** —— 其他发行版               | x86_64，glibc 2.34+，FUSE 2                            | [最新 `.AppImage`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)           |
 
 所有构建均来自 `main` 分支；macOS 和 Windows 安装程序均已签名。
-历史版本见 [Releases](https://github.com/genspark-ai/chaoffice/releases) 页面。
+历史版本见 [Releases](https://github.com/zhgyuhuii/ChayuanAIOffice/releases) 页面。
 
 <details>
 <summary><b>在 Linux 上安装</b></summary>
@@ -568,7 +568,7 @@ Sheets 应用的 xlsx sidecar 还需要 Rust 工具链（`cargo` 在 PATH 中）
 ChaOffice 正在积极开发中，你的反馈决定它的走向。
 
 - **报告 bug 或提出功能需求**，请到
-  [GitHub Issues](https://github.com/genspark-ai/chaoffice/issues)。
+  [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues)。
 - **加入 ChaOffice 群聊**，在
   [GenTeam](https://chaoffice.ai/join) 上与团队和其他用户交流。
 - **在 X 上关注 [@merrickbuilds](https://x.com/merrickbuilds)**，获取版本说明、
@@ -599,7 +599,7 @@ ChaOffice 正在积极开发中，你的反馈决定它的走向。
 <summary><b>ChaOffice 可以离线使用吗？</b></summary>
 
 文档编辑完全在本地进行 —— 打开、编辑、保存和转换文件都不需要把文件发送到任何
-地方。AI 功能（智能体、搜索、图片工具）需要网络连接，并且需要登录 Genspark 或
+地方。AI 功能（智能体、搜索、图片工具）需要网络连接，并且需要登录 察元AIOffice 或
 提供你自己的模型 API 密钥。
 
 </details>
@@ -624,7 +624,7 @@ ChaOffice 正在积极开发中，你的反馈决定它的走向。
 <details>
 <summary><b>我可以使用自己的 AI 模型或 API 密钥吗？</b></summary>
 
-可以。除了免密钥的 Genspark 登录，ChaOffice 还支持自带 Claude、OpenAI、Gemini、
+可以。除了免密钥的 察元AIOffice 登录，ChaOffice 还支持自带 Claude、OpenAI、Gemini、
 DeepSeek、Kimi、GLM、Qwen、Doubao、MiniMax、Grok、Mistral、OpenRouter、Requesty、Opper、
 Cheaper Inference、Atlas Cloud 和 OpenCode Zen/Go 的密钥，以及任何 OpenAI 兼容端点 —— 包括本地模型服务。搜索、
 图片生成和图片/视频解析在 设置 → AI 媒体与搜索 下使用各自的密钥。
@@ -725,5 +725,5 @@ MIT/Apache-2.0/BSD-3-Clause/OFL 许可。
 ChaOffice 采用 [Apache License 2.0](../../LICENSE) 许可，仅有一处例外：`ee/`
 目录为未来的企业模块预留，受 [ChaOffice 企业许可证](../../ee/LICENSE) 约束。
 
-ChaOffice 和 Genspark 的名称与标识是 Mainfunc, Inc. 的商标。Apache-2.0 许可证
+ChaOffice 和 察元AIOffice 的名称与标识是 Mainfunc, Inc. 的商标。Apache-2.0 许可证
 并不授予使用它们的权利（见第 6 节）；分叉项目请使用自己的品牌。

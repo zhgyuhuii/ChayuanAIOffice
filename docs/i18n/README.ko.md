@@ -13,10 +13,10 @@
 Word, Excel, PowerPoint, PDF 파일을 당신과 당신의 AI가 함께 편집하고, 실제 포맷 그대로 저장합니다.</p>
 
 <p align="center">
-  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/genspark-ai/chaoffice" alt="라이선스: Apache-2.0"></a>
-  <a href="https://github.com/genspark-ai/chaoffice/releases/latest"><img src="https://img.shields.io/github/v/release/genspark-ai/chaoffice" alt="최신 릴리스"></a>
-  <a href="https://github.com/genspark-ai/chaoffice/releases"><img src="https://img.shields.io/github/downloads/genspark-ai/chaoffice/total" alt="다운로드 수"></a>
-  <a href="https://github.com/genspark-ai/chaoffice/stargazers"><img src="https://img.shields.io/github/stars/genspark-ai/chaoffice?style=flat" alt="GitHub 스타 수"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/ChayuanAIOffice" alt="라이선스: Apache-2.0"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/ChayuanAIOffice" alt="최신 릴리스"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/ChayuanAIOffice/total" alt="다운로드 수"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/ChayuanAIOffice?style=flat" alt="GitHub 스타 수"></a>
   <a href="https://x.com/merrickbuilds"><img src="https://img.shields.io/badge/follow-%40merrickbuilds-000000?logo=x&logoColor=white" alt="X에서 @merrickbuilds 팔로우"></a>
 </p>
 
@@ -68,7 +68,7 @@ PowerPoint 97–2003 `.ppt` 파일과 한컴 문서(`.hwp`, `.hwpx`)도 마찬�
 - **출처와 함께, 내 파일에 물어보세요.** 문서 묶음에 별표를 달아 두면 홈 화면의
   **Ask AI**가 그 문서들을 아울러 질문에 답하고, 모든 주장마다 근거가 된 파일을
   인용하므로 직접 열어 확인할 수 있습니다.
-- **API 키가 있어도, 없어도 됩니다.** Genspark로 로그인하면 키 없이 바로
+- **API 키가 있어도, 없어도 됩니다.** ChaAI Office로 로그인하면 키 없이 바로
   사용할 수 있고, 원한다면 Claude, OpenAI, Gemini, DeepSeek, Kimi, GLM,
   Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty, Opper, Cheaper
   Inference, Atlas Cloud는 물론 OpenAI 호환 엔드포인트(로컬 서버 포함)까지 직접
@@ -79,9 +79,9 @@ PowerPoint 97–2003 `.ppt` 파일과 한컴 문서(`.hwp`, `.hwpx`)도 마찬�
   않고도 내 컴퓨터에서 실제 Office 파일을 만들고, 변환하고, 읽고, 편집할 수
   있습니다.
 
-**다운로드:** [macOS](https://github.com/genspark-ai/chaoffice/releases/latest) (Apple Silicon 및 Intel) ·
-[Windows](https://github.com/genspark-ai/chaoffice/releases/latest) (x64 및 Arm) ·
-[Linux](https://github.com/genspark-ai/chaoffice/releases/latest) (deb, rpm, AppImage) —
+**다운로드:** [macOS](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (Apple Silicon 및 Intel) ·
+[Windows](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (x64 및 Arm) ·
+[Linux](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (deb, rpm, AppImage) —
 자세한 내용과 요구 사항은 [다운로드](#download) 섹션을 참고하세요.
 
 ## <a id="demo"></a>데모
@@ -254,7 +254,7 @@ Windsurf가 앱과 동일한 엔진을 통해 창을 열지 않고도 실제 Off
 </tr>
 <tr>
 <td><b>에이전트에게 프롬프트 하나</b> — "태양계에 관한 8장짜리 덱을 만들어줘." 에이전트는 스킬을 읽고 스타일 시트, 개요, 슬라이드마다 하나씩의 페이지 스펙을 작성하고, <code>chaoffice image</code>로 사진 두 장을 생성하고, <code>chaoffice slides check</code>가 넘치거나 겹치는 요소를 걸러낸 뒤, <code>chaoffice create</code>로 <code>.pptx</code>를 조립하고 <code>slides render</code>로 슬라이드마다 PNG 한 장을 받아 확인합니다.</td>
-<td><b>설정 → 연동에서 한 번만 설치</b> — ChaOffice가 이 컴퓨터에서 찾은 코딩 에이전트를 나열하고, 선택한 각 에이전트에 스킬을 기록합니다. 스킬을 zip으로 내려받거나 <code>npx skills add genspark-ai/chaoffice</code>를 실행해도 됩니다. 명령과 전체 워크플로는 <a href="#command-line-and-agent-skill">명령줄과 에이전트 스킬</a>에 있습니다.</td>
+<td><b>설정 → 연동에서 한 번만 설치</b> — ChaOffice가 이 컴퓨터에서 찾은 코딩 에이전트를 나열하고, 선택한 각 에이전트에 스킬을 기록합니다. 스킬을 zip으로 내려받거나 <code>npx skills add zhgyuhuii/ChayuanAIOffice</code>를 실행해도 됩니다. 명령과 전체 워크플로는 <a href="#command-line-and-agent-skill">명령줄과 에이전트 스킬</a>에 있습니다.</td>
 </tr>
 </table>
 
@@ -295,7 +295,7 @@ Word 97–2003 `.doc`, Excel `.xls`, PowerPoint `.ppt` 파일은 사용자의 �
 - **문서를 직접 편집하는 AI.** Docs에서는 변경 내용 추적, Sheets에서는 실시간으로
   동작하는 수식과 차트, 슬라이드는 캔버스 위에 그려지며, AI가 한 번 작업할 때마다
   되돌릴 수 있는 스냅샷이 남습니다.
-- **내 모델, 내 키.** Genspark로 로그인하거나 Claude, OpenAI, Gemini, DeepSeek
+- **내 모델, 내 키.** ChaAI Office로 로그인하거나 Claude, OpenAI, Gemini, DeepSeek
   등의 키를 사용할 수 있으며, 로컬 서버와 모든 OpenAI 호환 엔드포인트도 지원합니
   다.
 - **PDF도 제대로.** 페이지 안에서 텍스트를 직접 편집하고, 기기 내에서 PDF를
@@ -315,8 +315,8 @@ Word 97–2003 `.doc`, Excel `.xls`, PowerPoint `.ppt` 파일은 사용자의 �
 
 ## AI 백엔드
 
-**Genspark로 로그인**하면 별도 설정이 전혀 필요 없습니다. 모델 호출은
-Genspark 프록시(Claude, GPT, Gemini 계열)를 거치고, 에이전트는 웹 및
+**ChaAI Office로 로그인**하면 별도 설정이 전혀 필요 없습니다. 모델 호출은
+ChaAI Office 프록시(Claude, GPT, Gemini 계열)를 거치고, 에이전트는 웹 및
 이미지 검색, 이미지 생성, 이미지/오디오/비디오 분석 기능까지 사용할 수
 있습니다.
 
@@ -338,7 +338,7 @@ TypeSafe 자체 API입니다. 키는 이 기기에만 저장됩니다. 기본값
 로컬 상위 20개 결과의 발췌문이 판정을 위해 전송되고 그 밖에는 아무것도 기기를
 벗어나지 않습니다.
 
-**Parallel**은 계정 없이도 동작합니다: Genspark 로그인이나 검색 키가 설정되어 있지
+**Parallel**은 계정 없이도 동작합니다: ChaAI Office 로그인이나 검색 키가 설정되어 있지
 않으면 무료 Search MCP(속도 제한 있음)가 기본 웹 검색으로 쓰이며, DuckDuckGo
 스크레이핑보다 먼저 실행됩니다. Search API를 대신 쓰려면 웹 검색에서 Parallel을
 선택하고 [Parallel](https://platform.parallel.ai/) 키를 입력하세요. Keenable도 키
@@ -378,7 +378,7 @@ OpenCode, Windsurf는 바로 사용할 수 있고, 스킬을 읽을 수 있는 �
 | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 앱의 **설정 → 연동**                   | 이 컴퓨터에서 찾은 에이전트를 나열하고, 클릭 한 번으로 선택한 각 에이전트에 스킬을 기록합니다. ChaOffice 릴리스에 새 스킬이 포함되면 **업데이트** 버튼이 나타납니다. |
 | 같은 페이지의 **zip으로 다운로드**     | claude.ai, Claude 데스크톱 앱, 그 밖의 어시스턴트가 업로드 스킬로 받아들이는 구조입니다.                                                                             |
-| `npx skills add genspark-ai/chaoffice` | 이 저장소에서 스킬을 지원하는 모든 에이전트에 설치합니다.                                                                                                            |
+| `npx skills add zhgyuhuii/ChayuanAIOffice` | 이 저장소에서 스킬을 지원하는 모든 에이전트에 설치합니다.                                                                                                            |
 
 그런 다음 새 대화를 시작해 문서를 요청하세요. 스킬은 언제 `chaoffice`를
 꺼내야 하는지, 편집 전에 파일을 어떻게 읽어야 하는지, 자신의 작업을
@@ -501,16 +501,16 @@ deck_replace(dir, n, page) ×3 · slides_render(file, out)
 
 | 플랫폼                               | 요구 사항                                             | 다운로드                                                                                |
 | ------------------------------------ | ----------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [최신 `.dmg` (arm64)](https://github.com/genspark-ai/chaoffice/releases/latest)         |
-| **macOS** — Intel (x64)              | macOS 11+                                             | [최신 `.dmg` (x64)](https://github.com/genspark-ai/chaoffice/releases/latest)           |
-| **Windows** (x64, 대부분의 PC)       | Windows 10+, Intel/AMD                                | [최신 `-x64.exe` 설치 파일](https://github.com/genspark-ai/chaoffice/releases/latest)   |
-| **Windows** on Arm (ARM64)           | Windows 11 on Arm (Snapdragon X 및 유사 기종)         | [최신 `-arm64.exe` 설치 파일](https://github.com/genspark-ai/chaoffice/releases/latest) |
-| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 이상)               | [최신 `.deb`](https://github.com/genspark-ai/chaoffice/releases/latest)                 |
-| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [최신 `.rpm`](https://github.com/genspark-ai/chaoffice/releases/latest)                 |
-| **Linux** — 기타 배포판              | x86_64, glibc 2.34+, FUSE 2                           | [최신 `.AppImage`](https://github.com/genspark-ai/chaoffice/releases/latest)            |
+| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [최신 `.dmg` (arm64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)         |
+| **macOS** — Intel (x64)              | macOS 11+                                             | [최신 `.dmg` (x64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)           |
+| **Windows** (x64, 대부분의 PC)       | Windows 10+, Intel/AMD                                | [최신 `-x64.exe` 설치 파일](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)   |
+| **Windows** on Arm (ARM64)           | Windows 11 on Arm (Snapdragon X 및 유사 기종)         | [최신 `-arm64.exe` 설치 파일](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) |
+| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 이상)               | [최신 `.deb`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
+| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [최신 `.rpm`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
+| **Linux** — 기타 배포판              | x86_64, glibc 2.34+, FUSE 2                           | [최신 `.AppImage`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)            |
 
 모든 빌드는 `main` 브랜치에서 만들어지며, macOS와 Windows 설치 파일에는
-서명이 되어 있습니다. 이전 버전은 [릴리스](https://github.com/genspark-ai/chaoffice/releases) 페이지에서 확인할 수 있습니다.
+서명이 되어 있습니다. 이전 버전은 [릴리스](https://github.com/zhgyuhuii/ChayuanAIOffice/releases) 페이지에서 확인할 수 있습니다.
 
 <details>
 <summary><b>Linux에 설치하기</b></summary>
@@ -614,7 +614,7 @@ ChaOffice는 활발히 개발되고 있으며, 여러분의 피드백이 그 방
 만들어갑니다.
 
 - **버그를 신고하거나 기능을 요청**하려면
-  [GitHub Issues](https://github.com/genspark-ai/chaoffice/issues)를 이용하세요.
+  [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues)를 이용하세요.
 - **ChaOffice 그룹 채팅에 참여**하려면
   [GenTeam](https://chaoffice.ai/join)에서 팀 및 다른 사용자들과 대화할 수 있습니다.
 - 릴리스 노트, 데모, 다음에 만들고 있는 것을 보려면 **X에서
@@ -650,7 +650,7 @@ ChaOffice는 활발히 개발되고 있으며, 여러분의 피드백이 그 방
 
 문서 편집은 완전히 로컬에서 이루어집니다 — 파일을 열고, 편집하고,
 저장하고, 변환하는 과정에서 파일이 기기를 벗어나지 않습니다. AI
-기능(에이전트, 검색, 이미지 도구)은 네트워크 연결이 필요하며, Genspark
+기능(에이전트, 검색, 이미지 도구)은 네트워크 연결이 필요하며, ChaAI Office
 로그인 또는 직접 발급받은 모델 API 키가 있어야 합니다.
 
 </details>
@@ -677,7 +677,7 @@ ChaOffice는 활발히 개발되고 있으며, 여러분의 피드백이 그 방
 <details>
 <summary><b>제 AI 모델이나 API 키를 직접 사용할 수 있나요?</b></summary>
 
-네. 키가 필요 없는 Genspark 로그인 외에도, ChaOffice는 Claude, OpenAI,
+네. 키가 필요 없는 ChaAI Office 로그인 외에도, ChaOffice는 Claude, OpenAI,
 Gemini, DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral,
 OpenRouter, Requesty, Opper, Cheaper Inference, Atlas Cloud, OpenCode Zen/Go를 위한 직접 키 사용을 지원하며, 로컬 모델
 서버를 포함한 모든 OpenAI 호환 엔드포인트도 사용할 수 있습니다. 검색,
@@ -795,6 +795,6 @@ ChaOffice는 [Apache License 2.0](../../LICENSE)에 따라 라이선스가
 예약되어 있으며 [ChaOffice Enterprise License](../../ee/LICENSE)가
 적용됩니다.
 
-ChaOffice와 Genspark의 이름과 로고는 Mainfunc, Inc.의 상표입니다.
+ChaOffice와 ChaAI Office의 이름과 로고는 Mainfunc, Inc.의 상표입니다.
 Apache-2.0 라이선스는 이를 사용할 권리를 부여하지 않으며(6항 참고),
 포크는 자체 브랜딩을 사용해야 합니다.

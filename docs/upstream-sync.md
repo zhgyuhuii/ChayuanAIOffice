@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/chaoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第四十三轮完成（2026-11-19，终点 2491896c，施工于 sync/43-upstream；区间无新 tag 后三位维持 0.13.18；20 提交全吸收+patch-id 对账（10 原样/10 adapted——初稿误记 12/8，2026-11-20 复审改正）+全量门禁+web 真机 smoke；同链本地三提交=图标单一事实源收口（packages/ui/file-tiles）+首页左树改版/右侧文件树/右上角文件图标恢复——详见 §R43 小节**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第四十四轮完成（2026-11-20，终点 a10ba620，施工于 sync/44-upstream；单提交巨件 #2872（836 文件 docs 编辑器大重构快照）全吸收，落位 da865da90；192 冲突三档裁决+复审补六件（compare 死代码对照删/errGsk 死键 23 处清理/pptImportDetail 文案 22 语补收/sheets 死键 69 处/aiGskLoginOk 品牌化/Ribbon 察元 AI）+全量门禁（node v24 口径）+web 真机 smoke——详见 §R44 小节**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -823,6 +823,63 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 4. **amend 目标漂移**：连续两文件 amend 时 HEAD 已是下一提交，边界混入——reset --soft 重做为准。
 
 **R44 起点=2491896c**（上游 main 当前 HEAD）。
+
+## 第四十四轮（2026-11-20，上游 2491896c..a10ba620 单提交巨件 #2872 全吸收，施工于 sync/44-upstream，落位 da865da90；836 文件 +152k/−8.5k=docs 编辑器大重构快照；区间无新 tag（v0.13.18-140，v0.13.615 为远端误导 tag 不相关），chaofficeUpstreamVersion 维持 0.13.18，六段 1.0.18.0.13.18 不动）
+
+> 上游单件 Sync snapshot (2026-11-19) #2872：**docs 编辑器命令域大重构**（renderer/commands/ 新族十件：menu-commands/menu-state/ribbon-controls/reference-commands/borders-shading/paragraph-spacing/text-direction/edit-target/repeat）+**组件族大扩**（AutoTextDialog/BordersShadingDialog/BulletsNumberingDialog/ChangeCaseDialog/CitationsPane/ColumnsDialog/CombineCharactersDialog/CompareDocumentsDialog/CompareRequest/ApplyToSelect 等）+**对比功能重构**（旧 ComparePanel+editor/compare.ts+compare.test.ts 三件退役→新 CompareDocumentsDialog+compare-request+docx-engine/compare.ts 的 CompareGranularity 引擎级对比）+AiPanel 拆分（AiConversationBody/AssistantBrowser/AssistantTab 新件）+docs-main i18n 内嵌 23 语大扩（7151→11518 行）+**ppt2pptx 升级**（ppt/metro：.ppt 97-2003 直接编辑语义，文案 23 语同步）+tools/docs-icon-library 图标库工具（+@fluentui/svg-icons 1.1.346 依赖）+hyphen 连字符模式（tools/notices/hyphen-patterns.txt+hyphen 1.14.1 依赖）+ai-search genoffice-auth→chaoffice-auth 改名+登录 landed 广播三端（docs/slides/sheets AiPanel 退役内联登录钮）+登录错误文案族（errGskNotLoggedIn 23 语）+i18n README 20 语刷新+docx-engine compare/chart/parse/patch 引擎批。**冲突 192 件全人工三档裁决**。
+
+### 《冲突与裁决清单》（要点）
+
+| 域/文件 | 裁决 |
+|---|---|
+| CLAUDE.md | Q5-②豁免：还原本地版 |
+| docs AiPanel.tsx | **Q3-①本地 V2 架构赢**：本地 601 行薄壳（消息态在 useAiConversations）vs 上游 2136 行版；吸收登录广播监听（onChaOfficeLoginLanded→gskLoggedInRef+toast）+新组件接线（AiConversationBody/AssistantBrowser/AssistantTab 非 p 死代码） |
+| ai-provider/media.ts | **Q3-①本地 live-discovery 架构赢**：上游静态内置 vendor 卡/模型清单（180 行）不收，本地 live fetch+策展可选契约保留（R43 #2656 同款） |
+| editor/compare.ts+compare.test.ts | **照删（本轮复审补）**：上游 D 但首个会话保留——复审证唯一消费者互为（sort-paragraphs 的 compareParagraphs 是同名不同物、ComparePanel 已删、App/file-actions/review-actions 零引用）=死代码对，按 Q3-②/Q7 删净 |
+| docs-main.ts errGskNotLoggedIn ×23 | **keep-both 死键清理（本轮复审补）**：本地键 errChaOfficeNotLoggedIn（R41 键名改写）与上游键同对象并存——上游键无消费方，删除 23 处；en 段其余 i18n 值（ChaAI Office edits .docx 族）上个会话已品牌化 |
+| slides i18n-main.ts pptImportDetail ×22 | **文案补收（本轮复审补）**：上游 PPT 转换文案 22 语更新被解成 HEAD 旧文案——引擎（ppt2pptx ppt/metro）已收故文案必须跟；品牌形态=本地拼接式（值以空格开头、品牌名消费侧拼）——ar/pt 特例品牌名句中删除（HEAD 既有形态） |
+| sheets i18n aiGensparkAccount/aiLoginGenspark ×23 | **死键删除（本轮复审补）**：上游新键无源码消费（三端只用 aiGskLoginOk），品牌词根键名+死代码双理由 |
+| aiGskLoginOk 值 ×69（docs/sheets/slides 各 23 语） | **品牌化（本轮复审补）**：上游值 Genspark→ChaAI Office（zh/zh-TW→察元AIOffice）；键名 gsk 词根保留（aiGskLoginBtn 本地既有先例） |
+| Ribbon Genspark AI 入口 | **品牌化（本轮复审补）**：上游新「Genspark AI」第一槽位入口（GensparkMark 图标+一键 AI 动作排）→标签「察元 AI」×3+e2e baseline 同步 ×2；GensparkMark 组件名保留（icons.tsx 既有标识符） |
+| AiPanel/slides ipc 注释 ×3 | Genspark login→sign-in 中性化（slides AiPanel 为复审补的第三处） |
+| 11 件测试/e2e（autocorrect/field-codes/font-dialog-advanced/paste-actions/table-ops-wave/ai-error-login-button/merge.test/e2e×4） | **挂账族维持不收**：上游 M 但本地从未存在（诞生于 9-27/10-12 快照=R18-C docs 渲染域测试挂账族，本地 505 vs 上游 622）；被测功能符号（clipboardSource/fontDefaultColor/splitTableAtSelection）已在本地，覆盖补收留挂账专项轮 |
+| direction.ts | 已吸收（distribute 两处在）——三方合并自动判零正确 |
+| slides file-actions.ts | 架构等效：上游 if(r.error) 守卫在本地 #2740 三分支（else if (r.error)）中天然成立 |
+| scripts/pdf2docx-accuracy.mjs | 品牌豁免不收：上游注释加 genoffice# 前缀，本地保持无前缀 |
+| packages/ai-search genoffice-auth | 改名承接：上游 M 落到本地 chaoffice-auth.ts（+test） |
+| markdown roundtrip-serializer.test.ts | 多收缝合件：scorecard.md 入 roundtrip 语料豁免（pipe 表格+箭头记号，台账类正则敌对） |
+| 依赖（Q5-①） | @fluentui/svg-icons 1.1.346+hyphen 1.14.1 入 docs（与新工具同批）；npm install 重验 lock 无漂移 |
+
+### 对账与品牌
+
+- **836 文件对账**：4 删除照删（ComparePanel/caption-sequence+复审补 compare 对）+395 blob 全等+424 结构差异（全归因：Q5 豁免 27/品牌类（@genoffice 域/GenOffice 常量）/本地功能区（AiPanel V2/media live-discovery/shell 热区）/本地超集键（i18n shard 本地键保全））+13 缺席全归因（11 挂账+2 改名）。subject 逐字保留。
+- **品牌闸三轮**（首轮发现假阴性后重建口径）：本轮 diff 行级 genspark -i 零命中（豁免外；GensparkMark 组件名/genspark.ai URL/GENOFFICE_* env 保留）；值级 ChaAI Office 63 行健康。
+
+### 门禁终态
+
+- typecheck 全仓 0（npm --workspaces，node v24 口径）；lint 0 error（32 warnings=基线量）。
+- vitest 全工作区绿（node v24.21.0=nvm default，R43 环境口径）：docs 588 文件 7234 用例——首跑 1 个 uncaught（docops-table-ops 的 prosemirror 卸载后定时器，R34/R42/R43 类 flake）单文件+全量双复跑绿（exit 0）；首跑（v22.16 误口径）曾现 line-metrics/truths 两红=V8 Unicode 数据环境坑（见新坑 4），v24 下绿，非代码缺陷。
+- 品牌闸三轮归零：首轮假阴性（新坑 1）→二轮修 errGsk 死键/aiGskLoginOk 值/Ribbon 察元 AI/注释 →三轮（独立终审）补 README i18n 22 件（徽章 URL genspark-ai/chaoffice→zhgyuhuii/ChayuanAIOffice+正文 Genspark→ChaAI Office/察元AIOffice）。
+- build:web 过（BW_EXIT=0）。
+- **web 真机 smoke（5180+sidecar 52587）**：页面 200+title ChaAI Office✅；欢迎页品牌全对（察元AIOffice 家族+aidooo+GitHub star）✅；跳过引导→新建文档→编辑器打开✅；Ribbon tab 全家（开始/插入/绘图/设计/布局/引用/邮件/审阅/察元 AI/视图）✅；**察元 AI 第一槽位大入口+一键 AI 动作排（AI 总结/润色/排版/思维导图）在位且品牌正确**（上游新 UI 落地实证）✅；审阅 tab 修订追踪在位✅；DOM 快照 genspark 零残留✅；截图存档。
+
+### 本轮新坑
+
+1. **品牌闸大小写漏洞（假阴性事故）**：首轮 grep "genspark" 大小写敏感漏 Genspark——且 `git grep --cached` 语法位次错（应在 pattern 前）致静默失败被误读为零命中。**防线：品牌闸一律 `git grep --cached -i`+以「本轮 diff 行级」为口径（`git diff --cached -i -G'genspark' HEAD` 的 +侧），文件级 comm 不足以捕获值级回退。**
+2. **keep-both 死键**：键名改写族（errGsk→errChaOffice）冲突解决时本地键+上游键同对象并存（位置不同不报 TS1117）——上游键成死键。**防线：键名改写族 pick 后跑「键名双注册扫描」（errGsk*/aiGenspark* 等上游词根键 grep 应归零）。**
+3. **shell 批量循环不可信（PATH 间歇性损坏）**：zsh 循环内 git/wc/awk 随机 command not found→`|| echo NONE` 兜底制造「双 NONE 假相等」（832 identical 假象两现）。**防线：批量对账一律 node 单进程（两次 ls-tree 全量内存比对），且任何循环产物必须独立抽查复核。**
+4. **node 版本会话漂移（环境口径坑）**：nvm default v24 vs 会话 shell 解析到 v22.16——V8 12.4（22 系）把 U+2605 判 Extended_Pictographic=true 致 line-metrics/truths 两测试红（分派走 emoji 档 1.3125≠1.3301）；v24（V8 13.x）数据修正后绿。**防线：门禁前 `node -v` 对齐 nvm default（R43 口径 v24）；上游 CI 用 node 22 跑此族会红，属上游环境兼容事项，台账挂账。**
+5. **mjs 批处理脚本写入需即时独立验证**：一次 writeFileSync 后文件内容未变（根因未定，heredoc 疑似）——docs-main 死键删除首轮「报告 2637B 成功」实际未落盘，独立 grep 复查兜住。**防线：脚本改动后必须另起命令验证产物状态，勿信脚本自报。**
+6. **i18n README 双层品牌面**：徽章 URL（github 仓库指向）与正文（服务名叙述）是两层——本轮终审才抓到 22 件 i18n README 的双层残留（pick 冲突解时只做了部分语言）。**防线：上游 README.*.md 族 pick 后按「URL 层+正文层」双 grep（genspark-ai/ 仓库串与 Genspark 服务名分开查）。**
+
+### 挂账（新增）
+
+| 项 | 说明 | 同步检查动作 |
+|---|---|---|
+| docs 渲染域测试挂账族 11 件（本轮维持不收） | autocorrect/field-codes/font-dialog-advanced/paste-actions/table-ops-wave/ai-error-login-button/merge.test+e2e×4；本地 505 vs 上游 622 | 挂账专项轮批量补收（需逐件适配本地测试基建） |
+| 上游 CI node 22 vs U+2605 Unicode 数据 | V8 12.4 Extended_Pictographic 含 U+2605，line-metrics/truths 两用例在 node 22 红 | 上游修（数据或断言）后随轮取；本地门禁锁定 v24 |
+
+**R45 起点=a10ba620**（上游 main 当前 HEAD）。
 
 ## 第四十二轮（2026-11-19，上游 19a389b39..6b43f81b 63 提交全吸收，施工于 r42-work worktree（前半 37 pick 落 sync/42-upstream，后半 26 pick 续于 r42-work，两段同源续链经 patch-id 对账无断层，终链链重写一次拆 articles）；区间无新 tag（最新仍 v0.13.18），chaofficeUpstreamVersion 维持 0.13.18，六段 1.0.18.0.13.18，本轮未打包 Z 不动）
 

@@ -13,10 +13,10 @@
 Tệp Word, Excel, PowerPoint và PDF do bạn và AI của bạn cùng chỉnh sửa, được lưu lại đúng định dạng gốc.</p>
 
 <p align="center">
-  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/genspark-ai/chaoffice" alt="License: Apache-2.0"></a>
-  <a href="https://github.com/genspark-ai/chaoffice/releases/latest"><img src="https://img.shields.io/github/v/release/genspark-ai/chaoffice" alt="Latest release"></a>
-  <a href="https://github.com/genspark-ai/chaoffice/releases"><img src="https://img.shields.io/github/downloads/genspark-ai/chaoffice/total" alt="Downloads"></a>
-  <a href="https://github.com/genspark-ai/chaoffice/stargazers"><img src="https://img.shields.io/github/stars/genspark-ai/chaoffice?style=flat" alt="GitHub stars"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/ChayuanAIOffice" alt="License: Apache-2.0"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/ChayuanAIOffice" alt="Latest release"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/ChayuanAIOffice/total" alt="Downloads"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/ChayuanAIOffice?style=flat" alt="GitHub stars"></a>
   <a href="https://x.com/merrickbuilds"><img src="https://img.shields.io/badge/follow-%40merrickbuilds-000000?logo=x&logoColor=white" alt="Follow @merrickbuilds on X"></a>
 </p>
 
@@ -68,7 +68,7 @@ mở — lưu thì ghi OOXML, không bao giờ ghi định dạng nguồn.
 - **Hỏi chính tệp của bạn, kèm nguồn.** Gắn sao một nhóm tài liệu và
   **Ask AI** trên màn hình chính sẽ trả lời câu hỏi trên toàn bộ nhóm đó,
   mỗi thông điệp đều trích dẫn tệp nguồn để bạn mở ra kiểm chứng.
-- **Khoá của bạn, hoặc không cần khoá.** Đăng nhập Genspark để khỏi cần
+- **Khoá của bạn, hoặc không cần khoá.** Đăng nhập ChaAI Office để khỏi cần
   khoá, hoặc mang khoá riêng của bạn cho Claude, OpenAI, Gemini, DeepSeek,
   Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty,
   Opper, Cheaper Inference, Atlas Cloud, hoặc bất kỳ điểm cuối tương thích
@@ -79,9 +79,9 @@ mở — lưu thì ghi OOXML, không bao giờ ghi định dạng nguồn.
   chuyển đổi, đọc và chỉnh sửa tệp Office thật ngay trên máy của bạn mà
   không cần mở cửa sổ nào.
 
-**Tải ngay:** [macOS](https://github.com/genspark-ai/chaoffice/releases/latest) (Apple Silicon và Intel) ·
-[Windows](https://github.com/genspark-ai/chaoffice/releases/latest) (x64 và Arm) ·
-[Linux](https://github.com/genspark-ai/chaoffice/releases/latest) (deb, rpm, AppImage) —
+**Tải ngay:** [macOS](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (Apple Silicon và Intel) ·
+[Windows](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (x64 và Arm) ·
+[Linux](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (deb, rpm, AppImage) —
 chi tiết và yêu cầu hệ thống xem mục [Tải xuống](#download).
 
 ## Demo
@@ -324,7 +324,7 @@ khi <code>chaoffice create</code> lắp <code>.pptx</code> và
 <td><b>Cài một lần, từ Settings → Integrations</b> — ChaOffice liệt kê các
 agent lập trình tìm thấy trên máy này và ghi skill vào mỗi agent bạn chọn.
 Hoặc tải skill dưới dạng zip, hoặc chạy <code>npx skills add
-genspark-ai/chaoffice</code>. Các lệnh và toàn bộ quy trình nằm ở
+zhgyuhuii/ChayuanAIOffice</code>. Các lệnh và toàn bộ quy trình nằm ở
 <a href="#command-line-and-agent-skill">Dòng lệnh và agent skill</a>.</td>
 </tr>
 </table>
@@ -382,7 +382,7 @@ Tệp `.doc` của Word 97–2003, `.xls` của Excel hoặc `.ppt` của PowerP
 - **Một AI tự chỉnh tài liệu.** Theo dõi thay đổi trong Docs, công thức và
   biểu đồ sống trong Sheets, slide vẽ thẳng lên khung vẽ, mỗi lượt AI là
   một bản chụp hoàn tác được.
-- **Mô hình của bạn, khoá của bạn.** Đăng nhập Genspark, hoặc mang khoá cho
+- **Mô hình của bạn, khoá của bạn.** Đăng nhập ChaAI Office, hoặc mang khoá cho
   Claude, OpenAI, Gemini, DeepSeek và nhiều nhà cung cấp khác, gồm cả máy
   chủ mô hình cục bộ và bất kỳ điểm cuối tương thích OpenAI nào.
 - **PDF được làm đúng kiểu.** Sửa chữ bên trong trang, và chuyển PDF sang
@@ -402,8 +402,8 @@ Tệp `.doc` của Word 97–2003, `.xls` của Excel hoặc `.ppt` của PowerP
 
 ## Các backend AI
 
-**Đăng nhập Genspark** và không có gì phải cấu hình: các lời gọi mô hình đi
-qua proxy Genspark (họ Claude, GPT và Gemini) và các agent có tìm kiếm web
+**Đăng nhập ChaAI Office** và không có gì phải cấu hình: các lời gọi mô hình đi
+qua proxy ChaAI Office (họ Claude, GPT và Gemini) và các agent có tìm kiếm web
 và ảnh, tạo ảnh, cùng phân tích ảnh/âm thanh/video.
 
 **Hoặc mang khoá riêng của bạn.** Settings → AI liệt kê Claude, OpenAI,
@@ -427,7 +427,7 @@ quả cục bộ hàng đầu được gửi đi để phán đoán và không g
 
 **Parallel** hoạt động không cần tài khoản: Search MCP miễn phí của nó
 (giới hạn tần suất) là tìm kiếm web mặc định khi chưa có đăng nhập
-Genspark hay khoá tìm kiếm, và chạy trước bước scrape DuckDuckGo. Chọn
+ChaAI Office hay khoá tìm kiếm, và chạy trước bước scrape DuckDuckGo. Chọn
 Parallel dưới Web search và nhập khoá
 [Parallel](https://platform.parallel.ai/) để dùng Search API thay thế.
 Keenable cũng không cần khoá; khoá chỉ giúp nâng giới hạn tần suất.
@@ -466,7 +466,7 @@ OpenCode và Windsurf ngay từ đầu, bất kỳ agent nào đọc được sk
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Settings → Integrations** trong ứng dụng | Liệt kê các agent tìm thấy trên máy này; một cú bấm ghi skill vào từng agent bạn chọn. Nút **Update** xuất hiện khi một bản phát hành ChaOffice mang skill mới hơn. |
 | **Download as zip** trên cùng trang        | Đúng cấu trúc claude.ai, ứng dụng Claude desktop và các trợ lý khác chấp nhận như skill tải lên.                                                                    |
-| `npx skills add genspark-ai/chaoffice`     | Cài từ kho lưu trữ này vào bất kỳ agent tương thích skills nào.                                                                                                     |
+| `npx skills add zhgyuhuii/ChayuanAIOffice`     | Cài từ kho lưu trữ này vào bất kỳ agent tương thích skills nào.                                                                                                     |
 
 Sau đó mở một cuộc trò chuyện mới và yêu cầu một tài liệu. Skill dạy agent
 khi nào nên dùng tới `chaoffice`, cách đọc tệp trước khi sửa, và cách tự
@@ -595,17 +595,17 @@ hình trong ChaOffice.
 
 | Nền tảng                             | Yêu cầu                                               | Tải xuống                                                                                   |
 | ------------------------------------ | ----------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [`.dmg` mới nhất (arm64)](https://github.com/genspark-ai/chaoffice/releases/latest)         |
-| **macOS** — Intel (x64)              | macOS 11+                                             | [`.dmg` mới nhất (x64)](https://github.com/genspark-ai/chaoffice/releases/latest)           |
-| **Windows** (x64, đa số máy tính)    | Windows 10+, Intel/AMD                                | [Trình cài `-x64.exe` mới nhất](https://github.com/genspark-ai/chaoffice/releases/latest)   |
-| **Windows** on Arm (ARM64)           | Windows 11 on Arm (Snapdragon X và tương tự)          | [Trình cài `-arm64.exe` mới nhất](https://github.com/genspark-ai/chaoffice/releases/latest) |
-| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 trở lên)            | [`.deb` mới nhất](https://github.com/genspark-ai/chaoffice/releases/latest)                 |
-| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [`.rpm` mới nhất](https://github.com/genspark-ai/chaoffice/releases/latest)                 |
-| **Linux** — các bản phân phối khác   | x86_64, glibc 2.34+, FUSE 2                           | [`.AppImage` mới nhất](https://github.com/genspark-ai/chaoffice/releases/latest)            |
+| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [`.dmg` mới nhất (arm64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)         |
+| **macOS** — Intel (x64)              | macOS 11+                                             | [`.dmg` mới nhất (x64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)           |
+| **Windows** (x64, đa số máy tính)    | Windows 10+, Intel/AMD                                | [Trình cài `-x64.exe` mới nhất](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)   |
+| **Windows** on Arm (ARM64)           | Windows 11 on Arm (Snapdragon X và tương tự)          | [Trình cài `-arm64.exe` mới nhất](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) |
+| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 trở lên)            | [`.deb` mới nhất](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
+| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [`.rpm` mới nhất](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
+| **Linux** — các bản phân phối khác   | x86_64, glibc 2.34+, FUSE 2                           | [`.AppImage` mới nhất](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)            |
 
 Mọi bản dựng đều đến từ `main`; trình cài macOS và Windows có ký số. Các
 phiên bản cũ nằm trên trang
-[Releases](https://github.com/genspark-ai/chaoffice/releases).
+[Releases](https://github.com/zhgyuhuii/ChayuanAIOffice/releases).
 
 <details>
 <summary><b>Cài trên Linux</b></summary>
@@ -711,7 +711,7 @@ Xem [CONTRIBUTING.md](../../CONTRIBUTING.md) để biết các kiểm tra mọi 
 ChaOffice đang được phát triển liên tục và phản hồi của bạn định hình nó.
 
 - **Báo lỗi hoặc đề xuất tính năng** trong
-  [GitHub Issues](https://github.com/genspark-ai/chaoffice/issues).
+  [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues).
 - **Tham gia trò chuyện nhóm ChaOffice** trên
   [GenTeam](https://chaoffice.ai/join) để nói chuyện với đội ngũ và những
   người dùng khác.
@@ -748,7 +748,7 @@ cũ và ODF được mở dưới dạng bản sao đã chuyển
 
 Chỉnh sửa tài liệu hoàn toàn cục bộ — tệp không bao giờ rời máy của bạn để
 được mở, sửa, lưu hay chuyển đổi. Các tính năng AI (agent, tìm kiếm, công
-cụ ảnh) cần kết nối mạng, với đăng nhập Genspark hoặc khoá API mô hình của
+cụ ảnh) cần kết nối mạng, với đăng nhập ChaAI Office hoặc khoá API mô hình của
 riêng bạn.
 
 </details>
@@ -774,7 +774,7 @@ thành chữ chỉnh sửa được thay vì một ảnh trang.
 <details>
 <summary><b>Có thể dùng mô hình AI hay khoá API riêng không?</b></summary>
 
-Có. Ngoài đăng nhập Genspark không cần khoá, ChaOffice hỗ trợ mang khoá
+Có. Ngoài đăng nhập ChaAI Office không cần khoá, ChaOffice hỗ trợ mang khoá
 riêng cho Claude, OpenAI, Gemini, DeepSeek, Kimi, GLM, Qwen, Doubao,
 MiniMax, Grok, Mistral, OpenRouter, Requesty, Opper, Cheaper Inference,
 Atlas Cloud và OpenCode Zen/Go, cùng bất kỳ điểm cuối tương thích OpenAI
@@ -888,6 +888,6 @@ ChaOffice được cấp phép theo [Giấy phép Apache
 đun doanh nghiệp tương lai và chịu sự điều chỉnh của [ChaOffice Enterprise
 License](../../ee/LICENSE).
 
-Tên và logo ChaOffice và Genspark là nhãn hiệu của Mainfunc, Inc. Giấy phép
+Tên và logo ChaOffice và ChaAI Office là nhãn hiệu của Mainfunc, Inc. Giấy phép
 Apache-2.0 không cấp quyền sử dụng chúng (xem mục 6); các fork nên dùng
 thương hiệu riêng của mình.

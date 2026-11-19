@@ -13,10 +13,10 @@
 Word, Excel, PowerPoint और PDF फ़ाइलें, आपके और आपके AI द्वारा एडिट की गई, असली फ़ॉर्मैट में ही सेव होती हैं।</p>
 
 <p align="center">
-  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/genspark-ai/chaoffice" alt="License: Apache-2.0"></a>
-  <a href="https://github.com/genspark-ai/chaoffice/releases/latest"><img src="https://img.shields.io/github/v/release/genspark-ai/chaoffice" alt="Latest release"></a>
-  <a href="https://github.com/genspark-ai/chaoffice/releases"><img src="https://img.shields.io/github/downloads/genspark-ai/chaoffice/total" alt="Downloads"></a>
-  <a href="https://github.com/genspark-ai/chaoffice/stargazers"><img src="https://img.shields.io/github/stars/genspark-ai/chaoffice?style=flat" alt="GitHub stars"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/ChayuanAIOffice" alt="License: Apache-2.0"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/ChayuanAIOffice" alt="Latest release"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/ChayuanAIOffice/total" alt="Downloads"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/ChayuanAIOffice?style=flat" alt="GitHub stars"></a>
   <a href="https://x.com/merrickbuilds"><img src="https://img.shields.io/badge/follow-%40merrickbuilds-000000?logo=x&logoColor=white" alt="Follow @merrickbuilds on X"></a>
 </p>
 
@@ -40,12 +40,12 @@ ChaOffice, macOS, Windows और Linux के लिए Microsoft Office का 
 - **डिज़ाइन से ही लोकल।** फ़ाइलें आपकी मशीन पर ही खुलती, एडिट होती, सेव होती और कन्वर्ट होती हैं। PDF → Word / Excel / PowerPoint, Markdown → Word और HTML → Word — यह सभी कन्वर्शन ऑन-डिवाइस होते हैं। मशीन से बाहर सिर्फ़ AI कॉल्स जाती हैं, और वह भी आपके चुने हुए प्रोवाइडर तक।
 - **फ़ाइलें उनके कंटेंट से खोजें।** होम स्क्रीन एक लोकल SQLite इंडेक्स से आपकी `.docx`, `.xlsx`, `.pptx`, PDF, Markdown और HTML फ़ाइलों के नाम, फ़ोल्डर और पूरा टेक्स्ट खोजती है, CJK सहित। चाहें तो टॉप नतीजों को System One जजमेंट मॉडल **[TypeSafe Jev](https://typesafe.ai/)** से री-रैंक कराएँ, ताकि आपके सवाल का जवाब देने वाली फ़ाइल सबसे ऊपर आए।
 - **अपनी फ़ाइलों से पूछें, स्रोतों के साथ।** डॉक्यूमेंट्स के एक सेट को स्टार करें और होम स्क्रीन पर **Ask AI** उन सबके आधार पर सवालों के जवाब देता है, और हर दावे के पीछे की फ़ाइल साइट करता है ताकि आप उसे खोलकर जाँच सकें।
-- **आपकी कीज़ या कोई कीज़ नहीं।** Genspark से साइन इन करें और कीज़ की झंझट से बचें, या Claude, OpenAI, Gemini, DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty, Opper, Cheaper Inference, Atlas Cloud या किसी भी OpenAI-compatible endpoint के लिए अपनी खुद की key लाएँ — लोकल सर्वर भी शामिल हैं।
+- **आपकी कीज़ या कोई कीज़ नहीं।** ChaAI Office से साइन इन करें और कीज़ की झंझट से बचें, या Claude, OpenAI, Gemini, DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty, Opper, Cheaper Inference, Atlas Cloud या किसी भी OpenAI-compatible endpoint के लिए अपनी खुद की key लाएँ — लोकल सर्वर भी शामिल हैं।
 - **स्क्रिप्ट करने योग्य और एजेंट के लिए तैयार।** ऐप के साथ एक `chaoffice` कमांड लाइन और Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode और Windsurf के लिए एक skill आती है, ताकि कोई कोडिंग एजेंट बिना कोई विंडो खोले आपकी मशीन पर असली Office फ़ाइलें बना, कन्वर्ट, पढ़ और एडिट कर सके।
 
-**पाएँ:** [macOS](https://github.com/genspark-ai/chaoffice/releases/latest) (Apple Silicon और Intel) ·
-[Windows](https://github.com/genspark-ai/chaoffice/releases/latest) (x64 और Arm) ·
-[Linux](https://github.com/genspark-ai/chaoffice/releases/latest) (deb, rpm, AppImage) —
+**पाएँ:** [macOS](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (Apple Silicon और Intel) ·
+[Windows](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (x64 और Arm) ·
+[Linux](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (deb, rpm, AppImage) —
 विवरण और आवश्यकताएँ [डाउनलोड](#download) में देखें।
 
 ## <a id="demo"></a>डेमो
@@ -188,7 +188,7 @@ ChaOffice के साथ एक `chaoffice` कमांड लाइन औ�
 </tr>
 <tr>
 <td><b>अपने एजेंट को एक प्रॉम्प्ट</b> — "सोलर सिस्टम पर आठ स्लाइड का डेक बनाएँ।" एजेंट skill पढ़ता है, एक स्टाइल शीट, एक आउटलाइन और हर स्लाइड के लिए एक पेज स्पेक लिखता है, <code>chaoffice image</code> से दो फ़ोटो जनरेट करता है, और <code>chaoffice slides check</code> को ओवरफ़्लो या ओवरलैप करने वाली हर चीज़ रिजेक्ट करने देता है; इसके बाद <code>chaoffice create</code> <code>.pptx</code> असेंबल करता है और <code>slides render</code> देखने के लिए हर स्लाइड का एक PNG वापस देता है।</td>
-<td><b>एक बार इंस्टॉल करें, सेटिंग्स → इंटीग्रेशन से</b> — ChaOffice इस कंप्यूटर पर मिले कोडिंग एजेंट्स की सूची दिखाता है और आपके चुने हुए हर एजेंट में skill लिख देता है। या skill को zip के रूप में डाउनलोड करें, या <code>npx skills add genspark-ai/chaoffice</code> चलाएँ। कमांड और पूरा वर्कफ़्लो <a href="#command-line-and-agent-skill">कमांड लाइन और एजेंट skill</a> में हैं।</td>
+<td><b>एक बार इंस्टॉल करें, सेटिंग्स → इंटीग्रेशन से</b> — ChaOffice इस कंप्यूटर पर मिले कोडिंग एजेंट्स की सूची दिखाता है और आपके चुने हुए हर एजेंट में skill लिख देता है। या skill को zip के रूप में डाउनलोड करें, या <code>npx skills add zhgyuhuii/ChayuanAIOffice</code> चलाएँ। कमांड और पूरा वर्कफ़्लो <a href="#command-line-and-agent-skill">कमांड लाइन और एजेंट skill</a> में हैं।</td>
 </tr>
 </table>
 
@@ -230,7 +230,7 @@ Word 97–2003 की `.doc`, Excel की `.xls` या PowerPoint की `.ppt
 - **AI जो डॉक्यूमेंट को खुद एडिट करता है।** Docs में ट्रैक्ड चेंजेस, Sheets में लाइव
   फ़ॉर्मूला और चार्ट, कैनवस पर खींची गई स्लाइड्स, हर AI टर्न एक स्नैपशॉट है जिसे
   आप वापस ले जा सकते हैं।
-- **आपका मॉडल, आपकी key।** Genspark से साइन इन करें, या Claude, OpenAI, Gemini,
+- **आपका मॉडल, आपकी key।** ChaAI Office से साइन इन करें, या Claude, OpenAI, Gemini,
   DeepSeek और अन्य के लिए अपनी key लाएँ, लोकल सर्वर और कोई भी OpenAI-compatible
   endpoint भी शामिल है।
 - **PDF सही तरीके से हैंडल किया गया।** पेज के भीतर सीधे टेक्स्ट एडिट करें, और PDF को
@@ -250,13 +250,13 @@ Word 97–2003 की `.doc`, Excel की `.xls` या PowerPoint की `.ppt
 
 ## AI बैकएंड
 
-**Genspark से साइन इन करें** और कुछ भी कॉन्फ़िगर करने की ज़रूरत नहीं: मॉडल कॉल्स Genspark प्रॉक्सी (Claude, GPT और Gemini फ़ैमिली) के ज़रिए रूट होती हैं, और एजेंट्स को वेब व इमेज सर्च, इमेज जनरेशन, और इमेज/ऑडियो/वीडियो एनालिसिस मिलता है।
+**ChaAI Office से साइन इन करें** और कुछ भी कॉन्फ़िगर करने की ज़रूरत नहीं: मॉडल कॉल्स ChaAI Office प्रॉक्सी (Claude, GPT और Gemini फ़ैमिली) के ज़रिए रूट होती हैं, और एजेंट्स को वेब व इमेज सर्च, इमेज जनरेशन, और इमेज/ऑडियो/वीडियो एनालिसिस मिलता है।
 
 **या अपनी खुद की key लाएँ।** Settings → AI में Claude, OpenAI, Gemini, DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty, Opper, Cheaper Inference, Atlas Cloud, SiliconFlow, PPIO, Command Code और OpenCode Zen/Go लिस्ट किए गए हैं, साथ ही किसी भी OpenAI-compatible endpoint (base URL + key) के लिए एक कस्टम स्लॉट है, जिसमें लोकल मॉडल सर्वर भी शामिल हैं। सर्च और मीडिया के अपने अलग, हर-कैपेबिलिटी प्रोवाइडर **AI Media & Search** के तहत हैं: वेब सर्च के लिए Serper, Serply, SearchApi, Tavily, Parallel, Keenable, Exa या Firecrawl, और इमेज जनरेशन व इमेज/वीडियो एनालिसिस के लिए OpenAI, Gemini, Doubao/Seedream, GLM, Grok, Qwen, MiniMax, Stability, FLUX या कोई भी OpenAI-compatible images endpoint, साथ ही इमेज एनालिसिस के लिए DeepSeek V4.1 Flash।
 
 **TypeSafe Jev** होम स्क्रीन की फ़ाइल सर्च को री-रैंक करता है। **AI Media & Search → स्थानीय फ़ाइल खोज** के तहत Jev खोज पुनर्क्रमण चालू करें और एक endpoint चुनें: [OpenRouter](https://openrouter.ai/typesafe) (मॉडल `typesafe/jev-1.13`) या TypeSafe का अपना API। key सिर्फ़ इसी डिवाइस पर स्टोर होती है। यह डिफ़ॉल्ट रूप से बंद है; चालू होने पर टॉप 20 लोकल नतीजों के अंश परखने के लिए भेजे जाते हैं और इसके अलावा कुछ भी मशीन से बाहर नहीं जाता।
 
-**Parallel** बिना अकाउंट के काम करता है: जब कोई Genspark लॉगिन या सर्च key कॉन्फ़िगर नहीं होती, तब इसका फ़्री Search MCP (रेट-लिमिटेड) डिफ़ॉल्ट वेब सर्च होता है, और यह DuckDuckGo स्क्रेप से पहले चलता है। इसके बजाय Search API इस्तेमाल करने के लिए Web search के तहत Parallel चुनें और एक [Parallel](https://platform.parallel.ai/) key डालें। Keenable भी बिना-key चलता है; key सिर्फ़ रेट लिमिट बढ़ा देती है।
+**Parallel** बिना अकाउंट के काम करता है: जब कोई ChaAI Office लॉगिन या सर्च key कॉन्फ़िगर नहीं होती, तब इसका फ़्री Search MCP (रेट-लिमिटेड) डिफ़ॉल्ट वेब सर्च होता है, और यह DuckDuckGo स्क्रेप से पहले चलता है। इसके बजाय Search API इस्तेमाल करने के लिए Web search के तहत Parallel चुनें और एक [Parallel](https://platform.parallel.ai/) key डालें। Keenable भी बिना-key चलता है; key सिर्फ़ रेट लिमिट बढ़ा देती है।
 
 पूरा सूट लाइट, डार्क और सिस्टम थीम के साथ आता है। थीम सिर्फ़ स्क्रीन पर दिखने वाली चीज़ बदलती है: एक्सपोर्ट, प्रिंट और सेव की गई फ़ाइलें हमेशा डॉक्यूमेंट के अपने असली रंग बरकरार रखती हैं।
 
@@ -291,7 +291,7 @@ OpenCode और Windsurf के साथ बिना किसी अतिर
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | ऐप में **सेटिंग्स → इंटीग्रेशन**       | इस कंप्यूटर पर मिले एजेंट्स की सूची दिखाता है; एक क्लिक में आपके चुने हुए हर एजेंट में skill लिख देता है। जब किसी ChaOffice रिलीज़ में नई skill आती है, तो एक **Update** बटन दिखाई देता है। |
 | उसी पेज पर **zip के रूप में डाउनलोड**  | वह लेआउट जिसे claude.ai, Claude डेस्कटॉप ऐप्स और दूसरे असिस्टेंट अपलोड की गई skill के रूप में स्वीकार करते हैं।                                                                             |
-| `npx skills add genspark-ai/chaoffice` | इस रिपॉज़िटरी से किसी भी skills-compatible एजेंट में इंस्टॉल करता है।                                                                                                                       |
+| `npx skills add zhgyuhuii/ChayuanAIOffice` | इस रिपॉज़िटरी से किसी भी skills-compatible एजेंट में इंस्टॉल करता है।                                                                                                                       |
 
 फिर एक नई चैट शुरू करें और कोई डॉक्यूमेंट माँगें। skill एजेंट को सिखाती है कि
 `chaoffice` का सहारा कब लेना है, एडिट करने से पहले फ़ाइल कैसे पढ़नी है, और अपना
@@ -416,16 +416,16 @@ deck_replace(dir, n, page) ×3 · slides_render(file, out)
 
 | प्लेटफ़ॉर्म                          | आवश्यकताएँ                                            | डाउनलोड                                                                                   |
 | ------------------------------------ | ----------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [नवीनतम `.dmg` (arm64)](https://github.com/genspark-ai/chaoffice/releases/latest)         |
-| **macOS** — Intel (x64)              | macOS 11+                                             | [नवीनतम `.dmg` (x64)](https://github.com/genspark-ai/chaoffice/releases/latest)           |
-| **Windows** (x64, ज़्यादातर PC)      | Windows 10+, Intel/AMD                                | [नवीनतम `-x64.exe` installer](https://github.com/genspark-ai/chaoffice/releases/latest)   |
-| **Windows** Arm पर (ARM64)           | Windows 11 on Arm (Snapdragon X और समान)              | [नवीनतम `-arm64.exe` installer](https://github.com/genspark-ai/chaoffice/releases/latest) |
-| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 या नया)             | [नवीनतम `.deb`](https://github.com/genspark-ai/chaoffice/releases/latest)                 |
-| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [नवीनतम `.rpm`](https://github.com/genspark-ai/chaoffice/releases/latest)                 |
-| **Linux** — अन्य डिस्ट्रीब्यूशन      | x86_64, glibc 2.34+, FUSE 2                           | [नवीनतम `.AppImage`](https://github.com/genspark-ai/chaoffice/releases/latest)            |
+| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [नवीनतम `.dmg` (arm64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)         |
+| **macOS** — Intel (x64)              | macOS 11+                                             | [नवीनतम `.dmg` (x64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)           |
+| **Windows** (x64, ज़्यादातर PC)      | Windows 10+, Intel/AMD                                | [नवीनतम `-x64.exe` installer](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)   |
+| **Windows** Arm पर (ARM64)           | Windows 11 on Arm (Snapdragon X और समान)              | [नवीनतम `-arm64.exe` installer](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) |
+| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 या नया)             | [नवीनतम `.deb`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
+| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [नवीनतम `.rpm`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                 |
+| **Linux** — अन्य डिस्ट्रीब्यूशन      | x86_64, glibc 2.34+, FUSE 2                           | [नवीनतम `.AppImage`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)            |
 
 सभी बिल्ड `main` से बनते हैं; macOS और Windows इंस्टॉलर साइन किए हुए हैं।
-पुराने वर्शन [Releases](https://github.com/genspark-ai/chaoffice/releases) पेज पर मौजूद हैं।
+पुराने वर्शन [Releases](https://github.com/zhgyuhuii/ChayuanAIOffice/releases) पेज पर मौजूद हैं।
 
 <details>
 <summary><b>Linux पर इंस्टॉल करना</b></summary>
@@ -504,7 +504,7 @@ pull request कैसे मर्ज होते हैं, इसके ल�
 
 ChaOffice पर सक्रिय रूप से काम चल रहा है, और आपका फ़ीडबैक इसे आकार देता है।
 
-- [GitHub Issues](https://github.com/genspark-ai/chaoffice/issues) में
+- [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues) में
   **बग रिपोर्ट करें या फ़ीचर रिक्वेस्ट करें**।
 - टीम और दूसरे यूज़र्स से बात करने के लिए
   [GenTeam](https://chaoffice.ai/join) पर **ChaOffice ग्रुप चैट जॉइन करें**।
@@ -540,7 +540,7 @@ ChaOffice पर सक्रिय रूप से काम चल रहा 
 
 डॉक्यूमेंट एडिटिंग पूरी तरह लोकल है — खोलने, एडिट करने, सेव करने या कन्वर्ट
 करने के लिए फ़ाइलें कभी आपकी मशीन से बाहर नहीं जाती हैं। AI फ़ीचर्स (एजेंट,
-सर्च, इमेज टूल्स) को नेटवर्क कनेक्शन चाहिए, और उसके लिए Genspark साइन-इन या
+सर्च, इमेज टूल्स) को नेटवर्क कनेक्शन चाहिए, और उसके लिए ChaAI Office साइन-इन या
 आपकी अपनी मॉडल API key में से कोई एक ज़रूरी है।
 
 </details>
@@ -566,7 +566,7 @@ ChaOffice पर सक्रिय रूप से काम चल रहा 
 <details>
 <summary><b>क्या मैं अपना AI मॉडल या API key इस्तेमाल कर सकता हूँ?</b></summary>
 
-हाँ। बिना-key वाले Genspark साइन-इन के अलावा, ChaOffice Claude, OpenAI,
+हाँ। बिना-key वाले ChaAI Office साइन-इन के अलावा, ChaOffice Claude, OpenAI,
 Gemini, DeepSeek, Kimi, GLM, Qwen, Doubao, MiniMax, Grok, Mistral,
 OpenRouter, Requesty, Opper, Cheaper Inference, Atlas Cloud और OpenCode Zen/Go के लिए अपनी खुद की key लाने को सपोर्ट करता
 है, साथ ही किसी भी OpenAI-compatible endpoint को — जिसमें लोकल मॉडल सर्वर
@@ -682,6 +682,6 @@ ChaOffice को [Apache License 2.0](../../LICENSE) के तहत लाइ�
 है, एक अपवाद के साथ: `ee/` डायरेक्टरी भविष्य के एंटरप्राइज़ मॉड्यूल्स के लिए
 रिज़र्व है और [ChaOffice Enterprise License](../../ee/LICENSE) के तहत आती है।
 
-ChaOffice और Genspark के नाम व लोगो, Mainfunc, Inc. के ट्रेडमार्क हैं।
+ChaOffice और ChaAI Office के नाम व लोगो, Mainfunc, Inc. के ट्रेडमार्क हैं।
 Apache-2.0 लाइसेंस इनके इस्तेमाल की अनुमति नहीं देता (सेक्शन 6 देखें);
 फ़ॉर्क को अपनी खुद की ब्रांडिंग इस्तेमाल करनी चाहिए।
