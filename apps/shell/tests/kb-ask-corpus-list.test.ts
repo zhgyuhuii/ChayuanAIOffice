@@ -2,7 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
-import type { KbFileInfo } from '@genoffice/agent-core'
+import type { KbFileInfo } from '@chaoffice/agent-core'
 import { KbCorpusList } from '../src/renderer/src/KbAskPanel'
 import { LocaleProvider } from '../src/renderer/src/locale'
 

@@ -263,7 +263,7 @@ interface EngineResult {
 }
 
 async function scoreEngine(
-  engine: 'genoffice' | 'soffice',
+  engine: 'chaoffice' | 'soffice',
   sample: Sample,
   pdfium: PdfiumModule,
   workDir: string,
@@ -271,7 +271,7 @@ async function scoreEngine(
   let docx: Uint8Array
   const pdfPath = join(workDir, `${sample.name}.pdf`)
   writeFileSync(pdfPath, sample.pdf)
-  if (engine === 'genoffice') {
+  if (engine === 'chaoffice') {
     const r = await convertPdfToDocx(sample.pdf, { pdfium })
     docx = r.docx
   } else {
@@ -316,7 +316,7 @@ async function scoreEngine(
 // ── the bench ───────────────────────────────────────────────────────────
 
 describe.skipIf(!RUN)('pdf → editable accuracy bench (invoice/report class)', () => {
-  it('scores genoffice vs soffice across the corpus', async () => {
+  it('scores chaoffice vs soffice across the corpus', async () => {
     const pdfium = await loadPdfium()
     const samples: Sample[] = [
       {
@@ -401,7 +401,7 @@ describe.skipIf(!RUN)('pdf → editable accuracy bench (invoice/report class)', 
       '|---|---|---|---|---|---|',
     ]
     for (const sample of samples) {
-      for (const engine of ['genoffice', 'soffice'] as const) {
+      for (const engine of ['chaoffice', 'soffice'] as const) {
         const r = await scoreEngine(engine, sample, pdfium, workDir)
         scorecard.push(
           `| ${sample.name} | ${engine} | ${r.intact}/${sample.fields.length} | ${r.split} | ${r.missing} | ${r.detailColumns ?? '-'}${sample.expectedColumns !== undefined ? ` (${sample.expectedColumns})` : ''} |`,
@@ -420,6 +420,6 @@ describe.skipIf(!RUN)('pdf → editable accuracy bench (invoice/report class)', 
 
     // the smoke assertion: the pipeline produces tables for the invoice class
     // (the numbers themselves are the narrative, never a gate)
-    expect(md).toContain('genoffice')
+    expect(md).toContain('chaoffice')
   })
 })

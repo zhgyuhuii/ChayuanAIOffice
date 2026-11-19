@@ -1,6 +1,6 @@
 # PDF → editable accuracy scorecard — measured 2026-11-15
 
-- genoffice pipeline at commit 19a389b3 (upstream/main, "before") vs this branch
+- chaoffice pipeline at commit 19a389b3 (upstream/main, "before") vs this branch
   ("after", `augmentGridStreamColumns`); LibreOffice 26.8.2.2 via
   `soffice --infilter=writer_pdf_import --convert-to docx` for reference.
 - Run: `node scripts/pdf2docx-accuracy.mjs <out.md>` (regenerates the after
@@ -16,15 +16,15 @@ Field = a ground-truth string that must survive as ONE contiguous cell/paragraph
 
 | sample            | engine    | intact | split | missing | detail columns (expected) |
 | ----------------- | --------- | ------ | ----- | ------- | ------------------------- |
-| invoice-banded-en | genoffice | 11/11  | 0     | 0       | 1 (8)                     |
+| invoice-banded-en | chaoffice | 11/11  | 0     | 0       | 1 (8)                     |
 | invoice-banded-en | soffice   | 11/11  | 0     | 0       | - (8)                     |
-| invoice-cjk-real  | genoffice | 6/7    | 0     | 1       | 1 (8)                     |
+| invoice-cjk-real  | chaoffice | 6/7    | 0     | 1       | 1 (8)                     |
 
 - not intact: "91310000MA1FL0000X"
   | invoice-cjk-real | soffice | 7/7 | 0 | 0 | - (8) |
-  | report-bordered | genoffice | 12/12 | 0 | 0 | - |
+  | report-bordered | chaoffice | 12/12 | 0 | 0 | - |
   | report-bordered | soffice | 12/12 | 0 | 0 | - |
-  | report-borderless | genoffice | 9/9 | 0 | 0 | - |
+  | report-borderless | chaoffice | 9/9 | 0 | 0 | - |
   | report-borderless | soffice | 9/9 | 0 | 0 | - |
 
 ## after (this branch)
@@ -37,13 +37,13 @@ Field = a ground-truth string that must survive as ONE contiguous cell/paragraph
 
 | sample            | engine    | intact | split | missing | detail columns (expected) |
 | ----------------- | --------- | ------ | ----- | ------- | ------------------------- |
-| invoice-banded-en | genoffice | 11/11  | 0     | 0       | 9 (8)                     |
+| invoice-banded-en | chaoffice | 11/11  | 0     | 0       | 9 (8)                     |
 | invoice-banded-en | soffice   | 11/11  | 0     | 0       | - (8)                     |
-| invoice-cjk-real  | genoffice | 7/7    | 0     | 0       | 8 (8)                     |
+| invoice-cjk-real  | chaoffice | 7/7    | 0     | 0       | 8 (8)                     |
 | invoice-cjk-real  | soffice   | 7/7    | 0     | 0       | - (8)                     |
-| report-bordered   | genoffice | 12/12  | 0     | 0       | -                         |
+| report-bordered   | chaoffice | 12/12  | 0     | 0       | -                         |
 | report-bordered   | soffice   | 12/12  | 0     | 0       | -                         |
-| report-borderless | genoffice | 9/9    | 0     | 0       | -                         |
+| report-borderless | chaoffice | 9/9    | 0     | 0       | -                         |
 | report-borderless | soffice   | 9/9    | 0     | 0       | -                         |
 
 ## Reading
