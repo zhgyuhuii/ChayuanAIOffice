@@ -563,14 +563,14 @@ export const tMain = createI18n({
     mediaAviBody:
       'Az AVI formátumot nem támogatja a beépített lejátszó, ezért az alkalmazáson belül nem játszható le. A fájl változatlan formában ágyazódik be, és exportálás után a PowerPointban továbbra is lejátszható.',
     pptImportDetail:
-      'A GenOffice a bemutatót szerkeszthető szövegdobozokként építi újra, az eredeti diasorrendben és -méretben; az alakzatok geometriája, a képek és a szövegformázás egyelőre nem kerül át. Az eredeti fájl soha nem módosul; a konvertált .pptx külön másolat, amelybe a későbbi mentések íródnak.',
+      'A ChaAI Office a bemutatót szerkeszthető szövegdobozokként építi újra, az eredeti diasorrendben és -méretben; az alakzatok geometriája, a képek és a szövegformázás egyelőre nem kerül át. Az eredeti fájl soha nem módosul; a konvertált .pptx külön másolat, amelybe a későbbi mentések íródnak.',
     pptImportFailedTitle: 'Ez a .ppt nem konvertálható',
     pptImportFailedBody:
       'Lehet, hogy a fájl sérült, vagy nem érvényes PowerPoint 97-2003 bemutató.',
     legacyPptTitle: 'A régi .ppt nem nyitható meg',
     odpImportMsg: 'Átalakítjuk ezt a .{ext} bemutatót?',
     odpImportDetail:
-      'A GenOffice .pptx fájlokat szerkeszt, nem ODF-et. Minden oldal diává alakul, a szövegdobozokkal és képekkel az eredeti helyükön; a diaminták, a helyőrzős elrendezések, a táblázatok és az alakzatstílusok nem maradnak meg. Az eredeti fájl soha nem módosul; a konvertált .pptx külön másolat, amelybe a későbbi mentések íródnak.',
+      'A ChaAI Office .pptx fájlokat szerkeszt, nem ODF-et. Minden oldal diává alakul, a szövegdobozokkal és képekkel az eredeti helyükön; a diaminták, a helyőrzős elrendezések, a táblázatok és az alakzatstílusok nem maradnak meg. Az eredeti fájl soha nem módosul; a konvertált .pptx külön másolat, amelybe a későbbi mentések íródnak.',
     odpImportConvertBtn: 'Átalakítás és megnyitás',
     importSkipConfirm: 'Átalakítás a jövőben kérdés nélkül',
     odpImportFailedTitle: 'Ez az .odp nem konvertálható',
@@ -608,11 +608,11 @@ export const tMain = createI18n({
       'A képmellékletek nem tartalmaznak szöveget; a kép a felhasználó üzenetével együtt kerül elküldésre',
     errNotImage: 'nem támogatott képtípus',
     errGskNotLoggedIn:
-      'Nem vagy bejelentkezve a Gensparkba: kattints alább a „Bejelentkezés a Gensparkba” gombra, jelentkezz be, majd próbáld újra',
+      'Nem vagy bejelentkezve a ChaAI Officeba: kattints alább a „Bejelentkezés a ChaAI Officeba” gombra, jelentkezz be, majd próbáld újra',
     errNoApiKey: 'Nincs API-kulcs beállítva a következőhöz: {provider}',
     errNoModel: 'Nincs modellnév beállítva',
     errGskCli:
-      'A gsk nincs bejelentkezve: futtasd a gsk login parancsot, hogy előbb bejelentkezz a Genspark-fiókodba',
+      'A gsk nincs bejelentkezve: futtasd a gsk login parancsot, hogy előbb bejelentkezz a ChaAI Office-fiókodba',
     errNoDeckAppend:
       'Nincs bemutató, amihez hozzá lehetne adni (a munkamenet hiányzik). Az első oldalt a mode:"replace" móddal generáld, vagy adj hozzá oldalakat a natív eszközökkel.',
     errAppendFailed: 'Hozzáadás sikertelen: {reason}',

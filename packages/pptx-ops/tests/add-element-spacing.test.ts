@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest'
-import { createBlankPptx, openPptx, savePptx, type TextElement } from '@genoffice/pptx-engine'
+import { createBlankPptx, openPptx, savePptx, type TextElement } from '@chaoffice/pptx-engine'
 import { runTxn } from '../src/ops/executor'
 import '../src/ops/index'
 

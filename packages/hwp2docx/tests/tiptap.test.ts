@@ -39,7 +39,7 @@ const texts = (node: TiptapNode): string =>
   node.text ?? (node.content ?? []).map(texts).join(node.type === 'doc' ? '\n' : '')
 
 describe('convertHwpToTiptap', () => {
-  it('emits Tiptap JSON from the same docx the GenOffice filter writes', async () => {
+  it('emits Tiptap JSON from the same docx the ChaAI Office filter writes', async () => {
     const table =
       `<hp:tbl rowCnt="2" colCnt="2" borderFillIDRef="1"><hp:sz width="15000" height="3000"/>` +
       `<hp:tr>${cell(0, 0, '세로 병합', { col: 1, row: 2 })}${cell(1, 0, '위')}</hp:tr>` +

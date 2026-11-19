@@ -19,7 +19,7 @@
  * the next one.
  */
 import type { Editor } from '@tiptap/core'
-import type { CommentInfo } from '@genoffice/docx-engine'
+import type { CommentInfo } from '@chaoffice/docx-engine'
 
 const graveyard = new Map<string, CommentInfo>()
 

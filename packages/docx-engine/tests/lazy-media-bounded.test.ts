@@ -1,6 +1,6 @@
 import JSZip from 'jszip'
 import { describe, expect, it } from 'vitest'
-import { DEFAULT_ZIP_LIMITS } from '@genoffice/zip-gate'
+import { DEFAULT_ZIP_LIMITS } from '@chaoffice/zip-gate'
 import { MAX_LAZY_SERVED_MEDIA_BYTES, readMediaPartBounded } from '../src/lazy-media'
 import { bufferSource, readZipEntries, type ZipEntry } from '../src/zip-splice'
 

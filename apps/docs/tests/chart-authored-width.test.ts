@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { ChartDisplay } from '@genoffice/docx-engine'
+import type { ChartDisplay } from '@chaoffice/docx-engine'
 import { CHART_MAX_WIDTH_PX, chartPlotWidth } from '../src/renderer/editor/protected-render'
 
 describe('chart display width (issue #2805)', () => {

@@ -11,7 +11,7 @@ import {
  * A workbook's data connections are not part of the grid: Power Query keeps its
  * M code in `customXml/item1.xml` (the DataMashup part) and the query and its
  * destination in `xl/connections.xml`, `xl/queryTables/` and `xl/tables/`.
- * GenOffice does not run those queries, but it must not damage them: the file
+ * ChaAI Office does not run those queries, but it must not damage them: the file
  * has to stay refreshable in Excel.
  *
  * So the save path may touch the worksheet and the workbook part, and nothing

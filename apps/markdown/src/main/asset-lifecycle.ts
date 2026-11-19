@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 import { lstat, mkdir, readFile, readdir, realpath, rm, stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path'
-import { copyFileExclusive } from '@genoffice/electron-utils/copy-file'
+import { copyFileExclusive } from '@chaoffice/electron-utils/copy-file'
 import { atomicWriteFile } from './atomic-write'
 
 export const ASSET_MANIFEST_FILENAME = '.chaoffice-assets.json'

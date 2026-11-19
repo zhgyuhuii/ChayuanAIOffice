@@ -17,7 +17,7 @@ import {
   type FSWatcher,
 } from 'node:fs'
 import { basename, dirname, extname, join, resolve, sep } from 'node:path'
-import { copyFileExclusiveSync } from '@genoffice/electron-utils/copy-file'
+import { copyFileExclusiveSync } from '@chaoffice/electron-utils/copy-file'
 import type {
   FolderEntry,
   FolderListing,

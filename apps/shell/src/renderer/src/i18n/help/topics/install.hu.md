@@ -1,6 +1,6 @@
-# A GenOffice telepítése
+# A ChaOffice telepítése
 
-Minden build elérhető a [Releases oldalon](https://github.com/genspark-ai/genoffice/releases/latest). Mindegyik a `main` ágból készül; a macOS- és Windows-telepítők alá vannak írva.
+Minden build elérhető a [Releases oldalon](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest). Mindegyik a `main` ágból készül; a macOS- és Windows-telepítők alá vannak írva.
 
 ## Válaszd ki a gépednek megfelelő fájlt
 
@@ -18,32 +18,32 @@ A régebbi verziók is megmaradnak a Releases oldalon.
 
 ## macOS-en
 
-Nyisd meg a `.dmg` fájlt, és húzd a **GenOffice**-ot az Alkalmazások mappába. Az Intel-es buildnél az első indításkor meg kell erősítened a megnyitást: kattints jobb gombbal az alkalmazásra az Alkalmazások mappában ▸ Megnyitás. Ez csak annyit jelent, hogy a Gatekeeper aláíratlannak tűnő lemezképpel találkozott, nem azt, hogy a letöltés megsérült.
+Nyisd meg a `.dmg` fájlt, és húzd a **ChaOffice**-ot az Alkalmazások mappába. Az Intel-es buildnél az első indításkor meg kell erősítened a megnyitást: kattints jobb gombbal az alkalmazásra az Alkalmazások mappában ▸ Megnyitás. Ez csak annyit jelent, hogy a Gatekeeper aláíratlannak tűnő lemezképpel találkozott, nem azt, hogy a letöltés megsérült.
 
 ## Windowson
 
-Futtasd az `.exe` telepítőt. Felveszi a GenOffice-ot a Start menübe, és társítja a `.docx`, `.xlsx`, `.pptx`, `.pdf` és hasonló fájltípusokat, így egy fájlra duplán kattintva megnyílik a GenOffice-ban.
+Futtasd az `.exe` telepítőt. Felveszi a ChaOffice-ot a Start menübe, és társítja a `.docx`, `.xlsx`, `.pptx`, `.pdf` és hasonló fájltípusokat, így egy fájlra duplán kattintva megnyílik a ChaOffice-ban.
 
 ## Linuxon
 
 **Debian / Ubuntu**
 
 ```sh
-sudo apt install ./genoffice_<version>_amd64.deb
+sudo apt install ./ChaAIOffice_<version>_amd64.deb
 ```
 
 **Fedora / RHEL / openSUSE**
 
 ```sh
-sudo dnf install ./genoffice-<version>.x86_64.rpm     # Fedora / RHEL family
-sudo zypper install ./genoffice-<version>.x86_64.rpm  # openSUSE
+sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
+sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
 
 **AppImage** — ott fut, ahol van, telepítési lépés nélkül:
 
 ```sh
-chmod +x GenOffice-<version>.AppImage
-./GenOffice-<version>.AppImage
+chmod +x ChaOffice-<version>.AppImage
+./ChaOffice-<version>.AppImage
 ```
 
 Ehhez a FUSE 2 futtatókörnyezet szükséges. Ha nem szeretnéd telepíteni, indítsd a `--appimage-extract-and-run` kapcsolóval, és a sandbox a kicsomagolt mappából működik.
@@ -64,4 +64,4 @@ Mindhárom a közzétett kiadási fájlokat csomagolja be ahelyett, hogy újraé
 
 ## A parancssor is jár hozzá
 
-Minden telepítés tartalmaz egy `genoffice` parancsot, amely ugyanazokat a motorokat használja, mint az ablak, így a kettő soha nem kezeli eltérően ugyanazt a fájlt. macOS-en és Windowson ez az alkalmazáscsomagon belül található; a `genoffice install-cli` hozzáadja a `PATH`-hoz. A **Parancssor és ügynökök** című súgótémából megtudhatod, mire képes.
+Minden telepítés tartalmaz egy `chaoffice` parancsot, amely ugyanazokat a motorokat használja, mint az ablak, így a kettő soha nem kezeli eltérően ugyanazt a fájlt. macOS-en és Windowson ez az alkalmazáscsomagon belül található; a `chaoffice install-cli` hozzáadja a `PATH`-hoz. A **Parancssor és ügynökök** című súgótémából megtudhatod, mire képes.

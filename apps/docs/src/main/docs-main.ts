@@ -747,14 +747,14 @@ const tMain = createI18n({
     filterWord: 'Word-dokumentumok',
     odtImportMsg: 'Átalakítsuk ezt a(z) .{ext} dokumentumot?',
     odtImportDetail:
-      'A GenOffice .docx fájlokat szerkeszt, ODF-et nem. A szövegtörzs, a címsorok, a listák, a táblázatok és a képek átmennek; a lábjegyzetek, a megjegyzések és a szövegdobozok nem maradnak meg teljesen. Az eredeti fájl sosem változik; az átalakított .docx egy külön példány, amelybe a későbbi mentések kerülnek.',
+      'A ChaAI Office .docx fájlokat szerkeszt, ODF-et nem. A szövegtörzs, a címsorok, a listák, a táblázatok és a képek átmennek; a lábjegyzetek, a megjegyzések és a szövegdobozok nem maradnak meg teljesen. Az eredeti fájl sosem változik; az átalakított .docx egy külön példány, amelybe a későbbi mentések kerülnek.',
     hwpImportDetail:
-      'A GenOffice .docx fájlokat szerkeszt, HWP-t nem. A szövegtörzs, a táblázatok, a képek, az élőfejek és az élőlábak átmennek; az egyenletek, a lábjegyzetek és a beágyazott objektumok nem alakulnak át, az automatikus számozás pedig egyszerű szöveggé válik. Az eredeti fájl sosem változik; az átalakított .docx egy külön példány, amelybe a későbbi mentések kerülnek.',
+      'A ChaAI Office .docx fájlokat szerkeszt, HWP-t nem. A szövegtörzs, a táblázatok, a képek, az élőfejek és az élőlábak átmennek; az egyenletek, a lábjegyzetek és a beágyazott objektumok nem alakulnak át, az automatikus számozás pedig egyszerű szöveggé válik. Az eredeti fájl sosem változik; az átalakított .docx egy külön példány, amelybe a későbbi mentések kerülnek.',
     odtImportConvertBtn: 'Átalakítás és megnyitás',
     importSkipConfirm: 'Átalakítás a továbbiakban kérdés nélkül',
     docImportMsg: 'Átalakítsuk ezt a(z) .{ext} dokumentumot?',
     docImportDetail:
-      'A GenOffice .docx fájlokat szerkeszt, Word 97-2003 dokumentumokat nem. A szövegtörzs, a címsorok, a listák, a táblázatok és a képek átmennek; a lábjegyzetek, a megjegyzések és a szövegdobozok nem maradnak meg teljesen. Az eredeti fájl sosem változik; az átalakított .docx egy külön példány, amelybe a későbbi mentések kerülnek.',
+      'A ChaAI Office .docx fájlokat szerkeszt, Word 97-2003 dokumentumokat nem. A szövegtörzs, a címsorok, a listák, a táblázatok és a képek átmennek; a lábjegyzetek, a megjegyzések és a szövegdobozok nem maradnak meg teljesen. Az eredeti fájl sosem változik; az átalakított .docx egy külön példány, amelybe a későbbi mentések kerülnek.',
     docImportConvertBtn: 'Átalakítás és megnyitás',
     dlgSaveAs: 'Mentés másként',
     closeUnsavedMsg: 'A dokumentum nem mentett módosításokat tartalmaz.',

@@ -1679,7 +1679,7 @@ export const ribbonCommonTr = {
 }
 
 export const ribbonCommonHu = {
-  ribbonAiAssistant: 'Genspark',
+  ribbonAiAssistant: 'ChaAI Office',
   ribbonApply: 'Alkalmaz',
   ribbonChart: 'Diagram',
   ribbonCollapse: 'Menüszalag összecsukása',

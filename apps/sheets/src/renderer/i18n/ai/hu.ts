@@ -5,7 +5,7 @@ export const hu = {
   aiEmptyBuildTitle: 'Hagyd, hogy az AI elkészítse a munkafüzetet',
   aiEmptyBuildBody:
     'Írd le a szükséges táblázatot, adatot vagy diagramot — az AI a helyén hozza létre.',
-  aiGskLoginBtn: 'Bejelentkezés a Gensparkba',
+  aiGskLoginBtn: 'Bejelentkezés a ChaAI Officeba',
   aiUndelivered: 'Nem sikerült elküldeni',
   aiRetry: 'Újra',
   aiOpenAssistant: 'AI-asszisztens megnyitása',
@@ -53,7 +53,7 @@ export const hu = {
   aiAccountChecking: 'Ellenőrzés…',
   aiLoggedIn: 'Bejelentkezve',
   aiLoggedInAs: 'Bejelentkezve: {email}',
-  aiNotLoggedIn: 'Nem vagy bejelentkezve (az AI-funkciókhoz Genspark-fiók szükséges)',
+  aiNotLoggedIn: 'Nem vagy bejelentkezve (az AI-funkciókhoz ChaAI Office-fiók szükséges)',
   aiWaitingBrowserLogin: 'Várakozás a böngészős bejelentkezésre…',
   aiModel: 'Modell',
   aiCancel: 'Mégse',
@@ -67,7 +67,7 @@ export const hu = {
   aiNetworkError:
     'Hálózati probléma: nem sikerült elérni az AI-szolgáltatást. Ellenőrizd a kapcsolatot, és próbáld újra',
   aiCreditsExhausted:
-    'Elfogytak a Genspark-kreditjeid. Töltsd fel az egyenlegedet a genspark.ai/pricing oldalon, majd próbáld újra',
+    'Elfogytak a ChaAI Office-kreditjeid. Töltsd fel az egyenlegedet a genspark.ai/pricing oldalon, majd próbáld újra',
   aiToolWorkbookContext: 'Munkafüzet-információk beolvasása',
   aiToolReadRange: 'Tartomány beolvasása',
   aiToolReadRangeOf: 'Tartomány beolvasása: {range}',

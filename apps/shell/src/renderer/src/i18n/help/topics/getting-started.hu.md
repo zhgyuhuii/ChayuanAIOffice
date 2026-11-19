@@ -1,6 +1,6 @@
 # Gyors kezdés: a felület és az alapok
 
-A GenOffice egy teljes egészében a gépeden futó irodai programcsomag: egyetlen ablak, egy lapsor, benne hat szerkesztő — Docs (szövegszerkesztés), Sheets (táblázatkezelés), Slides (bemutatók), PDF, Markdown és HTML. A fájlok valódi .docx / .xlsx / .pptx / .pdf fájlok, amelyeket a Word, az Excel és a PowerPoint is megnyit, és fordítva. Nincs szükség hálózatra.
+A ChaOffice egy teljes egészében a gépeden futó irodai programcsomag: egyetlen ablak, egy lapsor, benne hat szerkesztő — Docs (szövegszerkesztés), Sheets (táblázatkezelés), Slides (bemutatók), PDF, Markdown és HTML. A fájlok valódi .docx / .xlsx / .pptx / .pdf fájlok, amelyeket a Word, az Excel és a PowerPoint is megnyit, és fordítva. Nincs szükség hálózatra.
 
 ## A felület áttekintése
 
@@ -18,7 +18,7 @@ Az alábbiak bármelyike megfelel:
 
 - Kattints egy gyorslétrehozó kártyára a **Kezdőképernyő** [Gyors kezdés](help://getting-started) szakaszában (AI Docs, AI Sheets, AI Slides, ...).
 - **Fájl ▸ Új** menü: Docs (⌘N/ctrl+N), Sheets, Slides, Markdown, HTML vagy PDF.
-- Húzz egy fájlt az ablakra, vagy kattints rá duplán a fájlkezelődben (ha a GenOffice az alapértelmezett alkalmazás hozzá).
+- Húzz egy fájlt az ablakra, vagy kattints rá duplán a fájlkezelődben (ha a ChaOffice az alapértelmezett alkalmazás hozzá).
 
 Az új dokumentum névtelenül nyílik meg; a fájl a lemezen csak az első mentéskor jön létre.
 
@@ -26,7 +26,7 @@ Az új dokumentum névtelenül nyílik meg; a fájl a lemezen csak az első ment
 
 - A **Fájl ▸ Megnyitás** (⌘O/ctrl+O) a rendszer fájlválasztóját nyitja meg: .docx / .doc / .xlsx / .xls / .csv / .tsv / .pptx / .ppt / .pdf / .md / .html.
 - Kattints a Kezdőképernyő **Legutóbbiak** listájának bármelyik elemére.
-- A `genoffice <file>` parancs terminálból kiadva szintén megnyitja a fájlokat.
+- A `chaoffice <file>` parancs terminálból kiadva szintén megnyitja a fájlokat.
 
 ## A mentési modell
 
@@ -52,7 +52,7 @@ Az egyes szerkesztőkön belüli billentyűparancsok (formátummásoló, keresé
 
 ## Az Option+Command kombinációk
 
-Az Option+Command az a réteg, amelyet a Word a szerkezeti ugrásokra tart fenn, és a GenOffice is ugyanígy használja. Nagy részét a Docs veszi igénybe; a Sheets két saját kombinációt kap az Excellel való egyezés kedvéért; egy kombináció pedig mindenhol működik.
+Az Option+Command az a réteg, amelyet a Word a szerkezeti ugrásokra tart fenn, és a ChaOffice is ugyanígy használja. Nagy részét a Docs veszi igénybe; a Sheets két saját kombinációt kap az Excellel való egyezés kedvéért; egy kombináció pedig mindenhol működik.
 
 **Docs**
 
@@ -81,7 +81,7 @@ Ne feledd, hogy **a ⌥⌘0 a Docsban a Normál stílust, a Sheetsben pedig a K�
 
 **Minden szerkesztőben**: a **⌥⌘R / Ctrl+F1** összecsukja a menüszalagot, ahogy fent leírtuk.
 
-Így a ⌥⌘D szabadon marad macOS-en a GenOffice számára, ha egy későbbi parancs igényelné.
+Így a ⌥⌘D szabadon marad macOS-en a ChaOffice számára, ha egy későbbi parancs igényelné.
 
 ## Hová tovább
 

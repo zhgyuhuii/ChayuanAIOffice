@@ -527,7 +527,7 @@ const tMain = createI18n({
     filterXlsm: 'Makróbarát Excel-munkafüzetek',
     odsImportMsg: 'Átalakítsuk ezt a .{ext} munkafüzetet?',
     odsImportDetail:
-      'A GenOffice .xlsx fájlokat szerkeszt, az ODF-et nem. Az értékek, képletek és dátumok átjönnek (a képletek Excel-szintaxisra íródnak át, és ami nem alakítható át biztonságosan, az megtartja jelenlegi eredményét). A képek, az egyesített cellák, az oszlopszélességek és a sormagasságok szintén átjönnek; más formázások, például a szegélyek, valamint a diagramok nem kerülnek át. Az eredeti fájl soha nem módosul; az átalakított másolat első mentéskor .xlsx formátumban kerül mentésre.',
+      'A ChaAI Office .xlsx fájlokat szerkeszt, az ODF-et nem. Az értékek, képletek és dátumok átjönnek (a képletek Excel-szintaxisra íródnak át, és ami nem alakítható át biztonságosan, az megtartja jelenlegi eredményét). A képek, az egyesített cellák, az oszlopszélességek és a sormagasságok szintén átjönnek; más formázások, például a szegélyek, valamint a diagramok nem kerülnek át. Az eredeti fájl soha nem módosul; az átalakított másolat első mentéskor .xlsx formátumban kerül mentésre.',
     odsImportConvertBtn: 'Átalakítás és megnyitás',
     importSkipConfirm: 'Átalakítás a jövőben kérdezés nélkül',
     dlgAddAttachment: 'Mellékletek hozzáadása',

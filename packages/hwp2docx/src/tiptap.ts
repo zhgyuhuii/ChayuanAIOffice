@@ -1,5 +1,5 @@
 /**
- * Tiptap entry: the same HWP/HWPX → .docx filter GenOffice opens with, read
+ * Tiptap entry: the same HWP/HWPX → .docx filter ChaAI Office opens with, read
  * back through docx-engine and emitted as standard Tiptap JSON (StarterKit,
  * TextStyle/Color/FontFamily/FontSize, Highlight, TextAlign, Subscript/
  * Superscript, Link, Image, Table). There is no second HWP reader: anything

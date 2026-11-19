@@ -26,7 +26,7 @@ Minden szerkesztőnek megvannak a saját billentyűhozzárendelései, és csak n
 
 - A macOS oszlop a megszokott szimbólumokat használja: `⌘` Command, `⌥` Option, `⇧` Shift, `⌃` Control.
 - A Windows / Linux oszlop szövegesen írja őket ki: `Ctrl`, `Alt`, `Shift`.
-- Ahol a GenOffice a két platformon valóban eltérő billentyűt igényel, azt a táblázat mutatja. A jellemző esetek: `⌃H` a Keresés és csere parancshoz (macOS-en a `⌘H` az Elrejtés funkcióé), `⌥⌘G` az Ugráshoz, valamint a Slides bezáró billentyűje.
+- Ahol a ChaOffice a két platformon valóban eltérő billentyűt igényel, azt a táblázat mutatja. A jellemző esetek: `⌃H` a Keresés és csere parancshoz (macOS-en a `⌘H` az Elrejtés funkcióé), `⌥⌘G` az Ugráshoz, valamint a Slides bezáró billentyűje.
 - Az olyan kombinációt, amely csak kijelölés mellett működik, a Művelet oszlopban jelöljük, külön oszlop helyett, így a táblázat három oszlopos marad.
 
 ## Word
@@ -159,7 +159,7 @@ Az F1 a **Felhasználói útmutatót** nyitja meg, nem ezt a listát. A billenty
 
 ## Sheets
 
-A GenOffice Sheets az Excellel kompatibilis táblázatrács. Az alábbi billentyűparancsok többsége azok az Excel-billentyűparancsok, amelyeket már ismersz.
+A ChaOffice Sheets az Excellel kompatibilis táblázatrács. Az alábbi billentyűparancsok többsége azok az Excel-billentyűparancsok, amelyeket már ismersz.
 
 > **A szerkesztés elsőbbséget élvez.** Szinte minden Sheets-billentyűparancs figyelmen kívül marad, amíg cellát szerkesztesz, vagy a **szerkesztőlécen** gépelsz, hogy a gépelés, a kurzor mozgatása és a Backspace megtartsa a szövegszerkesztés megszokott jelentését. Ha egy billentyű úgy tűnik, hogy nem csinál semmit, ellenőrizd, hogy éppen szerkesztés közben vagy-e: előbb nyomd meg az Esc vagy az Enter billentyűt, majd próbáld újra. A kijelölésre ható parancsok akkor sem csinálnak semmit, ha párbeszédpanel van nyitva. Ahol egy billentyűkombináció kivételt jelent ez alól a szabály alól, azt a táblázat jelzi.
 
@@ -287,7 +287,7 @@ Az Excel szűrési billentyűparancsa, a Ctrl+Shift+L, nem csinál semmit Window
 
 ## Slides
 
-A GenOffice Slides egy PowerPoint-stílusú bemutatószerkesztő. A legtöbb billentyű bárhol ugyanazt teszi, de néhányé a fókusztól függően változik — szövegdobozon belül, illetve ha a **miniatűrpanel**, a **vázlatpanel** vagy a **diarendező** kapja a billentyűfókuszt. Ezek az esetek a Művelet oszlopban vannak megjelölve.
+A ChaOffice Slides egy PowerPoint-stílusú bemutatószerkesztő. A legtöbb billentyű bárhol ugyanazt teszi, de néhányé a fókusztól függően változik — szövegdobozon belül, illetve ha a **miniatűrpanel**, a **vázlatpanel** vagy a **diarendező** kapja a billentyűfókuszt. Ezek az esetek a Művelet oszlopban vannak megjelölve.
 
 ### Fájl és alkalmazás
 
@@ -482,7 +482,7 @@ Az Escape egyszerre csak egy réteget bont le — először a nyitott párbeszé
 
 ## Markdown
 
-A GenOffice Markdown a Markdownot szerkeszti, mellette élő előnézettel.
+A ChaOffice Markdown a Markdownot szerkeszti, mellette élő előnézettel.
 
 ### Fájl és nézet
 
@@ -523,7 +523,7 @@ Ezek csak akkor érvényesek, amíg a lebegő LaTeX-szerkesztő nyitva van.
 
 ## HTML
 
-A GenOffice HTML egy kódszerkesztőt mutat élő előnézet mellett. Az oldalelemekre ható billentyűk csak akkor működnek, ha maga az előnézet kapta a billentyűfókuszt.
+A ChaOffice HTML egy kódszerkesztőt mutat élő előnézet mellett. Az oldalelemekre ható billentyűk csak akkor működnek, ha maga az előnézet kapta a billentyűfókuszt.
 
 ### Fájl és forrásnézet
 

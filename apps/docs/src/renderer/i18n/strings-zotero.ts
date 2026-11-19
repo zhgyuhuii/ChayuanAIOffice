@@ -407,7 +407,7 @@ export const zoteroStrings = defineStrings({
       'Nem sikerült csatlakozni a Zoterohoz. Indítsd el a Zoterót, és hagyd futni.',
     zoteroOperationError: 'A Zotero-művelet nem sikerült.',
     zoteroNoteFieldsUnsupported:
-      'Ez a dokumentum lábjegyzetekben vagy végjegyzetekben tartalmaz Zotero-hivatkozásokat, amelyeket a GenOffice egyelőre nem tud frissíteni. A Zotero-parancsok itt le vannak tiltva, hogy az irodalomjegyzék érintetlen maradjon.',
+      'Ez a dokumentum lábjegyzetekben vagy végjegyzetekben tartalmaz Zotero-hivatkozásokat, amelyeket a ChaAI Office egyelőre nem tud frissíteni. A Zotero-parancsok itt le vannak tiltva, hogy az irodalomjegyzék érintetlen maradjon.',
     zoteroGroup: 'Zotero',
   },
 })

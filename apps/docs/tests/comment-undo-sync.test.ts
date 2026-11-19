@@ -9,7 +9,7 @@ import { describe, expect, it } from 'vitest'
 import { EditorState } from '@tiptap/pm/state'
 import { Schema, Node as PmNode } from '@tiptap/pm/model'
 import type { Editor } from '@tiptap/core'
-import type { CommentInfo } from '@genoffice/docx-engine'
+import type { CommentInfo } from '@chaoffice/docx-engine'
 import {
   attachCommentUndoSync,
   resetCommentUndoStore,

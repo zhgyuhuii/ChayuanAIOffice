@@ -17,7 +17,7 @@ Szabályok: a kiterjesztés automatikusan megmarad; az érvénytelen karaktereke
 
 ## Törlés
 
-- A Kezdőképernyőn a **⋯ ▸ Törlés** parancs: megkérdezi, mely fájlokat töröljön, majd áthelyezi őket a **rendszer kukájába**, ahonnan az operációs rendszer vissza tudja állítani őket. A GenOffice ehhez nem kínál saját visszavonást — a helyreállítás a kuka dolga, nem egy felugró értesítésé.
+- A Kezdőképernyőn a **⋯ ▸ Törlés** parancs: megkérdezi, mely fájlokat töröljön, majd áthelyezi őket a **rendszer kukájába**, ahonnan az operációs rendszer vissza tudja állítani őket. A ChaOffice ehhez nem kínál saját visszavonást — a helyreállítás a kuka dolga, nem egy felugró értesítésé.
 
 ## Duplikálás
 

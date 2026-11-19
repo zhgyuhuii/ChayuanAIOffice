@@ -23,7 +23,7 @@ Világos / sötét / rendszer szerinti. A „rendszer szerinti” az operációs
 - **AI-oldalsáv pozíciója** (bal vagy jobb), **AI-panel szövegmérete** és **Helyesírás-ellenőrzés az AI-csevegésben**.
 - **AI-panel megnyitása új dokumentumokban** — kikapcsolva az új dokumentum összecsukott panellel indul, és egy kattintással előhívható.
 - Az **Összes dokumentum automatikus mentése** minden szerkesztőben alapértelmezetten bekapcsolja az automatikus mentést; egy-egy ablakban továbbra is kikapcsolhatod.
-- **Mentési hely** egy **Módosítás** gombbal, valamint az **Alapértelmezett alkalmazás Office-dokumentumokhoz**, amellyel a .docx / .xlsx / .pptx fájlokat a GenOffice-hoz rendelheted.
+- **Mentési hely** egy **Módosítás** gombbal, valamint az **Alapértelmezett alkalmazás Office-dokumentumokhoz**, amellyel a .docx / .xlsx / .pptx fájlokat a ChaOffice-hoz rendelheted.
 
 ## AI média és keresés
 
@@ -39,7 +39,7 @@ Ezek nem egyszerű kapcsolók — minden képességnél kiválasztod a kiszolgá
 
 ## Alapértelmezett alkalmazástársítások
 
-A Beállításokban a GenOffice beállítható alapértelmezett kezelőként a .docx / .xlsx / .pptx / .pdf és hasonló fájltípusokhoz (ez rendszerszintű beállítás; ha a rendszer kéri, hagyd jóvá).
+A Beállításokban a ChaOffice beállítható alapértelmezett kezelőként a .docx / .xlsx / .pptx / .pdf és hasonló fájltípusokhoz (ez rendszerszintű beállítás; ha a rendszer kéri, hagyd jóvá).
 
 ## Harmadik felek közleményei és frissítések
 
@@ -48,13 +48,13 @@ A Beállításokban a GenOffice beállítható alapértelmezett kezelőként a .
 
 ## Bejelentkezés a Gensparkba
 
-- A bejelentkezési pont (a Beállításokban vagy a felhőbeli projektlistában) **eszközkódos** folyamatot használ: a GenOffice megjelenít egy kódot, és megnyitja a bejelentkezési oldalt a böngészőben; ha végeztél, a folyamat automatikusan folytatódik.
+- A bejelentkezési pont (a Beállításokban vagy a felhőbeli projektlistában) **eszközkódos** folyamatot használ: a ChaOffice megjelenít egy kódot, és megnyitja a bejelentkezési oldalt a böngészőben; ha végeztél, a folyamat automatikusan folytatódik.
 - A bejelentkezésre kizárólag ezekhez van szükség: a felhőbeli projektlistához és a Genspark által üzemeltetett modellekhez. Enélkül is működik minden helyi funkció és az egyéni modellek.
 - A kijelentkezés egyetlen kattintás a Beállításokban.
 
 ## MCP-integráció (haladó felhasználóknak / AI-klienseknek)
 
-Az **Integrációk** az a panel, amely összeköti a GenOffice-ot egy kódoló ügynökkel, és külön cikk is szól róla: Kódoló ügynök csatlakoztatása. Röviden: válassz egy módot (parancssor vagy MCP), kövesd az adott szakaszt, majd indíts új csevegést, és kérdezz.
+Az **Integrációk** az a panel, amely összeköti a ChaOffice-ot egy kódoló ügynökkel, és külön cikk is szól róla: Kódoló ügynök csatlakoztatása. Röviden: válassz egy módot (parancssor vagy MCP), kövesd az adott szakaszt, majd indíts új csevegést, és kérdezz.
 
 ![Beállítások ▸ Integrációk: a három lépés, majd a képességek sorai és az MCP-beállítások](img/settings-integrations.png)
 
@@ -64,6 +64,6 @@ A **Helyi HTTP-kiszolgáló** alatt az alkalmazás maga is futtathatja a kiszolg
 
 | Parancs            | Mit csinál                        |
 | ------------------ | --------------------------------- |
-| `genoffice <file>` | fájl megnyitása                   |
-| `genoffice mcp`    | a helyi MCP-kiszolgáló elindítása |
-| `genoffice --help` | az összes parancs és kapcsoló     |
+| `chaoffice <file>` | fájl megnyitása                   |
+| `chaoffice mcp`    | a helyi MCP-kiszolgáló elindítása |
+| `chaoffice --help` | az összes parancs és kapcsoló     |

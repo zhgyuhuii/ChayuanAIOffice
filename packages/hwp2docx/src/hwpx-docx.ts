@@ -1510,7 +1510,7 @@ function rowContentHeight(
 ): number {
   if (heightHwp <= 0) return 0
   // the row's own cells: a cell merged down from a row above sits in that
-  // row's w:tr (one rowspan cell in GenOffice), so its margins and rules do
+  // row's w:tr (one rowspan cell in ChaAI Office), so its margins and rules do
   // not add to this row (a press release's discount table lost 1.5pt a row to the
   // double rule of the cell spanning it)
   const starting = cells.filter((cell) => cell.row === r)

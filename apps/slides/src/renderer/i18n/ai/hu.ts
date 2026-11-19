@@ -17,8 +17,8 @@ export const hu = {
   aiQcPageSkipped: '{n}. oldal: az automatikus elrendezés-ellenőrzés kihagyva',
   aiQcStopped: 'Elrendezés-ellenőrzés leállítva',
   aiQcCapped: '{count} további oldal ellenőrizetlen maradt (futásonkénti korlát)',
-  aiGskLoginBtn: 'Bejelentkezés a Gensparkba',
-  aiPanelTitle: 'Genspark',
+  aiGskLoginBtn: 'Bejelentkezés a ChaAI Officeba',
+  aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: 'AI-asszisztens megnyitása',
   aiFactCheckBtn: 'AI-tényellenőrzés',
   aiFactCheckPrompt:
@@ -115,7 +115,7 @@ export const hu = {
   aiErrNetwork:
     'Hálózati probléma: nem sikerült elérni az AI-szolgáltatást. Ellenőrizd a kapcsolatot, és próbáld újra',
   aiCreditsExhausted:
-    'Elfogytak a Genspark-kreditjeid. Töltsd fel az egyenlegedet a genspark.ai/pricing oldalon, majd próbáld újra',
+    'Elfogytak a ChaAI Office-kreditjeid. Töltsd fel az egyenlegedet a genspark.ai/pricing oldalon, majd próbáld újra',
   aiErrRequestFailed: 'Nem sikerült elküldeni a kérést: {msg}',
   aiErrGenerateFailed: 'A generálás sikertelen',
   aiErrRegenFailed: 'A dia újragenerálása sikertelen',

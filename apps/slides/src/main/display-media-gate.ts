@@ -1,4 +1,4 @@
-import { RENDERER_SCHEME } from '@genoffice/electron-utils'
+import { RENDERER_SCHEME } from '@chaoffice/electron-utils'
 
 /**
  * Whether a getDisplayMedia request may be answered with a screen.

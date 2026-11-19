@@ -1,22 +1,22 @@
 <p align="center">
-  <a href="https://genoffice.ai/">
+  <a href="https://chaoffice.ai/">
     <picture>
       <source srcset="../assets/readme/hero-dark.webp" media="(prefers-color-scheme: dark)">
-      <img src="../assets/readme/hero.webp" alt="GenOffice — a nyílt forráskódú AI-irodai programcsomag: Docs, Sheets, Slides, PDF, Markdown és HTML, beépített AI-panellel" width="100%">
+      <img src="../assets/readme/hero.webp" alt="ChaOffice — a nyílt forráskódú AI-irodai programcsomag: Docs, Sheets, Slides, PDF, Markdown és HTML, beépített AI-panellel" width="100%">
     </picture>
   </a>
 </p>
 
-<h1 align="center">GenOffice</h1>
+<h1 align="center">ChaOffice</h1>
 
 <p align="center"><b>A világ első, teljes értékű, nyílt forráskódú AI-irodai programcsomagja.</b><br>
 Word-, Excel-, PowerPoint- és PDF-fájlok, amelyeket te és az AI-d szerkesztetek, és amelyek valódi formátumban mentődnek vissza.</p>
 
 <p align="center">
-  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/genspark-ai/genoffice" alt="Licenc: Apache-2.0"></a>
-  <a href="https://github.com/genspark-ai/genoffice/releases/latest"><img src="https://img.shields.io/github/v/release/genspark-ai/genoffice" alt="Legutóbbi kiadás"></a>
-  <a href="https://github.com/genspark-ai/genoffice/releases"><img src="https://img.shields.io/github/downloads/genspark-ai/genoffice/total" alt="Letöltések"></a>
-  <a href="https://github.com/genspark-ai/genoffice/stargazers"><img src="https://img.shields.io/github/stars/genspark-ai/genoffice?style=flat" alt="GitHub-csillagok"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/ChayuanAIOffice" alt="Licenc: Apache-2.0"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/ChayuanAIOffice" alt="Legutóbbi kiadás"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/ChayuanAIOffice/total" alt="Letöltések"></a>
+  <a href="https://github.com/zhgyuhuii/ChayuanAIOffice/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/ChayuanAIOffice?style=flat" alt="GitHub-csillagok"></a>
   <a href="https://x.com/merrickbuilds"><img src="https://img.shields.io/badge/follow-%40merrickbuilds-000000?logo=x&logoColor=white" alt="Követés X-en: @merrickbuilds"></a>
 </p>
 
@@ -27,13 +27,13 @@ Word-, Excel-, PowerPoint- és PDF-fájlok, amelyeket te és az AI-d szerkesztet
   <a href="#skills"><b>Képességek</b></a> ·
   <a href="#command-line-and-agent-skill"><b>CLI</b></a> ·
   <a href="#mcp-server"><b>MCP</b></a> ·
-  <a href="https://genoffice.ai/"><b>Weboldal</b></a> ·
-  <a href="https://genoffice.ai/join"><b>Közösség</b></a> ·
+  <a href="https://chaoffice.ai/"><b>Weboldal</b></a> ·
+  <a href="https://chaoffice.ai/join"><b>Közösség</b></a> ·
   <a href="https://x.com/merrickbuilds"><b>X</b></a> ·
   <a href="../../PRIVACY.md"><b>Adatvédelem</b></a>
 </p>
 
-A GenOffice a Microsoft Office ingyenes, nyílt forráskódú alternatívája macOS, Windows
+A ChaOffice a Microsoft Office ingyenes, nyílt forráskódú alternatívája macOS, Windows
 és Linux rendszerre. Natív `.docx`, `.xlsx` és `.pptx` fájlokat nyit meg és ment,
 PDF-, Markdown- és HTML-fájlokat szerkeszt, és minden dokumentum mellé tesz egy
 AI-ügynököt — nem egy utólag odatoldott csevegőablakot, hanem egy szerkesztőt,
@@ -73,14 +73,14 @@ a mentés mindig OOXML-be ír, soha az eredeti formátumba.
   Qwen, Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty, Opper, Cheaper
   Inference, Atlas Cloud, illetve bármely OpenAI-kompatibilis végpont, a helyi
   szervereket is beleértve.
-- **Szkriptelhető és ügynökbarát.** Az alkalmazás `genoffice` parancssort és egy
+- **Szkriptelhető és ügynökbarát.** Az alkalmazás `chaoffice` parancssort és egy
   képességet (skillt) mellékel a Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode
   és Windsurf számára, így egy kódoló ügynök valódi Office-fájlokat hozhat
   létre, konvertálhat, olvashat és szerkeszthet a gépeden, ablak megnyitása nélkül.
 
-**Töltsd le:** [macOS](https://github.com/genspark-ai/genoffice/releases/latest) (Apple Silicon és Intel) ·
-[Windows](https://github.com/genspark-ai/genoffice/releases/latest) (x64 és Arm) ·
-[Linux](https://github.com/genspark-ai/genoffice/releases/latest) (deb, rpm, AppImage) —
+**Töltsd le:** [macOS](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (Apple Silicon és Intel) ·
+[Windows](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (x64 és Arm) ·
+[Linux](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) (deb, rpm, AppImage) —
 a részletekkel és a rendszerkövetelményekkel a [Letöltés](#download) részben találod.
 
 ## Demó
@@ -94,8 +94,8 @@ amelyet elolvashatsz a panelen.
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/docs-report.webp" alt="GenOffice Docs: egy kéthasábos éves jelentés oldala teljes szélességű borítóképpel, árnyékolt KPI-táblázattal, élőfejjel és élőlábbal, 80%-os nagyítással, összecsukott AI-panellel"></td>
-<td width="50%"><img src="../assets/readme/docs-ai.webp" alt="GenOffice Docs: egy vállalati áttekintés bannerképpel; az AI megfogalmazta tömörebben az Áttekintés részt, és új, felsorolásos szakaszt szúrt be, a panel pedig egyetlen kattintásos visszaállítást kínál"></td>
+<td width="50%"><img src="../assets/readme/docs-report.webp" alt="ChaOffice Docs: egy kéthasábos éves jelentés oldala teljes szélességű borítóképpel, árnyékolt KPI-táblázattal, élőfejjel és élőlábbal, 80%-os nagyítással, összecsukott AI-panellel"></td>
+<td width="50%"><img src="../assets/readme/docs-ai.webp" alt="ChaOffice Docs: egy vállalati áttekintés bannerképpel; az AI megfogalmazta tömörebben az Áttekintés részt, és új, felsorolásos szakaszt szúrt be, a panel pedig egyetlen kattintásos visszaállítást kínál"></td>
 </tr>
 <tr>
 <td><b>A fájl úgy nyílik meg, ahogy a Word rendezi</b> — kéthasábos szakaszok, szélig érő képek, árnyékolt táblázatok, élőfejek és élőlábak, tördelés a Word sormetrikái szerint. A stílusok, megjegyzések, változáskövetés, egyenletek, tintaírás és tartalomvezérlők mentéskor érintetlenül megmaradnak. A <b>Levelezés</b> lap a dokumentumot körlevélsablonná alakítja: válassz <code>.xlsx</code> vagy <code>.csv</code> címzettlistát, szúrj be valódi <code>MERGEFIELD</code>-eket, nézd meg rekordonként az előnézetet, és egyesíts egyetlen dokumentumba, vagy rekordonként külön <code>.docx</code>-be.</td>
@@ -107,8 +107,8 @@ amelyet elolvashatsz a panelen.
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/sheets-ai.webp" alt="GenOffice Sheets: az AI egy Összegzés munkalapot vett fel régiók és kategóriák szerinti bevétellel, SUMIF képletekkel, mellé egy oszlopdiagramot, és 43 alkalmazott módosításról számol be egy Visszavonás gombbal"></td>
-<td width="50%"><img src="../assets/readme/sheets-qa.webp" alt="GenOffice Sheets: arra a kérdésre, melyik régió vezette a második negyedéves bevételt, az AI Európát válaszolja a kategóriánkénti bontással, és a felhasznált cellákat hivatkozásként megjelöli, a Rendelések munkalap mellett"></td>
+<td width="50%"><img src="../assets/readme/sheets-ai.webp" alt="ChaOffice Sheets: az AI egy Összegzés munkalapot vett fel régiók és kategóriák szerinti bevétellel, SUMIF képletekkel, mellé egy oszlopdiagramot, és 43 alkalmazott módosításról számol be egy Visszavonás gombbal"></td>
+<td width="50%"><img src="../assets/readme/sheets-qa.webp" alt="ChaOffice Sheets: arra a kérdésre, melyik régió vezette a második negyedéves bevételt, az AI Európát válaszolja a kategóriánkénti bontással, és a felhasznált cellákat hivatkozásként megjelöli, a Rendelések munkalap mellett"></td>
 </tr>
 <tr>
 <td><b>Építsd fel</b> — egyetlen mondatból az ügynök egy Összegzés munkalapot vesz fel valódi <code>SUMIF</code>-ekkel régiónként és kategóriánként, beszúr egy oszlopdiagramot, és mind a 43 módosítást egyetlen, egyben visszavonható kötegként alkalmazza.</td>
@@ -118,15 +118,15 @@ amelyet elolvashatsz a panelen.
 
 ### 3 · Slides — prompttól a kész `.pptx` bemutatóig
 
-<img src="../assets/readme/slides-generate.webp" alt="Gyorsított felvétel arról, ahogy a GenOffice Slides generálja az Aurora Home befektetői bemutatót: az AI megtervezi a történetszálat a panelen, a diák egymás után jelennek meg a vásznon, a kész bemutató pedig a záró kéréssel ér véget" width="100%">
+<img src="../assets/readme/slides-generate.webp" alt="Gyorsított felvétel arról, ahogy a ChaOffice Slides generálja az Aurora Home befektetői bemutatót: az AI megtervezi a történetszálat a panelen, a diák egymás után jelennek meg a vásznon, a kész bemutató pedig a záró kéréssel ér véget" width="100%">
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/slides-cover.webp" alt="GenOffice Slides: egy AI-generált Aurora Home befektetői bemutató borítódia a rajzvásznon, az eredeti egysoros prompttal és az AI összefoglalójával arról, amit elkészített, a panelen"></td>
-<td width="50%"><img src="../assets/readme/slides-ai.webp" alt="GenOffice Slides: ugyanannak a 11 diás bemutatónak a megtervezett záró diája, balra a miniatűrsávval és az AI-panellel, amely összefoglalja a történetszálat"></td>
+<td width="50%"><img src="../assets/readme/slides-cover.webp" alt="ChaOffice Slides: egy AI-generált Aurora Home befektetői bemutató borítódia a rajzvásznon, az eredeti egysoros prompttal és az AI összefoglalójával arról, amit elkészített, a panelen"></td>
+<td width="50%"><img src="../assets/readme/slides-ai.webp" alt="ChaOffice Slides: ugyanannak a 11 diás bemutatónak a megtervezett záró diája, balra a miniatűrsávval és az AI-panellel, amely összefoglalja a történetszálat"></td>
 </tr>
 <tr>
-<td><b>Egyetlen sor bemenetként</b> — „Készíts egy 10 diás befektetői pitch bemutatót az Aurora Home számára…”. A GenOffice megtervezi a történetszálat, utánajár a számoknak, és minden diát valódi <code>.pptx</code>-ként vázol fel a vásznon.</td>
+<td><b>Egyetlen sor bemenetként</b> — „Készíts egy 10 diás befektetői pitch bemutatót az Aurora Home számára…”. A ChaOffice megtervezi a történetszálat, utánajár a számoknak, és minden diát valódi <code>.pptx</code>-ként vázol fel a vásznon.</td>
 <td><b>Kész bemutató kimenetként</b> — tizenegy megtervezett dia egységes tipográfiával, képi világgal és záró felhívással; szerkeszd tovább diamintákkal, elrendezésekkel, intelligens segédvonalakkal és nem roncsoló vágással, vagy kérd meg a panelt az átformázásra, átírásra és átrendezésre. Szúrj be egy <code>.glb</code> fájlt, és az valódi 3D-modell lesz: forgasd el húzással a szerkesztőben; úgy tárolódik, ahogy a PowerPoint a 3D-t tárolja, ezért a PowerPointban is 3D marad.</td>
 </tr>
 </table>
@@ -137,8 +137,8 @@ A **Diavetítés → Felvétel** diáról diára végigmondja a bemutatót, szü
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/pdf-edit.webp" alt="GenOffice PDF: a Szöveg szerkesztése mód körvonalakkal jelöli a lap minden szövegblokkját a helyben való szerkesztéshez, miközben az AI-panel oldalhivatkozásokkal válaszol a jelentésről feltett kérdésre"></td>
-<td width="50%"><img src="../assets/readme/pdf-convert.webp" alt="GenOffice Docs: egy Word-dokumentum, amelyet helyben konvertált a Helios negyedéves áttekintés PDF-jéből, egy második lapon megnyitva az eredeti PDF mellett"></td>
+<td width="50%"><img src="../assets/readme/pdf-edit.webp" alt="ChaOffice PDF: a Szöveg szerkesztése mód körvonalakkal jelöli a lap minden szövegblokkját a helyben való szerkesztéshez, miközben az AI-panel oldalhivatkozásokkal válaszol a jelentésről feltett kérdésre"></td>
+<td width="50%"><img src="../assets/readme/pdf-convert.webp" alt="ChaOffice Docs: egy Word-dokumentum, amelyet helyben konvertált a Helios negyedéves áttekintés PDF-jéből, egy második lapon megnyitva az eredeti PDF mellett"></td>
 </tr>
 <tr>
 <td><b>Szerkessz közvetlenül az oldalon</b> — a Szöveg szerkesztése mód körvonalakkal jelöli az összes szövegblokkot, hogy a szöveget a helyén írd át; a tartalomfolyam a PDFiumon keresztül íródik újra az eredeti betűtípusokkal, nem eltakaró jegyzetként. Kérdezd az AI-t egy hosszú jelentésről, és oldalhivatkozásokkal ellátott választ kapsz.</td>
@@ -150,11 +150,11 @@ A **Diavetítés → Felvétel** diáról diára végigmondja a bemutatót, szü
 
 Mondd el, mire való az oldal, és kinek készül. Az AI először egy **tervezési briefet** javasol — figyelemfelkeltő nyitás, paletta, tipográfia és stílusirányok —, majd ezekhez a tokenekhez egyetlen, önálló `.html` fájlt épít.
 
-<img src="../assets/readme/html-restyle-motion.webp" alt="Gyorsított felvétel arról, ahogy a GenOffice HTML átformálja a Lumen nyitóoldalt: egyetlen Átformázás kérés a panelen a sötét Midnight Studio oldalt a meleg Solar Daybreak változattá alakítja, miközben minden szakasz és az összes szöveg a helyén marad" width="100%">
+<img src="../assets/readme/html-restyle-motion.webp" alt="Gyorsított felvétel arról, ahogy a ChaOffice HTML átformálja a Lumen nyitóoldalt: egyetlen Átformázás kérés a panelen a sötét Midnight Studio oldalt a meleg Solar Daybreak változattá alakítja, miközben minden szakasz és az összes szöveg a helyén marad" width="100%">
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/html-ai.webp" alt="GenOffice HTML: egy generált nyitóoldal egy napenergiás asztali lámpához a sötét Midnight Studio irányban, élő előnézetben látható, az AI-panellel, amely összefoglalja az épp elkészült oldalt"></td>
+<td width="50%"><img src="../assets/readme/html-ai.webp" alt="ChaOffice HTML: egy generált nyitóoldal egy napenergiás asztali lámpához a sötét Midnight Studio irányban, élő előnézetben látható, az AI-panellel, amely összefoglalja az épp elkészült oldalt"></td>
 <td width="50%"><img src="../assets/readme/html-restyle.webp" alt="Ugyanaz a Lumen nyitóoldal, amelyet az AI a meleg Solar Daybreak irányba formált át: papírszínű háttér, talpas betűs címsorok és narancsos kiemelőszín, minden szakasz és az összes szöveg megtartásával"></td>
 </tr>
 <tr>
@@ -164,8 +164,8 @@ Mondd el, mire való az oldal, és kinek készül. Az AI először egy **tervez�
 </table>
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/html-dashboard.webp" alt="GenOffice HTML: egy generált személyes irányítópult UI egy szabadúszó dizájnernek meleg lenvászon stílusban, bal oldali sávval, talpas betűs üdvözléssel és négy metrikakártyával"></td>
-<td width="50%"><img src="../assets/readme/html-report.webp" alt="GenOffice HTML: egy generált elektromosautó-piaci adatjelentés újságszerű (broadsheet) stílusban, talpas betűs lapcímmel, egy 17,3 milliós főszámmal és statisztikai sorral"></td>
+<td width="50%"><img src="../assets/readme/html-dashboard.webp" alt="ChaOffice HTML: egy generált személyes irányítópult UI egy szabadúszó dizájnernek meleg lenvászon stílusban, bal oldali sávval, talpas betűs üdvözléssel és négy metrikakártyával"></td>
+<td width="50%"><img src="../assets/readme/html-report.webp" alt="ChaOffice HTML: egy generált elektromosautó-piaci adatjelentés újságszerű (broadsheet) stílusban, talpas betűs lapcímmel, egy 17,3 milliós főszámmal és statisztikai sorral"></td>
 </tr>
 <tr>
 <td><b>UI-makettek</b> — a „személyes irányítópult” kiinduló sablon egy felhasználói személyleírásból (persona) működő elrendezést formál: bal oldali sáv, üdvözlet, számlázható órák értékgörbéje, számla- és kihasználtságkártyák, mindez valódi HTML, amelyet átadhatsz egy fejlesztőnek.</td>
@@ -177,8 +177,8 @@ Mondd el, mire való az oldal, és kinek készül. Az AI először egy **tervez�
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/markdown-ai.webp" alt="GenOffice Markdown: egy kijelölt bekezdés fölött AI kérdezése felugró ablak jelenik meg begépelt utasítással és javaslatchipekkel, például Csiszold, Tömörítsd, Bővítsd és Nyelvtan javítása, valamint Küldés most és Sorba állítás gombokkal"></td>
-<td width="50%"><img src="../assets/readme/markdown-render.webp" alt="GenOffice Markdown: egy kiadási jegyzeteket tartalmazó dokumentumot jelenít meg táblázattal, Mermaid folyamatábrával és feladatlistával, balra az AI-panel kezdő promptjaival"></td>
+<td width="50%"><img src="../assets/readme/markdown-ai.webp" alt="ChaOffice Markdown: egy kijelölt bekezdés fölött AI kérdezése felugró ablak jelenik meg begépelt utasítással és javaslatchipekkel, például Csiszold, Tömörítsd, Bővítsd és Nyelvtan javítása, valamint Küldés most és Sorba állítás gombokkal"></td>
+<td width="50%"><img src="../assets/readme/markdown-render.webp" alt="ChaOffice Markdown: egy kiadási jegyzeteket tartalmazó dokumentumot jelenít meg táblázattal, Mermaid folyamatábrával és feladatlistával, balra az AI-panel kezdő promptjaival"></td>
 </tr>
 <tr>
 <td><b>Kérdezd az AI-t egy kijelölésről</b> — jelölj ki bármelyik szövegrészt, és megjelenik egy <b>AI kérdezése</b> chip: írj be egy utasítást, vagy válassz egy javaslatot, küldd el azonnal, vagy tegyél sorba több, szövegrészhez kötött szerkesztést, és futtasd őket egy menetben. Ugyanez a funkció minden alkalmazásban megtalálható.</td>
@@ -192,12 +192,12 @@ Mondd el, mire való az oldal, és kinek készül. Az AI először egy **tervez�
 
 A munkamappád minden fájlja helyben indexelve van: nevek, mappák, valamint a Word-, Excel-, PowerPoint-, PDF-, Markdown- és HTML-fájlok kinyert szövege, egy CJK-érzékeny tokenizálású, teljes szövegű SQLite-indexben. Kapcsold be a **Jev keresési átrendezést**, és a legjobb 20 helyi találatot a [TypeSafe Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev) értékeli, a System One modell, amely szöveg generálása helyett dokumentumonként egyetlen kalibrált relevanciapontszámot ad vissza egyetlen hívásban. A lista e pontszám alapján rendeződik újra; ha a hívás sikertelen, vagy időtúllépés lép fel, a helyi sorrend marad érvényben.
 
-<img src="../assets/readme/search-jev-motion.webp" alt="Képernyőfelvétel a GenOffice kezdőképernyőjéről: a „laptop frissítési szabályzat” beírására egy böngésző-gyorsítótár frissítési szabályzat, egy márkafrissítési terv és egy irányítópult-frissítési ütemezés jelenik meg elsőként, miközben az eszközszabványok dokumentuma az utolsó; a Beállítások oldalon a Jev keresési átrendezés bekapcsolva látható az AI média és keresés alatt a TypeSafe végponttal; ugyanaz a keresés ezután az eszközszabványok dokumentumát mutatja elsőként, Jev jelvénnyel a találatok száma mellett" width="100%">
+<img src="../assets/readme/search-jev-motion.webp" alt="Képernyőfelvétel a ChaOffice kezdőképernyőjéről: a „laptop frissítési szabályzat” beírására egy böngésző-gyorsítótár frissítési szabályzat, egy márkafrissítési terv és egy irányítópult-frissítési ütemezés jelenik meg elsőként, miközben az eszközszabványok dokumentuma az utolsó; a Beállítások oldalon a Jev keresési átrendezés bekapcsolva látható az AI média és keresés alatt a TypeSafe végponttal; ugyanaz a keresés ezután az eszközszabványok dokumentumát mutatja elsőként, Jev jelvénnyel a találatok száma mellett" width="100%">
 
 <table>
 <tr>
 <td width="50%"><img src="../assets/readme/search-jev-before-after.webp" alt="Két találatlista ugyanarra a „laptop frissítési szabályzat” lekérdezésre egymás mellett: Jev nélkül az irányítópult frissítési ütemezése, a márkafrissítési terv és a böngésző-gyorsítótár frissítési szabályzata vezet, a céges eszközszabványok dokumentuma pedig az ötödik; Jevvel az eszközszabványok dokumentuma, amely kimondja a hároméves laptopcsere-ciklust, az első"></td>
-<td width="50%"><img src="../assets/readme/search-jev-settings.webp" alt="GenOffice Beállítások, AI média és keresés oldal: a Helyi fájlkeresés blokk a Jev keresési átrendezés kapcsolóval, a végpont kiválasztása az OpenRouter és a TypeSafe között, valamint az API-kulcs mező"></td>
+<td width="50%"><img src="../assets/readme/search-jev-settings.webp" alt="ChaOffice Beállítások, AI média és keresés oldal: a Helyi fájlkeresés blokk a Jev keresési átrendezés kapcsolóval, a végpont kiválasztása az OpenRouter és a TypeSafe között, valamint az API-kulcs mező"></td>
 </tr>
 <tr>
 <td><b>Ugyanazok a szavak, más válaszok</b> — a „laptop frissítési szabályzat” szó szerint egyezik egy böngésző-gyorsítótár frissítési szabályzattal, egy márkafrissítési tervvel és egy irányítópult-frissítési ütemezéssel, így a teljes szöveges rangsorolás ezeket teszi előre. A Jev elolvassa a részleteket, és az eszközszabványok dokumentumát — amely kimondja a hároméves csereciklust — a lista tetejére helyezi. A találatok száma melletti <b>Jev</b> jelvény jelzi, ha a sorrend a modelltől származik.</td>
@@ -209,42 +209,42 @@ A munkamappád minden fájlja helyben indexelve van: nevek, mappák, valamint a 
 
 Csillagozd meg azokat a fájlokat, amelyekkel dolgozol, és a kezdőképernyő **AI kérdezése** funkciója tudásbázisként kezeli őket. Tegyél fel egy kérdést természetes nyelven; az ügynök megkeresi a csillagozott fájlokat, elolvassa a szükségeseket, és minden állítás után hivatkozással válaszol. Kattints egy hivatkozásra, és a fájl a megfelelő alkalmazásban nyílik meg. Csatolj fájlokat a kérdéshez húzással, beillesztéssel vagy a **+** menüből — a képek vizuális bemenetként jutnak el a modellhez —, és minden kérdés saját beszélgetésként őrződik meg: válthatsz közöttük, indíthatsz újat, törölhetsz egyet, a lista túléli az újraindítást.
 
-<img src="../assets/readme/home-ask-ai-motion.webp" alt="Képernyőfelvétel a GenOffice AI kérdezése funkciójáról: a kérdés — rövid összefoglaló, minek köszönhető a harmadik negyedéves növekedésünk és hogyan teljesített az Ázsia–Csendes-óceán térség — begépelésre kerül a kezdőképernyőn; az ügynök két csillagozott fájlt olvas el, és az Aurora X1 bevezetésével és az ázsiai–csendes-óceáni terjeszkedéssel válaszol, minden állítást hivatkozási chip követ, amely megnevezi a negyedéves jelentést vagy a regionális értékesítési munkafüzetet; a munkafüzet-chipre kattintva a Sheetsben nyílik meg, az Ázsia–Csendes-óceán sor kiemelve" width="100%">
+<img src="../assets/readme/home-ask-ai-motion.webp" alt="Képernyőfelvétel a ChaOffice AI kérdezése funkciójáról: a kérdés — rövid összefoglaló, minek köszönhető a harmadik negyedéves növekedésünk és hogyan teljesített az Ázsia–Csendes-óceán térség — begépelésre kerül a kezdőképernyőn; az ügynök két csillagozott fájlt olvas el, és az Aurora X1 bevezetésével és az ázsiai–csendes-óceáni terjeszkedéssel válaszol, minden állítást hivatkozási chip követ, amely megnevezi a negyedéves jelentést vagy a regionális értékesítési munkafüzetet; a munkafüzet-chipre kattintva a Sheetsben nyílik meg, az Ázsia–Csendes-óceán sor kiemelve" width="100%">
 
 Az AI kérdezése ugyanazt a helyi, teljes szövegű indexet keresi, mint a
 [Keresés](#7--search--find-the-file-that-answers-the-question-with-typesafe-jev),
 és oldalanként olvassa a fájlokat, így a modell csak a találatokat és a kért szakaszokat látja, az általad választott szolgáltatón keresztül. Emellett meghívhatja a beépített
-`genoffice` CLI-t is, hogy teljes fájlokat építsen; mindegyik fájl kártyaként jelenik meg a válasz alatt, és egy kattintással megnyílik.
+`chaoffice` CLI-t is, hogy teljes fájlokat építsen; mindegyik fájl kártyaként jelenik meg a válasz alatt, és egy kattintással megnyílik.
 
-### 9 · CLI — a kódoló ügynököd vezérli a GenOffice-t, a saját gépeden
+### 9 · CLI — a kódoló ügynököd vezérli a ChaOffice-t, a saját gépeden
 
-A GenOffice egy `genoffice` parancssort és egy ügynök-képességet mellékel. Telepítsd a képességet, és a Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode vagy
+A ChaOffice egy `chaoffice` parancssort és egy ügynök-képességet mellékel. Telepítsd a képességet, és a Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode vagy
 Windsurf valódi Office-fájlokat tud létrehozni, konvertálni, olvasni és szerkeszteni ugyanazokkal a motorokkal, mint az alkalmazások, ablak megnyitása nélkül.
 
-<img src="../assets/readme/cli-deck-in-app.webp" alt="GenOffice Slides: egy nyolc diás Naprendszer bemutató látható, amelyet egy kódoló ügynök épített a genoffice parancssoron keresztül: a borítódia a rajzvásznon, nyolc miniatűr balra és az AI-panel nyitva" width="100%">
+<img src="../assets/readme/cli-deck-in-app.webp" alt="ChaOffice Slides: egy nyolc diás Naprendszer bemutató látható, amelyet egy kódoló ügynök épített a chaoffice parancssoron keresztül: a borítódia a rajzvásznon, nyolc miniatűr balra és az AI-panel nyitva" width="100%">
 
 <table>
 <tr>
 <td width="50%"><img src="../assets/readme/cli-slides-grid.webp" alt="A Naprendszer bemutató nyolc renderelt diája egymás mellett: borító, felfedezési idővonal, négy kulcsfontosságú szám, bolygóátmérő oszlopdiagram, kőzetbolygók az óriásokkal szemben, a Nap 99,8%-a mint kiemelt szám, a négy óriás rácsa és a legfontosabb tanulságok"></td>
-<td width="50%"><img src="../assets/readme/cli-integrations.webp" alt="GenOffice Beállítások, Integrációk oldal: a genoffice képesség telepítve a Claude Code-ba, Telepítés gombokkal a Codex és a Cursor mellett"></td>
+<td width="50%"><img src="../assets/readme/cli-integrations.webp" alt="ChaOffice Beállítások, Integrációk oldal: a chaoffice képesség telepítve a Claude Code-ba, Telepítés gombokkal a Codex és a Cursor mellett"></td>
 </tr>
 <tr>
-<td><b>Egy prompt az ügynöködhöz</b> — „Készíts egy nyolc diás bemutatót a Naprendszerről.” Az ügynök elolvassa a képességet, megír egy stíluslapot, egy vázlatot és diánként egy oldalleírást, legenerálja a két fotót a <code>genoffice image</code> paranccsal, és hagyja, hogy a <code>genoffice slides check</code> elutasítson mindent, ami túlnyúlik vagy átfedésben van, mielőtt a <code>genoffice create</code> összeállítja a <code>.pptx</code>-et, és a <code>slides render</code> diánként egy PNG-t ad vissza megtekintésre.</td>
-<td><b>Telepítsd egyszer, a Beállítások → Integrációk menüből</b> — a GenOffice felsorolja azokat a kódoló ügynököket, amelyeket ezen a számítógépen talál, és minden kiválasztottba beírja a képességet. Vagy töltsd le a képességet zip-ként, vagy futtasd az <code>npx skills add genspark-ai/genoffice</code> parancsot. A parancsok és a teljes munkafolyamat a <a href="#command-line-and-agent-skill">Parancssor és ügynök-képesség</a> részben található.</td>
+<td><b>Egy prompt az ügynöködhöz</b> — „Készíts egy nyolc diás bemutatót a Naprendszerről.” Az ügynök elolvassa a képességet, megír egy stíluslapot, egy vázlatot és diánként egy oldalleírást, legenerálja a két fotót a <code>chaoffice image</code> paranccsal, és hagyja, hogy a <code>chaoffice slides check</code> elutasítson mindent, ami túlnyúlik vagy átfedésben van, mielőtt a <code>chaoffice create</code> összeállítja a <code>.pptx</code>-et, és a <code>slides render</code> diánként egy PNG-t ad vissza megtekintésre.</td>
+<td><b>Telepítsd egyszer, a Beállítások → Integrációk menüből</b> — a ChaOffice felsorolja azokat a kódoló ügynököket, amelyeket ezen a számítógépen talál, és minden kiválasztottba beírja a képességet. Vagy töltsd le a képességet zip-ként, vagy futtasd az <code>npx skills add zhgyuhuii/ChayuanAIOffice</code> parancsot. A parancsok és a teljes munkafolyamat a <a href="#command-line-and-agent-skill">Parancssor és ügynök-képesség</a> részben található.</td>
 </tr>
 </table>
 
 ### 10 · MCP — ugyanazok az eszközök a Model Context Protocol felett
 
-Minden `genoffice` parancs MCP-eszköz is egyben. A Claude Code, Claude Desktop,
-Cursor és bármely más MCP-kliens maga indíthatja a `genoffice mcp`-t, telepítendő képesség és megnyitott ablak nélkül, és 29 eszközt kap, az op-referenciákkal együtt erőforrásként. Az alkalmazáson belüli második, HTTP-s kiszolgáló lehetővé teszi, hogy egy ügynök Word-dokumentumot építsen egy látható szerkesztőlapon, miközben te nézed.
+Minden `chaoffice` parancs MCP-eszköz is egyben. A Claude Code, Claude Desktop,
+Cursor és bármely más MCP-kliens maga indíthatja a `chaoffice mcp`-t, telepítendő képesség és megnyitott ablak nélkül, és 29 eszközt kap, az op-referenciákkal együtt erőforrásként. Az alkalmazáson belüli második, HTTP-s kiszolgáló lehetővé teszi, hogy egy ügynök Word-dokumentumot építsen egy látható szerkesztőlapon, miközben te nézed.
 
-<img src="../assets/readme/mcp-deck-motion.webp" alt="Gyorsított felvétel arról, ahogy a Claude Code egy nyolc diás megújuló energiáról szóló befektetői áttekintést épít a genoffice MCP-kiszolgálón keresztül: adatok és fotók után keres, minden jelölt képet a media eszközzel ellenőriz, a deck_start megírja a stíluslapot és a vázlatot, a deck_page egyszerre egy ellenőrzött oldalt vesz fel, a deck_build összeállítja a .pptx-et, a slides_render pedig minden diáról képet ad vissza; a kész bemutató ezután a GenOffice Slidesban nyílik meg" width="100%">
+<img src="../assets/readme/mcp-deck-motion.webp" alt="Gyorsított felvétel arról, ahogy a Claude Code egy nyolc diás megújuló energiáról szóló befektetői áttekintést épít a chaoffice MCP-kiszolgálón keresztül: adatok és fotók után keres, minden jelölt képet a media eszközzel ellenőriz, a deck_start megírja a stíluslapot és a vázlatot, a deck_page egyszerre egy ellenőrzött oldalt vesz fel, a deck_build összeállítja a .pptx-et, a slides_render pedig minden diáról képet ad vissza; a kész bemutató ezután a ChaOffice Slidesban nyílik meg" width="100%">
 
 <table>
 <tr>
-<td width="50%"><img src="../assets/readme/mcp-deck-in-app.webp" alt="GenOffice Slides: a nyolc diás Renewable Energy 2026 bemutató látható, amelyet a Claude Code épített a genoffice MCP-kiszolgálón keresztül: a borítódia szélfarm-fotóval a rajzvásznon és nyolc miniatűr balra"></td>
-<td width="50%"><img src="../assets/readme/mcp-integrations.webp" alt="GenOffice Beállítások, Integrációk oldal, MCP rész: az egysoros claude mcp add parancs a Claude Code-hoz, a JSON blokk a Cursorhoz, Claude Desktophoz és más MCP-kliensekhez, és alatta a helyi HTTP-kiszolgáló opció"></td>
+<td width="50%"><img src="../assets/readme/mcp-deck-in-app.webp" alt="ChaOffice Slides: a nyolc diás Renewable Energy 2026 bemutató látható, amelyet a Claude Code épített a chaoffice MCP-kiszolgálón keresztül: a borítódia szélfarm-fotóval a rajzvásznon és nyolc miniatűr balra"></td>
+<td width="50%"><img src="../assets/readme/mcp-integrations.webp" alt="ChaOffice Beállítások, Integrációk oldal, MCP rész: az egysoros claude mcp add parancs a Claude Code-hoz, a JSON blokk a Cursorhoz, Claude Desktophoz és más MCP-kliensekhez, és alatta a helyi HTTP-kiszolgáló opció"></td>
 </tr>
 <tr>
 <td><b>Egy prompt, 38 eszközhívás, shell nélkül</b> — „Készíts egy nyolc diás befektetői áttekintést a megújuló energiáról 2026-ban, valódi fotóval a borítón és mindenütt, ahol egy fotó segít.” Az ügynök a számokat és fotókat a <code>search</code>-szel húzza be, megkérdezi a <code>media</code>-t, hogy minden jelölt kép valódi fotó-e, meghívja a <code>deck_start</code>-ot stíluslappal és vázlattal, majd a <code>deck_page</code>-et diánként egyszer; minden oldalt a vázlat és a paletta alapján ellenőriz, mielőtt megtartaná, a <code>deck_build</code> összeállítja a <code>.pptx</code>-et, a <code>slides_audit</code> túlfolyást keres, a <code>slides_render</code> diánként egy PNG-t ad vissza képtartalomként, amelyet a modell meg tud nézni, és a <code>deck_replace</code> kijavítja a három oldalt, amely nem tetszett neki.</td>
@@ -258,9 +258,9 @@ Egy Word 97–2003 `.doc`, egy Excel `.xls` vagy egy PowerPoint `.ppt` konvertá
 `.docx`, `.xlsx` vagy `.pptx` másolatként nyílik meg, amely a saját gépeden készül; az eredeti fájl soha nem módosul. A képek, táblázatok, képletek, számformátumok, kitöltések és
 az elrendezés átkerülnek. Hogy az egyes formátumoknál mi marad meg és mi vész el, azt a [A korábbi formátumú és ODF-fájlok konvertált másolatként nyílnak meg](#legacy-and-odf-files-open-as-converted-copies) részben olvashatod.
 
-<img src="../assets/readme/legacy-formats-motion.webp" alt="Gyorsított felvétel arról, ahogy a GenOffice megnyitja egy kitalált 2004-es éves jelentés három fájlját: egy hat diás .ppt-t lapozunk végig a Slidesban, egy borítóképes, árnyékolt táblázatos .doc-ot görgetünk a Docsban, és egy összegeket tartalmazó .xls értékesítési táblázatot nézünk a Sheetsben; ezután egy dia látható egymás mellett, az eredeti .ppt a PowerPointban a GenOffice-ban konvertált bemutató mellett" width="100%">
+<img src="../assets/readme/legacy-formats-motion.webp" alt="Gyorsított felvétel arról, ahogy a ChaOffice megnyitja egy kitalált 2004-es éves jelentés három fájlját: egy hat diás .ppt-t lapozunk végig a Slidesban, egy borítóképes, árnyékolt táblázatos .doc-ot görgetünk a Docsban, és egy összegeket tartalmazó .xls értékesítési táblázatot nézünk a Sheetsben; ezután egy dia látható egymás mellett, az eredeti .ppt a PowerPointban a ChaOffice-ban konvertált bemutató mellett" width="100%">
 
-## Miért a GenOffice
+## Miért a ChaOffice
 
 - **Nyílt forráskód**, Apache-2.0, nyíltan fejlesztve a GitHubon.
 - **Nálad fut.** Natív alkalmazások macOS-re, Windowsra és Linuxra; a fájljaid a saját lemezeden maradnak, és minden szerkesztés, mentés és átalakítás a te gépeden történik.
@@ -272,7 +272,7 @@ az elrendezés átkerülnek. Hogy az egyes formátumoknál mi marad meg és mi v
 - **Olyan keresés, amely a választ találja meg, nem a kulcsszót.** Teljes szöveges keresés a mappáidban lévő összes dokumentumban, helyben indexelve, igény szerint a TypeSafe Jev, a System One értékelő modellje általi átrendezéssel.
 - **Kérdezz az AI-tól a fájljaidról.** Csillagozd meg a fontos fájlokat, és tegyél fel kérdéseket természetes nyelven; minden válasz megnevezi a forrásfájlt, amely egy kattintással megnyitható.
 - **Képességek.** Előre elkészített képességek vagy a saját `SKILL.md`-ed, csatolva bármely AI-panel **+** menüjéből.
-- **Szkriptelhető.** Egy `genoffice` parancssori eszköz, egy ügynök-képesség és egy MCP-kiszolgáló a Claude Code, a Claude Desktop, a Codex, a Cursor és más ügynökök szolgálatába állít minden motort – ez is helyben, a gépeden.
+- **Szkriptelhető.** Egy `chaoffice` parancssori eszköz, egy ügynök-képesség és egy MCP-kiszolgáló a Claude Code, a Claude Desktop, a Codex, a Cursor és más ügynökök szolgálatába állít minden motort – ez is helyben, a gépeden.
 - **Ingyenes**, magánszemélyeknek és csapatoknak egyaránt.
 
 ## AI-háttérrendszerek
@@ -289,7 +289,7 @@ A teljes csomag világos, sötét és rendszer szerinti témákkal érkezik. A t
 
 ## Képességek
 
-Egy képesség egy `SKILL.md`, amely elmondja az AI-nak, hogyan oldjon meg egy adott feladatot jól: heti jelentés, NDA, óraterv. A GenOffice egy készletet szállít belőlük, és fogadja a sajátjaidat is, ugyanabban a formátumban, amelyet a kódoló ügynökök használnak.
+Egy képesség egy `SKILL.md`, amely elmondja az AI-nak, hogyan oldjon meg egy adott feladatot jól: heti jelentés, NDA, óraterv. A ChaOffice egy készletet szállít belőlük, és fogadja a sajátjaidat is, ugyanabban a formátumban, amelyet a kódoló ügynökök használnak.
 
 - **Beállítások → Képességek.** **Telepíts** egy ajánlott képességet, vagy **Importálj** egy mappát, egy zipfájlt vagy egyetlen `SKILL.md`-t. Importáláskor semmi nem fut le. Az **Összes** lap egy helyen sorolja fel a teljes ajánlott katalógust, az alkalmazás nyelvét követő leírásokkal.
 - **Csevegésben.** Nyisd meg a **+** menüt bármely AI-panel beviteli mezője mellett, válaszd a **Képességek** pontot, pipálj be egyet, és küldd el. A képesség csak azt az üzenetet kíséri.
@@ -298,10 +298,10 @@ Egy képesség egy `SKILL.md`, amely elmondja az AI-nak, hogyan oldjon meg egy a
 
 ## Parancssor és ügynök-képesség
 
-Amit az alkalmazások egy fájllal tudnak, azt a `genoffice` parancssor is elvégzi terminálból:
+Amit az alkalmazások egy fájllal tudnak, azt a `chaoffice` parancssor is elvégzi terminálból:
 megvizsgál, konvertál, létrehoz, olvas és szerkeszt Word-, Excel-, PowerPoint-,
 PDF-, Markdown- és HTML-fájlokat, ugyanazokra a motorokra épülve, grafikus felület nélkül.
-A GenOffice-szal együtt települ, nincs szüksége saját futtatókörnyezetre, és egyetlen
+A ChaOffice-szal együtt települ, nincs szüksége saját futtatókörnyezetre, és egyetlen
 dokumentumot sem küld el sehova. A beépített **ügynök-képességgel** párosítva a kódoló
 ügynök olyan dokumentummunkássá válik, amely Markdown-közelítések helyett valódi
 Office-fájlokat állít elő.
@@ -315,31 +315,31 @@ meg minden MCP-kliens.
 
 | Hogyan                                         | Mi történik                                                                                                                                                                                 |
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Beállítások → Integrációk** az alkalmazásban | Felsorolja a gépen megtalált ügynököket; egy kattintás beírja a képességet mindbe, amelyiket választod. **Frissítés** gomb jelenik meg, ha egy új GenOffice-kiadás frissebb képességet hoz. |
+| **Beállítások → Integrációk** az alkalmazásban | Felsorolja a gépen megtalált ügynököket; egy kattintás beírja a képességet mindbe, amelyiket választod. **Frissítés** gomb jelenik meg, ha egy új ChaOffice-kiadás frissebb képességet hoz. |
 | **Letöltés zipként** ugyanazon az oldalon      | Olyan felépítés, amelyet a claude.ai, a Claude asztali alkalmazásai és más asszisztensek feltöltött képességként elfogadnak.                                                                |
-| `npx skills add genspark-ai/genoffice`         | Ebből a tárolóból telepít bármely képesség-kompatibilis ügynökbe.                                                                                                                           |
+| `npx skills add zhgyuhuii/ChayuanAIOffice`         | Ebből a tárolóból telepít bármely képesség-kompatibilis ügynökbe.                                                                                                                           |
 
 Ezután indíts új csevegést, és kérj egy dokumentumot. A képesség megtanítja az ügynöknek,
-mikor nyúljon a `genoffice`-hoz, hogyan olvasson be egy fájlt a szerkesztés előtt, és
+mikor nyúljon a `chaoffice`-hoz, hogyan olvasson be egy fájlt a szerkesztés előtt, és
 hogyan ellenőrizze a saját munkáját.
 
 ### Gyorsindítás a terminálból
 
 ```bash
-genoffice --version
-genoffice info report.docx --json                  # headings and blocks; or sheets, slides, pages
-genoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx/md/html, odt/ods/odp → docx/xlsx/pptx, doc/dot → docx, ppt → pptx, …
-genoffice create --type docx --from notes.md --out notes.docx
-genoffice create --type xlsx --from table.json --out sales.xlsx   # "=SUM(B2:B9)" cells stay live formulas
-genoffice docs read report.docx --range 0-9 --json # then `docs apply --ops edits.json` edits in place
-genoffice docs compare original.docx revised.docx --out redline.docx   # the differences as tracked Word revisions
-genoffice render report.docx --out shots/          # one PNG per page, to look at what you made
-genoffice open sales.xlsx                          # hand the result to the editor
+chaoffice --version
+chaoffice info report.docx --json                  # headings and blocks; or sheets, slides, pages
+chaoffice convert report.md --to pdf               # md/html/docx/xlsx/pptx → pdf, pdf → docx/xlsx/pptx/md/html, odt/ods/odp → docx/xlsx/pptx, doc/dot → docx, ppt → pptx, …
+chaoffice create --type docx --from notes.md --out notes.docx
+chaoffice create --type xlsx --from table.json --out sales.xlsx   # "=SUM(B2:B9)" cells stay live formulas
+chaoffice docs read report.docx --range 0-9 --json # then `docs apply --ops edits.json` edits in place
+chaoffice docs compare original.docx revised.docx --out redline.docx   # the differences as tracked Word revisions
+chaoffice render report.docx --out shots/          # one PNG per page, to look at what you made
+chaoffice open sales.xlsx                          # hand the result to the editor
 ```
 
 Minden parancs egy egysoros összefoglalót ír ki, `--json` esetén pedig egyetlen
 JSON-objektumot ad vissza. A szerkesztések atomiak: egy elutasított op érintetlenül hagyja
-a fájlt, és megoldási útmutatást adó hibaüzenettel tér vissza. A `genoffice help` felsorolja az aktuális
+a fájlt, és megoldási útmutatást adó hibaüzenettel tér vissza. A `chaoffice help` felsorolja az aktuális
 parancskészletet; a teljes referencia a [packages/cli/README.md](../../packages/cli/README.md) fájlban található.
 
 ### Mit futtat az ügynök valójában
@@ -349,22 +349,22 @@ A háttérben az ügynök a képesség szakaszos munkafolyamatát követte, és 
 szakaszt ellenőrzött, mielőtt a következő elindult volna:
 
 ```bash
-genoffice capabilities --json                        # which cloud tools GenOffice has configured
-genoffice guide slides design                        # the deck workflow and layout library
-genoffice image "the eight planets in a row …" --aspect 16:9 --out deck/assets/cover.jpg
-genoffice slides check deck/outline.json --json      # 8 pages, no findings
-genoffice slides check deck/pages/01.json --json     # builds one slide, audits overflow and overlap
+chaoffice capabilities --json                        # which cloud tools ChaOffice has configured
+chaoffice guide slides design                        # the deck workflow and layout library
+chaoffice image "the eight planets in a row …" --aspect 16:9 --out deck/assets/cover.jpg
+chaoffice slides check deck/outline.json --json      # 8 pages, no findings
+chaoffice slides check deck/pages/01.json --json     # builds one slide, audits overflow and overlap
 …                                                    # one page file per slide, fixed until each check is clean
-genoffice create --type pptx --spec deck/pages --outline deck/outline.json --out deck/solar-system.pptx --json
-genoffice slides render deck/solar-system.pptx --out deck/shots --json
-genoffice slides audit deck/solar-system.pptx --json    # 8 slides, no layout issues
-genoffice slides replace deck/solar-system.pptx --slide 4 --spec deck/pages/05.json --json
-genoffice open deck/solar-system.pptx
+chaoffice create --type pptx --spec deck/pages --outline deck/outline.json --out deck/solar-system.pptx --json
+chaoffice slides render deck/solar-system.pptx --out deck/shots --json
+chaoffice slides audit deck/solar-system.pptx --json    # 8 slides, no layout issues
+chaoffice slides replace deck/solar-system.pptx --slide 4 --spec deck/pages/05.json --json
+chaoffice open deck/solar-system.pptx
 ```
 
-A `genoffice`-on belül nem történik modellhívás: a gondolkodást az ügynök végzi,
+A `chaoffice`-on belül nem történik modellhívás: a gondolkodást az ügynök végzi,
 az építést és az ellenőrzést a CLI, az eredmény pedig közönséges `.pptx`-ként nyílik meg
-a GenOffice-ban vagy a PowerPointban.
+a ChaOffice-ban vagy a PowerPointban.
 
 ### MCP-kiszolgáló
 
@@ -375,23 +375,23 @@ tartoznak a **Beállítások → Integrációk → MCP** panelen:
 
 | Mód                                | Mi ez                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **A · `genoffice mcp`** (ajánlott) | Egy stdio-kiszolgáló, amelyet az asszisztens maga indít el; a GenOffice-nak nem kell nyitva lennie. Parancsonként egy eszköz (`info`, `convert`, `create_docx`, `create_xlsx`, `create_pptx`, `create_pdf`, `docs_read` / `docs_apply` / `docs_check`, `sheet_*`, `slides_*`, `render`, `guide`, `search`, `image`, `media`, `open`), plusz a szakaszos bemutatófolyamat: `deck_start` → `deck_page` → `deck_build` → `deck_replace`. Az opok, a specifikációk és a Markdown inline adódik át, így egy fájlrendszer nélküli kliens is működik. |
-| **B · Helyi HTTP-kiszolgáló**      | A GenOffice alkalmazáson belül fut, a `http://127.0.0.1:3093/mcp` címen (Streamable HTTP, örökölt SSE-vel). Az eszközei egy látható Word-szerkesztő lapot vezérelnek: `create_session`, `insert_content`, `replace_blocks`, `apply_ops`, `read_document`, `save_session` – és közben nézheted, ahogy a dokumentum formát ölt. Alapból kikapcsolva; ugyanabban a beállítási panelen kapcsolhatod be.                                                                                                                                            |
-| **C · `genoffice mcp --http`**     | A stdio-eszközkészlet Streamable HTTP-kiszolgálóként, más gépeken futó klienseknek: konténer, sandbox vagy a hálózatodon lévő megosztott gép. A fájlok a hívásokkal együtt utaznak: a `PUT /files/<name>` feltölt egyet és URL-t ad vissza, minden `file` paraméter elfogad http(s)-URL-t, és minden fájlt író eszköz letöltési URL-ként adja vissza, kicsi méret esetén a bájtokat is, MCP-erőforrásként. A `--host 0.0.0.0` megnyitja a hálózat felé, a `--token` védi.                                                                      |
+| **A · `chaoffice mcp`** (ajánlott) | Egy stdio-kiszolgáló, amelyet az asszisztens maga indít el; a ChaOffice-nak nem kell nyitva lennie. Parancsonként egy eszköz (`info`, `convert`, `create_docx`, `create_xlsx`, `create_pptx`, `create_pdf`, `docs_read` / `docs_apply` / `docs_check`, `sheet_*`, `slides_*`, `render`, `guide`, `search`, `image`, `media`, `open`), plusz a szakaszos bemutatófolyamat: `deck_start` → `deck_page` → `deck_build` → `deck_replace`. Az opok, a specifikációk és a Markdown inline adódik át, így egy fájlrendszer nélküli kliens is működik. |
+| **B · Helyi HTTP-kiszolgáló**      | A ChaOffice alkalmazáson belül fut, a `http://127.0.0.1:3093/mcp` címen (Streamable HTTP, örökölt SSE-vel). Az eszközei egy látható Word-szerkesztő lapot vezérelnek: `create_session`, `insert_content`, `replace_blocks`, `apply_ops`, `read_document`, `save_session` – és közben nézheted, ahogy a dokumentum formát ölt. Alapból kikapcsolva; ugyanabban a beállítási panelen kapcsolhatod be.                                                                                                                                            |
+| **C · `chaoffice mcp --http`**     | A stdio-eszközkészlet Streamable HTTP-kiszolgálóként, más gépeken futó klienseknek: konténer, sandbox vagy a hálózatodon lévő megosztott gép. A fájlok a hívásokkal együtt utaznak: a `PUT /files/<name>` feltölt egyet és URL-t ad vissza, minden `file` paraméter elfogad http(s)-URL-t, és minden fájlt író eszköz letöltési URL-ként adja vissza, kicsi méret esetén a bájtokat is, MCP-erőforrásként. A `--host 0.0.0.0` megnyitja a hálózat felé, a `--token` védi.                                                                      |
 
 ```bash
 # Claude Code
-claude mcp add --transport stdio genoffice -- genoffice mcp
+claude mcp add --transport stdio chaoffice -- chaoffice mcp
 ```
 
 ```jsonc
 // Cursor, Claude Desktop or any other MCP client
-{ "mcpServers": { "genoffice": { "command": "genoffice", "args": ["mcp"] } } }
+{ "mcpServers": { "chaoffice": { "command": "chaoffice", "args": ["mcp"] } } }
 ```
 
 ```bash
-# On the machine that has GenOffice (private network; add --token for a shared box)
-genoffice mcp --http 3093 --host 0.0.0.0 --token "$GENOFFICE_MCP_TOKEN"
+# On the machine that has ChaOffice (private network; add --token for a shared box)
+chaoffice mcp --http 3093 --host 0.0.0.0 --token "$GENOFFICE_MCP_TOKEN"
 
 # From the client: upload, then use the URL wherever a tool takes a file
 curl -T report.docx -H "Authorization: Bearer $GENOFFICE_MCP_TOKEN" http://server:3093/files/
@@ -404,20 +404,20 @@ HTTP-en keresztül minden munkamenet saját privát munkamappát kap, a relatív
 bemutatómappák ezen belül oldódnak fel, az `open` nem érhető el, és ha a
 `GENOFFICE_ALLOWED_ROOTS` nincs beállítva, az eszközök nem léphetnek ki a kiszolgáló saját
 fájltárolójából. A `render`, a PDF-be konvertáló `convert` és a `create_pdf` továbbra is
-rejtett GenOffice-folyamatot indít, ezért egy grafikus felület nélküli gépnek telepített
+rejtett ChaOffice-folyamatot indít, ezért egy grafikus felület nélküli gépnek telepített
 alkalmazásra és virtuális kijelzőre (`xvfb-run`) van szüksége.
 
-Az itt szereplő `genoffice` az alkalmazásban szállított CLI (macOS-en:
-`/Applications/GenOffice.app/Contents/Resources/cli/genoffice`; a beállítási panel kiírja
+Az itt szereplő `chaoffice` az alkalmazásban szállított CLI (macOS-en:
+`/Applications/ChaAI Office.app/Contents/Resources/cli/chaoffice`; a beállítási panel kiírja
 a pontos elérési utat a telepítésedhez). A kiszolgáló saját munkafolyamat-utasításokkal
-érkezik, és az op-referenciákat `genoffice://guide/*` erőforrásokként teszi elérhetővé,
+érkezik, és az op-referenciákat `chaoffice://guide/*` erőforrásokként teszi elérhetővé,
 így képesség nem szükséges; a képesség és az MCP-kiszolgáló együtt is megfér, az
 asszisztens pedig választ közülük egyet. A felhőalapú funkciók (`search`, `image`, `media`)
-továbbra is a GenOffice-ban beállított szolgáltatón mennek keresztül; minden más helyben fut,
+továbbra is a ChaOffice-ban beállított szolgáltatón mennek keresztül; minden más helyben fut,
 a `GENOFFICE_ALLOWED_ROOTS` pedig minden eszközt az általad felsorolt mappákra korlátoz.
 
 A [demó](#demo) megújulóenergia-bemutatója megmutatja, hogyan néz ki protokollszinten
-egyetlen prompt a Claude Code-ban, ha mellé csak a `genoffice` MCP-kiszolgáló van
+egyetlen prompt a Claude Code-ban, ha mellé csak a `chaoffice` MCP-kiszolgáló van
 csatlakoztatva:
 
 ```text
@@ -438,42 +438,42 @@ deck_replace(dir, n, page) ×3 · slides_render(file, out)
 Harmincnyolc hívás, nagyjából tizenhárom perc, és az asszisztens egyetlen shellt sem használt:
 a számadatok, a fotók, az útmutatók, az ellenőrzések és a renderelések mind
 MCP-eszközeredményként utaztak. Csak a `search` és a `media` hagyta el a gépet –
-a GenOffice-ban beállított szolgáltató felé.
+a ChaOffice-ban beállított szolgáltató felé.
 
 ## Letöltés
 
 | Platform                             | Követelmények                                         | Letöltés                                                                                      |
 | ------------------------------------ | ----------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [Legfrissebb `.dmg` (arm64)](https://github.com/genspark-ai/genoffice/releases/latest)        |
-| **macOS** — Intel (x64)              | macOS 11+                                             | [Legfrissebb `.dmg` (x64)](https://github.com/genspark-ai/genoffice/releases/latest)          |
-| **Windows** (x64, a legtöbb gépen)   | Windows 10+, Intel/AMD                                | [Legfrissebb `-x64.exe` telepítő](https://github.com/genspark-ai/genoffice/releases/latest)   |
-| **Windows** on Arm (ARM64)           | Windows 11 on Arm (Snapdragon X és hasonlók)          | [Legfrissebb `-arm64.exe` telepítő](https://github.com/genspark-ai/genoffice/releases/latest) |
-| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 vagy újabb)         | [Legfrissebb `.deb`](https://github.com/genspark-ai/genoffice/releases/latest)                |
-| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [Legfrissebb `.rpm`](https://github.com/genspark-ai/genoffice/releases/latest)                |
-| **Linux** — egyéb disztribúciók      | x86_64, glibc 2.34+, FUSE 2                           | [Legfrissebb `.AppImage`](https://github.com/genspark-ai/genoffice/releases/latest)           |
+| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [Legfrissebb `.dmg` (arm64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)        |
+| **macOS** — Intel (x64)              | macOS 11+                                             | [Legfrissebb `.dmg` (x64)](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)          |
+| **Windows** (x64, a legtöbb gépen)   | Windows 10+, Intel/AMD                                | [Legfrissebb `-x64.exe` telepítő](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)   |
+| **Windows** on Arm (ARM64)           | Windows 11 on Arm (Snapdragon X és hasonlók)          | [Legfrissebb `-arm64.exe` telepítő](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest) |
+| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 vagy újabb)         | [Legfrissebb `.deb`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                |
+| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [Legfrissebb `.rpm`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)                |
+| **Linux** — egyéb disztribúciók      | x86_64, glibc 2.34+, FUSE 2                           | [Legfrissebb `.AppImage`](https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest)           |
 
 Minden build a `main` ágból készül; a macOS- és a Windows-telepítők alá vannak írva.
-A régebbi verziók a [Kiadások](https://github.com/genspark-ai/genoffice/releases) oldalon érhetők el.
+A régebbi verziók a [Kiadások](https://github.com/zhgyuhuii/ChayuanAIOffice/releases) oldalon érhetők el.
 
 <details>
 <summary><b>Telepítés Linuxon</b></summary>
 
-A deb az apttal telepíthető — ez magával húzza a függőségeket, és felveszi a GenOffice-ot az alkalmazásmenübe:
+A deb az apttal telepíthető — ez magával húzza a függőségeket, és felveszi a ChaOffice-ot az alkalmazásmenübe:
 
 ```bash
-sudo apt install ./genoffice_<version>_amd64.deb
+sudo apt install ./ChaAIOffice_<version>_amd64.deb
 ```
 
 Fedora / RHEL-család / openSUSE alatt az rpm-et telepítsd helyette:
 
 ```bash
-sudo dnf install ./genoffice-<version>.x86_64.rpm     # Fedora / RHEL family
-sudo zypper install ./genoffice-<version>.x86_64.rpm  # openSUSE
+sudo dnf install ./chaoffice-<version>.x86_64.rpm     # Fedora / RHEL family
+sudo zypper install ./chaoffice-<version>.x86_64.rpm  # openSUSE
 ```
 
 A deb és az rpm emellett üres sablonokat is hozzáad a KDE Plasma Dolphinjához: jobb klikk
-egy mappában → az **Új létrehozása** menü felsorolja a _GenOffice Document_, a _GenOffice Spreadsheet_
-és a _GenOffice Presentation_ elemeket. Ezek a `/usr/share/templates` helyen találhatók, és
+egy mappában → az **Új létrehozása** menü felsorolja a _ChaOffice Document_, a _ChaOffice Spreadsheet_
+és a _ChaOffice Presentation_ elemeket. Ezek a `/usr/share/templates` helyen találhatók, és
 a csomag eltávolításakor törlődnek.
 
 Az AppImage helyben fut: telepítsd a FUSE 2 futtatókörnyezetet
@@ -481,8 +481,8 @@ Az AppImage helyben fut: telepítsd a FUSE 2 futtatókörnyezetet
 tedd futtathatóvá a fájlt, majd indítsd el:
 
 ```bash
-chmod +x GenOffice-<version>.AppImage
-./GenOffice-<version>.AppImage
+chmod +x ChaOffice-<version>.AppImage
+./ChaOffice-<version>.AppImage
 ```
 
 Chromebookon ugyanezek a csomagok a Linux-környezetben (Crostini) futnak —
@@ -512,7 +512,7 @@ az ügynökmag és a szolgáltatók) a [CONTRIBUTING.md](../../CONTRIBUTING.md#e
 
 ### A korábbi formátumú és ODF-fájlok konvertált másolatként nyílnak meg
 
-Azok a formátumok, amelyeket a GenOffice nem tud visszaírni — a Word korábbi `.doc`/`.dot`,
+Azok a formátumok, amelyeket a ChaOffice nem tud visszaírni — a Word korábbi `.doc`/`.dot`,
 a Hancom `.hwp`/`.hwpx`, az Excel 97 `.xls`, a `.tsv`, a PowerPoint korábbi `.ppt`, valamint az
 OpenDocument család (`.odt`, `.ott`, `.ods`, `.ots`, `.odp`, `.otp`) — importok, nem natív fájlok.
 Egy ilyen fájl megnyitásakor a program a gépeden `.docx`, `.xlsx` vagy `.pptx`
@@ -547,38 +547,38 @@ npm run dist:linux   # package Linux AppImage + deb + rpm
 ```
 
 A Sheets-alkalmazásnak az xlsx sidecarhoz emellett Rust-eszközláncra is szüksége van
-(`cargo` a PATH-on); az `npm run build -w @genoffice/sheets` ezt automatikusan lefordítja.
+(`cargo` a PATH-on); az `npm run build -w @chaoffice/sheets` ezt automatikusan lefordítja.
 A [CONTRIBUTING.md](../../CONTRIBUTING.md) leírja az ellenőrzéseket, amelyeken minden változtatásnak
 át kell mennie, valamint azt, hogyan kerülnek be a pull requestek.
 
 ## Közösség
 
-A GenOffice aktív fejlesztés alatt áll, és a visszajelzéseid formálják.
+A ChaOffice aktív fejlesztés alatt áll, és a visszajelzéseid formálják.
 
 - **Jelents hibát vagy kérj új funkciót** a
-  [GitHub Issues](https://github.com/genspark-ai/genoffice/issues) oldalon.
-- **Csatlakozz a GenOffice csoportcsevegéséhez** a
-  [GenTeam](https://genoffice.ai/join) oldalon, hogy a csapattal és más felhasználókkal
+  [GitHub Issues](https://github.com/zhgyuhuii/ChayuanAIOffice/issues) oldalon.
+- **Csatlakozz a ChaOffice csoportcsevegéséhez** a
+  [GenTeam](https://chaoffice.ai/join) oldalon, hogy a csapattal és más felhasználókkal
   beszélgethess.
 - **Kövesd [@merrickbuilds](https://x.com/merrickbuilds) fiókját X-en** a kiadási
   megjegyzésekért, a demókért és az éppen készülő újdonságokért.
-- **Csillagozd a repót**, ha hasznosnak találod a GenOffice-ot — ez a legjobb módja
+- **Csillagozd a repót**, ha hasznosnak találod a ChaOffice-ot — ez a legjobb módja
   a projekt támogatásának.
 
 ## GYIK
 
 <details>
-<summary><b>Ingyenes a GenOffice?</b></summary>
+<summary><b>Ingyenes a ChaOffice?</b></summary>
 
-Igen. A GenOffice ingyenes és nyílt forráskódú, Apache-2.0 licenc alatt — nincs
+Igen. A ChaOffice ingyenes és nyílt forráskódú, Apache-2.0 licenc alatt — nincs
 próbaidőszak, és magukért az alkalmazásokért sem kell fizetni.
 
 </details>
 
 <details>
-<summary><b>Meg tudja nyitni a GenOffice a Microsoft Word-, Excel- és PowerPoint-fájlokat?</b></summary>
+<summary><b>Meg tudja nyitni a ChaOffice a Microsoft Word-, Excel- és PowerPoint-fájlokat?</b></summary>
 
-Igen. A GenOffice natív `.docx`, `.xlsx` és `.pptx` fájlokat nyit meg és ment.
+Igen. A ChaOffice natív `.docx`, `.xlsx` és `.pptx` fájlokat nyit meg és ment.
 A mentés bájtpontos: a fájl azon részei, amelyeket nem módosítottál, bájtról
 bájtra íródnak vissza, így a dokumentumok a Microsoft Office-ban is
 tovább működnek. A régi `.doc`/`.dot`, `.xls` és `.ppt` fájlok is megnyílnak,
@@ -588,7 +588,7 @@ ODF-fájlok konvertált másolatként nyílnak meg](#legacy-and-odf-files-open-a
 </details>
 
 <details>
-<summary><b>Működik a GenOffice offline is?</b></summary>
+<summary><b>Működik a ChaOffice offline is?</b></summary>
 
 A dokumentumszerkesztés teljesen helyi — a fájlok soha nem hagyják el a gépedet
 megnyitás, szerkesztés, mentés vagy átalakítás céljából. Az AI-funkciók
@@ -598,7 +598,7 @@ Genspark-bejelentkezés, vagy a saját modell-API-kulcsod kell.
 </details>
 
 <details>
-<summary><b>Tud a GenOffice PDF-fájlokat szerkeszteni?</b></summary>
+<summary><b>Tud a ChaOffice PDF-fájlokat szerkeszteni?</b></summary>
 
 Igen — valódi PDF-szöveg- és képszerkesztés, amely újraírja az oldal
 tartalomfolyamát az eredeti betűtípusok megtartásával, nem pedig
@@ -607,7 +607,7 @@ eltakaró jegyzeteket tesz rá.
 </details>
 
 <details>
-<summary><b>Át tudja alakítani a GenOffice a PDF-et Word-, Excel- vagy PowerPoint-formátumba?</b></summary>
+<summary><b>Át tudja alakítani a ChaOffice a PDF-et Word-, Excel- vagy PowerPoint-formátumba?</b></summary>
 
 Igen — teljesen az eszközön: PDFium karakterszintű kinyerés és geometria alapú
 elrendezéselemzés, felhőszolgáltatás és feltöltés nélkül. A beolvasott oldalakra
@@ -619,7 +619,7 @@ szerkeszthető szöveggé alakulnak, nem oldalképpé.
 <details>
 <summary><b>Használhatok saját AI-modellt vagy API-kulcsot?</b></summary>
 
-Igen. A kulcs nélküli Genspark-bejelentkezés mellett a GenOffice támogatja a
+Igen. A kulcs nélküli Genspark-bejelentkezés mellett a ChaOffice támogatja a
 saját kulcs használatát is: Claude, OpenAI, Gemini, DeepSeek, Kimi, GLM, Qwen,
 Doubao, MiniMax, Grok, Mistral, OpenRouter, Requesty, Opper, Cheaper Inference,
 Atlas Cloud és OpenCode Zen/Go, valamint bármely OpenAI-kompatibilis végpont —
@@ -641,7 +641,7 @@ dokumentumhoz, bezáráskor pedig ismét rejtett lesz.
 </details>
 
 <details>
-<summary><b>Át tudja alakítani a GenOffice a HTML-t Word-formátumba?</b></summary>
+<summary><b>Át tudja alakítani a ChaOffice a HTML-t Word-formátumba?</b></summary>
 
 Igen — a HTML-alkalmazás Exportálás Wordként funkciója teljesen az eszközön,
 natív, szerkeszthető `.docx` fájlt készít. Az oldal a beépített Chromiumban
@@ -653,9 +653,9 @@ vizuális elemek ágyazódnak be képként, amelyeknek nincs Word-megfelelőjük
 </details>
 
 <details>
-<summary><b>Irányíthatom a GenOffice-ot Claude Code-ból, Codexből, Cursorból vagy szkriptből?</b></summary>
+<summary><b>Irányíthatom a ChaOffice-ot Claude Code-ból, Codexből, Cursorból vagy szkriptből?</b></summary>
 
-Igen. A GenOffice telepít egy `genoffice` parancssori eszközt, amely ugyanazokat
+Igen. A ChaOffice telepít egy `chaoffice` parancssori eszközt, amely ugyanazokat
 a motorokat futtatja grafikus felület nélkül: dokumentumok vizsgálata,
 átalakítása, létrehozása, olvasása és szerkesztése terminálból vagy szkriptből,
 `--json` kimenettel a programok számára. A mellékelt ügynök-képesség megtanítja
@@ -666,13 +666,13 @@ Windsurf eszközöknek; a Beállítások → Integrációk pontnál telepíthete
 </details>
 
 <details>
-<summary><b>Gyűjt adatokat a GenOffice?</b></summary>
+<summary><b>Gyűjt adatokat a ChaOffice?</b></summary>
 
 A hivatalos, csomagolt kiadások alapértelmezés szerint korlátozott körű használati
 statisztikát küldenek, a jelentéstételt pedig bármikor kikapcsolhatod a
 Beállítások → Általános pontnál. A statisztika soha nem küld dokumentumtartalmat,
 fájlneveket, fájlútvonalakat, fiókazonosságot vagy e-mail-címeket. Az
-eseményekre és az adatokra vonatkozó teljes közlést lásd: [GenOffice
+eseményekre és az adatokra vonatkozó teljes közlést lásd: [ChaOffice
 adatvédelem](../../PRIVACY.md).
 
 </details>
@@ -685,7 +685,7 @@ megnyitása), valamint az AI által generált tartalom fenyegetési modelljeit.
 
 ## Köszönetnyilvánítás
 
-A GenOffice a következő nyílt forráskódú projektek nélkül nem jöhetett volna
+A ChaOffice a következő nyílt forráskódú projektek nélkül nem jöhetett volna
 létre:
 
 - [Electron](https://www.electronjs.org/) — az asztali futtatókörnyezet minden
@@ -716,7 +716,7 @@ létre:
   dokumentumokat olvas be HWPX-formátumba a Hancom-importhoz; a
   WebAssembly-változata tartalmazza a Rust crate-eket és a Volexity hwp-extract
   portját, amelyek a harmadik felekre vonatkozó megjegyzésekben szerepelnek. A
-  „한글”, „한컴”, „HWP” és „HWPX” a Hancom Inc. bejegyzett védjegyei; a GenOffice
+  „한글”, „한컴”, „HWP” és „HWPX” a Hancom Inc. bejegyzett védjegyei; a ChaOffice
   nem áll kapcsolatban a Hancommal.
 - [React](https://react.dev/) (MIT) — minden alkalmazás UI-rétege.
 - [Mermaid](https://mermaid.js.org/) (MIT) és [KaTeX](https://katex.org/)
@@ -739,10 +739,10 @@ függőség MIT/Apache-2.0/BSD-3-Clause/OFL licencű.
 
 ## Licenc
 
-A GenOffice az [Apache License 2.0](../../LICENSE) licenc alatt érhető el, egy
+A ChaOffice az [Apache License 2.0](../../LICENSE) licenc alatt érhető el, egy
 kivétellel: az `ee/` könyvtár a jövőbeli vállalati moduloknak van fenntartva,
-és a [GenOffice Enterprise License](../../ee/LICENSE) hatálya alá tartozik.
+és a [ChaOffice Enterprise License](../../ee/LICENSE) hatálya alá tartozik.
 
-A GenOffice és a Genspark nevek és logók a Mainfunc, Inc. védjegyei. Az
+A ChaOffice és a Genspark nevek és logók a Mainfunc, Inc. védjegyei. Az
 Apache-2.0 licenc nem ad engedélyt a használatukra (lásd a 6. szakaszt); a
 forkok saját márkajelzést használjanak.

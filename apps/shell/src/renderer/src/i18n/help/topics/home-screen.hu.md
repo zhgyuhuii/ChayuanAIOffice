@@ -1,6 +1,6 @@
 # A Kezdőképernyő: itt élnek a fájljaid
 
-A Kezdőképernyő a GenOffice nyitóoldala: bal oldalt egy navigációs oldalsáv, jobb oldalt fájllisták és gyorsindító kártyák.
+A Kezdőképernyő a ChaOffice nyitóoldala: bal oldalt egy navigációs oldalsáv, jobb oldalt fájllisták és gyorsindító kártyák.
 
 ![A Kezdőképernyő](img/home-screen.png)
 
@@ -36,7 +36,7 @@ Jelöld be egy sor jelölőnégyzetét, vagy kattints ⌘/ctrl lenyomva tartás�
 A felül található keresőmező egyszerre kétféle találatot ad:
 
 - **Fájlnevek**: gyors szűrés név szerint.
-- **Fájltartalom**: a GenOffice a háttérben indexeli a fájljaidat (a docx/xlsx/pptx/pdf/md/html fájlokban lévő szöveget), így a szövegtörzsben keresve is megtalálod a fájlokat. A hatókör és a kapcsolók a keresés beállításaiban találhatók.
+- **Fájltartalom**: a ChaOffice a háttérben indexeli a fájljaidat (a docx/xlsx/pptx/pdf/md/html fájlokban lévő szöveget), így a szövegtörzsben keresve is megtalálod a fájlokat. A hatókör és a kapcsolók a keresés beállításaiban találhatók.
 
 ## Gyorsindító kártyák
 
@@ -66,6 +66,6 @@ Az egyes kártyák működése:
 
 ## Felhőprojektek (Genspark-projektek)
 
-- Az első használathoz be kell jelentkezned a Genspark-fiókodba (eszközkódos folyamat: a GenOffice megjelenít egy kódot, a bejelentkezést pedig a böngészőben fejezed be).
+- Az első használathoz be kell jelentkezned a Genspark-fiókodba (eszközkódos folyamat: a ChaOffice megjelenít egy kódot, a bejelentkezést pedig a böngészőben fejezed be).
 - A projektlista szinkronban van a weben lévővel; a „Megnyitás böngészőben” oda visz, hogy ott folytasd.
 - Ha nem jelentkezel be, az egyik helyi funkciót sem érinti.

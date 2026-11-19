@@ -3,9 +3,9 @@ import { isSlidesScreenRecordingSource } from '../src/main/display-media-gate'
 
 describe('isSlidesScreenRecordingSource', () => {
   it('allows the slides renderer scheme URL', () => {
-    expect(isSlidesScreenRecordingSource('genoffice-app://slides/index.html', undefined)).toBe(true)
+    expect(isSlidesScreenRecordingSource('chaoffice-app://slides/index.html', undefined)).toBe(true)
     expect(
-      isSlidesScreenRecordingSource('genoffice-app://slides/index.html?mode=tab', undefined),
+      isSlidesScreenRecordingSource('chaoffice-app://slides/index.html?mode=tab', undefined),
     ).toBe(true)
   })
 
@@ -22,8 +22,8 @@ describe('isSlidesScreenRecordingSource', () => {
   })
 
   it('refuses other apps and hostile frames', () => {
-    expect(isSlidesScreenRecordingSource('genoffice-app://html/index.html', undefined)).toBe(false)
-    expect(isSlidesScreenRecordingSource('genoffice-app://docs/index.html', undefined)).toBe(false)
+    expect(isSlidesScreenRecordingSource('chaoffice-app://html/index.html', undefined)).toBe(false)
+    expect(isSlidesScreenRecordingSource('chaoffice-app://docs/index.html', undefined)).toBe(false)
     expect(
       isSlidesScreenRecordingSource('html-preview://view-1/', undefined),
       'the preview iframe origin, one click from a hostile document',
@@ -32,7 +32,7 @@ describe('isSlidesScreenRecordingSource', () => {
       false,
     )
     expect(isSlidesScreenRecordingSource('file:///etc/passwd', undefined)).toBe(false)
-    expect(isSlidesScreenRecordingSource('genoffice-app://slides.evil.com/', undefined)).toBe(false)
+    expect(isSlidesScreenRecordingSource('chaoffice-app://slides.evil.com/', undefined)).toBe(false)
   })
 
   it('refuses garbage and absence', () => {

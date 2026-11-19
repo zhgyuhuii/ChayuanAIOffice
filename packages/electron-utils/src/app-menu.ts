@@ -535,7 +535,7 @@ const LABELS: Record<string, Labels> = {
     zoomOut: 'Kicsinyítés',
     fullscreen: 'Teljes képernyő',
     help: 'Súgó',
-    about: 'A GenOffice névjegye',
+    about: 'A ChaAI Office névjegye',
     checkUpdates: 'Frissítések keresése…',
     version: 'Verzió',
     nameWithAi: 'Elnevezés AI-jal…',
