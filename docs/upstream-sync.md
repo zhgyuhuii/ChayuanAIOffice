@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/chaoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第四十一轮完成（2026-11-15，终点 19a389b39，分支 sync/41-upstream；区间含新 tag v0.13.18，后三位取 tag 口径 0.13.18；本轮未打包 Z 维持 17；120 提交全吸收+五步核对+全量门禁——详见 §R41 小节**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第四十二轮完成（2026-11-19，终点 6b43f81b，施工于 r42-work；区间无新 tag 后三位维持 0.13.18；63 提交全吸收+双重对账+八批缝合+全量门禁+web 真机 smoke——详见 §R42 小节**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -786,6 +786,56 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 
 **R41 起点=0ac588ff**（v0.12.852-28-g0ac588ff）。
 
+
+## 第四十二轮（2026-11-19，上游 19a389b39..6b43f81b 63 提交全吸收，施工于 r42-work worktree（前半 37 pick 落 sync/42-upstream，后半 26 pick 续于 r42-work，两段同源续链经 patch-id 对账无断层，终链链重写一次拆 articles）；区间无新 tag（最新仍 v0.13.18），chaofficeUpstreamVersion 维持 0.13.18，六段 1.0.18.0.13.18，本轮未打包 Z 不动）
+
+> 上游 63 提交=引擎修复大波（odf2ooxml：#2721-#2729 表格列宽继承/单元格底色/行列组遍历/标题保留/隐藏文本域/演示行距/重复项目符/表内分节/根级 slide notes 族+#2741 表头跨页重复+#2765 单元格垂直对齐+#2767-#2768 段落 keep/背景+#2780 列表重编号）+file-parse（#2730-#2732 根级 slide notes/DOCX 主部件优先/耗时溢出数字）+**安全加固批**（#2742 懒加载 zip 尺寸头伪造防护/#2743 electron ^43.8.10 CVE-2026-111497 brotli 修复/#2744 AI 设置文件 0o600 自愈/#2745 getDisplayMedia 仅 Slides renderer 应答/#2746 渲染层命名写通道与 reveal 通道关闭/#2748 深度 XML 树解析封顶/#2749 遗留导入路径尺寸上限/#2753 非 ASCII checkout 路径 wasm 测试/#2782 NSS 证书并发读上限）+特性（#2720 sheets Excel 正则函数族+PERCENTOF/#2736 技能说明独立页/#2598 PDF OCR bake 就地编辑+Recognize-text/#2661 视图按钮单亮/#2492/#2517/#2611/#2760 macOS 界面缩放可达/#2762 80%/90% 缩放档/#2600/#2793 逐键扫描只走必需区/#2811/#2774/#2777/#2802/#2800/#2791/#2789/#2823/#2822/#2799/#2810/#2819 gvfs 回退普通读写/#2831/#2829/#2830/#2833/#2832 RTL 视觉序）+**i18n 大件**（#2716 匈牙利语 23 语入列+hu help topics ×18+docs i18n README.hu、#2772 hu 技能页+PDF OCR 命令串）。**依赖**：@eslint-community/regexpp 入 sheets。**版本落点**：无新 tag，三段不动。
+
+### 《冲突与裁决清单》（要点摘录）
+
+| 域/提交 | 裁决 |
+|---|---|
+| #2716 i18n 大件（hu 23 语） | **四类缝合**（见事故 1-3）：html/slides strings-ai 双注册收敛单一 spread 表（hu 走 en 回退，照 pdf 模板）；shell 导出表补 hu 行；slides locale/strings 重复 tr/zh-TW 块去重；slides i18n-main hu 块 errGsk*→errChaOffice* 键名跟随（R41 裁决）+本地键 2 枚补齐 |
+| #2743 electron CVE bump | 批末手工并（Q5-①）：本地 7 app ^43.8.3→^43.8.8 区间（上游声明 ^43.8.10；lock 解析 43.8.11 ⊃ CVE 修复，adapted 注记在案） |
+| #2744 AI 设置 0o600 | heal 统一收进 ai-host deps.settingsPath 注入点（R41 架构裁决延续）；docs-main/sheets-main 上游调用位不落，死 import 清除 |
+| #2720 sheets 正则函数 | lock 不随（npm install 重生成策略）；@eslint-community/regexpp 入 sheets deps |
+| #2819 gvfs 回退 | folder-tree moveOnDisk 换 copyTreeExclusiveSync+回滚清除；macOS rmSync 递归序对只读子目录报 ENOTEMPTY（Linux 为 EACCES）——测试断言改编两码皆收（adapted 注记，上游潜在环境敏感，R29 类） |
+| 品牌差分 | 新 hu 面全量 sweep（strings 值/help topics ×18/README.hu）；标识符对齐本地真名：genoffice 命令→chaoffice、~/.chaoffice/launcher、open_in_chaoffice、ChaAIOffice_<v>_amd64.deb、ChaOffice-<v>.AppImage、chaoffice-app:// scheme、徽章 URL→zhgyuhuii/ChayuanAIOffice；豁免保留：键名标识符、genspark.ai/pricing URL、GENOFFICE_* 真实环境变量、Genspark 服务名（de/zh-CN README 先例） |
+| README | 上游 README.md hu 行不带（本地双语拆分结构不同构）；README.hu.md 按 de 先例品牌化；全端语言计数 22→23（README 双语+articles 同步；扩展名计数的 22 不动） |
+
+### 施工事故与修复（八批缝合，同轮闭环）
+
+1. **#2716 双注册洗键（R24 strings A/B 分叉同类事故再现）**：html/slides strings-ai.ts 上游裸语言条目接在本地 spread 后——JS 重复键后者胜，本地多会话键运行时+类型两层全洗掉；typecheck 兜出（TS1117×22+AiPanel TS2345×107）。**防线：i18n 大件 pick 后必跑「localStrings spread 文件全检」+tsc，勿信结构目测。**
+2. **npm --workspaces 首败即停盲区**：html 红时其后全部工作区未跑，错误按工作区串行三轮暴露——**防线：看 per-workspace 清单非总退出码；首败后全量重跑为唯一权威。**
+3. **LangDicts 23 语全键约束**：#2716 加 hu 后上游 hu 块对后续上游新键（pdf 54/shell 5）与本地键（slides 2）天然缺失、shell 导出表漏 hu 行；脚本化键集差分+en 回退回填。**防线：hu 类大件 pick 后先跑键集差分脚本再等 tsc。**
+4. **W42 zc* 八键仅 zh/en**（21 语缺 19）：W42 从未跑过门禁，落链首次 typecheck 即暴露；21 语真译补齐（希伯来语撇号 ׳ 坑）。**教训：未过门禁的 staged 工作视为不可信，落链即全量门禁。**
+5. **articles 两篇被 #2742 pick 卷入**：链重写（真父 6c0728655 上重建 #2742 纯 pick+50 提交 replay）拆出独立 docs 提交。**防线：pick 提交前 git status 必查非预期文件。**
+6. **#2716 hu 块 menuNew*/new* 族 AI 前缀**违反 R24/R37 全语言去前缀裁定（hu 新语言未跟随，钉名测试兜出）——五键×两文件对齐 en 基准。
+7. **新 worktree 环境生成物三件**：sheets fixtures/generated 六件（npm run fixtures）、third-party notices（依赖变化后需 npm run notices）、electron dist 504（ELECTRON_MIRROR=npmmirror）——新 worktree 首跑门禁前先补生成物。
+8. **#2819 auto-rename 测试 electron mock 缺 nativeImage**（pdf-main 顶层 APP_ICON；同 R25 cert-sign-handler 先例补 mock）。
+
+### 五步核对终态
+
+①63/63 subject 级对账（PR 集合差 26+37 两段合并=63，无缺号）；②patch-id 双重核对：49 原样一致+14 adapted 逐件归因（#2743 版本声明分叉#2744 ai-host#2716 files-pane hu+README 口径#2742 articles 拆出#2720 lock 策略+其余 9 件品牌上下文漂移），无内容丢失；③删除面：链重写后树差分=articles 两篇（已独立提交补回）+0；④品牌差分 vs main 基线：豁免外零新增（剩余 delta 全为键名标识符/genspark.ai URL/GENOFFICE_* 真实环境变量/Genspark 服务名四类豁免，值级可疑=0）；⑤全量门禁（见下）。
+
+### 门禁终态
+
+- typecheck 全仓 0（npm --workspaces 40 工作区）。
+- lint 0 error（32 warnings=基线 28+上游件 react-hooks/strict-boolean-expressions 类）。
+- vitest **38 工作区全绿**：docs 501 文件 6233 用例（含一次偶发 unhandled crash——protected-text-selection 的 prosemirror focus 定时器 node 环境炸 document，单跑复绿=R34 附注类）/shell 136 文件（含钉名三测试+folder-tree 改编）/slides 164/pdf 101/markdown 79/web-bridge 6/server 5/web 2/sheets 408 文件/cli 56 文件 464 用例/packages 全链；cargo 327 绿×2 crate；build:web 过。
+- 真机 smoke（web 形态 5180）：页面 200+完整渲染——W42「新建对话」按钮/左树分组/新建竖排三件在位，zh 串符合裁定命名，品牌正确；静态产物验证 PERCENTOF（sheets bundle）/hu 本地化分块（sheets/markdown/pdf） EditorsFilesPane 侧栏 css（side-new-row）全在。
+- 终链：72 提交=63 pick+6 缝合（9cc7d0186 #2744 适配/f572ac089 pdf hu 行/e57a8c2a5 品牌 pass/cd9ee7880 双注册/98e5069f0 tsc 清零/fe1c000ff lint）+3 本地（5a9556b85 articles 独立提交/0ce202e86 W42 UI 一致化/22d1e0189 语言计数）。
+
+### 挂账（新增）
+
+| 项 | 说明 | 同步检查动作 |
+|---|---|---|
+| pdf upstreamStrings.hu 54 键 en 回退 | #2716 后上游加键未跟 hu；脚本回填 en 值 | 上游 hu 完善提交后逐键取真译 |
+| shell upstreamStrings.hu 5 键同上 | 同上 | 同上 |
+| W42 桌面形态真机复验 | web 形态已验；桌面 dev 因端口被用户实例占用未跑，落链后随日常 dev 复验 | 常规 |
+| 随轮发版判断 | 六段 1.0.18.0.13.18，Z 未动 | 用户决定是否 Z+1 打包 |
+
+**R43 起点=6b43f81b**（上游 main 当前 HEAD）。
 
 ## 第四十一轮（2026-11-15，上游 0ac588ff..19a389b39 120 提交全吸收，施工于 sync/41-upstream；终点 describe=v0.13.18-56-g19a389b39——区间含新 tag v0.13.18（=ac19c5411 快照 #2641），后三位取 tag 口径 0.13.18；本轮未打包 Z 维持 17；版本落点 apps/shell chaofficeUpstreamVersion 0.12.852→0.13.18，六段 1.0.17.0.13.18）
 
