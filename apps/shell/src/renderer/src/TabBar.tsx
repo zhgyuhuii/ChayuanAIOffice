@@ -5,12 +5,12 @@ import { TEAR_OFF_SLACK, insertionIndexForX, isBeyondBand } from '../../shared/t
 import { notifyFilesChanged } from './file-events'
 import { useI18n } from './locale'
 import { getHomeLayout, onHomeLayoutChange, setHomeLayout } from './home-layout'
-import tabIconDocx from './assets/file-docx.png'
-import tabIconXlsx from './assets/file-xlsx.png'
-import tabIconPptx from './assets/file-pptx.png'
-import tabIconMd from './assets/file-md.png'
-import tabIconPdf from './assets/file-pdf.png'
-import tabIconHtml from './assets/file-html.png'
+import tabIconDocx from './assets/file-docx.svg'
+import tabIconXlsx from './assets/file-xlsx.svg'
+import tabIconPptx from './assets/file-pptx.svg'
+import tabIconMd from './assets/file-md.svg'
+import tabIconPdf from './assets/file-pdf.svg'
+import tabIconHtml from './assets/file-html.svg'
 import tabIconLogo from './assets/logo.png'
 
 declare global {
@@ -126,17 +126,17 @@ function PaneToggleIcon({ side }: { side: 'left' | 'right' }): ReactElement {
 }
 
 function DocIcon() {
-  // brand document icon (162×211 portrait sheet), height-driven
+  // 单字形品牌瓦片（与 OS 关联图标同源 SVG），方形 16px
   return <img src={tabIconDocx} style={{ height: 16, width: 'auto' }} alt="" aria-hidden="true" />
 }
 
 function SheetIcon() {
-  // brand document icon (162×211 portrait sheet), height-driven
+  // 单字形品牌瓦片（与 OS 关联图标同源 SVG），方形 16px
   return <img src={tabIconXlsx} style={{ height: 16, width: 'auto' }} alt="" aria-hidden="true" />
 }
 
 function PdfIcon() {
-  // brand file icon (square squircle badge), height-driven
+  // 单字形品牌瓦片（与 OS 关联图标同源 SVG），方形 16px
   return <img src={tabIconPdf} style={{ height: 16, width: 'auto' }} alt="" aria-hidden="true" />
 }
 
@@ -160,18 +160,18 @@ function HomeIcon() {
 }
 
 function SlideIcon() {
-  // brand document icon (162×211 portrait sheet), height-driven
+  // 单字形品牌瓦片（与 OS 关联图标同源 SVG），方形 16px
   return <img src={tabIconPptx} style={{ height: 16, width: 'auto' }} alt="" aria-hidden="true" />
 }
 
 /* same artwork as the home screen's file-md.svg asset */
 function MarkdownIcon() {
-  // brand document icon (162×211 portrait sheet), height-driven — same artwork family as the home screen badge
+  // 单字形品牌瓦片（与 OS 关联图标同源 SVG），方形 16px — same artwork family as the home screen badge
   return <img src={tabIconMd} style={{ height: 16, width: 'auto' }} alt="" aria-hidden="true" />
 }
 
 function HtmlIcon() {
-  // brand file icon (square squircle badge), height-driven
+  // 单字形品牌瓦片（与 OS 关联图标同源 SVG），方形 16px
   return <img src={tabIconHtml} style={{ height: 16, width: 'auto' }} alt="" aria-hidden="true" />
 }
 

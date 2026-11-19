@@ -3,12 +3,12 @@ import type { ReactElement } from 'react'
 import type { DockTabSummary } from '../../shared/dock-api'
 import { getHomeLayout, onHomeLayoutChange, setHomeLayout } from './home-layout'
 import { useI18n } from './locale'
-import tabIconDocx from './assets/file-docx.png'
-import tabIconXlsx from './assets/file-xlsx.png'
-import tabIconPptx from './assets/file-pptx.png'
-import tabIconMd from './assets/file-md.png'
-import tabIconPdf from './assets/file-pdf.png'
-import tabIconHtml from './assets/file-html.png'
+import tabIconDocx from './assets/file-docx.svg'
+import tabIconXlsx from './assets/file-xlsx.svg'
+import tabIconPptx from './assets/file-pptx.svg'
+import tabIconMd from './assets/file-md.svg'
+import tabIconPdf from './assets/file-pdf.svg'
+import tabIconHtml from './assets/file-html.svg'
 
 // help tabs ship no binary asset; a small inline question-mark book glyph keeps the Record total
 const HELP_ICON_SRC =
