@@ -29,6 +29,9 @@ vi.mock('electron', () => ({
   BrowserWindow: class {},
   WebContentsView: class {},
   ipcMain: { handle: vi.fn(), on: vi.fn(), removeHandler: vi.fn() },
+  // adapted: #2819 pick 后 pdf-main 顶层 APP_ICON 走 nativeImage.createFromPath，
+  // 本地 electron mock 需补该导出（同 R25 cert-sign-handler 先例）
+  nativeImage: { createFromPath: vi.fn(() => ({ toPNG: vi.fn(() => Buffer.alloc(0)) })) },
 }))
 
 import { movePdfFileNoClobber } from '../src/main/pdf-main'
