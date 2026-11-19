@@ -641,8 +641,13 @@ describe('moveOnDisk across volumes', () => {
     expect(modeOf(join(to, 'sub', 'locked'))).toBe(0o555)
     // Emptying a read-only source folder is refused to anyone but root, on a
     // local disk too; the complete copy at the destination stays.
+    // adapted: #2819 的回滚清除在 macOS 上因只读子目录挡住清扫报 ENOTEMPTY（libuv rmSync
+    // 递归序），Linux/CI 语义仍是 EACCES——语义都是「清空被拒绝」，两码皆收
     if (process.getuid?.() === 0) expect(failure).toBeUndefined()
-    else expect(failure).toEqual(expect.objectContaining({ code: 'EACCES' }))
+    else
+      expect(failure).toEqual(
+        expect.objectContaining({ code: expect.stringMatching(/^(EACCES|ENOTEMPTY)$/) }),
+      )
   })
 
   posixOnly('rolls back a part-way failure inside a read-only folder', () => {
