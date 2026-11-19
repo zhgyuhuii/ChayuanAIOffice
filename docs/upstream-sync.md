@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/chaoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第四十三轮完成（2026-11-19，终点 2491896c，施工于 sync/43-upstream；区间无新 tag 后三位维持 0.13.18；20 提交全吸收+patch-id 对账（12 原样/8 adapted）+全量门禁+web 真机 smoke；同链本地三提交=图标单一事实源收口（packages/ui/file-tiles）+首页左树改版/右侧文件树/右上角文件图标恢复——详见 §R43 小节**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第四十三轮完成（2026-11-19，终点 2491896c，施工于 sync/43-upstream；区间无新 tag 后三位维持 0.13.18；20 提交全吸收+patch-id 对账（10 原样/10 adapted——初稿误记 12/8，2026-11-20 复审改正）+全量门禁+web 真机 smoke；同链本地三提交=图标单一事实源收口（packages/ui/file-tiles）+首页左树改版/右侧文件树/右上角文件图标恢复——详见 §R43 小节**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -806,7 +806,7 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 
 ### 对账与品牌
 
-- **20/20 patch-id 对账：12 原样+8 adapted**（#2656 供应商并集/#2740 三分支+品牌/#2852 品牌行/#2761 import 收窄/#2859+#2865 桥名品牌/#2864 导出并集/#2862 测试结构缝合/#2860 中间地带）。
+- **20/20 patch-id 对账：10 原样+10 adapted**（原样=#2657/#2616/#2853/#2851/#2846/#2847/#2850/#2857/#2861/#2756；adapted=#2656 供应商并集/#2740 三分支+品牌/#2852 品牌行/#2761 import 收窄/#2864 导出并集/#2862 测试结构缝合/#2860 中间地带+#2737/#2859/#2865 三件**品牌上下文漂移**——变更行集合与上游逐行一致（#2737 实测 diff=0），patch-id 差异纯因邻近行品牌改名改上下文，R42 同类 9 件先例，内容零丢失。初稿误记 12/8，2026-11-20 复审按工具输出改正——两次审计集合逐条一致）。
 - 品牌 pass：headless-language/kb-ask-corpus/perop-settext 测试导入 @genoffice→@chaoffice 三件+pdf2docx bench 三件 genoffice→chaoffice（engine 字面量/文案/scorecard）+word-count docx-engine 导入归位；豁免外全树零残留。
 - **markdown roundtrip 语料新增豁免**：docs/upstream-sync.md（台账，glob 尾/环境变量名/箭头等正则敌对内容，R42 末次回写后 doc.check() 报 italic,italic 嵌套强调——R42 门禁跑在回写提交前的存量时差；byte round-trip 仍严格）。
 
