@@ -46,6 +46,30 @@ describe('thumbnail click selection', () => {
   })
 })
 
+describe('history selection', () => {
+  const before = ['A', 'B', 'C', 'D'].map((partPath) => ({ partPath }))
+  const moved = [before[0]!, before[2]!, before[3]!, before[1]!]
+
+  it('keeps the same slide selected when undo restores its earlier position', () => {
+    expect(currentAfterHistory(before, 3, moved[3]!.partPath)).toBe(1)
+  })
+
+  it('keeps the same slide selected when redo reapplies the move', () => {
+    expect(currentAfterHistory(moved, 1, before[1]!.partPath)).toBe(3)
+  })
+
+  it('clamps the old index when the selected slide no longer exists', () => {
+    expect(currentAfterHistory(before.slice(0, 3), 3, 'D')).toBe(2)
+    expect(currentAfterHistory(before, 2)).toBe(2)
+  })
+
+  it('restores a valid anchor for an empty deck or a negative saved index', () => {
+    expect(currentAfterHistory([], 3)).toBe(0)
+    expect(currentAfterHistory([], 3, 'A')).toBe(0)
+    expect(currentAfterHistory(before, -2)).toBe(0)
+  })
+})
+
 /** Applies moveSlide steps the way the engine does: remove, then insert at `to`. */
 function applyMoves(count: number, steps: Array<{ from: number; to: number }>): number[] {
   const order = Array.from({ length: count }, (_, i) => i)
