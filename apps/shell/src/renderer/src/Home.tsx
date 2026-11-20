@@ -1330,6 +1330,27 @@ export function Home() {
     setFilesPaneRoot({ path, name })
     setHomeLayout({ rightCollapsed: false })
   }, [])
+  // 查看文件对未绑定文件夹的项目（含 default）的接引：zcode 式每项目都有
+  // 图标——无文件夹的项目点击后先弹 OS 选目录（pickFolder），绑定进项目
+  // （project:setRoot，project.json+index 双写）再打开右侧树；取消选择即止
+  const bindProjectFiles = useCallback(
+    (projectId: string, displayName: string) => {
+      if (typeof window.chaOfficeProject?.pickFolder !== 'function') return
+      void window.chaOfficeProject.pickFolder().then(async (picked) => {
+        if (!picked) return
+        try {
+          await window.chaOfficeProject?.setProjectRoot(projectId, picked)
+          if (hasProjectApi()) {
+            void window.chaOfficeProject!.listProjects().then(setProjects)
+          }
+          openProjectFiles(picked, displayName)
+        } catch (error) {
+          window.alert(error instanceof Error ? error.message : String(error))
+        }
+      })
+    },
+    [openProjectFiles],
+  )
 
   // ── Project state ──
   const [projects, setProjects] = useState<ProjectSummaryEntry[]>([])
@@ -2502,6 +2523,13 @@ export function Home() {
         label: t('copyProjectPath'),
         action: () => void navigator.clipboard.writeText(root),
       })
+    } else {
+      // 未绑定文件夹的项目同语义：菜单里也能选目录绑定（与行尾图标一致）
+      items.push({
+        key: 'files',
+        label: t('viewFiles'),
+        action: () => bindProjectFiles(proj.id, proj.name),
+      })
     }
     items.push({ divider: true, key: 'd1' })
     items.push({
@@ -2880,9 +2908,10 @@ export function Home() {
                       <span className="proj-item-meta">
                         <span className="proj-item-count">{sessionsOf(proj.id).length}</span>
                       </span>
-                      {/* 行尾三钮：查看文件（绑定了文件夹才有）/ 新建任务 / 更多（右键同款菜单） */}
+                      {/* 行尾三钮：查看文件（每项目恒有——无文件夹的项目点击先走
+                          选目录绑定）/ 新建任务 / 更多（右键同款菜单） */}
                       <div className="proj-menu-wrap">
-                        {proj.rootPath && (
+                        {
                           <button
                             className="proj-row-btn"
                             data-tip={t('viewFiles')}
@@ -2891,13 +2920,15 @@ export function Home() {
                               event.stopPropagation()
                               // 2026-11-19：查看文件从 OS revealPath 改为右侧项目文件树
                               // （zcode-ref ProjectNodeContent ListTree 同款行为）；
-                              // revealPath 仍保留在行菜单里
-                              openProjectFiles(proj.rootPath!, displayName)
+                              // revealPath 仍保留在行菜单里。2026-11-20：未绑定文件夹
+                              // 的项目图标不再隐藏——点击先选目录绑定再打开树
+                              if (proj.rootPath) openProjectFiles(proj.rootPath, displayName)
+                              else bindProjectFiles(proj.id, displayName)
                             }}
                           >
                             <TreeListTreeIcon />
                           </button>
-                        )}
+                        }
                         <button
                           className="proj-row-btn"
                           data-tip={t('newTask')}

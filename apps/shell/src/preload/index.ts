@@ -853,6 +853,9 @@ const projectApi: ProjectHomeApi = {
   async renameProject(id, name) {
     await ipcRenderer.invoke(PROJECT_CHANNELS.rename, { id, name })
   },
+  async setProjectRoot(id, rootPath) {
+    await ipcRenderer.invoke(PROJECT_CHANNELS.setRoot, { id, rootPath })
+  },
   async deleteProject(id) {
     await ipcRenderer.invoke(PROJECT_CHANNELS.delete, { id })
   },

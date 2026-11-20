@@ -8978,6 +8978,11 @@ export function registerProjectIpc(): void {
     getProjectStore().renameProject(args.id, args.name)
   })
 
+  /** Bind a project to a local folder (查看文件 on a folder-less project) */
+  ipcMain.handle('project:setRoot', (_event, args: { id: string; rootPath: string }) => {
+    getProjectStore().setProjectRoot(args.id, args.rootPath)
+  })
+
   /** Soft-delete a project */
   ipcMain.handle('project:delete', (_event, args: { id: string }) => {
     getProjectStore().deleteProject(args.id)

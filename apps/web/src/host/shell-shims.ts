@@ -1009,6 +1009,7 @@ export function installShellShims(): void {
     listProjects: async () => [],
     createProject: async () => degraded('chaOfficeProject.createProject'),
     renameProject: async () => degraded('chaOfficeProject.renameProject'),
+    setProjectRoot: async () => degraded('chaOfficeProject.setProjectRoot'),
     deleteProject: async () => degraded('chaOfficeProject.deleteProject'),
     moveFile: async () => degraded('chaOfficeProject.moveFile'),
     listProjectFiles: async () => [],

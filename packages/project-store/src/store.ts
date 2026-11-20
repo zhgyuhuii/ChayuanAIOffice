@@ -1165,6 +1165,32 @@ export class ProjectStore {
   }
 
   /**
+   * Binds a project to a local folder (the 查看文件 icon's twin of the P4
+   * create-time rootPath: a project created without a folder — or the default
+   * project — gains one the first time its files are opened from the tree).
+   * Same double write as renameProject: project.json + the index entry.
+   */
+  setProjectRoot(id: string, rootPath: string): void {
+    const path = rootPath.trim()
+    if (!path || !existsSync(path) || !statSync(path).isDirectory()) {
+      throw new Error(`Project folder does not exist: ${rootPath}`)
+    }
+    const now = nowIso()
+    const proj = this.readProject(id)
+    if (!proj) throw new Error(`Project does not exist: ${id}`)
+    proj.rootPath = path
+    proj.updatedAt = now
+    this.writeProject(proj)
+    const index = this.readIndex()
+    const entry = index.projects.find((p) => p.id === id)
+    if (entry) {
+      entry.rootPath = path
+      entry.updatedAt = now
+    }
+    this.writeIndex(index)
+  }
+
+  /**
    * Soft-deletes a project:
    * 1. Move each of its files' chats into the default project, so the transcript
    *    follows the file instead of staying behind in the trashed directory

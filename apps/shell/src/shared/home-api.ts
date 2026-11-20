@@ -880,6 +880,8 @@ export interface ProjectHomeApi {
   createProject(name: string, rootPath?: string): Promise<ProjectSummaryEntry>
   /** rename a project */
   renameProject(id: string, name: string): Promise<void>
+  /** bind a project to a local folder (查看文件 on a folder-less project) */
+  setProjectRoot(id: string, rootPath: string): Promise<void>
   /** soft-delete a project */
   deleteProject(id: string): Promise<void>
   /** move a file into the given project */
@@ -1068,6 +1070,7 @@ export const PROJECT_CHANNELS = {
   create: 'project:create',
   pickFolder: 'project:pickFolder',
   rename: 'project:rename',
+  setRoot: 'project:setRoot',
   delete: 'project:delete',
   moveFile: 'project:moveFile',
   timeline: 'project:timeline',
