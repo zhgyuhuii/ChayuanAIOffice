@@ -24,6 +24,12 @@ function isWithin(dir: string, root: string): boolean {
   return dir === root || dir.startsWith(`${root}/`) || dir.startsWith(`${root}\\`)
 }
 
+/** the picked folder's own name doubles as the project name when the user
+ *  leaves the name input empty (the dialog only needs one identity source) */
+function defaultNameFromDir(dir: string): string {
+  return dir.replace(/[\\/]+$/, '').split(/[\\/]/).pop()?.trim() || ''
+}
+
 export function ProjectCreationDialog({
   onClose,
   onCreated,
@@ -85,7 +91,7 @@ export function ProjectCreationDialog({
   }, [currentDir])
 
   const submit = async () => {
-    const trimmed = name.trim()
+    const trimmed = name.trim() || (currentDir ? defaultNameFromDir(currentDir) : '')
     if (!trimmed || busy) return
     if (typeof window.chaOfficeProject?.createProject !== 'function') return
     setBusy(true)
@@ -141,7 +147,9 @@ export function ProjectCreationDialog({
             ref={nameRef}
             className="zc-input"
             value={name}
-            placeholder={t('zcProjNamePlaceholder')}
+            placeholder={
+              currentDir && !name ? defaultNameFromDir(currentDir) : t('zcProjNamePlaceholder')
+            }
             onChange={(event) => setName(event.target.value)}
             onKeyDown={(event) => {
               if (event.key === 'Enter') void submit()
@@ -208,7 +216,7 @@ export function ProjectCreationDialog({
           </button>
           <button
             className="zc-btn zc-btn-primary"
-            disabled={!name.trim() || busy}
+            disabled={!(name.trim() || (currentDir && defaultNameFromDir(currentDir))) || busy}
             onClick={() => void submit()}
           >
             {t('newProject')}
