@@ -103,12 +103,18 @@ const winArch = winArm64 ? 'arm64' : 'x64'
 // second electron-builder pass (cross sidecar staged from the zigbuild
 // target dir). Default follows the host arch like before; the mac-host
 // release pipeline runs the arm64 pass plain and this one for x64.
-const linuxArch =
+// linuxArm64 is the SINGLE arch source of truth (pack targets AND sidecar
+// candidate below): deriving the sidecar arch separately from the env var
+// only once shipped an arm64 package with the x64 sidecar inside — the
+// plain arm64 pass on an arm64 mac host packed arm64 (host arch) while the
+// sidecar pick still looked at x86_64, and the ELF guard validated the same
+// wrong expectation, so nothing caught it (1.0.19, caught by post-pack
+// e_machine verification).
+const linuxArm64 =
   process.env.CHAOFFICE_LINUX_X64 === '1'
-    ? 'x64'
+    ? false
     : process.env.GENOFFICE_LINUX_ARM64 === '1' || process.arch === 'arm64'
-      ? 'arm64'
-      : 'x64'
+const linuxArch = linuxArm64 ? 'arm64' : 'x64'
 const winSidecarTarget = winArm64 ? 'aarch64-pc-windows-msvc' : 'x86_64-pc-windows-gnu'
 // Where the release pipeline puts the sidecar: an explicit cross-compilation
 // triple (CI builds it that way). A Windows contributor's plain
@@ -151,7 +157,6 @@ const WIN_CLIPBOARD_HELPER =
 // beforePack checks the ELF machine type either way, because
 // electron-builder exits 0 on a missing/odd extraResources source and would
 // otherwise ship Sheets dead on every install.
-const linuxArm64 = process.env.GENOFFICE_LINUX_ARM64 === '1'
 const linuxSidecarTarget = linuxArm64 ? 'aarch64-unknown-linux-gnu' : 'x86_64-unknown-linux-gnu'
 // Mirrors the Windows candidate list above: the explicit triple first, then
 // cargo's plain host-native output — but only when the host really is the
