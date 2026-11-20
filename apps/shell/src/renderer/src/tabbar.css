@@ -394,38 +394,42 @@ body.overlay-title-bar .tab-bar-drag-spacer {
   padding-top: 40px;
 }
 
-/* While a document tab is active the home tree stays painted in the strip a
- * document view leaves open: clip-path stops painting the covered rest so home
- * can't ghost through the editors' translucent vibrancy regions. The strip
- * width rides on --tree-width (set live by TabBar from home-layout.sidebarWidth
- * and mirrored to the main process inset over setTreeWidth IPC), so a user-
- * resized tree stays fully visible beside the editor — with its divider and
- * drag handle, which a stale hardcoded clip used to cut off. 232px fallback =
- * home-layout SIDEBAR_DEFAULT. The right side is the files pane's twin strip
- * (--files-width, mirrored over setFilesInset alongside the main process's
- * right inset; 0px when the pane is collapsed). A shell modal (settings,
- * html.chaoffice-shell-modal set by Home's settings funnel) frees the whole
- * window — the main process hides the covering editor view — so the clip must
- * drop or the dialog would still be cut at the strip. */
+/* While a document tab is active the home tree and the right files pane stay
+ * painted in the strips the document view leaves open (main-process / web
+ * layer insets by --tree-width left and --files-width right). The covered
+ * middle must not ghost through the editors' translucent vibrancy regions:
+ * the home root goes transparent and the chat pane stops painting —
+ * visibility:hidden keeps the flex layout intact (the covered layout never
+ * reflows), while the sidebar and the files pane paint their own surface.
+ * A single polygon() can't express the two-strips-with-a-hole shape (CSS
+ * clip-path polygons are one ring; an 8-point ring self-intersects into an
+ * hourglass that slices the tree diagonally — tried and reverted). A shell
+ * modal (settings, html.chaoffice-shell-modal set by Home's settings funnel)
+ * frees the whole window — the main process hides the covering editor view —
+ * so these hide rules must drop or the dialog would sit on a blank pane. */
 .app-frame-content.doc-active {
-  /* evenodd polygon = two visible strips (left tree + right files pane) with
-   * the editor-covered middle hollowed out — a single inset() can only keep
-   * one rectangle, so its two-sided form would clip the tree away */
-  clip-path: polygon(
-    evenodd,
-    0 0,
-    100% 0,
-    100% 100%,
-    0 100%,
-    var(--tree-width, 232px) 0,
-    calc(100% - var(--files-width, 0px)) 0,
-    calc(100% - var(--files-width, 0px)) 100%,
-    var(--tree-width, 232px) 100%
-  );
+  clip-path: none;
+  background: transparent;
 }
 
-html.chaoffice-shell-modal .app-frame-content.doc-active {
-  clip-path: none;
+.app-frame-content.doc-active .home {
+  background: transparent;
+}
+
+.app-frame-content.doc-active .sidebar {
+  background: var(--surface);
+}
+
+.app-frame-content.doc-active .chat-pane {
+  visibility: hidden;
+}
+
+html.chaoffice-shell-modal .app-frame-content.doc-active .chat-pane {
+  visibility: visible;
+}
+
+html.chaoffice-shell-modal .app-frame-content.doc-active .home {
+  background: var(--surface);
 }
 
 /* ── Dark mode tab bar overrides ─────────────────────────── */
