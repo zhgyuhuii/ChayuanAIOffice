@@ -107,7 +107,7 @@ export function readSkillBody(path: string): string {
   return fm?.body ?? ''
 }
 
-const MAX_IMPORT_BYTES = 10 * 1024 * 1024
+const MAX_IMPORT_BYTES = 1024 * 1024 * 1024
 
 /**
  * A symlink is refused rather than dereferenced: `cpSync` without
@@ -150,7 +150,7 @@ function inspectSkillDir(dir: string): void {
       }
       total += size
       if (total > MAX_IMPORT_BYTES) {
-        throw new Error('the skill is larger than the 10 MB import cap')
+        throw new Error('the skill is larger than the 1 GB import cap')
       }
     }
   }
@@ -217,7 +217,7 @@ export function importSkillMd(mdPath: string, userDataDir: string): FoundSkill {
  */
 export function importMdBytes(fileName: string, bytes: Buffer, userDataDir: string): FoundSkill {
   if (bytes.length > MAX_IMPORT_BYTES) {
-    throw new Error('the skill is larger than the 10 MB import cap')
+    throw new Error('the skill is larger than the 1 GB import cap')
   }
   const text = bytes.toString('utf8')
   const fm = parseSkillFrontmatter(text)
@@ -253,7 +253,7 @@ function inflateWithin(entry: JSZip.JSZipObject, limit: number): Promise<Buffer>
         if (size > limit) {
           stream.pause()
           stream.removeAllListeners('data')
-          reject(new Error('the skill is larger than the 10 MB import cap'))
+          reject(new Error('the skill is larger than the 1 GB import cap'))
           return
         }
         chunks.push(chunk)
@@ -316,7 +316,7 @@ function writeSkillFiles(
     for (const f of files) {
       total += f.bytes.length
       if (total > MAX_IMPORT_BYTES) {
-        throw new Error('the skill is larger than the 10 MB import cap')
+        throw new Error('the skill is larger than the 1 GB import cap')
       }
       const rel = f.name.split('/').join(sep)
       const target = join(scratch, rel)

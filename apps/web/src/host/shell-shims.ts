@@ -950,7 +950,7 @@ export function installShellShims(): void {
         // names the skill after the picked directory, like the desktop import
         const rel = (f as File & { webkitRelativePath?: string }).webkitRelativePath || f.name
         total += f.size
-        if (total > 10 * 1024 * 1024) throw new Error('the skill is larger than the 10 MB import cap')
+        if (total > 1024 * 1024 * 1024) throw new Error('the skill is larger than the 1 GB import cap')
         payloads.push({ path: rel, bytesB64: await fileToB64(f) })
       }
       return skillsJson('ai/skills/import/folder', {

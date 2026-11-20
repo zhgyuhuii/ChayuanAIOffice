@@ -67,8 +67,9 @@ export function buildServer(options: ServerOptions = {}): BuiltServer {
 
   // 默认 1MiB 装不下首页对话历史——生成的图片以 base64 数据 URL 留在会话里，
   // 带图会话的下一轮 /ai/stream 请求体轻松超限 → 413（桌面 IPC 形态无此问题，
-  // dsh/web 形态必现）。64MiB 与编辑器附件同量级。
-  const app = Fastify({ logger: false, bodyLimit: 64 * 1024 * 1024 })
+  // dsh/web 形态必现）。64MiB 与编辑器附件同量级；2GiB 给技能导入让路
+  // （store 限额 1 GB，base64 后 ~1.41 GB，见 skills-routes MAX_BODY_BYTES）。
+  const app = Fastify({ logger: false, bodyLimit: 2 * 1024 * 1024 * 1024 })
 
   app.get('/healthz', async () => ({ ok: true, ts: new Date().toISOString() }))
 

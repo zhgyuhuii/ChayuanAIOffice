@@ -25,9 +25,12 @@ vi.mock('node:fs', async (importOriginal) => {
   }
 })
 import {
+  closeSync,
   existsSync,
+  ftruncateSync,
   mkdirSync,
   mkdtempSync,
+  openSync,
   readdirSync,
   rmSync,
   symlinkSync,
@@ -189,7 +192,11 @@ describe('importSkillDir', () => {
   it('refuses a skill over the import size cap', () => {
     const { save, src, cleanup } = scaffold({}, { heavy: SKILL('heavy', 'A docx thing') })
     mkdirSync(join(src, 'heavy', 'corpus'), { recursive: true })
-    writeFileSync(join(src, 'heavy', 'corpus', 'big.bin'), Buffer.alloc(11 * 1024 * 1024, 0))
+    // a sparse file: statSync.size reads the logical 1 GB + 1, no real bytes
+    // are written, so the cap check bites without the test holding gigabytes
+    const big = openSync(join(src, 'heavy', 'corpus', 'big.bin'), 'w')
+    ftruncateSync(big, 1024 * 1024 * 1024 + 1)
+    closeSync(big)
     expect(() => importSkillDir(join(src, 'heavy'), save)).toThrow('import cap')
     expect(existsSync(join(save, 'skills', 'heavy'))).toBe(false)
     cleanup()
@@ -333,14 +340,15 @@ describe('importSkillZip', () => {
     cleanup()
   })
 
-  it('refuses a zip over the import cap and leaves no scratch behind', async () => {
+  it('imports a zip past the old 10 MB cap (limit is now 1 GB)', async () => {
     const { root, save, cleanup } = scaffold()
     const zip = await zipOf(
       { 'heavy/SKILL.md': SKILL('heavy', 'docx'), 'heavy/big.bin': Buffer.alloc(11 * 1024 * 1024) },
       join(root, 'heavy.zip'),
     )
-    await expect(importSkillZip(zip, save)).rejects.toThrow('import cap')
-    expect(readdirSync(join(save, 'skills'))).toEqual([])
+    const skill = await importSkillZip(zip, save)
+    expect(skill.name).toBe('heavy')
+    expect(existsSync(join(save, 'skills', 'heavy', 'big.bin'))).toBe(true)
     cleanup()
   })
 

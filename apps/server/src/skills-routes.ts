@@ -37,7 +37,7 @@ export interface SkillsRoutesOptions {
   recommendedDir?: string
 }
 
-const MAX_BODY_BYTES = 12 * 1024 * 1024 // base64 upload ceiling (~9 MB binary; store cap is 10 MB)
+const MAX_BODY_BYTES = Math.round((1024 * 1024 * 1024 * 4) / 3) // base64 upload ceiling: 1 GB binary inflates to ~1.41 GB of base64; keep a little headroom over the store's 1 GB cap
 const MAX_FILE_COUNT = 2000
 /** mirrors the desktop's ai:skill-text clip (user-cli MAX_STD_CHARS) */
 const MAX_TEXT_CHARS = 32_000
@@ -189,7 +189,7 @@ export function attachSkillsRoutes(app: FastifyInstance, options: SkillsRoutesOp
           return reply.code(400).send({ error: 'the folder came through empty' })
         }
         if (files.length > MAX_FILE_COUNT) {
-          return reply.code(400).send({ error: 'the skill is larger than the 10 MB import cap' })
+          return reply.code(400).send({ error: 'the folder has too many files to import' })
         }
         return webify(
           importDirBytes(
