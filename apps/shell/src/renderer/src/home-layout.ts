@@ -41,6 +41,12 @@ export const SIDEBAR_MAX = 420
 // setTreeWidth IPC so document views keep their inset
 const SIDEBAR_DEFAULT = 264
 
+// fixed width of the home files pane (right drawer); must equal the CSS width
+// in packages/ui zcode-theme.css (.home-files-pane) and the main process's
+// FILES_PANE_WIDTH — all three feed the document views' right inset, so a
+// drift would leave the pane partly covered (or a gap) beside an editor
+export const FILES_PANE_WIDTH = 280
+
 export function clampSidebarWidth(w: number): number {
   return Math.round(Math.min(Math.max(w, SIDEBAR_MIN), SIDEBAR_MAX))
 }

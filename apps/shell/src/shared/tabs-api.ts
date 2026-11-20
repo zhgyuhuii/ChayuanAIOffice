@@ -124,6 +124,13 @@ export interface TabsApi {
    */
   setTreeWidth(px: number): void
   /**
+   * fire-and-forget: show/hide the home files pane (right drawer) beside
+   * document tabs — the right-side twin of setTreeInset. When on, the main
+   * process insets every document WebContentsView by the pane's width so the
+   * pane (part of the shell DOM the views otherwise cover) stays visible.
+   */
+  setFilesInset(visible: boolean): void
+  /**
    * fire-and-forget: a shell modal (settings) needs the whole window. Shell
    * DOM always paints beneath the editor WebContentsViews, so the main
    * process hides the active editor view for the modal's lifetime.
@@ -154,6 +161,7 @@ export const TABS_CHANNELS = {
   chromePressed: 'tabs:chrome-pressed',
   treeInset: 'tabs:tree-inset',
   treeWidth: 'tabs:tree-width',
+  filesInset: 'tabs:files-inset',
   shellModal: 'tabs:shell-modal',
   startRename: 'tabs:start-rename',
 } as const

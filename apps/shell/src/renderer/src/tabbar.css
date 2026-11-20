@@ -401,12 +401,27 @@ body.overlay-title-bar .tab-bar-drag-spacer {
  * and mirrored to the main process inset over setTreeWidth IPC), so a user-
  * resized tree stays fully visible beside the editor — with its divider and
  * drag handle, which a stale hardcoded clip used to cut off. 232px fallback =
- * home-layout SIDEBAR_DEFAULT. A shell modal (settings,
+ * home-layout SIDEBAR_DEFAULT. The right side is the files pane's twin strip
+ * (--files-width, mirrored over setFilesInset alongside the main process's
+ * right inset; 0px when the pane is collapsed). A shell modal (settings,
  * html.chaoffice-shell-modal set by Home's settings funnel) frees the whole
  * window — the main process hides the covering editor view — so the clip must
  * drop or the dialog would still be cut at the strip. */
 .app-frame-content.doc-active {
-  clip-path: inset(0 calc(100% - var(--tree-width, 232px)) 0 0);
+  /* evenodd polygon = two visible strips (left tree + right files pane) with
+   * the editor-covered middle hollowed out — a single inset() can only keep
+   * one rectangle, so its two-sided form would clip the tree away */
+  clip-path: polygon(
+    evenodd,
+    0 0,
+    100% 0,
+    100% 100%,
+    0 100%,
+    var(--tree-width, 232px) 0,
+    calc(100% - var(--files-width, 0px)) 0,
+    calc(100% - var(--files-width, 0px)) 100%,
+    var(--tree-width, 232px) 100%
+  );
 }
 
 html.chaoffice-shell-modal .app-frame-content.doc-active {

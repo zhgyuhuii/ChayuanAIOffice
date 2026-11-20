@@ -559,6 +559,35 @@ describe('home tree inset', () => {
     })
   })
 
+  it('setFilesInset insets the view from the right (files pane visible)', () => {
+    manager.openDocsTab()
+    const view = lastCreatedView(createDocsView)
+    manager.setFilesInset(true)
+    expect(view.setBounds).toHaveBeenLastCalledWith({
+      x: TREE_SIDEBAR_WIDTH,
+      y: TAB_STRIP_HEIGHT,
+      width: WINDOW_WIDTH - TREE_SIDEBAR_WIDTH - 280,
+      height: WINDOW_HEIGHT - TAB_STRIP_HEIGHT,
+    })
+  })
+
+  it('setFilesInset(false) restores the full width and skips redundant updates', () => {
+    manager.openDocsTab()
+    const view = lastCreatedView(createDocsView)
+    manager.setFilesInset(true)
+    manager.setFilesInset(false)
+    expect(view.setBounds).toHaveBeenLastCalledWith({
+      x: TREE_SIDEBAR_WIDTH,
+      y: TAB_STRIP_HEIGHT,
+      width: WINDOW_WIDTH - TREE_SIDEBAR_WIDTH,
+      height: WINDOW_HEIGHT - TAB_STRIP_HEIGHT,
+    })
+    view.setBounds.mockClear()
+
+    manager.setFilesInset(false)
+    expect(view.setBounds).not.toHaveBeenCalled()
+  })
+
   it('fullscreen bleed still covers the whole window while the tree is visible', () => {
     manager.openSlidesTab()
     const view = lastCreatedView(createSlidesView)

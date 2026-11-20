@@ -4,7 +4,7 @@ import type { TabsApi, TabSummary, WindowControlsApi } from '../../shared/tabs-a
 import { TEAR_OFF_SLACK, insertionIndexForX, isBeyondBand } from '../../shared/tab-drag-geometry'
 import { notifyFilesChanged } from './file-events'
 import { useI18n } from './locale'
-import { getHomeLayout, onHomeLayoutChange, setHomeLayout } from './home-layout'
+import { FILES_PANE_WIDTH, getHomeLayout, onHomeLayoutChange, setHomeLayout } from './home-layout'
 import tabIconDocx from '@chaoffice/ui/file-tiles/file-docx.svg'
 import tabIconXlsx from '@chaoffice/ui/file-tiles/file-xlsx.svg'
 import tabIconPptx from '@chaoffice/ui/file-tiles/file-pptx.svg'
@@ -355,7 +355,9 @@ export function TabBar() {
   // (the sidebar itself is the shell document, always rendered underneath).
   // The same width feeds --tree-width for tabbar.css's .doc-active clip-path —
   // it must track live or a user-resized strip gets cut at the stale default,
-  // taking the divider and drag handle with it.
+  // taking the divider and drag handle with it. The right-side files pane gets
+  // the same treatment (--files-width + setFilesInset) so it also stays
+  // visible beside an editor instead of hiding under the view.
   useEffect(() => {
     if (!('chaOfficeTabs' in window)) return
     const send = (): void => {
@@ -365,6 +367,11 @@ export function TabBar() {
       document.documentElement.style.setProperty(
         '--tree-width',
         layout.leftCollapsed ? '0px' : `${layout.sidebarWidth}px`,
+      )
+      window.chaOfficeTabs.setFilesInset?.(!layout.rightCollapsed)
+      document.documentElement.style.setProperty(
+        '--files-width',
+        layout.rightCollapsed ? '0px' : `${FILES_PANE_WIDTH}px`,
       )
     }
     send()

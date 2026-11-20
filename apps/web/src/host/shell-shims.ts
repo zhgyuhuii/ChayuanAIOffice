@@ -352,6 +352,9 @@ export function installShellShims(): void {
     // the settings dialog's lifetime so the covering editor layer hides.
     setTreeInset: () => {},
     setTreeWidth: () => {},
+    // right pane twin; the web tab-manager reads home-layout.rightCollapsed
+    // directly (same as the left tree), so this only keeps the contract
+    setFilesInset: () => {},
     setShellModalOpen: (open: boolean) => tabManager.setModalOpen(open),
   }
 

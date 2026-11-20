@@ -1088,6 +1088,9 @@ const tabsApi: TabsApi = {
   setTreeWidth(px) {
     ipcRenderer.send(TABS_CHANNELS.treeWidth, px)
   },
+  setFilesInset(visible) {
+    ipcRenderer.send(TABS_CHANNELS.filesInset, visible)
+  },
   setShellModalOpen(open) {
     ipcRenderer.send(TABS_CHANNELS.shellModal, open)
   },

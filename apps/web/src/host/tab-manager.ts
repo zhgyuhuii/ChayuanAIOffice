@@ -5,7 +5,11 @@
  * Home stays pinned at index 0, exactly like the Electron strip.
  */
 
-import { getHomeLayout, onHomeLayoutChange } from '../../../shell/src/renderer/src/home-layout'
+import {
+  FILES_PANE_WIDTH,
+  getHomeLayout,
+  onHomeLayoutChange,
+} from '../../../shell/src/renderer/src/home-layout'
 import bootLogoUrl from '../assets/boot-logo.png'
 
 export type TabKind = 'home' | 'docs' | 'sheets' | 'slides' | 'pdf' | 'markdown' | 'html'
@@ -80,13 +84,17 @@ export class TabManager {
       const top = Math.max(r.top, barBottom)
       // keep the home tree strip visible beside the editor, mirroring the
       // main-process WebContentsView inset: the layer starts right of the
-      // sidebar (dragging the splitter re-syncs live via onHomeLayoutChange)
+      // sidebar (dragging the splitter re-syncs live via onHomeLayoutChange).
+      // Right twin: the home files pane (right drawer) gets the same
+      // treatment, so it also stays visible instead of hiding under the
+      // layer — the layer is opaque and would cover the shell DOM pane.
       const layout = getHomeLayout()
       const inset = layout.leftCollapsed ? 0 : layout.sidebarWidth
+      const rightInset = layout.rightCollapsed ? 0 : FILES_PANE_WIDTH
       Object.assign(this.layer.style, {
         top: `${top}px`,
         left: `${r.left + inset}px`,
-        width: `${Math.max(0, r.width - inset)}px`,
+        width: `${Math.max(0, r.width - inset - rightInset)}px`,
         height: `${Math.max(0, r.bottom - top)}px`,
       })
     }

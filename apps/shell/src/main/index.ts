@@ -7623,6 +7623,9 @@ function registerTabsIpc(): void {
   ipcMain.on(TABS_CHANNELS.treeWidth, (_event, px: unknown) => {
     if (typeof px === 'number' && Number.isFinite(px)) tabManager?.setTreeWidth(px)
   })
+  ipcMain.on(TABS_CHANNELS.filesInset, (_event, visible: unknown) => {
+    tabManager?.setFilesInset(visible === true)
+  })
   ipcMain.on(TABS_CHANNELS.shellModal, (_event, open: unknown) => {
     tabManager?.setShellModalOpen(open === true)
   })

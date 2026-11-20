@@ -94,6 +94,9 @@ interface TabRecord {
 /** default home sidebar width (home.css .sidebar); the renderer mirrors its
  *  live width over setTreeWidth, so this is only the pre-first-message value */
 const TREE_SIDEBAR_DEFAULT = 232
+/** fixed width of the home files pane (right drawer, packages/ui
+ *  zcode-theme.css .home-files-pane); no splitter, so no mirror channel */
+const FILES_PANE_WIDTH = 280
 const HOME_ID = 'home'
 
 /**
@@ -119,6 +122,12 @@ export class TabManager {
   private treeInset = true
   /** live home tree strip width (renderer mirrors drags over setTreeWidth) */
   private treeWidth = TREE_SIDEBAR_DEFAULT
+  /** home files pane (right drawer) visible beside document tabs; the shell
+   *  renderer mirrors the persisted rightCollapsed flag over setFilesInset
+   *  (default: hidden). Width is fixed (no splitter) and must equal the CSS
+   *  width in packages/ui zcode-theme.css (.home-files-pane). */
+  private filesInset = false
+  private readonly filesWidth = FILES_PANE_WIDTH
   /** a shell modal (settings) has the window: the active editor view is hidden
    *  because shell DOM always paints beneath WebContentsViews */
   private shellModalOpen = false
@@ -236,10 +245,14 @@ export class TabManager {
     // home tree inset (local dock architecture) applies on top.
     const strip = tabStripHeight(this.uiScale())
     const x = this.treeInset ? this.treeWidth : 0
+    // right twin of the tree inset: keep the home files pane visible beside
+    // document tabs (same architecture — the pane is shell DOM the view
+    // otherwise covers; the renderer clips home to match via .doc-active)
+    const right = this.filesInset ? this.filesWidth : 0
     return {
       x,
       y: strip,
-      width: Math.max(0, width - x),
+      width: Math.max(0, width - x - right),
       height: Math.max(0, height - strip),
     }
   }
@@ -256,6 +269,15 @@ export class TabManager {
   setTreeWidth(px: number): void {
     if (!Number.isFinite(px) || px === this.treeWidth) return
     this.treeWidth = px
+    this.layout()
+  }
+
+  /** show/hide the home files pane beside document tabs (renderer-relayed
+   *  home-layout rightCollapsed, TabBar toggle + project-row 查看文件);
+   *  re-fits the active view immediately */
+  setFilesInset(visible: boolean): void {
+    if (this.filesInset === visible) return
+    this.filesInset = visible
     this.layout()
   }
 
