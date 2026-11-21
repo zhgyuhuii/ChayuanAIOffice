@@ -4459,6 +4459,23 @@ function folderRootPaths(): string[] {
   return [defaultSaveDir(), ...extraFolderRoots()]
 }
 
+/** 项目 rootPath 集合：右侧项目文件树（scopeRoot 钉根）列出的是项目文件夹的
+ *  内容——rootPath 不在 folderRoots 信任集里（新建项目可绑定 folderRoots 之外的
+ *  本地文件夹），listFolder/建改移等通道必须在这里放行，否则钉根树永远空
+ *  （2026-11-21 用户报告修复）。ProjectStore 按需实例化沿主进程既有惯例，
+ *  project.json 很小，树操作频率下开销可忽略。 */
+function projectRootPaths(): string[] {
+  try {
+    const store = new ProjectStore(app.getPath('userData'))
+    return store
+      .listProjects()
+      .map((p) => p.rootPath)
+      .filter((p): p is string => typeof p === 'string' && p.length > 0)
+  } catch {
+    return []
+  }
+}
+
 function fileTargetSources(): FileTargetSources {
   return {
     insideAnyRoot: (p) => insideAnyRoot(p),
@@ -4474,7 +4491,10 @@ function fileTargetSources(): FileTargetSources {
 }
 
 function insideAnyRoot(path: string): boolean {
-  return folderRootPaths().some((root) => isInsideRoot(root, path))
+  return (
+    folderRootPaths().some((root) => isInsideRoot(root, path)) ||
+    projectRootPaths().some((root) => isInsideRoot(root, path))
+  )
 }
 
 /** Whether the home UI can legitimately be showing this path: the folder
@@ -4671,7 +4691,9 @@ const SEARCH_EXT_FAMILY: Record<string, readonly string[]> = {
 
 /** one recursive watcher per tree root; follows the save-folder setting and the added folders */
 function ensureFolderWatchers(): void {
-  const wanted = new Set(folderRootPaths().filter((root) => existsSync(root)))
+  const wanted = new Set(
+    [...folderRootPaths(), ...projectRootPaths()].filter((root) => existsSync(root)),
+  )
   for (const [root, watcher] of folderWatchers) {
     if (wanted.has(root) && watcher.active) continue
     watcher.close()

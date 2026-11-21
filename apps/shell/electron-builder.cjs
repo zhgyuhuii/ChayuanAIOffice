@@ -52,6 +52,10 @@ function hasRpmbuild() {
 }
 const { closeSync, existsSync, openSync, readFileSync, readSync, rmSync, writeFileSync } = require('node:fs')
 const { join } = require('node:path')
+// URL comes from node:url rather than the global so the config stays
+// testable: the vitest sandboxes run this file in a bare VM context where
+// the WHATWG URL global does not exist (normalizeHttpsBaseUrl would throw).
+const { URL } = require('node:url')
 const { stageCrossSidecar, restoreHostSidecar } = require('./build/linux-sidecar-staging.cjs')
 
 function normalizeHttpsBaseUrl(name, value) {
