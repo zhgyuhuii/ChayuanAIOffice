@@ -645,6 +645,25 @@ const config = {
   // never leave a stale hard-coded pin behind (packaging would silently ship
   // the old runtime).
   electronVersion: require('electron/package.json').version,
+  // generic-provider publish config: electron-builder bakes this URL into
+  // resources/app-update.yml, which the packaged app's autoUpdater reads to
+  // find latest*.yml (see src/main/updater.ts). Without a publish config the
+  // file is never generated and every shipped build silently has NO update
+  // checker — 1.0.19 and earlier shipped that way, which is why users never
+  // saw an update prompt. The aidooo feed (downloads/office/update/) is the
+  // default channel; CHAOFFICE_UPDATE_URL can point builds at a different
+  // (e.g. staging) feed base. Local builds never auto-publish (electron-builder
+  // only publishes on --publish, and the feed yml files are uploaded by
+  // scripts/publish-update-feed.mjs).
+  publish: [
+    {
+      provider: 'generic',
+      url: normalizeHttpsBaseUrl(
+        'CHAOFFICE_UPDATE_URL',
+        process.env.CHAOFFICE_UPDATE_URL ?? 'https://aidooo.com/downloads/office/update/',
+      ),
+    },
+  ],
   directories: {
     output: process.env.BUILD_DIR || 'release',
   },
