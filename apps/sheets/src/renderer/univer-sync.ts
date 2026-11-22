@@ -5700,7 +5700,9 @@ export function cellFontTextStyle(style: WorkbookCellStyle | undefined): IStyleD
     ...(style.fontSize ? { fs: style.fontSize } : {}),
     ...(style.bold ? { bl: BooleanNumber.TRUE } : {}),
     ...(style.italic ? { it: BooleanNumber.TRUE } : {}),
-    ...(style.underline ? { ul: { s: BooleanNumber.TRUE } } : {}),
+    ...(style.underline
+      ? { ul: { s: BooleanNumber.TRUE, ...(style.underlineStyle === 'double' ? { t: 10 } : {}) } }
+      : {}),
     ...(style.strikethrough ? { st: { s: BooleanNumber.TRUE } } : {}),
     ...(style.vertAlign ? { va: baselineOffsetOf(style.vertAlign) } : {}),
     ...(style.fontColor ? { cl: { rgb: style.fontColor } } : {}),
@@ -5720,7 +5722,7 @@ export function fontTextStyleOf(s: IStyleData | null | undefined): IStyleData {
     ...(s.fs ? { fs: s.fs } : {}),
     ...(s.bl ? { bl: s.bl } : {}),
     ...(s.it ? { it: s.it } : {}),
-    ...(s.ul?.s ? { ul: { s: BooleanNumber.TRUE } } : {}),
+    ...(s.ul?.s ? { ul: { s: BooleanNumber.TRUE, ...(s.ul.t === 10 ? { t: 10 } : {}) } } : {}),
     ...(s.st?.s ? { st: { s: BooleanNumber.TRUE } } : {}),
     ...(s.va ? { va: s.va } : {}),
     ...(s.cl?.rgb ? { cl: { rgb: s.cl.rgb } } : {}),
@@ -7809,7 +7811,9 @@ export function toUniverStyle(style: WorkbookCellStyle): IStyleData {
     ...(style.fontSize ? { fs: style.fontSize } : {}),
     bl: style.bold ? BooleanNumber.TRUE : BooleanNumber.FALSE,
     it: style.italic ? BooleanNumber.TRUE : BooleanNumber.FALSE,
-    ...(style.underline ? { ul: { s: BooleanNumber.TRUE } } : {}),
+    ...(style.underline
+      ? { ul: { s: BooleanNumber.TRUE, ...(style.underlineStyle === 'double' ? { t: 10 } : {}) } }
+      : {}),
     ...(style.strikethrough ? { st: { s: BooleanNumber.TRUE } } : {}),
     ...(style.vertAlign ? { va: baselineOffsetOf(style.vertAlign) } : {}),
     // xf alignment is fully resolved in the file: an explicit non-wrap cell
