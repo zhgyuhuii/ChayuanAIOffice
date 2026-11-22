@@ -32,6 +32,7 @@ import type { AiSettingsV2, AttachmentAddResult, AttachmentMeta } from '../../sh
 import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
 import type { PmNode } from '../editor/convert'
 import { TABLE_TRAILING_SKIP } from '../editor/extensions'
+import { PERM_REGIONS_LOAD } from '../editor/perm-regions'
 import { countWords, findNumId, type NumIds } from './protocol'
 import { DOC_NAV_SCHEME, navigateToBlock, parseDocNavHref } from './doc-nav'
 import { setInactiveSelectionShown } from '../editor/inactive-selection'
@@ -1101,6 +1102,7 @@ export function AiConversationBody({
     editor
       .chain()
       .setMeta(TABLE_TRAILING_SKIP, true)
+      .setMeta(PERM_REGIONS_LOAD, true)
       .setContent(snapshot as never)
       .run()
     // The document rewound to before this turn, so this and every later
