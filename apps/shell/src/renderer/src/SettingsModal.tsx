@@ -650,6 +650,7 @@ export function SettingsModal({
   const [autoSaveOn, setAutoSaveOn] = useState(false)
   const [tabSleepOn, setTabSleepOn] = useState(true)
   const [restoreSessionOn, setRestoreSessionOn] = useState(true)
+  const [excludedFolders, setExcludedFoldersList] = useState<string[]>([])
   const [autoUpdateCheckOn, setAutoUpdateCheckOn] = useState(true)
   const [silentInstallOn, setSilentInstallOn] = useState(false)
   const [defaultApp, setDefaultApp] = useState<DefaultAppStatus | null>(null)
@@ -688,6 +689,9 @@ export function SettingsModal({
     })
     void window.chaOffice.getRestoreLastSession?.().then((on) => {
       if (alive) setRestoreSessionOn(on)
+    })
+    void window.chaOffice.getExcludedFolders?.().then((list) => {
+      if (alive) setExcludedFoldersList(list ?? [])
     })
     void window.chaOffice.getDefaultAppStatus?.().then((st) => {
       if (alive) setDefaultApp(st)
@@ -759,6 +763,18 @@ export function SettingsModal({
     void window.chaOffice.setDocumentTheme(next)
   }
 
+  const addExcludedFolder = async (): Promise<void> => {
+    const picked = await window.chaOffice.pickExcludedFolder?.()
+    if (!picked) return
+    const next = await window.chaOffice.setExcludedFolders?.([...excludedFolders, picked])
+    setExcludedFoldersList(next ?? [])
+  }
+  const removeExcludedFolder = async (folder: string): Promise<void> => {
+    const next = await window.chaOffice.setExcludedFolders?.(
+      excludedFolders.filter((p) => p !== folder),
+    )
+    setExcludedFoldersList(next ?? [])
+  }
   // 上游快照（#2000）：作者名（导出/协作者显示兜底）；失焦/回车即保存
   const commitAuthorName = () => {
     void window.chaOffice.setAuthorName?.(authorName.value).then(setAuthorName)
@@ -1156,6 +1172,39 @@ export function SettingsModal({
                     </button>
                   }
                 />
+                <div className="set-field">
+                  <div className="set-field-text">
+                    <div className="set-field-stack">
+                      <div className="set-field-label">{t('setExcludedFolders')}</div>
+                      <div className="set-field-desc">{t('setExcludedFoldersDesc')}</div>
+                    </div>
+                  </div>
+                  <button className="set-btn" onClick={() => void addExcludedFolder()}>
+                    {t('setExcludedFoldersAdd')}
+                  </button>
+                </div>
+                {excludedFolders.length === 0 ? (
+                  <div className="set-field-desc">{t('setExcludedFoldersEmpty')}</div>
+                ) : (
+                  excludedFolders.map((folder) => (
+                    <div key={folder} className="set-field">
+                      <div className="set-field-text">
+                        <div className="set-field-stack">
+                          <div className="set-field-label" title={folder}>
+                            {folder}
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        className="set-btn"
+                        aria-label={t('setExcludedFoldersAdd')}
+                        onClick={() => void removeExcludedFolder(folder)}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))
+                )}
                 <div className="set-field">
                   <div className="set-field-text">
                     <div className="set-field-stack">
