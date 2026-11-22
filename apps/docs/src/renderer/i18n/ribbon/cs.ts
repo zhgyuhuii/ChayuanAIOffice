@@ -1553,7 +1553,7 @@ export const cs = {
   ribbonChartRadar: 'Paprskový',
   ribbonChartScatter: 'Bodový',
   ribbonChartTreemap: 'Stromová mapa',
-  ribbonChartSunburst: 'Paprskový',
+  ribbonChartSunburst: 'Sluneční',
   ribbonChartHistogram: 'Histogram',
   ribbonChartPareto: 'Paretův',
   ribbonChartBoxWhisker: 'Krabicový',
