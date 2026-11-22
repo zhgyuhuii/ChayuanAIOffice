@@ -17,6 +17,7 @@ import '@chaoffice/ui/ribbon-collapse.css'
 import '@chaoffice/ui/markdown.css'
 import '@chaoffice/ui/ai-panel-prefs.css'
 import '@chaoffice/ui/ai-scope-quote.css'
+import '@chaoffice/ui/image-viewer.css'
 import '@univerjs/preset-sheets-core/lib/index.css'
 
 import { App } from './App'
