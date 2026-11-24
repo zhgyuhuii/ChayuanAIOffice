@@ -46,6 +46,9 @@ export default defineConfig({
       '@chaoffice/ui': local('../../packages/ui/src/index.ts'),
       '@chaoffice/xlsx-gateway/*': local('../../packages/xlsx-gateway/src/*'),
       '@chaoffice/ui/measurement': local('../../packages/ui/src/measurement.ts'),
+      '@chaoffice/ai-provider/custom-models': local('../../packages/ai-provider/src/custom-models.ts'),
+      '@chaoffice/ai-provider/trace': local('../../packages/ai-provider/src/trace.ts'),
+      '@chaoffice/electron-utils/program-files': local('../../packages/electron-utils/src/program-files.ts'),
     },
   },
 
@@ -56,6 +59,7 @@ export default defineConfig({
       local('../../packages/docx-engine/tests/setup-equality.ts'),
       // every package a test saves must read back as strict XML
       local('../../packages/docx-engine/tests/setup-strict-xml.ts'),
+      local('./tests/setup-dom.ts'),
     ],
     environment: 'jsdom',
     testTimeout: 20000,

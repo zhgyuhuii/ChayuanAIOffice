@@ -89,6 +89,7 @@ import { KB_CHANNELS } from '@chaoffice/ai-host/kb-channels'
 
 const desktopApi: DesktopApi = {
   getLanguage: () => ipcRenderer.invoke('app:get-language'),
+  getNumberLocale: () => ipcRenderer.invoke('sheets:get-number-locale'),
   openSourcePath: (path: string) => ipcRenderer.invoke('home:open-path', path),
   onLanguageChanged(handler) {
     const listener = (

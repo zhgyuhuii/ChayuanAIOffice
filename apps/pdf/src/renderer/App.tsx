@@ -37,6 +37,15 @@ import {
 import type { LocalMarkup, PageGeom } from './annotations'
 import { groupLineSpans } from './text-line'
 import { DRAW_COLORS, DrawLayer, cssRgb } from './DrawLayer'
+import {
+  STROKE_WIDTHS,
+  loadDrawColor,
+  loadDrawWidth,
+  saveDrawColor,
+  saveDrawWidth,
+  type DrawRgb,
+} from './draw-prefs'
+import { useHandPan } from './hand-pan'
 import { ColorPickerPopover } from './ColorPicker'
 import type { DrawTool, LocalDrawing, SavedNotePin } from './DrawLayer'
 import { NoteMarginColumn } from './NoteMargin'
@@ -50,6 +59,7 @@ import {
   visibleNoteThreads,
 } from './note-threads'
 import type { NoteInput, NoteThreadItem, SavedNoteAnnot } from './note-threads'
+import { drawingOutline, outlineHit, type SavedShapeAnnot } from './shape-hit'
 import { FormLayer } from './FormLayer'
 import {
   FormDesignLayer,
@@ -246,7 +256,6 @@ import {
   clampSidebarW,
   loadSidebarW,
   PAPER_SIZES,
-  STROKE_WIDTH,
   NOTE_MARGIN_W,
   parsePageRanges,
 } from './view-config'
@@ -297,6 +306,7 @@ import type { Bucket, Op, OpContext, PlanResult } from './edit-ops'
 import { rectsNear } from './edit-state'
 import type {
   StampConfig,
+  SavedAnnot,
   SavedMarkupAnnot,
   LocalAnnotDelete,
   LocalBlankPage,
@@ -314,6 +324,7 @@ import {
   IconStrike,
   IconEditText,
   IconInk,
+  IconEraser,
   IconRect,
   IconEllipse,
   IconArrow,
@@ -372,6 +383,8 @@ import {
   IconComments,
   IconEye,
   IconDrawColor,
+  IconHand,
+  IconLineWidth,
   RbCaret,
   IconSearch,
   IconPrint,
@@ -397,9 +410,12 @@ GlobalWorkerOptions.workerSrc = workerUrl
 
 import { RedactionLayer } from './RedactionLayer'
 import type { LocalRedaction } from './RedactionLayer'
+/** How close (display px) a click or the eraser must come to a drawn shape's stroke */
+const ERASE_REACH_PX = 8
 
 const DRAW_TOOLS = [
   { tool: 'ink' as const, icon: IconInk, key: 'drawInk' as const },
+  { tool: 'eraser' as const, icon: IconEraser, key: 'drawEraser' as const },
   { tool: 'measure' as const, icon: IconMeasure, key: 'drawMeasure' as const },
   { tool: 'rect' as const, icon: IconRect, key: 'drawRect' as const },
   { tool: 'ellipse' as const, icon: IconEllipse, key: 'drawEllipse' as const },
@@ -576,6 +592,7 @@ export default function App() {
   const [savedMarkups, setSavedMarkups] = useState<Map<number, SavedMarkupAnnot[]>>(new Map())
   /** Saved note (Text) comments per original page index, loaded in the same pass */
   const [savedNotes, setSavedNotes] = useState<Map<number, SavedNoteAnnot[]>>(new Map())
+  const [savedShapes, setSavedShapes] = useState<Map<number, SavedShapeAnnot[]>>(new Map())
   /** Active comment thread: its margin card is expanded and linked to its pin */
   const [activeNote, setActiveNote] = useState<{ origIdx: number; rootKey: string } | null>(null)
   /** Settings → General user name; the default author of new note comments */
@@ -591,6 +608,7 @@ export default function App() {
   const [convertOpen, setConvertOpen] = useState(false)
   const [convertBusy, setConvertBusy] = useState(false)
   const [drawings, setDrawings] = useState<LocalDrawing[]>([])
+  const eraseGestureRef = useRef(0)
   const drawingsRef = useRef(drawings)
   drawingsRef.current = drawings
   const [drawTool, setDrawTool] = useState<DrawTool | null>(null)
@@ -910,8 +928,14 @@ export default function App() {
   const [draftColorOpen, setDraftColorOpen] = useState(false)
   /** Colored mirror behind the transparent-text textarea; scroll-synced to it */
   const draftGhostRef = useRef<HTMLDivElement | null>(null)
-  const [drawColor, setDrawColor] = useState<[number, number, number]>(DRAW_COLORS[0]!.rgb)
+  const [drawColor, setDrawColor] = useState<DrawRgb>(() => loadDrawColor(DRAW_COLORS[0]!.rgb))
   const [colorOpen, setColorOpen] = useState(false)
+  const [drawWidth, setDrawWidth] = useState(loadDrawWidth)
+  const [widthOpen, setWidthOpen] = useState(false)
+  useEffect(() => saveDrawColor(drawColor), [drawColor])
+  useEffect(() => saveDrawWidth(drawWidth), [drawWidth])
+  const [handTool, setHandTool] = useState(false)
+  const [pageMenu, setPageMenu] = useState<{ x: number; y: number } | null>(null)
   /** Note just placed with the note tool; its content is typed into a margin draft card */
   const [noteDraft, setNoteDraft] = useState<{ origIdx: number; at: [number, number] } | null>(null)
   /** In-progress rewrite of an existing comment. Hoisted out of the margin card so a
@@ -2645,6 +2669,7 @@ export default function App() {
   useEffect(() => {
     setSavedMarkups(new Map())
     setSavedNotes(new Map())
+    setSavedShapes(new Map())
     setActiveNote(null)
     setNoteDraft(null)
   }, [doc])
@@ -2663,14 +2688,17 @@ export default function App() {
     void (async () => {
       const markupEntries: [number, SavedMarkupAnnot[]][] = []
       const noteEntries: [number, SavedNoteAnnot[]][] = []
+      const shapeEntries: [number, SavedShapeAnnot[]][] = []
       for (const origIdx of missing) {
-        const { markups: markupList, notes: noteList } = await loadSavedAnnots(doc, origIdx)
-        markupEntries.push([origIdx, markupList])
-        noteEntries.push([origIdx, noteList])
+        const loaded = await loadSavedAnnots(doc, origIdx)
+        markupEntries.push([origIdx, loaded.markups])
+        noteEntries.push([origIdx, loaded.notes])
+        shapeEntries.push([origIdx, loaded.shapes])
       }
       if (!stale) {
         setSavedMarkups((prev) => new Map([...prev, ...markupEntries]))
         setSavedNotes((prev) => new Map([...prev, ...noteEntries]))
+        setSavedShapes((prev) => new Map([...prev, ...shapeEntries]))
       }
     })()
     return () => {
@@ -2966,6 +2994,33 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [textDraft])
 
+  /** Saved shapes under a PDF-space point, topmost first, skipping ones pending deletion */
+  const savedShapesAt = (origIdx: number, px: number, py: number): SavedShapeAnnot[] => {
+    const pendingDeleted = new Set(annotDeletesRef.current.map((d) => d.annot.objNum))
+    return [...(savedShapes.get(origIdx) ?? [])]
+      .reverse()
+      .filter(
+        (a) =>
+          !pendingDeleted.has(a.objNum) && outlineHit(a.outline, px, py, ERASE_REACH_PX / scale),
+      )
+  }
+
+  /** Eraser: drop every stroke or shape under the point, pending or saved. One drag
+      is one undo step. */
+  const eraseAt = (origIdx: number, [px, py]: [number, number], start: boolean) => {
+    if (start) eraseGestureRef.current++
+    const reach = ERASE_REACH_PX / scale
+    const ops: Op[] = drawingsRef.current.flatMap((d): Op[] => {
+      if (d.input.pageIndex !== origIdx || d.formWidgetId) return []
+      const outline = drawingOutline(d.input)
+      return outline && outlineHit(outline, px, py, reach)
+        ? [{ op: 'removeDrawing', id: d.id }]
+        : []
+    })
+    for (const annot of savedShapesAt(origIdx, px, py)) ops.push({ op: 'deleteSavedAnnot', annot })
+    if (ops.length > 0) applyEditOps(ops, { coalesceKey: `erase:${eraseGestureRef.current}` })
+  }
+
   /** Markup overlays don't take pointer events (text under them must stay selectable),
    *  so a bare click on the page content hit-tests them here. Only a true click counts:
    *  a drag that produced a text selection goes to the markup bar instead. Pending
@@ -2990,6 +3045,9 @@ export default function App() {
       setSelected(selection)
     }
     const at = popupPos(e.clientX, e.clientY)
+    // Drawn shapes sit above the markups they cross, so they take the click first
+    const shape = readOnly ? undefined : savedShapesAt(origIdx, px, py)[0]
+    if (shape) return select({ kind: 'savedShape', annot: shape, ...at })
     const onPage = markups.filter((m) => m.pageIndex === origIdx)
     for (let i = onPage.length - 1; i >= 0; i--) {
       const m = onPage[i]!
@@ -4286,7 +4344,7 @@ export default function App() {
     const op: Op =
       sel.kind === 'markup'
         ? { op: 'removeMarkup', id: sel.id }
-        : sel.kind === 'savedMarkup'
+        : sel.kind === 'savedMarkup' || sel.kind === 'savedShape'
           ? { op: 'deleteSavedAnnot', annot: sel.annot }
           : sel.kind === 'drawing'
             ? { op: 'removeDrawing', id: sel.id }
@@ -6019,7 +6077,7 @@ export default function App() {
       number,
       {
         rects: [number, number, number, number][]
-        annots: (SavedMarkupAnnot | SavedNoteAnnot)[]
+        annots: SavedAnnot[]
         text: { probe: TextEditInput; rect: [number, number, number, number] }[]
       }
     >()
@@ -6771,7 +6829,9 @@ export default function App() {
     for (const d of annotDeletes) {
       if (deleted.has(d.annot.pageIndex)) continue // its whole page is already excluded
       if ('inReplyTo' in d.annot && d.annot.inReplyTo === null) deletedThreads++
-      if (d.annot.type !== 'note') deletedMarkups++
+      // a commented markup is saved note-shaped: its quads are in quadPoints
+      if ('quads' in d.annot || ('quadPoints' in d.annot && d.annot.quadPoints?.length))
+        deletedMarkups++
     }
     // scan still running: "unknown" must not read as "none" — a run started right
     // after open would otherwise never hear the file carries review feedback
@@ -7263,6 +7323,8 @@ export default function App() {
   /** Guard roots (popover panel + its trigger) for the dismissal hooks below */
   const thumbMenuRef = useRef<HTMLDivElement | null>(null)
   const drawColorWrapRef = useRef<HTMLDivElement | null>(null)
+  const drawWidthWrapRef = useRef<HTMLDivElement | null>(null)
+  const pageMenuRef = useRef<HTMLDivElement | null>(null)
   const draftColorWrapRef = useRef<HTMLSpanElement | null>(null)
   const highlightWrapRef = useRef<HTMLDivElement | null>(null)
   const opacityBtnRef = useRef<HTMLButtonElement | null>(null)
@@ -7299,6 +7361,33 @@ export default function App() {
   useDismissablePopover(colorOpen, () => setColorOpen(false), {
     inside: () => [drawColorWrapRef.current],
   })
+  useDismissablePopover(widthOpen, () => setWidthOpen(false), {
+    inside: () => [drawWidthWrapRef.current],
+  })
+  useDismissablePopover(pageMenu != null, () => setPageMenu(null), {
+    inside: () => [pageMenuRef.current],
+  })
+  useLayoutEffect(() => {
+    const el = pageMenuRef.current
+    if (!pageMenu || !el) return
+    const r = el.getBoundingClientRect()
+    const x = Math.max(0, Math.min(pageMenu.x, window.innerWidth - r.width - 4))
+    const y = Math.max(0, Math.min(pageMenu.y, window.innerHeight - r.height - 4))
+    if (x !== pageMenu.x || y !== pageMenu.y) setPageMenu({ x, y })
+  }, [pageMenu])
+  // The hand is the resting pointer: an armed tool or placement takes the press back
+  const handActive =
+    handTool &&
+    status === 'ready' &&
+    !drawTool &&
+    !editTextMode &&
+    !editImageMode &&
+    !pendingSign &&
+    !imagePick &&
+    !pendingTextInsert &&
+    !pendingStaticFill &&
+    ribbonTab !== 'formDesign'
+  useHandPan(scrollRef, handActive)
 
   // Text-edit color popover follows its draft: closes with the draft
   useEffect(() => {
@@ -8014,6 +8103,17 @@ export default function App() {
           <span>{spread === 2 ? t('singlePage') : t('twoPage')}</span>
         </button>
         <button
+          className={`rb-big${handTool ? ' active' : ''}`}
+          data-tip={t('handTool')}
+          aria-pressed={handTool}
+          onClick={() => setHandTool((v) => !v)}
+        >
+          <span className="rb-big-icon">
+            <IconHand />
+          </span>
+          <span>{t('handTool')}</span>
+        </button>
+        <button
           className={`rb-big${nightMode ? ' active' : ''}`}
           data-tip={t('nightMode')}
           onClick={() => setNightMode((v) => !v)}
@@ -8687,6 +8787,39 @@ export default function App() {
                         total: formWidgets.length,
                       })}
                     </span>
+                  </div>
+                  <div ref={drawWidthWrapRef} className="rb-drop-wrap">
+                    <button
+                      className={`rb-big${widthOpen ? ' active' : ''}`}
+                      disabled={readOnly}
+                      data-tip={t('drawWidth')}
+                      onClick={() => setWidthOpen((v) => !v)}
+                    >
+                      <span className="rb-big-icon">
+                        <IconLineWidth />
+                        <RbCaret />
+                      </span>
+                      <span>{t('drawWidth')}</span>
+                    </button>
+                    {widthOpen && (
+                      <div className="rb-drop rb-menu" role="menu">
+                        {STROKE_WIDTHS.map((w) => (
+                          <button
+                            key={w}
+                            role="menuitemradio"
+                            aria-checked={drawWidth === w}
+                            className={`rb-width-item${drawWidth === w ? ' active' : ''}`}
+                            onClick={() => {
+                              setDrawWidth(w)
+                              setWidthOpen(false)
+                            }}
+                          >
+                            <span className="rb-width-line" style={{ height: w }} />
+                            <span>{w} pt</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="ribbon-sep" />
@@ -9398,6 +9531,170 @@ export default function App() {
                           })
                         }}
                       >
+                        {!isBlankPage(origIdx) && (
+                          <PdfThumb
+                            doc={doc}
+                            pageNo={origIdx + 1}
+                            rotationDelta={rotDelta(origIdx)}
+                            visible={visibleThumbs.has(v)}
+                            rasterW={thumbRasterW}
+                          />
+                        )}
+                        {/* Pending erase ops patch the thumb too, so it tracks the canvas */}
+                        {livePreview.has(origIdx) &&
+                          (() => {
+                            const lp = livePreview.get(origIdx)!
+                            return (
+                              <img
+                                className="pdf-thumb-livepreview"
+                                src={`data:image/png;base64,${lp.png}`}
+                                alt=""
+                                style={{
+                                  left: `${(lp.clip.x / size.width) * 100}%`,
+                                  top: `${(lp.clip.y / size.height) * 100}%`,
+                                  width: `${(lp.clip.width / size.width) * 100}%`,
+                                  height: `${(lp.clip.height / size.height) * 100}%`,
+                                }}
+                              />
+                            )
+                          })()}
+                        {/* Pending edits mirror (markups/drawings/text/images/stamps) */}
+                        {visibleThumbs.has(v) &&
+                          (() => {
+                            const mk = markups.filter((m) => m.pageIndex === origIdx)
+                            const dw = drawings.filter((d) => d.input.pageIndex === origIdx)
+                            const tes = textEdits.filter((te) => te.input.pageIndex === origIdx)
+                            const tis = textInserts.filter((ti) => ti.input.pageIndex === origIdx)
+                            const ies = imageEdits.filter((ie) => ie.input.pageIndex === origIdx)
+                            const sts = stampPreview.get(origIdx) ?? []
+                            if (
+                              !mk.length &&
+                              !dw.length &&
+                              !tes.length &&
+                              !tis.length &&
+                              !ies.length &&
+                              !sts.length
+                            )
+                              return null
+                            return (
+                              <ThumbPendingOverlay
+                                geom={pageGeom(origIdx)}
+                                k={thumbRasterW / size.width}
+                                markups={mk}
+                                drawings={dw}
+                                textEdits={tes}
+                                erasedText={livePreview.get(origIdx)?.erased}
+                                textInserts={tis}
+                                imageEdits={ies}
+                                stamps={sts}
+                              />
+                            )
+                          })()}
+                      </div>
+                      <span className="pdf-thumb-no">{v + 1}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+            {(sidebar === 'thumbs' ||
+              (sidebar === 'outline' && !!outline) ||
+              sidebar === 'comments') && (
+              <div className="pdf-side-resizer" onPointerDown={startSidebarResize} />
+            )}
+            <div
+              ref={scrollRef}
+              className={`pdf-scroll${drawTool ? ' pdf-drawing' : ''}${handActive ? ' pdf-hand' : ''}${nightMode ? ' pdf-night' : ''}`}
+              onContextMenu={(e) => {
+                // a text selection or an editable keeps the native menu (Copy / Paste)
+                if (e.defaultPrevented || !window.getSelection()?.isCollapsed) return
+                if ((e.target as Element).closest?.('input, textarea, [contenteditable="true"]'))
+                  return
+                e.preventDefault()
+                setPageMenu({ x: e.clientX, y: e.clientY })
+              }}
+              onScroll={() => {
+                handleScroll()
+                setSelPopup(null)
+                setAskPop(null)
+                setSelected(null)
+                clearLineHover()
+                clearBlockHover()
+              }}
+              onMouseUp={drawTool ? undefined : handleMouseUp}
+              onClick={(e) => {
+                // Clicking anywhere that isn't an annotation clears the selection
+                // (markup overlays are pointer-transparent; when hit they stopPropagation
+                // in handlePageClick before this runs)
+                if (
+                  !(e.target as Element).closest?.(
+                    '.pdf-draw-shape, .pdf-note-pin, .pdf-stamp-preview, .pdf-textedit-preview, .pdf-textinsert-preview, .pdf-textedit-input, .pdf-imgedit-layer, .pdf-imgedit-under, .pdf-del-popup',
+                  )
+                )
+                  setSelected(null)
+                if (!(e.target as Element).closest?.('.pdf-note-pin, .pdf-note-margin')) {
+                  setActiveNote(null)
+                  // With the note tool armed a click on a page (the draw layer) is a
+                  // placement, not a dismissal; clicking anywhere else discards the draft
+                  if (drawTool !== 'note' || !(e.target as Element).closest?.('.pdf-draw-layer'))
+                    setNoteDraft(null)
+                }
+              }}
+            >
+              {rows.map((row, r) => {
+                const rowVisible = visibleRows.has(r)
+                // Comments margin geometry: pin anchors relative to the margin column,
+                // which sits one flex gap right of the row's pages
+                const rowWidths = row.map((i) => Math.floor(dispSize(i).width * scale))
+                const rowW = rowWidths.reduce((a, b) => a + b, 0) + PAGE_GAP * (row.length - 1)
+                const pageOffset = (i: number) =>
+                  rowWidths.slice(0, i).reduce((a, b) => a + b, 0) + PAGE_GAP * i
+                const pinAnchor = (
+                  pageIdxInRow: number,
+                  geom: PageGeom,
+                  at: [number, number],
+                ): [number, number] => {
+                  const [vx, vy] = pdfToView(geom, at[0], at[1])
+                  return [
+                    pageOffset(pageIdxInRow) + vx * scale + 10 - (rowW + PAGE_GAP),
+                    vy * scale - 10,
+                  ]
+                }
+                const marginThreads: NoteMarginThread[] =
+                  noteMarginOn && rowVisible
+                    ? row.flatMap((origIdx, i) =>
+                        noteThreadsOn(origIdx).map((root) => {
+                          const [pinX, pinY] = pinAnchor(i, pageGeom(origIdx), root.at)
+                          return { origIdx, root, pinX, pinY }
+                        }),
+                      )
+                    : []
+                const draftIdxInRow = noteDraft ? row.indexOf(noteDraft.origIdx) : -1
+                const marginDraft: NoteMarginDraft | null =
+                  noteDraft && draftIdxInRow >= 0
+                    ? (() => {
+                        const [pinX, pinY] = pinAnchor(
+                          draftIdxInRow,
+                          pageGeom(noteDraft.origIdx),
+                          noteDraft.at,
+                        )
+                        return {
+                          // Placement identity (PDF coords, zoom-invariant): a new pin
+                          // remounts the draft card so stale text/timestamp never carry over
+                          placementKey: `${noteDraft.origIdx}:${noteDraft.at[0]}:${noteDraft.at[1]}`,
+                          origIdx: noteDraft.origIdx,
+                          pinX,
+                          pinY,
+                          color: drawColor,
+                        }
+                      })()
+                    : null
+                return (
+                  <div key={r} ref={setRowRef(r)} data-idx={r} className="pdf-row">
+                    {row.map((origIdx) => {
+                      const size = dispSize(origIdx)
+                      const geom = pageGeom(origIdx)
+                      return (
                         <div
                           className="pdf-thumb-box"
                           style={{ aspectRatio: `${size.width} / ${size.height}` }}
@@ -10717,6 +11014,216 @@ export default function App() {
                                           top: vy * scale - 20,
                                           background: cssRgb(drawColor),
                                         }}
+                              ))}
+                              {searchOpen && (
+                                <div className="pdf-search-layer">
+                                  {activeMatches.flatMap((m, mi) =>
+                                    m.pageIndex === origIdx
+                                      ? m.rects.map((r, ri) => (
+                                          <div
+                                            key={`${mi}-${ri}`}
+                                            className={`pdf-search-hit${mi === searchCurClamped ? ' pdf-search-hit-cur' : ''}`}
+                                            style={pdfRectToCss(geom, r, scale)}
+                                          />
+                                        ))
+                                      : [],
+                                  )}
+                                </div>
+                              )}
+                              {(() => {
+                                const ocr = ocrPages.get(origIdx)
+                                return ocr ? (
+                                  <OcrTextLayer data={ocr} geom={geom} scale={scale} />
+                                ) : null
+                              })()}
+                              <MarkupOverlay
+                                markups={markups.filter((m) => m.pageIndex === origIdx)}
+                                geom={geom}
+                                scale={scale}
+                                selectedId={selected?.kind === 'markup' ? selected.id : null}
+                              />
+                              {/* Selection outline for a saved markup annotation (the markup
+                                itself is painted in the canvas raster) */}
+                              {selected?.kind === 'savedMarkup' &&
+                                selected.annot.pageIndex === origIdx &&
+                                selected.annot.quads.map((q, i) => (
+                                  <div
+                                    key={i}
+                                    className="pdf-markup pdf-markup-selected"
+                                    style={pdfRectToCss(geom, quadToRect(q), scale)}
+                                  />
+                                ))}
+                              {selected?.kind === 'savedShape' &&
+                                selected.annot.pageIndex === origIdx && (
+                                  <div
+                                    className="pdf-markup pdf-markup-selected"
+                                    style={pdfRectToCss(geom, selected.annot.rect, scale)}
+                                  />
+                                )}
+                              <DrawLayer
+                                geom={geom}
+                                scale={scale}
+                                pageWidth={size.width}
+                                pageHeight={size.height}
+                                drawings={drawings.filter((d) => d.input.pageIndex === origIdx)}
+                                savedNotes={savedNotePins(origIdx)}
+                                activeNoteKey={
+                                  activeNote?.origIdx === origIdx ? activeNote.rootKey : null
+                                }
+                                tool={readOnly ? null : drawTool}
+                                color={drawColor}
+                                strokeWidth={drawWidth}
+                                selectedId={selected?.kind === 'drawing' ? selected.id : null}
+                                selectTitle={t('removeMarkup')}
+                                noteOpenTitle={t('noteOpen')}
+                                onCommit={(input) => commitDrawing(origIdx, input)}
+                                onErase={(at, start) => eraseAt(origIdx, at, start)}
+                                onNoteAt={(at) => {
+                                  setActiveNote(null)
+                                  setNoteDraft({ origIdx, at })
+                                }}
+                                onNoteOpen={(key) => {
+                                  setNoteDraft(null)
+                                  setActiveNote((prev) =>
+                                    prev?.origIdx === origIdx && prev.rootKey === key
+                                      ? null
+                                      : { origIdx, rootKey: key },
+                                  )
+                                }}
+                                onSelect={(id, x, y) =>
+                                  setSelected({ kind: 'drawing', id, ...popupPos(x, y) })
+                                }
+                                onMove={readOnly ? undefined : moveDrawing}
+                                onResize={readOnly ? undefined : resizeDrawing}
+                              />
+                              <RedactionLayer
+                                active={
+                                  !readOnly && !redactionCopyInFlight && drawTool === 'redact'
+                                }
+                                geom={geom}
+                                scale={scale}
+                                pageWidth={size.width}
+                                pageHeight={size.height}
+                                marks={redactions.filter((mark) => mark.pageIndex === origIdx)}
+                                markLabel={t('redact')}
+                                onCommit={(rect) =>
+                                  setRedactions((prev) => [
+                                    ...prev,
+                                    { id: newId(), pageIndex: origIdx, rect },
+                                  ])
+                                }
+                                onTooSmall={() => showNotice(t('redactHint'))}
+                              />
+                              <FormDesignLayer
+                                designing={
+                                  ribbonTab === 'formDesign' && !readOnly && !formDesignPreview
+                                }
+                                preview={ribbonTab === 'formDesign' && formDesignPreview}
+                                tool={
+                                  ribbonTab === 'formDesign' && !readOnly ? formDesignTool : null
+                                }
+                                geom={geom}
+                                scale={scale}
+                                pageWidth={size.width}
+                                pageHeight={size.height}
+                                fields={designFieldsByPage.get(origIdx) ?? []}
+                                selectedIds={selectedFormFieldIdSet}
+                                onCreate={(kind, rect, keep) =>
+                                  addFormField(kind, origIdx, rect, keep)
+                                }
+                                onSelect={(ids, mode) => {
+                                  setSelectedFormFieldIds((cur) => {
+                                    if (mode === 'replace') return ids
+                                    const next = cur.filter((x) => !ids.includes(x))
+                                    for (const id of ids) if (!cur.includes(id)) next.push(id)
+                                    return next
+                                  })
+                                  setFreshFormFieldId((cur) =>
+                                    ids.length === 1 && cur === ids[0] ? cur : null,
+                                  )
+                                }}
+                                onRects={(changes) => {
+                                  const fields = designFieldsByPage.get(origIdx) ?? []
+                                  applyDesignRects(
+                                    changes.flatMap(({ id, rect }) => {
+                                      const field = fields.find((x) => x.id === id)
+                                      return field ? [{ field, rect }] : []
+                                    }),
+                                  )
+                                }}
+                                onContextMenu={(e, fieldId) =>
+                                  setFormMenu({
+                                    x: e.clientX,
+                                    y: e.clientY,
+                                    fieldId,
+                                    pageIndex: origIdx,
+                                  })
+                                }
+                              />
+                              {ribbonTab === 'formDesign' &&
+                                !formDesignPreview &&
+                                selectedDesignField &&
+                                selectedDesignField.pageIndex === origIdx &&
+                                (() => {
+                                  const f = selectedDesignField
+                                  const box = pdfRectToCss(geom, f.rect, scale)
+                                  return (
+                                    <FormFieldProps
+                                      key={f.id}
+                                      field={f}
+                                      isNew={freshFormFieldId === f.id}
+                                      style={{ left: box.left, top: box.top + box.height + 6 }}
+                                      labels={{
+                                        required: t('formDesignRequired'),
+                                        multiLine: t('formDesignMultiLine'),
+                                        defaultValue: t('formDesignDefaultValue'),
+                                        defaultChecked: t('formDesignDefaultChecked'),
+                                        remove: t('formDesignDelete'),
+                                        done: t('formDesignDone'),
+                                        cancel: t('formDesignCancel'),
+                                        existingHint: t('formDesignExistingHint'),
+                                        exportValue: t('formDesignExportValue'),
+                                        radioGroupHint: t('formDesignRadioGroupHint'),
+                                        options: t('formDesignOptions'),
+                                        dateFormat: t('formDesignDateFormat'),
+                                      }}
+                                      onPatch={(input, key) => patchDesignField(f, input, key)}
+                                      onDelete={() => deleteFormField(f.id)}
+                                      onDone={() => {
+                                        setSelectedFormFieldId(null)
+                                        setFreshFormFieldId(null)
+                                        setFormDesignDoneSave((n) => n + 1)
+                                      }}
+                                      onCancel={() => {
+                                        if (!f.existing)
+                                          applyEditOps([{ op: 'removeFormField', id: f.id }])
+                                        setSelectedFormFieldId(null)
+                                        setFreshFormFieldId(null)
+                                      }}
+                                    />
+                                  )
+                                })()}
+                              {/* Ghost pin for the note being typed into the margin draft card */}
+                              {noteDraft?.origIdx === origIdx &&
+                                (() => {
+                                  const [vx, vy] = pdfToView(geom, noteDraft.at[0], noteDraft.at[1])
+                                  return (
+                                    <div
+                                      className="pdf-note-pin pdf-note-pin-ghost"
+                                      style={{
+                                        left: vx * scale,
+                                        top: vy * scale - 20,
+                                        background: cssRgb(drawColor),
+                                      }}
+                                    >
+                                      <svg
+                                        width="11"
+                                        height="11"
+                                        viewBox="0 0 16 16"
+                                        fill="none"
+                                        stroke="#fff"
+                                        strokeWidth="1.6"
+                                        aria-hidden
                                       >
                                         <svg
                                           width="11"
@@ -10908,6 +11415,146 @@ export default function App() {
                           style={{ background: cssRgb(highlightColor) }}
                         />
                       </button>
+                    )}
+                    <button type="button" onClick={() => setOcrRun(null)}>
+                      {t('ok')}
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+            {pageMenu && (
+              <div
+                ref={pageMenuRef}
+                className="thumb-menu file-menu pdf-page-menu"
+                role="menu"
+                style={{ left: pageMenu.x, top: pageMenu.y }}
+              >
+                {[false, true].map((hand) => (
+                  <button
+                    key={String(hand)}
+                    role="menuitemradio"
+                    aria-checked={handTool === hand}
+                    onClick={() => {
+                      setHandTool(hand)
+                      setPageMenu(null)
+                    }}
+                  >
+                    <span className="pdf-page-menu-check">{handTool === hand ? '✓' : ''}</span>
+                    {t(hand ? 'handTool' : 'selectTextTool')}
+                  </button>
+                ))}
+              </div>
+            )}
+            {thumbMenu && (
+              <div
+                ref={thumbMenuRef}
+                className="thumb-menu file-menu"
+                style={{ left: thumbMenu.x, top: thumbMenu.y }}
+              >
+                {!menuInGap && (
+                  <>
+                    <button
+                      onClick={() => {
+                        rotatePage(menuOrig, -90)
+                        setThumbMenu(null)
+                      }}
+                    >
+                      {t('rotateLeft')}
+                    </button>
+                    <button
+                      onClick={() => {
+                        rotatePage(menuOrig, 90)
+                        setThumbMenu(null)
+                      }}
+                    >
+                      {t('rotateRight')}
+                    </button>
+                    <button
+                      disabled={pageCount <= 1}
+                      onClick={() => {
+                        deletePage(menuOrig)
+                        setThumbMenu(null)
+                      }}
+                    >
+                      {t('deletePage')}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setThumbMenu(null)
+                        void extractPage(menuOrig)
+                      }}
+                    >
+                      {t('extractPage')}
+                    </button>
+                  </>
+                )}
+                <button
+                  onClick={() => {
+                    setThumbMenu(null)
+                    void insertPdf(menuInsertAfter)
+                  }}
+                >
+                  {t('insertPdf')}
+                </button>
+                <button
+                  onClick={() => {
+                    setThumbMenu(null)
+                    insertBlankPage(menuInsertAfter)
+                  }}
+                >
+                  {t('insertBlankPage')}
+                </button>
+              </div>
+            )}
+            {formMenu && (
+              <div
+                ref={formMenuRef}
+                className="thumb-menu file-menu"
+                style={{ left: formMenu.x, top: formMenu.y }}
+              >
+                {formMenu.fieldId && (
+                  <>
+                    <button
+                      disabled={selectedFormFieldIds.length !== 1}
+                      onClick={() => {
+                        setFormMenu(null)
+                        setSelectedFormFieldId(formMenu.fieldId)
+                      }}
+                    >
+                      {t('formDesignProperties')}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setFormMenu(null)
+                        copySelectedFormFields()
+                      }}
+                    >
+                      {t('formDesignCopy')}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setFormMenu(null)
+                        duplicateSelectedFormFields()
+                      }}
+                    >
+                      {t('formDesignDuplicate')}
+                    </button>
+                  </>
+                )}
+                <button
+                  disabled={formClipboardRef.current.length === 0}
+                  onClick={() => {
+                    setFormMenu(null)
+                    pasteFormFields(formMenu.pageIndex)
+                  }}
+                >
+                  {t('formDesignPaste')}
+                </button>
+                {formMenu.fieldId && (
+                  <>
+                    <div className="thumb-menu-sep" />
+                    {arrangeItems.map(([how, label, min]) => (
                       <button
                         type="button"
                         className={activeMarkupTypes.has('underline') ? 'is-active' : undefined}

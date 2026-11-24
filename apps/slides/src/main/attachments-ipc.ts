@@ -289,7 +289,7 @@ export function registerAttachmentIpc(): void {
   // Clipboard-pasted images (screenshots and other bitmaps without a local path): saved to a temp file then take the regular attachment chain
   ipcMain.handle(
     'slides:files-add-pasted-image',
-    (_e, data: unknown, ext: unknown): AttachmentAddResult => {
+    (e, data: unknown, ext: unknown): AttachmentAddResult => {
       const saved = savePastedImage(data, ext)
       if ('error' in saved) {
         return {
@@ -297,6 +297,7 @@ export function registerAttachmentIpc(): void {
           rejected: [saved.error === 'too-large' ? tm('errImageTooLarge') : tm('errNotImage')],
         }
       }
+      sharedPathGrants().grant(e.sender.id, [saved.path])
       return collectAttachments([saved.path])
     },
   )

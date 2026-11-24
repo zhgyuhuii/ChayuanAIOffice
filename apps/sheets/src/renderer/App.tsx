@@ -189,6 +189,7 @@ import {
 
 import {
 } from '@chaoffice/agent-core'
+import { type WorkbookOperation } from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
 import {
   type AiSettingsV2,
 } from '@chaoffice/ai-provider/browser'
@@ -522,6 +523,7 @@ import { installNotePopupCard, type NotePopupCard } from './note-hover-card'
 import { collectNotePictures, type NotePicture, type PendingNotePicture } from './note-pictures'
 import { handleRemoveNotePicture } from './note-picture-actions'
 import { installFormulaNullResultFix } from './formula-null-result'
+import { installNumberSeparators } from './number-separators-runtime'
 import { installNumberFormatFix } from './numfmt-fix'
 import { installIfsEmptySetFix } from './ifs-empty-set'
 import { installExcel365Aggregators } from './excel-365-aggregators'
@@ -2295,6 +2297,9 @@ export function App({
       runtime,
       () => lazyWorkbookRef.current?.file.date1904 === true,
     )
+    // Decimal-comma regions: the grid, the editors and the formula bar speak
+    // the region's notation; the model stays canonical.
+    const numberSeparatorsDisposable = installNumberSeparators(runtime)
     const errorAlignDisposable = installErrorValueAlignment(runtime)
     // CELL("filename") resolves the session's on-disk path; converted
     // imports (needsSaveAs) count as never-saved, like Excel.
@@ -2616,7 +2621,12 @@ export function App({
           (id) => id === SET_RANGE_VALUES_MUTATION,
           cellValueBounds,
         )
-        if (resultSync) queueChartDataSync(resultSync.sheetId, resultSync.bounds)
+        // Only after a user edit: the recalculation on open and volatile
+        // cells must not journal a chart edit into an untouched workbook.
+        const resultState = lazyWorkbookRef.current
+        if (resultSync && (!resultState || journalSize(resultState.editJournal) > 0)) {
+          queueChartDataSync(resultSync.sheetId, resultSync.bounds)
+        }
         if (options?.fromFormula) return
         // The copy finished (or failed); a stale source must not claim a
         // later, unrelated insert-sheet.
@@ -3800,6 +3810,7 @@ export function App({
       tsvClipboardDisposable.dispose()
       formulaViewDisposable.dispose()
       formulaTextDisposable.dispose()
+      numberSeparatorsDisposable.dispose()
       formulaBarAutosizeDisposable.dispose()
       fxButtonDisposable.dispose()
       pickRelayDisposable.dispose()

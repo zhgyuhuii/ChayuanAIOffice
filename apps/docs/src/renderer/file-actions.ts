@@ -16,8 +16,8 @@ import { Editor } from '@tiptap/core'
 import { GapCursor } from '@tiptap/pm/gapcursor'
 import { history } from '@tiptap/pm/history'
 import { suggestFileName, aiPanelInitiallyOpen, shortFileError } from '@chaoffice/ui'
-import { ResolvedPos } from '@tiptap/pm/model'
-import { NodeSelection, Selection } from '@tiptap/pm/state'
+import { NodeSelection, Selection, TextSelection } from '@tiptap/pm/state'
+import { suggestFileName } from '@genoffice/ui'
 import { modelTextOf, type RedactableNode } from './ai/redact-view'
 import {
   applyPageNumType,
@@ -49,6 +49,7 @@ import {
   type HeaderFooter,
   type NoteInfo,
   type NoteProps,
+  type MailMergeMainType,
   type MathPr,
   type ParsedDocFull,
   type PropertyChanges,
@@ -60,11 +61,16 @@ import {
   type StyleUpsert,
   type ThemeColors,
   type ThemeFonts,
+  type ThemeFormat,
+  customStyleSetUpserts,
+  readDocxStylesXml,
   type WriteProtection,
   type PictureWatermarkSpec,
   type WatermarkSpec,
   type WrittenFontConversion,
-} from '@chaoffice/docx-engine'
+  type KinsokuCustom,
+  type DrawingGrid,
+} from '@genoffice/docx-engine'
 import { Dispatch, SetStateAction } from 'react'
 import { AiDocContent, OpenDocxResult, PdfInternalLink } from '../shared/ipc'
 import { twipsToPx } from './units'
@@ -76,11 +82,14 @@ import {
   type HfVariantsState,
   type PendingNumbering,
 } from './doc-state'
-import { hfSaveOptions } from './hf-sections'
+import { hfSaveOptions, withHfFieldResults } from './hf-sections'
+import { grammarHidden } from './grammar-pref'
 import { fetchDocBytes } from './doc-bytes'
 import { parseDocxOffThread } from './parse-off-thread'
 import { PHASED_APPEND } from './editor/streaming-tail-guard'
+import { setSpacingControl, spacingControlOf, type SpacingControl } from './editor/cjk-punct-shrink'
 import { PERM_REGIONS_LOAD } from './editor/perm-regions'
+import { SECTION_GUARD_PASS } from './editor/section-edit-guard'
 import { docTextLength, docWeight, openTierFor } from './large-document'
 import { documentToMarkdown } from './export-markdown'
 import { docStyleCss } from './doc-style-css'
@@ -88,6 +97,8 @@ import { setMathLimits } from './editor/math-defaults'
 import {
   hyphenationConfigOf,
   hyphenationDictFor,
+  hyphenationLangOf,
+  hyphenationStyleDicts,
   loadHyphenation,
   setHyphenation,
   type HyphenationSettings,
@@ -98,7 +109,8 @@ import { setOpenDocumentText } from './text-layout/open-document'
 import { sectionNotePropsOf, setNoteProps } from './note-format'
 import { collectHeadings } from './editor/headings'
 import { refreshGroupBoxes } from './editor/object-group'
-import { settleFieldResults } from './editor/field-results'
+import { hasWaitingPageField, settleFieldResults, type PageSource } from './editor/field-results'
+import { forgetEditPlaces } from './editor/word-keys'
 import {
   blocksToPmDoc,
   keepGroupMembersApart,
@@ -110,7 +122,8 @@ import { TABLE_TRAILING_SKIP, setLazyMediaHashes } from './editor/extensions'
 import { setStaticAsciiResolver } from './editor/protected-render'
 import { FORMAT_MARKS, serializeMarks } from './editor/caret-marks'
 import { TRACK_IGNORE } from './editor/revisions'
-import { FontConversions } from './editor/font-conversion-history'
+import { HEADING_COLLAPSE_KEEP } from './editor/heading-collapse'
+import type { FontConversions } from './editor/font-conversion-history'
 import {
   cancelPhasedContent,
   isPhasedContentPending,
@@ -144,6 +157,7 @@ import { adoptEmbeddedFonts } from './embedded-fonts'
 import { prefetchFaces } from './font-resolve'
 import { defaultEastAsiaFontFor } from './font-list'
 import { clearPrintZoom, setPrintZoom } from './print-zoom'
+import { documentKeysXml, loadDocumentKeys } from './key-layer'
 import { collectPdfInternalLinks } from './pdf-internal-links'
 import { SaveAsExportFormat } from '../shared/save-as-format'
 import { showToast } from './components/toast-bus'
@@ -219,6 +233,11 @@ export interface FileActionContext {
   setSectionHfEdits: (value: Record<string, HeaderFooter>) => void
   /** laid-out page total, written as the cached NUMPAGES result */
   pageCount?: number
+  /**
+   * the page layout while it stands for the document as it is; null otherwise (a pass is due,
+   * not the page view). `settle` runs a pass that is due first.
+   */
+  pageSource?: (settle?: boolean) => PageSource | null
   /** Link to Previous switched on per `${sectionIdx}:${kind}` */
   hfLinks: Record<string, true>
   setHfLinks: (value: Record<string, true>) => void
@@ -228,6 +247,9 @@ export interface FileActionContext {
   evenOddHfDirty: boolean
   mirrorMargins: boolean
   mirrorMarginsDirty: boolean
+  /** Hide Grammar Errors, a setting of the document as in Word */
+  hideGrammar: boolean
+  hideGrammarDirty: boolean
   /** settings.xml w:autoHyphenation as the user left it */
   autoHyphenation: boolean
   autoHyphenationDirty: boolean
@@ -237,6 +259,8 @@ export interface FileActionContext {
   setEvenOddHfDirty: (dirty: boolean) => void
   setMirrorMargins: (on: boolean) => void
   setMirrorMarginsDirty: (dirty: boolean) => void
+  setHideGrammar: (hidden: boolean) => void
+  setHideGrammarDirty: (dirty: boolean) => void
   setAutoHyphenation: (on: boolean) => void
   setAutoHyphenationDirty: (dirty: boolean) => void
   /** the finer hyphenation rules set in this session (only the fields changed); null when untouched */
@@ -259,11 +283,16 @@ export interface FileActionContext {
   fontConversions: FontConversions | null
   setFontConversions: (fonts: FontConversions | null) => void
   /** settings.xml w:characterSpacingControl as set in this session; null when untouched */
-  compressPunctEdit: boolean | null
+  spacingControlEdit: SpacingControl | null
   /** settings.xml w:strictFirstAndLastChars as set in this session; null when untouched */
   strictKinsokuEdit: boolean | null
   setStrictKinsokuEdit: (strict: boolean | null) => void
-  setCompressPunctEdit: (compress: boolean | null) => void
+  /** the custom kinsoku lists as set in this session: false = taken away, null = untouched */
+  kinsokuCustomEdit: KinsokuCustom | false | null
+  setKinsokuCustomEdit: (custom: KinsokuCustom | false | null) => void
+  drawingGridEdit: DrawingGrid | null
+  setDrawingGridEdit: (grid: DrawingGrid | null) => void
+  setSpacingControlEdit: (control: SpacingControl | null) => void
   trackMovesEdit: boolean | null
   setTrackMovesEdit: (on: boolean | null) => void
   pgNumEdit: { fmt?: string; start?: number; chapter?: PageNumberChapter | null } | null
@@ -323,6 +352,9 @@ export interface FileActionContext {
   citationStyle: CitationStyleId | null
   setCitationStyle: (value: CitationStyleId | null) => void
   setSourcesDirty: (dirty: boolean) => void
+  /** the document's own keyboard assignments were changed (Customize Keyboard) */
+  docKeysDirty: boolean
+  setDocKeysDirty: (dirty: boolean) => void
   zoteroDocumentData: string
   zoteroDocumentDataDirty: boolean
   setZoteroDocumentData: (value: string) => void
@@ -331,6 +363,11 @@ export interface FileActionContext {
   themeFontsDirty: boolean
   themeColors: ThemeColors | null
   themeColorsDirty: boolean
+  /** the theme name and format scheme of a whole-theme pick the save has not written yet */
+  themeFormat?: ThemeFormat | null
+  setThemeFormat?: (value: ThemeFormat | null) => void
+  /** the file's blocks as the page shows them: read under a picked theme once the page was repainted for it */
+  shownBlocks?: () => Block[] | null
   setThemeFonts: (value: ThemeFonts | null) => void
   setThemeFontsDirty: (dirty: boolean) => void
   setThemeColors: (value: ThemeColors | null) => void
@@ -354,7 +391,7 @@ export interface FileActionContext {
   /** document (re)loaded: App resets the modify-password session state and prompts when one is set */
   onWriteProtectionLoaded: (wp: WriteProtection | null) => void
   /** password-protected docx: open the password prompt (decrypt-retry loop lives in App) */
-  promptDocxPassword: (info: { path: string; name: string }) => void
+  promptDocxPassword: (info: { path: string; name: string; template?: boolean }) => void
 }
 
 /** Drop the undo stack: undo across an open/reparse boundary resurrects stale
@@ -388,7 +425,20 @@ export function hasUnanchoredComments(comments: CommentInfo[], blocks: Block[]):
   )
 }
 
+/** The document as the saved file reads, in place of the one it was saved from: not a user edit. */
+export function showSavedDocument(editor: Editor, saved: PmNode): void {
+  editor
+    .chain()
+    .setMeta(TRACK_IGNORE, true)
+    .setMeta(HEADING_COLLAPSE_KEEP, true)
+    .setMeta(PERM_REGIONS_LOAD, true)
+    .setMeta(SECTION_GUARD_PASS, true)
+    .setContent(saved as never)
+    .run()
+}
+
 function resetEditorHistory(editor: Editor): void {
+  forgetEditPlaces(editor)
   const plugin = editor.state.plugins.find((p) =>
     String((p as unknown as { key: string }).key).startsWith('history$'),
   )
@@ -447,8 +497,12 @@ export function restoreMarksAfterDocRewrite(editor: Editor, snapshot: string | n
 
 /** the document's break points are in place before its first layout */
 async function loadDocHyphenation(parsed: ParsedDocFull): Promise<void> {
-  const dict = parsed.autoHyphenation ? hyphenationDictFor(parsed.docDefaults?.lang) : null
-  if (dict) await loadHyphenation(dict)
+  if (!parsed.autoHyphenation) return
+  const dicts = new Set([
+    hyphenationDictFor(hyphenationLangOf(parsed)),
+    ...hyphenationStyleDicts(parsed).values(),
+  ])
+  await Promise.all([...dicts].map((dict) => (dict ? loadHyphenation(dict) : null)))
 }
 
 /** doc-level layout inputs living outside CSS: default tab grid + hyphenation lang */
@@ -472,16 +526,16 @@ function applyDocLayoutSettings(editor: Editor, parsed: ParsedDocFull): void {
   // Word stretches a justified line that ends in a line break (w:br / w:cr)
   // unless the document opts out with doNotExpandShiftReturn
   editor.storage.justifyShrink.expandBreakLines = parsed.doNotExpandShiftReturn !== true
-  editor.storage.cjkPunctShrink.enabled = parsed.compressPunctuation === true
-  editor.storage.cjkPunctShrink.hangPunct = parsed.compressPunctuation !== true
+  setSpacingControl(editor.storage.cjkPunctShrink, spacingControlOf(parsed))
   editor.storage.cjkPunctShrink.strictKinsoku = parsed.strictFirstAndLastChars === true
+  editor.storage.cjkPunctShrink.kinsokuCustom = parsed.kinsokuCustom ?? null
   editor.storage.cjkPunctShrink.legacyLayout = (parsed.compatibilityMode ?? 0) < 15
   editor.storage.cjkPunctShrink.docEastAsiaLang = parsed.docDefaults?.eastAsiaLang ?? null
   setOpenDocumentText(documentTextContext(parsed))
   setStaticAsciiResolver(() => editor.storage.listNumbering)
   // Chromium only hyphenates under an explicit lang (the app shell is zh-CN);
   // scoped to autoHyphenation docs so CJK font fallback is untouched elsewhere
-  const lang = parsed.autoHyphenation ? parsed.docDefaults?.lang : undefined
+  const lang = parsed.autoHyphenation ? hyphenationLangOf(parsed) : undefined
   if (lang) editor.view.dom.setAttribute('lang', lang)
   else editor.view.dom.removeAttribute('lang')
   setHyphenation(editor, hyphenationConfigOf(parsed, parsed.autoHyphenation === true))
@@ -601,7 +655,7 @@ export async function loadFile(
 ): Promise<LoadFileOutcome> {
   if (!result || !ctx.editor) return 'canceled'
   if ('needsPassword' in result) {
-    ctx.promptDocxPassword({ path: result.path, name: result.name })
+    ctx.promptDocxPassword({ path: result.path, name: result.name, template: result.template })
     return 'password'
   }
   const generation = ++openGeneration
@@ -708,6 +762,9 @@ export async function loadFile(
     ctx.setEvenOddHfDirty(false)
     ctx.setMirrorMargins(parsed.mirrorMargins ?? false)
     ctx.setMirrorMarginsDirty(false)
+    // a document that does not say keeps what this machine was last left at
+    ctx.setHideGrammar(parsed.hideGrammaticalErrors || grammarHidden())
+    ctx.setHideGrammarDirty(false)
     ctx.setAutoHyphenation(parsed.autoHyphenation ?? false)
     ctx.setAutoHyphenationDirty(false)
     ctx.setHyphenationEdit(null)
@@ -717,9 +774,11 @@ export async function loadFile(
     ctx.setNotePropsEdit(null)
     ctx.setGutterAtTopEdit(null)
     ctx.setFontConversions(null)
-    ctx.setCompressPunctEdit(null)
+    ctx.setSpacingControlEdit(null)
     ctx.setTrackMovesEdit(null)
     ctx.setStrictKinsokuEdit(null)
+    ctx.setKinsokuCustomEdit(null)
+    ctx.setDrawingGridEdit(null)
     ctx.setShowComments(true)
     ctx.setCommentPanelOpen(hasUnanchoredComments(parsed.comments, parsed.blocks))
     ctx.setCommentPopup(null)
@@ -740,12 +799,15 @@ export async function loadFile(
     ctx.setSources(parsed.sources)
     ctx.setCitationStyle(parsed.citationStyle ?? null)
     ctx.setSourcesDirty(false)
+    loadDocumentKeys(parsed.keyCustomizations)
+    ctx.setDocKeysDirty(false)
     ctx.setZoteroDocumentData(parsed.zoteroDocumentData)
     ctx.setZoteroDocumentDataDirty(false)
     ctx.setThemeFonts(parsed.themeFonts ?? null)
     ctx.setThemeFontsDirty(false)
     ctx.setThemeColors(parsed.themeColors ?? null)
     ctx.setThemeColorsDirty(false)
+    ctx.setThemeFormat?.(null)
     ctx.setCommentComposing(false)
     ctx.setTrackChanges(parsed.trackRevisions ?? false)
     ctx.setTrackRevisionsDirty(false)
@@ -800,6 +862,8 @@ async function systemLocale(): Promise<string> {
 async function blankDocxBytes(): Promise<Uint8Array> {
   const blank = await buildBlankDocx({
     eastAsiaFont: defaultEastAsiaFontFor(getLang()),
+    // as a blank Word document: without a language Word hyphenates none of the text
+    lang: 'en-US',
     paperSize: paperSizeForLocale(await systemLocale()),
     wordDefaults: true,
   })
@@ -814,7 +878,15 @@ export async function withDesignDefault(
   blank: Uint8Array,
   look: DesignDefault | null,
 ): Promise<Uint8Array> {
-  if (!look?.fonts && !look?.colors && !look?.spacing && !look?.page && !look?.font) return blank
+  if (
+    !look?.fonts &&
+    !look?.colors &&
+    !look?.spacing &&
+    !look?.page &&
+    !look?.font &&
+    !look?.styles
+  )
+    return blank
   const parsed = await parseDocx(blank)
   const { page } = look
   // margins kept on another paper size may not leave room for text on this one
@@ -837,9 +909,14 @@ export async function withDesignDefault(
       ? []
       : [{ kind: 'original' as const, docxIndex: block.docxIndex }],
   )
+  // the kept style set goes in first: the kept spacing and font are said on top of it
+  const setUpserts = look.styles
+    ? customStyleSetUpserts(look.styles, await readDocxStylesXml(blank))
+    : []
   return saveDocx(parsed, untouched, {
     themeFonts: look.fonts,
     themeColors: look.colors,
+    themeFormat: look.format,
     ...(page && section && fits
       ? {
           section,
@@ -850,35 +927,40 @@ export async function withDesignDefault(
         }
       : {}),
     styleUpserts:
-      look.spacing || look.font
+      look.spacing || look.font || setUpserts.length > 0
         ? [
-            {
-              styleId,
-              ...(parsed.styles.has(styleId) ? {} : { builtIn: true }),
-              ...(look.spacing
-                ? {
-                    pPr: {
-                      spaceBeforeTwips: look.spacing.beforeTwips ?? 0,
-                      spaceAfterTwips: look.spacing.afterTwips,
-                      lineSpacing: look.spacing.line,
-                    },
-                  }
-                : {}),
-              ...(look.font
-                ? {
-                    rPr: {
-                      ...(look.font.latin ? { font: look.font.latin } : {}),
-                      ...(look.font.eastAsia ? { eastAsiaFont: look.font.eastAsia } : {}),
-                      ...(look.font.sizeHalfPoints
-                        ? { sizeHalfPoints: look.font.sizeHalfPoints }
-                        : {}),
-                      ...(look.font.bold ? { bold: true } : {}),
-                      ...(look.font.italic ? { italic: true } : {}),
-                      ...(look.font.color ? { color: look.font.color } : {}),
-                    },
-                  }
-                : {}),
-            },
+            ...setUpserts,
+            ...(look.spacing || look.font
+              ? [
+                  {
+                    styleId,
+                    ...(parsed.styles.has(styleId) ? {} : { builtIn: true }),
+                    ...(look.spacing
+                      ? {
+                          pPr: {
+                            spaceBeforeTwips: look.spacing.beforeTwips ?? 0,
+                            spaceAfterTwips: look.spacing.afterTwips,
+                            lineSpacing: look.spacing.line,
+                          },
+                        }
+                      : {}),
+                    ...(look.font
+                      ? {
+                          rPr: {
+                            ...(look.font.latin ? { font: look.font.latin } : {}),
+                            ...(look.font.eastAsia ? { eastAsiaFont: look.font.eastAsia } : {}),
+                            ...(look.font.sizeHalfPoints
+                              ? { sizeHalfPoints: look.font.sizeHalfPoints }
+                              : {}),
+                            ...(look.font.bold ? { bold: true } : {}),
+                            ...(look.font.italic ? { italic: true } : {}),
+                            ...(look.font.color ? { color: look.font.color } : {}),
+                          },
+                        }
+                      : {}),
+                  },
+                ]
+              : []),
           ]
         : undefined,
   })
@@ -919,6 +1001,7 @@ export async function newFile(ctx: FileActionContext): Promise<boolean | undefin
     ctx.editor
       .chain()
       .setMeta(PERM_REGIONS_LOAD, true)
+      .setMeta(SECTION_GUARD_PASS, true)
       .setContent(blocksToPmDoc(parsed.blocks, readSections(parsed), pmDocOptions(parsed)) as never)
       .run()
     resetEditorHistory(ctx.editor)
@@ -963,15 +1046,20 @@ export async function newFile(ctx: FileActionContext): Promise<boolean | undefin
     ctx.setSources([])
     ctx.setCitationStyle(null)
     ctx.setSourcesDirty(false)
+    loadDocumentKeys(parsed.keyCustomizations)
+    ctx.setDocKeysDirty(false)
     ctx.setZoteroDocumentData(parsed.zoteroDocumentData)
     ctx.setZoteroDocumentDataDirty(false)
     ctx.setThemeFonts(parsed.themeFonts ?? null)
     ctx.setThemeFontsDirty(false)
     ctx.setThemeColors(parsed.themeColors ?? null)
     ctx.setThemeColorsDirty(false)
+    ctx.setThemeFormat?.(null)
     ctx.setCommentComposing(false)
     ctx.setTrackChanges(false)
     ctx.setTrackRevisionsDirty(false)
+    ctx.setHideGrammar(parsed.hideGrammaticalErrors || grammarHidden())
+    ctx.setHideGrammarDirty(false)
     ctx.setAutoHyphenation(parsed.autoHyphenation ?? false)
     ctx.setAutoHyphenationDirty(false)
     ctx.setHyphenationEdit(null)
@@ -981,9 +1069,11 @@ export async function newFile(ctx: FileActionContext): Promise<boolean | undefin
     ctx.setNotePropsEdit(null)
     ctx.setGutterAtTopEdit(null)
     ctx.setFontConversions(null)
-    ctx.setCompressPunctEdit(null)
+    ctx.setSpacingControlEdit(null)
     ctx.setTrackMovesEdit(null)
     ctx.setStrictKinsokuEdit(null)
+    ctx.setKinsokuCustomEdit(null)
+    ctx.setDrawingGridEdit(null)
     ctx.setProtection(null)
     ctx.setProtectionDirty(false)
     ctx.setWriteProtection(null)
@@ -1120,15 +1210,20 @@ async function buildDoc(
   ctx = current
   const { doc, editor } = ctx
   if (!doc || !editor) return null
+  // the layout as it stands, read before anything is written: a save runs a pass only
+  // where a field waits for its page, so that field is not left for Word to update
+  const pages = pmOverride
+    ? null
+    : (ctx.pageSource?.(hasWaitingPageField(editor.state.doc)) ?? null)
   // a group saves its members where they show now
   if (!pmOverride) {
     refreshGroupBoxes(editor)
     // the fields this editor computes are saved with their result, not left for Word to update
-    settleFieldResults(editor, doc.parsed.blocks)
+    settleFieldResults(editor, doc.parsed.blocks, pages)
   }
   const live = editor.getJSON() as PmNode
   const pmJson = pmOverride ? pmOverride(live) : live
-  const plan = pmDocToSavePlan(pmJson, doc.parsed.blocks)
+  const plan = pmDocToSavePlan(pmJson, ctx.shownBlocks?.() ?? doc.parsed.blocks)
   // chart data edits patch the chart's own zip part, not the body XML
   const partXml: Record<string, string> = {}
   const partBinary: Record<string, string> = {}
@@ -1196,11 +1291,11 @@ async function buildDoc(
     }
     saveBlocks = applySectPrRewrites(saveBlocks, plan.saveBlockIndexByDocx, rewrites)
   }
-  const hfOptions = hfSaveOptions({
-    sections: ctx.sections,
-    edits: ctx.sectionHfEdits,
-    links: ctx.hfLinks,
-  })
+  const hfOptions = withHfFieldResults(
+    hfSaveOptions({ sections: ctx.sections, edits: ctx.sectionHfEdits, links: ctx.hfLinks }),
+    ctx.sections[ctx.sections.length - 1]?.lastBlockIndex,
+    pages?.hfPage,
+  )
   const bytes = await saveDocx(doc.parsed, saveBlocks, {
     pageCount: ctx.pageCount,
     newPictures: Object.keys(plan.newPictures).length > 0 ? plan.newPictures : undefined,
@@ -1223,6 +1318,7 @@ async function buildDoc(
     titlePg: ctx.titlePgDirty ? ctx.titlePg : undefined,
     evenAndOddHeaders: ctx.evenOddHfDirty ? ctx.evenOddHf : undefined,
     mirrorMargins: ctx.mirrorMarginsDirty ? ctx.mirrorMargins : undefined,
+    hideGrammaticalErrors: ctx.hideGrammarDirty ? ctx.hideGrammar : undefined,
     autoHyphenation: ctx.autoHyphenationDirty ? ctx.autoHyphenation : undefined,
     hyphenation: ctx.hyphenationEdit
       ? {
@@ -1235,8 +1331,16 @@ async function buildDoc(
     mathPr: ctx.mathPrEdit ?? undefined,
     settingsNoteProps: ctx.notePropsEdit ?? undefined,
     gutterAtTop: ctx.gutterAtTopEdit ?? undefined,
-    compressPunctuation: ctx.compressPunctEdit ?? undefined,
+    mailMergeMainType: mailMergeMainTypeToWrite(
+      doc.parsed.mailMergeMainType,
+      labelTableIndex(pmJson) >= 0,
+      !!pmOverride,
+    ),
+    compressPunctuation: ctx.spacingControlEdit ? ctx.spacingControlEdit !== 'none' : undefined,
+    compressKana: ctx.spacingControlEdit === 'kana',
     strictFirstAndLastChars: ctx.strictKinsokuEdit ?? undefined,
+    kinsokuCustom: ctx.kinsokuCustomEdit == null ? undefined : ctx.kinsokuCustomEdit || null,
+    drawingGrid: ctx.drawingGridEdit ?? undefined,
     trackRevisions: ctx.trackRevisionsDirty ? ctx.trackChanges : undefined,
     trackMoves: ctx.trackMovesEdit ?? undefined,
     partXml: Object.keys(partXml).length > 0 ? partXml : undefined,
@@ -1253,10 +1357,12 @@ async function buildDoc(
     footnotes: ctx.notesDirty ? ctx.footnotes : undefined,
     endnotes: ctx.notesDirty ? ctx.endnotes : undefined,
     sources: ctx.sourcesDirty ? ctx.sources : undefined,
+    keyCustomizations: ctx.docKeysDirty ? documentKeysXml() : undefined,
     sourcesStyle: ctx.sourcesDirty ? (ctx.citationStyle ?? undefined) : undefined,
     zoteroDocumentData: ctx.zoteroDocumentDataDirty ? ctx.zoteroDocumentData : undefined,
     themeFonts: ctx.themeFontsDirty && ctx.themeFonts ? ctx.themeFonts : undefined,
     themeColors: ctx.themeColorsDirty && ctx.themeColors ? ctx.themeColors : undefined,
+    themeFormat: ctx.themeFormat ?? undefined,
   })
   if (!ctx.fontConversions) return { bytes, fontsWritten: [] }
   const fonts = await writeFontConversions(
@@ -1305,6 +1411,70 @@ export async function writeRecoveryCopy(ctx: FileActionContext): Promise<void> {
   }
 }
 
+const THUMBNAIL_WIDTH_PX = 320
+
+/** The first page as the print preview prints it, as a small JPEG; null when it cannot be taken. */
+async function printedFirstPageJpeg(ctx: FileActionContext): Promise<ArrayBuffer | null> {
+  if (printJobActive || ctx.pendingMixedExportRef.current) return null
+  printJobActive = true
+  const opened = !previewIsOpen()
+  const appRoot = appRootEl()
+  let pages: HTMLElement[] = []
+  try {
+    if (opened) ctx.setShowPagePreview(true)
+    // the sheets mount asynchronously, as the PDF export waits for them
+    await new Promise((r) => window.setTimeout(r, opened ? 1200 : 0))
+    for (let i = 0; i < 40 && previewPageEls().length === 0; i++) {
+      await new Promise((r) => window.setTimeout(r, 250))
+    }
+    pages = previewPageEls()
+    const sheet = pages[0]
+    if (!sheet) return null
+    const toTwips = (px: number) => Math.round((px / 96) * 1440)
+    const scale = setPrintZoom()
+    appRoot?.classList.add('pv-exporting')
+    pages.forEach((page, i) => {
+      page.classList.toggle('pv-print-skip', i > 0)
+      page.classList.toggle('pv-print-tail', i === 0)
+    })
+    const pdf = await window.desktop.printPdfBuffer(
+      toTwips(parseFloat(sheet.style.width)),
+      toTwips(parseFloat(sheet.style.height)),
+      scale,
+    )
+    if (!pdf.ok || !pdf.base64) return null
+    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs')
+    const { default: workerUrl } = await import('pdfjs-dist/legacy/build/pdf.worker.min.mjs?url')
+    pdfjs.GlobalWorkerOptions.workerSrc = workerUrl
+    const task = pdfjs.getDocument({
+      data: Uint8Array.from(atob(pdf.base64), (c) => c.charCodeAt(0)),
+      useWasm: false,
+    })
+    try {
+      const page = await (await task.promise).getPage(1)
+      const viewport = page.getViewport({
+        scale: THUMBNAIL_WIDTH_PX / page.getViewport({ scale: 1 }).width,
+      })
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.round(viewport.width)
+      canvas.height = Math.round(viewport.height)
+      await page.render({ canvas, viewport }).promise
+      const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/jpeg', 0.82))
+      return blob ? await blob.arrayBuffer() : null
+    } finally {
+      await task.destroy()
+    }
+  } catch {
+    return null
+  } finally {
+    appRoot?.classList.remove('pv-exporting')
+    pages.forEach((page) => page.classList.remove('pv-print-skip', 'pv-print-tail'))
+    clearPrintZoom()
+    printJobActive = false
+    if (opened) ctx.setShowPagePreview(false)
+  }
+}
+
 /** File > Save as Template: a .dotx copy of the document as it stands; the document itself stays as it is */
 export async function saveAsTemplate(ctx: FileActionContext): Promise<void> {
   const { doc } = ctx
@@ -1325,7 +1495,14 @@ export async function saveAsTemplate(ctx: FileActionContext): Promise<void> {
     // the picture the template gallery shows: the first page, where it is in the window
     const first = ctx.sections[0]?.settings ?? ctx.section
     const preview = first ? firstPaperOnScreen(twipsToPx(first.pageHeight)) : null
-    const result = await window.desktop.saveTemplate(doc.fileName, buffer, preview ?? undefined)
+    // not there to take (another view, a dark page, scrolled or zoomed past): take it as it prints
+    const printed = preview ? null : await printedFirstPageJpeg(ctx)
+    const result = await window.desktop.saveTemplate(
+      doc.fileName,
+      buffer,
+      preview ?? undefined,
+      printed ?? undefined,
+    )
     if (result.ok && result.path) ctx.setStatus(t('appTemplateSaved', { path: result.path }))
     else if (result.error) {
       console.error('[docs] save failed', result.error)
@@ -1810,19 +1987,19 @@ async function saveOnce(
       // font the user just picked (chaoffice#2004). Both are read live, not
       // before the await: a font chosen or a caret moved during the save must
       // win, and the marks must belong to the position they are restored at.
-      const selectionPos = editor.state.selection.from
-      const caretMarks = caretMarksSnapshot(editor)
+      // a stretch of selected text stays selected: what is picked next (a dialog, a format) acts on it
+      const { selection } = editor.state
+      const range =
+        selection instanceof TextSelection
+          ? { from: selection.anchor, to: selection.head }
+          : { from: selection.from, to: selection.from }
+      // typing over a selection takes the selected text's marks, not the ones before it
+      const caretMarks =
+        range.from === range.to || editor.state.storedMarks ? caretMarksSnapshot(editor) : null
       // Rebase saved anchors without recording the reload as a user edit.
-      editor
-        .chain()
-        .setMeta(TRACK_IGNORE, true)
-        .setMeta(PERM_REGIONS_LOAD, true)
-        .setContent(rebasedPm as never)
-        .run()
+      showSavedDocument(editor, rebasedPm)
       resetEditorHistory(editor)
-      const chain = editor
-        .chain()
-        .setTextSelection(Math.min(selectionPos, editor.state.doc.content.size))
+      const chain = editor.chain().setTextSelection(range)
       if (!auto) chain.scrollIntoView()
       chain.run()
       restoreMarksAfterDocRewrite(editor, caretMarks)
@@ -1875,6 +2052,7 @@ async function saveOnce(
     ctx.setEvenOddHfDirty(false)
     ctx.setMirrorMargins(reparsed.mirrorMargins ?? false)
     ctx.setMirrorMarginsDirty(false)
+    ctx.setHideGrammarDirty(false)
     ctx.setAutoHyphenation(reparsed.autoHyphenation ?? false)
     ctx.setAutoHyphenationDirty(false)
     ctx.setHyphenationEdit(null)
@@ -1887,9 +2065,11 @@ async function saveOnce(
     ctx.setFontConversions(
       unchanged && fresh?.fontsWritten.length ? { pending: {}, written: fresh.fontsWritten } : null,
     )
-    ctx.setCompressPunctEdit(null)
+    ctx.setSpacingControlEdit(null)
     ctx.setTrackMovesEdit(null)
     ctx.setStrictKinsokuEdit(null)
+    ctx.setKinsokuCustomEdit(null)
+    ctx.setDrawingGridEdit(null)
     ctx.setTrackRevisionsDirty(false)
     ctx.setComments(reparsed.comments)
     ctx.setCommentsDirty(false)
@@ -1905,12 +2085,15 @@ async function saveOnce(
     ctx.setSources(reparsed.sources)
     ctx.setCitationStyle(reparsed.citationStyle ?? null)
     ctx.setSourcesDirty(false)
+    loadDocumentKeys(reparsed.keyCustomizations)
+    ctx.setDocKeysDirty(false)
     ctx.setZoteroDocumentData(reparsed.zoteroDocumentData)
     ctx.setZoteroDocumentDataDirty(false)
     ctx.setThemeFonts(reparsed.themeFonts ?? null)
     ctx.setThemeFontsDirty(false)
     ctx.setThemeColors(reparsed.themeColors ?? null)
     ctx.setThemeColorsDirty(false)
+    ctx.setThemeFormat?.(null)
     ctx.setProtection(reparsed.protection)
     ctx.setProtectionDirty(false)
     // no onWriteProtectionLoaded here: saving must not re-lock the session
@@ -2265,4 +2448,18 @@ export async function exportMarkdown(ctx: FileActionContext, outPath?: string): 
         : t('appExportMarkdownCanceled'),
   )
   return result.ok
+}
+
+/**
+ * What a save does to the file's mail-merge kind: a sheet of labels is a
+ * labels main document to Word as well, and the labels a merge wrote out of
+ * one are no main document any more. Undefined leaves the file as it is.
+ */
+export function mailMergeMainTypeToWrite(
+  inFile: MailMergeMainType | undefined,
+  labelSheet: boolean,
+  derived: boolean,
+): 'mailingLabels' | null | undefined {
+  if (labelSheet) return inFile === 'mailingLabels' ? undefined : 'mailingLabels'
+  return derived && inFile === 'mailingLabels' ? null : undefined
 }

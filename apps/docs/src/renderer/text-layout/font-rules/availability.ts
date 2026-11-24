@@ -30,6 +30,7 @@ export const BUNDLED_FONTS = new Set([
   'ChaAI Office Gothic KR',
   'ChaAI Office Poppins',
   'ChaAI Office DM Sans',
+  'ChaAI Office Barlow',
   'ChaAI Office Tamil',
   'ChaAI Office Cordia',
   'ChaAI Office Sarabun',

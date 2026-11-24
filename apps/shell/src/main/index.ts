@@ -382,7 +382,6 @@ import {
   MEASUREMENT_UNIT_CHANNELS,
   defaultMeasurementUnit,
   isMeasurementUnit,
-  measurementUnitForRegion,
   type MeasurementUnitState,
 } from '@chaoffice/ui/measurement'
 import type { TabKind } from '../shared/tabs-api'
@@ -469,6 +468,7 @@ import {
   detachedWebContentsFor,
   detachedSetTitleFor,
   detachedWindowForWebContents,
+  detachedTabsOf,
   detachedWindowsOf,
   holdDocking,
   dockBandFor,
@@ -4465,7 +4465,7 @@ let tabManager: TabManager | null = null
  * created, and the tab's first save moves the fresh file there.
  * key: 'doc' | 'sheet' | 'slide' | 'markdown' | 'html' | 'pdf'
  */
-/** folders the user excluded from recents, search and session restore (#2844) */
+/** folders the user excluded from recents, search and session restore (genoffice#2844) */
 function excludedFolderPaths(): string[] {
   return readExcludedFolders(readAppSettings(APP_SETTINGS_PATH()))
 }
@@ -5148,6 +5148,12 @@ openResultDocTab: (doc) => ensureTabManager().openDocsTab(undefined, { resultDoc
     arrangeAll: arrangeDocsWindows,
     gatherWindows: gatherDocsWindows,
     detachedWindowCount: () => detachedWindowsOf('docs').length,
+    docsWindows: () => [
+      ...(shellWindow && tabManager?.list().some((t) => t.active && t.kind === 'docs')
+        ? [shellWindow]
+        : []),
+      ...detachedWindowsOf('docs'),
+    ],
     // ⌘W in a detached docs window closes that window (its own close guard runs)
     closeActiveTab: () => {
       const focused = BrowserWindow.getFocusedWindow()
@@ -6188,7 +6194,14 @@ function registerHomeIpc(): void {
     return readKnowledgeFilePage(path, offset)
   })
 
-  ipcMain.handle(HOME_CHANNELS.kbCreateDocument, async (_event, raw: unknown): Promise<unknown> => {
+  // an @ mention attaches a corpus file: the attachment reads need it in the ledger
+  ipcMain.handle('kb:grant-mention', (event, path: unknown): boolean => {
+    if (typeof path !== 'string' || !readStarredFiles().includes(path)) return false
+    sharedPathGrants().grant(event.sender.id, [path])
+    return true
+  })
+
+  ipcMain.handle('kb:create-document', async (_event, raw: unknown): Promise<unknown> => {
     const req = parseKbCreateRequest(raw)
     return createKnowledgeDocument(
       {
@@ -6610,7 +6623,10 @@ function registerHomeIpc(): void {
     buildHomeMenu()
     installDockMenu()
     installBackToHomeItems()
-    for (const wc of webContents.getAllWebContents()) wc.send('app:language-changed', lang)
+    for (const wc of webContents.getAllWebContents()) {
+      wc.send('app:language-changed', lang)
+      wc.send(MEASUREMENT_UNIT_CHANNELS.changed, measurementUnitState())
+    }
   })
 
   ipcMain.handle(HOME_CHANNELS.getUpdateChannel, (): UpdateChannel => currentUpdateChannel())
@@ -6671,15 +6687,12 @@ function registerHomeIpc(): void {
   ipcMain.handle('app:get-document-theme', (): DocTheme => currentDocTheme())
 
   // measurement units (Settings ▸ General): one preference for every editor's
-  // rulers and length fields; unset follows the system region (an English UI
-  // in a metric country still gets centimeters)
+  // rulers and length fields; unset follows the UI language as it did before
+  // the setting existed (inches for English, centimeters elsewhere)
   const measurementUnitState = (): MeasurementUnitState => {
     const saved = readAppSettings(APP_SETTINGS_PATH()).measurementUnit
     if (isMeasurementUnit(saved)) return { unit: saved, explicit: true }
-    const unit =
-      measurementUnitForRegion(app.getLocaleCountryCode()) ??
-      defaultMeasurementUnit(app.getLocale() || 'en-US')
-    return { unit, explicit: false }
+    return { unit: defaultMeasurementUnit(currentLang()), explicit: false }
   }
   ipcMain.handle(MEASUREMENT_UNIT_CHANNELS.get, (): MeasurementUnitState => measurementUnitState())
   ipcMain.handle(MEASUREMENT_UNIT_CHANNELS.set, (_event, unit: unknown): MeasurementUnitState => {
@@ -6791,10 +6804,11 @@ function registerHomeIpc(): void {
         ? { [EXCLUDED_FOLDERS_KEY]: next }
         : { [EXCLUDED_FOLDERS_KEY]: undefined }),
     })
-    // the surfaces re-read the list on their next pass; the watchers and the
-    // search index re-decide now
+    // the surfaces re-read the list on their next pass; the watchers, the
+    // search index and File > Open Recent re-decide now
     ensureFolderWatchers()
     fileIndexer?.refresh()
+    buildDocsMenu()
     return next
   })
   ipcMain.handle(HOME_CHANNELS.pickExcludedFolder, async (event) => {
@@ -9025,7 +9039,10 @@ function installBackToHomeItems(): void {
     accelerator: 'Shift+CmdOrCtrl+H',
     click: () => tabManager?.openHomeTab(),
   }
-  setDocsExtraFileMenuItems([backToHomeItem])
+  // in Docs on the Mac ⇧⌘H is Replace, as in Word
+  const inDocs =
+    process.platform === 'darwin' ? { ...backToHomeItem, accelerator: undefined } : backToHomeItem
+  setDocsExtraFileMenuItems([inDocs])
   setSheetsExtraFileMenuItems([backToHomeItem])
   setSlidesExtraFileMenuItems([backToHomeItem])
 }

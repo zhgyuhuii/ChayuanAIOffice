@@ -183,10 +183,21 @@ const api: DesktopApi = {
   spellSuggestions: (word: string) => webFrame.getWordSuggestions(word),
   spellLanguages: () => ipcRenderer.invoke('docs:spell-languages'),
   spellSetLanguages: (langs: string[]) => ipcRenderer.invoke('docs:spell-set-languages', langs),
-  saveTemplate: (defaultName: string, data: ArrayBuffer, preview?: TemplatePreviewRect) =>
-    ipcRenderer.invoke('docs:save-template', defaultName, data, preview),
+  saveTemplate: (
+    defaultName: string,
+    data: ArrayBuffer,
+    preview?: TemplatePreviewRect,
+    thumbnail?: ArrayBuffer,
+  ) => ipcRenderer.invoke('docs:save-template', defaultName, data, preview, thumbnail),
   openTemplate: (fromGallery?: string) => ipcRenderer.invoke('docs:open-template', fromGallery),
+  openTemplateDecrypt: (password: string) =>
+    ipcRenderer.invoke('docs:open-template-decrypt', password),
   listTemplates: () => ipcRenderer.invoke('docs:list-templates'),
+  listThemes: () => ipcRenderer.invoke('docs:list-themes'),
+  saveTheme: (defaultName: string, themeXml: string) =>
+    ipcRenderer.invoke('docs:save-theme', defaultName, themeXml),
+  deleteTheme: (name: string) => ipcRenderer.invoke('docs:delete-theme', name),
+  pickTheme: () => ipcRenderer.invoke('docs:pick-theme'),
   saveDocxAs: (defaultName: string, data: ArrayBuffer, sourcePath?: string | null) =>
     ipcRenderer.invoke('docs:save-as', defaultName, data, sourcePath ?? null),
   saveDocxNew: (defaultName: string, data: ArrayBuffer) =>
@@ -204,6 +215,18 @@ const api: DesktopApi = {
   getRecentFiles: () => ipcRenderer.invoke('docs:recent'),
   pickImage: () => ipcRenderer.invoke('docs:pick-image'),
   pickDocx: () => ipcRenderer.invoke('docs:pick-docx'),
+  pickLinkFile: () => ipcRenderer.invoke('docs:pick-link-file'),
+  readLinkSource: (source, kind) => ipcRenderer.invoke('docs:read-link-source', source, kind),
+  openLinkSource: (source) => ipcRenderer.invoke('docs:open-link-source', source),
+  offerLinkSource: (token) => ipcRenderer.send('docs:link-source-offer', token),
+  claimLinkSource: (token, commit) => ipcRenderer.invoke('docs:link-source-claim', token, commit),
+  onLinkSourceMark: (handler) => {
+    const listener = (_event: IpcRendererEvent, token: string) => handler(token)
+    ipcRenderer.on('docs:link-source-mark', listener)
+    return () => ipcRenderer.removeListener('docs:link-source-mark', listener)
+  },
+  linkSourceMarked: (token, bookmark) =>
+    ipcRenderer.send('docs:link-source-marked', token, bookmark),
   organizerOpen: () => ipcRenderer.invoke('docs:organizer-open'),
   organizerSave: (path: string, data: ArrayBuffer) =>
     ipcRenderer.invoke('docs:organizer-save', path, data),
@@ -410,6 +433,7 @@ const api: DesktopApi = {
     ipcRenderer.on('docs:key-overrides-changed', listener)
     return () => ipcRenderer.removeListener('docs:key-overrides-changed', listener)
   },
+  setDocumentKeyOverrides: (overrides) => ipcRenderer.send('docs:doc-key-overrides', overrides),
   reportCloseCheck: (state: { dirty: boolean; autoSave: boolean; filePath?: string | null }) =>
     ipcRenderer.send('docs:close-check-result', {
       dirty: state?.dirty === true,

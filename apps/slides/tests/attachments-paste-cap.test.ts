@@ -2,6 +2,7 @@ import { tmpdir } from 'node:os'
 import { describe, expect, it, vi } from 'vitest'
 
 const handlers = new Map<string, (...args: never[]) => unknown>()
+const grantPaths = vi.hoisted(() => vi.fn())
 
 vi.mock('electron', () => ({
   app: { getPath: () => tmpdir() },
@@ -16,9 +17,13 @@ vi.mock('electron', () => ({
 vi.mock('@chaoffice/file-parse', () => ({
   parseFileToText: vi.fn(async () => ({ ok: false, error: 'mocked' })),
 }))
-vi.mock('@chaoffice/cli/agent-skills', () => ({}))
-vi.mock('@chaoffice/cli/install', () => ({}))
-vi.mock('@chaoffice/electron-utils', () => ({ showOpenDialogWithMemory: vi.fn() }))
+vi.mock('@genoffice/cli/agent-skills', () => ({}))
+vi.mock('@genoffice/cli/install', () => ({}))
+vi.mock('@genoffice/electron-utils', () => ({
+  showOpenDialogWithMemory: vi.fn(),
+  isBesideDocument: () => false,
+  sharedPathGrants: () => ({ grant: grantPaths, has: () => false }),
+}))
 // session-state pulls the font/shaping chain (harfbuzz wasm) which cannot
 // load in the unit-test env; the paste handler under test never reaches it.
 vi.mock('../src/main/session-state', () => ({ dialogParent: vi.fn(() => null) }))
@@ -51,8 +56,9 @@ describe('pasted-image byte cap', () => {
       'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
       'base64',
     )
-    const ok = fn({}, png, 'png')
+    const ok = fn({ sender: { id: 7 } }, png, 'png')
     expect(ok.accepted).toHaveLength(1)
+    expect(grantPaths).toHaveBeenCalledWith(7, [expect.stringMatching(/\.png$/)])
     expect(ok.rejected).toEqual([])
     const bad = fn({}, new Uint8Array([1, 2, 3]), 'txt')
     expect(bad.accepted).toEqual([])
