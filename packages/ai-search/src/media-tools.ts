@@ -8,8 +8,8 @@
  * chaoffice tier behind the login gate.
  */
 
-import { existsSync, readFileSync, statSync } from 'node:fs'
-import { basename, dirname, extname } from 'node:path'
+import { existsSync, readFileSync, realpathSync, statSync } from 'node:fs'
+import { basename, dirname, extname, sep } from 'node:path'
 import {
   activeMediaConfig,
   analyzeMediaWithProvider,
@@ -227,6 +227,9 @@ export async function analyzeMediaTool(
   }
 }
 
+/** no allowlist configured: the extension check alone decides */
+const NO_MEDIA_ROOTS: readonly string[] = []
+
 /**
  * Directories a bare local media path may be read from. Deliberately no
  * default: cwd is "/" in a packaged macOS app and tmpdir() is world-readable,
@@ -234,6 +237,40 @@ export async function analyzeMediaTool(
  */
 export function localMediaRoots(...roots: (string | undefined | null)[]): string[] {
   return roots.filter((root): root is string => Boolean(root))
+}
+
+/**
+ * Real path of `ref`, or null when missing or outside `roots`. Both sides go
+ * through realpath so a planted symlink cannot walk out, and containment is
+ * on whole segments so /tmp/root-evil does not pass as /tmp/root.
+ */
+function verifiedLocalPath(ref: string, roots: readonly string[]): string | null {
+  let real: string
+  try {
+    real = realpathSync(ref)
+  } catch {
+    return null
+  }
+  if (roots.length === 0) return real
+  for (const root of roots) {
+    let realRoot: string
+    try {
+      realRoot = realpathSync(root)
+    } catch {
+      continue
+    }
+    const prefix = realRoot.endsWith(sep) ? realRoot : `${realRoot}${sep}`
+    if (real === realRoot || real.startsWith(prefix)) return real
+  }
+  return null
+}
+
+/** True when `ref` is a readable path; with no `roots` the allowlist does not apply. */
+export function isLocalMediaPathAllowed(
+  ref: string,
+  roots: readonly string[] = NO_MEDIA_ROOTS,
+): boolean {
+  return verifiedLocalPath(ref, roots) !== null
 }
 
 /** The Electron allowlist: the open document's directory plus the app's attachment staging dir. */
