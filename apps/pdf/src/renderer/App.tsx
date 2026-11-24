@@ -41,7 +41,14 @@ import { ColorPickerPopover } from './ColorPicker'
 import type { DrawTool, LocalDrawing, SavedNotePin } from './DrawLayer'
 import { NoteMarginColumn } from './NoteMargin'
 import type { NoteMarginDraft, NoteMarginThread } from './NoteMargin'
-import { flattenThread, pendingNoteKey, threadSubtree, visibleNoteThreads } from './note-threads'
+import {
+  findThreadRoot,
+  flattenThread,
+  pendingNoteKey,
+  savedNoteKey,
+  threadSubtree,
+  visibleNoteThreads,
+} from './note-threads'
 import type { NoteInput, NoteThreadItem, SavedNoteAnnot } from './note-threads'
 import { FormLayer } from './FormLayer'
 import {
@@ -2988,14 +2995,21 @@ export default function App() {
       const m = onPage[i]!
       if (hitQuads(m.quads)) return select({ kind: 'markup', id: m.id, ...at })
     }
-    if (readOnly) return
     // Markup annotations already saved in the file (skipping ones pending deletion)
     const pendingDeleted = new Set(annotDeletes.map((d) => d.annot.objNum))
     const saved = savedMarkups.get(origIdx) ?? []
     for (let i = saved.length - 1; i >= 0; i--) {
       const a = saved[i]!
       if (pendingDeleted.has(a.objNum) || !hitQuads(a.quads)) continue
-      return select({ kind: 'savedMarkup', annot: a, ...at })
+      const root = findThreadRoot(noteThreadsOn(origIdx), savedNoteKey(a.objNum))
+      if (root) {
+        e.stopPropagation()
+        setSelected(null)
+        setNoteDraft(null)
+        setActiveNote({ origIdx, rootKey: root.key })
+        return
+      }
+      if (!readOnly) return select({ kind: 'savedMarkup', annot: a, ...at })
     }
   }
 
@@ -4468,11 +4482,15 @@ export default function App() {
       subtype: d.annot.type,
       rect: d.annot.rect,
       // A note thread's comments all share the root's rect; contents disambiguates
-      ...(d.annot.type === 'note' ? { contents: d.annot.contents } : {}),
+      ...('contents' in d.annot
+        ? { contents: d.annot.contents, quadPoints: d.annot.quadPoints }
+        : {}),
     })),
     noteEdits: (noteFlush?.noteEdits ?? noteEdits).map((e): NoteEditInput => ({
       pageIndex: e.annot.pageIndex,
       objNum: e.annot.objNum,
+      subtype: e.annot.type,
+      quadPoints: e.annot.quadPoints,
       rect: e.annot.rect,
       oldContents: e.annot.contents,
       contents: e.contents,
@@ -4727,6 +4745,8 @@ export default function App() {
               {
                 pageIndex: ni,
                 objNum: e.annot.objNum,
+                subtype: e.annot.type,
+                quadPoints: e.annot.quadPoints,
                 rect: e.annot.rect,
                 oldContents: inFlightWrites.get(e.annot.objNum) ?? e.annot.contents,
                 contents: e.contents,
@@ -6097,7 +6117,7 @@ export default function App() {
         objNum: a.objNum,
         subtype: a.type,
         rect: a.rect,
-        ...(a.type === 'note' ? { contents: a.contents } : {}),
+        ...('contents' in a ? { contents: a.contents, quadPoints: a.quadPoints } : {}),
       }))
       const annotKey = excludedAnnots
         .map((a) => `${a.objNum}:${a.subtype}:${imageRectKey(a.rect)}`)
@@ -6321,6 +6341,8 @@ export default function App() {
             ? {
                 replyToSaved: {
                   objNum: root.saved.objNum,
+                  subtype: root.saved.type,
+                  quadPoints: root.saved.quadPoints,
                   rect: root.saved.rect,
                   contents: root.saved.contents,
                 },
@@ -6748,9 +6770,8 @@ export default function App() {
     let deletedMarkups = 0
     for (const d of annotDeletes) {
       if (deleted.has(d.annot.pageIndex)) continue // its whole page is already excluded
-      if (d.annot.type === 'note') {
-        if (d.annot.inReplyTo === null) deletedThreads++
-      } else deletedMarkups++
+      if ('inReplyTo' in d.annot && d.annot.inReplyTo === null) deletedThreads++
+      if (d.annot.type !== 'note') deletedMarkups++
     }
     // scan still running: "unknown" must not read as "none" — a run started right
     // after open would otherwise never hear the file carries review feedback
