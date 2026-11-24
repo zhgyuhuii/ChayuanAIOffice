@@ -28,6 +28,7 @@ import './styles.css'
 import '@chaoffice/ui/zcode-theme.css'
 import { applyAiPanelPrefs, installScreenTips } from '@chaoffice/ui'
 import { installAnchorPanelFallback } from '@chaoffice/ui'
+import { connectMeasurementUnit } from './measurement-unit'
 
 installCanvasKerning()
 
@@ -90,6 +91,12 @@ async function bootstrap(): Promise<void> {
   if (mode !== 'audience') {
     applyTheme(theme)
     window.slidesApi?.onThemeChanged(applyTheme)
+    const api = window.slidesApi
+    if (api?.getMeasurementUnit && api.onMeasurementUnitChanged)
+      connectMeasurementUnit({
+        get: api.getMeasurementUnit,
+        onChanged: api.onMeasurementUnitChanged,
+      })
     await window.slidesApi
       ?.getAiPanelPrefs?.()
       .then(applyAiPanelPrefs)

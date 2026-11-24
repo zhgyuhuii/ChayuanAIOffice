@@ -45,6 +45,7 @@ export default defineConfig({
       '@chaoffice/ui/ModelDefaultsPage': local('../../packages/ui/src/ModelDefaultsPage.tsx'),
       '@chaoffice/ui': local('../../packages/ui/src/index.ts'),
       '@chaoffice/xlsx-gateway/*': local('../../packages/xlsx-gateway/src/*'),
+      '@chaoffice/ui/measurement': local('../../packages/ui/src/measurement.ts'),
     },
   },
 

@@ -38,6 +38,20 @@ import { IntegrationsPane, skillUpdateDue } from './IntegrationsPane'
 import { FoundSkills } from './FoundSkills'
 import { McpServerSettings } from './McpServerSettings'
 import { McpManagePane } from './McpManagePane'
+import {
+  MEASUREMENT_UNITS,
+  isMeasurementUnit,
+  type MeasurementUnit,
+  type MeasurementUnitState,
+} from '@chaoffice/ui/measurement'
+
+const UNIT_LABEL_KEYS = {
+  in: 'setUnitIn',
+  cm: 'setUnitCm',
+  mm: 'setUnitMm',
+  pt: 'setUnitPt',
+  pi: 'setUnitPi',
+} as const satisfies Record<MeasurementUnit, string>
 import './settings.css'
 import './settings-skin.css'
 import { useSlidingIndicator } from './settings-fx'
@@ -643,6 +657,8 @@ export function SettingsModal({
   const [theme, setTheme] = useState<UiTheme>('system')
   const [docTheme, setDocTheme] = useState<DocTheme>('follow')
   const [updateState, setUpdateState] = useState<UpdateUiState | null>(null)
+  /** app-wide measurement unit; null until the shell answers */
+  const [unitState, setUnitState] = useState<MeasurementUnitState | null>(null)
   const [csvLimitMb, setCsvLimitMb] = useState(CSV_IMPORT_DEFAULT_LIMIT_MB)
   const [saveDir, setSaveDir] = useState('')
   const [analyticsOn, setAnalyticsOn] = useState(true)
@@ -672,6 +688,12 @@ export function SettingsModal({
     void window.chaOffice.getDocumentTheme?.().then((th) => {
       if (alive) setDocTheme(th)
     })
+    void window.chaOffice
+      .getMeasurementUnit?.()
+      .then((state) => {
+        if (alive) setUnitState(state)
+      })
+      .catch(() => undefined)
     void window.chaOffice.getDefaultSaveDir?.().then((dir) => {
       if (alive && dir) setSaveDir(dir)
     })
@@ -756,6 +778,13 @@ export function SettingsModal({
     void window.chaOffice.setTheme(next)
     if (next === 'system') document.documentElement.removeAttribute('data-theme')
     else document.documentElement.setAttribute('data-theme', next)
+  }
+
+  const applyMeasurementUnit = (next: MeasurementUnit | null) => {
+    void window.aiOffice
+      .setMeasurementUnit?.(next)
+      .then(setUnitState)
+      .catch(() => undefined)
   }
 
   const applyDocumentTheme = (next: DocTheme) => {
@@ -963,6 +992,23 @@ export function SettingsModal({
                     }}
                   />
                 </div>
+                    <label className="set-field-label">{t('setMeasureUnits')}</label>
+                  </div>
+                  <Dropdown
+                    className="set-dd"
+                    value={unitState?.explicit ? unitState.unit : 'auto'}
+                    ariaLabel={t('setMeasureUnits')}
+                    options={[
+                      { value: 'auto', label: t('setUnitAuto') },
+                      ...MEASUREMENT_UNITS.map((unit) => ({
+                        value: unit,
+                        label: t(UNIT_LABEL_KEYS[unit]),
+                      })),
+                    ]}
+                    onPick={(v) => applyMeasurementUnit(isMeasurementUnit(v) ? v : null)}
+                  />
+                </div>
+                <h4 className="set-pane-subtitle">{t('setGrpAi')}</h4>
                 <div className="set-field">
                   <div className="set-field-text">
                     <label className="set-field-label">{t('setAiPanelSide')}</label>

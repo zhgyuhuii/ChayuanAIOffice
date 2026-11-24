@@ -4,6 +4,11 @@ import type { AiModelEntry, AiSettingsV2, ChaOfficeAccountStatus } from '@chaoff
 import { normalizeAiPanelPrefs } from '@chaoffice/ui/ai-panel-prefs'
 import { installDropOpenBridge } from '@chaoffice/electron-utils/drop-open'
 import { createRemoteFilesClient } from '@chaoffice/storage-adapter/remote-ipc'
+import {
+  MEASUREMENT_UNIT_CHANNELS,
+  isMeasurementUnit,
+  isMeasurementUnitState,
+} from '@chaoffice/ui/measurement'
 import type { UpdateUiState } from '../shared/update-api'
 import type {
   AccountLoginEvent,
@@ -447,6 +452,17 @@ const homeApi: HomeApi = {
     if (theme !== 'light' && theme !== 'dark' && theme !== 'follow')
       throw new Error('Invalid document theme.')
     await ipcRenderer.invoke(HOME_CHANNELS.setDocumentTheme, theme)
+  },
+  async getMeasurementUnit() {
+    const result: unknown = await ipcRenderer.invoke(MEASUREMENT_UNIT_CHANNELS.get)
+    if (!isMeasurementUnitState(result)) throw new Error('Invalid measurement unit state.')
+    return result
+  },
+  async setMeasurementUnit(unit) {
+    if (unit !== null && !isMeasurementUnit(unit)) throw new Error('Invalid measurement unit.')
+    const result: unknown = await ipcRenderer.invoke(MEASUREMENT_UNIT_CHANNELS.set, unit)
+    if (!isMeasurementUnitState(result)) throw new Error('Invalid measurement unit state.')
+    return result
   },
   async getAutoSaveDefault() {
     const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.getAutoSaveDefault)

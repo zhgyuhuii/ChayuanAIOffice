@@ -1,4 +1,5 @@
 import type { AiPanelPrefs } from '@chaoffice/ui'
+import { MEASUREMENT_UNIT_CHANNELS } from '@chaoffice/ui/measurement'
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import type { IpcRendererEvent } from 'electron'
 import { KB_CHANNELS } from '@chaoffice/ai-host/kb-channels'
@@ -128,6 +129,12 @@ const api: SlidesApi = {
     const listener = (_event: IpcRendererEvent, theme: UiTheme) => handler(theme)
     ipcRenderer.on('app:theme-changed', listener)
     return () => ipcRenderer.removeListener('app:theme-changed', listener)
+  },
+  getMeasurementUnit: () => ipcRenderer.invoke(MEASUREMENT_UNIT_CHANNELS.get),
+  onMeasurementUnitChanged: (handler) => {
+    const listener = (_event: IpcRendererEvent, state: unknown) => handler(state)
+    ipcRenderer.on(MEASUREMENT_UNIT_CHANNELS.changed, listener)
+    return () => ipcRenderer.removeListener(MEASUREMENT_UNIT_CHANNELS.changed, listener)
   },
   getAutoSaveDefault: () => ipcRenderer.invoke('app:get-auto-save-default'),
   onAutoSaveDefaultChanged: (handler) => {

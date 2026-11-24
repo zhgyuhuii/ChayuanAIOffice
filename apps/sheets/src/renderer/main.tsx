@@ -26,6 +26,7 @@ import {
   registerTextDingbatsFace,
   untilCellFontsLoaded,
 } from './cell-font-fallback'
+import { connectMeasurementUnit } from '@genoffice/ui/use-measurement-unit'
 import { LocaleProvider, setModuleLang } from './i18n/locale'
 import type { DocTheme, UiTheme } from '../shared/desktop-api'
 import './styles.css'
@@ -115,7 +116,14 @@ async function bootstrap(): Promise<void> {
   applyDocumentTheme(docTheme ?? 'follow')
   await loadCellFonts()
   window.desktopApi?.onThemeChanged(applyTheme)
-  void window.desktopApi
+  window.desktopApi?.onDocumentThemeChanged?.(applyDocumentTheme)
+  const api = window.desktopApi
+  if (api?.getMeasurementUnit && api.onMeasurementUnitChanged)
+    connectMeasurementUnit({
+      get: () => api.getMeasurementUnit!(),
+      onChanged: (handler) => api.onMeasurementUnitChanged!(handler),
+    })
+  await window.desktopApi
     ?.getAiPanelPrefs?.()
     .then(applyAiPanelPrefs)
     .catch(() => {})

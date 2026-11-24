@@ -29,6 +29,7 @@ import type {
 } from '@chaoffice/agent-core'
 import type { UpdateChannel, UpdateUiState } from './update-api'
 import type { AiPanelPrefs } from '@chaoffice/ui/ai-panel-prefs'
+import type { MeasurementUnit, MeasurementUnitState } from '@chaoffice/ui/measurement'
 
 /** folder the new file's first save should land in (upstream 7036122; Home "Folders" panel) */
 export interface NewFileOpts {
@@ -461,6 +462,10 @@ export interface HomeApi {
   getDocumentTheme(): Promise<DocTheme>
   /** switch + persist the document page theme; broadcasts 'app:document-theme-changed' to all web contents */
   setDocumentTheme(theme: DocTheme): Promise<void>
+  /** app-wide measurement unit (rulers and length fields in every editor); explicit = picked, not the region default */
+  getMeasurementUnit(): Promise<MeasurementUnitState>
+  /** persist the unit (null = follow the system region); broadcasts 'app:measurement-unit-changed' to all web contents */
+  setMeasurementUnit(unit: MeasurementUnit | null): Promise<MeasurementUnitState>
   /** AutoSave default applied by every editor window (persisted in userData/app-settings.json) */
   getAutoSaveDefault(): Promise<AutoSaveDefault>
   /** persist the AutoSave default; broadcasts 'app:auto-save-default-changed' to all web contents */

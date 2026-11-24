@@ -29,6 +29,7 @@ import '@chaoffice/ui/files-pane.css'
 import '@chaoffice/ui/zcode-theme.css'
 import { applyAiPanelPrefs, installScreenTips } from '@chaoffice/ui'
 import { setAltChunkHtmlConverter } from '@chaoffice/docx-engine'
+import { connectAppWideMeasurementUnit } from './units'
 
 installScreenTips()
 installKeyLayer()
@@ -69,6 +70,19 @@ async function bootstrap(): Promise<void> {
   applyDocumentTheme(docTheme ?? 'follow')
   window.desktop?.onThemeChanged(applyTheme)
   window.desktop?.onDocumentThemeChanged?.(applyDocumentTheme)
+  // the app-wide unit (Settings ▸ General); before it answers, the locale default
+  const desktop = window.desktop
+  if (
+    desktop?.getMeasurementUnit &&
+    desktop.setMeasurementUnit &&
+    desktop.onMeasurementUnitChanged
+  ) {
+    connectAppWideMeasurementUnit({
+      get: () => desktop.getMeasurementUnit!(),
+      set: (unit) => desktop.setMeasurementUnit!(unit),
+      onChanged: (handler) => desktop.onMeasurementUnitChanged!(handler),
+    })
+  }
   await window.desktop
     ?.getAiPanelPrefs?.()
     .then(applyAiPanelPrefs)

@@ -165,6 +165,7 @@ import {
 } from '@chaoffice/chart-kit/designer'
 import { StageRuler } from './components/StageRuler'
 import { formatRulerValue, type RulerUnit } from './ruler-ticks'
+import { useMeasurementUnit } from './measurement-unit'
 import * as fileActions from './file-actions'
 import * as clipboardActions from './clipboard-actions'
 import * as insertActions from './insert-actions'
@@ -869,8 +870,8 @@ export function App() {
   }, [slide?.widthPx, slide?.heightPx])
 
   // ── Stage rulers (PowerPoint-style fixed chrome outside the zoomed canvas) ──
-  /** ruler unit follows the UI language: imperial for English, metric elsewhere */
-  const rulerUnit: RulerUnit = lang === 'en' ? 'in' : 'cm'
+  /** ruler unit: the app-wide measurement unit (Settings ▸ General) */
+  const rulerUnit: RulerUnit = useMeasurementUnit()
   /** where slide coordinate 0 falls, in px relative to the stage viewport
    * (= ruler-local px, since each ruler strip is flush with .stage-wrap) */
   const [rulerOrigin, setRulerOrigin] = useState<{ x: number; y: number } | null>(null)
