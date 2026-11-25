@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@chaoffice/ppt2pptx": "*",
+    "@chaoffice/zip-gate": "*",
     "@chaoffice/ai-provider": "*",
     "@chaoffice/ai-search": "*",
     "@chaoffice/doc2docx": "*",
