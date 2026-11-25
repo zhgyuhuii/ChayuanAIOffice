@@ -129,16 +129,22 @@ Without Apple or Windows signing credentials in the environment these produce
 unsigned artifacts: code signing and notarization are skipped with a warning
 rather than failing. That is the expected result for a contributor build.
 
-`dist:win` additionally expects the xlsx sidecar at the MinGW cross-compilation
-path. Building on Windows leaves it under the MSVC target instead, so stage it
-first:
+On macOS, packaging from a repository that lives on an exFAT/FAT32 volume (an
+external USB drive, for example) fails because the OS writes hidden `._`
+AppleDouble sidecar files next to the build output and electron-builder trips
+over them. Point the output directory at an APFS path instead of moving the
+repository:
 
 ```bash
-cargo build --release --target x86_64-pc-windows-gnu   # from apps/sheets/native/xlsx-engine
+BUILD_DIR=/tmp/chatoffice-release npm run dist:mac
 ```
 
-or copy an existing `target/release/xlsx-sidecar.exe` to
-`target/x86_64-pc-windows-gnu/release/`.
+`dist:win` takes the xlsx sidecar from the MinGW cross-compilation path when it
+is there (that is what the release pipeline builds). On a Windows host the plain
+`npm run build:all` compiles it with the host toolchain into
+`target/release/xlsx-sidecar.exe` instead, and packaging accepts that build as
+long as the host architecture matches the packaged one (`GENOFFICE_WIN_ARM64=1`
+still needs a cross build for `aarch64-pc-windows-msvc`).
 
 The Windows clipboard helper (`native/win-clipboard-helper`, genoffice#1985)
 follows the same layout rule and is built by the same `native:build`/`native:test`
@@ -150,32 +156,20 @@ for it and the sheets resolver silently skips the EMF format when it is absent.
 None are required — the apps run with all of these unset. They exist for
 testing and local overrides:
 
-<<<<<<< HEAD
-| Variable                                                 | Effect                                                                 |
-| -------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `CHATOFFICE_USER_DATA`                                    | Override the Electron userData directory (test isolation)              |
-| `CHATOFFICE_LANG`                                         | Force the UI language instead of following the OS locale               |
-| `CHATOFFICE_FAKE_UPDATE`                                  | Exercise the updater UI without a real release feed                    |
-| `CHATOFFICE_CLOUD_SLIDE`, `CHATOFFICE_CLOUD_SLIDE_TIER`    | Route slide generation through the cloud endpoint                      |
-| `GSK_API_KEY`, `GSK_CLI_PATH`                            | Genspark credentials / CLI location for the built-in AI provider       |
-| `AI_SEARCH_DISABLE_GSK`, `SERPER_API_KEY`, `TAVILY_API_KEY` | Disable the gsk search backend / supply a Serper or Tavily key        |
-| `XLSX_SIDECAR_PATH`, `XLSX_OPEN_PATH`, `XLSX_DEBUG_PORT` | Point at a locally built xlsx sidecar and its debug port               |
-| `*_DEV_PORT`, `*_RENDERER_URL`                           | Per-app Vite dev server ports and renderer URLs (set by `npm run dev`) |
-=======
 | Variable                                                                                                               | Effect                                                                                      |
 | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | `BUILD_DIR`                                                                                                            | Override the electron-builder output directory (default `apps/shell/release`)               |
 | `GENOFFICE_USER_DATA`                                                                                                  | Override the Electron userData directory (test isolation)                                   |
 | `GENOFFICE_LANG`                                                                                                       | Force the UI language instead of following the OS locale                                    |
 | `GENOFFICE_FAKE_UPDATE`                                                                                                | Exercise the updater UI without a real release feed                                         |
-| `GSK_API_KEY`, `GSK_CLI_PATH`                                                                                          | ChaAI Office credentials / CLI location for the built-in AI provider                            |
+| `GSK_API_KEY`, `GSK_CLI_PATH`                                                                                          | ChaAI Office credentials / CLI location for the built-in AI provider                        |
 | `AI_SEARCH_DISABLE_GSK`, `SERPER_API_KEY`, `SERPLY_API_KEY`, `SEARCHAPI_API_KEY`, `TAVILY_API_KEY`, `PARALLEL_API_KEY` | Disable the gsk search backend / supply a Serper, Serply, SearchApi, Tavily or Parallel key |
 | `XLSX_SIDECAR_PATH`, `XLSX_OPEN_PATH`, `XLSX_DEBUG_PORT`                                                               | Point at a locally built xlsx sidecar and its debug port                                    |
 | `*_DEV_PORT`, `*_RENDERER_URL`                                                                                         | Per-app Vite dev server ports and renderer URLs (set by `npm run dev`)                      |
->>>>>>> 5e9d11049 (feat(ai-search): add SearchApi as a web and image search provider (#2484))
 
 AI features degrade rather than break without credentials: requests surface an
-inline sign-in prompt, and web search falls back to a keyless backend.
+inline sign-in prompt, and web search falls back to keyless backends (Parallel's
+free Search MCP, then DuckDuckGo).
 
 ## Coding conventions
 
@@ -187,12 +181,10 @@ inline sign-in prompt, and web search falls back to a keyless backend.
   is cheap.
 - Tests live in `apps/*/tests` and `packages/*/tests` (vitest). New engine
   behavior needs a unit test; renderer-only UI tweaks generally don't.
-- Local Playwright/Electron acceptance drivers belong in `scripts/drivers/`
-  (gitignored, excluded from CI) — see `scripts/drivers/README.md`.
-- The Word-fidelity scripts (`scripts/docs-word-fidelity.mjs`,
-  `scripts/pagination-baseline-word.mjs`) need macOS with Microsoft Word
-  installed and AppleScript automation permission granted; they are optional
-  local tools and never run in CI.
+- Playwright/Electron acceptance drivers and Office-app comparison scripts
+  (anything that drives the built app or Word/Excel/PowerPoint on your
+  machine) are local, on-demand tools: keep them out of the tree (they are
+  gitignored) and never wire them into CI.
 - Keep files from growing without bound: if you are adding a substantial new
   concern to an already-large file, prefer a new module.
 

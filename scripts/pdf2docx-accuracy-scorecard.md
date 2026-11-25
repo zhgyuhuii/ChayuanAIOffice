@@ -1,12 +1,7 @@
 # PDF → editable accuracy scorecard — measured 2026-11-15
 
-<<<<<<< HEAD
-- chaoffice pipeline at commit 19a389b3 (upstream/main, "before") vs this branch
-  ("after", `augmentGridStreamColumns`); LibreOffice 26.8.2.2 via
-=======
-- genoffice pipeline at commit 19a389b3 ("before") vs the same pipeline with
+- chaoffice pipeline at commit 19a389b3 ("before") vs the same pipeline with
   `augmentGridStreamColumns` ("after"); LibreOffice 26.8.2.2 via
->>>>>>> a10ba6203 (Sync snapshot (2026-11-19) (#2872))
   `soffice --infilter=writer_pdf_import --convert-to docx` for reference.
 - Run: `node scripts/pdf2docx-accuracy.mjs <out.md>` (regenerates the after
   numbers on any checkout; the before numbers need a checkout WITHOUT the fix).
@@ -23,25 +18,14 @@ Field = a ground-truth string that must survive as ONE contiguous cell/paragraph
 | ----------------- | --------- | ------ | ----- | ------- | ------------------------- |
 | invoice-banded-en | chaoffice | 11/11  | 0     | 0       | 1 (8)                     |
 | invoice-banded-en | soffice   | 11/11  | 0     | 0       | - (8)                     |
-<<<<<<< HEAD
 | invoice-cjk-real  | chaoffice | 6/7    | 0     | 1       | 1 (8)                     |
-
-- not intact: "91310000MA1FL0000X"
-  | invoice-cjk-real | soffice | 7/7 | 0 | 0 | - (8) |
-  | report-bordered | chaoffice | 12/12 | 0 | 0 | - |
-  | report-bordered | soffice | 12/12 | 0 | 0 | - |
-  | report-borderless | chaoffice | 9/9 | 0 | 0 | - |
-  | report-borderless | soffice | 9/9 | 0 | 0 | - |
-=======
-| invoice-cjk-real  | genoffice | 6/7    | 0     | 1       | 1 (8)                     |
 | invoice-cjk-real  | soffice   | 7/7    | 0     | 0       | - (8)                     |
-| report-bordered   | genoffice | 12/12  | 0     | 0       | -                         |
+| report-bordered   | chaoffice | 12/12  | 0     | 0       | -                         |
 | report-bordered   | soffice   | 12/12  | 0     | 0       | -                         |
-| report-borderless | genoffice | 9/9    | 0     | 0       | -                         |
+| report-borderless | chaoffice | 9/9    | 0     | 0       | -                         |
 | report-borderless | soffice   | 9/9    | 0     | 0       | -                         |
 
-- invoice-cjk-real, genoffice, not intact: "91310000MA1FL0000X"
->>>>>>> a10ba6203 (Sync snapshot (2026-11-19) (#2872))
+- invoice-cjk-real, chaoffice, not intact: "91310000MA1FL0000X"
 
 ## after (with `augmentGridStreamColumns`)
 
