@@ -303,6 +303,8 @@ export interface Run {
     rId?: string
     anchor?: string
     history?: string
+    targetFrame?: string
+    docLocation?: string
     tooltip?: string
     plain?: boolean
   }
