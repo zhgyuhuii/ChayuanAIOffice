@@ -2,7 +2,7 @@
  * Re-identify the dev-mode electron install so every OS shows the product.
  *
  * macOS: the dev bundle directory itself is renamed
- *   node_modules/electron/dist/Electron.app → 察元AIOffice.app
+ *   node_modules/electron/dist/Electron.app → the branded APP_NAME.app (below)
  * because the Dock HOVER TOOLTIP reads the .app bundle's directory name —
  * empirically it shows "Electron" even when the process name (p_comm), the
  * ASN check-in name, NSRunningApplication.localizedName and the
@@ -19,7 +19,7 @@
  * repaired; between installs nothing calls install.js (getElectronPath only
  * heals when the path.txt target is missing, and it exists).
  *
- * The main executable is HARD-LINKED as 察元AIOffice inside the bundle
+ * The main executable is HARD-LINKED under APP_NAME inside the bundle
  * (CFBundleExecutable points there) so the process name matches too; the
  * stock "Electron" link stays so a stale path.txt still launches. A renamed
  * executable makes Electron report app.isPackaged === true, which flips every
@@ -30,7 +30,7 @@
  *
  * Linux: the GNOME/KDE taskbar names a window by WM_CLASS = executable
  * basename ("electron" in dev) — a dev .desktop entry resolves that WM_CLASS
- * to 察元AIOffice + brand icon. The binary is not renamed (same isPackaged
+ * to APP_NAME + brand icon. The binary is not renamed (same isPackaged
  * flip).
  *
  * Editing a signed .app invalidates its code signature and arm64 macOS kills
@@ -74,7 +74,7 @@ if (process.platform === 'win32') process.exit(0)
  * "electron" tooltip and the stock icon. The binary itself is NOT renamed
  * (renaming flips app.isPackaged and breaks the dev module layout — see the
  * header); instead a dev .desktop entry resolves WM_CLASS electron →
- * 察元AIOffice + brand icon.
+ * APP_NAME + brand icon.
  */
 function patchLinux() {
   const distDir = [

@@ -534,7 +534,7 @@ html.chaoffice-popover-open .ribbon-tabs {
   background: var(--word-blue);
 }
 
-/* 文件按钮与其他标签统一（WPS 形态: 透明底/同 hover, 去品牌色胶囊） */
+/* File button matches the other tabs (WPS form: transparent plate, same hover, no brand-color pill) */
 .ribbon-tab-file {
   color: inherit;
   background: transparent;
@@ -1087,7 +1087,7 @@ html.chaoffice-popover-open .ribbon-tabs {
   background: var(--hover);
 }
 
-/* The 察元AI entry reads as one piece: hover/press tint the whole button
+/* The Chayuan AI entry reads as one piece: hover/press tint the whole button
    (icon + label together), so the gradient brand tile never sits inside a
    gray icon plate — same treatment as the pdf/sheets ribbons. */
 .rb-big.ai-entry:hover:not(:disabled) {
@@ -1612,7 +1612,7 @@ span.rb-group-menu-button::after,
   font-weight: 500;
 }
 
-/* 字符边框 / 字符底纹 button glyphs (WPS font-group #12-13) */
+/* Character border / character shading button glyphs (WPS font-group #12-13) */
 .rb-char-box {
   font-size: 13px;
   font-weight: 500;
@@ -1631,7 +1631,7 @@ span.rb-group-menu-button::after,
   background: #d9d9d9;
 }
 
-/* 简繁转换 button glyphs (审阅): 简体箭头指向目标字形 */
+/* Simplified↔Traditional conversion button glyphs (Review tab): the arrow points at the target script */
 .rb-zh-convert {
   font-size: 15px;
   font-weight: 600;
@@ -10520,7 +10520,7 @@ body.docs-crop-active
   color: var(--color-text-primary);
 }
 
-/* ---- 助手 tab: one-click action list (icon + name + description) ---- */
+/* ---- Assistant tab: one-click action list (icon + name + description) ---- */
 
 .ai-assistant {
   flex: 1;
@@ -10586,7 +10586,7 @@ body.docs-crop-active
   color: var(--color-text-secondary);
 }
 
-/* ---- 助手 tab: library browser (domain groups / search / recents) ---- */
+/* ---- Assistant tab: library browser (domain groups / search / recents) ---- */
 
 .ai-assist-toolbar {
   display: flex;
@@ -12769,7 +12769,7 @@ body.docs-crop-active
   color: var(--accent);
 }
 
-/* % label doubles as the 显示比例 popover trigger (WPS) */
+/* % label doubles as the zoom-level popover trigger (WPS) */
 .zoom-value-btn {
   border: none;
   background: none;
@@ -12784,7 +12784,7 @@ body.docs-crop-active
   background: var(--docs-statusbar-hover);
 }
 
-/* WPS 视图切换组:与缩放组之间以细分割线隔开 */
+/* WPS view-switch group: separated from the zoom group by a thin divider */
 .status-views {
   display: flex;
   align-items: center;
@@ -12820,7 +12820,7 @@ body.docs-crop-active
   cursor: default;
 }
 
-/* 显示比例 popover:预设行 + 自定义百分比行 */
+/* Zoom-level popover: preset row + custom percentage row */
 .zoom-pop {
   position: fixed;
   z-index: 90;
@@ -17496,12 +17496,13 @@ tr > .page-gap-cut {
 }
 
 /* ───────────────────────────────────────────────────────────────────────────
-   手机/平板自适应(P1)
-   检测在 JS 侧(useUIMode:coarse 指针 + ≤768px AND 判定,localStorage 三态覆
-   盖);`.mobile-ui` 挂在 .app 根上承载结构差异。桌面 UI 不受影响。
+   Phone / tablet adaptive layout (P1)
+   Detection lives on the JS side (useUIMode: coarse pointer AND ≤768px, with a
+   three-state localStorage override); `.mobile-ui` sits on the .app root and
+   carries the structural differences. The desktop UI is unaffected.
    ─────────────────────────────────────────────────────────────────────────── */
 
-/* coarse 指针(平板触屏走桌面 UI 时也生效):触控命中目标补偿 */
+/* Coarse pointer (also active when tablets use the desktop UI): touch hit-target compensation */
 @media (pointer: coarse) {
   .ribbon-tabs .ribbon-tab {
     min-height: 40px;
@@ -17513,18 +17514,19 @@ tr > .page-gap-cut {
   }
 }
 
-/* 移动模式:标尺对触屏没有意义(拖拽精度不足),隐藏整行 */
+/* Mobile mode: rulers are pointless on touch (drag precision), hide the whole row */
 .mobile-ui .ruler-row {
   display: none;
 }
 
-/* 移动模式:底部快捷条是 fixed 定位,给滚动区留出内容不被遮挡的底部空间 */
+/* Mobile mode: the bottom quick bar is fixed; reserve scroll-area padding so content stays clear of it */
 .mobile-ui .editor-scroll {
   padding-bottom: calc(64px + env(safe-area-inset-bottom));
 }
 
-/* 底部快捷格式条:拇指可达(44px 命中),横滑,悬浮在虚拟键盘之上
-   (marginBottom 由 useKeyboardInset 注入,桌面端恒为 0) */
+/* Bottom quick format bar: thumb-reachable (44px targets), horizontally
+   scrollable, floats above the virtual keyboard (marginBottom injected by
+   useKeyboardInset; always 0 on desktop) */
 .mqb {
   position: fixed;
   right: 0;
@@ -17595,7 +17597,7 @@ tr > .page-gap-cut {
   min-height: 0;
 }
 
-/* 文件菜单: 最近文件区标题与路径行 */
+/* File menu: recents section title and path rows */
 .file-menu-sec {
   padding: 6px 12px 3px;
   font-size: 11px;
@@ -17614,7 +17616,7 @@ tr > .page-gap-cut {
   text-align: left;
 }
 
-/* ── 功能区折叠（WPS 双击标签/右下角图标） ── */
+/* ── Ribbon collapse (WPS: double-click a tab / the bottom-right icon) ── */
 .ribbon {
   position: relative;
 }
@@ -17634,8 +17636,9 @@ tr > .page-gap-cut {
   background: transparent;
   color: var(--text-2, var(--text));
   cursor: pointer;
-  /* 折叠态 chevron 落进 .ribbon-tabs 拖拽带: 不豁免则 mousedown 被窗口
-     拖拽吞掉, 无法再点击展开 */
+  /* The collapsed chevron lands inside the .ribbon-tabs drag strip: without
+     this exemption the window drag swallows mousedown and it can no longer
+     be clicked to expand */
   -webkit-app-region: no-drag;
   pointer-events: auto;
 }
@@ -17645,13 +17648,13 @@ tr > .page-gap-cut {
   color: var(--text);
 }
 
-/* 折叠态: 功能区只剩标签行, chevron 左移避开右端 AI 开关 */
+/* Collapsed: the ribbon keeps only the tab row; move the chevron left, clear of the AI toggle */
 .ribbon-collapsed .ribbon-collapse-btn {
   right: 46px;
   bottom: 3px;
 }
 
-/* 图片工具：亮度/对比度 ± 步进（WPS 形态） */
+/* Picture tools: brightness/contrast ± steppers (WPS form) */
 .rb-lum-col {
   display: flex;
   flex-direction: column;
@@ -17705,7 +17708,7 @@ tr > .page-gap-cut {
   cursor: default;
 }
 
-/* AI 重绘替换（图片工具 tab 内联面板） */
+/* AI redraw/replace (inline panel inside the picture-tools tab) */
 .rb-ai-replace {
   position: absolute;
   top: calc(100% + 6px);
@@ -17750,7 +17753,7 @@ tr > .page-gap-cut {
   position: relative;
 }
 
-/* 拼音指南 button glyph (WPS font-group #11) */
+/* Pinyin guide button glyph (WPS font-group #11) */
 .rb-phonetic {
   font-size: 11px;
   font-weight: 500;
@@ -17764,7 +17767,7 @@ tr > .page-gap-cut {
   font-family: 'Noto Serif CJK SC';
 }
 
-/* boot / loading logo（37 号家族品牌 logo，等待画面统一元素） */
+/* Boot / loading logo (family brand logo #37, the shared waiting-screen element) */
 .boot-logo {
   width: 64px;
   height: 64px;
@@ -17879,7 +17882,7 @@ tr > .page-gap-cut {
   cursor: pointer;
 }
 
-/* ── 察元 AI docops: dialogs, tables, toast, form-mode fields ───────────── */
+/* ── Chayuan AI docops: dialogs, tables, toast, form-mode fields ────────── */
 
 .docops-modal .docops-modal-body {
   display: flex;
@@ -18070,7 +18073,6 @@ tr > .page-gap-cut {
   margin-right: 4px;
   white-space: nowrap;
 }
-
 
 /* ---- table operations wave: 9-way cell alignment, small dialogs, screen gridlines ---- */
 .cell-align-grid {
