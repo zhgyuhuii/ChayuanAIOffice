@@ -145,7 +145,7 @@ def set_names(font, family, subfamily, version_note):
     for nid, text in (
         (1, family),
         (2, subfamily),
-        (3, f"GenOffice;{ps}"),
+        (3, f"ChaOffice;{ps}"),
         (4, f"{family} {subfamily}" if subfamily != "Regular" else family),
         (5, f"Version 1.000; {version_note}"),
         (6, ps),

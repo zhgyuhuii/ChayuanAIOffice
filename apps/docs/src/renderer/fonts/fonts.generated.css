@@ -1646,6 +1646,141 @@
   font-display: block;
 }
 
+/* Word for Mac ships Cordia New and TH SarabunPSK (DFonts) and lays every other Thai
+ * family out as Cordia New (probe 2026-11-03, doc2docx sample 059: 16pt TH SarabunIT9
+ * paces 18.4pt = Cordia hhea 1.147). macOS has neither and Chromium's Thonburi fallback
+ * advances ~1.75x wider at a 1em design size. The Thai faces (Regular and Bold) are Noto
+ * Sans Thai with every outline scaled horizontally to the Word advance of its code point
+ * and vertically to the small Thai design size, mark anchors moved along, advances and
+ * vertical metrics rewritten (tools/build-thai-font.py); the Latin repertoire is
+ * Liberation Sans size-adjusted to the Word face's Latin advances (hmtx sentence ratio
+ * over a mixed-case English sample).
+ * 
+ * ChaAI Office Cordia: hmtx 2026-11-03
+ * Thai advances per glyph from hmtx, Regular and Bold; Latin ratio 0.649 regular / 0.643 bold
+ * fonts: Cordia New (Word DFonts cordia.ttc); NotoSansThai; LiberationSans */
+@font-face {
+  font-family: 'ChaAI Office Cordia';
+  src: url('./ChaOfficeCordia-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: 'ChaAI Office Cordia';
+  src: url('./ChaOfficeCordia-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: 'ChaAI Office Cordia';
+  src: url('./LiberationSans-Regular.ttf');
+  size-adjust: 64.9%;
+  unicode-range: U+0000-0DFF, U+0E80-F6FF, U+F71B-10FFFF;
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: 'ChaAI Office Cordia';
+  src: url('./LiberationSans-Bold.ttf');
+  size-adjust: 64.3%;
+  unicode-range: U+0000-0DFF, U+0E80-F6FF, U+F71B-10FFFF;
+  font-weight: bold;
+  font-style: normal;
+  font-display: block;
+}
+
+/* Ethiopic faces (Nyala/Ebrima/Abyssinica) are missing on macOS and fall back
+ * to Kefa, 1.35-1.4x wider than Word's Nyala. Only routed when an Ethiopic
+ * face is declared, so no unicode-range needed; on Windows the declared name
+ * itself resolves ahead of this alias.
+ * Chromium local() matches PostScript/full names, not family names.
+ * 
+ * ChaAI Office Ethiopic: corpus 2026-08-13
+ * regression sample 39: line breaks match Word at 72%; the residual page-4 spill is line-height, not width */
+@font-face {
+  font-family: 'ChaAI Office Ethiopic';
+  src: local('Kefa-Regular'), local('Kefa Regular'), local('Kefa');
+  size-adjust: 72%;
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Word for Mac ships Cordia New and TH SarabunPSK (DFonts) and lays every other Thai
+ * family out as Cordia New (probe 2026-11-03, doc2docx sample 059: 16pt TH SarabunIT9
+ * paces 18.4pt = Cordia hhea 1.147). macOS has neither and Chromium's Thonburi fallback
+ * advances ~1.75x wider at a 1em design size. The Thai faces (Regular and Bold) are Noto
+ * Sans Thai with every outline scaled horizontally to the Word advance of its code point
+ * and vertically to the small Thai design size, mark anchors moved along, advances and
+ * vertical metrics rewritten (tools/build-thai-font.py); the Latin repertoire is
+ * Liberation Sans size-adjusted to the Word face's Latin advances (hmtx sentence ratio
+ * over a mixed-case English sample).
+ * 
+ * ChaAI Office Sarabun: hmtx 2026-11-03
+ * Thai advances per glyph from hmtx, Regular and Bold; Latin ratio 0.644 regular / 0.657 bold
+ * fonts: TH SarabunPSK (Word DFonts thsarabun.ttf); NotoSansThai; LiberationSans */
+@font-face {
+  font-family: 'ChaAI Office Sarabun';
+  src: url('./ChaOfficeSarabun-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: 'ChaAI Office Sarabun';
+  src: url('./ChaOfficeSarabun-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: 'ChaAI Office Sarabun';
+  src: url('./LiberationSans-Regular.ttf');
+  size-adjust: 64.4%;
+  unicode-range: U+0000-0DFF, U+0E80-F6FF, U+F71B-10FFFF;
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: 'ChaAI Office Sarabun';
+  src: url('./LiberationSans-Bold.ttf');
+  size-adjust: 65.7%;
+  unicode-range: U+0000-0DFF, U+0E80-F6FF, U+F71B-10FFFF;
+  font-weight: bold;
+  font-style: normal;
+  font-display: block;
+}
+
+/* Latin stand-in for Microsoft YaHei on machines without it: YaHei's tabular
+ * digits advance 0.586em (bold 0.617), Helvetica's 0.556, so the size-adjusted
+ * alias keeps digit-heavy cells wrapping like Word. A locally installed YaHei
+ * precedes it in the chain.
+ * 
+ * ChaAI Office YaHei Latin: hmtx 2026-09-23
+ * tabular digits 0.586em (bold 0.617) vs Helvetica 0.556
+ * fonts: Microsoft YaHei; Helvetica */
+@font-face {
+  font-family: 'ChaAI Office YaHei Latin';
+  src: local('Helvetica'), local('ArialMT'), url('./LiberationSans-Regular.ttf');
+  size-adjust: 106%;
+  unicode-range: U+0020-007E;
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: 'ChaAI Office YaHei Latin';
+  src: local('Helvetica-Bold'), local('Arial-BoldMT'), url('./LiberationSans-Bold.ttf');
+  size-adjust: 108%;
+  unicode-range: U+0020-007E;
+  font-weight: bold;
+  font-style: normal;
+  font-display: block;
+}
+
 /* Consolas ships only inside Office (Word's DFonts), so Chromium never resolves
  * it and the mono chain fell to Menlo, whose 0.602em advance runs 9.5% wider
  * than Consolas' 0.550em (hmtx, both fonts): indented code drifted right and
@@ -2004,141 +2139,6 @@
   unicode-range: U+0021-002F, U+003A-0040, U+005B-0060, U+007B-007E;
   font-weight: bold;
   font-style: italic;
-  font-display: block;
-}
-
-/* Word for Mac ships Cordia New and TH SarabunPSK (DFonts) and lays every other Thai
- * family out as Cordia New (probe 2026-11-03, doc2docx sample 059: 16pt TH SarabunIT9
- * paces 18.4pt = Cordia hhea 1.147). macOS has neither and Chromium's Thonburi fallback
- * advances ~1.75x wider at a 1em design size. The Thai faces (Regular and Bold) are Noto
- * Sans Thai with every outline scaled horizontally to the Word advance of its code point
- * and vertically to the small Thai design size, mark anchors moved along, advances and
- * vertical metrics rewritten (tools/build-thai-font.py); the Latin repertoire is
- * Liberation Sans size-adjusted to the Word face's Latin advances (hmtx sentence ratio
- * over a mixed-case English sample).
- * 
- * ChaAI Office Cordia: hmtx 2026-11-03
- * Thai advances per glyph from hmtx, Regular and Bold; Latin ratio 0.649 regular / 0.643 bold
- * fonts: Cordia New (Word DFonts cordia.ttc); NotoSansThai; LiberationSans */
-@font-face {
-  font-family: 'ChaAI Office Cordia';
-  src: url('./ChaOfficeCordia-Regular.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-  font-display: block;
-}
-@font-face {
-  font-family: 'ChaAI Office Cordia';
-  src: url('./ChaOfficeCordia-Bold.woff2') format('woff2');
-  font-weight: bold;
-  font-style: normal;
-  font-display: block;
-}
-@font-face {
-  font-family: 'ChaAI Office Cordia';
-  src: url('./LiberationSans-Regular.ttf');
-  size-adjust: 64.9%;
-  unicode-range: U+0000-0DFF, U+0E80-F6FF, U+F71B-10FFFF;
-  font-weight: normal;
-  font-style: normal;
-  font-display: block;
-}
-@font-face {
-  font-family: 'ChaAI Office Cordia';
-  src: url('./LiberationSans-Bold.ttf');
-  size-adjust: 64.3%;
-  unicode-range: U+0000-0DFF, U+0E80-F6FF, U+F71B-10FFFF;
-  font-weight: bold;
-  font-style: normal;
-  font-display: block;
-}
-
-/* Ethiopic faces (Nyala/Ebrima/Abyssinica) are missing on macOS and fall back
- * to Kefa, 1.35-1.4x wider than Word's Nyala. Only routed when an Ethiopic
- * face is declared, so no unicode-range needed; on Windows the declared name
- * itself resolves ahead of this alias.
- * Chromium local() matches PostScript/full names, not family names.
- * 
- * ChaAI Office Ethiopic: corpus 2026-08-13
- * regression sample 39: line breaks match Word at 72%; the residual page-4 spill is line-height, not width */
-@font-face {
-  font-family: 'ChaAI Office Ethiopic';
-  src: local('Kefa-Regular'), local('Kefa Regular'), local('Kefa');
-  size-adjust: 72%;
-  font-weight: normal;
-  font-style: normal;
-}
-
-/* Word for Mac ships Cordia New and TH SarabunPSK (DFonts) and lays every other Thai
- * family out as Cordia New (probe 2026-11-03, doc2docx sample 059: 16pt TH SarabunIT9
- * paces 18.4pt = Cordia hhea 1.147). macOS has neither and Chromium's Thonburi fallback
- * advances ~1.75x wider at a 1em design size. The Thai faces (Regular and Bold) are Noto
- * Sans Thai with every outline scaled horizontally to the Word advance of its code point
- * and vertically to the small Thai design size, mark anchors moved along, advances and
- * vertical metrics rewritten (tools/build-thai-font.py); the Latin repertoire is
- * Liberation Sans size-adjusted to the Word face's Latin advances (hmtx sentence ratio
- * over a mixed-case English sample).
- * 
- * ChaAI Office Sarabun: hmtx 2026-11-03
- * Thai advances per glyph from hmtx, Regular and Bold; Latin ratio 0.644 regular / 0.657 bold
- * fonts: TH SarabunPSK (Word DFonts thsarabun.ttf); NotoSansThai; LiberationSans */
-@font-face {
-  font-family: 'ChaAI Office Sarabun';
-  src: url('./ChaOfficeSarabun-Regular.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-  font-display: block;
-}
-@font-face {
-  font-family: 'ChaAI Office Sarabun';
-  src: url('./ChaOfficeSarabun-Bold.woff2') format('woff2');
-  font-weight: bold;
-  font-style: normal;
-  font-display: block;
-}
-@font-face {
-  font-family: 'ChaAI Office Sarabun';
-  src: url('./LiberationSans-Regular.ttf');
-  size-adjust: 64.4%;
-  unicode-range: U+0000-0DFF, U+0E80-F6FF, U+F71B-10FFFF;
-  font-weight: normal;
-  font-style: normal;
-  font-display: block;
-}
-@font-face {
-  font-family: 'ChaAI Office Sarabun';
-  src: url('./LiberationSans-Bold.ttf');
-  size-adjust: 65.7%;
-  unicode-range: U+0000-0DFF, U+0E80-F6FF, U+F71B-10FFFF;
-  font-weight: bold;
-  font-style: normal;
-  font-display: block;
-}
-
-/* Latin stand-in for Microsoft YaHei on machines without it: YaHei's tabular
- * digits advance 0.586em (bold 0.617), Helvetica's 0.556, so the size-adjusted
- * alias keeps digit-heavy cells wrapping like Word. A locally installed YaHei
- * precedes it in the chain.
- * 
- * ChaAI Office YaHei Latin: hmtx 2026-09-23
- * tabular digits 0.586em (bold 0.617) vs Helvetica 0.556
- * fonts: Microsoft YaHei; Helvetica */
-@font-face {
-  font-family: 'ChaAI Office YaHei Latin';
-  src: local('Helvetica'), local('ArialMT'), url('./LiberationSans-Regular.ttf');
-  size-adjust: 106%;
-  unicode-range: U+0020-007E;
-  font-weight: normal;
-  font-style: normal;
-  font-display: block;
-}
-@font-face {
-  font-family: 'ChaAI Office YaHei Latin';
-  src: local('Helvetica-Bold'), local('Arial-BoldMT'), url('./LiberationSans-Bold.ttf');
-  size-adjust: 108%;
-  unicode-range: U+0020-007E;
-  font-weight: bold;
-  font-style: normal;
   font-display: block;
 }
 
@@ -5158,15 +5158,15 @@
  * Chromium never see it, so Bengali runs fell to Kohinoor Bangla, 1.34x the Word
  * line width, and a 38-page Bengali document wrapped to 40 pages. Its glyphs sit
  * small in the em: the Bengali block is 0.69 of Nirmala UI's advances at a
- * near-constant ratio (one size-adjusted GenOffice Bengali face per weight) and
+ * near-constant ratio (one size-adjusted ChaAI Office Bengali face per weight) and
  * its Latin is Times at 0.827 for every glyph (the rangeless Liberation Serif
  * faces, which also keep quotes and dashes off the CJK tail). Every face pins the
  * cloud font's hhea box (0.8081 / 0.4863 regular, 0.8403 / 0.4775 bold) divided
  * by its size-adjust. Word has no italic cut; both sides synthesize it.
  * 
  * Shonar Bangla GO: hmtx 2026-11-12
- * hb-shape widths of 207 Bengali paragraphs of a corpus document: Shonar Bangla over GenOffice Bengali 0.687 regular (p10-p90 0.674-0.706), 0.686 bold (0.673-0.700); hmtx of its Latin letters, digits, punctuation, quotes and space over Liberation Serif 0.827 for every glyph in both cuts; Word paces the face at its hhea box (10.5 pt at line 340 auto -> 19.7 pt)
- * fonts: Shonar Bangla Regular/Bold (Office CloudFonts cache); GenOfficeBengali-Regular/Bold.woff2; LiberationSerif-Regular/Bold.ttf */
+ * hb-shape widths of 207 Bengali paragraphs of a corpus document: Shonar Bangla over ChaAI Office Bengali 0.687 regular (p10-p90 0.674-0.706), 0.686 bold (0.673-0.700); hmtx of its Latin letters, digits, punctuation, quotes and space over Liberation Serif 0.827 for every glyph in both cuts; Word paces the face at its hhea box (10.5 pt at line 340 auto -> 19.7 pt)
+ * fonts: Shonar Bangla Regular/Bold (Office CloudFonts cache); ChaOfficeBengali-Regular/Bold.woff2; LiberationSerif-Regular/Bold.ttf */
 @font-face {
   font-family: 'Shonar Bangla GO';
   src: url('./LiberationSerif-Regular.ttf');
@@ -5191,7 +5191,7 @@
 }
 @font-face {
   font-family: 'Shonar Bangla GO';
-  src: url('./GenOfficeBengali-Regular.woff2') format('woff2');
+  src: url('./ChaOfficeBengali-Regular.woff2') format('woff2');
   size-adjust: 68.7%;
   unicode-range: U+0964-0965, U+0980-09FF, U+200C-200D;
   ascent-override: 117.63%;
@@ -5203,7 +5203,7 @@
 }
 @font-face {
   font-family: 'Shonar Bangla GO';
-  src: url('./GenOfficeBengali-Bold.woff2') format('woff2');
+  src: url('./ChaOfficeBengali-Bold.woff2') format('woff2');
   size-adjust: 68.6%;
   unicode-range: U+0964-0965, U+0980-09FF, U+200C-200D;
   ascent-override: 122.5%;

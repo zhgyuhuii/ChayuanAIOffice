@@ -47,9 +47,9 @@ from fontTools.ttLib.woff2 import WOFF2FlavorData
 # Faces the docs renderer loads whose upstream Reserved Font Name ("Source"
 # for Noto CJK) is not the family name they ship under.
 DEFAULT_FONTS = [
-    "apps/docs/src/renderer/fonts/GenOfficeSansKR-Regular-subset.woff2",
-    "apps/docs/src/renderer/fonts/GenOfficeSerifKR-Regular-subset.woff2",
-    "apps/docs/src/renderer/fonts/GenOfficeCheLatinKR.woff2",
+    "apps/docs/src/renderer/fonts/ChaOfficeSansKR-Regular-subset.woff2",
+    "apps/docs/src/renderer/fonts/ChaOfficeSerifKR-Regular-subset.woff2",
+    "apps/docs/src/renderer/fonts/ChaOfficeCheLatinKR.woff2",
     "apps/docs/src/renderer/fonts/NotoSansCJKsc-Regular-subset.woff2",
     "apps/docs/src/renderer/fonts/NotoSerifCJKsc-Regular-subset.woff2",
 ]

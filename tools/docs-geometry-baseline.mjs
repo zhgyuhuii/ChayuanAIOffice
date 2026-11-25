@@ -7,9 +7,9 @@
  * "before -> after" in words and numbers without copying sample ids.
  *
  * A run directory is what the docs-fidelity shooter writes:
- *   <run>/pagecounts.json   { <sample>: { word, gen, errors } }  Word vs GenOffice page counts
+ *   <run>/pagecounts.json   { <sample>: { word, gen, errors } }  Word vs ChaAI Office page counts
  *   <run>/wps-metrics.json  { pages: [{ doc, page, ours, label }] }  per-page pixel deviation
- *                           of the GenOffice render from Word (docs_wps_report.py)
+ *                           of the ChaAI Office render from Word (docs_wps_report.py)
  *
  *   node tools/docs-geometry-baseline.mjs <run-dir>                 summary
  *   node tools/docs-geometry-baseline.mjs <base-run> <after-run>    summary of both + per-sample
@@ -60,7 +60,7 @@ function summarise(dir) {
 const pct = (x) => `${(x * 100).toFixed(2)}%`
 
 function print(s) {
-  console.log(`${s.run}: ${s.samples.length} samples with Word and GenOffice page counts`)
+  console.log(`${s.run}: ${s.samples.length} samples with Word and ChaAI Office page counts`)
   console.log(
     `  page count agrees: ${s.agree}/${s.samples.length}, summed |gen - word| = ${s.pageDelta}`,
   )

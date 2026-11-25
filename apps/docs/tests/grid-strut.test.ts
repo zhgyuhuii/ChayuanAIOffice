@@ -152,7 +152,7 @@ function stubMetricsCanvas(ascent: number, descent: number) {
 function mountBlankFace() {
   const style = document.createElement('style')
   style.textContent =
-    "@font-face { font-family: 'ChaAI Office PUA Blank'; src: url('./GenOfficePUABlank.woff2') format('woff2'); }"
+    "@font-face { font-family: 'ChaAI Office PUA Blank'; src: url('./ChaOfficePUABlank.woff2') format('woff2'); }"
   document.head.appendChild(style)
 }
 
@@ -166,7 +166,7 @@ describe('docStyleCss grid strut face', () => {
     expect(css).toContain("@font-face { font-family:'ChaAI Office Grid Strut'")
     expect(css).toContain('ascent-override:100.94%')
     expect(css).toContain('descent-override:29.06%')
-    expect(css).toContain('GenOfficePUABlank.woff2')
+    expect(css).toContain('ChaOfficePUABlank.woff2')
     // the Office-private MS Mincho renders through a stand-in, so the
     // inheriting .doc-ea-strut paragraphs share the strut too
     expect(css).toContain(
@@ -220,7 +220,9 @@ describe('docStyleCss grid strut face', () => {
     const resolved = parsedWith(GRID_SECT, 'PMingLiU', { eaSlotEmpty: true, eaFromLang: true })
     expect(docStyleCss(resolved)).toContain('ascent-override:95.08%')
     const unresolved = parsedWith(GRID_SECT, 'Yu Gothic', { eaSlotEmpty: true })
-    expect(docStyleCss(unresolved)).not.toContain("@font-face { font-family:'ChaAI Office Grid Strut'")
+    expect(docStyleCss(unresolved)).not.toContain(
+      "@font-face { font-family:'ChaAI Office Grid Strut'",
+    )
   })
 
   it('Office-private faces under a metric alias get the strut without a grid', () => {
@@ -304,7 +306,7 @@ describe('per-paragraph strut face (strut-face.ts)', () => {
     expect(gothic).toBe('ChaAI Office Grid Strut 1')
     expect(declaredStrutFace('MS Mincho')).toBe(gothic)
     expect(added).toHaveLength(1)
-    expect(added[0].src).toContain('GenOfficePUABlank.woff2')
+    expect(added[0].src).toContain('ChaOfficePUABlank.woff2')
     expect(added[0].descriptors).toEqual({
       ascentOverride: '100.94%',
       descentOverride: '29.06%',
