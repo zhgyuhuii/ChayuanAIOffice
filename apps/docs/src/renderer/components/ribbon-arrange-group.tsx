@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import type { Editor } from '@tiptap/core'
+import { WRAP_OPTIONS } from './ContextMenu'
 import { getActiveSubEditor } from '../editor/active-editor'
 import { arrangeStateOf } from '../editor/arrange-target'
 import { canGroupObjects, canUngroupObjects } from '../editor/object-group'
