@@ -350,6 +350,13 @@ html.chaoffice-popover-open .ribbon-tabs {
   background: var(--hover);
 }
 
+/* The 察元AI entry's open state: the whole button carries the active plate
+   (html's .rb-big already tints the whole button on hover, docs parity). */
+.rb-big.ai-entry.active {
+  background: var(--active-bg);
+  color: var(--text-primary);
+}
+
 .rb-big:disabled {
   opacity: 0.4;
   cursor: default;

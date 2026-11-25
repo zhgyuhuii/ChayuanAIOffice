@@ -192,7 +192,7 @@ import type { CharStyle } from './color-runs'
 import { TabStripArrows, useTabStripOverflow } from '@chaoffice/ribbon'
 import { platformShortcuts } from '@chaoffice/i18n'
 import {
-  AiPanelToggle,
+  ChayuanAiMark,
   DockShell,
   Dropdown,
   useDismissablePopover,
@@ -8105,18 +8105,24 @@ export default function App() {
             XFA
           </span>
         )}
-        <AiPanelToggle
-          open={!aiCollapsed && aiSidebarEnabled}
-          onToggle={() => setAiCollapsed((v) => !v)}
-          label={t('aiOpenAssistant')}
-        />
       </div>
       <div className="ribbon-body" data-ribbon-body="">
         {ribbonTab === 'home' && (
           <>
-            {/* ---- ChaOffice AI one-click actions (entry lives in the tab-row bubble) ---- */}
+            {/* ---- 察元 AI (first slot: entry + one-click AI actions) ---- */}
             <div className="ribbon-group">
               <div className="ribbon-group-items">
+                <button
+                  className={`rb-big ai-entry${!aiCollapsed && aiSidebarEnabled ? ' active' : ''}`}
+                  data-tip={t('aiOpenAssistant')}
+                  aria-pressed={!aiCollapsed && aiSidebarEnabled}
+                  onClick={() => setAiCollapsed((v) => !v)}
+                >
+                  <span className="rb-big-icon">
+                    <ChayuanAiMark size={26} />
+                  </span>
+                  <span>察元 AI</span>
+                </button>
                 <button
                   className="rb-big ai-entry"
                   data-tip={t('aiSummarizeBtn')}

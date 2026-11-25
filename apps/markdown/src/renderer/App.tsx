@@ -153,7 +153,7 @@ export default function App() {
   // panel=0 (docked boot, P1 契约): the Home conversation is the chat surface
   const DOCKED_BOOT = new URLSearchParams(window.location.search).get('panel') === '0'
   const dockedRef = useRef(DOCKED_BOOT)
-  const [, setDockedEditor] = useState(DOCKED_BOOT)
+  const [dockedEditor, setDockedEditor] = useState(DOCKED_BOOT)
   useEffect(() => {
     const off = window.markdownApi?.onDockedState?.((docked) => {
       dockedRef.current = docked
@@ -1208,6 +1208,7 @@ export default function App() {
             spellcheck={spellcheck}
             onToggleSpellcheck={() => setSpellcheck((v) => !v)}
             aiOpen={aiOpen}
+            aiPanelAvailable={!dockedEditor}
             onToggleAi={() => setAiOpen((v) => !v)}
             onAiPreset={askSendNow}
             sourceMode={sourceMode}

@@ -44,6 +44,7 @@ import {
   type PainterState,
 } from './ribbon-painter'
 import {
+  ChayuanAiMark,
   Dropdown,
   isSymbolFontFamily,
   useDismissablePopover,
@@ -243,7 +244,6 @@ import {
   IconSendBackward,
   IconSendToBack,
   IconComments,
-  GensparkMark,
   IconFlipH,
   IconFlipV,
 } from './icons'
@@ -264,8 +264,6 @@ export interface RibbonProps {
   windowsDetached?: boolean
   /** Quick-access area on the tab row's left (save/undo-redo/autosave), matching the WPS/Office QAT */
   quickActions?: React.ReactNode
-  /** Right side of the tab row (file name, etc.) */
-  trailingActions?: React.ReactNode
   editor: Editor
   /** shallow-stable snapshot of every editor-state read shown in the ribbon (memo invalidation key) */
   formatState: RibbonFormatState
@@ -296,6 +294,9 @@ export interface RibbonProps {
   /** File ▸ Name with AI…: ask the model for a name and offer it in the dialog */
   onNameWithAi: () => void
   showAi: boolean
+  /** false while docked (the Home conversation is the chat surface then):
+   *  hides the 察元AI entry, the panel's own entrance — P1 契约 */
+  aiPanelAvailable?: boolean
   onToggleAi: () => void
   section: SectionSettings | null
   onSection: (next: SectionSettings) => void
@@ -684,7 +685,6 @@ function RibbonInner({
   actionsRef,
   onRibbonCollapsed,
   quickActions,
-  trailingActions,
   editor,
   formatState: fs,
   hasDoc,
@@ -701,6 +701,7 @@ function RibbonInner({
   onNameWithAi,
   showAi: _showAi,
   onToggleAi: _onToggleAi,
+  aiPanelAvailable,
   section,
   onSection,
   activeSection,
@@ -2383,7 +2384,6 @@ function RibbonInner({
             )}
           </div>
         </div>
-        {trailingActions}
       </div>
 
       <div className="ribbon-body" data-ribbon-body="" ref={bodyRef}>
@@ -3442,16 +3442,18 @@ function RibbonInner({
             {/* ---- 察元 AI (first slot: entry + one-click AI actions) ---- */}
             <div className="ribbon-group">
               <div className="ribbon-group-items">
-                <button
-                  className={`rb-big ai-entry ${aiEntry.pressed ? 'active' : ''}`}
-                  data-tip={t(aiEntry.control.tip)}
-                  onClick={aiEntry.run}
-                >
-                  <span className="rb-big-icon">
-                    <GensparkMark size={26} />
-                  </span>
-                  <span>察元 AI</span>
-                </button>
+                {aiPanelAvailable !== false && (
+                  <button
+                    className={`rb-big ai-entry ${aiEntry.pressed ? 'active' : ''}`}
+                    data-tip={t(aiEntry.control.tip)}
+                    onClick={aiEntry.run}
+                  >
+                    <span className="rb-big-icon">
+                      <ChayuanAiMark size={26} />
+                    </span>
+                    <span>察元 AI</span>
+                  </button>
+                )}
                 <button
                   className="rb-big ai-entry"
                   disabled={docEmpty}

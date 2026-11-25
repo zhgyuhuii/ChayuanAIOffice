@@ -766,6 +766,18 @@ button {
   background: var(--hover);
 }
 
+/* The 察元AI entry reads as one piece: hover/press tint the whole button
+   (icon + label together), so the gradient brand tile never sits inside a
+   gray icon plate — same treatment as the docs/pdf ribbons. */
+.rb-big.ai-entry:hover:not(:disabled) {
+  background: var(--hover);
+}
+
+.rb-big.ai-entry:hover:not(:disabled) .rb-big-icon,
+.rb-big.ai-entry.active .rb-big-icon {
+  background: transparent;
+}
+
 .rb-big:disabled {
   opacity: 0.4;
   cursor: default;

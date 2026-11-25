@@ -42,7 +42,6 @@ import { DOMParser as PmDOMParser, type Mark as PmMark, Slice as PmSlice } from 
 import { NodeSelection, TextSelection, type EditorState, type Transaction } from '@tiptap/pm/state'
 import { CellSelection } from '@tiptap/pm/tables'
 import {
-  AiPanelToggle,
   DockShell,
   Dropdown,
   ImageViewer,
@@ -1243,7 +1242,34 @@ export function App() {
   } | null>(null)
   const [_recent, setRecent] = useState<string[]>([])
   const [settings, setSettings] = useState<AiSettingsV2>(DEFAULT_SETTINGS)
-  const [showAi, setShowAi] = useState(() => aiPanelInitiallyOpen('aidocs.showAi'))
+  // panel=0 (docked boot, P1 契约): the Home conversation is the chat surface,
+  // so a docked editor boots with its own AI panel closed and its entrance
+  // hidden (restored here after upstream sync 18D adopted upstream's App
+  // structure and dropped the guard; the sheets/slides ribbons kept theirs).
+  const DOCKED_BOOT = new URLSearchParams(window.location.search).get('panel') === '0'
+  const dockedRef = useRef(DOCKED_BOOT)
+  const [dockedEditor, setDockedEditor] = useState(DOCKED_BOOT)
+  const [showAi, setShowAi] = useState(() => !DOCKED_BOOT && aiPanelInitiallyOpen('aidocs.showAi'))
+  useEffect(() => {
+    const off = window.desktop.onDockedState?.((docked) => {
+      dockedRef.current = docked
+      setDockedEditor(docked)
+      // popped out to a full tab: the editor's own panel preference returns
+      if (!docked) setShowAi(localStorage.getItem('aidocs.showAi') !== '0')
+    })
+    return () => off?.()
+  }, [])
+  /** while docked the Home conversation is the chat surface: panel-opening
+   *  actions (the ribbon entry, the View menu toggle) must not raise the
+   *  internal panel */
+  const setShowAiIfUndocked = useCallback(
+    (value: boolean | ((prev: boolean) => boolean)) =>
+      setShowAi((prev) => {
+        const next = typeof value === 'function' ? value(prev) : value
+        return next && dockedRef.current ? prev : next
+      }),
+    [],
+  )
   // Settings › "show the AI sidebar" off hides the panel and its rail the way Word
   // treats the Copilot pane: an explicit Ask-AI action (ribbon, context menu,
   // shortcut, preset) still opens the panel for this document, and closing it
@@ -2359,7 +2385,7 @@ export function App() {
   )
   const chayuanServices = useStableCallbacks({
     runAssistant: (id: string) => {
-      setShowAi(true)
+      setShowAiIfUndocked(true)
       setAiAssistantReq({ id, nonce: Date.now() })
     },
     openDialog: (kind: DocOpsDialogKind) => setDocOpsDialog(kind),
@@ -2865,6 +2891,9 @@ export function App() {
   }, [])
 
   useEffect(() => {
+    // while docked the boot-closed panel must not overwrite the remembered
+    // preference (P1: popping out restores it)
+    if (dockedRef.current) return
     rememberAiPanelOpen('aidocs.showAi', showAi)
   }, [showAi])
 
@@ -7819,7 +7848,7 @@ export function App() {
     )
       return
     localStorage.setItem(AI_REWRITE_ACK_KEY, '1')
-    setShowAi(true)
+    setShowAiIfUndocked(true)
     setAiPreset({ text: t('ribbonEditorPrompt'), nonce: Date.now(), autoRun: true })
   }, [])
 
@@ -8251,7 +8280,7 @@ export function App() {
     stepZoom: (dir) => setZoom((z) => stepDocsZoom(z, dir)),
     setZoom: (pct) => setZoom(clampDocsZoom(pct)),
     zoomFit,
-    toggleAi: () => setShowAi((v) => !v),
+    toggleAi: () => setShowAiIfUndocked((v) => !v),
     toggleDark: () => updateDarkPage(!darkPageRef.current),
     toggleMarks: () => setShowMarks((v) => !v),
     toggleStylesPane: () => setShowStylesPane((v) => !v),
@@ -8312,7 +8341,7 @@ export function App() {
         applyGalleryStyle(editor, getActiveSubEditor(), info, styles, formatState.charStyleId)
     },
     aiPreset: (text) => {
-      setShowAi(true)
+      setShowAiIfUndocked(true)
       setAiPreset({ text, nonce: Date.now(), autoRun: true })
     },
     applyHeadingLevel: (level) => {
@@ -8323,7 +8352,7 @@ export function App() {
       // a word or a short phrase, as on the right-click menu; the model reads the projection
       const text = selectedProjection()
       if (!text || text.length > 20) return setStatus(t('appThesaurusSelect'))
-      setShowAi(true)
+      setShowAiIfUndocked(true)
       setAiPreset({ text: t('appSynonymsPrompt', { text }), nonce: Date.now(), autoRun: true })
     },
     translate: (scope) => {
@@ -8332,7 +8361,7 @@ export function App() {
         // the passage goes in the request, as on the right-click menu, so a text box's is found
         const text = selectedProjection()
         if (!text) return setStatus(t('appTranslateSelect'))
-        setShowAi(true)
+        setShowAiIfUndocked(true)
         setAiPreset({
           text: t('appTranslateSelectionPrompt', { lang: langName, text }),
           nonce: Date.now(),
@@ -8347,7 +8376,7 @@ export function App() {
       )
         return
       localStorage.setItem(AI_REWRITE_ACK_KEY, '1')
-      setShowAi(true)
+      setShowAiIfUndocked(true)
       setAiPreset({
         text: t('ribbonTranslatePrompt', { lang: langName }),
         nonce: Date.now(),
@@ -9298,7 +9327,7 @@ export function App() {
     editor.view.focus()
   }
   const askSendNow = (text: string): void => {
-    setShowAi(true)
+    setShowAiIfUndocked(true)
     setAiPreset({ text, nonce: Date.now(), autoRun: true })
   }
 
@@ -9785,7 +9814,7 @@ export function App() {
     onOpen: () => void openFile(),
     onSave: () => void save(false),
     onSaveAs: () => void save(true),
-    onToggleAi: () => setShowAi((v) => !v),
+    onToggleAi: () => setShowAiIfUndocked((v) => !v),
     onConvert: (format: ConvertFormat) => {
       if (format === 'pdf') void exportPdf()
       else if (format === 'html') void exportHtml()
@@ -10770,13 +10799,6 @@ export function App() {
         onMergeRecordIndex={setMergeRecordIndex}
         mergeRange={mergeRange}
         onMergeRange={setMergeRange}
-        trailingActions={
-          <AiPanelToggle
-            open={showAi}
-            onToggle={() => setShowAi((v) => !v)}
-            label={t('aiOpenAssistant')}
-          />
-        }
         editor={editor}
         formatState={formatState}
         hasDoc={!!doc}
@@ -10788,6 +10810,7 @@ export function App() {
         recentListPresets={recentLists}
         chayuan={chayuanServices}
         showAi={showAi}
+        aiPanelAvailable={!dockedEditor}
         section={sections[activeSection]?.settings ?? section}
         tableGridlines={tableGridlines}
         activeSection={sections.length > 1 ? activeSection : null}

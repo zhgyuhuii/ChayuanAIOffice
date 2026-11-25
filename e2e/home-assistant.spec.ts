@@ -64,17 +64,19 @@ test.describe('docked editor carries no internal chat (P1 契约)', () => {
       const dockPage = await waitForPageWithUrl(launched.app, 'panel=0')
       await dockPage.waitForLoadState('domcontentloaded')
       await dockPage.waitForTimeout(2500)
-      // while docked the ribbon carries no AI panel toggle
-      await expect(dockPage.locator('.ai-panel-toggle')).toHaveCount(0)
+      // while docked the ribbon carries no 察元AI entry (the panel's own
+      // entrance lives in the Home tab's first group now)
+      const entry = dockPage.getByRole('button', { name: '察元 AI', exact: true })
+      await expect(entry).toHaveCount(0)
       await page.screenshot({ path: screenshotPath('docked-docs-no-internal-chat') })
 
       // pop out to a full tab: the shell pushes app:docked-state=false and
-      // the toggle (the editor's own panel entrance) returns
+      // the entry (the editor's own panel entrance) returns
       const tabs = page.locator('.tab-bar .tab-item')
       await expect(tabs).toHaveCount(2)
       await tabs.nth(1).click()
       await dockPage.waitForTimeout(1500)
-      await expect(dockPage.locator('.ai-panel-toggle')).toHaveCount(1)
+      await expect(entry).toHaveCount(1)
       await page.screenshot({ path: screenshotPath('fulltab-docs-toggle-returns') })
     } finally {
       await closeAndSaveVideo(launched, 'dock-panel-policy')

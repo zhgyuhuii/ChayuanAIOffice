@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import {
-  AiPanelToggle,
+  ChayuanAiMark,
   RibbonCollapseButton,
   RibbonExpandButton,
   useDismissablePopover,
@@ -261,15 +261,28 @@ export function Ribbon(p: Props) {
             onChange={(e) => p.onToggleAutoSave(e.target.checked)}
           />
         </label>
-        {p.aiPanelAvailable && (
-          <AiPanelToggle open={p.aiPanelOpen} onToggle={p.onToggleAiPanel} label={t('aiOpenAssistant')} />
-        )}
         <RibbonExpandButton state={collapse} label={t('ribbonExpand')} />
       </div>
 
       <div className="ribbon-body" data-ribbon-body="">
         <div className="ribbon-group">
           <div className="ribbon-group-items">
+            {/* ---- 察元 AI (first slot: opens/closes the conversation panel) ---- */}
+            {p.aiPanelAvailable && (
+              <button
+                type="button"
+                className={`rb-big ai-entry${p.aiPanelOpen ? ' active' : ''}`}
+                data-tip={t('aiOpenAssistant')}
+                aria-pressed={p.aiPanelOpen}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={p.onToggleAiPanel}
+              >
+                <span className="rb-big-icon">
+                  <ChayuanAiMark size={26} />
+                </span>
+                <span>察元 AI</span>
+              </button>
+            )}
             <button
               type="button"
               className="rb-big"

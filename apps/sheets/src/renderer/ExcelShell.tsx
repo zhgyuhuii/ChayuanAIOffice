@@ -4,7 +4,7 @@ import { platformShortcuts } from '@chaoffice/i18n'
 import { TabStripArrows, useTabStripOverflow } from '@chaoffice/ribbon'
 import { SHAPE_GALLERY_GROUPS, ShapePreview } from '@chaoffice/ui/shape-gallery'
 import {
-  AiPanelToggle,
+  ChayuanAiMark,
   ColorPicker,
   Dropdown,
   DockShell,
@@ -1423,13 +1423,6 @@ export function ExcelShell({
               <span className="workbook-status" role="status" aria-live="polite">
                 {statusMessage}
               </span>
-              {!dockedEditor && (
-                <AiPanelToggle
-                  open={isCopilotOpen}
-                  onToggle={() => setIsCopilotOpen((open) => !open)}
-                  label={t('aiOpenAssistant')}
-                />
-              )}
             </nav>
             {/* WPS 功能区右下角展开/折叠图标 */}
             <button
@@ -1454,6 +1447,9 @@ export function ExcelShell({
             <div style={collapsed ? { display: 'none' } : undefined}>
               <Ribbon
                 activeTab={activeTab}
+                copilotAvailable={!dockedEditor}
+                copilotOpen={isCopilotOpen}
+                onToggleCopilot={() => setIsCopilotOpen((open) => !open)}
                 selectionFormat={selectionFormat}
                 sheetHasContent={sheetHasContent}
                 queryConnections={queryConnections}
@@ -2865,6 +2861,9 @@ function ChangePictureButton({
 
 function Ribbon({
   activeTab,
+  copilotAvailable,
+  copilotOpen,
+  onToggleCopilot,
   selectionFormat,
   sheetProtected,
   workbookProtected,
@@ -2898,6 +2897,10 @@ function Ribbon({
   activeCell,
 }: {
   readonly activeTab: RibbonTab
+  /** the 察元AI entry (Home band's first slot) opens/closes the copilot panel */
+  readonly copilotAvailable: boolean
+  readonly copilotOpen: boolean
+  readonly onToggleCopilot: () => void
   readonly selectionFormat: SelectionFormat | null
   readonly sheetHasContent: boolean
   readonly sheetProtected: boolean | null
@@ -5252,6 +5255,24 @@ function Ribbon({
       <RibbonGroupLevelsContext.Provider value={groupLevels}>
         <GroupSlotContext.Provider value={{ claim: claimSlot }}>
           <BandCollectorContext.Provider value={bandCollector}>
+            {/* ---- 察元 AI (first slot: opens/closes the copilot conversation panel) ---- */}
+            {copilotAvailable && (
+              <RibbonGroup label="察元 AI">
+                <button
+                  className={`ribbon-tool as-button large ai-entry${copilotOpen ? ' active' : ''}`}
+                  data-tip={t('aiOpenAssistant')}
+                  aria-pressed={copilotOpen}
+                  onClick={onToggleCopilot}
+                >
+                  <span className="tool-icon-row">
+                    <ChayuanAiMark size={26} />
+                  </span>
+                  <span>
+                    <strong>察元 AI</strong>
+                  </span>
+                </button>
+              </RibbonGroup>
+            )}
             <RibbonGroup label={t('appGroupClipboard')}>
               {/* WPS 布局（对比清单 1-3）：格式刷升为第一枚大按钮；粘贴改为分体
             按钮（本体直接粘贴 + 下拉八项）；竖排只剩剪切和分体复制 */}

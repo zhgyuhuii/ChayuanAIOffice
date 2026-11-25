@@ -121,7 +121,7 @@ export { AiHistoryPopover, type AiHistoryPopoverLabels } from './AiHistoryPopove
 export { AiTabConfirm } from './AiTabConfirm'
 export { AiConversationsEmpty, type AiConversationsEmptyLabels } from './AiConversationsEmpty'
 export { AI_CONTINUE_INSTRUCTION } from './aiContinuation'
-export { AiPanelToggle, type AiPanelToggleProps } from './AiPanelToggle'
+export { ChayuanAiMark } from './ChayuanAiMark'
 export { IconSend, IconStop, type IconProps } from './icons'
 export { Markdown, type MarkdownNav } from './Markdown'
 export { MessageActions } from './MessageActions'

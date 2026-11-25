@@ -144,7 +144,6 @@ import texCork from '../assets/textures/cork.png'
 import texParchment from '../assets/textures/parchment.png'
 import iconCrop from '../assets/icon-crop.png'
 import { ChartTypeDialog } from './ChartTypeDialog'
-import { AiPanelToggle } from '@chaoffice/ui'
 import {
   BIG,
   Group,
@@ -2201,6 +2200,9 @@ export function Ribbon({
     slideShowOpen,
     setSlideShowFromStart,
     setSlideShowOpen,
+    aiPanelAvailable,
+    aiPanelOpen,
+    onToggleAiPanel,
     brushMode,
     canDistribute,
     canPaste,
@@ -2527,13 +2529,6 @@ export function Ribbon({
             tailLabel={t('ribbonTabScrollRight')}
           />
         </div>
-        {aiPanelAvailable && (
-          <AiPanelToggle
-            open={aiPanelOpen}
-            onToggle={onToggleAiPanel}
-            label={t('aiOpenAssistant')}
-          />
-        )}
       </div>
 
       {/* WPS 功能区右下角展开/折叠图标 */}

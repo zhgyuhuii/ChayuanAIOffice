@@ -501,8 +501,7 @@ html.chaoffice-popover-open .ribbon-tabs {
   padding-right: 150px;
 }
 
-/* the AI bubble icon keeps its own .ai-panel-toggle box (dock.css) */
-.ribbon-tabs button:not(.qa-btn):not(.ai-panel-toggle):not(.ribbon-tab-file) {
+.ribbon-tabs button:not(.qa-btn):not(.ribbon-tab-file) {
   -webkit-app-region: no-drag;
   position: relative;
   border: 0;

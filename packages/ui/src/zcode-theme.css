@@ -376,18 +376,18 @@
  * padding, bottom border) at specificity (0,4,1); re-assert the ghost-square
  * shape with an outgunning selector. zcode-theme.css loads last, so an equal
  * specificity would also win — this is deliberately higher. */
-.ribbon-tabs button.zc-icon-btn.zc-icon-btn:not(.qa-btn):not(.ai-panel-toggle):not(.ribbon-tab-file) {
+.ribbon-tabs button.zc-icon-btn.zc-icon-btn:not(.qa-btn):not(.ribbon-tab-file) {
   padding: 0;
   border-bottom: none;
   border-radius: 6px;
   background: transparent;
 }
 
-.ribbon-tabs button.zc-icon-btn.zc-icon-btn:not(.qa-btn):not(.ai-panel-toggle):not(.ribbon-tab-file):hover {
+.ribbon-tabs button.zc-icon-btn.zc-icon-btn:not(.qa-btn):not(.ribbon-tab-file):hover {
   background: var(--hover);
 }
 
-.ribbon-tabs button.zc-icon-btn.zc-icon-btn:not(.qa-btn):not(.ai-panel-toggle):not(.ribbon-tab-file).is-active {
+.ribbon-tabs button.zc-icon-btn.zc-icon-btn:not(.qa-btn):not(.ribbon-tab-file).is-active {
   background: var(--active-bg);
 }
 

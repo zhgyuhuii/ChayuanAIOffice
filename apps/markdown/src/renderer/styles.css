@@ -739,6 +739,44 @@ html.markdown-graph-open .ribbon-tabs {
   flex: 1;
 }
 
+/* ---- the 察元AI entry: a tall docs-parity .rb-big button ---- */
+
+.rb-big {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  border: none;
+  background: none;
+  border-radius: 4px;
+  padding: 3px 7px;
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.rb-big-icon {
+  min-height: 28px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+}
+
+/* The entry reads as one piece: hover/press tint the whole button (icon +
+   label together), so the gradient brand tile never sits inside a gray
+   plate — same treatment as the docs/pdf/slides ribbons. */
+.rb-big.ai-entry:hover:not(:disabled) {
+  background: var(--hover);
+}
+
+.rb-big.ai-entry.active {
+  background: var(--active-bg);
+  color: var(--text-primary);
+}
+
 /* typographic letterform glyphs (B/I/U/S): 15px/600 like the docs inline row */
 .rb-mono {
   font-family: 'SF Mono', Menlo, Consolas, monospace;

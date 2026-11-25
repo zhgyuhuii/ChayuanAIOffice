@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
 /**
- * PanelTabs + AiPanelToggle tests: tab switching, persisted tab memory and
- * the top-row toggle button's open/closed states.
+ * PanelTabs tests: tab switching and persisted tab memory. (The top-row
+ * AiPanelToggle bubble was retired when the panel entrance moved to each
+ * editor's 「开始」tab 察元AI entry.)
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
-import { AiPanelToggle } from '../src/AiPanelToggle'
 import { PanelTabs, usePanelTab, type PanelTabItem } from '../src/PanelTabs'
 
 const TABS: PanelTabItem[] = [
@@ -104,28 +104,6 @@ describe('PanelTabs', () => {
       header.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, button: 0 }))
     })
     expect(onPointerDown).toHaveBeenCalled()
-    act(() => root.unmount())
-  })
-})
-
-describe('AiPanelToggle', () => {
-  it('toggles and reflects the open state', () => {
-    const onToggle = vi.fn()
-    const { container, root } = mount(
-      createElement(AiPanelToggle, { open: false, onToggle, label: 'AI 助手' }),
-    )
-    const btn = container.querySelector<HTMLButtonElement>('.ai-panel-toggle')!
-    expect(btn.classList.contains('active')).toBe(false)
-    expect(btn.getAttribute('aria-pressed')).toBe('false')
-    expect(btn.getAttribute('aria-label')).toBe('AI 助手')
-
-    act(() => btn.click())
-    expect(onToggle).toHaveBeenCalledTimes(1)
-
-    act(() => root.render(createElement(AiPanelToggle, { open: true, onToggle, label: 'AI 助手' })))
-    const active = container.querySelector<HTMLButtonElement>('.ai-panel-toggle')!
-    expect(active.classList.contains('active')).toBe(true)
-    expect(active.getAttribute('aria-pressed')).toBe('true')
     act(() => root.unmount())
   })
 })

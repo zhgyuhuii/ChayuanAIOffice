@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { platformShortcuts } from '@chaoffice/i18n'
 import {
+  ChayuanAiMark,
   ColorPicker,
   isSymbolFontFamily,
   partitionFontFamilies,
@@ -80,6 +81,9 @@ const fontPreviewFamily = (f: string): string | undefined =>
 
 export function RibbonHomeTab({ rb }: { rb: RibbonTabCtx }) {
   const {
+    aiPanelAvailable,
+    aiPanelOpen,
+    onToggleAiPanel,
     brushMode,
     canDistribute,
     canPaste,
@@ -231,6 +235,22 @@ export function RibbonHomeTab({ rb }: { rb: RibbonTabCtx }) {
   }
   return (
     <>
+      {/* ---- 察元 AI (first slot: opens/closes the conversation panel) ---- */}
+      {aiPanelAvailable && (
+        <Group label="察元 AI">
+          <button
+            className={`rb-big ai-entry${aiPanelOpen ? ' active' : ''}`}
+            onClick={onToggleAiPanel}
+            data-tip={t('aiOpenAssistant')}
+            aria-pressed={aiPanelOpen}
+          >
+            <span className="rb-big-icon">
+              <ChayuanAiMark size={26} />
+            </span>
+            <span>察元 AI</span>
+          </button>
+        </Group>
+      )}
       <Group label={t('ribbonGroupClipboard')}>
         <button
           className="rb-big"

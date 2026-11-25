@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import type { Editor } from '@tiptap/core'
 import { useEditorState } from '@tiptap/react'
 import {
+  ChayuanAiMark,
   Dropdown,
   RibbonCollapseButton,
   RibbonExpandButton,
@@ -75,6 +76,9 @@ interface Props {
   onMarkdownTheme: (theme: MarkdownTheme) => void
   aiOpen: boolean
   onToggleAi: () => void
+  /** false while docked (the Home conversation is the chat surface then):
+   *  hides the 察元AI entry, the panel's own entrance — P1 契约 */
+  aiPanelAvailable?: boolean
   onAiPreset: (instruction: string) => void
   /**
    * A .txt/.json is edited as source, so every button that formats a block
@@ -216,6 +220,9 @@ export function Ribbon({
   editor,
   disabled,
   dirty,
+  aiOpen,
+  aiPanelAvailable,
+  onToggleAi,
   onSave,
   onSaveAs,
   onNameWithAi,
@@ -402,6 +409,29 @@ export function Ribbon({
       </div>
 
       <div className="ribbon-body" data-ribbon-body="">
+        {/* ---- 察元 AI (first slot: opens/closes the conversation panel; applies
+            in source mode too, like save/find/autosave) ---- */}
+        {aiPanelAvailable !== false && (
+          <div className="ribbon-group">
+            <div className="ribbon-group-items">
+              <button
+                type="button"
+                className={`rb-big ai-entry${aiOpen ? ' active' : ''}`}
+                data-tip={t('aiOpenAssistant')}
+                aria-pressed={aiOpen}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={onToggleAi}
+              >
+                <span className="rb-big-icon">
+                  <ChayuanAiMark size={26} />
+                </span>
+                <span>察元 AI</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="rb-sep" />
 
         {!sourceMode && (
           <div className="ribbon-group">

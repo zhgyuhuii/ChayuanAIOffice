@@ -666,6 +666,10 @@ export interface RibbonTabCtx extends Pick<
   | 'setSlideShowFromStart'
   | 'setSlideShowOpen'
   | 'brushMode'
+  /* the 察元AI entry (Home tab's first slot) reads these straight from the ctx */
+  | 'aiPanelAvailable'
+  | 'aiPanelOpen'
+  | 'onToggleAiPanel'
   | 'canDistribute'
   | 'canPaste'
   | 'curBulletChar'

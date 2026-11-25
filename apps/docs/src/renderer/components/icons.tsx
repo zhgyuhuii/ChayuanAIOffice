@@ -2306,22 +2306,6 @@ export function IconClose(props: IconProps) {
   )
 }
 
-/** Genspark brand mark (rounded-square sparkle badge), inline so it renders
- * crisply at device resolution instead of going through <img> rasterization */
-export function GensparkMark({ size = 30 }: { size?: number }) {
-  // LOCAL brand mark: 察元 sparkle — replaces the upstream logo (name kept to
-  // avoid churn at the call sites; the visual is ours, not upstream's).
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
-      <rect x="1" y="1" width="22" height="22" rx="6" fill="currentColor" opacity="0.14" />
-      <path
-        d="M12 4.5l1.9 5.1 5.1 1.9-5.1 1.9L12 18.5l-1.9-5.1L5 11.5l5.1-1.9L12 4.5z"
-        fill="currentColor"
-      />
-    </svg>
-  )
-}
-
 export function IconReplace(props: IconProps) {
   return (
     <Svg {...props}>
