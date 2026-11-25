@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/chaoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第四十四轮完成（2026-11-20，终点 a10ba620，施工于 sync/44-upstream；单提交巨件 #2872（836 文件 docs 编辑器大重构快照）全吸收，落位 da865da90；192 冲突三档裁决+复审补六件（compare 死代码对照删/errGsk 死键 23 处清理/pptImportDetail 文案 22 语补收/sheets 死键 69 处/aiGskLoginOk 品牌化/Ribbon 察元 AI）+全量门禁（node v24 口径）+web 真机 smoke——详见 §R44 小节**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第四十五轮完成（2026-11-25，上游 a10ba620..c57dc1a2a（tag v0.13.886）59 提交全吸收，施工于 sync/45-upstream，终链 77e51258c 已推；快照 #2969+58 件、chaofficeUpstreamVersion 0.13.18→0.13.886、六段 1.0.21.0.13.886；续作收尾四件=遗产冲突标记实解+字体死链修复+门禁族三红收绿+版本记账，origin v2 文档提交并入——详见 §R45 小节**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -823,6 +823,22 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 4. **amend 目标漂移**：连续两文件 amend 时 HEAD 已是下一提交，边界混入——reset --soft 重做为准。
 
 **R44 起点=2491896c**（上游 main 当前 HEAD）。
+
+## 第四十五轮（2026-11-25，上游 a10ba620..c57dc1a2a（tag v0.13.886）59 提交全吸收，施工于 sync/45-upstream，终链 77e51258c 已推；快照 #2969（Sync snapshot 2026-11-24）单件吸收+逐件 pick 重写，chaofficeUpstreamVersion 0.13.18→0.13.886（=终点 tag），六段 1.0.21.0.13.886——自有版本本轮已至 1.0.21 未打包）
+
+> 上游区间 a10ba620..c57dc1a2a：快照 #2969 单件（8ae917806 吸收）+58 件逐项（docs 写作视图/writing view #2668、页眉页脚 Word 式编辑 #2935、MathType MTEF→MathML #2916、测量单位全局设置 #2848、PDF 标注评论 #2896、表格整选对齐 #2961/#2963、AI 工具受保护文档报错 #2959、shell 排除文件夹 #2906+KB @提及 #2866、cli gated-zip/HWP 上限/CSV 公式中和/MCP 鉴权 #2747、GROUPBY/PIVOTBY #2755、AutoFilter 大簿提速 #2790、grant-check 渲染读开通道 #2758、doc2docx 样式真 .docx styles #2734、xlsx/pptx 往返保真 scorecard #2918 等全文档/表格/PDF/ai 修正批）。前会话施工：快照吸收+pick 重写+缝合四件（671dd0262 pdf App 三方重解+strings.ts 去重、d38d34622 i18n 键集对齐+ai:chat selection 可选化+shell SettingsModal、79591b1af unused 清理 21 处、269a61d18 WRAP_OPTIONS 复原）+品牌 pass 两轮（1c2455054 行级 1014 文件、0bfec41dd fixture/工具件基线形）+依赖 023e271e3（cli zip-gate 工作区映射）。续作会话收尾四件：**63588c180 遗产冲突标记**（CONTRIBUTING.md #2484 pick 残留+scorecard #2872 残留共三处 `<<<<<<<` 实解——品牌 pass 曾在标记块内编辑=假已解决更隐蔽）、**fad1b5971 字体品牌链**（fonts.generated.css GenOfficeBengali-*.woff2 死链修复：manifest 改名+build-font-aliases.mjs 重生成；cordia/sarabun manifest family ChaOffice 残留纠回 ChaAI Office 消费方口径；grid-strut fixture 同步；字体测试 936 过）、**e5d24617c 门禁族适配**（新门禁首跑三红收绿：styles.css 本地注释 25 处译英过 inline-rules、check-english-comments 按 fork 政策重塑为文档层门禁、word-truths coverage 重生成）、**be0e10728 版本记账**。终链并入 origin/main 他机 v2 文档提交（dbae0c06f office_1gb 勘误）后 ff 双推。
+
+**本轮新坑六条**：
+1. **遗产冲突标记假已解决**：历史轮声称已解决的冲突文件可能残留 `<<<<<<<`/`>>>>>>>`（本轮 CONTRIBUTING.md #2484 pick、pdf2docx-accuracy-scorecard.md #2872 两文件三处；品牌 pass 曾在标记块内编辑过=更难察觉）。每轮开局 `git grep -n '^<<<<<<<'` 必查；解法=对 upstream/main 做 tree-diff 让残差收敛到纯品牌行。
+2. **字体文件 git mv 后 CSS 死链**：fonts.generated.css 的 @font-face url 由 manifest 经 `node tools/build-font-aliases.mjs` 重生成，字体改名轮不重跑=运行时 404（孟加拉语 Shonar Bangla GO 兜底族实际加载不到）；且 check-generated-fonts 是 diff 基线门禁（"pre-existing lines never fail"），存量失配永不红，不能依赖门禁兜底。
+3. **字体族名三分口径**：文件 token=ChaOffice*、Bengali 族名='ChaAI Office Bengali'、UI Kana JP 族名='ChaOffice UI Kana JP'——权威=fonts/README.md+availability.ts/css-chains.ts 消费方；manifest family 字段可与消费方漂移（上游 #2503 带入 'ChaOffice Cordia/Sarabun'，因 CSS 长期未重生成而潜伏，重生成时才暴露）。
+4. **check:english-comments 与 fork 根本不兼容**：自初始导入即红（fork 中文注释约定全树 481 处+双语 README+24 语帮助+中文设计文档皆刻意设计）。已按 fork 真实政策重塑为文档层门禁（仅扫非豁免 md；豁免=双语 README 对+CLAUDE.md+docs/ i18n/ articles/ brand-samples/ dsh-plugin/ skills/；代码注释/HTML 明示 fork 双语约定），上游全量英文注释规则挂账 upstream-ism。
+5. **上游新门禁族首跑撞本地存量**：check:inline-rules/check:page-cut-readers/check:table-layout-rules/check:docs-commands 为本轮带入新脚本——inline-rules 撞 styles.css 本地特性 CJK 注释 25 处（译英解决）；check:word-truths 撞窗口新增 truths fixtures（word-truths.md 源文件不在树：无参直接 `node tools/truths-coverage.mjs` 重生成 coverage 即过）。
+6. **推送分叉+同文件工作区叠加**：origin/main 可能含他机推的文档提交（本轮 v2 dbae0c06f）——push 前 fetch；分叉解法=merge origin/main 进 sync 分支再 `git fetch . sync/45-upstream:main` 免 checkout ff main；工作区同文件未提交的更新内容：备份→checkout--→merge→cp 回放（回放后 diff 对 v2 只剩增量=正确终态）。
+
+**另**：续作会话 stash 误删一条——R42 期间并行 WIP stash（47620e25，2026-11-19）在 drop 时落错条目被删；该轮工作已完成、stash 大概率废弃，reflog 可恢复至 GC，挂账备查不追。
+
+**R45 起点=a10ba620，终点=77e51258c**（=main 当前）。
 
 ## 第四十四轮（2026-11-20，上游 2491896c..a10ba620 单提交巨件 #2872 全吸收，施工于 sync/44-upstream，落位 da865da90；836 文件 +152k/−8.5k=docs 编辑器大重构快照；区间无新 tag（v0.13.18-140，v0.13.615 为远端误导 tag 不相关），chaofficeUpstreamVersion 维持 0.13.18，六段 1.0.18.0.13.18 不动）
 
