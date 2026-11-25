@@ -1073,4 +1073,4 @@ export const ja = {
   appCtxConvertToEndnote: '文末脚注に変換',
   appCtxConvertToFootnote: '脚注に変換',
   appFindIn: '查找范围',
-}
+} satisfies Record<keyof typeof zh, string>

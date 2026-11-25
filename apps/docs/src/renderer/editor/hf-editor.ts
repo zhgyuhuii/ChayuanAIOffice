@@ -6,7 +6,7 @@
  * stay display-only and are spliced back around the edited paragraphs.
  */
 import { Editor, Extension, Node } from '@tiptap/core'
-import { Plugin, PluginKey, TextSelection, type EditorState } from '@tiptap/pm/state'
+import { Plugin, TextSelection, type EditorState } from '@tiptap/pm/state'
 import { ResolvedPos } from '@tiptap/pm/model'
 import { EditorView, Decoration, DecorationSet } from '@tiptap/pm/view'
 import {

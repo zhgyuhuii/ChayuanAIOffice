@@ -127,7 +127,6 @@ import {
   setChaOfficeProxyUrl,
   webSearch,
   imageSearch,
-  generateImageTool,
   localMediaRoots,
   isLocalMediaPathAllowed,
 } from '@chaoffice/ai-search'

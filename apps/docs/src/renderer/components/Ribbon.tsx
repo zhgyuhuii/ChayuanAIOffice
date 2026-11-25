@@ -77,7 +77,7 @@ import {
   type RibbonCommandSource,
 } from './ribbon-command'
 import { RbTextEffects } from './ribbon-text-effects'
-import { AlignObjectsMenu } from './ribbon-align-menu'
+import {} from './ribbon-align-menu'
 import { RibbonFormatState } from './ribbon-format-state'
 import { setSelectedColumnWidth } from '../editor/table-sizing'
 import {
@@ -167,7 +167,7 @@ import {
 import { ChayuanTab, type ChayuanServices } from './ribbon-chayuan-tab'
 import { ZoteroTab } from './ribbon-zotero-tab'
 import { CommentsMode } from './comments-mode'
-import { WRAP_OPTIONS } from './ContextMenu'
+import {} from './ContextMenu'
 import {
   IconAlignCenter,
   IconAlignJustify,

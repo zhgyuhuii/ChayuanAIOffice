@@ -5,7 +5,6 @@ import {
   FORMULA_REFERENCE_PATTERN,
   qualifierMatches,
 } from '@chaoffice/xlsx-gateway/gateway/xlsx-structure'
-import JSZip from 'jszip'
 import { loadUserZip } from './gated-zip'
 import { excerpt, PLACEHOLDER, textWidthPx, type IssueDraft } from '../check'
 import { displayText } from './xlsx'

@@ -232,10 +232,6 @@ import {
   withHfPictureLink,
   type HfSectionState,
 } from './hf-sections'
-import { noteMarkText } from './note-format'
-import { textColorValue } from './editor/text-color'
-import { setDkColor } from './editor/dark-page'
-import { textOutlineCssValue } from './editor/text-outline'
 import { installHfFloatEdit, tagHfFloatEl } from './editor/hf-float-edit'
 import { HF_MARGIN_SKIP, hfBandAt, pageMarginBands } from './editor/hf-margin-hit'
 import { hfFooterLine, hfLayoutResolved, hfPhantomSpec, hfWithPhantom } from './hf-phantom'
@@ -427,7 +423,6 @@ import {
   syncMarginAnnotations,
   type MarginHandlers,
 } from './editor/margin-annotations'
-import { cssFontFamily } from './text-layout/font-rules'
 import {
   bumpHfProbeFontEpoch,
   hfHasPageField,
@@ -1240,53 +1235,12 @@ function blockNoteScanRuns(b: Block): NonNullable<Block['runs']> {
   return out
 }
 
-/** Note entry content: superscript number + styled runs (shared by the canvas gap area and the hidden height measurer) */
-function appendNoteRuns(
-  row: HTMLElement,
-  it: Omit<PageNoteItem, 'height' | 'id'>,
-  kind: NoteKind,
-): void {
-  if (!it.noRefMark) {
-    const sup = document.createElement('sup')
-    sup.textContent = noteMarkText(kind, it.no)
-    row.append(sup)
-  }
-  if (it.richParas) {
-    it.richParas.forEach((para, pi) => {
-      if (pi > 0) row.append(document.createElement('br'))
-      for (const run of para) {
-        const span = document.createElement('span')
-        span.textContent = run.text
-        if (run.bold) span.style.fontWeight = '600'
-        if (run.italic) span.style.fontStyle = 'italic'
-        const deco = [run.underline && 'underline', run.strike && 'line-through'].filter(Boolean)
-        if (deco.length > 0) span.style.textDecoration = deco.join(' ')
-        if (run.color) {
-          span.style.color = textColorValue(run.color)
-          // dark-page twin; the authored color stays the declaration
-          if (run.color !== 'auto') setDkColor(span, run.color)
-        }
-        if (run.sizeHalfPoints) span.style.fontSize = `${run.sizeHalfPoints / 2}pt`
-        if (run.fontAscii) span.style.fontFamily = cssFontFamily(run.fontAscii)
-        if (run.textOutline) span.style.webkitTextStroke = textOutlineCssValue(run.textOutline)
-        if (run.caps === 'all') span.style.textTransform = 'uppercase'
-        else if (run.caps === 'small') span.style.fontVariantCaps = 'small-caps'
-        row.append(span)
-      }
-    })
-  } else {
-    const span = document.createElement('span')
-    span.textContent = it.text
-    row.append(span)
-  }
-}
 
 /**
  * Hidden DOM measurement of one note entry at the renderers' exact styles: the
  * char-width estimate undercounts complex scripts (prod100r4/022 Arabic notes
  * overprinted each other), so reservation and drawing share the DOM wrap truth.
  */
-let noteMeasureHost: HTMLDivElement | null = null
 
 const DEFAULT_SETTINGS: AiSettingsV2 = defaultSettingsV2()
 

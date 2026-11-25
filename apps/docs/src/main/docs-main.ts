@@ -82,7 +82,6 @@ import {
   readBodyCapped,
   setContextMenuInterceptor,
   writeJsonAtomic,
-  restrictFileToOwner,
   isBesideDocument,
   sharedPathGrants,
   recoveryCopyDiskNewer,

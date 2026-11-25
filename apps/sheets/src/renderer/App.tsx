@@ -501,14 +501,6 @@ import {
 } from './paste-special'
 import { installStatusBarFileStats } from './statusbar-file-stats'
 import { installStreamedColumnWidth } from './streamed-column-width'
-import {
-  installStatusBarStatsFilter,
-  readStatusBarFuncs,
-  toggleStatusBarFunc,
-  writeStatusBarFuncs,
-  type StatusBarFunc,
-  type StatusBarStatsFilter,
-} from './status-bar-stats'
 import { applyUniverLocale, hideFromAiLocale, insertRowsBelowLocale, numberAsTextAlertLocale } from './univer-locales'
 import { installRuleDetail } from './univer-rule-detail'
 import { installActiveCellDataValidationChrome } from './data-validation-dropdown'

@@ -1058,4 +1058,4 @@ export const vi = {
   appCtxConvertToEndnote: 'Chuyển thành Chú thích cuối',
   appCtxConvertToFootnote: 'Chuyển thành Cước chú',
   appFindIn: '查找范围',
-}
+} satisfies Record<keyof typeof zh, string>

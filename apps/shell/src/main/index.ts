@@ -468,7 +468,6 @@ import {
   detachedWebContentsFor,
   detachedSetTitleFor,
   detachedWindowForWebContents,
-  detachedTabsOf,
   detachedWindowsOf,
   holdDocking,
   dockBandFor,

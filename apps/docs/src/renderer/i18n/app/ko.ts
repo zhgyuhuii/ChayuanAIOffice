@@ -1068,4 +1068,4 @@ export const ko = {
   appCtxConvertToEndnote: '미주로 변환',
   appCtxConvertToFootnote: '각주로 변환',
   appFindIn: '查找范围',
-}
+} satisfies Record<keyof typeof zh, string>

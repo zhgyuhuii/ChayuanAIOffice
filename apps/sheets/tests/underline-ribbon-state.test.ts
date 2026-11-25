@@ -7,7 +7,6 @@ import {
   LogLevel,
   Univer,
   UniverInstanceType,
-  type IStyleData,
 } from '@univerjs/core'
 import { UniverSheetsPlugin } from '@univerjs/sheets'
 import '@univerjs/sheets/facade'
