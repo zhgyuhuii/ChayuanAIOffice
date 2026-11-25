@@ -960,7 +960,7 @@ describe('checkForUpdatesNow (r148 manual check)', () => {
   })
 })
 
-describe('linux deb self-update (genoffice#2325)', () => {
+describe('linux deb self-update (chaoffice#2325)', () => {
   // electron-builder's FpmTarget bakes `package-type` ("deb") next to
   // app-update.yml and electron-updater reads that file to pick DebUpdater.
   // The gate in initAutoUpdater must treat it like the APPIMAGE env var: the
@@ -1018,7 +1018,7 @@ describe('linux deb self-update (genoffice#2325)', () => {
   it('still installs on quit for an AppImage run', async () => {
     platformSpy?.restore()
     setPlatform('linux')
-    process.env.APPIMAGE = '/opt/GenOffice.AppImage'
+    process.env.APPIMAGE = '/opt/ChaOffice.AppImage'
     mockLinuxFiles('deb', 'url: https://cdn.example.com/linux\n')
     const { initAutoUpdater } = await loadUpdater()
     initAutoUpdater(() => null)
@@ -1109,7 +1109,7 @@ describe('linux deb self-update (genoffice#2325)', () => {
 
     updaterState.listeners.get('update-available')!({
       version: '0.2.0',
-      files: [{ url: 'GenOffice-0.2.0.AppImage' }, { url: 'genoffice_0.2.0_amd64.deb' }],
+      files: [{ url: 'ChaOffice-0.2.0.AppImage' }, { url: 'ChaAIOffice_0.2.0_amd64.deb' }],
     })
     const actions = lastShownActions()
     actions.onDownload()
@@ -1121,14 +1121,14 @@ describe('linux deb self-update (genoffice#2325)', () => {
 
     actions.onOpenDownload()
     expect(openExternal).toHaveBeenCalledWith(
-      'https://cdn.example.com/linux/genoffice_0.2.0_amd64.deb',
+      'https://cdn.example.com/linux/ChaAIOffice_0.2.0_amd64.deb',
     )
   })
 
   it('still offers the AppImage to an AppImage run that fails twice', async () => {
     platformSpy?.restore()
     setPlatform('linux')
-    process.env.APPIMAGE = '/opt/GenOffice.AppImage'
+    process.env.APPIMAGE = '/opt/ChaOffice.AppImage'
     Object.defineProperty(process, 'resourcesPath', { value: '/res', configurable: true })
     mockLinuxFiles('deb', 'url: https://cdn.example.com/linux\n')
     downloadUpdate.mockImplementation(() => Promise.reject(new Error('offline')))
@@ -1137,7 +1137,7 @@ describe('linux deb self-update (genoffice#2325)', () => {
 
     updaterState.listeners.get('update-available')!({
       version: '0.2.0',
-      files: [{ url: 'genoffice_0.2.0_amd64.deb' }, { url: 'GenOffice-0.2.0.AppImage' }],
+      files: [{ url: 'ChaAIOffice_0.2.0_amd64.deb' }, { url: 'ChaOffice-0.2.0.AppImage' }],
     })
     const actions = lastShownActions()
     actions.onDownload()
@@ -1148,7 +1148,7 @@ describe('linux deb self-update (genoffice#2325)', () => {
 
     actions.onOpenDownload()
     expect(openExternal).toHaveBeenCalledWith(
-      'https://cdn.example.com/linux/GenOffice-0.2.0.AppImage',
+      'https://cdn.example.com/linux/ChaOffice-0.2.0.AppImage',
     )
   })
 })

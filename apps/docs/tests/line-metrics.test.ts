@@ -939,7 +939,7 @@ describe('cssFontFamily', () => {
       "'游ゴシック','Yu Gothic GO','Yu Gothic Sans GO','Yu Gothic','ChaAI Office Hiragino Sans','Meiryo','Noto Sans JP','ChaOffice Sans KR',sans-serif",
     )
     expect(cssFontFamily('ＭＳ Ｐ明朝')).toBe(
-      "'\uff2d\uff33 \uff30\u660e\u671d','MS PMincho GO','MS PMincho JA GO','Yu Mincho','GenOffice Hiragino Mincho','GenOffice MS Mincho','Noto Serif JP','GenOffice Batang','GenOffice Serif KR',serif",
+      "'\uff2d\uff33 \uff30\u660e\u671d','MS PMincho GO','MS PMincho JA GO','Yu Mincho','ChaAI Office Hiragino Mincho','ChaAI Office MS Mincho','Noto Serif JP','ChaAI Office Batang','ChaAI Office Serif KR',serif",
     )
     expect(cssFontFamily('Meiryo')).toContain("'ChaAI Office Hiragino Sans'")
     expect(cssFontFamily('Meiryo')).not.toContain('CJK SC')

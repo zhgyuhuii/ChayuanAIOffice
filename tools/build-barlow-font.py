@@ -25,7 +25,7 @@ from fontTools.ttLib import TTFont
 from fontTools.ttLib.woff2 import WOFF2FlavorData
 
 FAMILY = "ChaAI Office Barlow"
-PS_FAMILY = "GenOfficeBarlow"
+PS_FAMILY = "ChaOfficeBarlow"
 OUT_DIR = "apps/docs/src/renderer/fonts"
 
 # Latin + Latin Extended + combining marks + punctuation/currency + f-ligatures

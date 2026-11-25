@@ -2249,13 +2249,13 @@
       "unicode-range": "U+0021-002F, U+003A-0040, U+005B-0060, U+007B-007E"
     }
   ],
-  "GenOffice Balanced Space": [
+  "ChaAI Office Balanced Space": [
     {
       "font-display": "block",
-      "font-family": "'GenOffice Balanced Space'",
+      "font-family": "'ChaAI Office Balanced Space'",
       "font-style": "normal",
       "font-weight": "normal",
-      "src": "url('./GenOfficeBalancedSpace.woff2') format('woff2')",
+      "src": "url('./ChaOfficeBalancedSpace.woff2') format('woff2')",
       "unicode-range": "U+0020"
     }
   ],
@@ -2275,68 +2275,68 @@
       "src": "url('./ChaOfficeBarlow-Bold-subset.woff2') format('woff2')"
     }
   ],
-  "GenOffice Batang": [
+  "ChaAI Office Batang": [
     {
-      "font-family": "'GenOffice Batang'",
+      "font-family": "'ChaAI Office Batang'",
       "font-style": "normal",
       "font-weight": "normal",
       "src": "local('Batang'), local('BatangChe')",
       "unicode-range": "U+2160-217F, U+2E80-303F, U+3041-33FF, U+3400-4DBF, U+4E00-9FFF, U+AC00-D7A3, U+F900-FAFF, U+FE30-FE4F, U+FF00-FFEF, U+20000-2FA1F"
     }
   ],
-  "GenOffice Bengali": [
+  "ChaAI Office Bengali": [
     {
       "font-display": "block",
-      "font-family": "'GenOffice Bengali'",
+      "font-family": "'ChaAI Office Bengali'",
       "font-style": "normal",
       "font-weight": "normal",
-      "src": "url('./GenOfficeBengali-Regular.woff2') format('woff2')"
+      "src": "url('./ChaOfficeBengali-Regular.woff2') format('woff2')"
     },
     {
       "font-display": "block",
-      "font-family": "'GenOffice Bengali'",
+      "font-family": "'ChaAI Office Bengali'",
       "font-style": "normal",
       "font-weight": "bold",
-      "src": "url('./GenOfficeBengali-Bold.woff2') format('woff2')"
+      "src": "url('./ChaOfficeBengali-Bold.woff2') format('woff2')"
     }
   ],
-  "GenOffice Box Drawing": [
+  "ChaAI Office Box Drawing": [
     {
-      "font-family": "'GenOffice Box Drawing'",
+      "font-family": "'ChaAI Office Box Drawing'",
       "font-style": "normal",
       "font-weight": "normal",
       "src": "local('Menlo-Regular'), local('Menlo Regular'), local('Menlo'), local('Consolas')",
       "unicode-range": "U+2500-257F"
     }
   ],
-  "GenOffice Che Latin KR": [
+  "ChaAI Office Che Latin KR": [
     {
       "font-display": "block",
-      "font-family": "'GenOffice Che Latin KR'",
+      "font-family": "'ChaAI Office Che Latin KR'",
       "font-style": "normal",
       "font-weight": "normal",
-      "src": "url('./GenOfficeCheLatinKR.woff2') format('woff2')",
+      "src": "url('./ChaOfficeCheLatinKR.woff2') format('woff2')",
       "unicode-range": "U+0020-007E"
     }
   ],
-  "GenOffice Cordia": [
+  "ChaAI Office Cordia": [
     {
       "font-display": "block",
-      "font-family": "'GenOffice Cordia'",
+      "font-family": "'ChaAI Office Cordia'",
       "font-style": "normal",
       "font-weight": "normal",
-      "src": "url('./GenOfficeCordia-Regular.woff2') format('woff2')"
+      "src": "url('./ChaOfficeCordia-Regular.woff2') format('woff2')"
     },
     {
       "font-display": "block",
-      "font-family": "'GenOffice Cordia'",
+      "font-family": "'ChaAI Office Cordia'",
       "font-style": "normal",
       "font-weight": "bold",
-      "src": "url('./GenOfficeCordia-Bold.woff2') format('woff2')"
+      "src": "url('./ChaOfficeCordia-Bold.woff2') format('woff2')"
     },
     {
       "font-display": "block",
-      "font-family": "'GenOffice Cordia'",
+      "font-family": "'ChaAI Office Cordia'",
       "font-style": "normal",
       "font-weight": "normal",
       "size-adjust": "64.9%",
@@ -2345,7 +2345,7 @@
     },
     {
       "font-display": "block",
-      "font-family": "'GenOffice Cordia'",
+      "font-family": "'ChaAI Office Cordia'",
       "font-style": "normal",
       "font-weight": "bold",
       "size-adjust": "64.3%",
@@ -2353,172 +2353,172 @@
       "unicode-range": "U+0000-0DFF, U+0E80-F6FF, U+F71B-10FFFF"
     }
   ],
-  "GenOffice DM Sans": [
+  "ChaAI Office DM Sans": [
     {
       "font-display": "block",
-      "font-family": "'GenOffice DM Sans'",
+      "font-family": "'ChaAI Office DM Sans'",
       "font-style": "normal",
       "font-weight": "normal",
-      "src": "url('./GenOfficeDMSans-Regular-subset.woff2') format('woff2')"
+      "src": "url('./ChaOfficeDMSans-Regular-subset.woff2') format('woff2')"
     },
     {
       "font-display": "block",
-      "font-family": "'GenOffice DM Sans'",
+      "font-family": "'ChaAI Office DM Sans'",
       "font-style": "normal",
       "font-weight": "bold",
-      "src": "url('./GenOfficeDMSans-Bold-subset.woff2') format('woff2')"
+      "src": "url('./ChaOfficeDMSans-Bold-subset.woff2') format('woff2')"
     }
   ],
-  "GenOffice Ethiopic": [
+  "ChaAI Office Ethiopic": [
     {
-      "font-family": "'GenOffice Ethiopic'",
+      "font-family": "'ChaAI Office Ethiopic'",
       "font-style": "normal",
       "font-weight": "normal",
       "size-adjust": "72%",
       "src": "local('Kefa-Regular'), local('Kefa Regular'), local('Kefa')"
     }
   ],
-  "GenOffice Fullwidth TC": [
+  "ChaAI Office Fullwidth TC": [
     {
       "font-display": "block",
-      "font-family": "'GenOffice Fullwidth TC'",
+      "font-family": "'ChaAI Office Fullwidth TC'",
       "font-style": "normal",
       "font-weight": "normal",
       "src": "url('./NotoSerifCJKsc-Regular-subset.woff2') format('woff2')",
       "unicode-range": "U+FF0D, U+FF0F, U+FF3C, U+FF3F, U+FF5E"
     }
   ],
-  "GenOffice Gothic KR": [
+  "ChaAI Office Gothic KR": [
     {
       "font-display": "block",
-      "font-family": "'GenOffice Gothic KR'",
+      "font-family": "'ChaAI Office Gothic KR'",
       "font-style": "normal",
       "font-weight": "normal",
-      "src": "url('./GenOfficeGothicKR-Regular-subset.woff2') format('woff2')"
+      "src": "url('./ChaOfficeGothicKR-Regular-subset.woff2') format('woff2')"
     }
   ],
-  "GenOffice Heiti TC": [
+  "ChaAI Office Heiti TC": [
     {
-      "font-family": "'GenOffice Heiti TC'",
+      "font-family": "'ChaAI Office Heiti TC'",
       "font-style": "normal",
       "font-weight": "normal",
       "src": "local('Heiti TC'), local('Heiti TC Light'), local('STHeitiTC-Light')",
       "unicode-range": "U+2160-217F, U+2E80-303F, U+3041-33FF, U+3400-4DBF, U+4E00-9FFF, U+AC00-D7A3, U+F900-FAFF, U+FE30-FE4F, U+FF00-FFEF, U+20000-2FA1F"
     }
   ],
-  "GenOffice Hiragino Mincho": [
+  "ChaAI Office Hiragino Mincho": [
     {
-      "font-family": "'GenOffice Hiragino Mincho'",
+      "font-family": "'ChaAI Office Hiragino Mincho'",
       "font-style": "normal",
       "font-weight": "normal",
       "src": "local('Hiragino Mincho ProN'), local('HiraMinProN-W3')",
       "unicode-range": "U+2160-217F, U+2E80-303F, U+3041-33FF, U+3400-4DBF, U+4E00-9FFF, U+AC00-D7A3, U+F900-FAFF, U+FE30-FE4F, U+FF00-FFEF, U+20000-2FA1F"
     }
   ],
-  "GenOffice Hiragino Sans": [
+  "ChaAI Office Hiragino Sans": [
     {
-      "font-family": "'GenOffice Hiragino Sans'",
+      "font-family": "'ChaAI Office Hiragino Sans'",
       "font-style": "normal",
       "font-weight": "normal",
       "src": "local('Hiragino Sans'), local('HiraginoSans-W3'), local('MS Gothic')",
       "unicode-range": "U+2160-217F, U+2E80-303F, U+3041-33FF, U+3400-4DBF, U+4E00-9FFF, U+AC00-D7A3, U+F900-FAFF, U+FE30-FE4F, U+FF00-FFEF, U+20000-2FA1F"
     },
     {
-      "font-family": "'GenOffice Hiragino Sans'",
+      "font-family": "'ChaAI Office Hiragino Sans'",
       "font-style": "normal",
       "font-weight": "bold",
       "src": "local('HiraginoSans-W6'), local('Hiragino Sans W6')",
       "unicode-range": "U+2160-217F, U+2E80-303F, U+3041-33FF, U+3400-4DBF, U+4E00-9FFF, U+AC00-D7A3, U+F900-FAFF, U+FE30-FE4F, U+FF00-FFEF, U+20000-2FA1F"
     }
   ],
-  "GenOffice MingLiU": [
+  "ChaAI Office MingLiU": [
     {
-      "font-family": "'GenOffice MingLiU'",
+      "font-family": "'ChaAI Office MingLiU'",
       "font-style": "normal",
       "font-weight": "normal",
       "src": "local('PMingLiU'), local('MingLiU')",
       "unicode-range": "U+2160-217F, U+2E80-303F, U+3041-33FF, U+3400-4DBF, U+4E00-9FFF, U+AC00-D7A3, U+F900-FAFF, U+FE30-FE4F, U+FF00-FFEF, U+20000-2FA1F"
     }
   ],
-  "GenOffice MS Mincho": [
+  "ChaAI Office MS Mincho": [
     {
-      "font-family": "'GenOffice MS Mincho'",
+      "font-family": "'ChaAI Office MS Mincho'",
       "font-style": "normal",
       "font-weight": "normal",
       "src": "local('MS Mincho'), local('MS PMincho')",
       "unicode-range": "U+2160-217F, U+2E80-303F, U+3041-33FF, U+3400-4DBF, U+4E00-9FFF, U+AC00-D7A3, U+F900-FAFF, U+FE30-FE4F, U+FF00-FFEF, U+20000-2FA1F"
     }
   ],
-  "GenOffice Myungjo": [
+  "ChaAI Office Myungjo": [
     {
-      "font-family": "'GenOffice Myungjo'",
+      "font-family": "'ChaAI Office Myungjo'",
       "font-style": "normal",
       "font-weight": "normal",
       "src": "local('AppleMyungjo')",
       "unicode-range": "U+2160-217F, U+2E80-303F, U+3041-33FF, U+3400-4DBF, U+4E00-9FFF, U+AC00-D7A3, U+F900-FAFF, U+FE30-FE4F, U+FF00-FFEF, U+20000-2FA1F"
     }
   ],
-  "GenOffice Poppins": [
+  "ChaAI Office Poppins": [
     {
       "font-display": "block",
-      "font-family": "'GenOffice Poppins'",
+      "font-family": "'ChaAI Office Poppins'",
       "font-style": "normal",
       "font-weight": "normal",
-      "src": "url('./GenOfficePoppins-Regular-subset.woff2') format('woff2')"
+      "src": "url('./ChaOfficePoppins-Regular-subset.woff2') format('woff2')"
     },
     {
       "font-display": "block",
-      "font-family": "'GenOffice Poppins'",
+      "font-family": "'ChaAI Office Poppins'",
       "font-style": "normal",
       "font-weight": "bold",
-      "src": "url('./GenOfficePoppins-Bold-subset.woff2') format('woff2')"
+      "src": "url('./ChaOfficePoppins-Bold-subset.woff2') format('woff2')"
     }
   ],
-  "GenOffice PUA Blank": [
+  "ChaAI Office PUA Blank": [
     {
       "font-display": "block",
-      "font-family": "'GenOffice PUA Blank'",
+      "font-family": "'ChaAI Office PUA Blank'",
       "font-style": "normal",
       "font-weight": "normal",
-      "src": "url('./GenOfficePUABlank.woff2') format('woff2')",
+      "src": "url('./ChaOfficePUABlank.woff2') format('woff2')",
       "unicode-range": "U+E000-F8FF"
     }
   ],
-  "GenOffice Sans KR": [
+  "ChaAI Office Sans KR": [
     {
       "font-display": "block",
-      "font-family": "'GenOffice Sans KR'",
+      "font-family": "'ChaAI Office Sans KR'",
       "font-style": "normal",
       "font-weight": "normal",
-      "src": "url('./GenOfficeSansKR-Regular-subset.woff2') format('woff2')"
+      "src": "url('./ChaOfficeSansKR-Regular-subset.woff2') format('woff2')"
     },
     {
       "font-display": "block",
-      "font-family": "'GenOffice Sans KR'",
+      "font-family": "'ChaAI Office Sans KR'",
       "font-style": "normal",
       "font-weight": "normal",
       "src": "url('@chaoffice/ui/fonts/Carlito-Regular.ttf') format('truetype')",
       "unicode-range": "U+2070-209F, U+00B2-00B3, U+00B9"
     }
   ],
-  "GenOffice Sarabun": [
+  "ChaAI Office Sarabun": [
     {
       "font-display": "block",
-      "font-family": "'GenOffice Sarabun'",
+      "font-family": "'ChaAI Office Sarabun'",
       "font-style": "normal",
       "font-weight": "normal",
-      "src": "url('./GenOfficeSarabun-Regular.woff2') format('woff2')"
+      "src": "url('./ChaOfficeSarabun-Regular.woff2') format('woff2')"
     },
     {
       "font-display": "block",
-      "font-family": "'GenOffice Sarabun'",
+      "font-family": "'ChaAI Office Sarabun'",
       "font-style": "normal",
       "font-weight": "bold",
-      "src": "url('./GenOfficeSarabun-Bold.woff2') format('woff2')"
+      "src": "url('./ChaOfficeSarabun-Bold.woff2') format('woff2')"
     },
     {
       "font-display": "block",
-      "font-family": "'GenOffice Sarabun'",
+      "font-family": "'ChaAI Office Sarabun'",
       "font-style": "normal",
       "font-weight": "normal",
       "size-adjust": "64.4%",
@@ -2527,7 +2527,7 @@
     },
     {
       "font-display": "block",
-      "font-family": "'GenOffice Sarabun'",
+      "font-family": "'ChaAI Office Sarabun'",
       "font-style": "normal",
       "font-weight": "bold",
       "size-adjust": "65.7%",
@@ -2535,62 +2535,62 @@
       "unicode-range": "U+0000-0DFF, U+0E80-F6FF, U+F71B-10FFFF"
     }
   ],
-  "GenOffice Serif KR": [
+  "ChaAI Office Serif KR": [
     {
       "font-display": "block",
-      "font-family": "'GenOffice Serif KR'",
+      "font-family": "'ChaAI Office Serif KR'",
       "font-style": "normal",
       "font-weight": "normal",
-      "src": "url('./GenOfficeSerifKR-Regular-subset.woff2') format('woff2')"
+      "src": "url('./ChaOfficeSerifKR-Regular-subset.woff2') format('woff2')"
     },
     {
       "font-display": "block",
-      "font-family": "'GenOffice Serif KR'",
+      "font-family": "'ChaAI Office Serif KR'",
       "font-style": "normal",
       "font-weight": "normal",
       "src": "url('@chaoffice/ui/fonts/Carlito-Regular.ttf') format('truetype')",
       "unicode-range": "U+2070-209F, U+00B2-00B3, U+00B9"
     }
   ],
-  "GenOffice SimSun Latin": [
+  "ChaAI Office SimSun Latin": [
     {
       "font-display": "block",
-      "font-family": "'GenOffice SimSun Latin'",
+      "font-family": "'ChaAI Office SimSun Latin'",
       "font-style": "normal",
       "font-weight": "normal",
-      "src": "url('./GenOfficeCheLatinKR.woff2') format('woff2')",
+      "src": "url('./ChaOfficeCheLatinKR.woff2') format('woff2')",
       "unicode-range": "U+0020-007E"
     }
   ],
-  "GenOffice Songti SC": [
+  "ChaAI Office Songti SC": [
     {
-      "font-family": "'GenOffice Songti SC'",
+      "font-family": "'ChaAI Office Songti SC'",
       "font-style": "normal",
       "font-weight": "normal",
       "src": "local('STSongti-SC-Regular'), local('Songti SC Regular')"
     }
   ],
-  "GenOffice Songti TC": [
+  "ChaAI Office Songti TC": [
     {
-      "font-family": "'GenOffice Songti TC'",
+      "font-family": "'ChaAI Office Songti TC'",
       "font-style": "normal",
       "font-weight": "normal",
       "src": "local('STSongti-TC-Regular'), local('Songti TC Regular')"
     }
   ],
-  "GenOffice Tamil": [
+  "ChaAI Office Tamil": [
     {
       "font-display": "block",
-      "font-family": "'GenOffice Tamil'",
+      "font-family": "'ChaAI Office Tamil'",
       "font-style": "normal",
       "font-weight": "normal",
-      "src": "url('./GenOfficeTamil-Regular.woff2') format('woff2')"
+      "src": "url('./ChaOfficeTamil-Regular.woff2') format('woff2')"
     }
   ],
-  "GenOffice YaHei Latin": [
+  "ChaAI Office YaHei Latin": [
     {
       "font-display": "block",
-      "font-family": "'GenOffice YaHei Latin'",
+      "font-family": "'ChaAI Office YaHei Latin'",
       "font-style": "normal",
       "font-weight": "normal",
       "size-adjust": "106%",
@@ -2599,7 +2599,7 @@
     },
     {
       "font-display": "block",
-      "font-family": "'GenOffice YaHei Latin'",
+      "font-family": "'ChaAI Office YaHei Latin'",
       "font-style": "normal",
       "font-weight": "bold",
       "size-adjust": "108%",
@@ -5745,7 +5745,7 @@
       "font-weight": "normal",
       "line-gap-override": "0%",
       "size-adjust": "68.7%",
-      "src": "url('./GenOfficeBengali-Regular.woff2') format('woff2')",
+      "src": "url('./ChaOfficeBengali-Regular.woff2') format('woff2')",
       "unicode-range": "U+0964-0965, U+0980-09FF, U+200C-200D"
     },
     {
@@ -5757,7 +5757,7 @@
       "font-weight": "bold",
       "line-gap-override": "0%",
       "size-adjust": "68.6%",
-      "src": "url('./GenOfficeBengali-Bold.woff2') format('woff2')",
+      "src": "url('./ChaOfficeBengali-Bold.woff2') format('woff2')",
       "unicode-range": "U+0964-0965, U+0980-09FF, U+200C-200D"
     }
   ],
