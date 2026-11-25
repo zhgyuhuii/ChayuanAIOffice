@@ -774,6 +774,7 @@ const upstreamStrings = {
       'Documents open when ChaAI Office closes reopen automatically the next time it starts.',
     setExcludedFolders: 'Excluded folders',
     setExcludedFoldersDesc:
+    'Files under these folders stay out of recents, search and session restore.',
     setExcludedFoldersAdd: 'Add folder…',
     setExcludedFoldersEmpty: 'Nothing excluded yet',
     setTabSleep: 'Sleep inactive tabs',
@@ -1351,6 +1352,7 @@ const upstreamStrings = {
       'Các tài liệu đang mở khi đóng ChaAI Office sẽ tự động mở lại vào lần khởi động tiếp theo.',
     setExcludedFolders: 'Thư mục loại trừ',
     setExcludedFoldersDesc:
+    'Tệp trong các thư mục này không vào danh sách gần đây, tìm kiếm và khôi phục phiên.',
     setExcludedFoldersAdd: 'Thêm thư mục…',
     setExcludedFoldersEmpty: 'Chưa loại trừ thư mục nào',
     setTabSleep: 'Tạm ngủ các thẻ không hoạt động',
@@ -1934,6 +1936,7 @@ const upstreamStrings = {
       'ChaAI Office kapatılırken açık olan belgeler bir sonraki başlatmada otomatik olarak yeniden açılır.',
     setExcludedFolders: 'Hariç tutulan klasörler',
     setExcludedFoldersDesc:
+    'Bu klasörlerdeki dosyalar son kullanılanlar, arama ve oturum geri yükleme dışında tutulur.',
     setExcludedFoldersAdd: 'Klasör ekle…',
     setExcludedFoldersEmpty: 'Hariç tutulan klasör yok',
     setTabSleep: 'Etkin olmayan sekmeleri uyut',
@@ -2525,6 +2528,7 @@ const upstreamStrings = {
       'A ChaAI Office bezárásakor nyitva lévő dokumentumok a következő indításkor automatikusan megnyílnak.',
     setExcludedFolders: 'Kizárt mappák',
     setExcludedFoldersDesc:
+    'E mappák fájljai nem kerülnek a legutóbbiakba, a keresésbe és a munkamenet-helyreállításba.',
     setExcludedFoldersAdd: 'Mappa hozzáadása…',
     setExcludedFoldersEmpty: 'Nincs kizárt mappa',
     setTabSleep: 'Inaktív lapok elaltatása',
@@ -3118,6 +3122,7 @@ const upstreamStrings = {
       'ChaAI Office を閉じたときに開いていたドキュメントを、次回起動時に自動で開き直します。',
     setExcludedFolders: '除外フォルダー',
     setExcludedFoldersDesc:
+    'これらのフォルダー内のファイルは、最近使った項目・検索・セッション復元の対象外になります。',
     setExcludedFoldersAdd: 'フォルダーを追加…',
     setExcludedFoldersEmpty: '除外されたフォルダーはありません',
     setTabSleep: '非アクティブなタブをスリープ',
@@ -4279,6 +4284,7 @@ const upstreamStrings = {
       'Les documents ouverts à la fermeture de ChaAI Office se rouvrent automatiquement au prochain démarrage.',
     setExcludedFolders: 'Dossiers exclus',
     setExcludedFoldersDesc:
+    'Les fichiers de ces dossiers sont exclus des récents, de la recherche et de la restauration de session.',
     setExcludedFoldersAdd: 'Ajouter un dossier…',
     setExcludedFoldersEmpty: 'Aucun dossier exclu',
     setTabSleep: 'Mettre en veille les onglets inactifs',
@@ -4877,6 +4883,7 @@ const upstreamStrings = {
       'Dokumente, die beim Schließen von ChaAI Office geöffnet waren, werden beim nächsten Start automatisch wieder geöffnet.',
     setExcludedFolders: 'Ausgeschlossene Ordner',
     setExcludedFoldersDesc:
+    'Dateien in diesen Ordnern bleiben außerhalb von „Zuletzt verwendet“, der Suche und der Sitzungswiederherstellung.',
     setExcludedFoldersAdd: 'Ordner hinzufügen…',
     setExcludedFoldersEmpty: 'Keine Ordner ausgeschlossen',
     setTabSleep: 'Inaktive Tabs schlafen legen',
@@ -5467,6 +5474,7 @@ const upstreamStrings = {
       'Los documentos abiertos al cerrar ChaAI Office se vuelven a abrir automáticamente la próxima vez que se inicie.',
     setExcludedFolders: 'Carpetas excluidas',
     setExcludedFoldersDesc:
+    'Los archivos de estas carpetas quedan fuera de recientes, búsqueda y restauración de sesión.',
     setExcludedFoldersAdd: 'Añadir carpeta…',
     setExcludedFoldersEmpty: 'Ninguna carpeta excluida',
     setTabSleep: 'Suspender pestañas inactivas',
@@ -6049,6 +6057,7 @@ const upstreamStrings = {
       'เอกสารที่เปิดอยู่ตอนปิด ChaAI Office จะเปิดขึ้นอีกครั้งโดยอัตโนมัติเมื่อเริ่มโปรแกรมครั้งถัดไป',
     setExcludedFolders: 'โฟลเดอร์ที่ยกเว้น',
     setExcludedFoldersDesc:
+    'ไฟล์ในโฟลเดอร์เหล่านี้จะไม่อยู่ในรายการล่าสุด การค้นหา และการกู้คืนเซสชัน',
     setExcludedFoldersAdd: 'เพิ่มโฟลเดอร์…',
     setExcludedFoldersEmpty: 'ยังไม่มีโฟลเดอร์ที่ยกเว้น',
     setTabSleep: 'พักแท็บที่ไม่ได้ใช้งาน',
@@ -6623,6 +6632,7 @@ const upstreamStrings = {
       'Dokumen yang terbuka saat ChaAI Office ditutup akan dibuka kembali secara otomatis saat dijalankan berikutnya.',
     setExcludedFolders: 'Folder yang dikecualikan',
     setExcludedFoldersDesc:
+    'Berkas di folder ini tidak masuk daftar terbaru, pencarian, dan pemulihan sesi.',
     setExcludedFoldersAdd: 'Tambah folder…',
     setExcludedFoldersEmpty: 'Belum ada folder yang dikecualikan',
     setTabSleep: 'Tidurkan tab tidak aktif',
@@ -7203,6 +7213,7 @@ const upstreamStrings = {
       'Документы, открытые при закрытии ChaAI Office, автоматически откроются при следующем запуске.',
     setExcludedFolders: 'Исключённые папки',
     setExcludedFoldersDesc:
+    'Файлы в этих папках не попадают в недавние, поиск и восстановление сеанса.',
     setExcludedFoldersAdd: 'Добавить папку…',
     setExcludedFoldersEmpty: 'Нет исключённых папок',
     setTabSleep: 'Усыплять неактивные вкладки',
@@ -7784,6 +7795,7 @@ const upstreamStrings = {
       'تُعاد فتح المستندات المفتوحة عند إغلاق ChaAI Office تلقائيًا في المرة التالية التي يبدأ فيها.',
     setExcludedFolders: 'مجلدات مستبعدة',
     setExcludedFoldersDesc:
+    'الملفات في هذه المجلدات لا تظهر في الأخيرة ولا في البحث ولا في استعادة الجلسة.',
     setExcludedFoldersAdd: 'إضافة مجلد…',
     setExcludedFoldersEmpty: 'لا توجد مجلدات مستبعدة',
     setTabSleep: 'إسبات علامات التبويب غير النشطة',
@@ -8362,6 +8374,7 @@ const upstreamStrings = {
       'Os documentos abertos ao fechar o ChaOffice são reabertos automaticamente na próxima vez que ele for iniciado.',
     setExcludedFolders: 'Pastas excluídas',
     setExcludedFoldersDesc:
+    'Os arquivos nessas pastas ficam fora de recentes, pesquisa e restauração de sessão.',
     setExcludedFoldersAdd: 'Adicionar pasta…',
     setExcludedFoldersEmpty: 'Nenhuma pasta excluída',
     setTabSleep: 'Suspender guias inativas',
@@ -8950,6 +8963,7 @@ const upstreamStrings = {
       'I documenti aperti alla chiusura di ChaAI Office si riaprono automaticamente al successivo avvio.',
     setExcludedFolders: 'Cartelle escluse',
     setExcludedFoldersDesc:
+    'I file in queste cartelle restano fuori da recenti, ricerca e ripristino della sessione.',
     setExcludedFoldersAdd: 'Aggiungi cartella…',
     setExcludedFoldersEmpty: 'Nessuna cartella esclusa',
     setTabSleep: 'Sospendi le schede inattive',
@@ -9537,6 +9551,7 @@ const upstreamStrings = {
       'Dokumenty otwarte w chwili zamknięcia ChaAI Office zostaną automatycznie otwarte przy następnym uruchomieniu.',
     setExcludedFolders: 'Wykluczone foldery',
     setExcludedFoldersDesc:
+    'Pliki w tych folderach nie trafiają do ostatnich, wyszukiwania i przywracania sesji.',
     setExcludedFoldersAdd: 'Dodaj folder…',
     setExcludedFoldersEmpty: 'Brak wykluczonych folderów',
     setTabSleep: 'Usypiaj nieaktywne karty',
@@ -10350,6 +10365,7 @@ const upstreamStrings = {
       'Dokumenty otevřené při zavření ChaAI Office se při příštím spuštění automaticky znovu otevřou.',
     setExcludedFolders: 'Vyloučené složky',
     setExcludedFoldersDesc:
+    'Soubory v těchto složkách se nezobrazují v nedávných, hledání ani v obnově relace.',
     setExcludedFoldersAdd: 'Přidat složku…',
     setExcludedFoldersEmpty: 'Žádné vyloučené složky',
     setTabSleep: 'Uspávat neaktivní karty',
@@ -10700,6 +10716,7 @@ const upstreamStrings = {
       'Documenten die open waren toen ChaAI Office werd gesloten, worden bij de volgende start automatisch opnieuw geopend.',
     setExcludedFolders: 'Uitgesloten mappen',
     setExcludedFoldersDesc:
+    'Bestanden in deze mappen blijven buiten Recent, zoeken en sessieherstel.',
     setExcludedFoldersAdd: 'Map toevoegen…',
     setExcludedFoldersEmpty: 'Geen mappen uitgesloten',
     setTabSleep: 'Inactieve tabbladen laten slapen',
@@ -11284,6 +11301,7 @@ const upstreamStrings = {
       'Dokumen yang dibuka semasa ChaAI Office ditutup akan dibuka semula secara automatik apabila ia dimulakan seterusnya.',
     setExcludedFolders: 'Folder dikecualikan',
     setExcludedFoldersDesc:
+    'Fail dalam folder ini tidak masuk senarai terkini, carian dan pemulihan sesi.',
     setExcludedFoldersAdd: 'Tambah folder…',
     setExcludedFoldersEmpty: 'Tiada folder dikecualikan',
     setTabSleep: 'Tidurkan tab tidak aktif',
@@ -12438,6 +12456,7 @@ const upstreamStrings = {
       'ChaAI Office बंद करते समय खुले दस्तावेज़ अगली बार शुरू होने पर अपने-आप फिर से खुल जाते हैं।',
     setExcludedFolders: 'बहिष्कृत फ़ोल्डर',
     setExcludedFoldersDesc:
+    'इन फ़ोल्डर की फ़ाइलें हाल की सूची, खोज और सत्र पुनर्स्थापना में नहीं आतीं।',
     setExcludedFoldersAdd: 'फ़ोल्डर जोड़ें…',
     setExcludedFoldersEmpty: 'अभी कोई फ़ोल्डर बहिष्कृत नहीं है',
     setTabSleep: 'निष्क्रिय टैब को सुलाएँ',
