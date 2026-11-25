@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Editor } from '@tiptap/core'
-import type { Block, HfPictureLink } from '@genoffice/docx-engine'
+import type { Block, HfPictureLink } from '@chaoffice/docx-engine'
 import { HF_COMMIT_EVENT } from '../editor/hf-editor'
 import type { InsertFileNotes } from '../editor/insert-file'
 import {

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import type { MouseEvent as ReactMouseEvent, KeyboardEvent as ReactKeyboardEvent } from 'react'
 import type { Editor } from '@tiptap/core'
-import type { SectionSettings } from '@genoffice/docx-engine'
+import type { SectionSettings } from '@chaoffice/docx-engine'
 import { t } from '../i18n/locale'
 import { useMeasurement } from '../use-measurement'
 import { GAP_BAND, PAGE_TURN_SEL } from '../editor/pagination-gaps'

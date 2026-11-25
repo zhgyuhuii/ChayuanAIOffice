@@ -4,7 +4,7 @@
  */
 import { afterEach, describe, expect, it } from 'vitest'
 import { Editor } from '@tiptap/core'
-import { parseDocx, readSections } from '@genoffice/docx-engine'
+import { parseDocx, readSections } from '@chaoffice/docx-engine'
 import { buildDocx } from '../../../packages/docx-engine/tests/helpers/build-docx'
 import { editorExtensions } from '../src/renderer/editor/extensions'
 import { blocksToPmDoc } from '../src/renderer/editor/convert'
@@ -142,7 +142,7 @@ describe('forms protection section by section', () => {
     const { editor, at } = await openDoc()
     const guard = editor.storage.sectionEditGuard
     const { pmDocToSavePlan } = await import('../src/renderer/editor/convert')
-    const { saveDocx } = await import('@genoffice/docx-engine')
+    const { saveDocx } = await import('@chaoffice/docx-engine')
     let parsed = await parseDocx(await buildDocx({ bodyXml: BODY }))
     const save = async () => {
       const plan = pmDocToSavePlan(editor.getJSON() as never, parsed.blocks)

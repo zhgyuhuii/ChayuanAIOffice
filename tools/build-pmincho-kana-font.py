@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build GenOffice PMincho Kana JP: Noto Serif JP kana/JP punctuation set at
+"""Build ChaAI Office PMincho Kana JP: Noto Serif JP kana/JP punctuation set at
 MS PMincho advances, full glyph height preserved.
 
 MS PMincho kana are proportional glyph by glyph (0.50-0.98em in Word's private
@@ -34,8 +34,8 @@ from fontTools.varLib.instancer import instantiateVariableFont
 ROOT = Path(__file__).resolve().parent.parent
 ADVANCES = ROOT / "tools/ms-pmincho-kana-advances.json"
 OUT_DIR = ROOT / "apps/docs/src/renderer/fonts"
-FAMILY = "GenOffice PMincho Kana JP"
-PS_NAME = "GenOfficePMinchoKanaJP-Regular"
+FAMILY = "ChaAI Office PMincho Kana JP"
+PS_NAME = "ChaOfficePMinchoKanaJP-Regular"
 # kana, JP punctuation and the fullwidth brackets/colons; fullwidth letters and
 # digits stay with the chain
 RANGES = [(0x3000, 0x30FF), (0xFF01, 0xFF0F), (0xFF1A, 0xFF20), (0xFF3B, 0xFF40), (0xFF5B, 0xFF60)]

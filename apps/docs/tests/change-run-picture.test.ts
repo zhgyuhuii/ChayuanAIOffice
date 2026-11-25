@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import JSZip from 'jszip'
 import { Editor } from '@tiptap/core'
 import { NodeSelection } from '@tiptap/pm/state'
-import { parseDocx, saveDocx, type HeaderFooter } from '@genoffice/docx-engine'
+import { parseDocx, saveDocx, type HeaderFooter } from '@chaoffice/docx-engine'
 import {
   buildDocx,
   IMAGE_PARAGRAPH_XML,

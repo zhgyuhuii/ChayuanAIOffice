@@ -33,7 +33,7 @@ import { fontNamesFor, parseFontTable } from './fonts'
 import { iterateSprms, readSprmU16 } from './sprm'
 import { legacyStyleId, parseStsh, type Style, type StyleSheet } from './styles'
 import { createWordControlMapper } from './text'
-import { BLANK_STYLES_BY_NAME, BLANK_STYLE_ON_TOGGLES_BY_ID } from '@genoffice/docx-engine'
+import { BLANK_STYLES_BY_NAME, BLANK_STYLE_ON_TOGGLES_BY_ID } from '@chaoffice/docx-engine'
 
 /** the style index Word applies to paragraphs with no PAPX / no explicit style */
 export const DEFAULT_PARAGRAPH_STYLE_ISTD = 0

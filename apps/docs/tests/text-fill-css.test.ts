@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { TextFill } from '@genoffice/docx-engine'
+import type { TextFill } from '@chaoffice/docx-engine'
 import {
   declStyle,
   liveTextFill,

@@ -1,7 +1,7 @@
 import { readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { isHiddenEntry, isSupportedTreeFile } from '../folder-tree'
-import { isUnderExcludedFolder } from '@genoffice/electron-utils'
+import { isUnderExcludedFolder } from '@chaoffice/electron-utils'
 
 export interface ScannedFile {
   path: string

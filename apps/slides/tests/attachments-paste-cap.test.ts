@@ -17,9 +17,9 @@ vi.mock('electron', () => ({
 vi.mock('@chaoffice/file-parse', () => ({
   parseFileToText: vi.fn(async () => ({ ok: false, error: 'mocked' })),
 }))
-vi.mock('@genoffice/cli/agent-skills', () => ({}))
-vi.mock('@genoffice/cli/install', () => ({}))
-vi.mock('@genoffice/electron-utils', () => ({
+vi.mock('@chaoffice/cli/agent-skills', () => ({}))
+vi.mock('@chaoffice/cli/install', () => ({}))
+vi.mock('@chaoffice/electron-utils', () => ({
   showOpenDialogWithMemory: vi.fn(),
   isBesideDocument: () => false,
   sharedPathGrants: () => ({ grant: grantPaths, has: () => false }),

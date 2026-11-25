@@ -4,9 +4,9 @@ import { describe, expect, it } from 'vitest'
 import {
   applyCellEditsToXlsx,
   assertOnlyTouchedEntriesChanged,
-} from '@genoffice/xlsx-gateway/gateway/xlsx-gateway'
-import { relsPathFor, resolveRelTarget } from '@genoffice/xlsx-gateway/gateway/xlsx-drawing-add'
-import { renameTablesInWorksheet } from '@genoffice/xlsx-gateway/gateway/xlsx-sheet-clone'
+} from '@chaoffice/xlsx-gateway/gateway/xlsx-gateway'
+import { relsPathFor, resolveRelTarget } from '@chaoffice/xlsx-gateway/gateway/xlsx-drawing-add'
+import { renameTablesInWorksheet } from '@chaoffice/xlsx-gateway/gateway/xlsx-sheet-clone'
 import {
   classifyRemovedSheetRels,
   definedNamesUseToken,

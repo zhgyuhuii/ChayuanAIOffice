@@ -5,7 +5,7 @@ import {
   type RelSize,
   type SectionSettings,
   type TextboxDisplay,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { selectedBoxIndex } from './selected-box'
 
 const TWIPS_PER_PX = 15

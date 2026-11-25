@@ -9,7 +9,7 @@ import { mkdtemp, writeFile } from 'node:fs/promises'
 import type { AddressInfo } from 'node:net'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { defaultAiSettings, resolveCustomEndpoints } from '@genoffice/ai-provider'
+import { defaultAiSettings, resolveCustomEndpoints } from '@chaoffice/ai-provider'
 import { launchShell, closeAndSaveVideo, waitForPageWithUrl } from './helpers'
 
 const POLL = { timeout: 15_000, intervals: [250, 500, 1000] }

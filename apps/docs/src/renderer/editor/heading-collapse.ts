@@ -18,7 +18,7 @@ import {
 } from '@tiptap/pm/state'
 import { ReplaceStep } from '@tiptap/pm/transform'
 import { Decoration, DecorationSet, type EditorView } from '@tiptap/pm/view'
-import type { StyleInfo } from '@genoffice/docx-engine'
+import type { StyleInfo } from '@chaoffice/docx-engine'
 import { collectHeadings, type HeadingRef } from './headings'
 import { headingAtPos, headingKey, subtreeEnd } from './nav-outline'
 import { TRACK_IGNORE } from './revisions'

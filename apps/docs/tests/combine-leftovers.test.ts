@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { Editor } from '@tiptap/core'
 import JSZip from 'jszip'
-import { compareDocuments, parseDocx, readSections, saveDocx } from '@genoffice/docx-engine'
+import { compareDocuments, parseDocx, readSections, saveDocx } from '@chaoffice/docx-engine'
 import {
   buildDocx,
   type BuildDocxOptions,

@@ -157,11 +157,11 @@ class (0.88/-0.12) the glyphs sit next to (`tools/build-meiryo-ui-kana-font.py`)
 Renamed per OFL ("Source" is a Reserved Font Name of the upstream and the
 outlines are modified).
 
-### GenOffice PMincho Kana JP
+### ChaAI Office PMincho Kana JP
 
 | Font                                      | Role                                                 |
 | ----------------------------------------- | ---------------------------------------------------- |
-| GenOffice PMincho Kana JP (Regular woff2) | MS PMincho-advance kana/JP punctuation for the alias |
+| ChaAI Office PMincho Kana JP (Regular woff2) | MS PMincho-advance kana/JP punctuation for the alias |
 
 Source: Noto Serif JP variable font from [notofonts/noto-cjk](https://github.com/notofonts/noto-cjk)
 (SIL OFL 1.1), instanced at wght 400. Word for Mac renders MS PMincho with its
@@ -217,7 +217,7 @@ Italic synthesizes oblique from these faces.
 
 | Font                            | Role                                |
 | ------------------------------- | ----------------------------------- |
-| GenOffice Barlow (subset woff2) | real face for Barlow-declaring docs |
+| ChaAI Office Barlow (subset woff2) | real face for Barlow-declaring docs |
 
 Source: Barlow 1.408 Regular/Bold statics from [google/fonts](https://github.com/google/fonts/tree/main/ofl/barlow)
 (SIL OFL 1.1). Barlow is an M365 cloud font: Word downloads the real face
@@ -227,7 +227,7 @@ glyph), while Helvetica Bold runs ~10% wider. Subset to Latin + Latin Extended
 
 - punctuation/currency, advances and vertical metrics **unmodified**
   (`tools/build-barlow-font.py`), checked in as
-  `GenOfficeBarlow-{Regular,Bold}-subset.woff2`. Renamed (no Reserved Font Name
+  `ChaOfficeBarlow-{Regular,Bold}-subset.woff2`. Renamed (no Reserved Font Name
   upstream) so a locally installed Barlow wins by chain order. Barlow Condensed
   keeps its size-adjusted alias.
 

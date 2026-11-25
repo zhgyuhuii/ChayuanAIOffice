@@ -4,7 +4,7 @@
  * sizes so a deck prints edge to edge on that paper.
  */
 
-import { DECIMALS, type MeasurementUnit } from '@genoffice/ui/measurement'
+import { DECIMALS, type MeasurementUnit } from '@chaoffice/ui/measurement'
 
 export type SizeUnit = MeasurementUnit
 /** listed in the order the Units menu shows them */

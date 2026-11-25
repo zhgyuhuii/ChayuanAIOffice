@@ -4,7 +4,7 @@
  * rule; inheriting the paragraph's absolute line-height made a 14pt minimum
  * render shorter than the same rule declared directly.
  */
-import type { DocDefaults, ParsedDocFull, StyleInfo } from '@genoffice/docx-engine'
+import type { DocDefaults, ParsedDocFull, StyleInfo } from '@chaoffice/docx-engine'
 import { describe, expect, it } from 'vitest'
 import { docStyleCss } from '../src/renderer/doc-style-css'
 

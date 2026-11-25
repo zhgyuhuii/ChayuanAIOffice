@@ -116,7 +116,7 @@ export interface FormulaResultEventLike {
 /// Engine result mutations are not user edits, but the cells they write can
 /// sit inside a chart series ref and must be dirtied for the live sync. Without
 /// this, editing a formula's precedent leaves the chart cache stale until the
-/// result cells are edited directly (genspark-ai/genoffice#2647).
+/// result cells are edited directly (chaoffice#2647).
 export function formulaResultSyncBounds(
   event: FormulaResultEventLike,
   isSetRangeValues: (id: string) => boolean,

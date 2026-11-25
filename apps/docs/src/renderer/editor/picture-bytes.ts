@@ -1,7 +1,7 @@
 import type { Editor } from '@tiptap/core'
 import type { Node as PmNode } from '@tiptap/pm/model'
 import { NodeSelection } from '@tiptap/pm/state'
-import { NEW_PICTURE_SVG_SUFFIX, retargetImageBlip } from '@genoffice/docx-engine'
+import { NEW_PICTURE_SVG_SUFFIX, retargetImageBlip } from '@chaoffice/docx-engine'
 import { getActiveSubEditor } from './active-editor'
 import { heldPictureToken } from './convert'
 import { originalPictureSize, pictureDensityOf } from './picture-density'

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { TextboxDisplay } from '@genoffice/docx-engine'
+import type { TextboxDisplay } from '@chaoffice/docx-engine'
 import { pictureLayerDecls } from '../src/renderer/editor/image-rotation'
 import { textboxFloatPlacement } from '../src/renderer/editor/protected-render'
 

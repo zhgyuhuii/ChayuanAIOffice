@@ -1894,7 +1894,7 @@ describe('Korean line metrics', () => {
     // Barlow Condensed keeps its own alias
     expect(lineHeightFactor('Barlow')).toBe(1.2)
     expect(cssFontFamily('Barlow')).toBe(
-      "'Barlow','GenOffice Barlow','Noto Sans CJK SC',sans-serif",
+      "'Barlow','ChaAI Office Barlow','Noto Sans CJK SC',sans-serif",
     )
     expect(cssFontFamily('Barlow Condensed')).toContain("'Barlow Condensed GO'")
     // the MT tag is not a style word: Abadi MT with a roman entry is Cambria, not the cloud Abadi

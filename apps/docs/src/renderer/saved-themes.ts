@@ -1,4 +1,4 @@
-import { themeOfXml, type ThemeFileTheme } from '@genoffice/docx-engine'
+import { themeOfXml, type ThemeFileTheme } from '@chaoffice/docx-engine'
 import type { SavedThemeEntry } from '../shared/ipc'
 import type { ThemePick } from './commands/menu-commands'
 

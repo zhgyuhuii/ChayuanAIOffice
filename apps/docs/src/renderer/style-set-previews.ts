@@ -13,7 +13,7 @@ import {
   type StyleSetId,
   type StyleUpsert,
   type ThemeEdit,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { cssFontFamily } from './text-layout/font-rules'
 import type { CustomStyleSet } from './custom-style-sets'
 import { textOutlineCssValue } from './editor/text-outline'

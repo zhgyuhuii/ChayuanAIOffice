@@ -1,4 +1,4 @@
-import { fieldNumberText } from '@genoffice/docx-engine'
+import { fieldNumberText } from '@chaoffice/docx-engine'
 
 /** what a field's result is, which decides the switches that can shape it */
 export type FieldResultKind = 'number' | 'date' | 'text'

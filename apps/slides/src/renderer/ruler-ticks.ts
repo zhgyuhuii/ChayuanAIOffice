@@ -1,7 +1,7 @@
 /** Ruler tick math (PowerPoint-style): 0 sits at the slide center and values
  * grow toward both edges, in the app-wide measurement unit. Pure module so the
  * tick layout is unit-testable without the DOM. */
-import { DECIMALS, type MeasurementUnit } from '@genoffice/ui/measurement'
+import { DECIMALS, type MeasurementUnit } from '@chaoffice/ui/measurement'
 
 export type RulerUnit = MeasurementUnit
 

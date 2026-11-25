@@ -9,7 +9,7 @@ import {
   verticalRulerDims,
 } from '../src/renderer/components/VerticalRuler'
 import { MIN_BODY_TWIPS } from '../src/renderer/components/Ruler'
-import type { SectionSettings } from '@genoffice/docx-engine'
+import type { SectionSettings } from '@chaoffice/docx-engine'
 
 const a4 = { pageHeight: 16838, marginTop: 1418, marginBottom: 1134 } as SectionSettings
 

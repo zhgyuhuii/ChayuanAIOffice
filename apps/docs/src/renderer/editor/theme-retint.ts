@@ -1,5 +1,5 @@
 import type { Editor } from '@tiptap/core'
-import { resolveThemeColor, type ThemeColors } from '@genoffice/docx-engine'
+import { resolveThemeColor, type ThemeColors } from '@chaoffice/docx-engine'
 import { TRACK_IGNORE } from './revisions'
 
 const attrOf = (tag: string, name: string): string | undefined =>

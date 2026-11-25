@@ -1,4 +1,4 @@
-import type { NoteInfo, ParsedDocFull } from '@genoffice/docx-engine'
+import type { NoteInfo, ParsedDocFull } from '@chaoffice/docx-engine'
 import { hfVariantsFromParsed } from '../doc-state'
 import type { HfDocStrips, HfParsedParts } from '../hf-sections'
 

@@ -1,6 +1,6 @@
 import type { Editor } from '@tiptap/core'
 import { NodeSelection } from '@tiptap/pm/state'
-import { parseLazyMediaUrl, type TextboxDisplay } from '@genoffice/docx-engine'
+import { parseLazyMediaUrl, type TextboxDisplay } from '@chaoffice/docx-engine'
 import { SHAPE_INLINE_WRAP, shapeWrapOf } from './floating-z-order'
 import { selectedBoxIndex } from './selected-box'
 

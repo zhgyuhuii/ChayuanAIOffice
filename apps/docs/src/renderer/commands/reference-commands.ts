@@ -9,7 +9,7 @@ import {
   parseSeqInstruction,
   seqFieldsOfXml,
   unlinkFieldsXml,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import type {
   Block,
   CitationStyleId,

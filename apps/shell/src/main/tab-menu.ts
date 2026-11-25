@@ -1,5 +1,5 @@
 import type { MenuItemConstructorOptions } from 'electron'
-import { isProgramFile } from '@genoffice/electron-utils/program-files'
+import { isProgramFile } from '@chaoffice/electron-utils/program-files'
 import type { TabSummary } from '../shared/tabs-api'
 
 export type TabMenuStringKey =

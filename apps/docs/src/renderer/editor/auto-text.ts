@@ -4,7 +4,7 @@ import {
   docxAutoTextEntries,
   docxRootNamespaces,
   parseDocx,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { insertFileBody, type InsertFileNotes } from './insert-file'
 import { pastePayload } from './paste-actions'
 

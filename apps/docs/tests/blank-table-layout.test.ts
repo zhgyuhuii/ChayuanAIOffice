@@ -1,4 +1,4 @@
-import { buildBlankDocx, parseDocx } from '@genoffice/docx-engine'
+import { buildBlankDocx, parseDocx } from '@chaoffice/docx-engine'
 import JSZip from 'jszip'
 import { describe, expect, it } from 'vitest'
 import { blocksToPmDoc, pmDocOptions, type PmNode } from '../src/renderer/editor/convert'

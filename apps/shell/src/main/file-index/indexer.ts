@@ -2,7 +2,7 @@ import { Worker } from 'node:worker_threads'
 import type { Extracted } from './extract'
 import type { WorkerRequest, WorkerResponse } from './extract-worker'
 import { isSupportedTreeFile } from '../folder-tree'
-import { isUnderExcludedFolder } from '@genoffice/electron-utils'
+import { isUnderExcludedFolder } from '@chaoffice/electron-utils'
 import { statOrNull, type ScannedFile } from './scan'
 import type { FileIndexStore } from './store'
 

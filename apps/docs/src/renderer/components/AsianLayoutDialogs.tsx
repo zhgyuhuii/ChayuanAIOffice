@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { COMBINE_BRACKETS, type CombineBrackets } from '@genoffice/docx-engine'
+import { COMBINE_BRACKETS, type CombineBrackets } from '@chaoffice/docx-engine'
 import {
   COMBINE_BRACKET_PAIRS,
   twoLinesWidthEm,

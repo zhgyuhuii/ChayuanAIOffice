@@ -498,7 +498,7 @@ export interface DesktopApi {
   getMeasurementUnit?(): Promise<unknown>
   /** pick the app-wide unit (null = follow the UI language) */
   setMeasurementUnit?(
-    unit: import('@genoffice/ui/measurement').MeasurementUnit | null,
+    unit: import('@chaoffice/ui/measurement').MeasurementUnit | null,
   ): Promise<unknown>
   onMeasurementUnitChanged?(handler: (state: unknown) => void): () => void
   /** shell-wide AutoSave default (see useAutoSavePref) */

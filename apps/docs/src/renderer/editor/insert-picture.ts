@@ -1,7 +1,7 @@
 import type { Editor } from '@tiptap/core'
 import type { ResolvedPos } from '@tiptap/pm/model'
 import { TextSelection, type Transaction } from '@tiptap/pm/state'
-import { pictureLinkToken, withPictureLink } from '@genoffice/docx-engine'
+import { pictureLinkToken, withPictureLink } from '@chaoffice/docx-engine'
 import { heldPictureXml } from './convert'
 import { pictureVectorAttr } from './picture-vectors'
 

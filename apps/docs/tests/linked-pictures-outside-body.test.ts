@@ -1,7 +1,7 @@
 /** Linked pictures in a line of text, a table cell and a text box: listed, relinked, updated, broken. */
 import { afterEach, describe, expect, it } from 'vitest'
 import { Editor } from '@tiptap/core'
-import { parseDocx, saveDocx } from '@genoffice/docx-engine'
+import { parseDocx, saveDocx } from '@chaoffice/docx-engine'
 import JSZip from 'jszip'
 import { buildDocx, TINY_PNG_BASE64 } from '../../../packages/docx-engine/tests/helpers/build-docx'
 import { editorExtensions } from '../src/renderer/editor/extensions'

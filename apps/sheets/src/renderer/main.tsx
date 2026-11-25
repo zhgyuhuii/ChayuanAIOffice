@@ -26,7 +26,7 @@ import {
   registerTextDingbatsFace,
   untilCellFontsLoaded,
 } from './cell-font-fallback'
-import { connectMeasurementUnit } from '@genoffice/ui/use-measurement-unit'
+import { connectMeasurementUnit } from '@chaoffice/ui/use-measurement-unit'
 import { LocaleProvider, setModuleLang } from './i18n/locale'
 import { separatorsForLocale, setNumberSeparators } from './number-separators'
 import type { DocTheme, UiTheme } from '../shared/desktop-api'

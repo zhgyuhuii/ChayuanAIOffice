@@ -1,6 +1,6 @@
 import { Editor } from '@tiptap/core'
 import JSZip from 'jszip'
-import { generateCaptionXml, parseDocx, saveDocx } from '@genoffice/docx-engine'
+import { generateCaptionXml, parseDocx, saveDocx } from '@chaoffice/docx-engine'
 import { afterEach, describe, expect, it } from 'vitest'
 import { buildDocx } from '../../../packages/docx-engine/tests/helpers/build-docx'
 import { allowDirtyFields } from '../../../packages/docx-engine/tests/helpers/dirty-fields'

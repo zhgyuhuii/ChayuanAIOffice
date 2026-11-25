@@ -7,7 +7,7 @@
  * updates. Nothing about the file travels on the clipboard.
  */
 import type { Editor } from '@tiptap/core'
-import { LINK_SOURCE_PREFIX, wordLinkInstruction } from '@genoffice/docx-engine'
+import { LINK_SOURCE_PREFIX, wordLinkInstruction } from '@chaoffice/docx-engine'
 import { collectBookmarks } from './cross-reference'
 import { insertAsLinkResult } from './link-fields'
 import { pastePayload, type ClipboardPayload } from './paste-actions'

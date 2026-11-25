@@ -6,7 +6,7 @@ import {
   type RelSize,
   type RelSizeFrom,
   type SectionSettings,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import type { ShapeSide, ShapeSizeGeometry } from '../editor/shape-size'
 import { useI18n, type StringKey } from '../i18n/locale'
 import { pxToTwips, twipsToPx } from '../units'

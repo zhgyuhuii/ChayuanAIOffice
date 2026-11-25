@@ -17,7 +17,7 @@ import { GapCursor } from '@tiptap/pm/gapcursor'
 import { history } from '@tiptap/pm/history'
 import { suggestFileName, aiPanelInitiallyOpen, shortFileError } from '@chaoffice/ui'
 import { NodeSelection, Selection, TextSelection } from '@tiptap/pm/state'
-import { suggestFileName } from '@genoffice/ui'
+import { suggestFileName } from '@chaoffice/ui'
 import { modelTextOf, type RedactableNode } from './ai/redact-view'
 import {
   applyPageNumType,
@@ -70,7 +70,7 @@ import {
   type WrittenFontConversion,
   type KinsokuCustom,
   type DrawingGrid,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { Dispatch, SetStateAction } from 'react'
 import { AiDocContent, OpenDocxResult, PdfInternalLink } from '../shared/ipc'
 import { twipsToPx } from './units'

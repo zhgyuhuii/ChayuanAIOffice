@@ -12,8 +12,8 @@ import {
   twipsPerUnit,
   twipsToEmu,
   type MeasurementUnit,
-} from '@genoffice/ui/measurement'
-import { useMeasurementUnit } from '@genoffice/ui/use-measurement-unit'
+} from '@chaoffice/ui/measurement'
+import { useMeasurementUnit } from '@chaoffice/ui/use-measurement-unit'
 
 import type { WorkbookVisualObject } from '../shared/desktop-api'
 import { useI18n } from './i18n/locale'

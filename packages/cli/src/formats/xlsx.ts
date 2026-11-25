@@ -1,6 +1,6 @@
 import JSZip from 'jszip'
 import { loadUserZip } from './gated-zip'
-import { neutralizeCsvFormulaField } from '@genoffice/xlsx-gateway/domain/csv-formula-guard'
+import { neutralizeCsvFormulaField } from '@chaoffice/xlsx-gateway/domain/csv-formula-guard'
 import * as numfmt from 'numfmt'
 import {
   decodeCsvBuffer,

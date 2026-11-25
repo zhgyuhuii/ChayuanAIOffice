@@ -6,7 +6,7 @@ import {
   saveDocx,
   themedDocxBytes,
   type ParsedDocFull,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { afterEach, describe, expect, it } from 'vitest'
 import { themedDocx } from '../../../packages/docx-engine/tests/helpers/themed-docx'
 import { blocksToPmDoc, pmDocOptions, pmDocToSavePlan } from '../src/renderer/editor/convert'

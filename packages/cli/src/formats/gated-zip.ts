@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import JSZip from 'jszip'
-import { assertZipInflatesWithinLimits } from '@genoffice/zip-gate'
+import { assertZipInflatesWithinLimits } from '@chaoffice/zip-gate'
 
 /**
  * JSZip over bytes the user supplied, behind the metered-inflate gate.

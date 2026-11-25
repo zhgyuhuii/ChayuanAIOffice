@@ -4,7 +4,7 @@
  * snaps to. The grid starts at the first page's margin corner (or its own
  * origin) and runs down the page canvas.
  */
-import type { DrawingGrid } from '@genoffice/docx-engine'
+import type { DrawingGrid } from '@chaoffice/docx-engine'
 
 const TWIPS_PER_PX = 15
 /** an eighth of an inch: the spacing a file without one is drawn with */

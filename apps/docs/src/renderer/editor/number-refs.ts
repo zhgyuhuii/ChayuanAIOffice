@@ -13,7 +13,7 @@ import {
   type ListNumberSite,
   type NumberingDef,
   type ParagraphNumberContext,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { t } from '../i18n/locale'
 import { collectFields, isFieldLocked, type FieldRange } from './field-codes'
 import { writeField } from './field-results'

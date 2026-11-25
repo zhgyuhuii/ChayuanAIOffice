@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from 'vitest'
 import JSZip from 'jszip'
-import { parseDocx, readSections, saveDocx } from '@genoffice/docx-engine'
+import { parseDocx, readSections, saveDocx } from '@chaoffice/docx-engine'
 import { buildDocx, TINY_PNG_BASE64 } from '../../../packages/docx-engine/tests/helpers/build-docx'
 import { blocksToPmDoc, pmDocToSavePlan } from '../src/renderer/editor/convert'
 import { hfPictureLink, linkSourceOf, linkTypeOf } from '../src/renderer/editor/link-fields'

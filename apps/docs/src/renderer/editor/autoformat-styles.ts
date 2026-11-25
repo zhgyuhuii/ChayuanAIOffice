@@ -14,7 +14,7 @@ import {
   type DocDefaults,
   type StyleInfo,
   type StyleUpsert,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { defaultParagraphStyleId, headingStyleId } from '../style-gallery'
 
 type Styles = Map<string, StyleInfo>

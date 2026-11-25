@@ -1,4 +1,4 @@
-import { OFFICE_THEMES, parseDocx, themedDocxBytes, type NoteInfo } from '@genoffice/docx-engine'
+import { OFFICE_THEMES, parseDocx, themedDocxBytes, type NoteInfo } from '@chaoffice/docx-engine'
 import { describe, expect, it } from 'vitest'
 import { themedPartsDocx } from '../../../packages/docx-engine/tests/helpers/themed-parts-docx'
 import {

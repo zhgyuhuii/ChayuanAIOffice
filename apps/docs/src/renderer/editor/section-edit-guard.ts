@@ -1,6 +1,6 @@
 import { Extension } from '@tiptap/core'
 import { Plugin, type Transaction } from '@tiptap/pm/state'
-import type { SectionInfo } from '@genoffice/docx-engine'
+import type { SectionInfo } from '@chaoffice/docx-engine'
 import { topBlockSections } from './section-endnotes'
 
 /**

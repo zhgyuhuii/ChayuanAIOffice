@@ -7,7 +7,7 @@
  */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { Editor } from '@tiptap/core'
-import type { HeaderFooter, ParsedDocFull, StyleInfo } from '@genoffice/docx-engine'
+import type { HeaderFooter, ParsedDocFull, StyleInfo } from '@chaoffice/docx-engine'
 import { docStyleCss } from '../src/renderer/doc-style-css'
 import {
   HF_LIVE_COMMIT_MS,

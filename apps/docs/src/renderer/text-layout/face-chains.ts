@@ -214,7 +214,7 @@ export const FACE_CHAIN_RULES: ChainRule[] = [
   {
     id: 'barlow',
     when: (f) => f === 'barlow',
-    chain: () => [['GenOffice Barlow', CJK_SANS], 'sans-serif'],
+    chain: () => [['ChaAI Office Barlow', CJK_SANS], 'sans-serif'],
   },
   // Montserrat is an M365 cloud font Word renders real, ignoring its fontTable altName; only the
   // cloud family names qualify: a PostScript-style "Montserrat-Bold" is unknown to Word and keeps the altName

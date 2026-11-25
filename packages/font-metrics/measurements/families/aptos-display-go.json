@@ -51,7 +51,7 @@
       "lineGapOverride": 22.33
     },
     {
-      "src": "url('@genoffice/ui/fonts/Carlito-Bold.ttf')",
+      "src": "url('@chaoffice/ui/fonts/Carlito-Bold.ttf')",
       "sizeAdjust": 102.2,
       "ascentOverride": 73.33,
       "descentOverride": 24.44,
@@ -59,7 +59,7 @@
       "weight": "bold"
     },
     {
-      "src": "url('@genoffice/ui/fonts/Carlito-Italic.ttf')",
+      "src": "url('@chaoffice/ui/fonts/Carlito-Italic.ttf')",
       "sizeAdjust": 99.2,
       "ascentOverride": 75.54,
       "descentOverride": 25.18,
@@ -67,7 +67,7 @@
       "style": "italic"
     },
     {
-      "src": "url('@genoffice/ui/fonts/Carlito-BoldItalic.ttf')",
+      "src": "url('@chaoffice/ui/fonts/Carlito-BoldItalic.ttf')",
       "sizeAdjust": 102.6,
       "ascentOverride": 73.03,
       "descentOverride": 24.34,

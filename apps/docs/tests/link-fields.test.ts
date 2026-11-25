@@ -1,7 +1,7 @@
 /** Linked content: link fields as two markers, links kept in a block's XML, linked pictures. */
 import { describe, expect, it } from 'vitest'
 import { Editor } from '@tiptap/core'
-import { docxRootNamespaces, parseDocx, saveDocx } from '@genoffice/docx-engine'
+import { docxRootNamespaces, parseDocx, saveDocx } from '@chaoffice/docx-engine'
 import JSZip from 'jszip'
 import {
   buildDocx,

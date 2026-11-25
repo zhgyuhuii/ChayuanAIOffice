@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build GenOffice Barlow from upstream Barlow 1.408 statics, metrics untouched.
+"""Build ChaAI Office Barlow from upstream Barlow 1.408 statics, metrics untouched.
 
 Barlow is an M365 cloud font: Word downloads the real face and lays out with
 its metrics (corpus 2026-11-19: the PDF embeds Barlow-Bold, a 36pt heading
@@ -24,7 +24,7 @@ from fontTools.subset import Options, Subsetter
 from fontTools.ttLib import TTFont
 from fontTools.ttLib.woff2 import WOFF2FlavorData
 
-FAMILY = "GenOffice Barlow"
+FAMILY = "ChaAI Office Barlow"
 PS_FAMILY = "GenOfficeBarlow"
 OUT_DIR = "apps/docs/src/renderer/fonts"
 
@@ -76,7 +76,7 @@ def main() -> None:
         sys.exit(f"expected Barlow-Regular.ttf or Barlow-Bold.ttf, got {src.name}")
     subfamily = m.group(1)
     root = Path(__file__).resolve().parent.parent
-    default_out = root / OUT_DIR / f"GenOfficeBarlow-{subfamily}-subset.woff2"
+    default_out = root / OUT_DIR / f"ChaOfficeBarlow-{subfamily}-subset.woff2"
     out = Path(sys.argv[2]) if len(sys.argv) > 2 else default_out
 
     font = TTFont(str(src), recalcTimestamp=False)

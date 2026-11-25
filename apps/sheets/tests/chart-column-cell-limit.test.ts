@@ -4,10 +4,10 @@
  * never reach the visual — so a wide table with two named columns is cheap.
  */
 import { describe, expect, it } from 'vitest'
-import { parseRange, columnLabel } from '@genoffice/xlsx-gateway/domain/cell-address'
-import { buildChartVisual, chartCellLimitError } from '@genoffice/xlsx-gateway/domain/chart-visual'
-import { InMemoryWorkbookAdapter } from '@genoffice/xlsx-gateway/domain/in-memory-workbook'
-import type { WorkbookSnapshot } from '@genoffice/xlsx-gateway/domain/workbook.types'
+import { parseRange, columnLabel } from '@chaoffice/xlsx-gateway/domain/cell-address'
+import { buildChartVisual, chartCellLimitError } from '@chaoffice/xlsx-gateway/domain/chart-visual'
+import { InMemoryWorkbookAdapter } from '@chaoffice/xlsx-gateway/domain/in-memory-workbook'
+import type { WorkbookSnapshot } from '@chaoffice/xlsx-gateway/domain/workbook.types'
 import { readNamedChartColumns } from '../src/renderer/chart-column-read'
 
 const ROWS = 251 // header + 250 data rows

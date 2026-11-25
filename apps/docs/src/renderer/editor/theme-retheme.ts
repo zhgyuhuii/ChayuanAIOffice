@@ -1,7 +1,7 @@
 import type { Editor } from '@tiptap/core'
 import type { Mark, Node as PMNode } from '@tiptap/pm/model'
 import type { Transaction } from '@tiptap/pm/state'
-import type { Block } from '@genoffice/docx-engine'
+import type { Block } from '@chaoffice/docx-engine'
 import { TRACK_IGNORE } from './revisions'
 
 /**

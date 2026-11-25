@@ -13,7 +13,7 @@ import { armColorInput } from '../color-input'
 import { displayFontFamily } from '../konva-adapter'
 import { useSystemFontFamilies } from '../system-fonts'
 import { useFontCatalog } from '../font-manager'
-import { parseLengthEmu } from '@genoffice/ui/measurement'
+import { parseLengthEmu } from '@chaoffice/ui/measurement'
 import { unitSuffixes, useMeasurementUnit } from '../measurement-unit'
 import {
   IconAlignCenter,

@@ -7,8 +7,8 @@
  */
 import { afterEach, describe, expect, it } from 'vitest'
 import { Editor } from '@tiptap/core'
-import type { ParsedDocFull, SectionInfo, StyleDisplay, StyleInfo } from '@genoffice/docx-engine'
-import { generateParagraphXml, mergePPrFormat, parseDocx } from '@genoffice/docx-engine'
+import type { ParsedDocFull, SectionInfo, StyleDisplay, StyleInfo } from '@chaoffice/docx-engine'
+import { generateParagraphXml, mergePPrFormat, parseDocx } from '@chaoffice/docx-engine'
 import { upsertStyleXml } from '../../../packages/docx-engine/src/style-upsert'
 import { buildDocx } from '../../../packages/docx-engine/tests/helpers/build-docx'
 import { gridRightIndentPt } from '../src/renderer/char-grid'

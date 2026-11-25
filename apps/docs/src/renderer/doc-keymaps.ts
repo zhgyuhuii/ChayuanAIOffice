@@ -11,7 +11,7 @@ import {
   readKeymaps,
   writeKeymaps,
   type KeymapEntry,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { toChord, type KeyOverrides } from '../shared/keybindings'
 import { IS_MAC, assignChord, bindingCommand, chordOwner, removeChord } from './keybindings'
 

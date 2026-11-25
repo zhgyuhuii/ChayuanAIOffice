@@ -2259,20 +2259,20 @@
       "unicode-range": "U+0020"
     }
   ],
-  "GenOffice Barlow": [
+  "ChaAI Office Barlow": [
     {
       "font-display": "block",
-      "font-family": "'GenOffice Barlow'",
+      "font-family": "'ChaAI Office Barlow'",
       "font-style": "normal",
       "font-weight": "normal",
-      "src": "url('./GenOfficeBarlow-Regular-subset.woff2') format('woff2')"
+      "src": "url('./ChaOfficeBarlow-Regular-subset.woff2') format('woff2')"
     },
     {
       "font-display": "block",
-      "font-family": "'GenOffice Barlow'",
+      "font-family": "'ChaAI Office Barlow'",
       "font-style": "normal",
       "font-weight": "bold",
-      "src": "url('./GenOfficeBarlow-Bold-subset.woff2') format('woff2')"
+      "src": "url('./ChaOfficeBarlow-Bold-subset.woff2') format('woff2')"
     }
   ],
   "GenOffice Batang": [
@@ -2497,7 +2497,7 @@
       "font-family": "'GenOffice Sans KR'",
       "font-style": "normal",
       "font-weight": "normal",
-      "src": "url('@genoffice/ui/fonts/Carlito-Regular.ttf') format('truetype')",
+      "src": "url('@chaoffice/ui/fonts/Carlito-Regular.ttf') format('truetype')",
       "unicode-range": "U+2070-209F, U+00B2-00B3, U+00B9"
     }
   ],
@@ -2548,7 +2548,7 @@
       "font-family": "'GenOffice Serif KR'",
       "font-style": "normal",
       "font-weight": "normal",
-      "src": "url('@genoffice/ui/fonts/Carlito-Regular.ttf') format('truetype')",
+      "src": "url('@chaoffice/ui/fonts/Carlito-Regular.ttf') format('truetype')",
       "unicode-range": "U+2070-209F, U+00B2-00B3, U+00B9"
     }
   ],
@@ -3672,7 +3672,7 @@
       "font-family": "'MS PMincho JA GO'",
       "font-style": "normal",
       "font-weight": "normal",
-      "src": "url('./GenOfficePMinchoKanaJP-Regular.woff2') format('woff2')",
+      "src": "url('./ChaOfficePMinchoKanaJP-Regular.woff2') format('woff2')",
       "unicode-range": "U+3000-3002, U+3008-3011, U+3014-3015, U+3041-3049, U+304B-3058, U+305D-3063, U+3066-306B, U+306E-306F, U+307B-307E, U+3081-3083, U+3085-3096, U+309B-309E, U+30A1-30C6, U+30C8-30D7, U+30DB-30FB, U+30FD-30FE, U+FF08-FF09, U+FF0C, U+FF0E, U+FF1A-FF1B, U+FF3B, U+FF3D-FF3E, U+FF40, U+FF5B, U+FF5D, U+FF5F-FF60"
     }
   ],

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { defaultAiSettings } from '@genoffice/ai-provider'
+import { defaultAiSettings } from '@chaoffice/ai-provider'
 import { agentConfigured, sendRoute } from '../src/ai/agent-configured'
 import {
   isOfflinePrompt,

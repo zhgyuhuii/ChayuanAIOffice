@@ -24,7 +24,7 @@ vi.mock('electron', () => ({
   webContents: {},
   protocol: { registerSchemesAsPrivileged: vi.fn() },
 }))
-vi.mock('@genoffice/file-parse', () => ({
+vi.mock('@chaoffice/file-parse', () => ({
   parseFileToText: vi.fn(async (filePath: string) => ({
     ok: true,
     kind: 'text',
@@ -35,13 +35,13 @@ vi.mock('../src/main/session-state', () => ({
   dialogParent: vi.fn(() => null),
   sessions: deckSessions,
 }))
-vi.mock('@genoffice/electron-utils', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@genoffice/electron-utils')>()
+vi.mock('@chaoffice/electron-utils', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@chaoffice/electron-utils')>()
   return { ...actual, showOpenDialogWithMemory: vi.fn() }
 })
 
 import { registerAttachmentIpc } from '../src/main/attachments-ipc'
-import { sharedPathGrants } from '@genoffice/electron-utils'
+import { sharedPathGrants } from '@chaoffice/electron-utils'
 
 type ReadResult = { ok: boolean; text?: string; error?: string }
 

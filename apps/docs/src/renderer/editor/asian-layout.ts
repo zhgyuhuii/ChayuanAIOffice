@@ -1,6 +1,6 @@
 import type { Editor } from '@tiptap/core'
 import type { EditorState } from '@tiptap/pm/state'
-import type { CombineBrackets } from '@genoffice/docx-engine'
+import type { CombineBrackets } from '@chaoffice/docx-engine'
 
 /** the text mark's `eaLayout` value: the run's w:eastAsianLayout, and how wide two lines in one sit */
 export interface EaLayoutAttr {

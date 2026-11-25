@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Node as PmNode } from '@tiptap/pm/model'
-import type { SectionSettings, TextboxDisplay } from '@genoffice/docx-engine'
+import type { SectionSettings, TextboxDisplay } from '@chaoffice/docx-engine'
 import {
   boxWithSize,
   boxesFittedToSection,

@@ -5,7 +5,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { Editor, type JSONContent } from '@tiptap/core'
 import { TextSelection } from '@tiptap/pm/state'
-import { generateParagraphXml, parseDocx } from '@genoffice/docx-engine'
+import { generateParagraphXml, parseDocx } from '@chaoffice/docx-engine'
 import { buildDocx } from '../../../packages/docx-engine/tests/helpers/build-docx'
 import { editorExtensions } from '../src/renderer/editor/extensions'
 import { blocksToPmDoc, pmNodeToGeneratedBlock } from '../src/renderer/editor/convert'

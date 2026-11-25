@@ -1,5 +1,5 @@
 import { Editor } from '@tiptap/core'
-import { parseDocx, saveDocx } from '@genoffice/docx-engine'
+import { parseDocx, saveDocx } from '@chaoffice/docx-engine'
 import JSZip from 'jszip'
 import { expect, it } from 'vitest'
 import { buildDocx } from '../../../packages/docx-engine/tests/helpers/build-docx'

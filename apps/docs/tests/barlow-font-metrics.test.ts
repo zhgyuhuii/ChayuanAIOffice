@@ -9,10 +9,10 @@ import { describe, expect, it } from 'vitest'
 import { advanceEm, readWoff2 } from './helpers/woff2-metrics'
 
 const FONTS = join(__dirname, '../src/renderer/fonts')
-const regular = readWoff2(join(FONTS, 'GenOfficeBarlow-Regular-subset.woff2'))
-const bold = readWoff2(join(FONTS, 'GenOfficeBarlow-Bold-subset.woff2'))
+const regular = readWoff2(join(FONTS, 'ChaOfficeBarlow-Regular-subset.woff2'))
+const bold = readWoff2(join(FONTS, 'ChaOfficeBarlow-Bold-subset.woff2'))
 
-describe('GenOffice Barlow (real-metric face)', () => {
+describe('ChaAI Office Barlow (real-metric face)', () => {
   it('keeps the upstream 1.2em hhea line box', () => {
     for (const font of [regular, bold]) {
       const hhea = font.tables.get('hhea')!

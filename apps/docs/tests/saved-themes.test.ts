@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { OFFICE_THEMES, themeXmlOf } from '@genoffice/docx-engine'
+import { OFFICE_THEMES, themeXmlOf } from '@chaoffice/docx-engine'
 import { savedThemesOf, themePickOf } from '../src/renderer/saved-themes'
 
 const facet = OFFICE_THEMES.find((t) => t.id === 'facet')!

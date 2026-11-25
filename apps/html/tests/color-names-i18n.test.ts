@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { STANDARD_COLORS, THEME_COLORS } from '@genoffice/ui'
+import { STANDARD_COLORS, THEME_COLORS } from '@chaoffice/ui'
 import { COLOR_NAME_KEYS } from '../src/renderer/components/ColorField'
 
 describe('colour palette names', () => {

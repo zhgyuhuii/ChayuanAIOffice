@@ -1,4 +1,4 @@
-import type { SectionSettings } from '@genoffice/docx-engine'
+import type { SectionSettings } from '@chaoffice/docx-engine'
 
 /** how a page's footnote area is laid out: its columns and the gap between them (px) */
 export interface NoteColumns {

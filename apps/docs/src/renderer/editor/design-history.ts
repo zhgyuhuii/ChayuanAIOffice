@@ -11,7 +11,7 @@ import {
   type ThemeColors,
   type ThemeFonts,
   type ThemeFormat,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import { TRACK_IGNORE } from './revisions'
 
 /**

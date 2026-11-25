@@ -1,5 +1,5 @@
 import { useState, type CSSProperties } from 'react'
-import type { TextFill } from '@genoffice/docx-engine'
+import type { TextFill } from '@chaoffice/docx-engine'
 import {
   FX_COLORS,
   GLOW_SIZES_PT,

@@ -4,7 +4,7 @@
  * paragraph spacing stay in points, as in Word.
  *
  * The preference is app-wide (Settings ▸ General, held by the shell, see
- * @genoffice/ui/measurement); this module keeps the editor's copy of it and
+ * @chaoffice/ui/measurement); this module keeps the editor's copy of it and
  * re-exports the shared conversions. */
 import {
   defaultMeasurementUnit,
@@ -12,7 +12,7 @@ import {
   isMeasurementUnitState,
   type MeasurementUnit,
   type MeasurementUnitState,
-} from '@genoffice/ui/measurement'
+} from '@chaoffice/ui/measurement'
 
 export {
   MEASUREMENT_UNITS,
@@ -27,8 +27,8 @@ export {
   toUnit,
   twipsPerUnit,
   twipsToPx,
-} from '@genoffice/ui/measurement'
-export type { MeasurementUnit } from '@genoffice/ui/measurement'
+} from '@chaoffice/ui/measurement'
+export type { MeasurementUnit } from '@chaoffice/ui/measurement'
 
 /** where Docs kept its own unit before the setting became app-wide (migrated once) */
 export const MEASUREMENT_UNIT_KEY = 'aidocs.measurementUnit'

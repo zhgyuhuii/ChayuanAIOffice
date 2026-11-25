@@ -11,7 +11,7 @@ import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSy
 import type { AddressInfo } from 'node:net'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { defaultAiSettings, resolveCustomEndpoints } from '@genoffice/ai-provider'
+import { defaultAiSettings, resolveCustomEndpoints } from '@chaoffice/ai-provider'
 import { launchShell, closeAndSaveVideo, waitForPageWithUrl } from './helpers'
 import { docxWith, para, saveFromMenu, settingsXml, withWordPart } from './docs-objects-fixture'
 
@@ -354,7 +354,7 @@ test('without an AI provider the dialog says grammar was not checked and spellin
   const docPath = join(dir, 'spelling.docx')
   writeFileSync(docPath, await docxWith(para('They is going to recieve the parcel.')))
   mkdirSync(userDataDir)
-  // a home of its own: the machine's Genspark login must not stand in for "no provider"
+  // a home of its own: the machine's cloud sign-in must not stand in for "no provider"
   const launched = await launchShell({
     userDataDir,
     onboardingSeen: true,

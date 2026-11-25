@@ -20,7 +20,7 @@ import {
   type LinkFieldInfo,
   type Run,
   type TextboxDisplay,
-} from '@genoffice/docx-engine'
+} from '@chaoffice/docx-engine'
 import type { LinkSourceResult } from '../../shared/ipc'
 import { fetchDocBytes } from '../doc-bytes'
 import type { HfPictureLinkRow } from '../hf-sections'

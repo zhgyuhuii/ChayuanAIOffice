@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
 import { flushSync } from 'react-dom'
-import { useDismissablePopover } from '@genoffice/ui'
+import { useDismissablePopover } from '@chaoffice/ui'
 import { IconCaret } from './icons'
 import { GROUP_MENU } from './ribbon-fit'
 

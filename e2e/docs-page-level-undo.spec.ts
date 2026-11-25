@@ -12,7 +12,7 @@ import type { AddressInfo } from 'node:net'
 import { mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { defaultAiSettings, resolveCustomEndpoints } from '@genoffice/ai-provider'
+import { defaultAiSettings, resolveCustomEndpoints } from '@chaoffice/ai-provider'
 import { launchShell, closeAndSaveVideo, waitForPageWithUrl } from './helpers'
 import { docxWith, para, saveFromMenu } from './docs-objects-fixture'
 

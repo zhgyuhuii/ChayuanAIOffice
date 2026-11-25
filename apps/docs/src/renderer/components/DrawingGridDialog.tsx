@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { DrawingGrid } from '@genoffice/docx-engine'
+import type { DrawingGrid } from '@chaoffice/docx-engine'
 import {
   DEFAULT_GRID_DISPLAY_EVERY,
   DEFAULT_GRID_ORIGIN_TWIPS,

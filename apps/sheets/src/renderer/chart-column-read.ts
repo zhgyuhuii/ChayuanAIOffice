@@ -2,8 +2,8 @@ import {
   columnLabel,
   parseAddress,
   type RangeBounds,
-} from '@genoffice/xlsx-gateway/domain/cell-address'
-import type { ChartGridValue } from '@genoffice/xlsx-gateway/domain/chart-visual'
+} from '@chaoffice/xlsx-gateway/domain/cell-address'
+import type { ChartGridValue } from '@chaoffice/xlsx-gateway/domain/chart-visual'
 
 /// The grid a named-columns chart reads, fetched one column at a time: the
 /// cell limit counts only the named columns, so a read of the whole rectangle

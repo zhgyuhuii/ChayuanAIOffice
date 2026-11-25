@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { KbFileInfo } from '@genoffice/agent-core'
+import type { KbFileInfo } from '@chaoffice/agent-core'
 import {
   matchMentionFiles,
   mentionToken,

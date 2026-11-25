@@ -2,9 +2,9 @@
  * The app-wide measurement unit (Settings ▸ General ▸ "Show measurements in
  * units of") as Slides sees it: the ruler, guide readouts, Format pane sizes,
  * positions and text insets, bullet indents and the Slide Size dialog all
- * follow it. The store lives in @genoffice/ui; this adds Slides' unit labels.
+ * follow it. The store lives in @chaoffice/ui; this adds Slides' unit labels.
  */
-import { MEASUREMENT_UNITS, type MeasurementUnit } from '@genoffice/ui/measurement'
+import { MEASUREMENT_UNITS, type MeasurementUnit } from '@chaoffice/ui/measurement'
 
 import type { TFunc } from './i18n/locale'
 
@@ -13,7 +13,7 @@ export {
   measurementUnit,
   resetMeasurementUnitForTests,
   useMeasurementUnit,
-} from '@genoffice/ui/use-measurement-unit'
+} from '@chaoffice/ui/use-measurement-unit'
 
 /** short unit labels shown after a length (pt is the Format pane's point label) */
 const UNIT_ABBR_KEYS = {

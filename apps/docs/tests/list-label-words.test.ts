@@ -7,7 +7,7 @@
  */
 import { afterEach, describe, expect, it } from 'vitest'
 import { Editor } from '@tiptap/core'
-import type { NumberingDef, NumberingLevel } from '@genoffice/docx-engine'
+import type { NumberingDef, NumberingLevel } from '@chaoffice/docx-engine'
 import { editorExtensions } from '../src/renderer/editor/extensions'
 import { buildDocumentContext } from '../src/renderer/ai/protocol'
 import { TextSelection } from '@tiptap/pm/state'

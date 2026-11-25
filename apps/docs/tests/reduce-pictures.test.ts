@@ -6,8 +6,8 @@ import { reducePictures } from '../src/renderer/reduce-pictures'
 
 // the TIFF decoder needs a real canvas: here a TIFF decodes to a PNG that names its own size
 const tiffAsPng = vi.hoisted(() => ({ decode: (_tiff: Uint8Array): Uint8Array | null => null }))
-vi.mock('@genoffice/docx-engine', async (original) => ({
-  ...(await original<typeof import('@genoffice/docx-engine')>()),
+vi.mock('@chaoffice/docx-engine', async (original) => ({
+  ...(await original<typeof import('@chaoffice/docx-engine')>()),
   tiffToDataUrlAsync: async (bytes: ArrayBuffer | Uint8Array) => {
     const png = tiffAsPng.decode(new Uint8Array(bytes as ArrayBuffer))
     return png && `data:image/png;base64,${Buffer.from(png).toString('base64')}`

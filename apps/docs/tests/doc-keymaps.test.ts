@@ -1,6 +1,6 @@
 /** Keyboard assignments a document carries: which run here, and how they sit over the machine's. */
 import { describe, expect, it } from 'vitest'
-import { readKeymaps } from '@genoffice/docx-engine'
+import { readKeymaps } from '@chaoffice/docx-engine'
 import {
   DOCUMENT_BINDINGS,
   assignDocKey,
