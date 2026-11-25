@@ -323,6 +323,12 @@
 @font-face {
   font-family: 'ChaAI Office Balanced Space';
   src: url('./ChaOfficeBalancedSpace.woff2') format('woff2');
+  unicode-range: U+0020;
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
   font-family: 'ChaAI Office Hangul Space';
   src: url('./ChaOfficeCheLatinKR.woff2') format('woff2');
   unicode-range: U+0020;

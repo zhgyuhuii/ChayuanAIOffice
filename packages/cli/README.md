@@ -40,7 +40,7 @@ chaoffice convert report.docx --to html               # the Word editor's standa
 chaoffice convert page.html --to docx                 # html2docx, same as the HTML app's Export as Word
 chaoffice convert report.docx --to md                 # GFM via the markdown editor's serializer
 chaoffice convert letter.doc --to docx                # Word 97-2003 .doc/.dot through the in-process doc2docx importer
-chaoffice convert book.xlsx --to csv [--sheet Data]   # one sheet, cell text as displayed, UTF-8 BOM, CRLF
+chaoffice convert book.xlsx --to csv [--sheet Data] [--neutralize-formulas]   # one sheet, cell text as displayed, UTF-8 BOM, CRLF; --neutralize-formulas prefixes formula-like cells (=, @/+/- function calls, DDE) with an apostrophe — off by default so ordinary data keeps its bytes
 chaoffice capabilities --json                        # which cloud features ChaAI Office has configured (no network call)
 chaoffice search "electron headless export" [--images] [--max 6] --json
 chaoffice image "isometric office, soft light" --aspect 16:9 --out hero.png
@@ -84,6 +84,7 @@ available.
 `chaoffice install-cli` repeats the attempt and prints the manual command when it cannot finish. jsdom (for Word/Markdown) ships beside the bundle as `Resources/cli/node_modules`, collected by `collect-deps.mjs` at build time.
 
 Independently of the PATH, every launch of the packaged app writes the launcher directory to `~/.chaoffice/launcher` (`GENOFFICE_AUTH_DIR` overrides the directory, as for `auth.json`). The `chaoffice` agent skill (`skills/chaoffice/SKILL.md`) reads it when `chaoffice` is not on the PATH. `chaoffice --version` prints this package's version, inlined by `build.mjs`.
+
 ## Layout
 
 - `src/cli.ts` — argv parsing, dispatch, output; `runCli()` is embeddable.
