@@ -1,324 +1,200 @@
-# 察元 AI Office (`chayuan-office`) 超大文档（1GB+）性能优化与核外架构深度解析
+# 察元 AI Office (`chayuan-office`) 超大文档（1GB+）架构演进与施工设计方案（代码校准版）
 
-## 1. 背景与问题定性：为什么 1GB+ 文档是现有架构的「生死线」
-
-`chayuan-office` 采用 **npm workspaces Monorepo（TypeScript + Rust 混合架构 + Electron 宿主）**，其最具辨识度的核心架构是 **「归档原件 + 块级锚定 + 补丁式保存」** 的字节保真（Byte-Fidelity）设计。这一架构确保了在编辑 `.docx` / `.xlsx` / `.pptx` 时，未修改的复杂 OOXML 标签、宏、自定义扩展属性能够零损回写。
-
-然而，当文档体积从常规的数兆字节上升到 $100\text{ MB}$ 甚至 $\ge 1\text{ GB}$ 量级时，传统的「内存驻留型（In-Memory）」前端编辑器架构不仅会出现卡顿，更会直接触碰底层运行时的物理硬极限而崩溃：
-
-### 1.1 三大物理硬极限（Hard Limits）
-
-1. **V8 引擎单字符串长度极限（约 $512\text{ MB}$）**
-   在 V8 引擎中，单个 `String` 对象的最大长度被硬编码限制在 $2^{29} - 24$ 个字符（约 $5.36 \times 10^8$ 字符）。一个 $1\text{ GB}$ 的 `.docx` 或 `.xlsx` 压缩包，其内部的 `word/document.xml` 或 `xl/worksheets/sheet1.xml` 解压后往往高达 $3\text{ GB} \sim 8\text{ GB}$。一旦调用 `TextDecoder` 或作为完整字符串读入 JS，会立即抛出 `RangeError: Invalid string length`。
-2. **Electron 渲染进程堆内存上限（约 $4\text{ GB}$）**
-   Chromium 渲染进程默认受限于 V8 指针压缩（Pointer Compression）机制，堆上限通常在 $4\text{ GB}$ 左右。在现有的多重对象拷贝模型下，即使是一个 $250\text{ MB}$ 的纯文本/表格文档，经过 $8\times \sim 15\times$ 的内存放大后也会触发 `FatalProcessOutOfMemory`。
-3. **ZIP/DEFLATE 压缩流不可随机寻址困境**
-   `.docx` / `.xlsx` / `.pptx` 本质上是 ZIP 归档（超过 $4\text{ GB}$ 时升级为 ZIP64），其内部 XML 条目采用 `DEFLATE` 算法流式压缩。`DEFLATE` 依赖滑动窗口字典，天然不支持 $O(1)$ 随机字节跳转——如果不加索引改造，哪怕只想读取第 $5000$ 页的一行字，也必须从第 $1$ 字节开始顺序解压数 GB 的 XML 流。
+> **版本说明**：本文档基于仓库真实代码路径（`file:line`）核查结果全面修订。剔除了存量已具备能力的重复建设，修正了模块归属错位，解决了 `document.xml` 流式重压缩吞吐率与保存耗时目标之间的数学矛盾，并补充了 Web/Server/CLI 多端形态约束与真实工程量评估，可直接作为立项评估与分阶段施工蓝图。
 
 ---
 
-## 2. 现有代码库核心瓶颈全链路拆解
+## 1. 现状基线校准：存量能力、模块勘误与真实硬缺口
 
-结合 `chayuan-office` 各核心包职责，当前打开大文档慢、内存居高不下的根因可归纳为**「四重内存放大」**与**「全量同步水合」**：
+在对全仓代码进行逐行核查后，`chayuan-office` 并非在所有子系统上都处于「全量内存裸奔」状态——团队在历史迭代（包括处理 2.7GB EMF 事故与 409 页 PPT 9GB 内存事故）中已经落地了相当一部分流式与窗口化基础设施。立项前必须先划清**「存量已具备」**与**「真实待攻坚缺口（True Delta）」**的边界。
 
-| 涉及模块 / 目录 | 当前实现机制 | 1GB+ 场景下的致命表现 | 内存放大系数 |
+### 1.1 模块职责勘误与基线对照表
+
+| 子系统 | 真实代码归属（修正前版错位） | 存量已实现能力（无需重复造轮子） | 1GB+ 场景下的真实剩余硬缺口（True Delta） |
 | :--- | :--- | :--- | :--- |
-| **`packages/zip-gate` & `file-parse`** | 原 ZIP 字节流读入内存，解压条目常驻；`document.xml` 解析为块树时，每个顶层块保存 `docxIndex` 与**原始 XML 字符串切片副本** | 产生数十万至数百万个切片字符串与 AST 对象，直接打爆 V8 老生代堆内存（Old Space）与 GC | $8\times \sim 15\times$ |
-| **`apps/docs` (Tiptap / ProseMirror)** | 调用 `EditorState.create` 一次性实例化全量 `Node` 树，并在浏览器中同步挂载所有段落/表格真实 DOM，叠加 `HarfBuzz (wasm)` 排版度量 | 数十万 DOM 节点同步 Layout / Reflow，UI 主线程假死数十秒乃至数分钟 | $5\times \sim 10\times$ |
-| **`xlsx-gateway` (Rust) & `apps/sheets`** | `calamine` + `IronCalc` Sidecar 解析虽快，但通过 IPC/HTTP JSON 全量序列化工作簿单元格与样式传输至前端 | 百万级单元格 JSON 序列化产生数 GB 临时字符串峰值，前端反序列化瞬间崩溃 | $10\times+$ |
-| **`apps/slides` & 媒体管线** | `word/media/*`、`ppt/media/*` 高清大图全量解压为 `Uint8Array` 或转为 `data:image/*;base64` 内联注入编辑器与 `Konva` 图层 | 1GB 多媒体 PPT/Word 中 95% 为媒体资源，Base64 体积膨胀 $1.33\times$ 且无法被浏览器按视口卸载纹理 | $2.5\times \sim 4\times$ |
-| **`apps/pdf` (`pdf.js` + `pdf-lib`)** | 浏览与真编辑双引擎并存，打开大 PDF 时同步执行 `PDFDocument.load(fullBytes)` 解析全量交叉引用表（XRef）与对象树 | 1GB PDF 在内存中存在两套完整二进制缓冲与对象树，首屏白屏极长 | $3\times \sim 6\times$ |
-| **`agent-core` / 安全快照** | 写回前在内存中克隆原文件快照，或打开瞬间扫描全文构建 AI 上下文索引 | 瞬间翻倍拷贝 $1\text{ GB}$ `ArrayBuffer`，抢占首屏 IO 与 CPU 核心 | $2\times$ |
+| **归档门禁与拼接** | `packages/zip-gate`<br>`packages/docx-engine/src/zip-splice.ts` | `zip-gate` 是零依赖防炸弹校验器；`zip-splice.ts:2-4` 已具备按 stored bytes 原样拷贝未改条目的种子设计 | **硬拒 ZIP64**：`zip-gate/src/index.ts:156-164` 与 `zip-splice.ts:89-97,120-122` 显式拒绝 ZIP64，导致超限大文件在门禁层直接被拒；缺少 `mmap` 与 DEFLATE 随机寻址检查点 |
+| **Word 解析与补丁** | `packages/docx-engine`（注：`file-parse` 仅用于 AI 附件抽文本，`file-parse/src/docx.ts:20-69`） | 基于 `originalXml` + `docxIndex` 的高精度块级字节保真回写（`patch.ts` 约 3000 行，覆盖表格补丁、`rawPPr` 等） | **全量驻留触碰 V8 极限**：`parse.ts:424` 将 `document.xml` 整体读为 `string`（上限 $\approx 512\text{ MB}$）；每块挂载 `originalXml`（`types.ts:2069-2107`）；渲染进程持有 `internal.originalBytes` 全包字节与 `documentXml` 全文（`types.ts:3101-3110`）；`patch.ts:2360,2952` 全量内存 `generateAsync` 重建整包 `Uint8Array` |
+| **Word 渲染与排版** | `apps/docs`<br>`packages/font-metrics` | 分帧渐进挂载（`phased-content.ts:40-44`，首帧 64 块 + 每帧 128 块）；超重保护阈值（`large-document.ts:17-18`）；主进程 sfnt 竖向度量预取（`font-metrics/src/metrics.ts:121`）+ Canvas `measureText`（`line-metrics.ts:180`） | **无视口虚拟化、大文档直接拒开**：单 ProseMirror `EditorState` 装载全量节点，无旧块卸载；当前策略为权重 $> 115,000$ 降级只读、$> 230,000$ **直接拒绝打开** |
+| **表格引擎** | `apps/sheets/native/xlsx-engine`（Rust stdin/stdout JSON 行协议 Sidecar）+ `packages/xlsx-gateway` | **已实现分块与视口驱逐**：Sidecar 已按 `CHUNK_ROW_COUNT = 256` 流式落盘索引（`lib.rs:59`），Open 仅回元数据，按 $\le 100\text{k}$ 上限 `read_range` 拉取（`desktop-api.ts:61`）；Univer Canvas 已实现可见窗口加载与旧窗口驱逐（`univer-sync.ts:4171-4183`）；写前备份已走内核级 `fs.copyFile`（`xlsx-package-io.ts:459-462`） | **`sharedStrings` 全量驻留**：Rust 侧 Open 时一次性将全部共享字符串解析进 `Arc<Vec<SharedString>>`（`workbook.rs:507`、`lib.rs:686`）；行 JSON 协议在高密度数值拉取时仍有序列化开销；`IronCalc` 依赖图常驻优化 |
+| **演示文稿与媒体** | `apps/slides`<br>`packages/pptx-engine`<br>`apps/docs/src/main/lazy-media.ts` | **图片协议与流式保存已存在**：Slides 图片已走 `chaoffice-slide-media://`（`slides-main.ts:1442-1453`）；Docs 媒体 $\ge 1\text{ MB}$ 已走 `chaoffice-docx-media://`（`lazy-media.ts:21-24`）；缩略图已用 `IntersectionObserver` 窗口化（`use-visible-thumbs.ts:4-6`）；PPTX 保存已走 `generateNodeStream` 流式写出（`pptx-engine/src/index.ts:816-828`） | **音视频仍走 Base64 IPC**：`slides:media-data` 仍返回全量 `data:${mime};base64,...`（`slides-main.ts:4357-4376`）；图片缓存 `Map` 只增不减无驱逐（`image-loader.ts:103-111`）；缺少 `?maxW` 按需降采样；EMF 栅格化仍有 $\approx 40\text{ MB}$ Base64 预算风险（`image-loader.ts:24-28`） |
+| **PDF 引擎** | `apps/pdf`（含唯一使用 `HarfBuzz wasm` 做字体子集化的路径 `wasm-path.ts:22-38`） | 数字签名路径已手工实现过 PDF 增量更新拼装先例（`pdf-sign.ts:381` 起） | **全量字节拼装 + 全量重写**：渲染进程分片 IPC 后仍拼成完整 `Uint8Array`（`file-bytes.ts:30-33`）；普通编辑保存走 `pdf-lib` 全量 load + 全量 save（`save-pdf.ts:1485-1497,1591,1723`） |
+| **文件写入与 Agent** | `packages/electron-utils`<br>`packages/agent-core` | 原子写已采用 `temp + fsync + rename`（`atomic-write.ts:126-155`）；Agent 已有 `captureSnapshot` 大纲级快照机制（`agent-core/src/loop.ts:1567`） | 核外模式下编辑器不再持有全文，需为 `agent-core` 补齐基于本地 SQLite FTS5 的核外块检索接口 |
 
 ---
 
-## 3. 面向 1GB+ 文档的目标架构：核外计算（Out-of-Core Architecture）
+## 2. 核心设计约束：多端形态与存量阈值对齐
 
-要让 $1\text{ GB}$ 甚至 $10\text{ GB}$ 的文档实现 **「亚秒级首屏打开（$< 500\text{ ms}$）」** 且 **「渲染进程常驻内存恒定在 $< 300\text{ MB}$」**，核心原则只有一条：**任何时候，渲染进程（JavaScript / DOM）只持有当前视口（Viewport）上下有限窗口的数据；完整文件永远留在磁盘与 Rust 核外引擎中。**
+在设计核外（Out-of-Core）架构前，必须遵守本仓库的两项工程边界，避免破坏现有产品矩阵：
 
-### 3.1 全栈分层架构图
+### 2.1 Desktop / Web / Server / CLI 多端隔离策略
 
-```
-+-----------------------------------------------------------------------------------+
-|                        Electron Renderer Process (内存预算 < 300MB)                |
-|                                                                                   |
-|  +-----------------------+   +-----------------------+   +---------------------+  |
-|  | apps/docs             |   | apps/sheets           |   | apps/pdf & slides   |  |
-|  | 虚拟分片文档窗口       |   | Canvas 视口瓦片渲染器  |   | Range 按需分页渲染   |  |
-|  | (仅挂载活跃 150 个块)  |   | (仅缓存可见 Tile 矩阵) |   | 协议流式降采样纹理   |  |
-|  +-----------+-----------+   +-----------+-----------+   +----------+----------+  |
-|              | 二进制紧凑帧 / 块分页请求  | Arrow/Binary IPC         | chaoffice:// |
-+--------------+---------------------------+--------------------------+-------------+
-               |                           |                          |
-===============|===========================|==========================|==============
-               v                           v                          v
-+-----------------------------------------------------------------------------------+
-|                 Rust Native Core / Sidecar Engine (核外存储与流式计算层)             |
-|                                                                                   |
-|  +-----------------------------------------------------------------------------+  |
-|  | 1. Zero-Copy Archive Manager (zip-gate-rs)                                  |  |
-|  |    - OS Mmap 虚拟内存映射 (支持 ZIP64 > 4GB，零物理内存预占)                  |  |
-|  |    - DEFLATE Checkpoint Span Index (每 2MB 解压流建立 32KB 窗口锚点，随机寻址)|  |
-|  +-----------------------------------------------------------------------------+  |
-|  | 2. Streaming Parser & Out-of-Core Indexer (file-parse-rs + SQLite/LMDB)     |  |
-|  |    - quick-xml 状态机流式扫描，仅记录 64-bit [byte_start, byte_end] 偏移      |  |
-|  |    - 块级元数据、大纲目录、稀疏单元格落盘至临时页缓存库 (.chaoffice-swap)      |  |
-|  +-----------------------------------------------------------------------------+  |
-|  | 3. Streaming Patch Writer (流式补丁拼装器)                                   |  |
-|  |    - 未脏区间直接从原流 Zero-Copy 管道对拷，脏块局部替换并流式重压缩写入新文件 |  |
-|  +-----------------------------------------------------------------------------+  |
-+-----------------------------------------------------------------------------------+
-```
+本仓库同时构建 **Electron Desktop**、**Web 端（`build:web`）**、**Server Docker**，且 `packages/docx-engine` 同时被 CLI 与格式转换包（如 `doc2docx` 等）直接依赖。`mmap`、Rust 原生 Sidecar、本地 SQLite 在浏览器沙箱中均不可用。因此必须采用 **接口抽象 + 运行时适配器（Storage & Parse Provider）** 架构：
+
+1. **Desktop 端（Electron + Rust Native/Sidecar）**：启用完整的「Mmap + DEFLATE 检查点 + 核外索引 + 流式补丁保存」，突破 $1\text{ GB}+$ 限制。
+2. **Server / CLI 端（Node.js / Rust Addon）**：复用与 Desktop 相同的 Rust 核心库（N-API 或 Sidecar），使服务端批处理与 `doc2docx` 转换同样具备流式低内存能力，同时保留旧版内存 API 的兼容门面（Facade）以免破坏下游调用方回归。
+3. **纯 Web 端（Browser）**：通过 `File.slice()`（底层为浏览器 Blob 磁盘引用，不占 JS 堆）配合 Web Worker 中的 Rust WASM 流式解析器读取局部区间；受限于浏览器 OPFS（Origin Private File System）配额，超过内存预算时优雅降级为「分页流式只读/局部块编辑」或沿用现行阈值提示。
+
+### 2.2 双模式切换阈值：与现存预算体系严格对齐
+
+摒弃拍脑袋的固定文件体积阈值，直接与仓库现有的多维预算体系挂钩，只有触及水位线时才激活核外重型管线（小文档继续走现有零 IPC 极速内存快路径）：
+
+* **媒体懒加载阈值**：维持 `lazy-media.ts:21` 现行的可解码媒体总计 $\ge 1\text{ MB}$ 标准，并统一收口音视频流。
+* **Docs 核外模式激活阈值**：对接 `large-document.ts:17-18` 的文档权重（Weight）计算模型——当权重 $\le 80,000$ 且解压预估 `document.xml` $< 32\text{ MB}$ 时维持现有全内存模式；当权重 $> 80,000$（原 $115,000$ 只读线前移）或包含 ZIP64 条目时，**不再降级只读或拒开（移除 $230,000$ 拒开硬限制）**，无缝切入核外流式管线。
+* **Sheets 核外字符串池阈值**：对接 `apps/sheets/src/renderer/load-budget.ts:53-71` 的 $\le 500,000$ 格自动全载预算——当 `sharedStrings.xml` 未压缩体积 $> 16\text{ MB}$ 或条目数 $> 200,000$ 时，Sidecar 自动切换为 Mmap 偏移索引模式。
 
 ---
 
-## 4. 六大核心子系统深度改造方案
+## 3. 分模块精准攻坚方案（按真实缺口设计）
 
-### 4.1 归档与存储层（`packages/zip-gate` Rust 化）：突破 ZIP64 与 DEFLATE 随机寻址
+### 3.1 PDF 引擎（`apps/pdf`）：流式 Range 打开 + 通用增量保存 + 碎片整理
 
-对于 $1\text{ GB}+$ 的 `.docx` / `.xlsx` 文件，绝不能把 ZIP 文件读进 `Buffer`，也不能把整个 `document.xml` 解压到内存中。
+这是全仓**先例最成熟、风险最低、收益立竿见影**的改造项。
 
-#### 方案设计：Mmap + DEFLATE 检查点索引（Span Indexing）
-1. **文件虚拟内存映射（`memmap2`）**：使用操作系统级 `mmap` 打开 $1\text{ GB}+$ 文件。此时物理内存（RSS）占用接近 $0\text{ MB}$，由操作系统内核页缓存（Page Cache）按 $4\text{ KB}$ 页按需调入与淘汰。同时启用 `ZIP64` 解析支持大于 $4\text{ GB}$ 的压缩/未压缩流。
-2. **流式构建 DEFLATE 访问检查点（Access Points）**：
-   借鉴 `zlib` 的 `gzran` 原理，后台线程首次流式扫描超大 XML 条目时，每解压出 $2\text{ MB}$ 数据，记录一次当前的 **压缩流比特偏移量（Compressed Bit Offset）** 以及 **前 $32\text{ KB}$ 滑动窗口字典（Sliding Window Dictionary）**（可通过 `zstd` 极速压缩至约 $8\text{ KB}$ 存入内存/磁盘索引）。
-   - 对于一个解压后 $4\text{ GB}$ 的巨型 `document.xml`，共产生 $2000$ 个检查点，索引总内存仅 $2000 \times 8\text{ KB} \approx 16\text{ MB}$！
-   - 之后任意读取第 $3.5\text{ GB}$ 处的某个段落 XML 时，只需定位到最近的检查点，注入 $32\text{ KB}$ 字典，最多解压 $< 2\text{ MB}$ 数据即可在 $2\text{ ms}$ 内精确提取目标字节切片。
+1. **渲染层废除全量 `Uint8Array` 拼接（改写 `file-bytes.ts:30-33`）**
+   * 主进程不再通过分片 IPC 把整个 $1\text{ GB}$ PDF 搬运并拼接到渲染进程内存中，而是暴露基于文件描述符（`fs.read` 指定 `position` 与 `length`）的 `PDFDataRangeTransport` 通道，或通过自定义流式协议响应 `Range: bytes=start-end`。
+   * 配置 `pdf.js` 开启 `disableAutoFetch: true`、`disableStream: false`，仅加载末尾交叉引用表（`xref`）及当前视口前后各 2 页的内容流，离屏页严格调用 `pdfPage.cleanup()`。
+2. **复用 `pdf-sign.ts:381` 先例，将普通编辑保存升级为增量更新（改写 `save-pdf.ts`）**
+   * 放弃 `pdf-lib` 对全文件执行 `PDFDocument.load(fullBytes)` + `save()`。
+   * 当用户修改注释、表单或单页真文本（配合 `wasm-path.ts` 现有的 `HarfBuzz wasm` 局部字形子集化）时，仅提取被修改页的 Indirect Object ID，构建增量对象体（Modified Objects + 新增 Font Subset Stream + Incremental XRef Table/Stream + 指向原文件末尾偏移的 `/Prev` Trailer）。
+   * 保存时先通过 `atomic-write.ts` 的临时文件机制利用内核 `fs.copyFile`（在 APFS/Btrfs/ReFS 下可尝试 `COPYFILE_FICLONE` 写时复制优化）复制原文件，再在末尾 `append` 数十 KB 的增量字节，使 $1\text{ GB}$ PDF 保存耗时从数十秒降至 $< 100\text{ ms}$。
+3. **增量膨胀治理（Eventual Compaction 策略）**
+   * 增量追加会导致多次保存后已废弃的旧对象留在文件中。记录增量修订次数 `revisionCount` 与累计追加体积 `deltaBytes`：当 `revisionCount >= 15` 或 $\text{deltaBytes} > 0.25 \times \text{originalSize}$ 时，在后台空闲时或关闭文档时提示/静默触发一次 Rust 流式线性重写（Linear Compaction GC），清理孤儿对象。
+
+---
+
+### 3.2 演示文稿与媒体管线（`apps/slides` & `docs`）：补齐最后 40% 缺口
+
+既然 `chaoffice-slide-media://` 与 `chaoffice-docx-media://` 已经落地，无需推倒重建，重点定点清除三个内存泄漏与卡顿源：
+
+1. **音视频彻底去 Base64 化（重构 `slides-main.ts:4357-4376`）**
+   * 废弃返回 `data:${mime};base64,...` 的 `slides:media-data` IPC 接口。
+   * 在现有的 `chaoffice-slide-media://` 协议处理器中增加标准 HTTP **`206 Partial Content`（Byte-Range）** 支持：对于 ZIP 内以 `STORE`（未压缩，常见于 `.mp4`/`.mp3`）方式存储的媒体，直接基于原 ZIP 文件偏移量 `fs.createReadStream({ start, end })` 零内存切片直出；对于 `DEFLATE` 存储的媒体，首次访问时后台流式落盘至会话临时目录后按 Range 供给 `<video>` / `<audio>` 标签。
+2. **图片解码缓存驱逐与按需降采样（修复 `image-loader.ts:103-111`）**
+   * 将 `image-loader.ts` 中只增不减的图片缓存 `Map` 替换为 **带字节预算上限（如最大 $128\text{ MB}$ 解码位图预算）的 LRU Cache**，淘汰条目时若为 `ImageBitmap` 显式调用 `.close()` 释放显存。
+   * 在 `chaoffice-slide-media://` 与 `chaoffice-docx-media://` 协议层支持 `?maxW=1600` 查询参数（利用 Electron `nativeImage` 或 Rust `image` 库在主进程缩放后再送入渲染器，将 $8\text{ K}$ 原图的单张 RGBA 显存从 $\approx 130\text{ MB}$ 压至 $< 6\text{ MB}$）。
+   * **保留现有缩略图渲染一致性**：继续沿用 `use-visible-thumbs.ts:4-6` 的 `IntersectionObserver` 窗口化方案，**不强行替换为 Rust 离屏 WebP 生成**，以完整保留前端现有的 EMF 栅格化与主题色动态重着色（Theme Recoloring）管线一致性；针对 `image-loader.ts:24-28` 的 EMF 栅格化，将其输出从 Base64 字符串改为落盘临时缓存文件并通过媒体协议加载。
+
+---
+
+### 3.3 表格引擎（`apps/sheets`）：`sharedStrings` 核外化与 ZIP64 放行
+
+基于 `apps/sheets/native/xlsx-engine` 已有的 `CHUNK_ROW_COUNT = 256` 分块架构与 Univer 视口窗口驱逐能力，无需大改前端架构，聚焦两处精准手术：
+
+1. **`sharedStrings` Mmap 偏移索引化（改造 `workbook.rs:507`、`lib.rs:686`）**
+   * 当共享字符串表超过阈值时，不再一次性构造 `Arc<Vec<SharedString>>` 字符串对象池。
+   * Open 阶段由 `xlsx-engine` 将 `xl/sharedStrings.xml` 流式解压到会话临时文件并执行 `memmap2::Mmap` 映射，内存中仅保留紧凑偏移索引 `Vec<StringSliceMeta>`（每项仅占 $8\text{ Bytes}$：`offset: u64` + 富文本标志位，$500$ 万个唯一字符串仅占 $40\text{ MB}$ 索引内存）。
+   * 当 `read_range` 命中具体单元格窗口时，才按索引从 `Mmap` 切片按需解码对应窗口内的数十至数百个 UTF-8 字符串。
+2. **打通 ZIP64 门禁，按需演进 Sidecar 帧协议**
+   * 升级 `zip-gate` 支持解析 `0x06064b50`（ZIP64 End of Central Directory）与 `0x0001` 扩展头，在保留压缩比炸弹检测（如解压膨胀比阈值校验）的前提下合法放行 $> 4\text{ GB}$ 归档。
+   * 现行 stdin/stdout JSON 行协议配合 $\le 100\text{k}$ 单元格上限已能稳定工作；仅当压测证实百万行高频滚动受限于 JSON 解析耗时时，再以渐进扩展方式引入长度前缀二进制帧（Length-Prefixed Binary Frame v2），避免对稳定运行的 Sidecar 做无必要重写。
+
+---
+
+### 3.4 Word 核外解析与字节保真流式保存（`packages/docx-engine` 重构）
+
+这是突破 $1\text{ GB}+$ `.docx`「生死线」的核心战役。必须在**完全继承 `patch.ts` 现有字节保真语义**的前提下，解除渲染进程对 `originalXml`、`documentXml` 和 `internal.originalBytes` 的内存依赖。
+
+#### 3.4.1 核外块锚点与 DEFLATE 随机寻址检查点
+
+1. **修正数据结构（防溢出）**：每个顶层块在 `document.xml` 未压缩字节流中的锚点移除 `originalXml: string`，改用定长结构，且针对跨百页巨型表格将预估高度升级为 `u32`：
 
 ```rust
-// crates/zip-gate-rs/src/checkpoint.rs
-use serde::{Deserialize, Serialize};
-
-/// DEFLATE 随机访问检查点：支持在数 GB 压缩 XML 流中实现 O(1) 近似随机跳转
-#[derive(Clone, Serialize, Deserialize)]
-pub struct DeflateCheckpoint {
-    /// 未压缩 XML 流中的精确字节偏移量 (支持 > 4GB，使用 u64)
-    pub uncompressed_offset: u64,
-    /// 原 ZIP 条目压缩流中的字节偏移量
-    pub compressed_offset: u64,
-    /// 当前字节内的比特偏移 (0..7)
-    pub bit_offset: u8,
-    /// LZ77 32KB 历史滑动窗口字典（经 LZ4 压缩后约 6~10KB）
-    pub compressed_window: Vec<u8>,
-}
-
-/// 顶层块字节保真锚点（完全取代前端内存中的 rawXml: string）
 #[repr(C)]
-#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug)]
 pub struct BlockByteAnchor {
     pub block_id: u64,
     pub docx_index: u32,
-    /// 在未压缩 document.xml 中的起始 UTF-8 字节偏移
-    pub byte_start: u64,
-    /// 在未压缩 document.xml 中的结束 UTF-8 字节偏移
-    pub byte_end: u64,
-    /// 块类型标记：0=Paragraph, 1=Table, 2=SectPr, 3=Sdt...
-    pub block_kind: u8,
-    /// 估算渲染高度（用于前端虚拟滚动条精确计算总高度）
-    pub estimated_height_px: u16,
+    pub byte_start: u64,          // 未压缩 document.xml 中的起始 UTF-8 偏移
+    pub byte_end: u64,            // 结束 UTF-8 偏移
+    pub block_kind: u8,           // Paragraph / Table / Sdt / SectPr
+    pub flags: u8,                // 是否含复杂域/批注/懒媒体引用
+    pub estimated_height_px: u32, // 使用 u32 防止超大长表格超过 65535px 溢出
 }
 ```
 
----
+2. **DEFLATE 检查点随机读取（zran 模型）**：
+   后台 Rust 线程首次流式解压 `word/document.xml` 时，每间隔 $2\text{ MB}$ 未压缩数据记录一个 `DeflateCheckpoint`（含压缩流 `compressed_offset: u64`、`bit_offset: u8` 及经 LZ4 压缩的 $32\text{ KB}$ 滑动窗口字典）。提取任意位置的块原始 XML 切片耗时约 $5 \sim 15\text{ ms}$（解压最多 $2\text{ MB}$ 数据流），索引总内存仅 $\approx 8\text{ MB} / \text{GB}$。
 
-### 4.2 解析与字节保真层（`packages/file-parse`）：$O(1)$ 状态机与核外块索引
+#### 3.4.2 重点澄清：流式补丁保存的吞吐率矛盾与两条技术路径
 
-当前架构将每个块的原始 XML 切片保存在 JS 对象上以备未修改回写，这是内存放大的核心源头。
+在 $1.2\text{ GB}$ 大文档保存耗时上，必须严格区分两种真实文档构成，并解决单线程重压缩算力瓶颈：
 
-#### 方案设计：两阶段流式扫描（Fast First-Screen + Background Indexing）
-1. **第一阶段：首屏极速交付（耗时 $< 80\text{ ms}$）**
-   打开 $1\text{ GB}$ 文档时，Rust 端的 `quick-xml` 事件流解析器从 `word/document.xml` 头部开始扫描，一旦解析满前 **60 个顶层块**（如 `<w:p>` 或 `<w:tbl>`），**立即暂停或转入后台线程**，将这 60 个块的结构化 AST 返回给前端渲染首屏。用户无需等待整个 $1\text{ GB}$ 文件扫描完毕即可开始阅读甚至编辑第一页！
-2. **第二阶段：后台流式建立 `BlockByteAnchor` 核外索引**
-   后台工作线程以 $300\text{ MB/s}+$ 的速度流式扫过剩余的 `document.xml`，**不生成任何 AST 对象，也不保留任何 XML 字符串**，只追踪标签嵌套深度（Depth == 2 的 `<w:body>` 直接子节点），提取：
-   - 每个块的 `[byte_start, byte_end]`（`u64` 整数对）；
-   - 大纲标题文本（若包含 `<w:outlineLvl>` 或 `Heading` 样式，直接生成目录树供大纲视图和 AI 导航使用）；
-   - 将数百万个 `BlockByteAnchor` 写入本地临时嵌入式库（SQLite WAL 模式或 `LMDB` 内存映射库）。即使文档有 $1,000,000$ 个段落，索引体积也仅有 $10^6 \times 32\text{ Bytes} \approx 32\text{ MB}$。
-3. **流式补丁式保存（Streaming Patch Save）**
-   保存文件时，前端仅把用户修改过的块（`dirtyBlocks: Map<blockId, newOoxmlString>`）传给 Rust。Rust 按 `byte_start` 排序遍历修改记录：
-   - 未修改区间 $[prev\_end, dirty.byte\_start)$：直接从原解压流管道流式拷贝字节到新 ZIP 压缩流；
-   - 已修改块：写入 `newOoxmlString` 的 UTF-8 字节；
-   - 全程内存峰值不超过 $16\text{ MB}$ 缓冲区，彻底保持「字节保真」特性且支持任意 GB 级文档保存。
+* **场景 A：媒体主导型大文档（占实际用户大文件的 $90\%$ 以上，如 $1.15\text{ GB}$ 图片/嵌入对象 + $50\text{ MB}$ `document.xml`）**
+  依托 `zip-splice.ts` 已有的设计思想（扩展为流式文件管道输出并支持 ZIP64）：所有未修改的 `word/media/*` 条目直接按原 ZIP 中的 **Stored Compressed Bytes 零解压对拷**（磁盘顺序读写耗时 $< 0.5\text{ s}$）；仅对 $50\text{ MB}$ 的 `document.xml` 执行未脏字节拷贝 + 脏块替换 + 流式重压缩（耗时 $\approx 0.4\text{ s}$）。**总保存耗时稳定在 $0.8 \sim 1.5\text{ s}$**。
 
----
+* **场景 B：纯文本/巨表主导型极端文档（解压后仅 `document.xml` 单文件就高达 $1.8\text{ GB}$）**
+  若采用常规单线程 `deflate`（约 $60 \sim 120\text{ MB/s}$）将拼接后的 $1.8\text{ GB}$ XML 全量重压缩，仅压缩耗时就高达 **$15 \sim 30\text{ s}$**！为什么不能简单地把脏块前后的原压缩比特直接剪接上去？
+  > **技术陷阱揭示（LZ77 跨块回溯污染）**：外部 Word 生成的野生 `document.xml` DEFLATE 流并非在段落边界做 `Z_FULL_FLUSH`。当第 $k$ 块被用户修改后，原文件中第 $k+1$ 块的原始压缩比特流极可能包含指向第 $k$ 块末尾 $32\text{ KB}$ 范围内的 `(length, distance)` 回溯指针！如果直接比特拼接，解压第 $k+1$ 块时就会引用错误字典导致文档损坏。
 
-### 4.3 富文本编辑器层（`apps/docs`）：突破 ProseMirror 单文档树极限
+  针对场景 B，立项阶段通过技术原型（PoC）在以下两条严密方案中择一落地：
+  1. **方案 B1（稳健工程首选：多核并行分段 `Z_FULL_FLUSH` 硬件加速压缩）**
+     流式拼装出新的 `document.xml` 字节流时，按每 $4\text{ MB}$ 切分为独立块，投入 Rust `rayon` 线程池配合 `zlib-ng`（支持 AVX2 / NEON 指令集加速），以 `Z_SYNC_FLUSH` / `Z_FULL_FLUSH` 边界并行压缩后按序拼接比特流。在主流 8 核桌面 CPU 上吞吐率可达 **$600\text{ MB/s} \sim 1.1\text{ GB/s}$**，$1.8\text{ GB}$ 纯 XML 保存耗时可压至 **$1.8 \sim 3.0\text{ s}$**，且 100% 兼容标准 ZIP 解压器，无比特流边界腐败风险；并且保存后的新文件天然带有独立分段边界，二次保存可直接跳过所有未脏的 $4\text{ MB}$ 压缩段！
+  2. **方案 B2（极致进阶：带 $32\text{ KB}$ 脱敏过渡区的压缩域比特拼接）**
+     若追求首次保存亦免重压缩：对脏块输出新的 DEFLATE 块后，**额外向后解压并重编码原流紧随其后的 $32\text{ KB}$ 未修改文本（Lookahead Sanitization Zone）**，直到抵达下一个检查点并以空 `Z_SYNC_FLUSH` 块（`00 00 FF FF`）对齐字节边界后，此时后续原压缩流的 $32\text{ KB}$ 滑动窗口已完全由未修改字节填满，方可安全续接后续数 GB 的原始压缩比特流。*（注：该方案需严格处理比特移位重打包，复杂度高，须先做独立模糊测试验证后才可入主线。）*
 
-即使后端做到了零内存驻留，如果把 50 万个段落塞进同一个 Tiptap / ProseMirror `EditorState`，仅 ProseMirror 的 `Node` 实例树就会占用 $> 2\text{ GB}$ 内存，且每次按键输入触发的 `tr.docChanged` 树结构共享拷贝与坐标重算都会带来严重掉帧。
+#### 3.4.3 保持 `patch.ts` 3000 行特性不退化的迁移策略
 
-#### 方案设计：滑动窗口文档模型（Sliding Window ProseMirror Document）
-针对超大文档（当块总数 $> 2000$ 时自动激活核外虚拟分页模式）：
-
-1. **虚拟视口控制器（Virtual Document Viewport）**
-   外层容器根据 Rust 端汇报的总块数及 `estimated_height_px` 前缀和数组（Prefix Sum Array / 树状数组 Fenwick Tree，支持 $O(\log N)$ 动态更新行高与偏移定位）撑开真实滚动条高度（注意：当像素总高度超过浏览器单 DOM 极限约 $1.6 \times 10^7\text{ px}$ 时，采用**虚拟缩放滚动条比例映射**）。
-2. **ProseMirror 仅装载活跃窗口（Active Window = 150 Blocks）**
-   ProseMirror 实例的 `state.doc` 中**永远只存在当前视口可见块及其上下缓冲区的 150 个块**！
-   - 当用户向下滚动跨越阈值（例如距离窗口底部不足 40 个块）时，向 Rust IPC 请求下一批 60 个块的 AST；
-   - 使用带有 `tr.setMeta('addToHistory', false)` 的静默事务（Transaction），在文档尾部 `insert` 新块，同时在文档头部 `delete` 滚出视野最远的 60 个块（若头部被卸载的块有未保存的本地编辑，先序列化存入本地 `DirtyBlockStore` 缓存池）。
-3. **跨窗口选区、查找替换与撤销栈（Undo/Redo）适配**
-   - **查找与替换**：不再依赖 ProseMirror 内存树遍历，直接下沉至 Rust 引擎流式正则/Aho-Corasick 匹配，返回匹配块的 `block_id` 列表，点击跳转时直接将该 `block_id` 所在窗口水合进视口。
-   - **独立块级/事务级 Undo 栈**：重写历史插件，记录基于全局 `block_id` 与块内相对 `pos` 的变更补丁，使得即使某个块滚出视口被卸载，按下 `Ctrl+Z` 时依然能定位跳回该块位置、重新挂载并恢复变更。
-
-```typescript
-// apps/docs/src/core/virtual-window-manager.ts
-import { EditorView } from '@tiptap/pm/view';
-
-export interface WindowRange {
-  startBlockIndex: number;
-  endBlockIndex: number; // 始终保持 end - start <= MAX_ACTIVE_BLOCKS (如 150)
-}
-
-export class VirtualDocWindowManager {
-  private readonly MAX_WINDOW_SIZE = 150;
-  private readonly BUFFER_THRESHOLD = 35;
-  private dirtyBlockXmlCache = new Map<number, Record<string, unknown>>(); // blockId -> PM JSON
-
-  constructor(
-    private view: EditorView,
-    private docSessionId: string,
-    private ipcBridge: {
-      fetchBlockSlice: (sessionId: string, start: number, count: number) => Promise<any[]>;
-    }
-  ) {}
-
-  /** 滚动到任意全局块索引（支持百万段落秒跳） */
-  async jumpToBlock(targetIndex: number): Promise<void> {
-    this.flushDirtyBlocksFromCurrentWindow();
-
-    const start = Math.max(0, targetIndex - Math.floor(this.MAX_WINDOW_SIZE / 2));
-    const blocksJson = await this.ipcBridge.fetchBlockSlice(
-      this.docSessionId,
-      start,
-      this.MAX_WINDOW_SIZE
-    );
-
-    // 优先用本地已修改缓存覆盖原始解析块
-    const hydratedNodes = blocksJson.map((raw) => {
-      const cached = this.dirtyBlockXmlCache.get(raw.attrs.blockId);
-      return this.view.state.schema.nodeFromJSON(cached ?? raw);
-    });
-
-    const tr = this.view.state.tr.replaceWith(
-      0,
-      this.view.state.doc.content.size,
-      hydratedNodes
-    );
-    // 关键：窗口换页本身绝不污染用户的 Undo/Redo 历史栈
-    tr.setMeta('addToHistory', false);
-    tr.setMeta('virtualWindowShift', { startBlockIndex: start });
-    this.view.dispatch(tr);
-  }
-
-  private flushDirtyBlocksFromCurrentWindow(): void {
-    this.view.state.doc.forEach((node) => {
-      if (node.attrs?.dirty) {
-        this.dirtyBlockXmlCache.set(node.attrs.blockId, node.toJSON());
-      }
-    });
-  }
-}
-```
+`packages/docx-engine/src/patch.ts` 承载了极其复杂的表格单元格合并补丁、`rawPPr` 段落属性继承、懒媒体占位还原等细节，用 Rust 一次性重写 3000 行逻辑极易引发大面积回归。采用**「存储流化 + 脏块局部复用 TS 补丁器」**的分步架构：
+* **未修改块（占 $99.9\%$）**：渲染进程根本不感知其 XML，由 Rust 保存引擎直接按 `BlockByteAnchor` 的 `[byte_start, byte_end]` 从原流拷贝字节。
+* **已修改脏块（通常仅几十个）**：保存前，主进程通过检查点从原 `document.xml` 按需提取这几十个脏块对应的 `originalXml` 切片，**直接喂给现有的 TypeScript `patch.ts` 单块补丁函数**生成字节保真的新 XML 片段，再交由 Rust 流式拼装器写出！这样既实现了 $1\text{ GB}$ 核外流式保存，又 **100% 复用了 `patch.ts` 现有的局部补丁逻辑，将重写风险降到最低**。
 
 ---
 
-### 4.4 电子表格引擎层（`xlsx-gateway` & `apps/sheets`）：百万行级流式网格与二进制 IPC
+### 3.5 编辑器视口虚拟化（`apps/docs`）：解耦保存契约与滑动窗口
 
-1GB 的 `.xlsx` 往往包含百万行（$1,048,576$ 行）乘以数十列的数据。`calamine` 如果一次性构建全表 DOM 或通过 JSON 发给渲染进程，必然触发内存爆炸。
+这是全案**交互复杂度与风险最高**的模块，必须在完成 `3.4`（使保存不再依赖渲染进程持有完整 `parsed.internal.originalBytes` 与全量 `state.doc`）之后方可推进。
 
-#### 方案设计：流式稀疏块存储 + 二进制 Tile 视口协议
-1. **SharedStrings 字符串池核外映射**
-   超大 `.xlsx` 中，`xl/sharedStrings.xml` 本身就可能高达 $500\text{ MB}$。Rust 端采用 `mmap` + 偏移量数组（`Vec<u64>`）索引 `sharedStrings.xml`，而不将数百万个字符串实例化到堆内存中。
-2. **工作表分块懒加载（Chunked Tile Storage）**
-   按 `256 行 × 32 列` 将工作表划分为二维数据瓦片（Tile）。打开文件时仅流式读取激活 Sheet 的第 `(0, 0)` 号瓦片（即 `A1:AF256`），**首屏可在 $100\text{ ms}$ 内渲染完毕**。后台线程流式扫描剩余行，将瓦片序列化压缩后写入磁盘页缓存，并在后台构建 `IronCalc` 稀疏依赖图。
-3. **零 JSON 跨进程传输：采用紧凑二进制缓冲区（Flat Binary / Apache Arrow）**
-   前端 Canvas 表格滚动请求某个可见区瓦片时，Rust 直接返回对齐的 `ArrayBuffer`（通过 Electron `MessagePortMain` 零拷贝传输或 `SharedArrayBuffer`）：
-
-```
-+------------------------+------------------------+-------------------------+
-| Header (16 Bytes)      | Cell Type & Style IDs  | Values & String Offsets |
-| rows, cols, cell_count | Uint32Array[N]         | Float64Array[N] + UTF8  |
-+------------------------+------------------------+-------------------------+
-```
-
-前端 Canvas 渲染器直接通过 `DataView` / `Float64Array` 读取坐标、数值与全局去重样式表 ID 进行绘制，**全程在 V8 中产生 0 个单元格临时 Object**，百万行滚动帧率稳定在 $60\text{ FPS}$/$120\text{ FPS}$。
+1. **前置解耦：重构 Renderer $\leftrightarrow$ Main 保存契约（改造 `types.ts:3101-3110`）**
+   * 将 `sessionId` 作为文档唯一句柄；`originalBytes` 与全量块锚点表下沉至主进程/Rust 会话层。
+   * 渲染进程仅维护 `DirtyBlockRegistry: Map<blockId, SaveBlockPatch>`。当块在编辑器中被修改时，通过 ProseMirror `appendTransaction` 钩子标记脏状态；即使该块随后因滚动被移出 ProseMirror 活跃窗口，其修改后的块级 JSON/补丁依然持久化在会话级 `DirtyBlockRegistry`（超量可溢写 IndexedDB/主进程临时表）中。
+2. **增量头尾裁剪窗口（替代全文档 `replaceWith`）**
+   * 绝不能在滚动换页时对整个文档执行 `tr.replaceWith(0, doc.content.size, ...)`——那会导致光标选区丢失、输入法（IME）中断及严重的 GC 抖动。
+   * **增量双向链表式挂载**：维持活跃窗口约 $160$ 个块。向下滚动越过缓冲区阈值时，仅在文档末尾执行一次 `tr.insert(doc.content.size, nextBatchNodes)`（每次仅小批量挂载 $20 \sim 30$ 个块），同时在文档头部执行 `tr.delete(0, removedHeadSize)`，并在同一帧同步读取头部被删 DOM 的精确高度差 $\Delta H$，累加至顶部占位容器 `paddingTop` 并补偿 `scrollTop`，实现**零视觉跳动、零选区丢失**的平滑滑动。
+3. **跨窗口逻辑历史栈（Block-Addressed Undo/Redo）**
+   * 禁用 ProseMirror 内置基于绝对文档偏移 `pos` 的 `prosemirror-history`（因为头部卸载块会导致全局 `pos` 漂移，使旧 `StepMap` 失效）。
+   * 构建基于 `(blockId, localOffset)` 的块寻址历史管理器：每次用户编辑事务记录变更前后的单块 JSON 快照（或块内局部 `Step`）。触发 `Ctrl+Z` 时，若目标 `blockId` 在当前活跃窗口内，直接映射局部偏移应用反向 `Step`；若目标 `blockId` 已被卸载出视口，先驱动虚拟滚动控制器定位将该 `blockId` 所在区间水合进视口，再恢复块状态与选区焦点。
 
 ---
 
-### 4.5 媒体管线与画布层（`apps/slides` / `docs`）：流式协议与实时降采样（Mipmap）
+## 4. 修正后的性能与资源预期指标（实事求是基准）
 
-许多超过 $1\text{ GB}$ 的 `.pptx` 或 `.docx` 是因为嵌入了上百张 $4\text{ K}$/$8\text{ K}$ 未压缩位图（BMP/TIFF/PNG）或音视频文件。
+以两类典型 $1.2\text{ GB}$ 超大 `.docx` 文档在主流 8 核 / 16GB 桌面设备（Desktop 核外模式）下的表现作为验收基准：
 
-#### 方案设计：彻底消灭 Base64，引入 `chaoffice-media://` 流式解码管线
-1. **Electron 主进程自定义流式协议**
-   在 `apps/shell` 中通过 `protocol.handle('chaoffice-media', handler)` 拦截所有文档内部媒体请求：
-   - 解析器遇到 `<a:blip r:embed="rId5"/>` 时，只查询 `.rels` 关系表将其转换为 URL：`chaoffice-media://{sessionId}/ppt/media/image5.png?maxW=1280`。**解析阶段读取图片字节数为 $0$！**
-   - 视频/音频资源天然支持 HTTP `206 Partial Content`（Range 请求），由 Rust 从归档流按块流式输出，支持百兆内嵌视频即点即播。
-2. **Rust 端实时尺寸自适应降采样（On-the-fly Downsampling）**
-   一张 $8000 \times 6000$ 的 PNG 解码为 RGBA 位图后在 GPU/RAM 中占用 $8000 \times 6000 \times 4 \approx 192\text{ MB}$！十张图就会撑爆显存。
-   - 协议处理器收到带 `?maxW=1280`（编辑态屏幕显示尺寸）的请求时，由 Rust `image` / `libvips` 流式解码并快速缩放到宽度 $1280\text{ px}$（显存占用暴降至 $4.9\text{ MB}$，下降 **97%**），并缓存在本地磁盘缩略图池中；
-   - 仅当用户执行「导出高清 PDF / 打印」或放大画布超过 $200\%$ 时，才按需请求原图分辨率。
-3. **`Konva` / 画布纹理 LRU 回收池**
-   在 `apps/slides` 中，仅实例化当前激活幻灯片及前后各 1 页的 `Konva.Stage`；左侧缩略图栏全部采用 Rust 离屏生成的低清 WebP 静态图，切换页面时主动对滚出缓存窗口的 `ImageBitmap` 调用 `.close()` 立即释放底层显存，无需等待浏览器 GC。
-
----
-
-### 4.6 PDF 双引擎彻底解耦（`apps/pdf`）：Range 流式阅读 + 增量追加保存
-
-当前 `apps/pdf` 同时集成了 `pdf.js`（渲染）和 `pdf-lib`（编辑）。对于 $1\text{ GB}$ 的工程图纸或扫描版 PDF，`PDFDocument.load(bytes)` 会一次性解析几十万个 PDF Indirect Objects，直接耗尽内存。
-
-#### 方案设计：读写完全分离 + PDF 增量更新（Incremental Update）
-1. **浏览态：纯流式 Range 分片加载**
-   配置 `pdf.js` 的 `PDFDataRangeTransport` 对接本地文件句柄，设置 `disableAutoFetch: true` 和 `disableStream: false`。`pdf.js` 会先读取文件末尾的 `xref` 表，之后用户翻到哪一页，才精准读取哪一页对应的数 KB 字节区间。同时严格维护 **最多 5 页活跃 Canvas 池**，离屏页面销毁 Canvas 保留空尺寸容器并调用 `pdfPage.cleanup()`。
-2. **编辑态：按需解析单页对象，彻底弃用全量 `pdf-lib` 加载**
-   - 当用户双击第 $350$ 页执行「真文本编辑」时，Rust 端使用 `lopdf` 或 `pdf-syntax`（基于 `mmap` 的按需交叉引用解析器）**仅解析第 $350$ 页关联的 Content Stream 与 Font 对象**，`HarfBuzz` 仅提取该页涉及的字形子集。
-3. **保存态：利用 PDF 标准「增量更新（Incremental Update）」秒存 1GB 文件**
-   PDF 规范（ISO 32000）原生支持在原文件末尾直接追加修改过的对象（New Body + New XRef Section + New Trailer `Prev` 指针），而无需重写前面的 $1\text{ GB}$ 内容！
-   - 保存修改后的 $1\text{ GB}$ PDF 时，先通过操作系统写时复制（Copy-on-Write）克隆原文件，随后仅在文件末尾 `append` 几十 KB 的增量对象流，**保存耗时从数十秒降至 $< 20\text{ ms}$**！
-
----
-
-### 4.7 AI Agent 与写前快照机制（`agent-core` & 安全层）
-
-1. **零内存零耗时的写前快照（Copy-on-Write File Clone）**
-   首次写回前的自动备份严禁通过 Node.js 读入 `Buffer` 再写出。直接调用 Rust `std::fs::copy` 或封装平台原生 CoW 系统调用：
-   - macOS (`APFS`)：`clonefile()` 系统调用；
-   - Windows (`ReFS` / 新版 `Dev Drive`) / Linux (`Btrfs` / `XFS`)：`ioctl(FICLONE)`。
-   在支持 CoW 的文件系统上，克隆一个 $2\text{ GB}$ 文档耗时 **$< 1\text{ ms}$**，且额外磁盘与内存占用为 **$0$**；在普通 NTFS/ext4 上也由内核态 DMA 异步拷贝，完全不经过 V8 内存。
-2. **AI Agent 核外检索架构（Out-of-Core RAG / Tool-Use）**
-   禁止 `agent-core` 在打开大文档时拼接全文 Prompt。在 `4.2` 节后台流式扫描的同时，顺便将块纯文本写入本地 SQLite **FTS5 全文检索引擎**。Agent 被赋予以下核外工具：
-   - `get_document_outline()`：毫秒级获取完整标题层级树与对应 `block_id` 范围；
-   - `search_document_blocks(keyword_or_query, limit=20)`：通过 FTS5 在百万段落中毫秒级检索相关块；
-   - `read_block_range(start_block_id, end_block_id)`：按需读取指定章节内容并修改回写。
-
----
-
-## 5. 改造前后性能与内存预算对比（以 1.2 GB 复杂图文表混排文档为例）
-
-假设测试样本为一个 $1.2\text{ GB}$ 的大型标书 `.docx`（解压后 `document.xml` 约 $1.8\text{ GB}$，含 $45$ 万个段落、$800$ 个复杂表格、$600$ 张高清图片）：
-
-| 核心指标 | 改造前（现有全量内存架构） | 改造后（核外流式虚拟架构） | 提升幅度 |
+| 核心维度 | 现行架构表现（Baseline） | 改造后目标水位（Desktop 核外架构） | 关键技术支撑点 |
 | :--- | :--- | :--- | :--- |
-| **首屏可交互时间 (TTI)** | 直接崩溃（V8 字符串超限 / OOM） | **$180\text{ ms} \sim 350\text{ ms}$** | 从不可用到亚秒级瞬开 |
-| **全文大纲与跳页就绪时间** | 无法完成 | 后台流式扫描约 **$3.5\text{ s}$**（不阻塞前台交互） | 全异步无感索引 |
-| **渲染进程常驻内存 (Renderer RSS)** | $> 4096\text{ MB}$（触发 OOM 崩溃） | **$140\text{ MB} \sim 260\text{ MB}$**（恒定水位，与文件大小脱钩） | 内存降低 **$> 93\%$** |
-| **Rust 核外引擎物理内存占用** | N/A | **$45\text{ MB} \sim 90\text{ MB}$**（其余由 OS Mmap 页缓存托管） | 极低开销 |
-| **修改单段文字后的保存耗时** | 全量序列化重压缩 $> 45\text{ s}$（若未崩溃） | **$0.8\text{ s} \sim 2.5\text{ s}$**（流式字节管道对拷 + 局部补丁） | 提速 **$20\times+$** |
+| **可打开性（超 23 万权重 / ZIP64）** | 硬拒打开（`large-document.ts:18` / `zip-gate:156`）或 V8 字符串超限崩溃 | **无上限打开**（支持 $> 4\text{ GB}$ ZIP64 及百万级段落） | ZIP64 放行 + Mmap + 移除 `document.xml` 整串读入 |
+| **首屏可交互时间 (TTI)** | 大文档数十秒白屏或直接报错 | **$300\text{ ms} \sim 800\text{ ms}$**（首屏 64 块水合即交付，后台异步建检查点索引） | 首屏流式截断解析 + 异步核外锚点扫描 |
+| **渲染进程常驻内存 (Renderer RSS)** | 随文件线性暴涨至 $> 4\text{ GB}$ OOM | **$180\text{ MB} \sim 350\text{ MB}$**（与文件体积脱钩，受窗口与 LRU 预算严格封顶） | 活跃块滑动窗口 + 图片位图 LRU 驱逐 + 剥离 `originalBytes` |
+| **保存耗时（媒体主导型 $1.2\text{ GB}$）** | 内存重建整包 `Uint8Array` 崩溃或 $> 30\text{ s}$ | **$0.8\text{ s} \sim 1.8\text{ s}$** | `zip-splice` 媒体原压缩流直拷 + 局部调用 `patch.ts` |
+| **保存耗时（纯文本 $1.8\text{ GB}$ XML）** | 无法完成 | **$2.0\text{ s} \sim 3.5\text{ s}$**（多核 `zlib-ng` 分段并行压缩） | $4\text{ MB}$ 分段多线程硬件加速 DEFLATE（首次保存后二次保存 $< 1\text{ s}$） |
 
 ---
 
-## 6. 渐进式工程落地路线图（Phased Roadmap）
+## 5. 按「真实剩余缺口 $\times$ 风险」重排的分阶段施工路线图
 
-为了避免一次性推翻现有业务代码导致回归风险，建议按以下三个阶段平滑演进，且可设置**双模式阈值开关**（例如文件 $< 15\text{ MB}$ 仍走轻量快速通道，$\ge 15\text{ MB}$ 自动切入核外流式引擎）：
+摒弃低估复杂度的排期，按照**「先收割低风险高收益存量先例，再做底层核外解耦，最后攻坚高风险编辑器虚拟化」**的工程顺序推进：
 
-### 第一阶段：快速止血与外围降压（预计 1 周，内存立降 50%+）
-- [ ] **媒体流式化**：在 `apps/shell` 落地 `protocol.handle('chaoffice-media', ...)`，彻底移除 `file-parse`、`docs`、`slides` 中所有将 ZIP 内图片解压为 Base64 或全量 `Blob` 的逻辑，加入 Rust 端按请求尺寸降采样。
-- [ ] **PDF 读写解耦**：在 `apps/pdf` 中移除打开文档时的 `pdf-lib` 预加载，开启 `pdf.js` 流式分片加载与离屏页面 `cleanup()` 销毁池。
-- [ ] **零拷贝快照**：将写前快照改为系统级文件克隆/异步流拷贝，禁止在 JS 中复制原归档 `ArrayBuffer`。
+### P0 阶段：低风险速赢——PDF 增量流式化 + Slides 媒体闭环（预计 1.5 ~ 2 周）
+* **工程目标**：不触碰复杂富文本内核，快速消灭 PDF 与大体积多媒体 PPT 的内存爆炸现场事故。
+* **核心任务**：
+  1. `apps/pdf`：基于 `Range` / 文件偏移改造 `file-bytes.ts` 移除渲染层全包字节拼接；参照 `pdf-sign.ts:381` 改造 `save-pdf.ts` 落地通用增量更新保存与超阈值 Compaction 回收。
+  2. `apps/slides`：为 `chaoffice-slide-media://` 增加 HTTP `206 Range` 流式支持，下线 `slides-main.ts:4357` 的音视频 Base64 IPC；将 `image-loader.ts:103` 无界缓存改造为带显存预算的 LRU Cache，并将 EMF 栅格化结果改为临时文件协议供给；补充 `?maxW` 缩放参数。
 
-### 第二阶段：核外引擎与字节偏移锚定重构（预计 2~3 周，突破 1GB 打开限制）
-- [ ] **构建 `zip-gate-rs`**：引入 `memmap2`、ZIP64 支持与 DEFLATE `DeflateCheckpoint` 随机访问检查点索引。
-- [ ] **升级 `packages/file-parse`**：用 `quick-xml` 流式状态机替代全量 XML 解析，将每个块保存的 `rawXml: string` 彻底替换为 64 位 `[byte_start, byte_end]` 偏移锚点，落地 SQLite/LMDB 核外块索引与流式补丁拼装保存器。
+### P1 阶段：基础设施破壁——ZIP64 全链路放行 + Sheets `sharedStrings` Mmap 化（预计 1.5 ~ 2 周）
+* **工程目标**：打通 $> 4\text{ GB}$ 归档门禁，彻底消除百万行大表格的 Rust 侧字符串内存峰值。
+* **核心任务**：
+  1. `packages/zip-gate` & `zip-splice.ts`：补齐 ZIP64 Central Directory 解析与校验，保留防炸弹膨胀率门禁，解除硬拒限制。
+  2. `apps/sheets/native/xlsx-engine`：改造 `workbook.rs:507` 与 `lib.rs:686`，对超阈值 `sharedStrings.xml` 实现临时文件 `memmap2` + 偏移数组按需解码。
 
-### 第三阶段：编辑器视口虚拟化与二进制表格协议（预计 3~4 周，实现百万行/十万页丝滑编辑）
-- [ ] **`apps/docs` 滑动窗口化**：实现 `VirtualDocWindowManager`，使 ProseMirror 仅装载视口附近的 150 个活跃块，适配跨窗口查找替换与块级 Undo/Redo 历史栈。
-- [ ] **`xlsx-gateway` 瓦片化**：改造 Rust 表格 Sidecar，支持 `sharedStrings` 偏移映射、按 `256×32` 瓦片懒加载以及二进制 TypedArray IPC 协议。
-- [ ] **`agent-core` 核外化**：对接后台流式生成的 FTS5 全文索引与章节大纲树，实现超大文档的毫秒级 AI 检索与局部块安全改写。
+### P2 阶段：核心深水区——`docx-engine` 核外检查点索引与流式拼接保存（预计 4 ~ 6 周）
+* **工程目标**：突破 V8 $512\text{ MB}$ 字符串死穴，实现 `docx` 流式首屏解析与复用 `patch.ts` 单块语义的核外保存，同时保证 CLI 与 `doc2docx` 等全仓消费方零回归。
+* **核心任务**：
+  1. **PoC 先行（第 1 周）**：独立验证 Rust `DeflateCheckpoint` 随机提取性能，以及 `zlib-ng` 多核分段 `Z_FULL_FLUSH` 流式压缩（对比比特级拼接方案）的吞吐率与 Word 兼容性。
+  2. **核外解析与索引（第 2~3 周）**：实现 `quick-xml` 流式扫描器，首屏优先返回前 64 块，后台生成 `BlockByteAnchor`（`u32` 高度）与 SQLite FTS5 全文检索表（对接 `agent-core` 核外检索工具）。
+  3. **保存契约解耦与混合补丁管线（第 4~6 周）**：剥离渲染进程的 `internal.originalBytes` 与 `documentXml`；实现「未脏区间 Rust 流式直拷 + 脏块提取原切片调用 TS `patch.ts` 局部补丁」的混合保存管线，并编写 Desktop / Server / Web 三端 Storage Adapter 及回归测试集。
+
+### P3 阶段：最高风险攻坚——`apps/docs` ProseMirror 滑动窗口与块寻址 Undo 栈（预计 4 ~ 6 周）
+* **工程目标**：彻底移除 `large-document.ts` 的只读与拒开限制，实现十万页级文档丝滑滚动与完整编辑体验。
+* **核心任务**：
+  1. **独立原型验证（第 1~2 周）**：在主线外构建最小原型，攻克「增量头尾节点裁剪时的滚动锚点补偿（Scroll Anchor Compensation）」、「IME 输入态保护」与「基于 `(blockId, localOffset)` 的跨窗口 Undo/Redo 历史栈」。
+  2. **主线集成与边缘特性适配（第 3~6 周）**：接入 `DirtyBlockRegistry` 会话存储；将全文查找替换下沉至 P2 构建的 Rust 流式搜索/FTS5 索引；联调跨窗口选区复制、大纲跳页与 AI Agent 局部块改写。

@@ -8535,8 +8535,13 @@ export function registerAiIpc(): void {
 
   ipcMain.handle(
     'ai:chat',
-    async (_event, request: { selection: AiModelSelection; system: string; user: string }) => {
-      const result = await getAiRuntime().runChat(request.selection, request.system, request.user)
+    async (_event, request: { selection?: AiModelSelection; system: string; user: string }) => {
+      // selection 可选（#2969 grammar/synonyms 等后台单次调用无 UI 选型）——回退到
+      // 设置文件里存的 currentModel（composer set-current-model 写入同一字段）
+      const selection =
+        request.selection ?? (await getAiRuntime().readRawSettings()).currentModel
+      if (!selection) throw new Error('no model selected')
+      const result = await getAiRuntime().runChat(selection, request.system, request.user)
       // the one-shot path reports HTTP failures as ok:false with the raw body —
       // replace capacity/rate-limit dumps with the localized "busy" message
       if (!result.ok && isAiOverloadedError(result.error)) {
@@ -10020,7 +10025,7 @@ export function registerDocsIpc(): void {
     'docs:link-source-claim',
     async (_event, token: string, commit: boolean): Promise<LinkSourceClaim> => {
       if (!linkOffer || linkOffer.token !== token) return null
-      const source = webContents.fromId(linkOffer.wcId)
+      const source = electronWebContents.fromId(linkOffer.wcId)
       const path = openDocByWc.get(linkOffer.wcId)
       if (!source || source.isDestroyed() || tornDownWcIds.has(linkOffer.wcId)) return null
       if (!path || !/\.docx$/i.test(path) || !existsSync(path)) return null

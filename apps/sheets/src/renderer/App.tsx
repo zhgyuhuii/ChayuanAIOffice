@@ -189,7 +189,6 @@ import {
 
 import {
 } from '@chaoffice/agent-core'
-import { type WorkbookOperation } from '@chaoffice/xlsx-gateway/domain/workbook-dsl'
 import {
   type AiSettingsV2,
 } from '@chaoffice/ai-provider/browser'

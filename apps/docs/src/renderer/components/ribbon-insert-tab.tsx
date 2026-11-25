@@ -582,7 +582,10 @@ export function InsertTab({
             className="rb-big"
             disabled={!hasDoc}
             data-tip={t('ribbonPictureTip')}
-            onClick={insertImageDialogOpen ?? ((): void => void insertImageViaDialog(editor))}
+            onClick={
+              insertImageDialogOpen ??
+              ((): void => void insertImageViaDialog(editor, async () => undefined))
+            }
           >
             <span className="rb-big-icon">
               <IconPicture size={BIG} />

@@ -590,9 +590,9 @@ export function KbAskPanel({
   const pickMention = (file: KbFileInfo): void => {
     if (!mention) return
     setDraft(removeMentionToken(draft, mention.start))
-    void window.aiOffice
+    void window.chaOffice
       .kbGrantMention(file.path)
-      .then(() => window.aiOffice.addAttachmentPaths([file.path]))
+      .then(() => window.chaOffice.addAttachmentPaths([file.path]))
       .then(mergeAttachments)
       .catch(() => {})
   }

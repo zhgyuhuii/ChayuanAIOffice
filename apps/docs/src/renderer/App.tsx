@@ -172,8 +172,6 @@ import {
   type Watermark,
   type WatermarkSpec,
   type CommentImage,
-  type MathPr,
-  DEFAULT_MATH_PR,
   type KinsokuCustom,
   type DrawingGrid,
 } from '@chaoffice/docx-engine'
@@ -234,7 +232,6 @@ import {
   withHfPictureLink,
   type HfSectionState,
 } from './hf-sections'
-import { noteRowMetrics } from './editor/note-dom'
 import { noteMarkText } from './note-format'
 import { textColorValue } from './editor/text-color'
 import { setDkColor } from './editor/dark-page'
@@ -1290,75 +1287,6 @@ function appendNoteRuns(
  * overprinted each other), so reservation and drawing share the DOM wrap truth.
  */
 let noteMeasureHost: HTMLDivElement | null = null
-function measureNoteHeightDom(
-  entry: Pick<PageNoteItem, 'no' | 'text' | 'richParas' | 'noRefMark'>,
-  kind: NoteKind,
-  widthPx: number,
-  lineHeightPx: number,
-  fontSizePt: number,
-  fontFamily?: string,
-): number | null {
-  if (typeof document === 'undefined' || !document.body || widthPx <= 0) return null
-  if (!noteMeasureHost || !noteMeasureHost.isConnected) {
-    noteMeasureHost = document.createElement('div')
-    noteMeasureHost.style.cssText =
-      'position:absolute;left:-99999px;top:0;visibility:hidden;pointer-events:none;text-align:left;text-indent:0;'
-    document.body.appendChild(noteMeasureHost)
-  }
-  noteMeasureHost.style.fontFamily =
-    fontFamily ?? "Calibri, 'DengXian', 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif"
-  noteMeasureHost.style.width = `${widthPx}px`
-  noteMeasureHost.style.fontSize = `${fontSizePt}pt`
-  noteMeasureHost.style.lineHeight = `${lineHeightPx}px`
-  const row = document.createElement('div')
-  appendNoteRuns(row, entry, kind)
-  // the renderers' sup style (CSS classes don't reach the detached host)
-  const sup = row.querySelector('sup')
-  if (sup) {
-    sup.style.fontSize = '0.65em'
-    sup.style.marginRight = '4px'
-  }
-  noteMeasureHost.replaceChildren(row)
-  const h = row.getBoundingClientRect().height
-  noteMeasureHost.replaceChildren()
-  return h > 0 ? h : null
-}
-
-/** Footnote area at the top of a page gap (previous page's bottom): absolutely positioned in the content area, double-click an entry to edit */
-function makeGapNotesEl(
-  items: PageNoteItem[],
-  leftPx: number,
-  widthPx: number,
-  heightPx: number,
-  lineHeightPx: number,
-  onEdit: (id: string) => void,
-): HTMLElement {
-  const wrap = document.createElement('div')
-  wrap.className = 'page-gap-notes'
-  wrap.style.left = `${leftPx}px`
-  // paper x: block gaps start at the paper edge, mid-paragraph gaps at their page's
-  // edge — alignGapHfStrips re-anchors from the actual gap origin
-  wrap.dataset.paperX = leftPx.toFixed(1)
-  wrap.style.width = `${widthPx}px`
-  wrap.style.height = `${heightPx}px`
-  // same line height as the reservation model; min-height keeps rows at the
-  // reserved size while letting long entries overflow instead of clipping
-  wrap.style.lineHeight = `${lineHeightPx}px`
-  for (const it of items) {
-    const row = document.createElement('div')
-    row.className = 'page-gap-note'
-    row.title = t('appDblclickEditFootnote')
-    row.style.minHeight = `${it.height}px`
-    // per-note resolved style: the entry's line boxes must match its reservation
-    if (it.lineHeightPx) row.style.lineHeight = `${it.lineHeightPx}px`
-    if (it.fontSizePt) row.style.fontSize = `${it.fontSizePt}pt`
-    if (it.fontFamily) row.style.fontFamily = it.fontFamily
-    appendNoteRuns(row, it, 'footnote')
-    row.addEventListener('dblclick', () => onEdit(it.id))
-    wrap.appendChild(row)
-  }
-  return wrap
-}
 
 const DEFAULT_SETTINGS: AiSettingsV2 = defaultSettingsV2()
 

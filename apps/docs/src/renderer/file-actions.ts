@@ -16,8 +16,9 @@ import { Editor } from '@tiptap/core'
 import { GapCursor } from '@tiptap/pm/gapcursor'
 import { history } from '@tiptap/pm/history'
 import { suggestFileName, aiPanelInitiallyOpen, shortFileError } from '@chaoffice/ui'
+import type { ResolvedPos } from '@tiptap/pm/model'
+import { labelTableIndex } from './mail-merge/label-sheet'
 import { NodeSelection, Selection, TextSelection } from '@tiptap/pm/state'
-import { suggestFileName } from '@chaoffice/ui'
 import { modelTextOf, type RedactableNode } from './ai/redact-view'
 import {
   applyPageNumType,

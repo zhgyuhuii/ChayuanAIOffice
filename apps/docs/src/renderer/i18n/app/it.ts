@@ -1068,4 +1068,6 @@ export const it = {
   appAcIntro: '键入时自动替换：',
   appAcAutoLists: '自动项目符号和编号列表',
   appAcSymbols: '符号：(c) (r) (tm) … 分数和箭头',
+  appTranslateTo: '翻译成{lang}',
+  appFindIn: '查找范围',
 } satisfies Record<keyof typeof zh, string>

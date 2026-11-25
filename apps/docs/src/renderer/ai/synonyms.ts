@@ -27,8 +27,8 @@ export function parseSynonyms(content: string, word: string): string[] {
 /** Empty when no provider is set up or the request fails: the menu then reads "No Suggestions". */
 export async function fetchSynonyms(word: string): Promise<string[]> {
   try {
-    const settings = await window.desktop.getAiSettings()
-    const reply = await window.desktop.aiChat({ settings, system: SYSTEM, user: word })
+    // 本地 V2 线：selection 可选，主进程回退 settings.currentModel（无需带 settings）
+    const reply = await window.desktop.aiChat({ system: SYSTEM, user: word })
     return reply.ok && reply.content ? parseSynonyms(reply.content, word) : []
   } catch {
     return []

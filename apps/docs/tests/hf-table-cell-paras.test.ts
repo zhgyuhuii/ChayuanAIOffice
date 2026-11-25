@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import { hfImageHangsOnPara } from '../src/renderer/editor/hf-dom'
 import type { HeaderFooter, HfImage, HfTextBox, SectionSettings } from '@chaoffice/docx-engine'
 import {
   hfCellParaStyle,

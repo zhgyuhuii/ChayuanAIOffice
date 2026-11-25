@@ -6326,7 +6326,7 @@ function registerHomeIpc(): void {
 
   // LOCAL(2026-09-22, f5247d3..476e5023): 上游 #560 openPath 长度/空串守卫并入本地
   // remote 物化+dock 结构(本地 routeDocumentPath 语义保留)
-  ipcMain.handle(HOME_CHANNELS.openPath, (_event, path: unknown, options?: { dock?: boolean }) => {
+  ipcMain.handle(HOME_CHANNELS.openPath, (event, path: unknown, options?: { dock?: boolean }) => {
     if (typeof path !== 'string' || !path || path.length > 4096) return
     const dock = options?.dock === true
     if (isRemoteUri(path)) {

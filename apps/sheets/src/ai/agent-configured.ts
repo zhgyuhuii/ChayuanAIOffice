@@ -22,7 +22,7 @@ export function agentConfigured(settings: AiSettings | null | undefined): boolea
   // the cloud provider's key never lands in the settings file; the main process injects
   // it from the gsk login state. When logged out, requests return an error
   // guiding sign-in — not intercepted here.
-  if (settings.provider === 'genspark' || config.apiKey) return true
+  if (settings.provider === 'chaoffice' || config.apiKey) return true
   // a key named by environment variable is resolved by the main process per request
   return !!normalizeCustomProfile(config.profile)?.apiKeyEnv
 }
@@ -31,7 +31,7 @@ export function agentConfigured(settings: AiSettings | null | undefined): boolea
  * Where a sent message goes. An incomplete setup (no key, no model) keeps the
  * offline planner for the three commands it understands; anything else runs
  * the agent path so the main process answers with the actual reason instead
- * of the planner's syntax hint (genoffice#2967).
+ * of the planner's syntax hint (chaoffice#2967).
  */
 export function sendRoute(
   settings: AiSettings | null | undefined,

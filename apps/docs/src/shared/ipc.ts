@@ -577,6 +577,10 @@ export interface DesktopApi {
     suggestedName: string,
     files: Array<{ fileName: string; base64: string }>,
   ): Promise<{ ok: boolean; canceled?: boolean; error?: string; paths?: string[] }>
+  /** LOCAL: re-kick the spell checker from the settings page (trusted typing probe) */
+  respellKick(): Promise<unknown>
+  /** LOCAL: spell-diag trace line (intermittent squiggle loss support log) */
+  spellDiag(line: string): void
   /** 察元 AI docops: declassify backup sidecar next to the document */
   declassifyStore(
     action: 'save' | 'load' | 'clear',
@@ -762,7 +766,7 @@ export interface DesktopApi {
     links?: PdfInternalLink[],
   ): Promise<{ ok: boolean; path?: string; error?: string }>
   aiChat(request: {
-    selection: AiModelSelection
+    selection?: AiModelSelection
     system: string
     user: string
   }): Promise<AiChatResponse>

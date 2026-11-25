@@ -261,8 +261,8 @@ export type GrammarChat = (
 ) => Promise<{ ok: boolean; content?: string; error?: string }>
 
 const desktopChat: GrammarChat = async (systemPrompt, user) => {
-  const settings = await window.desktop.getAiSettings()
-  return window.desktop.aiChat({ settings, system: systemPrompt, user })
+  // 本地 V2 线：selection 可选，主进程回退 settings.currentModel（无需带 settings）
+  return window.desktop.aiChat({ system: systemPrompt, user })
 }
 
 /**

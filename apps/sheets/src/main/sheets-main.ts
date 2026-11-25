@@ -86,6 +86,8 @@ import {
   configuredAuthorName,
   readLegacyImportSkip,
   writeLegacyImportSkip,
+  isBesideDocument,
+  sharedPathGrants,
 } from '@chaoffice/electron-utils'
 import { createMainProcessProxyDispatcher } from '@chaoffice/electron-utils/main-proxy'
 import { createI18n, getUiLang, type Lang, normalizeLang, setUiLang } from '@chaoffice/i18n'

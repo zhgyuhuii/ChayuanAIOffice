@@ -781,7 +781,7 @@ export function SettingsModal({
   }
 
   const applyMeasurementUnit = (next: MeasurementUnit | null) => {
-    void window.aiOffice
+    void window.chaOffice
       .setMeasurementUnit?.(next)
       .then(setUnitState)
       .catch(() => undefined)
@@ -992,6 +992,8 @@ export function SettingsModal({
                     }}
                   />
                 </div>
+                <div className="set-field">
+                  <div className="set-field-text">
                     <label className="set-field-label">{t('setMeasureUnits')}</label>
                   </div>
                   <Dropdown
