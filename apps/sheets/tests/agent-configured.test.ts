@@ -14,9 +14,12 @@ describe('agentConfigured', () => {
     expect(agentConfigured(undefined)).toBe(false)
   })
 
-  it('accepts genspark without a stored key (main injects the gsk key)', () => {
+  it('accepts the cloud provider without a stored key (main injects the gsk key)', () => {
     const settings = defaultAiSettings()
-    expect(settings.provider).toBe('genspark')
+    expect(settings.provider).toBe('chaoffice')
+    // live discovery fills the model at runtime; pin one the way a resolved
+    // settings file would carry it (no static seed defaults in this fork)
+    settings.providers.chaoffice.model = 'gsk-claude-sonnet-4'
     expect(agentConfigured(settings)).toBe(true)
   })
 
@@ -38,6 +41,10 @@ describe('agentConfigured', () => {
   it('still requires a key for API-key providers', () => {
     const settings = defaultAiSettings()
     settings.provider = 'anthropic'
+    // live discovery fills the model at runtime (the static seed catalog is
+    // stripped in this fork), so the test pins one the way a resolved
+    // settings file would carry it
+    settings.providers.anthropic.model = 'claude-sonnet-5-5'
     expect(agentConfigured(settings)).toBe(false)
     settings.providers.anthropic.apiKey = 'sk-ant-test'
     expect(agentConfigured(settings)).toBe(true)
