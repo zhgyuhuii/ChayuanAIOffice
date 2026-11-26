@@ -1,3 +1,5 @@
+import { spawnSync } from 'node:child_process'
+import path from 'node:path'
 import { app, dialog } from 'electron'
 import type { BrowserWindow } from 'electron'
 import { autoUpdater } from 'electron-updater'
@@ -18,6 +20,13 @@ import { createI18n, getUiLang } from '@chaoffice/i18n'
  * updates download silently in the background and a single native dialog
  * offers "Restart & Install" once the payload is ready. Declining defers the
  * install to normal app quit (autoInstallOnAppQuit).
+ *
+ * Unsigned mac hosts never reach that flow at all: Squirrel.Mac verifies the
+ * staged bundle against the running app's code-signing requirement, which an
+ * ad-hoc/linker-signed bundle can never satisfy — the payload downloads
+ * silently, the install dialog's quitAndInstall() then waits forever on an
+ * update-downloaded that never fires, and nothing is staged for quit either.
+ * The self-update probe gates the whole updater off for such hosts.
  */
 
 const tUpd = createI18n({
@@ -213,6 +222,34 @@ function log(...args: unknown[]): void {
   console.log('[docs-updater]', ...args)
 }
 
+/// True when the running macOS bundle carries a code signature Squirrel.Mac
+/// can build a verification requirement from — a Developer ID or in-house
+/// signing. Ad-hoc (linker-signed) or unsigned bundles cannot self-update:
+/// the staged update never passes verification, so the download is wasted
+/// bytes and every install path is a no-op. Probed via `codesign -dv` on the
+/// running bundle; fail-closed.
+export function macSelfUpdateCapable(): boolean {
+  if (process.platform !== 'darwin') return true
+  try {
+    // process.execPath is <bundle>/Contents/MacOS/<bin>; the bundle root two
+    // levels up is what codesign expects
+    const bundle = path.dirname(path.dirname(path.dirname(process.execPath)))
+    const { status, stdout, stderr } = spawnSync('codesign', ['-dv', bundle], {
+      encoding: 'utf8',
+    })
+    if (status !== 0) return false
+    const out = `${stdout}\n${stderr}`
+    // an ad-hoc signature reports "Signature=adhoc" and "TeamIdentifier=not
+    // set"; a real identity prints its Team ID — require both signals to
+    // agree before trusting the full download → install path
+    if (/Signature=adhoc\b/.test(out)) return false
+    const team = /^TeamIdentifier=(.+)$/m.exec(out)?.[1]?.trim() ?? ''
+    return team.length > 0 && team !== 'not set'
+  } catch {
+    return false
+  }
+}
+
 async function promptInstall(win: BrowserWindow | null, info: UpdateInfo): Promise<void> {
   const lang = getUiLang()
   const options = {
@@ -242,10 +279,15 @@ export function initDocsAutoUpdater(getWindow: () => BrowserWindow | null): void
 
   // Unpacked runs have no app-update.yml and must not hit the CDN with a dev
   // version. Windows updates via NSIS (latest.yml); macOS via the zip target
-  // (latest-mac.yml) — Squirrel.Mac additionally requires a signed app, so
-  // unsigned local builds check but never install.
+  // (latest-mac.yml) — Squirrel.Mac additionally requires a signed app, so an
+  // unsigned mac host gets no updater at all: checking would download the
+  // payload and every install path would silently do nothing.
   if (!app.isPackaged) return
   if (process.platform !== 'win32' && process.platform !== 'darwin') return
+  if (process.platform === 'darwin' && !macSelfUpdateCapable()) {
+    log('self-update unavailable: the app bundle is not signed for Squirrel.Mac')
+    return
+  }
 
   autoUpdater.autoDownload = true
   autoUpdater.autoInstallOnAppQuit = true

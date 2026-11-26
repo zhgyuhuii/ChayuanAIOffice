@@ -8,6 +8,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const appState = { isPackaged: true }
 const showMessageBox = vi.fn()
+const spawnSyncMock = vi.fn<
+  (...args: unknown[]) => { status: number | null; stdout: string; stderr: string; error?: Error }
+>()
 
 vi.mock('electron', () => ({
   app: {
@@ -20,6 +23,16 @@ vi.mock('electron', () => ({
     showMessageBox: (...args: unknown[]) => showMessageBox(...args),
   },
 }))
+
+// backs the macOS self-update probe (codesign -dv). Default: a properly
+// signed bundle, so the full download → install flow stays exercisable. The
+// default export is part of the mock because @chaoffice/i18n's module graph
+// reaches node:child_process through a default import.
+vi.mock('node:child_process', () => {
+  const spawnSync = (...args: unknown[]) =>
+    spawnSyncMock(...(args as [string, string[], { encoding: string }]))
+  return { spawnSync, default: { spawnSync } }
+})
 
 type Listener = (...args: unknown[]) => unknown
 
@@ -84,6 +97,12 @@ beforeEach(() => {
   showMessageBox.mockReset()
   checkForUpdates.mockClear()
   quitAndInstall.mockClear()
+  spawnSyncMock.mockReset()
+  spawnSyncMock.mockImplementation(() => ({
+    status: 0,
+    stdout: '',
+    stderr: 'Format=app bundle with Mach-O thin (arm64)\nTeamIdentifier=ABCDEF123456\n',
+  }))
   setPlatform('darwin')
 })
 
@@ -160,5 +179,41 @@ describe('initDocsAutoUpdater', () => {
     initDocsAutoUpdater(() => null)
     vi.advanceTimersByTime(FIRST_CHECK_DELAY_MS)
     expect(checkForUpdates).toHaveBeenCalledTimes(1)
+  })
+
+  it('stays off entirely on an unsigned mac host — the download and every install path are no-ops', async () => {
+    spawnSyncMock.mockImplementation(() => ({
+      status: 0,
+      stdout: '',
+      stderr: 'Signature=adhoc\nTeamIdentifier=not set\n',
+    }))
+    const { initDocsAutoUpdater } = await loadUpdater()
+    initDocsAutoUpdater(() => null)
+    vi.advanceTimersByTime(FIRST_CHECK_DELAY_MS)
+    expect(updaterState.listeners.size).toBe(0)
+    expect(checkForUpdates).not.toHaveBeenCalled()
+  })
+
+  it('treats a codesign failure as an unsigned host (fail-closed)', async () => {
+    spawnSyncMock.mockImplementation(() => ({
+      status: null,
+      stdout: '',
+      stderr: '',
+      error: new Error('spawn codesign ENOENT'),
+    }))
+    const { initDocsAutoUpdater } = await loadUpdater()
+    initDocsAutoUpdater(() => null)
+    vi.advanceTimersByTime(FIRST_CHECK_DELAY_MS)
+    expect(checkForUpdates).not.toHaveBeenCalled()
+  })
+
+  it('does not probe codesign off macOS', async () => {
+    platformSpy?.restore()
+    setPlatform('win32')
+    const { initDocsAutoUpdater } = await loadUpdater()
+    initDocsAutoUpdater(() => null)
+    vi.advanceTimersByTime(FIRST_CHECK_DELAY_MS)
+    expect(checkForUpdates).toHaveBeenCalledTimes(1)
+    expect(spawnSyncMock).not.toHaveBeenCalled()
   })
 })

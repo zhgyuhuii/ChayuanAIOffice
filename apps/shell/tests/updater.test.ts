@@ -14,6 +14,9 @@ const showMessageBox = vi.hoisted(() =>
   vi.fn<(opts: unknown) => Promise<{ response: number }>>(() => Promise.resolve({ response: 0 })),
 )
 const readFileSyncMock = vi.hoisted(() => vi.fn<(...args: unknown[]) => string>())
+const spawnSyncMock = vi.hoisted(() =>
+  vi.fn<(...args: unknown[]) => { status: number | null; stdout: string; stderr: string; error?: Error }>(),
+)
 
 vi.mock('electron', () => ({
   app: {
@@ -32,6 +35,13 @@ vi.mock('electron', () => ({
 
 vi.mock('node:fs', () => ({
   readFileSync: (...args: unknown[]) => readFileSyncMock(...args),
+}))
+
+// backs the macOS self-update probe (codesign -dv). Default: a properly
+// signed bundle, so the full download → install flow stays exercisable.
+vi.mock('node:child_process', () => ({
+  spawnSync: (...args: unknown[]) =>
+    spawnSyncMock(...(args as [string, string[], { encoding: string }])),
 }))
 
 type Listener = (...args: unknown[]) => unknown
@@ -126,6 +136,12 @@ function setPlatform(platform: string): void {
   }
 }
 
+function setArch(arch: string): () => void {
+  const original = Object.getOwnPropertyDescriptor(process, 'arch')!
+  Object.defineProperty(process, 'arch', { value: arch })
+  return () => Object.defineProperty(process, 'arch', original)
+}
+
 async function loadUpdater() {
   return import('../src/main/updater')
 }
@@ -168,6 +184,12 @@ beforeEach(() => {
   readFileSyncMock.mockImplementation(() => {
     throw new Error('no app-update.yml')
   })
+  spawnSyncMock.mockReset()
+  spawnSyncMock.mockImplementation(() => ({
+    status: 0,
+    stdout: '',
+    stderr: 'Format=app bundle with Mach-O thin (arm64)\nTeamIdentifier=ABCDEF123456\n',
+  }))
   setPlatform('darwin')
 })
 
@@ -562,12 +584,6 @@ describe('manual download fallback', () => {
     { url: 'ChaOffice-0.2.0.dmg' },
   ]
 
-  function setArch(arch: string): () => void {
-    const original = Object.getOwnPropertyDescriptor(process, 'arch')!
-    Object.defineProperty(process, 'arch', { value: arch })
-    return () => Object.defineProperty(process, 'arch', original)
-  }
-
   async function failTwiceIntoManual(files: { url: string }[]): Promise<UpdateActions> {
     downloadUpdate.mockImplementation(() => Promise.reject(new Error('team id changed')))
     const { initAutoUpdater } = await loadUpdater()
@@ -686,6 +702,29 @@ describe('manual download fallback', () => {
     }
   })
 
+  it('uses an absolute same-host feed URL as-is (artifacts live beside the feed, not under its prefix)', async () => {
+    Object.defineProperty(process, 'resourcesPath', { value: '/res', configurable: true })
+    readFileSyncMock.mockReturnValue('url: https://cdn.example.com/mac\n')
+    const restoreArch = setArch('arm64')
+    try {
+      const actions = await failTwiceIntoManual([
+        {
+          url: 'https://cdn.example.com/installer/mac-arm64/ChaOffice-0.2.0-arm64.zip',
+        },
+        {
+          url: 'https://cdn.example.com/installer/mac-arm64/ChaOffice-0.2.0-arm64.dmg',
+        },
+      ])
+      actions.onOpenDownload()
+      // a basename rebuild would 404: /mac/ChaOffice-0.2.0-arm64.dmg does not exist
+      expect(openExternal).toHaveBeenCalledWith(
+        'https://cdn.example.com/installer/mac-arm64/ChaOffice-0.2.0-arm64.dmg',
+      )
+    } finally {
+      restoreArch()
+    }
+  })
+
   it('rejects a non-HTTPS baked feed URL', async () => {
     Object.defineProperty(process, 'resourcesPath', { value: '/res', configurable: true })
     readFileSyncMock.mockReturnValue('url: http://cdn.example.com/mac\n')
@@ -705,6 +744,185 @@ describe('manual download fallback', () => {
     expect(openExternal).toHaveBeenCalledWith(
       'https://github.com/zhgyuhuii/ChayuanAIOffice/releases/latest',
     )
+  })
+})
+
+describe('macSelfUpdateCapable probe', () => {
+  it('accepts a Developer ID signed bundle', async () => {
+    spawnSyncMock.mockImplementation(() => ({
+      status: 0,
+      stdout: '',
+      stderr:
+        'Authority=Developer ID Application: Example (ABCDEF123456)\nTeamIdentifier=ABCDEF123456\n',
+    }))
+    const { macSelfUpdateCapable } = await loadUpdater()
+    expect(macSelfUpdateCapable()).toBe(true)
+  })
+
+  it('rejects an ad-hoc bundle', async () => {
+    spawnSyncMock.mockImplementation(() => ({
+      status: 0,
+      stdout: '',
+      stderr: 'CodeDirectory v=20400 flags=0x20002(adhoc,linker-signed)\nSignature=adhoc\nTeamIdentifier=not set\n',
+    }))
+    const { macSelfUpdateCapable } = await loadUpdater()
+    expect(macSelfUpdateCapable()).toBe(false)
+  })
+
+  it('rejects a TeamIdentifier=not set bundle even without the adhoc flag', async () => {
+    spawnSyncMock.mockImplementation(() => ({
+      status: 0,
+      stdout: '',
+      stderr: 'TeamIdentifier=not set\n',
+    }))
+    const { macSelfUpdateCapable } = await loadUpdater()
+    expect(macSelfUpdateCapable()).toBe(false)
+  })
+
+  it('rejects when codesign exits non-zero (unsigned bundle)', async () => {
+    spawnSyncMock.mockImplementation(() => ({
+      status: 1,
+      stdout: '',
+      stderr: 'code object is not signed at all\n',
+    }))
+    const { macSelfUpdateCapable } = await loadUpdater()
+    expect(macSelfUpdateCapable()).toBe(false)
+  })
+
+  it('fails closed when codesign itself cannot run', async () => {
+    spawnSyncMock.mockImplementation(() => ({
+      status: null,
+      stdout: '',
+      stderr: '',
+      error: new Error('spawn codesign ENOENT'),
+    }))
+    const { macSelfUpdateCapable } = await loadUpdater()
+    expect(macSelfUpdateCapable()).toBe(false)
+  })
+
+  it('never shells out off macOS', async () => {
+    platformSpy?.restore()
+    setPlatform('win32')
+    const { macSelfUpdateCapable } = await loadUpdater()
+    expect(macSelfUpdateCapable()).toBe(true)
+    expect(spawnSyncMock).not.toHaveBeenCalled()
+  })
+})
+
+describe('unsigned mac self-update gate', () => {
+  function setUnsigned(): void {
+    spawnSyncMock.mockImplementation(() => ({
+      status: 0,
+      stdout: '',
+      stderr: 'Signature=adhoc\nTeamIdentifier=not set\n',
+    }))
+  }
+
+  it('offers the installer directly instead of a download that can never install', async () => {
+    setUnsigned()
+    const { initAutoUpdater } = await loadUpdater()
+    initAutoUpdater(() => null)
+    updaterState.listeners.get('update-available')!({ version: '0.2.0' })
+    expect(showUpdateWindow).toHaveBeenCalledTimes(1)
+    expect(lastShownState().phase).toBe('manual')
+    expect(downloadUpdate).not.toHaveBeenCalled()
+  })
+
+  it('opens the manual card on a quiet check too — silence would hide the update forever', async () => {
+    setUnsigned()
+    const { initAutoUpdater } = await loadUpdater()
+    initAutoUpdater(() => null, 'stable', () => true, () => true)
+    vi.advanceTimersByTime(FIRST_CHECK_DELAY_MS)
+    updaterState.listeners.get('update-available')!({ version: '0.2.0' })
+    expect(showUpdateWindow).toHaveBeenCalledTimes(1)
+    expect(lastShownState().phase).toBe('manual')
+    expect(downloadUpdate).not.toHaveBeenCalled()
+  })
+
+  it('still enters the download flow on a signed host', async () => {
+    const { initAutoUpdater } = await loadUpdater()
+    initAutoUpdater(() => null)
+    updaterState.listeners.get('update-available')!({ version: '0.2.0' })
+    expect(lastShownState().phase).toBe('available')
+    lastShownActions().onDownload()
+    expect(downloadUpdate).toHaveBeenCalledTimes(1)
+  })
+
+  it('hands over the feed entry URL (installer path, not the feed prefix)', async () => {
+    setUnsigned()
+    Object.defineProperty(process, 'resourcesPath', { value: '/res', configurable: true })
+    readFileSyncMock.mockReturnValue('provider: generic\nurl: https://cdn.example.com/mac\n')
+    const restoreArch = setArch('arm64')
+    try {
+      const { initAutoUpdater } = await loadUpdater()
+      initAutoUpdater(() => null)
+      updaterState.listeners.get('update-available')!({
+        version: '0.2.0',
+        files: [
+          { url: 'https://cdn.example.com/installer/mac-arm64/ChaOffice-0.2.0-arm64.zip' },
+          { url: 'https://cdn.example.com/installer/mac-arm64/ChaOffice-0.2.0-arm64.dmg' },
+        ],
+      })
+      lastShownActions().onOpenDownload()
+      expect(openExternal).toHaveBeenCalledWith(
+        'https://cdn.example.com/installer/mac-arm64/ChaOffice-0.2.0-arm64.dmg',
+      )
+    } finally {
+      restoreArch()
+    }
+  })
+
+  it('treats a probe failure as not capable', async () => {
+    spawnSyncMock.mockImplementation(() => ({
+      status: null,
+      stdout: '',
+      stderr: '',
+      error: new Error('spawn codesign ENOENT'),
+    }))
+    const { initAutoUpdater } = await loadUpdater()
+    initAutoUpdater(() => null)
+    updaterState.listeners.get('update-available')!({ version: '0.2.0' })
+    expect(lastShownState().phase).toBe('manual')
+  })
+
+  it('demotes a Squirrel apply rejection right after the download to manual', async () => {
+    const { initAutoUpdater } = await loadUpdater()
+    initAutoUpdater(() => null)
+    updaterState.listeners.get('update-available')!({ version: '0.2.0' })
+    lastShownActions().onDownload()
+    updaterState.listeners.get('update-downloaded')!({ version: '0.2.0' })
+    expect(pushUpdateState).toHaveBeenCalledWith({ phase: 'downloaded', percent: 100 })
+    // Squirrel validates the staged bundle seconds later and rejects
+    updaterState.listeners.get('error')!(new Error('code signature is not valid'))
+    expect(pushUpdateState).toHaveBeenCalledWith({ phase: 'manual' })
+  })
+
+  it('does not demote a healthy staged package when hours later an error arrives', async () => {
+    const { initAutoUpdater } = await loadUpdater()
+    initAutoUpdater(() => null)
+    updaterState.listeners.get('update-available')!({ version: '0.2.0' })
+    lastShownActions().onDownload()
+    updaterState.listeners.get('update-downloaded')!({ version: '0.2.0' })
+    // a recheck's network noise, far beyond the apply window (the recheck
+    // itself resolves to null and must not disturb the staged package)
+    vi.advanceTimersByTime(RECHECK_INTERVAL_MS + 60_000)
+    await flushAsync()
+    updaterState.listeners.get('error')!(new Error('network blip'))
+    expect(pushUpdateState).not.toHaveBeenCalledWith({ phase: 'manual' })
+    expect(pushUpdateState).toHaveBeenLastCalledWith({ phase: 'downloaded', percent: 100 })
+  })
+
+  it('keeps the old failDownload behavior off macOS', async () => {
+    platformSpy?.restore()
+    setPlatform('win32')
+    const { initAutoUpdater } = await loadUpdater()
+    initAutoUpdater(() => null)
+    updaterState.listeners.get('update-available')!({ version: '0.2.0' })
+    lastShownActions().onDownload()
+    updaterState.listeners.get('update-downloaded')!({ version: '0.2.0' })
+    updaterState.listeners.get('error')!(new Error('signature check failed'))
+    expect(pushUpdateState).not.toHaveBeenCalledWith({ phase: 'manual' })
+    expect(pushUpdateState).toHaveBeenLastCalledWith({ phase: 'downloaded', percent: 100 })
   })
 })
 

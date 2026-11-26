@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { app, dialog, shell } from 'electron'
@@ -43,6 +44,14 @@ import {
  *
  * Dev preview: GENOFFICE_FAKE_UPDATE=<version> in an unpacked run opens the
  * window with a simulated download so the UI can be exercised end to end.
+ *
+ * Unsigned mac hosts never reach the download: Squirrel.Mac verifies the
+ * staged bundle against the running app's code-signing requirement, which an
+ * ad-hoc/linker-signed bundle can never satisfy — the package downloads,
+ * ShipIt stages nothing, and "Restart & Install" clicks do nothing
+ * (quitAndInstall waits on an update-downloaded that never fires). The
+ * self-update probe (macSelfUpdateCapable) routes such hosts straight to the
+ * manual installer from their own feed.
  */
 
 const tUpd = createI18n({
@@ -443,6 +452,12 @@ const RECHECK_INTERVAL_MS = 4 * 60 * 60 * 1000
 // code-signing identity (Apple Team ID) change, which Squirrel.Mac rejects
 // on every retry while the error looks like a download failure to the user.
 const MANUAL_FALLBACK_AFTER = 2
+// Squirrel.Mac validates a staged bundle seconds after 'update-downloaded';
+// an error landing within this window is an apply-side rejection (Team ID
+// change, unsigned host) rather than a download failure. A background
+// recheck's network noise lands hours later and must not demote a healthy
+// staged package.
+const APPLY_ERROR_WINDOW_MS = 10 * 60_000
 // Last-resort manual link only: the GitHub Latest release tracks one channel
 // and signing track, so a stable/legacy-track user could land on the wrong
 // build. Preferred is the CDN installer derived from the user's own update
@@ -497,38 +512,98 @@ function linuxPackageType(): 'deb' | null {
 /// for a deb install (the AppImage is a different install lineage and cannot
 /// upgrade a deb). Served feeds may carry either feed-relative names or
 /// absolute CDN URLs (mac-release-upload rewrites every url: entry to
-/// absolute), but only their basename is used.
-/// The final URL is always rebuilt against the trusted baked feed base.
+/// absolute).
+///
+/// Relative names are rebuilt against the trusted baked feed base. Absolute
+/// https URLs on the baked feed's own host are used as-is: the artifacts live
+/// beside the feed on the CDN, not under the feed prefix (aidooo serves
+/// installers under /installer/<platform>-<arch>/), so a basename rebuild
+/// would 404. Same host + https keeps the trust boundary — the link can only
+/// land where the feed itself is served from, never on a third party.
 function manualDownloadUrlFor(info: UpdateInfo): string | null {
-  const basenames = (info.files ?? []).flatMap((file) => {
+  const entries = (info.files ?? []).flatMap((file) => {
     try {
-      const pathname = new URL(file.url, 'https://metadata.invalid/').pathname
-      const basename = pathname.slice(pathname.lastIndexOf('/') + 1)
-      return basename ? [decodeURIComponent(basename)] : []
+      const url = new URL(file.url, 'https://metadata.invalid/')
+      const basename = url.pathname.slice(url.pathname.lastIndexOf('/') + 1)
+      return basename ? [{ basename: decodeURIComponent(basename), url }] : []
     } catch {
       return []
     }
   })
-  const pick = (match: (basename: string) => boolean): string | null =>
-    basenames.find(match) ?? null
-  let chosen: string | null
+  const pick = (match: (entry: { basename: string; url: URL }) => boolean) =>
+    entries.find(match) ?? null
+  let chosen: { basename: string; url: URL } | null
   if (process.platform === 'darwin') {
     const arm =
-      pick((name) => name.endsWith('-arm64.dmg')) ?? pick((name) => name.endsWith('-universal.dmg'))
-    const x64 = pick((name) => name.endsWith('.dmg') && !/-(arm64|universal)\.dmg$/.test(name))
+      pick((e) => e.basename.endsWith('-arm64.dmg')) ??
+      pick((e) => e.basename.endsWith('-universal.dmg'))
+    const x64 = pick(
+      (e) => e.basename.endsWith('.dmg') && !/-(arm64|universal)\.dmg$/.test(e.basename),
+    )
     chosen = process.arch === 'arm64' ? (arm ?? x64) : (x64 ?? arm)
   } else if (process.platform === 'win32') {
-    const arm = pick((name) => name.endsWith('-arm64.exe'))
-    const x64 = pick((name) => name.endsWith('.exe') && !name.endsWith('-arm64.exe'))
+    const arm = pick((e) => e.basename.endsWith('-arm64.exe'))
+    const x64 = pick((e) => e.basename.endsWith('.exe') && !e.basename.endsWith('-arm64.exe'))
     chosen = process.arch === 'arm64' ? (arm ?? x64) : (x64 ?? arm)
   } else {
     // a deb install must be offered the deb, not the AppImage
     const extension = !process.env.APPIMAGE && linuxPackageType() === 'deb' ? '.deb' : '.AppImage'
-    chosen = pick((name) => name.endsWith(extension))
+    chosen = pick((e) => e.basename.endsWith(extension))
   }
   if (chosen === null) return null
   const base = updateFeedBaseUrl()
-  return base === null ? null : new URL(encodeURIComponent(chosen), base).toString()
+  if (base === null) return null
+  const baseUrl = new URL(base)
+  if (
+    chosen.url.protocol === 'https:' &&
+    !chosen.url.username &&
+    !chosen.url.password &&
+    chosen.url.host === baseUrl.host
+  ) {
+    chosen.url.search = ''
+    chosen.url.hash = ''
+    return chosen.url.toString()
+  }
+  return new URL(encodeURIComponent(chosen.basename), base).toString()
+}
+
+/// True when the running macOS bundle carries a code signature Squirrel.Mac
+/// can build a verification requirement from — a Developer ID or in-house
+/// signing. Ad-hoc (linker-signed) or unsigned bundles cannot self-update:
+/// Squirrel validates the staged update against the host's requirement, the
+/// match always fails, nothing is staged, and the "Restart & Install" click
+/// then waits forever on an event that never fires. Probed via
+/// `codesign -dv` on the running bundle; fail-closed, because the only
+/// consequence of a false negative is the (working) manual installer path.
+export function macSelfUpdateCapable(): boolean {
+  if (process.platform !== 'darwin') return true
+  try {
+    // process.execPath is <bundle>/Contents/MacOS/<bin>; the bundle root two
+    // levels up is what codesign expects
+    const bundle = path.dirname(path.dirname(path.dirname(process.execPath)))
+    const { status, stdout, stderr } = spawnSync('codesign', ['-dv', bundle], {
+      encoding: 'utf8',
+    })
+    if (status !== 0) return false
+    const out = `${stdout}\n${stderr}`
+    // an ad-hoc signature reports "Signature=adhoc" and "TeamIdentifier=not
+    // set"; a real identity prints its Team ID — require both signals to
+    // agree before trusting the full download → install path
+    if (/Signature=adhoc\b/.test(out)) return false
+    const team = /^TeamIdentifier=(.+)$/m.exec(out)?.[1]?.trim() ?? ''
+    return team.length > 0 && team !== 'not set'
+  } catch {
+    return false
+  }
+}
+
+// probed once per run; null until the first darwin ask
+let selfUpdateCapableCache: boolean | null = null
+
+function selfUpdateCapable(): boolean {
+  if (process.platform !== 'darwin') return true
+  selfUpdateCapableCache ??= macSelfUpdateCapable()
+  return selfUpdateCapableCache
 }
 
 let started = false
@@ -739,6 +814,9 @@ export function initAutoUpdater(
   // can cancel the request and its late rejection cannot fail the next one
   let downloadToken: CancellationToken | null = null
   let downloadGen = 0
+  // when the current package finished downloading — anchors the apply-side
+  // rejection window in the error handler below
+  let downloadedAt = 0
 
   const setPhase = (patch: { phase: UpdatePhase; percent?: number }): void => {
     phase = patch.phase
@@ -809,6 +887,20 @@ export function initAutoUpdater(
     // network failures during background checks are expected; only surface
     // when the user is watching a download
     log('error:', err?.message ?? err)
+    // macOS apply-side rejection: Squirrel.Mac validates the staged bundle
+    // right after 'update-downloaded' (a Team ID change, or an unsigned host
+    // the probe missed) and reports here — failDownload() no-ops because
+    // downloadInFlight is already false, and the card would keep offering a
+    // "Restart & Install" whose quitAndInstall() waits forever on an event
+    // Squirrel never fires. Retrying cannot help; hand over the installer.
+    if (
+      process.platform === 'darwin' &&
+      phase === 'downloaded' &&
+      Date.now() - downloadedAt < APPLY_ERROR_WINDOW_MS
+    ) {
+      setPhase({ phase: 'manual' })
+      return
+    }
     failDownload()
   })
 
@@ -837,6 +929,18 @@ export function initAutoUpdater(
     latestSeenVersion = info.version
     manualDownloadUrl = manualDownloadUrlFor(info)
     log('update available:', info.version)
+    // a host that cannot apply the package (unsigned macOS bundle: Squirrel
+    // rejects it at staging, leaving a "Restart & Install" that does nothing)
+    // never enters the download flow — offer the installer from this feed
+    // directly. Quiet checks surface the card too: silence would hide the
+    // update forever, and the only cost of the probe being wrong is a
+    // perfectly good installer link.
+    if (!selfUpdateCapable()) {
+      setPhase({ phase: 'manual' })
+      if (sameVersionRecheck && isUpdateWindowOpen()) return
+      showUpdateWindow(getWindow(), { ...initialState(info.version), phase, percent }, actions)
+      return
+    }
     if (quietCheck && silentInstallEnabled() && !isLinuxDeb) {
       // quiet path: no card, the package downloads in the background and the
       // app installs it when it quits (chaoffice#2389). Not for a deb: its
@@ -870,6 +974,7 @@ export function initAutoUpdater(
     autoUpdater.autoInstallOnAppQuit = !isLinuxDeb
     downloadInFlight = false
     failedAttempts = 0
+    downloadedAt = Date.now()
     setPhase({ phase: 'downloaded', percent: 100 })
   })
 
