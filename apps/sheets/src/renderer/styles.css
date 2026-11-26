@@ -7407,6 +7407,31 @@ textarea:focus {
   background: var(--ribbon-hover);
 }
 
+/* The 察元AI entry is the band's brand anchor: it stays a tall icon-over-label
+   button at every degrade stage (one child per group, so compacting it saves no
+   width anyway) — the horizontal compaction above is for command clusters. */
+.degrade-grid .ribbon-tool.large.ai-entry {
+  flex-direction: column;
+  justify-content: center;
+  height: auto;
+  min-width: 58px;
+  gap: 4px;
+  padding: 4px 7px 6px;
+  text-align: center;
+}
+
+.degrade-grid .ribbon-tool.large.ai-entry .tool-icon-row {
+  align-self: stretch;
+  flex: 1 1 auto;
+  min-height: 24px;
+  padding: 3px 4px;
+  margin: 0 -4px;
+}
+
+.degrade-grid .ribbon-tool.large.ai-entry strong {
+  white-space: nowrap;
+}
+
 /* 组合框钳宽（WPS 同款：窄带下字体框缩宽）——字体/数字组的主要宽度来源。
    分级钳：三行档比两行档更紧；下拉包装（边框/颜色/对齐行距等）一并钳 */
 .ribbon-group.degrade-1 :is(.menu-select, .menu-select-edit, .rb-drop-wrap) {
