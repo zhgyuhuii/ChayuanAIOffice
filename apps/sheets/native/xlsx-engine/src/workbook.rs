@@ -1,6 +1,6 @@
 //! Workbook-level parts: sheet declarations and relationships,
-//! `<dimension>` / sheet-view scans, the shared-string table and workbook
-//! defined names.
+//! `<dimension>` / sheet-view scans and workbook defined names. (The
+//! shared-string table lives in `shared_strings`.)
 
 use super::*;
 
@@ -502,95 +502,6 @@ pub(crate) fn dimensions_from_reference(reference: &str) -> Result<(usize, usize
         .replace('$', "");
     let (row, column) = parse_address(&last)?;
     Ok((row + 1, column + 1))
-}
-
-pub(crate) fn read_shared_strings(
-    archive: &mut ZipArchive<File>,
-    colors: &ColorContext,
-) -> Result<Vec<SharedString>, SidecarError> {
-    let Ok(entry) = zip_entry(archive, "xl/sharedStrings.xml") else {
-        return Ok(Vec::new());
-    };
-    let mut reader = Reader::from_reader(BufReader::new(entry));
-    let mut buffer = Vec::new();
-    let mut strings = Vec::new();
-    let mut current = String::new();
-    let mut runs: Vec<RichRun> = Vec::new();
-    let mut current_run: Option<RichRun> = None;
-    let mut in_text = false;
-    let mut text_preserve = false;
-    let mut text_node = String::new();
-    let mut in_phonetic = false;
-    loop {
-        match reader.read_event_into(&mut buffer)? {
-            Event::Start(element) if element.local_name().as_ref() == b"si" => {
-                current.clear();
-                runs.clear();
-                current_run = None;
-            }
-            Event::Start(element) if element.local_name().as_ref() == b"r" => {
-                current_run = Some(RichRun::default());
-            }
-            // Phonetic guide text (<rPh><t>…</t></rPh>) is ruby annotation,
-            // not cell content.
-            Event::Start(element) if element.local_name().as_ref() == b"rPh" => {
-                in_phonetic = true;
-            }
-            Event::End(element) if element.local_name().as_ref() == b"rPh" => {
-                in_phonetic = false;
-            }
-            Event::Start(element) | Event::Empty(element) if current_run.is_some() => {
-                if element.local_name().as_ref() == b"t" {
-                    in_text = true;
-                    text_preserve = preserves_space(&reader, &element)?;
-                    text_node.clear();
-                } else if let Some(run) = current_run.as_mut() {
-                    apply_run_property(run, &reader, &element, colors)?;
-                }
-            }
-            Event::Start(element) if element.local_name().as_ref() == b"t" => {
-                in_text = !in_phonetic;
-                text_preserve = preserves_space(&reader, &element)?;
-                text_node.clear();
-            }
-            Event::Text(text) if in_text => text_node.push_str(&decode_text(&text)?),
-            Event::CData(text) if in_text => text_node.push_str(&decode_cdata(&text)?),
-            Event::GeneralRef(reference) if in_text => {
-                text_node.push_str(&general_ref_text(&reference)?);
-            }
-            Event::End(element) if element.local_name().as_ref() == b"t" => {
-                if in_text {
-                    let text = text_node_content(std::mem::take(&mut text_node), text_preserve);
-                    current.push_str(&text);
-                    if let Some(run) = &mut current_run {
-                        run.text.push_str(&text);
-                    }
-                }
-                in_text = false;
-            }
-            Event::End(element) if element.local_name().as_ref() == b"r" => {
-                if let Some(run) = current_run.take() {
-                    runs.push(run);
-                }
-            }
-            Event::End(element) if element.local_name().as_ref() == b"si" => {
-                let mut finished = std::mem::take(&mut runs);
-                for run in &mut finished {
-                    normalize_cell_text(&mut run.text);
-                }
-                let mut text = current.clone();
-                normalize_cell_text(&mut text);
-                strings.push(SharedString {
-                    text,
-                    runs: qualify_runs(finished),
-                });
-            }
-            Event::Eof => break,
-            _ => {}
-        }
-        buffer.clear();
-    }
-    Ok(strings)
 }
 
 pub(crate) fn has_run_formatting(run: &RichRun) -> bool {

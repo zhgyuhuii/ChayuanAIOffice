@@ -2244,6 +2244,89 @@ fn phonetic_runs_stay_out_of_shared_strings() {
     assert!(
         matches!(&result.cells[0].value, Some(CellValue::String(text)) if text == "\u{8c4a}\u{7530}")
     );
+    // Below the spill thresholds the table stays the eager in-memory one.
+    assert_eq!(
+        sessions.shared_strings_are_mapped(&metadata.session_id),
+        Some(false)
+    );
+}
+
+/// A shared-string table whose declared `uniqueCount` crosses the spill
+/// threshold is served from the mmap store: values, rich runs and phonetic
+/// filtering must survive lazy decoding, a stale index still degrades to a
+/// dropped valueless cell, and closing the session reclaims the spilled
+/// file with the rest of the cache directory.
+#[test]
+fn oversized_shared_string_table_serves_from_the_mmap_store() {
+    let (_dir, path) = open_fixture(&[
+        (
+            "xl/workbook.xml",
+            r#"<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="S" sheetId="1" r:id="rId1"/></sheets></workbook>"#,
+        ),
+        (
+            "xl/_rels/workbook.xml.rels",
+            r#"<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>"#,
+        ),
+        (
+            "xl/sharedStrings.xml",
+            r#"<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="4" uniqueCount="200001"><si><t>豊田</t><rPh sb="0" eb="1"><t>トヨ</t></rPh></si><si><r><rPr><b/><color rgb="FFFF0000"/><sz val="14"/></rPr><t xml:space="preserve">Bold </t></r><r><t>plain</t></r></si><si><t xml:space="preserve"> padded </t></si></sst>"#,
+        ),
+        (
+            "xl/worksheets/sheet1.xml",
+            r#"<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData><row r="1"><c r="A1" t="s"><v>0</v></c><c r="B1" t="s"><v>1</v></c><c r="C1" t="s"><v>2</v></c><c r="D1" t="s"><v>99</v></c></row></sheetData></worksheet>"#,
+        ),
+    ]);
+    let mut sessions = WorkbookSessions::new();
+    let metadata = sessions.open(&path).unwrap();
+    assert_eq!(
+        sessions.shared_strings_are_mapped(&metadata.session_id),
+        Some(true)
+    );
+    let cache =
+        std::env::temp_dir().join(format!("chatoffice-ai-excel-{}", metadata.session_id));
+    assert!(cache.join("sharedStrings.xml").exists());
+    let sheet_id = metadata.sheets[0].id.clone();
+    let range = CellRange {
+        start_row: 0,
+        end_row: 0,
+        start_column: 0,
+        end_column: 3,
+    };
+    let result = loop {
+        let result = sessions
+            .read_range(&metadata.session_id, &sheet_id, &range)
+            .unwrap();
+        if result.indexing_complete {
+            break result;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(5));
+    };
+    // Phonetic ruby text stays out of the lazily decoded string.
+    assert!(
+        matches!(&result.cells[0].value, Some(CellValue::String(text)) if text == "\u{8c4a}\u{7530}")
+    );
+    assert!(result.cells[0].rich.is_none());
+    // Rich runs and their properties decode identically on demand.
+    assert!(
+        matches!(&result.cells[1].value, Some(CellValue::String(text)) if text == "Bold plain")
+    );
+    let runs = result.cells[1].rich.as_ref().expect("rich runs");
+    assert!(runs[0].bold);
+    assert_eq!(runs[0].color.as_deref(), Some("#FF0000"));
+    assert_eq!(runs[0].size, Some(14.0));
+    assert_eq!(runs[1].text, "plain");
+    assert!(!runs[1].bold);
+    // xml:space="preserve" survives the mmap round-trip.
+    assert!(
+        matches!(&result.cells[2].value, Some(CellValue::String(text)) if text == " padded ")
+    );
+    // The stale index degrades to a dropped valueless cell, as before.
+    assert_eq!(result.cells.len(), 3);
+    sessions.close(&metadata.session_id).unwrap();
+    assert!(
+        !cache.exists(),
+        "closing the session reclaims the spilled shared strings"
+    );
 }
 
 /// A tableStyleInfo without a name is Excel's style "None": no palette.

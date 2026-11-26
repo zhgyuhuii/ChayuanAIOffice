@@ -34,6 +34,7 @@ mod chunks;
 mod escher;
 mod external_links;
 mod refs;
+mod shared_strings;
 mod sparklines;
 mod table_styles;
 #[cfg(test)]
@@ -48,6 +49,7 @@ mod xml_util;
 
 use cell_images::*;
 use refs::*;
+use shared_strings::*;
 use sparklines::*;
 use table_styles::*;
 pub use types::*;
@@ -247,6 +249,14 @@ impl WorkbookSessions {
         self.sessions.len()
     }
 
+    #[cfg(test)]
+    /// Whether a session's shared strings spilled to the mmap store.
+    fn shared_strings_are_mapped(&self, session_id: &str) -> Option<bool> {
+        self.sessions
+            .get(session_id)
+            .map(|session| session.shared_strings.is_mapped())
+    }
+
     pub fn open(&mut self, path: &Path) -> Result<WorkbookMetadata, SidecarError> {
         self.open_with_locale(path, "zh", None, &AtomicBool::new(false))
     }
@@ -287,7 +297,6 @@ impl WorkbookSessions {
         visuals::read_indexed_palette(&mut archive, &mut color_context)?;
         let theme_colors = color_context.palette_hex();
         let theme_fonts = visuals::read_theme_fonts(&mut archive)?;
-        let shared_strings = Arc::new(read_shared_strings(&mut archive, &color_context)?);
         let (declarations, workbook_protection, active_tab, date_1904) =
             read_sheet_declarations(&mut archive)?;
         let relationships = read_workbook_relationships(&mut archive)?;
@@ -505,6 +514,14 @@ impl WorkbookSessions {
         }
         let session_id = Uuid::new_v4().to_string();
         let mut cache_directory = create_cache_directory(&session_id, cancelled)?;
+        // Read here, after the cache directory exists: a shared-string
+        // table past the spill thresholds decompresses into it and is
+        // served from an mmap instead of a resident Vec.
+        let shared_strings = Arc::new(read_shared_strings(
+            &mut archive,
+            &color_context,
+            cache_directory.path(),
+        )?);
         let name = canonical_path
             .file_name()
             .and_then(|value| value.to_str())
@@ -701,7 +718,7 @@ struct WorkbookSession {
     sheets: Vec<SheetMetadata>,
     runtimes: Vec<SheetRuntime>,
     filter_columns: filter::ColumnCache,
-    shared_strings: Arc<Vec<SharedString>>,
+    shared_strings: Arc<SharedStringsStore>,
     styled_xfs: Arc<Vec<bool>>,
     color_context: Arc<ColorContext>,
     visuals: Vec<VisualObject>,
@@ -1009,6 +1026,14 @@ impl WorkbookSession {
                 let _ = handle.join();
             }
         }
+        // Unmap the spilled shared strings before the directory removal
+        // deletes their backing file: the mapping threads are joined above,
+        // so this Arc is the last one, and Windows refuses to delete the
+        // file behind a live mapping.
+        drop(std::mem::replace(
+            &mut self.shared_strings,
+            Arc::new(SharedStringsStore::InMemory(Vec::new())),
+        ));
         let cache_result = if self.cache_directory.exists() {
             fs::remove_dir_all(&self.cache_directory)
         } else {

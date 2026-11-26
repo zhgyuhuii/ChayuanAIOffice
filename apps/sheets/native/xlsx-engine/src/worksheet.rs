@@ -16,7 +16,7 @@ pub(crate) fn index_worksheet(
     worksheet_path: &str,
     sheet_index: usize,
     cache_directory: &Path,
-    shared_strings: &[SharedString],
+    shared_strings: &SharedStringsStore,
     styled_xfs: &[bool],
     colors: &ColorContext,
     rich_image_cells: &HashSet<(usize, usize)>,
@@ -1345,7 +1345,7 @@ impl CellBuilder {
 
     fn finish(
         self,
-        shared_strings: &[SharedString],
+        shared_strings: &SharedStringsStore,
         styled_xfs: &[bool],
         rich_image_cells: &HashSet<(usize, usize)>,
     ) -> Result<Option<CellRecord>, SidecarError> {
@@ -1362,16 +1362,14 @@ impl CellBuilder {
             _ if picture => None,
             // Empty <v/> or a stale index degrades to a valueless styled cell;
             // erroring here used to blank the whole sheet.
-            Some("s") => match self
-                .raw_value
-                .parse::<usize>()
-                .ok()
-                .and_then(|index| shared_strings.get(index))
-            {
-                Some(shared) => {
-                    rich = shared.runs.clone();
-                    Some(CellValue::String(shared.text.clone()))
-                }
+            Some("s") => match self.raw_value.parse::<usize>().ok() {
+                Some(index) => match shared_strings.get(index)? {
+                    Some(shared) => {
+                        rich = shared.runs.clone();
+                        Some(CellValue::String(shared.text.clone()))
+                    }
+                    None => None,
+                },
                 None => None,
             },
             Some("inlineStr") => {

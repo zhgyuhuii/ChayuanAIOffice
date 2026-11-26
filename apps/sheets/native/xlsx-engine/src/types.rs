@@ -525,7 +525,7 @@ pub struct RichRun {
     pub vert_align: Option<String>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SharedString {
     pub(crate) text: String,
     pub(crate) runs: Option<Vec<RichRun>>,
