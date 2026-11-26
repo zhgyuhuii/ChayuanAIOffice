@@ -30,6 +30,16 @@ export interface ZipLimits {
   maxParts: number
   maxPartBytes: number
   maxTotalBytes: number
+  /**
+   * Optional ceiling on verified-bytes ÷ compressed-bytes per part, enforced
+   * only by `assertZipInflatesWithinLimits` (the declared pass cannot see it).
+   * Absolute byte caps stop being a meaningful bomb defense once they rise to
+   * the ZIP64 era, so the local-file profile keeps metered inflation honest
+   * with a ratio instead. Only checked for parts of at least 64 KB compressed:
+   * below that a legitimate XML stub can legitimately inflate a few hundred
+   * times, while a bomb needs volume.
+   */
+  maxRatio?: number
 }
 
 /** Part-count / per-part / total caps shared by the docx and pptx engines. */
@@ -37,6 +47,21 @@ export const DEFAULT_ZIP_LIMITS = {
   maxParts: 10000,
   maxPartBytes: 512 * 1024 * 1024,
   maxTotalBytes: 1.5 * 1024 * 1024 * 1024,
+} as const
+
+/**
+ * Caps for archives opened from the local disk through streaming readers (the
+ * giant-document path): honest 1 GB+ docx/pptx packages carry parts and totals
+ * past every DEFAULT ceiling without being bombs, so the ceilings rise to the
+ * ZIP64 era and a compression-ratio cap (see `ZipLimits.maxRatio`) takes over
+ * the bomb-defense role that the absolute caps can no longer play. Serving
+ * paths that read parts on demand apply their own per-part output caps on top.
+ */
+export const LOCAL_FILE_ZIP_LIMITS = {
+  maxParts: 100000,
+  maxPartBytes: 4 * 1024 * 1024 * 1024,
+  maxTotalBytes: 8 * 1024 * 1024 * 1024,
+  maxRatio: 250,
 } as const
 
 /** What the declared-size pass needs to know about one part. */
@@ -93,6 +118,7 @@ const EOCD_SIG = 0x06054b50
 const CENTRAL_SIG = 0x02014b50
 const LOCAL_SIG = 0x04034b50
 const ZIP64_LOCATOR_SIG = 0x07064b50
+const EOCD64_SIG = 0x06064b50
 const FLAG_ENCRYPTED = 0x1
 
 /**
@@ -119,7 +145,19 @@ export async function assertZipInflatesWithinLimits(
           `(limit ${limits.maxPartBytes})`,
       )
     }
-    total += await verifiedSize(bytes, part)
+    const seen = await verifiedSize(bytes, part)
+    if (
+      limits.maxRatio !== undefined &&
+      part.csize >= 64 * 1024 &&
+      seen > part.csize * limits.maxRatio
+    ) {
+      throw new Error(
+        `zip rejected: part ${part.name} inflates to ${seen} bytes from ` +
+          `${part.csize} compressed (ratio ${(seen / part.csize).toFixed(1)} exceeds ` +
+          `${limits.maxRatio})`,
+      )
+    }
+    total += seen
     if (total > limits.maxTotalBytes) {
       throw new Error(
         `zip rejected: total uncompressed size ${total} exceeds the ` +
@@ -143,6 +181,8 @@ function scanParts(bytes: Uint8Array): ScannedPart[] {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
   const at = (i: number, width: number): number =>
     width === 4 ? view.getUint32(i, true) : view.getUint16(i, true)
+  /** u64 little-endian as a JS number; archive geometry stays far under 2^53. */
+  const bigAt = (i: number): number => Number(view.getBigUint64(i, true))
   const end = bytes.byteLength - 22
   if (end < 0) throw new Error('zip: end of central directory not found')
   let eocd = -1
@@ -153,14 +193,23 @@ function scanParts(bytes: Uint8Array): ScannedPart[] {
     }
   }
   if (eocd < 0) throw new Error('zip: end of central directory not found')
-  if (eocd >= 20 && at(eocd - 20, 4) === ZIP64_LOCATOR_SIG) {
-    throw new Error('zip: zip64 archives are not supported')
-  }
-  const count = at(eocd + 10, 2)
-  const cdSize = at(eocd + 12, 4)
-  const cdOffset = at(eocd + 16, 4)
-  if (count === 0xffff || cdSize === 0xffffffff || cdOffset === 0xffffffff) {
-    throw new Error('zip: zip64 archives are not supported')
+  // ZIP64: the locator sits 20 bytes before the EOCD and points at the EOCD64
+  // record, which carries the real counts and offsets as u64s. Maxed 16/32-bit
+  // fields without a locator are a corrupt marker set, not a real archive.
+  let count = at(eocd + 10, 2)
+  let cdSize = at(eocd + 12, 4)
+  let cdOffset = at(eocd + 16, 4)
+  const hasZip64Locator = eocd >= 20 && at(eocd - 20, 4) === ZIP64_LOCATOR_SIG
+  if (hasZip64Locator) {
+    const eocd64 = bigAt(eocd - 20 + 8)
+    if (eocd64 + 56 > bytes.byteLength || at(eocd64, 4) !== EOCD64_SIG) {
+      throw new Error('zip: corrupt zip64 end of central directory')
+    }
+    count = bigAt(eocd64 + 32)
+    cdSize = bigAt(eocd64 + 40)
+    cdOffset = bigAt(eocd64 + 48)
+  } else if (count === 0xffff || cdSize === 0xffffffff || cdOffset === 0xffffffff) {
+    throw new Error('zip: zip64 marker fields without a zip64 locator')
   }
   if (cdOffset > bytes.byteLength || cdSize > bytes.byteLength - cdOffset) {
     throw new Error('zip: corrupt central directory')
@@ -180,15 +229,47 @@ function scanParts(bytes: Uint8Array): ScannedPart[] {
     if (nameStart + nameLen > cdOffset + cdSize) {
       throw new Error('zip: corrupt central directory')
     }
-    const localOffset = at(pos + 42, 4)
+    // ZIP64 per-entry: maxed 32-bit fields are repointed by a 0x0001 extra
+    // field whose payload carries the real values in a fixed order
+    // (usize, csize, local offset — each only when its base field is maxed).
+    let usize = at(pos + 24, 4)
+    let csize = at(pos + 20, 4)
+    let localOffset = at(pos + 42, 4)
+    if (usize === 0xffffffff || csize === 0xffffffff || localOffset === 0xffffffff) {
+      if (!hasZip64Locator) {
+        throw new Error('zip: zip64 entry fields without a zip64 locator')
+      }
+      let q = nameStart + nameLen
+      const extraEnd = q + extraLen
+      while (q + 4 <= extraEnd) {
+        const fieldId = at(q, 2)
+        const fieldLen = at(q + 2, 2)
+        if (fieldId === 1) {
+          let r = q + 4
+          if (usize === 0xffffffff && r + 8 <= q + 4 + fieldLen) {
+            usize = bigAt(r)
+            r += 8
+          }
+          if (csize === 0xffffffff && r + 8 <= q + 4 + fieldLen) {
+            csize = bigAt(r)
+            r += 8
+          }
+          if (localOffset === 0xffffffff && r + 8 <= q + 4 + fieldLen) {
+            localOffset = bigAt(r)
+          }
+          break
+        }
+        q += 4 + fieldLen
+      }
+    }
     const rawName = bytes.subarray(nameStart, nameStart + nameLen)
     parts.push({
       // latin1 keeps byte-for-byte round-tripping of the non-UTF8 names Word and
       // JSZip accept; the string is only ever used to name a rejection.
       name: decodeLatin1(rawName),
       method: at(pos + 10, 2),
-      csize: at(pos + 20, 4),
-      usize: at(pos + 24, 4),
+      csize,
+      usize,
       dataStart: localOffset,
     })
     pos = nameStart + nameLen + extraLen + commentLen

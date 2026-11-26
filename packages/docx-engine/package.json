@@ -10,7 +10,8 @@
     "./math": "./src/math.ts",
     "./metafile": "./src/metafile.ts",
     "./zip-splice": "./src/zip-splice.ts",
-    "./lazy-media": "./src/lazy-media.ts"
+    "./lazy-media": "./src/lazy-media.ts",
+    "./giant": "./src/giant.ts"
   },
   "scripts": {
     "fixtures": "tsx scripts/generate-fixtures.ts",
@@ -23,8 +24,6 @@
     "@chaoffice/pptx-engine": "*",
     "@chaoffice/zip-gate": "*",
     "@chaoffice/agent-core": "*",
-    "@chaoffice/pptx-engine": "*",
-    "@chaoffice/zip-gate": "*",
     "fast-xml-parser": "^5.12.0",
     "jszip": "^3.10.1",
     "utif2": "^4.1.0"

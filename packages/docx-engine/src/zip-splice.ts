@@ -13,6 +13,8 @@ import {
 } from './lazy-media'
 import { DOCX_ZIP_LIMITS, assertDeclaredSizesWithinLimits, type ZipLimits } from './zip-load'
 
+export { LOCAL_FILE_ZIP_LIMITS } from './zip-load'
+
 export interface ZipEntry {
   name: string
   nameBytes: Buffer
@@ -45,6 +47,7 @@ const SIG_LOCAL = 0x04034b50
 const SIG_CENTRAL = 0x02014b50
 const SIG_EOCD = 0x06054b50
 const SIG_ZIP64_LOCATOR = 0x07064b50
+const SIG_ZIP64_RECORD = 0x06064b50
 const FLAG_ENCRYPTED = 0x1
 const FLAG_DATA_DESCRIPTOR = 0x8
 const FLAG_UTF8 = 0x800
@@ -86,14 +89,26 @@ export async function readZipEntries(
     }
   }
   if (eocd < 0) throw new Error('zip: end of central directory not found')
-  if (eocd >= 20 && tail.readUInt32LE(eocd - 20) === SIG_ZIP64_LOCATOR) {
-    throw new Error('zip: zip64 archives are not supported')
-  }
-  const count = tail.readUInt16LE(eocd + 10)
-  const cdSize = tail.readUInt32LE(eocd + 12)
-  const cdOffset = tail.readUInt32LE(eocd + 16)
-  if (count === 0xffff || cdSize === 0xffffffff || cdOffset === 0xffffffff) {
-    throw new Error('zip: zip64 archives are not supported')
+  // ZIP64: the locator sits 20 bytes before the EOCD and points at the EOCD64
+  // record carrying the real u64 counts/offsets; maxed 16/32-bit fields with
+  // no locator behind them are a corrupt marker set rather than an archive.
+  let count = tail.readUInt16LE(eocd + 10)
+  let cdSize = tail.readUInt32LE(eocd + 12)
+  let cdOffset = tail.readUInt32LE(eocd + 16)
+  const hasZip64Locator = eocd >= 20 && tail.readUInt32LE(eocd - 20) === SIG_ZIP64_LOCATOR
+  if (hasZip64Locator) {
+    const eocd64 = Number(tail.readBigUInt64LE(eocd - 20 + 8))
+    if (eocd64 + 56 > src.size) throw new Error('zip: corrupt zip64 end of central directory')
+    const head = await src.read(eocd64, 4)
+    if (head.readUInt32LE(0) !== SIG_ZIP64_RECORD) {
+      throw new Error('zip: corrupt zip64 end of central directory')
+    }
+    const record = await src.read(eocd64 + 24, 32)
+    count = Number(record.readBigUInt64LE(8)) // total entries @EOCD64+32
+    cdSize = Number(record.readBigUInt64LE(16)) // @+40
+    cdOffset = Number(record.readBigUInt64LE(24)) // @+48
+  } else if (count === 0xffff || cdSize === 0xffffffff || cdOffset === 0xffffffff) {
+    throw new Error('zip: zip64 marker fields without a zip64 locator')
   }
   if (cdOffset > src.size || cdSize > src.size || cdOffset + cdSize > src.size) {
     throw new Error('zip: corrupt central directory')
@@ -114,11 +129,37 @@ export async function readZipEntries(
     const extraLen = cd.readUInt16LE(pos + 30)
     const commentLen = cd.readUInt16LE(pos + 32)
     const nameBytes = Buffer.from(cd.subarray(pos + 46, pos + 46 + nameLen))
-    const csize = cd.readUInt32LE(pos + 20)
-    const usize = cd.readUInt32LE(pos + 24)
-    const localOffset = cd.readUInt32LE(pos + 42)
+    // ZIP64 per-entry: maxed 32-bit fields are repointed by a 0x0001 extra
+    // field (usize, csize, local offset — each only when its base is maxed).
+    let csize = cd.readUInt32LE(pos + 20)
+    let usize = cd.readUInt32LE(pos + 24)
+    let localOffset = cd.readUInt32LE(pos + 42)
     if (csize === 0xffffffff || usize === 0xffffffff || localOffset === 0xffffffff) {
-      throw new Error('zip: zip64 archives are not supported')
+      if (!hasZip64Locator) {
+        throw new Error('zip: zip64 entry fields without a zip64 locator')
+      }
+      let q = pos + 46 + nameLen
+      const extraEnd = q + extraLen
+      while (q + 4 <= extraEnd) {
+        const fieldId = cd.readUInt16LE(q)
+        const fieldLen = cd.readUInt16LE(q + 2)
+        if (fieldId === 1) {
+          let r = q + 4
+          if (usize === 0xffffffff && r + 8 <= q + 4 + fieldLen) {
+            usize = Number(cd.readBigUInt64LE(r))
+            r += 8
+          }
+          if (csize === 0xffffffff && r + 8 <= q + 4 + fieldLen) {
+            csize = Number(cd.readBigUInt64LE(r))
+            r += 8
+          }
+          if (localOffset === 0xffffffff && r + 8 <= q + 4 + fieldLen) {
+            localOffset = Number(cd.readBigUInt64LE(r))
+          }
+          break
+        }
+        q += 4 + fieldLen
+      }
     }
     entries.push({
       name: nameBytes.toString(flags & FLAG_UTF8 ? 'utf8' : 'latin1'),
@@ -169,15 +210,18 @@ export async function readZipEntries(
 /**
  * Opens a file-backed archive. The caller owns the handle and must call
  * close() in a finally block. The handle is closed automatically when
- * opening fails.
+ * opening fails. Local-disk opens of honest 1 GB+ packages pass
+ * `LOCAL_FILE_ZIP_LIMITS`: serving paths apply their own per-part output
+ * caps, so the raised declared ceilings plus the ratio gate carry the
+ * bomb defense instead of the absolute caps.
  */
-export async function openZipFile(path: string): Promise<ZipFile> {
+export async function openZipFile(path: string, limits: ZipLimits = DOCX_ZIP_LIMITS): Promise<ZipFile> {
   const fh = await open(path, 'r')
   try {
     const { size } = await fh.stat()
     const src = fileSource(fh, size)
     const entries = new Map<string, ZipEntry>()
-    for (const e of await readZipEntries(src)) entries.set(e.name, e)
+    for (const e of await readZipEntries(src, limits)) entries.set(e.name, e)
     return { ...src, entries, close: () => fh.close() }
   } catch (err) {
     await fh.close()

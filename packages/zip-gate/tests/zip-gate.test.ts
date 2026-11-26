@@ -6,6 +6,7 @@ import {
   assertZipInflatesWithinLimits,
   DEFAULT_ZIP_LIMITS,
   inflateRawWithinCap,
+  LOCAL_FILE_ZIP_LIMITS,
   type DeclaredPart,
 } from '../src/index'
 
@@ -168,5 +169,128 @@ describe('inflateRawWithinCap', () => {
 
   it('returns null for corrupt input instead of throwing', async () => {
     await expect(inflateRawWithinCap(Buffer.from('not a deflate stream'), 1024)).resolves.toBeNull()
+  })
+})
+
+/** A minimal honest one-entry ZIP64 archive: the entry's usize and local
+ *  offset are maxed in the central record and repointed by a 0x0001 extra
+ *  field, the real counts live in an EOCD64 record behind a locator. */
+function zip64OnePart(payload: Buffer): Buffer {
+  const name = Buffer.from('word/document.xml')
+  const local = Buffer.alloc(30)
+  local.writeUInt32LE(0x04034b50, 0)
+  local.writeUInt16LE(45, 4)
+  local.writeUInt16LE(0, 8) // method = STORE
+  local.writeUInt32LE(0, 14) // crc
+  local.writeUInt32LE(payload.length, 18) // local csize: real values are legal
+  local.writeUInt32LE(payload.length, 22) // local usize
+  local.writeUInt16LE(name.length, 26)
+  const cdOffset = local.length + name.length + payload.length
+
+  const extra = Buffer.alloc(4 + 16)
+  extra.writeUInt16LE(0x0001, 0)
+  extra.writeUInt16LE(16, 2)
+  extra.writeBigUInt64LE(BigInt(payload.length), 4) // real usize
+  extra.writeBigUInt64LE(0n, 12) // real local offset
+
+  const central = Buffer.alloc(46)
+  central.writeUInt32LE(0x02014b50, 0)
+  central.writeUInt16LE(45, 4)
+  central.writeUInt16LE(45, 6)
+  central.writeUInt16LE(0, 8) // method = STORE
+  central.writeUInt32LE(payload.length, 20) // csize real
+  central.writeUInt32LE(0xffffffff, 24) // usize maxed → extra field
+  central.writeUInt16LE(name.length, 28)
+  central.writeUInt16LE(extra.length, 30)
+  central.writeUInt32LE(0xffffffff, 42) // local offset maxed → extra field
+  const cdSize = central.length + name.length + extra.length
+
+  const eocd64Offset = cdOffset + cdSize
+  const eocd64 = Buffer.alloc(56)
+  eocd64.writeUInt32LE(0x06064b50, 0)
+  eocd64.writeBigUInt64LE(44n, 4) // bytes after the size field
+  eocd64.writeUInt32LE(0, 16) // disk
+  eocd64.writeUInt32LE(0, 20) // disk with CD
+  eocd64.writeBigUInt64LE(1n, 24) // entries on disk
+  eocd64.writeBigUInt64LE(1n, 32) // total entries
+  eocd64.writeBigUInt64LE(BigInt(cdSize), 40)
+  eocd64.writeBigUInt64LE(BigInt(cdOffset), 48)
+
+  const locator = Buffer.alloc(20)
+  locator.writeUInt32LE(0x07064b50, 0)
+  locator.writeUInt32LE(0, 4)
+  locator.writeBigUInt64LE(BigInt(eocd64Offset), 8)
+  locator.writeUInt32LE(1, 16)
+
+  const eocd = Buffer.alloc(22)
+  eocd.writeUInt32LE(0x06054b50, 0)
+  eocd.writeUInt16LE(0xffff, 8) // maxed → EOCD64 record carries the truth
+  eocd.writeUInt16LE(0xffff, 10)
+  eocd.writeUInt32LE(0xffffffff, 12)
+  eocd.writeUInt32LE(0xffffffff, 16)
+
+  return Buffer.concat([local, name, payload, central, name, extra, eocd64, locator, eocd])
+}
+
+describe('zip64', () => {
+  it('accepts an honest zip64 archive', async () => {
+    const archive = zip64OnePart(Buffer.alloc(4 * KB))
+    await expect(assertZipInflatesWithinLimits(archive)).resolves.toBeUndefined()
+  })
+
+  it('accepts a zip64 part whose declared size passes the local-file profile', async () => {
+    const archive = zip64OnePart(Buffer.alloc(3 * MB))
+    // a tight per-part ceiling still rejects it...
+    await expect(
+      assertZipInflatesWithinLimits(archive, {
+        maxParts: 100,
+        maxPartBytes: 2 * MB,
+        maxTotalBytes: 8 * MB,
+        maxRatio: 250,
+      }),
+    ).rejects.toThrow(/declares .* uncompressed bytes/)
+    // ...while the raised local-file ceiling with the ratio cap admits it
+    await expect(
+      assertZipInflatesWithinLimits(archive, {
+        maxParts: 100,
+        maxPartBytes: 4 * MB,
+        maxTotalBytes: 8 * MB,
+        maxRatio: 250,
+      }),
+    ).resolves.toBeUndefined()
+  })
+
+  it('still rejects maxed marker fields with no zip64 locator behind them', async () => {
+    const archive = await onePart(KB, KB)
+    const eocd = archive.length - 22
+    archive.writeUInt16LE(0xffff, eocd + 10) // count maxed, no locator precedes
+    await expect(assertZipInflatesWithinLimits(archive, LIMITS)).rejects.toThrow(/zip64/)
+  })
+
+  it('rejects a zip64 locator pointing outside the archive', async () => {
+    const archive = zip64OnePart(Buffer.alloc(KB))
+    const eocd = archive.length - 22
+    archive.writeBigUInt64LE(0xffffffffn, eocd - 20 + 8) // bogus EOCD64 offset
+    await expect(assertZipInflatesWithinLimits(archive)).rejects.toThrow(
+      /corrupt zip64 end of central directory/,
+    )
+  })
+})
+
+describe('LOCAL_FILE_ZIP_LIMITS ratio gate', () => {
+  it('rejects a high-ratio part once the absolute ceilings are gone', async () => {
+    // 100 MB of zeros deflate to ~100 KB (JSZip defaults to STORE, so the
+    // compression must be asked for): ratio ~1000:1, far past the cap.
+    const zip = new JSZip()
+    zip.file(NAME, Buffer.alloc(100 * MB), { compression: 'DEFLATE' })
+    const archive = (await zip.generateAsync({ type: 'nodebuffer' })) as Buffer
+    await expect(assertZipInflatesWithinLimits(archive, LOCAL_FILE_ZIP_LIMITS)).rejects.toThrow(
+      /ratio .* exceeds 250/,
+    )
+  })
+
+  it('admits honest local-file-scale archives', async () => {
+    const archive = await onePart(2 * MB, 2 * MB)
+    await expect(assertZipInflatesWithinLimits(archive, LOCAL_FILE_ZIP_LIMITS)).resolves.toBeUndefined()
   })
 })

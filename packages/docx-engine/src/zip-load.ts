@@ -18,6 +18,7 @@ export {
   type ZipLimits,
 } from '@chaoffice/zip-gate'
 export { DEFAULT_ZIP_LIMITS as DOCX_ZIP_LIMITS } from '@chaoffice/zip-gate'
+export { LOCAL_FILE_ZIP_LIMITS } from '@chaoffice/zip-gate'
 
 const EOCD_SIG = 0x06054b50
 const CENTRAL_SIG = 0x02014b50
