@@ -1834,11 +1834,13 @@ export interface SlidesApi {
   ) => Promise<{ slide: RenderSlide; sourceId: string } | null>
   /** Insert renderer-recorded or dropped media; placed centered on the slide or the drop point */
   addMediaBytes: (op: AddMediaBytesOp) => Promise<AddMediaResult | null>
-  /** Read an audio/video element's media data (double-click playback); embedded media converts to dataUrl, external links return as-is */
+  /** Resolve an audio/video element to a playable source (double-click playback and shows);
+   * embedded media gets a Range-capable chaoffice-slide-media:// URL the renderer's
+   * <video>/<audio> fetch directly, external links return their target as-is */
   getMediaData: (
     slideIndex: number,
     sourceId: string,
-  ) => Promise<{ kind: 'video' | 'audio'; dataUrl: string } | null>
+  ) => Promise<{ kind: 'video' | 'audio'; url: string } | null>
   /** Show a dialog to pick a 3D model (.glb) and read it */
   pickModel3d: () => Promise<{ name: string; bytes: Uint8Array } | null>
   addModel3d: (op: AddModel3dOp) => Promise<{ slide: RenderSlide; sourceId: string } | null>

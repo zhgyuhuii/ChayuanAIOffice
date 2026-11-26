@@ -26,7 +26,7 @@ import {
 import { createSystemFontMetrics, resetFontRegistry } from './fonts'
 import { tiffToPng } from './tiff-decode'
 import { neutralizeJpegOrientation } from './jpeg-orientation'
-import { displayMime } from './media-mime'
+import { avMime, displayMime } from './media-mime'
 import type { SlideUpdate } from '../shared/ipc'
 
 export interface RuntimePaths {
@@ -526,6 +526,8 @@ type MediaSource = {
   bytes: WeakRef<Uint8Array>
   mediaRef: string
   slidePath?: string
+  /** Audio/video parts are served verbatim under their container mime (no display conversion) */
+  mime?: string
 }
 const mediaSources = new Map<string, MediaSource>()
 const mediaUrls = new WeakMap<OpenedPptx, Map<string, string>>()
@@ -605,12 +607,51 @@ export function makeMediaResolver(opened: OpenedPptx, slidePath?: string) {
   }
 }
 
+/**
+ * Register an embedded audio/video part for protocol serving. The renderer's
+ * <video>/<audio> fetch the URL directly (the protocol handler answers Range
+ * requests with slices), so the bytes never travel as one base64 IPC payload.
+ * URL reuse follows the same byteVersion keying as images: a replacement gets
+ * a new URL, undo restores the original one, and pruneMediaSources governs the
+ * lifetime of the registration.
+ */
+export function makeAvMediaUrl(
+  opened: OpenedPptx,
+  mediaRef: string,
+  kind: 'video' | 'audio',
+): string | null {
+  const bytes = opened.archive.readBytes(mediaRef)
+  if (!bytes) return null
+  const mime = avMime(mediaRef, bytes, kind)
+  let urls = mediaUrls.get(opened)
+  if (!urls) {
+    urls = new Map()
+    mediaUrls.set(opened, urls)
+    mediaCleanup.register(opened, urls)
+  }
+  const key = `av:${byteVersion(bytes)}:${mime}`
+  let url = urls.get(key)
+  if (!url) {
+    url = `chaoffice-slide-media://av/${randomUUID()}?mime=${encodeURIComponent(mime)}`
+    urls.set(key, url)
+    mediaSources.set(url, {
+      opened: new WeakRef(opened),
+      bytes: new WeakRef(bytes),
+      mediaRef,
+      mime,
+    })
+  }
+  return url
+}
+
 /** Display-only conversion; the original archive bytes are untouched for PPTX save. */
 export function readSlideMedia(url: string): { body: Uint8Array; mime: string } | null {
   const source = mediaSources.get(url)
   const opened = source?.opened.deref()
   const bytes = source?.bytes.deref()
   if (!source || !opened || !bytes) return null
+  // Audio/video: raw bytes, container mime decided at registration
+  if (source.mime) return { body: bytes, mime: source.mime }
   let mime = displayMime(source.mediaRef, bytes)
   let body = bytes
   if (mime === 'image/tiff') {

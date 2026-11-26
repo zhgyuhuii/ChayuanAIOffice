@@ -41,7 +41,7 @@ export function ShowMediaLayer({
   const nodes = slide.nodes.filter(
     (n): n is PictureRenderNode => n.type === 'picture' && !!(n as PictureRenderNode).media,
   )
-  const [urls, setUrls] = useState<Record<string, { kind: 'video' | 'audio'; dataUrl: string }>>({})
+  const [urls, setUrls] = useState<Record<string, { kind: 'video' | 'audio'; url: string }>>({})
   const [playing, setPlaying] = useState<Record<string, boolean>>({})
   const els = useRef(new Map<string, HTMLMediaElement>())
   useEffect(() => {
@@ -118,7 +118,7 @@ export function ShowMediaLayer({
             <video
               key={n.sourceId}
               ref={ref(n.sourceId)}
-              src={media.dataUrl}
+              src={media.url}
               style={style}
               playsInline
               muted={muted}
@@ -136,7 +136,7 @@ export function ShowMediaLayer({
             <audio
               key={n.sourceId}
               ref={ref(n.sourceId)}
-              src={media.dataUrl}
+              src={media.url}
               muted={muted}
               onPlay={onPlay}
               onPause={onPause}
@@ -155,7 +155,7 @@ export function ShowMediaLayer({
           >
             <audio
               ref={ref(n.sourceId)}
-              src={media.dataUrl}
+              src={media.url}
               muted={muted}
               onPlay={onPlay}
               onPause={onPause}

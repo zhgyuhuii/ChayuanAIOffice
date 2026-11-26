@@ -307,6 +307,7 @@ import {
   hostWindowFor,
   resetFontMetrics,
   journalOps,
+  makeAvMediaUrl,
   makeMediaResolver,
   markMetaDirty,
   pushHistory,
@@ -331,6 +332,7 @@ import {
 import { registerAiIpc, registerSlidesOnlyAiIpc } from './ai-ipc'
 import { listPrivateFontFaces, getPrivateFontData, registerEmbeddedFonts } from './fonts'
 import { listMetafileFonts } from './metafile-fonts'
+import { baseMediaHeaders, parseRangeHeader } from './media-protocol'
 import {
   downloadFontFamily,
   initFontStore,
@@ -1443,14 +1445,28 @@ export function registerSlidesIpc(): void {
     electronSession.defaultSession.protocol.handle('chaoffice-slide-media', (request) => {
       const media = readSlideMedia(request.url)
       if (!media) return new Response(null, { status: 404 })
-      return new Response(media.body as BodyInit, {
-        headers: {
-          'Content-Type': media.mime,
-          'Content-Length': String(media.body.byteLength),
-          'Access-Control-Allow-Origin': '*',
-          'Cache-Control': 'no-store',
-        },
-      })
+      const total = media.body.byteLength
+      // Media elements stream and seek through Range requests: answer them with
+      // 206 slices (a subarray view, no copy of the untouched span) so a movie
+      // is delivered window by window instead of as one buffered body.
+      const headers = baseMediaHeaders(media.mime, total)
+      const range = parseRangeHeader(request.headers.get('range'), total)
+      if (range === 'unsatisfiable')
+        return new Response(new Uint8Array(0), {
+          status: 416,
+          headers: { 'Content-Range': `bytes */${total}` },
+        })
+      if (range) {
+        const slice = media.body.subarray(range.start, range.end + 1)
+        return new Response(slice as BodyInit, {
+          status: 206,
+          headers: {
+            ...baseMediaHeaders(media.mime, slice.byteLength),
+            'Content-Range': `bytes ${range.start}-${range.end}/${total}`,
+          },
+        })
+      }
+      return new Response(media.body as BodyInit, { status: 200, headers })
     })
     try {
       electronSession.defaultSession.setDisplayMediaRequestHandler(
@@ -4344,21 +4360,11 @@ export function registerSlidesIpc(): void {
     },
   )
 
-  // Double-click playback: read the media bytes of an audio/video element (embedded converts to dataUrl, external links return as-is)
-  const AV_MIME: Record<string, string> = {
-    mp4: 'video/mp4',
-    m4v: 'video/mp4',
-    // Chromium refuses to even load video/quicktime, but demuxes QuickTime bytes
-    // fine through the ISO-BMFF path when served as video/mp4
-    mov: 'video/mp4',
-    webm: 'video/webm',
-    avi: 'video/x-msvideo',
-    mp3: 'audio/mpeg',
-    wav: 'audio/wav',
-    m4a: 'audio/mp4',
-    aac: 'audio/aac',
-    ogg: 'audio/ogg',
-  }
+  // Double-click playback / show playback: resolve an audio/video element to a
+  // playable source. Embedded media gets a Range-capable slide-media protocol
+  // URL (no base64 copy of the bytes across the IPC boundary — the renderer's
+  // <video>/<audio> fetch it directly); external links keep flowing through this
+  // channel as-is, since our protocol cannot serve them.
   ipcMain.handle('slides:media-data', (e, slideIndex: number, sourceId: string) => {
     const session = sessions.get(e.sender.id)
     const slide = session?.opened.deck.slides[slideIndex]
@@ -4369,15 +4375,9 @@ export function registerSlidesIpc(): void {
       el as { media?: { kind: 'video' | 'audio'; target?: string; external?: boolean } }
     ).media
     if (!media?.target) return null
-    if (media.external) return { kind: media.kind, dataUrl: media.target }
-    const bytes = session.opened.archive.readBytes(media.target)
-    if (!bytes) return null
-    const ext = media.target.split('.').pop()?.toLowerCase() ?? ''
-    const mime = AV_MIME[ext] ?? (media.kind === 'video' ? 'video/mp4' : 'audio/mpeg')
-    return {
-      kind: media.kind,
-      dataUrl: `data:${mime};base64,${Buffer.from(bytes).toString('base64')}`,
-    }
+    if (media.external) return { kind: media.kind, url: media.target }
+    const url = makeAvMediaUrl(session.opened, media.target, media.kind)
+    return url ? { kind: media.kind, url } : null
   })
 
   // Media recorded by the renderer (screen-recording webm) or dropped on the canvas: placed like an inserted file

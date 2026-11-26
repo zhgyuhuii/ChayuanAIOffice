@@ -73,3 +73,42 @@ export function displayMime(mediaRef: string, bytes: Uint8Array): string {
   const ext = mediaRef.split('.').pop()?.toLowerCase() ?? ''
   return EXT_MIME[ext] ?? 'image/png'
 }
+
+/** Extension table for the audio/video containers the app embeds (mirrors media-kinds). */
+const EXT_AV_MIME: Record<string, string> = {
+  mp4: 'video/mp4',
+  m4v: 'video/mp4',
+  // Chromium refuses to even load video/quicktime, but demuxes QuickTime bytes
+  // fine through the ISO-BMFF path when served as video/mp4
+  mov: 'video/mp4',
+  webm: 'video/webm',
+  avi: 'video/x-msvideo',
+  mp3: 'audio/mpeg',
+  wav: 'audio/wav',
+  m4a: 'audio/mp4',
+  aac: 'audio/aac',
+  ogg: 'audio/ogg',
+}
+
+/**
+ * Container mime for an audio/video part, served verbatim by the slide-media
+ * protocol. Magic bytes win over the extension (converters mislabel movies just
+ * like they mislabel pictures); unknown bytes fall back to the extension table
+ * and then to a kind-matched default.
+ */
+export function avMime(name: string, bytes: Uint8Array, kind: 'video' | 'audio'): string {
+  if (startsWith(bytes, [0x1a, 0x45, 0xdf, 0xa3])) return 'video/webm' // EBML
+  if (startsWith(bytes, [0x4f, 0x67, 0x67, 0x53])) return 'audio/ogg'
+  if (startsWith(bytes, [0x49, 0x44, 0x33])) return 'audio/mpeg' // ID3v2
+  if (bytes.length > 1 && bytes[0] === 0xff && (bytes[1]! & 0xe0) === 0xe0)
+    return 'audio/mpeg' // MPEG audio sync
+  if (startsWith(bytes, [0x52, 0x49, 0x46, 0x46]) && startsWith(bytes, [0x57, 0x41, 0x56, 0x45], 8))
+    return 'audio/wav'
+  // ISO-BMFF: brand at offset 8 distinguishes an audio-only M4A from a movie
+  if (startsWith(bytes, [0x66, 0x74, 0x79, 0x70], 4)) {
+    const brand = String.fromCharCode(...bytes.subarray(8, 12))
+    return brand === 'M4A ' ? 'audio/mp4' : 'video/mp4'
+  }
+  const ext = name.split('.').pop()?.toLowerCase() ?? ''
+  return EXT_AV_MIME[ext] ?? (kind === 'video' ? 'video/mp4' : 'audio/mpeg')
+}

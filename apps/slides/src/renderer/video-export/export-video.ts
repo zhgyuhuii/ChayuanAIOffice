@@ -41,11 +41,13 @@ async function loadNarration(slideIndex: number, ids: string[]): Promise<Narrati
   for (const id of ids) {
     const media = await window.slidesApi.getMediaData(slideIndex, id).catch(() => null)
     if (!media || media.kind !== 'audio') continue
-    // The CSP keeps fetch() off data: URLs; an external link has no bytes to decode
-    const b64 = media.dataUrl.startsWith('data:') ? media.dataUrl.split(',', 2)[1] : undefined
-    if (!b64) continue
+    // Only our protocol carries decodable bytes; an external link has none we
+    // can read under the CSP
+    if (!media.url.startsWith('chaoffice-slide-media:')) continue
     try {
-      const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))
+      const response = await fetch(media.url)
+      if (!response.ok) continue
+      const bytes = new Uint8Array(await response.arrayBuffer())
       const probe = new OfflineAudioContext(1, 1, AUDIO_SAMPLE_RATE)
       const decoded = await probe.decodeAudioData(bytes.buffer)
       parts.push(mixdown(decoded))

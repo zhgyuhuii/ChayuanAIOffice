@@ -2934,13 +2934,29 @@ export function App() {
       walk(s.nodes)
     }
     if (!imageLoaderRef.current) {
-      imageLoaderRef.current = createImageLoader((entries) => {
-        setImages((prev) => {
-          const m = new Map(prev)
-          for (const [k, v] of entries) m.set(k, v)
-          return m
-        })
-      })
+      imageLoaderRef.current = createImageLoader(
+        (entries) => {
+          setImages((prev) => {
+            const m = new Map(prev)
+            for (const [k, v] of entries) m.set(k, v)
+            return m
+          })
+        },
+        16,
+        100,
+        {
+          // LRU evictions release the decoded bitmaps; drop our references too so
+          // the canvas stops drawing the blanked elements until they reload
+          onEvict: (urls) => {
+            setImages((prev) => {
+              let changed = false
+              const m = new Map(prev)
+              for (const u of urls) changed = m.delete(u) || changed
+              return changed ? m : prev
+            })
+          },
+        },
+      )
     }
     imageLoaderRef.current.load(urls)
   }, [slides])
@@ -2984,7 +3000,7 @@ export function App() {
   const [mediaPlay, setMediaPlay] = useState<{
     sourceId: string
     kind: 'video' | 'audio'
-    dataUrl: string
+    url: string
   } | null>(null)
   useEffect(() => setMediaPlay(null), [current])
   const startMediaPlayback = useCallback(
@@ -4989,7 +5005,7 @@ export function App() {
                                 >
                                   {mediaPlay.kind === 'video' ? (
                                     <video
-                                      src={mediaPlay.dataUrl}
+                                      src={mediaPlay.url}
                                       controls
                                       autoPlay
                                       style={{
@@ -5000,7 +5016,7 @@ export function App() {
                                     />
                                   ) : (
                                     <audio
-                                      src={mediaPlay.dataUrl}
+                                      src={mediaPlay.url}
                                       controls
                                       autoPlay
                                       style={{ width: '100%' }}
