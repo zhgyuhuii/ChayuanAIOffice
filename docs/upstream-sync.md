@@ -1514,6 +1514,11 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 | 2026-10-16 | 4dc4b7b3 | shell index.ts tabMenuActions savePdfAs 适配 | 上游 #2031 deps.savePdfAs(target: TabDocumentTarget) → 本地 0 参 savePdfAs()（延迟落盘共识对话框内部定位），target 弃用注释 |
 | 2026-10-16 | 4dc4b7b3 | i18n-local-strings.ts（B 区） | navUserGuide×21 回补（上游导航改版删键，本地 Home 保留使用手册入口）|
 | — | — | 说明 | R24 全部实现位于既定 A/B 区;新文件 KbAskPanel.tsx/chaoffice-reauth.test.ts 为上游件+本地桥改名 | 上游若实现多会话 kb-ask 或官方改名则按收敛条件重评 |
+| 2026-11-26 | 6a64fc750 | apps/shell/src/shared/home-api.ts | WeChat 扫码登录（aidooo.com 官网服务）：`WxLoginUser/WxLoginSession/WxLoginQr/WxLoginPollResult` 类型 + HOME_CHANNELS 五通道（wxStatus/wxQrStart/wxPoll/wxProfileQr/wxLogout）+ HomeApi 五方法（追加块，LOCAL 标记）；实现位于 B 区 `main/wx-auth.ts`（HTTP 代理/`~/.chaoffice/wx-user.json` 0600 持久化/图片转 data URL，i18n 键 acWx*×18×21 语在 B 区 local-strings） | 上游移动=增行；上游若原生引入账号体系占同一面则按收敛裁决 |
+| 2026-11-26 | 6a64fc750 | apps/shell/src/preload/index.ts | homeApi `wx*` 五转发方法（追加块，LOCAL 标记） | 同上 |
+| 2026-11-26 | 6a64fc750 | apps/shell/src/main/index.ts | `registerWxAuthIpc()` 一行挂载 + import（实现位于 B 区 wx-auth.ts） | 上游移动=增行 |
+| 2026-11-26 | 6a64fc750 | apps/shell/src/renderer/src/SettingsModal.tsx | ①`section==='account'` pane 分支（补空白根因：nav「账户」按钮切换后无渲染分支，账户 pane 于 0798c9240 被移除后按钮残留）②nav set-nav-account 按钮 wx 头像/昵称覆盖（useWxAccount，未登录维持 authorName/email/未登录现状） | 上游移动=增行；上游若重建账户 pane 则本地 AccountPane 对齐重裁 |
+| 2026-11-26 | 6a64fc750 | apps/shell/src/renderer/src/Home.tsx | 侧栏 account-btn wx 头像/昵称覆盖（useWxAccount + 三元分支，未登录不变） | 上游移动=增行 |
 
 ## 12. 拒绝清单（同步时对上游 newChat 相关改动逐个裁决；制度 §5.2/§5.3）
 

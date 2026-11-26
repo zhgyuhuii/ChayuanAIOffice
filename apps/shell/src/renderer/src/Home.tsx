@@ -60,6 +60,9 @@ import type { McpClientApi } from '../../shared/mcp-client-api'
 
 import { FeedbackModal } from './FeedbackModal'
 import { onFilesChanged } from './file-events'
+// LOCAL(2026-11-26, base 6a64fc750): WeChat identity on the sidebar account button —
+// local account/ module, mount-point only in this upstream file
+import { useWxAccount } from './account/useWxAccount'
 
 import type { ProjectApi } from '@chaoffice/project-store'
 
@@ -513,6 +516,9 @@ function AccountEntry({
 
   const loggedIn = status?.loggedIn ?? false
   const email = status?.email ?? ''
+  // LOCAL(2026-11-26, base 6a64fc750): WeChat identity overrides the letter avatar
+  const wx = useWxAccount()
+  const wxName = wx.loggedIn ? (wx.user?.nickname || '') : ''
   const initial = email ? email[0].toUpperCase() : loggedIn ? 'G' : '?'
   const [loginError] = useState<
     'timeout' | 'launch' | 'network' | 'expired' | 'failed' | null
@@ -699,6 +705,8 @@ function AccountEntry({
                 strokeLinecap="round"
               />
             </svg>
+          ) : wx.loggedIn && wx.avatarDataUrl ? (
+            <img className="account-avatar-img" src={wx.avatarDataUrl} alt="" />
           ) : (
             initial
           )}
@@ -707,7 +715,7 @@ function AccountEntry({
             )}
           </span>
           <span className="account-text">
-            <span className="account-name">{t('settings')}</span>
+            <span className="account-name">{wxName || t('settings')}</span>
           </span>
           <svg
             className="account-chevron"

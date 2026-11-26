@@ -1,0 +1,225 @@
+/* WeChat account pane (LOCAL) — component-scoped styles for AccountPane.
+   Chrome colors use the semantic tokens from packages/ui tokens.css. The WeChat
+   brand green and the QR quiet-zone white are functional/brand constants, not
+   theme values, so they are declared here as local custom properties (the
+   token-definition exception in CLAUDE.md theming rule 1) and referenced. */
+
+.acx {
+  --acx-green: #07c160;
+  --acx-green-dark: #06ad56;
+  --acx-qr-bg: #ffffff;
+  /* text/icons sitting on the brand green stay white in both themes */
+  --acx-on-green: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  max-width: 420px;
+  margin: 4px auto 0;
+  padding-top: 10px;
+  text-align: center;
+}
+
+.acx-logo {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: var(--acx-green);
+  color: var(--acx-on-green);
+}
+
+.acx-btn {
+  padding: 9px 26px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--acx-green);
+  color: var(--acx-on-green);
+  font: inherit;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+
+.acx-btn:hover {
+  background: var(--acx-green-dark);
+}
+
+.acx-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.acx-btn-secondary {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: none;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.acx-btn-secondary:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.acx-qrbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.acx-qr {
+  width: 208px;
+  height: 208px;
+  padding: 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  background: var(--acx-qr-bg);
+}
+
+.acx-qr-small {
+  width: 168px;
+  height: 168px;
+}
+
+.acx-qr-placeholder {
+  display: grid;
+  place-items: center;
+  width: 208px;
+  height: 208px;
+  border-radius: 12px;
+  background: var(--surface-subtle);
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.acx-qr-placeholder.acx-qr-small {
+  width: 168px;
+  height: 168px;
+}
+
+.acx-qr-expired {
+  color: var(--text-secondary);
+}
+
+.acx-hint {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 12.5px;
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.acx-hint-follow {
+  margin-top: -6px;
+  color: var(--text-muted);
+}
+
+.acx-waiting {
+  margin: -4px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.acx-error {
+  margin: 0;
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.acx-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  background: var(--surface-subtle);
+  text-align: left;
+}
+
+.acx-avatar {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.acx-avatar-letter {
+  display: grid;
+  place-items: center;
+  background: var(--acx-green);
+  color: var(--acx-on-green);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.acx-profile-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.acx-name {
+  overflow: hidden;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acx-sub {
+  overflow: hidden;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acx-complete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+}
+
+.acx-complete-title {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* settings-modal nav 「账户」 button avatar (mounted from SettingsModal;
+   .set-nav-avatar itself lives in the upstream settings-skin.css) */
+.set-nav-avatar .set-nav-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Home sidebar account button avatar (mounted from Home.tsx; .account-avatar
+   itself lives in the upstream home.css) */
+.account-avatar .account-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}

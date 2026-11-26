@@ -439,6 +439,17 @@ export interface HomeApi {
   openChat?(): Promise<boolean>
   /** log out (clears the saved API key; the login state is shared globally with the chaoffice CLI) */
   accountLogout(): Promise<void>
+  // LOCAL(2026-11-26, base 6a64fc750): WeChat scan-code login (see WxLoginSession above)
+  /** current WeChat login session (validates the stored token against /me; cleared when expired) */
+  wxStatus(): Promise<WxLoginSession>
+  /** create a scan-code login attempt; resolves with the QR bitmap as a data: URL */
+  wxQrStart(): Promise<WxLoginQr>
+  /** poll one step of the pending login attempt (renderer drives the 2s loop) */
+  wxPoll(state: string): Promise<WxLoginPollResult>
+  /** QR bitmap (data: URL) of the snsapi_userinfo "complete profile" authorize page */
+  wxProfileQr(): Promise<string>
+  /** log out of the WeChat account (clears the local session file) */
+  wxLogout(): Promise<void>
   /** app version (from package.json / electron app.getVersion) */
   getAppVersion(): Promise<string>
   /** feedback channel (aidooo.com): cheap connectivity probe — true when the dialog can be opened */
@@ -807,6 +818,42 @@ export interface AccountLoginEvent {
   error?: string
 }
 
+// LOCAL(2026-11-26, base 6a64fc750): WeChat scan-code login (aidooo.com website
+// backend) — desktop contract for /api/auth/wx/*: poll?client=desktop returns the
+// wx-user JWT (desktop has no cookie jar), later /me & /logout go via
+// Authorization: Bearer. Upstream has no account pane; converge if upstream
+// reintroduces an account system that would occupy the same surface.
+/** WeChat user as returned by the website (maskWxUser shape) */
+export interface WxLoginUser {
+  id: number
+  nickname: string
+  avatarUrl: string
+  loginCount?: number
+}
+/** current WeChat login session as seen by the renderer */
+export interface WxLoginSession {
+  loggedIn: boolean
+  user?: WxLoginUser
+  /** avatar already converted to a data: URL (renderer CSP forbids remote img src) */
+  avatarDataUrl?: string
+  /** true when the account still has the anonymous nickname / no avatar — the
+   *  pane offers the "complete profile" QR (snsapi_userinfo authorize) */
+  profileIncomplete?: boolean
+}
+/** one scan-code login attempt: QR bitmap ready to show */
+export interface WxLoginQr {
+  mode: 'mpqrcode' | 'qrconnect'
+  state: string
+  /** QR image as a data: URL (mpqrcode showqrcode fetched / qrconnect rendered via /api/qr) */
+  qrDataUrl: string
+  expiresInSec: number
+}
+export type WxLoginPollResult =
+  | { status: 'pending' }
+  | { status: 'ok'; session: WxLoginSession }
+  | { status: 'expired' }
+  | { status: 'error'; error: string }
+
 export interface RenameResult {
   ok: boolean
   /** the new absolute path when ok */
@@ -1019,6 +1066,12 @@ export const HOME_CHANNELS = {
   accountLoginOpenUrl: 'home:account-login-open-url',
   openExternal: 'home:open-external',
   accountLogout: 'home:account-logout',
+  // LOCAL(2026-11-26, base 6a64fc750): WeChat scan-code login channels
+  wxStatus: 'home:wx-status',
+  wxQrStart: 'home:wx-qr-start',
+  wxPoll: 'home:wx-poll',
+  wxProfileQr: 'home:wx-profile-qr',
+  wxLogout: 'home:wx-logout',
   getAppVersion: 'home:get-app-version',
   feedbackProbe: 'home:feedback-probe',
   feedbackUpload: 'home:feedback-upload',

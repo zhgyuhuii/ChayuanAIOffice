@@ -27,6 +27,10 @@ import type {
   RecentPage,
   RenameResult,
   UiLanguage,
+  // LOCAL(2026-11-26, base 6a64fc750): WeChat scan-code login types
+  WxLoginPollResult,
+  WxLoginQr,
+  WxLoginSession,
   FileSearchPage,
   FileSearchRerank,
   FileSearchSettings,
@@ -396,6 +400,26 @@ const homeApi: HomeApi = {
   },
   async accountLogout() {
     await ipcRenderer.invoke(HOME_CHANNELS.accountLogout)
+  },
+  // LOCAL(2026-11-26, base 6a64fc750): WeChat scan-code login forwarding
+  async wxStatus() {
+    const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.wxStatus)
+    return (result ?? { loggedIn: false }) as WxLoginSession
+  },
+  async wxQrStart() {
+    const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.wxQrStart)
+    return result as WxLoginQr
+  },
+  async wxPoll(state: string) {
+    const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.wxPoll, state)
+    return result as WxLoginPollResult
+  },
+  async wxProfileQr() {
+    const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.wxProfileQr)
+    return (typeof result === 'string' && result) || ''
+  },
+  async wxLogout() {
+    await ipcRenderer.invoke(HOME_CHANNELS.wxLogout)
   },
   async getAppVersion() {
     const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.getAppVersion)

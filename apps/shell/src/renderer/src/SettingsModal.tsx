@@ -54,6 +54,10 @@ const UNIT_LABEL_KEYS = {
 } as const satisfies Record<MeasurementUnit, string>
 import './settings.css'
 import './settings-skin.css'
+// LOCAL(2026-11-26, base 6a64fc750): WeChat scan-code login — the account pane
+// lives in the local account/ module; mount-point only in this upstream file
+import { AccountPane } from './account/AccountPane'
+import { useWxAccount } from './account/useWxAccount'
 import { useSlidingIndicator } from './settings-fx'
 import './settings-fx.css'
 
@@ -647,6 +651,9 @@ export function SettingsModal({
   initialSection,
 }: SettingsModalProps) {
   const { lang, setLang, t } = useI18n()
+  // LOCAL(2026-11-26, base 6a64fc750): WeChat identity on the nav account button
+  const wx = useWxAccount()
+  const wxName = wx.loggedIn ? (wx.user?.nickname || '') : ''
   const [section, setSection] = useState<SectionId>(initialSection ?? 'modelSettings')
   const navRef = useRef<HTMLElement | null>(null)
   const navPill = useSlidingIndicator(navRef, '.set-nav-item.active', section)
@@ -893,18 +900,23 @@ export function SettingsModal({
                 )}
               </button>
             ))}
+            {/* LOCAL(2026-11-26, base 6a64fc750): WeChat avatar/nickname once signed in */}
             <button type="button" className="set-nav-account" onClick={() => setSection('account')}>
               <span className="set-nav-avatar" aria-hidden="true">
-                {(authorName.value || authorName.fallback || email || '?')
-                  .slice(0, 1)
-                  .toUpperCase()}
+                {wx.loggedIn && wx.avatarDataUrl ? (
+                  <img className="set-nav-avatar-img" src={wx.avatarDataUrl} alt="" />
+                ) : (
+                  (wxName || authorName.value || authorName.fallback || email || '?')
+                    .slice(0, 1)
+                    .toUpperCase()
+                )}
               </span>
               <span className="set-nav-account-text">
                 <span className="set-nav-account-name">
-                  {authorName.value || authorName.fallback || t('setSecAccount')}
+                  {wxName || authorName.value || authorName.fallback || t('setSecAccount')}
                 </span>
                 <span className="set-nav-account-email">
-                  {loggedIn ? email : t('setNotLoggedIn')}
+                  {wx.loggedIn ? t('acWxWechat') : loggedIn ? email : t('setNotLoggedIn')}
                 </span>
               </span>
             </button>
@@ -925,6 +937,9 @@ export function SettingsModal({
             )}
             {section === 'fileSearch' && <FileSearchPane />}
             {section === 'remoteStorage' && <StoragePane />}
+            {/* LOCAL(2026-11-26, base 6a64fc750): account pane restored — the nav
+                「账户」 button used to switch here with no pane behind it (blank) */}
+            {section === 'account' && <AccountPane />}
             {section === 'general' && (
               <>
                 <h3 className="set-pane-title">{t('setSecGeneral')}</h3>

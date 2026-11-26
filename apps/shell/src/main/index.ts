@@ -38,6 +38,9 @@ import { openTrash } from './trash'
 import { registerAiNamingIpc } from './ai-naming-service'
 import { tabStripOverlay } from './title-bar-overlay'
 import { createFeedbackClient } from './feedback'
+// LOCAL(2026-11-26, base 6a64fc750): WeChat scan-code login (aidooo.com backend);
+// implementation lives in the local wx-auth module — mount-point only here
+import { registerWxAuthIpc } from './wx-auth'
 import { shellWindowBackground } from './window-background'
 import {
   applyUiScaleTo,
@@ -9200,6 +9203,8 @@ registerMcpClientIpc(externalMcp)
 const aiProxyFetch = initAiFetchProxy()
 setRescueFetch(aiProxyFetch)
 registerHomeIpc()
+// LOCAL(2026-11-26, base 6a64fc750): WeChat scan-code login channels (home:wx-*)
+registerWxAuthIpc()
 registerIntegrationsIpc({
   settingsPath: APP_SETTINGS_PATH,
   window: () => shellWindow,
