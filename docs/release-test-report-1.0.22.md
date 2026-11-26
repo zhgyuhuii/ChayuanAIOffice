@@ -82,6 +82,7 @@
 
 ## 附注
 
+- **发版后用户报告官网下载 404，已修复（缺口补入流程）**：官网下载按钮读的是静态清单 `downloads/releases.json`（server/db.js#publishManifest 产物），而我本轮直改 `releases-admin.json` 绕过了 server 进程 → 该清单停留在 1.0.21（其槽位已清）→ 页面给出 404 链接。修复=容器内补跑 `docker exec -w /app/server chayuan-admin node --input-type=module -e "import('/app/server/db.js').then(m=>m.publishManifest())"`，公网清单五平台全 1.0.22，浏览器端到端复测（点「下载察元AI Office」→ 落盘 ChaAIOffice-1.0.22-arm64.zip）通过。**此后每轮发版：改完 releases-admin.json 必须容器内补跑 publishManifest（或走管理后台发布通道）。**
 - 1.0.21 已装用户将通过应用内更新卡片直接收 1.0.22（提示链 1.0.20 起已通；mac 手动引导/Win·Linux 全自动）。
 - 本轮直验新工具链：**AppImage 无需 Linux 运行时**——按 hsqs 魔数切出 squashfs 段后 `7z x -tsquashfs` 直接解包（x64 AppImage 在 arm64 宿主无法 exec 的解法，deb/rpm 同口径双证）。
 - 重铺坑两则：①部署 chatoffice 的 vendor/chaoffice-sidecar 形态 = **dsh-plugin/embedded/**（构建剪裁产物）而非 dsh-plugin/vendor 源目录——按旧版文件清单（落位 ⊂ embedded，0 多余）坐实后复刻；②rsync 必须 `-a`——裸 `-r` 丢 node_modules/.bin 与 @chaoffice/* 工作区符号链接，sidecar 起不来。
