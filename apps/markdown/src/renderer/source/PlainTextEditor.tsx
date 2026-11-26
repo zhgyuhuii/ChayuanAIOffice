@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
-import { Annotation, Compartment, EditorState } from '@codemirror/state'
+import { Annotation, Compartment, EditorState, Transaction } from '@codemirror/state'
 import {
   EditorView,
   keymap,
@@ -89,7 +89,15 @@ const theme = EditorView.theme({
   '.cm-activeLineGutter': { backgroundColor: 'var(--hover)' },
 })
 
-function extensionsFor(mode: Props['mode']) {
+/**
+ * Above this size the JSON grammar is dropped: a full Lezer parse of a
+ * multi-MB document parks the open on CPU for seconds, and syntax coloring a
+ * 170k-line data file is cosmetic. The editor itself stays incremental either
+ * way — virtualized rendering is what makes the pane usable at this scale.
+ */
+const GIANT_JSON_HIGHLIGHT_LIMIT = 2_000_000
+
+function extensionsFor(mode: Props['mode'], docLength: number) {
   return [
     lineNumbers(),
     highlightActiveLineGutter(),
@@ -107,7 +115,7 @@ function extensionsFor(mode: Props['mode']) {
     keymap.of([...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap, indentWithTab]),
     // JSON gets its own grammar; plain text gets none, so there is nothing to
     // mistake ordinary prose for code
-    ...(mode === 'json' ? [json()] : []),
+    ...(mode === 'json' && docLength <= GIANT_JSON_HIGHLIGHT_LIMIT ? [json()] : []),
     findHighlight,
     theme,
     EditorView.lineWrapping,
@@ -124,6 +132,11 @@ export const PlainTextEditor = forwardRef<PlainTextEditorHandle, Props>(function
   const findTargetRef = useRef<FindTarget | null>(null)
   const onChangeRef = useRef(onChange)
   onChangeRef.current = onChange
+  // read at effect time, not render time: an external value that lands between
+  // the render that mounts this editor and its seeding effect must not be lost
+  // (the caller pairs such replacements with setDoc, which no-ops pre-mount)
+  const initialRef = useRef(initialText)
+  initialRef.current = initialText
 
   useEffect(() => {
     const host = hostRef.current
@@ -132,12 +145,13 @@ export const PlainTextEditor = forwardRef<PlainTextEditorHandle, Props>(function
     // spellcheck is a live preference, so it lives in a compartment rather
     // than in the extension set that identifies this editor
     const spellCompartment = new Compartment()
+    const doc = initialRef.current
     const view = new EditorView({
       parent: host,
       state: EditorState.create({
-        doc: initialText,
+        doc,
         extensions: [
-          ...extensionsFor(mode),
+          ...extensionsFor(mode, doc.length),
           spellCompartment.of(EditorView.contentAttributes.of({ spellcheck: String(spellcheck) })),
           EditorView.updateListener.of((update) => {
             // the load dispatch must not read back as a user edit
@@ -161,7 +175,8 @@ export const PlainTextEditor = forwardRef<PlainTextEditorHandle, Props>(function
       spellRef.current = null
       findTargetRef.current = null
     }
-    // the buffer is seeded once; later external replacements go through setDoc
+    // the buffer is seeded once (through initialRef, so a value that arrived
+    // during mount is not lost); later external replacements go through setDoc
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode])
 
@@ -182,7 +197,10 @@ export const PlainTextEditor = forwardRef<PlainTextEditorHandle, Props>(function
       if (!view || view.state.doc.toString() === text) return
       view.dispatch({
         changes: { from: 0, to: view.state.doc.length, insert: text },
-        annotations: Loaded.of(true),
+        // not reported as an edit, and not undoable: a disk reload must not
+        // leave Cmd+Z a path back to the pre-reload bytes (a save after that
+        // would resurrect them)
+        annotations: [Loaded.of(true), Transaction.addToHistory.of(false)],
       })
     },
     focus: () => viewRef.current?.focus(),

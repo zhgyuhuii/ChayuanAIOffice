@@ -36,7 +36,7 @@ import {
   type DocEnvelope,
 } from './markdown/docText'
 import { buildSourceMap, spliceMarkdown, type SourceMap } from './markdown/sourceSplice'
-import { SourcePane } from './components/SourcePane'
+import { PlainTextEditor, type PlainTextEditorHandle } from './source/PlainTextEditor'
 import { buildExtensions } from './editor/extensions'
 import { tiptapFindTarget } from './editor/findTarget'
 import { collectOutline, type OutlineItem } from './editor/outline'
@@ -242,6 +242,9 @@ export default function App() {
    *  the text is exactly the file's, null while a markdown file is open */
   const sourceTextRef = useRef<string | null>(null)
   const [sourceText, setSourceText] = useState<string | null>(null)
+  /** the source pane is a CodeMirror editor (virtualized, so multi-MB files
+   *  stay editable); external buffer swaps go through this handle */
+  const plainSourceRef = useRef<PlainTextEditorHandle | null>(null)
   /** what a save writes for a source-mode file: pane text with the disk
    *  envelope's BOM, EOL style and trailing-newline restored verbatim */
   const sourceFileText = (): string =>
@@ -835,6 +838,9 @@ export default function App() {
           envelopeRef.current = envelope
           sourceTextRef.current = text
           setSourceText(text)
+          // the pane's editor seeds from the prop on mount only — a reload
+          // swaps an already-mounted buffer, so push the new bytes in
+          plainSourceRef.current?.setDoc(text)
           setImageBaseDir(dirOf(path))
           setFilePath(path)
           setFmText('')
@@ -882,7 +888,7 @@ export default function App() {
     [roundTripEnabled],
   )
 
-  /** source-pane edits: the pane text is the document; dirty tracks the disk copy */
+  /** source-editor edits: the editor text is the document; dirty tracks the disk copy */
   const onSourcePaneChange = useCallback((text: string) => {
     sourceTextRef.current = text
     setSourceText(text)
@@ -893,6 +899,13 @@ export default function App() {
       window.markdownApi.setDirty(dirtyNow)
     }
   }, [])
+
+  // a source file lands ready to type in: the pane's editor mounts with the
+  // commit that sets filePath, so this fires after its view exists. Reloading
+  // in place keeps focus where it was (filePath does not change).
+  useEffect(() => {
+    if (sourceTextRef.current !== null) plainSourceRef.current?.focus()
+  }, [filePath])
 
   const reloadNow = useCallback(async () => {
     const path = filePathRef.current
@@ -1322,20 +1335,26 @@ export default function App() {
                 </div>
               )}
               <div className="editor-scroll" ref={scrollRef}>
-                <div className="doc-page" style={{ zoom: zoom / 100 }}>
-                  {sourceText !== null ? (
-                    <SourcePane
-                      value={sourceText}
+                {sourceText !== null ? (
+                  // full-bleed: a raw .txt/.json is a code surface, not a paper
+                  // page — it fills the editor area edge to edge, no .doc-page
+                  // width cap or margins
+                  <div className="source-editor">
+                    <PlainTextEditor
+                      key={filePath ?? 'source'}
+                      ref={plainSourceRef}
+                      initialText={sourceText}
+                      mode={filePath && /\.json$/i.test(filePath) ? 'json' : 'plain'}
                       onChange={onSourcePaneChange}
-                      onFocusChange={() => {}}
+                      spellcheck={false}
                     />
-                  ) : (
-                    <>
-                      {fmOpen && <FrontmatterPanel value={fmText} onChange={onFrontmatterChange} />}
-                      <EditorContent editor={editor} />
-                    </>
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <div className="doc-page" style={{ zoom: zoom / 100 }}>
+                    {fmOpen && <FrontmatterPanel value={fmText} onChange={onFrontmatterChange} />}
+                    <EditorContent editor={editor} />
+                  </div>
+                )}
               </div>
               <footer className="status-bar">
                 <div className="status-left">
