@@ -116,3 +116,38 @@ export function serializeDocText(envelope: DocEnvelope, body: string): string {
   if (envelope.eol === '\r\n') text = text.replace(/\n/g, '\r\n')
   return envelope.bom ? `\uFEFF${text}` : text
 }
+
+/** .txt/.json open as raw bytes in the source pane: no markdown parse, no
+ *  wiki/graph surface (a multi-MB data file measured minutes inside the
+ *  markdown parser; the pane is exactly the file). */
+export function isRawSourcePath(path: string): boolean {
+  return /\.(txt|json)$/i.test(path)
+}
+
+/** envelope + normalized pane text for a raw-source file: frontmatter is
+ *  always empty (a leading fence in a .txt must not be stripped as YAML-ish
+ *  frontmatter — that would corrupt the file on save). */
+export function rawSourceEnvelope(raw: string): { envelope: DocEnvelope; text: string } {
+  const envelope = parseDocText(raw)
+  const text = (envelope.bom ? raw.slice(1) : raw).replace(/\r\n/g, '\n')
+  return {
+    envelope: {
+      ...envelope,
+      frontmatter: '',
+      body: text,
+      trailingNewline: text === '' || text.endsWith('\n'),
+    },
+    text,
+  }
+}
+
+/** the exact file text a save writes for a raw-source pane: pane text with the
+ *  disk envelope's BOM, EOL style and trailing-newline restored verbatim. */
+export function rawSourceFileText(envelope: DocEnvelope, text: string): string {
+  let out = text.replace(/\r?\n/g, envelope.eol)
+  if (envelope.trailingNewline && out && !out.endsWith(envelope.eol)) out += envelope.eol
+  if (!envelope.trailingNewline && out.endsWith(envelope.eol)) {
+    out = out.slice(0, -envelope.eol.length)
+  }
+  return (envelope.bom ? '\uFEFF' : '') + out
+}

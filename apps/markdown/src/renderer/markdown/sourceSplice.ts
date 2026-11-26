@@ -114,6 +114,21 @@ export function buildSourceMap(editor: Editor, doc: PmNode, source: string): Sou
 
   const tokens = splitAbsorbedBlankLines(rawTokens)
   const nonSpace = tokens.map((t) => t.type !== 'space')
+  // prefix/suffix "any non-space" booleans: the loop below asks per space
+  // token, and slicing the array each time is quadratic on blank-line-heavy
+  // sources (a multi-MB indented log spent minutes here)
+  let anyNonSpaceBefore = false
+  const nonSpaceBefore: boolean[] = new Array(tokens.length)
+  for (let i = 0; i < tokens.length; i++) {
+    nonSpaceBefore[i] = anyNonSpaceBefore
+    if (nonSpace[i]) anyNonSpaceBefore = true
+  }
+  let anyNonSpaceAfter = false
+  const nonSpaceAfter: boolean[] = new Array(tokens.length)
+  for (let i = tokens.length - 1; i >= 0; i--) {
+    nonSpaceAfter[i] = anyNonSpaceAfter
+    if (nonSpace[i]) anyNonSpaceAfter = true
+  }
   // a block parsed alone still needs the `[id]: url` definitions, or `![alt][id]` stays text
   const definitions = tokens
     .filter((t) => t.type === 'def')
@@ -126,8 +141,8 @@ export function buildSourceMap(editor: Editor, doc: PmNode, source: string): Sou
     let produced: string[]
     let space = false
     if (token.type === 'space') {
-      const hasPrevious = nonSpace.slice(0, i).some(Boolean)
-      const hasNext = nonSpace.slice(i + 1).some(Boolean)
+      const hasPrevious = nonSpaceBefore[i]!
+      const hasNext = nonSpaceAfter[i]!
       produced = new Array<string>(implicitParagraphs(token.raw, hasPrevious, hasNext)).fill(
         'paragraph',
       )

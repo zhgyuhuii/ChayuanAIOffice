@@ -28,11 +28,15 @@ import { t as translate, useI18n } from './i18n/locale'
 import {
   buildFrontmatterRaw,
   frontmatterInner,
+  isRawSourcePath,
   parseDocText,
+  rawSourceEnvelope,
+  rawSourceFileText,
   stripLegacyFencedDivs,
   type DocEnvelope,
 } from './markdown/docText'
 import { buildSourceMap, spliceMarkdown, type SourceMap } from './markdown/sourceSplice'
+import { SourcePane } from './components/SourcePane'
 import { buildExtensions } from './editor/extensions'
 import { tiptapFindTarget } from './editor/findTarget'
 import { collectOutline, type OutlineItem } from './editor/outline'
@@ -234,8 +238,17 @@ export default function App() {
   // blocks of the text on disk paired with the editor's nodes; null until a
   // file is loaded or saved, and whenever the pairing could not be established
   const sourceMapRef = useRef<SourceMap | null>(null)
+  /** .txt/.json live in the raw source pane, never in the markdown editor:
+   *  the text is exactly the file's, null while a markdown file is open */
+  const sourceTextRef = useRef<string | null>(null)
+  const [sourceText, setSourceText] = useState<string | null>(null)
+  /** what a save writes for a source-mode file: pane text with the disk
+   *  envelope's BOM, EOL style and trailing-newline restored verbatim */
+  const sourceFileText = (): string =>
+    rawSourceFileText(envelopeRef.current ?? EMPTY_ENVELOPE, sourceTextRef.current ?? '')
   /** the body a save writes: unchanged blocks verbatim from disk, edited runs re-serialized */
   const bodyMarkdown = (current: Editor): string => {
+    if (sourceTextRef.current !== null) return sourceFileText()
     const map = sourceMapRef.current
     return map ? spliceMarkdown(current, current.state.doc, map) : current.getMarkdown()
   }
@@ -410,6 +423,20 @@ export default function App() {
           diskTextRef.current = raw
           overwriteRef.current = false
           setDiskNotice(null)
+          if (isRawSourcePath(path)) {
+            // raw bytes edited as-is: a multi-MB data file never enters the
+            // markdown parser (a 6.8 MB data-a.json measured 89 s in setContent
+            // and 177 s building its source map) — it renders in the source pane
+            const { envelope, text } = rawSourceEnvelope(raw)
+            envelopeRef.current = envelope
+            sourceTextRef.current = text
+            setSourceText(text)
+            setImageBaseDir(dirOf(path))
+            setFilePath(path)
+            statusRef.current = 'ready'
+            setStatus('ready')
+            return
+          }
           const envelope = parseDocText(raw)
           envelopeRef.current = envelope
           setImageBaseDir(dirOf(path))
@@ -433,6 +460,8 @@ export default function App() {
           jumpToWikiFragment(path)
         } else {
           envelopeRef.current = { ...EMPTY_ENVELOPE }
+          sourceTextRef.current = null
+          setSourceText(null)
           // AI-authored content (create_document): set it as this untitled
           // document's initial text. The content is unsaved user work — mark
           // dirty so the close guard protects it — and the queued title only
@@ -534,7 +563,20 @@ export default function App() {
         }
         // the next save splices against what is now on disk: after image
         // rewrites that is writtenText paired with the rewritten document
-        if (result.writtenText === undefined) {
+        if (sourceTextRef.current !== null) {
+          // raw-source save: no document/source pairing to rebuild — and a
+          // Save As into a markdown extension reopens through the parser
+          if (!isRawSourcePath(result.path)) {
+            sourceTextRef.current = null
+            setSourceText(null)
+            const body2 = stripLegacyFencedDivs(parseDocText(text).body)
+            editorRef.current
+              ?.chain()
+              .setMeta('addToHistory', false)
+              .setContent(body2, { contentType: 'markdown' })
+              .run()
+          }
+        } else if (result.writtenText === undefined) {
           sourceMapRef.current = buildSourceMap(
             current,
             docAtSave,
@@ -788,25 +830,36 @@ export default function App() {
         diskTextRef.current = raw
         overwriteRef.current = false
         setDiskNotice(null)
-        const envelope = parseDocText(raw)
-        envelopeRef.current = envelope
-        setImageBaseDir(dirOf(path))
-        const body = stripLegacyFencedDivs(envelope.body)
-        current
-          ?.chain()
-          .setMeta('addToHistory', false)
-          .setContent(body, { contentType: 'markdown' })
-          .run()
-        if (current) {
-          sourceMapRef.current = buildSourceMap(current, current.state.doc, body)
-          originalSourceRef.current = roundTripEnabled
-            ? captureMarkdownSource(raw, envelope, current.state.doc)
-            : undefined
+        if (isRawSourcePath(path)) {
+          const { envelope, text } = rawSourceEnvelope(raw)
+          envelopeRef.current = envelope
+          sourceTextRef.current = text
+          setSourceText(text)
+          setImageBaseDir(dirOf(path))
+          setFilePath(path)
+          setFmText('')
+          setFmOpen(false)
+        } else {
+          const envelope = parseDocText(raw)
+          envelopeRef.current = envelope
+          const body = stripLegacyFencedDivs(envelope.body)
+          current
+            ?.chain()
+            .setMeta('addToHistory', false)
+            .setContent(body, { contentType: 'markdown' })
+            .run()
+          setImageBaseDir(dirOf(path))
+          if (current) {
+            sourceMapRef.current = buildSourceMap(current, current.state.doc, body)
+            originalSourceRef.current = roundTripEnabled
+              ? captureMarkdownSource(raw, envelope, current.state.doc)
+              : undefined
+          }
+          setFilePath(path)
+          const inner = frontmatterInner(envelope.frontmatter)
+          setFmText(inner)
+          setFmOpen(inner !== '')
         }
-        setFilePath(path)
-        const inner = frontmatterInner(envelope.frontmatter)
-        setFmText(inner)
-        setFmOpen(inner !== '')
       } finally {
         statusRef.current = 'ready'
       }
@@ -828,6 +881,18 @@ export default function App() {
     },
     [roundTripEnabled],
   )
+
+  /** source-pane edits: the pane text is the document; dirty tracks the disk copy */
+  const onSourcePaneChange = useCallback((text: string) => {
+    sourceTextRef.current = text
+    setSourceText(text)
+    const dirtyNow = text !== diskTextRef.current
+    if (dirtyNow !== dirtyRef.current) {
+      dirtyRef.current = dirtyNow
+      setDirty(dirtyNow)
+      window.markdownApi.setDirty(dirtyNow)
+    }
+  }, [])
 
   const reloadNow = useCallback(async () => {
     const path = filePathRef.current
@@ -899,12 +964,15 @@ export default function App() {
       const current = editorRef.current
       if (!current || statusRef.current !== 'ready') return
       try {
-        const text = serializeMarkdown(
-          envelopeRef.current,
-          current.state.doc,
-          () => bodyMarkdown(current),
-          originalSourceRef.current,
-        )
+        const text =
+          sourceTextRef.current !== null
+            ? sourceFileText()
+            : serializeMarkdown(
+                envelopeRef.current,
+                current.state.doc,
+                () => bodyMarkdown(current),
+                originalSourceRef.current,
+              )
         window.markdownApi.sendReadTextResult({ text })
       } catch (err) {
         window.markdownApi.sendReadTextResult({
@@ -1255,8 +1323,18 @@ export default function App() {
               )}
               <div className="editor-scroll" ref={scrollRef}>
                 <div className="doc-page" style={{ zoom: zoom / 100 }}>
-                  {fmOpen && <FrontmatterPanel value={fmText} onChange={onFrontmatterChange} />}
-                  <EditorContent editor={editor} />
+                  {sourceText !== null ? (
+                    <SourcePane
+                      value={sourceText}
+                      onChange={onSourcePaneChange}
+                      onFocusChange={() => {}}
+                    />
+                  ) : (
+                    <>
+                      {fmOpen && <FrontmatterPanel value={fmText} onChange={onFrontmatterChange} />}
+                      <EditorContent editor={editor} />
+                    </>
+                  )}
                 </div>
               </div>
               <footer className="status-bar">
