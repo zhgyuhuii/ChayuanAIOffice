@@ -6,8 +6,15 @@ import { PDFDocument } from 'pdf-lib'
 import { decryptDocument } from '../src/main/pdf-crypt'
 
 const { getDocument } = vi.hoisted(() => ({ getDocument: vi.fn() }))
-vi.mock('pdfjs-dist/legacy/build/pdf.mjs', () => ({ getDocument }))
-import { loadPdfForView } from '../src/renderer/open-document'
+// keep the real exports besides getDocument: the range transport subclasses
+// PDFDataRangeTransport from the same module
+vi.mock('pdfjs-dist/legacy/build/pdf.mjs', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('pdfjs-dist/legacy/build/pdf.mjs')>()
+  return { ...actual, getDocument }
+})
+import { loadPdfForRange, loadPdfForView } from '../src/renderer/open-document'
+import { PDF_RANGE_CHUNK_BYTES } from '../src/renderer/file-bytes'
+import { IpcRangeTransport } from '../src/renderer/range-transport'
 
 // A real transferable boundary, like PDF.js handing document data to its worker.
 // The reader itself is not needed to exercise the caller's retained bytes.
@@ -69,6 +76,27 @@ describe('document loading retains source bytes for the open pipeline', () => {
     expect(opened).toBe(task)
     await expect(opened.promise).rejects.toBe(error)
     expect(getDocument.mock.calls[0][0].password).toBe('incorrect')
+    getDocument.mockReset()
+  })
+
+  it('loads through a range transport with lazy fetching flags', async () => {
+    const task = { promise: Promise.resolve({ numPages: 1 }) }
+    getDocument.mockReturnValueOnce(task)
+    const api = {
+      readFileChunk: async () => ({ data: new Uint8Array(0), fileSize: 10 }),
+    }
+    const transport = new IpcRangeTransport(10, new Uint8Array(4), api, '/docs/big.pdf')
+    const opened = loadPdfForRange(transport, 'pw')
+    expect(opened).toBe(task)
+    const params = getDocument.mock.calls[0][0]
+    expect(params.range).toBe(transport)
+    expect(params.rangeChunkSize).toBe(PDF_RANGE_CHUNK_BYTES)
+    // no pre-fetch of the whole file; with a custom transport the worker also
+    // forces auto-fetch off whenever streaming is advertised (disableStream false)
+    expect(params.disableAutoFetch).toBe(true)
+    expect(params.disableStream).toBe(false)
+    expect(params.password).toBe('pw')
+    expect(params.data).toBeUndefined()
     getDocument.mockReset()
   })
 })

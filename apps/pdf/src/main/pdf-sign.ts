@@ -19,6 +19,14 @@ import type {
   SignaturePosition,
 } from '../shared/ipc'
 import { useNativePkcs12Crypto } from './forge-native'
+import {
+  latin1,
+  readPreviousXref,
+  serialize,
+  xrefStreamData,
+  xrefTable,
+  type PreviousXref,
+} from './incremental-update'
 import { collectSignatureFields, describeCertificate } from './pdf-signatures'
 
 useNativePkcs12Crypto()
@@ -211,8 +219,6 @@ const PLACEHOLDER_SIZES = [16 * 1024, 48 * 1024]
 const BYTE_RANGE_DIGITS = 10
 const MAX_SIGNABLE_BYTES = 400 * 1024 * 1024
 
-const latin1 = (text: string): Buffer => Buffer.from(text, 'latin1')
-
 /** PDF text string: plain literal when ASCII, UTF-16BE hex (with BOM) otherwise */
 function pdfText(value: string): string {
   if (/^[\x20-\x7e]*$/.test(value)) {
@@ -231,37 +237,13 @@ const pdfDate = (date: Date): string => {
   return `D:${date.getUTCFullYear()}${p(date.getUTCMonth() + 1)}${p(date.getUTCDate())}${p(date.getUTCHours())}${p(date.getUTCMinutes())}${p(date.getUTCSeconds())}Z`
 }
 
-const serialize = (ref: PDFRef, object: PDFObject): Buffer => {
-  const body = new Uint8Array(object.sizeInBytes())
-  object.copyBytesInto(body, 0)
-  return Buffer.concat([
-    latin1(`${ref.objectNumber} ${ref.generationNumber} obj\n`),
-    Buffer.from(body),
-    latin1('\nendobj\n'),
-  ])
-}
-
-interface PreviousXref {
-  offset: number
-  /** The previous section is an xref stream, so this update must be one too */
-  isStream: boolean
-  size: number
-}
-
-function readPreviousXref(bytes: Buffer): PreviousXref {
-  const tail = bytes.subarray(Math.max(0, bytes.length - 2048)).toString('latin1')
-  const marker = tail.lastIndexOf('startxref')
-  const match = marker >= 0 ? /startxref\s+(\d+)/.exec(tail.slice(marker)) : null
-  if (!match) throw new SignError('sign-failed')
-  const offset = Number(match[1])
-  if (!Number.isSafeInteger(offset) || offset <= 0 || offset >= bytes.length) {
+/** Shared xref discovery, mapped onto the signer's error surface */
+function previousXrefOrThrow(bytes: Buffer): PreviousXref {
+  try {
+    return readPreviousXref(bytes)
+  } catch {
     throw new SignError('sign-failed')
   }
-  const head = bytes.subarray(offset, offset + 4096).toString('latin1')
-  const isStream = !head.trimStart().startsWith('xref')
-  const searchFrom = isStream ? head : head.slice(Math.max(0, head.indexOf('trailer')))
-  const size = /\/Size\s+(\d+)/.exec(searchFrom)
-  return { offset, isStream, size: size ? Number(size[1]) : 0 }
 }
 
 /** Rewritable copy of the object a reference points to, plus the ref to write it back under */
@@ -337,45 +319,6 @@ function placeBox(
   }
 }
 
-function xrefTable(entries: { num: number; offset: number; gen: number }[]): Buffer {
-  const sorted = [...entries].sort((a, b) => a.num - b.num)
-  const runs: (typeof sorted)[] = []
-  for (const entry of sorted) {
-    const run = runs[runs.length - 1]
-    if (run && run[run.length - 1]!.num + 1 === entry.num) run.push(entry)
-    else runs.push([entry])
-  }
-  let text = 'xref\n'
-  for (const run of runs) {
-    text += `${run[0]!.num} ${run.length}\n`
-    for (const e of run) {
-      text += `${String(e.offset).padStart(10, '0')} ${String(e.gen).padStart(5, '0')} n \n`
-    }
-  }
-  return latin1(text)
-}
-
-function xrefStreamData(entries: { num: number; offset: number; gen: number }[]): {
-  index: number[]
-  data: Buffer
-} {
-  const sorted = [...entries].sort((a, b) => a.num - b.num)
-  const index: number[] = []
-  const rows: Buffer[] = []
-  let previous = -2
-  for (const e of sorted) {
-    if (e.num === previous + 1) index[index.length - 1]!++
-    else index.push(e.num, 1)
-    previous = e.num
-    const row = Buffer.alloc(7)
-    row[0] = 1
-    row.writeUInt32BE(e.offset, 1)
-    row.writeUInt16BE(e.gen, 5)
-    rows.push(row)
-  }
-  return { index, data: Buffer.concat(rows) }
-}
-
 interface Assembled {
   file: Buffer
   contentsStart: number
@@ -401,7 +344,7 @@ async function assemble(
     throw new SignError('sign-failed')
   }
   const { context } = pdf
-  const previous = readPreviousXref(original)
+  const previous = previousXrefOrThrow(original)
   // Object numbers must not collide with free slots of the previous table either
   context.largestObjectNumber = Math.max(context.largestObjectNumber, previous.size - 1)
   const firstNew = context.largestObjectNumber + 1

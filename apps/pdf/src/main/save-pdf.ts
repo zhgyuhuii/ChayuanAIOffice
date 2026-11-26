@@ -1,4 +1,6 @@
-import { readFile } from 'node:fs/promises'
+import { randomBytes } from 'node:crypto'
+import { appendFile, copyFile, readFile, rename, unlink } from 'node:fs/promises'
+import { basename, dirname, join } from 'node:path'
 import {
   PDFArray,
   PDFBool,
@@ -45,6 +47,11 @@ import type {
   TextInsertFailure,
 } from '../shared/ipc'
 import { writePdfAtomically } from './atomic-write'
+import {
+  assembleIncrementalUpdate,
+  reserveObjectNumbers,
+  snapshotObjects,
+} from './incremental-update'
 import { redactPdf } from './redaction'
 
 const num = (v: number) => Math.round(v * 100) / 100
@@ -1511,10 +1518,21 @@ export async function savePdfToPath(
   targetPath: string,
   request: SavePdfRequest,
 ): Promise<SavePdfSkips> {
-  const { bytes, ...skips } = await applySaveRequest(
-    new Uint8Array(await readFile(sourcePath)),
-    request,
-  )
+  const source = new Uint8Array(await readFile(sourcePath))
+  // Large documents with graph-only edits save incrementally: the original
+  // bytes are staged as a file copy and only the revision is written. Any
+  // failure on that path falls back to the proven full rewrite (nothing has
+  // touched disk yet).
+  if (incrementalSaveEligible(request, source.byteLength)) {
+    try {
+      const applied = await applySaveRequestIncremental(source, request)
+      await writeIncrementalPdf(sourcePath, targetPath, applied.revision)
+      return applied
+    } catch (err) {
+      console.warn('[pdf] incremental save fell back to a full rewrite:', err)
+    }
+  }
+  const { bytes, ...skips } = await applySaveRequest(source, request)
   await verifyContentEdits(bytes, request, skips)
   await writePdfAtomically(targetPath, bytes)
   return skips
@@ -1613,6 +1631,48 @@ export async function applySaveRequest(
     skippedImageEdits = applied.skipped
   }
   const pdfDoc = await PDFDocument.load(bytes, { updateMetadata: false })
+  await runSaveMutations(pdfDoc, request)
+  // Protection serializes with the document: strings and streams are encrypted in
+  // place, so no object/xref stream may be created after this point (all saves here
+  // already run with useObjectStreams off). Redaction below re-serializes a cleaned
+  // graph, which would drop the trailer entry — protect that output instead.
+  // Redaction is a PDFium pass and cannot read an encrypted file, so with
+  // redactions the protection is written after the reload below instead.
+  if (protection !== null && !request.redactions?.length) {
+    // flush first: pdf-lib embeds fonts and images only at save/flush time, and
+    // a payload created after this pass would land in the file as plaintext
+    // inside a document declared encrypted
+    await pdfDoc.flush()
+    protect(pdfDoc)
+  }
+  let saved = await pdfDoc.save({ useObjectStreams: false, updateFieldAppearances: false })
+  // Redaction is the final serializer. EmbedPDF's full SaveAsCopy writes only the
+  // reachable cleaned object graph; no subsequent pdf-lib pass can revive old streams.
+  if (request.redactions?.length) {
+    saved = await redactPdf(saved, request.redactions)
+    if (protection !== null) {
+      const cleaned = await PDFDocument.load(saved, { updateMetadata: false })
+      await cleaned.flush()
+      protect(cleaned)
+      saved = await cleaned.save({ useObjectStreams: false })
+    }
+  }
+  return {
+    bytes: saved,
+    skippedTextEdits,
+    skippedTextInserts,
+    skippedImageEdits,
+  }
+}
+
+/**
+ * Graph mutations shared by the full rewrite and the incremental update:
+ * everything from form values through annotation work to page deletions and
+ * the attachment/static-fill catalog entries. Runs against a freshly loaded
+ * document whose bytes stages (text/image edits, blank pages) have already
+ * landed, if the request had any.
+ */
+async function runSaveMutations(pdfDoc: PDFDocument, request: SavePdfRequest): Promise<void> {
   if (request.formValues.length > 0) applyFormValues(pdfDoc, request.formValues)
   const pages = pdfDoc.getPages()
   // Apply rotations first so markup appearances draw lines for the page's final orientation
@@ -1733,36 +1793,108 @@ export async function applySaveRequest(
   }
   if (request.attachments) applyAttachments(pdfDoc, request.attachments)
   refreshFieldAppearances(pdfDoc)
-  // Protection serializes with the document: strings and streams are encrypted in
-  // place, so no object/xref stream may be created after this point (all saves here
-  // already run with useObjectStreams off). Redaction below re-serializes a cleaned
-  // graph, which would drop the trailer entry — protect that output instead.
-  // Redaction is a PDFium pass and cannot read an encrypted file, so with
-  // redactions the protection is written after the reload below instead.
-  if (protection !== null && !request.redactions?.length) {
-    // flush first: pdf-lib embeds fonts and images only at save/flush time, and
-    // a payload created after this pass would land in the file as plaintext
-    // inside a document declared encrypted
-    await pdfDoc.flush()
-    protect(pdfDoc)
+}
+
+/**
+ * Apply the same annotation/form/page mutation stage as a full save, then
+ * append the result as an incremental revision instead of re-serializing the
+ * whole document: the returned `bytes` are the original ones plus one update
+ * (new and changed objects + a chained xref section), and `revision` is the
+ * appended tail alone. Only requests whose every stage is expressible as an
+ * object-graph change qualify — byte-rewriting stages and protection have no
+ * incremental form (see incrementalSaveEligible).
+ */
+export async function applySaveRequestIncremental(
+  bytes: Uint8Array,
+  request: SavePdfRequest,
+): Promise<AppliedSaveRequest & { revision: Uint8Array }> {
+  const original = Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength)
+  const pdfDoc = await PDFDocument.load(bytes, { updateMetadata: false })
+  // before any mutation allocates object numbers: they must start past every
+  // slot the previous revision reserved (see reserveObjectNumbers)
+  reserveObjectNumbers(original, pdfDoc)
+  const snapshot = snapshotObjects(pdfDoc)
+  await runSaveMutations(pdfDoc, request)
+  // force pdf-lib's deferred embeds (fonts, images) into the context so the
+  // object diff below sees every object the revision has to carry
+  await pdfDoc.flush()
+  const updated = assembleIncrementalUpdate(original, pdfDoc, snapshot)
+  return {
+    bytes: new Uint8Array(updated),
+    // the revision starts after the original bytes plus the separator newline
+    revision: new Uint8Array(updated.subarray(original.length)),
+    skippedTextEdits: [],
+    skippedTextInserts: [],
+    skippedImageEdits: [],
   }
-  let saved = await pdfDoc.save({ useObjectStreams: false, updateFieldAppearances: false })
-  // Redaction is the final serializer. EmbedPDF's full SaveAsCopy writes only the
-  // reachable cleaned object graph; no subsequent pdf-lib pass can revive old streams.
-  if (request.redactions?.length) {
-    saved = await redactPdf(saved, request.redactions)
-    if (protection !== null) {
-      const cleaned = await PDFDocument.load(saved, { updateMetadata: false })
-      await cleaned.flush()
-      protect(cleaned)
-      saved = await cleaned.save({ useObjectStreams: false })
+}
+
+/**
+ * An incremental save reuses the bytes already on disk and appends one
+ * revision, so it can only serve requests whose stages mutate the object
+ * graph. Content-stream rewrites (text/image edits, blank pages, annotation
+ * deletion) produce a fresh byte stream, encryption re-serializes every
+ * string and stream, and redaction hands the document to PDFium — those keep
+ * the full-rewrite path, as do small documents where the rewrite is cheap
+ * and long-proven.
+ */
+export const INCREMENTAL_SAVE_MIN_BYTES = 64 * 1024 * 1024
+
+export function incrementalSaveEligible(request: SavePdfRequest, sourceBytes: number): boolean {
+  if (sourceBytes < INCREMENTAL_SAVE_MIN_BYTES) return false
+  if (request.decryption !== undefined || request.encryption !== undefined) return false
+  if ((request.annotDeletes?.length ?? 0) > 0) return false
+  if ((request.blankPages?.length ?? 0) > 0) return false
+  if ((request.textEdits?.length ?? 0) > 0) return false
+  if ((request.textInserts?.length ?? 0) > 0) return false
+  if ((request.imageEdits?.length ?? 0) > 0) return false
+  if ((request.redactions?.length ?? 0) > 0) return false
+  return true
+}
+
+/** Transient Windows codes: antivirus/indexer briefly lock the rename target
+ *  (same set the shared atomic writer retries). */
+const RETRYABLE_RENAME_CODES = new Set(['EPERM', 'EACCES', 'EBUSY'])
+const RENAME_RETRY_DELAYS_MS = [50, 100, 200, 400]
+
+async function renameWithRetry(from: string, to: string): Promise<void> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await rename(from, to)
+      return
+    } catch (err) {
+      const code = (err as NodeJS.ErrnoException).code ?? ''
+      if (attempt >= RENAME_RETRY_DELAYS_MS.length || !RETRYABLE_RENAME_CODES.has(code)) throw err
+      await new Promise((resolve) => setTimeout(resolve, RENAME_RETRY_DELAYS_MS[attempt]))
     }
   }
-  return {
-    bytes: saved,
-    skippedTextEdits,
-    skippedTextInserts,
-    skippedImageEdits,
+}
+
+/**
+ * Land an incremental save on disk without ever materializing the whole updated
+ * document in memory: stage a copy of the source beside the target (APFS clones
+ * it; other filesystems stream it), append the revision to the copy, then swap
+ * it in with the same temp+rename atomicity the full writer uses. A crash
+ * before the rename leaves the original untouched.
+ */
+async function writeIncrementalPdf(
+  sourcePath: string,
+  targetPath: string,
+  revision: Uint8Array,
+): Promise<void> {
+  // No leading dot in the temp name: the macOS SMB client marks dot-files
+  // hidden and the flag survives the rename (chaoffice#2145)
+  const tmp = join(
+    dirname(targetPath),
+    `${basename(targetPath)}.${randomBytes(6).toString('hex')}.tmp`,
+  )
+  try {
+    await copyFile(sourcePath, tmp)
+    await appendFile(tmp, revision)
+    await renameWithRetry(tmp, targetPath)
+  } catch (err) {
+    await unlink(tmp).catch(() => {})
+    throw err
   }
 }
 

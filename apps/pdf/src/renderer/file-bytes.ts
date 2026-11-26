@@ -14,6 +14,37 @@ export interface PdfFileChunkApi {
   ): Promise<{ data: Uint8Array; fileSize: number }>
 }
 
+/** Head slice fetched up front by the ranged open path: pdf.js needs the file's
+ * leading bytes (header magic plus the first parse steps), the renderer's own
+ * /XFA marker pre-parse scans them, and the size riding along is what sizes the
+ * range transport — all without touching the rest of a potentially huge file. */
+export const PDF_RANGE_HEAD_BYTES = Math.min(1024 * 1024, PDF_READ_CHUNK_BYTES)
+
+/** Range granularity pdf.js requests at. One IPC round trip per chunk, so this
+ * trades latency against wasted bytes around each fetch; 1 MiB keeps a typical
+ * page's objects in one or two invokes. Must stay within the main-side
+ * readFileChunk cap (PDF_READ_CHUNK_BYTES) or every fetch is rejected. Lives
+ * here (not in range-transport) so modules that only size their calls don't
+ * pull the pdf.js class import — several tests stub that module. */
+export const PDF_RANGE_CHUNK_BYTES = Math.min(1024 * 1024, PDF_READ_CHUNK_BYTES)
+
+export interface PdfFileHead {
+  /** bytes [0, data.length) of the file */
+  data: Uint8Array
+  fileSize: number
+  /** true when data already covers the whole file (nothing left to stream) */
+  whole: boolean
+}
+
+export async function readFileHead(
+  api: PdfFileChunkApi,
+  path: string,
+  headBytes = PDF_RANGE_HEAD_BYTES,
+): Promise<PdfFileHead> {
+  const { data, fileSize } = await api.readFileChunk(path, 0, headBytes)
+  return { data, fileSize, whole: data.length >= fileSize }
+}
+
 export async function readFileBytes(
   api: PdfFileChunkApi,
   path: string,
