@@ -140,6 +140,9 @@ export const id = {
   appUntitledDocx: 'Dokumen tanpa judul.docx',
   appOpenedFile: '{name} dibuka',
   appOpenFailed: 'Gagal membuka: {error}',
+  giantReadonly: 'Dokumen raksasa · baca-saja',
+  giantBlocks: '{count} blok',
+  giantClose: 'Tutup',
   appDocTooLargeBlocks:
     '{name}: dokumen terlalu besar untuk dibuka ({blocks} paragraf, {chars} karakter)',
   appDocLargeReadOnly:

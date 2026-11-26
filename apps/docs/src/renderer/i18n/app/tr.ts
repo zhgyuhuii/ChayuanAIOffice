@@ -140,6 +140,9 @@ export const tr = {
   appUntitledDocx: 'Adsız.docx',
   appOpenedFile: '{name} açıldı',
   appOpenFailed: 'Açma başarısız: {error}',
+  giantReadonly: 'Dev belge · salt okunur',
+  giantBlocks: '{count} blok',
+  giantClose: 'Kapat',
   appDocTooLargeBlocks:
     '{name}: belge açılamayacak kadar büyük ({blocks} paragraf, {chars} karakter)',
   appDocLargeReadOnly:

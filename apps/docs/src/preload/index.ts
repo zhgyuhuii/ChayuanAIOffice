@@ -108,6 +108,11 @@ const api: DesktopApi = {
   respondToZotero: (response) => ipcRenderer.send('zotero:response', response),
   openDocx: () => ipcRenderer.invoke('docs:open'),
   openDocxPath: (path: string) => ipcRenderer.invoke('docs:open-path', path),
+  giantWindow: (giantId: string, first: number, count: number) =>
+    ipcRenderer.invoke('docs:giant-window', giantId, first, count),
+  giantClose: (giantId: string) => {
+    void ipcRenderer.invoke('docs:giant-close', giantId)
+  },
   confirmDocumentReplace: () => ipcRenderer.invoke('docs:confirm-document-replace'),
   convertAltChunkHtml: (html: string) => ipcRenderer.invoke('docs:altchunk-html-to-docx', html),
   openDocxDecrypt: (path: string, password: string) =>

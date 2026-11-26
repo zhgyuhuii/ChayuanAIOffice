@@ -139,6 +139,9 @@ export const hi = {
   appUntitledDocx: 'शीर्षकहीन.docx',
   appOpenedFile: '{name} खोला गया',
   appOpenFailed: 'खोलने में विफल: {error}',
+  giantReadonly: 'विशाल दस्तावेज़ · केवल-पठन',
+  giantBlocks: '{count} ब्लॉक',
+  giantClose: 'बंद करें',
   appDocTooLargeBlocks:
     '{name}: दस्तावेज़ खोलने के लिए बहुत बड़ा है ({blocks} अनुच्छेद, {chars} वर्ण)',
   appDocLargeReadOnly:

@@ -78,6 +78,7 @@ import { refreshTableFormulas, setFormulaSourceBlocks } from './editor/table-for
 import { linkTarget } from './editor/link-actions'
 import { TOP_ANCHOR, anchorPos } from './editor/link-targets'
 import { FieldDialog } from './components/FieldDialog'
+import { GiantDocView } from './components/GiantDocView'
 import { createLabelSheet } from './mail-merge/label-sheet'
 import { layoutSection } from './mail-merge/layout'
 import { formatFieldNumber, formatFieldText } from './editor/field-switches'
@@ -181,6 +182,7 @@ import type {
   MergeDataSource,
   MergeOutputMode,
   OpenDocxResult,
+  GiantOpenResult,
 } from '../shared/ipc'
 import {
   buildMailMergeFiles,
@@ -2002,6 +2004,9 @@ export function App() {
   const [showWatermarkDialog, setShowWatermarkDialog] = useState(false)
   const [showColumnsDialog, setShowColumnsDialog] = useState(false)
   const [showSymbolDialog, setShowSymbolDialog] = useState(false)
+  // giant document (document.xml past the V8 string ceiling): read-only
+  // virtual-window view over a main-process session, overlaying the editor
+  const [giantDoc, setGiantDoc] = useState<GiantOpenResult | null>(null)
   const [showIconsDialog, setShowIconsDialog] = useState(false)
   const [showChangePictureIcon, setShowChangePictureIcon] = useState(false)
   const [showPageNumbers, setShowPageNumbers] = useState(false)
@@ -3635,6 +3640,7 @@ export function App() {
       setModifyUnlocked(!wp?.hash)
       setModifyPwdPrompt(wp?.hash ? { value: '', errorKey: '' } : null)
     },
+    enterGiant: (result) => setGiantDoc(result),
     promptDocxPassword: (info) =>
       setDocPwdPrompt({
         path: info.path,
@@ -3649,7 +3655,8 @@ export function App() {
   const loadFile = useCallback(async (result: OpenDocxResult) => {
     const outcome = await loadFileImpl(fileCtxRef.current, result)
     // a failed open with no document yet (boot, or the open that superseded the
-    // boot open) must land on blank instead of the "Opening…" screen
+    // boot open) must land on blank instead of the "Opening…" screen — a giant
+    // open is not a failure: its read-only view overlays the blank editor
     if (outcome === 'failed' && !fileCtxRef.current.doc) await newFileImpl(fileCtxRef.current)
     return outcome
   }, [])
@@ -12175,6 +12182,17 @@ export function App() {
           自动关面板,并以 panelAvailable 条件隐藏停靠槽(关且未显式打开时无 rail 无残条) */}
 
         <div className="app-content">
+          {giantDoc ? (
+            <GiantDocView
+              open={giantDoc}
+              onClose={() => setGiantDoc(null)}
+              labels={{
+                readonlyBadge: t('giantReadonly'),
+                blocksLabel: (count) => t('giantBlocks', { count: String(count) }),
+                closeLabel: t('giantClose'),
+              }}
+            />
+          ) : null}
           <div className={workspaceClass}>
             {doc && showFind && (
               <FindPanel

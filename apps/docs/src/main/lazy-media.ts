@@ -11,6 +11,7 @@ import {
   readMediaPartBounded,
 } from '@chaoffice/docx-engine/lazy-media'
 import {
+  LOCAL_FILE_ZIP_LIMITS,
   bufferSource,
   lazyMediaHashesIn,
   materializeDocx,
@@ -50,7 +51,7 @@ const MIME: Record<string, string> = {
   svg: 'image/svg+xml',
 }
 
-function sha256File(path: string): Promise<string> {
+export function sha256File(path: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const hash = createHash('sha256')
     createReadStream(path)
@@ -60,7 +61,7 @@ function sha256File(path: string): Promise<string> {
   })
 }
 
-function registerSource(hash: string, path: string, wcId: number): void {
+export function registerSource(hash: string, path: string, wcId: number): void {
   const source = sources.get(hash)
   if (source) {
     if (source.path !== path) source.table = undefined
@@ -81,7 +82,7 @@ export async function openLazyDocx(
 ): Promise<{ bytes: Buffer; hash: string } | null> {
   let zip: ZipFile
   try {
-    zip = await openZipFile(filePath)
+    zip = await openZipFile(filePath, LOCAL_FILE_ZIP_LIMITS)
   } catch {
     return null
   }
@@ -137,7 +138,7 @@ async function entriesOf(source: Source): Promise<Map<string, ZipEntry> | null> 
   if (source.table && source.table.size === st.size && source.table.mtimeMs === st.mtimeMs) {
     return source.table.entries
   }
-  const zip = await openZipFile(source.path)
+  const zip = await openZipFile(source.path, LOCAL_FILE_ZIP_LIMITS)
   try {
     // an encrypted save may have switched the source to memory meanwhile
     if (!source.bytes) source.table = { size: st.size, mtimeMs: st.mtimeMs, entries: zip.entries }

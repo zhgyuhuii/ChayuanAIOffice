@@ -163,6 +163,7 @@ import type {
   CreateDocumentResult,
   DecryptOpenResult,
   DocsTabInfo,
+  GiantWindowResult,
   MenuCommand,
   MergeOutputRequest,
   OpenDocxResult,
@@ -224,8 +225,11 @@ import {
   pointLazyMediaAt,
   readLazyMedia,
   registerLazyMediaProtocol,
+  registerSource,
+  sha256File,
 } from './lazy-media'
 import { inlineLazyMediaInHtml } from './lazy-media-inline'
+import { GiantDocxSession, probeGiantDocx } from '@chaoffice/docx-engine/giant'
 import {
   commitDocPasswordSave,
   currentDocPasswordIntentRevision,
@@ -8036,6 +8040,11 @@ async function confirmLossyImport(
   return true
 }
 
+/** Giant sessions by id: a document.xml past the V8 string ceiling lives as a
+ *  read-only virtual-window parse in this process, never as renderer bytes. */
+const giantSessions = new Map<string, { session: GiantDocxSession; wcId: number }>()
+let giantSessionSeq = 0
+
 async function loadDocx(
   filePath: string,
   wcId: number,
@@ -8044,6 +8053,40 @@ async function loadDocx(
   if (typeof filePath !== 'string' || !/\.docx$/i.test(filePath)) return null
   if (!existsSync(filePath)) return null
   const size = (await stat(filePath)).size
+  // giant branch first: a multi-GB document.xml can never become a JS string,
+  // so the whole-buffer lazy/decrypt path below is skipped for it (an
+  // encrypted docx is a CFB container, not a zip, so the probe sees no
+  // document part and the normal needsPassword flow runs instead)
+  const giantProbe = await probeGiantDocx(filePath).catch(() => null)
+  if (giantProbe?.giant) {
+    const hash = await sha256File(filePath)
+    const session = await GiantDocxSession.open(filePath, { mediaHash: hash }).catch((err) => {
+      console.warn('[docs] giant session failed:', err)
+      return null
+    })
+    if (session) {
+      registerSource(hash, filePath, wcId)
+      const giantId = `giant-${++giantSessionSeq}`
+      giantSessions.set(giantId, { session, wcId })
+      const wc = electronWebContents.fromId(wcId)
+      wc?.once('destroyed', () => {
+        if (giantSessions.get(giantId)?.wcId === wcId) giantSessions.delete(giantId)
+      })
+      pushRecent(filePath)
+      // read-only: no write grant, no disk-state, no recovery copies
+      if (fileOpenedHook) fileOpenedHook(wcId, filePath)
+      return {
+        giant: true,
+        giantId,
+        path: filePath,
+        name: basename(filePath),
+        hash,
+        meta: session.meta,
+      }
+    }
+    await showOpenError(wcId, `${basename(filePath)}: ${tm('errParseFailed')}`)
+    return null
+  }
   const lazy = await openLazyDocx(filePath, wcId)
   if ((lazy?.bytes.length ?? size) > MAX_OPEN_BYTES) {
     const mb = MAX_OPEN_BYTES / 1024 / 1024
@@ -9250,6 +9293,48 @@ export function registerDocsIpc(): void {
     const prepared = await prepareDocumentForOpen(result.filePaths[0], dialogParent(event))
     if (!prepared) return null
     return loadDocx(prepared, event.sender.id)
+  })
+
+  // giant sessions: window-local parses of a document.xml too large for any
+  // JS string. Only the session's owning view may fetch windows or close it.
+  ipcMain.handle(
+    'docs:giant-window',
+    async (
+      event,
+      giantId: unknown,
+      first: unknown,
+      count: unknown,
+    ): Promise<GiantWindowResult | null> => {
+      if (typeof giantId !== 'string' || typeof first !== 'number' || typeof count !== 'number') {
+        return null
+      }
+      if (!Number.isInteger(first) || !Number.isInteger(count) || first < 0 || count <= 0) {
+        return null
+      }
+      const entry = giantSessions.get(giantId)
+      if (!entry || entry.wcId !== event.sender.id) return null
+      try {
+        const w = await entry.session.window(first, Math.min(count, 400))
+        return {
+          first: w.first,
+          count: w.count,
+          blocks: w.parsed.blocks,
+          docDefaults: w.parsed.docDefaults ?? null,
+          compatibilityMode: w.parsed.compatibilityMode ?? 0,
+        }
+      } catch (err) {
+        console.warn('[docs] giant window failed:', err)
+        return null
+      }
+    },
+  )
+
+  ipcMain.handle('docs:giant-close', (event, giantId: unknown): { ok: boolean } => {
+    if (typeof giantId !== 'string') return { ok: false }
+    const entry = giantSessions.get(giantId)
+    if (!entry || entry.wcId !== event.sender.id) return { ok: false }
+    giantSessions.delete(giantId)
+    return { ok: true }
   })
 
   ipcMain.handle('docs:open-path', async (event, filePath: string) => {

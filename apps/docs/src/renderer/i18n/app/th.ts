@@ -139,6 +139,9 @@ export const th = {
   appUntitledDocx: 'เอกสารไม่มีชื่อ.docx',
   appOpenedFile: 'เปิด {name} แล้ว',
   appOpenFailed: 'เปิดไม่สำเร็จ: {error}',
+  giantReadonly: 'เอกสารขนาดใหญ่ · อ่านอย่างเดียว',
+  giantBlocks: '{count} บล็อก',
+  giantClose: 'ปิด',
   appDocTooLargeBlocks:
     '{name}: เอกสารมีขนาดใหญ่เกินกว่าจะเปิดได้ ({blocks} ย่อหน้า, {chars} ตัวอักษร)',
   appDocLargeReadOnly: 'เอกสารขนาดใหญ่ ({blocks} ย่อหน้า): เปิดในโหมดอ่าน — กด Esc เพื่อแก้ไข',

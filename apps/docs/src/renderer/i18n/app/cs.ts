@@ -139,6 +139,9 @@ export const cs = {
   appUntitledDocx: 'Bez názvu.docx',
   appOpenedFile: 'Otevřeno: {name}',
   appOpenFailed: 'Otevření se nezdařilo: {error}',
+  giantReadonly: 'Obří dokument · jen ke čtení',
+  giantBlocks: '{count} bloků',
+  giantClose: 'Zavřít',
   appDocTooLargeBlocks:
     '{name}: dokument je příliš velký k otevření ({blocks} odstavců, {chars} znaků)',
   appDocLargeReadOnly:

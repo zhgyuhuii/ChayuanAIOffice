@@ -143,6 +143,9 @@ export const ja = {
   appUntitledDocx: '無題の文書.docx',
   appOpenedFile: '{name} を開きました',
   appOpenFailed: '開けませんでした: {error}',
+  giantReadonly: '巨大ドキュメント · 読み取り専用',
+  giantBlocks: '{count} ブロック',
+  giantClose: '閉じる',
   appDocTooLargeBlocks: '{name}: 文書が大きすぎて開けません（{blocks} 段落、{chars} 文字）',
   appDocLargeReadOnly:
     '大きな文書（{blocks} 段落）のため閲覧モードで開きました。Esc で編集できます',

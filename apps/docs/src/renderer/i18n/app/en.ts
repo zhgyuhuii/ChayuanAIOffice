@@ -139,6 +139,9 @@ export const en = {
   appUntitledDocx: 'Untitled.docx',
   appOpenedFile: 'Opened {name}',
   appOpenFailed: 'Open failed: {error}',
+  giantReadonly: 'Giant document · read-only',
+  giantBlocks: '{count} blocks',
+  giantClose: 'Close',
   appDocTooLargeBlocks:
     '{name}: the document is too large to open ({blocks} paragraphs, {chars} characters)',
   appDocLargeReadOnly:

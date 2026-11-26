@@ -143,6 +143,9 @@ export const hu = {
   appUntitledDocx: 'Névtelen.docx',
   appOpenedFile: 'Megnyitva: {name}',
   appOpenFailed: 'Nem sikerült megnyitni: {error}',
+  giantReadonly: 'Óriás dokumentum · csak olvasható',
+  giantBlocks: '{count} blokk',
+  giantClose: 'Bezárás',
   appDocTooLargeBlocks:
     '{name}: a dokumentum túl nagy a megnyitáshoz ({blocks} bekezdés, {chars} karakter)',
   appDocLargeReadOnly:

@@ -140,6 +140,9 @@ export const ru = {
   appUntitledDocx: 'Документ без названия.docx',
   appOpenedFile: 'Открыт файл {name}',
   appOpenFailed: 'Не удалось открыть: {error}',
+  giantReadonly: 'Гигантский документ · только чтение',
+  giantBlocks: 'блоков: {count}',
+  giantClose: 'Закрыть',
   appDocTooLargeBlocks:
     '{name}: документ слишком большой, чтобы его открыть ({blocks} абзацев, {chars} символов)',
   appDocLargeReadOnly:

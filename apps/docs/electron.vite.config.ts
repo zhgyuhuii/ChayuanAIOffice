@@ -6,6 +6,10 @@ import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 // node_modules is a symlink into the main checkout, so bare specifiers would
 // silently bundle the other checkout's (possibly stale) code.
 const localAlias = {
+  '@chaoffice/docx-engine/giant': resolve(
+    __dirname,
+    '../../packages/docx-engine/src/giant.ts',
+  ),
   '@chaoffice/docx-engine/lazy-media': resolve(
     __dirname,
     '../../packages/docx-engine/src/lazy-media.ts',

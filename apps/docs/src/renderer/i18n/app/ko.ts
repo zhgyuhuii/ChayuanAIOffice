@@ -141,6 +141,9 @@ export const ko = {
   appUntitledDocx: '제목 없는 문서.docx',
   appOpenedFile: '{name}을(를) 열었습니다',
   appOpenFailed: '열기 실패: {error}',
+  giantReadonly: '대용량 문서 · 읽기 전용',
+  giantBlocks: '{count}개 블록',
+  giantClose: '닫기',
   appDocTooLargeBlocks: '{name}: 문서가 너무 커서 열 수 없습니다 ({blocks}개 단락, {chars}자)',
   appDocLargeReadOnly:
     '큰 문서({blocks}개 단락)이므로 읽기 모드로 열었습니다. Esc를 누르면 편집할 수 있습니다',

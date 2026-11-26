@@ -141,6 +141,9 @@ export const de = {
   appUntitledDocx: 'Unbenanntes Dokument.docx',
   appOpenedFile: '{name} geöffnet',
   appOpenFailed: 'Öffnen fehlgeschlagen: {error}',
+  giantReadonly: 'Riesiges Dokument · schreibgeschützt',
+  giantBlocks: '{count} Blöcke',
+  giantClose: 'Schließen',
   appDocTooLargeBlocks:
     '{name}: Das Dokument ist zu groß zum Öffnen ({blocks} Absätze, {chars} Zeichen)',
   appDocLargeReadOnly:

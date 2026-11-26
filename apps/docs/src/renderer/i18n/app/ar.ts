@@ -139,6 +139,9 @@ export const ar = {
   appUntitledDocx: 'مستند بلا عنوان.docx',
   appOpenedFile: 'تم فتح {name}',
   appOpenFailed: 'فشل الفتح: {error}',
+  giantReadonly: 'مستند ضخم · للقراءة فقط',
+  giantBlocks: '{count} كتلة',
+  giantClose: 'إغلاق',
   appDocTooLargeBlocks: '{name}: المستند أكبر من أن يُفتح ({blocks} فقرة، {chars} حرفًا)',
   appDocLargeReadOnly: 'مستند كبير ({blocks} فقرة): تم فتحه في وضع القراءة — اضغط Esc للتحرير',
   appDocLargeSpellOff:

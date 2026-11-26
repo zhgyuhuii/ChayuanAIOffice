@@ -28,7 +28,35 @@ export interface OpenFileNeedsPassword {
   template?: boolean
 }
 
-export type OpenDocxResult = OpenFileResult | OpenFileNeedsPassword | null
+/** Giant document (document.xml past the V8 string ceiling): opened as a
+ *  read-only virtual-window session in the main process; the renderer never
+ *  holds the archive or the XML, only per-window parsed blocks. */
+export interface GiantOpenResult {
+  giant: true
+  giantId: string
+  path: string
+  name: string
+  hash: string
+  meta: GiantDocMeta
+}
+
+export interface GiantDocMeta {
+  documentXmlBytes: number
+  bodyBytes: number
+  blockCount: number
+}
+
+/** One fetched window of a giant session: blocks parsed window-locally by the
+ *  ordinary production parser plus the doc-level defaults rendering needs. */
+export interface GiantWindowResult {
+  first: number
+  count: number
+  blocks: unknown[]
+  docDefaults: { sizeHalfPoints?: number; asciiFont?: string; eastAsiaLang?: string } | null
+  compatibilityMode: number
+}
+
+export type OpenDocxResult = OpenFileResult | OpenFileNeedsPassword | GiantOpenResult | null
 
 /** a file of the templates folder, as the template gallery shows it */
 export interface TemplateEntry {
@@ -90,9 +118,10 @@ export type LinkSourceResult =
     }
   | { ok: false; reason: 'missing' | 'tooLarge' | 'unsupported' | 'password' | 'failed' }
 
-/** result of an openDocxDecrypt attempt; wrong-password keeps the prompt open */
+/** result of an openDocxDecrypt attempt; wrong-password keeps the prompt open.
+ *  A decrypted file that turns out giant still opens (read-only session). */
 export type DecryptOpenResult =
-  | { ok: true; result: OpenFileResult }
+  | { ok: true; result: OpenFileResult | GiantOpenResult }
   | { ok: false; reason: 'wrong-password' | 'unsupported' | 'error'; error?: string }
 
 export interface PickImageResult {
@@ -525,6 +554,14 @@ export interface DesktopApi {
   respondToZotero(response: ZoteroRendererResponse): void
   openDocx(): Promise<OpenDocxResult>
   openDocxPath(path: string): Promise<OpenDocxResult>
+  /** giant session: fetch one window of parsed blocks (read-only view) */
+  giantWindow(
+    giantId: string,
+    first: number,
+    count: number,
+  ): Promise<GiantWindowResult | null>
+  /** giant session: release the session (close button / teardown) */
+  giantClose(giantId: string): void
   confirmDocumentReplace(): Promise<boolean>
   /** decrypt-and-open a password-protected docx (path from a needsPassword result) */
   openDocxDecrypt(path: string, password: string): Promise<DecryptOpenResult>

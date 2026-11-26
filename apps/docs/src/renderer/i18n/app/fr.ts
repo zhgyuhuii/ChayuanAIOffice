@@ -141,6 +141,9 @@ export const fr = {
   appUntitledDocx: 'Document sans titre.docx',
   appOpenedFile: '{name} ouvert',
   appOpenFailed: "Échec de l'ouverture : {error}",
+  giantReadonly: 'Document géant · lecture seule',
+  giantBlocks: '{count} blocs',
+  giantClose: 'Fermer',
   appDocTooLargeBlocks:
     '{name} : le document est trop volumineux pour être ouvert ({blocks} paragraphes, {chars} caractères)',
   appDocLargeReadOnly:

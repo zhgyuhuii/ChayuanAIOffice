@@ -10,6 +10,7 @@ export default defineConfig({
   resolve: {
     alias: {
       // subpath before the bare name: string aliases are prefix replacements
+      '@chaoffice/docx-engine/giant': local('../../packages/docx-engine/src/giant.ts'),
       '@chaoffice/docx-engine/lazy-media': local('../../packages/docx-engine/src/lazy-media.ts'),
       '@chaoffice/docx-engine/zip-splice': local('../../packages/docx-engine/src/zip-splice.ts'),
       '@chaoffice/font-metrics/resolve': local('../../packages/font-metrics/src/resolve.ts'),

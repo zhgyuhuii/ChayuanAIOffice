@@ -140,6 +140,9 @@ export const ms = {
   appUntitledDocx: 'Tanpa tajuk.docx',
   appOpenedFile: '{name} dibuka',
   appOpenFailed: 'Gagal membuka: {error}',
+  giantReadonly: 'Dokumen gergasi · baca-sahaja',
+  giantBlocks: '{count} blok',
+  giantClose: 'Tutup',
   appDocTooLargeBlocks:
     '{name}: dokumen terlalu besar untuk dibuka ({blocks} perenggan, {chars} aksara)',
   appDocLargeReadOnly:

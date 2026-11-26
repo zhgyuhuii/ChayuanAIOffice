@@ -138,6 +138,9 @@ export const zh = {
   appUntitledDocx: '未命名文档.docx',
   appOpenedFile: '已打开 {name}',
   appOpenFailed: '打开失败：{error}',
+  giantReadonly: '超大文档 · 只读',
+  giantBlocks: '{count} 个块',
+  giantClose: '关闭',
   appDocTooLargeBlocks: '{name}：文档过大（{blocks} 个段落、{chars} 个字符），无法打开',
   appDocLargeReadOnly: '文档很大（{blocks} 个段落），已以只读模式打开；按 Esc 可开始编辑',
   appDocLargeSpellOff:

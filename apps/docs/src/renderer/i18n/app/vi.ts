@@ -140,6 +140,9 @@ export const vi = {
   appUntitledDocx: 'Tài liệu không tên.docx',
   appOpenedFile: 'Đã mở {name}',
   appOpenFailed: 'Mở thất bại: {error}',
+  giantReadonly: 'Tài liệu khổng lồ · chỉ đọc',
+  giantBlocks: '{count} khối',
+  giantClose: 'Đóng',
   appDocTooLargeBlocks: '{name}: tài liệu quá lớn không thể mở ({blocks} đoạn văn, {chars} ký tự)',
   appDocLargeReadOnly:
     'Tài liệu lớn ({blocks} đoạn văn): đã mở ở chế độ chỉ đọc — nhấn Esc để chỉnh sửa',

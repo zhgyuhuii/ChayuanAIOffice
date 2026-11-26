@@ -138,6 +138,9 @@ export const he = {
   appUntitledDocx: 'ללא שם.docx',
   appOpenedFile: '{name} נפתח',
   appOpenFailed: 'הפתיחה נכשלה: {error}',
+  giantReadonly: 'מסמך ענק · קריאה בלבד',
+  giantBlocks: '{count} בלוקים',
+  giantClose: 'סגירה',
   appDocTooLargeBlocks: '{name}: המסמך גדול מדי לפתיחה ({blocks} פסקאות, {chars} תווים)',
   appDocLargeReadOnly: 'מסמך גדול ({blocks} פסקאות): נפתח במצב קריאה — הקש Esc לעריכה',
   appDocLargeSpellOff:

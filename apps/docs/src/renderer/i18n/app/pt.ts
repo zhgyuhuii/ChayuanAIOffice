@@ -140,6 +140,9 @@ export const pt = {
   appUntitledDocx: 'Sem título.docx',
   appOpenedFile: '{name} aberto',
   appOpenFailed: 'Falha ao abrir: {error}',
+  giantReadonly: 'Documento gigante · somente leitura',
+  giantBlocks: '{count} blocos',
+  giantClose: 'Fechar',
   appDocTooLargeBlocks:
     '{name}: o documento é grande demais para ser aberto ({blocks} parágrafos, {chars} caracteres)',
   appDocLargeReadOnly:

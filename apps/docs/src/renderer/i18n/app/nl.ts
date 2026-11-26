@@ -140,6 +140,9 @@ export const nl = {
   appUntitledDocx: 'Naamloos.docx',
   appOpenedFile: '{name} geopend',
   appOpenFailed: 'Openen mislukt: {error}',
+  giantReadonly: 'Reusachtig document · alleen-lezen',
+  giantBlocks: '{count} blokken',
+  giantClose: 'Sluiten',
   appDocTooLargeBlocks:
     "{name}: het document is te groot om te openen ({blocks} alinea's, {chars} tekens)",
   appDocLargeReadOnly:

@@ -73,7 +73,7 @@ import {
   type DrawingGrid,
 } from '@chaoffice/docx-engine'
 import { Dispatch, SetStateAction } from 'react'
-import { AiDocContent, OpenDocxResult, PdfInternalLink } from '../shared/ipc'
+import { AiDocContent, GiantOpenResult, OpenDocxResult, PdfInternalLink } from '../shared/ipc'
 import { twipsToPx } from './units'
 import {
   hfVariantsFromParsed,
@@ -198,6 +198,8 @@ export interface FileActionContext {
   setDocLoading: (loading: boolean) => void
   /** Read Mode toggle: a very large document opens in it */
   setReadMode: (readMode: boolean) => void
+  /** a giant (string-infeasible) document opened: mount the read-only window view */
+  enterGiant?: (result: GiantOpenResult) => void
   /** a large document opens with check-as-you-type spelling off */
   setLargeDocSpellOff: (off: boolean) => void
   setShowPagePreview: (show: boolean) => void
@@ -548,7 +550,7 @@ function applyDocLayoutSettings(editor: Editor, parsed: ParsedDocFull): void {
  * load error — the boot path falls back to a blank document instead of leaving
  * the tab on "Opening…" forever.
  */
-export type LoadFileOutcome = 'ok' | 'canceled' | 'password' | 'failed' | 'superseded'
+export type LoadFileOutcome = 'ok' | 'canceled' | 'password' | 'giant' | 'failed' | 'superseded'
 
 /** appends a streamed tail chunk at the document end, outside undo history and the AI freshness baseline */
 export function appendStreamedNodes(editor: Editor, nodes: PmNode[]): void {
@@ -658,6 +660,12 @@ export async function loadFile(
   if ('needsPassword' in result) {
     ctx.promptDocxPassword({ path: result.path, name: result.name, template: result.template })
     return 'password'
+  }
+  if ('giant' in result) {
+    // a document.xml past the V8 string ceiling: the main process owns a
+    // read-only windowed session, this view never sees the archive bytes
+    ctx.enterGiant?.(result)
+    return 'giant'
   }
   const generation = ++openGeneration
   try {
