@@ -95,12 +95,13 @@ struct SharedStringsScale {
 fn shared_strings_scale(archive: &mut ZipArchive<File>) -> Result<SharedStringsScale, SidecarError> {
     let entry = zip_entry(archive, SHARED_STRINGS_PATH)?;
     let declared_bytes = entry.size();
-    let mut reader = Reader::from_reader(BufReader::new(entry));
+    // adapted: 与上游 #2893 同款——非 UTF-8 部件经 DecodingReader 解码
+    let mut reader = xml_reader(entry)?;
     let mut buffer = Vec::new();
     loop {
         match reader.read_event_into(&mut buffer)? {
-            Event::Start(element) if element.local_name().as_ref() == b"sst" => {
-                let unique_count = attribute_value(&reader, &element, b"uniqueCount")?
+            Event::Start(element) if element.local_name().as_ref() == "sst" => {
+                let unique_count = attribute_value(&reader, &element, "uniqueCount")?
                     .and_then(|value| value.parse::<u64>().ok());
                 return Ok(SharedStringsScale {
                     declared_bytes,
@@ -122,13 +123,13 @@ fn shared_strings_scale(archive: &mut ZipArchive<File>) -> Result<SharedStringsS
 /// Exact `<si>` count for tables whose root declares no `uniqueCount`.
 fn count_shared_string_entries(archive: &mut ZipArchive<File>) -> Result<u64, SidecarError> {
     let entry = zip_entry(archive, SHARED_STRINGS_PATH)?;
-    let mut reader = Reader::from_reader(BufReader::new(entry));
+    let mut reader = xml_reader(entry)?;
     let mut buffer = Vec::new();
     let mut count = 0u64;
     loop {
         match reader.read_event_into(&mut buffer)? {
             Event::Start(element) | Event::Empty(element)
-                if element.local_name().as_ref() == b"si" =>
+                if element.local_name().as_ref() == "si" =>
             {
                 count += 1;
             }
@@ -146,7 +147,8 @@ fn parse_shared_strings_into_memory(
     let Ok(entry) = zip_entry(archive, SHARED_STRINGS_PATH) else {
         return Ok(SharedStringsStore::InMemory(Vec::new()));
     };
-    let mut reader = Reader::from_reader(BufReader::new(entry));
+    // adapted: 与上游 #2893 同款——非 UTF-8 部件经 DecodingReader 解码
+    let mut reader = xml_reader(entry)?;
     let mut buffer = Vec::new();
     let mut strings = Vec::new();
     let mut accumulator = SharedStringAccumulator::default();
@@ -188,24 +190,24 @@ impl SharedStringAccumulator {
         colors: &ColorContext,
     ) -> Result<Option<SharedString>, SidecarError> {
         match event {
-            Event::Start(element) if element.local_name().as_ref() == b"si" => {
+            Event::Start(element) if element.local_name().as_ref() == "si" => {
                 self.current.clear();
                 self.runs.clear();
                 self.current_run = None;
             }
-            Event::Start(element) if element.local_name().as_ref() == b"r" => {
+            Event::Start(element) if element.local_name().as_ref() == "r" => {
                 self.current_run = Some(RichRun::default());
             }
             // Phonetic guide text (<rPh><t>…</t></rPh>) is ruby annotation,
             // not cell content.
-            Event::Start(element) if element.local_name().as_ref() == b"rPh" => {
+            Event::Start(element) if element.local_name().as_ref() == "rPh" => {
                 self.in_phonetic = true;
             }
-            Event::End(element) if element.local_name().as_ref() == b"rPh" => {
+            Event::End(element) if element.local_name().as_ref() == "rPh" => {
                 self.in_phonetic = false;
             }
             Event::Start(element) | Event::Empty(element) if self.current_run.is_some() => {
-                if element.local_name().as_ref() == b"t" {
+                if element.local_name().as_ref() == "t" {
                     self.in_text = true;
                     self.text_preserve = preserves_space(reader, &element)?;
                     self.text_node.clear();
@@ -213,7 +215,7 @@ impl SharedStringAccumulator {
                     apply_run_property(run, reader, &element, colors)?;
                 }
             }
-            Event::Start(element) if element.local_name().as_ref() == b"t" => {
+            Event::Start(element) if element.local_name().as_ref() == "t" => {
                 self.in_text = !self.in_phonetic;
                 self.text_preserve = preserves_space(reader, &element)?;
                 self.text_node.clear();
@@ -227,7 +229,7 @@ impl SharedStringAccumulator {
             Event::GeneralRef(reference) if self.in_text => {
                 self.text_node.push_str(&general_ref_text(&reference)?);
             }
-            Event::End(element) if element.local_name().as_ref() == b"t" => {
+            Event::End(element) if element.local_name().as_ref() == "t" => {
                 if self.in_text {
                     let text = text_node_content(
                         std::mem::take(&mut self.text_node),
@@ -240,12 +242,12 @@ impl SharedStringAccumulator {
                 }
                 self.in_text = false;
             }
-            Event::End(element) if element.local_name().as_ref() == b"r" => {
+            Event::End(element) if element.local_name().as_ref() == "r" => {
                 if let Some(run) = self.current_run.take() {
                     self.runs.push(run);
                 }
             }
-            Event::End(element) if element.local_name().as_ref() == b"si" => {
+            Event::End(element) if element.local_name().as_ref() == "si" => {
                 return Ok(Some(self.finish()));
             }
             _ => {}
@@ -366,16 +368,16 @@ mod mapped {
         loop {
             let start = reader.buffer_position();
             match reader.read_event_into(&mut buffer)? {
-                Event::Start(element) if element.local_name().as_ref() == b"si" => {
+                Event::Start(element) if element.local_name().as_ref() == "si" => {
                     open = Some(start);
                 }
-                Event::Empty(element) if element.local_name().as_ref() == b"si" => {
+                Event::Empty(element) if element.local_name().as_ref() == "si" => {
                     metas.push(SharedStringMeta {
                         start,
                         end: reader.buffer_position(),
                     });
                 }
-                Event::End(element) if element.local_name().as_ref() == b"si" => {
+                Event::End(element) if element.local_name().as_ref() == "si" => {
                     if let Some(start) = open.take() {
                         metas.push(SharedStringMeta {
                             start,
