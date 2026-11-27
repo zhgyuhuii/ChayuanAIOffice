@@ -30,14 +30,14 @@ describe('generatedImageDisplayUrl', () => {
 describe('resolveGeneratedImageFile', () => {
   it('serves only store-shaped names from the renderer scheme', () => {
     const display = generatedImageDisplayUrl(fileUrl)
-    expect(resolveGeneratedImageFile(`genoffice-app://slides${display}`)).toBe(
+    expect(resolveGeneratedImageFile(`chaoffice-app://slides${display}`)).toBe(
       join(STORE_DIR, NAME),
     )
-    expect(resolveGeneratedImageFile(`genoffice-app://docs${display}`)).toBe(join(STORE_DIR, NAME))
+    expect(resolveGeneratedImageFile(`chaoffice-app://docs${display}`)).toBe(join(STORE_DIR, NAME))
   })
 
   it('refuses traversal and foreign names', () => {
-    const prefix = 'genoffice-app://slides/generated-images/'
+    const prefix = 'chaoffice-app://slides/generated-images/'
     for (const name of [
       'notes.txt',
       '../outside.png',
@@ -48,6 +48,6 @@ describe('resolveGeneratedImageFile', () => {
       expect(resolveGeneratedImageFile(`${prefix}${name}`)).toBeNull()
     }
     expect(resolveGeneratedImageFile(fileUrl)).toBeNull()
-    expect(resolveGeneratedImageFile('genoffice-app://slides/index.html')).toBeNull()
+    expect(resolveGeneratedImageFile('chaoffice-app://slides/index.html')).toBeNull()
   })
 })
