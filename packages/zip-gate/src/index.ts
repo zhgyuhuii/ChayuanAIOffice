@@ -186,6 +186,7 @@ function scanParts(bytes: Uint8Array): ScannedPart[] {
   const end = bytes.byteLength - 22
   if (end < 0) throw new Error('zip: end of central directory not found')
   let eocd = -1
+  let zip64Rejection: string | null = null
   for (let i = end; i >= Math.max(0, end - 0xffff); i--) {
     if (at(i, 4) !== EOCD_SIG) continue
     // The archive comment can contain the same signature. Only a record whose
@@ -196,13 +197,56 @@ function scanParts(bytes: Uint8Array): ScannedPart[] {
     const count = at(i + 10, 2)
     const cdSize = at(i + 12, 4)
     const cdOffset = at(i + 16, 4)
+    // adapted: 本地 zip64 支持面——sentinel/locator 标记的候选走 EOCD64 的 u64 值
+    // 做同一组校验（上游无 zip64 面，直接按 32 位校验会把真 zip64 EOCD 当伪记录跳过）。
+    // 校验失败不收编也不吞掉：候选照旧跳过，但把精确拒因留给穷尽后的抛错，
+    // 保持本地 zip64 拒收测试钉住的错误文案。
+    const looksZip64 =
+      count === 0xffff ||
+      cdSize === 0xffffffff ||
+      cdOffset === 0xffffffff ||
+      (i >= 20 && at(i - 20, 4) === ZIP64_LOCATOR_SIG)
+    if (looksZip64) {
+      if (!(i >= 20 && at(i - 20, 4) === ZIP64_LOCATOR_SIG)) {
+        zip64Rejection ??= 'zip: zip64 marker fields without a zip64 locator'
+        continue
+      }
+      const eocd64 = bigAt(i - 20 + 8)
+      if (eocd64 + 56 > bytes.byteLength || at(eocd64, 4) !== EOCD64_SIG) {
+        zip64Rejection ??= 'zip: corrupt zip64 end of central directory'
+        continue
+      }
+      const count64 = bigAt(eocd64 + 32)
+      const cdSize64 = bigAt(eocd64 + 40)
+      const cdOffset64 = bigAt(eocd64 + 48)
+      if (cdOffset64 + cdSize64 > i) {
+        zip64Rejection ??= 'zip: corrupt central directory'
+        continue
+      }
+      if (
+        count64 > 0 &&
+        (cdSize64 < 46 || cdOffset64 > bytes.byteLength - 46 || at(cdOffset64, 4) !== CENTRAL_SIG)
+      ) {
+        zip64Rejection ??= 'zip: corrupt central directory'
+        continue
+      }
+      if (count64 === 0 && (cdOffset64 !== i || cdSize64 !== 0)) {
+        zip64Rejection ??= 'zip: corrupt central directory'
+        continue
+      }
+      eocd = i
+      break
+    }
     if (cdOffset + cdSize > i) continue
     if (count > 0 && (cdSize < 46 || at(cdOffset, 4) !== CENTRAL_SIG)) continue
     if (count === 0 && (cdOffset !== i || cdSize !== 0)) continue
     eocd = i
     break
   }
-  if (eocd < 0) throw new Error('zip: end of central directory not found')
+  if (eocd < 0) {
+    if (zip64Rejection) throw new Error(zip64Rejection)
+    throw new Error('zip: end of central directory not found')
+  }
   // ZIP64: the locator sits 20 bytes before the EOCD and points at the EOCD64
   // record, which carries the real counts and offsets as u64s. Maxed 16/32-bit
   // fields without a locator are a corrupt marker set, not a real archive.

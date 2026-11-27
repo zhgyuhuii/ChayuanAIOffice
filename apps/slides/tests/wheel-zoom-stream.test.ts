@@ -4,7 +4,7 @@ import { URL as NodeURL } from 'node:url'
 import { runInNewContext } from 'node:vm'
 import ts from 'typescript'
 import { afterEach, expect, it, vi } from 'vitest'
-import { createWheelPager, createZoomWheelClassifier } from '@genoffice/ui'
+import { createWheelPager, createZoomWheelClassifier } from '@chaoffice/ui'
 import { clampZoom, notchStep } from '../src/renderer/zoom-steps'
 
 // Execute the actual wheel effect AND preview callback, including the pending

@@ -3,7 +3,7 @@ import { URL as NodeURL } from 'node:url'
 import { runInNewContext } from 'node:vm'
 import ts from 'typescript'
 import { afterEach, expect, it } from 'vitest'
-import { createZoomWheelClassifier } from '@genoffice/ui'
+import { createZoomWheelClassifier } from '@chaoffice/ui'
 import * as docsZoom from '../src/renderer/wheel-zoom'
 
 // Exercise App's actual effect and DOM WheelEvents without mounting its unrelated services.

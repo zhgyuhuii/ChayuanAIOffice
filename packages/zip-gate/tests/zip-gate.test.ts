@@ -88,7 +88,7 @@ describe('assertZipInflatesWithinLimits', () => {
   it('accepts an honest archive that has a comment', async () => {
     const good = await onePart(300, 300, { method: 'store' })
     const eocd = good.length - 22
-    const comment = Buffer.from('genoffice', 'utf8')
+    const comment = Buffer.from('chaoffice', 'utf8')
     const commented = Buffer.concat([good, comment])
     commented.writeUInt16LE(comment.length, eocd + 20)
     await expect(assertZipInflatesWithinLimits(commented, LIMITS)).resolves.toBeUndefined()
