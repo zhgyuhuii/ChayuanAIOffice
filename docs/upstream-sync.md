@@ -812,6 +812,10 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 
 **R46 起点=c57dc1a2a，终点=2c17f6a8e**（=upstream/main 当前）。
 
+### R46 三轮审查（2026-11-28 合并后同日，零新增缺陷）
+
+**一轮·吸收完整性**：23 件对账=19 patch-id 直配+#2996 scope 归一后逐行全等+3 适配件（#2997/#2999/#2893 各有裁决与 adapted 提交）；69 文件树差残差仅 5 文件且全为纯品牌行（genoffice→chaoffice 注释映射，皆长分歧件）；自动合并风险文件（docs convert.ts/marks.ts、sheets App.tsx、pdf save-pdf.ts、hyperlink 测试）逐件「只增不删/上游意图替换」验证零本地内容丢失；上游本轮零删除件。**二轮·本地存活**：1GB 四层链（LOCAL_FILE_ZIP_LIMITS/shared_strings.rs mmap/giant 会话两件/zip-gate ZIP64 13 处）、察元AI入口（ChayuanAiMark 6 文件）、右侧文件面板（files-pane/FilesPane.tsx+home-layout.ts）、file-badge 单源（file-tiles/badge.tsx+shell file-badge.tsx）、微信扫码登录（wx-auth.ts/Onboarding/AccountPane）、mac 未签名更新手动降级（31 处）、双语 README、dsh-plugin——逐项在位。**三轮·门禁与真破坏**：全量根套件 38 工作区 exit 0 直捕获（R45 坑⑦⑧口径）；vitest alias 排序——本轮零 config 触碰；en 字典值/i18n——本轮零 strings 触碰；fonts @font-face——零字体触碰；版本字段核对——无新 tag 不动正确；`build:web` exit 0（CSS 断点门禁兜底）；新增专项=zip-gate zip64 测试族真跑（22/22，坑⑫兜出物已修）。**结论：三轮零新增缺陷，两笔门禁基线修复（memmap2 lock/lint 三处）已在合并链内闭环。**
+
 ## 第四十三轮（2026-11-19，上游 6b43f81b..2491896c 20 提交全吸收，施工于 sync/43-upstream；区间无新 tag（v0.13.18-139-g2491896c），chaofficeUpstreamVersion 维持 0.13.18，六段 1.0.18.0.13.18，本轮未打包 Z 不动；同链三本地提交=图标单一事实源收口+首页左树改版右侧文件树+R43 测试适配）
 
 > 上游 20 提交=docs 引擎修复波（#2860 嵌套表格内分页+#2861 表格单元格空行+#2862 填充分隔行顶对齐+#2850 Word 列表级次→HTML 嵌套列表+#2846 图组旁锚线换行+#2853 单元格内嵌表格字数+#2852 Avenir Next LT Pro 字体链+#2851 View>Ruler 跨窗口记忆（stored-flag 新件））+sheets（#2737 网格滚动时单元格编辑器跟随+#2761 ribbon 溢出时先紧凑后图标化（ribbon-fit 新件）+#2857 流式状态命名工作簿）+odf2ooxml（#2616 表格预算下重复行展开）+pptx-ops（#2864 setText 拒绝不支持的 bullet 格式（原子性前拒绝））+ai-provider（#2656 MiniMax H3-Image 生图模型族）+shell（#2859 Linux 网络文件夹不卡窗口（per-folder-watch 新件）+#2865 知识库问答背后展示星标文件+#2847 headless 导出前初始化保存语言）+i18n（#2740 保存/打开失败文案短化（shortFileError 入 packages/ui））+bench（#2756 pdf2docx 发票/报告精度记分卡 vs LibreOffice）。**依赖零变更**（regexpp 等未触及 lock）。
