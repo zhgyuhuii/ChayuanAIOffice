@@ -67,10 +67,6 @@ function indexOfSeq(buf: Uint8Array, seq: readonly number[], from: number): numb
   return -1
 }
 
-function isSpace(b: number): boolean {
-  return b === 0x20 || b === 0x09 || b === 0x0a || b === 0x0d
-}
-
 function isNameByte(b: number): boolean {
   return (
     (b >= 0x41 && b <= 0x5a) || // A-Z

@@ -10,7 +10,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react'
 import { EditorContent, useEditor } from '@tiptap/react'
-import type { GiantDocMeta, GiantOpenResult, GiantWindowResult } from '../../shared/ipc'
+import type { GiantOpenResult, GiantWindowResult } from '../../shared/ipc'
 import { editorExtensions } from '../editor/extensions'
 import { blocksToPmDoc, pmDocOptions } from '../editor/convert'
 import type { Block } from '@chaoffice/docx-engine'
@@ -20,8 +20,6 @@ const WINDOW_BLOCKS = 150
 const EDGE_BLOCKS = 40
 /** rough height of an unmeasured block: a plain paragraph line plus spacing */
 const ESTIMATED_BLOCK_PX = 30
-/** estimated px per body byte for big elements (tables); clamps the estimate */
-const ESTIMATED_PX_PER_BYTE = 0.02
 
 export interface GiantDocViewProps {
   open: GiantOpenResult
