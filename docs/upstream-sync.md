@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/chaoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第四十五轮完成（2026-11-25，上游 a10ba620..c57dc1a2a（tag v0.13.886）59 提交全吸收，施工于 sync/45-upstream，终链 77e51258c 已推；快照 #2969+58 件、chaofficeUpstreamVersion 0.13.18→0.13.886、六段 1.0.21.0.13.886；续作收尾四件=遗产冲突标记实解+字体死链修复+门禁族三红收绿+版本记账，origin v2 文档提交并入——详见 §R45 小节**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第四十六轮完成（2026-11-28，上游 c57dc1a2a..2c17f6a8e 23 提交全吸收，施工于 sync/46-upstream；纯加固批：docx-engine 页眉图片链/超链接属性/EMF 上限、sheets 网格线+缩略滚动、滚轮缩放共享手势、ui ScreenTips、slides BYOK 图同源化、pdf/xlsx/pptx/zip-gate 非有限值防御族、xlsx-engine RUSTSEC 升级；chaofficeUpstreamVersion 维持 0.13.886、六段 1.0.22.0.13.886；冲突 6 处三档裁决+adapted 三件（shared_strings Rust 迁移/zip-gate EOCD×zip64 融合/品牌收尾）——详见 §R46 小节**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -786,6 +786,31 @@ packages 层 3-way 补漏后全量测试暴露 apps/shell 同样落后于上游�
 
 **R41 起点=0ac588ff**（v0.12.852-28-g0ac588ff）。
 
+
+## 第四十六轮（2026-11-28，上游 c57dc1a2a..2c17f6a8e 23 提交全吸收，施工于 sync/46-upstream；区间无新 tag（describe=v0.13.886-23-g2c17f6a8e），chaofficeUpstreamVersion 维持 0.13.886，六段 1.0.22.0.13.886 不动，本轮未打包 Z 不动）
+
+> 上游 23 提交=纯加固/修复批（69 文件 +2160/−469，无巨件无删除）：docx-engine 页眉图片链两件（#2976 空关系根页眉图片保留/#2978 嵌套页眉部件旁图片链接定位）+列表/形状 XML `$` 序列字面化（#2979）+w:customXml 块/行/单元格遍历解包（#2977）+超链接 tgtFrame/docLocation 导入保留（#2982）+EMF/WMF 光栅上限（#2996）+非有限域编号留给 Word（#3008）；sheets 网格线精度+垂直缩略图滚动延迟（#2907，gridline-precision/vertical-thumb-scroll 新件）；滚轮缩放共享手势上下文（#2923，ui/wheel-zoom 新件+docs/sheets/slides 三端测试）；ui ScreenTips 小图标避让光标（#2991）；slides BYOK 生成图缩略图同源化（#2997，electron-utils/generated-image-url 新件+renderer-scheme `/generated-images/` 受限服务）；pdf Bates 字号非有限值拒绝（#2998）+extractPagesBytes 页索引去重（#3002）+编辑 op 四边/颜色校验（#3006）；hwp 最小 JPEG 头本征尺寸（#3000）；xlsx 图表值轴非有限极值拦截（#3001）+CSV 引号空字段成格（#3003）+表保护 spin 次数 fail-closed（#3005）；zip-gate 注释内 EOCD 签名防伪（#2999）+非有限 inflate cap 拒绝（#3007）；pptx hasDefaultFor 字面比较（#3009）+3D 边界任一轴溢出拒绝（#3010）；xlsx-engine crates RUSTSEC 升级（#2893：calamine 0.37→0.38、quick-xml 0.38→0.42、rustix，非 UTF-8 部件经 DecodingReader 解码）。
+
+### 《冲突与裁决清单》（合并门禁规则 v2 三栏，供事后审计）
+
+| 上游意图 | 本地状态 | 裁决 |
+|---|---|---|
+| #2997 AiPanel 导入 `generatedImageDisplayUrl`（genoffice scope） | 本地 scope=@chaoffice、AiSettingsV2、已有 ATTACHMENT_IMAGE_EXTS 导入+空 ai-provider/browser 块（历史 lint 清理残留） | 三档③：本地 scope/类型胜+上游新导入落地（`@chaoffice/electron-utils/generated-image-url`）；上游 `imageGenAvailable`/`mediaAnalysisAvailable` 接线不属本件意图（上游 #1225 行来自更早上游提交，本地架构无此消费点）不追 |
+| #2997 electron-utils package.json exports 并集 | 本地已有 files-pane-bridge（本地功能）+font-catalog/font-store（早轮入册、位置乱序） | 并集去重：本地两件保留+上游 generated-image-url 新增 |
+| #2997 renderer-scheme/gen­erated-images 品牌串 | 本地 scheme=chaoffice-app、目录=chaoffice-ai-images | 本地品牌胜+上游 resolver 函数/RE 外提全量落地（generated-image-url.ts 内 marker/注释同步品牌化） |
+| #2893 Cargo.lock | 本地多 memmap2 依赖（1GB mmap 架构） | 取上游 lock+cargo check 自动回补 memmap2 条目（单独提交） |
+| #2893 workbook.rs read_sheet_dimensions 地址解析 | 本地 count-budget 扫描变体持 `parse_address(&address)?`（#1794 robustness 半吸收：同函数另一处已 unwrap_or） | 三档②：采上游 `unwrap_or((current_row, next_column))`（#1794「坏地址不整簿报废」意图补全）+quick-xml 0.42 API 形态 |
+| #2893 workbook.rs read_shared_strings | 本地独有 mmap 架构 shared_strings.rs（workbook.rs 版本本地不存在） | 三档①：上游 workbook.rs 版本不取，本地架构胜；本地件随本轮做同款 quick-xml 0.42+DecodingReader 迁移（adapted 提交） |
+
+**本轮 adapted 三件**：①`71e8c30bd` shared_strings.rs 随 #2893 迁移——本地 mmap 独有件 15 处 `b"…"`→`"…"` API 迁移+三处裸 `Reader::from_reader(BufReader)` 换 `xml_reader`（DecodingReader 非 UTF-8 解码，legacy code page/UTF-16 BOM 两测试转绿）②`77ab03648` zip-gate EOCD 防伪×zip64 支持面融合——上游 #2999 严格校验按 zip32 语义（cdOffset/cdSize 32 位比较）会把 zip64 sentinel EOCD 当伪记录跳过=三个 zip64 测试红；裁决=zip64 候选（sentinel/locator 标记）走 EOCD64 u64 值做同组校验、失败候选照跳但 `zip64Rejection` 记录精确拒因（本地 zip64 测试钉住的 `/zip64/`、`/corrupt zip64 end of central directory/` 文案保持）③随件品牌收尾（wheel-zoom 测试 scope、AiPanel 注释、zip-gate 测试载荷 `'chaoffice'`）。
+
+**门禁基线修复两笔（皆先于本任务即红，非本轮引入）**：`5a609def9` Cargo.lock 回补本地 memmap2 条目；`6175a5dd0` lint 存量债三处（GiantDocView 两未用符号+giant-scan isSpace 未用函数——大文件战役存量）。
+
+**本轮新坑两条**：⑪**vitest 调用姿势坑**：从仓库根 `npx vitest run --root apps/docs` 会把出根 setupFiles（../../packages/…）外化成 `'/@fs/…'` 裸模块而 657 文件连炸——main 基线同炸、R45 绿提交同炸=纯调用姿势伪故障；门禁唯一正确口径=`npm run test -w @chaoffice/docs`（npm 会把 cwd 切进工作区）。全量根套件 `npm run test` 天然正确（workspace 脚本逐仓 cwd）。⑫**上游 zip32-only 假设的加固撞本地超集**：上游加固类提交（EOCD 防伪）pick 直配≠语义安全——本地 zip64 支持面测试族必须真跑（本轮 zip-gate 3 红兜出）；同类风险面=本地有超集能力的所有门禁件（zip-gate/预算门禁/giant 会话）。
+
+**门禁终态**：全量根套件 38 工作区 exit 0（后台直捕获，零 FAIL 行）/typecheck 0/lint 0 error（36 warning 基线）/check:* 十二门全绿（english-comments/font-metrics-provenance/generated-fonts/help-langs/skill-version/theme-colors/word-truths/font-rules/inline-rules/page-cut-readers/table-layout-rules/docs-commands）/品牌零新增（分支 1090=main 基线 1090，豁免外）/cargo 338 全绿（xlsx-engine，含两编码测试修复）。
+
+**R46 起点=c57dc1a2a，终点=2c17f6a8e**（=upstream/main 当前）。
 
 ## 第四十三轮（2026-11-19，上游 6b43f81b..2491896c 20 提交全吸收，施工于 sync/43-upstream；区间无新 tag（v0.13.18-139-g2491896c），chaofficeUpstreamVersion 维持 0.13.18，六段 1.0.18.0.13.18，本轮未打包 Z 不动；同链三本地提交=图标单一事实源收口+首页左树改版右侧文件树+R43 测试适配）
 
