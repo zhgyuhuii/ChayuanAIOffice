@@ -12,6 +12,7 @@
     "./disk-watch": "./src/disk-watch.ts",
     "./drop-open": "./src/drop-open.ts",
     "./files-pane-bridge": "./src/files-pane-bridge.ts",
+    "./generated-image-url": "./src/generated-image-url.ts",
     "./generated-images": "./src/generated-images.ts",
     "./headless-export": "./src/headless-export.ts",
     "./main-proxy": "./src/main-proxy.ts",

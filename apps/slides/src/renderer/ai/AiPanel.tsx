@@ -12,6 +12,9 @@ import {
   type ToolDisplay,
 } from '@chaoffice/agent-core'
 import type { RenderSlide } from '@chaoffice/pptx-render'
+// adapted: #2997 生成图片缩略图同源化——generatedImageDisplayUrl 走 renderer-scheme
+// /generated-images/ 路径（file:// 无法被 genoffice-app:// 页面加载）
+import { generatedImageDisplayUrl } from '@chaoffice/electron-utils/generated-image-url'
 import {
 } from '@chaoffice/ai-provider/browser'
 import type {
@@ -3231,7 +3234,12 @@ function ImageThumb({ url, title }: { url: string; title?: string }) {
       onClick={() => openExternal(url)}
       data-tip={title ?? url}
     >
-      <img src={url} alt={title ?? ''} loading="lazy" onError={() => setHidden(true)} />
+      <img
+        src={generatedImageDisplayUrl(url)}
+        alt={title ?? ''}
+        loading="lazy"
+        onError={() => setHidden(true)}
+      />
     </button>
   )
 }
